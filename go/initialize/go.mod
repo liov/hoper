@@ -1,4 +1,4 @@
-module github.com/liov/hoper/go/user
+module github.com/liov/hoper/go/initialize
 
 go 1.13
 
@@ -9,12 +9,9 @@ require (
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
 	github.com/jinzhu/configor v1.1.1
 	github.com/jinzhu/gorm v1.9.10
-	github.com/liov/hoper/go/initialize v0.0.0-20190920064137-7615f290bf48
+	github.com/liov/hoper/go/user v0.0.0-20190921073057-949eac45b5ee // indirect
 	github.com/liov/hoper/go/utls v0.0.0-20190920064137-7615f290bf48
 	go.uber.org/zap v1.10.0
 )
 
-replace (
-	github.com/liov/hoper/go/initialize => ../initialize
-	github.com/liov/hoper/go/utls => ../utils
-)
+replace github.com/liov/hoper/go/utls => ../utils
