@@ -1,0 +1,27 @@
+title = "user"
+
+[server]
+Host =  "hoper.user"
+HttpPort = ":8000"
+ReadTimeout = 60
+WriteTimeout = 60
+
+PassSalt = "%*~&*G(Ysa-jyb"
+TokenSecret = "hjoihiahDAW2iofjiJPO"
+TokenMaxAge = 86400
+
+PageSize = 10
+JwtSecret = "233"
+
+RuntimeRootPath =""
+#文件
+UploadDir = "../../static/upload"
+UploadPath = "/static/upload"
+# MB
+UploadMaxSize = 5
+UploadAllowExt = [".jpg",".jpeg",".png",".gif"]
+#日志
+LogSavePath = "../../static/logs"
+LogSaveName = "log"
+LogFileExt = "log"
+TimeFormat = "20060102"
