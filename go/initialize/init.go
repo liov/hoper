@@ -17,9 +17,9 @@ type Init struct {
 }
 
 //init函数命名规则，P+数字（优先级）+ 功能名
-func Start() {
+func Start(conf interface{}) {
 	init := &Init{}
-	init.config()
+	init.config(conf)
 	value := reflect.ValueOf(init)
 	noInit := strings.Join(init.NoInit, " ")
 	typeOf := value.Type()
