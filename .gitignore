@@ -9,3 +9,5 @@ out
 gen
 go.sum
 *.pb.go
+*.pb.gw.go
+*.micro.go
