@@ -1,3 +1,10 @@
+go get -u github.com/gpmgo/gopm
+安装protoc[https://github.com/protocolbuffers/protobuf/releases]
+go get -u github.com/golang/protobuf/protoc-gen-go
+go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
+go get -u github.com/micro/micro
+go get -u github.com/micro/protoc-gen-micro
+
 安装chocolatey[https://chocolatey.org]
 ```bash
 ChocolateyInstall = xxxx/Chocolatey

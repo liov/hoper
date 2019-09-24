@@ -11,7 +11,7 @@ require (
 	github.com/jinzhu/configor v1.1.1
 	github.com/jinzhu/gorm v1.9.10
 	github.com/liov/hoper/go/v1/initialize v0.0.0-20190920064137-7615f290bf48
-	github.com/liov/hoper/go/v1/proto v0.0.0-20190920064137-7615f290bf48
+	github.com/liov/hoper/go/v1/protobuf v0.0.0-20190920064137-7615f290bf48
 	github.com/liov/hoper/go/v1/utils v0.0.0-20190920064137-7615f290bf48
 	go.uber.org/zap v1.10.0
 	google.golang.org/grpc v1.23.1
@@ -19,6 +19,6 @@ require (
 
 replace (
 	github.com/liov/hoper/go/v1/initialize => ../initialize
-	github.com/liov/hoper/go/v1/proto => ../proto
+	github.com/liov/hoper/go/v1/protobuf => ../protobuf
 	github.com/liov/hoper/go/v1/utils => ../utils
 )
