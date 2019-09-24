@@ -1,4 +1,4 @@
-module github.com/liov/go/proto
+module github.com/liov/go/v1/protobuf
 
 go 1.13
 

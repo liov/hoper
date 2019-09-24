@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: default
+  name: greeter
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: greeter-srv
+  template:
+    metadata:
+      labels:
+        app: greeter-srv
+    spec:
+      containers:
+        - name: greeter
+          command: [
+            "/greeter-srv",
+            "--selector=static",
+            "--server_address=0.0.0.0:8080",
+            "--broker_address=0.0.0.0:10001"
+          ]
+          image: microhq/greeter-srv:kubernetes
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: greeter-port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: greeter
+  labels:
+    app: greeter
+spec:
+  ports:
+    - port: 8080
+      protocol: TCP
+  selector:
+    app: greeter

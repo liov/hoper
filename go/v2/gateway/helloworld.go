@@ -2,11 +2,14 @@ package main
 
 import (
 	"context"
-	"log"
 	"os"
 	"time"
 
-	pb "github.com/liov/hoper/go/v1/proto"
+	"github.com/liov/hoper/go/v2/gateway/internal/config"
+	"github.com/liov/hoper/go/v2/initialize"
+	"github.com/liov/hoper/go/v2/initialize/dao"
+	pb "github.com/liov/hoper/go/v2/protobuf"
+	"github.com/liov/hoper/go/v2/utils/log"
 	"google.golang.org/grpc"
 )
 
@@ -17,6 +20,10 @@ const (
 
 //验证，无论是在一个大模块里还是拆分成小模块，都是可以rpc通信的
 func main() {
+	defer log.Sync()
+	defer dao.Dao.Close()
+	initialize.Start(config.Conf)
+	log.Info(*dao.Dao)
 	// Set up a connection to the server.
 	conn, err := grpc.Dial(address, grpc.WithInsecure())
 	if err != nil {
@@ -36,5 +43,5 @@ func main() {
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
-	log.Printf("Greeting: %s", r.Message)
+	log.Infof("Greeting: %s", r.Message)
 }
