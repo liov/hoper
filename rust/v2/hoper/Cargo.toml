@@ -1,5 +1,5 @@
 [package]
-name = "rust"
+name = "hoper"
 version = "0.1.0"
 authors = ["liov <lby.i@qq.com>"]
 edition = "2018"
