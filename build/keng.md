@@ -28,3 +28,12 @@ nameserver   xxx
 
 ## IDEA中总模块名与java中maven模块名冲突
 改总模块名
+
+## Java搞了半天缺依赖
+```$xslt
+pom中只有test，少了
+ <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+ </dependency>
+```

@@ -28,29 +28,51 @@
         <grpc.version>1.25.0-SNAPSHOT</grpc.version><!-- CURRENT_GRPC_VERSION -->
         <protobuf.version>3.9.0</protobuf.version>
         <protoc.version>3.9.0</protoc.version>
-        <spring-cloud.version>Greenwich SR3</spring-cloud.version>
-        <java.version>1.12</java.version>
-        <maven.compiler.source>1.12</maven.compiler.source>
-        <maven.compiler.target>1.12</maven.compiler.target>
+        <java.version>1.13</java.version>
+        <maven.compiler.source>1.13</maven.compiler.source>
+        <maven.compiler.target>1.13</maven.compiler.target>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-netty-shaded</artifactId>
+            <version>1.23.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-protobuf</artifactId>
+            <version>1.23.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-stub</artifactId>
+            <version>1.23.0</version>
         </dependency>
     </dependencies>
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
             <dependency>
                 <groupId>io.grpc</groupId>
                 <artifactId>grpc-netty-shaded</artifactId>
@@ -86,7 +108,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
-                    <release>12</release>
+                    <release>13</release>
                     <compilerArgs>
                         <arg>-J--add-opens=java.base/jdk.internal.misc=hello</arg>
                         <arg>-J--add-exports=java.base/jdk.internal.misc=hello</arg>
@@ -121,13 +143,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <repositories>
-        <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/milestone</url>
-        </repository>
-    </repositories>
 
 </project>
