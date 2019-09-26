@@ -2,20 +2,18 @@ package xyz.hoper.client;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
+@Component
 public class GrpcClientMananer {
-    @Value("${grpc.client.host}")
-    private String host;
-    @Value("${grpc.client.port}")
-    private Integer port;
 
-    public ManagedChannel getChannel(){
+    public ManagedChannel getChannel(String host, int port){
         ManagedChannel channel = ManagedChannelBuilder.forAddress(host,port)
+                .usePlaintext()
                 .disableRetry()
-                .idleTimeout(2, TimeUnit.SECONDS)
+                .idleTimeout(5, TimeUnit.SECONDS)
                 .build();
         return channel;
     }

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option java_multiple_files = true;
 option java_package = "xyz.hoper.protobuf";
-option java_outer_classname = "HelloWorldProto";
+option java_outer_classname = "HelloWorld";
 
 package protobuf;
 
