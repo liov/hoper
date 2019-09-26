@@ -11,3 +11,4 @@ go.sum
 *.pb.go
 *.pb.gw.go
 *.micro.go
+target

@@ -17,7 +17,7 @@ func (s *Say) Hello(ctx context.Context, req *hello.Request, rsp *hello.Response
 	rsp.Msg = "Hello " + req.Name
 	return nil
 }
-
+//--registry=mdns --server_address=localhost:9090
 func main() {
 	service := grpc.NewService(
 		micro.Name("go.micro.srv.greeter"),
