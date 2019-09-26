@@ -37,3 +37,8 @@ pom中只有test，少了
             <artifactId>spring-boot-starter</artifactId>
  </dependency>
 ```
+## springboot管理普通类
+@Component，@Autowired，@PostConstruct，init()
+
+## java调go 远程主机强迫关闭了一个现有的连接。
+建channel的时候少了usePlaintext()
