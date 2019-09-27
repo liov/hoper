@@ -9,8 +9,6 @@ import xyz.hoper.protobuf.GreeterGrpc;
 import xyz.hoper.protobuf.HelloReply;
 import xyz.hoper.protobuf.HelloRequest;
 
-import javax.annotation.PostConstruct;
-
 @Component
 @Log4j2
 public class HelloWorldClient {
@@ -22,7 +20,7 @@ public class HelloWorldClient {
     @Autowired
     private GrpcClientMananer grpcClientMananer;
 
-    @PostConstruct
+    //@PostConstruct
     public void init() {
         call();
     }

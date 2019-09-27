@@ -1,0 +1,23 @@
+https://github.com/grpc/grpc/blob/master/BUILDING.md
+
+git clone -b $(curl -L https://grpc.io/release) https://github.com/grpc/grpc
+
+Install Visual Studio 2015 or 2017 (Visual C++ compiler will be used).
+Install Git.
+Install CMake.
+Install Active State Perl (choco install activeperl) - required by boringssl
+Install Go (choco install golang) - required by boringssl
+Install yasm and add it to PATH (choco install yasm) - required by boringssl
+(Optional) Install Ninja (choco install ninja)
+
+> md .build
+> cd .build
+> cmake .. -G "Visual Studio 14 2015"
+> cmake --build . --config Release
+
+> call "%VS140COMNTOOLS%..\..\VC\vcvarsall.bat" x64
+> cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release
+> cmake --build .
+
+protoc -I ../../protobuf/ --grpc_out=. --plugin=protoc-gen-grpc=grpc_cpp_plugin ../../protobuf/helloworld.proto
+protoc -I ../../protobuf/ --cpp_out=. ../../protobuf/helloworld.proto
