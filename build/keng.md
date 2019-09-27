@@ -42,3 +42,8 @@ pom中只有test，少了
 
 ## java调go 远程主机强迫关闭了一个现有的连接。
 建channel的时候少了usePlaintext()
+
+## go调java 远程主机强迫关闭了一个现有的连接。
+[https://github.com/grpc/grpc-java/issues/6011]
+windows问题
+So the problem is just the shutdown of the connection, which is not actually a problem.
