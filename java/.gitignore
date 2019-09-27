@@ -7,13 +7,4 @@
 *.iml
 out
 gen
-go.sum
-*.pb.go
-*.pb.gw.go
-*.micro.go
 target
-/python/v2/venv
-/csharp/v2/bin
-/csharp/v2/obj
-/node/v2/node_modules
-/python/v2/__pycache__
