@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using Protobuf;
 
-namespace v2
+namespace hello
 {
     public class Program
     {
