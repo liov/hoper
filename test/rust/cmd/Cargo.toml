@@ -1,0 +1,24 @@
+[package]
+name = "cmd"
+version = "0.1.0"
+authors = ["贾一饼 <lby.i@qq.com>"]
+edition = "2018"
+
+
+[dependencies]
+hoper = { path = "../hoper" }
+h_macro = { path = "../h_macro" }
+rand = "0.6.5"
+libc="0.2.58"
+actix = "0.8.3"
+actix-rt = "0.2.2"
+futures = "0.1.25"
+cpp = "0.5.3"
+log = "0.4.7"
+rayon = "1.1.0"
+regex = "1.2.1"
+async-std = "0.99.5"
+
+[build-dependencies]
+cpp_build = "0.5.3"
+cc = { version = "1.0.38", features = ["parallel"] }
