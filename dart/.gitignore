@@ -1,0 +1,6 @@
+# Created by .ignore support plugin (hsz.mobi)
+lib/src/generated/**
+v2/hello/.dart_tool
+.packages
+*.lock
+v2/hello/lib/src/generated/*
