@@ -1,0 +1,15 @@
+Install conan.(pip install conan)
+Add conan repositories
+conan remote add remote_bintray_conan-community https://api.bintray.com/conan/conan-community/conan
+conan remote add remote_bintray_bincrafters https://api.bintray.com/conan/bincrafters/public-conan
+conan remote add remote_bintray_inexorgame https://api.bintray.com/conan/inexorgame/inexor-conan
+conan remote add remote_bintray_conan https://api.bintray.com/conan/conan/conan-transit
+conan remote add remote_bintray_jinq0123 https://api.bintray.com/conan/jinq0123/test
+conan create . user/channel --build missing
+The result grpc_lua.dll/grpc_lua.so is in ~/.conan/data/grpc-lua/0.1/user/channel/package/...
+
+Download premake5.exe and put it here.
+Install conan.
+conan_install.bat, which generates 4 conanpremake files.
+premake5.exe vs2015 or premake5.exe vs20??
+Use the generated vs20??/grpc_lua.sln

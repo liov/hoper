@@ -1,0 +1,65 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.3.41'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '5.0.0'
+}
+
+group 'xyz.hoper'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+ext {
+    kotlinVersion = '1.3.41'
+    vertxVersion = '3.8.0'
+    junitJupiterEngineVersion = '5.4.0'
+}
+
+application {
+    mainClassName = 'io.vertx.core.Launcher'
+}
+
+
+def mainVerticleName = 'xyz.hoper.starter.MainVerticle'
+def watchForChange = 'src/**/*'
+def doOnChange = './gradlew classes'
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "io.vertx:vertx-lang-kotlin:$vertxVersion"
+
+    testImplementation "io.vertx:vertx-junit5:$vertxVersion"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiterEngineVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitJupiterEngineVersion"
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+shadowJar {
+    classifier = 'fat'
+    manifest {
+        attributes 'Main-Verticle': mainVerticleName
+    }
+    mergeServiceFiles {
+        include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
+    }
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events 'PASSED', 'FAILED', 'SKIPPED'
+    }
+}
+
+run {
+    args = ['run', mainVerticleName, "--redeploy=$watchForChange", "--launcher-class=$mainClassName", "--on-redeploy=$doOnChange"]
+}
