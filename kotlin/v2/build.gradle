@@ -1,0 +1,47 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.3.41'
+}
+allprojects {
+    group 'xyz.hoper.kotlin'
+    version '1.0-SNAPSHOT'
+}
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+}
+
+dependencies {
+
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+subprojects {
+    apply plugin: 'org.jetbrains.kotlin.jvm'
+
+    repositories {
+        mavenCentral()
+    }
+
+    configurations {
+        // 所有需要忽略的包定义在此
+        all*.exclude group: 'commons-beanutils', module: 'commons-beanutils'
+    }
+
+    dependencies {
+        // 通用依赖
+
+        // 测试依赖
+        testCompile(
+                "junit:junit:4.12"
+        )
+    }
+}
