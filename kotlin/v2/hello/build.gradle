@@ -1,0 +1,4 @@
+archivesBaseName = 'hello'
+project.dependencies {
+
+}
