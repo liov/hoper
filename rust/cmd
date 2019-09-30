@@ -1,0 +1,14 @@
+CMake >= 3.8.0
+Rust >= 1.19.0
+binutils >= 2.22[https://mirrors.tuna.tsinghua.edu.cn/gnu/binutils/]
+LLVM and Clang >= 3.9 if you need to generate bindings at compile time.
+By default, the secure feature is provided by boringssl, which requires Go (>=1.7) to build. You can also use openssl instead by enabling openssl feature.
+For Windows, you also need to install following software:
+
+Active State Perl[http://www.perl.org]
+yasm
+Visual Studio 2015+
+
+cargo install protobuf-codegen
+cargo install grpcio-compiler
+protoc --rust_out=./protobuf --grpc_out=./protobuf --plugin=protoc-gen-grpc=`which grpc_rust_plugin` ../../../protobuf/helloworld.proto

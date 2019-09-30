@@ -1,0 +1,7 @@
+https://github.com/grpc/grpc-web/releases
+https://www.envoyproxy.io/docs/envoy/latest/install/building
+protoc -I=../protobuf ../protobuf/helloworld.proto --js_out=import_style=commonjs:./protobuf --grpc-web_out=import_style=typescript,mode=grpcwebtext:./protobuf
+$ docker build -t helloworld/envoy -f ./envoy.Dockerfile .
+$ docker run -d -p 8080:8080 -p 9901:9901 --network=host helloworld/envoy
+npx webpack client.ts
+wls2连接windows，关闭windows防火墙！！！

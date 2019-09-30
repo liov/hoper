@@ -7,14 +7,4 @@
 *.iml
 out
 gen
-target
-*.exe
-*.sum
-*.pb.go
-*.pb.gw.go
-/python/pic/**
-wasm_exec.js
-*.lock
-node_modules
-dist
-*.lock
+protobuf
