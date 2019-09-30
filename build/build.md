@@ -5,6 +5,54 @@ go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
 go get -u github.com/micro/micro
 go get -u github.com/micro/protoc-gen-micro
 
+wls2
+```bash
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Directory\background\shell\Bash]
+@="Bash here"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Directory\background\shell\Bash\command]
+@="C:\\Users\\[your-name]\\AppData\\Local\\Microsoft\\WindowsApps\\wt.exe"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Directory\shell\Bash]
+@="Bash here"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Directory\shell\Bash\command]
+@="C:\\Users\\[your-name]\\AppData\\Local\\Microsoft\\WindowsApps\\wt.exe"
+~/.bashrc
+# WSL2使用的是虚拟机技术和WSL第一版本不一样，和宿主windows不在同一个网络内
+# 获取宿主windows的ip
+export windows_host=`ipconfig.exe | grep -n4 WSL  | tail -n 1 | awk -F":" '{ print $2 }'  | sed 's/^[ \r\n\t]*//;s/[ \r\n\t]*$//'`
+
+# 假设你的宿主windows代理端口是1080, 全面设置WSL内的代理
+export ALL_PROXY=socks5://$windows_host:1080
+export HTTP_PROXY=$ALL_PROXY
+export http_proxy=$ALL_PROXY
+export HTTPS_PROXY=$ALL_PROXY
+export https_proxy=$ALL_PROXY
+
+# 设置git的代理
+if [ "`git config --global --get proxy.https`" != "socks5://$windows_host:1080" ]; then
+    git config --global proxy.https socks5://$windows_host:1080
+fi
+
+# wcd
+# cd C:\\ 自动切换到 /mnt/c
+function wcd() {
+    command cd `wslpath "$1"`
+}
+                         
+#设置docker内的代理
+#在/etc/default/docker有
+# export http_proxy="socks5://[windows_host]:1080"
+# export https_proxy="socks5://[windows_host]:1080"
+sudo sed -i -E "s#socks5.*?1080#socks5://$windows_host:1080#" /etc/default/docker
+
+# 设置WSL内的DNS, 默认是系统自己创建的
+sudo bash -c 'echo -e "\nnameserver 114.114.114.114\nnameserver 8.8.8.8\nnameserver 8.8.4.4" > /etc/resolv.conf'
+```
+
 安装chocolatey[https://chocolatey.org]
 ```bash
 ChocolateyInstall = xxxx/Chocolatey
@@ -128,3 +176,4 @@ kubectl create -n <namespace> -f <your-app-spec>.yaml
 在没有istio-injection标签的命名空间中，您可以使用 istioctl kube-inject 在部署它们之前在应用程序窗格中手动注入Envoy容器：
 istioctl kube-inject -f <your-app-spec>.yaml | kubectl apply -f -
 ```
+安装bazel[https://bazel.build,https://github.com/bazelbuild/bazel/releases]

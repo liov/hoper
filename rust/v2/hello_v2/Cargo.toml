@@ -1,0 +1,37 @@
+[package]
+name = "hello_v2"
+version = "0.1.0"
+authors = ["liov <liov@maizuo.com>"]
+edition = "2018"
+build = "build.rs"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+default = ["protobuf-codec"]
+protobuf-codec = ["protobuf", "grpcio/protobuf-codec", "grpcio-proto/protobuf-codec"]
+prost-codec = ["prost", "bytes", "grpcio/prost-codec", "grpcio-proto/prost-codec"]
+
+[dependencies]
+grpcio-sys = { version = "0.5.0-alpha" }
+grpcio = { version = "0.5.0-alpha.3", default-features = false, features = ["protobuf-codec"] }
+protobuf = { version = "^2.1.0", optional = true }
+prost = { version = "0.5", optional = true }
+bytes = { version = "0.4.11", optional = true }
+log = "0.4.7"
+libc = "0.2.62"
+futures = "^0.1.29"
+
+[dev-dependencies]
+serde_json = "1.0.40"
+serde = "1.0.101"
+serde_derive = "1.0.101"
+grpcio-proto = {  version = "0.5.0-alpha.3", default-features = false }
+rand = "0.7.2"
+slog = "2.5.2"
+slog-async = "2.3.0"
+slog-stdlog = "3.0"
+slog-scope = "4.1.2"
+slog-term = "2.4.1"
+
+[build-dependencies]
+protoc-grpcio = "1.0.2"
