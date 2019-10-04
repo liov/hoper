@@ -154,8 +154,12 @@ export PATH=$PWD/bin:$PATH
 linux:
 for i in install/kubernetes/helm/istio-init/files/crd*yaml; do kubectl apply -f $i; done
 win ps:
-for ($i = 1; $i -lt 99; $i++){
-    
+Get-ChildItem e:/istio-1.3.0/install/kubernetes/helm/istio-init/files/ | ForEach-Object -Process{
+    if ($_.Name -match "crd*yaml"])
+    {
+        kubectl apply -f $_;
+    }
+
 }
 
 kubectl apply -f install/kubernetes/istio-demo.yaml
