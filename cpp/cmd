@@ -65,3 +65,11 @@ gRPC编译教程
 　　④ Configure，像ZLIB_ROOT CMake is ignoring the variable、 gRPC_INSTALL will be forced to FALSE等警告可以忽略
 
 　　⑤ Generate，启动vs全部生成
+
+perl 5.26
+perl -MCPAN -e shell
+install Win32::Console
+quit
+方法二：
+cpan -i Win32::Console
+perl Configure VC-WIN64A no-asm --prefix=D:\tools\openssl
