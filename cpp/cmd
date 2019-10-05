@@ -17,7 +17,7 @@ Install yasm and add it to PATH (choco install yasm) - required by boringssl
 > cd .build
 > cmake .. -G "Visual Studio 16 2019"
 > cmake --build . --config Release
-
+ cmake -DgRPC_INSTALL=ON -DgRPC_BUILD_TESTS=OFF -DgRPC_PROTOBUF_PROVIDER=package -DgRPC_ZLIB_PROVIDER=package -DgRPC_CARES_PROVIDER=package -DgRPC_SSL_PROVIDER=package -DCMAKE_BUILD_TYPE=Release ../..
 > call "%VS140COMNTOOLS%..\..\VC\vcvarsall.bat" x64
 > cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release
 > cmake --build .
@@ -30,3 +30,38 @@ E:\code\home\grpc\.build\third_party\protobuf\Release\protoc -I ../../protobuf/ 
 E:\code\home\grpc\.build\third_party\protobuf\Release\protoc -I ../../protobuf/ --cpp_out=./protobuf ../../protobuf/helloworld.proto
 
 g++ server.cc -I E:\code\home\grpc\include -I E:\code\home\grpc\third_party\protobuf\src  -D_WINVER=0x600 -D_WIN32_WINNT=0x600
+
+简直浪费时间
+天末
+gRPC编译教程
+　　windows平台的编译
+
+一.编译openssl
+
+　　① 安装perl(可以使用ActivePerl)，执行perl Configure VC-WIN64A no-asm 。在这里解释一下参数含义，VC-WIN64A是指amd64也就是我们常用的x64，还要一个VC-WIN64I是安腾Itanium，目前没有使用，no-asm是不使用汇编。
+
+　　② 执行ms\do_win64a.bat 。
+
+　　③ 使用vs的x86_x64命令行工具执行nmake -f ms\ntdll.mak 生成动态库。
+
+　　④ 使用vs的x86_x64命令行工具执行nmake -f ms\nt.mak 生成静态库，这步可以不用执行一般生成动态库即可。
+
+　　备注：遇到过的常见问题，比如ml64、rc等命令不存在以及x86和x64，这都是没有使用vs的x84_x64命令行工具导致的。
+
+二.编译zlib
+
+　　zlib的编译非常简单，在contrib\vstudio选择任意一个文件夹然后生成全部即可。
+
+　　备注：最好生成Release x64的，ReleaseWithoutAsm可能会有某些project生成失败，这是因为它们的lib使用的是Release的。
+
+三.编译gRPC
+
+　　① 将下载的好的cares、protobuf、gflags、benchmark源码放到third_party文件夹下的对应文件夹中(cares需要放到cares\cares中)。
+
+　　② 使用CMake打开，并将gRPC_ZLIB_PROVIDER、gRPC_SSL_PROVIDER由module改成package
+
+　　③ 在CMake中配置好ZLIB_ROOT、ZLIB_BINARAY、LIB_EAY_DEBUG、LIB_EAY_RELEASE、SSL_EAY_DEBUG、SSL_EAY_RELEASE、OEPNSSL_INCLUDE_DIR这些变量
+
+　　④ Configure，像ZLIB_ROOT CMake is ignoring the variable、 gRPC_INSTALL will be forced to FALSE等警告可以忽略
+
+　　⑤ Generate，启动vs全部生成
