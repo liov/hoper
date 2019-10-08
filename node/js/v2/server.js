@@ -1,4 +1,4 @@
-var PROTO_PATH = __dirname + '/../../protobuf/helloworld.proto';
+var PROTO_PATH = __dirname + '/../../../protobuf/helloworld.proto';
 
 var grpc = require('grpc');
 var protoLoader = require('@grpc/proto-loader');
