@@ -1,0 +1,24 @@
+[package]
+name = "hello_v3"
+version = "0.1.0"
+authors = ["liov <lby.i@qq.com>"]
+edition = "2018"
+build = "build.rs"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+doctest = false
+test = false
+
+[dependencies]
+tonic = "0.1.0-alpha.2"
+bytes = "0.4"
+prost = "0.5"
+prost-derive = "0.5"
+
+[build-dependencies]
+tonic-build = "0.1.0-alpha.2"
+
+[[bin]]
+name = "server"
+test = false
