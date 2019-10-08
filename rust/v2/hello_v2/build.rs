@@ -6,7 +6,7 @@ fn main() {
     protoc_grpcio::compile_grpc_protos(
         &["../../../protobuf/helloworld.proto"],
         &[proto_root],
-        &"protobuf",
+        &"src/protobuf",
         None
     ).expect("Failed to compile gRPC definitions!");
 }
