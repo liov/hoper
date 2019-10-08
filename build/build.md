@@ -1,3 +1,5 @@
+hosts 192.30.253.112	github.com
+      199.232.5.194	github.global.ssl.fastly.net
 go get -u github.com/gpmgo/gopm
 安装protoc[https://github.com/protocolbuffers/protobuf/releases]
 go get -u github.com/golang/protobuf/protoc-gen-go
@@ -181,3 +183,5 @@ kubectl create -n <namespace> -f <your-app-spec>.yaml
 istioctl kube-inject -f <your-app-spec>.yaml | kubectl apply -f -
 ```
 安装bazel[https://bazel.build,https://github.com/bazelbuild/bazel/releases]
+
+安装postgresql[https://www.postgresql.org/download/]

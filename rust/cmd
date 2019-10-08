@@ -6,7 +6,7 @@ By default, the secure feature is provided by boringssl, which requires Go (>=1.
 For Windows, you also need to install following software:
 
 Active State Perl[http://www.perl.org]
-yasm
+yasm[https://github.com/yasm/yasm/releases]
 Visual Studio 2015+
 
 cargo install protobuf-codegen
