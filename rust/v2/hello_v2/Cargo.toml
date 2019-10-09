@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["liov <liov@maizuo.com>"]
 edition = "2018"
 build = "build.rs"
+description = "windows下放弃吧"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
@@ -13,7 +14,7 @@ prost-codec = ["prost", "bytes", "grpcio/prost-codec", "grpcio-proto/prost-codec
 
 [dependencies]
 grpcio-sys = { version = "0.5.0-alpha" }
-grpcio = { version = "0.5.0-alpha.3", default-features = false, features = ["protobuf-codec"] }
+grpcio = { version = "0.5.0-alpha.3", default-features = false, features = ["protobuf-codec","openssl"] }
 protobuf = { version = "^2.1.0", optional = true }
 prost = { version = "0.5", optional = true }
 bytes = { version = "0.4.11", optional = true }
