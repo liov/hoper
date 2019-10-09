@@ -12,6 +12,7 @@ target
 *.sum
 *.pb.go
 *.pb.gw.go
+*.micro.go
 /python/pic/**
 wasm_exec.js
 *.lock

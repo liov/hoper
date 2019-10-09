@@ -1,4 +1,4 @@
-//go:generate protoc -I proto/ proto/*.proto --go_out=plugins=grpc:go/v2/protobuf
+//go:generate protoc -I ../protobuf/ ../protobuf/*.proto --go_out=plugins=grpc:go/v2/protobuf
 
 protoc -I/usr/local/include -I. \
   -I$GOPATH/src \
