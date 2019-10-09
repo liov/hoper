@@ -1,8 +1,8 @@
 #[macro_use]
 extern crate log;
 
-#[path = "../log_util.rs"]
-mod log_util;
+
+use hello_v2::log_util;
 
 use std::io::Read;
 use std::sync::Arc;
@@ -12,14 +12,15 @@ use futures::sync::oneshot;
 use futures::Future;
 use grpcio::{ChannelBuilder, Environment, ResourceQuota, RpcContext, ServerBuilder, UnarySink};
 
-use grpcio_proto::example::helloworld::{HelloReply, HelloRequest};
-use grpcio_proto::example::helloworld_grpc::{create_greeter, Greeter};
+use hello_v2::protobuf::helloworld::{HelloReply, HelloRequest};
+use hello_v2::protobuf::helloworld_grpc::{create_greeter, Greeter};
 
 #[derive(Clone)]
 struct GreeterService;
 
 impl Greeter for GreeterService {
     fn say_hello(&mut self, ctx: RpcContext<'_>, req: HelloRequest, sink: UnarySink<HelloReply>) {
+        info!("one request");
         let msg = format!("Hello {}", req.get_name());
         let mut resp = HelloReply::default();
         resp.set_message(msg);
@@ -36,7 +37,7 @@ fn main() {
     let service = create_greeter(GreeterService);
 
     let quota = ResourceQuota::new(Some("HelloServerQuota")).resize_memory(1024 * 1024);
-    let ch_builder = ChannelBuilder::new(env.clone()).set_resource_quota(quota);
+    let ch_builder = ChannelBuilder::new(env.clone()).resource_quota(quota);
 
     let mut server = ServerBuilder::new(env)
         .register_service(service)
