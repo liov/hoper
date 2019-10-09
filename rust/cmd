@@ -12,3 +12,12 @@ Visual Studio 2015+
 cargo install protobuf-codegen
 cargo install grpcio-compiler
 protoc --rust_out=./protobuf --grpc_out=./protobuf --plugin=protoc-gen-grpc=`which grpc_rust_plugin` ../../../protobuf/helloworld.proto
+
+
+[wsl2]
+sudo nc -l 80
+telnet 172.27.175.35 80
+netstat -a
+
+[keng]
+wsl2和windows的网络问题
