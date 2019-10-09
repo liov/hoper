@@ -72,6 +72,9 @@ install Win32::Console
 quit
 方法二：
 cpan -i Win32::Console
-perl Configure VC-WIN64A no-asm --prefix=D:\tools\openssl
+
 
 strawberry-perl-5.30.0.1-64bit YYYYYYYYYYYY
+perl Configure VC-WIN64A no-asm --prefix=D:\tools\openssl
+必须在vs命令行下
+nmake -f makefile
