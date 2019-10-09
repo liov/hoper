@@ -1,7 +1,7 @@
 use tonic::{transport::Server, Request, Response, Status};
 
 pub mod hello_world {
-    tonic::include_proto!("helloworld");
+    tonic::include_proto!("protobuf");
 }
 
 use hello_world::{

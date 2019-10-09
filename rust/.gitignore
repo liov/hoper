@@ -7,6 +7,6 @@
 *.iml
 out
 gen
-*protobuf/
-!*protobuf/mod.rs
+protobuf
+!protobuf/mod.rs
 *.lock
