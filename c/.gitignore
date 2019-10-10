@@ -3,10 +3,5 @@
 ### Example user template
 
 # IntelliJ project files
-.idea
-*.iml
-out
-gen
-target
-*.exe
+v2/protobuf
 cmake-build-debug
