@@ -12,10 +12,10 @@ typedef enum {
       MON=1, TUE, WED, THU, FRI, SAT, SUN
 } DAY;
 
-void main(int argc, char *argv[]){
+int main(int argc, char *argv[]){
     Foo foo;
     foo.i = 10;
-    foo.f = 220.5;
+    foo.f = 220.5f;
     strcpy( foo.str, "hello");
  
     printf( "data.i : %d\n", foo.i);
