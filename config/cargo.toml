@@ -1,0 +1,7 @@
+#在 $HOME/.cargo/config 中添加如下内容：
+
+[source.crates-io]
+replace-with = 'ustc'
+
+[source.ustc]
+registry = "git://mirrors.ustc.edu.cn/crates.io-index"

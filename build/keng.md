@@ -47,3 +47,6 @@ pom中只有test，少了
 [https://github.com/grpc/grpc-java/issues/6011]
 windows问题
 So the problem is just the shutdown of the connection, which is not actually a problem.
+
+## 调用wsl2上的grpc服务
+监听地址应为0.0.0.0,不能是127.0.0.1
