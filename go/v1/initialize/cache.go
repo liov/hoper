@@ -6,5 +6,5 @@ import (
 )
 
 func (i *Init) P3Cache() {
-	dao.SetCache(gcache.New(20).LRU().Build())
+	dao.Dao.SetCache(gcache.New(20).LRU().Build())
 }
