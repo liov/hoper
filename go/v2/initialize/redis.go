@@ -2,17 +2,20 @@ package initialize
 
 import (
 	"fmt"
-	"reflect"
 	"time"
 
 	"github.com/garyburd/redigo/redis"
 	"github.com/liov/hoper/go/v2/initialize/dao"
+	"github.com/liov/hoper/go/v2/utils/h_reflect"
 )
 
 func (i *Init) P2Redis(conf interface{}) {
-	var redisConf = (reflect.ValueOf(conf).Elem().FieldByName("Redis").Interface()).(RedisConfig)
+	redisConf:=RedisConfig{}
+	if exist := h_reflect.GetExpectTypeValue(conf,&redisConf);!exist{
+		return
+	}
 	url := fmt.Sprintf("%s:%d", redisConf.Host, redisConf.Port)
-	dao.SetRedis(&redis.Pool{
+	dao.Dao.SetRedis(&redis.Pool{
 		MaxIdle:     redisConf.MaxIdle,
 		MaxActive:   redisConf.MaxActive,
 		IdleTimeout: redisConf.IdleTimeout,

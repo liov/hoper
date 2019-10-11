@@ -37,21 +37,29 @@ func (d *dao) Close() {
 	if d.Bolt != nil {
 		d.Bolt.Close()
 	}
-	d.Redis.Close()
-	d.DB.Close()
+	if d.Redis != nil {
+		d.Redis.Close()
+	}
+	if d.DB != nil {
+		d.DB.Close()
+	}
 	if d.Mongo != nil {
 		d.Mongo.Session.Close()
 	}
 }
 
-func SetDB(db *gorm.DB) {
-	Dao.DB = db
+func (d *dao) SetDB(db *gorm.DB) {
+	d.DB = db
 }
 
-func SetCache(c gcache.Cache) {
-	Dao.Cache = c
+func (d *dao) SetBolt(bolt *bbolt.DB) {
+	d.Bolt = bolt
 }
 
-func SetRedis(redb *redis.Pool) {
-	Dao.Redis = redb
+func (d *dao) SetCache(c gcache.Cache) {
+	d.Cache = c
+}
+
+func (d *dao) SetRedis(redb *redis.Pool) {
+	d.Redis = redb
 }
