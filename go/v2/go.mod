@@ -11,12 +11,13 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.11.2
 	github.com/jinzhu/configor v1.1.1
 	github.com/jinzhu/gorm v1.9.10
+	github.com/json-iterator/go v1.1.7 // indirect
 	github.com/micro/go-grpc v0.11.0
 	github.com/micro/go-micro v0.25.0
 	github.com/micro/kubernetes v0.7.0
-	go.uber.org/atomic v1.4.0 // indirect
+	github.com/spf13/viper v1.4.0 // indirect
 	go.uber.org/zap v1.10.0
-	golang.org/x/net v0.0.0-20190311183353-d8887717615a
+	golang.org/x/net v0.0.0-20190522155817-f3200d17e092
 	google.golang.org/genproto v0.0.0-20190404172233-64821d5d2107
 	google.golang.org/grpc v1.23.1
 )

@@ -46,17 +46,17 @@ Type = "postgres"
 #User = root
 User = "postgres"
 Password = "123456"
-Host = "localhost"
+Host = "hoper.xyz"
 #Port = 3306
 Port = 5432
 Charset = "utf8"
-Database = "hoper"
+Database = "hoper_test"
 TablePrefix =""
 MaxIdleConns = 5
 MaxOpenConns = 10
 
 [redis]
-Host = "localhost"
+Host = "hoper.xyz"
 Port = 6379
 Password =""
 MaxIdle = 30

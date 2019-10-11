@@ -1,3 +1,4 @@
+思忖再三，还是觉得没必要上micro框架
 //go:generate protoc -I ../protobuf/ ../protobuf/*.proto --go_out=plugins=grpc:go/v2/protobuf
 
 protoc -I/usr/local/include -I. \

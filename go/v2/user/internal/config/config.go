@@ -1,15 +1,13 @@
 package config
 
 import (
-	"flag"
 	"runtime"
 	"time"
 
 	"github.com/liov/hoper/go/v2/initialize"
 )
 
-type ServerConfig struct {
-	Env          string
+type serverConfig struct {
 	HttpPort     string
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
@@ -55,7 +53,12 @@ var RedisSettings = &RedisConfig{}
 var MongoSettings = &MongoConfig{}*/
 
 type config struct {
-	Server   ServerConfig
+	//必须
+	Env      string
+	//自定义的配置
+	Server   serverConfig
+	//命令参数大于配置
+	Flag     flagValue
 	Database initialize.DatabaseConfig
 	Redis    initialize.RedisConfig
 	Mongo    initialize.MongoConfig
@@ -75,17 +78,16 @@ func (d *duration) UnmarshalText(text []byte) error {
 }
 
 //固定函数名，init时反射用
-func (c *config) Set(env string) {
+func (c *config) Custom() {
 	if runtime.GOOS == "windows" {
 		c.Server.LuosimaoAPIKey = ""
-		c.Redis.Password = ""
-		c.Server.Env = initialize.DEVELOPMENT
-	} else {
-		flag.StringVar(&c.Database.Password, "p", c.Database.Password, "password")
-		flag.StringVar(&c.Server.MailPassword, "mp", c.Server.MailPassword, "password")
-		flag.Parse()
-		c.Redis.Password = c.Database.Password
-		c.Server.Env = env
+		if c.Flag.Password !=""{
+			c.Database.Password = c.Flag.Password
+			c.Redis.Password = c.Database.Password
+		}
+		if c.Flag.MailPassword !="" {
+			c.Server.MailPassword = c.Flag.MailPassword
+		}
 	}
 
 	c.Server.UploadMaxSize = c.Server.UploadMaxSize * 1024 * 1024

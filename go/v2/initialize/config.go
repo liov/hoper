@@ -3,7 +3,6 @@ package initialize
 import (
 	"flag"
 	"os"
-	"reflect"
 	"time"
 
 	"github.com/jinzhu/configor"
@@ -16,19 +15,29 @@ const (
 	PathSeparator = "/"
 )
 
-func (i *Init) config(config interface{}) {
-	confUrl := flag.String("c", "./config", "配置文件夹路径")
-	flag.Parse()
+var confUrl string
+
+func init() {
+	flag.StringVar(&confUrl,"c", "./config", "配置文件夹路径")
+}
+
+type Config interface {
+	Custom()
+}
+
+func (i *Init) config(config Config) {
+	if flag.Parsed(){
+		flag.Parse()
+	}
 	err := configor.New(&configor.Config{Debug: false}).
-		Load(i, *confUrl+PathSeparator+"config"+ext) //"./config/config.toml"
+		Load(i, confUrl+PathSeparator+"config"+ext) //"./config/config.toml"
 	err = configor.New(&configor.Config{Debug: i.Env != PRODUCT}).
-		Load(config, *confUrl+PathSeparator+i.Env+ext) //"./config/{{env}}.toml"
+		Load(config, confUrl+PathSeparator+"config"+ext,confUrl+PathSeparator+i.Env+ext) //"./config/{{env}}.toml"
 	if err != nil {
 		log.Errorf("配置错误: %v", err)
 		os.Exit(10)
 	}
-	value := reflect.ValueOf(config)
-	value.MethodByName("Set").Call([]reflect.Value{reflect.ValueOf(i.Env)})
+	config.Custom()
 }
 
 type DatabaseConfig struct {
