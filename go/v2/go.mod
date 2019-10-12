@@ -13,6 +13,8 @@ require (
 	github.com/flosch/pongo2 v0.0.0-20190707114632-bbf5a6c351f4 // indirect
 	github.com/garyburd/redigo v1.6.0
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
+	github.com/go-openapi/spec v0.19.3
+	github.com/go-openapi/swag v0.19.5
 	github.com/golang/protobuf v1.3.2
 	github.com/gorilla/schema v1.1.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.11.2
@@ -22,8 +24,8 @@ require (
 	github.com/jinzhu/configor v1.1.1
 	github.com/jinzhu/gorm v1.9.10
 	github.com/json-iterator/go v1.1.7 // indirect
-	github.com/kataras/golog v0.0.0-20190624001437-99c81de45f40 // indirect
-	github.com/kataras/iris v11.1.1+incompatible // indirect
+	github.com/kataras/golog v0.0.0-20190624001437-99c81de45f40
+	github.com/kataras/iris v11.1.1+incompatible
 	github.com/kataras/pio v0.0.0-20190103105442-ea782b38602d // indirect
 	github.com/klauspost/compress v1.8.6 // indirect
 	github.com/klauspost/cpuid v1.2.1 // indirect
@@ -32,7 +34,8 @@ require (
 	github.com/micro/kubernetes v0.7.0
 	github.com/spf13/viper v1.4.0 // indirect
 	go.uber.org/zap v1.10.0
-	golang.org/x/net v0.0.0-20190522155817-f3200d17e092
+	golang.org/x/net v0.0.0-20190827160401-ba9fcec4b297
 	google.golang.org/genproto v0.0.0-20190404172233-64821d5d2107
 	google.golang.org/grpc v1.23.1
+	gopkg.in/yaml.v3 v3.0.0-20191010095647-fc94e3f71652
 )

@@ -1,4 +1,4 @@
-DisableStartupLog: true
+DisableStartupLog: false
 DisableInterruptHandler: false
 DisablePathCorrection: false
 EnablePathEscape: false
