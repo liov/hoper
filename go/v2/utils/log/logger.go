@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -38,10 +39,12 @@ func (lf *LoggerInfo) newLogger() *Logger {
 
 func (lf *LoggerInfo) NewLogger() {
 	logger.SugaredLogger = lf.initLogger()
+	Default = lf.noCaller()
 }
 
+
 //构建日志对象基本信息
-func (lf *LoggerInfo) initLogger() *zap.SugaredLogger {
+func (lf *LoggerInfo) initConfig() (*zap.Config,zap.Option) {
 	config := zap.NewProductionConfig()
 	config.Level = zap.NewAtomicLevelAt(lf.OutLevel)
 	config.EncoderConfig = zapcore.EncoderConfig{
@@ -53,7 +56,9 @@ func (lf *LoggerInfo) initLogger() *zap.SugaredLogger {
 		//StacktraceKey: "stacktrace",
 		LineEnding:     zapcore.DefaultLineEnding,
 		EncodeLevel:    zapcore.CapitalColorLevelEncoder,
-		EncodeTime:     zapcore.ISO8601TimeEncoder,
+		EncodeTime: func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
+			enc.AppendString(t.Format("2006/01/02 - 15:04:05.000"))
+		},
 		EncodeDuration: zapcore.SecondsDurationEncoder,
 		EncodeCaller:   zapcore.ShortCallerEncoder,
 	}
@@ -84,9 +89,16 @@ func (lf *LoggerInfo) initLogger() *zap.SugaredLogger {
 		//输出文件
 		config.OutputPaths = lf.LogFilePath
 	}
+	return &config,hook
+}
+
+
+//构建日志对象基本信息
+func (lf *LoggerInfo) initLogger() *zap.SugaredLogger {
+	config,hook:=lf.initConfig()
 	logger, err := config.Build(zap.AddCallerSkip(1), hook)
 	if err != nil {
-		log.Fatalf("open file error :%s", err.Error())
+	log.Fatalf("open file error :%s", err.Error())
 	}
 	return logger.Sugar()
 }
@@ -103,12 +115,20 @@ func Sync() {
 	logger.Sync()
 }
 
+func Print(v ...interface{})  {
+
+}
+
 func Debug(v ...interface{}) {
 	logger.Debug(v...)
 }
 
 func Info(v ...interface{}) {
 	logger.Info(v...)
+}
+
+func Warn(format string, v ...interface{}) {
+	logger.Warn(v...)
 }
 
 func Error(v ...interface{}) {
