@@ -10,12 +10,12 @@ import (
 )
 
 type UserController struct{
-	*ApiInfo
+	apiInfo
 	App *iris.Application
 }
 var userService = &service.UserService{}
 func (u *UserController) Add() {
-	u.apiInfo(
+	u.api(
 		path("/user"),
 		method(http.MethodPost),
 		describe("新增用户"),
@@ -33,7 +33,7 @@ func (u *UserController) Add() {
 }
 
 func (u *UserController) Get() {
-	u.apiInfo(
+	u.api(
 		path("/add/:id"),
 		method(http.MethodGet),
 		describe("get"),
