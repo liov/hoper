@@ -17,6 +17,14 @@ import (
 )
 
 func main() {
+/*	f, err := os.Create("trace.out")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	trace.Start(f)
+	defer trace.Stop()*/
 	flag.Parse()
 	defer log.Sync()
 	defer dao.Dao.Close()
