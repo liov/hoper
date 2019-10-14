@@ -5,7 +5,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
-type ApiInfo struct {
+type apiInfo struct {
 	path     string
 	version  uint8
 	method   string
@@ -13,39 +13,39 @@ type ApiInfo struct {
 	auth     string
 }
 
-type infoParam func(info *ApiInfo)
+type infoParam func(info *apiInfo)
 
 func path(p string) infoParam {
-	return func(info *ApiInfo) {
+	return func(info *apiInfo) {
 		info.path = p
 	}
 }
 
 func method(m string) infoParam {
-	return func(info *ApiInfo) {
+	return func(info *apiInfo) {
 		info.method = m
 	}
 }
 
 func describe(d string) infoParam {
-	return func(info *ApiInfo) {
+	return func(info *apiInfo) {
 		info.describe = d
 	}
 }
 
 func auth(a string) infoParam {
-	return func(info *ApiInfo) {
+	return func(info *apiInfo) {
 		info.auth = a
 	}
 }
 
 func version(v uint8) infoParam {
-	return func(info *ApiInfo) {
+	return func(info *apiInfo) {
 		info.version = v
 	}
 }
 
-func (info *ApiInfo) apiInfo(path, method, describe, auth, version, handle infoParam) {
+func (info *apiInfo) api(path, method, describe, auth, version, handle infoParam) {
 	path(info)
 	method(info)
 	describe(info)
@@ -56,7 +56,7 @@ func (info *ApiInfo) apiInfo(path, method, describe, auth, version, handle infoP
 }
 
 func handle(app *iris.Application, h ...iris.Handler) infoParam {
-	return func(info *ApiInfo) {
+	return func(info *apiInfo) {
 		app.Handle(info.method, info.path, h...)
 	}
 }
