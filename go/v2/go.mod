@@ -34,7 +34,7 @@ require (
 	github.com/micro/kubernetes v0.7.0
 	github.com/spf13/viper v1.4.0 // indirect
 	go.uber.org/zap v1.10.0
-	golang.org/x/net v0.0.0-20190827160401-ba9fcec4b297
+	golang.org/x/net v0.0.0-20191011234655-491137f69257
 	google.golang.org/genproto v0.0.0-20190404172233-64821d5d2107
 	google.golang.org/grpc v1.23.1
 	gopkg.in/yaml.v3 v3.0.0-20191010095647-fc94e3f71652
