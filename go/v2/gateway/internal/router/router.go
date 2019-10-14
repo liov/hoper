@@ -4,22 +4,27 @@ import (
 	"reflect"
 
 	"github.com/kataras/iris"
+	"github.com/kataras/iris/context"
 	"github.com/liov/hoper/go/v2/gateway/internal/controller"
 )
 
 func route(app *iris.Application) {
-	ctrl := []interface{}{
-		&controller.UserController{},
+	getController :=func(partyPath string, handlers ...context.Handler) controller.Controller {
+		return controller.Controller{App:app.Party("/api"+partyPath,handlers...)}
 	}
-	register(app,ctrl)
+
+	ctrl := []interface{}{
+		&controller.UserController{Controller: getController("/user")},
+	}
+	register(ctrl)
 }
 
 
-func register(app *iris.Application, ctrl []interface{}) {
-	appV := reflect.ValueOf(app)
+
+
+func register(ctrl []interface{}) {
 	for _,c:=range ctrl{
 		value := reflect.ValueOf(c)
-		value.Elem().FieldByName("App").Set(appV)
 		for i := 0; i < value.NumMethod(); i++ {
 			value.Method(i).Call(nil)
 		}
