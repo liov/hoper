@@ -7,7 +7,7 @@ go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
 go get -u github.com/micro/micro
 go get -u github.com/micro/protoc-gen-micro
 
-wls2
+# wls2
 ```bash
 Windows Registry Editor Version 5.00
 
@@ -34,6 +34,24 @@ export http_proxy=$ALL_PROXY
 export HTTPS_PROXY=$ALL_PROXY
 export https_proxy=$ALL_PROXY
 
+## zsh
+sudo apt install zsh
+sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+vi ~/.zshrc
+mh
+source
+erport
+
+## go
+sudo tar -C /usr/local -xzf go1.13.1.linux-amd64.tar.gz
+vi /etc/
+export PATH=$PATH:/usr/local/go/bin
+export GOROOT=$PATH:/usr/local/go
+export GOPATH=/mnt/e/gopath
+
+## rust
+curl https://sh.rustup.rs -sSf | sh
+
 # 设置git的代理
 if [ "`git config --global --get proxy.https`" != "socks5://$windows_host:1080" ]; then
     git config --global proxy.https socks5://$windows_host:1080
@@ -55,7 +73,7 @@ sudo sed -i -E "s#socks5.*?1080#socks5://$windows_host:1080#" /etc/default/docke
 sudo bash -c 'echo -e "\nnameserver 114.114.114.114\nnameserver 8.8.8.8\nnameserver 8.8.4.4" > /etc/resolv.conf'
 ```
 
-安装chocolatey[https://chocolatey.org]
+# 安装chocolatey[https://chocolatey.org]
 ```bash
 ChocolateyInstall = xxxx/Chocolatey
 cmd:
@@ -64,21 +82,13 @@ ps:
 Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 choco upgrade chocolatey
 ```
-安装docker
+# 安装docker
 ```bash
 sudo apt-get update
-sudo apt-get install \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg-agent \
-    software-properties-common
+sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo apt-key fingerprint 0EBFCD88
-sudo add-apt-repository \
-   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable"
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io
 sudo gpasswd -a ${USER} docker
@@ -124,7 +134,7 @@ https://storage.googleapis.com/kubernetes-release/release/v1.16.0/bin/windows/am
 ```
 ## 配置kubectl
 ```shell script
-$HOME/.kube/${cluster}
+mkdir $HOME/.kube/${cluster}
 
 # 配置一个名为 ${cluster} 的集群，并指定服务地址与根证书
 kubectl config set-cluster ${cluster} --server=${cluster-server} --certificate-authority=$HOME/.kube/${cluster}/ca.pem
@@ -151,7 +161,7 @@ curl -L https://git.io/getLatestIstio | ISTIO_VERSION=1.3.0 sh -
 cd istio-1.3.0
 export PATH=$PWD/bin:$PATH
 ```
-安装istio[https://istio.io/docs/setup/install/kubernetes/]
+# 安装istio[https://istio.io/docs/setup/install/kubernetes/]
 ```bash
 linux:
 for i in install/kubernetes/helm/istio-init/files/crd*yaml; do kubectl apply -f $i; done
@@ -168,13 +178,13 @@ kubectl apply -f install/kubernetes/istio-demo.yaml
 kubectl label namespace default istio-injection=enabled
 kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml
 ```
-卸载istio
+## 卸载istio
 ```bash
 kubectl delete -f install/kubernetes/istio-demo.yaml
 for i in install/kubernetes/helm/istio-init/files/crd*yaml; do kubectl delete -f $i; done
 ```
 
-部署
+# 部署istio
 ```bash
 当您使用时部署应用程序时kubectl apply，如果Istio边车注入器 在标有istio-injection=enabled以下标记的名称空间中启动，它们将自动将Envoy容器注入您的应用程序窗格：
 kubectl label namespace <namespace> istio-injection=enabled
