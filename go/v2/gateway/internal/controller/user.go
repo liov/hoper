@@ -18,7 +18,7 @@ func (u *UserController) Add() {
 		method(http.MethodPost),
 		describe("新增用户"),
 		auth("jyb"),
-		version("1"),
+		version(1),
 		handle(
 			func(ctx context.Context) {
 				var req request.AddUserReq
@@ -36,7 +36,7 @@ func (u *UserController) Get() {
 		method(http.MethodGet),
 		describe("get"),
 		auth("jyb"),
-		version("1"),
+		version(1),
 		handle(
 			func(ctx context.Context) {
 				ctx.Writef("返回")
