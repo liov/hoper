@@ -1,4 +1,6 @@
-[binary]
+https://www.postgresql.org/download/
+```bash
+#[binary]
 https://www.postgresql.org/download/linux/ubuntu/
 ubuntu 18.04
 vim /etc/apt/sources.list.d/pgdg.list
@@ -6,7 +8,7 @@ deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 sudo apt-get update
 
-[source]
+#[source]
 wget https://ftp.postgresql.org/pub/source/v11.3/postgresql-11.3.tar.gz
 tar -xzvf
 apt install libreadline-dev
@@ -47,3 +49,4 @@ ALTER USER postgres WITH PASSWORD '123456';
 sudo  passwd -d postgres
 
 sudo -u postgres passwd
+```
