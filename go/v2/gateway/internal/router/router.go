@@ -9,12 +9,22 @@ import (
 )
 
 func route(app *iris.Application) {
-	getController :=func(partyPath string, handlers ...context.Handler) controller.Controller {
-		return controller.Controller{App:app.Party("/api"+partyPath,handlers...)}
+	//params:控制器,控制器公共的url路径，公共中间件
+	newController :=func(c interface{},partyPath string, handlers ...context.Handler) interface {}{
+		value:=reflect.ValueOf(c)
+		if value.Kind() != reflect.Ptr{
+			panic("必须传入指针")
+		}
+		value = value.Elem()
+		if value.NumField() > 1{
+			panic("传入controller不合法")
+		}
+		value.Field(0).Set(reflect.ValueOf(controller.Controller{App:app.Party("/api"+partyPath,handlers...)}))
+		return c
 	}
-
+	//controller注册
 	ctrl := []interface{}{
-		&controller.UserController{Controller: getController("/user")},
+		newController(&controller.UserController{},"/user"),
 	}
 	register(ctrl)
 }

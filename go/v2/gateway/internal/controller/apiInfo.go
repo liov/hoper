@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"strconv"
+
 	"github.com/kataras/iris"
 	"github.com/liov/hoper/go/v2/utils/log"
 )
@@ -12,7 +14,7 @@ type Controller struct {
 
 type apiInfo struct {
 	path     string
-	version  string
+	version  int
 	method   string
 	describe string
 	auth     string
@@ -44,7 +46,7 @@ func auth(a string) apiParam {
 	}
 }
 
-func version(v string) apiParam {
+func version(v int) apiParam {
 	return func(c *Controller) {
 		c.version = v
 	}
@@ -52,8 +54,10 @@ func version(v string) apiParam {
 
 func handle(h ...iris.Handler) apiParam {
 	return func(c *Controller) {
-		c.App.Handle(c.apiInfo.method, c.path+"/v"+c.version, h...)
-		log.Default.Infof("api: %s \t path:%s", c.apiInfo.describe, c.App.GetRelPath()+c.path +"/v"+c.version)
+		//"/api"的长度
+		path := c.App.GetRelPath()[:4]+"/v"+strconv.Itoa(c.version)+c.App.GetRelPath()[4:] +c.path
+		c.App.Handle(c.apiInfo.method, path, h...)
+		log.Default.Infof("api: %s \t path:%s", c.apiInfo.describe, path)
 	}
 }
 
