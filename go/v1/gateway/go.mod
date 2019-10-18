@@ -1,4 +1,4 @@
-module github.com/liov/go/gateway
+module github.com/liov/go/v1/gateway
 
 go 1.13
 

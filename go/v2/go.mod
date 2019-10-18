@@ -23,7 +23,7 @@ require (
 	github.com/iris-contrib/go.uuid v2.0.0+incompatible // indirect
 	github.com/jinzhu/configor v1.1.1
 	github.com/jinzhu/gorm v1.9.10
-	github.com/json-iterator/go v1.1.7 // indirect
+	github.com/json-iterator/go v1.1.7
 	github.com/kataras/golog v0.0.0-20190624001437-99c81de45f40
 	github.com/kataras/iris v11.1.1+incompatible
 	github.com/kataras/pio v0.0.0-20190103105442-ea782b38602d // indirect
@@ -32,6 +32,7 @@ require (
 	github.com/micro/go-grpc v0.11.0
 	github.com/micro/go-micro v0.25.0
 	github.com/micro/kubernetes v0.7.0
+	github.com/modern-go/reflect2 v1.0.1
 	github.com/spf13/viper v1.4.0 // indirect
 	go.uber.org/zap v1.10.0
 	golang.org/x/net v0.0.0-20191011234655-491137f69257
