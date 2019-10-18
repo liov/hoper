@@ -1,4 +1,4 @@
-package h_reflect
+package reflect3
 
 import (
 	"testing"

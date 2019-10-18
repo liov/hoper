@@ -6,12 +6,12 @@ import (
 
 	"github.com/garyburd/redigo/redis"
 	"github.com/liov/hoper/go/v2/initialize/dao"
-	"github.com/liov/hoper/go/v2/utils/h_reflect"
+	"github.com/liov/hoper/go/v2/utils/reflect3"
 )
 
 func (i *Init) P2Redis(conf interface{}) {
 	redisConf:=RedisConfig{}
-	if exist := h_reflect.GetExpectTypeValue(conf,&redisConf);!exist{
+	if exist := reflect3.GetExpectTypeValue(conf,&redisConf);!exist{
 		return
 	}
 	url := fmt.Sprintf("%s:%d", redisConf.Host, redisConf.Port)
