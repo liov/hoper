@@ -8,7 +8,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/liov/hoper/go/v2/initialize/dao"
-	"github.com/liov/hoper/go/v2/utils/h_reflect"
+	"github.com/liov/hoper/go/v2/utils/reflect3"
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
@@ -21,7 +21,7 @@ const (
 
 func (i *Init) P2DB(conf interface{}) {
 	dbConf:=DatabaseConfig{}
-	if exist := h_reflect.GetExpectTypeValue(conf,&dbConf);!exist{
+	if exist := reflect3.GetExpectTypeValue(conf,&dbConf);!exist{
 		return
 	}
 	var url string

@@ -27,7 +27,6 @@ func (u *UserController) Add() {
 			}),
 	)
 
-
 }
 
 func (u *UserController) Get() {
