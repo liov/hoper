@@ -5,9 +5,8 @@ import (
 	"github.com/json-iterator/go/extra"
 )
 
-func init()  {
+var Json = jsoniter.ConfigCompatibleWithStandardLibrary
+
+func SupportPrivateFields()  {
 	extra.SupportPrivateFields()
 }
-
-var Json = jsoniter.ConfigDefault
-

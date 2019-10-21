@@ -7,7 +7,7 @@ import (
 	"github.com/modern-go/reflect2"
 )
 
-func Type(v interface{})  {
+func TypeInfo(v interface{})  {
 	value:= reflect.ValueOf(v).Elem()
 	type2:= reflect2.TypeOf(&value)
 	rtype:= type2.(reflect2.PtrType).Elem().(reflect2.StructType)
@@ -20,5 +20,15 @@ func Type(v interface{})  {
 		v:=field.Get(typV)
 		v = reflect.ValueOf(v).Elem().Interface()
 		fmt.Printf("字段名：%v,字段值：%v\n",field.Name(),v)
+	}
+}
+
+func Set(o interface{},field string,v interface{})  {
+	t:= reflect2.TypeOf(o)
+	if field == "" {
+		t.Set(o,v)
+	}else{
+		f:= t.(reflect2.PtrType).Elem().(reflect2.StructType).FieldByName(field)
+		f.Set(o,v)
 	}
 }

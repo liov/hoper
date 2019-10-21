@@ -23,11 +23,37 @@ message User {
     uint64 ID = 1;
     string name = 2;
     google.protobuf.Timestamp activatedAt = 3;
-    string password = 4;
-    string email = 5;
-    string phone = 6;
-    google.protobuf.Timestamp createdAt = 7;
-    int32 status = 8;
+    string account =4;
+    string password = 5;
+    string email = 6;
+    string phone = 7;
+    string sex = 8;
+    google.protobuf.Timestamp birthday = 9;
+    string introduction =10;
+    uint64 score = 11;
+    string signature = 12;
+    uint32 role = 13;
+    string avatarURL =14;
+    string coverURL = 15;
+    string address = 16;
+    string location =17;
+   google.protobuf.Timestamp UpdatedAt = 18;
+   google.protobuf.Timestamp BannedAt = 19;
+   google.protobuf.Timestamp CreatedAt = 20;
+   google.protobuf.Timestamp LastActivatedAt = 21;
+    string LastName =22;
+    uint32 status = 23;
+}
+
+message Resume  {
+    uint64 ID = 1;
+    uint32 kind = 2;
+    string school = 3;
+    string  speciality  =4;
+    google.protobuf.Timestamp startTime =5;
+    google.protobuf.Timestamp endTime =6;
+    uint64  userID = 7;
+    uint32 status = 8;
 }
 
 message GetReq {
