@@ -5,9 +5,9 @@ import (
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
-func (i *Init) P1Log(conf interface{}) {
+func (i *Init) P1Log() {
 	logConf:=LogConfig{}
-	if exist := reflect3.GetExpectTypeValue(conf,&logConf);!exist{
+	if exist := reflect3.GetFieldValue(i.conf,&logConf);!exist{
 		return
 	}
 	(&log.LoggerInfo{

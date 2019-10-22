@@ -4,18 +4,17 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/garyburd/redigo/redis"
-	"github.com/liov/hoper/go/v2/initialize/dao"
+	"github.com/gomodule/redigo/redis"
 	"github.com/liov/hoper/go/v2/utils/reflect3"
 )
 
-func (i *Init) P2Redis(conf interface{}) {
+func (i *Init) P2Redis() {
 	redisConf:=RedisConfig{}
-	if exist := reflect3.GetExpectTypeValue(conf,&redisConf);!exist{
+	if exist := reflect3.GetFieldValue(i.conf,&redisConf);!exist{
 		return
 	}
 	url := fmt.Sprintf("%s:%d", redisConf.Host, redisConf.Port)
-	dao.Dao.SetRedis(&redis.Pool{
+	reflect3.SetFieldValue(i.dao,&redis.Pool{
 		MaxIdle:     redisConf.MaxIdle,
 		MaxActive:   redisConf.MaxActive,
 		IdleTimeout: redisConf.IdleTimeout,

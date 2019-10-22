@@ -21,23 +21,16 @@ func init() {
 	flag.StringVar(&confUrl,"c", "./config", "配置文件夹路径")
 }
 
-type Config interface {
-	Custom()
-}
-
-func (i *Init) config(config Config) {
-	if flag.Parsed(){
-		flag.Parse()
-	}
+func (i *Init) config() {
 	err := configor.New(&configor.Config{Debug: false}).
 		Load(i, confUrl+PathSeparator+"config"+ext) //"./config/config.toml"
 	err = configor.New(&configor.Config{Debug: i.Env != PRODUCT}).
-		Load(config, confUrl+PathSeparator+"config"+ext,confUrl+PathSeparator+i.Env+ext) //"./config/{{env}}.toml"
+		Load(i.conf, confUrl+PathSeparator+"config"+ext,confUrl+PathSeparator+i.Env+ext) //"./config/{{env}}.toml"
 	if err != nil {
 		log.Errorf("配置错误: %v", err)
 		os.Exit(10)
 	}
-	config.Custom()
+	i.conf.Custom()
 }
 
 type DatabaseConfig struct {
@@ -60,6 +53,17 @@ type RedisConfig struct {
 	MaxIdle     int
 	MaxActive   int
 	IdleTimeout time.Duration
+}
+
+type ElasticConfig struct {
+	Host string
+}
+
+type NsqConfig struct {
+	Host string
+	model int8 //0生产者，1消费者，2所有
+	topic string
+	channel string
 }
 
 type MongoConfig struct {

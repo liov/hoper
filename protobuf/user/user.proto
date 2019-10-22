@@ -1,11 +1,14 @@
 syntax = "proto3";
 import public "google/protobuf/timestamp.proto";
-package protobuf;
+package user;
 
 
 service UserService {
 
     rpc Signup (SignupReq) returns (LoginRep) {
+    }
+
+    rpc Edit (EditReq) returns (EditRep) {
     }
 
     rpc Login (LoginReq) returns (LoginRep) {
@@ -71,6 +74,14 @@ message LoginReq {
     string input = 1;
     string password = 2;
     string luosimaoRes = 3;
+}
+
+message EditReq{
+
+}
+
+message EditRep{
+
 }
 
 message LoginRep {
