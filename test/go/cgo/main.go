@@ -103,7 +103,7 @@ func main() {
 
 	/*	var s0 string
 		var s0Hdr = (*reflect.StringHeader)(unsafe.Pointer(&s0))
-		s0Hdr.Data = uintptr(unsafe.Pointer(C.s1))
+		s0Hdr.Result = uintptr(unsafe.Pointer(C.s1))
 		s0Hdr.Len = int(C.strlen(C.s1))
 
 		sLen := int(C.strlen(C.s1))

@@ -1,6 +1,7 @@
 package initialize
 
 import (
+	"flag"
 	"reflect"
 	"strings"
 )
@@ -14,12 +15,21 @@ const (
 type Init struct {
 	Env    string
 	NoInit []string
+	conf   needInit
+	dao    needInit
+}
+
+type needInit interface {
+	Custom()
 }
 
 //init函数命名规则，P+数字（优先级）+ 功能名
-func Start(conf Config, customInit func()) {
-	init := &Init{}
-	init.config(conf)
+func Start(conf needInit, dao needInit) {
+	if !flag.Parsed(){
+		flag.Parse()
+	}
+	init := &Init{conf: conf,dao:dao}
+	init.config()
 	value := reflect.ValueOf(init)
 	noInit := strings.Join(init.NoInit, " ")
 	typeOf := value.Type()
@@ -27,9 +37,9 @@ func Start(conf Config, customInit func()) {
 		if strings.Contains(noInit, typeOf.Method(i).Name[2:]) {
 			continue
 		}
-		value.Method(i).Call([]reflect.Value{reflect.ValueOf(conf)})
+		value.Method(i).Call(nil)
 	}
-	if customInit != nil {
-		customInit()
+	if dao != nil {
+		dao.Custom()
 	}
 }

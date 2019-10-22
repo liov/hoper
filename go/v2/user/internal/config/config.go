@@ -77,7 +77,7 @@ func (d *duration) UnmarshalText(text []byte) error {
 	return err
 }
 
-//固定函数名，init时反射用
+
 func (c *config) Custom() {
 	if runtime.GOOS == "windows" {
 		c.Server.LuosimaoAPIKey = ""

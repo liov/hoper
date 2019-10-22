@@ -7,9 +7,8 @@ import (
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"github.com/liov/hoper/go/v2/initialize/dao"
-	"github.com/liov/hoper/go/v2/utils/reflect3"
 	"github.com/liov/hoper/go/v2/utils/log"
+	"github.com/liov/hoper/go/v2/utils/reflect3"
 )
 
 const (
@@ -18,10 +17,9 @@ const (
 	SQLite = "sqlite3"
 )
 
-
-func (i *Init) P2DB(conf interface{}) {
+func (i *Init) P2DB() {
 	dbConf:=DatabaseConfig{}
-	if exist := reflect3.GetExpectTypeValue(conf,&dbConf);!exist{
+	if exist := reflect3.GetFieldValue(i.conf,&dbConf);!exist{
 		return
 	}
 	var url string
@@ -53,6 +51,6 @@ func (i *Init) P2DB(conf interface{}) {
 	db.SingularTable(true)
 	db.DB().SetMaxIdleConns(dbConf.MaxIdleConns)
 	db.DB().SetMaxOpenConns(dbConf.MaxOpenConns)
-	dao.Dao.SetDB(db)
+	reflect3.SetFieldValue(i.dao,db)
 }
 

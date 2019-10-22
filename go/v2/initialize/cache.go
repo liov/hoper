@@ -2,9 +2,9 @@ package initialize
 
 import (
 	"github.com/bluele/gcache"
-	"github.com/liov/hoper/go/v2/initialize/dao"
+	"github.com/liov/hoper/go/v2/utils/reflect3"
 )
 
 func (i *Init) P3Cache() {
-	dao.Dao.SetCache(gcache.New(20).LRU().Build())
+	reflect3.SetFieldValue(i.dao,gcache.New(20).LRU().Build())
 }
