@@ -31,7 +31,7 @@ func App() *iris.Application {
 	//api文档
 	//other.Api(app)
 	//https://rpm.newrelic.com/accounts/2269290/applications
-	/*	config := newrelic.Config("hoper", "199e00247f278548fe92d6c81aeaadac0fc52b4b")
+	/*	config := newrelic.config("hoper", "199e00247f278548fe92d6c81aeaadac0fc52b4b")
 		m, err := newrelic.New(config)
 		if err != nil {
 			app.Logger().Fatal(err)
@@ -50,7 +50,7 @@ func App() *iris.Application {
 	  iris.FromStd()将其他Handler转为iris的Handler
 	*/
 	//i18n
-	/*		globalLocale := i18n.New(i18n.Config{
+	/*		globalLocale := i18n.New(i18n.config{
 			Default:      "en-US",
 			URLParameter: "lang",
 			Languages: map[string]string{
@@ -61,7 +61,7 @@ func App() *iris.Application {
 	app.Use(mid.LogMid(false))
 
 	app.OnAnyErrorCode(mid.LogMid(true), func(ctx iris.Context) {
-		//这应该被添加到日志中，因为`logger.Config＃MessageContextKey`
+		//这应该被添加到日志中，因为`logger.config＃MessageContextKey`
 		ctx.Values().Set("logger_message",
 			ctx.Request())
 		ctx.Writef("My Custom error page")

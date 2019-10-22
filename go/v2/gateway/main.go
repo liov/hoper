@@ -12,7 +12,6 @@ import (
 	"github.com/liov/hoper/go/v2/gateway/internal/config"
 	"github.com/liov/hoper/go/v2/gateway/internal/router"
 	"github.com/liov/hoper/go/v2/initialize"
-	"github.com/liov/hoper/go/v2/initialize/dao"
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
@@ -27,8 +26,7 @@ func main() {
 	defer trace.Stop()*/
 	flag.Parse()
 	defer log.Sync()
-	defer dao.Dao.Close()
-	initialize.Start(config.Conf,config.CustomInit)
+	initialize.Start(config.Conf,nil)
 	app := router.App()
 	ch := make(chan os.Signal, 1)
 Loop:
@@ -46,7 +44,7 @@ Loop:
 			break Loop
 		default:
 			// listen and serve on https://0.0.0.0:8000.
-			//if err := irisRouter.Run(iris.TLS(initialize.Config.Server.HttpPort, "../../config/tls/cert.pem", "../../config/tls/cert.key"),
+			//if err := irisRouter.Run(iris.TLS(initialize.config.Server.HttpPort, "../../config/tls/cert.pem", "../../config/tls/cert.key"),
 			if err := app.Run(iris.Addr(config.Conf.Server.HttpPort, func(su *host.Supervisor) {
 				su.Server.WriteTimeout = config.Conf.Server.WriteTimeout
 				su.Server.ReadTimeout = config.Conf.Server.ReadTimeout

@@ -1,14 +1,17 @@
 package json
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/json-iterator/go/extra"
+	"github.com/magiconair/properties/assert"
 )
 
 type Foo struct {
 	a int
 	b string
+	c json.RawMessage
 }
 
 func TestJson(t *testing.T)  {
@@ -20,5 +23,6 @@ func TestJson(t *testing.T)  {
 		var f Foo
 		Json.Unmarshal(data,&f)
 		t.Log(f)
+		assert.Equal(t,string(data),`{"a":1,"b":"str","c":null}`)
 	})
 }

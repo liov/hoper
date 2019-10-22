@@ -16,6 +16,7 @@ require (
 	github.com/go-openapi/spec v0.19.3
 	github.com/go-openapi/swag v0.19.5
 	github.com/golang/protobuf v1.3.2
+	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/gorilla/schema v1.1.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.11.2
 	github.com/iris-contrib/blackfriday v2.0.0+incompatible // indirect
@@ -29,10 +30,13 @@ require (
 	github.com/kataras/pio v0.0.0-20190103105442-ea782b38602d // indirect
 	github.com/klauspost/compress v1.8.6 // indirect
 	github.com/klauspost/cpuid v1.2.1 // indirect
+	github.com/magiconair/properties v1.8.0
 	github.com/micro/go-grpc v0.11.0
 	github.com/micro/go-micro v0.25.0
 	github.com/micro/kubernetes v0.7.0
 	github.com/modern-go/reflect2 v1.0.1
+	github.com/olivere/elastic v6.2.23+incompatible
+	github.com/olivere/elastic/v7 v7.0.8 // indirect
 	github.com/spf13/viper v1.4.0 // indirect
 	go.uber.org/zap v1.10.0
 	golang.org/x/net v0.0.0-20191011234655-491137f69257

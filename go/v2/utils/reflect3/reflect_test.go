@@ -18,13 +18,8 @@ type Bar struct {
 func TestGetExpectTypeValue(t *testing.T) {
 	a:= Bar{Foo:Foo{A:1}}
 	b:= Foo{}
-	v:=GetExpectTypeValue(&a,&b)
+	v:= GetFieldValue(&a,&b)
 	if v{
 		log.Info(b)
 	}
-}
-
-func TestReflect(t *testing.T)  {
-	a:= Bar{Foo:Foo{A:1}}
-	Type(&a)
 }

@@ -1,3 +1,0 @@
-NoInit = ["Cache","DB","Redis"]
-#dev | test | prod
-Env = "dev"
