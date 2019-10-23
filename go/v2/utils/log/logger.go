@@ -25,7 +25,8 @@ func GetLogger() *Logger {
 type LoggerInfo struct {
 	Development bool
 	OutLevel    zapcore.Level
-	LogFilePath []string //日志文件路径
+	OutputPaths []string //日志文件路径
+	ErrOutputPaths []string
 	ServiceName string   //系统名称namespace.service
 	LoggerCall
 }
@@ -87,7 +88,7 @@ func (lf *LoggerInfo) initConfig() (*zap.Config,zap.Option) {
 		//系统名称
 		config.InitialFields = map[string]interface{}{"source": lf.ServiceName}
 		//输出文件
-		config.OutputPaths = lf.LogFilePath
+		config.OutputPaths = lf.OutputPaths
 	}
 	return &config,hook
 }

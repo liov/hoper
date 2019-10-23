@@ -1,3 +1,5 @@
 NoInit = ["Cache"]
+
+Module = "user"
 #dev | test | prod
 Env = "dev"
