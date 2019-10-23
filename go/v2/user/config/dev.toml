@@ -1,7 +1,9 @@
 title = "user"
 
+Volume = "../../data"
+Dir = "test"
 [server]
-Host =  "hoper.user"
+Host =  "user.hoper.xyz"
 HttpPort = ":8000"
 ReadTimeout = 60
 WriteTimeout = 60
@@ -13,31 +15,22 @@ TokenMaxAge = 86400
 PageSize = 10
 JwtSecret = "233"
 
-RuntimeRootPath =""
+
 #文件
-UploadDir = "../../static/upload"
-UploadPath = "/static/upload"
+UploadDir = "../../data/user/upload"
+UploadPath = "/data/user/upload"
 # MB
 UploadMaxSize = 5
 UploadAllowExt = [".jpg",".jpeg",".png",".gif"]
-#日志
-LogSavePath = "../../static/logs"
-LogSaveName = "log"
-LogFileExt = "log"
-TimeFormat = "20060102"
 
-#邮件
-MailHost = "smtp.qq.com"
-MailPort = ":465"
-MailUser =  "lby.i@qq.com"
-MailPassword = "123456"
+
 
 LuosimaoVerifyURL ="https://captcha.luosimao.com/api/site_verify"
 LuosimaoAPIKey ="f4a1c65ee13911b7bb9f902655c773a6"
 
-QrCodeSavePath = "../../static/qrcode"
+QrCodeSavePath = "../../data/user/qrcode"
 PrefixUrl =""
-FontSavePath ="../../static/font"
+FontSavePath ="../../data/user/font"
 
 CrawlerName =""
 [database]
@@ -66,3 +59,17 @@ IdleTimeout = 200
 [mongodb]
 URL =""
 Database =""
+
+#日志
+[log]
+LogSavePath = "../../data/user/logs"
+LogSaveName = "log"
+LogFileExt = "log"
+TimeFormat = "20060102"
+
+#邮件
+[mail]
+Host = "smtp.qq.com"
+Port = ":465"
+User =  "lby.i@qq.com"
+Password = "123456"

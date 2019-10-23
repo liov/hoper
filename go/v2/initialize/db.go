@@ -4,6 +4,7 @@ import (
 	"fmt"
 	stdlog "log"
 	"os"
+	"runtime"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -31,7 +32,10 @@ func (i *Init) P2DB() {
 		url = fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s",
 			dbConf.Host, dbConf.User, dbConf.Database, dbConf.Password)
 	} else if dbConf.Type == SQLite {
-		url = "../../static/db/hoper.db"
+		url = "/data/db/sqlite/"+dbConf.Database+".db"
+		if runtime.GOOS == "windows" {
+			url=".."+url
+		}
 	}
 	db, err := gorm.Open(dbConf.Type, url)
 

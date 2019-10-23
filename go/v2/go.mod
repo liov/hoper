@@ -35,6 +35,7 @@ require (
 	github.com/micro/go-micro v0.25.0
 	github.com/micro/kubernetes v0.7.0
 	github.com/modern-go/reflect2 v1.0.1
+	github.com/nsqio/go-nsq v1.0.7
 	github.com/olivere/elastic v6.2.23+incompatible
 	github.com/olivere/elastic/v7 v7.0.8 // indirect
 	github.com/spf13/viper v1.4.0 // indirect
