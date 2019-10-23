@@ -1,6 +1,7 @@
 package config
 
 import (
+	"net/http"
 	"runtime"
 	"time"
 
@@ -19,23 +20,17 @@ type serverConfig struct {
 	PageSize        int8
 	RuntimeRootPath string
 
-	UploadDir      string
-	UploadPath     string
+	UploadDir      http.Dir
 	UploadMaxSize  int
 	UploadAllowExt []string
 
-	LogSavePath string
+	LogSavePath http.Dir
 	LogSaveName string
 	LogFileExt  string
 	TimeFormat  string
 
 	SiteName string
 	Host     string
-
-	MailHost     string
-	MailPort     string
-	MailUser     string
-	MailPassword string
 
 	LuosimaoVerifyURL string
 	LuosimaoAPIKey    string
@@ -52,13 +47,17 @@ var DatabaseSettings = &DatabaseConfig{}
 var RedisSettings = &RedisConfig{}
 var MongoSettings = &MongoConfig{}*/
 
+
 type config struct {
 	//必须
-	Env      string
+	Env    string
+	Volume http.Dir
+	Dir http.Dir
 	//自定义的配置
-	Server   serverConfig
+	Server serverConfig
 	//命令参数大于配置
 	Flag     flagValue
+	Mail     initialize.MailConfig
 	Database initialize.DatabaseConfig
 	Redis    initialize.RedisConfig
 	Mongo    initialize.MongoConfig
@@ -77,16 +76,15 @@ func (d *duration) UnmarshalText(text []byte) error {
 	return err
 }
 
-
 func (c *config) Custom() {
 	if runtime.GOOS == "windows" {
 		c.Server.LuosimaoAPIKey = ""
-		if c.Flag.Password !=""{
+		if c.Flag.Password != "" {
 			c.Database.Password = c.Flag.Password
 			c.Redis.Password = c.Database.Password
 		}
-		if c.Flag.MailPassword !="" {
-			c.Server.MailPassword = c.Flag.MailPassword
+		if c.Flag.MailPassword != "" {
+			c.Mail.Password = c.Flag.MailPassword
 		}
 	}
 

@@ -75,3 +75,10 @@ type LogConfig struct {
 	Level    zapcore.Level
 	FilePath []string //日志文件路径
 }
+
+type MailConfig struct {
+	Host     string
+	Port     string
+	User     string
+	Password string
+}
