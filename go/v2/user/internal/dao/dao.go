@@ -1,13 +1,14 @@
 package dao
 
 import (
+	"net/smtp"
+
 	"github.com/bluele/gcache"
 	"github.com/etcd-io/bbolt"
 	"github.com/globalsign/mgo"
 	"github.com/gomodule/redigo/redis"
 	"github.com/jinzhu/gorm"
 	"github.com/liov/hoper/go/v2/utils/db/gormCallback"
-	"github.com/olivere/elastic"
 )
 
 //原本是个单独模块，但是考虑到数据库必须初始化，所以合进来了
@@ -27,7 +28,7 @@ type dao struct {
 	Cache       gcache.Cache
 	McExpire    int32
 	//elastic
-	elastic.AcknowledgedResponse
+	Mail	*smtp.Client
 }
 
 // Close close the resource.

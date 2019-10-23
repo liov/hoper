@@ -54,8 +54,8 @@ func App() *iris.Application {
 			Default:      "en-US",
 			URLParameter: "lang",
 			Languages: map[string]string{
-				"en-US": "../../static/i18n/locale_en-US.ini",
-				"zh-CN": "../../static/i18n/locale_zh-CN.ini"}})
+				"en-US": "../../data/i18n/locale_en-US.ini",
+				"zh-CN": "../../data/i18n/locale_zh-CN.ini"}})
 		app.Use(globalLocale)*/
 	//请求日志
 	app.Use(mid.LogMid(false))
