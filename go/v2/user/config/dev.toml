@@ -1,7 +1,8 @@
-title = "user"
+title = "user-config"
+#文件存储在Volume+Module下
 
 Volume = "../../data"
-Dir = "test"
+
 [server]
 Host =  "user.hoper.xyz"
 HttpPort = ":8000"
@@ -17,8 +18,8 @@ JwtSecret = "233"
 
 
 #文件
-UploadDir = "../../data/user/upload"
-UploadPath = "/data/user/upload"
+UploadDir = "/upload"
+
 # MB
 UploadMaxSize = 5
 UploadAllowExt = [".jpg",".jpeg",".png",".gif"]
@@ -28,9 +29,9 @@ UploadAllowExt = [".jpg",".jpeg",".png",".gif"]
 LuosimaoVerifyURL ="https://captcha.luosimao.com/api/site_verify"
 LuosimaoAPIKey ="f4a1c65ee13911b7bb9f902655c773a6"
 
-QrCodeSavePath = "../../data/user/qrcode"
+QrCodeSaveDir = "/qrcode"
 PrefixUrl =""
-FontSavePath ="../../data/user/font"
+FontSaveDir ="/font"
 
 CrawlerName =""
 [database]
@@ -62,9 +63,8 @@ Database =""
 
 #日志
 [log]
-LogSavePath = "../../data/user/logs"
-LogSaveName = "log"
-LogFileExt = "log"
+Level = 0
+SaveDir = "/logs"
 TimeFormat = "20060102"
 
 #邮件

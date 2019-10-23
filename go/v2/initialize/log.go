@@ -3,6 +3,7 @@ package initialize
 import (
 	"github.com/liov/hoper/go/v2/utils/reflect3"
 	"github.com/liov/hoper/go/v2/utils/log"
+	"go.uber.org/zap/zapcore"
 )
 
 func (i *Init) P1Log() {
@@ -12,7 +13,8 @@ func (i *Init) P1Log() {
 	}
 	(&log.LoggerInfo{
 		Development: i.Env != PRODUCT,
-		OutLevel:    logConf.Level,
-		LogFilePath: logConf.FilePath,
+		OutLevel:    zapcore.Level(logConf.Level),
+		OutputPaths: logConf.OutputPaths,
+		ErrOutputPaths:logConf.ErrOutputPaths,
 	}).NewLogger()
 }

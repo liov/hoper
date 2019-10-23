@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/liov/hoper/go/v2/initialize"
+	"github.com/liov/hoper/go/v2/utils/fs"
 )
 
 type serverConfig struct {
@@ -18,13 +19,12 @@ type serverConfig struct {
 	TokenSecret     string
 	JwtSecret       string
 	PageSize        int8
-	RuntimeRootPath string
 
-	UploadDir      http.Dir
+	UploadDir      fs.Dir
 	UploadMaxSize  int
 	UploadAllowExt []string
 
-	LogSavePath http.Dir
+	LogSaveDir fs.Dir
 	LogSaveName string
 	LogFileExt  string
 	TimeFormat  string
@@ -35,9 +35,9 @@ type serverConfig struct {
 	LuosimaoVerifyURL string
 	LuosimaoAPIKey    string
 
-	QrCodeSavePath string //二维码保存路径
+	QrCodeSaveDir fs.Dir //二维码保存路径
 	PrefixUrl      string
-	FontSavePath   string //字体保存路径
+	FontSaveDir   fs.Dir //字体保存路径
 
 	CrawlerName string //爬虫
 }
@@ -50,9 +50,10 @@ var MongoSettings = &MongoConfig{}*/
 
 type config struct {
 	//必须
+	Module string
 	Env    string
 	Volume http.Dir
-	Dir http.Dir
+
 	//自定义的配置
 	Server serverConfig
 	//命令参数大于配置
