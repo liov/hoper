@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/jinzhu/configor"
+	"github.com/liov/hoper/go/v2/utils/fs"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"go.uber.org/zap/zapcore"
 )
 
 const (
@@ -72,8 +72,10 @@ type MongoConfig struct {
 }
 
 type LogConfig struct {
-	Level    zapcore.Level
-	FilePath []string //日志文件路径
+	Level    int8
+	SaveDir fs.Dir
+	OutputPaths []string //日志文件路径
+	ErrOutputPaths []string
 }
 
 type MailConfig struct {
