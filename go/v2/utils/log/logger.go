@@ -36,20 +36,15 @@ type LoggerInfo struct {
 }
 
 //初始化日志对象
-func (lf *LoggerInfo) setLogger() *Logger {
+func (lf *LoggerInfo) NewLogger() *Logger {
 	return &Logger{
 		lf.initConfig(true).Sugar(),
 	}
 }
 
-func (lf *LoggerInfo) NewLogger() {
+func (lf *LoggerInfo) SetLogger() {
 	logger.SugaredLogger = lf.initConfig(true).Sugar()
 }
-
-func (lf *LoggerInfo) NewDefaultLogger()  {
-	Default = lf.initConfig(false).Sugar()
-}
-
 
 //构建日志对象基本信息
 func (lf *LoggerInfo) initConfig(skip bool) *zap.Logger {
@@ -134,11 +129,10 @@ func (l *Logger) ReportLog(interfaceName string, msg ...interface{}) {
 	}).Warn(msg...)
 }
 
-var logger *Logger = (&LoggerInfo{Product: true}).setLogger()
+var logger *Logger = (&LoggerInfo{Product: true}).NewLogger()
 
 func Sync() {
 	logger.Sync()
-	Default.Sync()
 }
 
 func Print(v ...interface{})  {
