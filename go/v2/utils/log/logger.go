@@ -2,10 +2,14 @@ package log
 
 import (
 	"fmt"
+	"io"
 	"log"
+	"os"
 	"strings"
 	"time"
 
+	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
+	"github.com/liov/hoper/go/v2/utils/log/output"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -23,35 +27,37 @@ func GetLogger() *Logger {
 }
 
 type LoggerInfo struct {
-	Development bool
+	Product     bool
+	Kafka       *output.LogKafka
 	OutLevel    zapcore.Level
 	OutputPaths []string //日志文件路径
-	ErrOutputPaths []string
-	ServiceName string   //系统名称namespace.service
+	ModuleName  string   //系统名称namespace.service
 	LoggerCall
 }
 
 //初始化日志对象
-func (lf *LoggerInfo) newLogger() *Logger {
+func (lf *LoggerInfo) setLogger() *Logger {
 	return &Logger{
-		lf.initLogger(),
+		lf.initConfig(true).Sugar(),
 	}
 }
 
 func (lf *LoggerInfo) NewLogger() {
-	logger.SugaredLogger = lf.initLogger()
-	Default = lf.noCaller()
+	logger.SugaredLogger = lf.initConfig(true).Sugar()
+}
+
+func (lf *LoggerInfo) NewDefaultLogger()  {
+	Default = lf.initConfig(false).Sugar()
 }
 
 
 //构建日志对象基本信息
-func (lf *LoggerInfo) initConfig() (*zap.Config,zap.Option) {
-	config := zap.NewProductionConfig()
-	config.Level = zap.NewAtomicLevelAt(lf.OutLevel)
-	config.EncoderConfig = zapcore.EncoderConfig{
+func (lf *LoggerInfo) initConfig(skip bool) *zap.Logger {
+
+	encoderConfig := zapcore.EncoderConfig{
 		TimeKey:    "time",
 		LevelKey:   "level",
-		NameKey:    lf.ServiceName,
+		NameKey:    lf.ModuleName,
 		CallerKey:  "caller",
 		MessageKey: "msg",
 		//StacktraceKey: "stacktrace",
@@ -63,46 +69,64 @@ func (lf *LoggerInfo) initConfig() (*zap.Config,zap.Option) {
 		EncodeDuration: zapcore.SecondsDurationEncoder,
 		EncodeCaller:   zapcore.ShortCallerEncoder,
 	}
-	var hook zap.Option
+	var hooks []zap.Option
 	//hook日志初始化
-
 	if len(lf.HookURL) != 0 {
 		lf.AtMan = "@" + strings.ReplaceAll(lf.AtMan, ",", "@")
 
-		hook = zap.Hooks(func(e zapcore.Entry) error {
+		hooks = append(hooks, zap.Hooks(func(e zapcore.Entry) error {
 			return lf.Fire(&e)
-		})
+		}))
 	} else {
-		hook = zap.Hooks(func(i zapcore.Entry) error {
+		hooks = append(hooks, zap.Hooks(func(i zapcore.Entry) error {
 			return nil
-		})
+		}))
 	}
 
-	if lf.Development {
-		config.Encoding = "console"
-		config.Sampling = nil
-		config.EncoderConfig.EncodeCaller = zapcore.FullCallerEncoder
-		hook = zap.Development()
-	} else {
-		config.EncoderConfig.EncodeLevel = zapcore.LowercaseLevelEncoder
-		//系统名称
-		config.InitialFields = map[string]interface{}{"source": lf.ServiceName}
-		//输出文件
-		config.OutputPaths = lf.OutputPaths
-	}
-	return &config,hook
-}
-
-
-//构建日志对象基本信息
-func (lf *LoggerInfo) initLogger() *zap.SugaredLogger {
-	config,hook:=lf.initConfig()
-	logger, err := config.Build(zap.AddCallerSkip(1), hook)
+	encoderConfig.EncodeLevel = zapcore.LowercaseLevelEncoder
+	jsonEncoder := zapcore.NewJSONEncoder(encoderConfig)
+	sink, _, err := zap.Open(lf.OutputPaths...)
 	if err != nil {
-	log.Fatalf("open file error :%s", err.Error())
+		log.Fatal(err)
 	}
-	return logger.Sugar()
+
+	core:= zapcore.NewCore(jsonEncoder,sink,lf.OutLevel)
+	//系统名称
+	hooks= append(hooks,zap.Fields(zap.Any("module", lf.ModuleName)))
+
+	if !lf.Product {
+		encoderConfig.EncodeCaller = zapcore.FullCallerEncoder
+		encoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+		consoleEncoder := zapcore.NewConsoleEncoder(encoderConfig)
+		core = zapcore.NewTee(core,zapcore.NewCore(consoleEncoder,zapcore.AddSync(os.Stderr),lf.OutLevel))
+		hooks = append(hooks,zap.Development())
+	}
+	if skip {
+		hooks = append(hooks,zap.AddCaller(),zap.AddCallerSkip(1))
+	}
+
+	logger :=  zap.New(core, hooks..., )
+
+	return logger
 }
+
+func getWriter(filename string) io.Writer {
+	// 生成rotatelogs的Logger 实际生成的文件名 demo.log.YYmmddHH
+	// demo.log是指向最新日志的链接
+	// 保存7天内的日志，每1小时(整点)分割一次日志
+	hook, err := rotatelogs.New(
+		filename+"_%Y%m%d%H", // 没有使用go风格反人类的format格式
+		rotatelogs.WithLinkName(filename),
+		rotatelogs.WithMaxAge(time.Hour*24*7),
+		rotatelogs.WithRotationTime(time.Hour),
+	)
+
+	if err != nil {
+		panic(err)
+	}
+	return hook
+}
+
 
 func (l *Logger) ReportLog(interfaceName string, msg ...interface{}) {
 	l.With("fields", map[string]interface{}{
@@ -110,10 +134,11 @@ func (l *Logger) ReportLog(interfaceName string, msg ...interface{}) {
 	}).Warn(msg...)
 }
 
-var logger *Logger = (&LoggerInfo{Development: true}).newLogger()
+var logger *Logger = (&LoggerInfo{Product: true}).setLogger()
 
 func Sync() {
 	logger.Sync()
+	Default.Sync()
 }
 
 func Print(v ...interface{})  {

@@ -23,15 +23,15 @@ func GetFieldValue(src interface{}, dst interface{}) bool {
 	return false
 }
 
-func SetFieldValue(src interface{}, sub interface{}) bool {
+func SetField(src interface{}, sub interface{}) bool {
 	srcValue:= reflect.ValueOf(src).Elem()
 	subValue:=reflect.ValueOf(sub)
-	setSubTypeValue(srcValue,subValue)
+	SetFieldValue(srcValue,subValue)
 	subValue = subValue.Elem()
-	return setSubTypeValue(srcValue,subValue)
+	return SetFieldValue(srcValue,subValue)
 }
 
-func setSubTypeValue(srcValue reflect.Value, subValue reflect.Value) bool  {
+func SetFieldValue(srcValue reflect.Value, subValue reflect.Value) bool  {
 	for i := 0; i < srcValue.NumField(); i++ {
 		if srcValue.Field(i).Type() == subValue.Type(){
 			srcValue.Field(i).Set(subValue)

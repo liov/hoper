@@ -4,6 +4,8 @@ import (
 	"flag"
 	"reflect"
 	"strings"
+
+	"github.com/liov/hoper/go/v2/utils/reflect3"
 )
 
 const (
@@ -14,6 +16,7 @@ const (
 
 type Init struct {
 	Env    string
+	Module string
 	NoInit []string
 	conf   needInit
 	dao    needInit
@@ -37,7 +40,14 @@ func Start(conf needInit, dao needInit) {
 		if strings.Contains(noInit, typeOf.Method(i).Name[2:]) {
 			continue
 		}
-		value.Method(i).Call(nil)
+		if res:=value.Method(i).Call(nil);res!=nil && len(res)>0{
+			daoValue:= reflect.ValueOf(dao).Elem()
+			for j := range res{
+				if res[j].IsValid(){
+					reflect3.SetFieldValue(daoValue,res[j])
+				}
+			}
+		}
 	}
 	if dao != nil {
 		dao.Custom()
