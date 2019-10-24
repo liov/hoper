@@ -16,5 +16,5 @@ func (i *Init) P1Log() {
 		ModuleName:		i.Module,
 		OutLevel:       zapcore.Level(conf.Level),
 		OutputPaths:    conf.OutputPaths,
-	}).NewLogger()
+	}).SetLogger()
 }

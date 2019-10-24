@@ -9,7 +9,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
-func LogMid(hasErr bool) iris.Handler {
+func LogMid(logger2 *log.Logger,hasErr bool) iris.Handler {
 	var excludeExtensions = [...]string{
 		".js",
 		".css",
@@ -41,9 +41,9 @@ func LogMid(hasErr bool) iris.Handler {
 	c.LogFunc = func(now time.Time, latency time.Duration, status, ip, method, path string, message interface{}, headerMessage interface{}) {
 		format:="latency: %d|status: %s|ip: %s|method: %s|path: %s|message: %v|headerMessage: %v"
 			if hasErr{
-				log.Default.Warnf(format,latency, status, ip, method, path, message, headerMessage)
+				logger2.Warnf(format,latency, status, ip, method, path, message, headerMessage)
 			}else {
-				log.Default.Infof(format,latency, status, ip, method, path, message, headerMessage)
+				logger2.Infof(format,latency, status, ip, method, path, message, headerMessage)
 			}
 	}
 	//我们不想使用记录器，一些静态请求等
