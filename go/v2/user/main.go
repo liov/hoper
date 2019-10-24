@@ -15,4 +15,6 @@ func main() {
 	initialize.Start(config.Conf,dao.Dao)
 	defer dao.Dao.Close()
 	log.Info(*dao.Dao)
+	log.Error(*dao.Dao)
+
 }

@@ -7,21 +7,21 @@ import (
 	"github.com/nsqio/go-nsq"
 )
 
-func (i *Init) P2NSQ() {
-	nsqConf := NsqConfig{}
-	if exist := reflect3.GetFieldValue(i.conf, &nsqConf); !exist {
-		return
+func (i *Init) P2NSQ() (*nsq.Producer,*nsq.Consumer) {
+	conf := NsqConfig{}
+	if exist := reflect3.GetFieldValue(i.conf, &conf); !exist {
+		return nil,nil
 	}
 	cfg := nsq.NewConfig()
-	if nsqConf.model == 0 || nsqConf.model == 2 {
-		producer, err := nsq.NewProducer(nsqConf.Host, cfg)
+	if conf.Model == 0 || conf.Model == 2 {
+		producer, err := nsq.NewProducer(conf.Addr, cfg)
 		if err != nil {
 			panic(err)
 		}
-		reflect3.SetFieldValue(i.dao,producer)
+		return producer,nil
 	}
-	if nsqConf.model == 1 || nsqConf.model == 2 {
-		customer, err := nsq.NewConsumer(nsqConf.topic, nsqConf.channel, cfg)
+	if conf.Model == 1 || conf.Model == 2 {
+		customer, err := nsq.NewConsumer(conf.Topic, conf.Channel, cfg)
 		if err != nil {
 			panic(err)
 		}
@@ -29,7 +29,7 @@ func (i *Init) P2NSQ() {
 		//customer.AddHandler(handle) // 添加消费者接口
 
 		//建立NSQLookupd连接
-		if err := customer.ConnectToNSQLookupd(nsqConf.Host); err != nil {
+		if err := customer.ConnectToNSQLookupd(conf.Addr); err != nil {
 			log.Println("consumer 新建失败")
 		}
 		//建立多个nsqd连接
@@ -42,6 +42,7 @@ func (i *Init) P2NSQ() {
 			 panic(err)
 			}
 			<-c.StopChan*/
-		reflect3.SetFieldValue(i.dao,customer)
+		return nil,customer
 	}
+	return nil ,nil
 }

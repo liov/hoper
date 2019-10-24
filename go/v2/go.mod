@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/Joker/jade v1.0.0 // indirect
 	github.com/Shopify/goreferrer v0.0.0-20181106222321-ec9c9a553398 // indirect
+	github.com/Shopify/sarama v1.24.0
 	github.com/aymerick/raymond v2.0.2+incompatible // indirect
 	github.com/bluele/gcache v0.0.0-20190518031135-bc40bd653833
 	github.com/eknkc/amber v0.0.0-20171010120322-cdade1c07385 // indirect
@@ -30,6 +31,8 @@ require (
 	github.com/kataras/pio v0.0.0-20190103105442-ea782b38602d // indirect
 	github.com/klauspost/compress v1.8.6 // indirect
 	github.com/klauspost/cpuid v1.2.1 // indirect
+	github.com/lestrrat-go/file-rotatelogs v2.2.0+incompatible
+	github.com/lestrrat-go/strftime v0.0.0-20190725011945-5c849dd2c51d // indirect
 	github.com/magiconair/properties v1.8.0
 	github.com/micro/go-grpc v0.11.0
 	github.com/micro/go-micro v0.25.0

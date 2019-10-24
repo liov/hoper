@@ -1,0 +1,73 @@
+title = "user-config"
+#文件存储在Volume+Module下
+
+Volume = "../../data"
+
+[server]
+Host =  "user.hoper.xyz"
+HttpPort = ":8000"
+ReadTimeout = 60
+WriteTimeout = 60
+
+PassSalt = "%*~&*G(Ysa-jyb"
+TokenSecret = "hjoihiahDAW2iofjiJPO"
+TokenMaxAge = 86400
+
+PageSize = 10
+JwtSecret = "233"
+
+
+#文件
+UploadDir = "/upload"
+
+# MB
+UploadMaxSize = 5
+UploadAllowExt = [".jpg",".jpeg",".png",".gif"]
+
+
+
+LuosimaoVerifyURL ="https://captcha.luosimao.com/api/site_verify"
+LuosimaoAPIKey ="f4a1c65ee13911b7bb9f902655c773a6"
+
+QrCodeSaveDir = "/qrcode"
+PrefixUrl =""
+FontSaveDir ="/font"
+
+CrawlerName =""
+[database]
+Type = "postgres"
+#Type = mysql
+#User = root
+User = "postgres"
+Password = "123456"
+Host = "hoper.xyz"
+#Port = 3306
+Port = 5432
+Charset = "utf8"
+Database = "hoper_test"
+TablePrefix =""
+MaxIdleConns = 5
+MaxOpenConns = 10
+
+[redis]
+Host = "hoper.xyz"
+Port = 6379
+Password =""
+MaxIdle = 30
+MaxActive = 30
+IdleTimeout = 200
+
+
+#日志
+[log]
+Level = 0
+SaveDir = "/logs"
+TimeFormat = "20060102"
+OutputPaths = ["stdout"]
+
+#邮件
+[mail]
+Host = "smtp.qq.com"
+Port = ":465"
+User =  "lby.i@qq.com"
+Password = "123456"

@@ -7,14 +7,14 @@ import (
 )
 
 func (i *Init) P1Log() {
-	logConf:=LogConfig{}
-	if exist := reflect3.GetFieldValue(i.conf,&logConf);!exist{
+	conf :=LogConfig{}
+	if exist := reflect3.GetFieldValue(i.conf,&conf);!exist{
 		return
 	}
 	(&log.LoggerInfo{
-		Development: i.Env != PRODUCT,
-		OutLevel:    zapcore.Level(logConf.Level),
-		OutputPaths: logConf.OutputPaths,
-		ErrOutputPaths:logConf.ErrOutputPaths,
+		Product:        i.Env == PRODUCT,
+		ModuleName:		i.Module,
+		OutLevel:       zapcore.Level(conf.Level),
+		OutputPaths:    conf.OutputPaths,
 	}).NewLogger()
 }

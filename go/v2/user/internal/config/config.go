@@ -61,7 +61,6 @@ type config struct {
 	Mail     initialize.MailConfig
 	Database initialize.DatabaseConfig
 	Redis    initialize.RedisConfig
-	Mongo    initialize.MongoConfig
 	Log      initialize.LogConfig
 }
 
