@@ -57,15 +57,14 @@ MaxIdle = 30
 MaxActive = 30
 IdleTimeout = 200
 
-[mongodb]
-URL =""
-Database =""
+
 
 #日志
 [log]
 Level = 0
 SaveDir = "/logs"
 TimeFormat = "20060102"
+OutputPaths = []
 
 #邮件
 [mail]

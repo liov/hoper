@@ -1,31 +1,29 @@
 package initialize
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/gomodule/redigo/redis"
 	"github.com/liov/hoper/go/v2/utils/reflect3"
 )
 
-func (i *Init) P2Redis() {
-	redisConf:=RedisConfig{}
-	if exist := reflect3.GetFieldValue(i.conf,&redisConf);!exist{
-		return
+func (i *Init) P2Redis() *redis.Pool {
+	conf :=RedisConfig{}
+	if exist := reflect3.GetFieldValue(i.conf,&conf);!exist{
+		return nil
 	}
-	url := fmt.Sprintf("%s:%d", redisConf.Host, redisConf.Port)
-	reflect3.SetFieldValue(i.dao,&redis.Pool{
-		MaxIdle:     redisConf.MaxIdle,
-		MaxActive:   redisConf.MaxActive,
-		IdleTimeout: redisConf.IdleTimeout,
+	return &redis.Pool{
+		MaxIdle:     conf.MaxIdle,
+		MaxActive:   conf.MaxActive,
+		IdleTimeout: conf.IdleTimeout,
 		Wait:        true,
 		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", url)
+			c, err := redis.Dial("tcp", conf.Addr)
 			if err != nil {
 				return nil, err
 			}
-			if redisConf.Password != "" {
-				if _, err := c.Do("AUTH", redisConf.Password); err != nil {
+			if conf.Password != "" {
+				if _, err := c.Do("AUTH", conf.Password); err != nil {
 					c.Close()
 					return nil, err
 				}
@@ -36,5 +34,5 @@ func (i *Init) P2Redis() {
 			_, err := c.Do("PING")
 			return err
 		},
-	})
+	}
 }

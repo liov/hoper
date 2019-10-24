@@ -18,33 +18,33 @@ const (
 	SQLite = "sqlite3"
 )
 
-func (i *Init) P2DB() {
-	dbConf:=DatabaseConfig{}
-	if exist := reflect3.GetFieldValue(i.conf,&dbConf);!exist{
-		return
+func (i *Init) P2DB() *gorm.DB {
+	conf :=DatabaseConfig{}
+	if exist := reflect3.GetFieldValue(i.conf,&conf);!exist{
+		return nil
 	}
 	var url string
-	if dbConf.Type == MYSQL {
+	if conf.Type == MYSQL {
 		url = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
-			dbConf.User, dbConf.Password, dbConf.Host,
-			dbConf.Port, dbConf.Database, dbConf.Charset)
-	} else if dbConf.Type == POSTGRES {
+			conf.User, conf.Password, conf.Host,
+			conf.Port, conf.Database, conf.Charset)
+	} else if conf.Type == POSTGRES {
 		url = fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s",
-			dbConf.Host, dbConf.User, dbConf.Database, dbConf.Password)
-	} else if dbConf.Type == SQLite {
-		url = "/data/db/sqlite/"+dbConf.Database+".db"
+			conf.Host, conf.User, conf.Database, conf.Password)
+	} else if conf.Type == SQLite {
+		url = "/data/db/sqlite/"+ conf.Database+".db"
 		if runtime.GOOS == "windows" {
 			url=".."+url
 		}
 	}
-	db, err := gorm.Open(dbConf.Type, url)
-
+	db, err := gorm.Open(conf.Type, url)
+	log.Error(conf.Password)
 	if err != nil {
 		log.Error(err)
 		os.Exit(10)
 	}
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
-		return dbConf.TablePrefix + defaultTableName
+		return conf.TablePrefix + defaultTableName
 	}
 
 	if i.Env != PRODUCT {
@@ -53,8 +53,8 @@ func (i *Init) P2DB() {
 		db.LogMode(true)
 	}
 	db.SingularTable(true)
-	db.DB().SetMaxIdleConns(dbConf.MaxIdleConns)
-	db.DB().SetMaxOpenConns(dbConf.MaxOpenConns)
-	reflect3.SetFieldValue(i.dao,db)
+	db.DB().SetMaxIdleConns(conf.MaxIdleConns)
+	db.DB().SetMaxOpenConns(conf.MaxOpenConns)
+	return db
 }
 
