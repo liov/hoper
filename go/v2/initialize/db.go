@@ -49,7 +49,7 @@ func (i *Init) P2DB() *gorm.DB {
 
 	if i.Env != PRODUCT {
 		//b不set输出空白
-		db.SetLogger(stdlog.New(os.Stdout, "", 3))
+		db.SetLogger(stdlog.New(os.Stderr, "", 3))
 		db.LogMode(true)
 	}
 	db.SingularTable(true)
