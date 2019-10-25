@@ -57,7 +57,7 @@ func handle(h ...iris.Handler) apiParam {
 		//"/api"的长度
 		path := c.App.GetRelPath()[:4]+"/v"+strconv.Itoa(c.version)+c.App.GetRelPath()[4:] +c.path
 		c.App.Handle(c.apiInfo.method, path, h...)
-		log.Default.Infof("api: %s \t path:%s", c.apiInfo.describe, path)
+		log.NoCall.Infof("api: %s \t path:%s", c.apiInfo.describe, path)
 	}
 }
 

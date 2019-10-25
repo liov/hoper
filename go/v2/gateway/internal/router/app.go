@@ -59,7 +59,7 @@ func App() *iris.Application {
 				"zh-CN": "../../data/i18n/locale_zh-CN.ini"}})
 		app.Use(globalLocale)*/
 	//请求日志
-	logger:= log.LoggerInfo{Product:config.Conf.Env == initialize.PRODUCT}.NewLogger()
+	logger:= (&log.Config{Development: config.Conf.Env == initialize.PRODUCT}).NewLogger()
 	app.Use(mid.LogMid(logger,false))
 
 	app.OnAnyErrorCode(mid.LogMid(logger,true), func(ctx iris.Context) {
