@@ -38,7 +38,6 @@ func (i *Init) P2DB() *gorm.DB {
 		}
 	}
 	db, err := gorm.Open(conf.Type, url)
-	log.Error(conf.Password)
 	if err != nil {
 		log.Error(err)
 		os.Exit(10)

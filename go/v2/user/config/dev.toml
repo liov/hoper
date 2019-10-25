@@ -5,7 +5,7 @@ Volume = "../../data"
 
 [server]
 Host =  "user.hoper.xyz"
-HttpPort = ":8000"
+Port = ":8080"
 ReadTimeout = 60
 WriteTimeout = 60
 

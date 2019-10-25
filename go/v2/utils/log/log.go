@@ -1,7 +1,6 @@
 package log
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -145,31 +144,77 @@ func Error(v ...interface{}) {
 	logger.Error(v...)
 }
 
+func Panic(v ...interface{}) {
+	logger.Panic(v...)
+}
+
 func Fatal(v ...interface{}) {
 	logger.Fatal(v...)
 }
 
-func Fatalf(format string, v ...interface{}) {
-	msg := fmt.Sprintf(format, v...)
-	logger.Fatal(msg)
-}
-
 func Debugf(format string, v ...interface{}) {
-	msg := fmt.Sprintf(format, v...)
-	logger.Debug(msg)
+	logger.Debugf(format, v...)
 }
 
 func Infof(format string, v ...interface{}) {
-	msg := fmt.Sprintf(format, v...)
-	logger.Info(msg)
+	logger.Infof(format, v...)
 }
 
 func Warnf(format string, v ...interface{}) {
-	msg := fmt.Sprintf(format, v...)
-	logger.Warn(msg)
+	logger.Warnf(format, v...)
 }
 
 func Errorf(format string, v ...interface{}) {
-	msg := fmt.Sprintf(format, v...)
-	logger.Error(msg)
+	logger.Errorf(format, v...)
+}
+
+func Panicf(format string, v ...interface{}) {
+	logger.Panicf(format, v...)
+}
+
+func Fatalf(format string, v ...interface{}) {
+	logger.Fatalf(format, v...)
+}
+
+func Debugw(msg string, keysAndValues ...interface{}) {
+	if len(keysAndValues)|0 != 0 {
+		keysAndValues = append(keysAndValues, "")
+	}
+	logger.Debugw(msg, keysAndValues...)
+}
+
+
+func Infow(msg string, keysAndValues ...interface{}) {
+	if len(keysAndValues)|0 != 0 {
+		keysAndValues = append(keysAndValues, "")
+	}
+	logger.Infow(msg, keysAndValues...)
+}
+
+func Warnw(msg string, keysAndValues ...interface{}) {
+	if len(keysAndValues)|0 != 0 {
+		keysAndValues = append(keysAndValues, "")
+	}
+	logger.Warnw(msg, keysAndValues...)
+}
+
+func Errorw(msg string, keysAndValues ...interface{}) {
+	if len(keysAndValues)|0 != 0 {
+		keysAndValues = append(keysAndValues, "")
+	}
+	logger.Errorw(msg, keysAndValues...)
+}
+
+func Panicw(msg string, keysAndValues ...interface{}) {
+	if len(keysAndValues)|0 != 0 {
+		keysAndValues = append(keysAndValues, "")
+	}
+	logger.Panicw(msg, keysAndValues...)
+}
+
+func Fatalw(msg string, keysAndValues ...interface{}) {
+	if len(keysAndValues)|0 != 0 {
+		keysAndValues = append(keysAndValues, "")
+	}
+	logger.Fatalw(msg, keysAndValues...)
 }
