@@ -9,7 +9,7 @@ import (
 )
 
 type serverConfig struct {
-	HttpPort     string
+	Port     string
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
 
