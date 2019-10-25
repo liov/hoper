@@ -26,36 +26,36 @@ message User {
     uint64 ID = 1;
     string name = 2;
     google.protobuf.Timestamp activatedAt = 3;
-    string account =4;
+    string account = 4;
     string password = 5;
     string email = 6;
     string phone = 7;
     string sex = 8;
     google.protobuf.Timestamp birthday = 9;
-    string introduction =10;
+    string introduction = 10;
     uint64 score = 11;
     string signature = 12;
     uint32 role = 13;
-    string avatarURL =14;
+    string avatarURL = 14;
     string coverURL = 15;
     string address = 16;
-    string location =17;
-   google.protobuf.Timestamp UpdatedAt = 18;
-   google.protobuf.Timestamp BannedAt = 19;
-   google.protobuf.Timestamp CreatedAt = 20;
-   google.protobuf.Timestamp LastActivatedAt = 21;
-    string LastName =22;
+    string location = 17;
+    google.protobuf.Timestamp UpdatedAt = 18;
+    google.protobuf.Timestamp BannedAt = 19;
+    google.protobuf.Timestamp CreatedAt = 20;
+    google.protobuf.Timestamp LastActivatedAt = 21;
+    string LastName = 22;
     uint32 status = 23;
 }
 
-message Resume  {
+message Resume {
     uint64 ID = 1;
     uint32 kind = 2;
     string school = 3;
-    string  speciality  =4;
-    google.protobuf.Timestamp startTime =5;
-    google.protobuf.Timestamp endTime =6;
-    uint64  userID = 7;
+    string speciality = 4;
+    google.protobuf.Timestamp startTime = 5;
+    google.protobuf.Timestamp endTime = 6;
+    uint64 userID = 7;
     uint32 status = 8;
 }
 
@@ -73,15 +73,14 @@ message SignupReq {
 message LoginReq {
     string input = 1;
     string password = 2;
-    string luosimaoRes = 3;
 }
 
-message EditReq{
-
+message EditReq {
+    uint64 ID = 1;
 }
 
-message EditRep{
-
+message EditRep {
+    uint64 ID = 1;
 }
 
 message LoginRep {

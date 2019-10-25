@@ -1,11 +1,15 @@
 package controller
 
 import (
+	"context"
 	"net/http"
+	"time"
 
-	"github.com/kataras/iris/context"
-	"github.com/liov/hoper/go/v2/gateway/internal/api/request"
+	"github.com/kataras/iris"
+	"github.com/liov/hoper/go/v2/gateway/internal/client"
 	"github.com/liov/hoper/go/v2/gateway/internal/service"
+	"github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/utils/log"
 )
 
 type UserController struct{
@@ -20,10 +24,16 @@ func (u *UserController) Add() {
 		auth("jyb"),
 		version(1),
 		handle(
-			func(ctx context.Context) {
-				var req request.AddUserReq
+			func(ctx iris.Context) {
+				var req user.SignupReq
 				ctx.ReadJSON(&req)
-				userService.Add(&req)
+				gctx, cancel := context.WithTimeout(context.Background(), time.Second)
+				defer cancel()
+				rep,err:=client.UserClient.Signup(gctx,&req)
+				if err != nil {
+					log.Errorf("could not greet: %v", err)
+				}
+				ctx.JSON(rep)
 			}),
 	)
 
@@ -37,7 +47,7 @@ func (u *UserController) Get() {
 		auth("jyb"),
 		version(1),
 		handle(
-			func(ctx context.Context) {
+			func(ctx iris.Context) {
 				ctx.Writef("返回")
 			}),
 	)
