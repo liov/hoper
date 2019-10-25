@@ -20,11 +20,6 @@ UploadPath = "/static/upload"
 # MB
 UploadMaxSize = 5
 UploadAllowExt = [".jpg",".jpeg",".png",".gif"]
-#日志
-LogSavePath = "../../static/logs"
-LogSaveName = "log"
-LogFileExt = "log"
-TimeFormat = "20060102"
 
 #邮件
 MailHost = "smtp.qq.com"
@@ -56,13 +51,8 @@ MaxIdleConns = 5
 MaxOpenConns = 10
 
 [redis]
-Host = "hoper.xyz"
-Port = 6379
+Addr = "hoper.xyz:6379"
 Password =""
 MaxIdle = 30
 MaxActive = 30
 IdleTimeout = 200
-
-[mongodb]
-URL =""
-Database =""

@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/liov/hoper/go/v2/initialize"
+	"github.com/liov/hoper/go/v2/utils/fs"
 )
 
 type serverConfig struct {
-	Env          string
 	HttpPort     string
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
@@ -55,13 +55,14 @@ var MongoSettings = &MongoConfig{}*/
 
 type config struct {
 	//必须
-	Env      string
+	Module string
+	Env    string
+	Volume fs.Dir
 	//自定义的配置
 	Server   serverConfig
 	Flag     flagValue
 	Database initialize.DatabaseConfig
 	Redis    initialize.RedisConfig
-	Mongo    initialize.MongoConfig
 	Log      initialize.LogConfig
 }
 

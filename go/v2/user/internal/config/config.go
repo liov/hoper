@@ -1,7 +1,6 @@
 package config
 
 import (
-	"net/http"
 	"runtime"
 	"time"
 
@@ -52,7 +51,7 @@ type config struct {
 	//必须
 	Module string
 	Env    string
-	Volume http.Dir
+	Volume fs.Dir
 
 	//自定义的配置
 	Server serverConfig

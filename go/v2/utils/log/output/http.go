@@ -1,4 +1,4 @@
-package log
+package output
 
 import (
 	"encoding/json"
@@ -16,14 +16,12 @@ type LoggerCall struct {
 	CallMan   []string //手机号
 }
 
-func (th *LoggerCall) Fire(e *zapcore.Entry) error {
-	if e.Level < th.HookLevel {
-		return nil
-	}
+func (th *LoggerCall) Write(b []byte) (n int, err error) {
+
 	if len(th.HookURL) == 0 {
-		return errors.New("无效的URL")
+		return 0,errors.New("无效的URL")
 	}
-	b := e.Message
+
 	hookBody := map[string]interface{}{
 		"msgtype": "markdown",
 		"markdown": map[string]string{
@@ -37,19 +35,19 @@ func (th *LoggerCall) Fire(e *zapcore.Entry) error {
 	}
 	bodyByte, err := json.Marshal(hookBody)
 	if nil != err {
-		return err
+		return 0,err
 	}
 	body := strings.NewReader(string(bodyByte))
 	var resp *http.Response
 	for i := range th.HookURL {
 		resp, err = http.Post(th.HookURL[i], "application/json", body)
 		if err != nil {
-			return err
+			return 0,err
 		}
 		if resp.StatusCode != http.StatusOK {
-			return errors.New(e.Message)
+			return 0,errors.New("上报出错")
 		}
 	}
 	defer resp.Body.Close()
-	return nil
+	return 0,nil
 }

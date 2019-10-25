@@ -40,7 +40,7 @@ func Start(conf needInit, dao needInit) {
 		if strings.Contains(noInit, typeOf.Method(i).Name[2:]) {
 			continue
 		}
-		if res:=value.Method(i).Call(nil);res!=nil && len(res)>0{
+		if res:=value.Method(i).Call(nil);dao!=nil && res!=nil && len(res)>0{
 			daoValue:= reflect.ValueOf(dao).Elem()
 			for j := range res{
 				if res[j].IsValid(){

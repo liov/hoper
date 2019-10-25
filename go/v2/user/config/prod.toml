@@ -61,9 +61,8 @@ IdleTimeout = 200
 #日志
 [log]
 Level = 0
-SaveDir = "/logs"
-TimeFormat = "20060102"
-OutputPaths = ["stdout"]
+Skip = true
+OutputPaths = {consele = ["stderr"],json = []}
 
 #邮件
 [mail]

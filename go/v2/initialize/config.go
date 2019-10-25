@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/jinzhu/configor"
-	"github.com/liov/hoper/go/v2/utils/fs"
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
@@ -60,17 +59,16 @@ type ElasticConfig struct {
 }
 
 type NsqConfig struct {
-	Addr string
+	Addr    string
 	Model   int8 //0生产者，1消费者，2所有
 	Topic   string
 	Channel string
 }
 
-
 type LogConfig struct {
-	Level          int8
-	SaveDir        fs.Dir
-	OutputPaths    []string //日志文件路径
+	Level       int8
+	Skip        bool
+	OutputPaths map[string][]string
 }
 
 type MailConfig struct {
@@ -81,8 +79,8 @@ type MailConfig struct {
 }
 
 type KafkaConfig struct {
-	Model int8 //0生产者，1消费者，2所有
-	Topic string
+	Model    int8 //0生产者，1消费者，2所有
+	Topic    string
 	ProdAddr []string
 	ConsAddr []string
 }
