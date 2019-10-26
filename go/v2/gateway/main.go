@@ -45,7 +45,7 @@ Loop:
 		default:
 			// listen and serve on https://0.0.0.0:8000.
 			//if err := irisRouter.Run(iris.TLS(initialize.config.Server.HttpPort, "../../config/tls/cert.pem", "../../config/tls/cert.key"),
-			if err := app.Run(iris.Addr(config.Conf.Server.HttpPort, func(su *host.Supervisor) {
+			if err := app.Run(iris.Addr(config.Conf.Server.Port, func(su *host.Supervisor) {
 				su.Server.WriteTimeout = config.Conf.Server.WriteTimeout
 				su.Server.ReadTimeout = config.Conf.Server.ReadTimeout
 			}), iris.WithConfiguration(iris.YAML("./config/iris.yml"))); err != nil && err != http.ErrServerClosed {
