@@ -7,7 +7,6 @@ import (
 
 	"github.com/kataras/iris"
 	"github.com/liov/hoper/go/v2/gateway/internal/client"
-	"github.com/liov/hoper/go/v2/gateway/internal/service"
 	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/utils/log"
 )
@@ -15,10 +14,10 @@ import (
 type UserController struct{
 	Controller
 }
-var userService = &service.UserService{}
+
 func (u *UserController) Add() {
 	u.api(
-		path(""),
+		path("/user"),
 		method(http.MethodPost),
 		describe("新增用户"),
 		auth("jyb"),
@@ -27,9 +26,9 @@ func (u *UserController) Add() {
 			func(ctx iris.Context) {
 				var req user.SignupReq
 				ctx.ReadJSON(&req)
-				gctx, cancel := context.WithTimeout(context.Background(), time.Second)
+				gctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 				defer cancel()
-				rep,err:=client.UserClient.Signup(gctx,&req)
+				rep,err:=client.Client.UserClient.Signup(gctx,&req)
 				if err != nil {
 					log.Errorf("could not greet: %v", err)
 				}
@@ -41,7 +40,7 @@ func (u *UserController) Add() {
 
 func (u *UserController) Get() {
 	u.api(
-		path("/:id"),
+		path("/user/:id"),
 		method(http.MethodGet),
 		describe("get"),
 		auth("jyb"),

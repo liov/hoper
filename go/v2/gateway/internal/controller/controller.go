@@ -9,7 +9,8 @@ import (
 
 type Controller struct {
 	apiInfo
-	App iris.Party
+	App *iris.Application
+	Middle []iris.Handler
 }
 
 type apiInfo struct {
@@ -54,10 +55,10 @@ func version(v int) apiParam {
 
 func handle(h ...iris.Handler) apiParam {
 	return func(c *Controller) {
-		//"/api"的长度
-		path := c.App.GetRelPath()[:4]+"/v"+strconv.Itoa(c.version)+c.App.GetRelPath()[4:] +c.path
-		c.App.Handle(c.apiInfo.method, path, h...)
-		log.NoCall.Infof("api: %s \t path:%s", c.apiInfo.describe, path)
+		path :="/api/v"+strconv.Itoa(c.version) + c.path
+		handles := append(c.Middle,h...)
+		c.App.Handle(c.apiInfo.method, path, handles...)
+		log.NoCall.Infof("method:%s api:%s \t uri:%s", c.apiInfo.method, c.apiInfo.describe, path)
 	}
 }
 
