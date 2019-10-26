@@ -5,7 +5,7 @@ package user;
 
 service UserService {
 
-    rpc Signup (SignupReq) returns (LoginRep) {
+    rpc Signup (SignupReq) returns (SignupRep) {
     }
 
     rpc Edit (EditReq) returns (EditRep) {
@@ -24,6 +24,7 @@ service UserService {
 // The request message containing the user's name.
 message User {
     uint64 ID = 1;
+    // @inject_tag: gorm:"not_null"
     string name = 2;
     google.protobuf.Timestamp activatedAt = 3;
     string account = 4;
@@ -68,6 +69,15 @@ message SignupReq {
     string password = 4;
     string email = 5;
     string phone = 6;
+}
+
+message SignupRep {
+    // code
+    int32 code = 1;
+    // msg
+    string msg = 2;
+
+    User data = 3;
 }
 
 message LoginReq {
