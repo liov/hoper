@@ -1,0 +1,7 @@
+syntax = "proto3";
+option go_package = "github.com/liov/hoper/go/v2/utils/time";
+package time;
+
+message Time {
+    int64 t = 1;
+}

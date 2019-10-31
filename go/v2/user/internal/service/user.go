@@ -4,15 +4,14 @@ import (
 	"context"
 	"time"
 
-	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/utils/time2"
 )
 
 type UserService struct {}
 
 func (u *UserService) Signup(ctx context.Context, in *user.SignupReq) (*user.SignupRep, error) {
-	now:=time.Now()
-	return &user.SignupRep{Code:0,Data:&user.User{ActivatedAt:&timestamp.Timestamp{Seconds:int64(now.Second()),Nanos:int32(now.Nanosecond())}},Msg:"test"}, nil
+	return &user.SignupRep{Code:0,Data:&user.User{ActivatedAt:time2.Time2(time.Now())},Msg:"test"}, nil
 }
 
 func (u *UserService) Edit(context.Context, *user.EditReq) (*user.EditRep, error) {
