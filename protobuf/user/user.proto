@@ -1,7 +1,12 @@
 syntax = "proto3";
-import public "google/protobuf/timestamp.proto";
 package user;
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
+option (gogoproto.goproto_enum_prefix_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
 
 service UserService {
 
@@ -26,13 +31,13 @@ message User {
     uint64 ID = 1;
     // @inject_tag: gorm:"not_null"
     string name = 2;
-    google.protobuf.Timestamp activatedAt = 3;
+    int64 activatedAt = 3 [(gogoproto.casttype) = "github.com/liov/hoper/go/v2/utils/time2.Time"];
     string account = 4;
     string password = 5;
     string email = 6;
     string phone = 7;
     string sex = 8;
-    google.protobuf.Timestamp birthday = 9;
+    int64 birthday = 9 [(gogoproto.casttype) = "github.com/liov/hoper/go/v2/utils/time2.Time"];
     string introduction = 10;
     uint64 score = 11;
     string signature = 12;
@@ -41,11 +46,11 @@ message User {
     string coverURL = 15;
     string address = 16;
     string location = 17;
-    google.protobuf.Timestamp UpdatedAt = 18;
-    google.protobuf.Timestamp BannedAt = 19;
-    google.protobuf.Timestamp CreatedAt = 20;
-    google.protobuf.Timestamp LastActivatedAt = 21;
-    string LastName = 22;
+    int64 updatedAt = 18 [(gogoproto.casttype) = "github.com/liov/hoper/go/v2/utils/time2.Time"];
+    int64 bannedAt = 19 [(gogoproto.casttype) = "github.com/liov/hoper/go/v2/utils/time2.Time"];
+    int64 createdAt = 20 [(gogoproto.casttype) = "github.com/liov/hoper/go/v2/utils/time2.Time"];
+    int64 lastActivatedAt = 21 [(gogoproto.casttype) = "github.com/liov/hoper/go/v2/utils/time2.Time"];
+    string lastName = 22;
     uint32 status = 23;
 }
 
@@ -54,8 +59,8 @@ message Resume {
     uint32 kind = 2;
     string school = 3;
     string speciality = 4;
-    google.protobuf.Timestamp startTime = 5;
-    google.protobuf.Timestamp endTime = 6;
+    int64 startTime = 5 [(gogoproto.casttype) = "github.com/liov/hoper/go/v2/utils/time2.Time"];
+    int64 endTime = 6 [(gogoproto.casttype) = "github.com/liov/hoper/go/v2/utils/time2.Time"];
     uint64 userID = 7;
     uint32 status = 8;
 }
