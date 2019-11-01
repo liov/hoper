@@ -28,7 +28,7 @@
         <grpc.version>1.25.0-SNAPSHOT</grpc.version><!-- CURRENT_GRPC_VERSION -->
         <protobuf.version>3.9.0</protobuf.version>
         <protoc.version>3.9.0</protoc.version>
-        <java.version>11</java.version>
+        <java.version>12</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>

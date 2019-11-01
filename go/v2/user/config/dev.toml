@@ -24,8 +24,6 @@ UploadDir = "/upload"
 UploadMaxSize = 5
 UploadAllowExt = [".jpg",".jpeg",".png",".gif"]
 
-
-
 LuosimaoVerifyURL ="https://captcha.luosimao.com/api/site_verify"
 LuosimaoAPIKey ="f4a1c65ee13911b7bb9f902655c773a6"
 
@@ -50,8 +48,7 @@ MaxIdleConns = 5
 MaxOpenConns = 10
 
 [redis]
-Host = "hoper.xyz"
-Port = 6379
+Addr = "hoper.xyz:6379"
 Password =""
 MaxIdle = 30
 MaxActive = 30
