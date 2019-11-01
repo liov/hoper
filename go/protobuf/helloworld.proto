@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "xyz.hoper.protobuf";
+option java_outer_classname = "HelloWorld";
+
+package protobuf;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+// The greeting service definition.
+service Greeter {
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+}
+
+// The request message containing the user's name.
+message HelloRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings
+message HelloReply {
+  int64 time = 1 [(gogoproto.casttype) = "github.com/liov/hoper/go/v2/utils/time2.Time"];
+}

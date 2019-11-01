@@ -6,13 +6,15 @@ import xyz.hoper.protobuf.GreeterGrpc;
 import xyz.hoper.protobuf.HelloReply;
 import xyz.hoper.protobuf.HelloRequest;
 
+import java.util.Date;
+
 @GrpcService
 public class HelloWorldService extends GreeterGrpc.GreeterImplBase {
 
     @Override
     public void sayHello(HelloRequest request, StreamObserver<HelloReply> responseObserver) {
         HelloReply.Builder helloReplyOrBuilder = HelloReply.newBuilder();
-        helloReplyOrBuilder.setMessage("java " + request.getName());
+        helloReplyOrBuilder.setTime(new Date().getTime());
         responseObserver.onNext(helloReplyOrBuilder.build());
         responseObserver.onCompleted();
     }
