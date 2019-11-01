@@ -1,6 +1,6 @@
 package config
 
-func CustomInit() {
+func Init() {
 
 }
 
