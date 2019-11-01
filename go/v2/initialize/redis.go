@@ -12,6 +12,7 @@ func (i *Init) P2Redis() *redis.Pool {
 	if exist := reflect3.GetFieldValue(i.conf,&conf);!exist{
 		return nil
 	}
+	conf.IdleTimeout = conf.IdleTimeout * time.Second
 	return &redis.Pool{
 		MaxIdle:     conf.MaxIdle,
 		MaxActive:   conf.MaxActive,

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/jinzhu/configor"
+	"github.com/liov/hoper/go/v2/utils/fs"
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
@@ -32,6 +33,12 @@ func (i *Init) config() {
 	i.conf.Custom()
 }
 
+type BasicConfig struct {
+	Module     string
+	Env        string
+	Volume     fs.Dir
+}
+
 type DatabaseConfig struct {
 	Type         string
 	User         string
@@ -42,7 +49,7 @@ type DatabaseConfig struct {
 	TablePrefix  string
 	MaxIdleConns int
 	MaxOpenConns int
-	Port         int
+	Port         int32
 }
 
 type RedisConfig struct {
@@ -55,7 +62,7 @@ type RedisConfig struct {
 
 type ElasticConfig struct {
 	Host string
-	Port int
+	Port int32
 }
 
 type NsqConfig struct {
