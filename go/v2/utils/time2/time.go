@@ -38,7 +38,7 @@ func (t Time) Time() time.Time {
 }
 
 func Time2(t time.Time) Time {
-	return Time(t.Unix()*1000 + t.UnixNano()/1e6)
+	return Time(t.UnixNano()/1e6)
 }
 
 func (t Time) MarshalJSON() ([]byte, error) {

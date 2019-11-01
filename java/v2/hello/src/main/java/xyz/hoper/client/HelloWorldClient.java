@@ -9,18 +9,20 @@ import xyz.hoper.protobuf.GreeterGrpc;
 import xyz.hoper.protobuf.HelloReply;
 import xyz.hoper.protobuf.HelloRequest;
 
+import javax.annotation.PostConstruct;
+
 @Component
 @Log4j2
 public class HelloWorldClient {
-    @Value("${grpc.server.host}")
+    @Value("${grpc.client.host}")
     private String host;
-    @Value("${grpc.server.port}")
+    @Value("${grpc.client.port}")
     private Integer port;
 
     @Autowired
     private GrpcClientMananer grpcClientMananer;
 
-    //@PostConstruct
+    @PostConstruct
     public void init() {
         call();
     }
@@ -30,6 +32,6 @@ public class HelloWorldClient {
         GreeterGrpc.GreeterBlockingStub stub = GreeterGrpc.newBlockingStub(channel);
         HelloRequest request = HelloRequest.newBuilder().setName("world").build();
         HelloReply helloReply = stub.sayHello(request);
-        log.info(helloReply.getMessage());
+        log.info("time: "+ helloReply.getTime());
     }
 }
