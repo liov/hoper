@@ -15,6 +15,7 @@ func (i *Init) P2Elastic() *elastic.Client {
 	if err!=nil{
 		log.Error(err)
 	}
+	//closes = append(closes,client.Stop)
 	return client
 }
 

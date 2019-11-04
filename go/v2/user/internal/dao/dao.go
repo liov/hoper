@@ -5,7 +5,6 @@ import (
 
 	"github.com/bluele/gcache"
 	"github.com/etcd-io/bbolt"
-	"github.com/globalsign/mgo"
 	"github.com/gomodule/redigo/redis"
 	"github.com/jinzhu/gorm"
 	"github.com/liov/hoper/go/v2/utils/db/gormCallback"
@@ -22,8 +21,6 @@ type dao struct {
 	Bolt *bbolt.DB
 	// RedisPool Redis连接池
 	Redis *redis.Pool
-	// MongoDB 数据库连接
-	Mongo       *mgo.Database
 	RedisExpire int32
 	Cache       gcache.Cache
 	McExpire    int32
@@ -41,9 +38,6 @@ func (d *dao) Close() {
 	}
 	if d.DB != nil {
 		d.DB.Close()
-	}
-	if d.Mongo != nil {
-		d.Mongo.Session.Close()
 	}
 }
 

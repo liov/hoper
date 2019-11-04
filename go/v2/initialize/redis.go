@@ -13,7 +13,7 @@ func (i *Init) P2Redis() *redis.Pool {
 		return nil
 	}
 	conf.IdleTimeout = conf.IdleTimeout * time.Second
-	return &redis.Pool{
+	pool:= &redis.Pool{
 		MaxIdle:     conf.MaxIdle,
 		MaxActive:   conf.MaxActive,
 		IdleTimeout: conf.IdleTimeout,
@@ -36,4 +36,6 @@ func (i *Init) P2Redis() *redis.Pool {
 			return err
 		},
 	}
+	//closes = append(closes,pool.Close)
+	return pool
 }

@@ -40,8 +40,7 @@ func (i *Init) P2DB() *gorm.DB {
 	}
 	db, err := gorm.Open(conf.Type, url)
 	if err != nil {
-		log.Error(err)
-		os.Exit(10)
+		log.Fatal(err)
 	}
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
 		return conf.TablePrefix + defaultTableName
@@ -55,6 +54,9 @@ func (i *Init) P2DB() *gorm.DB {
 	db.SingularTable(true)
 	db.DB().SetMaxIdleConns(conf.MaxIdleConns)
 	db.DB().SetMaxOpenConns(conf.MaxOpenConns)
+
+	//i.closes = append(i.closes,db.Close)
+	//closes = append(closes, func() {log.Info("数据库已关闭")})
 	return db
 }
 

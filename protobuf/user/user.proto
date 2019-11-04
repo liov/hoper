@@ -1,0 +1,106 @@
+syntax = "proto3";
+package user;
+
+service UserService {
+
+    rpc Signup (SignupReq) returns (SignupRep) {
+    }
+
+    rpc Edit (EditReq) returns (EditRep) {
+    }
+
+    rpc Login (LoginReq) returns (LoginRep) {
+    }
+
+    rpc Logout (LogoutReq) returns (LogoutRep) {
+    }
+
+    rpc GetUser (GetReq) returns (User) {
+    }
+}
+
+// The request message containing the user's name.
+message User {
+    uint64 ID = 1;
+    // @inject_tag: gorm:"not_null"
+    string name = 2;
+    string activatedAt = 3 ;
+    string account = 4;
+    string password = 5;
+    string email = 6;
+    string phone = 7;
+    string sex = 8;
+    string birthday = 9 ;
+    string introduction = 10;
+    uint64 score = 11;
+    string signature = 12;
+    uint32 role = 13;
+    string avatarURL = 14;
+    string coverURL = 15;
+    string address = 16;
+    string location = 17;
+    string updatedAt = 18 ;
+    string bannedAt = 19 ;
+    int64 createdAt = 20 ;
+    string lastActivatedAt = 21 ;
+    string lastName = 22;
+    uint32 status = 23;
+}
+
+message Resume {
+    uint64 ID = 1;
+    uint32 kind = 2;
+    string school = 3;
+    string speciality = 4;
+    string startTime = 5 ;
+    string endTime = 6 ;
+    uint64 userID = 7;
+    uint32 status = 8;
+}
+
+message GetReq {
+    uint64 ID = 1;
+}
+
+message SignupReq {
+    string name = 2;
+    string password = 4;
+    string email = 5;
+    string phone = 6;
+}
+
+message SignupRep {
+    // code
+    int32 code = 1;
+    // msg
+    string msg = 2;
+
+    User data = 3;
+}
+
+message LoginReq {
+    string input = 1;
+    string password = 2;
+}
+
+message EditReq {
+    uint64 ID = 1;
+}
+
+message EditRep {
+    uint64 ID = 1;
+}
+
+message LoginRep {
+    string token = 1;
+    User user = 2;
+    string msg = 3;
+}
+
+message LogoutReq {
+    uint64 ID = 1;
+}
+
+message LogoutRep {
+    string msg = 1;
+}

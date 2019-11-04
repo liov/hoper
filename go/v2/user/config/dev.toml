@@ -40,6 +40,7 @@ User = "postgres"
 Password = "123456"
 Host = "hoper.xyz"
 #Port = 3306
+TimeFormat = "2006-01-02 15:04:05.999"
 Port = 5432
 Charset = "utf8"
 Database = "hoper_test"

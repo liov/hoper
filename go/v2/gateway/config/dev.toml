@@ -56,3 +56,9 @@ Password =""
 MaxIdle = 30
 MaxActive = 30
 IdleTimeout = 200
+
+#日志
+[log]
+Level = 0
+Skip = true
+OutputPaths = {console = ["stderr"],json = []}

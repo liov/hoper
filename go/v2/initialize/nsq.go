@@ -18,6 +18,7 @@ func (i *Init) P2NSQ() (*nsq.Producer,*nsq.Consumer) {
 		if err != nil {
 			panic(err)
 		}
+		//closes = append(closes,producer.Stop)
 		return producer,nil
 	}
 	if conf.Model == 1 || conf.Model == 2 {
@@ -42,6 +43,7 @@ func (i *Init) P2NSQ() (*nsq.Producer,*nsq.Consumer) {
 			 panic(err)
 			}
 			<-c.StopChan*/
+		//closes = append(closes,customer.Stop)
 		return nil,customer
 	}
 	return nil ,nil

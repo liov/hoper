@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"net/http"
 	"os"
 	"os/signal"
@@ -24,9 +23,7 @@ func main() {
 
 	trace.Start(f)
 	defer trace.Stop()*/
-	flag.Parse()
-	defer log.Sync()
-	initialize.Start(config.Conf,nil)
+	defer initialize.Start(config.Conf,nil)()
 	app := router.App()
 	ch := make(chan os.Signal, 1)
 Loop:
