@@ -11,7 +11,7 @@ import (
 type UserService struct {}
 
 func (u *UserService) Signup(ctx context.Context, in *user.SignupReq) (*user.SignupRep, error) {
-	return &user.SignupRep{Code:0,Data:&user.User{ActivatedAt:time2.Time2(time.Now())},Msg:"test"}, nil
+	return &user.SignupRep{Code:0,Data:&user.User{ActivatedAt:time2.Format(time.Now())},Msg:"test"}, nil
 }
 
 func (u *UserService) Edit(context.Context, *user.EditReq) (*user.EditRep, error) {

@@ -1,14 +1,11 @@
 package config
 
 import (
-	"os"
 	"runtime"
 	"time"
 
-	"github.com/jinzhu/configor"
 	"github.com/liov/hoper/go/v2/initialize"
 	"github.com/liov/hoper/go/v2/utils/fs"
-	"github.com/liov/hoper/go/v2/utils/log"
 )
 
 type serverConfig struct {
@@ -75,15 +72,6 @@ func (d *duration) UnmarshalText(text []byte) error {
 }
 
 func (c *config) Custom() {
-	if c.Flag.Additional != ""{
-		err := configor.New(&configor.Config{Debug: c.Env != initialize.PRODUCT}).
-			Load(c, c.Flag.Additional)
-		if err != nil {
-			log.Errorf("配置错误: %v", err)
-			os.Exit(10)
-		}
-	}
-
 	if runtime.GOOS == "windows" {
 		c.Server.LuosimaoAPIKey = ""
 		if c.Flag.Password != "" {

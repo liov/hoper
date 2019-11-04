@@ -26,6 +26,7 @@ func (i *Init) P2Kafka() (sarama.SyncProducer,sarama.Consumer){
 		if err != nil {
 			log.Info(err)
 		}
+		//closes = append(closes,producer.Close)
 		return producer,nil
 	}
 	if conf.Model == 1 || conf.Model ==2 {
@@ -33,6 +34,7 @@ func (i *Init) P2Kafka() (sarama.SyncProducer,sarama.Consumer){
 		if err != nil {
 			log.Info(err)
 		}
+		//closes = append(closes,consumer.Close)
 		return nil,consumer
 	}
 	return nil,nil
