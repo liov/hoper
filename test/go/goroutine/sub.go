@@ -12,7 +12,7 @@ func main(){
  wg.Wait()
 }
 
-func sub1(wg *sync.WaitGroup)  {
+func sub1(wg *sync.WaitGroup) string {
 	go sub2(wg)
 	fmt.Println("sub1执行完毕")
 }

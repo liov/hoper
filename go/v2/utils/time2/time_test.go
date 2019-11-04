@@ -6,6 +6,6 @@ import (
 )
 
 func TestTime2(t *testing.T) {
-	var tm Time = 1572505560772
+	var tm Time = 1572838282583
 	fmt.Println(tm.Time())
 }

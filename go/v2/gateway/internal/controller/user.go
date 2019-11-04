@@ -23,16 +23,16 @@ func (u *UserController) Add() {
 		auth("jyb"),
 		version(1),
 		handle(
-			func(ctx iris.Context) {
+			func(c iris.Context) {
 				var req user.SignupReq
-				ctx.ReadJSON(&req)
-				gctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+				c.ReadJSON(&req)
+				ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 				defer cancel()
-				rep,err:=client.Client.UserClient.Signup(gctx,&req)
+				rep,err:=client.Client.UserClient.Signup(ctx,&req)
 				if err != nil {
 					log.Errorf("could not greet: %v", err)
 				}
-				ctx.JSON(rep)
+				c.JSON(rep)
 			}),
 	)
 
@@ -46,8 +46,32 @@ func (u *UserController) Get() {
 		auth("jyb"),
 		version(1),
 		handle(
-			func(ctx iris.Context) {
-				ctx.Writef("返回")
+			func(c iris.Context) {
+				id:= c.Params().GetUint64Default("id",0)
+				ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+				defer cancel()
+				rep,err:=client.Client.UserClient.GetUser(ctx,&user.GetReq{ID:id})
+				if err != nil {
+					log.Errorf("could not greet: %v", err)
+				}
+				c.JSON(rep)
+			}),
+	)
+}
+
+func (u *UserController) Shutdown() {
+	u.api(
+		path("/shutdown"),
+		method(http.MethodGet),
+		describe("get"),
+		auth("jyb"),
+		version(1),
+		handle(
+			func(c iris.Context) {
+				ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+				defer cancel()
+				u.App.Shutdown(ctx)
+				c.WriteString("重启了")
 			}),
 	)
 }

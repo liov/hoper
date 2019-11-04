@@ -3,3 +3,4 @@ NoInit = ["Cache","Mail"]
 Module = "user"
 #dev | test | prod
 Env = "dev"
+Additional  = "./config/add-config.toml"

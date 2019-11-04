@@ -1,3 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 additional-config.toml
 add-config.toml
+v2/protobuf
+*.pb.go
+*.pb.gw.go
+*.micro.go

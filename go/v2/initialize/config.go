@@ -2,7 +2,6 @@ package initialize
 
 import (
 	"flag"
-	"os"
 	"time"
 
 	"github.com/jinzhu/configor"
@@ -27,16 +26,22 @@ func (i *Init) config() {
 	err = configor.New(&configor.Config{Debug: i.Env != PRODUCT}).
 		Load(i.conf, confUrl+PathSeparator+"config"+ext, confUrl+PathSeparator+i.Env+ext) //"./config/{{env}}.toml"
 	if err != nil {
-		log.Errorf("配置错误: %v", err)
-		os.Exit(10)
+		log.Fatalf("配置错误: %v", err)
+	}
+	if i.Additional!= "" {
+		err := configor.New(&configor.Config{Debug: i.Env != PRODUCT}).
+			Load(i.conf, i.Additional)
+		if err != nil {
+			log.Fatalf("配置错误: %v", err)
+		}
 	}
 	i.conf.Custom()
 }
 
 type BasicConfig struct {
-	Module     string
-	Env        string
-	Volume     fs.Dir
+	Module string
+	Env    string
+	Volume fs.Dir
 }
 
 type DatabaseConfig struct {
@@ -46,6 +51,7 @@ type DatabaseConfig struct {
 	Host         string
 	Charset      string
 	Database     string
+	TimeFormat   string
 	TablePrefix  string
 	MaxIdleConns int
 	MaxOpenConns int

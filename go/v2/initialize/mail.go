@@ -32,6 +32,6 @@ func (i *Init) P3Mail() *smtp.Client {
 			}
 		}
 	}
-
+	//closes = append(closes,client.Quit)
 	return client
 }
