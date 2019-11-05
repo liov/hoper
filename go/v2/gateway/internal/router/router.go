@@ -10,16 +10,17 @@ import (
 
 func route(app *iris.Application) {
 	//params:控制器,控制器公共的url路径，公共中间件
-	newController :=func(c interface{},handlers ...context.Handler) interface{} {
-		value:=reflect.ValueOf(c)
-		if value.Kind() != reflect.Ptr{
+	newController := func(c interface{}, handlers ...context.Handler) interface{} {
+		value := reflect.ValueOf(c)
+		if value.Kind() != reflect.Ptr {
 			panic("必须传入指针")
 		}
 		value = value.Elem()
-		if value.NumField() > 1{
+		if value.NumField() > 1 {
 			panic("传入controller不合法")
 		}
-		value.Field(0).Set(reflect.ValueOf(controller.Controller{App:app,Middle:handlers}))
+		handler := controller.Handler{ApiInfo: &controller.ApiInfo{}, App: app}
+		value.Field(0).Set(reflect.ValueOf(controller.Controller{Handler: &handler, Middle: handlers}))
 		return c
 	}
 	//controller注册
@@ -29,14 +30,16 @@ func route(app *iris.Application) {
 	register(ctrl)
 }
 
-
-
-
 func register(ctrl []interface{}) {
-	for _,c:=range ctrl{
-		value := reflect.ValueOf(c)
-		for i := 0; i < value.NumMethod(); i++ {
-			value.Method(i).Call(nil)
+	for i := range ctrl {
+		value := reflect.ValueOf(ctrl[i])
+		for j := 0; j < value.NumMethod(); j++ {
+			value.Method(j).Call(nil)
+		}
+		c := value.Elem().Field(0).Interface().(controller.Controller)
+		c.Middle = nil
+		if i == len(ctrl) - 1 {
+			c.ApiInfo = nil
 		}
 	}
 }

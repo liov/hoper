@@ -1,19 +1,25 @@
 package controller
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/kataras/iris"
-	"github.com/liov/hoper/go/v2/utils/log"
+	"github.com/kataras/pio"
+	"github.com/liov/hoper/go/v2/utils/strings2"
 )
 
 type Controller struct {
-	apiInfo
-	App *iris.Application
+	*Handler
 	Middle []iris.Handler
 }
+//时间换空间
+type Handler struct {
+	*ApiInfo
+	App *iris.Application
+}
 
-type apiInfo struct {
+type ApiInfo struct {
 	path     string
 	version  int
 	method   string
@@ -57,8 +63,11 @@ func handle(h ...iris.Handler) apiParam {
 	return func(c *Controller) {
 		path :="/api/v"+strconv.Itoa(c.version) + c.path
 		handles := append(c.Middle,h...)
-		c.App.Handle(c.apiInfo.method, path, handles...)
-		log.NoCall.Infof("method:%s api:%s \t uri:%s", c.apiInfo.method, c.apiInfo.describe, path)
+		c.App.Handle(c.ApiInfo.method, path, handles...)
+		fmt.Printf(" %s\t %s %s\t %s\n",
+			pio.Purple("API:"),
+			pio.Yellow(strings2.FormatLen(c.ApiInfo.method,6)),
+			pio.Blue(path,), pio.Gray(c.ApiInfo.describe))
 	}
 }
 

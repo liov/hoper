@@ -42,7 +42,7 @@ func (u *UserController) Get() {
 	u.api(
 		path("/user/:id"),
 		method(http.MethodGet),
-		describe("get"),
+		describe("获取用户信息"),
 		auth("jyb"),
 		version(1),
 		handle(
