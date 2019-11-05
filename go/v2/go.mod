@@ -8,6 +8,7 @@ require (
 	github.com/Shopify/sarama v1.24.0
 	github.com/aymerick/raymond v2.0.2+incompatible // indirect
 	github.com/bluele/gcache v0.0.0-20190518031135-bc40bd653833
+	github.com/bytedance/go-tagexpr v2.5.0+incompatible // indirect
 	github.com/eknkc/amber v0.0.0-20171010120322-cdade1c07385 // indirect
 	github.com/etcd-io/bbolt v1.3.3
 	github.com/fatih/structs v1.1.0 // indirect
@@ -21,6 +22,7 @@ require (
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/gorilla/schema v1.1.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.11.2
+	github.com/henrylee2cn/goutil v0.0.0-20191029125303-21920e347847 // indirect
 	github.com/iris-contrib/blackfriday v2.0.0+incompatible // indirect
 	github.com/iris-contrib/formBinder v5.0.0+incompatible // indirect
 	github.com/iris-contrib/go.uuid v2.0.0+incompatible // indirect
@@ -29,7 +31,7 @@ require (
 	github.com/json-iterator/go v1.1.7
 	github.com/kataras/golog v0.0.0-20190624001437-99c81de45f40
 	github.com/kataras/iris v11.1.1+incompatible
-	github.com/kataras/pio v0.0.0-20190103105442-ea782b38602d // indirect
+	github.com/kataras/pio v0.0.0-20190103105442-ea782b38602d
 	github.com/klauspost/compress v1.8.6 // indirect
 	github.com/klauspost/cpuid v1.2.1 // indirect
 	github.com/magiconair/properties v1.8.0
@@ -45,5 +47,6 @@ require (
 	golang.org/x/net v0.0.0-20191011234655-491137f69257
 	google.golang.org/genproto v0.0.0-20190404172233-64821d5d2107
 	google.golang.org/grpc v1.23.1
+	gopkg.in/go-playground/validator.v9 v9.30.0
 	gopkg.in/yaml.v3 v3.0.0-20191010095647-fc94e3f71652
 )
