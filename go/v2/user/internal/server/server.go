@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"net"
 	"os"
 	"os/signal"
@@ -24,7 +23,6 @@ func filter(
 	defer func() {
 		if r := recover(); r != nil {
 			log.Errorf("%v panic: %v",info,r)
-			err = fmt.Errorf("panic: %v", r)
 		}
 	}()
 
