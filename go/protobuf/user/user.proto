@@ -26,42 +26,87 @@ service UserService {
     }
 }
 
-// The request message containing the user's name.
+// 用户
 message User {
-    uint64 ID = 1 [(gogoproto.moretags) = "gorm:\"primary_key\""];
-    string name = 2 [(gogoproto.moretags) = "gorm:\"type:varchar(100)\" validate:\"required\""];
-    string activatedAt = 3 [(gogoproto.moretags) = "gorm:\"type:varchar(100)\""];
-    string account = 4;
-    string password = 5;
-    string email = 6;
-    string phone = 7;
-    string sex = 8;
-    string birthday = 9 ;
-    string introduction = 10;
-    uint64 score = 11;
-    string signature = 12;
-    uint32 role = 13;
-    string avatarURL = 14;
-    string coverURL = 15;
-    string address = 16;
-    string location = 17;
-    string updatedAt = 18 ;
-    string bannedAt = 19 ;
-    string createdAt = 20 ;
-    string lastActivatedAt = 21 ;
-    string lastName = 22;
-    uint32 status = 23;
+    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"type:bigint(20);primary_key\""];
+    string name = 2 [(gogoproto.moretags) = "gorm:\"type:varchar(15)\" validate:\"required\""];
+    string activatedAt = 3 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+    string account = 4 [(gogoproto.moretags) = "gorm:\"type:varchar(15)\""];
+    string password = 5 [(gogoproto.moretags) = "gorm:\"type:varchar(31)\""];
+    string email = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(31)\""];
+    string phone = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(31)\""];
+    uint32 gender = 8 [(gogoproto.moretags) = "gorm:\"type:tinyint(1)\""];
+    string birthday = 9 [(gogoproto.moretags) = "gorm:\"type:datetime\""];
+    string introduction = 10 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    uint64 score = 11 [(gogoproto.moretags) = "gorm:\"type:bigint(20)\""];
+    string signature = 12 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    uint32 role = 13 [(gogoproto.moretags) = "gorm:\"type:tinyint(1)\""];
+    string avatarURL = 14 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string coverURL = 15 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string address = 16 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string updatedAt = 18 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+    string createdAt = 20 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+    string bannedAt = 21 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+    string lastActiveAt = 22 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+    uint32 status = 23 [(gogoproto.moretags) = "gorm:\"type:tinyint(1)\""];
+}
+//用户分数变化日志
+message UserScoreLog {
+    uint64 ID = 1 [(gogoproto.moretags) = "gorm:\"type:bigint(20);primary_key\""];
+    uint64 userID = 2 [(gogoproto.moretags) = "gorm:\"type:bigint(20)\""];
+    int64 score = 3 [(gogoproto.moretags) = "gorm:\"type:bigint(20)\""];
+    string reason = 5 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string createdAt = 6 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+    string remark = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+}
+//用户封禁日志
+message UserBannedLog {
+    uint64 ID = 1 [(gogoproto.moretags) = "gorm:\"type:bigint(20);primary_key\""];
+    uint64 userID = 2 [(gogoproto.moretags) = "gorm:\"type:bigint(20)\""];
+    uint64 duration = 3 [(gogoproto.moretags) = "gorm:\"type:bigint(20)\""];
+    string reason = 4 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string createdAt = 5 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+    string remark = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
 }
 
-message Resume {
-    uint64 ID = 1;
-    uint32 kind = 2;
-    string school = 3;
-    string speciality = 4;
-    string startTime = 5 ;
-    string endTime = 6 ;
-    uint64 userID = 7;
-    uint32 status = 8;
+//用户操作日志
+message UserActionLog {
+    uint64 ID = 1 [(gogoproto.moretags) = "gorm:\"type:bigint(20);primary_key\""];
+    uint64 userID = 2 [(gogoproto.moretags) = "gorm:\"type:bigint(20)\""];
+    uint32 action = 3 [(gogoproto.moretags) = "gorm:\"type:tinyint(1)\""]; //类型
+    string location = 4 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""]; //操作地点
+    string IP = 5 [(gogoproto.moretags) = "gorm:\"type:varchar(63)\""];
+    string device = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""]; //设备
+    string createdAt = 20 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+    string remark = 22 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+}
+
+// Education 教育经历
+message Education {
+    uint64 ID = 1 [(gogoproto.moretags) = "gorm:\"type:bigint(20);primary_key\""];
+    uint64 userID = 2 [(gogoproto.moretags) = "gorm:\"type:bigint(20)\""];
+    string school = 3 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string speciality = 4 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""]; //专业
+    string startTime = 5 [(gogoproto.moretags) = "gorm:\"type:datetime\""];
+    string endTime = 6 [(gogoproto.moretags) = "gorm:\"type:datetime\""];
+    string remark = 11 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string createdAt = 7 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+    string updatedAt = 8 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+    string deletedAt = 9 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+    uint32 status = 10 [(gogoproto.moretags) = "gorm:\"type:tinyint(1)\""];
+}
+// Work 职业生涯
+message Work {
+    uint64 ID = 1 [(gogoproto.moretags) = "gorm:\"type:bigint(20);primary_key\""];
+    uint64 userID = 2 [(gogoproto.moretags) = "gorm:\"type:bigint(20)\""];
+    string company = 3 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""]; //公司或组织
+    string title = 4 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""]; //职位
+    string startTime = 5 [(gogoproto.moretags) = "gorm:\"type:datetime\""];
+    string endTime = 6 [(gogoproto.moretags) = "gorm:\"type:datetime\""];
+    string createdAt = 7 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+    string updatedAt = 8 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+    string deletedAt = 9 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+    uint32 status = 10 [(gogoproto.moretags) = "gorm:\"type:tinyint(1)\""];
 }
 
 message GetReq {
