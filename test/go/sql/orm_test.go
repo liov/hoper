@@ -3,8 +3,6 @@ package main
 import (
 	"log"
 	"testing"
-
-	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
 
