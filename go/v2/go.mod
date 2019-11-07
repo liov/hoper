@@ -17,6 +17,8 @@ require (
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
 	github.com/go-openapi/spec v0.19.3
 	github.com/go-openapi/swag v0.19.5
+	github.com/go-playground/locales v0.12.1
+	github.com/go-playground/universal-translator v0.16.0
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.3.2
 	github.com/gomodule/redigo v2.0.0+incompatible
@@ -27,7 +29,7 @@ require (
 	github.com/iris-contrib/formBinder v5.0.0+incompatible // indirect
 	github.com/iris-contrib/go.uuid v2.0.0+incompatible // indirect
 	github.com/jinzhu/configor v1.1.1
-	github.com/jinzhu/gorm v1.9.10
+	github.com/jinzhu/gorm v1.9.12-0.20191028081811-179760d8343e
 	github.com/json-iterator/go v1.1.7
 	github.com/kataras/golog v0.0.0-20190624001437-99c81de45f40
 	github.com/kataras/iris v11.1.1+incompatible

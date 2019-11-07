@@ -2,8 +2,6 @@ package initialize
 
 import (
 	"fmt"
-	stdlog "log"
-	"os"
 	"runtime"
 
 	"github.com/jinzhu/gorm"
@@ -48,7 +46,7 @@ func (i *Init) P2DB() *gorm.DB {
 
 	if i.Env != PRODUCT {
 		//b不set输出空白
-		db.SetLogger(stdlog.New(os.Stderr, "", 3))
+		//db.SetLogger(gorm.Logger{stdlog.New(os.Stderr, "", 0)})
 		db.LogMode(true)
 	}
 	db.SingularTable(true)

@@ -11,7 +11,6 @@ import (
 	"github.com/go-openapi/spec"
 	"github.com/go-openapi/swag"
 	"github.com/kataras/iris/context"
-	"github.com/liov/hoper/go/v2/utils"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"gopkg.in/yaml.v3"
 )
@@ -127,7 +126,7 @@ func GetDoc(args ...string) {
 
 		realPath = filepath.Join(realPath, "swagger."+apiType)
 
-		if utils.CheckNotExist(realPath) {
+		if _,err:=os.Stat(realPath);os.IsNotExist(err) {
 			generate()
 		} else {
 			file, err := os.Open(realPath)
@@ -231,7 +230,7 @@ func WriteToFile(args ...string) {
 
 	realPath = filepath.Join(realPath, "swagger."+apiType)
 
-	if utils.CheckExist(realPath) {
+	if _,err:=os.Stat(realPath);err==nil {
 		os.Remove(realPath)
 	}
 	var file *os.File

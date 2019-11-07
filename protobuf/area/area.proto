@@ -1,9 +1,0 @@
-syntax = "proto3";
-package area;
-
-message Area {
-    uint64 code = 1;
-    string name =2;
-    int32 level = 3;
-    uint64 pcode = 4;
-}
