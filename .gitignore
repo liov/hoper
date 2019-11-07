@@ -3,7 +3,7 @@
 ### Example user template
 
 # IntelliJ project files
-.idea
+/.idea
 *.iml
 out
 gen
@@ -15,4 +15,4 @@ wasm_exec.js
 *.lock
 node_modules
 dist
-*.lock
+/protobuf
