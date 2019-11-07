@@ -35,5 +35,6 @@ func init() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	ormDB.SingularTable(true)
 	ormDB.LogMode(true)
 }
