@@ -1,5 +1,5 @@
 syntax = "proto3";
-package user;
+package model;
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 option (gogoproto.goproto_enum_prefix_all) = false;
@@ -8,53 +8,46 @@ option (gogoproto.unmarshaler_all) = true;
 option (gogoproto.marshaler_all) = true;
 option (gogoproto.sizer_all) = true;
 
-service UserService {
-
-    rpc Signup (SignupReq) returns (SignupRep) {
-    }
-
-    rpc Edit (EditReq) returns (EditRep) {
-    }
-
-    rpc Login (LoginReq) returns (LoginRep) {
-    }
-
-    rpc Logout (LogoutReq) returns (LogoutRep) {
-    }
-
-    rpc GetUser (GetReq) returns (User) {
-    }
-}
-
 // 用户
 message User {
     uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key;\""];
-    string name = 2 [(gogoproto.moretags) = "gorm:\"type:varchar(15)\" validate:\"required\""];
-    string activatedAt = 3 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\" validate:\"gte=6\""];
-    string password = 5 [(gogoproto.moretags) = "gorm:\"type:varchar(31)\" validate:\"gte=8,lte=15\""];
-    string account = 4 [(gogoproto.moretags) = "gorm:\"type:varchar(15)\" validate:\"gte=6\""];
-    string email = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(31)\" validate:\"email\""];
-    string phone = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(31)\""];
+    string name = 2 [(gogoproto.moretags) = "gorm:\"type:varchar(15)\" validate:\"required\" comment:\"名字\""];
+    string activatedAt = 3 [(gogoproto.moretags) = "gorm:\"type:datetime(3);default:0\""];
+    string password = 5 [(gogoproto.moretags) = "gorm:\"type:varchar(32)\" validate:\"gte=8,lte=15\" comment:\"密码\""];
+    string email = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(16)\" validate:\"email\" comment:\"邮箱\""];
+    string phone = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(32)\" validate:\"phone\" comment:\"手机号\""];
     uint32 gender = 8 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned\""];
     string birthday = 9 [(gogoproto.moretags) = "gorm:\"type:datetime;default:0\""];
     string introduction = 10 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
-    uint64 score = 11 [(gogoproto.moretags) = "gorm:\"type:bigint(20)\""];
-    string signature = 12 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
-    uint32 role = 13 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned\""];
-    string avatarURL = 14 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
-    string coverURL = 15 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
-    string address = 16 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
-    string updatedAt = 18 [(gogoproto.moretags) = "gorm:\"type:datetime(3);default:0\""];
-    string createdAt = 20 [(gogoproto.moretags) = "gorm:\"type:datetime(3);default:current_timestamp(3)\""];
-    string bannedAt = 21 [(gogoproto.moretags) = "gorm:\"type:datetime(3);default:0\""];
-    string lastActiveAt = 22 [(gogoproto.moretags) = "gorm:\"type:datetime(3);default:0\""];
-    uint32 status = 23 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned\""];
+    string signature = 11 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string avatarURL = 12 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string coverURL = 13 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string address = 14 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    uint32 role = 24 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned\""];
+    string createdAt = 25 [(gogoproto.moretags) = "gorm:\"type:datetime(3);default:current_timestamp(3)\""];
+    string updatedAt = 26 [(gogoproto.moretags) = "gorm:\"type:datetime(3);default:0\""];
+    string bannedAt = 27 [(gogoproto.moretags) = "gorm:\"type:datetime(3);default:0\""];
+    uint32 status = 28 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned\""];
 }
+
+message UserExtend {
+    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key;type:bigint(20)\""];
+    uint64 score = 15 [(gogoproto.moretags) = "gorm:\"type:bigint(20)\""];
+    uint64 followCount = 16 [(gogoproto.moretags) = "gorm:\"type:bigint(20)\""];
+    uint64 followedCount = 17 [(gogoproto.moretags) = "gorm:\"type:bigint(20)\""];
+    uint64 articleCount = 18 [(gogoproto.moretags) = "gorm:\"type:bigint(20)\""];
+    uint64 momentCount = 19 [(gogoproto.moretags) = "gorm:\"type:bigint(20)\""];
+    uint64 diaryBookCount = 20 [(gogoproto.moretags) = "gorm:\"type:bigint(20)\""];
+    uint64 diaryCount = 21 [(gogoproto.moretags) = "gorm:\"type:bigint(20)\""];
+    uint64 commentCount = 22 [(gogoproto.moretags) = "gorm:\"type:bigint(20)\""];
+    string lastActiveAt = 23 [(gogoproto.moretags) = "gorm:\"type:datetime(3);default:0\""];
+}
+
 //用户分数变化日志
 message UserScoreLog {
     uint64 ID = 1 [(gogoproto.moretags) = "gorm:\"primary_key\""];
     uint64 userID = 2 [(gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned;index\""];
-    int64 score = 3 [(gogoproto.moretags) = "gorm:\"type:bigint(20)\""];
+    sint64 score = 3 [(gogoproto.moretags) = "gorm:\"type:bigint(20)\""];
     string reason = 5 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
     string createdAt = 6 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
     string remark = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
@@ -75,7 +68,7 @@ message UserActionLog {
     uint64 userID = 2 [(gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned;index\""];
     uint32 action = 3 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned\""]; //类型
     string location = 4 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""]; //操作地点
-    string IP = 5 [(gogoproto.moretags) = "gorm:\"type:varchar(63)\""];
+    string IP = 5 [(gogoproto.moretags) = "gorm:\"type:varchar(32)\""];
     string device = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""]; //设备
     string createdAt = 20 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
     string remark = 22 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
@@ -107,52 +100,4 @@ message Work {
     string updatedAt = 8 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
     string deletedAt = 9 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
     uint32 status = 10 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned\""];
-}
-
-message GetReq {
-    uint64 ID = 1;
-}
-
-message SignupReq {
-    string name = 2;
-    string password = 4;
-    string account = 3;
-    string email = 5;
-    string phone = 6;
-}
-
-message SignupRep {
-    // code
-    int32 code = 1;
-    // msg
-    string msg = 2;
-
-    User data = 3;
-}
-
-message LoginReq {
-    string input = 1;
-    string password = 2;
-}
-
-message EditReq {
-    uint64 ID = 1;
-}
-
-message EditRep {
-    uint64 ID = 1;
-}
-
-message LoginRep {
-    string token = 1;
-    User user = 2;
-    string msg = 3;
-}
-
-message LogoutReq {
-    uint64 ID = 1;
-}
-
-message LogoutRep {
-    string msg = 1;
 }
