@@ -8,50 +8,55 @@ import (
 	"github.com/liov/hoper/go/v2/utils/time2"
 )
 
-type UserDao struct {}
+type UserDao struct{}
 
-func (*UserDao) ExitByEmailORPhone(email,phone string) (bool,error)  {
+func (*UserDao) ExitByEmailORPhone(email, phone string) (bool, error) {
 	var err error
 	var count int
 	if email != "" {
-		err = Dao.DB.DB().QueryRow(`SELECT EXISTS(select  1 FROM user WHERE email =  ?)`,email).Scan(&count)
-	}else {
-		err = Dao.DB.DB().QueryRow(`SELECT EXISTS(select  1 FROM user WHERE phone =  ?)`,phone).Scan(&count)
+		err = Dao.DB.QueryRow(`SELECT EXISTS(select  1 FROM user WHERE email =  ?)`, email).Scan(&count)
+	} else {
+		err = Dao.DB.QueryRow(`SELECT EXISTS(select  1 FROM user WHERE phone =  ?)`, phone).Scan(&count)
 	}
-	if  err != nil {
-		log.Error("UserDao.ExitByEmailORPhone: ",err)
-		return false,err
+	if err != nil {
+		log.Error("UserDao.ExitByEmailORPhone: ", err)
+		return false, err
 	}
-	return count == 1,nil
+	return count == 1, nil
 }
 
-
-func (*UserDao) GetByEmailORPhone(email,phone string) (*model.User,error) {
+func (*UserDao) GetByEmailORPhone(email, phone string) (*model.User, error) {
 	var user model.User
 	var err error
 	if email != "" {
-		err = Dao.DB.Where("email = ?", email).Find(&user).Error
-	}else {
-		err = Dao.DB.Where("phone = ?", phone).Find(&user).Error
+		err = Dao.GORMDB.Where("email = ?", email).Find(&user).Error
+	} else {
+		err = Dao.GORMDB.Where("phone = ?", phone).Find(&user).Error
 	}
-	if  err != nil {
-		log.Error("UserDao.GetByEmailORPhone: ",err)
-		return nil,err
+	if err != nil {
+		log.Error("UserDao.GetByEmailORPhone: ", err)
+		return nil, err
 	}
-	return &user,nil
+	return &user, nil
 }
 
 func (*UserDao) Creat(user *model.User) error {
 	defer time2.TimeCost(time.Now())
-	res,err := Dao.DB.DB().Exec(`INSERT INTO user 
+	res, err := Dao.DB.Exec(`INSERT INTO user 
     (name, password, email, phone, gender, role, avatar_url, created_at, updated_at, status)
-     VALUES (?,?,?,?,?,?,?,?,?,?)`,user.Name,user.Password,user.Email,user.Phone,user.Role,
-     user.AvatarURL,user.CreatedAt,user.UpdatedAt,user.Status)
-	if  err != nil {
-		log.Error("UserDao.Creat: ",err)
+     VALUES (?,?,?,?,?,?,?,?,?,?)`, user.Name, user.Password, user.Email, user.Phone,user.Gender, user.Role,
+		user.AvatarURL, user.CreatedAt, user.UpdatedAt, user.Status)
+	if err != nil {
+		log.Error("UserDao.Creat: ", err)
 		return err
 	}
-	id,err := res.LastInsertId()
+	id, err := res.LastInsertId()
 	user.Id = uint64(id)
+	defer time2.TimeCost(time.Now())
+	_, err = Dao.DB.Exec(`INSERT INTO user_extend (id,last_active_at) VALUES (?,?)`, id,user.CreatedAt)
+	if err != nil {
+		log.Error("UserDao.Creat: ", err)
+		return err
+	}
 	return nil
 }
