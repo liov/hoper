@@ -79,8 +79,10 @@ exit
 # sublimet text
 ```json
 {
+    "default_line_ending": "unix",
     "hot_exit": false,
-	"remember_open_files": false,
-	"default_line_ending": "unix"
+    "remember_open_files": false,
+    "theme": "Adaptive.sublime-theme",
+    "enable_tab_scrolling": false
 }
 ```
