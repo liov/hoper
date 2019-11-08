@@ -1,0 +1,75 @@
+syntax = "proto3";
+package model;
+import "user/model/user.modle.proto";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.goproto_enum_prefix_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+
+service UserService {
+
+    rpc Signup (SignupReq) returns (SignupRep) {
+    }
+
+    rpc Edit (EditReq) returns (EditRep) {
+    }
+
+    rpc Login (LoginReq) returns (LoginRep) {
+    }
+
+    rpc Logout (LogoutReq) returns (LogoutRep) {
+    }
+
+    rpc GetUser (GetReq) returns (User) {
+    }
+}
+
+message GetReq {
+    uint64 ID = 1;
+}
+
+message SignupReq {
+    string name = 2 [(gogoproto.moretags) = "validate:\"required,alphanum,gte=3,lte=10\" comment:\"名字\""];
+    string password = 4 [(gogoproto.moretags) = "validate:\"required,gte=6,lte=15\" comment:\"密码\""];
+    string email = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" comment:\"邮箱\""];
+    string phone = 7 [(gogoproto.moretags) = "validate:\"omitempty,phone\" comment:\"手机号\""];
+}
+
+message SignupRep {
+    // code
+    int32 code = 1;
+    // msg
+    string msg = 2;
+
+    User data = 3;
+}
+
+message LoginReq {
+    string input = 1;
+    string password = 2;
+}
+
+message EditReq {
+    uint64 ID = 1;
+}
+
+message EditRep {
+    uint64 ID = 1;
+}
+
+message LoginRep {
+    string token = 1;
+    User user = 2;
+    string msg = 3;
+}
+
+message LogoutReq {
+    uint64 ID = 1;
+}
+
+message LogoutRep {
+    string msg = 1;
+}

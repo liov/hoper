@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/protobuf/user/model"
 	"google.golang.org/grpc"
 )
 
@@ -13,7 +13,7 @@ func init() {
 
 var Client client
 type client struct {
-	UserClient user.UserServiceClient
+	UserClient model.UserServiceClient
 	conns []*grpc.ClientConn
 }
 
