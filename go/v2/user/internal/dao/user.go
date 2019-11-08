@@ -42,19 +42,7 @@ func (*UserDao) GetByEmailORPhone(email, phone string) (*model.User, error) {
 
 func (*UserDao) Creat(user *model.User) error {
 	defer time2.TimeCost(time.Now())
-	res, err := Dao.DB.Exec(`INSERT INTO user 
-    (name, password, email, phone, gender, role, avatar_url, created_at, updated_at, status)
-     VALUES (?,?,?,?,?,?,?,?,?,?)`, user.Name, user.Password, user.Email, user.Phone,user.Gender, user.Role,
-		user.AvatarURL, user.CreatedAt, user.UpdatedAt, user.Status)
-	if err != nil {
-		log.Error("UserDao.Creat: ", err)
-		return err
-	}
-	id, err := res.LastInsertId()
-	user.Id = uint64(id)
-	defer time2.TimeCost(time.Now())
-	_, err = Dao.DB.Exec(`INSERT INTO user_extend (id,last_active_at) VALUES (?,?)`, id,user.CreatedAt)
-	if err != nil {
+	if err:=Dao.GORMDB.Save(user).Error;err != nil {
 		log.Error("UserDao.Creat: ", err)
 		return err
 	}
