@@ -28,10 +28,7 @@ message User {
     string updatedAt = 26 [(gogoproto.moretags) = "gorm:\"type:datetime(3);default:0\""];
     string bannedAt = 27 [(gogoproto.moretags) = "gorm:\"type:datetime(3);default:0\""];
     uint32 status = 28 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned\""];
-}
-
-message UserExtend {
-    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key;type:bigint(20)\""];
+    string lastActiveAt = 23 [(gogoproto.moretags) = "gorm:\"type:datetime(3);default:0\""];
     uint64 score = 15 [(gogoproto.moretags) = "gorm:\"type:bigint(20);default:0\""];
     uint64 followCount = 16 [(gogoproto.moretags) = "gorm:\"type:bigint(20);default:0\""];
     uint64 followedCount = 17 [(gogoproto.moretags) = "gorm:\"type:bigint(20);default:0\""];
@@ -40,7 +37,6 @@ message UserExtend {
     uint64 diaryBookCount = 20 [(gogoproto.moretags) = "gorm:\"type:bigint(20);default:0\""];
     uint64 diaryCount = 21 [(gogoproto.moretags) = "gorm:\"type:bigint(20);default:0\""];
     uint64 commentCount = 22 [(gogoproto.moretags) = "gorm:\"type:bigint(20);default:0\""];
-    string lastActiveAt = 23 [(gogoproto.moretags) = "gorm:\"type:datetime(3);default:0\""];
 }
 
 //用户分数变化日志
