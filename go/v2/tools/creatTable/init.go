@@ -37,5 +37,5 @@ func init() {
 }
 
 func main() {
-	ormDB.CreateTable(&model.User{})
+	ormDB.CreateTable(&model.User{},&model.UserExtend{})
 }

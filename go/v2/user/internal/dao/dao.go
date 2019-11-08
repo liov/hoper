@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"database/sql"
 	"net/smtp"
 
 	"github.com/bluele/gcache"
@@ -16,16 +17,17 @@ var Dao *dao = &dao{}
 
 // dao dao.
 type dao struct {
-	// DB 数据库连接
-	DB   *gorm.DB
-	Bolt *bbolt.DB
+	// GORMDB 数据库连接
+	GORMDB *gorm.DB
+	DB     *sql.DB
+	Bolt   *bbolt.DB
 	// RedisPool Redis连接池
-	Redis *redis.Pool
+	Redis       *redis.Pool
 	RedisExpire int32
 	Cache       gcache.Cache
 	McExpire    int32
 	//elastic
-	Mail	*smtp.Client
+	Mail *smtp.Client
 }
 
 // Close close the resource.
@@ -36,14 +38,13 @@ func (d *dao) Close() {
 	if d.Redis != nil {
 		d.Redis.Close()
 	}
-	if d.DB != nil {
-		d.DB.Close()
+	if d.GORMDB != nil {
+		d.GORMDB.Close()
 	}
 }
 
-
-func (d *dao) Custom()  {
-	db :=d.DB
+func (d *dao) Custom() {
+	db := d.GORMDB
 	db.Callback().Create().Remove("gorm:update_time_stamp")
 	db.Callback().Update().Remove("gorm:update_time_stamp")
 	db.Callback().Create().Remove("gorm:save_before_associations")
@@ -55,5 +56,6 @@ func (d *dao) Custom()  {
 	//db.Callback().Create().Replace("gorm:save_before_associations", saveBeforeAssociationsCallback)
 	//db.Callback().Create().Replace("gorm:save_after_associations", saveAfterAssociationsCallback)
 	db.Callback().Delete().Replace("gorm:delete", gormCallback.DeleteCallback)
-	d.DB = db
+	d.GORMDB = db
+	d.DB = db.DB()
 }
