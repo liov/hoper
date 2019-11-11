@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package utils.any;
+import "google/protobuf/any.proto";
+
+option csharp_namespace = "Google.Protobuf.WellKnownTypes";
+option go_package = "github.com/liov/hoper/go/v2/utils/ptotobuf";
+option java_package = "com.google.protobuf";
+option java_outer_classname = "AnyProto";
+option java_multiple_files = true;
+option objc_class_prefix = "GPB";
+
+
+message Any {
+    google.protobuf.Any any =1;
+}
