@@ -1,0 +1,16 @@
+syntax = "proto3";
+package response;
+import "google/protobuf/any.proto";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.goproto_enum_prefix_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+
+message Response {
+    uint64 code = 1;
+    google.protobuf.Any data =2;
+    string msg =3;
+}

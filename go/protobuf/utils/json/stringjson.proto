@@ -1,0 +1,15 @@
+syntax = "proto3";
+package utils.json;
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option go_package = "github.com/liov/hoper/go/v2/utils/json/protobuf";
+
+option (gogoproto.goproto_enum_prefix_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+
+message StringJson {
+    string s = 1;
+}

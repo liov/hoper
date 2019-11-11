@@ -7,7 +7,7 @@ import (
 	"github.com/jinzhu/configor"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"github.com/liov/hoper/go/v2/protobuf/user/model"
+	model "github.com/liov/hoper/go/v2/protobuf/user"
 )
 
 var(
@@ -37,5 +37,5 @@ func init() {
 }
 
 func main() {
-	ormDB.CreateTable(&model.User{},&model.UserExtend{})
+	ormDB.CreateTable(&model.User{})
 }

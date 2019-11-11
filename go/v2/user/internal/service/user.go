@@ -3,12 +3,14 @@ package service
 import (
 	"context"
 	"crypto/md5"
+	"encoding/json"
 	"fmt"
 	"time"
 
-	"github.com/liov/hoper/go/v2/protobuf/user/model"
+	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/internal/config"
 	modelconst "github.com/liov/hoper/go/v2/user/internal/model"
+	"github.com/liov/hoper/go/v2/utils/json/protobuf"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 	"github.com/liov/hoper/go/v2/utils/time2"
 	"github.com/liov/hoper/go/v2/utils/valid"
@@ -51,7 +53,8 @@ func (*UserService) Signup(ctx context.Context, in *model.SignupReq) (*model.Sig
 		rep.Msg = "新建出错"
 		return rep, err
 	}
-	rep.Data = user
+	data,_:=json.Marshal(user)
+	rep.Data = &protobuf.StringJson{S:string(data)}
 	rep.Msg = "新建成功"
 	return rep, nil
 }
