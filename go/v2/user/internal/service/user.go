@@ -10,7 +10,7 @@ import (
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/internal/config"
 	modelconst "github.com/liov/hoper/go/v2/user/internal/model"
-	"github.com/liov/hoper/go/v2/utils/json/protobuf"
+	"github.com/liov/hoper/go/v2/utils/protobuf"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 	"github.com/liov/hoper/go/v2/utils/time2"
 	"github.com/liov/hoper/go/v2/utils/valid"
@@ -45,7 +45,8 @@ func (*UserService) Signup(ctx context.Context, in *model.SignupReq) (*model.Sig
 	user.Email = in.Email
 	user.Gender = modelconst.UserSexNil
 	user.CreatedAt = time2.Format(time.Now())
-	user.UpdatedAt = user.CreatedAt
+	user.LastActiveAt = user.CreatedAt
+	user.Role = modelconst.UserRoleNormal
 	user.Status = modelconst.UserStatusInActive
 	user.AvatarURL = modelconst.DefaultAvatar
 	user.Password = encryptPassword(in.Password)
@@ -54,7 +55,7 @@ func (*UserService) Signup(ctx context.Context, in *model.SignupReq) (*model.Sig
 		return rep, err
 	}
 	data,_:=json.Marshal(user)
-	rep.Data = &protobuf.StringJson{S:string(data)}
+	rep.Data = protobuf.StringJson(data)
 	rep.Msg = "新建成功"
 	return rep, nil
 }
