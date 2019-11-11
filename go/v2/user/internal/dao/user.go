@@ -3,7 +3,7 @@ package dao
 import (
 	"time"
 
-	"github.com/liov/hoper/go/v2/protobuf/user/model"
+	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/time2"
 )
@@ -42,9 +42,20 @@ func (*UserDao) GetByEmailORPhone(email, phone string) (*model.User, error) {
 
 func (*UserDao) Creat(user *model.User) error {
 	defer time2.TimeCost(time.Now())
-	if err:=Dao.GORMDB.Save(user).Error;err != nil {
+	res,err :=Dao.DB.Exec(`INSERT INTO user 
+    ( name, password, email, phone, gender, avatar_url, role, created_at, updated_at, status, last_active_at, score, follow_count, followed_count, article_count, moment_count, diary_book_count, diary_count, comment_count) VALUES 
+    (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+		user.Name,user.Password,user.Email,user.Phone,user.Gender,user.AvatarURL,user.Role,user.CreatedAt,
+		user.UpdatedAt,0,user.CreatedAt,0,0,0,0,0,0,0,0)
+	if err!=nil {
 		log.Error("UserDao.Creat: ", err)
 		return err
 	}
+	id,err := res.LastInsertId()
+	if err!=nil {
+		log.Error("UserDao.Creat: ", err)
+		return err
+	}
+	user.Id = uint64(id)
 	return nil
 }

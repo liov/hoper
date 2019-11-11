@@ -1,6 +1,7 @@
 syntax = "proto3";
 package model;
-import "user/model/user.modle.proto";
+import "user/user.modle.proto";
+import "utils/json/stringjson.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 option (gogoproto.goproto_enum_prefix_all) = false;
@@ -44,7 +45,7 @@ message SignupRep {
     // msg
     string msg = 2;
 
-    User data = 3;
+    utils.json.StringJson data = 3;
 }
 
 message LoginReq {

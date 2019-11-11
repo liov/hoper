@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/liov/hoper/go/v2/protobuf/user/model"
+	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"google.golang.org/grpc"
 )
