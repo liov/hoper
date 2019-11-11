@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/liov/hoper/go/v2/protobuf/user/model"
+	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/internal/config"
 	"github.com/liov/hoper/go/v2/user/internal/service"
 	"github.com/liov/hoper/go/v2/utils/log"

@@ -7,7 +7,8 @@ import (
 
 	"github.com/kataras/iris"
 	"github.com/liov/hoper/go/v2/gateway/internal/client"
-	"github.com/liov/hoper/go/v2/protobuf/user/model"
+	model "github.com/liov/hoper/go/v2/protobuf/user"
+
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
