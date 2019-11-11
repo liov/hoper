@@ -36,6 +36,17 @@ func init() {
 	ormDB.LogMode(true)
 }
 
+var userMod = []interface{}{
+	&model.User{},
+	&model.UserActionLog{},
+	&model.UserBannedLog{},
+	&model.UserFollow{},
+	&model.UserScoreLog{},
+	&model.UserFollowLog{},
+	&model.Education{},
+	&model.Work{},
+}
+
 func main() {
-	ormDB.CreateTable(&model.User{})
+	ormDB.CreateTable(userMod...)
 }

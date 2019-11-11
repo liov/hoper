@@ -53,7 +53,7 @@ func (*UserDao) Creat(user *model.User) error {
 	}
 	id,err := res.LastInsertId()
 	if err!=nil {
-		log.Error("UserDao.Creat: ", err)
+		log.Error("UserDao.LastInsertId: ", err)
 		return err
 	}
 	user.Id = uint64(id)
