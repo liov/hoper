@@ -45,7 +45,7 @@ message SignupRep {
     // msg
     string msg = 2;
 
-    utils.json.StringJson data = 3;
+    utils.json.StringJson data = 3 [(gogoproto.nullable) = false];
 }
 
 message LoginReq {

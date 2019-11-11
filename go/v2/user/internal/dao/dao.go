@@ -46,6 +46,7 @@ func (d *dao) Close() {
 func (d *dao) Custom() {
 	db := d.GORMDB
 	db.Callback().Create().Remove("gorm:update_time_stamp")
+	db.Callback().Create().Remove("gorm:force_reload_after_create")
 	db.Callback().Update().Remove("gorm:update_time_stamp")
 	db.Callback().Create().Remove("gorm:save_before_associations")
 	db.Callback().Create().Remove("gorm:save_after_associations")

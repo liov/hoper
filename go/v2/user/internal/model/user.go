@@ -24,11 +24,11 @@ const (
 
 //用户性别
 const (
-	UserSexMale = iota // 男
+	UserSexNil = iota//未填写
+
+	UserSexMale  // 男
 
 	UserSexFemale // 女
-
-	UserSexNil //未填写
 )
 
 //用户操作

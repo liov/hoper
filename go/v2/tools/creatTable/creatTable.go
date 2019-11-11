@@ -38,6 +38,7 @@ func init() {
 
 var userMod = []interface{}{
 	&model.User{},
+	&model.UserExtend{},
 	&model.UserActionLog{},
 	&model.UserBannedLog{},
 	&model.UserFollow{},
@@ -48,5 +49,6 @@ var userMod = []interface{}{
 }
 
 func main() {
+	ormDB.DropTable(userMod...)
 	ormDB.CreateTable(userMod...)
 }
