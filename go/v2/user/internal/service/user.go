@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gomodule/redigo/redis"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/internal/config"
 	"github.com/liov/hoper/go/v2/user/internal/dao"
@@ -18,63 +19,101 @@ import (
 	"github.com/liov/hoper/go/v2/utils/strings2"
 	"github.com/liov/hoper/go/v2/utils/time2"
 	"github.com/liov/hoper/go/v2/utils/valid"
+	"github.com/liov/hoper/go/v2/utils/verificationCode"
 )
 
 type UserService struct{}
 
-func (*UserService) Signup(ctx context.Context, in *model.SignupReq) (*response.AnyReply, error) {
+func (*UserService) Verify(ctx context.Context, req *model.VerifyReq) (*response.AnyReply, error) {
 	var rep = &response.AnyReply{Code: 10000}
-	err := valid.Validate.Struct(in)
+	err := valid.Validate.Struct(req)
 	if err != nil {
 		rep.Msg = valid.Trans(err)
 		return rep, nil
 	}
 
-	if in.Mail == "" && in.Phone == "" {
+	if req.Mail == "" && req.Phone == "" {
 		rep.Msg = "请填写邮箱或手机号"
 		return rep, err
 	}
 
-/*	if exist, err := userDao.ExitByEmailORPhone(in.Mail, in.Phone); exist {
-		if  in.Mail != "" {
+	if exist, err := userDao.ExitByEmailORPhone(req.Mail, req.Phone); exist {
+		if req.Mail != "" {
 			rep.Msg = "邮箱已被注册"
 			return rep, err
-		} else  {
+		} else {
 			rep.Msg = "手机号已被注册"
 			return rep, err
 		}
-	}*/
+	}
+	vcode:=verificationCode.Generate()
+
+	key := modelconst.VerificationCodeKey + req.Mail + req.Phone
+	RedisConn := dao.Dao.Redis.Get()
+	defer RedisConn.Close()
+
+	if _, err := RedisConn.Do("SET", key, vcode, "EX", modelconst.VerificationCodeDuration); err != nil {
+		log.Error("UserService.Verify,RedisConn.Do: ", err)
+		rep.Msg = "新建出错"
+		return rep, nil
+	}
+	return rep, err
+}
+
+func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*response.AnyReply, error) {
+	var rep = &response.AnyReply{Code: 10000}
+	err := valid.Validate.Struct(req)
+	if err != nil {
+		rep.Msg = valid.Trans(err)
+		return rep, nil
+	}
+
+	if req.Mail == "" && req.Phone == "" {
+		rep.Msg = "请填写邮箱或手机号"
+		return rep, err
+	}
+
+	if exist, err := userDao.ExitByEmailORPhone(req.Mail, req.Phone); exist {
+		if req.Mail != "" {
+			rep.Msg = "邮箱已被注册"
+			return rep, err
+		} else {
+			rep.Msg = "手机号已被注册"
+			return rep, err
+		}
+	}
 	var user = &model.User{}
-	user.Name = in.Name
-	user.Mail = in.Mail
+	user.Mail = req.Mail
 	user.Gender = modelconst.UserSexNil
 	user.CreatedAt = time2.Format(time.Now())
 	user.LastActiveAt = user.CreatedAt
 	user.Role = modelconst.UserRoleNormal
 	user.Status = modelconst.UserStatusInActive
 	user.AvatarURL = modelconst.DefaultAvatar
-	user.Password = encryptPassword(in.Password)
+	user.Password = encryptPassword(req.Password)
 	if err = userDao.Creat(user); err != nil {
 		rep.Msg = "新建出错"
 		return rep, err
 	}
-	data,_:=json.Marshal(user)
+	data, _ := json.Marshal(user)
 	rep.Data = data
 	rep.Msg = "新建成功"
 
-	activeUser := modelconst.ActiveTime + strconv.FormatUint(user.Id, 10)
+	activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
 	RedisConn := dao.Dao.Redis.Get()
 	defer RedisConn.Close()
 
 	curTime := time.Now().Unix()
 
 	if _, err := RedisConn.Do("SET", activeUser, curTime, "EX", modelconst.ActiveDuration); err != nil {
-		log.Error("UserService.Signup,RedisConn.Do: ",err)
+		log.Error("UserService.Signup,RedisConn.Do: ", err)
 		rep.Msg = "新建出错"
-		return rep,nil
+		return rep, nil
 	}
 	go func() {
-		sendMail("/active", "账号激活", curTime, user)
+		if req.Mail != "" {
+			sendMail("/active", "账号激活", curTime, user)
+		}
 	}()
 	return rep, nil
 }
@@ -87,9 +126,8 @@ func salt(password string) string {
 // EncryptPassword 给密码加密
 func encryptPassword(password string) string {
 	hash := salt(password) + config.Conf.Server.PassSalt + password[5:]
-	return fmt.Sprintf("%x",md5.Sum(strings2.ToBytes(hash)))
+	return fmt.Sprintf("%x", md5.Sum(strings2.ToBytes(hash)))
 }
-
 
 /*
 	letter:=`
@@ -136,10 +174,10 @@ func sendMail(action string, title string, curTime int64, user *model.User) {
 	}
 	message += "\r\n" + content
 
-	addr:= config.Conf.Mail.Host+ config.Conf.Mail.Port
-	err := mail.SendMailTLS(addr,dao.Dao.MailAuth,config.Conf.Mail.User,[]string{user.Mail},[]byte(message))
-	if err!=nil{
-		log.Error("sendMail",err)
+	addr := config.Conf.Mail.Host + config.Conf.Mail.Port
+	err := mail.SendMailTLS(addr, dao.Dao.MailAuth, config.Conf.Mail.User, []string{user.Mail}, []byte(message))
+	if err != nil {
+		log.Error("sendMail", err)
 	}
 }
 
@@ -149,6 +187,33 @@ func checkPassword(password string, user *model.User) bool {
 		return false
 	}
 	return encryptPassword(password) == user.Password
+}
+
+func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*response.AnyReply, error) {
+	var rep = &response.AnyReply{Code: 10000, Msg: "无效的链接"}
+	RedisConn := dao.Dao.Redis.Get()
+	defer RedisConn.Close()
+
+	emailTime, err := redis.Int64(RedisConn.Do("GET", modelconst.ActiveTimeKey+strconv.FormatUint(req.Id, 10)))
+	if err != nil {
+		log.Error("UserService.Active,redis.Int64", err)
+		return rep, err
+	}
+
+	user, err := userDao.GetByPrimaryKey(req.Id)
+	if err != nil {
+		return rep, err
+	}
+
+	secretStr := strconv.Itoa((int)(emailTime)) + user.Mail + user.Password
+
+	secretStr = fmt.Sprintf("%x", md5.Sum(strings2.ToBytes(secretStr)))
+
+	if req.Secret != secretStr {
+		return rep, nil
+	}
+	rep.Msg = "激活成功"
+	return rep, nil
 }
 
 func (*UserService) Edit(context.Context, *model.EditReq) (*model.EditRep, error) {
