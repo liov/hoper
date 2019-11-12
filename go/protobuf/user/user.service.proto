@@ -1,7 +1,7 @@
 syntax = "proto3";
 package model;
 import "user/user.modle.proto";
-import "utils/json/stringjson.proto";
+import "response/anyreply.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 option (gogoproto.goproto_enum_prefix_all) = false;
@@ -12,7 +12,7 @@ option (gogoproto.sizer_all) = true;
 
 service UserService {
 
-    rpc Signup (SignupReq) returns (SignupRep) {
+    rpc Signup (SignupReq) returns (response.AnyReply) {
     }
 
     rpc Edit (EditReq) returns (EditRep) {
@@ -35,18 +35,10 @@ message GetReq {
 message SignupReq {
     string name = 2 [(gogoproto.moretags) = "validate:\"required,alphanum,gte=3,lte=10\" comment:\"名字\""];
     string password = 4 [(gogoproto.moretags) = "validate:\"required,gte=6,lte=15\" comment:\"密码\""];
-    string email = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" comment:\"邮箱\""];
+    string mail = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" comment:\"邮箱\""];
     string phone = 7 [(gogoproto.moretags) = "validate:\"omitempty,phone\" comment:\"手机号\""];
 }
 
-message SignupRep {
-    // code
-    int32 code = 1;
-    // msg
-    string msg = 2;
-
-    utils.json.StringJson data = 3 [(gogoproto.nullable) = false];
-}
 
 message LoginReq {
     string input = 1;

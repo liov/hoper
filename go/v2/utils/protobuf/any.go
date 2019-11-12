@@ -3,6 +3,9 @@ package protobuf
 type Any []byte
 
 func (a *Any) MarshalJSON() ([]byte, error) {
+	if len(*a) == 0 {
+		return []byte("null"), nil
+	}
 	return *a, nil
 }
 

@@ -36,3 +36,60 @@ const(
 	SignUp = iota
 	ModifyPassword
 )
+
+const (
+	// 用户名的最大长度
+	MaxUserNameLen = 10
+
+	// 用户名的最小长度
+	MinUserNameLen = 3
+
+	// 密码的最大长度
+	MaxPassLen = 15
+
+	// 密码的最小长度
+	MinPassLen = 6
+
+	// 个性签名最大长度
+	MaxSignatureLen = 200
+
+	// 居住地的最大长度
+	MaxLocationLen = 200
+
+	//个人简介的最大长度
+	MaxIntroduceLen = 500
+)
+
+const (
+	// 生成激活账号的链接
+	ActiveTime = "ActiveTime_"
+
+	// 生成重置密码的链接
+	ResetTime = "ResetTime_"
+
+	// 用户信息
+	LoginUser = "LoginUser_"
+
+	// 用户每分钟最多能发表的文章数
+	MomentMinuteLimit = "MomentMinuteLimit_"
+
+	// 用户每天最多能发表的文章数
+	MomentDayLimit = "MomentDayLimit_"
+
+	// 用户每分钟最多能发表的文章数
+	ArticleMinuteLimit = "ArticleMinuteLimit_"
+
+	// 用户每天最多能发表的文章数
+	ArticleDayLimit = "ArticleDayLimit_"
+
+	// 用户每分钟最多能发表的评论数
+	CommentMinuteLimit = "CommentMinuteLimit_"
+
+	// 用户每天最多能发表的评论数
+	CommentDayLimit = "CommentDayLimit_"
+)
+
+const (
+	ActiveDuration = 24 * 60 * 60
+	ResetDuration  = 24 * 60 * 60
+)
