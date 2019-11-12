@@ -27,7 +27,7 @@ type dao struct {
 	Cache       gcache.Cache
 	McExpire    int32
 	//elastic
-	Mail *smtp.Client
+	MailAuth smtp.Auth
 }
 
 // Close close the resource.

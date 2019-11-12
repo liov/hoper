@@ -14,7 +14,7 @@ func (*UserDao) ExitByEmailORPhone(email, phone string) (bool, error) {
 	var err error
 	var count int
 	if email != "" {
-		err = Dao.DB.QueryRow(`SELECT EXISTS(select  1 FROM user WHERE email =  ?)`, email).Scan(&count)
+		err = Dao.DB.QueryRow(`SELECT EXISTS(select  1 FROM user WHERE mail =  ?)`, email).Scan(&count)
 	} else {
 		err = Dao.DB.QueryRow(`SELECT EXISTS(select  1 FROM user WHERE phone =  ?)`, phone).Scan(&count)
 	}

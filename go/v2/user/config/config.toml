@@ -1,4 +1,4 @@
-NoInit = ["Cache","Mail"]
+NoInit = ["Cache"]
 
 Module = "user"
 #dev | test | prod
