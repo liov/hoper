@@ -16,6 +16,30 @@ type UserController struct{
 	Controller
 }
 
+func (u *UserController) VerificationCode() {
+	u.api(
+		path("/user/verificationCode"),
+		method(http.MethodPost),
+		describe("获取验证码"),
+		auth("jyb"),
+		version(1),
+		handle(
+			func(c iris.Context) {
+				var req model.VerifyReq
+				c.ReadJSON(&req)
+				ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+				defer cancel()
+				rep,err:=client.Client.UserClient.Verify(ctx,&req)
+				if err != nil {
+					log.Errorf("could not greet: %v", err)
+				}
+				c.JSON(rep)
+			}),
+	)
+
+}
+
+
 func (u *UserController) Add() {
 	u.api(
 		path("/user"),

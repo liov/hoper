@@ -48,3 +48,13 @@ func (*UserDao) Creat(user *model.User) error {
 	}
 	return nil
 }
+
+func (*UserDao) GetByPrimaryKey(id uint64) (*model.User,error) {
+	defer time2.TimeCost(time.Now())
+	var user model.User
+	if err:=Dao.GORMDB.First(&user).Error;err != nil {
+		log.Error("UserDao.GetByPrimaryKey: ", err)
+		return nil,err
+	}
+	return &user,nil
+}
