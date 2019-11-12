@@ -12,7 +12,16 @@ option (gogoproto.sizer_all) = true;
 
 service UserService {
 
+    //验证码
+    rpc Verify (VerifyReq) returns (response.AnyReply) {
+    }
+
+    //注册
     rpc Signup (SignupReq) returns (response.AnyReply) {
+    }
+
+    //激活
+    rpc Active (ActiveReq) returns (response.AnyReply) {
     }
 
     rpc Edit (EditReq) returns (EditRep) {
@@ -28,17 +37,27 @@ service UserService {
     }
 }
 
-message GetReq {
-    uint64 ID = 1;
-}
-
-message SignupReq {
-    string name = 2 [(gogoproto.moretags) = "validate:\"required,alphanum,gte=3,lte=10\" comment:\"名字\""];
-    string password = 4 [(gogoproto.moretags) = "validate:\"required,gte=6,lte=15\" comment:\"密码\""];
+message VerifyReq {
     string mail = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" comment:\"邮箱\""];
     string phone = 7 [(gogoproto.moretags) = "validate:\"omitempty,phone\" comment:\"手机号\""];
 }
 
+message SignupReq {
+    string password = 4 [(gogoproto.moretags) = "validate:\"required,gte=6,lte=15\" comment:\"密码\""];
+    string mail = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" comment:\"邮箱\""];
+    string phone = 7 [(gogoproto.moretags) = "validate:\"omitempty,phone\" comment:\"手机号\""];
+    //验证码
+    string vCode = 8 [(gogoproto.moretags) = "validate:\"required,numeric\" comment:\"验证码\""];
+}
+
+message ActiveReq{
+    uint64 id = 1;
+    string secret =2;
+}
+
+message GetReq {
+    uint64 ID = 1;
+}
 
 message LoginReq {
     string input = 1;
@@ -47,6 +66,7 @@ message LoginReq {
 
 message EditReq {
     uint64 ID = 1;
+    string name = 2 [(gogoproto.moretags) = "validate:\"required,alphanum,gte=3,lte=10\" comment:\"名字\""];
 }
 
 message EditRep {

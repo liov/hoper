@@ -1,6 +1,6 @@
-package model
+package modelconst
 
-const(
+const (
 	DefaultAvatar = "/static/images/6cbeb5c8-7160-4b6f-a342-d96d3c00367a.jpg"
 )
 
@@ -24,15 +24,15 @@ const (
 
 //用户性别
 const (
-	UserSexNil = iota//未填写
+	UserSexNil = iota //未填写
 
-	UserSexMale  // 男
+	UserSexMale // 男
 
 	UserSexFemale // 女
 )
 
 //用户操作
-const(
+const (
 	SignUp = iota
 	ModifyPassword
 )
@@ -62,34 +62,37 @@ const (
 
 const (
 	// 生成激活账号的链接
-	ActiveTime = "ActiveTime_"
+	ActiveTimeKey = "ActiveTime_"
 
 	// 生成重置密码的链接
-	ResetTime = "ResetTime_"
+	ResetTimeKey = "ResetTime_"
 
 	// 用户信息
-	LoginUser = "LoginUser_"
+	LoginUserKey = "LoginUser_"
 
 	// 用户每分钟最多能发表的文章数
-	MomentMinuteLimit = "MomentMinuteLimit_"
+	MomentMinuteLimitKey = "MomentMinuteLimit_"
 
 	// 用户每天最多能发表的文章数
-	MomentDayLimit = "MomentDayLimit_"
+	MomentDayLimitKey = "MomentDayLimit_"
 
 	// 用户每分钟最多能发表的文章数
-	ArticleMinuteLimit = "ArticleMinuteLimit_"
+	ArticleMinuteLimitKey = "ArticleMinuteLimit_"
 
 	// 用户每天最多能发表的文章数
-	ArticleDayLimit = "ArticleDayLimit_"
+	ArticleDayLimitKey = "ArticleDayLimit_"
 
 	// 用户每分钟最多能发表的评论数
-	CommentMinuteLimit = "CommentMinuteLimit_"
+	CommentMinuteLimitKey = "CommentMinuteLimit_"
 
 	// 用户每天最多能发表的评论数
-	CommentDayLimit = "CommentDayLimit_"
+	CommentDayLimitKey = "CommentDayLimit_"
+
+	VerificationCodeKey = "VerificationCode_"
 )
 
 const (
-	ActiveDuration = 24 * 60 * 60
-	ResetDuration  = 24 * 60 * 60
+	ActiveDuration           = 24 * 60 * 60
+	ResetDuration            = 24 * 60 * 60
+	VerificationCodeDuration = 5 * 60
 )
