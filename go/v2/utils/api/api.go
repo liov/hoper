@@ -194,7 +194,7 @@ func generate() {
 
 	var contact spec.ContactInfo
 	contact.Name = "Contact Name"
-	contact.Email = "Contact Email"
+	contact.Email = "Contact Mail"
 	contact.URL = "Contact URL"
 	info.Contact = &contact
 

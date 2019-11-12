@@ -9,6 +9,8 @@ import (
 )
 
 type serverConfig struct {
+	Protocol     string
+	Domain       string
 	Port         string
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
@@ -27,9 +29,6 @@ type serverConfig struct {
 	LogSaveName string
 	LogFileExt  string
 	TimeFormat  string
-
-	SiteName string
-	Host     string
 
 	LuosimaoVerifyURL string
 	LuosimaoAPIKey    string

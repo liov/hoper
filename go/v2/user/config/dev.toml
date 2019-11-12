@@ -4,7 +4,8 @@ title = "user-config"
 Volume = "../../data"
 
 [server]
-Host =  "user.hoper.xyz"
+Protocol = "https"
+Domain =  "user.hoper.xyz"
 Port = ":8080"
 ReadTimeout = 60
 WriteTimeout = 60

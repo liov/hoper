@@ -4,7 +4,7 @@ package utils.any;
 import "google/protobuf/any.proto";
 
 option csharp_namespace = "Google.Protobuf.WellKnownTypes";
-option go_package = "github.com/liov/hoper/go/v2/utils/ptotobuf";
+option go_package = "github.com/liov/hoper/go/v2/utils/protobuf";
 option java_package = "com.google.protobuf";
 option java_outer_classname = "AnyProto";
 option java_multiple_files = true;

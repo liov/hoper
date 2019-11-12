@@ -5,12 +5,16 @@ import (
 	"crypto/md5"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"time"
 
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/internal/config"
+	"github.com/liov/hoper/go/v2/user/internal/dao"
 	modelconst "github.com/liov/hoper/go/v2/user/internal/model"
-	"github.com/liov/hoper/go/v2/utils/protobuf"
+	"github.com/liov/hoper/go/v2/utils/log"
+	"github.com/liov/hoper/go/v2/utils/mail"
+	"github.com/liov/hoper/go/v2/utils/protobuf/response"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 	"github.com/liov/hoper/go/v2/utils/time2"
 	"github.com/liov/hoper/go/v2/utils/valid"
@@ -18,31 +22,31 @@ import (
 
 type UserService struct{}
 
-func (*UserService) Signup(ctx context.Context, in *model.SignupReq) (*model.SignupRep, error) {
-	var rep = &model.SignupRep{Code: 10000}
+func (*UserService) Signup(ctx context.Context, in *model.SignupReq) (*response.AnyReply, error) {
+	var rep = &response.AnyReply{Code: 10000}
 	err := valid.Validate.Struct(in)
 	if err != nil {
 		rep.Msg = valid.Trans(err)
 		return rep, nil
 	}
 
-	if in.Email == "" && in.Phone == "" {
+	if in.Mail == "" && in.Phone == "" {
 		rep.Msg = "请填写邮箱或手机号"
 		return rep, err
 	}
 
-	if exist, err := userDao.ExitByEmailORPhone(in.Email, in.Phone); exist {
-		if  in.Email != "" {
+/*	if exist, err := userDao.ExitByEmailORPhone(in.Mail, in.Phone); exist {
+		if  in.Mail != "" {
 			rep.Msg = "邮箱已被注册"
 			return rep, err
 		} else  {
 			rep.Msg = "手机号已被注册"
 			return rep, err
 		}
-	}
+	}*/
 	var user = &model.User{}
 	user.Name = in.Name
-	user.Email = in.Email
+	user.Mail = in.Mail
 	user.Gender = modelconst.UserSexNil
 	user.CreatedAt = time2.Format(time.Now())
 	user.LastActiveAt = user.CreatedAt
@@ -55,8 +59,23 @@ func (*UserService) Signup(ctx context.Context, in *model.SignupReq) (*model.Sig
 		return rep, err
 	}
 	data,_:=json.Marshal(user)
-	rep.Data = protobuf.StringJson(data)
+	rep.Data = data
 	rep.Msg = "新建成功"
+
+	activeUser := modelconst.ActiveTime + strconv.FormatUint(user.Id, 10)
+	RedisConn := dao.Dao.Redis.Get()
+	defer RedisConn.Close()
+
+	curTime := time.Now().Unix()
+
+	if _, err := RedisConn.Do("SET", activeUser, curTime, "EX", modelconst.ActiveDuration); err != nil {
+		log.Error("UserService.Signup,RedisConn.Do: ",err)
+		rep.Msg = "新建出错"
+		return rep,nil
+	}
+	go func() {
+		sendMail("/active", "账号激活", curTime, user)
+	}()
 	return rep, nil
 }
 
@@ -69,6 +88,59 @@ func salt(password string) string {
 func encryptPassword(password string) string {
 	hash := salt(password) + config.Conf.Server.PassSalt + password[5:]
 	return fmt.Sprintf("%x",md5.Sum(strings2.ToBytes(hash)))
+}
+
+
+/*
+	letter:=`
+From:{{.From}}
+To: {{.To}}
+Subject: {{.Title}}
+Content-Type: text/html; charset=UTF-8
+
+`
+*/
+func sendMail(action string, title string, curTime int64, user *model.User) {
+	siteName := "hoper"
+	siteURL := "https://" + config.Conf.Server.Domain
+	secretStr := strconv.FormatInt(curTime, 10) + user.Mail + user.Password
+	secretStr = fmt.Sprintf("%x", md5.Sum(strings2.ToBytes(secretStr)))
+	actionURL := siteURL + "/user" + action + "/"
+
+	actionURL = actionURL + strconv.FormatUint(user.Id, 10) + "/" + secretStr
+	log.Info(actionURL)
+
+	content := "<p><b>亲爱的" + user.Name + ":</b></p>" +
+		"<p>我们收到您在 " + siteName + " 的注册信息, 请点击下面的链接, 或粘贴到浏览器地址栏来激活帐号.</p>" +
+		"<a href=\"" + actionURL + "\">" + actionURL + "</a>" +
+		"<p>如果您没有在 " + siteName + " 填写过注册信息, 说明有人滥用了您的邮箱, 请删除此邮件, 我们对给您造成的打扰感到抱歉.</p>" +
+		"<p>" + siteName + " 谨上.</p>"
+
+	if action == "/reset" {
+		content = "<p><b>亲爱的" + user.Name + ":</b></p>" +
+			"<p>你的密码重设要求已经得到验证。请点击以下链接, 或粘贴到浏览器地址栏来设置新的密码: </p>" +
+			"<a href=\"" + actionURL + "\">" + actionURL + "</a>" +
+			"<p>感谢你对" + siteName + "的支持，希望你在" + siteName + "的体验有益且愉快。</p>" +
+			"<p>(这是一封自动产生的email，请勿回复。)</p>"
+	}
+	//content += "<p><img src=\"" + siteURL + "/images/logo.png\" style=\"height: 42px;\"/></p>"
+	//fmt.Println(content)
+	headers := make(map[string]string)
+	headers["From"] = siteName + "<" + config.Conf.Mail.User + ">"
+	headers["To"] = user.Mail
+	headers["Subject"] = title
+	headers["Content-Type"] = "text/html; charset=UTF-8"
+	message := ""
+	for key, value := range headers {
+		message += fmt.Sprintf("%s: %s\r\n", key, value)
+	}
+	message += "\r\n" + content
+
+	addr:= config.Conf.Mail.Host+ config.Conf.Mail.Port
+	err := mail.SendMailTLS(addr,dao.Dao.MailAuth,config.Conf.Mail.User,[]string{user.Mail},[]byte(message))
+	if err!=nil{
+		log.Error("sendMail",err)
+	}
 }
 
 //验证密码是否正确
