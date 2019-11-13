@@ -57,6 +57,7 @@ func (*UserService) Verify(ctx context.Context, req *model.VerifyReq) (*response
 		rep.Msg = "新建出错"
 		return rep, nil
 	}
+	rep.Data = []byte("\""+vcode+"\"")
 	return rep, err
 }
 
