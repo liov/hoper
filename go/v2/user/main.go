@@ -3,7 +3,7 @@ package main
 ////go:generate protoc -I ../../../protobuf/ ../../../protobuf/user/*.proto --go_out=plugins=grpc:../protobuf
 //go:generate protoc -I../../protobuf/ -I$GOPATH/src -I$GOPATH/src/github.com/gogo/protobuf/protobuf  ../../protobuf/user/*.proto --gogo_out=plugins=grpc,Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types,Mgoogle/api/annotations.proto=github.com/gogo/googleapis/google/api,Mgoogle/protobuf/field_mask.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/any.proto=github.com/gogo/protobuf/types:../protobuf
 import (
-	"os"
+
 	"os/signal"
 	"syscall"
 
@@ -13,12 +13,12 @@ import (
 	"github.com/liov/hoper/go/v2/user/internal/server"
 )
 
+
 func main() {
 	defer initialize.Start(config.Conf, dao.Dao)()
-	ch := make(chan os.Signal, 1)
 Loop:
 	for {
-		signal.Notify(ch,
+		signal.Notify(server.SignalChan(),
 			// kill -SIGINT XXXX 或 Ctrl+c
 			syscall.SIGINT, // register that too, it should be ok
 			// os.Kill等同于syscall.Kill
@@ -27,10 +27,10 @@ Loop:
 			syscall.SIGTERM,
 		)
 		select {
-		case <-ch:
+		case <-server.SignalChan():
 			break Loop
 		default:
-			server.Server()
+			server.Serve()
 		}
 	}
 }
