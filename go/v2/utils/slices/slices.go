@@ -27,3 +27,18 @@ func StringContains(arr []string, sub string) bool {
 	}
 	return false
 }
+
+type Equal interface {
+	IsEqual(interface{}) bool
+}
+
+func IsCoincide(s1, s2 []Equal) bool {
+	for i:= range s1 {
+		for j:= range s2 {
+			if s1[i].IsEqual(s2[j]){
+				return true
+			}
+		}
+	}
+	return false
+}

@@ -24,3 +24,4 @@ useradd 选项 用户名
 Linux提供了集成的系统管理工具userconf，它可以用来对用户账号进行统一管理。
 
 useradd -d /home/jyb -m -g root jyb
+usermod -s /bin/bash jyb
