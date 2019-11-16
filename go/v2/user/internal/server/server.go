@@ -28,19 +28,21 @@ func Serve() {
 		// kill -SIGTERM XXXX
 		syscall.SIGTERM,
 	)
+	httpServer:=Http()
+	grpcServer:=Grpc()
 	handle := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.ProtoMajor != 2 {
-			Http().ServeHTTP(w, r)
+			httpServer.ServeHTTP(w, r)
 			return
 		}
 		if strings.Contains(
 			r.Header.Get("Content-Type"), "application/grpc",
 		) {
-			Grpc().ServeHTTP(w, r) // gRPC Server
+			grpcServer.ServeHTTP(w, r) // gRPC Server
 			return
 		}
 
-		Http().ServeHTTP(w, r)
+		httpServer.ServeHTTP(w, r)
 		return
 	})
 	h2Handler := h2c.NewHandler(handle, &http2.Server{})
@@ -52,6 +54,8 @@ func Serve() {
 	}()
 
 	<-ch
-	Grpc().Stop()
-	server.Close()
+	grpcServer.Stop()
+	if err:=server.Close();err!=nil{
+		log.Error(err)
+	}
 }

@@ -7,6 +7,11 @@ option (gogoproto.goproto_getters_all) = false;
 option (gogoproto.unmarshaler_all) = true;
 option (gogoproto.marshaler_all) = true;
 option (gogoproto.sizer_all) = true;
+option (gogoproto.goproto_unrecognized_all) = false;
+option (gogoproto.goproto_unkeyed_all) = false;
+option (gogoproto.goproto_sizecache_all) = false;
+option (gogoproto.goproto_registration) = true;
+option (gogoproto.messagename_all) = true;
 
 // 用户
 message User {
@@ -17,7 +22,7 @@ message User {
     string mail = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(16);default:''\" validate:\"email\" comment:\"邮箱\""];
     string phone = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(32);default:''\" validate:\"phone\" comment:\"手机号\""];
     //性别，0未填写，1男，2女
-    uint32 gender = 8 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned;default:0\"",(gogoproto.casttype) = "uint8"];
+    uint32 gender = 8 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned;default:0\"", (gogoproto.casttype) = "uint8"];
     string birthday = 9 [(gogoproto.moretags) = "gorm:\"type:datetime;default:0\""];
     string address = 14 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
     string introduction = 10 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
@@ -28,10 +33,10 @@ message User {
     uint64 score = 15 [(gogoproto.jsontag) = "score", (gogoproto.moretags) = "gorm:\"type:bigint(20);default:0\""];
     uint64 followCount = 16 [(gogoproto.jsontag) = "followCount", (gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned;default:0\""];
     uint64 followedCount = 17 [(gogoproto.jsontag) = "followedCount", (gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned;default:0\""];
-    uint32 role = 24 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned;default:0\"",(gogoproto.casttype) = "uint8"];
+    uint32 role = 24 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned;default:0\"", (gogoproto.casttype) = "uint8"];
     string createdAt = 25 [(gogoproto.moretags) = "gorm:\"type:datetime(3);default:current_timestamp(3)\""];
     string bannedAt = 27 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"type:datetime(3);default:0\""];
-    uint32 status = 28 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned;default:0\"",(gogoproto.casttype) = "uint8"];
+    uint32 status = 28 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned;default:0\"", (gogoproto.casttype) = "uint8"];
 }
 
 message UserExtend {
@@ -48,13 +53,13 @@ message UserFollow {
     uint64 userId = 1 [(gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned;index\""]; //一个关注另一个，ID小的做UserID
     uint64 followId = 2 [(gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned\""];
     string createdAt = 3 [(gogoproto.moretags) = "gorm:\"type:bigint(20);default:0\""]; //FollowUser关注User时间
-    uint32 status = 5 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned\"" , (gogoproto.casttype) = "uint8"]; //状态：0无效，1有效
+    uint32 status = 5 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned\"", (gogoproto.casttype) = "uint8"]; //状态：0无效，1有效
 }
 
 //关注日志
 message UserFollowLog {
     uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key\""];
-    uint32 action = 2 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned\"",(gogoproto.casttype) = "uint8"]; //类型：0添加关注，1移除关注
+    uint32 action = 2 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned\"", (gogoproto.casttype) = "uint8"]; //类型：0添加关注，1移除关注
     uint64 userId = 3 [(gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned\""];
     uint64 followId = 4 [(gogoproto.moretags) = "gorm:\"type:bigint(20)unsigned\""];
     string createdAt = 6 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
@@ -84,7 +89,7 @@ message UserActionLog {
     uint64 ID = 1 [(gogoproto.moretags) = "gorm:\"primary_key\""];
     uint64 userId = 2 [(gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned;index\""];
     //类型
-    sint32 action = 3 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned\"",(gogoproto.casttype) = "uint8"];
+    sint32 action = 3 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned\"", (gogoproto.casttype) = "uint8"];
     //操作地点
     string location = 4 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
     string IP = 5 [(gogoproto.moretags) = "gorm:\"type:varchar(32)\""];

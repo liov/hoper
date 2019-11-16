@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/kataras/iris"
-	"github.com/liov/hoper/go/v2/gateway/internal/client"
+	"github.com/liov/hoper/go/v2/httptpl/internal/grpcclient"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 
 	"github.com/liov/hoper/go/v2/utils/log"
@@ -29,7 +29,7 @@ func (u *UserController) VerificationCode() {
 				c.ReadJSON(&req)
 				ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 				defer cancel()
-				rep,err:=client.Client.UserClient.Verify(ctx,&req)
+				rep,err:= grpcclient.Client.UserClient.Verify(ctx,&req)
 				if err != nil {
 					log.Errorf("could not greet: %v", err)
 				}
@@ -53,7 +53,7 @@ func (u *UserController) Add() {
 				c.ReadJSON(&req)
 				ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 				defer cancel()
-				rep,err:=client.Client.UserClient.Signup(ctx,&req)
+				rep,err:= grpcclient.Client.UserClient.Signup(ctx,&req)
 				if err != nil {
 					log.Errorf("could not greet: %v", err)
 				}
@@ -75,7 +75,7 @@ func (u *UserController) Get() {
 				id:= c.Params().GetUint64Default("id",0)
 				ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 				defer cancel()
-				rep,err:=client.Client.UserClient.GetUser(ctx,&model.GetReq{ID:id})
+				rep,err:= grpcclient.Client.UserClient.GetUser(ctx,&model.GetReq{ID: id})
 				if err != nil {
 					log.Errorf("could not greet: %v", err)
 				}

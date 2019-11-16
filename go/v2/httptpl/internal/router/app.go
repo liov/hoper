@@ -6,7 +6,7 @@ import (
 
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/recover"
-	"github.com/liov/hoper/go/v2/gateway/internal/config"
+	"github.com/liov/hoper/go/v2/httptpl/internal/config"
 	"github.com/liov/hoper/go/v2/initialize"
 	"github.com/liov/hoper/go/v2/utils/api"
 	"github.com/liov/hoper/go/v2/utils/log"
