@@ -28,7 +28,8 @@ func filter(
 
 func Grpc() *grpc.Server{
 	s := grpc.NewServer(
-		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(filter,grpc_validator.UnaryServerInterceptor())),
+		//filter应该在最后
+		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(grpc_validator.UnaryServerInterceptor(),filter)),
 		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(grpc_validator.StreamServerInterceptor())),
 		)
 	model.RegisterUserServiceServer(s, &service.UserService{})
