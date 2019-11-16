@@ -1,4 +1,4 @@
-package client
+package grpcclient
 
 import (
 	user_model "github.com/liov/hoper/go/v2/protobuf/user"

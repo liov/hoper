@@ -5,7 +5,7 @@ import (
 
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/context"
-	"github.com/liov/hoper/go/v2/gateway/internal/controller"
+	"github.com/liov/hoper/go/v2/httptpl/internal/controller"
 )
 
 func route(app *iris.Application) {

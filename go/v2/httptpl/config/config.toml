@@ -1,0 +1,6 @@
+NoInit = ["Cache"]
+
+Module = "gateway"
+#dev | test | prod
+Env = "dev"
+Additional  = "./config/add-config.toml"
