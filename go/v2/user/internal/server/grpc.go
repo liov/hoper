@@ -23,7 +23,7 @@ func filter(
 			log.Errorf("%v panic: %v", info, r)
 		}
 		if err != nil {
-			resp = response.AnyReply{
+			resp = &response.AnyReply{
 				Code: 1000,
 				Data: nil,
 				Msg:  err.Error(),
