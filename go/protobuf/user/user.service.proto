@@ -3,17 +3,40 @@ package model;
 import "user/user.modle.proto";
 import "response/anyreply.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+import "github.com/mwitkow/go-proto-validators/validator.proto";
+import "google/api/annotations.proto";
 
 option (gogoproto.goproto_enum_prefix_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 option (gogoproto.unmarshaler_all) = true;
 option (gogoproto.marshaler_all) = true;
 option (gogoproto.sizer_all) = true;
+option (gogoproto.goproto_unrecognized_all) = false;
+option (gogoproto.goproto_unkeyed_all) = false;
+option (gogoproto.goproto_sizecache_all) = false;
+option (gogoproto.goproto_registration) = true;
+option (gogoproto.messagename_all) = true;
+
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+  info: {
+    version: "1.0";
+  };
+external_docs: {
+url: "https://hoper.xyz/api";
+description: "用户中心api";
+}
+schemes: HTTPS;
+};
 
 service UserService {
 
     //验证码
     rpc Verify (VerifyReq) returns (response.AnyReply) {
+        option (google.api.http) = {
+        post: "/v1/user/verify"
+        body: "*"
+        };
     }
 
     //注册
@@ -43,16 +66,19 @@ message VerifyReq {
 }
 
 message SignupReq {
-    string password = 4 [(gogoproto.moretags) = "validate:\"required,gte=6,lte=15\" comment:\"密码\""];
+    string password = 4 [(gogoproto.moretags) = "validate:\"required,gte=6,lte=15\" comment:\"密码\"",(validator.field) = {
+            int_gt: 0
+            human_error: "ID must a positive integer"
+        }];
     string mail = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" comment:\"邮箱\""];
     string phone = 7 [(gogoproto.moretags) = "validate:\"omitempty,phone\" comment:\"手机号\""];
     //验证码
     string vCode = 8 [(gogoproto.moretags) = "validate:\"required,numeric\" comment:\"验证码\""];
 }
 
-message ActiveReq{
+message ActiveReq {
     uint64 id = 1;
-    string secret =2;
+    string secret = 2;
 }
 
 message GetReq {

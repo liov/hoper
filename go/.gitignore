@@ -4,3 +4,4 @@ add-config.toml
 *.pb.go
 *.pb.gw.go
 *.micro.go
+*.swagger.json
