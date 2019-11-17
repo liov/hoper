@@ -23,5 +23,4 @@ useradd 选项 用户名
 增加用户账号就是在/etc/passwd文件中为新用户增加一条记录，同时更新其他系统文件如/etc/shadow, /etc/group等。
 Linux提供了集成的系统管理工具userconf，它可以用来对用户账号进行统一管理。
 
-useradd -d /home/jyb -m -g root jyb
-usermod -s /bin/bash jyb
+useradd -d /home/jyb -m -g root  -s /bin/bash jyb

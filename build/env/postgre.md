@@ -12,29 +12,31 @@ sudo apt-get update
 wget https://ftp.postgresql.org/pub/source/v11.3/postgresql-11.3.tar.gz
 tar -xzvf
 apt install libreadline-dev
+apt-get install zlib1g-dev
 ./configure --prefix=/usr/local/postgresql
-
-useradd postgres
+make&&make install
+useradd  -m -s /bin/bash postgres
 
 sudo passwd postgres
 
 su postgres
 
-mkdir /home/postgre/data
+mkdir /home/postgres/data
 
 cd /home/jyb/
 
-chown -R postgres.postgres postgre
+chown -R postgres:postgres postgre
 
-./initdb -E UTF-8 -D /home/postgre/data --locale=en_US.UTF-8 -U postgres -W
+cd /usr/local/postgresql/bin
+./initdb -E UTF-8 -D /home/postgres/data --locale=en_US.UTF-8 -U postgres -W
 
-./pg_ctl -D /home/postgre/data start
+./pg_ctl -D /home/postgres/data start
 
-vim /home/postgre/data/pg_hba.conf
+vim /home/postgres/data/pg_hba.conf
 
 host    all     all     0.0.0.0/0                       md5
 
-vim /home/postgre/data/postgresql.conf
+vim /home/postgres/data/postgresql.conf
 
 listen_addresses = '*'
 
