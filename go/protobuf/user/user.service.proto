@@ -17,6 +17,7 @@ option (gogoproto.goproto_unkeyed_all) = false;
 option (gogoproto.goproto_sizecache_all) = false;
 option (gogoproto.goproto_registration) = true;
 option (gogoproto.messagename_all) = true;
+option (gogoproto.populate_all) = true;
 
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
   info: {
