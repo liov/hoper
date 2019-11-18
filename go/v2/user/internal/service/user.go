@@ -9,13 +9,13 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
+	"github.com/liov/hoper/go/v2/protobuf/response"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/internal/config"
 	"github.com/liov/hoper/go/v2/user/internal/dao"
 	modelconst "github.com/liov/hoper/go/v2/user/internal/model"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/mail"
-	"github.com/liov/hoper/go/v2/utils/protobuf/response"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 	"github.com/liov/hoper/go/v2/utils/time2"
 	"github.com/liov/hoper/go/v2/utils/valid"
@@ -47,7 +47,7 @@ func (*UserService) Verify(ctx context.Context, req *model.VerifyReq) (*response
 		}
 	}
 	vcode:=verificationCode.Generate()
-
+	log.Info(vcode)
 	key := modelconst.VerificationCodeKey + req.Mail + req.Phone
 	RedisConn := dao.Dao.Redis.Get()
 	defer RedisConn.Close()
@@ -58,6 +58,7 @@ func (*UserService) Verify(ctx context.Context, req *model.VerifyReq) (*response
 		return rep, nil
 	}
 	rep.Data = []byte("\""+vcode+"\"")
+	rep.Msg = "字符串有问题吗啊"
 	return rep, err
 }
 

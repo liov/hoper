@@ -5,10 +5,10 @@ import (
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
+	"github.com/liov/hoper/go/v2/protobuf/response"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/internal/service"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/protobuf/response"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -37,7 +37,7 @@ func filter(
 func Grpc() *grpc.Server {
 	s := grpc.NewServer(
 		//filter应该在最后
-		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(grpc_validator.UnaryServerInterceptor(), filter)),
+		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(filter,grpc_validator.UnaryServerInterceptor())),
 		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(grpc_validator.StreamServerInterceptor())),
 	)
 	model.RegisterUserServiceServer(s, &service.UserService{})

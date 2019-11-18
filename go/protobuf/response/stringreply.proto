@@ -3,15 +3,21 @@ package response;
 import "utils/json/stringjson.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
-option go_package = "github.com/liov/hoper/go/v2/utils/protobuf/response";
+option go_package = "github.com/liov/hoper/go/v2/protobuf/response";
 
 option (gogoproto.goproto_enum_prefix_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 option (gogoproto.unmarshaler_all) = true;
 option (gogoproto.marshaler_all) = true;
 option (gogoproto.sizer_all) = true;
+option (gogoproto.goproto_unrecognized_all) = false;
+option (gogoproto.goproto_unkeyed_all) = false;
+option (gogoproto.goproto_sizecache_all) = false;
+option (gogoproto.goproto_registration) = true;
+option (gogoproto.messagename_all) = true;
+option (gogoproto.populate_all) = true;
 
-message Reply {
+message StringReply {
     uint64 code = 1;
     //字符串json
     utils.json.StringJson data =2 [(gogoproto.nullable) = false];

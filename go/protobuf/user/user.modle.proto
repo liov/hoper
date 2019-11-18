@@ -12,6 +12,7 @@ option (gogoproto.goproto_unkeyed_all) = false;
 option (gogoproto.goproto_sizecache_all) = false;
 option (gogoproto.goproto_registration) = true;
 option (gogoproto.messagename_all) = true;
+option (gogoproto.populate_all) = true;
 
 // 用户
 message User {
@@ -89,7 +90,7 @@ message UserActionLog {
     uint64 ID = 1 [(gogoproto.moretags) = "gorm:\"primary_key\""];
     uint64 userId = 2 [(gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned;index\""];
     //类型
-    sint32 action = 3 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned\"", (gogoproto.casttype) = "uint8"];
+    uint32 action = 3 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned\"", (gogoproto.casttype) = "uint8"];
     //操作地点
     string location = 4 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
     string IP = 5 [(gogoproto.moretags) = "gorm:\"type:varchar(32)\""];
