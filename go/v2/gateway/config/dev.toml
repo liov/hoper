@@ -6,6 +6,8 @@ Port = ":8000"
 ReadTimeout = 60
 WriteTimeout = 60
 
+GrpcService = {user = "localhost:8080"}
+
 PassSalt = "%*~&*G(Ysa-jyb"
 TokenSecret = "hjoihiahDAW2iofjiJPO"
 TokenMaxAge = 86400

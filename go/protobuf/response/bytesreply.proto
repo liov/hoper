@@ -1,6 +1,6 @@
 syntax = "proto3";
 package response;
-import "google/protobuf/any.proto";
+import "utils/any/any.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 option go_package = "github.com/liov/hoper/go/v2/protobuf/response";
@@ -17,8 +17,9 @@ option (gogoproto.goproto_registration) = true;
 option (gogoproto.messagename_all) = true;
 option (gogoproto.populate_all) = true;
 
-message Reply {
+message AnyReply {
     uint64 code = 1;
-    google.protobuf.Any data =2;
+    //字节数组json
+    utils.any.Any data =2 [(gogoproto.nullable) = false];
     string msg =3;
 }

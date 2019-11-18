@@ -1,0 +1,26 @@
+[database]
+Type = "mysql"
+#User = root
+User = "web"
+Password = "123456"
+Host = "192.168.1.212"
+Port = 3306
+Charset = "utf8mb4"
+Database = "test"
+TablePrefix =""
+MaxIdleConns = 5
+MaxOpenConns = 10
+
+[redis]
+Addr = "192.168.1.204:6379"
+Password ="123456"
+MaxIdle = 30
+MaxActive = 30
+IdleTimeout = 200
+
+#邮件
+[mail]
+Host = "smtp.qq.com"
+Port = ":465"
+User =  "lby.i@qq.com"
+Password = "mtliqcfqelbscage"

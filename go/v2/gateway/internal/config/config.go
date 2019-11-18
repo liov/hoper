@@ -9,9 +9,11 @@ import (
 )
 
 type serverConfig struct {
-	Port     string
+	Port         string
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
+
+	GrpcService     map[string]string
 
 	PassSalt        string
 	TokenMaxAge     int64
@@ -81,11 +83,11 @@ func (d *duration) UnmarshalText(text []byte) error {
 //固定函数名，init时反射用
 func (c *config) Custom() {
 	if runtime.GOOS == "windows" {
-		if c.Flag.Password !=""{
+		if c.Flag.Password != "" {
 			c.Database.Password = c.Flag.Password
 			c.Redis.Password = c.Database.Password
 		}
-		if c.Flag.MailPassword !="" {
+		if c.Flag.MailPassword != "" {
 			c.Server.MailPassword = c.Flag.MailPassword
 		}
 	}
