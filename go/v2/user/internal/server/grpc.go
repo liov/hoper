@@ -36,7 +36,7 @@ func filter(
 
 func Grpc() *grpc.Server {
 	s := grpc.NewServer(
-		//filter应该在最后
+		//filter应该在最前
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(filter,grpc_validator.UnaryServerInterceptor())),
 		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(grpc_validator.StreamServerInterceptor())),
 	)
