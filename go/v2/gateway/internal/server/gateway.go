@@ -34,8 +34,8 @@ func GateWay() http.Handler {
 	gwmux := runtime.NewServeMux(
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, jsonpb),
 		runtime.WithProtoErrorHandler(runtime.DefaultHTTPProtoErrorHandler),)
-	opts := []grpc.DialOption{grpc.WithInsecure()}
-	err := model.RegisterUserServiceHandlerFromEndpoint(ctx, gwmux, "localhost:9090", opts)
+	opts := []grpc.DialOption{grpc.WithInsecure(),grpc.WithBlock()}
+	err := model.RegisterUserServiceHandlerFromEndpoint(ctx, gwmux, config.Conf.Server.GrpcService["user"], opts)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -46,6 +46,7 @@ func GateWay() http.Handler {
 	h2Handler := h2c.NewHandler(mux, &http2.Server{})
 	server := &http.Server{Addr: config.Conf.Server.Port, Handler: h2Handler}
 	go func() {
+		log.Info("启动")
 		if err :=server.ListenAndServe();err!=nil{
 			log.Fatal(err)
 		}

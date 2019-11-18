@@ -31,6 +31,11 @@ func Serve() {
 	httpServer:=Http()
 	grpcServer:=Grpc()
 	handle := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if r := recover(); r != nil {
+				log.Errorf(" panic: %v", r)
+			}
+		}()
 		if r.ProtoMajor != 2 {
 			httpServer.ServeHTTP(w, r)
 			return

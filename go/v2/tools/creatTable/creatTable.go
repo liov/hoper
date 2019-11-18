@@ -14,6 +14,7 @@ var(
 	ormDB *gorm.DB
 )
 
+var configPath = "../../../add-config.toml"
 
 func init() {
 	var config = struct {
@@ -22,7 +23,7 @@ func init() {
 		Host string
 	}{}
 	err := configor.New(&configor.Config{Debug: true}).
-		Load(&config, "./add-config.toml")
+		Load(&config, configPath)
 	if err != nil {
 		log.Fatal(err)
 	}

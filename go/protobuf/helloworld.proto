@@ -1,13 +1,23 @@
 syntax = "proto3";
+package protobuf;
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 option java_multiple_files = true;
 option java_package = "xyz.hoper.protobuf";
 option java_outer_classname = "HelloWorld";
 
-package protobuf;
 
-import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-
+option (gogoproto.goproto_enum_prefix_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.goproto_unrecognized_all) = false;
+option (gogoproto.goproto_unkeyed_all) = false;
+option (gogoproto.goproto_sizecache_all) = false;
+option (gogoproto.goproto_registration) = true;
+option (gogoproto.messagename_all) = true;
+option (gogoproto.populate_all) = true;
 // The greeting service definition.
 service Greeter {
   // Sends a greeting
@@ -16,7 +26,9 @@ service Greeter {
 
 // The request message containing the user's name.
 message HelloRequest {
-  string name = 1;
+  uint64 code = 1;
+  bytes data = 2;
+  string name = 3;
 }
 
 // The response message containing the greetings

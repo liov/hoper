@@ -1,7 +1,7 @@
 syntax = "proto3";
 package model;
 import "user/user.modle.proto";
-import "response/anyreply.proto";
+import "response/bytesreply.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
@@ -35,7 +35,7 @@ service UserService {
     //验证码
     rpc Verify (VerifyReq) returns (response.AnyReply) {
         option (google.api.http) = {
-        post: "/v1/user/verify"
+        post: "/api/v1/user/verify"
         body: "*"
         };
     }
