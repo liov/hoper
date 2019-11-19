@@ -1,6 +1,10 @@
-package protobuf
+package any
 
 import (
+	"fmt"
+	"reflect"
+	"strings"
+
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/types"
 	"github.com/golang/protobuf/ptypes"
@@ -45,4 +49,17 @@ func GenGogoAny(detail proto.Message) (*types.Any, error) {
 		return nil, err
 	}
 	return vany,nil
+}
+
+func ResolveAny(typeUrl string) (proto.Message, error) {
+	// Only the part of typeUrl after the last slash is relevant.
+	mname := typeUrl
+	if slash := strings.LastIndex(mname, "/"); slash >= 0 {
+		mname = mname[slash+1:]
+	}
+	mt := proto.MessageType(mname)
+	if mt == nil {
+		return nil, fmt.Errorf("unknown message type %q", mname)
+	}
+	return reflect.New(mt.Elem()).Interface().(proto.Message), nil
 }

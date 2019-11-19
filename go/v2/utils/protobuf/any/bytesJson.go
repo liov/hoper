@@ -1,4 +1,4 @@
-package protobuf
+package any
 
 import (
 	"github.com/gogo/protobuf/jsonpb"
