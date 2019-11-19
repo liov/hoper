@@ -1,7 +1,6 @@
 syntax = "proto3";
 package model;
 import "user/user.modle.proto";
-import "response/bytesreply.proto";
 import "response/anyreply.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "protoc-gen-swagger/options/annotations.proto";
@@ -34,7 +33,7 @@ schemes: HTTPS;
 service UserService {
 
     //验证码
-    rpc Verify (VerifyReq) returns (response.AnyReply) {
+    rpc Verify (VerifyReq) returns (response.BytesReply) {
         option (google.api.http) = {
         post: "/api/v1/user/verify"
         body: "*"
@@ -42,17 +41,21 @@ service UserService {
     }
 
     //注册
-    rpc Signup (SignupReq) returns (response.AnyReply) {
+    rpc Signup (SignupReq) returns (response.BytesReply) {
     }
 
     //激活
-    rpc Active (ActiveReq) returns (response.AnyReply) {
+    rpc Active (ActiveReq) returns (response.BytesReply) {
     }
 
     rpc Edit (EditReq) returns (EditRep) {
     }
 
     rpc Login (LoginReq) returns (LoginRep) {
+        option (google.api.http) = {
+        post: "/api/v1/user/login"
+        body: "*"
+        };
     }
 
     rpc Logout (LogoutReq) returns (LogoutRep) {
@@ -66,22 +69,14 @@ service UserService {
 }
 
 message VerifyReq {
-    string mail = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" comment:\"邮箱\"",(validator.field) = {
-            regex:"^([a-zA-Z0-9]+[_.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_.]?)*[a-zA-Z0-9]+.[a-zA-Z]{2,3}$"
-            string_not_empty: false
-            human_error: "必须是一个正确邮箱"
-        }];
-    string phone = 7 [(gogoproto.moretags) = "validate:\"omitempty,phone\" comment:\"手机号\"",(validator.field) = {
-    regex: "^1[0-9]{10}$"
-    string_not_empty: false
-    human_error: "必须是一个正确手机号"
-}];
+    string mail = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" comment:\"邮箱\""];
+    string phone = 7 [(gogoproto.moretags) = "validate:\"omitempty,phone\" comment:\"手机号\""];
 }
 
 message SignupReq {
     string password = 4 [(gogoproto.moretags) = "validate:\"required,gte=6,lte=15\" comment:\"密码\"",(validator.field) = {
-            int_gt: 0
-            human_error: "ID must a positive integer"
+            length_gt: 6
+            human_error: "密码错误"
         }];
     string mail = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" comment:\"邮箱\""];
     string phone = 7 [(gogoproto.moretags) = "validate:\"omitempty,phone\" comment:\"手机号\""];
@@ -100,7 +95,10 @@ message GetReq {
 
 message LoginReq {
     string input = 1;
-    string password = 2;
+    string password = 2 [(validator.field) = {
+            length_gt: 6
+            human_error: "密码错误"
+        }];
 }
 
 message EditReq {

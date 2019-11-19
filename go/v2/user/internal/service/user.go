@@ -16,7 +16,7 @@ import (
 	modelconst "github.com/liov/hoper/go/v2/user/internal/model"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/mail"
-	"github.com/liov/hoper/go/v2/utils/protobuf"
+	"github.com/liov/hoper/go/v2/utils/protobuf/any"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 	"github.com/liov/hoper/go/v2/utils/time2"
 	"github.com/liov/hoper/go/v2/utils/valid"
@@ -25,8 +25,8 @@ import (
 
 type UserService struct{}
 
-func (*UserService) Verify(ctx context.Context, req *model.VerifyReq) (*response.AnyReply, error) {
-	var rep = &response.AnyReply{Code: 10000}
+func (*UserService) Verify(ctx context.Context, req *model.VerifyReq) (*response.BytesReply, error) {
+	var rep = &response.BytesReply{Code: 10000}
 	err := valid.Validate.Struct(req)
 	if err != nil {
 		rep.Message = valid.Trans(err)
@@ -63,8 +63,8 @@ func (*UserService) Verify(ctx context.Context, req *model.VerifyReq) (*response
 	return rep, err
 }
 
-func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*response.AnyReply, error) {
-	var rep = &response.AnyReply{Code: 10000}
+func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*response.BytesReply, error) {
+	var rep = &response.BytesReply{Code: 10000}
 	err := valid.Validate.Struct(req)
 	if err != nil {
 		rep.Message = valid.Trans(err)
@@ -192,8 +192,8 @@ func checkPassword(password string, user *model.User) bool {
 	return encryptPassword(password) == user.Password
 }
 
-func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*response.AnyReply, error) {
-	var rep = &response.AnyReply{Code: 10000, Message: "无效的链接"}
+func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*response.BytesReply, error) {
+	var rep = &response.BytesReply{Code: 10000, Message: "无效的链接"}
 	RedisConn := dao.Dao.Redis.Get()
 	defer RedisConn.Close()
 
@@ -224,7 +224,7 @@ func (*UserService) Edit(context.Context, *model.EditReq) (*model.EditRep, error
 }
 
 func (*UserService) Login(context.Context, *model.LoginReq) (*model.LoginRep, error) {
-	panic("implement me")
+	return &model.LoginRep{Token:"test",User:&model.User{Name:"jack"}}, nil
 }
 
 func (*UserService) Logout(context.Context, *model.LogoutReq) (*model.LogoutRep, error) {
@@ -232,6 +232,6 @@ func (*UserService) Logout(context.Context, *model.LogoutReq) (*model.LogoutRep,
 }
 
 func (*UserService) GetUser(ctx context.Context,req *model.GetReq) (*response.Reply, error) {
-	user,_:=protobuf.GenGogoAny(&model.User{Id:req.Id})
+	user,_:=any.GenGogoAny(&model.User{Id:req.Id})
 	return &response.Reply{Details:user}, nil
 }
