@@ -6,8 +6,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/core/host"
+	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris//v12core/host"
 	"github.com/liov/hoper/go/v2/httptpl/internal/config"
 	"github.com/liov/hoper/go/v2/httptpl/internal/router"
 	"github.com/liov/hoper/go/v2/initialize"

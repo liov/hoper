@@ -7,10 +7,10 @@ import (
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	"github.com/liov/hoper/go/v2/protobuf/response"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
-	"github.com/liov/hoper/go/v2/user/internal/service"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"google.golang.org/grpc/status"
 )
 
 func filter(
@@ -28,6 +28,9 @@ func filter(
 				Data: nil,
 				Msg:  err.Error(),
 			}
+			s,_ := status.FromError(err)
+			s,_ = s.WithDetails(&model.User{FollowCount: 10})
+			err = s.Err()
 		}
 	}()
 
@@ -40,7 +43,7 @@ func Grpc() *grpc.Server {
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(filter,grpc_validator.UnaryServerInterceptor())),
 		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(grpc_validator.StreamServerInterceptor())),
 	)
-	model.RegisterUserServiceServer(s, &service.UserService{})
+	model.RegisterUserServiceServer(s, userService)
 	// Register reflection service on gRPC server.
 	reflection.Register(s)
 	return s

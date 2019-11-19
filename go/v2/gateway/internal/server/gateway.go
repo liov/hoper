@@ -46,7 +46,7 @@ func GateWay() http.Handler {
 	h2Handler := h2c.NewHandler(mux, &http2.Server{})
 	server := &http.Server{Addr: config.Conf.Server.Port, Handler: h2Handler}
 	go func() {
-		log.Info("启动")
+		log.Info("listening ",config.Conf.Server.Port)
 		if err :=server.ListenAndServe();err!=nil{
 			log.Fatal(err)
 		}
