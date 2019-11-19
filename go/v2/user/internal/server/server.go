@@ -28,8 +28,8 @@ func Serve() {
 		// kill -SIGTERM XXXX
 		syscall.SIGTERM,
 	)
-	httpServer:=Http()
-	grpcServer:=Grpc()
+	httpServer := Http()
+	grpcServer := Grpc()
 	handle := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if r := recover(); r != nil {
@@ -60,7 +60,7 @@ func Serve() {
 
 	<-ch
 	grpcServer.Stop()
-	if err:=server.Close();err!=nil{
+	if err := server.Close(); err != nil {
 		log.Error(err)
 	}
 }

@@ -62,8 +62,14 @@ service UserService {
 }
 
 message VerifyReq {
-    string mail = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" comment:\"邮箱\""];
-    string phone = 7 [(gogoproto.moretags) = "validate:\"omitempty,phone\" comment:\"手机号\""];
+    string mail = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" comment:\"邮箱\"",(validator.field) = {
+            regex:"^([a-zA-Z0-9]+[_.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_.]?)*[a-zA-Z0-9]+.[a-zA-Z]{2,3}$"
+            human_error: "必须是一个正确邮箱"
+        }];
+    string phone = 7 [(gogoproto.moretags) = "validate:\"omitempty,phone\" comment:\"手机号\"",(validator.field) = {
+    regex: "^1[0-9]{10}$"
+    human_error: "必须是一个正确手机号"
+}];
 }
 
 message SignupReq {

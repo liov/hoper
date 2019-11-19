@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 	"github.com/liov/hoper/go/v2/httptpl/internal/grpcclient"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 
