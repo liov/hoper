@@ -16,6 +16,7 @@ import (
 	modelconst "github.com/liov/hoper/go/v2/user/internal/model"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/mail"
+	"github.com/liov/hoper/go/v2/utils/protobuf"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 	"github.com/liov/hoper/go/v2/utils/time2"
 	"github.com/liov/hoper/go/v2/utils/valid"
@@ -28,21 +29,21 @@ func (*UserService) Verify(ctx context.Context, req *model.VerifyReq) (*response
 	var rep = &response.AnyReply{Code: 10000}
 	err := valid.Validate.Struct(req)
 	if err != nil {
-		rep.Msg = valid.Trans(err)
+		rep.Message = valid.Trans(err)
 		return rep, nil
 	}
 
 	if req.Mail == "" && req.Phone == "" {
-		rep.Msg = "请填写邮箱或手机号"
+		rep.Message = "请填写邮箱或手机号"
 		return rep, err
 	}
 
 	if exist, err := userDao.ExitByEmailORPhone(req.Mail, req.Phone); exist {
 		if req.Mail != "" {
-			rep.Msg = "邮箱已被注册"
+			rep.Message = "邮箱已被注册"
 			return rep, err
 		} else {
-			rep.Msg = "手机号已被注册"
+			rep.Message = "手机号已被注册"
 			return rep, err
 		}
 	}
@@ -54,11 +55,11 @@ func (*UserService) Verify(ctx context.Context, req *model.VerifyReq) (*response
 
 	if _, err := RedisConn.Do("SET", key, vcode, "EX", modelconst.VerificationCodeDuration); err != nil {
 		log.Error("UserService.Verify,RedisConn.Do: ", err)
-		rep.Msg = "新建出错"
+		rep.Message = "新建出错"
 		return rep, nil
 	}
-	rep.Data = []byte("\""+vcode+"\"")
-	rep.Msg = "字符串有问题吗啊"
+	rep.Details = []byte("\""+vcode+"\"")
+	rep.Message = "字符串有问题吗啊"
 	return rep, err
 }
 
@@ -66,21 +67,21 @@ func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*response
 	var rep = &response.AnyReply{Code: 10000}
 	err := valid.Validate.Struct(req)
 	if err != nil {
-		rep.Msg = valid.Trans(err)
+		rep.Message = valid.Trans(err)
 		return rep, nil
 	}
 
 	if req.Mail == "" && req.Phone == "" {
-		rep.Msg = "请填写邮箱或手机号"
+		rep.Message = "请填写邮箱或手机号"
 		return rep, err
 	}
 
 	if exist, err := userDao.ExitByEmailORPhone(req.Mail, req.Phone); exist {
 		if req.Mail != "" {
-			rep.Msg = "邮箱已被注册"
+			rep.Message = "邮箱已被注册"
 			return rep, err
 		} else {
-			rep.Msg = "手机号已被注册"
+			rep.Message = "手机号已被注册"
 			return rep, err
 		}
 	}
@@ -94,12 +95,12 @@ func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*response
 	user.AvatarURL = modelconst.DefaultAvatar
 	user.Password = encryptPassword(req.Password)
 	if err = userDao.Creat(user); err != nil {
-		rep.Msg = "新建出错"
+		rep.Message = "新建出错"
 		return rep, err
 	}
 	data, _ := json.Marshal(user)
-	rep.Data = data
-	rep.Msg = "新建成功"
+	rep.Details = data
+	rep.Message = "新建成功"
 
 	activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
 	RedisConn := dao.Dao.Redis.Get()
@@ -109,7 +110,7 @@ func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*response
 
 	if _, err := RedisConn.Do("SET", activeUser, curTime, "EX", modelconst.ActiveDuration); err != nil {
 		log.Error("UserService.Signup,RedisConn.Do: ", err)
-		rep.Msg = "新建出错"
+		rep.Message = "新建出错"
 		return rep, nil
 	}
 	go func() {
@@ -192,7 +193,7 @@ func checkPassword(password string, user *model.User) bool {
 }
 
 func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*response.AnyReply, error) {
-	var rep = &response.AnyReply{Code: 10000, Msg: "无效的链接"}
+	var rep = &response.AnyReply{Code: 10000, Message: "无效的链接"}
 	RedisConn := dao.Dao.Redis.Get()
 	defer RedisConn.Close()
 
@@ -214,7 +215,7 @@ func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*response
 	if req.Secret != secretStr {
 		return rep, nil
 	}
-	rep.Msg = "激活成功"
+	rep.Message = "激活成功"
 	return rep, nil
 }
 
@@ -230,6 +231,7 @@ func (*UserService) Logout(context.Context, *model.LogoutReq) (*model.LogoutRep,
 	panic("implement me")
 }
 
-func (*UserService) GetUser(context.Context, *model.GetReq) (*model.User, error) {
-	panic("implement me")
+func (*UserService) GetUser(ctx context.Context,req *model.GetReq) (*response.Reply, error) {
+	user,_:=protobuf.GenGogoAny(&model.User{Id:req.Id})
+	return &response.Reply{Details:user}, nil
 }

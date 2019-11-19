@@ -54,6 +54,7 @@ require (
 	go.etcd.io/bbolt v1.3.2 // indirect
 	go.uber.org/zap v1.10.0
 	golang.org/x/net v0.0.0-20191011234655-491137f69257
+	google.golang.org/genproto v0.0.0-20190819201941-24fa4b261c55
 	google.golang.org/grpc v1.23.1
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.30.0

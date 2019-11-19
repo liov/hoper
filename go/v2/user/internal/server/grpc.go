@@ -23,14 +23,12 @@ func filter(
 			log.Errorf("%v panic: %v", info, r)
 		}
 		if err != nil {
+			s,_:=status.FromError(err)
 			resp = &response.AnyReply{
 				Code: 1000,
-				Data: nil,
-				Msg:  err.Error(),
+				Message:  s.Message(),
 			}
-			s,_ := status.FromError(err)
-			s,_ = s.WithDetails(&model.User{FollowCount: 10})
-			err = s.Err()
+			err = nil
 		}
 	}()
 

@@ -19,7 +19,8 @@ option (gogoproto.populate_all) = true;
 
 message StringReply {
     uint64 code = 1;
+    string message = 2;
     //字符串json
-    utils.json.StringJson data =2 [(gogoproto.nullable) = false];
-    string msg =3;
+    utils.json.StringJson details = 3 [(gogoproto.nullable) = false];
+
 }
