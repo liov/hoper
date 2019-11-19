@@ -2,6 +2,7 @@ syntax = "proto3";
 package model;
 import "user/user.modle.proto";
 import "response/bytesreply.proto";
+import "response/anyreply.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
@@ -57,17 +58,22 @@ service UserService {
     rpc Logout (LogoutReq) returns (LogoutRep) {
     }
 
-    rpc GetUser (GetReq) returns (User) {
+    rpc GetUser (GetReq) returns (response.Reply) {
+        option (google.api.http) = {
+        get: "/api/v1/user"
+        };
     }
 }
 
 message VerifyReq {
     string mail = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" comment:\"邮箱\"",(validator.field) = {
             regex:"^([a-zA-Z0-9]+[_.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_.]?)*[a-zA-Z0-9]+.[a-zA-Z]{2,3}$"
+            string_not_empty: false
             human_error: "必须是一个正确邮箱"
         }];
     string phone = 7 [(gogoproto.moretags) = "validate:\"omitempty,phone\" comment:\"手机号\"",(validator.field) = {
     regex: "^1[0-9]{10}$"
+    string_not_empty: false
     human_error: "必须是一个正确手机号"
 }];
 }
@@ -89,7 +95,7 @@ message ActiveReq {
 }
 
 message GetReq {
-    uint64 ID = 1;
+    uint64 id = 1;
 }
 
 message LoginReq {
@@ -98,12 +104,12 @@ message LoginReq {
 }
 
 message EditReq {
-    uint64 ID = 1;
+    uint64 id = 1;
     string name = 2 [(gogoproto.moretags) = "validate:\"required,alphanum,gte=3,lte=10\" comment:\"名字\""];
 }
 
 message EditRep {
-    uint64 ID = 1;
+    uint64 id = 1;
 }
 
 message LoginRep {
@@ -113,7 +119,7 @@ message LoginRep {
 }
 
 message LogoutReq {
-    uint64 ID = 1;
+    uint64 id = 1;
 }
 
 message LogoutRep {
