@@ -19,7 +19,8 @@ option (gogoproto.populate_all) = true;
 
 message AnyReply {
     uint64 code = 1;
+    string message =2;
     //字节数组json
-    utils.any.Any data =2 [(gogoproto.nullable) = false];
-    string msg =3;
+    utils.any.Any details =3 [(gogoproto.nullable) = false];
+
 }
