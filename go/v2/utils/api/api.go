@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-openapi/spec"
 	"github.com/go-openapi/swag"
-	"github.com/kataras/iris/context"
+	"github.com/kataras/iris/v12/context"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"gopkg.in/yaml.v3"
 )

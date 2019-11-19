@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 	"github.com/kataras/pio"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 )
