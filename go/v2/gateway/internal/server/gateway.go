@@ -2,7 +2,9 @@ package server
 
 import (
 	"context"
+	"expvar"
 	"net/http"
+	"net/http/pprof"
 	"os"
 
 	"github.com/gogo/gateway"
@@ -34,7 +36,7 @@ func GateWay() http.Handler {
 	gwmux := runtime.NewServeMux(
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, jsonpb),
 		runtime.WithProtoErrorHandler(runtime.DefaultHTTPProtoErrorHandler),)
-	opts := []grpc.DialOption{grpc.WithInsecure(),grpc.WithBlock()}
+	opts := []grpc.DialOption{grpc.WithInsecure()}
 	err := model.RegisterUserServiceHandlerFromEndpoint(ctx, gwmux, config.Conf.Server.GrpcService["user"], opts)
 	if err != nil {
 		log.Fatal(err)
@@ -42,6 +44,12 @@ func GateWay() http.Handler {
 	//openapi
 	mux := http.NewServeMux()
 	mux.Handle("/",gwmux)
+	mux.Handle("/debug/vars",expvar.Handler())
+	mux.Handle("/debug/pprof/", http.HandlerFunc(pprof.Index))
+	mux.Handle("/debug/pprof/cmdline", http.HandlerFunc(pprof.Cmdline))
+	mux.Handle("/debug/pprof/profile", http.HandlerFunc(pprof.Profile))
+	mux.Handle("/debug/pprof/symbol", http.HandlerFunc(pprof.Symbol))
+	mux.Handle("/debug/pprof/trace", http.HandlerFunc(pprof.Trace))
 	mux.Handle("/open-api/",http.StripPrefix("/open-api/", http.FileServer(http.Dir("./api"))))
 	h2Handler := h2c.NewHandler(mux, &http2.Server{})
 	server := &http.Server{Addr: config.Conf.Server.Port, Handler: h2Handler}

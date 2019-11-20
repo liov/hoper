@@ -3,6 +3,7 @@ module github.com/liov/hoper/go/v2
 go 1.13
 
 require (
+	github.com/360EntSecGroup-Skylar/excelize v1.4.1 // indirect
 	github.com/Shopify/sarama v1.24.0
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/bluele/gcache v0.0.0-20190518031135-bc40bd653833
