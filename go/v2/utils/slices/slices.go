@@ -33,12 +33,24 @@ type Equal interface {
 }
 
 func IsCoincide(s1, s2 []Equal) bool {
-	for i:= range s1 {
-		for j:= range s2 {
-			if s1[i].IsEqual(s2[j]){
+	for i := range s1 {
+		for j := range s2 {
+			if s1[i].IsEqual(s2[j]) {
 				return true
 			}
 		}
 	}
 	return false
+}
+
+func RemoveDuplicates(s []int) []int {
+	var m = make(map[int]struct{})
+	for _, i := range s {
+		m[i] = struct{}{}
+	}
+	s =s[:0]
+	for k,_:=range m{
+		s = append(s,k)
+	}
+	return s
 }

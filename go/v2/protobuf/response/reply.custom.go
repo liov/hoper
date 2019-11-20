@@ -12,6 +12,10 @@ func (m *BytesReply) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
 	return json.Marshal(m)
 }
 
+func (m *StringReply) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
+	return json.Marshal(m)
+}
+
 type GoReply struct {
 	Code    int32
 	Message string
