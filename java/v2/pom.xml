@@ -146,7 +146,7 @@
                     <protocArtifact>com.google.protobuf:protoc:3.9.0:exe:${os.detected.classifier}</protocArtifact>
                     <pluginId>grpc-java</pluginId>
                     <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.23.0:exe:${os.detected.classifier}</pluginArtifact>
-                    <protoSourceRoot>${project.basedir}/../../../protobuf</protoSourceRoot>
+                    <protoSourceRoot>${project.basedir}/../../../go/protobuf</protoSourceRoot>
                     <includes>
                         <param>**/*.proto</param>
                     </includes>
