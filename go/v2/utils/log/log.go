@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/liov/hoper/go/v2/utils/log/output"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -38,6 +39,10 @@ func (lf *Config) NewLogger() *Logger {
 
 var logger *Logger = (&Config{Development: true, Skip: true}).NewLogger()
 var NoCall = (&Config{Development: true}).NewLogger()
+
+func init() {
+	output.RegisterSink()
+}
 
 func (lf *Config) SetLogger() {
 	logger.SugaredLogger = lf.initLogger().Sugar()
@@ -99,7 +104,7 @@ func (lf *Config) initLogger() *zap.Logger {
 	}
 	core := zapcore.NewTee(cores...)
 
-	logger := zap.New(core, lf.hook()..., )
+	logger := zap.New(core, lf.hook()...)
 
 	return logger
 }
@@ -182,7 +187,6 @@ func Debugw(msg string, keysAndValues ...interface{}) {
 	}
 	logger.Debugw(msg, keysAndValues...)
 }
-
 
 func Infow(msg string, keysAndValues ...interface{}) {
 	if len(keysAndValues)|0 != 0 {
