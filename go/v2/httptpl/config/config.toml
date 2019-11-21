@@ -1,6 +1,6 @@
 NoInit = ["Cache"]
 
-Module = "gateway"
+Module = "httptpl"
 #dev | test | prod
 Env = "dev"
 Additional  = ""
