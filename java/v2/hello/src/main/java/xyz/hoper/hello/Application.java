@@ -1,10 +1,10 @@
-package xyz.hoper;
+package xyz.hoper.hello;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import xyz.hoper.annotation.GrpcService;
-import xyz.hoper.server.GrpcLauncher;
+import xyz.hoper.hello.annotation.GrpcService;
+import xyz.hoper.hello.service.GrpcLauncher;
 
 import java.util.Map;
 
