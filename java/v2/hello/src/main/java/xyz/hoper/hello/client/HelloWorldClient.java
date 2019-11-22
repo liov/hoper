@@ -1,4 +1,4 @@
-package xyz.hoper.client;
+package xyz.hoper.hello.client;
 
 import io.grpc.ManagedChannel;
 import lombok.extern.log4j.Log4j2;

@@ -1,7 +1,7 @@
-package xyz.hoper.server;
+package xyz.hoper.hello.service;
 
 import io.grpc.stub.StreamObserver;
-import xyz.hoper.annotation.GrpcService;
+import xyz.hoper.hello.annotation.GrpcService;
 import xyz.hoper.protobuf.GreeterGrpc;
 import xyz.hoper.protobuf.HelloReply;
 import xyz.hoper.protobuf.HelloRequest;

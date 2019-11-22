@@ -1,4 +1,4 @@
-package xyz.hoper.server;
+package xyz.hoper.hello.service;
 
 import io.grpc.BindableService;
 import io.grpc.Server;
