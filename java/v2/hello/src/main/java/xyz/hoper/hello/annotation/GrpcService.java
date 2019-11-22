@@ -1,4 +1,4 @@
-package xyz.hoper.annotation;
+package xyz.hoper.hello.annotation;
 
 import org.springframework.stereotype.Component;
 

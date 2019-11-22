@@ -1,0 +1,11 @@
+module user {
+    requires jdk.unsupported;
+    requires java.base;
+    requires spring.boot;
+    requires spring.boot.autoconfigure;
+    requires spring.beans;
+    requires lombok;
+    requires spring.context;
+    requires java.annotation;
+    requires mybatis.spring;
+}

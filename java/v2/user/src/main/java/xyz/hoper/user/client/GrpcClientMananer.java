@@ -1,4 +1,4 @@
-package xyz.hoper.client;
+package xyz.hoper.user.client;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
