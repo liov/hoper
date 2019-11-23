@@ -1,0 +1,134 @@
+syntax = "proto3";
+package model;
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option java_package = "xyz.hoper.protobuf.user";
+
+option (gogoproto.goproto_enum_prefix_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.goproto_unrecognized_all) = false;
+option (gogoproto.goproto_unkeyed_all) = false;
+option (gogoproto.goproto_sizecache_all) = false;
+option (gogoproto.goproto_registration) = true;
+option (gogoproto.messagename_all) = true;
+option (gogoproto.populate_all) = true;
+
+// 用户
+message User {
+    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key;\""];
+    string name = 2 [(gogoproto.moretags) = "gorm:\"type:varchar(10);not null\" validate:\"required,gte=3,lte=10\" comment:\"名字\""];
+    string activatedAt = 3 [(gogoproto.moretags) = "gorm:\"type:datetime(3);default:0\""];
+    string password = 5 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"type:varchar(32);not null\" validate:\"gte=8,lte=15\" comment:\"密码\""];
+    string mail = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(16);default:''\" validate:\"email\" comment:\"邮箱\""];
+    string phone = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(32);default:''\" validate:\"phone\" comment:\"手机号\""];
+    //性别，0未填写，1男，2女
+    uint32 gender = 8 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned;default:0\"", (gogoproto.casttype) = "uint8"];
+    string birthday = 9 [(gogoproto.moretags) = "gorm:\"type:datetime;default:0\""];
+    string address = 14 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
+    string introduction = 10 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
+    string signature = 11 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
+    string avatarURL = 12 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
+    string coverURL = 13 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
+    string lastActiveAt = 23 [(gogoproto.moretags) = "gorm:\"type:datetime(3);default:0\""];
+    uint64 score = 15 [(gogoproto.jsontag) = "score", (gogoproto.moretags) = "gorm:\"type:bigint(20);default:0\""];
+    uint64 followCount = 16 [(gogoproto.jsontag) = "followCount", (gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned;default:0\""];
+    uint64 followedCount = 17 [(gogoproto.jsontag) = "followedCount", (gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned;default:0\""];
+    uint32 role = 24 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned;default:0\"", (gogoproto.casttype) = "uint8"];
+    string createdAt = 25 [(gogoproto.moretags) = "gorm:\"type:datetime(3);default:current_timestamp(3)\""];
+    string bannedAt = 27 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"type:datetime(3);default:0\""];
+    uint32 status = 28 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned;default:0\"", (gogoproto.casttype) = "uint8"];
+}
+
+message UserExtend {
+    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"type:bigint(20);primary_key;\""];
+    uint64 articleCount = 18 [(gogoproto.jsontag) = "articleCount", (gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned;default:0\""];
+    uint64 momentCount = 19 [(gogoproto.jsontag) = "momentCount", (gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned;default:0\""];
+    uint64 diaryBookCount = 20 [(gogoproto.jsontag) = "diaryBookCount", (gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned;default:0\""];
+    uint64 diaryCount = 21 [(gogoproto.jsontag) = "diaryCount", (gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned;default:0\""];
+    uint64 commentCount = 22 [(gogoproto.jsontag) = "commentCount", (gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned;default:0\""];
+}
+
+//关注表
+message UserFollow {
+    uint64 userId = 1 [(gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned;index\""]; //一个关注另一个，ID小的做UserID
+    uint64 followId = 2 [(gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned\""];
+    string createdAt = 3 [(gogoproto.moretags) = "gorm:\"type:bigint(20);default:0\""]; //FollowUser关注User时间
+    uint32 status = 5 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned\"", (gogoproto.casttype) = "uint8"]; //状态：0无效，1有效
+}
+
+//关注日志
+message UserFollowLog {
+    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key\""];
+    uint32 action = 2 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned\"", (gogoproto.casttype) = "uint8"]; //类型：0添加关注，1移除关注
+    uint64 userId = 3 [(gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned\""];
+    uint64 followId = 4 [(gogoproto.moretags) = "gorm:\"type:bigint(20)unsigned\""];
+    string createdAt = 6 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+}
+
+//用户分数变化日志
+message UserScoreLog {
+    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key\""];
+    uint64 userId = 2 [(gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned;index\""];
+    sint64 score = 3 [(gogoproto.moretags) = "gorm:\"type:bigint(20)\""];
+    string reason = 5 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string createdAt = 6 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+    string remark = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+}
+//用户封禁日志
+message UserBannedLog {
+    uint64 ID = 1 [(gogoproto.moretags) = "gorm:\"primary_key\""];
+    uint64 userId = 2 [(gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned;index\""];
+    uint64 duration = 3 [(gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned\""];
+    string reason = 4 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string createdAt = 5 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+    string remark = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+}
+
+//用户操作日志
+message UserActionLog {
+    uint64 ID = 1 [(gogoproto.moretags) = "gorm:\"primary_key\""];
+    uint64 userId = 2 [(gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned;index\""];
+    //类型
+    uint32 action = 3 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned\"", (gogoproto.casttype) = "uint8"];
+    //操作地点
+    string location = 4 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string IP = 5 [(gogoproto.moretags) = "gorm:\"type:varchar(32)\""];
+    //设备
+    string device = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string lastValue = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string newValue = 8 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string createdAt = 20 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+    string remark = 22 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+}
+
+// Education 教育经历
+message Education {
+    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key\""];
+    uint64 userId = 2 [(gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned;index\""];
+    string school = 3 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    //专业
+    string speciality = 4 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string startTime = 5 [(gogoproto.moretags) = "gorm:\"type:datetime\""];
+    string endTime = 6 [(gogoproto.moretags) = "gorm:\"type:datetime\""];
+    string remark = 11 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string createdAt = 7 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+    string updatedAt = 8 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+    string deletedAt = 9 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+}
+// Work 职业生涯
+message Work {
+    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key\""];
+    uint64 userId = 2 [(gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned;index\""];
+    //公司或组织
+    string company = 3 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    //职位
+    string title = 4 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string startTime = 5 [(gogoproto.moretags) = "gorm:\"type:datetime\""];
+    string endTime = 6 [(gogoproto.moretags) = "gorm:\"type:datetime\""];
+    string createdAt = 7 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+    string updatedAt = 8 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+    string deletedAt = 9 [(gogoproto.moretags) = "gorm:\"type:datetime(3)\""];
+}
