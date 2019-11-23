@@ -15,5 +15,4 @@ wasm_exec.js
 *.lock
 node_modules
 dist
-/protobuf
-./config/add-config.toml
+/config/add-config.toml
