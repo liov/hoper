@@ -1,0 +1,11 @@
+[package]
+name = "async_test"
+version = "0.1.0"
+authors = ["liov <lby.i@qq.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tokio = "v0.2.0-alpha.5"
+async-std = "v1.1.0"

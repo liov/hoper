@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package utils.any;
+import "google/protobuf/any.proto";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+option go_package = "github.com/liov/hoper/go/v2/utils/protobuf/any";
+option java_package = "xyz.hoper.protobuf.utils.any";
+
+message Any {
+    google.protobuf.Any any =1;
+}
+
+message StringJson {
+    string s = 1;
+}
