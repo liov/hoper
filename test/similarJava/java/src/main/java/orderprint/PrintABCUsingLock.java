@@ -19,7 +19,7 @@ public class PrintABCUsingLock {
     }
 
     public static void main(String[] args) {
-        PrintABCUsingLock printABC = new PrintABCUsingLock(10);
+        PrintABCUsingLock printABC = new PrintABCUsingLock(1000);
         //非静态方法引用 x::toString == ()->x.toString()
         new Thread(printABC::printA).start();
         new Thread(printABC::printB).start();
@@ -40,13 +40,14 @@ public class PrintABCUsingLock {
     }
 
     private void print(String name, int targetState) {
-        for (int i = 0; i < times;) {
+        for (int i = 0; i < times; ) {
             lock.lock();
             if (state % 3 == targetState) {
                 state++;
                 i++;
-                System.out.print(name);
+                System.out.println(name + i);
             }
+            System.out.println(name + "空循环");
             lock.unlock();
         }
     }
