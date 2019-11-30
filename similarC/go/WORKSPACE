@@ -1,0 +1,31 @@
+workspace(name = "hoper_go")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
+
+http_archive(
+    name = "io_bazel_rules_go",
+    url = "http://bazel-cabin.bilibili.co/go/rules_go/rules_go-0.16.4-hack.tar.gz",
+    sha256 = "891470f5ea5026891f76f66122c7a7d13255c1905cb5ce4ee01c4b46278f9201",
+)
+
+http_archive(
+    name = "bazel_skylib",
+    sha256 = "b5f6abe419da897b7901f90cbab08af958b97a8f3575b0d3dd062ac7ce78541f",
+    strip_prefix = "bazel-skylib-0.5.0",
+    urls = ["http://bazel-cabin.bilibili.co/bazel-skylib/0.5.0.tar.gz"],
+)
+
+http_archive(
+    name = "bazel_gazelle",
+    urls = ["http://bazel-cabin.bilibili.co/go/gazelle/bazel-gazelle-0.15.0.tar.gz"],
+    sha256 = "6e875ab4b6bf64a38c352887760f21203ab054676d9c1b274963907e0768740d",
+)
+
+load("@bazel_skylib//:lib.bzl", "versions")
+
+new_http_archive(
+  name = "googleapi",
+  url = "https://github.com/googleapis/googleapis/archive/common-protos-1_3_1.zip",
+  strip_prefix = "googleapis-common-protos-1_3_1/",
+  build_file_content = "proto_library(name = 'annotations_proto', srcs = ['google/api/annotations.proto'])"
+)
