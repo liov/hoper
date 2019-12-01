@@ -1,0 +1,16 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "app.go",
+        "router.go",
+    ],
+    importpath = "github.com/liov/hoper/go/v2/v2/httptpl/internal/router",
+    visibility = ["//v2/httptpl:__subpackages__"],
+    deps = [
+        "@com_github_kataras_iris_v12//:go_default_library",
+        "@com_github_kataras_iris_v12//context:go_default_library",
+        "@com_github_kataras_iris_v12//middleware/recover:go_default_library",
+    ],
+)

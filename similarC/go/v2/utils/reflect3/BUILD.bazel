@@ -1,0 +1,23 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "invoke.go",
+        "reflect.go",
+        "refletc3.go",
+        "unsafe.go",
+    ],
+    importpath = "github.com/liov/hoper/go/v2/v2/utils/reflect3",
+    visibility = ["//visibility:public"],
+    deps = ["@com_github_modern_go_reflect2//:go_default_library"],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "invoke_test.go",
+        "reflect_test.go",
+    ],
+    embed = [":go_default_library"],
+)

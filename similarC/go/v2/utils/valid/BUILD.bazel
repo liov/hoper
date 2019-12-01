@@ -1,0 +1,14 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["valid.go"],
+    importpath = "github.com/liov/hoper/go/v2/v2/utils/valid",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_go_playground_locales//zh:go_default_library",
+        "@com_github_go_playground_universal_translator//:go_default_library",
+        "@in_gopkg_go_playground_validator_v9//:go_default_library",
+        "@in_gopkg_go_playground_validator_v9//translations/zh:go_default_library",
+    ],
+)

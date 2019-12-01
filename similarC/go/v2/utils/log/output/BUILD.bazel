@@ -1,0 +1,17 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "http.go",
+        "kafaka.go",
+        "sink.go",
+    ],
+    importpath = "github.com/liov/hoper/go/v2/v2/utils/log/output",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_shopify_sarama//:go_default_library",
+        "@org_uber_go_zap//:go_default_library",
+        "@org_uber_go_zap//zapcore:go_default_library",
+    ],
+)
