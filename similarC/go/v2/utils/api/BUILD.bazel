@@ -1,0 +1,24 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["api.go"],
+    importpath = "github.com/liov/hoper/go/v2/v2/utils/api",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_go_openapi_spec//:go_default_library",
+        "@com_github_go_openapi_swag//:go_default_library",
+        "@com_github_kataras_iris_v12//context:go_default_library",
+        "@in_gopkg_yaml_v3//:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["api_test.go"],
+    embed = [":go_default_library"],
+    deps = [
+        "@com_github_go_openapi_spec//:go_default_library",
+        "@com_github_stretchr_testify//assert:go_default_library",
+    ],
+)
