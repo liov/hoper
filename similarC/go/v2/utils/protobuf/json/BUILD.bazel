@@ -3,7 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "go_default_library",
     srcs = ["json.go"],
-    importpath = "github.com/liov/hoper/go/v2/v2/utils/protobuf/json",
+    importpath = "github.com/liov/hoper/go/v2/utils/protobuf/json",
     visibility = ["//visibility:public"],
     deps = ["@com_github_json_iterator_go//:go_default_library"],
 )

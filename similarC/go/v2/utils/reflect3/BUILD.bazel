@@ -8,7 +8,7 @@ go_library(
         "refletc3.go",
         "unsafe.go",
     ],
-    importpath = "github.com/liov/hoper/go/v2/v2/utils/reflect3",
+    importpath = "github.com/liov/hoper/go/v2/utils/reflect3",
     visibility = ["//visibility:public"],
     deps = ["@com_github_modern_go_reflect2//:go_default_library"],
 )

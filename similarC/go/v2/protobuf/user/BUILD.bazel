@@ -10,7 +10,7 @@ go_library(
         "user.service.pb.gw.go",
         "user.service.validator.pb.go",
     ],
-    importpath = "github.com/liov/hoper/go/v2/v2/protobuf/user",
+    importpath = "github.com/liov/hoper/go/v2/protobuf/user",
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_gogo_googleapis//google/api:go_default_library",

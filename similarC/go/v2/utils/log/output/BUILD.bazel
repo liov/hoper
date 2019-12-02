@@ -7,7 +7,7 @@ go_library(
         "kafaka.go",
         "sink.go",
     ],
-    importpath = "github.com/liov/hoper/go/v2/v2/utils/log/output",
+    importpath = "github.com/liov/hoper/go/v2/utils/log/output",
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_shopify_sarama//:go_default_library",

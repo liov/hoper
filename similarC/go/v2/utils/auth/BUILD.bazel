@@ -3,7 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "go_default_library",
     srcs = ["auth.go"],
-    importpath = "github.com/liov/hoper/go/v2/v2/utils/auth",
+    importpath = "github.com/liov/hoper/go/v2/utils/auth",
     visibility = ["//visibility:public"],
     deps = [
         "@org_golang_google_grpc//codes:go_default_library",

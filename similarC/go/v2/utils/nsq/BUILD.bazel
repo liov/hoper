@@ -3,7 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "go_default_library",
     srcs = ["invoke.go"],
-    importpath = "github.com/liov/hoper/go/v2/v2/utils/nsq",
+    importpath = "github.com/liov/hoper/go/v2/utils/nsq",
     visibility = ["//visibility:public"],
     deps = ["@com_github_nsqio_go_nsq//:go_default_library"],
 )
