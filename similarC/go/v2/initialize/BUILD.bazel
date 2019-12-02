@@ -14,7 +14,7 @@ go_library(
         "nsq.go",
         "redis.go",
     ],
-    importpath = "github.com/liov/hoper/go/v2/v2/initialize",
+    importpath = "github.com/liov/hoper/go/v2/initialize",
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_bluele_gcache//:go_default_library",

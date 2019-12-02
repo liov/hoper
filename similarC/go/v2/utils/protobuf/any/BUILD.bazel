@@ -7,7 +7,7 @@ go_library(
         "bytesJson.go",
         "stringJson.go",
     ],
-    importpath = "github.com/liov/hoper/go/v2/v2/utils/protobuf/any",
+    importpath = "github.com/liov/hoper/go/v2/utils/protobuf/any",
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_gogo_protobuf//jsonpb:go_default_library",
