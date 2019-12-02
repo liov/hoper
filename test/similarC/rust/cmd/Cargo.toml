@@ -7,7 +7,7 @@ edition = "2018"
 
 [dependencies]
 hoper = { path = "../hoper" }
-h_macro = { path = "../h_macro" }
+p_macro = { path = "../p_macro" }
 rand = "0.6.5"
 libc="0.2.58"
 actix = "0.8.3"

@@ -126,6 +126,7 @@ macro_rules! calculate {
 fn main() {
     foo();
     bar();
+    hello();
 
     print_result!(1u32 + 1);
 
@@ -187,11 +188,27 @@ mod test {
     test!(sub_assign, 3u32, 2u32, 1u32);
 }
 
-use h_macro::Foo;
+macro_rules! count_tt {
+    ()      => (0usize);
+    ($e:tt) => (1usize);
+    ($($s:tt $t:tt)*) => (
+        count_tt!($($t)*) << 1 | 0
+    );
+    ($e:tt $($s:tt $t:tt)*) => (
+        count_tt!($($t)*) << 1 | 1
+    );
+}
+#[macro_use]
+use p_macro::{Foo,inject};
 
 #[derive(Foo)]
 struct Bar;
 
 trait Foo{
     fn foo();
+}
+
+#[inject("want")]
+fn hello(){
+    println!("hello macro")
 }
