@@ -8,6 +8,5 @@ opt-level = 3
 members = [
     "hello",
     "hello_v2",
-    "hello_v3",
-    "async_test"
+    "hello_v3"
 ]
