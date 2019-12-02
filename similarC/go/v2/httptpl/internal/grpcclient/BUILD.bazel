@@ -6,7 +6,7 @@ go_library(
         "client.go",
         "user.go",
     ],
-    importpath = "github.com/liov/hoper/go/v2/v2/httptpl/internal/grpcclient",
+    importpath = "github.com/liov/hoper/go/v2/httptpl/internal/grpcclient",
     visibility = ["//v2/httptpl:__subpackages__"],
     deps = ["@org_golang_google_grpc//:go_default_library"],
 )

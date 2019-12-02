@@ -6,7 +6,7 @@ go_library(
         "service.go",
         "user.go",
     ],
-    importpath = "github.com/liov/hoper/go/v2/v2/user/internal/service",
+    importpath = "github.com/liov/hoper/go/v2/user/internal/service",
     visibility = ["//v2/user:__subpackages__"],
     deps = ["@com_github_gomodule_redigo//redis:go_default_library"],
 )

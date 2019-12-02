@@ -3,7 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "go_default_library",
     srcs = ["dbcallback.go"],
-    importpath = "github.com/liov/hoper/go/v2/v2/utils/dao/gormCallback",
+    importpath = "github.com/liov/hoper/go/v2/utils/dao/gormCallback",
     visibility = ["//visibility:public"],
     deps = ["@com_github_jinzhu_gorm//:go_default_library"],
 )

@@ -6,7 +6,7 @@ go_library(
         "time.go",
         "time2.go",
     ],
-    importpath = "github.com/liov/hoper/go/v2/v2/utils/time2",
+    importpath = "github.com/liov/hoper/go/v2/utils/time2",
     visibility = ["//visibility:public"],
 )
 

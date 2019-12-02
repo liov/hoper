@@ -37,3 +37,6 @@ protoc -I. -I e:/gopath/src/github.com/grpc-ecosystem/grpc-gateway/third_party/g
 
 --go_out ：golang编译支持，支持以下参数
 plugins=plugin1+plugin2 - 指定插件，目前只支持grpc，即：plugins=grpc
+
+go env -w GOPROXY=https://goproxy.cn,direct
+go env -w GO111MODULE=on
