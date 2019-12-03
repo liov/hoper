@@ -1,6 +1,5 @@
 [database]
 Type = "mysql"
-#User = root
 User = "web"
 Password = "123456"
 Host = "192.168.1.212"
@@ -24,3 +23,21 @@ Host = "smtp.qq.com"
 Port = ":465"
 User =  "lby.i@qq.com"
 Password = "mtliqcfqelbscage"
+
+[db1]
+Type = "mysql"
+User = "web"
+Password = "123456"
+Host = "192.168.1.212"
+Port = 3306
+Charset = "utf8mb4"
+Database = "test"
+
+[db2]
+Type = "mysql"
+User = "crm"
+Password = "Md!612914"
+Host = "rm-bp1z91212df7415ha.mysql.rds.aliyuncs.com"
+Port = 3306
+Charset = "utf8mb4"
+Database = "d_crm_customer"
