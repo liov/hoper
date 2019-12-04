@@ -14,3 +14,4 @@ futures = "0.3.1"
 thiserror = "1.0.6"
 futures-timer = "2.0.2"
 mio = "0.6.21"
+log = { git = "https://github.com/rust-lang/log"}
