@@ -1,0 +1,3 @@
+[submodule "awsome/reproduceds_blogs/blogs"]
+	path = awsome/reproduceds_blogs/blogs
+	url = https://github.com/liov/blog
