@@ -3,7 +3,7 @@ wget https://openresty.org/download/openresty-1.15.8.2.tar.gz
 tar -xzvf openresty-VERSION.tar.gz
 cd openresty-VERSION/
 
-apt install libpq-dev libpcre3-dev libxml2-dev libxslt-dev libgd2-dev libgeoip-dev
+apt install libssl-dev libpq-dev libpcre3-dev libxml2-dev libxslt-dev libgd2-dev libgeoip-dev
 
 ./configure --with-select_module\
            --with-poll_module \
