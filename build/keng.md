@@ -50,3 +50,8 @@ So the problem is just the shutdown of the connection, which is not actually a p
 
 ## 调用wsl2上的grpc服务
 监听地址应为0.0.0.0,不能是127.0.0.1
+
+## redis MISCONF Redis is configured to save RDB snapshots, but it is currently not able to persist on disk. Commands that may modify the data set are disabled, because this instance is configured to report errors during writes if RDB snapshotting fails (stop-writ
+强制把redis快照关闭了导致不能持久化
+1.Redis客户端执行：config set stop-writes-on-bgsave-error no
+2.修改redis.conf文件，stop-writes-on-bgsave-error=yes修改为stop-writes-on-bgsave-error=no
