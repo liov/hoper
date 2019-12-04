@@ -34,7 +34,7 @@ cd /usr/local/postgresql/bin
 
 vim /home/postgres/data/pg_hba.conf
 
-host    all     all     0.0.0.0/0                       md5
+host    all     all     0.0.0.0/0                       trust
 
 vim /home/postgres/data/postgresql.conf
 
