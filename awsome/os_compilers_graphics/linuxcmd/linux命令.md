@@ -1,341 +1,65 @@
-Linux命令大全完整版
-目    录
-目    录	I
-1. linux系统管理命令	1
-adduser	1
-chfn(change finger information)	1
-chsh(change shell)	1
-date	2
-exit	3
-finger	4
-free	5
-fwhois	5
-gitps(gnu interactive tools process status)	5
-groupdel(group delete)	6
-groupmod(group modify)	6
-halt	7
-id	7
-kill	8
-last	8
-lastb	8
-login	9
-logname	9
-logout	9
-logrotate	9
-newgrp	10
-nice	10
-procinfo(process information)	11
-ps(process status)	11
-pstree(process status tree)	14
-reboot	15
-renice	15
-rlogin(remote login)	16
-rsh(remote shell)	16
-rwho	16
-screen	17
-shutdown	17
-sliplogin	18
-su(super user)	18
-sudo	19
-suspend	19
-swatch(simple watcher)	20
-tload	20
-top	21
-uname	21
-useradd	22
-userconf	22
-userdel	23
-usermod	23
-vlock(virtual console lock)	24
-w	24
-who	25
-whoami	25
-whois	25
-2. linux系统设置命令	27
-alias	27
-apmd(advanced power management BIOS daemon)	27
-aumix(audio mixer)	27
-bind	29
-chkconfig(check config)	29
-chroot(change root)	30
-clock	30
-crontab	31
-declare	31
-depmod(depend module)	32
-dircolors	32
-dmesg	33
-enable	33
-eval	33
-export	33
-fbset(frame buffer setup)	34
-grpconv(group convert to shadow password)	35
-grpunconv(group unconvert from shadow password)	35
-hwclock(hardware clock)	35
-insmod(install module)	36
-kbdconfig	36
-lilo(linux loader)	37
-liloconfig	38
-lsmod(list modules)	38
-minfo	38
-mkkickstart	39
-modinfo(module infomation)	39
-modprobe(module probe)	39
-mouseconfig	40
-ntsysv	41
-passwd(password)	41
-pwconv	41
-pwunconv	42
-rdate(receive date)	42
-resize	42
-rmmod(remove module)	42
-rpm(redhat package manager)	43
-set	46
-setconsole	47
-setenv(set environment variable)	48
-setup	48
-sndconfig	48
-SVGAText Mode	49
-timeconfig	49
-ulimit	50
-unalias	50
-unset	51
-3. linux文档编辑命令	52
-col	52
-colrm(column remove)	52
-comm(common)	52
-csplit(context split)	53
-ed(editor)	53
-egrep	54
-ex	54
-fgrep(fixed regexp)	54
-fmt(fromat)	54
-fold	55
-grep	55
-ispell(interactive spelling checking)	57
-jed	58
-joe	58
-join	60
-look	61
-mtype	61
-pico	62
-rgrep(recursive grep)	62
-sed(stream editor)	63
-sort	64
-spell	65
-tr(translate character)	65
-uniq	65
-wc(word count)	66
-4. linux压缩备份命令	67
-ar	67
-bunzip2	68
-bzip2	68
-bzip2recover	69
-compress	69
-cpio(copy in/out)	70
-dump	72
-gunzip(gnu unzip)	73
-gzexe(gzip executable)	74
-gzip(gnu zip)	74
-lha	75
-restore	76
-tar(tape archive)	77
-unarj	80
-unzip	81
-zip	82
-zipinfo	83
-5.linux文件管理命令	85
-diff(differential)	85
-diffstat(differential status)	86
-file	87
-find	87
-git(gnu interactive tools)	90
-gitview(gnu interactie tools viewer)	91
-ln(link)	91
-locate	92
-lsattr(list attribute)	92
-mattrib	93
-mc(midnight commander)	93
-mcopy	94
-mdel	94
-mktemp	95
-mmove	95
-mread	95
-mren	96
-mshowfat	96
-mtools	96
-mtoolstest	96
-mv	97
-od(octal dump)	97
-paste	98
-patch	99
-rcp(remote copy)	101
-rhmask	101
-rm(remove)	101
-slocate(secure locate)	102
-split	102
-tee	103
-tmpwatch(temporary watch)	103
-touch	103
-umask	104
-whereis	104
-which	105
-cat	105
-chattr(change attribute)	106
-chgrp(change group)	106
-chmod(change mode)	107
-chown(change owner)	108
-cksum(check sum)	109
-cmp(compare)	109
-cp(copy)	110
-cut	111
-indent	111
-6.linux文件传输命令	115
-bye	115
-ftp(file transfer protocol)	115
-ftpcount	115
-ftpshut(ftp shutdown)	115
-ftpwho	116
-ncftp(nc file transfer protocol)	116
-tftp(trivial file transfer protocol)	116
-uucico	116
-uucp	117
-uupick	118
-uuto	119
-7. linux磁盘管理命令	120
-cd(change directory)	120
-df(disk free)	120
-dirs	121
-du(disk usage)	121
-edquota(edit quota)	122
-eject	122
-lndir(link directory)	123
-ls(list)	123
-mcd	125
-mdeltree	125
-mdu	126
-mkdir(make directories)	126
-mlabel	126
-mmd	127
-mmount	127
-mrd	127
-mzip	127
-pwd(print working directory)	128
-quota	128
-quotacheck	128
-quotaoff	129
-quotaon	129
-repquota(report quota)	130
-rmdir(remove directory)	130
-rmt(remote magnetic tape)	130
-stat(status)	131
-Tree	131
-umount	132
-8. linux磁盘维护命令	133
-badblocks	133
-cfdisk	133
-dd	134
-e2fsck(ext2 file system check)	134
-ext2ed(ext2 file system editor)	136
-fdisk	137
-fsck.ext2(file system check-second filesystem)	137
-fsck(file system check)	138
-fsck.minix(file system check-minix filesystem)	139
-fsconf(file system configurator)	139
-hdparm(hard disk parameters)	139
-losetup(loop setup)	141
-mbadblocks	141
-mformat	141
-mkbootdisk(make boot disk)	142
-mkdosfs(make Dos file system)	143
-mke2fs(make ext2 file system)	143
-mkfs.ext2	144
-mkfs(make file system)	144
-mkfs.minix	145
-mkfs.msdos	145
-mkinitrd(make initial ramdisk images)	145
-mkisofs(make iso file system)	145
-mkswap	147
-mpartition	148
-sfdisk	148
-swapoff	149
-swapon	149
-symlinks(symbolic links)	149
-sync	150
-9. linux网络通讯命令	151
-dip	151
-getty(get teletypewriter)	151
-mingetty	152
-ppp-off	152
-smbd(samba daemon)	152
-telnet	153
-uulog	154
-uustat	154
-uux	155
-cu(call up)	156
-dnsconf(dns configurator)	157
-efax	158
-httpd(http daemon)	159
-ifconfig	159
-mesg	160
-minicom	161
-nc	161
-netconf	162
-netstat	162
-ping	163
-pppstats(point to point protocol status)	164
-samba	164
-setserial	165
-shapecfg(shaper configuration)	165
-smbd(samba daemon)	166
-statserial(status ofserial port)	166
-talk	166
-Tcpdump	167
-testparm(test parameter)	168
-traceroute	168
-tty(teletypewriter)	169
-uuname	169
-wall(write all)	170
-write	170
-ytalk	170
-arpwatch(ARP watcher)	170
-apachectl(Apache control interface)	171
-smbclient(samba client)	171
-pppsetup	172
-10. linux电子邮件与新闻组命令	173
-archive	173
-ctlinnd(control the internet news daemon)	173
-elm	173
-getlist	174
-inncheck(inn check)	174
-mail	175
-mailconf	175
-mailq(mail queue)	175
-messages	176
-metamail	176
-mutt	177
-nntpget	178
-pine	178
-slrn	180
-11. linux其他命令	181
-reconfig	181
-startx(start X Window)	181
-xconfigurator	181
-XF86Setup	182
-xlsatoms	182
-xlsclients	183
-xlsfonts	183
-yes	184
-
-
+https://www.runoob.com/linux/linux-command-manual.html
+[toc]
+# Linux命令大全完整版
+1、文件管理
+cat	chattr	chgrp	chmod chown	cksum	cmp	diff    diffstat	file	find	git
+gitview	indent	cut	ln less	locate	lsattr	mattrib mc	mdel	mdir	mktemp
+more	mmove	mread	mren mtools	mtoolstest	mv	od paste	patch	rcp	rm
+slocate	split	tee	tmpwatch touch	umask	which	cp whereis	mcopy	mshowfat	rhmask
+scp	awk	read	updatedb
+2、文档编辑
+col	colrm	comm	csplit ed	egrep	ex	fgrep fmt	fold	grep	ispell
+jed	joe	join	look mtype	pico	rgrep	sed sort	spell	tr	expr
+uniq	wc	let	 
+3、文件传输
+lprm	lpr	lpq	lpd bye	ftp	uuto	uupick uucp	uucico	tftp	ncftp
+ftpshut	ftpwho	ftpcount	 
+4、磁盘管理
+cd	df	dirs	du edquota	eject	mcd mdeltree    mdu mkdir	mlabel	mmd
+mrd	mzip	pwd	quota mount	mmount	rmdir	rmt stat	tree	umount	ls
+quotacheck	quotaoff	lndir	repquota    quotaon	 	 	 
+5、磁盘维护
+badblocks	cfdisk	dd	e2fsck  ext2ed  fsck	fsck.minix	fsconf
+fdformat	hdparm	mformat	mkbootdisk  mkdosfs	mke2fs	mkfs.ext2	mkfs.msdos
+mkinitrd	mkisofs	mkswap	mpartition  swapon	symlinks	sync	mbadblocks
+mkfs.minix	fsck.ext2	fdisk	losetup mkfs	sfdisk	swapoff	 
+6、网络通讯
+apachectl	arpwatch	dip	getty   mingetty	uux	telnet	uulog
+uustat	ppp-off	netconfig	nc  httpd	ifconfig	minicom	mesg
+dnsconf	wall	netstat	ping    pppstats	samba	setserial	talk
+traceroute	tty	newaliases	uuname  netconf	write	statserial	efax
+pppsetup	tcpdump	ytalk	cu  smbd	testparm	smbclient	shapecfg
+7、系统管理
+adduser	chfn	useradd	date    exit	finger	fwhios	sleep
+suspend	groupdel	groupmod	halt    kill	last	lastb	login
+logname	logout	ps	nice    procinfo	top	pstree	reboot
+rlogin	rsh	sliplogin	screen  shutdown	rwho	sudo	gitps
+swatch	tload	logrotate	uname   chsh	userconf	userdel	usermod
+vlock	who	whoami	whois   newgrp	renice	su	skill
+w	id	groupadd	free
+8、系统设置
+reset	clear	alias	dircolors   aumix	bind	chroot	clock
+crontab	declare	depmod	dmesg   enable	eval	export	pwunconv
+grpconv	rpm	insmod	kbdconfig   lilo	liloconfig	lsmod	minfo
+set	modprobe	ntsysv	mouseconfig passwd	pwconv	rdate	resize
+rmmod	grpunconv	modinfo	time    setup	sndconfig	setenv	setconsole
+timeconfig	ulimit	unset	chkconfig   apmd	hwclock	mkkickstart	fbset
+unalias	SVGATextMode	gpasswd	 
+9、备份压缩
+ar	bunzip2	bzip2	bzip2recover    gunzip	unarj	compress	cpio
+dump	uuencode	gzexe	gzip    lha	restore	tar	uudecode
+unzip	zip	zipinfo	 
+10、设备管理
+setleds	loadkeys	rdev	dumpkeys    MAKEDEV	 	 	 
+其他命令
+Linux bc 命令 Linux tail 命令   Linux xargs 命令
 
  
-1. linux系统管理命令
-adduser
-功能说明：新增用户帐号。
+## linux系统管理命令
+### adduser：新增用户帐号。
 语　　法：adduser
 补充说明：在Slackware中，adduser指令是个script程序，利用交谈的方式取得输入的用户帐号资料，然后再交由真正建立帐号的useradd指令建立新用户，如此可方便管理员建立用户帐号。在Red Hat Linux中，adduser指令则是useradd指令的符号连接，两者实际上是同一个指令。
-chfn(change finger information)
-功能说明：改变finger指令显示的信息。
+### chfn(change finger information)：改变finger指令显示的信息。
 语　　法：chfn [-f <真实姓名>][-h <家中电话>][-o <办公地址>][-p <办公电话>][-uv][帐号名称]
 补充说明：chfn指令可用来更改执行finger指令时所显示的信息，这些信息都存放在/etc目录里的asswd文件里。若不指定任何参数，则chfn指令会进入问答式界面。
 参　　数：
@@ -345,8 +69,7 @@ chfn(change finger information)
 　-p<办公电话>或--office-phone<办公电话> 　设置办公室的电话号码。 
 　-u或--help 　在线帮助。 
 　-v或-version 　显示版本信息。
-chsh(change shell)
-功能说明：更换登入系统时使用的shell。
+### chsh(change shell)：更换登入系统时使用的shell。
 语　　法：chsh [-luv][-s <shell 名称>][用户名称]
 补充说明：每位用户在登入系统时，都会拥有预设的shell环境，这个指令可更改其预设值。若不指定任何参数与用户名称，则chsh会以应答的方式进行设置。
 参　　数：
@@ -354,8 +77,7 @@ chsh(change shell)
 　-l或--list-shells 　列出目前系统可用的shell清单。 
 　-u或--help 　在线帮助。 
 　-v或-version 　显示版本信息。
-date
-功能说明：显示或设置系统时间与日期。
+### date：显示或设置系统时间与日期。
 语    法：
 date [-d <字符串>][-u][+%H%I%K%l%M%P%r%s%S%T%X%Z%a%A%b%B%c%d%D%j%m%U%w%x%y%Y%n%t] 或date [-s <字符串>][-u][MMDDhhmmCCYYss] 或 date [--help][--version]
 补充说明：第一种语法可用来显示系统日期或时间，以%为开头的参数为格式参数，可指定日期或时间的显示格式。第二种语法可用来设置系统日期与时间。只有管理员才有设置日期与时间的权限。若不加任何参数，data会显示目前的日期与时间。
@@ -400,12 +122,10 @@ date [-d <字符串>][-u][+%H%I%K%l%M%P%r%s%S%T%X%Z%a%A%b%B%c%d%D%j%m%U%w%x%y%Y%
 　-u 　显示GMT。 
 　--help 　在线帮助。 
 　--version 　显示版本信息。
-exit
-功能说明：退出目前的shell。
+### exit：退出目前的shell。
 语　　法：exit [状态值]
 补充说明：执行exit可使shell以指定的状态值退出。若不设置状态值参数，则shell以预设值退出。状态值0代表执行成功，其他值代表执行失败。exit也可用在script，离开正在执行的script，回到shell。
-finger
-功能说明：查找并显示用户信息。
+### finger：查找并显示用户信息。
 语　　法：finger [-lmsp][帐号名称...]
 补充说明：finger指令会去查找，并显示指定帐号的用户相关信息，包括本地与远端主机的用户皆可，帐号名称没有大小写的差别。单独执行finger指令，它会显示本地主机现在所有的用户的登陆信息，包括帐号名称，真实姓名，登入终端机，闲置时间，登入时间以及地址和电话。
 参　　数：
@@ -413,8 +133,7 @@ finger
   -m 　排除查找用户的真实姓名。
   -s 　列出该用户的帐号名称，真实姓名，登入终端机，闲置时间，登入时间以及地址和电话。 
   -p 　列出该用户的帐号名称，真实姓名，用户专属目录，登入所用的Shell，登入时间，转信地址，电子邮件状态，但不显示该用户的计划文件和方案文件内容。
-free
-功能说明：显示内存状态。
+### free：显示内存状态。
 语　　法： free [-bkmotV][-s <间隔秒数>]
 补充说明：free指令会显示内存的使用情况，包括实体内存，虚拟的交换文件内存，共享内存区段，以及系统核心使用的缓冲区等。
 参　　数：
@@ -425,12 +144,10 @@ free
 　-s<间隔秒数> 　持续观察内存使用状况。 
 　-t 　显示内存总和列。 
 　-V 　显示版本信息。
-fwhois
-功能说明：查找并显示用户信息。
+### fwhois：查找并显示用户信息。
 语　　法：fwhios [帐号名称]
 补充说明：本指令的功能有点类似finger指令，它会去查找并显示指定帐号的用户相关信息。不同之处在于fwhois指令是到Network Solutions的WHOIS数据库去查找，该帐号名称必须有在上面注册才能寻获，且名称没有大小写的差别
-gitps(gnu interactive tools process status)
-功能说明：报告程序状况。
+### gitps(gnu interactive tools process status)：报告程序状况。
 语　　法：gitps [acefgjlnrsSTuvwxX][p <程序识别码>][t <终端机编号>][U <帐号名称>]
 补充说明：gitps是用来报告并管理程序执行的指令，基本上它就是通过ps指令来报告，管理程序，也能通过gitps指令随时中断，删除不必要的程序。因为gitps指令会去执行ps指令，所以其参数和ps指令相当类似。
 参　　数：
@@ -454,20 +171,17 @@ gitps(gnu interactive tools process status)
 　w 　采用宽阔的格式来显示程序状况。 
 　x 　显示所有程序，不以终端机来区分。 
 　X 　采用旧试的Linux i386登陆格式显示程序状况。
-groupdel(group delete)
-功能说明：删除群组。
+### groupdel(group delete)：删除群组。
 语　　法：groupdel [群组名称]
 补充说明：需要从系统上删除群组时，可用groupdel指令来完成这项工作。倘若该群组中仍包括某些用户，则必须先删除这些用户后，方能删除群组。
-groupmod(group modify)
-功能说明：更改群组识别码或名称。
+### groupmod(group modify)：更改群组识别码或名称。
 语　　法：groupmod [-g <群组识别码> <-o>][-n <新群组名称>][群组名称]
 补充说明：需要更改群组的识别码或名称时，可用groupmod指令来完成这项工作。
 参　　数：
 　-g <群组识别码> 　设置欲使用的群组识别码。 
 　-o 　重复使用群组识别码。 
 　-n <新群组名称> 　设置欲使用的群组名称。
-halt
-功能说明：关闭系统。
+### halt：关闭系统。
 语　　法：halt [-dfinpw]
 补充说明：halt会先检测系统的runlevel。若runlevel为0或6，则关闭系统，否则即调用shutdown来关闭系统。
 参　　数：
@@ -477,8 +191,7 @@ halt
   -n 　halt前，不用先执行sync。 
   -p 　halt之后，执行poweroff。 
   -w 　仅在wtmp中记录，而不实际结束系统。
-id
-功能说明：显示用户的ID，以及所属群组的ID。
+### id：显示用户的ID，以及所属群组的ID。
 语　　法：id [-gGnru][--help][--version][用户名称]
 补充说明：id会显示用户以及所属群组的实际与有效ID。若两个ID相同，则仅显示实际ID。若仅指定用户名称，则显示目前用户的ID。
 参　　数：
@@ -489,16 +202,14 @@ id
 　-u或--user 　显示用户ID。 
 　-help 　显示帮助。 
 　-version 　显示版本信息。
-kill
-功能说明：删除执行中的程序或工作。
+### kill：删除执行中的程序或工作。
 语　　法：kill [-s <信息名称或编号>][程序]　或　kill [-l <信息编号>]
 补充说明：kill可将指定的信息送至程序。预设的信息为SIGTERM(15)，可将指定程序终止。若仍无法终止该程序，可使用SIGKILL(9)信息尝试强制删除程序。程序或工作的编号可利用ps指令或jobs指令查看。 
 参　　数：
 　-l <信息编号> 　若不加<信息编号>选项，则-l参数会列出全部的信息名称。 
 　-s <信息名称或编号> 　指定要送出的信息。 
 　[程序] 　[程序]可以是程序的PID或是PGID，也可以是工作编号。
-last
-功能说明：列出目前与过去登入系统的用户相关信息。
+### last：列出目前与过去登入系统的用户相关信息。
 语　　法：last [-adRx][-f <记录文件>][-n <显示列数>][帐号名称...][终端机编号...]
 补充说明：单独执行last指令，它会读取位于/var/log目录下，名称为wtmp的文件，并把该给文件的内容记录的登入系统的用户名单全部显示出来。
 参　　数：
@@ -508,8 +219,7 @@ last
 　-n <显示列数>或-<显示列数> 　设置列出名单的显示列数。 
 　-R 　不显示登入系统的主机名称或IP地址。 
 　-x 　显示系统关机，重新开机，以及执行等级的改变等信息。
-lastb
-功能说明：列出登入系统失败的用户相关信息。
+### lastb：列出登入系统失败的用户相关信息。
 语　　法：lastb [-adRx][-f <记录文件>][-n <显示列数>][帐号名称...][终端机编号...]
 补充说明：单独执行lastb指令，它会读取位于/var/log目录下，名称为btmp的文件，并把该文件内容记录的登入失败的用户名单，全部显示出来。
 参　　数：
@@ -519,23 +229,19 @@ lastb
 　-n<显示列数>或-<显示列数> 　设置列出名单的显示列数。 
 　-R 　不显示登入系统的主机名称或IP地址。 
 　-x 　显示系统关机，重新开机，以及执行等级的改变等信息。
-login
-功能说明：登入系统。
+### login：登入系统。
 语　　法：login
 补充说明：login指令让用户登入系统，您亦可通过它的功能随时更换登入身份。在Slackware发行版中 ，您可在指令后面附加欲登入的用户名称，它会直接询问密码，等待用户输入。当/etc目录里含名称为nologin的文件时，系统只root帐号登入系统，其他用户一律不准登入。
-logname
-功能说明：显示用户名称。
+### logname：显示用户名称。
 语　　法：logname [--help][--version]
 补充说明：执行logname指令，它会显示目前用户的名称。
 参　　数：
 　--help 　在线帮助。 
 　--vesion 　显示版本信息。
-logout
-功能说明：退出系统。
+### logout：退出系统。
 语　　法：logout
 补充说明：logout指令让用户退出系统，其功能和login指令相互对应。
-logrotate
-功能说明：管理记录文件。
+### logrotate：管理记录文件。
 语　　法：logrotate [-?dfv][-s <状态文件>][--usage][配置文件]
 补充说明：使用logrotate指令，可让你轻松管理系统所产生的记录文件。它提供自动替换，压缩，删除和邮寄记录文件，每个记录文件都可被设置成每日，每周或每月处理，也能在文件太大时立即处理。您必须自行编辑，指定配置文件，预设的配置文件存放在/etc目录下，文件名称为logrotate.conf。
 参　　数：
@@ -545,20 +251,17 @@ logrotate
 　-s<状态文件>或--state=<状态文件> 　使用指定的状态文件。 
 　-v或--version 　显示指令执行过程。 
 　-usage 　显示指令基本用法。
-newgrp
-功能说明：登入另一个群组。
+### newgrp：登入另一个群组。
 语　　法：newgrp [群组名称]
 补充说明：newgrp指令类似login指令，当它是以相同的帐号，另一个群组名称，再次登入系统。欲使用newgrp指令切换群组，您必须是该群组的用户，否则将无法登入指定的群组。单一用户要同时隶属多个群组，需利用交替用户的设置。若不指定群组名称，则newgrp指令会登入该用户名称的预设群组。
-nice
-功能说明：设置优先权。
+### nice：设置优先权。
 语　　法：nice [-n <优先等级>][--help][--version][执行指令]
 补充说明：nice指令可以改变程序执行的优先权等级。
 参　　数：</b 
 　-n<优先等级>或-<优先等级>或--adjustment=<优先等级> 　设置欲执行的指令的优先权等级。等级的范围从-20－19，其中-20最高，19最低，只有系统管理者可以设置负数的等级。 
 　--help 　在线帮助。 
 　--version 　显示版本信息。
-procinfo(process information)
-功能说明：显鞠低匙刺?BR>
+### procinfo(process information)：显鞠低匙刺?BR>
 语　　法：procinfo [-abdDfhimsSv][-F <输出文件>][-n <间隔秒数>]
 补充说明：procinfo指令从/proc目录里读取相关数据，将数据妥善整理过后输出到标准输出设备。
 参　　数：
@@ -575,8 +278,7 @@ procinfo(process information)
 　-s 　显示系统的内存，磁盘空间，IRP和DMA等信息，此为预设值。 
 　-S 　搭配参数"-d"或"-D"使用时，每秒都会更新信息，不论是否有使用参数"-n"。 
 　-v 　显示版本信息。
-ps(process status)
-功能说明：报告程序状况。
+### ps(process status)：报告程序状况。
 语　　法：ps [-aAcdefHjlmNVwy][acefghLnrsSTuvxX][-C <指令名称>][-g <群组名称>][-G <群组识别码>][-p <程序识别码>][p <程序识别码>][-s <阶段作业>][-t <终端机编号>][t <终端机编号>][-u <用户识别码>][-U <用户识别码>][U <用户名称>][-<程序识别码>][--cols <每列字符数>][--columns <每列字符数>][--cumulative][--deselect][--forest][--headers][--help][--info][--lines <显示列数>][--no-headers][--group <群组名称>][-Group <群组识别码>][--pid <程序识别码>][--rows <显示列数>][--sid <阶段作业>][--tty <终端机编号>][--user <用户名称>][--User <用户识别码>][--version][--width <每列字符数>]
 补充说明：ps是用来报告程序执行状况的指令，您可以搭配kill指令随时中断，删除不必要的程序。
 参　　数：
@@ -642,8 +344,7 @@ ps(process status)
 　--User<用户识别码> 　此参数的效果和指定"-U"参数相同。 
 　--version 　此参数的效果和指定"-V"参数相同。 
 　--widty<每列字符数> 　此参数的效果和指定"-cols"参数相同。
-pstree(process status tree)
-功能说明：以树状图显示程序。
+### pstree(process status tree)：以树状图显示程序。
 语　　法：pstree [-acGhlnpuUV][-H <程序识别码>][<程序识别码>/<用户名称>]
 补充说明：pstree指令用ASCII字符显示树状结构，清楚地表达程序间的相互关系。如果不指定程序识别码或用户名称，则会把系统启动时的第一个程序视为基层，并显示之后的所有程序。若指定用户名称，便会以隶属该用户的第一个程序当作基层，然后显示该用户的所有程序。
 参　　数：
@@ -658,8 +359,7 @@ pstree(process status tree)
 　-u 　显示用户名称。 
 　-U 　使用UTF-8列绘图字符。 
 　-V 　显示版本信息。
-reboot
-功能说明：重新开机。
+### reboot：重新开机。
 语　　法：dreboot [-dfinw]
 补充说明：执行reboot指令可让系统停止运作，并重新开机。
 参　　数：
@@ -668,16 +368,14 @@ reboot
   -i 　在重开机之前，先关闭所有网络界面。 
   -n 　重开机之前不检查是否有未结束的程序。 
   -w 　仅做测试，并不真的将系统重新开机，只会把重开机的数据写入/var/log目录下的wtmp记录文件。
-renice
-功能说明：调整优先权。
+### renice：调整优先权。
 语　　法：renice [优先等级][-g <程序群组名称>...][-p <程序识别码>...][-u <用户名称>...]
 补充说明：renice指令可重新调整程序执行的优先权等级。预设是以程序识别码指定程序调整其优先权，您亦可以指定程序群组或用户名称调整优先权等级，并修改所有隶属于该程序群组或用户的程序的优先权。等级范围从-20--19，只有系统管理者可以改变其他用户程序的优先权，也仅有系统管理者可以设置负数等级。
 参　　数：
 　-g <程序群组名称> 　使用程序群组名称，修改所有隶属于该程序群组的程序的优先权。 
 　-p <程序识别码> 　改变该程序的优先权等级，此参数为预设值。 
 　-u <用户名称> 　指定用户名称，修改所有隶属于该用户的程序的优先权。
-rlogin(remote login)
-功能说明：远端登入。
+### rlogin(remote login)：远端登入。
 语　　法：rlogin [-8EL][-e <脱离字符>][-l <用户名称>][主机名称或IP地址]
 补充说明：执行rlogin指令开启终端机阶段操作，并登入远端主机。
 参　　数：
@@ -686,22 +384,19 @@ rlogin(remote login)
 　-E 　滤除脱离字符。 
 　-l用户名称> 　指定要登入远端主机的用户名称。 
 　-L 　使用litout模式进行远端登入阶段操作。
-rsh(remote shell)
-功能说明：远端登入的Shell。
+### rsh(remote shell)：远端登入的Shell。
 语　　法：rsh [-dn][-l <用户名称>][主机名称或IP地址][执行指令]
 补充说明：rsh提供用户环境，也就是Shell，以便指令能够在指定的远端主机上执行。
 参　　数：
 　-d 　使用Socket层级的排错功能。 
 　-l<用户名称> 　指定要登入远端主机的用户名称。 
 　-n 　把输入的指令号向代号为/dev/null的特殊外围设备。
-rwho
-功能说明：查看系统用户。
+### rwho：查看系统用户。
 语　　法：rwho [-a]
 补充说明：rwho指令的效果类似who指令，但它会显示局域网里所有主机的用户。主机必须提供rwhod常驻服务的功能，方可使用rwho指令。
 参　　数：
   -a 　列出所有的用户，包括闲置时间超过1个小时以上的用户。
-screen
-功能说明：多重视窗管理程序。
+### screen：多重视窗管理程序。
 语　　法：screen [-AmRvx -ls -wipe][-d <作业名称>][-h <行数>][-r <作业名称>][-s <shell>][-S <作业名称>]
 补充说明：screen为多重视窗管理程序。此处所谓的视窗，是指一个全屏幕的文字模式画面。通常只有在使用telnet登入主机或是使用老式的终端机时，才有可能用到screen程序。
 参　　数：
@@ -717,8 +412,7 @@ screen
 　-x 　恢复之前离线的screen作业。 
 　-ls或--list 　显示目前所有的screen作业。 
 　-wipe 　检查目前所有的screen作业，并删除已经无法使用的screen作业。
-shutdown
-功能说明：系统关机指令。
+### shutdown：系统关机指令。
 语　　法：shutdown [-efFhknr][-t 秒数][时间][警告信息]
 补充说明：shutdown指令可以关闭所有程序，并依用户的需要，进行重新开机或关机的动作。
 参　　数：
@@ -732,12 +426,10 @@ shutdown
 　-t<秒数> 　送出警告信息和删除信息之间要延迟多少秒。 
 　[时间] 　设置多久时间后执行shutdown指令。 
 　[警告信息] 　要传送给所有登入用户的信息
-sliplogin
-功能说明：将SLIP接口加入标准输入。
+### sliplogin：将SLIP接口加入标准输入。
 语　　法：sliplogin [用户名称]
 补充说明：sliplogin可将SLIP接口加入标准输入，把一般终端机的连线变成SLIP连线。通常可用来建立SLIP服务器，让远端电脑以SLIP连线到服务器。sliplogin活去检查/etc/slip/slip.hosts文件中是否有相同的用户名称。通过检查后，sliplogin会调用执行shell script来设置IP地址，子网掩码等网络界面环境。此shell script通常是/etc/slip/slip.login。
-su(super user)
-功能说明：变更用户身份。
+### su(super user)：变更用户身份。
 语　　法：su [-flmp][--help][--version][-][-c <指令>][-s <shell>][用户帐号]
 补充说明：su可让用户暂时变更登入的身份。变更时须输入所要变更的用户帐号与密码。
 参　　数：
@@ -749,8 +441,7 @@ su(super user)
 　--help 　显示帮助。 
 　--version 　显示版本信息。 
 　[用户帐号] 　指定要变更的用户。若不指定此参数，则预设变更为root。
-sudo
-功能说明：以其他身份来执行指令。
+### sudo：以其他身份来执行指令。
 语　　法：sudo [-bhHpV][-s <shell>][-u <用户>][指令] 或 sudo [-klv]
 补充说明：sudo可让用户以其他的身份来执行指定的指令，预设的身份为root。在/etc/sudoers中设置了可执行sudo指令的用户。若其未经授权的用户企图使用sudo，则会发出警告的邮件给管理员。用户使用sudo时，必须先输入密码，之后有5分钟的有效期限，超过期限则必须重新输入密码。  
 参　　数：
@@ -764,14 +455,12 @@ sudo
 　-u<用户> 　以指定的用户作为新的身份。若不加上此参数，则预设以root作为新的身份。 
 　-v 　延长密码有效期限5分钟。 
 　-V 　显示版本信息。
-suspend
-功能说明：暂停执行shell。
+### suspend：暂停执行shell。
 语　　法：suspend [-f]
 补充说明：suspend为shell内建指令，可暂停目前正在执行的shell。若要恢复，则必须使用SIGCONT信息。
 参　　数：
   -f 　若目前执行的shell为登入的shell，则suspend预设无法暂停此shell。若要强迫暂停登入的shell，则必须使用-f参数。
-swatch(simple watcher)
-功能说明：系统监控程序。
+### swatch(simple watcher)：系统监控程序。
 语　　法：swatch [-A <分隔字符>][-c <设置文件>][-f <记录文件>][-I <分隔字符>][-P <分隔字符>][-r <时间>][-t <记录文件>]
 补充说明：swatch可用来监控系统记录文件，并在发现特定的事件时，执行指定的动作。swatch所监控的事件以及对应事件的动作都存放在swatch的配置文件中。预设的配置文件为拥护根目录下的.swatchrc。然而在Red Hat Linux的预设用户根目录下并没有.swatchrc配置文件，您可将/usr/doc/swatch-2.2/config_files/swatchrc.personal文件复制到用户根目录下的.swatchrc，然后修改.swatchrc所要监控的事件及执行的动作。
 参　　数：
@@ -782,16 +471,14 @@ swatch(simple watcher)
 　-P分隔字符> 　指定配置文件中，事件的分隔字符，预设为逗号。 
 　-r时间> 　在指定的时间重新启动。 
 　-t<记录文件> 　检查指定的记录文件，并且会监控加入记录文件中的后继记录。
-tload
-功能说明：显示系统负载状况。
+### tload：显示系统负载状况。
 语　　法：tload [-V][-d <间隔秒数>][-s <刻度大小>][终端机编号]
 补充说明：tload指令使用ASCII字符简单地以文字模式显示系统负载状态。假设不给予终端机编号，则会在执行tload指令的终端机显示负载情形。
 参　　数：
 　-d<间隔秒数> 　设置tload检测系统负载的间隔时间，单位以秒计算。 
 　-s<刻度大小> 　设置图表的垂直刻度大小，单位以列计算。 
 　-V 　显示版本信息。
-top
-功能说明：显示，管理执行中的程序。
+### top：显示，管理执行中的程序。
 语　　法：top [bciqsS][d <间隔秒数>][n <执行次数>]
 补充说明：执行top指令可显示目前正在系统中执行的程序，并通过它所提供的互动式界面，用热键加以管理。
 参　　数：
@@ -803,8 +490,7 @@ top
 　q 　持续监控程序执行的状况。 
 　s 　使用保密模式，消除互动模式下的潜在危机。 
 　S 　使用累计模式，其效果类似ps指令的"-S"参数。
-uname
-功能说明：显示系统信息。
+### uname：显示系统信息。
 语　　法：uname [-amnrsv][--help][--version]
 补充说明：uname可显示电脑以及操作系统的相关信息。
 参　　数：
@@ -816,8 +502,7 @@ uname
 　-v 　显示操作系统的版本。 
 　--help 　显示帮助。 
 　--version 　显示版本信息。
-useradd
-功能说明：建立用户帐号。
+### useradd：建立用户帐号。
 语　　法：useradd [-mMnr][-c <备注>][-d <登入目录>][-e <有效期限>][-f <缓冲天数>][-g <群组>][-G <群组>][-s <shell>][-u <uid>][用户帐号] 或 useradd -D [-b][-e <有效期限>][-f <缓冲天数>][-g <群组>][-G <群组>][-s <shell>]
 补充说明：useradd可用来建立用户帐号。帐号建好之后，再用passwd设定帐号的密码．而可用userdel删除帐号。使用useradd指令所建立的帐号，实际上是保存在/etc/passwd文本文件中。
 参　　数：
@@ -834,8 +519,7 @@ useradd
 　-r 　建立系统帐号。 
 　-s<shell>　 　指定用户登入后所使用的shell。 
 　-u<uid> 　指定用户ID。
-userconf
-功能说明：用户帐号设置程序。
+### userconf：用户帐号设置程序。
 语　　法：userconf [--addgroup <群组>][--adduser <用户ID><群组><用户名称><shell>][--delgroup <群组>][--deluser <用户ID>][--help]
 补充说明：userconf实际上为linuxconf的符号连接，提供图形界面的操作方式，供管理员建立与管理各类帐号。若不加任何参数，即进入图形界面。 
 参　　数：
@@ -844,14 +528,12 @@ userconf
 　--delgroup<群组> 　删除群组。 
 　--deluser<用户ID> 　删除用户帐号。 
 　--help 　显示帮助。
-userdel
-功能说明：删除用户帐号。
+### userdel：删除用户帐号。
 语　　法：userdel [-r][用户帐号]
 补充说明：userdel可删除用户帐号与相关的文件。若不加参数，则仅删除用户帐号，而不删除相关文件。
 参　　数：
   -f 　删除用户登入目录以及目录中所有文件。
-usermod
-功能说明：修改用户帐号。
+### usermod：修改用户帐号。
 语　　法：usermod [-LU][-c <备注>][-d <登入目录>][-e <有效期限>][-f <缓冲天数>][-g <群组>][-G <群组>][-l <帐号名称>][-s <shell>][-u <uid>][用户帐号]
 补充说明：usermod可用来修改用户帐号的各项设定。
 参　　数：
@@ -866,8 +548,7 @@ usermod
 　-s<shell> 　修改用户登入后所使用的shell。 
 　-u<uid> 　修改用户ID。 
 　-U 　解除密码锁定。
-vlock(virtual console lock)
-功能说明：锁住虚拟终端。
+### vlock(virtual console lock)：锁住虚拟终端。
 语　　法：vlock [-achv]
 补充说明：执行vlock指令可锁住虚拟终端，避免他人使用。
 参　　数：
@@ -876,8 +557,7 @@ vlock(virtual console lock)
 　-c或--current 　锁住目前的终端阶段作业，此为预设值。 
 　-h或--help 　在线帮助。 
 　-v或--version 　显示版本信息。
-w
-功能说明：显示目前登入系统的用户信息。
+### w：显示目前登入系统的用户信息。
 语　　法：w [-fhlsuV][用户名称]
 补充说明：执行这项指令可得知目前登入系统的用户有那些人，以及他们正在执行的程序。单独执行w
 指令会显示所有的用户，您也可指定用户名称，仅显示某位用户的相关信息。
@@ -888,8 +568,7 @@ w
   -s 　使用简洁格式列表，不显示用户登入时间，终端机阶段作业和程序所耗费的CPU时间。 
   -u 　忽略执行程序的名称，以及该程序耗费CPU时间的信息。 
   -V 　显示版本信息。
-who
-功能说明：显示目前登入系统的用户信息。
+### who：显示目前登入系统的用户信息。
 语　　法：who [-Himqsw][--help][--version][am i][记录文件]
 补充说明：执行这项指令可得知目前有那些用户登入系统，单独执行who指令会列出登入帐号，使用的 终端机，登入时间以及从何处登入或正在使用哪个X显示器。
 参　　数：
@@ -901,27 +580,23 @@ who
 　-w或-T或--mesg或--message或--writable 　显示用户的信息状态栏。 
 　--help 　在线帮助。 
 　--version 　显示版本信息。
-whoami
-功能说明：先似乎用户名称。
+### whoami：先似乎用户名称。
 语　　法：whoami [--help][--version]
 补充说明：显示自身的用户名称，本指令相当于执行"id -un"指令。
 参　　数：
 　--help 　在线帮助。 
 　--version 　显示版本信息。
-whois
-功能说明：查找并显示用户信息。
+### whois：查找并显示用户信息。
 语　　法：whois [帐号名称]
 补充说明：whois指令会去查找并显示指定帐号的用户相关信息，因为它是到Network Solutions的WHOIS数据库去查找，所以该帐号名称必须在上面注册方能寻获，且名称没有大小写的差别。
 
  
-2. linux系统设置命令
-alias
-功能说明：设置指令的别名。
+## linux系统设置命令
+### alias：设置指令的别名。
 语　　法：alias[别名]=[指令名称]
 补充说明：用户可利用alias，自定指令的别名。若仅输入alias，则可列出目前所有的别名设置。　alias的效力仅及于该次登入的操作。若要每次登入是即自动设好别名，可在.profile或.cshrc中设定指令的别名。
 参　　数：若不加任何参数，则列出目前所有的别名设置。
-apmd(advanced power management BIOS daemon)
-功能说明：进阶电源管理服务程序。
+### apmd(advanced power management BIOS daemon)：进阶电源管理服务程序。
 语　　法：apmd [-u v V W][-p <百分比变化量>][-w <百分比值>]
 补充说明：apmd负责BIOS进阶电源管理(APM)相关的记录，警告与管理工作。
 参　　数：
@@ -931,8 +606,7 @@ apmd(advanced power management BIOS daemon)
   -V或--version 显示版本信息。 
   -w<百分比值>或--warn<百分比值> 当电池不在充电状态时，且电池电量低于设置的百分比值，则在syslog(2)的ALERT层记录警告信息。百分比值的预设置为10，若设置为0，则关闭此功能。  
   -W或--wall 发出警告信息给所有人。
-aumix(audio mixer)
-功能说明：设置音效装置。
+### aumix(audio mixer)：设置音效装置。
 语　　法：aumix [-123bcilmoprstvwWx][(+/-)强度][PqR][-dfhILqS]
 补充说明：设置各项音效装置的信号强度以及指定播放与录音的装置。
 参　　数：
@@ -965,8 +639,7 @@ aumix(audio mixer)
   -L 　从$HOME/.aumixrc或/etc/aumixrc载入设置。 
   -q 　显示所有频道的设置值。 
   -S 　将设置值保存至/HOME/.aumixrc。
-bind
-功能说明：显示或设置键盘按键与其相关的功能。
+### bind：显示或设置键盘按键与其相关的功能。
 语　　法：bind [-dlv][-f <按键配置文件>][-m <按键配置>][-q <功能>]
 补充说明：您可以利用bind命令了解有哪些按键组合与其功能，也可以自行指定要用哪些按键组合。
 参　　数：
@@ -976,23 +649,20 @@ bind
 　-m<按键配置> 　指定按键配置。 
 　-q<功能> 　显示指定功能的按键。 
 　-v 　列出目前的按键配置与其功能。
-chkconfig(check config)
-功能说明：检查，设置系统的各种服务。
+### chkconfig(check config)：检查，设置系统的各种服务。
 语　　法：chkconfig [--add][--del][--list][系统服务] 或 chkconfig [--level <等级代号>][系统服务][on/off/reset]
 补充说明：这是Red Hat公司遵循GPL规则所开发的程序，它可查询操作系统在每一个执行等级中会执行哪些系统服务，其中包括各类常驻服务。
 参　　数：
 　--add 　增加所指定的系统服务，让chkconfig指令得以管理它，并同时在系统启动的叙述文件内增加相关数据。 
 　--del 　删除所指定的系统服务，不再由chkconfig指令管理，并同时在系统启动的叙述文件内删除相关数据。 
 　--level <等级代号> 指定读系统服务要在哪一个执行等级中开启或关毕
-chroot(change root)
-功能说明：改变根目录。
+### chroot(change root)：改变根目录。
 语　　法：chroot [--help][--version][目的目录][执行指令...]
 补充说明：把根目录换成指定的目的目录。
 参　　数：
 　--help 　在线帮助。
 　--version 　显示版本信息。
-clock
-功能说明：调整 RTC 时间。
+### clock：调整 RTC 时间。
 语　　法：
 clock [--adjust][--debug][--directisa][--getepoch][--hctosys][--set --date="<日期时间>"][--setepoch --epoch=< >][--show][--systohc][--test][--utc][--version]
 补充说明：RTC 是电脑内建的硬件时间，执行这项指令可以显示现在时刻，调整硬件时钟的时间，将系统时间设成与硬件时钟之时间一致，或是把系统时间回存到硬件时钟。
@@ -1009,8 +679,7 @@ clock [--adjust][--debug][--directisa][--getepoch][--hctosys][--set --date="<日
 　--test 　仅作测试，并不真的将时间写入硬件时钟或系统时间。 
 　--utc 　把硬件时钟上的时间时为CUT，有时也称为UTC或UCT。 
 　--version 　显示版本信息。
-crontab
-功能说明：设置计时器。
+### crontab：设置计时器。
 语　　法：crontab [-u <用户名称>][配置文件] 或 crontab [-u <用户名称>][-elr]
 补充说明：cron是一个常驻服务，它提供计时器的功能，让用户在特定的时间得以执行预设的指令或程序。只要用户会编辑计时器的配置文件，就可以使用计时器的功能。其配置文件格式如下：
   Minute Hour Day Month DayOFWeek Command 
@@ -1019,8 +688,7 @@ crontab
 　-l 　列出该用户的计时器设置。 
 　-r 　删除该用户的计时器设置。 
 　-u<用户名称> 　指定要设定计时器的用户名称。
-declare
-功能说明：声明 shell 变量。
+### declare：声明 shell 变量。
 语　　法：declare [+/-][rxi][变量名称＝设置值] 或 declare -f
 补充说明：declare为shell指令，在第一种语法中可用来声明变量并设置变量的属性([rix]即为变量的属性），在第二种语法中可用来显示shell函数。若不加上任何参数，则会显示全部的shell变量与函数(与执行set指令的效果相同)。
 参　　数：
@@ -1029,8 +697,7 @@ declare
 　r 　将变量设置为只读。 
 　x 　指定的变量会成为环境变量，可供shell以外的程序来使用。 
 　i 　[设置值]可以是数值，字符串或运算式。
-depmod(depend module)
-功能说明：分析可载入模块的相依性。
+### depmod(depend module)：分析可载入模块的相依性。
 语　　法：depmod [-adeisvV][-m <文件>][--help][模块名称]
 补充说明：depmod可检测模块的相依性，供modprobe在安装模块时使用。
 参　　数：
@@ -1043,8 +710,7 @@ depmod(depend module)
 　-v或--verbose 　执行时显示详细的信息。 
 　-V或--version 　显示版本信息。 
 　--help 　显示帮助。
-dircolors
-功能说明：设置 ls 指令在显示目录或文件时所用的色彩。
+### dircolors：设置 ls 指令在显示目录或文件时所用的色彩。
 语　　法：dircolors [色彩配置文件] 或 dircolors [-bcp][--help][--version]
 补充说明：dircolors可根据[色彩配置文件]来设置LS_COLORS环境变量或是显示设置LS_COLORS环境变量的shell指令。
 参　　数：
@@ -1053,36 +719,31 @@ dircolors
 　-p或--print-database 　显示预设置 
 　-help 　显示帮助。 
 　-version 　显示版本信息。
-dmesg
-功能说明：显示开机信息。
+### dmesg：显示开机信息。
 语　　法：dmesg [-cn][-s <缓冲区大小>]
 补充说明：kernel会将开机信息存储在ring buffer中。您若是开机时来不及查看信息，可利用dmesg来查看。开机信息亦保存在/var/log目录中，名称为dmesg的文件里。
 参　　数：
 　-c 　显示信息后，清除ring buffer中的内容。 
 　-s<缓冲区大小> 　预设置为8196，刚好等于ring buffer的大小。 
 　-n 　设置记录信息的层级。
-enable
-功能说明：启动或关闭 shell 内建指令。
+### enable：启动或关闭 shell 内建指令。
 语　　法：enable [-n][-all][内建指令]
 补充说明：若要执行的文件名称与shell内建指令相同，可用enable -n来关闭shell内建指令。若不加-n参数，enable可重新启动关闭的指令。
 参　　数：
 　-n 　关闭指定的shell内建指令。 
 　-all 　显示shell所有关闭与启动的指令。
-eval
-功能说明：重新运算求出参数的内容。
+### eval：重新运算求出参数的内容。
 语　　法：eval [参数]
 补充说明：eval可读取一连串的参数，然后再依参数本身的特性来执行。
 参　　数：参数不限数目，彼此之间用分号分开。
-export
-功能说明：设置或显示环境变量。
+### export：设置或显示环境变量。
 语　　法：export [-fnp][变量名称]=[变量设置值]
 补充说明：在shell中执行程序时，shell会提供一组环境变量。export可新增，修改或删除环境变量，供后续执行的程序使用。export的效力仅及于该此登陆操作。
 参　　数：
 　-f 　代表[变量名称]中为函数名称。 
 　-n 　删除指定的变量。变量实际上并未删除，只是不会输出到后续指令的执行环境中。 
 　-p 　列出所有的shell赋予程序的环境变量。
-fbset(frame buffer setup)
-功能说明：设置景框缓冲区。
+### fbset(frame buffer setup)：设置景框缓冲区。
 语　　法：fbset [-ahinsvVx][-db <信息文件>][-fb <外围设备代号>][--test][显示模式]
 补充说明：fbset指令可用于设置景框缓冲区的大小，还能调整画面之分辨率，位置，高低宽窄，色彩 深度，并可决定是否启动先卡之各项硬件特性。
 参　　数：
@@ -1099,16 +760,13 @@ fbset(frame buffer setup)
 　-V或--version 　显示版本信息。 
 　-x或--xfree86 　使用XFree86兼容模式。 
 　--test 　仅做测试，并不改变现行的显示模式
-grpconv(group convert to shadow password)
-功能说明：开启群组的投影密码。
+### grpconv(group convert to shadow password)：开启群组的投影密码。
 语　　法：grpconv
 补充说明：Linux系统里的用户和群组密码，分别存放在/etc目录下的passwd和group文件中。因系统运作所需，任何人都得以读取它们，造成安全上的破绽。投影密码将文件内的密码改存在/etc目录下的shadow和gshadow文件内，只允许系统管理者读取，同时把原密码置换为"x"字符。投影密码的功能可随时开启或关闭，您只需执行grpconv指令就能开启群组投影密码。
-grpunconv(group unconvert from shadow password)
-功能说明：关闭群组的投影密码。
+### grpunconv(group unconvert from shadow password)：关闭群组的投影密码。
 语　　法：grpunconv
 补充说明：执行grpunconv指令可关闭群组投影密码，它会把密码从gshadow文件内，回存到group文件里。
-hwclock(hardware clock)
-功能说明：显示与设定硬件时钟。
+### hwclock(hardware clock)：显示与设定硬件时钟。
 语　　法：
 hwclock [--adjust][--debug][--directisa][--hctosys][--show][--systohc][--test]
 [--utc][--version][--set --date=<日期与时间>]
@@ -1124,8 +782,7 @@ hwclock [--adjust][--debug][--directisa][--hctosys][--show][--systohc][--test]
   --test 　仅测试程序，而不会实际更改硬件时钟。 
   --utc 　若要使用格林威治时间，请加入此参数，hwclock会执行转换的工作。 
   --version 　显示版本信息。
-insmod(install module)
-功能说明：载入模块。
+### insmod(install module)：载入模块。
 语　　法：insmod [-fkmpsvxX][-o <模块名称>][模块文件][符号名称 = 符号值]
 补充说明：Linux有许多功能是通过模块的方式，在需要时才载入kernel。如此可使kernel较为精简，进而提高效率，以及保有较大的弹性。这类可载入的模块，通常是设备驱动程序。
 参　　数：
@@ -1138,15 +795,13 @@ insmod(install module)
   -v 　执行时显示详细的信息。 
   -x 　不要汇出模块的外部符号。 
   -X 　汇出模块所有的外部符号，此为预设置
-kbdconfig
-功能说明：设置键盘类型。
+### kbdconfig：设置键盘类型。
 语　　法：kbdconfig [--back][--test]
 补充说明：kbdconfig(Red Hat Linux才有的指令)是一个用来设置键盘的程序，提供图形化的操作界面。kbdconfig实际上是修改/etc/sysconfig/keyboard的键盘配置文件。
 参　　数：
   --back 　执行时将预设的Cancel按钮更改为Back按钮。 
   --test 　仅作测试，不会实际更改设置。
-lilo(linux loader)
-功能说明：安装核心载入，开机管理程序。
+### lilo(linux loader)：安装核心载入，开机管理程序。
 语　　法：lilo [-clqtV][-b<外围设备代号>][-C<配置文件>][-d<延迟时间>][－D<识别标签>][-f<几何参数文件>][-i<开机磁区文件>][-I<识别标签>][-m<映射文件>][-P<fix/ignore>][-r<根目录>][-R<执行指令>...][-s<备份文件>][-S<备份文件>][-uU<外围设备代号>][-v...]
 补充说明：lilo是个Linux系统核心载入程序，同时具备管理开机的功能。单独执行lilo指令，它会读取/etc/目录下的lilo.conf配置文件，然后根据其内容安装lilo。
 参　　数：
@@ -1171,22 +826,18 @@ lilo(linux loader)
   -U<外围设备代号> 　此参数的效果和指定"-u"参数类似，当不检查时间戳记。 
   -v 　显示指令执行过程。 
   -V 　显示版本信息。
-liloconfig
-功能说明：设置核心载入，开机管理程序。
+### liloconfig：设置核心载入，开机管理程序。
 语　　法：liloconfig
 补充说明：liloconfig是Slackware发行版专门用来调整lilo设置的程序。它通过互动式操作界面，让用户能够利用键盘上的方向键等，轻易地操控lilo的安装，设置作业，而无须下达各种参数或撰写配置文件。
-lsmod(list modules)
-功能说明：显示已载入系统的模块。
+### lsmod(list modules)：显示已载入系统的模块。
 语　　法：lsmod
 补充说明：执行lsmod指令，会列出所有已载入系统的模块。Linux操作系统的核心具有模块化的特性，应此在编译核心时，务须把全部的功能都放入核心。您可以将这些功能编译成一个个单独的模块，待需要时再分别载入。
-minfo
-功能说明：显示MS-DOS文件系统的各项参数。
+### minfo：显示MS-DOS文件系统的各项参数。
 语　　法：</>minfo [-v][驱动器代号]
 补充说明：minfo为mtools工具指令，可显示MS-DOS系统磁盘的各项参数，包括磁区数，磁头数...等。
 参　　数：
   -v 　除了一般信息外，并显示可开机磁区的内容。
-mkkickstart
-功能说明：建立安装的组态文件。
+### mkkickstart：建立安装的组态文件。
 语　　法：mkkickstart [--bootp][--dhcp][--nonet][--nox][--version][--nfs <远端电脑:路径>]
  补充说明：mkkickstart可根据目前系统的设置来建立组态文件，供其他电脑在安装时使用。组态文件的内容包括使用语言，网络环境，系统磁盘状态，以及X Windows的设置等信息。
 参　　数：
@@ -1196,8 +847,7 @@ mkkickstart
   --nonet 　不要进行网络设置，即假设在没有网络环境的状态下。 
   --nox 　不要进行X Windows的环境设置。 
   --version 　显示版本信息。
-modinfo(module infomation)
-功能说明：显示kernel模块的信息。
+### modinfo(module infomation)：显示kernel模块的信息。
 语　　法：modinfo [-adhpV][模块文件]
 补充说明：modinfo会显示kernel模块的对象文件，以显示该模块的相关信息。
 参　　数：
@@ -1206,8 +856,7 @@ modinfo(module infomation)
   -h或--help 　显示modinfo的参数使用方法。 
   -p或--parameters 　显示模块所支持的参数。 
   -V或--version 　显示版本信息。
-modprobe(module probe)
-功能说明：自动处理可载入模块。
+### modprobe(module probe)：自动处理可载入模块。
 语　　法：modprobe [-acdlrtvV][--help][模块文件][符号名称 = 符号值]
 补充说明：modprobe可载入指定的个别模块，或是载入一组相依的模块。modprobe会根据depmod所产生的相依关系，决定要载入哪些模块。若在载入过程中发生错误，在modprobe会卸载整组的模块。
 参　　数：
@@ -1220,10 +869,9 @@ modprobe(module probe)
   -v或--verbose 　执行时显示详细的信息。 
   -V或--version 　显示版本信息。 
   -help 　显示帮助。
-mouseconfig
-功能说明：设置鼠标相关参数。
+### mouseconfig：设置鼠标相关参数。
 语　　法：
-mouseconfig [--back][--emulthree][--help][--expert][--kickstart][--noprobe][--test][--device <连接端口>][鼠标类型]
+### mouseconfig [--back][--emulthree][--help][--expert][--kickstart][--noprobe][--test][--device <连接端口>][鼠标类型]
 补充说明：mouseconfig为鼠标设置程序，可自动设置相关参数，或者用户也可以利用所提供互动模式自行设置鼠标。mouseconfig是Red Hat Linux才有的命令。
 参　　数：
   --back 　在设置画面上显示Back按钮，而取代预设的Cancel按钮。 
@@ -1234,15 +882,13 @@ mouseconfig [--back][--emulthree][--help][--expert][--kickstart][--noprobe][--te
   --kickstart 　让程序自动检测并保存所有的鼠标设置。 
   --noprobe 　不要检测鼠标设备。 
   --test 　测试模式，不会改变任何设置。
-ntsysv
-功能说明：设置系统的各种服务。
+### ntsysv：设置系统的各种服务。
 语　　法：ntsysv [--back][--level <等级代号>]
 补充说明：这是Red Hat公司遵循GPL规则所开发的程序，它具有互动式操作界面，您可以轻易地利用方向键和空格键等，开启，关闭操作系统在每个执行等级中，所要执行的系统服务。
 参　　数：
   --back 　在互动式界面里，显示Back钮，而非Cancel钮。 
   --level <等级代号> 　在指定的执行等级中，决定要开启或关闭哪些系统服务。
-passwd(password)
-功能说明：设置密码。
+### passwd(password)：设置密码。
 语　　法：passwd [-dklS][-u <-f>][用户名称]
 补充说明：passwd指令让用户可以更改自己的密码，而系统管理者则能用它管理系统用户的密码。只有管理者可以指定用户名称，一般用户只能变更自己的密码。
 参　　数：
@@ -1252,38 +898,32 @@ passwd(password)
   -l 　锁住密码。 
   -s 　列出密码的相关信息。本参数仅有系统管理者才能使用。 
   -u 　解开已上锁的帐号。
-pwconv
-功能说明：开启用户的投影密码。
+### pwconv：开启用户的投影密码。
 语　　法：pwconv
 补充说明：Linux系统里的用户和群组密码，分别存放在名称为passwd和group的文件中，　这两个文件位于/etc目录下。因系统运作所需，任何人都得以读取它们，造成安全上的破绽。投影密码将文件内的密码改存在/etc目录下的shadow和gshadow文件内，只允许系统管理者读取，同时把原密码置换为"x"字符，有效的强化了系统的安全性。
-pwunconv
-功能说明：关闭用户的投影密码。
+### pwunconv：关闭用户的投影密码。
 语　　法：pwunconv
 补充说明：执行pwunconv指令可以关闭用户投影密码，它会把密码从shadow文件内，重回存到passwd文件里。
-rdate(receive date)
-功能说明：显示其他主机的日期与时间。
+### rdate(receive date)：显示其他主机的日期与时间。
 语　　法：rdate [-ps][主机名称或IP地址...]
 补充说明：执行rdate指令，向其他主机询问系统时间并显示出来。
 参　　数：
   -p 　显示远端主机的日期与时间。 
   -s 　把从远端主机收到的日期和时间，回存到本地主机的系统时间。
-resize
-功能说明：设置终端机视窗的大小。
+### resize：设置终端机视窗的大小。
 语　　法：resize [-cu][-s <列数> <行数>]
 补充说明：执行resize指令可设置虚拟终端机的视窗大小。
 参　　数：
 　-c 　就算用户环境并非C Shell，也用C Shell指令改变视窗大小。 
 　-s <列数> <行数> 　设置终端机视窗的垂直高度和水平宽度。 
 　-u 　就算用户环境并非Bourne Shell，也用Bourne Shell指令改变视窗大小。
-rmmod(remove module)
-功能说明：删除模块。
+### rmmod(remove module)：删除模块。
 语　　法：rmmod [-as][模块名称...]
 补充说明：执行rmmod指令，可删除不需要的模块。Linux操作系统的核心具有模块化的特性，应此在编译核心时，务须把全部的功能都放如核心。你可以将这些功能编译成一个个单独的模块，待有需要时再分别载入它们。
 参　　数：
   -a 　删除所有目前不需要的模块。 
   -s 　把信息输出至syslog常驻服务，而非终端机界面。
-rpm(redhat package manager)
-功能说明：管理套件。
+### rpm(redhat package manager)：管理套件。
 语　　法：rpm [-acdhilqRsv][-b<完成阶段><套间档>+][-e<套件挡>][-f<文件>+][-i<套件档>][-p<套件档>＋][-U<套件档>][-vv][--addsign<套件档>+][--allfiles][--allmatches][--badreloc][--buildroot<根目录>][--changelog][--checksig<套件档>+][--clean][--dbpath<数据库目录>][--dump][--excludedocs][--excludepath<排除目录>][--force][--ftpproxy<主机名称或IP地址>][--ftpport<通信端口>][--help][--httpproxy<主机名称或IP地址>][--httpport<通信端口>][--ignorearch][--ignoreos][--ignoresize][--includedocs][--initdb][justdb][--nobulid][--nodeps][--nofiles][--nogpg][--nomd5][--nopgp][--noorder][--noscripts][--notriggers][--oldpackage][--percent][--pipe<执行指令>][--prefix<目的目录>][--provides][--queryformat<档头格式>][--querytags][--rcfile<配置档>][--rebulid<套件档>][--rebuliddb][--recompile<套件档>][--relocate<原目录>=<新目录>][--replacefiles][--replacepkgs][--requires][--resign<套件档>+][--rmsource][--rmsource<文件>][--root<根目录>][--scripts][--setperms][--setugids][--short-circuit][--sign][--target=<安装平台>+][--test][--timecheck<检查秒数>][--triggeredby<套件档>][--triggers][--verify][--version][--whatprovides<功能特性>][--whatrequires<功能特性>]
 补充说明：rmp原本是Red Hat Linux发行版专门用来管理Linux各项套件的程序，由于它遵循GPL规则且功能强大方便，因而广受欢迎。逐渐受到其他发行版的采用。RPM套件管理方式的出现，让Linux易于安装，升级，间接提升了Linux的适用度。
 参　　数：
@@ -1370,8 +1010,7 @@ rpm(redhat package manager)
   --version 　显示版本信息。 
   --whatprovides<功能特性> 　查询该套件对指定的功能特性所提供的兼容度。 
   --whatrequires<功能特性> 　查询该套件对指定的功能特性所需要的兼容度。
-set
-功能说明：设置shell。
+### set：设置shell。
 语　　法：set [+-abCdefhHklmnpPtuvx]
 补充说明：set指令能设置所使用shell的执行方式，可依照不同的需求来做设置。
 参　　数：
@@ -1394,8 +1033,7 @@ set
 　-v 　显示shell所读取的输入值。 
 　-x 　执行指令后，会先显示该指令及所下的参数。 
 　+<参数> 　取消某个set曾启动的参数。
-setconsole
-功能说明：设置系统终端。
+### setconsole：设置系统终端。
 语　　法：setconsole [video][serial][ttya][ttyb]
 补充说明：setconsole可用来指定系统终端。
 参　　数：
@@ -1403,12 +1041,10 @@ setconsole
 　ttya,cua0或ttyS0 　使用第１个串口设备作为终端。 
 　ttyb,cua1或ttyS1 　使用第２个串口设备作为终端。 
 　video 　使用主机上的现卡作为终端。
-setenv(set environment variable)
-功能说明：查询或显示环境变量。
+### setenv(set environment variable)：查询或显示环境变量。
 语　　法：setenv [变量名称][变量值]
 补充说明：setenv为tsch中查询或设置环境变量的指令
-setup
-功能说明：设置公用程序。
+### setup：设置公用程序。
 语　　法：setup
 补充说明：setup是一个设置公用程序，提供图形界面的操作方式。在setup中可设置7类的选项：
 　１.登陆认证方式 
@@ -1418,16 +1054,14 @@ setup
 　５.声卡组态设置 
 　６.时区设置 
 　７.X Windows组态设置
-sndconfig
-功能说明：设置声卡。
+### sndconfig：设置声卡。
 语　　法：sndconfig [--help][--noautoconfig][--noprobe]
 补充说明：sndconfig为声卡设置程序，支持PnP柚茫勺远觳獠⑸柚肞nP声卡。
 参 　 数：
   --help 　显示帮助。 
   --noautoconfig 　不自动设置PnP的声卡。 
   --noprobe 　不自动检测PnP声卡。
-SVGAText Mode
-功能说明：加强文字模式的显示画面。
+### SVGAText Mode：加强文字模式的显示画面。
 语　　法：SVGATextMode [-acdfhmnrsv][-t <配置文件>][模式]
 补充说明：SVGATextMode可用来设置文字模式下的显示画面，包括分辨率，字体和更新频率等。
 参　　数：
@@ -1443,8 +1077,7 @@ SVGAText Mode
 　-t<配置文件> 　指定配置文件。 
 　-v 　SVGATextMode在配置新的显示模式时，预设会先检查垂直与水平的更新更新频率是否在配置文件所指定的范围内，如果不在范围内，则不设置新的显示模式。 
 　模式］ 　[模式]参数必须是配置文件中模式的名称。
-timeconfig
-功能说明：设置时区。
+### timeconfig：设置时区。
 语　　法：timeconfig [--arc][--back][--test][--utc][时区名称]
 补充说明：这是Red Hat公司遵循GPL规则所开发的程序，它具有互动式操作界面，您可以轻易地利用方向键和空格键等，设置系统时间所属的时区。
 参　　数：
@@ -1452,8 +1085,7 @@ timeconfig
 　--back 　在互动式界面里，显示Back钮而非Cancel钮。 
 　--test 　仅作测试，并不真的改变系统的时区。 
 　--utc 　把硬件时钟上的时间视为CUT，有时也称为UTC或UCT。
-ulimit
-功能说明：控制shell程序的资源。
+### ulimit：控制shell程序的资源。
 语　　法：ulimit [-aHS][-c <core文件上限>][-d <数据节区大小>][-f <文件大小>][-m <内存大小>][-n <文件数目>][-p <缓冲区大小>][-s <堆叠大小>][-t <CPU时间>][-u <程序数目>][-v <虚拟内存大小>]
 补充说明：ulimit为shell内建指令，可用来控制shell执行程序的资源。
 参　　数：
@@ -1470,23 +1102,20 @@ ulimit
   -t <CPU时间> 　指定CPU使用时间的上限，单位为秒。 
   -u <程序数目> 　用户最多可开启的程序数目。 
   -v <虚拟内存大小> 　指定可使用的虚拟内存上限，单位为KB。
-unalias
-功能说明：删除别名。
+### unalias：删除别名。
 语　　法：unalias [-a][别名]
 补充说明：unalias为shell内建指令，可删除别名设置。
 参　　数：
   -a 　删除全部的别名。
-unset
-功能说明：删除变量或函数。
+### unset：删除变量或函数。
 语　　法：unset [-fv][变量或函数名称]
 补充说明：unset为shell内建指令，可删除变量或函数。
 参 　 数：
   -f 　仅删除函数。 
   -v 　仅删除变量。
  
-3. linux文档编辑命令
-col
-功能说明：过滤控制字符。
+## linux文档编辑命令
+### col：过滤控制字符。
 语　　法：col [-bfx][-l<缓冲区列数>]
 补充说明：在许多UNIX说明文件里，都有RLF控制字符。当我们运用shell特殊字符">"和">>"，把说明文件的内容输出成纯文本文件时，控制字符会变成乱码，col指令则能有效滤除这些控制字符。
 参　　数：
@@ -1494,12 +1123,10 @@ col
   -f   滤除RLF字符，但允许将HRLF字符呈现出来。
   -x   以多个空格字符来表示跳格字符。
   -l<缓冲区列数>   预设的内存缓冲区有128列，您可以自行指定缓冲区的大小。
-colrm(column remove)
-功能说明：滤掉指定的行。
+### colrm(column remove)：滤掉指定的行。
 语　　法：colrm [开始行数编号<结束行数编号>]
 补充说明：colrm指令从标准输入设备读取书记，转而输出到标准输出设备。如果不加任何参数，则该指令不会过滤任何一行。
-comm(common)
-功能说明：比较两个已排过序的文件。
+### comm(common)：比较两个已排过序的文件。
 语　　法：comm [-123][--help][--version][第1个文件][第2个文件]
 补充说明：这项指令会一列列地比较两个已排序文件的差异，并将其结果显示出来，如果没有指定任何参数，则会把结果分成3行显示：第1行仅是在第1个文件中出现过的列，第2行是仅在第2个文件中出现过的列，第3行则是在第1与第2个文件里都出现过的列。若给予的文件名称为"-"，则comm指令会从标准输入设备读取数据。
 参　　数：
@@ -1508,8 +1135,7 @@ comm(common)
   -3   不显示只在第1和第2个文件里出现过的列。
   --help   在线帮助。
   --version   显示版本信息。
-csplit(context split)
-功能说明：分割文件。
+### csplit(context split)：分割文件。
 语　　法：csplit [-kqsz][-b<输出格式>][-f<输出字首字符串>][-n<输出文件名位数>][--help][--version][文件][范本样式...]
 补充说明：将文件依照指定的范本样式予以切割后，分别保存成名称为xx00,xx01,xx02...的文件。若给予的文件名称为"-"，则csplit指令会从标准输入设备读取数据。
 参　　数：
@@ -1521,8 +1147,7 @@ csplit(context split)
   -z或--elide-empty-files   删除长度为0 Byte文件。
   --help   在线帮助。
   --version   显示版本信息。
-ed(editor)
-功能说明：文本编辑器。
+### ed(editor)：文本编辑器。
 语　　法：ed [-][-Gs][-p<字符串>][--help][--version][文件]
 补充说明：ed是Linux中功能最简单的文本编辑程序，一次仅能编辑一行而非全屏幕方式的操作。
 参　　数：
@@ -1531,16 +1156,12 @@ ed(editor)
   -s,-,--quiet或--silent   不执行开启文件时的检查功能。
   --help   显示帮助。
   --version   显示版本信息。
-egrep
-功能说明：在文件内查找指定的字符串。egrep执行效果如grep -E，使用的语法及参数可参照grep指令，与grep不同点在于解读字符串的方法，egrep是用extended regular expression语法来解读，而grep则用basic regular expression语法，extended regular expression比basic regular expression有更完整的表达规范。
-ex
-功能说明：在Ex模式下启动vim文本编辑器。ex执行效果如同vi -E，使用语法及参数可参照vi指令，如要从Ex模式回到普通模式，则在vim中输入:vi或:visual即可。
-fgrep(fixed regexp)
-功能说明：查找文件里符合条件的字符串。
+### egrep：在文件内查找指定的字符串。egrep执行效果如grep -E，使用的语法及参数可参照grep指令，与grep不同点在于解读字符串的方法，egrep是用extended regular expression语法来解读，而grep则用basic regular expression语法，extended regular expression比basic regular expression有更完整的表达规范。
+### ex：在Ex模式下启动vim文本编辑器。ex执行效果如同vi -E，使用语法及参数可参照vi指令，如要从Ex模式回到普通模式，则在vim中输入:vi或:visual即可。
+### fgrep(fixed regexp)：查找文件里符合条件的字符串。
 语　　法：fgrep [范本样式][文件或目录...]
 补充说明：本指令相当于执行grep指令加上参数"-F"，详见grep指令说明。
-fmt(fromat)
-功能说明：编排文本文件。
+### fmt(fromat)：编排文本文件。
 语　　法：fmt [-cstu][-p<列起始字符串>][-w<每列字符数>][--help][--version][文件...]
 补充说明：fmt指令会从指定的文件里读取内容，将其依照指定格式重新编排后，输出到标准输出设备。若指定的文件名为"-"，则fmt指令会从标准输入设备读取数据。
 参　　数：
@@ -1552,8 +1173,7 @@ fmt(fromat)
   -w<每列字符数>或--width=<每列字符数>或-<每列字符数>   设置每列的最大字符数。
   --help   在线帮助。
   --version   显示版本信息。
-fold
-功能说明：限制文件列宽。
+### fold：限制文件列宽。
 语　　法：fold [-bs][-w<每列行数>][--help][--version][文件...]
 补充说明：fold指令会从指定的文件里读取内容，将超过限定列宽的列加入增列字符后，输出到标准输出设备。若不指定任何文件名称，或是所给予的文件名为“-”，则fold指令会从标准输入设备读取数据。
 参　　数：
@@ -1562,8 +1182,7 @@ fold
   -w<每列行数>或--width<每列行数>   设置每列的最大行数。
   --help   在线帮助。
   --version   显示版本信息。
-grep
-功能说明：查找文件里符合条件的字符串。
+### grep：查找文件里符合条件的字符串。
 语　　法：grep [-abcEFGhHilLnqrsvVwxy][-A<显示列数>][-B<显示列数>][-C<显示列数>][-d<进行动作>][-e<范本样式>][-f<范本文件>][--help][范本样式][文件或目录...]
 补充说明：grep指令用于查找内容包含指定的范本样式的文件，如果发现某文件的内容符合所指定的范本样式，预设grep指令会把含有范本样式的那一列显示出来。若不指定任何文件名称，或是所给予的文件名为“-”，则grep指令会从标准输入设备读取数据。
 参　　数：
@@ -1594,8 +1213,7 @@ grep
   -x或--line-regexp   只显示全列符合的列。
   -y   此参数的效果和指定“-i”参数相同。
   --help   在线帮助。
-ispell(interactive spelling checking)
-功能说明：拼字检查程序。
+### ispell(interactive spelling checking)：拼字检查程序。
 语　　法：ispell [-aAbBClmMnNPStVx][-d<字典文件>][-L<行数>][-p<字典文件>][-w<非字母字符>][-W<字符串长度>][要检查的文件]
 补充说明：ispell预设会使用/usr/lib/ispell/english.hash字典文件来检查文本文件。若在检查的文件中找到字典没有的词汇，ispell会建议使用的词汇，或是让你将新的词汇加入个人字典。
 参　　数：
@@ -1619,8 +1237,7 @@ ispell(interactive spelling checking)
   -w<非字母字符>   检查时，特别挑出含有指定的字符。
   -W<字符串长度>   不检查指定长度的词汇。
   -x   不要产生备份文件。
-jed
-功能说明：编辑文本文件。
+### jed：编辑文本文件。
 语　　法：jed [-2n][-batch][-f<函数>][-g<行数>][-i<文件>][-I<文件>][-s<字符串>][文件]
 补充说明：Jed是以Slang所写成的程序，适合用来编辑程序原始代码。
 参　　数：
@@ -1632,8 +1249,7 @@ jed
   -i<文件>   载入Slang原始代码文件。
   -n   不要载入jed.rc配置文件。
   -s<字符串>   查找并移到指定的字符串。
-joe
-功能说明：编辑文本文件。
+### joe：编辑文本文件。
 语　　法：
 joe [-asis][-beep][-csmode][-dopadding][-exask][-force][-help][-keepup][-lightoff][-arking][-mid][-nobackups][-nonotice][-nosta][-noxon][-orphan][-backpath<目录>][-columns<栏位>][-lines<行数>][-pg<行数>][-skiptop<行数>][-autoindent crlf linums overwrite rdonly wordwrap][+<行数>][-indentc<缩排字符>][-istep<缩排字符数>][-keymap<按键配置文件>][-lmargin<栏数>][-rmargin<栏数>][-tab<栏数>][要编辑的文件]
 补充说明：Joe是一个功能强大的全屏幕文本编辑程序。操作的复杂度要比Pico高一点，但是功能较为齐全。Joe一次可开启多个文件，每个文件各放在一个编辑区内，并可在文件之间执行剪贴的动作。
@@ -1673,8 +1289,7 @@ joe [-asis][-beep][-csmode][-dopadding][-exask][-force][-help][-keepup][-lightof
   -rmargin<栏数>   设置右侧边界。
   -tab<栏数>   设置tab的宽度。
   -rdonly   以只读的方式开启文件-wordwrap编辑时若超过右侧边界，则自动换行。
-join
-功能说明：将两个文件中，指定栏位内容相同的行连接起来。
+### join：将两个文件中，指定栏位内容相同的行连接起来。
 语　　法：join [-i][-a<1或2>][-e<字符串>][-o<格式>][-t<字符>][-v<1或2>][-1<栏位>][-2<栏位>][--help][--version][文件1][文件2]
 补充说明：找出两个文件中，指定栏位内容相同的行，并加以合并，再输出到标准输出设备。
 参　　数：
@@ -1688,8 +1303,7 @@ join
   -2<栏位>   连接[文件2]指定的栏位。
   --help   显示帮助。
   --version   显示版本信息。
-look
-功能说明：查询单字。
+### look：查询单字。
 语　　法：look [-adf][-t<字尾字符串>][字首字符串][字典文件]
 补充说明：look指令用于英文单字的查询。您仅需给予它欲查询的字首字符串，它会显示所有开头字符串符合该条件的单字。
 参　　数：
@@ -1697,15 +1311,13 @@ look
   -d   只对比英文字母和数字，其余一慨忽略不予比对。
   -f   忽略字符大小写差别。
   -t<字尾字符串>   设置字尾字符串。
-mtype
-功能说明：显示MS-DOS文件的内容。
+### mtype：显示MS-DOS文件的内容。
 语　　法：mtype [-st][文件]
 补充说明：mtype为mtools工具指令，模拟MS-DOS的type指令，可显示MS-DOS文件的内容。
 参　　数：
   -s   去除8位字符码集的第一个位，使它兼容于7位的ASCII。
   -t   将MS-DOS文本文件中的“换行+光标移至行首”字符转换成Linux的换行字符。
-pico
-功能说明：编辑文字文件。
+### pico：编辑文字文件。
 语　　法：pico [-bdefghjkmqtvwxz][-n<间隔秒数>][-o<工作目录>][-r<编辑页宽>][-s<拼字检查器>][+<列数编号>][文件]
 补充说明：pico是个简单易用、以显示导向为主的文字编辑程序，它伴随着处理电子邮件和新闻组的程序pine而来。
 参　　数：
@@ -1729,8 +1341,7 @@ pico
   -x   关闭换面下方的命令列表。
   -z   让pico可被Ctrl+z中断，暂存在后台作业里。
   +<列数编号>   执行pico指令进入编辑模式时，从指定的列数开始编辑。
-rgrep(recursive grep)
-功能说明：递归查找文件里符合条件的字符串。
+### rgrep(recursive grep)：递归查找文件里符合条件的字符串。
 语　　法：rgrep [-?BcDFhHilnNrv][-R<范本样式>][-W<列长度>][-x<扩展名>][--help][--version][范本样式][文件或目录...]
 补充说明：rgrep指令的功能和grep指令类似，可查找内容包含指定的范本样式的文件，如果发现某文件的内容符合所指定的范本样式，预设rgrep指令会把含有范本样式的那一列显示出来。
 参　　数：
@@ -1752,8 +1363,7 @@ rgrep(recursive grep)
   -x<扩展名>   只处理符合指定扩展名的文件名称的文件。
   --help   在线帮助。
   --version   显示版本信息。
-sed(stream editor)
-功能说明：利用script来处理文本文件。
+### sed(stream editor)：利用script来处理文本文件。
 语　　法：sed [-hnV][-e<script>][-f<script文件>][文本文件]
 补充说明：sed可依照script的指令，来处理、编辑文本文件。
 参　　数：
@@ -1762,8 +1372,7 @@ sed(stream editor)
   -h或--help   显示帮助。
   -n或--quiet或--silent   仅显示script处理后的结果。
   -V或--version   显示版本信息。
-sort
-功能说明：将文本文件内容加以排序。
+### sort：将文本文件内容加以排序。
 语　　法：sort [-bcdfimMnr][-o<输出文件>][-t<分隔字符>][+<起始栏位>-<结束栏位>][--help][--verison][文件]
 补充说明：sort可针对文本文件的内容，以行为单位来排序。
 参　　数：
@@ -1781,12 +1390,10 @@ sort
   +<起始栏位>-<结束栏位>   以指定的栏位来排序，范围由起始栏位到结束栏位的前一栏位。
   --help   显示帮助。
   --version   显示版本信息。
-spell
-功能说明：拼字检查程序。
+### spell：拼字检查程序。
 语　　法：spell
 补充说明：spell可从标准输入设备读取字符串，结束后显示拼错的词汇。
-tr(translate character)
-功能说明：转换字符。
+### tr(translate character)：转换字符。
 语　　法：tr [-cdst][--help][--version][第一字符集][第二字符集]
 补充说明：tr指令从标准输入设备读取数据，经过字符串转译后，输出到标准输出设备。
 参　　数：
@@ -1796,8 +1403,7 @@ tr(translate character)
   -t或--truncate-set1   先删除第一字符集较第二字符集多出的字符。
   --help   在线帮助。
   --version   显示版本信息。
-uniq
-功能说明：检查及删除文本文件中重复出现的行列。
+### uniq：检查及删除文本文件中重复出现的行列。
 语　　法：uniq [-cdu][-f<栏位>][-s<字符位置>][-w<字符位置>][--help][--version][输入文件][输出文件]
 补充说明：uniq可检查文本文件中重复出现的行列。
 参　　数：
@@ -1811,8 +1417,7 @@ uniq
   --version   显示版本信息。
   [输入文件]   指定已排序好的文本文件。
   [输出文件]   指定输出的文件。
-wc(word count)
-功能说明：计算字数。
+### wc(word count)：计算字数。
 语　　法：wc [-clw][--help][--version][文件...]
 补充说明：利用wc指令我们可以计算文件的Byte数、字数、或是列数，若不指定文件名称、或是所给予的文件名为“-”，则wc指令会从标准输入设备读取数据。
 参　　数：
@@ -1824,8 +1429,7 @@ wc(word count)
 
  
 4. linux压缩备份命令
-ar
-功能说明：建立或修改备存文件，或是从备存文件中抽取文件。
+### ar：建立或修改备存文件，或是从备存文件中抽取文件。
 语　　法：ar[-dmpqrtx][cfosSuvV][a<成员文件>][b<成员文件>][i<成员文件>][备存文件][成员文件]
 补充说明：ar可让您集合许多文件，成为单一的备存文件。在备存文件中，所有成员文件皆保有原来的属性与权限。
 参　　数：
@@ -1849,8 +1453,7 @@ ar
 　u 　只将日期较新文件插入备存文件中。 
 　v 　程序执行时显示详细的信息。 
 　V 　显示版本信息。
-bunzip2
-功能说明：.bz2文件的解压缩程序。
+### bunzip2：.bz2文件的解压缩程序。
 语　　法：bunzip2 [-fkLsvV][.bz2压缩文件]
 补充说明：bunzip2可解压缩.bz2格式的压缩文件。bunzip2实际上是bzip2的符号连接，执行bunzip2与bzip2 -d的效果相同。
 参　　数：
@@ -1859,8 +1462,7 @@ bunzip2
 　-s或--small 　降低程序执行时，内存的使用量。 
 　-v或--verbose 　解压缩文件时，显示详细的信息。 
 　-l,--license,-V或--version 　显示版本信息。
-bzip2
-功能说明：.bz2文件的压缩程序。
+### bzip2：.bz2文件的压缩程序。
 语　　法：bzip2 [-cdfhkLstvVz][--repetitive-best][--repetitive-fast][- 压缩等级][要压缩的文件]
 补充说明：bzip2采用新的压缩演算法，压缩效果比传统的LZ77/LZ78压缩演算法来得好。若没有加上任何参数，bzip2压缩完文件后会产生.bz2的压缩文件，并删除原始的文件。
 参　　数：
@@ -1878,12 +1480,10 @@ bzip2
 　--repetitive-best 　若文件中有重复出现的资料时，可利用此参数提高压缩效果。 
 　--repetitive-fast 　若文件中有重复出现的资料时，可利用此参数加快执行速度。 
 　-压缩等级 　压缩时的区块大小。
-bzip2recover
-功能说明：用来修复损坏的.bz2文件。
+### bzip2recover：用来修复损坏的.bz2文件。
 语　　法：bzip2recover [.bz2 压缩文件]
 补充说明：bzip2是以区块的方式来压缩文件，每个区块视为独立的单位。因此，当某一区块损坏时，便可利用bzip2recover，试着将文件中的区块隔开来，以便解压缩正常的区块。通常只适用在压缩文件很大的情况。
-compress
-功能说明：压缩或解压文件。
+### compress：压缩或解压文件。
 语　　法：compress [-cdfrvV][-b <压缩效率>][文件或目录...]
 补充说明：compress是个历史悠久的压缩程序，文件经它压缩后，其名称后面会多出".Z"的扩展名。当要解压缩时，可执行uncompress指令。事实上uncompress是指向compress的符号连接，因此不论是压缩或解压缩，都可通过compress指令单独完成。
 参　　数：
@@ -1894,8 +1494,7 @@ compress
 　-r 　递归处理，将指定目录下的所有文件及子目录一并处理。 
 　-v 　显示指令执行过程。 
 　-V 　显示指令版本及程序预设值。
-cpio(copy in/out)
-功能说明：备份文件。
+### cpio(copy in/out)：备份文件。
 语　　法：cpio [-0aABckLovV][-C <输入/输出大小>][-F <备份档>][-H <备份格式>][-O <备份档>][--block-size=<区块大小>][--force-local][--help][--quiet][--version] 或 cpio [-bBcdfikmnrsStuvV][-C <输入/输出大小>][-E <范本文件>][-F <备份档>][-H <备份格式>][-I <备份档>][-M <回传信息>][-R <拥有者><:/.><所属群组>][--block-size=<区块大小>][--force-local][--help][--no-absolute-filenames][--no-preserve-owner][--only-verify-crc][--quiet][--sparse][--version][范本样式...] 或 cpio [-0adkiLmpuvV][-R <拥有者><:/.><所属群组>][--help][--no-preserve-owner][--quiet][--sparse][--version][目的目]
 补充说明：cpio是用来建立，还原备份档的工具程序，它可以加入，解开cpio或tra备份档内的文件。
 参　　数：
@@ -1940,8 +1539,7 @@ cpio(copy in/out)
 　--quiet 　不显示复制了多少区块。 
 　--sparse 　倘若一个文件内含大量的连续0字节，则将此文件存成稀疏文件。 
 　--version 　显示版本信息。
-dump
-功能说明：备份文件系统。
+### dump：备份文件系统。
 语　　法：dump [-cnu][-0123456789][-b <区块大小>][-B <区块数目>][-d <密度>][-f <设备名称>][-h <层级>][-s <磁带长度>][-T <日期>][目录或文件系统] 或 dump [-wW]
 补充说明：dump为备份工具程序，可将目录或整个文件系统备份至指定的设备，或备份成一个大文件。
 参　　数：
@@ -1958,8 +1556,7 @@ dump
 　-u 　备份完毕后，在/etc/dumpdates中记录备份的文件系统，层级，日期与时间等。 
 　-w 　与-W类似，但仅显示需要备份的文件。 
 　-W 　显示需要备份的文件及其最后一次备份的层级，时间与日期。
-gunzip(gnu unzip)
-功能说明：解压文件。
+### gunzip(gnu unzip)：解压文件。
 语　　法：gunzip [-acfhlLnNqrtvV][-s <压缩字尾字符串>][文件...] 或 gunzip [-acfhlLnNqrtvV][-s <压缩字尾字符串>][目录]
 补充说明：gunzip是个使用广泛的解压缩程序，它用于解开被gzip压缩过的文件，这些压缩文件预设最后的扩展名为".gz"。事实上gunzip就是gzip的硬连接，因此不论是压缩或解压缩，都可通过gzip指令单独完成。
 参　　数：
@@ -1977,14 +1574,12 @@ gunzip(gnu unzip)
 　-t或--test 　测试压缩文件是否正确无误。 
 　-v或--verbose 　显示指令执行过程。 
 　-V或--version 显示版本信息。
-gzexe(gzip executable)
-功能说明：压缩执行文件。
+### gzexe(gzip executable)：压缩执行文件。
 语　　法：gzexe [-d][执行文件...]
 补充说明：gzexe是用来压缩执行文件的程序。当您去执行被压缩过的执行文件时，该文件会自动解压然后继续执行，和使用一般的执行文件相同。
 参　　数：
 　-d 　解开压缩文件。
-gzip(gnu zip)
-功能说明：压缩文件。
+### gzip(gnu zip)：压缩文件。
 语　　法：gzip [-acdfhlLnNqrtvV][-S <压缩字尾字符串>][-<压缩效率>][--best/fast][文件...] 或 gzip [-acdfhlLnNqrtvV][-S <压缩字尾字符串>][-<压缩效率>][--best/fast][目录]
 补充说明：gzip是个使用广泛的压缩程序，文件经它压缩过后，其名称后面会多出".gz"的扩展名。
 参　　数：
@@ -2006,8 +1601,7 @@ gzip(gnu zip)
 　-<压缩效率> 　压缩效率是一个介于1－9的数值，预设值为"6"，指定愈大的数值，压缩效率就会愈高。 
 　--best 　此参数的效果和指定"-9"参数相同。 
 　--fast 　此参数的效果和指定"-1"参数相同。
-lha
-功能说明：压缩或解压缩文件。
+### lha：压缩或解压缩文件。
 语　　法：
 lha [-acdfglmnpqtuvx][-a <0/1/2>/u</0/1/2>][-<a/c/u>d][-<e/x>i][-<a/u>o][-<e/x>w=<目的目录>][-<a/u>z][压缩文件][文件...] 或 lha [-acdfglmnpqtuvx][-a <0/1/2>/u</0/1/2>][-<a/c/u>d][-<e/x>i][-<a/u>o][-<e/x>w=<目的目录>][-<a/u>z][压缩文件][目录...]
 补充说明：lha是从lharc演变而来的压缩程序，文件经它压缩后，会另外产生具有".lzh"扩展名的压缩文件。
@@ -2034,8 +1628,7 @@ lha [-acdfglmnpqtuvx][-a <0/1/2>/u</0/1/2>][-<a/c/u>d][-<e/x>i][-<a/u>o][-<e/x>w
   -<e/x>w=<目的目录>或<e/x>w=<目的目录>   指定解压缩的目录。
   -x或x   解开压缩文件。
   -<a/u>z或<a/u>z   不压缩文件，直接把它加入，更新压缩文件。
-restore
-功能说明：还原(Restore)由倾倒(Dump)操作所备份下来的文件或整个文件系统(一个分区)。
+### restore：还原(Restore)由倾倒(Dump)操作所备份下来的文件或整个文件系统(一个分区)。
 语　　法：restore [-cCvy][-b <区块大小>][-D <文件系统>][-f <备份文件>][-s <文件编号>] 或 restore [-chimvy][-b <区块大小>][-f <备份文件>][-s <文件编号>] 或 restore [-crvy][-b <区块大小>][-f <备份文件>][-s <文件编号>] 或 restore [-cRvy][-b <区块大小>][-D <文件系统>][-f <备份文件>][-s <文件编号>] 或 restore [chtvy][-b <区块大小>][-D <文件系统>][-f <备份文件>][-s <文件编号>][文件...] 或 restore [-chmvxy][-b <区块大小>][-D <文件系统>][-f <备份文件>][-s <文件编号>][文件...]
 补充说明：restore 指令所进行的操作和dump指令相反，倾倒操作可用来备份文件，而还原操作则是写回这些已备份的文件。
 参　　数：
@@ -2054,8 +1647,7 @@ restore
   -v   显示指令执行过程。
   -x   设置文件名称，且从指定的存储媒体里读入它们，若该文件已存在在备份文件中，则将其还原到文件系统内。
   -y   不询问任何问题，一律以同意回答并继续执行指令。
-tar(tape archive)
-功能说明：备份文件。
+### tar(tape archive)：备份文件。
 语　　法：tar [-ABcdgGhiklmMoOpPrRsStuUvwWxzZ][-b <区块数目>][-C <目的目录>][-f <备份文件>][-F <Script文件>][-K <文件>][-L <媒体容量>][-N <日期时间>][-T <范本文件>][-V <卷册名称>][-X <范本文件>][-<设备编号><存储密度>][--after-date=<日期时间>][--atime-preserve][--backuup=<备份方式>][--checkpoint][--concatenate][--confirmation][--delete][--exclude=<范本样式>][--force-local][--group=<群组名称>][--help][--ignore-failed-read][--new-volume-script=<Script文件>][--newer-mtime][--no-recursion][--null][--numeric-owner][--owner=<用户名称>][--posix][--erve][--preserve-order][--preserve-permissions][--record-size=<区块数目>][--recursive-unlink][--remove-files][--rsh-command=<执行指令>][--same-owner][--suffix=<备份字尾字符串>][--totals][--use-compress-program=<执行指令>][--version][--volno-file=<编号文件>][文件或目录...]
 补充说明：tar是用来建立，还原备份文件的工具程序，它可以加入，解开备份文件内的文件。
 参　　数：
@@ -2130,8 +1722,7 @@ tar(tape archive)
   --use-compress-program=<执行指令>   通过指定的指令处理备份文件。
   --version   显示版本信息。
   --volno-file=<编号文件>   使用指定文件内的编号取代预设的卷册编号。
-unarj
-功能说明：解压缩.arj文件。
+### unarj：解压缩.arj文件。
 语　　法：unarj [eltx][.arj压缩文件]
 补充说明：unarj为.arj压缩文件的压缩程序。
 参　　数：
@@ -2139,8 +1730,7 @@ unarj
   l   显示压缩文件内所包含的文件。
   t   检查压缩文件是否正确。
   x   解压缩时保留原有的路径。
-unzip
-功能说明：解压缩zip文件
+### unzip：解压缩zip文件
 语　　法：unzip [-cflptuvz][-agCjLMnoqsVX][-P <密码>][.zip文件][文件][-d <目录>][-x <文件>] 或 unzip [-Z]
 补充说明：unzip为.zip压缩文件的解压缩程序。
 参　　数：
@@ -2170,8 +1760,7 @@ unzip
   -d<目录>   指定文件解压缩后所要存储的目录。
   -x<文件>   指定不要处理.zip压缩文件中的哪些文件。
   -Z   unzip -Z等于执行zipinfo指令。
-zip
-功能说明：压缩文件。
+### zip：压缩文件。
 语　　法：zip [-AcdDfFghjJKlLmoqrSTuvVwXyz$][-b <工作目录>][-ll][-n <字尾字符串>][-t <日期时间>][-<压缩效率>][压缩文件][文件...][-i <范本样式>][-x <范本样式>]
 补充说明：zip是个使用广泛的压缩程序，文件经它压缩后会另外产生具有".zip"扩展名的压缩文件。
 参　　数：
@@ -2209,8 +1798,7 @@ zip
   -z   替压缩文件加上注释。
   -$   保存第一个被压缩文件所在磁盘的卷册名称。
   -<压缩效率>   压缩效率是一个介于1-9的数值。
-zipinfo
-功能说明：列出压缩文件信息。
+### zipinfo：列出压缩文件信息。
 语　　法：zipinfo [-12hlmMstTvz][压缩文件][文件...][-x <范本样式>]
 补充说明：执行zipinfo指令可得知zip压缩文件的详细信息。
 参　　数：
@@ -2230,9 +1818,8 @@ zipinfo
 
 
  
-5.linux文件管理命令
-diff(differential)
-功能说明：比较文件的差异。 
+## linux文件管理命令
+### diff(differential)：比较文件的差异。 
 语　　法：diff [-abBcdefHilnNpPqrstTuvwy][-<行数>][-C <行数>][-D <巨集名称>][-I <字符或字符串>][-S <文件>][-W <宽度>][-x <文件或目录>][-X <文件>][--help][--left-column][--suppress-common-line][文件或目录1][文件或目录2] 
 补充说明：diff以逐行的方式，比较文本文件的异同处。所是指定要比较目录，则diff会比较目录中相同文件名的文件，但不会比较其中子目录。
 参　　数：
@@ -2271,8 +1858,7 @@ Only in目录：文件A若使用-N参数，则diff会将文件A与一个空白�
 　--help 　显示帮助。 
 　--left-column 　在使用-y参数时，若两个文件某一行内容相同，则仅在左侧的栏位显示该行内容。
 　--suppress-common-lines 　在使用-y参数时，仅显示不同之处。
-diffstat(differential status)
-功能说明：根据diff的比较结果，显示统计数字。
+### diffstat(differential status)：根据diff的比较结果，显示统计数字。
 语　　法：diff [-wV][-n <文件名长度>][-p <文件名长度>]
 补充说明：diffstat读取diff的输出结果，然后统计各文件的插入，删除，修改等差异计量。
 参　　数：
@@ -2280,8 +1866,7 @@ diffstat(differential status)
 　-p<文件名长度> 　与-n参数相同，但此处的<文件名长度>包括了文件的路径。 
 　-w 　指定输出时栏位的宽度。 
 　-V 　显示版本信息。
-file
-功能说明：辨识文件类型。 
+### file：辨识文件类型。 
 语　　法：file [-beLvz][-f <名称文件>][-m <魔法数字文件>...][文件或目录...]  
 补充说明：通过file指令，我们得以辨识该文件的类型。 
 参　　数：
@@ -2292,8 +1877,7 @@ file
 　-m<魔法数字文件> 　指定魔法数字文件。 
 　-v 　显示版本信息。 
 　-z 　尝试去解读压缩文件的内容。
-find
-功能说明：查找文件或目录。
+### find：查找文件或目录。
 语　　法：find [目录...][-amin <分钟>][-anewer <参考文件或目录>][-atime <24小时数>][-cmin <分钟>][-cnewer <参考文件或目录>][-ctime <24小时数>][-daystart][-depyh][-empty][-exec <执行指令>][-false][-fls <列表文件>][-follow][-fprint <列表文件>][-fprint0 <列表文件>][-fprintf <列表文件><输出格式>][-fstype <文件系统类型>][-gid <群组识别码>][-group <群组名称>][-help][-ilname <范本样式>][-iname <范本样式>][-inum <inode编号>][-ipath <范本样式>][-iregex <范本样式>][-links <连接数目>][-lname <范本样式>][-ls][-maxdepth <目录层级>][-mindepth <目录层级>][-mmin <分钟>][-mount] 
 [-mtime <24小时数>][-name <范本样式>][-newer <参考文件或目录>][-nogroup][noleaf] [-nouser][-ok <执行指令>][-path <范本样式>][-perm <权限数值>][-print][-print0][-printf <输出格式>][-prune][-regex <范本样式>][-size <文件大小>][-true][-type <文件类型>][-uid <用户识别码>][-used <日数>][-user <拥有者名称>][-version][-xdev][-xtype <文件类型>]
 补充说明：find指令用于查找符合条件的文件。任何位于参数之前的字符串都将被视为欲查找的目录。
@@ -2353,8 +1937,7 @@ find
 　-version或--version 　显示版本信息。 
 　-xdev 　将范围局限在先行的文件系统中。 
 　-xtype<文件类型> 　此参数的效果和指定"-type"参数类似，差别在于它针对符号连接检查。
-git(gnu interactive tools)
-功能说明：文字模式下的文件管理员。 
+### git(gnu interactive tools)：文字模式下的文件管理员。 
 语　　法：git
 补充说明：git是用来管理文件的程序，它十分类似DOS下的Norton Commander，具有互动式操作界面。它的操作方法和Norton Commander几乎一样，略诉如下： 
   F1 ：执行info指令，查询指令相关信息，会要求您输入欲查询的名称。 
@@ -2367,8 +1950,7 @@ git(gnu interactive tools)
   F8 ：执行rm指令，删除文件或目录。 
   F9 ：执行make指令，批处理执行指令或编译程序时，会要求您输入相关命令。 
   F10 ：离开git文件管理员。
-gitview(gnu interactie tools viewer)
-功能说明：Hex/ASCII的看文件程序。 
+### gitview(gnu interactie tools viewer)：Hex/ASCII的看文件程序。 
 语　　法：gitview [-bchilv][文件]  
 补充说明：gitview指令可用于观看文件的内容，它会同时显示十六进制和ASCII格式的字码。 
 参　　数：
@@ -2378,8 +1960,7 @@ gitview(gnu interactie tools viewer)
   -i 　显示存放gitview程序的所在位置。 
   -l 　不使用先前的显示字符。 
   -v 　显示版本信息。
-ln(link)
-功能说明：连接文件或目录。 
+### ln(link)：连接文件或目录。 
 语　　法：ln [-bdfinsv][-S <字尾备份字符串>][-V <备份方式>][--help][--version][源文件或目录][目标文件或目录] 或 ln [-bdfinsv][-S <字尾备份字符串>][-V <备份方式>][--help][--version][源文件或目录...][目的目录] 
 补充说明：ln指令用在连接文件或目录，如同时指定两个以上的文件或目录，且最后的目的地是一个已经存在的目录，则会把前面指定的所有文件或目录复制到该目录中。若同时指定多个文件或目录，且最后的目的地并非是一个已存在的目录，则会出现错误信息。 
 参　　数：
@@ -2394,16 +1975,14 @@ ln(link)
 　-V<备份方式>或--version-control=<备份方式> 　用"-b"参数备份目标文件后，备份文件的字尾会被加上一个备份字符串，这个字符串不仅可用"-S"参数变更，当使用"-V"参数<备份方式>指定不同备份方式时，也会产生不同字尾的备份字符串。 
 　--help 　在线帮助。 
 　--version 　显示版本信息。
-locate
-功能说明：查找文件。 
+### locate：查找文件。 
 语　　法：locate [-d <数据库文件>][--help][--version][范本样式...]
 补充说明：locate指令用于查找符合条件的文件，它会去保存文件与目录名称的数据库内，查找合乎范本样式条件的文件或目录。 
 参　　数：
 　-d<数据库文件>或--database=<数据库文件>  设置locate指令使用的数据库。locate指令预设的数据库位于/var/lib/slocate目录里，文件名为slocate.db，您可使用这个参数另行指定。 
 　--help 　在线帮助。 
 　--version 　显示版本信息。
-lsattr(list attribute)
-功能说明：显示文件属性。 
+### lsattr(list attribute)：显示文件属性。 
 语　　法：lsattr [-adlRvV][文件或目录...]  
 补充说明：用chattr执行改变文件或目录的属性，可执行lsattr指令查询其属性。 
 参　　数：
@@ -2413,8 +1992,7 @@ lsattr(list attribute)
   -R 　递归处理，将指定目录下的所有文件及子目录一并处理。 
   -v 　显示文件或目录版本。 
   -V 　显示版本信息。
-mattrib
-功能说明：变更或显示MS-DOS文件的属性。 
+### mattrib：变更或显示MS-DOS文件的属性。 
 语　　法：mattrib [+/-][ahrs][-/X][文件] 或 mattrib [-/X][文件] 
 补充说明：mattrib为mtools工具指令，模拟MS-DOS的attrib指令，可变更MS-DOS文件的属性。 
 参　　数：
@@ -2425,8 +2003,7 @@ mattrib
 　s 　系统属性。 
 　-/ 　列出指定目录及子目录下所有文件的属性。 
 　-X 　显示文件属性时，中间不输入空格。
-mc(midnight commander)
-功能说明：提供一个菜单式的文件管理程序。
+### mc(midnight commander)：提供一个菜单式的文件管理程序。
 语　　法：mc [-abcdfhkPstuUVx][-C <参数>][-l <文件>][-v <文件>][目录] 
 补充说明：执行mc之后，将会看到菜单式的文件管理程序，共分成４个部分。 
 参　　数：
@@ -2447,8 +2024,7 @@ mc(midnight commander)
 　-v<文件> 　使用mc的内部编辑器来显示指定的文件。 
 　-V 　显示版本信息。 
 　-x 　指定以xterm模式显示。
-mcopy
-功能说明：复制MS-DOS文件。
+### mcopy：复制MS-DOS文件。
 语　　法：mcopy [-bnmpQt/][源文件][目标文件或目录]
 补充说明：mcopy为mtools工具指令，可在MS-DOS文件系统中复制文件或是在MS-DOS与Linux的文件系统之间复制文件。mcopy会MS-DOS磁盘驱动器代号出现的位置来判断如何复制文件。
 参　　数：
@@ -2459,13 +2035,11 @@ mcopy
   -Q 　复制多个文件时，若发生错误，则立即结束程序。 
   -t 　转换文本文件。 
   -/ 　复制子目录以及其中的所有文件。
-mdel
-功能说明：删除MS-DOS文件。
+### mdel：删除MS-DOS文件。
 语　　法：mdel [文件...]
 补充说明：mdel为mtools工具指令，模拟MS-DOS的del指令，可删除MS-DOS文件系统中的文件。
 
-mdir
-功能说明：显示MS-DOS目录。
+### mdir：显示MS-DOS目录。
 语　　法：mdir [-afwx/][目录]
 补充说明：mdir为mtools工具指令，模拟MS-DOS的dir指令，可显示MS-DOS文件系统中的目录内容。
 参　　数：
@@ -2474,32 +2048,26 @@ mdir
   -f 　不显示磁盘所剩余的可用空间。 
   -w 　仅显示目录或文件名称，并以横排方式呈现，以便一次能显示较多的目录或文件。 
   -X 　仅显示目录下所有子目录与文件的完整路径，不显示其他信息。
-mktemp
-功能说明：建立暂存文件。
+### mktemp：建立暂存文件。
 语　　法：mktemp [-qu][文件名参数]
 补充说明：mktemp可建立一个暂存文件，供shell script使用。
 参　　数：
 　-q 　执行时若发生错误，不会显示任何信息。 
 　-u 　暂存文件会在mktemp结束前先行删除。 
 　[文件名参数] 　文件名参数必须是以"自订名称.XXXXXX"的格式。
-mmove
-功能说明：在MS-DOS文件系统中，移动文件或目录，或更改名称。
+### mmove：在MS-DOS文件系统中，移动文件或目录，或更改名称。
 语　　法：mmove [源文件或目录...][目标文件或目录]
 补充说明：mmove为mtools工具指令，模拟MS-DOS的move指令，可在MS-DOS文件系统中移动现有的文件或目录，或是更改现有文件或目录的名称。
-mread
-功能说明：将MS-DOS文件复制到Linux/Unix的目录中。
+### mread：将MS-DOS文件复制到Linux/Unix的目录中。
 语　　法：mread [MS-DOS文件...][Linux文件或目录]
 补充说明：mread为mtools工具指令，可将MS-DOS文件复制到Linux的文件系统中。这个指令目前已经不常用，一般都使用mcopy指令来代替。
-mren
-功能说明：更改MS-DOS文件或目录的名称，或是移动文件或目录。
+### mren：更改MS-DOS文件或目录的名称，或是移动文件或目录。
 语　　法：mren [源文件或目录...][目标文件或目录]
 补充说明：mren为MS-DOS工具指令，模拟MS-DOS的ren指令，可更改MS-DOS文件或目录名称。除此之外，ren也可移动文件或目录，但仅限于在同一设备内。
-mshowfat
-功能说明：显示MS-DOS文件在FAT中的记录。
+### mshowfat：显示MS-DOS文件在FAT中的记录。
 语　　法：mshowfat [文件...]
 补充说明：mshowfat为mtools工具指令，可显示MS-DOS文件在FAT中的记录编号。
-mtools
-功能说明：显示mtools支持的指令。
+### mtools：显示mtools支持的指令。
 语　　法：mtools
 补充说明：mtools为MS-DOS文件系统的工具程序，可模拟许多MS-DOS的指令。这些指令都是mtools的符号连接，因此会有一些共同的特性。
 参　　数：
@@ -2513,12 +2081,10 @@ mtools
   -S 　短文件名重复但长文件名不同时，则不处理该目标文件。 
   -v 　执行时显示详细的说明。 
   -V 　显示版本信息。
-mtoolstest
-功能说明：测试并显示mtools的相关设置。
+### mtoolstest：测试并显示mtools的相关设置。
 语　　法：mtoolstest
 补充说明：mtoolstest为mtools工具指令，可读取与分析mtools的配置文件，并在屏幕上显示结果
-mv
-功能说明：移动或更名现有的文件或目录。
+### mv：移动或更名现有的文件或目录。
 语　　法：mv [-bfiuv][--help][--version][-S <附加字尾>][-V <方法>][源文件或目录][目标文件或目录]
 补充说明：mv可移动文件或目录，或是更改文件或目录的名称。
 参　　数：
@@ -2533,8 +2099,7 @@ mv
 　--version-control=<方法> 　与-b参数一并使用，可指定备份的方法。 
 　--help 　显示帮助。 
 　--version 　显示版本信息。
-od(octal dump)
-功能说明：输出文件内容。
+### od(octal dump)：输出文件内容。
 语　　法：od [-abcdfhilovx][-A <字码基数>][-j <字符数目>][-N <字符数目>][-s <字符串字符数>][-t <输出格式>][-w <每列字符数>][--help][--version][文件...]
 补充说明：od指令会读取所给予的文件的内容，并将其内容以八进制字码呈现出来。
 参　　数：
@@ -2557,8 +2122,7 @@ od(octal dump)
 　-x 　此参数的效果和同时指定"-h"参数相同。 
 　--help 　在线帮助。 
 　--version 　显示版本信息。
-paste
-功能说明：合并文件的列。
+### paste：合并文件的列。
 语　　法：paste [-s][-d <间隔字符>][--help][--version][文件...]
 补充说明：paste指令会把每个文件以列对列的方式，一列列地加以合并。
 参　　数：
@@ -2566,8 +2130,7 @@ paste
 　-s或--serial 　串列进行而非平行处理。 
 　--help 　在线帮助。 
 　--version 　显示帮助信息。
-patch
-功能说明：修补文件。
+### patch：修补文件。
 语　　法：patch [-bceEflnNRstTuvZ][-B <备份字首字符串>][-d <工作目录>][-D <标示符号>][-F <监别列数>][-g <控制数值>][-i <修补文件>][-o <输出文件>][-p <剥离层级>][-r <拒绝文件>][-V <备份方式>][-Y <备份字首字符串>][-z <备份字尾字符串>][--backup-if　　 -mismatch][--binary][--help][--nobackup-if-mismatch][--verbose][原始文件 <修补文件>] 或 path [-p <剥离层级>] < [修补文件]
 补充说明：patch指令让用户利用设置修补文件的方式，修改，更新原始文件。倘若一次仅修改一个文件，可直接在指令列中下达指令依序执行。如果配合修补文件的方式则能一次修补大批文件，这也是Linux系统核心的升级方法之一。
 参　　数：
@@ -2603,21 +2166,18 @@ patch
 　--help 　在线帮助。 
 　--nobackup-if-mismatch 　在修补数据不完全吻合，且没有刻意指定要备份文件时，不要备份文件。 
 　--verbose 　详细显示指令的执行过程。
-rcp(remote copy)
-功能说明：远端复制文件或目录。
+### rcp(remote copy)：远端复制文件或目录。
 语　　法：rcp [-pr][源文件或目录][目标文件或目录] 或 rcp [-pr][源文件或目录...][目标文件] 
 补充说明：rcp指令用在远端复制文件或目录，如同时指定两个以上的文件或目录，且最后的目的地是一个已经存在的目录，则它灰把前面指定的所有文件或目录复制到该目录中。
 参　　数：
   -p 　保留源文件或目录的属性，包括拥有者，所属群组，权限与时间。 
   -r 　递归处理，将指定目录下的文件与子目录一并处理。
-rhmask
-功能说明：产生与还原加密文件。
+### rhmask：产生与还原加密文件。
 语　　法：rhmask [加密文件][输出文件] 或 rhmask [-d][加密文件][源文件][输出文件]
 补充说明：执行rhmask指令可制作加密过的文件，方便用户在公开的网络上传输该文件，而不至于被任意盗用。
 参　　数：
   -d 　产生加密过的文件。
-rm(remove)
-功能说明：删除文件或目录。
+### rm(remove)：删除文件或目录。
 语　　法：rm [-dfirv][--help][--version][文件或目录...]
 补充说明：执行rm指令可删除文件或目录，如欲删除目录必须加上参数"-r"，否则预设仅会删除文件。 
 参　　数：
@@ -2628,8 +2188,7 @@ rm(remove)
 　-v或--verbose 　显示指令执行过程。 
 　--help 　在线帮助。 
 　--version 　显示版本信息。
-slocate(secure locate)
-功能说明：查找文件或目录。
+### slocate(secure locate)：查找文件或目录。
 语　　法：slocate [-u][--help][--version][-d <目录>][查找的文件]
 补充说明：slocate本身具有一个数据库，里面存放了系统中文件与目录的相关信息。
 参　　数：
@@ -2637,8 +2196,7 @@ slocate(secure locate)
 　-u 　更新slocate数据库。 
 　--help 　显示帮助。 
 　--version 　显示版本信息。
-split
-功能说明：切割文件。
+### split：切割文件。
 语　　法：split [--help][--version][-<行数>][-b <字节>][-C <字节>][-l <行数>][要切割的文件][输出文件名]
 补充说明：split可将文件切成较小的文件，预设每1000行会切成一个小文件。
 参　　数：
@@ -2648,8 +2206,7 @@ split
 　--help 　显示帮助。 
 　--version 　显示版本信息。 
 　[输出文件名] 　设置切割后文件的前置文件名，split会自动在前置文件名后再加上编号。
-tee
-功能说明：读取标准输入的数据，并将其内容输出成文件。
+### tee：读取标准输入的数据，并将其内容输出成文件。
 语　　法：tee [-ai][--help][--version][文件...]
 补充说明：tee指令会从标准输入设备读取数据，将其内容输出到标准输出设备，同时保存成文件。
 参　　数：
@@ -2657,8 +2214,7 @@ tee
 　-i-i或--ignore-interrupts 　忽略中断信号。 
 　--help 　在线帮助。 
 　--version 　显示版本信息。
-tmpwatch(temporary watch)
-功能说明：删除暂存文件。
+### tmpwatch(temporary watch)：删除暂存文件。
 语　　法：tmpwatch [-afqv][--test][超期时间][目录...]
 补充说明：执行tmpwatch指令可删除不必要的暂存文件，您可以设置文件超期时间，单位以小时计算。
 参　　数：
@@ -2667,8 +2223,7 @@ tmpwatch(temporary watch)
 　-q或--quiet 　不显示指令执行过程。 
 　-v或--verbose 　详细显示指令执行过程。 
 　-test 　仅作测试，并不真的删除文件或目录。
-touch
-功能说明：改变文件或目录时间。
+### touch：改变文件或目录时间。
 语　　法：touch [-acfm][-d <日期时间>][-r <参考文件或目录>][-t <日期时间>][--help]　　 [--version][文件或目录...] 或 touch [-acfm][--help][--version][日期时间][文件或目录...] 
 补充说明：使用touch指令可更改文件或目录的日期时间，包括存取时间和更改时间。
 参　　数：
@@ -2681,14 +2236,12 @@ touch
 　-t<日期时间> 　使用指定的日期时间，而非现在的时间。 
 　--help 　在线帮助。 
 　--version 　显示版本信息。
-umask
-功能说明：指定在建立文件时预设的权限掩码。
+### umask：指定在建立文件时预设的权限掩码。
 语　　法：umask [-S][权限掩码]
 补充说明：umask可用来设定[权限掩码]。[权限掩码]是由3个八进制的数字所组成，将现有的存取权限减掉权限掩码后，即可产生建立文件时预设的权限。
 参　　数：
   -S 　以文字的方式来表示权限掩码。
-whereis
-功能说明：查找文件。
+### whereis：查找文件。
 语　　法：whereis [-bfmsu][-B <目录>...][-M <目录>...][-S <目录>...][文件...]
 补充说明：whereis指令会在特定目录中查找符合条件的文件。这些文件的烈性应属于原始代码，二进制文件，或是帮助文件。
 参　　数：
@@ -2700,8 +2253,7 @@ whereis
 　-s 　只查找原始代码文件。 
 　-S<目录> 　只在设置的目录下查找原始代码文件。 
 　-u 　查找不包含指定类型的文件。
-which
-功能说明：查找文件。
+### which：查找文件。
 语　　法：which [文件...]
 补充说明：which指令会在环境变量$PATH设置的目录里查找符合条件的文件。
 参　　数：
@@ -2721,8 +2273,7 @@ cat
 范例：
 cat -n textfile1 > textfile2 把 textfile1 的档案内容加上行号后输入 textfile2 这个档案里
 cat -b textfile1 textfile2 >> textfile3 把 textfile1 和 textfile2 的档案内容加上行号（空白行不加）之后将内容附加到 textfile3 里。
-chattr(change attribute)
-功能说明：改变文件属性。
+### chattr(change attribute)：改变文件属性。
 语　　法：chattr [-RV][-v<版本编号>][+/-/=<属性>][文件或目录...]
 补充说明：这项指令可改变存放在ext2文件系统上的文件或目录属性，这些属性共有以下8种模式： 
 　a：让文件或目录仅供附加用途。 
@@ -2740,8 +2291,7 @@ chattr(change attribute)
 　+<属性>  开启文件或目录的该项属性。 
 　-<属性>  关闭文件或目录的该项属性。 
 　=<属性>  指定文件或目录的该项属性。
-chgrp(change group)
-功能说明：变更文件或目录的所属群组。
+### chgrp(change group)：变更文件或目录的所属群组。
 语　　法：chgrp [-cfhRv][--help][--version][所属群组][文件或目录...] 或 chgrp [-cfhRv][--help][--reference=<参考文件或目录>][--version][文件或目录...] 
 补充说明：在UNIX系统家族里，文件或目录权限的掌控以拥有者及所属群组来管理。您可以使用chgrp指令去变更文件与目录的所属群组，设置方式采用群组名称或群组识别码皆可。 
 参　　数：
@@ -2753,8 +2303,7 @@ chgrp(change group)
 　--help 　在线帮助。 
 　--reference=<参考文件或目录> 　把指定文件或目录的所属群组全部设成和参考文件或目录的所属群组相同。 
 　--version 　显示版本信息。
-chmod(change mode)
-功能说明：变更文件或目录的权限。
+### chmod(change mode)：变更文件或目录的权限。
 语　　法：chmod [-cfRv][--help][--version][<权限范围>+/-/=<权限设置...>][文件或目录...] 或 chmod [-cfRv][--help][--version][数字代号][文件或目录...] 或 chmod [-cfRv][--help][--reference=<参考文件或目录>][--version][文件或目录...] 
 补充说明：在UNIX系统家族里，文件或目录权限的控制分别以读取，写入，执行3种一般权限来区分，另有3种特殊权限可供运用，再搭配拥有者与所属群组管理权限范围。您可以使用chmod指令去变更文件与目录的权限，设置方式采用文字或数字代号皆可。符号连接的权限无法变更，如果您对符号连接修改权限，其改变会作用在被连接的原始文件。权限范围的表示法如下： 
 　u：User，即文件或目录的拥有者。 
@@ -2779,8 +2328,7 @@ chmod(change mode)
 　<权限范围>-<权限设置> 　关闭权限范围的文件或目录的该项权限设置。 
 　<权限范围>=<权限设置> 　指定权限范围的文件或目录的该项权限设置。
  如chmod a+x …
-chown(change owner)
-功能说明：变更文件或目录的拥有者或所属群组。
+### chown(change owner)：变更文件或目录的拥有者或所属群组。
 语　　法：chown [-cfhRv][--dereference][--help][--version][拥有者.<所属群组>][文件或目录..] 或chown [-chfRv][--dereference][--help][--version][.所属群组][文件或目录... ...] 或chown [-cfhRv][--dereference][--help][--reference=<参考文件或目录>][--version][文件或目录...] 
 补充说明：在UNIX系统家族里，文件或目录权限的掌控以拥有者及所属群组来管理。您可以使用chown指令去变更文件与目录的拥有者或所属群组，设置方式采用用户名称或用户识别码皆可，设置群组则用群组名称或群组识别码。 
 参　　数：
@@ -2793,15 +2341,13 @@ chown(change owner)
 　--help 　在线帮助。 
 　--reference=<参考文件或目录> 　把指定文件或目录的拥有者与所属群组全部设成和参考文件或目　录的拥有者与所属群组相同。 
 　--version 　显示版本信息。
-cksum(check sum)
-功能说明：检查文件的CRC是否正确。 
+### cksum(check sum)：检查文件的CRC是否正确。 
 语　　法：cksum [--help][--version][文件...]  
 补充说明：CRC是一种排错检查方式，该演算法的标准由CCITT所指定，至少可检测到99.998%的已知错误。指定文件交由cksum演算，它会回报计算结果，供用户核对文件是否正确无误。若不指定任何文件名称或是所给予的文件名为"-"，则cksum指令会从标准输入设备读取数据。 
 参　　数：
 　--help 　在线帮助。 
 　--version 　显示版本信息。
-cmp(compare)
-功能说明：比较两个文件是否有差异。
+### cmp(compare)：比较两个文件是否有差异。
 语　　法：cmp [-clsv][-i <字符数目>][--help][第一个文件][第二个文件]
 补充说明：当相互比较的两个文件完全一样时，则该指令不会显示任何信息。若发现有所差异，预设会标示出第一个不同之处的字符和列数编号。若不指定任何文件名称或是所给予的文件名为"-"，则cmp指令会从标准输入设备读取数据。
 参　　数：
@@ -2811,8 +2357,7 @@ cmp(compare)
 　-s或--quiet或--silent 　不显示错误信息。 
 　-v或--version 　显示版本信息。 
 　--help 　在线帮助。
-cp(copy)
-功能说明：复制文件或目录。 
+### cp(copy)：复制文件或目录。 
 语　　法：cp [-abdfilpPrRsuvx][-S <备份字尾字符串>][-V <备份方式>][--help][--spares=<使用时机>][--version][源文件或目录][目标文件或目录] [目的目录] 
 补充说明：cp指令用在复制文件或目录，如同时指定两个以上的文件或目录，且最后的目的地是一个已经存在的目录，则它会把前面指定的所有文件或目录复制到该目录中。若同时指定多个文件或目录，而最后的目的地并非是一个已存在的目录，则会出现错误信息。
 参　　数：
@@ -2846,8 +2391,7 @@ cut
         shell>> cut -c0-6 example       ## print 开头算起前 6 个字元
         test2
         this i 
-indent
-功能说明：调整C原始代码文件的格式。
+### indent：调整C原始代码文件的格式。
  语　　法：indent [参数][源文件] 或 indent [参数][源文件][-o 目标文件]
 补充说明：indent可辨识C的原始代码文件，并加以格式化，以方便程序设计师阅读。 
 参　　数：
@@ -2907,13 +2451,11 @@ indent
 　-version 　显示版本信息。
 
  
-6.linux文件传输命令
-bye
-功能说明：中断FTP连线并结束程序。
+## linux文件传输命令
+### bye：中断FTP连线并结束程序。
 语　　法：bye
 补充说明：在ftp模式下，输入bye即可中断目前的连线作业，并结束ftp的执行。
-ftp(file transfer protocol)
-功能说明：设置文件系统相关功能。
+### ftp(file transfer protocol)：设置文件系统相关功能。
 语　　法：ftp [-dignv][主机名称或IP地址]
 补充说明：FTP是ARPANet的标准文件传输协议，该网络就是现今Internet的前身。
 参　　数：
@@ -2922,31 +2464,25 @@ ftp(file transfer protocol)
   -g   关闭本地主机文件名称支持特殊字符的扩充特性。
   -n   不使用自动登陆。
   -v   显示指令执行过程。
-ftpcount
-功能说明：显示目前以FTP登入的用户人数。
+### ftpcount：显示目前以FTP登入的用户人数。
 语　　法：ftpcount
 补充说明：执行这项指令可得知目前用FTP登入系统的人数以及FTP登入人数的上限。
-ftpshut(ftp shutdown)
-功能说明：在指定的时间关闭FTP服务器。
+### ftpshut(ftp shutdown)：在指定的时间关闭FTP服务器。
 语　　法：ftpshut [-d<分钟>][-l<分钟>][关闭时间]["警告信息"]
 补充说明：本指令提供系统管理者在设置的时间关闭FTP服务器，且能在关闭之前发出警告信息通知用户。关闭时间若设置后为"none"，则会马上关闭服务器。如果采用"+30"的方式来设置表示服务器在30分钟之后关闭。依次类推，假设使用"1130"的格式则代表服务器会在每日的11时30分关闭，时间格式为24小时制。FTP服务器关闭后，在/etc目录下会产生一个名称为shutmsg的文件，把它删除后即可再度启动FTP服务器的功能。
 参　　数：
   -d<分钟>   切断所有FTP连线时间。
   -l<分钟>   停止接受FTP登入的时间。
-ftpwho
-功能说明：显示目前所有以FTP登入的用户信息。
+### ftpwho：显示目前所有以FTP登入的用户信息。
 语　　法：ftpwho
 补充说明：执行这项指令可得知目前用FTP登入系统的用户有那些人，以及他们正在进行的操作。
-ncftp(nc file transfer protocol)
-功能说明：传输文件。
+### ncftp(nc file transfer protocol)：传输文件。
 语　　法：ncftp [主机或IP地址]
 补充说明：FTP让用户得以下载存放于服务器主机的文件，也能将文件上传到远端主机放置。NcFTP是文字模式FTP程序的佼佼者，它具备多样特色， 包括显示传输速率，下载进度，自动续传，标住书签，可通过防火墙和代理服务器等。
-tftp(trivial file transfer protocol)
-功能说明：传输文件。
+### tftp(trivial file transfer protocol)：传输文件。
 语　　法：tftp [主机名称或IP地址]
 补充说明：FTP让用户得以下载存放于远端主机的文件，也能将文件上传到远端主机放置。tftp是简单的文字模式ftp程序，它所使用的指令和FTP类似。
-uucico
-功能说明：UUCP文件传输服务程序。
+### uucico：UUCP文件传输服务程序。
 语　　法：uucico [-cCDefqvwz][-i<类型>][-I<文件>][-p<连接端口号码>][-][-rl][-s<主机>][-S<主机>][-u<用户>][-x<类型>][--help]
 补充说明：uucico是用来处理uucp或uux送到队列的文件传输工具。uucico有两种工作模式：主动模式和附属模式。当在主动模式下时，uucico会调用远端主机；在附属模式下时，uucico则接受远端主机的调用。
 参　　数：
@@ -2968,8 +2504,7 @@ uucico
   -x<类型>或-X<类型>或outgoing-debug<类型>   启动指定的排错模式。
   -z或--try-next   当执行不成功时，尝试下一个选择而不结束程序。
   --help   显示帮助，并且结束程序。
-uucp
-功能说明：在Unix系统之间传送文件。
+### uucp：在Unix系统之间传送文件。
 语　　法：uucp [-cCdfjmrRtvW][-g<等级>][-I<配置文件>][-n<用户>][-x<类型>][--help][...来源][目的]
 补充说明：UUCP为Unix系统之间，通过序列线来连线的协议。uucp使用UUCP协议，主要的功能为传送文件。
 参　　数：
@@ -2991,8 +2526,7 @@ uucp
   --help   显示帮助。
   [源...]   指定源文件或路径。
   [目的]   指定目标文件或路径。
-uupick
-功能说明：处理传送进来的文件。
+### uupick：处理传送进来的文件。
 语　　法：uupick [-v][-I<配置文件>][-s<主机>][-x<层级>][--help]
 补充说明：当其他主机通过UUCP将文件传送进来时，可利用uupick指令取出这些文件。
 参　　数：
@@ -3000,20 +2534,17 @@ uupick
   -s<主机>或--system<主机>   处理由指定主机传送过来的文件。
   -v或--version   显示版本信息。
   --help   显示帮助。
-uuto
-功能说明：将文件传送到远端的UUCP主机。
+### uuto：将文件传送到远端的UUCP主机。
 语　　法：uuto [文件][目的]
 补充说明：uuto为script文件，它实际上会执行uucp，用来将文件传送到远端UUCP主机，并在完成工作后，以邮件通知远端主机上的用户。
 参　　数：
   相关参数请参考uucp指令。
  
-7. linux磁盘管理命令
-cd(change directory)
-功能说明：切换目录。
+## linux磁盘管理命令
+### cd(change directory)：切换目录。
 语　　法：cd [目的目录]
 补充说明：cd指令可让用户在不同的目录间切换，但该用户必须拥有足够的权限进入目的目录。
-df(disk free)
-功能说明：显示磁盘的相关信息。
+### df(disk free)：显示磁盘的相关信息。
 语　　法：df [-ahHiklmPT][--block-size=<区块大小>][-t <文件系统类型>][-x <文件系统类型>][--help][--no-sync][--sync][--version][文件或设备]
 补充说明：df可显示磁盘的文件系统与使用情形。
 参　　数：
@@ -3034,16 +2565,14 @@ df(disk free)
   --help   显示帮助。
   --version   显示版本信息。
   [文件或设备]   指定磁盘设备。
-dirs
-功能说明：显示目录记录。
+### dirs：显示目录记录。
 语　　法：dirs [+/-n -l]
 补充说明：显示目录堆叠中的记录。
 参　　数：
   +n   显示从左边算起第n笔的目录。
   -n   显示从右边算起第n笔的目录。
   -l   显示目录完整的记录。
-du(disk usage)
-功能说明：显示目录或文件的大小。
+### du(disk usage)：显示目录或文件的大小。
 语　　法：du [-abcDhHklmsSx][-L <符号连接>][-X <文件>][--block-size][--exclude=<目录或文件>][--max-depth=<目录层数>][--help][--version][目录或文件]
 补充说明：du会显示指定的目录或文件所占用的磁盘空间。
 参　　数：
@@ -3065,8 +2594,7 @@ du(disk usage)
   --max-depth=<目录层数>   超过指定层数的目录后，予以忽略。
   --help   显示帮助。
   --version   显示版本信息。
-edquota(edit quota)
-功能说明：编辑用户或群组的quota。
+### edquota(edit quota)：编辑用户或群组的quota。
 语　　法：edquota [-p <源用户名称>][-ug][用户或群组名称...] 或 edquota [-ug] -t
 补充说明：edquota预设会使用vi来编辑使用者或群组的quota设置。
 参　　数：
@@ -3074,8 +2602,7 @@ edquota(edit quota)
   -g   设置群组的quota。
   -p<源用户名称>   将源用户的quota设置套用至其他用户或群组。
   -t   设置宽限期限。
-eject
-功能说明：退出抽取式设备。
+### eject：退出抽取式设备。
 语　　法：eject [-dfhnqrstv][-a <开关>][-c <光驱编号>][设备]
 补充说明：若设备已挂入，则eject会先将该设备卸除再退出。
 参　　数：
@@ -3091,15 +2618,13 @@ eject
   -s或--scsi   以SCSI指令来退出设备。
   -t或--trayclose   关闭光盘的托盘。
   -v或--verbose   执行时，显示详细的说明。
-lndir(link directory)
-功能说明：连接目录内容。
+### lndir(link directory)：连接目录内容。
 语　　法：lndir [-ignorelinks][-silent][源目录][目的目录]
 补充说明：执行lndir指令，可一口气把源目录底下的文件和子目录统统建立起相互对应的符号连接。
 参　　数：
   -ignorelinks   直接建立符号连接的符号连接。
   -silent   不显示指令执行过程。
-ls(list)
-功能说明：列出目录内容。
+### ls(list)：列出目录内容。
 语　　法：ls [-1aAbBcCdDfFgGhHiklLmnNopqQrRsStuUvxX][-I <范本样式>][-T <跳格字数>][-w <每列字符数>][--block-size=<区块大小>][--color=<使用时机>][--format=<列表格式>][--full-time][--help][--indicator-style=<标注样式>][--quoting-style=<引号样式>][--show-control-chars][--sort=<排序方式>][--time=<时间戳记>][--version][文件或目录...]
 补充说明：执行ls指令可列出目录的内容，包括文件和子目录的名称。
 参　　数：
@@ -3152,23 +2677,19 @@ ls(list)
   --sort=<排序方式>   配置文件和目录列表的排序方式。
   --time=<时间戳记>   用指定的时间戳记取代更改时间。
   --version   显示版本信息。
-mcd
-功能说明：在MS-DOS文件系统中切换工作目录
+### mcd：在MS-DOS文件系统中切换工作目录
 语　　法：mcd [目录名称]
 补充说明：mcd为mtools工具指令，可在MS-DOS文件系统中切换工作目录。若不加任何参数，则显示目前所在的磁盘与工作目录。
-mdeltree
-功能说明：删除MS-DOS目录
+### mdeltree：删除MS-DOS目录
 语　　法：mdeltree [目录...]
 补充说明：mdel为mtools工具指令，模拟MS-DOS的deltree指令，可删除MS-DOS文件系统中的目录及目录下所有子目录与文件。
-mdu
-功能说明：显示MS-DOS目录所占用的磁盘空间。
+### mdu：显示MS-DOS目录所占用的磁盘空间。
 语　　法：mdu [-as][目录]
 补充说明：mdu为mstools工具指令，可显示MS-DOS文件系统中目录所占用的磁盘空间。
 参　　数：
   -a   显示每个文件及整个目录所占用的空间。
   -s   仅显示整个目录所占用的空间。
-mkdir(make directories)
-功能说明：建立目录
+### mkdir(make directories)：建立目录
 语　　法：mkdir [-p][--help][--version][-m <目录属性>][目录名称]
 补充说明：mkdir可建立目录并同时设置目录的权限。
 参　　数：
@@ -3177,8 +2698,7 @@ mkdir(make directories)
   --help   显示帮助。
   --verbose   执行时显示详细的信息。
   --version   显示版本信息。
-mlabel
-功能说明：显示或设置MS-DOS磁盘驱动器的标签名称。
+### mlabel：显示或设置MS-DOS磁盘驱动器的标签名称。
 语　　法：mlabel [-csvV][驱动器代号][标签名称]
 补充说明：mlabel为mtools工具指令，模拟MS-DOS的label指令，可显示或设置MS-DOS磁盘驱动器的标签名称。
 参　　数：
@@ -3186,22 +2706,18 @@ mlabel
   -s   显示标签名称
   -v   执行时显示详细的信息。
   -V   显示版本信息。
-mmd
-功能说明：在MS-DOS文件系统中建立目录。
+### mmd：在MS-DOS文件系统中建立目录。
 语　　法：mmd [目录...]
 补充说明：mmd为mtools工具指令，模拟MS-DOS的md指令，可在MS-DOS的文件系统中建立目录。
-mmount
-功能说明：挂入MS-DOS文件系统。
+### mmount：挂入MS-DOS文件系统。
 语　　法：mmount [驱动器代号][mount参数]
 补充说明：mmount为mtools工具指令，可根据[mount参数]中的设置，将磁盘内容挂入到Linux目录中。
 参　　数：
   [mount参数]的用法请参考mount指令。
-mrd
-功能说明：删除MS-DOS文件系统中的目录。
+### mrd：删除MS-DOS文件系统中的目录。
 语　　法：mrd [目录...]
 补充说明：mrd为mtools工具指令，模拟MS-DOS的rd指令，可删除MS-DOS的目录。
-mzip
-功能说明：Zip/Jaz磁盘驱动器控制指令。
+### mzip：Zip/Jaz磁盘驱动器控制指令。
 语　　法：mzip [-efpqruwx]
 补充说明：mzip为mtools工具指令，可设置Zip或Jaz磁盘驱动区的保护模式以及执行退出磁盘的动作。
 参　　数：
@@ -3213,15 +2729,13 @@ mzip
   -u   退出磁盘以前，暂时解除磁盘的保护状态。
   -w   将磁盘设为可写入状态。
   -x   设置磁盘的密码。
-pwd(print working directory)
-功能说明：显示工作目录。
+### pwd(print working directory)：显示工作目录。
 语　　法：pwd [--help][--version]
 补充说明：执行pwd指令可立刻得知您目前所在的工作目录的绝对路径名称。
 参　　数：
   --help   在线帮助。
   --version   显示版本信息。
-quota
-功能说明：显示磁盘已使用的空间与限制。
+### quota：显示磁盘已使用的空间与限制。
 语　　法：quota [-quvV][用户名称...] 或 quota [-gqvV][群组名称...]
 补充说明：执行quota指令，可查询磁盘空间的限制，并得知已使用多少空间。
 参　　数：
@@ -3230,8 +2744,7 @@ quota
   -u   列出用户的磁盘空间限制。
   -v   显示该用户或群组，在所有挂入系统的存储设备的空间限制。
   -V   显示版本信息。
-quotacheck
-功能说明：检查磁盘的使用空间与限制。
+### quotacheck：检查磁盘的使用空间与限制。
 语　　法：quotacheck [-adgRuv][文件系统...]
 补充说明：执行quotacheck指令，扫描挂入系统的分区，并在各分区的文件系统根目录下产生quota.user和quota.group文件，设置用户和群组的磁盘空间限制。
 参　　数：
@@ -3241,8 +2754,7 @@ quotacheck
   -R   排除根目录所在的分区。
   -u   扫描磁盘空间时，计算每个用户识别码所占用的目录和文件数目。
   -v   显示指令执行过程。
-quotaoff
-功能说明：关闭磁盘空间限制。
+### quotaoff：关闭磁盘空间限制。
 语　　法：quotaoff [-aguv][文件系统...]
 补充说明：执行quotaoff指令可关闭用户和群组的磁盘空间限制。
 参　　数：
@@ -3250,8 +2762,7 @@ quotaoff
   -g   关闭群组的磁盘空间限制。
   -u   关闭用户的磁盘空间限制。
   -v   显示指令执行过程。
-quotaon
-功能说明：开启磁盘空间限制。
+### quotaon：开启磁盘空间限制。
 语　　法：quotaon [-aguv][文件系统...]
 补充说明：执行quotaon指令可开启用户和群组的才磅秒年空间限制，各分区的文件系统根目录必须有quota.user和quota.group配置文件。
 参　　数：
@@ -3259,8 +2770,7 @@ quotaon
   -g   开启群组的磁盘空间限制。
   -u   开启用户的磁盘空间限制。
   -v   显示指令指令执行过程。
-repquota(report quota)
-功能说明：检查磁盘空间限制的状态。
+### repquota(report quota)：检查磁盘空间限制的状态。
 语　　法：repquota [-aguv][文件系统...]
 补充说明：执行repquota指令，可报告磁盘空间限制的状况，清楚得知每位用户或每个群组已使用多少空间。
 参　　数：
@@ -3268,8 +2778,7 @@ repquota(report quota)
   -g   列出所有群组的磁盘空间限制。
   -u   列出所有用户的磁盘空间限制。
   -v   显示该用户或群组的所有空间限制。
-rmdir(remove directory)
-功能说明：删除目录。
+### rmdir(remove directory)：删除目录。
 语　　法：rmdir [-p][--help][--ignore-fail-on-non-empty][--verbose][--version][目录...]
 补充说明：当有空目录要删除时，可使用rmdir指令。
 参　　数：
@@ -3278,16 +2787,13 @@ rmdir(remove directory)
   --ignore-fail-on-non-empty   忽略非空目录的错误信息。
   --verbose   显示指令执行过程。
   --version   显示版本信息。
-rmt(remote magnetic tape)
-功能说明：远端磁带传输协议模块。
+### rmt(remote magnetic tape)：远端磁带传输协议模块。
 语　　法：rmt
 补充说明：通过rmt指令，用户可通过IPC连线，远端操控磁带机的倾倒和还原操作。
-stat(status)
-功能说明：显示inode内容。
+### stat(status)：显示inode内容。
 语　　法：stat [文件或目录]
 补充说明：stat以文字的格式来显示inode的内容。
-Tree
-功能说明：以树状图列出目录的内容。
+### Tree：以树状图列出目录的内容。
 语　　法：tree [-aACdDfFgilnNpqstux][-I <范本样式>][-P <范本样式>][目录...]
 补充说明：执行tree指令，它会列出指定目录下的所有文件，包括子目录里的文件。
 参　　数：
@@ -3311,8 +2817,7 @@ Tree
   -t   用文件和目录的更改时间排序。
   -u   列出文件或目录的拥有者名称，没有对应的名称时，则显示用户识别码。
   -x   将范围局限在现行的文件系统中，若指定目录下的某些子目录，其存放于另一个文件系统上，则将该子目录予以排除在寻找范围外。
-umount
-功能说明：卸除文件系统。
+### umount：卸除文件系统。
 语　　法：umount [-ahnrvV][-t <文件系统类型>][文件系统]
 补充说明：umount可卸除目前挂在Linux目录中的文件系统。
 参　　数：
@@ -3326,9 +2831,8 @@ umount
   [文件系统]   除了直接指定文件系统外，也可以用设备名称或挂入点来表示文件系统。
 
  
-8. linux磁盘维护命令
-badblocks
-功能说明：检查磁盘装置中损坏的区块。
+## linux磁盘维护命令
+### badblocks：检查磁盘装置中损坏的区块。
 语　　法：badblocks [-svw][-b <区块大小>][-o <输出文件>][磁盘装置][磁盘区块数][启始区块]
 补充说明：执行指令时须指定所要检查的磁盘装置，及此装置的磁盘区块数。
 参　　数：
@@ -3340,8 +2844,7 @@ badblocks
   [磁盘装置]   指定要检查的磁盘装置。
   [磁盘区块数]   指定磁盘装置的区块总数。
   [启始区块]   指定要从哪个区块开始检查。
-cfdisk
-功能说明：磁盘分区。
+### cfdisk：磁盘分区。
 语　　法：cfdisk [-avz][-c <柱面数目>-h <磁头数目>-s <盘区数目>][-P <r,s,t>][外围设备代号]
 补充说明：cfdisk是用来磁盘分区的程序，它十分类似DOS的fdisk，具有互动式操作界面而非传统fdisk的问答式界面，您可以轻易地利用方向键来操控分区操作。
 参　　数：
@@ -3352,8 +2855,7 @@ cfdisk
   -s<磁区数目>   忽略BIOS的数值，直接指定磁盘的磁区数目。
   -v   显示版本信息。
   -z   不读取现有的分区，直接当作没有分区的新磁盘使用。
-dd
-功能说明：读取，转换并输出数据。
+### dd：读取，转换并输出数据。
 语　　法：dd [bs=<字节数>][cbs=<字节数>][conv=<关键字>][count=<区块数>][ibs=<字节数>][if=<文件>][obs=<字节数>][of=<文件>][seek=<区块数>][skip=<区块数>][--help][--version]
 补充说明：dd可从标准输入或文件读取数据，依指定的格式来转换数据，再输出到文件，设备或标准输出。
 参　　数：
@@ -3369,8 +2871,7 @@ dd
   skip=<区块数>   一开始读取时，跳过指定的区块数。
   --help   帮助。
   --version   显示版本信息。
-e2fsck(ext2 file system check)
-功能说明：检查ext2文件系统的正确性。
+### e2fsck(ext2 file system check)：检查ext2文件系统的正确性。
 语　　法：e2fsck [-acCdfFnprsStvVy][-b <superblock>][-B <区块大小>][-l <文件>][-L <文件>][设备名称]
 补充说明：e2fsck执行后的传回值及代表意义如下。
   0     没有任何错误发生。
@@ -3400,8 +2901,7 @@ e2fsck(ext2 file system check)
   -v   执行时显示详细的信息。
   -V   显示版本信息。
   -y   采取非互动方式执行，所有的问题均设置以"yes"回答。
-ext2ed(ext2 file system editor)
-功能说明：ext2文件系统编辑程序。
+### ext2ed(ext2 file system editor)：ext2文件系统编辑程序。
 语　　法：ext2ed
 补充说明：ext2ed可直接处理硬盘分区上的数据，这指令只有Red Hat Linux才提供。
 参　　数：
@@ -3430,8 +2930,7 @@ ext2ed(ext2 file system editor)
   Inode模式
   dir   进入目录模式。
   file   进入文件模式。
-fdisk
-功能说明：磁盘分区。
+### fdisk：磁盘分区。
 语　　法：fdisk [-b <分区大小>][-uv][外围设备代号] 或 fdisk [-l][-b <分区大小>][-uv][外围设备代号...] 或 fdisk [-s <分区编号>]
 补充说明：fdisk是用来磁盘分区的程序，它采用传统的问答式界面，而非类似DOS fdisk的cfdisk互动式操作界面，因此在使用上较为不便，但功能却丝毫不打折扣。
 参　　数：
@@ -3440,8 +2939,7 @@ fdisk
   -s<分区编号>   将指定的分区大小输出到标准输出上，单位为区块。
   -u   搭配"-l"参数列表，会用分区数目取代柱面数目，来表示每个分区的起始地址。
   -v   显示版本信息。
-fsck.ext2(file system check-second filesystem)
-功能说明：检查文件系统并尝试修复错误。
+### fsck.ext2(file system check-second filesystem)：检查文件系统并尝试修复错误。
 语　　法：fsck.ext2 [-acdfFnprsStvVy][-b <分区第一个磁区地址>][-B <区块大小>][-C <反叙述器>][-I <inode缓冲区块数>][-l/L <损坏区块文件>][-P <处理inode大小>][外围设备代号]
 补充说明：当ext2文件系统发生错误时，可用fsck.ext2指令尝试加以修复。
 参　　数：
@@ -3466,8 +2964,7 @@ fsck.ext2(file system check-second filesystem)
   -v   详细显示指令执行过程。
   -V   显示版本信息。
   -y   关闭互动模式，且同意所有询问的问题。
-fsck(file system check)
-功能说明：检查文件系统并尝试修复错误。
+### fsck(file system check)：检查文件系统并尝试修复错误。
 语　　法：fsck [-aANPrRsTV][-t <文件系统类型>][文件系统...]
 补充说明：当文件系统发生错误四化，可用fsck指令尝试加以修复。
 参　　数：
@@ -3481,8 +2978,7 @@ fsck(file system check)
   -t<文件系统类型>   指定要检查的文件系统类型。
   -T   执行fsck指令时，不显示标题信息。
   -V   显示指令执行过程。
-fsck.minix(file system check-minix filesystem)
-功能说明：检查文件系统并尝试修复错误。
+### fsck.minix(file system check-minix filesystem)：检查文件系统并尝试修复错误。
 语　　法：fsck.minix [-aflmrsv][外围设备代号]
 补充说明：当minix文件系统发生错误时，可用fsck.minix指令尝试加以参考。
 参　　数：
@@ -3493,14 +2989,12 @@ fsck.minix(file system check-minix filesystem)
   -r   采用互动模式，在执行修复时询问问题，让用户得以确认并决定处理方式。
   -s   显示该分区第一个磁区的相关信息。
   -v   显示指令执行过程。
-fsconf(file system configurator)
-功能说明：设置文件系统相关功能。
+### fsconf(file system configurator)：设置文件系统相关功能。
 语　　法：fsconf [--check]
 补充说明：fsconf是Red Hat Linux发行版专门用来调整Linux各项设置的程序。
 参　　数：
   --chedk   检查特定文件的权限。
-hdparm(hard disk parameters)
-功能说明：显示与设定硬盘的参数。
+### hdparm(hard disk parameters)：显示与设定硬盘的参数。
 语　　法：hdparm [-CfghiIqtTvyYZ][-a <快取分区>][-A <0或1>][-c <I/O模式>][-d <0或1>][-k <0或1>][-K <0或1>][-m <分区数>][-n <0或1>][-p <PIO模式>][-P <分区数>][-r <0或1>][-S <时间>][-u <0或1>][-W <0或1>][-X <传输模式>][设备]
 补充说明：hdparm可检测，显示与设定IDE或SCSI硬盘的参数。
 参　　数：
@@ -3532,20 +3026,17 @@ hdparm(hard disk parameters)
   -y   使IDE硬盘进入省电模式。
   -Y   使IDE硬盘进入睡眠模式。
   -Z   关闭某些Seagate硬盘的自动省电功能。
-losetup(loop setup)
-功能说明：设置循环设备。
+### losetup(loop setup)：设置循环设备。
 语　　法：losetup [-d][-e <加密方式>][-o <平移数目>][循环设备代号][文件]
 补充说明：循环设备可把文件虚拟成区块设备，籍以模拟整个文件系统，让用户得以将其视为硬盘驱动器，光驱或软驱等设备，并挂入当作目录来使用。
 参　　数：
   -d   卸除设备。
   -e<加密方式>   启动加密编码。
   -o<平移数目>   设置数据平移的数目。
-mbadblocks
-功能说明：检查MS-DOS文件系统的磁盘是否有损坏的磁区。
+### mbadblocks：检查MS-DOS文件系统的磁盘是否有损坏的磁区。
 语　　法：mbadblocks [驱动器代号]
 补充说明：mbadblocks为mtools工具指令，可用来扫描MS-DOS文件系统的磁盘驱动器，并标示出损坏的磁区。
-mformat
-功能说明：对MS-DOS文件系统的磁盘进行格式化。
+### mformat：对MS-DOS文件系统的磁盘进行格式化。
 语　　法：mformat [-1aCFIKX][-0 <数据传输率>][-2 <磁区数>][-A <数据传输率>][-B <开机区文件>][-c <丛集大小>][-h <磁头数>][-H <隐藏磁区数>][-l <磁盘标签>][-M <磁区大小>][-n <序号>][-r <根目录大小>][-s <磁区数>][-S <磁区大小>][-t <柱面数>][驱动器代号]
 补充说明：mformat为mtools工具指令，模拟MS-DOS的format指令，可将指定的磁盘或硬盘分区格式化为MS-DOS文件系统。
 参　　数：
@@ -3569,8 +3060,7 @@ mformat
   -S<磁区大小>   指定硬件磁区大小。
   -t<柱面数>   指定柱面数目。
   -X   格式化XDF磁盘。
-mkbootdisk(make boot disk)
-功能说明：建立目前系统的启动盘。
+### mkbootdisk(make boot disk)：建立目前系统的启动盘。
 语　　法：mkbootdisk [--noprompt][--verbose][--version][--device <设备>][--mkinitrdargs <参数>][kernel 版本]
 补充说明：mkbootdisk可建立目前系统的启动盘。
 参　　数：
@@ -3579,8 +3069,7 @@ mkbootdisk(make boot disk)
   --noprompt   不会提示用户插入磁盘。
   --verbose   执行时显示详细的信息。
   --version   显示版本信息。
-mkdosfs(make Dos file system)
-功能说明：建立MS-DOS文件系统。
+### mkdosfs(make Dos file system)：建立MS-DOS文件系统。
 语　　法：mkdosfs [-cv][-f <FAT数目>][-F <FAT记录的单位>][-i <磁盘序号>][-l <文件名>][-m <信息文件>][-n <标签>][-r <根目录项目数>][-s <磁区数>][设备名称][区块数]
 补充说明：mkdosfs可在Linux下，将磁盘格式化为MS-DOS文件系统的格式。
 参　　数：
@@ -3594,8 +3083,7 @@ mkdosfs(make Dos file system)
   -r<根目录项目数>   设置根目录最多能记载项目数。
   -s<磁区数>   指定每个丛集所包含的磁区数。
   -v   执行时显示详细的信息。
-mke2fs(make ext2 file system)
-功能说明：建立ext2文件系统。
+### mke2fs(make ext2 file system)：建立ext2文件系统。
 语　　法：mke2fs [-cFMqrSvV][-b <区块大小>][-f <不连续区段大小>][-i <字节>][-N <inode数>][-l <文件>][-L <标签>][-m <百分比值>][-R=<区块数>][ 设备名称][区块数]
 补充说明：mke2fs可建立Linux的ext2文件系统。
 参　　数：
@@ -3615,10 +3103,8 @@ mke2fs(make ext2 file system)
   -S   仅写入superblock与group descriptors，而不更改inode able inode bitmap以及block bitmap。
   -v   执行时显示详细信息。
   -V   显示版本信息。
-mkfs.ext2
-功能说明：与mke2fs相同。
-mkfs(make file system)
-功能说明：建立各种文件系统。
+### mkfs.ext2：与mke2fs相同。
+### mkfs(make file system)：建立各种文件系统。
 语　　法：mkfs [-vV][fs][-f <文件系统类型>][设备名称][区块数]
 补充说明：mkfs本身并不执行建立文件系统的工作，而是去调用相关的程序来执行。
 参　　数：
@@ -3626,8 +3112,7 @@ mkfs(make file system)
   -t<文件系统类型>   指定要建立何种文件系统。
   -v   显示版本信息与详细的使用方法。
   -V   显示简要的使用方法。
-mkfs.minix
-功能说明：建立Minix文件系统。
+### mkfs.minix：建立Minix文件系统。
 语　　法：mkfs.minix [-cv][-i <inode数目>][-l <文件>][-n <文件名长度>][设备名称][区块数]
 补充说明：mkfs.minix可建立Minix文件系统。
 参　　数：
@@ -3636,10 +3121,8 @@ mkfs.minix
   -l<文件>   从指定的文件中，读取文件系统中损坏区块的信息。
   -n<文件名长度>   指定文件名称长度的上限。
   -v   建立第2版的Minix文件系统。
-mkfs.msdos
-功能说明：与mkdosfs相同。
-mkinitrd(make initial ramdisk images)
-功能说明：建立要载入ramdisk的映像文件。
+### mkfs.msdos：与mkdosfs相同。
+### mkinitrd(make initial ramdisk images)：建立要载入ramdisk的映像文件。
 语　　法：mkinitrd [-fv][--omit-scsi-modules][--version][--preload=<模块名称>][--with=<模块名称>][映像文件][Kernel 版本]
 补充说明：mkinitrd可建立映像文件，以供Linux开机时载入ramdisk。
 参　　数：
@@ -3649,8 +3132,7 @@ mkinitrd(make initial ramdisk images)
   --preload=<模块名称>   指定要载入的模块。
   --with=<模块名称>   指定要载入的模块。
   --version   显示版本信息。
-mkisofs(make iso file system)
-功能说明：建立ISO 9660映像文件。
+### mkisofs(make iso file system)：建立ISO 9660映像文件。
 语　　法：mkisofs [-adDfhJlLNrRTvz][-print-size][-quiet][-A <应用程序ID>][-abstract <摘要文件>][-b <开机映像文件>][-biblio <ISBN文件>][-c <开机文件名称>][-C <盘区编号，磁区编号>][-copyright <版权信息文件>][-hide <目录或文件名>][-hide-joliet <文件或目录名>][-log-file <记录文件>][-m <目录或文件名>][-M <开机映像文件>][-o <映像文件>][-p <数据处理人>][-P <光盘发行人>][-sysid <系统ID >][-V <光盘ID >][-volset <卷册集ID>][-volset-size <光盘总数>][-volset-seqno <卷册序号>][-x <目录>][目录或文件]
 补充说明：mkisofs可将指定的目录与文件做成ISO 9660格式的映像文件，以供刻录光盘。
 参　　数：
@@ -3689,8 +3171,7 @@ mkisofs(make iso file system)
   -volset-seqno<卷册序号>   指定光盘片在卷册集中的编号。
   -x<目录>   指定的目录将不会放入映像文件中。
   -z   建立通透性压缩文件的SUSP记录，此记录目前只在Alpha机器上的Linux有效。
-mkswap
-功能说明：设置交换区(swap area)。
+### mkswap：设置交换区(swap area)。
 语　　法：mkswap [-cf][-v0][-v1][设备名称或文件][交换区大小]
 补充说明：mkswap可将磁盘分区或文件设为Linux的交换区。
 参　　数：
@@ -3699,8 +3180,7 @@ mkswap
   -v0   建立旧式交换区，此为预设值。
   -v1   建立新式交换区。
   [交换区大小]   指定交换区的大小，单位为1024字节。
-mpartition
-功能说明：建立或删除MS-DOS的分区。
+### mpartition：建立或删除MS-DOS的分区。
 语　　法：mpartition [-acdfIprv][-b <磁区数>][-h <磁头数>][l <磁区数>][-s <磁区数>][-t <柱面数>][驱动器代号]
 补充说明：mpartition为mtools工具指令，可建立或删除磁盘分区。
 参　　数：
@@ -3717,8 +3197,7 @@ mpartition
   -s<磁区数>   建立分区时，指定每个磁轨的磁区数。
   -t<柱面数>   建立分区时，指定分区的柱面数。
   -v   与-p参数一并使用，若没有同时下达修改分区的命令，则显示目前分区的状态。
-sfdisk
-功能说明：硬盘恩区工具程序。
+### sfdisk：硬盘恩区工具程序。
 语　　法：sfdisk [-?Tvx][-d <硬盘>][-g <硬盘>][-l <硬盘>][-s <分区>][-V <硬盘>]
 补充说明：sfdisk为硬盘分区工具程序，可显示分区的设置信息，并检查分区是否正常。
 参　　数：
@@ -3731,12 +3210,10 @@ sfdisk
   -v或--version   显示版本信息。
   -V<硬盘>或--verify<硬盘>   检查硬盘分区是否正常。
   -x或--show-extend   显示扩展分区中的逻辑分区。
-swapoff
-功能说明：关闭系统交换区(swap area)。
+### swapoff：关闭系统交换区(swap area)。
 语　　法：swapoff [设备]
 补充说明：swapoff实际上为swapon的符号连接，可用来关闭系统的交换区。
-swapon
-功能说明：启动系统交换区(swap area)。
+### swapon：启动系统交换区(swap area)。
 语　　法：swapon [-ahsV][-p <优先顺序>][设备]
 补充说明：Linux系统的内存管理必须使用交换区来建立虚拟内存。
   -a   将/etc/fstab文件中所有设置为swap的设备，启动为交换区。
@@ -3744,8 +3221,7 @@ swapon
   -p<优先顺序>   指定交换区的优先顺序。
   -s   显示交换区的使用状况。
   -V   显示版本信息。
-symlinks(symbolic links)
-功能说明：维护符号连接的工具程序。
+### symlinks(symbolic links)：维护符号连接的工具程序。
 语　　法：symlinks [-cdrstv][目录]
 补充说明：symlinks可检查目录中的符号连接，并显示符号连接类型。以下为symlinks可判断的符号连接类型：
   absolute：符号连接使用了绝对路径。
@@ -3761,8 +3237,7 @@ symlinks(symbolic links)
   -s   检查lengthy类型的符号连接。
   -t   与-c一并使用时，会显示如何将绝对路径的符号连接转换为相对路径，但不会实际转换。
   -v   显示所有类型的符号连接。
-sync
-功能说明：将内存缓冲区内的数据写入磁盘。
+### sync：将内存缓冲区内的数据写入磁盘。
 语　　法：sync [--help][--version]
 补充说明：在Linux系统中，当数据需要存入磁盘时，通常会先放到缓冲区内，等到适当的时刻再写入磁盘，如此可提高系统的执行效率。
 参　　数：
@@ -3770,9 +3245,8 @@ sync
   --version   显示版本信息。
 
  
-9. linux网络通讯命令
-dip
-功能说明：IP拨号连接。
+## linux网络通讯命令
+### dip：IP拨号连接。
 语　　法：dip [-aikltv][-m<MTU数目>][-p<协议>][拨号script文件]
 补充说明：dip可控制调制解调器，以拨号IP的方式建立对外的双向连接。
 参　　数：
@@ -3784,8 +3258,7 @@ dip
   -p<协议>   设置通信协议。
   -t   进入dip的指令模式。
   -v   执行时显示详细的信息。
-getty(get teletypewriter)
-功能说明：设置终端机模式，连线速率和管制线路。
+### getty(get teletypewriter)：设置终端机模式，连线速率和管制线路。
 语　　法：getty [-h][-d<组态配置文件>][-r<延迟秒数>][-t<超时秒数>][-w<等待字符串>][终端机编号][连线速率<终端机类型><管制线路>] 或 getty [-c<定义配置文件>]
 补充说明：getty指令是UNIX之类操作系统启动时所必须的3个步骤之一。
 参　　数：
@@ -3795,19 +3268,16 @@ getty(get teletypewriter)
   -r<延迟秒数>   设置延迟时间。
   -t<超时秒数>   设置等待登入的时间。
   -w<等待字符串>   设置等待回应的字符串。
-mingetty
-功能说明：精简版的getty。
+### mingetty：精简版的getty。
 语　　法：mingetty [--long-hostname][--noclear][tty]
 补充说明：mingetty适用于本机上的登入程序。
 参　　数：
   --long-hostname   显示完整的主机名称。
   --noclear   在询问登入的用户名称之前不要清楚屏幕画面。
-ppp-off
-功能说明：关闭ppp连线。
+### ppp-off：关闭ppp连线。
 语　　法：ppp-of
 补充说明：这是Slackware发行版内附的程序，让用户切断PPP的网络连线。
-smbd(samba daemon)
-功能说明：Samba服务器程序。
+### smbd(samba daemon)：Samba服务器程序。
 语　　法：smbd [-aDhoP][-d<排错层级>][-i<范围>][-l<记录文件>][-O<连接槽选项>][-p<连接端口编号>][-s<配置文件>]
 补充说明：smbd为Samba服务器程序，可分享文件与打印机等网络资源供Windows相关的用户端程序存取。
 参　　数：
@@ -3822,8 +3292,7 @@ smbd(samba daemon)
   -p<连接端口编号>   设置连接端口编号。
   -P   仅用来测试smbd程序的正确性。
   -s<配置文件>   指定smbd的设置文件。
-telnet
-功能说明：远端登入。
+### telnet：远端登入。
 语　　法：telnet [-8acdEfFKLrx][-b<主机别名>][-e<脱离字符>][-k<域名>][-l<用户名称>][-n<记录文件>][-S<服务类型>][-X<认证形态>][主机名称或IP地址<通信端口>]
 补充说明：执行telnet指令开启终端机阶段作业，并登入远端主机。
 参　　数：
@@ -3845,8 +3314,7 @@ telnet
   -S<服务类型>   设置telnet连线所需的IP TOS信息。
   -x   假设主机有支持数据加密的功能，就使用它。
   -X<认证形态>   关闭指定的认证形态。
-uulog
-功能说明：显示UUCP记录文件。
+### uulog：显示UUCP记录文件。
 语　　法：uulog [-DFISv][-<行数>][-f<主机>][-I<配置文件>][-n<行数>][-s<主机>][-u<用户>][-X<层级>][--help]
 补充说明：uulog可用来显示UUCP记录文件中记录。
 参　　数：
@@ -3860,8 +3328,7 @@ uulog
   -v或--version   显示版本信息。
   -X<层级>或--debug<层级>   设定排错层级。
   --help   显示帮助。
-uustat
-功能说明：显示UUCP目前的状况。
+### uustat：显示UUCP目前的状况。
 语　　法：uustat [-aeiKmMNpqQRv][-B<行数>][-c<指令>][-C<指令>][-I<配置文件>][-k<工作>][-o<小时>][-r<工作>][-s<主机>][-S<主机>][-u<用户>][-U<用户>][-W<附注>][-y<小时>][-x<层级>][--help]
 补充说明：执行uucp与uux指令后，会先将工作送到队列，再由uucico来执行工作。uustat可显示，删除或启动队列中等待执行的工作。
 参　　数：
@@ -3891,8 +3358,7 @@ uustat
   -y<小时>或--younger-than<小时>   显示低于指定时数的工作。
   -x<层级>或--debug<层级>   指定排错层级。
   --help   显示帮助。
-uux
-功能说明：在远端的UUCP主机上执行指令。
+### uux：在远端的UUCP主机上执行指令。
 语　　法：uux [-bcCIjlnrvz][-a<地址>][-g<等级>][-s<文件>][-x<层级>][--help][指令]
 补充说明：uux可在远端的UUCP主机上执行指令或是执行本机上的指令，但在执行时会使用远端电脑的文件。
 参　　数：
@@ -3912,8 +3378,7 @@ uux
   -x<层级>或--debug<层级>   指定排错层级。
   -z或--notification=error   若发生错误，则以邮件来通知用户。
   --help   显示帮助。
-cu(call up)
-功能说明：连接另一个系统主机。
+### cu(call up)：连接另一个系统主机。
 语　　法：cu [dehnotv][-a<通信端口>][-c<电话号码>][-E<脱离字符>][-I<设置文件>][-l<外围设备代号>][-s<连线速率>][-x<排错模式>][-z<系统主机>][--help][-nostop][--parity=none][<系统主机>/<电话号码>]
 补充说明：本指令可连接另一台主机，并采用类似拨号终端机的接口工作，也可执行简易的文件传输作业。
 参　　数：
@@ -3935,8 +3400,7 @@ cu(call up)
   --help   在线帮助。
   --nostop   关闭Xon/Xoff软件流量控制。
   --parity=none   不使用同位检查。
-dnsconf(dns configurator)
-功能说明：设置DNS服务器组态。
+### dnsconf(dns configurator)：设置DNS服务器组态。
 语　　法：dnsconf [--deldomain<域>][--delsecondary<域>][--newdomain<域>][--set<主机><IP>][--setcname<CNAME><主机>][--setmx<域><主机>][--setns<域><主机>][--unset<主机>]
 补充说明：dnsconf实际上为linuxconf的符号连接，提供图形截面的操作方式，供管理员管理DNS服务器。
 参　　数：
@@ -3948,8 +3412,7 @@ dnsconf(dns configurator)
   --setmx<域><主机>   指定域的邮件主机。
   --setns<域><主机>   指定域的DNS服务器。
   --unset<主机>   删除DNS中某台主机的记录。
-efax
-功能说明：收发传真。
+### efax：收发传真。
 语　　法：efax [-sw][-a<AT指令>][-c<调制解调器属性>][-d<驱动程序>][-f<字体文件>][-g<指令>][-h<传真标题字符串>][-i<AT指令>][-j<AT指令>][-k<AT指令>][-l<识别码>][-o<选项>][-q<错误次数>][-r<文件名>][-v<信息类型>][-x<UUCP锁定文件>][-t<电话号码><传真文件>]
 补充说明：支持Class 1与Class 2的调制解调器来收发传真。
 参　　数：
@@ -3970,8 +3433,7 @@ efax
   -w   不要接听电话，等待OK或CONNECT的信号。
   -x<UUCP锁定文件>   使用UUCP格式的锁定文件来锁定调制解调器。
   -t<电话号码><传真文件>   以<电话号码>中的号码来拨号，并将<传真文件>传真出去。
-httpd(http daemon)
-功能说明：Apache HTTP服务器程序。
+### httpd(http daemon)：Apache HTTP服务器程序。
 语　　法：httpd [-hlLStvVX][-c<httpd指令>][-C<httpd指令>][-d<服务器根目录>][-D<设定文件参数>][-f<设定文件>]
 补充说明：httpd为Apache HTTP服务器程序。直接执行程序可启动服务器的服务。
 参　　数：
@@ -3988,8 +3450,7 @@ httpd(http daemon)
   -v   显示版本信息。
   -V   显示版本信息以及建立环境。
   -X   以单一程序的方式来启动服务器。
-ifconfig
-功能说明：显示或设置网络设备。
+### ifconfig：显示或设置网络设备。
 语　　法：ifconfig [网络设备][down up -allmulti -arp -promisc][add<地址>][del<地址>][<hw<网络设备类型><硬件地址>][io_addr<I/O地址>][irq<IRQ地址>][media<网络媒介类型>][mem_start<内存地址>][metric<数目>][mtu<字节>][netmask<子网掩码>][tunnel<地址>][-broadcast<地址>][-pointopoint<地址>][IP地址]
 补充说明：ifconfig可设置网络设备的状态，或是显示目前的设置。
 参　　数：
@@ -4011,15 +3472,13 @@ ifconfig
   -promisc   关闭或启动指定网络设备的promiscuous模式。
   [IP地址]   指定网络设备的IP地址。
   [网络设备]   指定网络设备的名称。
-mesg
-功能说明：设置终端机的写入权限。
+### mesg：设置终端机的写入权限。
 语　　法：mesg [ny]
 补充说明：将mesg设置y时，其他用户可利用write指令将信息直接显示在您的屏幕上。
 参　　数：
   n   不允许气筒用户将信息直接显示在你的屏幕上。
   y   允许气筒用户将信息直接显示在你的屏幕上。
-minicom
-功能说明：调制解调器通信程序。
+### minicom：调制解调器通信程序。
 语　　法：minicom [-8lmMostz][-a<on或0ff>][-c<on或off>][-C<取文件>][-d<编号>][-p<模拟终端机>][-S<script文件>][配置文件]
 补充说明：minicom是一个相当受欢迎的PPP拨号连线程序。
 参　　数：
@@ -4038,8 +3497,7 @@ minicom
   -t   设置终端机的类型。
   -z   在终端机上显示状态列。
   [配置文件]   指定minicom配置文件。
-nc
-功能说明：设置路由器。
+### nc：设置路由器。
 语　　法：nc [-hlnruz][-g<网关...>][-G<指向器数目>][-i<延迟秒数>][-o<输出文件>][-p<通信端口>][-s<来源位址>][-v...][-w<超时秒数>][主机名称][通信端口...]
 补充说明：执行本指令可设置路由器的相关参数。
 参　　数：
@@ -4057,17 +3515,14 @@ nc
   -v   显示指令执行过程。
   -w<超时秒数>   设置等待连线的时间。
   -z   使用0输入/输出模式，只在扫描通信端口时使用。
-netconf
-功能说明：设置各项网络功能。
+### netconf：设置各项网络功能。
 语　　法：netconf
 补充说明：netconf是Red Hat Linux发行版专门用来调整Linux各项设置的程序。
 
-netconfig
-功能说明：设置网络环境。
+### netconfig：设置网络环境。
 语　　法：netconfig
 补充说明：这是Slackware发行版内附程序，它具有互动式的问答界面，让用户轻易完成网络环境的设置。
-netstat
-功能说明：显示网络状态。
+### netstat：显示网络状态。
 语　　法：netstat [-acCeFghilMnNoprstuvVwx][-A<网络类型>][--ip]
 补充说明：利用netstat指令可让你得知整个Linux系统的网络情况。
 参　　数：
@@ -4095,8 +3550,7 @@ netstat
   -w或--raw   显示RAW传输协议的连线状况。
   -x或--unix   此参数的效果和指定"-A unix"参数相同。
   --ip或--inet   此参数的效果和指定"-A inet"参数相同。
-ping
-功能说明：检测主机。
+### ping：检测主机。
 语　　法：ping [-dfnqrRv][-c<完成次数>][-i<间隔秒数>][-I<网络界面>][-l<前置载入>][-p<范本样式>][-s<数据包大小>][-t<存活数值>][主机名称或IP地址]
 补充说明：执行ping指令会使用ICMP传输协议，发出要求回应的信息，若远端主机的网络功能没有问题，就会回应该信息，因而得知该主机运作正常。
 参　　数：
@@ -4114,8 +3568,7 @@ ping
   -s<数据包大小>   设置数据包的大小。
   -t<存活数值>   设置存活数值TTL的大小。
   -v   详细显示指令的执行过程。
-pppstats(point to point protocol status)
-功能说明：显示PPP连线状态。
+### pppstats(point to point protocol status)：显示PPP连线状态。
 语　　法：pppstats [-adrv][-c<执行次数>][-w<间隔秒数>][网络界面]
 补充说明：利用pppstats指令可让你得知PPP连接网络的相关信息。
 参　　数：
@@ -4125,8 +3578,7 @@ pppstats(point to point protocol status)
   -r   显示数据包压缩比率的统计值。
   -v   显示VJTCP文件头的压缩效率统计值。
   -w<间隔秒数>   设置显示统计信息的间隔时间。
-samba
-功能说明：Samba服务器控制。
+### samba：Samba服务器控制。
 语　　法：samba [start][stop][status][restart]
 补充说明：samba为script文件，可启动，停止Samba服务器或回报目前的状态。
 参　　数：
@@ -4134,8 +3586,7 @@ samba
   stop    停止Samba服务器的服务。
   status   显示Samba服务器目前的状态。
   restart   重新启动Samba服务器。
-setserial
-功能说明：设置或显示串口的相关信息。
+### setserial：设置或显示串口的相关信息。
 语　　法：setserial [-abgGqvVz][设备][串口参数]
 补充说明：setserial可用来设置串口或显示目前的设置。
 参　　数：
@@ -4147,15 +3598,13 @@ setserial
   -v   执行时显示较多的信息。
   -V   显示版本信息。
   -z   设置前，先将所有的标记归零。
-shapecfg(shaper configuration)
-功能说明：管制网络设备的流量。
+### shapecfg(shaper configuration)：管制网络设备的流量。
 语　　法：shapecfg attach [流量管制器][网络设备] 或  shapecfg speed [流量管制器][带宽]
 补充说明：自Linux-2.15开始，便支持流量管制的功能。
 参　　数：
   attach   将流量管制器与实际的网络设备结合。
   speed   设置流量管制器的对外传输带宽。
-smbd(samba daemon)
-功能说明：Samba服务器程序。
+### smbd(samba daemon)：Samba服务器程序。
 语　　法：smbd [-aDhoP][-d<排错层级>][-i<范围>][-l<记录文件>][-O<连接槽选项>][-p<连接端口编号>][-s<配置文件>]
 补充说明：smbd为Samba服务器程序，可分享文件与打印机等网络资源供Windows相关的用户端程序存取。
 参　　数：
@@ -4170,20 +3619,17 @@ smbd(samba daemon)
   -p<连接端口编号>   设置连接端口编号。
   -P   仅用来测试smbd程序的正确性。
   -s<配置文件>   指定smbd的设置文件。
-statserial(status ofserial port)
-功能说明：显示串口状态。
+### statserial(status ofserial port)：显示串口状态。
 语　　法：statserial [-dnx][串口设备名称]
 补充说明：statserial可显示各个接脚的状态，常用来判断串口是否正常。
 参　　数：
   -d   以10进制数字来表示串口的状态。
   -n   仅显示一次串口的状态后即结束程序。
   -x   与-n参数类似，但是以16进制来表示。
-talk
-功能说明：与其他用户交谈。
+### talk：与其他用户交谈。
 语　　法：talk [用户名称][终端机编号]
 补充说明：通过talk指令，你可以和另一个用户线上交谈。
-Tcpdump
-功能说明：倾倒网络传输数据。
+### Tcpdump：倾倒网络传输数据。
 语　　法：tcpdump [-adeflnNOpqStvx][-c<数据包数目>][-dd][-ddd][-F<表达文件>][-i<网络界面>][-r<数据包文件>][-s<数据包大小>][-tt][-T<数据包类型>][-vv][-w<数据包文件>][输出数据栏位]
 补充说明：执行tcpdump指令可列出经过指定网络界面的数据包文件头，在Linux操作系统中，你必须是系统管理员。
 参　　数：
@@ -4212,14 +3658,12 @@ Tcpdump
   -vv   更详细显示指令执行过程。
   -x   用十六进制字码列出数据包资料。
   -w<数据包文件>   把数据包数据写入指定的文件。
-testparm(test parameter)
-功能说明：测试Samba的设置是否正确无误。
+### testparm(test parameter)：测试Samba的设置是否正确无误。
 语　　法：testparm [-s][配置文件][<主机名称><IP地址>]
 补充说明：执行testparm指令可以简单测试Samba的配置文件，假如测试结果无误，Samba常驻服务就能正确载入该设置值，但并不保证其后的操作如预期般一切正常。
 参　　数：
   -s   不显示提示符号等待用户按下Enter键，就直接列出Samba服务定义信息。
-traceroute
-功能说明：显示数据包到主机间的路径。
+### traceroute：显示数据包到主机间的路径。
 语　　法：traceroute [-dFlnrvx][-f<存活数值>][-g<网关>...][-i<网络界面>][-m<存活数值>][-p<通信端口>][-s<来源地址>][-t<服务类型>][-w<超时秒数>][主机名称或IP地址][数据包大小]
 补充说明：traceroute指令让你追踪网络数据包的路由途径，预设数据包大小是40Bytes，用户可另行设置。
 参　　数：
@@ -4238,16 +3682,14 @@ traceroute
   -v   详细显示指令的执行过程。
   -w<超时秒数>   设置等待远端主机回报的时间。
   -x   开启或关闭数据包的正确性检验。
-tty(teletypewriter)
-功能说明：显示终端机连接标准输入设备的文件名称。
+### tty(teletypewriter)：显示终端机连接标准输入设备的文件名称。
 语　　法：tty [-s][--help][--version]
 补充说明：在Linux操作系统中，所有外围设备都有其名称与代号，这些名称代号以特殊文件的类型存放于/dev目录下。你可以执行tty指令查询目前使用的终端机的文件名称。
 参　　数：
   -s或--silent或--quiet   不显示任何信息，只回传状态代码。
   --help   在线帮助。
   --version   显示版本信息。
-uuname
-功能说明：显示全部的UUCP远端主机。
+### uuname：显示全部的UUCP远端主机。
 语　　法：uuname [-alv][-I<配置文件>][--help]
 补充说明：uuname可显示UUCP远端主机。
 参　　数：
@@ -4256,16 +3698,13 @@ uuname
   -l或--local   显示本机名称。
   -v或--version   显示版本信息。
   --help   显示帮助。
-wall(write all)
-功能说明：传送信息。
+### wall(write all)：传送信息。
 语　　法：wall [公告信息]
 补充说明：通过wall指令可将信息发送给每位同意接收公众信息的终端机用户，若不给予其信息内容，则wall指令会从标准输入设备读取数据，然后再把所得到的数据传送给所有终端机用户。
-write
-功能说明：传送信息。
+### write：传送信息。
 语　　法：write [用户名称][终端机编号]
 补充说明：通过write指令可传递信息给另一位登入系统的用户，当输入完毕后，键入EOF表示信息结束，write指令就会将信息传给对方。如果接收信息的用户不只登入本地主机一次，你可以指定接收信息的终端机编号。
-ytalk
-功能说明：与其他用户交谈。
+### ytalk：与其他用户交谈。
 语　　法：ytalk [-isxY][-h<主机名称IP地址>][用户名称...]
 补充说明：通过ytalk指令，你可以和其他用户线上交谈，如果想和其他主机的用户交谈，在用户名称后加上其主机名称或IP地址即可。
 参　　数：
@@ -4274,8 +3713,7 @@ ytalk
   -s   在指令提示符号先开启ytalk交谈窗。
   -x   关闭图形界面。
   -Y   所有必须回应yes或no的问题，都必须用大写英文字母"Y"或"N"回答。
-arpwatch(ARP watcher)
-功能说明：监听网络上ARP的记录。
+### arpwatch(ARP watcher)：监听网络上ARP的记录。
 语　　法：arpwatch [-d][-f<记录文件>][-i<接口>][-r<记录文件>]
 补充说明：ARP(Address Resolution Protocol)是用来解析IP与网络装置硬件地址的协议。arpwatch可监听区域网络中的ARP数据包并记录，同时将监听到的变化通过E-mail来报告。
 参　　数：
@@ -4283,8 +3721,7 @@ arpwatch(ARP watcher)
   -f<记录文件>   设置存储ARP记录的文件，预设为/var/arpwatch/arp.dat。
   -i<接口>   指定监听ARP的接口，预设的接口为eth0。
   -r<记录文件>   从指定的文件中读取ARP记录，而不是从网络上监听。
-apachectl(Apache control interface)
-功能说明：可用来控制Apache HTTP服务器的程序。
+### apachectl(Apache control interface)：可用来控制Apache HTTP服务器的程序。
 语　　法：apachectl [configtest][fullstatus][graceful][help][restart][start][status][stop]
 补充说明：apachectl是slackware内附Apache HTTP服务器的script文件，可供管理员控制服务器，但在其他Linux的Apache HTTP服务器不一定有这个文件。
 参　　数：
@@ -4296,8 +3733,7 @@ apachectl(Apache control interface)
   start   启动Apache服务器。
   status   显示服务器摘要的状态信息。
   stop   停止Apache服务器。
-smbclient(samba client)
-功能说明：可存取SMB/CIFS服务器的用户端程序。
+### smbclient(samba client)：可存取SMB/CIFS服务器的用户端程序。
 语　　法：smbclient [网络资源][密码][-EhLN][-B<IP地址>][-d<排错层级>][-i<范围>][-I<IP地址>][-l<记录文件>][-M<NetBIOS名称>][-n<NetBIOS名称>][-O<连接槽选项>][-p<TCP连接端口>][-R<名称解析顺序>][-s<目录>][-t<服务器字码>][-T<tar选项>][-U<用户名称>][-W<工作群组>]
 补充说明：SMB与CIFS为服务器通信协议，常用于Windows95/98/NT等系统。smbclient可让Linux系统存取Windows系统所分享的资源。
 参　　数：
@@ -4322,14 +3758,12 @@ smbclient(samba client)
   -T<tar选项>   备份服务器端分享的全部文件，并打包成tar格式的文件。
   -U<用户名称>   指定用户名称。
   -W<工作群组>   指定工作群组名称。
-pppsetup
-功能说明：设置PPP连线。
+### pppsetup：设置PPP连线。
 语　　法：pppsetup
 补充说明：这是Slackware发行版内附程序，它具有互动式的问答界面，让用户轻易完成PPP的连线设置。
  
-10. linux电子邮件与新闻组命令
-archive
-功能说明：新闻组文件备存程序。
+## linux电子邮件与新闻组命令
+### archive：新闻组文件备存程序。
 语　　法：archive [-fmr][-a<备存目录>][-i<索引文件>][源文件]
 补充说明：archive会读取新闻组的文件，然后加以备存。archive备存时，会保存[源文件]中文件的目录阶层。
 参　　数：
@@ -4339,16 +3773,14 @@ archive
   -m   将文件复制到目的地，建立文件连接后，以连接取代原始的文件。
   -r   archive预设的标准错误输出为/var/errlog。-r参数可取消此功能。
   [源文件]   在源文件中指定要备份的文件。
-ctlinnd(control the internet news daemon)
-功能说明：设置INN新闻组服务器。
+### ctlinnd(control the internet news daemon)：设置INN新闻组服务器。
 语　　法：ctlinnd [-hs][-t<超时秒数>][控制命令<设置数值>...]
 补充说明：通过ctlinnd指令，可以对新闻组服务器这项常驻服务下达控制命令，直接设置相关数值。
 参　　数：
   -h   在线帮助。
   -s   不显示指令执行过程。
   -t<超时秒数>   设置等待服务器回报的时间，单位以秒计算，超过此一时间则为超时。
-elm
-功能说明：E-mail管理程序。
+### elm：E-mail管理程序。
 语　　法：elm [-s<邮件主题>][收信人别名或地址]<[要输入的文件] 或
                  elm [-hmvz][-f<目录>][-i<文件名>]
 补充说明：elm为全屏文字模式的电子邮件管理程序。与mail相比，elm提供较易操作的界面，但仍不及pine来得友善。
@@ -4360,15 +3792,13 @@ elm
   -m   进入elm后，不显示指令说明。
   -v   显示elm的版本信息。
   -z   若收件信箱没有邮件，则不启动elm程序。
-getlist
-功能说明：下载新闻组清单。
+### getlist：下载新闻组清单。
 语　　法：getlist [-h<新闻组服务器>][-p<通信端口>][群组类型<范本样式><群组名称>]
 补充说明：getlist指令会从新闻服务器下载新闻组清单，并把清单输出到标准输出设备。
 参　　数：
   -h<新闻组服务器>   指定欲连接的新闻组服务器。
   -p<通信端口>   设置连接新闻组服务器的通讯端口。
-inncheck(inn check)
-功能说明：检查inn相关配置文件的语法是否正确。
+### inncheck(inn check)：检查inn相关配置文件的语法是否正确。
 语　　法：inncheck [-afv][-pedantic][-perm][-noperm][文件]
 补充说明：inncheck会检查inn配置文件的语法是否正确，但不会实际修改这些配置文件。
 参　　数：
@@ -4379,8 +3809,7 @@ inncheck(inn check)
   -perm   检查文件权限是否有误。
   --noperm   不检查文件的权限设置。
   [文件]   若不指定此参数，则inncheck会检查所有预设的文件。
-mail
-功能说明：E-mail管理程序。
+### mail：E-mail管理程序。
 语　　法：mail [-iInNv][-b<地址>][-c<地址>][-f<邮件文件>][-s<邮件主题>][-u<用户帐号>][收信人地址]
 补充说明：mail是一个文字模式的邮件管理程序，操作的界面不像elm或pine那么容易使用，但功能尚称完整。
 参　　数：
@@ -4394,22 +3823,18 @@ mail
   -s<邮件主题>   指定邮件的主题。
   -u<用户帐号>   读取指定用户的邮件。
   -v   执行时，显示详细的信息。
-mailconf
-功能说明：Sendmail设置程序。
+### mailconf：Sendmail设置程序。
 语　　法：mailconf [--addvdom<虚拟网络>][--delvdom<虚拟网络>][--help]
 补充说明：mailconf实际为linuxconf的符号连接，用来设置Sendmail相关的选项。执行mailconf时，不管目前的环境为指令列模式或是X Window，都会出现图形界面的设置画面，让您轻松地完成设置。所有指令列的参数都可以在图形界面中设置。建议不用加上任何参数，直接进入mailconf的图形界面来设置。
-mailq(mail queue)
-功能说明：显示待寄邮件的清单。
+### mailq(mail queue)：显示待寄邮件的清单。
 语　　法：mailq [-q]
 补充说明：mailq可列出待寄邮件的清单，包括邮件ID，邮件大小，邮件保存时间，寄信人，收信人，以及邮件无法寄出的原因，提供管理员参考的信息。mailq实际上是执行sendmail -bp指令。
 参　　数：
   -v   显示较详细的信息。
-messages
-功能说明：查看信箱中的邮件数。
+### messages：查看信箱中的邮件数。
 语　　法：messages [邮件目录或文件]
 补充说明：messages实际上是一个script文件，可用来检查信箱中的邮件数。若不指定[邮件目录或文件]参数，则显示目前收件信箱中的邮件数。
-metamail
-功能说明：负责处理非文字E-mail的程序。
+### metamail：负责处理非文字E-mail的程序。
 语　　法：metafile [-bBdehpPqrRTwxyz][-c<邮件内容类型>][-f<寄信人地址>][-m<邮件管理程序名称>][-s<邮件主题>][文件名]
 补充说明：当E-mail管理程序遇到非ISO-8859-1标准文字的邮件内容，而不知道要如何处理的时候，即调用metamail。
 参　　数：
@@ -4432,8 +3857,7 @@ metamail
   -x   不要以终端机模式来执行，即不使用互动模式。
   -y   抽出邮件内文中MIME格式的部分。
   -z   程序结束时将输入的文件删除。
-mutt
-功能说明：E-mail管理程序。
+### mutt：E-mail管理程序。
 语　　法：mutt [-hnpRvxz][-a<文件>][-b<地址>][-c<地址>][-f<邮件文件>][-F<配置文件>][-H<邮件草稿>][-i<文件>][-m<类型>][-s<主题>][邮件地址]
 补充说明：mutt是一个文字模式的邮件管理程序，提供了全屏幕的操作界面。
 参　　数：
@@ -4453,8 +3877,7 @@ mutt
   -v   显示mutt的版本信息以及当初编译此文件时所给予的参数。
   -x   模拟mailx的编辑方式。
   -z   与-f参数一并使用时，若邮件文件中没有邮件即不启动mutt。
-nntpget
-功能说明：下载新闻组文章。
+### nntpget：下载新闻组文章。
 语　　法：nntpget [-ov][-d<组类型清单>][-f<文件或目录>][-n<组名称清单>][-t<时间日期>][-u<文件或目录>][新闻组服务器]
 补充说明：执行nntpget指令将从指定的新闻组服务器下载文章。nntpget指令会从标准输入设备读取信息识别码，而下载的新闻文章则呈现到标准输出设备。
 参　　数：
@@ -4465,8 +3888,7 @@ nntpget
   -t<时间日期>   指定时间与日期，较该日期时间更新的新闻文章都会被下载。
   -u<文件或目录>   此参数的效果和指定"-f"参数类似，但它在成功下载文章之后会去更改指定文件或木的更改时间，便于下次再作为参考。
   -v   当指令执行时，把每篇文章的信息识别码都送到标准输出。本参数需配合参数"-o"使用。
-pine
-功能说明：收发电子邮件，浏览新闻组。
+### pine：收发电子邮件，浏览新闻组。
 语　　法：pine [-ahikorz][-attach<附件>][-attach_and_delete<附件>][-attachlist<附件清单>][-c<邮件编号>][-conf][-create_lu<地址薄><排序法>][-f<收件箱>][-F<文件>][-I<暂存快捷键>][-n<邮件编号>][-nr][-p<环境文件>][-pinerc<输出文件>][-P<配置文件>][-sort<排序法></reverse>][-url<URL>][-<功能选项>=<设置值>][用户名称或电子邮件地址...]
 补充说明：pine是个以显示导向为住的邮件处理程序，包括一般电子邮件和新闻组的文章。pine也支持MIME格式，可让用户将MIME的对象保存成文件，甚至指定外挂程序直接开启对象。
 参　　数：
@@ -4493,8 +3915,7 @@ pine
   -url<URL>   直接开启给予的URL。
   -z   让pine可被Ctrl+z中断，暂存在后台作业里。
   -<功能选项>=<设置值>   暂时指定各项功能的设置值。
-slrn
-功能说明：新闻组阅读程序。
+### slrn：新闻组阅读程序。
 语　　法：slrn [-Cdnp][-create][-help][-f<新闻组文件>][-h<服务器>][--version]
 补充说明：slrn是一个很容易使用的新闻组阅读程序，提供全屏幕的图形操作界面，让用户能轻松地阅读与管理新闻组。
 参　　数：
@@ -4508,20 +3929,17 @@ slrn
   -help   显示帮助。
   --version   显示版本信息。
  
-11. linux其他命令
-reconfig
-功能说明：转换配置文件。
+## linux其他命令
+### reconfig：转换配置文件。
 语　　法：reconfig [Xconfig] XF86Config
 补充说明：reconfig指令能将XFree86 3.1及以前的版本的配置文件，转成新的格式。现今的配置文件XF86Config，存放在/etc或/etc/X11目录下，它的格式包含了更多的信息，因此在转换之后，您还须自行编辑设置文件，输入不足的部分。
-startx(start X Window)
-功能说明：启动X Window。
+### startx(start X Window)：启动X Window。
 语　　法：startx [程序][--服务器设置]
 补充说明：startx为启动X Window的script文件，实际上启动X Window的程序为xinit。
 参　　数：
   [程序]   此处所指定的[程序]为X Window所要执行程序的配置文件。
   [--服务器设置]   startx预设会去读取.xerverrc中的配置，决定启动X Window的方式。
-xconfigurator
-功能说明：设置XFree86。
+### xconfigurator：设置XFree86。
 语　　法：Xconfigurator [--card<显卡型号>][--expert][--help][--hsync"<水平扫描频率>"][-kickstart][--monitor<显示器型号>][--server<显示服务器>][--vsync"<垂直扫描频率>"]
 补充说明：这是Red Hat公司遵循GPL规则所开发的程序，它具有互动式操作界面，您可以轻易地利用方向键和空格键等，设置显卡和显示器，并选择欲使用的画面分辨率与色彩深度，最后保存配置文件XF86Config。
 参　　数：
@@ -4533,16 +3951,14 @@ xconfigurator
   --monitor<显示器型号>   设置显示器型号，可用"--help"参数查询型号列表。
   --server<显示服务器>   设置显示服务器。
   --vsync"<垂直扫描频率>"   设置垂直扫描频率。
-XF86Setup
-功能说明：设置XFee86。
+### XF86Setup：设置XFee86。
 语　　法：XF86Setup [-display<主机名称或IP地址>:<显示器编号>][-nodialog][-sync]
 补充说明：这是Linux系统用来设置XFee86的程序，它会进入图形模式，通过互动操作界面，让用户轻松完成XFee86环境的设置。
 参　　数：
   -display<主机名称或IP地址>:<显示器编号>   指定显示XF86Setup设置画面的主机名称以及欲在该主机上的哪个显示器显示画面。
   -nodialog   执行XF86Setup时，不显示交谈窗，直接以文字模式提出询问。
   --sync   和X Server进行数据同步传输。
-xlsatoms
-功能说明：列出X Server定义的成分。
+### xlsatoms：列出X Server定义的成分。
 语　　法：xlsatoms [-display<显示器编号>][-format<输出格式>][-name<成分名称>][-range<列表范围>]
 补充说明：执行xlsatoms指令会列出X Server内部所有定义的成分，每个成分都有其编号，您可利用参数设置列表范围，或直接指定欲查询的成分名称。
 参　　数：
@@ -4550,8 +3966,7 @@ xlsatoms
   -format<输出格式>   设置成分清单的列表格式，您可使用控制字符改变显示样式。
   -name<成分名称>   列出指定的成分。
   -range<列表范围>   设置成分清单的列表范围。 
-xlsclients
-功能说明：列出显示器中的客户端应用程序。
+### xlsclients：列出显示器中的客户端应用程序。
 语　　法：xlsclients [-al][-display<显示器编号>][-m<最大指令长度>]
 补充说明：执行xlsclients指令可列出某个显示器中，正在执行的客户端应用程序信息。
 参　　数：
@@ -4559,8 +3974,7 @@ xlsclients
   -display<显示器编号>   指定X Server连接的显示器编号，该编号由"0"开始计算，依序递增。
   -l   使用详细格式列表。
   -m<最大指令长度>   设置显示指令信息的最大长度，单位以字符计算。
-xlsfonts
-功能说明：列出X Server使用的字体。
+### xlsfonts：列出X Server使用的字体。
 语　　法：xlsfonts [-1Clmou][-display<主机名称或IP地址>:<显示器编号>][-fn<范本样式>][-ll][-lll][-n<显示栏位数>][-w<每列字符数>]
 补充说明：执行xlsfonts指令会显示目前X Server可使用的字体，也能使用范本样式仅列出的符合条件的字体。
 参　　数：
