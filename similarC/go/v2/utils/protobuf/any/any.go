@@ -11,7 +11,9 @@ import (
 	"github.com/golang/protobuf/ptypes/any"
 )
 
-func  GenAnys(details ...proto.Message) ([]*any.Any, error) {
+//为了api文档，不雅使用这种返回
+
+func GenAnys(details ...proto.Message) ([]*any.Any, error) {
 	var anys []*any.Any
 	for _, detail := range details {
 		vany, err := ptypes.MarshalAny(detail)
@@ -28,10 +30,10 @@ func GenAny(detail proto.Message) (*any.Any, error) {
 	if err != nil {
 		return nil, err
 	}
-	return vany,nil
+	return vany, nil
 }
 
-func  GenGogoAnys(details ...proto.Message) ([]*types.Any, error) {
+func GenGogoAnys(details ...proto.Message) ([]*types.Any, error) {
 	var anys []*types.Any
 	for _, detail := range details {
 		vany, err := types.MarshalAny(detail)
@@ -48,7 +50,7 @@ func GenGogoAny(detail proto.Message) (*types.Any, error) {
 	if err != nil {
 		return nil, err
 	}
-	return vany,nil
+	return vany, nil
 }
 
 func ResolveAny(typeUrl string) (proto.Message, error) {

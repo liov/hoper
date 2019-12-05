@@ -3,12 +3,14 @@ package server
 import (
 	"context"
 	"expvar"
+	"mime"
 	"net/http"
 	"net/http/pprof"
 	"os"
 
 	"github.com/gogo/gateway"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/liov/hoper/go/v2/gateway/internal/api"
 	"github.com/liov/hoper/go/v2/gateway/internal/config"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/utils/log"
@@ -35,7 +37,7 @@ func GateWay() http.Handler {
 	}
 	gwmux := runtime.NewServeMux(
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, jsonpb),
-		runtime.WithProtoErrorHandler(runtime.DefaultHTTPProtoErrorHandler),)
+		runtime.WithProtoErrorHandler(runtime.DefaultHTTPProtoErrorHandler))
 	opts := []grpc.DialOption{grpc.WithInsecure()}
 	err := model.RegisterUserServiceHandlerFromEndpoint(ctx, gwmux, config.Conf.Server.GrpcService["user"], opts)
 	if err != nil {
@@ -43,24 +45,24 @@ func GateWay() http.Handler {
 	}
 	//openapi
 	mux := http.NewServeMux()
-	mux.Handle("/",gwmux)
-	mux.Handle("/debug/vars",expvar.Handler())
+	mux.Handle("/", gwmux)
+	mux.Handle("/debug/vars", expvar.Handler())
 	mux.Handle("/debug/pprof/", http.HandlerFunc(pprof.Index))
 	mux.Handle("/debug/pprof/cmdline", http.HandlerFunc(pprof.Cmdline))
 	mux.Handle("/debug/pprof/profile", http.HandlerFunc(pprof.Profile))
 	mux.Handle("/debug/pprof/symbol", http.HandlerFunc(pprof.Symbol))
 	mux.Handle("/debug/pprof/trace", http.HandlerFunc(pprof.Trace))
-	mux.Handle("/open-api/",http.StripPrefix("/open-api/", http.FileServer(http.Dir("./api"))))
+	api.OpenApi(mux)
 	h2Handler := h2c.NewHandler(mux, &http2.Server{})
 	server := &http.Server{Addr: config.Conf.Server.Port, Handler: h2Handler}
 	go func() {
-		log.Info("listening ",config.Conf.Server.Port)
-		if err :=server.ListenAndServe();err!=nil{
+		log.Info("listening ", config.Conf.Server.Port)
+		if err := server.ListenAndServe(); err != nil {
 			log.Fatal(err)
 		}
 	}()
 	<-ch
-	if err :=server.Close();err!=nil{
+	if err := server.Close(); err != nil {
 		log.Error(err)
 	}
 	return mux

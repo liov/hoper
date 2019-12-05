@@ -9,6 +9,8 @@ require (
 	github.com/bluele/gcache v0.0.0-20190518031135-bc40bd653833
 	github.com/etcd-io/bbolt v1.3.3
 	github.com/gavv/monotime v0.0.0-20190418164738-30dba4353424 // indirect
+	github.com/go-openapi/loads v0.19.4
+	github.com/go-openapi/runtime v0.19.8
 	github.com/go-openapi/spec v0.19.3
 	github.com/go-openapi/swag v0.19.5
 	github.com/go-playground/locales v0.12.1
