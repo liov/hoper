@@ -7,7 +7,7 @@ option go_package = "github.com/liov/hoper/go/v2/utils/protobuf/any";
 option java_package = "xyz.hoper.protobuf.utils.any";
 
 message Any {
-    google.protobuf.Any any =1;
+    bytes b = 1;
 }
 
 message StringJson {

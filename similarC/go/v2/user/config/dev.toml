@@ -34,24 +34,22 @@ FontSaveDir ="/font"
 
 CrawlerName =""
 [database]
-Type = "postgres"
-#Type = mysql
-#User = root
-User = "postgres"
+#Type = "postgres"
+Type = "mysql"
+User = "web"
 Password = "123456"
-Host = "hoper.xyz"
-#Port = 3306
+Host = "192.168.1.212"
+Port = 3306
 TimeFormat = "2006-01-02 15:04:05.999"
-Port = 5432
 Charset = "utf8mb4"
-Database = "hoper_test"
+Database = "test"
 TablePrefix =""
 MaxIdleConns = 5
 MaxOpenConns = 10
 
 [redis]
-Addr = "hoper.xyz:6379"
-Password =""
+Addr = "192.168.1.204:6379"
+Password ="123456"
 MaxIdle = 30
 MaxActive = 30
 IdleTimeout = 200
