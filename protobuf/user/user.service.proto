@@ -1,6 +1,6 @@
 syntax = "proto3";
 package model;
-import "user/user.modle.proto";
+import "user/user.model.proto";
 import "response/anyreply.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "protoc-gen-swagger/options/annotations.proto";
@@ -44,13 +44,25 @@ service UserService {
 
     //注册
     rpc Signup (SignupReq) returns (response.BytesReply) {
+        option (google.api.http) = {
+        post: "/api/v1/user/sign"
+        body: "*"
+        };
     }
 
     //激活
     rpc Active (ActiveReq) returns (response.BytesReply) {
+        option (google.api.http) = {
+        post: "/api/v1/user/active"
+        body: "*"
+        };
     }
-
+    //编辑
     rpc Edit (EditReq) returns (EditRep) {
+        option (google.api.http) = {
+        put: "/api/v1/user/{id}"
+        body: "*"
+        };
     }
 
     rpc Login (LoginReq) returns (LoginRep) {
@@ -105,7 +117,21 @@ message LoginReq {
 
 message EditReq {
     uint64 id = 1;
-    string name = 2 [(gogoproto.moretags) = "validate:\"required,alphanum,gte=3,lte=10\" comment:\"名字\""];
+    EditUser user = 2;
+    message EditUser{
+        string name = 2 [(gogoproto.moretags) = "gorm:\"type:varchar(10);not null\" validate:\"required,gte=3,lte=10\" comment:\"名字\""];
+        string password = 5 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"type:varchar(32);not null\" validate:\"gte=8,lte=15\" comment:\"密码\""];
+        string mail = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(16);default:''\" validate:\"email\" comment:\"邮箱\""];
+        string phone = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(32);default:''\" validate:\"phone\" comment:\"手机号\""];
+        //性别，0未填写，1男，2女
+        uint32 gender = 8 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned;default:0\"", (gogoproto.casttype) = "uint8"];
+        string birthday = 9 [(gogoproto.moretags) = "gorm:\"type:datetime;default:0\""];
+        string address = 14 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
+        string introduction = 10 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
+        string signature = 11 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
+        string avatarURL = 12 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
+        string coverURL = 13 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
+    }
 }
 
 message EditRep {
