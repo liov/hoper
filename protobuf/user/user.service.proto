@@ -24,12 +24,7 @@ option (gogoproto.populate_all) = true;
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
   info: {
     version: "1.0";
-  };
-external_docs: {
-url: "https://hoper.xyz/api";
-description: "用户中心api";
-}
-schemes: HTTPS;
+  }
 };
 
 service UserService {
@@ -53,58 +48,76 @@ service UserService {
     //激活
     rpc Active (ActiveReq) returns (response.BytesReply) {
         option (google.api.http) = {
-        post: "/api/v1/user/active"
-        body: "*"
+        get: "/api/v1/user/active/{id}/{secret}"
         };
     }
     //编辑
     rpc Edit (EditReq) returns (EditRep) {
         option (google.api.http) = {
         put: "/api/v1/user/{id}"
-        body: "*"
+        body: "user"
         };
     }
-
+    //登录
     rpc Login (LoginReq) returns (LoginRep) {
         option (google.api.http) = {
         post: "/api/v1/user/login"
         body: "*"
         };
     }
-
+    //退出
     rpc Logout (LogoutReq) returns (LogoutRep) {
+        option (google.api.http) = {
+        get: "/api/v1/user/logout"
+        };
     }
-
+    //获取用户 信息
     rpc GetUser (GetReq) returns (response.Reply) {
         option (google.api.http) = {
-        get: "/api/v1/user"
+        get: "/api/v1/user/{id}"
         };
     }
 }
 
 message VerifyReq {
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_schema) = {
+        example: {
+            value: '{ "mail": "123@qq.com", "phone": "12345678901"}'
+            }
+    };
+    //邮箱
     string mail = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" comment:\"邮箱\""];
+    //手机号
     string phone = 7 [(gogoproto.moretags) = "validate:\"omitempty,phone\" comment:\"手机号\""];
 }
 
 message SignupReq {
-    string password = 4 [(gogoproto.moretags) = "validate:\"required,gte=6,lte=15\" comment:\"密码\"",(validator.field) = {
+    //密码
+    string password = 4 [(gogoproto.moretags) = "validate:\"required,gte=6,lte=15\" comment:\"密码\"", (validator.field) = {
             length_gt: 6
             human_error: "密码错误"
-        }];
+        }, (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {title: "密码"
+                        min_length: 1}];
+    //邮箱
     string mail = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" comment:\"邮箱\""];
+    //手机号
     string phone = 7 [(gogoproto.moretags) = "validate:\"omitempty,phone\" comment:\"手机号\""];
     //验证码
     string vCode = 8 [(gogoproto.moretags) = "validate:\"required,numeric\" comment:\"验证码\""];
 }
 
 message ActiveReq {
-    uint64 id = 1;
-    string secret = 2;
+    uint64 id = 1 [(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    title:"ID"
+    type: INTEGER}];
+    string secret = 2 [(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    title:"密钥"}];
 }
 
 message GetReq {
-    uint64 id = 1;
+    uint64 id = 1 [(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    title:"ID"
+    type: INTEGER}];
 }
 
 message LoginReq {
@@ -116,15 +129,19 @@ message LoginReq {
 }
 
 message EditReq {
-    uint64 id = 1;
+    uint64 id = 1 [(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    title:"ID"
+    type: INTEGER}];
     EditUser user = 2;
-    message EditUser{
+    message EditUser {
         string name = 2 [(gogoproto.moretags) = "gorm:\"type:varchar(10);not null\" validate:\"required,gte=3,lte=10\" comment:\"名字\""];
         string password = 5 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"type:varchar(32);not null\" validate:\"gte=8,lte=15\" comment:\"密码\""];
         string mail = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(16);default:''\" validate:\"email\" comment:\"邮箱\""];
         string phone = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(32);default:''\" validate:\"phone\" comment:\"手机号\""];
         //性别，0未填写，1男，2女
-        uint32 gender = 8 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned;default:0\"", (gogoproto.casttype) = "uint8"];
+        uint32 gender = 8 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned;default:0\"", (gogoproto.casttype) = "uint8", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+           type:INTEGER
+    }];
         string birthday = 9 [(gogoproto.moretags) = "gorm:\"type:datetime;default:0\""];
         string address = 14 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
         string introduction = 10 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
@@ -135,7 +152,9 @@ message EditReq {
 }
 
 message EditRep {
-    uint64 id = 1;
+    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned;default:0\"", (gogoproto.casttype) = "uint8", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+           type:INTEGER
+    }];
 }
 
 message LoginRep {
@@ -145,7 +164,9 @@ message LoginRep {
 }
 
 message LogoutReq {
-    uint64 id = 1;
+    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned;default:0\"", (gogoproto.casttype) = "uint8", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+           type:INTEGER
+    }];
 }
 
 message LogoutRep {

@@ -1,6 +1,7 @@
 syntax = "proto3";
 package model;
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "protoc-gen-swagger/options/annotations.proto";
 
 option java_package = "xyz.hoper.protobuf.user";
 
@@ -33,7 +34,9 @@ message User {
     string avatarURL = 12 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
     string coverURL = 13 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
     string lastActiveAt = 23 [(gogoproto.moretags) = "gorm:\"type:datetime(3);default:0\""];
-    uint64 score = 15 [(gogoproto.jsontag) = "score", (gogoproto.moretags) = "gorm:\"type:bigint(20);default:0\""];
+    uint64 score = 15 [(gogoproto.jsontag) = "score", (gogoproto.moretags) = "gorm:\"type:bigint(20);default:0\"", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    title:"分数"
+    type: INTEGER}];
     uint64 followCount = 16 [(gogoproto.jsontag) = "followCount", (gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned;default:0\""];
     uint64 followedCount = 17 [(gogoproto.jsontag) = "followedCount", (gogoproto.moretags) = "gorm:\"type:bigint(20) unsigned;default:0\""];
     uint32 role = 24 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned;default:0\"", (gogoproto.casttype) = "uint8"];
