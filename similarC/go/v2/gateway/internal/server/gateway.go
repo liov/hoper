@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"expvar"
-	"mime"
 	"net/http"
 	"net/http/pprof"
 	"os"

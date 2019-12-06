@@ -25,6 +25,10 @@ import (
 
 type UserService struct{}
 
+func NewUserService(server model.UserServiceServer) *UserService {
+	return &UserService{}
+}
+
 func (*UserService) Verify(ctx context.Context, req *model.VerifyReq) (*response.BytesReply, error) {
 	var rep = &response.BytesReply{Code: 10000}
 	err := valid.Validate.Struct(req)
@@ -47,7 +51,7 @@ func (*UserService) Verify(ctx context.Context, req *model.VerifyReq) (*response
 			return rep, err
 		}
 	}
-	vcode:=verificationCode.Generate()
+	vcode := verificationCode.Generate()
 	log.Info(vcode)
 	key := modelconst.VerificationCodeKey + req.Mail + req.Phone
 	RedisConn := dao.Dao.Redis.Get()
@@ -58,7 +62,7 @@ func (*UserService) Verify(ctx context.Context, req *model.VerifyReq) (*response
 		rep.Message = "新建出错"
 		return rep, nil
 	}
-	rep.Details = []byte("\""+vcode+"\"")
+	rep.Details = []byte("\"" + vcode + "\"")
 	rep.Message = "字符串有问题吗啊"
 	return rep, err
 }
@@ -224,14 +228,14 @@ func (*UserService) Edit(context.Context, *model.EditReq) (*model.EditRep, error
 }
 
 func (*UserService) Login(context.Context, *model.LoginReq) (*model.LoginRep, error) {
-	return &model.LoginRep{Token:"test",User:&model.User{Name:"jack"}}, nil
+	return &model.LoginRep{Token: "test", User: &model.User{Name: "jack"}}, nil
 }
 
 func (*UserService) Logout(context.Context, *model.LogoutReq) (*model.LogoutRep, error) {
 	panic("implement me")
 }
 
-func (*UserService) GetUser(ctx context.Context,req *model.GetReq) (*response.Reply, error) {
-	user,_:=any.GenGogoAny(&model.User{Id:req.Id})
-	return &response.Reply{Details:user}, nil
+func (*UserService) GetUser(ctx context.Context, req *model.GetReq) (*response.Reply, error) {
+	user, _ := any.GenGogoAny(&model.User{Id: req.Id})
+	return &response.Reply{Details: user}, nil
 }
