@@ -23,7 +23,7 @@ func App() *iris.Application {
 		//关闭所有主机
 		app.Shutdown(ctx)
 	})
-	app.StaticWeb("/api/static", "../../static")
+	app.HandleDir("/api/static", "../../static")
 	app.Use(recover.New())
 	if config.Conf.Env != initialize.PRODUCT {
 		app.Use(api.ApiMiddle)
@@ -59,20 +59,17 @@ func App() *iris.Application {
 				"zh-CN": "../../data/i18n/locale_zh-CN.ini"}})
 		app.Use(globalLocale)*/
 	//请求日志
-	logger:= (&log.Config{Development: config.Conf.Env == initialize.PRODUCT}).NewLogger()
-	app.Use(mid.LogMid(logger,false))
+	logger := (&log.Config{Development: config.Conf.Env == initialize.PRODUCT}).NewLogger()
+	app.Use(mid.LogMid(logger, false))
 
-	app.OnAnyErrorCode(mid.LogMid(logger,true), func(ctx iris.Context) {
+	app.OnAnyErrorCode(mid.LogMid(logger, true), func(ctx iris.Context) {
 		//这应该被添加到日志中，因为`logger.config＃MessageContextKey`
 		ctx.Values().Set("logger_message",
 			ctx.Request())
 		ctx.Writef("My Custom error page")
 	})
 
-
 	route(app)
 
 	return app
 }
-
-
