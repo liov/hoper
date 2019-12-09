@@ -2,6 +2,8 @@ package initialize
 
 import (
 	"flag"
+	"os"
+	"path"
 	"time"
 
 	"github.com/jinzhu/configor"
@@ -9,26 +11,28 @@ import (
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
-const (
-	ext           = ".toml"
-	PathSeparator = "/"
-)
-
-var confUrl string
+var ConfUrl string
 
 func init() {
-	flag.StringVar(&confUrl, "c", "./config", "配置文件夹路径")
+	flag.StringVar(&ConfUrl, "c", "./config/config.toml", "配置文件夹路径")
 }
 
 func (i *Init) config() {
+	if _, err := os.Stat(ConfUrl); os.IsNotExist(err) {
+		log.Fatalf("配置文件不存在：", err)
+	}
 	err := configor.New(&configor.Config{Debug: false}).
-		Load(i, confUrl+PathSeparator+"config"+ext) //"./config/config.toml"
-	err = configor.New(&configor.Config{Debug: i.Env != PRODUCT}).
-		Load(i.conf, confUrl+PathSeparator+"config"+ext, confUrl+PathSeparator+i.Env+ext) //"./config/{{env}}.toml"
+		Load(i, ConfUrl) //"./config/config.toml"
+	dir, file := path.Split(ConfUrl)
 	if err != nil {
 		log.Fatalf("配置错误: %v", err)
 	}
-	if i.Additional!= "" {
+	err = configor.New(&configor.Config{Debug: i.Env != PRODUCT}).
+		Load(i.conf, ConfUrl, dir+i.Env+path.Ext(file)) //"./config/{{env}}.toml"
+	if err != nil {
+		log.Fatalf("配置错误: %v", err)
+	}
+	if i.Additional != "" {
 		err := configor.New(&configor.Config{Debug: i.Env != PRODUCT}).
 			Load(i.conf, i.Additional)
 		if err != nil {

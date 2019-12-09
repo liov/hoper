@@ -2,28 +2,19 @@ package api
 
 import (
 	"encoding/json"
-	"mime"
 	"net/http"
 	"path"
 
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/spec"
-	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/core/handlerconv"
 )
 
-var apiPath = "/open-api/"
+var PrefixUri = "/open-api/"
 
-func OpenApi(mux *iris.Application) {
-	_ = mime.AddExtensionType(".svg", "image/svg+xml")
-
-	mux.Get(apiPath+"{mod:path}", handlerconv.FromStd(httpHandle))
-}
-
-func httpHandle(w http.ResponseWriter, r *http.Request) {
+func HttpHandle(w http.ResponseWriter, r *http.Request) {
 	if r.RequestURI[len(r.RequestURI)-5:] == ".json" {
-		specDoc, err := loads.Spec("../protobuf/" + r.RequestURI[len(apiPath):])
+		specDoc, err := loads.Spec("../protobuf/" + r.RequestURI[len(PrefixUri):])
 		if err != nil {
 			w.Write([]byte(err.Error()))
 		}
@@ -45,10 +36,10 @@ func httpHandle(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write(b)
 		return
 	}
-	mod := r.RequestURI[len(apiPath):]
+	mod := r.RequestURI[len(PrefixUri):]
 	middleware.Redoc(middleware.RedocOpts{
-		BasePath: apiPath,
-		SpecURL:  path.Join(apiPath+mod, mod+".service.swagger.json"),
+		BasePath: PrefixUri,
+		SpecURL:  path.Join(PrefixUri+mod, mod+".service.swagger.json"),
 		Path:     mod,
 	}, http.NotFoundHandler()).ServeHTTP(w, r)
 }
