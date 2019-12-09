@@ -4,3 +4,15 @@ Module = "gateway"
 #dev | test | prod
 Env = "dev"
 Additional  = ""
+
+[iris]
+DisableStartupLog= false
+DisableInterruptHandler= false
+DisablePathCorrection= false
+EnablePathEscape= false
+FireMethodNotAllowed= false
+DisableBodyConsumptionOnUnmarshal= false
+DisableAutoFireStatusCode= false
+TimeFormat= "Mon, 01 Jan 2006 15=04=05 GMT"
+Charset= "UTF-8"
+EnableOptimizations= true

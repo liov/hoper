@@ -12,9 +12,11 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/core/handlerconv"
-	"github.com/liov/hoper/go/v2/gateway/internal/api"
 	"github.com/liov/hoper/go/v2/gateway/internal/config"
+	"github.com/liov/hoper/go/v2/initialize"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
+	iris_build "github.com/liov/hoper/go/v2/utils/http/iris"
+	"github.com/liov/hoper/go/v2/utils/http/iris/api"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -63,11 +65,7 @@ func GateWay() http.Handler {
 	mux.Get("/debug/pprof/symbol", handlerconv.FromStd(pprof.Symbol))
 	mux.Get("/debug/pprof/trace", handlerconv.FromStd(pprof.Trace))
 	api.OpenApi(mux)
-	if err := mux.Build(); err != nil {
-		log.Fatal(err)
-	}
-
-	mux.Configure(iris.WithConfiguration(iris.YAML("./config/iris.yml")))
+	iris_build.Build(mux, initialize.ConfUrl)
 	h2Handler := h2c.NewHandler(mux, &http2.Server{})
 	server := &http.Server{Addr: config.Conf.Server.Port, Handler: h2Handler}
 	go func() {

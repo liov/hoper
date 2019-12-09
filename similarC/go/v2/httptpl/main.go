@@ -11,6 +11,7 @@ import (
 	"github.com/liov/hoper/go/v2/httptpl/internal/config"
 	"github.com/liov/hoper/go/v2/httptpl/internal/router"
 	"github.com/liov/hoper/go/v2/initialize"
+	iris_build "github.com/liov/hoper/go/v2/utils/http/iris"
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
@@ -45,7 +46,7 @@ Loop:
 			if err := app.Run(iris.Addr(config.Conf.Server.Port, func(su *host.Supervisor) {
 				su.Server.WriteTimeout = config.Conf.Server.WriteTimeout
 				su.Server.ReadTimeout = config.Conf.Server.ReadTimeout
-			}), iris.WithConfiguration(iris.YAML("./config/iris.yml"))); err != nil && err != http.ErrServerClosed {
+			}), iris.WithConfiguration(*iris_build.Configuration(initialize.ConfUrl))); err != nil && err != http.ErrServerClosed {
 				log.Error(err)
 			}
 		}

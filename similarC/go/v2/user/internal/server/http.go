@@ -9,8 +9,10 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/core/handlerconv"
+	"github.com/liov/hoper/go/v2/initialize"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
-	"github.com/liov/hoper/go/v2/user/internal/api"
+	iris_build "github.com/liov/hoper/go/v2/utils/http/iris"
+	"github.com/liov/hoper/go/v2/utils/http/iris/api"
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
@@ -43,10 +45,6 @@ func Http() http.Handler {
 	})
 	mux.Any("/{grpc:path}", handlerconv.FromStd(gwmux))
 	api.OpenApi(mux)
-	if err := mux.Build(); err != nil {
-		log.Fatal(err)
-	}
-	//将来这块用配置中心
-	mux.Configure(iris.WithConfiguration(iris.YAML("./config/iris.yml")))
+	iris_build.Build(mux, initialize.ConfUrl)
 	return mux
 }
