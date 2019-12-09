@@ -40,3 +40,7 @@ plugins=plugin1+plugin2 - 指定插件，目前只支持grpc，即：plugins=grp
 
 go env -w GOPROXY=https://goproxy.cn,direct
 go env -w GO111MODULE=on
+待用：
+github.com/tidwall/gjson
+github.com/gorilla/handlers
+github.com/gorilla/mux
