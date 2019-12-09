@@ -6,9 +6,12 @@ import (
 	"net/http"
 	"net/http/pprof"
 	"os"
+	"time"
 
 	"github.com/gogo/gateway"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/core/handlerconv"
 	"github.com/liov/hoper/go/v2/gateway/internal/api"
 	"github.com/liov/hoper/go/v2/gateway/internal/config"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
@@ -43,15 +46,28 @@ func GateWay() http.Handler {
 		log.Fatal(err)
 	}
 	//openapi
-	mux := http.NewServeMux()
-	mux.Handle("/", gwmux)
-	mux.Handle("/debug/vars", expvar.Handler())
-	mux.Handle("/debug/pprof/", http.HandlerFunc(pprof.Index))
-	mux.Handle("/debug/pprof/cmdline", http.HandlerFunc(pprof.Cmdline))
-	mux.Handle("/debug/pprof/profile", http.HandlerFunc(pprof.Profile))
-	mux.Handle("/debug/pprof/symbol", http.HandlerFunc(pprof.Symbol))
-	mux.Handle("/debug/pprof/trace", http.HandlerFunc(pprof.Trace))
+	mux := iris.New()
+
+	iris.RegisterOnInterrupt(func() {
+		timeout := 5 * time.Second
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		defer cancel()
+		//关闭所有主机
+		mux.Shutdown(ctx)
+	})
+	mux.Any("/{grpc:path}", handlerconv.FromStd(gwmux))
+	mux.Get("/debug/vars", handlerconv.FromStd(expvar.Handler()))
+	mux.Get("/debug/pprof/", handlerconv.FromStd(pprof.Index))
+	mux.Get("/debug/pprof/cmdline", handlerconv.FromStd(pprof.Cmdline))
+	mux.Get("/debug/pprof/profile", handlerconv.FromStd(pprof.Profile))
+	mux.Get("/debug/pprof/symbol", handlerconv.FromStd(pprof.Symbol))
+	mux.Get("/debug/pprof/trace", handlerconv.FromStd(pprof.Trace))
 	api.OpenApi(mux)
+	if err := mux.Build(); err != nil {
+		log.Fatal(err)
+	}
+
+	mux.Configure(iris.WithConfiguration(iris.YAML("./config/iris.yml")))
 	h2Handler := h2c.NewHandler(mux, &http2.Server{})
 	server := &http.Server{Addr: config.Conf.Server.Port, Handler: h2Handler}
 	go func() {

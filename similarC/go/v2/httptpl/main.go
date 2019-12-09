@@ -7,7 +7,7 @@ import (
 	"syscall"
 
 	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris//v12core/host"
+	"github.com/kataras/iris/v12/core/host"
 	"github.com/liov/hoper/go/v2/httptpl/internal/config"
 	"github.com/liov/hoper/go/v2/httptpl/internal/router"
 	"github.com/liov/hoper/go/v2/initialize"
@@ -15,15 +15,15 @@ import (
 )
 
 func main() {
-/*	f, err := os.Create("trace.out")
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
+	/*	f, err := os.Create("trace.out")
+		if err != nil {
+			panic(err)
+		}
+		defer f.Close()
 
-	trace.Start(f)
-	defer trace.Stop()*/
-	defer initialize.Start(config.Conf,nil)()
+		trace.Start(f)
+		defer trace.Stop()*/
+	defer initialize.Start(config.Conf, nil)()
 	app := router.App()
 	ch := make(chan os.Signal, 1)
 Loop:
