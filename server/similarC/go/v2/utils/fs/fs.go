@@ -25,51 +25,47 @@ func (d Dir) Open(name string) (*os.File, error) {
 }
 
 //path和filepath两个包，filepath文件专用
-func FindFile(filename string) (string, error) {
+func FindFile(path string) (string, error) {
 	wd, err := os.Getwd()
 	if err != nil {
 		return "", err
 	}
-	filepath1 := filepath.Join(wd, filename)
+	filepath1 := filepath.Join(wd, path)
 	if _, err = os.Stat(filepath1); os.IsExist(err) {
 		return filepath1, nil
 	}
-	if subFilepath := subDirConfig(filepath1); subFilepath != "" {
+	if subFilepath := subDirFile(wd, path); subFilepath != "" {
 		return subFilepath, nil
 	}
-	if supFilepath := supDirConfig(filepath1); supFilepath != "" {
+	if supFilepath := supDirFile(wd, path); supFilepath != "" {
 		return supFilepath, nil
 	}
 	return "", errors.New("找不到文件")
 }
 
-func subDirConfig(src string) string {
-	dir, filename := filepath.Split(src)
+func subDirFile(dir, path string) string {
 	fileInfos, err := ioutil.ReadDir(dir)
 	if err != nil {
 		log.Println(err)
 	}
 	for i := range fileInfos {
 		if fileInfos[i].IsDir() {
-			filepath1 := filepath.Join(dir, fileInfos[i].Name(), filename)
-			log.Println("subDirConfig:", filepath1)
+			filepath1 := filepath.Join(dir, fileInfos[i].Name(), path)
 			if _, err = os.Stat(filepath1); !os.IsNotExist(err) {
 				return filepath1
 			}
-			return subDirConfig(filepath1)
+			return subDirFile(filepath.Join(dir, fileInfos[i].Name()), path)
 		}
 	}
 	return ""
 }
 
-func supDirConfig(src string) string {
-	dir, filename := filepath.Split(src)
+func supDirFile(dir, path string) string {
 	dir, dirName := filepath.Split(dir[:len(dir)-1])
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		return ""
 	}
-	filepath1 := filepath.Join(dir, filename)
-	log.Println("supDirConfig:", filepath1)
+	filepath1 := filepath.Join(dir, path)
 	if _, err := os.Stat(filepath1); !os.IsNotExist(err) {
 		return filepath1
 	}
@@ -82,8 +78,8 @@ func supDirConfig(src string) string {
 			if fileInfos[i].Name() == dirName {
 				continue
 			}
-			subDirConfig(filepath.Join(dir, fileInfos[i].Name(), filename))
+			subDirFile(filepath.Join(dir, fileInfos[i].Name()), path)
 		}
 	}
-	return supDirConfig(filepath1)
+	return supDirFile(dir, path)
 }
