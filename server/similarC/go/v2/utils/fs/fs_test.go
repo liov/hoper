@@ -9,7 +9,7 @@ import (
 )
 
 func TestFindFile(t *testing.T) {
-	path, err := FindFile("cmd")
+	path, err := FindFile("config/add-config.toml")
 	if err != nil {
 		log.Fatal(err)
 	}
