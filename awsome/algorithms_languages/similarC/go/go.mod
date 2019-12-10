@@ -13,8 +13,12 @@ require (
 	github.com/lucasb-eyer/go-colorful v1.0.2
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1
+	github.com/sirupsen/logrus v1.4.2 // indirect
 	github.com/spf13/viper v1.4.0
-	golang.org/x/net v0.0.0-20190522155817-f3200d17e092
+	github.com/unicorn-engine/unicorn v0.0.0-20191119163456-3cea38bff7bf
+	golang.org/x/exp v0.0.0-20191129062945-2f5052295587
+	golang.org/x/mobile v0.0.0-20191130191448-5c0e7e404af8
+	golang.org/x/net v0.0.0-20190620200207-3b0461eec859
 )
 
 replace bou.ke/monkey v1.0.1 => github.com/bouk/monkey v1.0.1
