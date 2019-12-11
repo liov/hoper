@@ -1,4 +1,4 @@
-package log
+package iris_log_mid
 
 import (
 	"strings"
