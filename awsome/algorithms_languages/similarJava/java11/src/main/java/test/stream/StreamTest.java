@@ -5,7 +5,6 @@ package test.stream;
  * @date ：Created in 2019/6/11
  * @description：stream
  */
-import java.util.*;
 import java.util.stream.Collectors;
 
 public class StreamTest {
