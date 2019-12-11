@@ -3,12 +3,12 @@ package fs
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"testing"
-
-	"github.com/liov/hoper/go/v2/utils/log"
 )
 
 func TestFindFile(t *testing.T) {
+	log.SetFlags(15)
 	path, err := FindFile("config/add-config.toml")
 	if err != nil {
 		log.Fatal(err)
@@ -18,4 +18,6 @@ func TestFindFile(t *testing.T) {
 		log.Fatal(err)
 	}
 	fmt.Println(string(bytes))
+	files, err := FindFiles("BUILD.bazel", 5, nil)
+	fmt.Println(files)
 }
