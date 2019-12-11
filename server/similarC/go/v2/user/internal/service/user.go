@@ -3,20 +3,17 @@ package service
 import (
 	"context"
 	"crypto/md5"
-	"encoding/json"
 	"fmt"
 	"strconv"
 	"time"
 
 	"github.com/gomodule/redigo/redis"
-	"github.com/liov/hoper/go/v2/protobuf/response"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/internal/config"
 	"github.com/liov/hoper/go/v2/user/internal/dao"
 	modelconst "github.com/liov/hoper/go/v2/user/internal/model"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/mail"
-	"github.com/liov/hoper/go/v2/utils/protobuf/any"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 	"github.com/liov/hoper/go/v2/utils/time2"
 	"github.com/liov/hoper/go/v2/utils/valid"
@@ -29,8 +26,8 @@ func NewUserService(server model.UserServiceServer) *UserService {
 	return &UserService{}
 }
 
-func (*UserService) Verify(ctx context.Context, req *model.VerifyReq) (*response.BytesReply, error) {
-	var rep = &response.BytesReply{Code: 10000}
+func (*UserService) Verify(ctx context.Context, req *model.VerifyReq) (*model.VerifyRep, error) {
+	var rep = &model.VerifyRep{Code: 10000}
 	err := valid.Validate.Struct(req)
 	if err != nil {
 		rep.Message = valid.Trans(err)
@@ -62,13 +59,13 @@ func (*UserService) Verify(ctx context.Context, req *model.VerifyReq) (*response
 		rep.Message = "新建出错"
 		return rep, nil
 	}
-	rep.Details = []byte("\"" + vcode + "\"")
+	rep.Details = vcode
 	rep.Message = "字符串有问题吗啊"
 	return rep, err
 }
 
-func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*response.BytesReply, error) {
-	var rep = &response.BytesReply{Code: 10000}
+func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*model.SignupRep, error) {
+	var rep = &model.SignupRep{Code: 10000}
 	err := valid.Validate.Struct(req)
 	if err != nil {
 		rep.Message = valid.Trans(err)
@@ -102,8 +99,8 @@ func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*response
 		rep.Message = "新建出错"
 		return rep, err
 	}
-	data, _ := json.Marshal(user)
-	rep.Details = data
+
+	rep.Details = user
 	rep.Message = "新建成功"
 
 	activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
@@ -196,8 +193,8 @@ func checkPassword(password string, user *model.User) bool {
 	return encryptPassword(password) == user.Password
 }
 
-func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*response.BytesReply, error) {
-	var rep = &response.BytesReply{Code: 10000, Message: "无效的链接"}
+func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.ActiveRep, error) {
+	var rep = &model.ActiveRep{Code: 10000, Message: "无效的链接"}
 	RedisConn := dao.Dao.Redis.Get()
 	defer RedisConn.Close()
 
@@ -228,14 +225,13 @@ func (*UserService) Edit(context.Context, *model.EditReq) (*model.EditRep, error
 }
 
 func (*UserService) Login(context.Context, *model.LoginReq) (*model.LoginRep, error) {
-	return &model.LoginRep{Token: "test", User: &model.User{Name: "jack"}}, nil
+	return &model.LoginRep{Details: &model.LoginRep_LoginDetails{Token: "test", User: &model.User{Name: "jack"}}}, nil
 }
 
 func (*UserService) Logout(context.Context, *model.LogoutReq) (*model.LogoutRep, error) {
 	panic("implement me")
 }
 
-func (*UserService) GetUser(ctx context.Context, req *model.GetReq) (*response.Reply, error) {
-	user, _ := any.GenGogoAny(&model.User{Id: req.Id})
-	return &response.Reply{Details: user}, nil
+func (*UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.GetRep, error) {
+	return &model.GetRep{Details: &model.User{Id: req.Id}}, nil
 }
