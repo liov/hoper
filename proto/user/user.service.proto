@@ -1,7 +1,6 @@
 syntax = "proto3";
 package model;
 import "user/user.model.proto";
-import "response/anyreply.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
@@ -30,7 +29,7 @@ option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
 service UserService {
 
     //验证码
-    rpc Verify (VerifyReq) returns (response.BytesReply) {
+    rpc Verify (VerifyReq) returns (VerifyRep) {
         option (google.api.http) = {
         post: "/api/v1/user/verify"
         body: "*"
@@ -38,7 +37,7 @@ service UserService {
     }
 
     //注册
-    rpc Signup (SignupReq) returns (response.BytesReply) {
+    rpc Signup (SignupReq) returns (SignupRep) {
         option (google.api.http) = {
         post: "/api/v1/user/sign"
         body: "*"
@@ -46,7 +45,7 @@ service UserService {
     }
 
     //激活
-    rpc Active (ActiveReq) returns (response.BytesReply) {
+    rpc Active (ActiveReq) returns (ActiveRep) {
         option (google.api.http) = {
         get: "/api/v1/user/active/{id}/{secret}"
         };
@@ -55,7 +54,7 @@ service UserService {
     rpc Edit (EditReq) returns (EditRep) {
         option (google.api.http) = {
         put: "/api/v1/user/{id}"
-        body: "user"
+        body: "details"
         };
     }
     //登录
@@ -72,7 +71,7 @@ service UserService {
         };
     }
     //获取用户 信息
-    rpc GetUser (GetReq) returns (response.Reply) {
+    rpc GetUser (GetReq) returns (GetRep) {
         option (google.api.http) = {
         get: "/api/v1/user/{id}"
         };
@@ -91,6 +90,13 @@ message VerifyReq {
     string phone = 7 [(gogoproto.moretags) = "validate:\"omitempty,phone\" comment:\"手机号\""];
 }
 
+message VerifyRep {
+    sint32 code = 1;
+    string message = 2;
+    //验证码
+    string details = 3;
+}
+
 message SignupReq {
     //密码
     string password = 4 [(gogoproto.moretags) = "validate:\"required,gte=6,lte=15\" comment:\"密码\"", (validator.field) = {
@@ -106,6 +112,12 @@ message SignupReq {
     string vCode = 8 [(gogoproto.moretags) = "validate:\"required,numeric\" comment:\"验证码\""];
 }
 
+message SignupRep {
+    sint32 code = 1;
+    string message = 2;
+    User details = 3;
+}
+
 message ActiveReq {
     uint64 id = 1 [(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
     title:"ID"
@@ -114,26 +126,29 @@ message ActiveReq {
     title:"密钥"}];
 }
 
+message ActiveRep{
+    sint32 code = 1;
+    string message =2;
+}
+
 message GetReq {
     uint64 id = 1 [(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
     title:"ID"
     type: INTEGER}];
 }
 
-message LoginReq {
-    string input = 1;
-    string password = 2 [(validator.field) = {
-            length_gt: 6
-            human_error: "密码错误"
-        }];
+message GetRep {
+    sint32 code = 1;
+    string message =2;
+    User details = 3;
 }
 
 message EditReq {
     uint64 id = 1 [(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
     title:"ID"
     type: INTEGER}];
-    EditUser user = 2;
-    message EditUser {
+    EditDetails details = 2;
+    message EditDetails {
         string name = 2 [(gogoproto.moretags) = "gorm:\"type:varchar(10);not null\" validate:\"required,gte=3,lte=10\" comment:\"名字\""];
         string password = 5 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"type:varchar(32);not null\" validate:\"gte=8,lte=15\" comment:\"密码\""];
         string mail = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(16);default:''\" validate:\"email\" comment:\"邮箱\""];
@@ -152,15 +167,26 @@ message EditReq {
 }
 
 message EditRep {
-    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned;default:0\"", (gogoproto.casttype) = "uint8", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
-           type:INTEGER
-    }];
+    sint32 code = 1;
+    string msg = 2;
+}
+
+message LoginReq {
+    string input = 1;
+    string password = 2 [(validator.field) = {
+            length_gt: 6
+            human_error: "密码错误"
+        }];
 }
 
 message LoginRep {
-    string token = 1;
-    User user = 2;
-    string msg = 3;
+    sint32 code = 1;
+    string msg = 2;
+    LoginDetails details = 3;
+    message LoginDetails{
+        User user = 1;
+        string token = 2;
+    }
 }
 
 message LogoutReq {
@@ -170,5 +196,6 @@ message LogoutReq {
 }
 
 message LogoutRep {
-    string msg = 1;
+    sint32 code = 1;
+    string msg = 2;
 }
