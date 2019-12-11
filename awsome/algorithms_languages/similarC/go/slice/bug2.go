@@ -1,12 +1,20 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"reflect"
+	"unsafe"
+)
 
 //map才是真引用传参...，因为切片有容量和长度，虽然底层指向同一个，但是却是两个不同的切片了
 func main() {
-	var s = make([]int, 0)
+	var s = make([]int, 0, 10)
+	s = s[:0:0]
 	slice1(s)
 	slice2(s)
+	fmt.Println(s)
+	var sh = (*reflect.SliceHeader)(unsafe.Pointer(&s))
+	sh.Len = 10
 	fmt.Println(s)
 
 	var m = make(map[int]struct{}, 0)
@@ -20,12 +28,18 @@ func slice1(s []int) {
 		s = append(s, i)
 	}
 	fmt.Println(s)
+	var sh = (*reflect.SliceHeader)(unsafe.Pointer(&s))
+	sh.Len = 5
+	fmt.Println(s)
 }
 
 func slice2(s []int) {
 	for i := 5; i < 10; i++ {
 		s = append(s, i)
 	}
+	fmt.Println(s)
+	var sh = (*reflect.SliceHeader)(unsafe.Pointer(&s))
+	sh.Len = 5
 	fmt.Println(s)
 }
 
