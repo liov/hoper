@@ -17,6 +17,7 @@ import (
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	iris_build "github.com/liov/hoper/go/v2/utils/http/iris"
 	"github.com/liov/hoper/go/v2/utils/http/iris/api"
+	iris_log_mid "github.com/liov/hoper/go/v2/utils/http/iris/log"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -57,6 +58,8 @@ func GateWay() http.Handler {
 		//关闭所有主机
 		mux.Shutdown(ctx)
 	})
+	logger := (&log.Config{Development: config.Conf.Env == initialize.PRODUCT}).NewLogger()
+	mux.Use(iris_log_mid.LogMid(logger, false))
 	mux.Any("/{grpc:path}", handlerconv.FromStd(gwmux))
 	mux.Get("/debug/vars", handlerconv.FromStd(expvar.Handler()))
 	mux.Get("/debug/pprof/", handlerconv.FromStd(pprof.Index))

@@ -8,9 +8,10 @@ import (
 	"github.com/kataras/iris/v12/middleware/recover"
 	"github.com/liov/hoper/go/v2/httptpl/internal/config"
 	"github.com/liov/hoper/go/v2/initialize"
-	"github.com/liov/hoper/go/v2/utils/api"
+	"github.com/liov/hoper/go/v2/utils/http/iris/api"
+	iris_log_mid "github.com/liov/hoper/go/v2/utils/http/iris/log"
+
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/log/mid"
 )
 
 func App() *iris.Application {
@@ -60,9 +61,9 @@ func App() *iris.Application {
 		app.Use(globalLocale)*/
 	//请求日志
 	logger := (&log.Config{Development: config.Conf.Env == initialize.PRODUCT}).NewLogger()
-	app.Use(mid.LogMid(logger, false))
+	app.Use(iris_log_mid.LogMid(logger, false))
 
-	app.OnAnyErrorCode(mid.LogMid(logger, true), func(ctx iris.Context) {
+	app.OnAnyErrorCode(iris_log_mid.LogMid(logger, true), func(ctx iris.Context) {
 		//这应该被添加到日志中，因为`logger.config＃MessageContextKey`
 		ctx.Values().Set("logger_message",
 			ctx.Request())
