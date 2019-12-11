@@ -1,21 +1,22 @@
-var PROTO_PATH = __dirname + '/../../../../proto/helloworld.proto';
+const PROTO_PATH = __dirname + '/../../../../proto/helloworld.proto';
 
-var grpc = require('grpc');
-var protoLoader = require('@grpc/proto-loader');
-var packageDefinition = protoLoader.loadSync(
+const grpc = require('grpc');
+const protoLoader = require('@grpc/proto-loader');
+const packageDefinition = protoLoader.loadSync(
     PROTO_PATH,
-    {keepCase: true,
+    {
+        keepCase: true,
         longs: String,
         enums: String,
         defaults: true,
         oneofs: true
     });
-var hello_proto = grpc.loadPackageDefinition(packageDefinition).protobuf;
+const hello_proto = grpc.loadPackageDefinition(packageDefinition).protobuf;
 
 function main() {
-    var client = new hello_proto.Greeter('localhost:50051',
+    const client = new hello_proto.Greeter('localhost:50051',
         grpc.credentials.createInsecure());
-    var user;
+    let user;
     if (process.argv.length >= 3) {
         user = process.argv[2];
     } else {
