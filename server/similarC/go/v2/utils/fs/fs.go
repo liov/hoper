@@ -51,7 +51,6 @@ func subDirFile(dir, path string) string {
 	for i := range fileInfos {
 		if fileInfos[i].IsDir() {
 			filepath1 := filepath.Join(dir, fileInfos[i].Name(), path)
-			log.Println("subDirFile", filepath1)
 			if _, err = os.Stat(filepath1); !os.IsNotExist(err) {
 				return filepath1
 			}
@@ -67,7 +66,6 @@ func supDirFile(dir, path string) string {
 		return ""
 	}
 	filepath1 := filepath.Join(dir, path)
-	log.Println("supDirFile", filepath1)
 	if _, err := os.Stat(filepath1); !os.IsNotExist(err) {
 		return filepath1
 	}
@@ -124,7 +122,6 @@ func subDirFiles(dir, path string, files *[]string, deep, step int8) {
 	for i := range fileInfos {
 		if fileInfos[i].IsDir() {
 			filepath1 := filepath.Join(dir, fileInfos[i].Name(), path)
-			log.Println("subDirFiles", filepath1, step)
 			if _, err = os.Stat(filepath1); !os.IsNotExist(err) {
 				*files = append(*files, filepath1)
 			}
@@ -143,7 +140,6 @@ func supDirFiles(dir, path string, files *[]string, deep, step int8) {
 		return
 	}
 	filepath1 := filepath.Join(dir, path)
-	log.Println("supDirFile", filepath1, step)
 	if _, err := os.Stat(filepath1); !os.IsNotExist(err) {
 		*files = append(*files, filepath1)
 	}
