@@ -8,26 +8,31 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/utils/fs"
 )
 
-var(
+var (
 	ormDB *gorm.DB
 )
 
-var configPath = "../../../add-config.toml"
-
 func init() {
-	var config = struct {
-		User string
-		PassWord string
-		Host string
-	}{}
-	err := configor.New(&configor.Config{Debug: true}).
-		Load(&config, configPath)
+	path, err := fs.FindFile("config/add-config.toml")
 	if err != nil {
 		log.Fatal(err)
 	}
-	url:= fmt.Sprintf("%s:%s@tcp(%s:3306)/test?charset=utf8mb4&parseTime=True&loc=Local",config.User,config.PassWord,config.Host)
+	var config = struct {
+		DataBase struct {
+			User     string
+			PassWord string
+			Host     string
+		}
+	}{}
+	err = configor.New(&configor.Config{Debug: true}).
+		Load(&config, path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	url := fmt.Sprintf("%s:%s@tcp(%s:3306)/test?charset=utf8mb4&parseTime=True&loc=Local", config.DataBase.User, config.DataBase.PassWord, config.DataBase.Host)
 
 	ormDB, err = gorm.Open("mysql", url)
 	if err != nil {
