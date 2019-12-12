@@ -19,6 +19,7 @@ require (
 	golang.org/x/exp v0.0.0-20191129062945-2f5052295587
 	golang.org/x/mobile v0.0.0-20191130191448-5c0e7e404af8
 	golang.org/x/net v0.0.0-20190620200207-3b0461eec859
+	golang.org/x/sys v0.0.0-20190422165155-953cdadca894
 )
 
 replace bou.ke/monkey v1.0.1 => github.com/bouk/monkey v1.0.1
