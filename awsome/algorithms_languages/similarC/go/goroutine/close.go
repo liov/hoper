@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"sync"
 	"time"
 )
 
@@ -25,9 +24,7 @@ func start() {
 		defer func() {
 			d.Close()
 		}()
-		var wg = &sync.WaitGroup{}
-		wg.Add(1)
-		wg.Wait()
+		time.Sleep(time.Second * 2)
 	}()
 	log.Println("执行结束", d)
 }
