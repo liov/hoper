@@ -1,6 +1,0 @@
-package config
-
-func Init() {
-
-}
-
