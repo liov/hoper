@@ -51,7 +51,7 @@ func main() {
 		close(calls)
 		//log.Println(windows.GetCurrentThreadId())//一个函数可能跑在两个线程里
 	}()
-	log.Println(len(calls))
+
 	for fn := range calls {
 		fn()
 	}
