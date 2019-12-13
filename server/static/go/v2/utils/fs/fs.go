@@ -95,14 +95,14 @@ func FindFiles(path string, deep int8, callback func(filepath string)) ([]string
 	if err != nil {
 		return nil, err
 	}
-	var files = make([]string, 0, 5)
+	var files []string
 	filepath1 := filepath.Join(wd, path)
 	if _, err = os.Stat(filepath1); !os.IsNotExist(err) {
 		files = append(files, filepath1)
 	}
 
-	subDirFiles(wd, path, &files, deep, 0)
-	supDirFiles(wd, path, &files, deep, 0)
+	subDirFiles(wd, path, "", &files, deep, 0)
+	supDirFiles(wd+"/", path, &files, deep, 0)
 	if len(files) == 0 {
 		return nil, errors.New("找不到文件")
 	}
@@ -114,9 +114,9 @@ func FindFiles(path string, deep int8, callback func(filepath string)) ([]string
 	return files, nil
 }
 
-func subDirFiles(dir, path string, files *[]string, deep, step int8) {
+func subDirFiles(dir, path, exclude string, files *[]string, deep, step int8) {
 	step += 1
-	if step > deep {
+	if step-1 == deep {
 		return
 	}
 	fileInfos, err := ioutil.ReadDir(dir)
@@ -125,18 +125,21 @@ func subDirFiles(dir, path string, files *[]string, deep, step int8) {
 	}
 	for i := range fileInfos {
 		if fileInfos[i].IsDir() {
+			if exclude != "" && fileInfos[i].Name() == exclude {
+				continue
+			}
 			filepath1 := filepath.Join(dir, fileInfos[i].Name(), path)
 			if _, err = os.Stat(filepath1); !os.IsNotExist(err) {
 				*files = append(*files, filepath1)
 			}
-			subDirFiles(filepath.Join(dir, fileInfos[i].Name()), path, files, deep, step)
+			subDirFiles(filepath.Join(dir, fileInfos[i].Name()), path, "", files, deep, step)
 		}
 	}
 }
 
 func supDirFiles(dir, path string, files *[]string, deep, step int8) {
 	step += 1
-	if step > deep {
+	if step-1 == deep {
 		return
 	}
 	dir, dirName := filepath.Split(dir[:len(dir)-1])
@@ -147,18 +150,7 @@ func supDirFiles(dir, path string, files *[]string, deep, step int8) {
 	if _, err := os.Stat(filepath1); !os.IsNotExist(err) {
 		*files = append(*files, filepath1)
 	}
-	fileInfos, err := ioutil.ReadDir(dir)
-	if err != nil {
-		log.Println(err)
-	}
-	for i := range fileInfos {
-		if fileInfos[i].IsDir() {
-			if fileInfos[i].Name() == dirName {
-				continue
-			}
-			subDirFiles(filepath.Join(dir, fileInfos[i].Name()), path, files, deep, 0)
-		}
-	}
+	subDirFiles(dir, path, dirName, files, deep, 0)
 	supDirFiles(dir, path, files, deep, step)
 }
 
@@ -169,7 +161,7 @@ func FindFile2(path string, deep int8, num int) ([]string, error) {
 		return nil, err
 	}
 	var file = make(chan string)
-
+	//属于回调而不是通知
 	ctx := runtime2.New(func() {
 		close(file)
 	})
@@ -182,13 +174,11 @@ func FindFile2(path string, deep int8, num int) ([]string, error) {
 		}
 	}()
 
-	go ctx.Monitor(func() {
-		subDirFiles2(wd, path, file, deep, 0, ctx)
-	})
-	go ctx.Monitor(func() {
-		supDirFiles2(wd+"/", path, file, deep, 0, ctx)
-	})
+	ctx.Start()
+	go subDirFiles2(wd, path, "", file, deep, 0, ctx)
 
+	ctx.Start()
+	go supDirFiles2(wd+"/", path, file, deep, 0, ctx)
 	var files []string
 	for filepath1 := range file {
 		if files = append(files, filepath1); len(files) == num {
@@ -199,18 +189,21 @@ func FindFile2(path string, deep int8, num int) ([]string, error) {
 	return files, nil
 }
 
-func subDirFiles2(dir, path string, file chan string, deep, step int8, ctx *runtime2.NumGoroutine) {
+func subDirFiles2(dir, path, exclude string, file chan string, deep, step int8, ctx *runtime2.NumGoroutine) {
+	defer ctx.End()
 	step += 1
 	if step-1 == deep {
 		return
 	}
 	fileInfos, err := ioutil.ReadDir(dir)
 	if err != nil {
-		//		debug.PrintStack()
 		log.Println(err)
 	}
 	for i := range fileInfos {
 		if fileInfos[i].IsDir() {
+			if exclude != "" && fileInfos[i].Name() == exclude {
+				continue
+			}
 			filepath1 := filepath.Join(dir, fileInfos[i].Name(), path)
 			if _, err = os.Stat(filepath1); !os.IsNotExist(err) {
 				//①如果给出了default语句，那么就会执行default的流程，同时程序的执行会从select语句后的语句中恢复。
@@ -221,16 +214,14 @@ func subDirFiles2(dir, path string, file chan string, deep, step int8, ctx *runt
 				case file <- filepath1:
 				}
 			}
-			log.Println("gogo", filepath.Join(dir, fileInfos[i].Name()))
-			go ctx.Monitor(func() {
-				log.Println("go", filepath.Join(dir, fileInfos[i].Name()))
-				subDirFiles2(filepath.Join(dir, fileInfos[i].Name()), path, file, deep, step, ctx)
-			})
+			ctx.Start()
+			go subDirFiles2(filepath.Join(dir, fileInfos[i].Name()), path, "", file, deep, step, ctx)
 		}
 	}
 }
 
 func supDirFiles2(dir, path string, file chan string, deep, step int8, ctx *runtime2.NumGoroutine) {
+	defer ctx.End()
 	step += 1
 	if step-1 == deep {
 		return
@@ -247,21 +238,9 @@ func supDirFiles2(dir, path string, file chan string, deep, step int8, ctx *runt
 		case file <- filepath1:
 		}
 	}
-	fileInfos, err := ioutil.ReadDir(dir)
-	if err != nil {
-		log.Println(err)
-	}
-	for i := range fileInfos {
-		if fileInfos[i].IsDir() {
-			if fileInfos[i].Name() == dirName {
-				continue
-			}
-			go ctx.Monitor(func() {
-				subDirFiles2(filepath.Join(dir, fileInfos[i].Name()), path, file, deep, 0, ctx)
-			})
-		}
-	}
-	go ctx.Monitor(func() {
-		go supDirFiles2(dir, path, file, deep, step, ctx)
-	})
+
+	ctx.Start()
+	go subDirFiles2(dir, path, dirName, file, deep, 0, ctx)
+	ctx.Start()
+	go supDirFiles2(dir, path, file, deep, step, ctx)
 }

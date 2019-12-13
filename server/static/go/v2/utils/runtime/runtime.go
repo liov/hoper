@@ -8,6 +8,7 @@ import (
 
 //监测子协程是否跑完，需要代码层面的配合
 //一点都不优雅
+//没什么优不优雅，这就像wg.Add(1)
 type NumGoroutine struct {
 	context.Context
 	context.CancelFunc
