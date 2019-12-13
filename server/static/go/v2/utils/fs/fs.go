@@ -1,0 +1,261 @@
+package fs
+
+import (
+	"errors"
+	"io/ioutil"
+	"log"
+	"os"
+	"path"
+	"path/filepath"
+
+	runtime2 "github.com/liov/hoper/go/v2/utils/runtime"
+)
+
+type Dir string
+
+func (d Dir) Open(name string) (*os.File, error) {
+	dir := string(d)
+	if dir == "" {
+		dir = "."
+	}
+	fullName := filepath.Join(dir, filepath.FromSlash(path.Clean("/"+name)))
+	f, err := os.Open(fullName)
+	if err != nil {
+		return nil, err
+	}
+	return f, nil
+}
+
+//path和filepath两个包，filepath文件专用
+func FindFile(path string) (string, error) {
+	wd, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	filepath1 := filepath.Join(wd, path)
+	if _, err = os.Stat(filepath1); !os.IsNotExist(err) {
+		return filepath1, nil
+	}
+	if subFilepath := subDirFile(wd, path); subFilepath != "" {
+		return subFilepath, nil
+	}
+	if supFilepath := supDirFile(wd+"/", path); supFilepath != "" {
+		return supFilepath, nil
+	}
+	return "", errors.New("找不到文件")
+}
+
+//直接看子文件夹中是否存在文件而不是在下次递归时看当前文件夹，这样可以减少递归次数
+//貌似也只能减少一次...
+func subDirFile(dir, path string) string {
+	fileInfos, err := ioutil.ReadDir(dir)
+	if err != nil {
+		log.Println(err)
+	}
+	for i := range fileInfos {
+		if fileInfos[i].IsDir() {
+			filepath1 := filepath.Join(dir, fileInfos[i].Name(), path)
+			if _, err = os.Stat(filepath1); !os.IsNotExist(err) {
+				return filepath1
+			}
+			return subDirFile(filepath.Join(dir, fileInfos[i].Name()), path)
+		}
+	}
+	return ""
+}
+
+func supDirFile(dir, path string) string {
+	dir, dirName := filepath.Split(dir[:len(dir)-1])
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return ""
+	}
+	filepath1 := filepath.Join(dir, path)
+	if _, err := os.Stat(filepath1); !os.IsNotExist(err) {
+		return filepath1
+	}
+	fileInfos, err := ioutil.ReadDir(dir)
+	if err != nil {
+		log.Println(err)
+	}
+	for i := range fileInfos {
+		if fileInfos[i].IsDir() {
+			if fileInfos[i].Name() == dirName {
+				continue
+			}
+			if subFilepath := subDirFile(filepath.Join(dir, fileInfos[i].Name()), path); subFilepath != "" {
+				return subFilepath
+			}
+		}
+	}
+	return supDirFile(dir, path)
+}
+
+func FindFiles(path string, deep int8, callback func(filepath string)) ([]string, error) {
+	wd, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+	var files = make([]string, 0, 5)
+	filepath1 := filepath.Join(wd, path)
+	if _, err = os.Stat(filepath1); !os.IsNotExist(err) {
+		files = append(files, filepath1)
+	}
+
+	subDirFiles(wd, path, &files, deep, 0)
+	supDirFiles(wd, path, &files, deep, 0)
+	if len(files) == 0 {
+		return nil, errors.New("找不到文件")
+	}
+	for i := range files {
+		if callback != nil {
+			callback(files[i])
+		}
+	}
+	return files, nil
+}
+
+func subDirFiles(dir, path string, files *[]string, deep, step int8) {
+	step += 1
+	if step > deep {
+		return
+	}
+	fileInfos, err := ioutil.ReadDir(dir)
+	if err != nil {
+		log.Println(err)
+	}
+	for i := range fileInfos {
+		if fileInfos[i].IsDir() {
+			filepath1 := filepath.Join(dir, fileInfos[i].Name(), path)
+			if _, err = os.Stat(filepath1); !os.IsNotExist(err) {
+				*files = append(*files, filepath1)
+			}
+			subDirFiles(filepath.Join(dir, fileInfos[i].Name()), path, files, deep, step)
+		}
+	}
+}
+
+func supDirFiles(dir, path string, files *[]string, deep, step int8) {
+	step += 1
+	if step > deep {
+		return
+	}
+	dir, dirName := filepath.Split(dir[:len(dir)-1])
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return
+	}
+	filepath1 := filepath.Join(dir, path)
+	if _, err := os.Stat(filepath1); !os.IsNotExist(err) {
+		*files = append(*files, filepath1)
+	}
+	fileInfos, err := ioutil.ReadDir(dir)
+	if err != nil {
+		log.Println(err)
+	}
+	for i := range fileInfos {
+		if fileInfos[i].IsDir() {
+			if fileInfos[i].Name() == dirName {
+				continue
+			}
+			subDirFiles(filepath.Join(dir, fileInfos[i].Name()), path, files, deep, 0)
+		}
+	}
+	supDirFiles(dir, path, files, deep, step)
+}
+
+//path和filepath两个包，filepath文件专用
+func FindFile2(path string, deep int8, num int) ([]string, error) {
+	wd, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+	var file = make(chan string)
+	ctx := runtime2.New()
+	defer ctx.Cancel()
+
+	go func() {
+		filepath1 := filepath.Join(wd, path)
+		if _, err = os.Stat(filepath1); !os.IsNotExist(err) {
+			file <- filepath1
+		}
+	}()
+
+	ctx.Start()
+	go subDirFiles2(wd, path, file, deep, 0, ctx)
+	ctx.Start()
+	go supDirFiles2(wd+"/", path, file, deep, 0, ctx)
+	var files []string
+	for filepath1 := range file {
+		if files = append(files, filepath1); len(files) == num {
+			close(file)
+			return files, nil
+		}
+	}
+	return files, nil
+}
+
+func subDirFiles2(dir, path string, file chan string, deep, step int8, ctx *runtime2.NumGoroutine) {
+	defer ctx.End(func() {
+		close(file)
+	})
+	step += 1
+	if step-1 == deep {
+		return
+	}
+	fileInfos, err := ioutil.ReadDir(dir)
+	if err != nil {
+		log.Println(err)
+	}
+	for i := range fileInfos {
+		if fileInfos[i].IsDir() {
+			filepath1 := filepath.Join(dir, fileInfos[i].Name(), path)
+			if _, err = os.Stat(filepath1); !os.IsNotExist(err) {
+				//①如果给出了default语句，那么就会执行default的流程，同时程序的执行会从select语句后的语句中恢复。
+				//②如果没有default语句，那么select语句将被阻塞，直到至少有一个case可以进行下去。
+				select {
+				case <-ctx.Done():
+					return
+				case file <- filepath1:
+				}
+			}
+			ctx.Start()
+			go subDirFiles2(filepath.Join(dir, fileInfos[i].Name()), path, file, deep, step, ctx)
+		}
+	}
+}
+
+func supDirFiles2(dir, path string, file chan string, deep, step int8, ctx *runtime2.NumGoroutine) {
+	defer ctx.End(func() {
+		close(file)
+	})
+	step += 1
+	if step-1 == deep {
+		return
+	}
+	dir, dirName := filepath.Split(dir[:len(dir)-1])
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return
+	}
+	filepath1 := filepath.Join(dir, path)
+	if _, err := os.Stat(filepath1); !os.IsNotExist(err) {
+		select {
+		case <-ctx.Done():
+			return
+		case file <- filepath1:
+		}
+	}
+	fileInfos, err := ioutil.ReadDir(dir)
+	if err != nil {
+		log.Println(err)
+	}
+	for i := range fileInfos {
+		if fileInfos[i].IsDir() {
+			if fileInfos[i].Name() == dirName {
+				continue
+			}
+			ctx.Start()
+			go subDirFiles2(filepath.Join(dir, fileInfos[i].Name()), path, file, deep, 0, ctx)
+		}
+	}
+	ctx.Start()
+	go supDirFiles2(dir, path, file, deep, step, ctx)
+}
