@@ -169,7 +169,10 @@ func FindFile2(path string, deep int8, num int) ([]string, error) {
 		return nil, err
 	}
 	var file = make(chan string)
-	ctx := runtime2.New()
+
+	ctx := runtime2.New(func() {
+		close(file)
+	})
 	defer ctx.Cancel()
 
 	go func() {
@@ -179,10 +182,13 @@ func FindFile2(path string, deep int8, num int) ([]string, error) {
 		}
 	}()
 
-	ctx.Start()
-	go subDirFiles2(wd, path, file, deep, 0, ctx)
-	ctx.Start()
-	go supDirFiles2(wd+"/", path, file, deep, 0, ctx)
+	go ctx.Monitor(func() {
+		subDirFiles2(wd, path, file, deep, 0, ctx)
+	})
+	go ctx.Monitor(func() {
+		supDirFiles2(wd+"/", path, file, deep, 0, ctx)
+	})
+
 	var files []string
 	for filepath1 := range file {
 		if files = append(files, filepath1); len(files) == num {
@@ -194,15 +200,13 @@ func FindFile2(path string, deep int8, num int) ([]string, error) {
 }
 
 func subDirFiles2(dir, path string, file chan string, deep, step int8, ctx *runtime2.NumGoroutine) {
-	defer ctx.End(func() {
-		close(file)
-	})
 	step += 1
 	if step-1 == deep {
 		return
 	}
 	fileInfos, err := ioutil.ReadDir(dir)
 	if err != nil {
+		//		debug.PrintStack()
 		log.Println(err)
 	}
 	for i := range fileInfos {
@@ -217,16 +221,16 @@ func subDirFiles2(dir, path string, file chan string, deep, step int8, ctx *runt
 				case file <- filepath1:
 				}
 			}
-			ctx.Start()
-			go subDirFiles2(filepath.Join(dir, fileInfos[i].Name()), path, file, deep, step, ctx)
+			log.Println("gogo", filepath.Join(dir, fileInfos[i].Name()))
+			go ctx.Monitor(func() {
+				log.Println("go", filepath.Join(dir, fileInfos[i].Name()))
+				subDirFiles2(filepath.Join(dir, fileInfos[i].Name()), path, file, deep, step, ctx)
+			})
 		}
 	}
 }
 
 func supDirFiles2(dir, path string, file chan string, deep, step int8, ctx *runtime2.NumGoroutine) {
-	defer ctx.End(func() {
-		close(file)
-	})
 	step += 1
 	if step-1 == deep {
 		return
@@ -252,10 +256,12 @@ func supDirFiles2(dir, path string, file chan string, deep, step int8, ctx *runt
 			if fileInfos[i].Name() == dirName {
 				continue
 			}
-			ctx.Start()
-			go subDirFiles2(filepath.Join(dir, fileInfos[i].Name()), path, file, deep, 0, ctx)
+			go ctx.Monitor(func() {
+				subDirFiles2(filepath.Join(dir, fileInfos[i].Name()), path, file, deep, 0, ctx)
+			})
 		}
 	}
-	ctx.Start()
-	go supDirFiles2(dir, path, file, deep, step, ctx)
+	go ctx.Monitor(func() {
+		go supDirFiles2(dir, path, file, deep, step, ctx)
+	})
 }
