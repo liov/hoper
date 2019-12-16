@@ -149,7 +149,7 @@ func (h *Handler) Handle(hs ...iris.Handler) *Handler {
 	fmt.Printf(" %s\t %s %s\t %s\n",
 		pio.Purple("API:"),
 		pio.Yellow(strings2.FormatLen(h.apiInfo.method, 6)),
-		pio.Blue(path), pio.Gray(h.apiInfo.describe))
+		pio.Blue(strings2.FormatLen(path, 50)), pio.Gray(h.apiInfo.describe))
 	return h
 }
 

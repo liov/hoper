@@ -31,8 +31,7 @@ func App() *iris.Application {
 		app.Use(api.ApiMiddle)
 	}
 	//other.Wrap(app)
-	//api文档
-	//other.Api(app)
+
 	//https://rpm.newrelic.com/accounts/2269290/applications
 	/*	config := newrelic.config("hoper", "199e00247f278548fe92d6c81aeaadac0fc52b4b")
 		m, err := newrelic.New(config)
