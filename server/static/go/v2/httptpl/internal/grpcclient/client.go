@@ -5,21 +5,22 @@ import (
 	"google.golang.org/grpc"
 )
 
-func init() {
-	client, conn := GetUserClient()
-	Client.UserClient = client
-	Client.conns = append(Client.conns, conn)
-}
-
-var Client client
-
-type client struct {
+var (
 	UserClient user_model.UserServiceClient
-	conns      []*grpc.ClientConn
+)
+
+func init() {
+	var conn *grpc.ClientConn
+	UserClient, conn = GetUserClient()
+	ClientConns = append(ClientConns, conn)
 }
 
-func (c *client) Close() {
-	for _, conn := range c.conns {
+var ClientConns clientConns
+
+type clientConns []*grpc.ClientConn
+
+func (cs clientConns) Close() {
+	for _, conn := range cs {
 		conn.Close()
 	}
 }
