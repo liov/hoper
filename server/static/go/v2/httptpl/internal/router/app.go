@@ -10,6 +10,7 @@ import (
 	"github.com/liov/hoper/go/v2/initialize"
 	"github.com/liov/hoper/go/v2/utils/http/iris/api"
 	iris_log_mid "github.com/liov/hoper/go/v2/utils/http/iris/log"
+	"github.com/liov/hoper/go/v2/utils/http/iris_plus"
 
 	"github.com/liov/hoper/go/v2/utils/log"
 )
@@ -70,7 +71,7 @@ func App() *iris.Application {
 		ctx.Writef("My Custom error page")
 	})
 
-	route(app)
+	iris_plus.Register(app, route())
 
 	return app
 }

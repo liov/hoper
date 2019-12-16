@@ -17,6 +17,7 @@ func OpenApi(mux *iris.Application) {
 	mux.Get(api.PrefixUri+"{mod:path}", handlerconv.FromStd(api.HttpHandle))
 }
 
+// Deprecated
 func ApiMiddle(ctx context.Context) {
 	currentRouteName := ctx.GetCurrentRoute().Name()[len(ctx.Method()):]
 
