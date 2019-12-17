@@ -1,12 +1,35 @@
 package mail
 
 import (
+	"bytes"
 	"crypto/tls"
 	"net"
 	"net/smtp"
+	"text/template"
 
 	"github.com/liov/hoper/go/v2/utils/log"
 )
+
+type Message struct {
+	Name, Mail, Subject, ContentType, Content, ToMail string
+}
+
+const msg = `To: {{.ToMail}}
+From: {{.Name}} <{{.Mail}}>
+Subject: {{.Subject}}
+Content-Type: {{if .ContentType}}{{.ContentType}}{{- else}}text/html; charset=UTF-8{{end}}
+{{.Content}}
+`
+
+func GenMsg(m *Message) []byte {
+	t := template.Must(template.New("msg").Parse(msg))
+	var buf = new(bytes.Buffer)
+	err := t.Execute(buf, m)
+	if err != nil {
+		log.Error("executing template:", err)
+	}
+	return buf.Bytes()
+}
 
 func SendMailTLS(addr string, auth smtp.Auth, from string, to []string, message []byte) error {
 	client, err := createSMTPClient(addr)

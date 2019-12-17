@@ -72,8 +72,6 @@ type Controller interface {
 	Middle() []iris.Handler
 }
 
-type HandlerFunc func(*Handler)
-
 type Handler struct {
 	*apiInfo
 	middle []iris.Handler
@@ -157,15 +155,17 @@ func (h *Handler) Handle(hs ...iris.Handler) *Handler {
 	handles := append(h.middle, hs...)
 	h.app.Handle(h.method, path, handles...)
 	fmt.Printf(" %s\t %s %s\t %s\n",
-		pio.Purple("API:"),
+		pio.Green("API:"),
 		pio.Yellow(strings2.FormatLen(h.method, 6)),
-		pio.Blue(strings2.FormatLen(path, 50)), pio.Gray(h.describe))
+		pio.Blue(strings2.FormatLen(path, 50)), pio.Purple(h.describe))
 	return h
 }
 
 func (h *Handler) Api() *Handler {
 	return h
 }
+
+type HandlerFunc func(*Handler)
 
 func (handler HandlerFunc) Path(p string) HandlerFunc {
 	return func(h *Handler) {
@@ -257,6 +257,6 @@ func (handler HandlerFunc) Handle(hs ...iris.Handler) HandlerFunc {
 		fmt.Printf(" %s\t %s %s\t %s\n",
 			pio.Purple("API:"),
 			pio.Yellow(strings2.FormatLen(h.method, 6)),
-			pio.Blue(strings2.FormatLen(path, 50)), pio.Gray(h.describe))
+			pio.Blue(strings2.FormatLen(path, 50)), pio.Green(h.describe))
 	}
 }

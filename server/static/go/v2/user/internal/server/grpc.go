@@ -6,6 +6,7 @@ import (
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/user/internal/service"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -40,7 +41,7 @@ func Grpc() *grpc.Server {
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(filter, grpc_validator.UnaryServerInterceptor())),
 		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(grpc_validator.StreamServerInterceptor())),
 	)
-	model.RegisterUserServiceServer(s, userService)
+	model.RegisterUserServiceServer(s, service.UserSvc)
 	// Register reflection service on gRPC server.
 	reflection.Register(s)
 	return s
