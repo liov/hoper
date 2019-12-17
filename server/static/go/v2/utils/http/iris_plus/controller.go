@@ -51,10 +51,15 @@ func Register(app *iris.Application, ctrl []Controller) {
 		if value1.Field(0).Type() != reflect.TypeOf(handler) {
 			panic("Handler field必须在第一个")
 		}
+		handler.middle = ctrl[i].Middle()
 		value1.Field(0).Set(reflect.ValueOf(handler))
 
 		for j := 0; j < value.NumMethod(); j++ {
-			if value.Type().Method(j).Name == "Middle" {
+			method := value.Type().Method(j)
+			if method.Name == "Middle" {
+				continue
+			}
+			if method.Type.NumOut() == 1 && method.Type.Out(0) == reflect.TypeOf(handler) {
 				continue
 			}
 			value.Method(j).Call(nil)
@@ -67,9 +72,11 @@ type Controller interface {
 	Middle() []iris.Handler
 }
 
+type HandlerFunc func(*Handler)
+
 type Handler struct {
 	*apiInfo
-	Middle []iris.Handler
+	middle []iris.Handler
 	app    *iris.Application
 }
 
@@ -143,16 +150,113 @@ func (h *Handler) Auth(a string) *Handler {
 }
 
 func (h *Handler) Handle(hs ...iris.Handler) *Handler {
+	if h.app == nil {
+		return h
+	}
 	path := "/api/v" + strconv.Itoa(h.version) + h.path
-	handles := append(h.Middle, hs...)
+	handles := append(h.middle, hs...)
 	h.app.Handle(h.method, path, handles...)
 	fmt.Printf(" %s\t %s %s\t %s\n",
 		pio.Purple("API:"),
-		pio.Yellow(strings2.FormatLen(h.apiInfo.method, 6)),
-		pio.Blue(strings2.FormatLen(path, 50)), pio.Gray(h.apiInfo.describe))
+		pio.Yellow(strings2.FormatLen(h.method, 6)),
+		pio.Blue(strings2.FormatLen(path, 50)), pio.Gray(h.describe))
 	return h
 }
 
 func (h *Handler) Api() *Handler {
 	return h
+}
+
+func (handler HandlerFunc) Path(p string) HandlerFunc {
+	return func(h *Handler) {
+		handler(h)
+		h.path = p
+	}
+
+}
+
+func (handler HandlerFunc) Date(d string) HandlerFunc {
+	return func(h *Handler) {
+		handler(h)
+		h.date = d
+	}
+}
+
+func (handler HandlerFunc) ChangeLog(v, date, log string) HandlerFunc {
+	return func(h *Handler) {
+		handler(h)
+		h.changelog = append(h.changelog, changelog{v, date, log})
+	}
+}
+
+func (handler HandlerFunc) CreateLog(v, date, log string) HandlerFunc {
+	return func(h *Handler) {
+		handler(h)
+		h.createlog = changelog{v, date, log}
+	}
+}
+
+func (handler HandlerFunc) Version(v int) HandlerFunc {
+	return func(h *Handler) {
+		handler(h)
+		h.version = v
+	}
+}
+
+func (handler HandlerFunc) Method(m string) HandlerFunc {
+	return func(h *Handler) {
+		handler(h)
+		h.method = m
+	}
+}
+
+func (handler HandlerFunc) Describe(d string) HandlerFunc {
+	return func(h *Handler) {
+		handler(h)
+		h.describe = d
+	}
+}
+
+func (handler HandlerFunc) Request(r interface{}) HandlerFunc {
+	return func(h *Handler) {
+		handler(h)
+		h.request = r
+	}
+}
+
+func (handler HandlerFunc) Response(r interface{}) HandlerFunc {
+	return func(h *Handler) {
+		handler(h)
+		h.response = r
+	}
+}
+
+func (handler HandlerFunc) Service(s interface{}) HandlerFunc {
+	return func(h *Handler) {
+		handler(h)
+		h.service = s
+	}
+}
+
+func (handler HandlerFunc) Auth(a string) HandlerFunc {
+	return func(h *Handler) {
+		handler(h)
+		h.auth = a
+	}
+}
+
+func (handler HandlerFunc) Handle(hs ...iris.Handler) HandlerFunc {
+	return func(h *Handler) {
+		handler(h)
+		if h.app == nil {
+			return
+		}
+		path := "/api/v" + strconv.Itoa(h.version) + h.path
+		handles := append(h.middle, hs...)
+		h.app.Handle(h.method, path, handles...)
+		fmt.Printf(" %s\t %s %s\t %s\n",
+			pio.Purple("API:"),
+			pio.Yellow(strings2.FormatLen(h.method, 6)),
+			pio.Blue(strings2.FormatLen(path, 50)), pio.Gray(h.describe))
+	}
 }
