@@ -15,7 +15,7 @@ import (
 )
 
 type UserController struct {
-	Handler *iris_plus.Handler
+	*iris_plus.Handler
 }
 
 func (u *UserController) Middle() []iris.Handler {
