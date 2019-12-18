@@ -67,5 +67,5 @@ OutputPaths = {console = ["stderr"],json = []}
 [mail]
 Host = "smtp.qq.com"
 Port = ":465"
-User =  "lby.i@qq.com"
+From =  "lby.i@qq.com"
 Password = "123456"

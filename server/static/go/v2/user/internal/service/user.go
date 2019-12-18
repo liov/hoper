@@ -133,15 +133,6 @@ func encryptPassword(password string) string {
 	return fmt.Sprintf("%x", md5.Sum(strings2.ToBytes(hash)))
 }
 
-/*
-	letter:=`
-From:{{.From}}
-To: {{.To}}
-Subject: {{.Title}}
-Content-Type: text/html; charset=UTF-8
-
-`
-*/
 func sendMail(action string, title string, curTime int64, user *model.User) {
 	siteName := "hoper"
 	siteURL := "https://" + config.Conf.Server.Domain
@@ -167,19 +158,16 @@ func sendMail(action string, title string, curTime int64, user *model.User) {
 	}
 	//content += "<p><img src=\"" + siteURL + "/images/logo.png\" style=\"height: 42px;\"/></p>"
 	//fmt.Println(content)
-	headers := make(map[string]string)
-	headers["From"] = siteName + "<" + config.Conf.Mail.User + ">"
-	headers["To"] = user.Mail
-	headers["Subject"] = title
-	headers["Content-Type"] = "text/html; charset=UTF-8"
-	message := ""
-	for key, value := range headers {
-		message += fmt.Sprintf("%s: %s\r\n", key, value)
-	}
-	message += "\r\n" + content
 
 	addr := config.Conf.Mail.Host + config.Conf.Mail.Port
-	err := mail.SendMailTLS(addr, dao.Dao.MailAuth, config.Conf.Mail.User, []string{user.Mail}, []byte(message))
+	m := mail.Mail{
+		FromName: siteName,
+		From:     config.Conf.Mail.From,
+		Subject:  title,
+		Content:  content,
+		To:       []string{user.Mail},
+	}
+	err := mail.SendMailTLS(addr, dao.Dao.MailAuth, &m)
 	if err != nil {
 		log.Error("sendMail", err)
 	}

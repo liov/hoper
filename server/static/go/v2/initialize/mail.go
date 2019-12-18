@@ -11,5 +11,5 @@ func (i *Init) P3Mail() smtp.Auth {
 	if exist := reflect3.GetFieldValue(i.conf, &conf); !exist {
 		return nil
 	}
-	return smtp.PlainAuth("", conf.User, conf.Password, conf.Host)
+	return smtp.PlainAuth("", conf.From, conf.Password, conf.Host)
 }

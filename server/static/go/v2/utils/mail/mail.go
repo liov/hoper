@@ -5,24 +5,26 @@ import (
 	"crypto/tls"
 	"net"
 	"net/smtp"
+	"strings"
 	"text/template"
 
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
-type Message struct {
-	Name, Mail, Subject, ContentType, Content, ToMail string
+type Mail struct {
+	FromName, From, Subject, ContentType, Content string
+	To                                            []string
 }
 
-const msg = `To: {{.ToMail}}
-From: {{.Name}} <{{.Mail}}>
+const msg = `To: {{join .To ",\n\t"}}
+From: {{.FromName}} <{{.From}}>
 Subject: {{.Subject}}
 Content-Type: {{if .ContentType}}{{.ContentType}}{{- else}}text/html; charset=UTF-8{{end}}
 {{.Content}}
 `
 
-func GenMsg(m *Message) []byte {
-	t := template.Must(template.New("msg").Parse(msg))
+func GenMsg(m *Mail) []byte {
+	t := template.Must(template.New("msg").Funcs(template.FuncMap{"join": strings.Join}).Parse(msg))
 	var buf = new(bytes.Buffer)
 	err := t.Execute(buf, m)
 	if err != nil {
@@ -31,7 +33,7 @@ func GenMsg(m *Message) []byte {
 	return buf.Bytes()
 }
 
-func SendMailTLS(addr string, auth smtp.Auth, from string, to []string, message []byte) error {
+func SendMailTLS(addr string, auth smtp.Auth, m *Mail) error {
 	client, err := createSMTPClient(addr)
 	if err != nil {
 		log.Error(err)
@@ -46,10 +48,10 @@ func SendMailTLS(addr string, auth smtp.Auth, from string, to []string, message 
 			}
 		}
 	}
-	if err := client.Mail(from); err != nil {
+	if err := client.Mail(m.From); err != nil {
 		return err
 	}
-	for _, addr := range to {
+	for _, addr := range m.To {
 		if err := client.Rcpt(addr); err != nil {
 			return err
 		}
@@ -58,7 +60,7 @@ func SendMailTLS(addr string, auth smtp.Auth, from string, to []string, message 
 	if err != nil {
 		return err
 	}
-	_, err = w.Write(message)
+	_, err = w.Write(GenMsg(m))
 	if err != nil {
 		return err
 	}
