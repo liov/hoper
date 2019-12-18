@@ -91,7 +91,7 @@ type LogConfig struct {
 type MailConfig struct {
 	Host     string
 	Port     string
-	User     string
+	From     string
 	Password string
 }
 

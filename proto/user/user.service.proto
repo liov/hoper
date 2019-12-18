@@ -5,6 +5,7 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
+import "google/protobuf/any.proto";
 
 option java_package = "xyz.hoper.protobuf.user";
 
@@ -29,10 +30,21 @@ option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
 service UserService {
 
     //验证码
-    rpc Verify (VerifyReq) returns (VerifyRep) {
+    rpc Verify (google.protobuf.Any) returns (VerifyRep) {
         option (google.api.http) = {
-        post: "/api/v1/user/verify"
+        get: "/api/v1/user/verifyCode"
+        };
+    }
+
+    //注册验证
+    rpc SignupVerify (SingUpVerifyReq) returns (SingUpVerifyRep) {
+        option (google.api.http) = {
+        post: "/api/v1/user/signupVerify"
         body: "*"
+        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            tags:["1.0.0"]
+            description : "注册验证"
         };
     }
 
@@ -78,7 +90,14 @@ service UserService {
     }
 }
 
-message VerifyReq {
+message VerifyRep{
+    sint32 code = 1;
+    string message = 2;
+    //验证码
+    string details = 3;
+}
+
+message SingUpVerifyReq {
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_schema) = {
         example: {
             value: '{ "mail": "123@qq.com", "phone": "12345678901"}'
@@ -90,7 +109,7 @@ message VerifyReq {
     string phone = 7 [(gogoproto.moretags) = "validate:\"omitempty,phone\" comment:\"手机号\""];
 }
 
-message VerifyRep {
+message SingUpVerifyRep {
     sint32 code = 1;
     string message = 2;
     //验证码
