@@ -1,6 +1,7 @@
 syntax = "proto3";
-package utils;
-
+package response;
+import "google/protobuf/any.proto";
+import "utils/any/any.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 option (gogoproto.goproto_enum_prefix_all) = false;
@@ -14,6 +15,10 @@ option (gogoproto.goproto_sizecache_all) = false;
 option (gogoproto.goproto_registration) = true;
 option (gogoproto.messagename_all) = true;
 option (gogoproto.populate_all) = true;
-
-message Empty {
+//返回数据为字符串，用于新建修改删除类的成功失败提示
+message NewCommonRep {
+    sint32 code = 1;
+    string message = 2;
+    //验证码
+    string details = 3;
 }

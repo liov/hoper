@@ -30,10 +30,18 @@ option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
 
 service UserService {
 
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_tag) = {
+		description: "UserService"
+    };
     //验证码
     rpc Verify (utils.Empty) returns (VerifyRep) {
         option (google.api.http) = {
-        get: "/api/v1/user/verifyCode"
+        get: "/api/v1/verifyCode"
+        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            tags:["1.0.0","util"]
+            summary : "验证码"
+            description : "验证码生成接口"
         };
     }
 
@@ -45,7 +53,8 @@ service UserService {
         };
         option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
             tags:["1.0.0"]
-            description : "注册验证"
+            summary : "注册验证"
+            description : "注册验证接口"
         };
     }
 
@@ -55,12 +64,22 @@ service UserService {
         post: "/api/v1/user"
         body: "*"
         };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            tags:["1.0.0"]
+            summary : "注册"
+            description : "注册接口"
+        };
     }
 
     //激活
     rpc Active (ActiveReq) returns (ActiveRep) {
         option (google.api.http) = {
         get: "/api/v1/user/active/{id}/{secret}"
+        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            tags:["1.0.0"]
+            summary : "激活"
+            description : "激活接口"
         };
     }
     //编辑
@@ -69,6 +88,18 @@ service UserService {
         put: "/api/v1/user/{id}"
         body: "details"
         };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            tags:["1.0.0"]
+            summary : "编辑"
+            description : "编辑接口"
+            security: {
+				security_requirement: {
+					key: "Authorization";
+                    value: {}
+                }
+            };
+
+        };
     }
     //登录
     rpc Login (LoginReq) returns (LoginRep) {
@@ -76,17 +107,45 @@ service UserService {
         post: "/api/v1/user/login"
         body: "*"
         };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            tags:["1.0.0"]
+            summary : "登录"
+            description : "登录接口"
+        };
     }
     //退出
     rpc Logout (LogoutReq) returns (LogoutRep) {
         option (google.api.http) = {
         get: "/api/v1/user/logout"
         };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            tags:["1.0.0"]
+            summary : "退出"
+            description : "退出接口"
+        };
     }
-    //获取用户 信息
+    //获取用户信息
     rpc GetUser (GetReq) returns (GetRep) {
         option (google.api.http) = {
         get: "/api/v1/user/{id}"
+        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            tags:["1.0.0"]
+            summary : "获取用户信息"
+            description : "获取用户信息接口"
+            security: {
+				security_requirement: {
+					key: "Authorization";
+                    value: {}
+                }
+                security_requirement: {
+                    key: "OAuth2";
+                    value: {
+                        scope: "read";
+                        scope: "write";
+                    }
+                }
+            };
         };
     }
 }
@@ -100,6 +159,9 @@ message VerifyRep{
 
 message SingUpVerifyReq {
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_schema) = {
+        json_schema: {
+                title: "注册验证请求"  //和message前注释一样的效果
+		    };
         example: {
             value: '{ "mail": "123@qq.com", "phone": "12345678901"}'
             }
@@ -120,7 +182,7 @@ message SingUpVerifyRep {
 message SignupReq {
     //密码
     string password = 4 [(gogoproto.moretags) = "validate:\"required,gte=6,lte=15\" comment:\"密码\"", (validator.field) = {
-            length_gt: 6
+            length_gt: 5
             human_error: "密码最短6位"
         }, (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {title: "密码"
                         min_length: 6}];

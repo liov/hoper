@@ -11,9 +11,10 @@ import (
 	"github.com/liov/hoper/go/v2/utils/http/api"
 )
 
-func OpenApi(mux *iris.Application) {
+func OpenApi(mux *iris.Application, filePath string) {
 	_ = mime.AddExtensionType(".svg", "image/svg+xml")
-
+	api.FilePath = filePath
+	mux.Get(api.PrefixUri, handlerconv.FromStd(api.ApiMod))
 	mux.Get(api.PrefixUri+"{mod:path}", handlerconv.FromStd(api.HttpHandle))
 }
 

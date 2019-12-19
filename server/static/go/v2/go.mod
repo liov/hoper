@@ -23,7 +23,7 @@ require (
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e // indirect
-	github.com/gorilla/handlers v1.4.2 // indirect
+	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/gorilla/schema v1.1.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.1.0

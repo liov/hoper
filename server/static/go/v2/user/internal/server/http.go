@@ -45,7 +45,7 @@ func Http() http.Handler {
 		mux.Shutdown(ctx)
 	})
 	mux.Any("/{grpc:path}", handlerconv.FromStd(gwmux))
-	api.OpenApi(mux)
+	api.OpenApi(mux, "../protobuf/api/")
 	iris_build.Build(mux, initialize.ConfUrl)
 	return mux
 }
