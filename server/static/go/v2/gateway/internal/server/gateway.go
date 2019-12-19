@@ -66,7 +66,7 @@ func GateWay() http.Handler {
 	mux.Get("/debug/pprof/profile", handlerconv.FromStd(pprof.Profile))
 	mux.Get("/debug/pprof/symbol", handlerconv.FromStd(pprof.Symbol))
 	mux.Get("/debug/pprof/trace", handlerconv.FromStd(pprof.Trace))
-	api.OpenApi(mux)
+	api.OpenApi(mux, "../protobuf/api/")
 	iris_build.Build(mux, initialize.ConfUrl)
 	h2Handler := h2c.NewHandler(mux, &http2.Server{})
 	server := &http.Server{Addr: config.Conf.Server.Port, Handler: h2Handler}
