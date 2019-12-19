@@ -8,7 +8,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/gogo/gateway"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/core/handlerconv"
@@ -18,7 +17,9 @@ import (
 	iris_build "github.com/liov/hoper/go/v2/utils/http/iris"
 	"github.com/liov/hoper/go/v2/utils/http/iris/api"
 	iris_log_mid "github.com/liov/hoper/go/v2/utils/http/iris/log"
+	"github.com/liov/hoper/go/v2/utils/json"
 	"github.com/liov/hoper/go/v2/utils/log"
+	"github.com/liov/hoper/go/v2/utils/protobuf/jsonpb"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	"google.golang.org/grpc"
@@ -35,10 +36,8 @@ func GateWay() http.Handler {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	jsonpb := &gateway.JSONPb{
-		EmitDefaults: true,
-		Indent:       "  ",
-		OrigName:     true,
+	jsonpb := &jsonpb.JSONPb{
+		json.Json,
 	}
 	gwmux := runtime.NewServeMux(
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, jsonpb),

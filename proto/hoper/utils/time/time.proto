@@ -1,7 +1,7 @@
 syntax = "proto3";
 package time;
 
-option go_package = "github.com/liov/hoper/go/v2/utils/time";
+option go_package = "github.com/liov/hoper/go/v2/utils/time2";
 option java_package = "xyz.hoper.protobuf.utils.time";
 
 message Time {

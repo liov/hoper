@@ -15,7 +15,7 @@ var in, out string
 
 func main() {
 	flag.StringVar(&in, "in", "../protobuf", "go protobuf")
-	flag.StringVar(&out, "out", "../../../proto", "通用 protobuf")
+	flag.StringVar(&out, "out", "../../../proto/hoper", "通用 protobuf")
 	flag.Parse()
 	_, err := os.Stat(out)
 	if os.IsNotExist(err) {
