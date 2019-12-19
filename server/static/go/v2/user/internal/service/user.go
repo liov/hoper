@@ -9,6 +9,7 @@ import (
 
 	"github.com/gomodule/redigo/redis"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/protobuf/utils"
 	"github.com/liov/hoper/go/v2/user/internal/config"
 	"github.com/liov/hoper/go/v2/user/internal/dao"
 	modelconst "github.com/liov/hoper/go/v2/user/internal/model"
@@ -26,8 +27,17 @@ func NewUserService(server model.UserServiceServer) *UserService {
 	return &UserService{}
 }
 
-func (*UserService) Verify(ctx context.Context, req *model.VerifyReq) (*model.VerifyRep, error) {
+func (*UserService) Verify(ctx context.Context, req *utils.Empty) (*model.VerifyRep, error) {
 	var rep = &model.VerifyRep{Code: 10000}
+	vcode := verificationCode.Generate()
+	log.Info(vcode)
+	rep.Details = vcode
+	rep.Message = "字符串有问题吗啊"
+	return rep, nil
+}
+
+func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*model.SingUpVerifyRep, error) {
+	var rep = &model.SingUpVerifyRep{Code: 10000}
 	err := valid.Validate.Struct(req)
 	if err != nil {
 		rep.Message = valid.Trans(err)

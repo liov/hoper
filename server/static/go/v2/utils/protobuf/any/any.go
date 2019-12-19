@@ -11,7 +11,7 @@ import (
 	"github.com/golang/protobuf/ptypes/any"
 )
 
-//为了api文档，不雅使用这种返回
+//为了api文档，不要使用这种返回
 
 func GenAnys(details ...proto.Message) ([]*any.Any, error) {
 	var anys []*any.Any

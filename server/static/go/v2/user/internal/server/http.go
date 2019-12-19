@@ -11,6 +11,7 @@ import (
 	"github.com/kataras/iris/v12/core/handlerconv"
 	"github.com/liov/hoper/go/v2/initialize"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/user/internal/service"
 	iris_build "github.com/liov/hoper/go/v2/utils/http/iris"
 	"github.com/liov/hoper/go/v2/utils/http/iris/api"
 	"github.com/liov/hoper/go/v2/utils/log"
@@ -29,7 +30,7 @@ func Http() http.Handler {
 	gwmux := runtime.NewServeMux(
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, jsonpb),
 		runtime.WithProtoErrorHandler(runtime.DefaultHTTPProtoErrorHandler))
-	err := model.RegisterUserServiceHandlerServer(ctx, gwmux, userService)
+	err := model.RegisterUserServiceHandlerServer(ctx, gwmux, service.UserSvc)
 	if err != nil {
 		log.Fatal(err)
 	}
