@@ -16,3 +16,6 @@ dart 跨平台客户端
 lua openresty，内嵌
 python 数据分析
 ts/js 专注前端吧，干后端的活再说吧，也许也可以当胶水语言
+
+有ts有必要用js吗？？
+有kotlin有必要用java吗？？
