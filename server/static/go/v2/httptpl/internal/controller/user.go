@@ -9,6 +9,7 @@ import (
 	"github.com/liov/hoper/go/v2/httptpl/internal/grpcclient"
 	"github.com/liov/hoper/go/v2/httptpl/internal/service"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/protobuf/utils"
 	"github.com/liov/hoper/go/v2/utils/http/iris_plus"
 
 	"github.com/liov/hoper/go/v2/utils/log"
@@ -28,14 +29,13 @@ func (u *UserController) VerificationCode() {
 		Method(http.MethodPost).
 		Describe("获取验证码").
 		//这些信息不应该放在源代码里,都会打包进二进制文件
-		Auth("jyb").
 		Version(1).
-		CreateLog("1.0.0", "2019/12/16", "创建").
-		ChangeLog("1.0.1", "2019/12/16", "修改").
+		CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
+		ChangeLog("1.0.1", "jyb", "2019/12/16", "修改").
 		Handle(
 			//不用反射做
 			func(c iris.Context) {
-				var req model.VerifyReq
+				var req utils.Empty
 				c.ReadJSON(&req)
 				c.JSON(service.UserSvc.VerificationCode(&req))
 			})
@@ -46,8 +46,8 @@ func (u *UserController) Add() {
 		Path("/user").
 		Method(http.MethodPost).
 		Describe("新增用户").
-		Auth("jyb").
 		Version(1).
+		CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
 		Handle(
 			func(c iris.Context) {
 				var req model.SignupReq
@@ -62,8 +62,8 @@ func (u *UserController) Get() {
 		Path("/user/{id:uint64}").
 		Method(http.MethodGet).
 		Describe("获取用户信息").
-		Auth("jyb").
 		Version(1).
+		CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
 		Handle(
 			func(c iris.Context) {
 				id := c.Params().GetUint64Default("id", 0)
@@ -82,8 +82,8 @@ func (u *UserController) Edit() {
 		Path("/user/{id:uint64}").
 		Method(http.MethodPut).
 		Describe("用户编辑").
-		Auth("liov").
 		Version(1).
+		CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
 		Request(&model.EditReq{}).
 		Response(&model.LoginRep{}).
 		Handle(func(c iris.Context) {})
@@ -94,8 +94,8 @@ func (u *UserController) Shutdown() {
 		Path("/restart").
 		Method(http.MethodGet).
 		Describe("系统重启").
-		Auth("jyb").
 		Version(1).
+		CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
 		Handle(
 			func(c iris.Context) {
 				ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
