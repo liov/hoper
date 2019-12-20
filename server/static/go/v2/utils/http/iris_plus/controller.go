@@ -79,7 +79,7 @@ type Handler struct {
 }
 
 type apiInfo struct {
-	path, method, describe, auth, date string
+	path, method, describe, date string
 	//生成api用的参数，不优雅的实现
 	request, response, service interface{}
 	version                    int
@@ -88,7 +88,7 @@ type apiInfo struct {
 }
 
 type changelog struct {
-	version, date, log string
+	version, auth, date, log string
 }
 
 func (h *Handler) Path(p string) *Handler {
@@ -101,13 +101,16 @@ func (h *Handler) Date(d string) *Handler {
 	return h
 }
 
-func (h *Handler) ChangeLog(v, date, log string) *Handler {
-	h.changelog = append(h.changelog, changelog{v, date, log})
+func (h *Handler) ChangeLog(v, auth, date, log string) *Handler {
+	h.changelog = append(h.changelog, changelog{v, auth, date, log})
 	return h
 }
 
-func (h *Handler) CreateLog(v, date, log string) *Handler {
-	h.createlog = changelog{v, date, log}
+func (h *Handler) CreateLog(v, auth, date, log string) *Handler {
+	if h.createlog.version != "" {
+		panic("创建记录只允许一条")
+	}
+	h.createlog = changelog{v, auth, date, log}
 	return h
 }
 
@@ -141,12 +144,6 @@ func (h *Handler) Service(s interface{}) *Handler {
 	return h
 }
 
-func (h *Handler) Auth(a string) *Handler {
-
-	h.auth = a
-	return h
-}
-
 func (h *Handler) Handle(hs ...iris.Handler) *Handler {
 	if h.app == nil {
 		return h
@@ -166,84 +163,6 @@ func (h *Handler) Api() *Handler {
 }
 
 type HandlerFunc func(*Handler)
-
-func (handler HandlerFunc) Path(p string) HandlerFunc {
-	return func(h *Handler) {
-		handler(h)
-		h.path = p
-	}
-
-}
-
-func (handler HandlerFunc) Date(d string) HandlerFunc {
-	return func(h *Handler) {
-		handler(h)
-		h.date = d
-	}
-}
-
-func (handler HandlerFunc) ChangeLog(v, date, log string) HandlerFunc {
-	return func(h *Handler) {
-		handler(h)
-		h.changelog = append(h.changelog, changelog{v, date, log})
-	}
-}
-
-func (handler HandlerFunc) CreateLog(v, date, log string) HandlerFunc {
-	return func(h *Handler) {
-		handler(h)
-		h.createlog = changelog{v, date, log}
-	}
-}
-
-func (handler HandlerFunc) Version(v int) HandlerFunc {
-	return func(h *Handler) {
-		handler(h)
-		h.version = v
-	}
-}
-
-func (handler HandlerFunc) Method(m string) HandlerFunc {
-	return func(h *Handler) {
-		handler(h)
-		h.method = m
-	}
-}
-
-func (handler HandlerFunc) Describe(d string) HandlerFunc {
-	return func(h *Handler) {
-		handler(h)
-		h.describe = d
-	}
-}
-
-func (handler HandlerFunc) Request(r interface{}) HandlerFunc {
-	return func(h *Handler) {
-		handler(h)
-		h.request = r
-	}
-}
-
-func (handler HandlerFunc) Response(r interface{}) HandlerFunc {
-	return func(h *Handler) {
-		handler(h)
-		h.response = r
-	}
-}
-
-func (handler HandlerFunc) Service(s interface{}) HandlerFunc {
-	return func(h *Handler) {
-		handler(h)
-		h.service = s
-	}
-}
-
-func (handler HandlerFunc) Auth(a string) HandlerFunc {
-	return func(h *Handler) {
-		handler(h)
-		h.auth = a
-	}
-}
 
 func (handler HandlerFunc) Handle(hs ...iris.Handler) HandlerFunc {
 	return func(h *Handler) {
