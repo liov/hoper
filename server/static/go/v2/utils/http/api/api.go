@@ -13,33 +13,20 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var Doc spec.Swagger
+var Doc *spec.Swagger
 
-func NewPathItem() *spec.PathItem {
-	return &spec.PathItem{
-		VendorExtensible: spec.VendorExtensible{
-			Extensions: map[string]interface{}{
-				"x-framework": "go-swagger",
-			},
-		},
-		PathItemProps: spec.PathItemProps{
-			Parameters: []spec.Parameter{
-				{
-					ParamProps: spec.ParamProps{In: "path"},
-				},
-			},
-		},
-	}
-}
-
-func GetDoc(args ...string) {
-	if Doc.Swagger != "" {
-		return
+//参数为路径和格式
+func GetDoc(args ...string) *spec.Swagger {
+	if Doc != nil {
+		return Doc
 	}
 	targetPath := "."
 	if len(args) > 0 {
 		targetPath = args[0]
+	} else {
+		return generate()
 	}
+
 	realPath, err := filepath.Abs(targetPath)
 	if err != nil {
 		log.Error(err)
@@ -53,7 +40,7 @@ func GetDoc(args ...string) {
 	realPath = filepath.Join(realPath, "swagger."+apiType)
 
 	if _, err := os.Stat(realPath); os.IsNotExist(err) {
-		generate()
+		return generate()
 	} else {
 		file, err := os.Open(realPath)
 		if err != nil {
@@ -75,14 +62,14 @@ func GetDoc(args ...string) {
 				log.Error(err)
 			}
 		} else {
-			/*				var v map[string]interface{}//子类型 json: unsupported type: map[interface{}]interface{}
-							//var v interface{} //json: unsupported type: map[interface{}]interface{}
-							err = yaml.Unmarshal(data, &v)
-							b, err := json.Marshal(&v)
-							if err != nil {
-								ulog.Error(err)
-							}
-							json.Unmarshal(b, &Doc)*/
+			/*var v map[string]interface{}//子类型 json: unsupported type: map[interface{}]interface{}
+			//var v interface{} //json: unsupported type: map[interface{}]interface{}
+			err = yaml.Unmarshal(data, &v)
+			b, err := json.Marshal(&v)
+			if err != nil {
+				ulog.Error(err)
+			}
+			json.Unmarshal(b, &Doc)*/
 			trimmed := bytes.TrimSpace(data)
 			if len(trimmed) > 0 {
 				if trimmed[0] != '{' && trimmed[0] != '[' {
@@ -101,11 +88,11 @@ func GetDoc(args ...string) {
 			}
 		}
 	}
-
+	return Doc
 }
 
-func generate() {
-
+func generate() *spec.Swagger {
+	Doc = new(spec.Swagger)
 	info := new(spec.Info)
 	Doc.Info = info
 
@@ -134,33 +121,40 @@ func generate() {
 	Doc.Schemes = []string{"http", "https"}
 	Doc.Consumes = []string{"application/json"}
 	Doc.Produces = []string{"application/json"}
+	return Doc
 }
 
 func WriteToFile(args ...string) {
-	if Doc.Swagger == "" {
+	if Doc == nil {
 		generate()
 	}
-	targetPath := "."
+	realPath := "."
 	if len(args) > 0 {
-		targetPath = args[0]
+		realPath = args[0]
 	}
-	realPath, err := filepath.Abs(targetPath)
-	if err != nil {
-		log.Error(err)
+
+	mod := ""
+	if len(args) > 1 {
+		mod = args[1]
+		realPath = realPath + mod
+		err := os.MkdirAll(realPath, 0666)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 
 	apiType := "json"
-	if len(args) > 1 {
+	if len(args) > 2 {
 		apiType = args[1]
 	}
 
-	realPath = filepath.Join(realPath, "swagger."+apiType)
+	realPath = filepath.Join(realPath, mod+".service.swagger."+apiType)
 
 	if _, err := os.Stat(realPath); err == nil {
 		os.Remove(realPath)
 	}
 	var file *os.File
-	file, err = os.Create(realPath)
+	file, err := os.Create(realPath)
 	if err != nil {
 		log.Error(err)
 	}
@@ -169,12 +163,12 @@ func WriteToFile(args ...string) {
 	if apiType == "json" {
 		enc := json.NewEncoder(file)
 		enc.SetIndent("", "  ")
-		err = enc.Encode(&Doc)
+		err = enc.Encode(Doc)
 		if err != nil {
 			log.Error(err)
 		}
 	} else {
-		b, err := yaml.Marshal(swag.ToDynamicJSON(&Doc))
+		b, err := yaml.Marshal(swag.ToDynamicJSON(Doc))
 		if err != nil {
 			log.Error(err)
 		}
@@ -182,4 +176,8 @@ func WriteToFile(args ...string) {
 			log.Error(err)
 		}
 	}
+}
+
+func NilDoc() {
+	Doc = nil
 }

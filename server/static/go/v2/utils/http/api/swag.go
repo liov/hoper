@@ -13,7 +13,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
-var PrefixUri = "/open-api/"
+var PrefixUri = "/api-doc/"
 var FilePath = "../protobuf/"
 
 func HttpHandle(w http.ResponseWriter, r *http.Request) {

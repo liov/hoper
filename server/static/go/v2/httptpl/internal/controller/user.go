@@ -23,12 +23,18 @@ func (u *UserController) Middle() []iris.Handler {
 	return nil
 }
 
+func (u *UserController) Name() string {
+	return "user"
+}
+
 func (u *UserController) VerificationCode() {
 	u.Handler.
 		Path("/user/verificationCode").
 		Method(http.MethodPost).
-		Describe("获取验证码").
 		//这些信息不应该放在源代码里,都会打包进二进制文件
+		Request(new(utils.Empty)).
+		Response(new(model.VerifyRep)).
+		Describe("获取验证码").
 		Version(1).
 		CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
 		ChangeLog("1.0.1", "jyb", "2019/12/16", "修改").
@@ -45,6 +51,8 @@ func (u *UserController) Add() {
 	u.Handler.
 		Path("/user").
 		Method(http.MethodPost).
+		Request(new(model.SignupReq)).
+		Response(new(model.SignupRep)).
 		Describe("新增用户").
 		Version(1).
 		CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
@@ -61,6 +69,8 @@ func (u *UserController) Get() {
 	u.Handler.
 		Path("/user/{id:uint64}").
 		Method(http.MethodGet).
+		Request(new(model.GetReq)).
+		Response(new(model.GetRep)).
 		Describe("获取用户信息").
 		Version(1).
 		CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
@@ -81,11 +91,11 @@ func (u *UserController) Edit() {
 	u.Handler.
 		Path("/user/{id:uint64}").
 		Method(http.MethodPut).
+		Request(new(model.EditReq)).
+		Response(new(model.LoginRep)).
 		Describe("用户编辑").
 		Version(1).
 		CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
-		Request(&model.EditReq{}).
-		Response(&model.LoginRep{}).
 		Handle(func(c iris.Context) {})
 }
 

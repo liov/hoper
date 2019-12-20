@@ -70,7 +70,7 @@ func App() *iris.Application {
 		ctx.Writef("My Custom error page")
 	})
 
-	iris_plus.Register(app, route())
+	iris_plus.Register(app, route(), config.Conf.Env == initialize.DEVELOPMENT)
 
 	return app
 }
