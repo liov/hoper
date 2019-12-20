@@ -6,12 +6,13 @@ import (
 
 	"github.com/liov/hoper/go/v2/httptpl/internal/grpcclient"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/protobuf/utils"
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
 type UserService struct{}
 
-func (*UserService) VerificationCode(req *model.VerifyReq) *model.VerifyRep {
+func (*UserService) VerificationCode(req *utils.Empty) *model.VerifyRep {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 	rep, err := grpcclient.UserClient.Verify(ctx, req)

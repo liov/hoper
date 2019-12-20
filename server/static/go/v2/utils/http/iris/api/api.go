@@ -22,19 +22,19 @@ func OpenApi(mux *iris.Application, filePath string) {
 func ApiMiddle(ctx context.Context) {
 	currentRouteName := ctx.GetCurrentRoute().Name()[len(ctx.Method()):]
 
-	pathItem := new(spec.PathItem)
+	var pathItem *spec.PathItem
 
-	api.GetDoc("../")
-	doc := &api.Doc
+	doc := api.GetDoc("../")
+
 	if doc.Paths != nil && doc.Paths.Paths != nil {
 		if path, ok := doc.Paths.Paths[currentRouteName]; ok {
 			pathItem = &path
 		} else {
-			pathItem = api.NewPathItem()
+			pathItem = new(spec.PathItem)
 		}
 	} else {
 		doc.Paths = &spec.Paths{Paths: map[string]spec.PathItem{}}
-		pathItem = api.NewPathItem()
+		pathItem = new(spec.PathItem)
 	}
 
 	parameters := make([]spec.Parameter, ctx.Params().Store.Len(), ctx.Params().Store.Len())
