@@ -101,3 +101,11 @@ type KafkaConfig struct {
 	ProdAddr []string
 	ConsAddr []string
 }
+
+type ApolloConfig struct {
+	Addr      string
+	AppId     string `json:"appId"`
+	Cluster   string `json:"cluster"`
+	IP        string `json:"ip"`
+	NameSpace []string
+}
