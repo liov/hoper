@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"path"
 	"path/filepath"
 
 	runtime2 "github.com/liov/hoper/go/v2/utils/runtime"
@@ -18,7 +17,7 @@ func (d Dir) Open(name string) (*os.File, error) {
 	if dir == "" {
 		dir = "."
 	}
-	fullName := filepath.Join(dir, filepath.FromSlash(path.Clean("/"+name)))
+	fullName := filepath.Join(dir, filepath.FromSlash(filepath.Clean(string(os.PathSeparator)+name)))
 	f, err := os.Open(fullName)
 	if err != nil {
 		return nil, err
@@ -39,7 +38,7 @@ func FindFile(path string) (string, error) {
 	if subFilepath := subDirFile(wd, path); subFilepath != "" {
 		return subFilepath, nil
 	}
-	if supFilepath := supDirFile(wd+"/", path); supFilepath != "" {
+	if supFilepath := supDirFile(wd+string(os.PathSeparator), path); supFilepath != "" {
 		return supFilepath, nil
 	}
 	return "", errors.New("找不到文件")
@@ -102,7 +101,7 @@ func FindFiles(path string, deep int8, callback func(filepath string)) ([]string
 	}
 
 	subDirFiles(wd, path, "", &files, deep, 0)
-	supDirFiles(wd+"/", path, &files, deep, 0)
+	supDirFiles(wd+string(os.PathSeparator), path, &files, deep, 0)
 	if len(files) == 0 {
 		return nil, errors.New("找不到文件")
 	}
@@ -178,7 +177,7 @@ func FindFile2(path string, deep int8, num int) ([]string, error) {
 	go subDirFiles2(wd, path, "", file, deep, 0, ctx)
 
 	ctx.Start()
-	go supDirFiles2(wd+"/", path, file, deep, 0, ctx)
+	go supDirFiles2(wd+string(os.PathSeparator), path, file, deep, 0, ctx)
 	var files []string
 	for filepath1 := range file {
 		if files = append(files, filepath1); len(files) == num {
