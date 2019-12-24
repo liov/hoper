@@ -6,15 +6,24 @@ import (
 	"github.com/olivere/elastic"
 )
 
-func (i *Init) P2Elastic() *elastic.Client {
-	esConf := ElasticConfig{}
-	if exist := reflect3.GetFieldValue(i.conf, &esConf); !exist {
-		return nil
-	}
+type ElasticConfig struct {
+	Host string
+	Port int32
+}
+
+func (conf *ElasticConfig) Generate() *elastic.Client {
 	client, err := elastic.NewClient()
 	if err != nil {
 		log.Error(err)
 	}
 	//closes = append(closes,client.Stop)
 	return client
+}
+
+func (i *Init) P2Elastic() *elastic.Client {
+	conf := &ElasticConfig{}
+	if exist := reflect3.GetFieldValue(i.conf, conf); !exist {
+		return nil
+	}
+	return conf.Generate()
 }

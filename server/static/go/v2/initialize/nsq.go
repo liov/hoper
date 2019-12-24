@@ -7,11 +7,14 @@ import (
 	"github.com/nsqio/go-nsq"
 )
 
-func (i *Init) P2NSQ() (*nsq.Producer, *nsq.Consumer) {
-	conf := NsqConfig{}
-	if exist := reflect3.GetFieldValue(i.conf, &conf); !exist {
-		return nil, nil
-	}
+type NsqConfig struct {
+	Addr    string
+	Model   int8 //0生产者，1消费者，2所有
+	Topic   string
+	Channel string
+}
+
+func (conf *NsqConfig) Generate() (*nsq.Producer, *nsq.Consumer) {
 	cfg := nsq.NewConfig()
 	if conf.Model == 0 || conf.Model == 2 {
 		producer, err := nsq.NewProducer(conf.Addr, cfg)
@@ -47,4 +50,12 @@ func (i *Init) P2NSQ() (*nsq.Producer, *nsq.Consumer) {
 		return nil, customer
 	}
 	return nil, nil
+}
+
+func (i *Init) P2NSQ() (*nsq.Producer, *nsq.Consumer) {
+	conf := &NsqConfig{}
+	if exist := reflect3.GetFieldValue(i.conf, conf); !exist {
+		return nil, nil
+	}
+	return conf.Generate()
 }

@@ -6,12 +6,14 @@ import (
 	"github.com/liov/hoper/go/v2/utils/reflect3"
 )
 
-func (i *Init) P2Kafka() (sarama.SyncProducer, sarama.Consumer) {
-	conf := KafkaConfig{}
-	if exist := reflect3.GetFieldValue(i.conf, &conf); !exist {
-		return nil, nil
-	}
+type KafkaConfig struct {
+	Model    int8 //0生产者，1消费者，2所有
+	Topic    string
+	ProdAddr []string
+	ConsAddr []string
+}
 
+func (conf *KafkaConfig) Generate() (sarama.SyncProducer, sarama.Consumer) {
 	if conf.Model == 0 || conf.Model == 2 {
 		config := sarama.NewConfig()
 		// 等待服务器所有副本都保存成功后的响应
@@ -38,4 +40,12 @@ func (i *Init) P2Kafka() (sarama.SyncProducer, sarama.Consumer) {
 		return nil, consumer
 	}
 	return nil, nil
+}
+
+func (i *Init) P2Kafka() (sarama.SyncProducer, sarama.Consumer) {
+	conf := &KafkaConfig{}
+	if exist := reflect3.GetFieldValue(i.conf, conf); !exist {
+		return nil, nil
+	}
+	return conf.Generate()
 }

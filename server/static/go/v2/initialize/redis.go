@@ -7,11 +7,15 @@ import (
 	"github.com/liov/hoper/go/v2/utils/reflect3"
 )
 
-func (i *Init) P2Redis() *redis.Pool {
-	conf := RedisConfig{}
-	if exist := reflect3.GetFieldValue(i.conf, &conf); !exist {
-		return nil
-	}
+type RedisConfig struct {
+	Addr        string
+	Password    string
+	MaxIdle     int
+	MaxActive   int
+	IdleTimeout time.Duration
+}
+
+func (conf *RedisConfig) Generate() *redis.Pool {
 	conf.IdleTimeout = conf.IdleTimeout * time.Second
 	pool := &redis.Pool{
 		MaxIdle:     conf.MaxIdle,
@@ -38,4 +42,13 @@ func (i *Init) P2Redis() *redis.Pool {
 	}
 	//closes = append(closes,pool.Close)
 	return pool
+}
+
+func (i *Init) P2Redis() *redis.Pool {
+	conf := &RedisConfig{}
+	if exist := reflect3.GetFieldValue(i.conf, conf); !exist {
+		return nil
+	}
+
+	return conf.Generate()
 }

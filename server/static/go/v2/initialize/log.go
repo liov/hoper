@@ -6,16 +6,29 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-func (i *Init) P1Log() {
-	conf := LogConfig{}
-	if exist := reflect3.GetFieldValue(i.conf, &conf); !exist {
-		return
-	}
-	(&log.Config{
-		Development: i.Env == DEVELOPMENT,
-		ModuleName:  i.Module,
+type LogConfig struct {
+	Level       int8
+	Skip        bool
+	OutputPaths map[string][]string
+}
+
+func (conf *LogConfig) Generate() *log.Config {
+	return &log.Config{
+		Development: true,
+		ModuleName:  "",
 		Skip:        conf.Skip,
 		Level:       zapcore.Level(conf.Level),
 		OutputPaths: conf.OutputPaths,
-	}).SetLogger()
+	}
+}
+
+func (i *Init) P1Log() {
+	conf := &LogConfig{}
+	if exist := reflect3.GetFieldValue(i.conf, conf); !exist {
+		return
+	}
+	logConf := conf.Generate()
+	logConf.Development = i.Env == DEVELOPMENT
+	logConf.ModuleName = i.Module
+	logConf.SetLogger()
 }
