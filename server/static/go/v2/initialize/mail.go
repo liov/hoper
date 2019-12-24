@@ -17,9 +17,9 @@ func (conf *MailConfig) Generate() smtp.Auth {
 	return smtp.PlainAuth("", conf.From, conf.Password, conf.Host)
 }
 
-func (i *Init) P3Mail() smtp.Auth {
+func (init *Init) P3Mail() smtp.Auth {
 	conf := &MailConfig{}
-	if exist := reflect3.GetFieldValue(i.conf, conf); !exist {
+	if exist := reflect3.GetFieldValue(init.conf, conf); !exist {
 		return nil
 	}
 	return conf.Generate()

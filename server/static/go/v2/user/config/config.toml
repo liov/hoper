@@ -3,7 +3,7 @@ NoInit = ["Cache"]
 Module = "user"
 #dev | test | prod
 Env = "dev"
-Additional  = "../../../config/add-config.toml"
+HasAddConfig  = true
 
 [iris]
 DisableStartupLog= false

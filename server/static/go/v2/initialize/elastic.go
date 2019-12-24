@@ -20,9 +20,9 @@ func (conf *ElasticConfig) Generate() *elastic.Client {
 	return client
 }
 
-func (i *Init) P2Elastic() *elastic.Client {
+func (init *Init) P2Elastic() *elastic.Client {
 	conf := &ElasticConfig{}
-	if exist := reflect3.GetFieldValue(i.conf, conf); !exist {
+	if exist := reflect3.GetFieldValue(init.conf, conf); !exist {
 		return nil
 	}
 	return conf.Generate()

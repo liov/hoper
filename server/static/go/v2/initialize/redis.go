@@ -44,9 +44,9 @@ func (conf *RedisConfig) Generate() *redis.Pool {
 	return pool
 }
 
-func (i *Init) P2Redis() *redis.Pool {
+func (init *Init) P2Redis() *redis.Pool {
 	conf := &RedisConfig{}
-	if exist := reflect3.GetFieldValue(i.conf, conf); !exist {
+	if exist := reflect3.GetFieldValue(init.conf, conf); !exist {
 		return nil
 	}
 

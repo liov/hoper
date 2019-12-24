@@ -27,69 +27,14 @@ func (d Dir) Open(name string) (*os.File, error) {
 
 //path和filepath两个包，filepath文件专用
 func FindFile(path string) (string, error) {
-	wd, err := os.Getwd()
+	files, err := FindFiles(path, 5, 1)
 	if err != nil {
 		return "", err
 	}
-	filepath1 := filepath.Join(wd, path)
-	if _, err = os.Stat(filepath1); !os.IsNotExist(err) {
-		return filepath1, nil
-	}
-	if subFilepath := subDirFile(wd, path); subFilepath != "" {
-		return subFilepath, nil
-	}
-	if supFilepath := supDirFile(wd+string(os.PathSeparator), path); supFilepath != "" {
-		return supFilepath, nil
-	}
-	return "", errors.New("找不到文件")
+	return files[0], nil
 }
 
-//直接看子文件夹中是否存在文件而不是在下次递归时看当前文件夹，这样可以减少递归次数
-//貌似也只能减少一次...
-func subDirFile(dir, path string) string {
-	fileInfos, err := ioutil.ReadDir(dir)
-	if err != nil {
-		log.Println(err)
-	}
-	for i := range fileInfos {
-		if fileInfos[i].IsDir() {
-			filepath1 := filepath.Join(dir, fileInfos[i].Name(), path)
-			if _, err = os.Stat(filepath1); !os.IsNotExist(err) {
-				return filepath1
-			}
-			return subDirFile(filepath.Join(dir, fileInfos[i].Name()), path)
-		}
-	}
-	return ""
-}
-
-func supDirFile(dir, path string) string {
-	dir, dirName := filepath.Split(dir[:len(dir)-1])
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		return ""
-	}
-	filepath1 := filepath.Join(dir, path)
-	if _, err := os.Stat(filepath1); !os.IsNotExist(err) {
-		return filepath1
-	}
-	fileInfos, err := ioutil.ReadDir(dir)
-	if err != nil {
-		log.Println(err)
-	}
-	for i := range fileInfos {
-		if fileInfos[i].IsDir() {
-			if fileInfos[i].Name() == dirName {
-				continue
-			}
-			if subFilepath := subDirFile(filepath.Join(dir, fileInfos[i].Name()), path); subFilepath != "" {
-				return subFilepath
-			}
-		}
-	}
-	return supDirFile(dir, path)
-}
-
-func FindFiles(path string, deep int8, callback func(filepath string)) ([]string, error) {
+func FindFiles(path string, deep int8, num int) ([]string, error) {
 	wd, err := os.Getwd()
 	if err != nil {
 		return nil, err
@@ -98,22 +43,20 @@ func FindFiles(path string, deep int8, callback func(filepath string)) ([]string
 	filepath1 := filepath.Join(wd, path)
 	if _, err = os.Stat(filepath1); !os.IsNotExist(err) {
 		files = append(files, filepath1)
+		if len(files) == num {
+			return files, nil
+		}
 	}
 
-	subDirFiles(wd, path, "", &files, deep, 0)
-	supDirFiles(wd+string(os.PathSeparator), path, &files, deep, 0)
+	subDirFiles(wd, path, "", &files, deep, 0, num)
+	supDirFiles(wd+string(os.PathSeparator), path, &files, deep, 0, num)
 	if len(files) == 0 {
 		return nil, errors.New("找不到文件")
-	}
-	for i := range files {
-		if callback != nil {
-			callback(files[i])
-		}
 	}
 	return files, nil
 }
 
-func subDirFiles(dir, path, exclude string, files *[]string, deep, step int8) {
+func subDirFiles(dir, path, exclude string, files *[]string, deep, step int8, num int) {
 	step += 1
 	if step-1 == deep {
 		return
@@ -130,13 +73,16 @@ func subDirFiles(dir, path, exclude string, files *[]string, deep, step int8) {
 			filepath1 := filepath.Join(dir, fileInfos[i].Name(), path)
 			if _, err = os.Stat(filepath1); !os.IsNotExist(err) {
 				*files = append(*files, filepath1)
+				if len(*files) == num {
+					return
+				}
 			}
-			subDirFiles(filepath.Join(dir, fileInfos[i].Name()), path, "", files, deep, step)
+			subDirFiles(filepath.Join(dir, fileInfos[i].Name()), path, "", files, deep, step, num)
 		}
 	}
 }
 
-func supDirFiles(dir, path string, files *[]string, deep, step int8) {
+func supDirFiles(dir, path string, files *[]string, deep, step int8, num int) {
 	step += 1
 	if step-1 == deep {
 		return
@@ -148,13 +94,16 @@ func supDirFiles(dir, path string, files *[]string, deep, step int8) {
 	filepath1 := filepath.Join(dir, path)
 	if _, err := os.Stat(filepath1); !os.IsNotExist(err) {
 		*files = append(*files, filepath1)
+		if len(*files) == num {
+			return
+		}
 	}
-	subDirFiles(dir, path, dirName, files, deep, 0)
-	supDirFiles(dir, path, files, deep, step)
+	subDirFiles(dir, path, dirName, files, deep, 0, num)
+	supDirFiles(dir, path, files, deep, step, num)
 }
 
 //path和filepath两个包，filepath文件专用
-func FindFile2(path string, deep int8, num int) ([]string, error) {
+func FindFiles2(path string, deep int8, num int) ([]string, error) {
 	wd, err := os.Getwd()
 	if err != nil {
 		return nil, err
@@ -181,7 +130,7 @@ func FindFile2(path string, deep int8, num int) ([]string, error) {
 	var files []string
 	for filepath1 := range file {
 		if files = append(files, filepath1); len(files) == num {
-			close(file)
+			//close(file) 这里无需做关闭操作，会关的
 			return files, nil
 		}
 	}

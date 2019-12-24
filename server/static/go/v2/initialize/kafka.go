@@ -42,9 +42,9 @@ func (conf *KafkaConfig) Generate() (sarama.SyncProducer, sarama.Consumer) {
 	return nil, nil
 }
 
-func (i *Init) P2Kafka() (sarama.SyncProducer, sarama.Consumer) {
+func (init *Init) P2Kafka() (sarama.SyncProducer, sarama.Consumer) {
 	conf := &KafkaConfig{}
-	if exist := reflect3.GetFieldValue(i.conf, conf); !exist {
+	if exist := reflect3.GetFieldValue(init.conf, conf); !exist {
 		return nil, nil
 	}
 	return conf.Generate()

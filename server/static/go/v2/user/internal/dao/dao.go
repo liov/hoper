@@ -8,6 +8,7 @@ import (
 	"github.com/etcd-io/bbolt"
 	"github.com/gomodule/redigo/redis"
 	"github.com/jinzhu/gorm"
+	"github.com/liov/hoper/go/v2/tools/apollo"
 	"github.com/liov/hoper/go/v2/utils/dao/gormCallback"
 )
 
@@ -28,6 +29,7 @@ type dao struct {
 	McExpire    int32
 	//elastic
 	MailAuth smtp.Auth
+	Apollo   *apollo.Server
 }
 
 // Close close the resource.

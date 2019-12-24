@@ -14,12 +14,13 @@ type ApolloConfig struct {
 }
 
 func (conf *ApolloConfig) Generate() *apollo.Server {
-	return apollo.New(conf.Addr, conf.AppId, conf.Cluster, conf.IP)
+	return apollo.New(conf.Addr, conf.AppId, conf.Cluster, conf.IP, conf.NameSpace)
 }
 
-func (i *Init) P0Apollo() *apollo.Server {
+//优先级应该最低，要更新配置
+func (init *Init) P9Apollo() *apollo.Server {
 	conf := &ApolloConfig{}
-	if exist := reflect3.GetFieldValue(i.conf, conf); !exist {
+	if exist := reflect3.GetFieldValue(init.conf, conf); !exist {
 		return nil
 	}
 	return conf.Generate()

@@ -8,6 +8,7 @@ require (
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/bluele/gcache v0.0.0-20190518031135-bc40bd653833
 	github.com/etcd-io/bbolt v1.3.3
+	github.com/fsnotify/fsnotify v1.4.7
 	github.com/gavv/monotime v0.0.0-20190418164738-30dba4353424 // indirect
 	github.com/go-openapi/loads v0.19.4
 	github.com/go-openapi/runtime v0.19.8
@@ -51,6 +52,7 @@ require (
 	github.com/sergi/go-diff v1.0.0 // indirect
 	github.com/smartystreets/assertions v0.0.0-20190116191733-b6c0e53d7304 // indirect
 	github.com/smartystreets/goconvey v0.0.0-20181108003508-044398e4856c // indirect
+	github.com/spf13/viper v1.3.2
 	github.com/stretchr/testify v1.4.0
 	github.com/tidwall/gjson v1.3.5 // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect

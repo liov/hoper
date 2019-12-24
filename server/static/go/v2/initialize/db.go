@@ -56,14 +56,14 @@ func (conf *DatabaseConfig) Generate() *gorm.DB {
 	return db
 }
 
-func (i *Init) P2DB() *gorm.DB {
+func (init *Init) P2DB() *gorm.DB {
 	conf := &DatabaseConfig{}
-	if exist := reflect3.GetFieldValue(i.conf, conf); !exist {
+	if exist := reflect3.GetFieldValue(init.conf, conf); !exist {
 		return nil
 	}
 
 	db := conf.Generate()
-	if i.Env != PRODUCT {
+	if init.Env != PRODUCT {
 		//b不set输出空白
 		//db.SetLogger(gorm.Logger{stdlog.New(os.Stderr, "", 0)})
 		db.LogMode(true)

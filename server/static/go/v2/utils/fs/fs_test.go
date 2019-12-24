@@ -20,7 +20,7 @@ func TestFindFile(t *testing.T) {
 		fmt.Println(string(bytes))*/
 	files, _ := FindFiles("BUILD.bazel", 5, nil)
 	fmt.Println(files)
-	files2, _ := FindFile2("BUILD.bazel", 5, 0)
+	files2, _ := FindFiles2("BUILD.bazel", 5, 0)
 	fmt.Println(files2)
 	fmt.Println(len(files), len(files2))
 	fmt.Println(removeDuplicates(files, files2))
@@ -63,7 +63,7 @@ func BenchmarkFindFiles(b *testing.B) {
 
 // 0.0130 ns/op
 func BenchmarkFindFiles2(b *testing.B) {
-	FindFile2("BUILD.bazel", 5, 0)
+	FindFiles2("BUILD.bazel", 5, 0)
 }
 
 func TestGo(t *testing.T) {
