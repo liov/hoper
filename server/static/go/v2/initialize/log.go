@@ -22,13 +22,13 @@ func (conf *LogConfig) Generate() *log.Config {
 	}
 }
 
-func (i *Init) P1Log() {
+func (init *Init) P1Log() {
 	conf := &LogConfig{}
-	if exist := reflect3.GetFieldValue(i.conf, conf); !exist {
+	if exist := reflect3.GetFieldValue(init.conf, conf); !exist {
 		return
 	}
 	logConf := conf.Generate()
-	logConf.Development = i.Env == DEVELOPMENT
-	logConf.ModuleName = i.Module
+	logConf.Development = init.Env == DEVELOPMENT
+	logConf.ModuleName = init.Module
 	logConf.SetLogger()
 }

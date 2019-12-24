@@ -52,9 +52,9 @@ func (conf *NsqConfig) Generate() (*nsq.Producer, *nsq.Consumer) {
 	return nil, nil
 }
 
-func (i *Init) P2NSQ() (*nsq.Producer, *nsq.Consumer) {
+func (init *Init) P2NSQ() (*nsq.Producer, *nsq.Consumer) {
 	conf := &NsqConfig{}
-	if exist := reflect3.GetFieldValue(i.conf, conf); !exist {
+	if exist := reflect3.GetFieldValue(init.conf, conf); !exist {
 		return nil, nil
 	}
 	return conf.Generate()

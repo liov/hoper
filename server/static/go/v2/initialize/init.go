@@ -7,16 +7,21 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/fsnotify/fsnotify"
 	"github.com/jinzhu/configor"
 	"github.com/liov/hoper/go/v2/utils/fs"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/reflect3"
 )
 
+type EnvVar map[string]string
+
 var ConfUrl string
+var AddConfig string
 
 func init() {
 	flag.StringVar(&ConfUrl, "c", "./config/config.toml", "配置文件夹路径")
+	flag.StringVar(&AddConfig, "add", "add-config.toml", "额外配置文件名")
 }
 
 const (
@@ -34,11 +39,11 @@ type BasicConfig struct {
 }
 
 type Init struct {
-	BasicConfig
-	NoInit        []string
-	HasAdditional bool //附加配置，不对外公开的的配置,特定文件名,启用文件搜寻查找
-	conf          needInit
-	dao           dao
+	Module, Env  string
+	HasAddConfig bool //附加配置，不对外公开的的配置,特定文件名,启用文件搜寻查找
+	NoInit       []string
+	conf         needInit
+	dao          dao
 	//closes     []interface{}
 }
 
@@ -50,40 +55,29 @@ type needInit interface {
 	Custom()
 }
 
+type config interface {
+	//BasicConfig() *BasicConfig
+	needInit
+}
+
 type dao interface {
 	Close()
 	needInit
 }
 
+var fist = true
+
 //init函数命名规则，P+数字（优先级）+ 功能名
-func Start(conf needInit, dao dao) func() {
+func Start(conf config, dao dao) func() {
 	if !flag.Parsed() {
 		flag.Parse()
 	}
 	init := &Init{conf: conf, dao: dao}
 	init.config()
-	value := reflect.ValueOf(init)
-	noInit := strings.Join(init.NoInit, " ")
-	typeOf := value.Type()
-	for i := 0; i < value.NumMethod(); i++ {
-		if strings.Contains(noInit, typeOf.Method(i).Name[2:]) {
-			continue
-		}
-		if typeOf.Method(i).Type.NumOut() > 0 && dao == nil {
-			continue
-		}
-
-		if res := value.Method(i).Call(nil); res != nil && len(res) > 0 {
-			daoValue := reflect.ValueOf(dao).Elem()
-			for j := range res {
-				if res[j].IsValid() {
-					reflect3.SetFieldValue(daoValue, res[j])
-				}
-			}
-		}
-	}
-	if dao != nil {
-		dao.Custom()
+	init.setDao()
+	if fist {
+		go Watcher(conf, dao)
+		fist = false
 	}
 
 	return func() {
@@ -100,26 +94,26 @@ func Start(conf needInit, dao dao) func() {
 	}
 }
 
-func (i *Init) config() {
+func (init *Init) config() {
 	if _, err := os.Stat(ConfUrl); os.IsNotExist(err) {
 		log.Fatalf("配置文件不存在：", err)
 	}
 	err := configor.New(&configor.Config{Debug: false}).
-		Load(i, ConfUrl) //"./config/config.toml"
+		Load(init, ConfUrl) //"./config/config.toml"
 	dir, file := path.Split(ConfUrl)
 	if err != nil {
 		log.Fatalf("配置错误: %v", err)
 	}
-	err = configor.New(&configor.Config{Debug: i.Env != PRODUCT}).
-		Load(i.conf, ConfUrl, dir+i.Env+path.Ext(file)) //"./config/{{env}}.toml"
+	err = configor.New(&configor.Config{Debug: init.Env != PRODUCT}).
+		Load(init.conf, ConfUrl, dir+init.Env+path.Ext(file)) //"./config/{{env}}.toml"
 	if err != nil {
 		log.Fatalf("配置错误: %v", err)
 	}
-	if i.HasAdditional {
-		adCongPath, err := fs.FindFile2("add-config.toml", 5, 1)
+	if init.HasAddConfig {
+		adCongPath, err := fs.FindFile(AddConfig)
 		if err == nil {
-			err := configor.New(&configor.Config{Debug: i.Env != PRODUCT}).
-				Load(i.conf, adCongPath[0])
+			err := configor.New(&configor.Config{Debug: init.Env != PRODUCT}).
+				Load(init.conf, adCongPath)
 			if err != nil {
 				log.Fatalf("配置错误: %v", err)
 			}
@@ -127,5 +121,67 @@ func (i *Init) config() {
 			log.Fatalf("配置错误: %v", err)
 		}
 	}
-	i.conf.Custom()
+	init.conf.Custom()
+}
+
+func (init *Init) setDao() {
+	value := reflect.ValueOf(init)
+	noInit := strings.Join(init.NoInit, " ")
+	typeOf := value.Type()
+	for i := 0; i < value.NumMethod(); i++ {
+		if strings.Contains(noInit, typeOf.Method(i).Name[2:]) {
+			continue
+		}
+		if typeOf.Method(i).Type.NumOut() > 0 && init.dao == nil {
+			continue
+		}
+
+		if res := value.Method(i).Call(nil); res != nil && len(res) > 0 {
+			daoValue := reflect.ValueOf(init.dao).Elem()
+			for j := range res {
+				if res[j].IsValid() {
+					reflect3.SetFieldValue(daoValue, res[j])
+				}
+			}
+		}
+	}
+	if init.dao != nil {
+		init.dao.Custom()
+	}
+}
+
+func Watcher(conf config, dao dao) {
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer watcher.Close()
+
+	done := make(chan bool)
+	go func() {
+		for {
+			select {
+			case event, ok := <-watcher.Events:
+				if !ok {
+					return
+				}
+				log.Info("event:", event)
+				if event.Op&fsnotify.Write == fsnotify.Write {
+					Start(conf, dao)
+					log.Info("modified file:", event.Name)
+				}
+			case err, ok := <-watcher.Errors:
+				if !ok {
+					return
+				}
+				log.Error("error:", err)
+			}
+		}
+	}()
+
+	err = watcher.Add(ConfUrl)
+	if err != nil {
+		log.Fatal(err)
+	}
+	<-done
 }

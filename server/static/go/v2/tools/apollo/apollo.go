@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	url2 "net/url"
+
+	"github.com/liov/hoper/go/v2/utils/log"
 )
 
 type Server struct {
@@ -18,8 +20,8 @@ type Server struct {
 	Notifications  NotificationMap
 }
 
-func New(addr, appId, cluster, ip string) *Server {
-	return &Server{
+func New(addr, appId, cluster, ip string, namespaces []string) *Server {
+	s := &Server{
 		Addr:           addr,
 		AppId:          appId,
 		Cluster:        cluster,
@@ -27,6 +29,15 @@ func New(addr, appId, cluster, ip string) *Server {
 		Configurations: map[string]*Apollo{},
 		Notifications:  map[string]int{},
 	}
+
+	for i := range namespaces {
+		s.Notifications[namespaces[i]] = -1
+		err := s.GetCacheConfig(namespaces[i])
+		if err != nil {
+			log.Error(err)
+		}
+	}
+	return s
 }
 
 type Apollo struct {
@@ -173,4 +184,22 @@ func (s *Server) UpdateConfig(appId, clusterName string) error {
 		}
 	}
 	return nil
+}
+
+func (s *Server) Get(namespace, key string) string {
+	if s.Configurations == nil {
+		return ""
+	}
+	ap, ok := s.Configurations[namespace]
+	if !ok {
+		return ""
+	}
+	if ap.Configurations == nil {
+		return ""
+	}
+	return ap.Configurations[key]
+}
+
+func (s *Server) GetDefault(key string) string {
+	return s.Get("default", key)
 }
