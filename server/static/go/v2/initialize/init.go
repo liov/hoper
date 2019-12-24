@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/liov/hoper/go/v2/utils/fs"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/reflect3"
 )
@@ -17,14 +18,23 @@ const (
 
 //var closes = []interface{}{log.Sync}
 
+type BasicConfig struct {
+	Module string
+	Env    string
+	Volume fs.Dir
+}
+
 type Init struct {
-	Env        string
-	Module     string
-	NoInit     []string
-	Additional string //附加配置，不对外公开的的配置
-	conf       needInit
-	dao        dao
+	BasicConfig
+	NoInit        []string
+	HasAdditional bool //附加配置，不对外公开的的配置,特定文件名,启用文件搜寻查找
+	conf          needInit
+	dao           dao
 	//closes     []interface{}
+}
+
+type Config interface {
+	Generate(dao)
 }
 
 type needInit interface {

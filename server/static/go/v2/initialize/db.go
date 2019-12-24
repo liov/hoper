@@ -17,11 +17,21 @@ const (
 	SQLite   = "sqlite3"
 )
 
-func (i *Init) P2DB() *gorm.DB {
-	conf := DatabaseConfig{}
-	if exist := reflect3.GetFieldValue(i.conf, &conf); !exist {
-		return nil
-	}
+type DatabaseConfig struct {
+	Type         string
+	User         string
+	Password     string
+	Host         string
+	Charset      string
+	Database     string
+	TimeFormat   string
+	TablePrefix  string
+	MaxIdleConns int
+	MaxOpenConns int
+	Port         int32
+}
+
+func (conf *DatabaseConfig) Generate() *gorm.DB {
 	var url string
 	if conf.Type == MYSQL {
 		url = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
@@ -43,7 +53,16 @@ func (i *Init) P2DB() *gorm.DB {
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
 		return conf.TablePrefix + defaultTableName
 	}
+	return db
+}
 
+func (i *Init) P2DB() *gorm.DB {
+	conf := &DatabaseConfig{}
+	if exist := reflect3.GetFieldValue(i.conf, conf); !exist {
+		return nil
+	}
+
+	db := conf.Generate()
 	if i.Env != PRODUCT {
 		//b不set输出空白
 		//db.SetLogger(gorm.Logger{stdlog.New(os.Stderr, "", 0)})
