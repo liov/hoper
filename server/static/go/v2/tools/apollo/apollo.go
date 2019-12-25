@@ -78,8 +78,33 @@ func (s *Server) GetCacheConfig(namespace string) error {
 	return nil
 }
 
+func (s *Server) GetInitConfig(namespace string) (map[string]string, error) {
+	url := fmt.Sprintf("http://%s/configfiles/json/%s/%s/%s", s.Addr, s.AppId, s.Cluster, namespace)
+	if s.IP != "" {
+		url += "?ip=" + s.IP
+	}
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	var config map[string]string
+	err = json.Unmarshal(body, &config)
+	if err != nil {
+		return nil, err
+	}
+	return config, nil
+}
+
 func (s *Server) GetNoCacheConfig(namespace string) error {
 	url := fmt.Sprintf("http://%s/configs/%s/%s/%s", s.Addr, s.AppId, s.Cluster, namespace)
+	_, ok := s.Configurations[namespace]
+	if !ok {
+		s.Configurations[namespace] = &Apollo{}
+	}
 	releaseKey := s.Configurations[namespace].ReleaseKey
 	if releaseKey != "" && s.IP != "" {
 		url += "?releaseKey=" + releaseKey + "&ip=" + s.IP
@@ -98,11 +123,6 @@ func (s *Server) GetNoCacheConfig(namespace string) error {
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
-	}
-
-	_, ok := s.Configurations[namespace]
-	if !ok {
-		s.Configurations[namespace] = &Apollo{}
 	}
 	err = json.Unmarshal(body, s.Configurations[namespace])
 	if err != nil {
@@ -152,38 +172,55 @@ func (nm NotificationMap) Update(ns []NotificationInfo) {
 }
 
 func (s *Server) UpdateConfig(appId, clusterName string) error {
-	notificationSlice := s.Notifications.ToSlice()
-	notifications, err := json.Marshal(&notificationSlice)
-	url := fmt.Sprintf("http://%s/notifications/v2?", s.Addr) +
-		url2.Values{
-			"appId":         []string{appId},
-			"cluster":       []string{clusterName},
-			"notifications": []string{string(notifications)},
-		}.Encode()
-	resp, err := http.Get(url)
+	urlStr := fmt.Sprintf("http://%s/notifications/v2?appId=%s&cluster=%s",
+		s.Addr, appId, clusterName)
+	req, err := http.NewRequest("GET", urlStr, nil)
 	if err != nil {
 		return err
 	}
-	if resp.Status == "304" {
-		return &NoChangeError{}
-	}
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-	var changeNamespace []NotificationInfo
-	err = json.Unmarshal(body, &changeNamespace)
-	if err != nil {
-		return err
-	}
-	for i := range changeNamespace {
-		s.Notifications[changeNamespace[i].NamespaceName] = changeNamespace[i].NotificationId
-		err = s.GetNoCacheConfig(changeNamespace[i].NamespaceName)
-		if err != nil {
-			return err
+	req.Header["Connection"] = []string{"keep-alive"}
+	query := req.URL.RawQuery + "&"
+	var ch = make(chan struct{}, 1)
+	ch <- struct{}{}
+	for {
+		select {
+		case <-ch:
+			notificationSlice := s.Notifications.ToSlice()
+			notifications, err := json.Marshal(&notificationSlice)
+			newQuery := url2.Values{
+				"notifications": []string{string(notifications)},
+			}.Encode()
+			req.URL.RawQuery = query + newQuery
+			log.Debug("发送请求", req.URL)
+			resp, err := http.DefaultClient.Do(req)
+			if err != nil {
+				return err
+			}
+			if resp.Status == "304" {
+				ch <- struct{}{}
+				continue
+			}
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				return err
+			}
+			log.Debug("收到返回", string(body))
+			var changeNamespace []NotificationInfo
+			err = json.Unmarshal(body, &changeNamespace)
+			if err != nil {
+				return err
+			}
+			for i := range changeNamespace {
+				s.Notifications[changeNamespace[i].NamespaceName] = changeNamespace[i].NotificationId
+				err = s.GetNoCacheConfig(changeNamespace[i].NamespaceName)
+				log.Info(s.Configurations[changeNamespace[i].NamespaceName])
+				if err != nil {
+					return err
+				}
+			}
+			ch <- struct{}{}
 		}
 	}
-	return nil
 }
 
 func (s *Server) Get(namespace, key string) string {

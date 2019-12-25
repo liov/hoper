@@ -49,6 +49,7 @@ require (
 	github.com/mwitkow/go-proto-validators v0.2.0
 	github.com/nsqio/go-nsq v1.0.7
 	github.com/olivere/elastic v6.2.23+incompatible
+	github.com/pelletier/go-toml v1.2.0
 	github.com/sergi/go-diff v1.0.0 // indirect
 	github.com/smartystreets/assertions v0.0.0-20190116191733-b6c0e53d7304 // indirect
 	github.com/smartystreets/goconvey v0.0.0-20181108003508-044398e4856c // indirect

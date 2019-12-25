@@ -6,12 +6,14 @@ import (
 	"path"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/jinzhu/configor"
 	"github.com/liov/hoper/go/v2/utils/fs"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/reflect3"
+	"github.com/liov/hoper/go/v2/utils/watch"
 )
 
 type EnvVar map[string]string
@@ -65,7 +67,9 @@ type dao interface {
 	needInit
 }
 
-var fist = true
+var alreadyRun struct {
+	WatchConfig bool
+}
 
 //init函数命名规则，P+数字（优先级）+ 功能名
 func Start(conf config, dao dao) func() {
@@ -74,12 +78,12 @@ func Start(conf config, dao dao) func() {
 	}
 	init := &Init{conf: conf, dao: dao}
 	init.config()
+	init.apollo()
 	init.setDao()
-	if fist {
-		go Watcher(conf, dao)
-		fist = false
+	if !alreadyRun.WatchConfig {
+		//go Watcher(conf, dao)
+		alreadyRun.WatchConfig = true
 	}
-
 	return func() {
 		if dao != nil {
 			dao.Close()
@@ -151,37 +155,16 @@ func (init *Init) setDao() {
 }
 
 func Watcher(conf config, dao dao) {
-	watcher, err := fsnotify.NewWatcher()
+	watcher, err := watch.New(time.Second)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer watcher.Close()
+	watcher.Add(ConfUrl, fsnotify.Write, func() {
+		dao.Close()
+		Start(conf, dao)
+	})
 
-	done := make(chan bool)
-	go func() {
-		for {
-			select {
-			case event, ok := <-watcher.Events:
-				if !ok {
-					return
-				}
-				log.Info("event:", event)
-				if event.Op&fsnotify.Write == fsnotify.Write {
-					Start(conf, dao)
-					log.Info("modified file:", event.Name)
-				}
-			case err, ok := <-watcher.Errors:
-				if !ok {
-					return
-				}
-				log.Error("error:", err)
-			}
-		}
-	}()
-
-	err = watcher.Add(ConfUrl)
-	if err != nil {
-		log.Fatal(err)
-	}
-	<-done
+	watcher.Add(".watch", fsnotify.Write, func() {
+		watcher.Close()
+	})
 }
