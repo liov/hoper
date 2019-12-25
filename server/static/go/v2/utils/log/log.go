@@ -37,7 +37,7 @@ func (lf *Config) NewLogger() *Logger {
 	}
 }
 
-var logger *Logger = (&Config{Development: true, Skip: true}).NewLogger()
+var logger *Logger = (&Config{Development: true, Skip: true, Level: -1}).NewLogger()
 var NoCall = (&Config{Development: true}).NewLogger()
 
 func init() {

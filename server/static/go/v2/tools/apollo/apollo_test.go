@@ -1,12 +1,12 @@
 package apollo
 
 import (
-	"log"
 	"testing"
+
+	"github.com/liov/hoper/go/v2/utils/log"
 )
 
 func TestApollo(t *testing.T) {
-	log.SetFlags(15)
 	s := Server{
 		Addr:           "192.168.1.212:8080",
 		AppId:          "hoper",
@@ -17,12 +17,27 @@ func TestApollo(t *testing.T) {
 	}
 	err := s.GetCacheConfig("application")
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 	}
-	log.Println(s.Configurations["application"])
+	log.Debug(s.Configurations["application"])
 	err = s.GetNoCacheConfig("application")
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 	}
-	log.Println(s.Configurations["application"])
+	log.Info(s.Configurations["application"])
+}
+
+func TestApolloPoll(t *testing.T) {
+	s := Server{
+		Addr:           "192.168.1.212:8080",
+		AppId:          "hoper",
+		Cluster:        "default",
+		IP:             "",
+		Configurations: map[string]*Apollo{},
+		Notifications:  map[string]int{"application": -1},
+	}
+	err := s.UpdateConfig("hoper", "default")
+	if err != nil {
+		log.Error(err)
+	}
 }
