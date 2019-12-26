@@ -1,7 +1,6 @@
 package initialize
 
 import (
-	"fmt"
 	"reflect"
 	"strings"
 
@@ -20,47 +19,31 @@ type ApolloConfig struct {
 	NameSpace  []string
 }
 
-func (conf *ApolloConfig) Generate() *apollo.Server {
+func (conf *ApolloConfig) Generate() *apollo.Client {
 	return apollo.New(conf.Addr, conf.AppId, conf.Cluster, conf.IP, conf.NameSpace, conf.InitConfig)
 }
 
-func (init *Init) P9Apollo() *apollo.Server {
-	//配置更新时创建新的sever关闭旧的
-	dao := reflect.ValueOf(init.dao)
-	for i := 0; i < dao.NumField(); i++ {
-		if dao.Field(i).Type() == reflect.TypeOf(&apollo.Server{}) {
-			s := dao.Field(i).Interface()
-			if s != nil {
-				s.(*apollo.Server).Close()
-			}
-
-		}
-	}
-
+func (init *Init) P0Apollo() *apollo.Client {
 	conf := &ApolloConfig{}
 	if exist := reflect3.GetFieldValue(init.conf, conf); !exist {
 		return nil
 	}
-	conf.NameSpace = append(conf.NameSpace, "initialize")
+	//初始化更新配置，这里不需要，开启实时更新时初始化会更新一次
+	/*	c := apollo.NewConfig(conf.Addr, conf.AppId, conf.Cluster, conf.IP)
+		aConf, err := c.GetInitConfig(InitKey)
+		if err != nil {
+			panic(err)
+		}
+		apolloConfigEnable(init.conf, aConf)*/
+	//监听指定namespace的更新
+	conf.NameSpace = append(conf.NameSpace, InitKey)
 	cCopy := init.conf
-	conf.InitConfig = apollo.SpecialConfig{NameSpace: "initialize", Callback: func(m map[string]string) {
+	dCopy := init.dao
+	conf.InitConfig = apollo.SpecialConfig{NameSpace: InitKey, Callback: func(m map[string]string) {
 		apolloConfigEnable(cCopy, m)
+		Refresh(cCopy, dCopy)
 	}}
 	return conf.Generate()
-}
-
-//优先级应该最低，要更新配置
-func (init *Init) apollo() {
-	conf := &ApolloConfig{}
-	if exist := reflect3.GetFieldValue(init.conf, conf); !exist {
-		return
-	}
-	c := apollo.NewConfig(conf.Addr, conf.AppId, conf.Cluster, conf.IP)
-	aConf, err := c.GetInitConfig("initialize")
-	if err != nil {
-		panic(err)
-	}
-	apolloConfigEnable(init.conf, aConf)
 }
 
 func apolloConfigEnable(conf interface{}, aConf map[string]string) {
@@ -76,5 +59,5 @@ func apolloConfigEnable(conf interface{}, aConf map[string]string) {
 			log.Error(err)
 		}
 	}
-	fmt.Println(conf)
+	log.Debug(conf)
 }

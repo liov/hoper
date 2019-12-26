@@ -7,7 +7,7 @@ import (
 )
 
 func TestApollo(t *testing.T) {
-	s := Server{
+	s := Client{
 		Addr:           "192.168.1.212:8080",
 		AppId:          "hoper",
 		Cluster:        "default",
@@ -28,7 +28,7 @@ func TestApollo(t *testing.T) {
 }
 
 func TestApolloPoll(t *testing.T) {
-	s := Server{
+	s := Client{
 		Addr:           "192.168.1.212:8080",
 		AppId:          "hoper",
 		Cluster:        "default",

@@ -29,7 +29,7 @@ type dao struct {
 	McExpire    int32
 	//elastic
 	MailAuth smtp.Auth
-	Apollo   *apollo.Server
+	Apollo   *apollo.Client
 }
 
 // Close close the resource.
