@@ -58,7 +58,7 @@ IdleTimeout = 200
 
 #日志
 [log]
-Level = 0
+Level = -1
 Skip = true
 OutputPaths = {console = ["stderr"],json = []}
 
@@ -75,3 +75,6 @@ Addr = "192.168.1.212:8080"
 AppId = "hoper"
 Cluster = "default"
 NameSpace = ["application"]
+
+[consul]
+Addr = "192.168.1.212:8500"

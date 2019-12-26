@@ -4,8 +4,10 @@ import (
 	"flag"
 	"os"
 	"path"
+	"path/filepath"
 	"reflect"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/fsnotify/fsnotify"
@@ -30,6 +32,7 @@ const (
 	DEVELOPMENT = "dev"
 	TEST        = "test"
 	PRODUCT     = "prod"
+	InitKey     = "initialize"
 )
 
 //var closes = []interface{}{log.Sync}
@@ -47,6 +50,19 @@ type Init struct {
 	conf         needInit
 	dao          dao
 	//closes     []interface{}
+}
+
+func NewInit(conf config, dao dao) *Init {
+	init := &Init{conf: conf, dao: dao}
+	if _, err := os.Stat(ConfUrl); os.IsNotExist(err) {
+		log.Fatalf("配置文件不存在：", err)
+	}
+	err := configor.New(&configor.Config{Debug: false}).
+		Load(init, ConfUrl) //"./config/config.toml"
+	if err != nil {
+		log.Fatalf("配置错误: %v", err)
+	}
+	return init
 }
 
 type Config interface {
@@ -69,21 +85,21 @@ type dao interface {
 
 var alreadyRun struct {
 	WatchConfig bool
+	InitFunc    bool
 }
+
+var once sync.Once
 
 //init函数命名规则，P+数字（优先级）+ 功能名
 func Start(conf config, dao dao) func() {
 	if !flag.Parsed() {
 		flag.Parse()
 	}
-	init := &Init{conf: conf, dao: dao}
+	init := NewInit(conf, dao)
 	init.config()
-	init.apollo()
+	//从config到dao的过渡
 	init.setDao()
-	if !alreadyRun.WatchConfig {
-		//go Watcher(conf, dao)
-		alreadyRun.WatchConfig = true
-	}
+	//go Watcher(conf, dao)
 	return func() {
 		if dao != nil {
 			dao.Close()
@@ -99,16 +115,8 @@ func Start(conf config, dao dao) func() {
 }
 
 func (init *Init) config() {
-	if _, err := os.Stat(ConfUrl); os.IsNotExist(err) {
-		log.Fatalf("配置文件不存在：", err)
-	}
-	err := configor.New(&configor.Config{Debug: false}).
-		Load(init, ConfUrl) //"./config/config.toml"
-	dir, file := path.Split(ConfUrl)
-	if err != nil {
-		log.Fatalf("配置错误: %v", err)
-	}
-	err = configor.New(&configor.Config{Debug: init.Env != PRODUCT}).
+	dir, file := filepath.Split(ConfUrl)
+	err := configor.New(&configor.Config{Debug: init.Env != PRODUCT}).
 		Load(init.conf, ConfUrl, dir+init.Env+path.Ext(file)) //"./config/{{env}}.toml"
 	if err != nil {
 		log.Fatalf("配置错误: %v", err)
@@ -125,22 +133,29 @@ func (init *Init) config() {
 			log.Fatalf("配置错误: %v", err)
 		}
 	}
-	init.conf.Custom()
 }
 
+//反射方法命名规范,P+优先级+方法名+(执行一次+Once)
 func (init *Init) setDao() {
+	init.conf.Custom()
 	value := reflect.ValueOf(init)
 	noInit := strings.Join(init.NoInit, " ")
 	typeOf := value.Type()
 	for i := 0; i < value.NumMethod(); i++ {
-		if strings.Contains(noInit, typeOf.Method(i).Name[2:]) {
+		methodName := typeOf.Method(i).Name
+		if strings.Contains(typeOf.Method(i).Name, "Once") {
+			if strings.Contains(noInit, methodName[2:len(methodName)-4]) || alreadyRun.InitFunc {
+				continue
+			}
+		}
+		if strings.Contains(noInit, methodName[2:]) {
 			continue
 		}
 		if typeOf.Method(i).Type.NumOut() > 0 && init.dao == nil {
 			continue
 		}
 
-		if res := value.Method(i).Call(nil); res != nil && len(res) > 0 {
+		if res := value.Method(i).Call(nil); len(res) > 0 {
 			daoValue := reflect.ValueOf(init.dao).Elem()
 			for j := range res {
 				if res[j].IsValid() {
@@ -149,6 +164,7 @@ func (init *Init) setDao() {
 			}
 		}
 	}
+	alreadyRun.InitFunc = true
 	if init.dao != nil {
 		init.dao.Custom()
 	}
@@ -161,10 +177,18 @@ func Watcher(conf config, dao dao) {
 	}
 	watcher.Add(ConfUrl, fsnotify.Write, func() {
 		dao.Close()
-		Start(conf, dao)
+		init := NewInit(conf, dao)
+		init.config()
+		init.setDao()
 	})
 
 	watcher.Add(".watch", fsnotify.Write, func() {
 		watcher.Close()
 	})
+}
+
+func Refresh(conf config, dao dao) {
+	init := NewInit(conf, dao)
+	dao.Close()
+	init.setDao()
 }

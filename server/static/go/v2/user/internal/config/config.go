@@ -57,6 +57,7 @@ type config struct {
 	Redis    initialize.RedisConfig
 	Log      initialize.LogConfig
 	Apollo   initialize.ApolloConfig
+	Consul   initialize.ConsulConfig
 }
 
 var Conf = &config{}

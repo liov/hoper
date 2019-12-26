@@ -47,7 +47,7 @@ func (c *Config) GetInitConfig(namespace string) (map[string]string, error) {
 	return config, nil
 }
 
-type Server struct {
+type Client struct {
 	Addr       string
 	AppId      string `json:"appId"`
 	Cluster    string `json:"cluster"`
@@ -64,8 +64,8 @@ type SpecialConfig struct {
 	Callback  func(map[string]string)
 }
 
-func New(addr, appId, cluster, ip string, namespaces []string, initConfig SpecialConfig) *Server {
-	s := &Server{
+func New(addr, appId, cluster, ip string, namespaces []string, initConfig SpecialConfig) *Client {
+	s := &Client{
 		Addr:           addr,
 		AppId:          appId,
 		Cluster:        cluster,
@@ -105,10 +105,10 @@ func (e *NoChangeError) Error() string {
 	return "配置无变化"
 }
 
-func (s *Server) GetCacheConfig(namespace string) error {
-	url := fmt.Sprintf("http://%s/configfiles/json/%s/%s/%s", s.Addr, s.AppId, s.Cluster, namespace)
-	if s.IP != "" {
-		url += "?ip=" + s.IP
+func (c *Client) GetCacheConfig(namespace string) error {
+	url := fmt.Sprintf("http://%s/configfiles/json/%s/%s/%s", c.Addr, c.AppId, c.Cluster, namespace)
+	if c.IP != "" {
+		url += "?ip=" + c.IP
 	}
 	resp, err := http.Get(url)
 	if err != nil {
@@ -118,29 +118,30 @@ func (s *Server) GetCacheConfig(namespace string) error {
 	if err != nil {
 		return err
 	}
-	_, ok := s.Configurations[namespace]
+	_, ok := c.Configurations[namespace]
+
 	if !ok {
-		s.Configurations[namespace] = &Apollo{}
+		c.Configurations[namespace] = &Apollo{}
 	}
-	err = json.Unmarshal(body, &(s.Configurations[namespace].Configurations))
+	err = json.Unmarshal(body, &(c.Configurations[namespace].Configurations))
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *Server) GetNoCacheConfig(namespace string) error {
-	url := fmt.Sprintf("http://%s/configs/%s/%s/%s", s.Addr, s.AppId, s.Cluster, namespace)
-	_, ok := s.Configurations[namespace]
+func (c *Client) GetNoCacheConfig(namespace string) error {
+	url := fmt.Sprintf("http://%c/configs/%c/%c/%c", c.Addr, c.AppId, c.Cluster, namespace)
+	_, ok := c.Configurations[namespace]
 	if !ok {
-		s.Configurations[namespace] = &Apollo{}
+		c.Configurations[namespace] = &Apollo{}
 	}
-	releaseKey := s.Configurations[namespace].ReleaseKey
-	if releaseKey != "" && s.IP != "" {
-		url += "?releaseKey=" + releaseKey + "&ip=" + s.IP
+	releaseKey := c.Configurations[namespace].ReleaseKey
+	if releaseKey != "" && c.IP != "" {
+		url += "?releaseKey=" + releaseKey + "&ip=" + c.IP
 	} else {
-		if s.IP != "" {
-			url += "?ip=" + s.IP
+		if c.IP != "" {
+			url += "?ip=" + c.IP
 		}
 		if releaseKey != "" {
 			url += "?releaseKey=" + releaseKey
@@ -154,10 +155,10 @@ func (s *Server) GetNoCacheConfig(namespace string) error {
 	if err != nil {
 		return err
 	}
-	err = json.Unmarshal(body, s.Configurations[namespace])
-	if namespace == s.InitConfig.NameSpace {
-		s.InitConfig.Callback(s.Configurations[namespace].Configurations)
-		s.Configurations[namespace] = nil
+	err = json.Unmarshal(body, c.Configurations[namespace])
+	if namespace == c.InitConfig.NameSpace {
+		c.InitConfig.Callback(c.Configurations[namespace].Configurations)
+		c.Configurations[namespace].Configurations = nil
 	}
 	if err != nil {
 		return err
@@ -205,9 +206,9 @@ func (nm NotificationMap) Update(ns []NotificationInfo) {
 	}
 }
 
-func (s *Server) UpdateConfig(appId, clusterName string) error {
-	urlStr := fmt.Sprintf("http://%s/notifications/v2?appId=%s&cluster=%s",
-		s.Addr, appId, clusterName)
+func (c *Client) UpdateConfig(appId, clusterName string) error {
+	urlStr := fmt.Sprintf("http://%c/notifications/v2?appId=%c&cluster=%c",
+		c.Addr, appId, clusterName)
 	req, err := http.NewRequest("GET", urlStr, nil)
 	if err != nil {
 		return err
@@ -220,7 +221,7 @@ Loop:
 	for {
 		select {
 		case <-ch:
-			notificationSlice := s.Notifications.ToSlice()
+			notificationSlice := c.Notifications.ToSlice()
 			notifications, err := json.Marshal(&notificationSlice)
 			newQuery := url2.Values{
 				"notifications": []string{string(notifications)},
@@ -246,27 +247,28 @@ Loop:
 				return err
 			}
 			for i := range changeNamespace {
-				s.Notifications[changeNamespace[i].NamespaceName] = changeNamespace[i].NotificationId
-				err = s.GetNoCacheConfig(changeNamespace[i].NamespaceName)
-				log.Info(s.Configurations[changeNamespace[i].NamespaceName])
+				c.Notifications[changeNamespace[i].NamespaceName] = changeNamespace[i].NotificationId
+				err = c.GetNoCacheConfig(changeNamespace[i].NamespaceName)
+				log.Info(c.Configurations[changeNamespace[i].NamespaceName])
 				if err != nil {
 					return err
 				}
 			}
 			ch <- struct{}{}
-		case <-s.close:
+		case <-c.close:
 			req.Header["Connection"] = []string{"Closed"}
 			http.DefaultClient.Do(req)
 			break Loop
 		}
 	}
+	return nil
 }
 
-func (s *Server) Get(namespace, key string) string {
-	if s.Configurations == nil {
+func (c *Client) Get(namespace, key string) string {
+	if c.Configurations == nil {
 		return ""
 	}
-	ap, ok := s.Configurations[namespace]
+	ap, ok := c.Configurations[namespace]
 	if !ok {
 		return ""
 	}
@@ -276,10 +278,11 @@ func (s *Server) Get(namespace, key string) string {
 	return ap.Configurations[key]
 }
 
-func (s *Server) GetDefault(key string) string {
-	return s.Get("default", key)
+func (c *Client) GetDefault(key string) string {
+	return c.Get("default", key)
 }
 
-func (s *Server) Close() error {
-	s.close <- struct{}{}
+func (c *Client) Close() error {
+	c.close <- struct{}{}
+	return nil
 }
