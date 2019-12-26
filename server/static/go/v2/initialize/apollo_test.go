@@ -16,6 +16,6 @@ func TestApolloConfig_Generate(t *testing.T) {
 	}
 	var foo Foo
 	var conf = map[string]string{"baR": "A = 1\nB = \"哈哈哈\""}
-	ApolloConfigEnable(&foo, conf)
+	apolloConfigEnable(&foo, conf)
 	log.Info(foo)
 }

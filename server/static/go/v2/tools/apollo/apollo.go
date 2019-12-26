@@ -10,24 +10,70 @@ import (
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
-type Server struct {
+type Config struct {
 	Addr    string
 	AppId   string `json:"appId"`
 	Cluster string `json:"cluster"`
 	IP      string `json:"ip"`
+}
+
+func NewConfig(addr, appId, cluster, ip string) *Config {
+	return &Config{
+		Addr:    addr,
+		AppId:   appId,
+		Cluster: cluster,
+		IP:      ip,
+	}
+}
+
+func (c *Config) GetInitConfig(namespace string) (map[string]string, error) {
+	url := fmt.Sprintf("http://%s/configfiles/json/%s/%s/%s", c.Addr, c.AppId, c.Cluster, namespace)
+	if c.IP != "" {
+		url += "?ip=" + c.IP
+	}
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	var config map[string]string
+	err = json.Unmarshal(body, &config)
+	if err != nil {
+		return nil, err
+	}
+	return config, nil
+}
+
+type Server struct {
+	Addr       string
+	AppId      string `json:"appId"`
+	Cluster    string `json:"cluster"`
+	IP         string `json:"ip"`
+	InitConfig SpecialConfig
 	//一个应用的appId和集群应该是启动时确定的，但却可以有多个namespace
 	Configurations map[string]*Apollo
 	Notifications  NotificationMap
+	close          chan struct{}
 }
 
-func New(addr, appId, cluster, ip string, namespaces []string) *Server {
+type SpecialConfig struct {
+	NameSpace string
+	Callback  func(map[string]string)
+}
+
+func New(addr, appId, cluster, ip string, namespaces []string, initConfig SpecialConfig) *Server {
 	s := &Server{
 		Addr:           addr,
 		AppId:          appId,
 		Cluster:        cluster,
 		IP:             ip,
+		InitConfig:     initConfig,
 		Configurations: map[string]*Apollo{},
 		Notifications:  map[string]int{},
+		close:          make(chan struct{}, 1),
 	}
 
 	for i := range namespaces {
@@ -37,6 +83,11 @@ func New(addr, appId, cluster, ip string, namespaces []string) *Server {
 			log.Error(err)
 		}
 	}
+
+	go func() {
+		s.UpdateConfig(s.AppId, s.Cluster)
+	}()
+
 	return s
 }
 
@@ -78,27 +129,6 @@ func (s *Server) GetCacheConfig(namespace string) error {
 	return nil
 }
 
-func (s *Server) GetInitConfig(namespace string) (map[string]string, error) {
-	url := fmt.Sprintf("http://%s/configfiles/json/%s/%s/%s", s.Addr, s.AppId, s.Cluster, namespace)
-	if s.IP != "" {
-		url += "?ip=" + s.IP
-	}
-	resp, err := http.Get(url)
-	if err != nil {
-		return nil, err
-	}
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	var config map[string]string
-	err = json.Unmarshal(body, &config)
-	if err != nil {
-		return nil, err
-	}
-	return config, nil
-}
-
 func (s *Server) GetNoCacheConfig(namespace string) error {
 	url := fmt.Sprintf("http://%s/configs/%s/%s/%s", s.Addr, s.AppId, s.Cluster, namespace)
 	_, ok := s.Configurations[namespace]
@@ -125,6 +155,10 @@ func (s *Server) GetNoCacheConfig(namespace string) error {
 		return err
 	}
 	err = json.Unmarshal(body, s.Configurations[namespace])
+	if namespace == s.InitConfig.NameSpace {
+		s.InitConfig.Callback(s.Configurations[namespace].Configurations)
+		s.Configurations[namespace] = nil
+	}
 	if err != nil {
 		return err
 	}
@@ -182,6 +216,7 @@ func (s *Server) UpdateConfig(appId, clusterName string) error {
 	query := req.URL.RawQuery + "&"
 	var ch = make(chan struct{}, 1)
 	ch <- struct{}{}
+Loop:
 	for {
 		select {
 		case <-ch:
@@ -196,7 +231,7 @@ func (s *Server) UpdateConfig(appId, clusterName string) error {
 			if err != nil {
 				return err
 			}
-			if resp.Status == "304" {
+			if resp.StatusCode == 304 {
 				ch <- struct{}{}
 				continue
 			}
@@ -219,6 +254,10 @@ func (s *Server) UpdateConfig(appId, clusterName string) error {
 				}
 			}
 			ch <- struct{}{}
+		case <-s.close:
+			req.Header["Connection"] = []string{"Closed"}
+			http.DefaultClient.Do(req)
+			break Loop
 		}
 	}
 }
@@ -239,4 +278,8 @@ func (s *Server) Get(namespace, key string) string {
 
 func (s *Server) GetDefault(key string) string {
 	return s.Get("default", key)
+}
+
+func (s *Server) Close() error {
+	s.close <- struct{}{}
 }

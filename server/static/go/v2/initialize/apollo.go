@@ -12,29 +12,51 @@ import (
 )
 
 type ApolloConfig struct {
-	Addr      string
-	AppId     string `json:"appId"`
-	Cluster   string `json:"cluster"`
-	IP        string `json:"ip"`
-	NameSpace []string
+	Addr       string
+	AppId      string `json:"appId"`
+	Cluster    string `json:"cluster"`
+	IP         string `json:"ip"`
+	InitConfig apollo.SpecialConfig
+	NameSpace  []string
 }
 
 func (conf *ApolloConfig) Generate() *apollo.Server {
-	return apollo.New(conf.Addr, conf.AppId, conf.Cluster, conf.IP, conf.NameSpace)
+	return apollo.New(conf.Addr, conf.AppId, conf.Cluster, conf.IP, conf.NameSpace, conf.InitConfig)
 }
 
 func (init *Init) P9Apollo() *apollo.Server {
+	//配置更新时创建新的sever关闭旧的
+	dao := reflect.ValueOf(init.dao)
+	for i := 0; i < dao.NumField(); i++ {
+		if dao.Field(i).Type() == reflect.TypeOf(&apollo.Server{}) {
+			s := dao.Field(i).Interface()
+			if s != nil {
+				s.(*apollo.Server).Close()
+			}
+
+		}
+	}
+
 	conf := &ApolloConfig{}
 	if exist := reflect3.GetFieldValue(init.conf, conf); !exist {
 		return nil
 	}
+	conf.NameSpace = append(conf.NameSpace, "initialize")
+	cCopy := init.conf
+	conf.InitConfig = apollo.SpecialConfig{NameSpace: "initialize", Callback: func(m map[string]string) {
+		apolloConfigEnable(cCopy, m)
+	}}
 	return conf.Generate()
 }
 
 //优先级应该最低，要更新配置
 func (init *Init) apollo() {
-	s := init.P9Apollo()
-	aConf, err := s.GetInitConfig("initialize")
+	conf := &ApolloConfig{}
+	if exist := reflect3.GetFieldValue(init.conf, conf); !exist {
+		return
+	}
+	c := apollo.NewConfig(conf.Addr, conf.AppId, conf.Cluster, conf.IP)
+	aConf, err := c.GetInitConfig("initialize")
 	if err != nil {
 		panic(err)
 	}

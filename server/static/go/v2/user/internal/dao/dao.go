@@ -43,6 +43,9 @@ func (d *dao) Close() {
 	if d.GORMDB != nil {
 		d.GORMDB.Close()
 	}
+	if d.Apollo != nil {
+		d.Apollo.Close()
+	}
 }
 
 func (d *dao) Custom() {
