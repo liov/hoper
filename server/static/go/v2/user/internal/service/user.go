@@ -19,6 +19,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/time2"
 	"github.com/liov/hoper/go/v2/utils/valid"
 	"github.com/liov/hoper/go/v2/utils/verificationCode"
+	"google.golang.org/grpc/metadata"
 )
 
 type UserService struct{}
@@ -33,6 +34,8 @@ func (*UserService) Verify(ctx context.Context, req *utils.Empty) (*model.Verify
 	log.Info(vcode)
 	rep.Details = vcode
 	rep.Message = "字符串有问题吗啊"
+	md, _ := metadata.FromIncomingContext(ctx)
+	log.Debug(md)
 	return rep, nil
 }
 

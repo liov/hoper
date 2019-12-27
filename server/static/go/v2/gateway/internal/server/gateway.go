@@ -23,6 +23,7 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 var ch = make(chan os.Signal, 1)
@@ -39,9 +40,23 @@ func GateWay() http.Handler {
 	jsonpb := &jsonpb.JSONPb{
 		json.Json,
 	}
+
 	gwmux := runtime.NewServeMux(
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, jsonpb),
-		runtime.WithProtoErrorHandler(runtime.DefaultHTTPProtoErrorHandler))
+		runtime.WithProtoErrorHandler(runtime.DefaultHTTPProtoErrorHandler),
+		runtime.WithMetadata(func(context.Context, *http.Request) metadata.MD {
+			return metadata.New(map[string]string{"foo": "bar"})
+		}), runtime.WithMetadata(func(context.Context, *http.Request) metadata.MD {
+			return metadata.New(map[string]string{"baz": "qux"})
+		}),
+		runtime.WithIncomingHeaderMatcher(func(s2 string) (s string, b bool) {
+			if s2 == "Cookie" {
+				return s2, true
+			} else {
+				return s2, false
+			}
+		}))
+
 	opts := []grpc.DialOption{grpc.WithInsecure()}
 	err := model.RegisterUserServiceHandlerFromEndpoint(ctx, gwmux, config.Conf.Server.GrpcService["user"], opts)
 	if err != nil {
