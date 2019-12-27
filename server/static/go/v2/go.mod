@@ -7,6 +7,7 @@ require (
 	github.com/Shopify/sarama v1.24.0
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/bluele/gcache v0.0.0-20190518031135-bc40bd653833
+	github.com/boombuler/barcode v1.0.0 // indirect
 	github.com/etcd-io/bbolt v1.3.3
 	github.com/fasthttp-contrib/websocket v0.0.0-20160511215533-1f3b11f56072 // indirect
 	github.com/fsnotify/fsnotify v1.4.7
@@ -20,6 +21,7 @@ require (
 	github.com/gogo/gateway v1.1.0
 	github.com/gogo/googleapis v1.3.0
 	github.com/gogo/protobuf v1.3.1
+	github.com/golang/groupcache v0.0.0-20191027212112-611e8accdfc9 // indirect
 	github.com/golang/mock v1.2.0
 	github.com/golang/protobuf v1.3.2
 	github.com/gomodule/redigo v2.0.0+incompatible
@@ -41,6 +43,7 @@ require (
 	github.com/kataras/iris/v12 v12.0.1
 	github.com/kataras/pio v0.0.0-20190103105442-ea782b38602d
 	github.com/leodido/go-urn v1.1.0 // indirect
+	github.com/lni/dragonboat v2.1.7+incompatible // indirect
 	github.com/magiconair/properties v1.8.1
 	github.com/mattn/go-colorable v0.1.0 // indirect
 	github.com/mattn/go-isatty v0.0.4 // indirect
@@ -50,6 +53,7 @@ require (
 	github.com/nsqio/go-nsq v1.0.7
 	github.com/olivere/elastic v6.2.23+incompatible
 	github.com/pelletier/go-toml v1.2.0
+	github.com/russross/blackfriday v2.0.0+incompatible // indirect
 	github.com/sergi/go-diff v1.0.0 // indirect
 	github.com/smartystreets/assertions v0.0.0-20190116191733-b6c0e53d7304 // indirect
 	github.com/spf13/viper v1.6.1

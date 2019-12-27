@@ -1,8 +1,6 @@
 package initialize
 
 import (
-	"time"
-
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/reflect3"
 	"github.com/spf13/viper"
@@ -31,11 +29,12 @@ func (init *Init) P0ConsulOnce() {
 	}
 	// unmarshal config
 	cCopy := init.conf
-	dCopy := init.dao
+	//dCopy := init.dao
 	runtime_viper.Unmarshal(cCopy)
 	log.Debug(cCopy)
 	// open a goroutine to watch remote changes forever
-	go func() {
+	//这段实现不够优雅
+	/*	go func() {
 		for {
 			time.Sleep(time.Second * 5) // delay after each request
 
@@ -45,12 +44,13 @@ func (init *Init) P0ConsulOnce() {
 				log.Errorf("unable to read remote config: %v", err)
 				continue
 			}
-
+			conf :=runtime_viper.AllSettings()
+			log.Debug(conf)
 			// unmarshal new config into our runtime config struct. you can also use channel
 			// to implement a signal to notify the system of the changes
 			runtime_viper.Unmarshal(cCopy)
 			Refresh(cCopy, dCopy)
 			log.Debug(cCopy)
 		}
-	}()
+	}()*/
 }

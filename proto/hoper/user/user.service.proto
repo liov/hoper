@@ -34,7 +34,7 @@ service UserService {
 		description: "用户相关接口"
     };
     //验证码
-    rpc Verify (utils.Empty) returns (VerifyRep) {
+    rpc VerifyCode (utils.Empty) returns (VerifyRep) {
         option (google.api.http) = {
             get: "/api/v1/verifyCode"
         };
@@ -123,6 +123,10 @@ service UserService {
             summary : "退出"
             description : "退出接口"
         };
+    }
+    //获取登录用户信息
+    rpc GetUser (utils.Empty) returns (GetRep) {
+
     }
     //获取用户信息
     rpc GetUser (GetReq) returns (GetRep) {
@@ -280,4 +284,10 @@ message LogoutReq {
 message LogoutRep {
     sint32 code = 1;
     string msg = 2;
+}
+
+message UserInfo {
+    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned;default:0\"", (gogoproto.casttype) = "uint8", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+           type:INTEGER
+    }];
 }
