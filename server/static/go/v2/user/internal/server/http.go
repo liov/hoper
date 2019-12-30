@@ -11,9 +11,12 @@ import (
 	"github.com/kataras/iris/v12/core/handlerconv"
 	"github.com/liov/hoper/go/v2/initialize"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/user/internal/config"
+	"github.com/liov/hoper/go/v2/user/internal/server/middle"
 	"github.com/liov/hoper/go/v2/user/internal/service"
 	iris_build "github.com/liov/hoper/go/v2/utils/http/iris"
 	"github.com/liov/hoper/go/v2/utils/http/iris/api"
+	iris_log_mid "github.com/liov/hoper/go/v2/utils/http/iris/log"
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
@@ -44,6 +47,9 @@ func Http() http.Handler {
 		//关闭所有主机
 		mux.Shutdown(ctx)
 	})
+	logger := (&log.Config{Development: config.Conf.Env == initialize.PRODUCT}).NewLogger()
+	mux.Use(iris_log_mid.LogMid(logger, false))
+	mux.Use(handlerconv.FromStd(middle.HttpAuth))
 	mux.Any("/{grpc:path}", handlerconv.FromStd(gwmux))
 	api.OpenApi(mux, "../protobuf/api/")
 	iris_build.Build(mux, initialize.ConfUrl)

@@ -18,8 +18,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/strings2"
 	"github.com/liov/hoper/go/v2/utils/time2"
 	"github.com/liov/hoper/go/v2/utils/valid"
-	"github.com/liov/hoper/go/v2/utils/verificationCode"
-	"google.golang.org/grpc/metadata"
+	"github.com/liov/hoper/go/v2/utils/verification/codes"
 )
 
 type UserService struct{}
@@ -28,14 +27,12 @@ func NewUserService(server model.UserServiceServer) *UserService {
 	return &UserService{}
 }
 
-func (*UserService) Verify(ctx context.Context, req *utils.Empty) (*model.VerifyRep, error) {
+func (*UserService) VerifyCode(ctx context.Context, req *utils.Empty) (*model.VerifyRep, error) {
 	var rep = &model.VerifyRep{Code: 10000}
-	vcode := verificationCode.Generate()
+	vcode := codes.Generate()
 	log.Info(vcode)
 	rep.Details = vcode
 	rep.Message = "字符串有问题吗啊"
-	md, _ := metadata.FromIncomingContext(ctx)
-	log.Debug(md)
 	return rep, nil
 }
 
@@ -61,7 +58,7 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 			return rep, err
 		}
 	}
-	vcode := verificationCode.Generate()
+	vcode := codes.Generate()
 	log.Info(vcode)
 	key := modelconst.VerificationCodeKey + req.Mail + req.Phone
 	RedisConn := dao.Dao.Redis.Get()
@@ -154,7 +151,7 @@ func sendMail(action string, title string, curTime int64, user *model.User) {
 	actionURL := siteURL + "/user" + action + "/"
 
 	actionURL = actionURL + strconv.FormatUint(user.Id, 10) + "/" + secretStr
-	log.Info(actionURL)
+	log.Debug(actionURL)
 
 	content := "<p><b>亲爱的" + user.Name + ":</b></p>" +
 		"<p>我们收到您在 " + siteName + " 的注册信息, 请点击下面的链接, 或粘贴到浏览器地址栏来激活帐号.</p>" +

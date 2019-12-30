@@ -29,7 +29,7 @@ func (u *UserController) Name() string {
 
 func (u *UserController) VerificationCode() {
 	u.Handler.
-		Path("/user/verificationCode").
+		Path("/user/verification").
 		Method(http.MethodPost).
 		//这些信息不应该放在源代码里,都会打包进二进制文件
 		Request(new(utils.Empty)).
