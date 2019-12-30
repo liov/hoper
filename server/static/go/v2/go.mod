@@ -8,6 +8,7 @@ require (
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/bluele/gcache v0.0.0-20190518031135-bc40bd653833
 	github.com/boombuler/barcode v1.0.0 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/etcd-io/bbolt v1.3.3
 	github.com/fasthttp-contrib/websocket v0.0.0-20160511215533-1f3b11f56072 // indirect
 	github.com/fsnotify/fsnotify v1.4.7
@@ -45,6 +46,7 @@ require (
 	github.com/leodido/go-urn v1.1.0 // indirect
 	github.com/lni/dragonboat v2.1.7+incompatible // indirect
 	github.com/magiconair/properties v1.8.1
+	github.com/markbates/goth v1.60.0 // indirect
 	github.com/mattn/go-colorable v0.1.0 // indirect
 	github.com/mattn/go-isatty v0.0.4 // indirect
 	github.com/modern-go/reflect2 v1.0.1

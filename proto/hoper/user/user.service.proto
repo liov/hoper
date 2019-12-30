@@ -124,10 +124,7 @@ service UserService {
             description : "退出接口"
         };
     }
-    //获取登录用户信息
-    rpc GetUser (utils.Empty) returns (GetRep) {
 
-    }
     //获取用户信息
     rpc GetUser (GetReq) returns (GetRep) {
         option (google.api.http) = {
@@ -240,10 +237,10 @@ message EditReq {
         string mail = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(16);default:''\" validate:\"email\" comment:\"邮箱\""];
         string phone = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(32);default:''\" validate:\"phone\" comment:\"手机号\""];
         //性别，0未填写，1男，2女
-        uint32 gender = 8 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned;default:0\"", (gogoproto.casttype) = "uint8", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+        uint32 gender = 8 [(gogoproto.moretags) = "gorm:\"default:0\"", (gogoproto.casttype) = "uint8", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
            type:INTEGER
     }];
-        string birthday = 9 [(gogoproto.moretags) = "gorm:\"type:datetime;default:0\""];
+        string birthday = 9 [(gogoproto.moretags) = "gorm:\"type:timestamptz(6);default:0\""];
         string address = 14 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
         string introduction = 10 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
         string signature = 11 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
@@ -276,7 +273,7 @@ message LoginRep {
 }
 
 message LogoutReq {
-    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned;default:0\"", (gogoproto.casttype) = "uint8", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"default:0\"", (gogoproto.casttype) = "uint8", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
            type:INTEGER
     }];
 }
@@ -287,7 +284,7 @@ message LogoutRep {
 }
 
 message UserInfo {
-    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"type:tinyint(1) unsigned;default:0\"", (gogoproto.casttype) = "uint8", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"default:0\"", (gogoproto.casttype) = "uint8", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
            type:INTEGER
     }];
 }

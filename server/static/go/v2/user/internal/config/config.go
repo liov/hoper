@@ -18,7 +18,6 @@ type serverConfig struct {
 	PassSalt    string
 	TokenMaxAge int64
 	TokenSecret string
-	JwtSecret   string
 	PageSize    int8
 
 	UploadDir      fs.Dir
