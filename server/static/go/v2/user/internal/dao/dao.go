@@ -20,7 +20,7 @@ var Dao *dao = &dao{}
 type dao struct {
 	// GORMDB 数据库连接
 	GORMDB *gorm.DB
-	DB     *sql.DB
+	StdDB  *sql.DB
 	Bolt   *bbolt.DB
 	// RedisPool Redis连接池
 	Redis       *redis.Pool
@@ -63,5 +63,5 @@ func (d *dao) Custom() {
 	//db.Callback().Create().Replace("gorm:save_after_associations", saveAfterAssociationsCallback)
 	db.Callback().Delete().Replace("gorm:delete", gormCallback.DeleteCallback)
 	d.GORMDB = db
-	d.DB = db.DB()
+	d.StdDB = db.DB()
 }

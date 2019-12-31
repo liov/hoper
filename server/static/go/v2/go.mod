@@ -3,6 +3,7 @@ module github.com/liov/hoper/go/v2
 go 1.13
 
 require (
+	cloud.google.com/go v0.37.4 // indirect
 	github.com/360EntSecGroup-Skylar/excelize/v2 v2.0.2 // indirect
 	github.com/Shopify/sarama v1.24.0
 	github.com/ajg/form v1.5.1 // indirect
@@ -38,7 +39,7 @@ require (
 	github.com/iris-contrib/formBinder v5.0.0+incompatible // indirect
 	github.com/iris-contrib/httpexpect v0.0.0-20180314041918-ebe99fcebbce // indirect
 	github.com/jinzhu/configor v1.1.1
-	github.com/jinzhu/gorm v1.9.12-0.20191028081811-179760d8343e
+	github.com/jinzhu/gorm v1.9.12-0.20191206142228-79a77d771dee
 	github.com/json-iterator/go v1.1.7
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/iris/v12 v12.0.1

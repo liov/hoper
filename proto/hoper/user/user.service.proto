@@ -125,6 +125,10 @@ service UserService {
         };
     }
 
+    //鉴权
+    rpc Auth (utils.Empty) returns (UserMainInfo) {
+
+    }
     //获取用户信息
     rpc GetUser (GetReq) returns (GetRep) {
         option (google.api.http) = {
@@ -260,11 +264,12 @@ message LoginReq {
             length_gt: 6
             human_error: "密码错误"
         }];
+    string luosimao = 3;
 }
 
 message LoginRep {
     sint32 code = 1;
-    string msg = 2;
+    string message = 2;
     LoginDetails details = 3;
     message LoginDetails{
         User user = 1;

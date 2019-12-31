@@ -19,7 +19,7 @@ func (l *Logger) Print(args ...interface{}) {
 }
 
 func GetLogger() *Logger {
-	return logger
+	return Default
 }
 
 type Config struct {
@@ -37,15 +37,16 @@ func (lf *Config) NewLogger() *Logger {
 	}
 }
 
-var logger *Logger = (&Config{Development: true, Skip: true, Level: -1}).NewLogger()
+var Default *Logger = (&Config{Development: true, Skip: true, Level: -1}).NewLogger()
 var NoCall = (&Config{Development: true}).NewLogger()
+var CallTwo = Default.Desugar().WithOptions(zap.AddCallerSkip(3)).Sugar()
 
 func init() {
 	output.RegisterSink()
 }
 
 func (lf *Config) SetLogger() {
-	logger.SugaredLogger = lf.initLogger().Sugar()
+	Default.SugaredLogger = lf.initLogger().Sugar()
 }
 
 func (lf *Config) SetNoCall() {
@@ -126,7 +127,7 @@ func (lf *Config) hook() []zap.Option {
 }
 
 func Sync() {
-	logger.Sync()
+	Default.Sync()
 }
 
 func Print(v ...interface{}) {
@@ -134,91 +135,91 @@ func Print(v ...interface{}) {
 }
 
 func Debug(v ...interface{}) {
-	logger.Debug(v...)
+	Default.Debug(v...)
 }
 
 func Info(v ...interface{}) {
-	logger.Info(v...)
+	Default.Info(v...)
 }
 
 func Warn(format string, v ...interface{}) {
-	logger.Warn(v...)
+	Default.Warn(v...)
 }
 
 func Error(v ...interface{}) {
-	logger.Error(v...)
+	Default.Error(v...)
 }
 
 func Panic(v ...interface{}) {
-	logger.Panic(v...)
+	Default.Panic(v...)
 }
 
 func Fatal(v ...interface{}) {
-	logger.Fatal(v...)
+	Default.Fatal(v...)
 }
 
 func Debugf(format string, v ...interface{}) {
-	logger.Debugf(format, v...)
+	Default.Debugf(format, v...)
 }
 
 func Infof(format string, v ...interface{}) {
-	logger.Infof(format, v...)
+	Default.Infof(format, v...)
 }
 
 func Warnf(format string, v ...interface{}) {
-	logger.Warnf(format, v...)
+	Default.Warnf(format, v...)
 }
 
 func Errorf(format string, v ...interface{}) {
-	logger.Errorf(format, v...)
+	Default.Errorf(format, v...)
 }
 
 func Panicf(format string, v ...interface{}) {
-	logger.Panicf(format, v...)
+	Default.Panicf(format, v...)
 }
 
 func Fatalf(format string, v ...interface{}) {
-	logger.Fatalf(format, v...)
+	Default.Fatalf(format, v...)
 }
 
 func Debugw(msg string, keysAndValues ...interface{}) {
 	if len(keysAndValues)|0 != 0 {
 		keysAndValues = append(keysAndValues, "")
 	}
-	logger.Debugw(msg, keysAndValues...)
+	Default.Debugw(msg, keysAndValues...)
 }
 
 func Infow(msg string, keysAndValues ...interface{}) {
 	if len(keysAndValues)|0 != 0 {
 		keysAndValues = append(keysAndValues, "")
 	}
-	logger.Infow(msg, keysAndValues...)
+	Default.Infow(msg, keysAndValues...)
 }
 
 func Warnw(msg string, keysAndValues ...interface{}) {
 	if len(keysAndValues)|0 != 0 {
 		keysAndValues = append(keysAndValues, "")
 	}
-	logger.Warnw(msg, keysAndValues...)
+	Default.Warnw(msg, keysAndValues...)
 }
 
 func Errorw(msg string, keysAndValues ...interface{}) {
 	if len(keysAndValues)|0 != 0 {
 		keysAndValues = append(keysAndValues, "")
 	}
-	logger.Errorw(msg, keysAndValues...)
+	Default.Errorw(msg, keysAndValues...)
 }
 
 func Panicw(msg string, keysAndValues ...interface{}) {
 	if len(keysAndValues)|0 != 0 {
 		keysAndValues = append(keysAndValues, "")
 	}
-	logger.Panicw(msg, keysAndValues...)
+	Default.Panicw(msg, keysAndValues...)
 }
 
 func Fatalw(msg string, keysAndValues ...interface{}) {
 	if len(keysAndValues)|0 != 0 {
 		keysAndValues = append(keysAndValues, "")
 	}
-	logger.Fatalw(msg, keysAndValues...)
+	Default.Fatalw(msg, keysAndValues...)
 }

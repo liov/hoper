@@ -4,21 +4,30 @@ import (
 	"context"
 	"crypto/md5"
 	"fmt"
+	"regexp"
 	"strconv"
 	"time"
 
 	"github.com/gomodule/redigo/redis"
+
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils"
 	"github.com/liov/hoper/go/v2/user/internal/config"
 	"github.com/liov/hoper/go/v2/user/internal/dao"
 	modelconst "github.com/liov/hoper/go/v2/user/internal/model"
+	"github.com/liov/hoper/go/v2/utils/errorcode"
+	"github.com/liov/hoper/go/v2/utils/http/token"
+	"github.com/liov/hoper/go/v2/utils/json"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/mail"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 	"github.com/liov/hoper/go/v2/utils/time2"
 	"github.com/liov/hoper/go/v2/utils/valid"
-	"github.com/liov/hoper/go/v2/utils/verification/codes"
+	"github.com/liov/hoper/go/v2/utils/verification/code"
+	"github.com/liov/hoper/go/v2/utils/verification/luosimao"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 type UserService struct{}
@@ -29,7 +38,7 @@ func NewUserService(server model.UserServiceServer) *UserService {
 
 func (*UserService) VerifyCode(ctx context.Context, req *utils.Empty) (*model.VerifyRep, error) {
 	var rep = &model.VerifyRep{Code: 10000}
-	vcode := codes.Generate()
+	vcode := code.Generate()
 	log.Info(vcode)
 	rep.Details = vcode
 	rep.Message = "字符串有问题吗啊"
@@ -58,7 +67,7 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 			return rep, err
 		}
 	}
-	vcode := codes.Generate()
+	vcode := code.Generate()
 	log.Info(vcode)
 	key := modelconst.VerificationCodeKey + req.Mail + req.Phone
 	RedisConn := dao.Dao.Redis.Get()
@@ -206,7 +215,10 @@ func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.Ac
 	if err != nil {
 		return rep, err
 	}
-
+	if user.Status != 0 {
+		rep.Message = "已激活"
+		return rep, nil
+	}
 	secretStr := strconv.Itoa((int)(emailTime)) + user.Mail + user.Password
 
 	secretStr = fmt.Sprintf("%x", md5.Sum(strings2.ToBytes(secretStr)))
@@ -214,6 +226,8 @@ func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.Ac
 	if req.Secret != secretStr {
 		return rep, nil
 	}
+	user.Status = 1
+	dao.Dao.GORMDB.Model(user).Update("activated_at", time.Now(), "status", 1)
 	rep.Message = "激活成功"
 	return rep, nil
 }
@@ -222,14 +236,166 @@ func (*UserService) Edit(context.Context, *model.EditReq) (*model.EditRep, error
 	panic("implement me")
 }
 
-func (*UserService) Login(context.Context, *model.LoginReq) (*model.LoginRep, error) {
-	return &model.LoginRep{Details: &model.LoginRep_LoginDetails{Token: "test", User: &model.User{Name: "jack"}}}, nil
+func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginRep, error) {
+	resp := &model.LoginRep{Code: 10000}
+	verifyErr := luosimao.LuosimaoVerify(config.Conf.Server.LuosimaoVerifyURL, config.Conf.Server.LuosimaoAPIKey, req.Luosimao)
+
+	if verifyErr != nil {
+		resp.Message = verifyErr.Error()
+		return resp, nil
+	}
+
+	if req.Input == "" {
+		resp.Message = "账号错误"
+		return resp, nil
+	}
+	var sql string
+	emailMatch, _ := regexp.MatchString(`^([a-zA-Z0-9]+[_.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_.]?)*[a-zA-Z0-9]+.[a-zA-Z]{2,3}$`, req.Input)
+	if emailMatch {
+		sql = "mail = ?"
+	} else {
+		phoneMatch, _ := regexp.MatchString(`^1[0-9]{10}$`, req.Input)
+		if phoneMatch {
+			sql = "phone = ?"
+		}
+	}
+
+	var user model.User
+	if err := dao.Dao.GORMDB.Where(sql, req.Input).Find(&user).Error; err != nil {
+		resp.Message = "账号不存在"
+		return resp, nil
+	}
+
+	if !checkPassword(req.Password, &user) {
+		resp.Message = "密码错误"
+		return resp, nil
+	}
+	if user.Status == modelconst.UserStatusInActive {
+		//没看懂
+		//encodedEmail := base64.StdEncoding.EncodeToString(strings2.ToBytes(user.Mail))
+		resp.Message = "账号未激活,请进去邮箱点击激活"
+		go sendMail("/active", "账号激活", time.Now().Unix(), &user)
+		return resp, nil
+	}
+
+	tokenString, err := token.GenerateToken(user.Id, config.Conf.Server.TokenMaxAge, config.Conf.Server.TokenSecret)
+	if err != nil {
+		resp.Message = "内部错误"
+		return resp, nil
+	}
+
+	dao.Dao.GORMDB.Model(&user).UpdateColumn("last_activated_at", time.Now())
+
+	if err := UserToRedis(&model.UserMainInfo{
+		Id:     user.Id,
+		Score:  user.Score,
+		Status: user.Status,
+		Role:   user.Role,
+	}); err != nil {
+		resp.Message = "内部错误."
+		return resp, nil
+	}
+
+	resp.Details = &model.LoginRep_LoginDetails{Token: tokenString, User: &user}
+	resp.Message = "登录成功"
+
+	return resp, nil
 }
 
 func (*UserService) Logout(context.Context, *model.LogoutReq) (*model.LogoutRep, error) {
 	panic("implement me")
 }
 
-func (*UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.GetRep, error) {
-	return &model.GetRep{Details: &model.User{Id: req.Id}}, nil
+func (*UserService) Auth(ctx context.Context, req *utils.Empty) (*model.UserMainInfo, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	tokens := md.Get("authorization")
+	authErr := status.Error(codes.Code(errorcode.Auth), errorcode.Auth.Error())
+	if len(tokens) == 0 || tokens[0] == "" {
+		return nil, authErr
+	}
+	claims, err := token.ParseToken(tokens[0], config.Conf.Server.TokenSecret)
+	if err != nil {
+		return nil, authErr
+	}
+	user, err := UserFromRedis(claims.UserID)
+	if err != nil {
+		return nil, authErr
+	}
+
+	return user, nil
+}
+
+func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.GetRep, error) {
+	sess, err := u.Auth(ctx, nil)
+	if err != nil {
+		return &model.GetRep{Details: &model.User{Id: req.Id}}, nil
+	}
+	return &model.GetRep{Details: &model.User{Id: sess.Id}}, nil
+}
+
+// UserToRedis 将用户信息存到redis
+func UserToRedis(user *model.UserMainInfo) error {
+	UserString, err := json.Json.MarshalToString(user)
+	if err != nil {
+		return err
+	}
+	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
+
+	conn := dao.Dao.Redis.Get()
+	defer conn.Close()
+	conn.Send("SELECT", modelconst.UserIndex)
+	if _, redisErr := conn.Do("SET", loginUserKey, UserString, "EX", config.Conf.Server.TokenMaxAge); redisErr != nil {
+		return redisErr
+	}
+	return nil
+}
+
+// UserFromRedis 从redis中取出用户信息
+func UserFromRedis(userID uint64) (*model.UserMainInfo, error) {
+	loginUser := modelconst.LoginUserKey + strconv.FormatUint(userID, 10)
+
+	conn := dao.Dao.Redis.Get()
+	defer conn.Close()
+	conn.Send("SELECT", modelconst.UserIndex)
+	userString, err := redis.String(conn.Do("GET", loginUser))
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+	var user model.UserMainInfo
+	err = json.Json.UnmarshalFromString(userString, &user)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func UserLastActiveTime(userID uint64) error {
+	conn := dao.Dao.Redis.Get()
+	defer conn.Close()
+
+	err := conn.Send("SELECT", modelconst.CronIndex)
+	_, err = conn.Do("ZADD", modelconst.LoginUserKey+"ActiveTime",
+		time.Now().Unix(), strconv.FormatUint(userID, 10))
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+	return nil
+}
+
+func EditUserRedis(user *model.UserMainInfo) error {
+	UserString, err := json.Json.MarshalToString(user)
+	if err != nil {
+		return err
+	}
+	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
+
+	conn := dao.Dao.Redis.Get()
+	defer conn.Close()
+	conn.Send("SELECT", modelconst.UserIndex)
+	if _, redisErr := conn.Do("SET", loginUserKey, UserString); redisErr != nil {
+		return redisErr
+	}
+	return nil
 }

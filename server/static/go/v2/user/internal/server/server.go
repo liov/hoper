@@ -33,7 +33,7 @@ func Serve() {
 	handle := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if r := recover(); r != nil {
-				log.Errorf(" panic: %v", r)
+				log.CallTwo.Errorf(" panic: %v", r)
 			}
 		}()
 		if r.ProtoMajor != 2 {
