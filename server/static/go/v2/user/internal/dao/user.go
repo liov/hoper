@@ -14,9 +14,9 @@ func (*UserDao) ExitByEmailORPhone(email, phone string) (bool, error) {
 	var err error
 	var count int
 	if email != "" {
-		err = Dao.DB.QueryRow(`SELECT EXISTS(select  1 FROM user WHERE mail =  ?)`, email).Scan(&count)
+		err = Dao.StdDB.QueryRow(`SELECT EXISTS(select  1 FROM user WHERE mail =  ?)`, email).Scan(&count)
 	} else {
-		err = Dao.DB.QueryRow(`SELECT EXISTS(select  1 FROM user WHERE phone =  ?)`, phone).Scan(&count)
+		err = Dao.StdDB.QueryRow(`SELECT EXISTS(select  1 FROM user WHERE phone =  ?)`, phone).Scan(&count)
 	}
 	if err != nil {
 		log.Error("UserDao.ExitByEmailORPhone: ", err)
@@ -52,7 +52,7 @@ func (*UserDao) Creat(user *model.User) error {
 func (*UserDao) GetByPrimaryKey(id uint64) (*model.User, error) {
 	defer time2.TimeCost(time.Now())
 	var user model.User
-	if err := Dao.GORMDB.First(&user).Error; err != nil {
+	if err := Dao.GORMDB.First(&user, id).Error; err != nil {
 		log.Error("UserDao.GetByPrimaryKey: ", err)
 		return nil, err
 	}

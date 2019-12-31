@@ -136,7 +136,7 @@ message Work {
     string deletedAt = 9 [(gogoproto.moretags) = "gorm:\"type:timestamptz(6)\""];
 }
 
-message Auth{
+message UserMainInfo{
     uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key;\""];
     uint32 role = 24 [(gogoproto.moretags) = "gorm:\"default:0\""];
     string lastActiveAt = 23 [(gogoproto.moretags) = "gorm:\"type:timestamptz(6);default:'0001-01-01 00:00:00'\""];
