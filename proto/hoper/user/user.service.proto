@@ -126,7 +126,7 @@ service UserService {
     }
 
     //鉴权
-    rpc Auth (utils.Empty) returns (UserMainInfo) {
+    rpc AuthInfo (utils.Empty) returns (UserMainInfo) {
 
     }
     //获取用户信息
