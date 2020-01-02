@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/md5"
 	"fmt"
+	"reflect"
 	"regexp"
 	"strconv"
 	"time"
@@ -306,7 +307,11 @@ func (*UserService) Logout(context.Context, *model.LogoutReq) (*model.LogoutRep,
 	panic("implement me")
 }
 
-func (*UserService) Auth(ctx context.Context, req *utils.Empty) (*model.UserMainInfo, error) {
+func (u *UserService) AuthInfo(ctx context.Context, req *utils.Empty) (*model.UserMainInfo, error) {
+	return u.Auth(ctx)
+}
+
+func (*UserService) Auth(ctx context.Context) (*model.UserMainInfo, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	tokens := md.Get("authorization")
 	authErr := status.Error(codes.Code(errorcode.Auth), errorcode.Auth.Error())
@@ -326,7 +331,7 @@ func (*UserService) Auth(ctx context.Context, req *utils.Empty) (*model.UserMain
 }
 
 func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.GetRep, error) {
-	sess, err := u.Auth(ctx, nil)
+	sess, err := u.Auth(ctx)
 	if err != nil {
 		return &model.GetRep{Details: &model.User{Id: req.Id}}, nil
 	}
@@ -339,6 +344,7 @@ func UserToRedis(user *model.UserMainInfo) error {
 	if err != nil {
 		return err
 	}
+
 	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
 
 	conn := dao.Dao.Redis.Get()
@@ -384,7 +390,7 @@ func UserLastActiveTime(userID uint64) error {
 	return nil
 }
 
-func EditUserRedis(user *model.UserMainInfo) error {
+func EditRedisUser(user *model.UserMainInfo) error {
 	UserString, err := json.Json.MarshalToString(user)
 	if err != nil {
 		return err
@@ -398,4 +404,55 @@ func EditUserRedis(user *model.UserMainInfo) error {
 		return redisErr
 	}
 	return nil
+}
+
+// UserToRedis 将用户信息存到redis
+func UserHashToRedis(user *model.UserMainInfo) error {
+	var redisArgs []interface{}
+	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
+	redisArgs = append(redisArgs, loginUserKey)
+
+	uValue := reflect.ValueOf(user).Elem()
+	uType := uValue.Type()
+	for i := 0; i < uValue.NumField(); i++ {
+		redisArgs = append(redisArgs, uType.Field(i).Name, uValue.Field(i).Interface())
+	}
+
+	conn := dao.Dao.Redis.Get()
+	defer conn.Close()
+	conn.Send("SELECT", modelconst.UserIndex)
+	conn.Send("HMSET", redisArgs...)
+	if _, redisErr := conn.Do("EXPIRE", loginUserKey, config.Conf.Server.TokenMaxAge); redisErr != nil {
+		return redisErr
+	}
+	return nil
+}
+
+// UserFromRedis 从redis中取出用户信息
+func UserHashFromRedis(userID uint64) (*model.UserMainInfo, error) {
+	loginUser := modelconst.LoginUserKey + strconv.FormatUint(userID, 10)
+
+	conn := dao.Dao.Redis.Get()
+	defer conn.Close()
+	conn.Send("SELECT", modelconst.UserIndex)
+	userArgs, err := redis.Strings(conn.Do("HGETALL", loginUser))
+	log.Debug(userArgs)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+	var user model.UserMainInfo
+	uValue := reflect.ValueOf(&user).Elem()
+	for i := 0; i < uValue.NumField(); i += 2 {
+		fieldValue := uValue.FieldByName(userArgs[i])
+		switch fieldValue.Kind() {
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			v, _ := strconv.ParseInt(userArgs[i-1], 10, 64)
+			fieldValue.SetInt(v)
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+
+		}
+
+	}
+	return &user, nil
 }
