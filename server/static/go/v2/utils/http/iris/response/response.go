@@ -9,7 +9,7 @@ import (
 type H map[string]interface{}
 
 type ResData struct {
-	Code    int    `protobuf:"zigzag32,1,opt,name=code,proto3" json:"code,omitempty"`
+	Code    uint32 `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
 	Message string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	//验证码
 	Details interface{} `protobuf:"bytes,3,opt,name=details,proto3" json:"details,omitempty"`
@@ -26,28 +26,28 @@ func Response(ctx iris.Context, res ...interface{}) {
 	var resData ResData
 
 	if len(res) == 1 {
-		resData.Code = int(errorcode.ERROR)
+		resData.Code = uint32(errorcode.ERROR)
 		if msgTmp, ok := res[0].(string); ok {
 			resData.Message = msgTmp
 			resData.Details = nil
 		} else {
 			resData.Details = res[0]
-			resData.Code = int(errorcode.SUCCESS)
+			resData.Code = uint32(errorcode.SUCCESS)
 		}
 	} else if len(res) == 2 {
 		if msgTmp, ok := res[0].(string); ok {
 			resData.Details = nil
 			resData.Message = msgTmp
-			resData.Code = res[1].(int)
+			resData.Code = res[1].(uint32)
 		} else {
 			resData.Details = res[0]
 			resData.Message = res[1].(string)
-			resData.Code = int(errorcode.SUCCESS)
+			resData.Code = uint32(errorcode.SUCCESS)
 		}
 	} else {
 		resData.Details = res[0]
 		resData.Message = res[1].(string)
-		resData.Code = res[2].(int)
+		resData.Code = res[2].(uint32)
 	}
 
 	num, err := ctx.JSON(&resData)
@@ -69,7 +69,7 @@ func Response(ctx iris.Context, res ...interface{}) {
 	}
 }*/
 
-func Res(c iris.Context, code int, msg string, data interface{}) {
+func Res(c iris.Context, code uint32, msg string, data interface{}) {
 	var resData = ResData{
 		Code:    code,
 		Message: msg,

@@ -156,7 +156,7 @@ service UserService {
 }
 
 message VerifyRep{
-    sint32 code = 1;
+    uint32 code = 1;
     string message = 2;
     //验证码
     string details = 3;
@@ -178,7 +178,7 @@ message SingUpVerifyReq {
 }
 
 message SingUpVerifyRep {
-    sint32 code = 1;
+    uint32 code = 1;
     string message = 2;
     //验证码
     string details = 3;
@@ -200,7 +200,7 @@ message SignupReq {
 }
 
 message SignupRep {
-    sint32 code = 1;
+    uint32 code = 1;
     string message = 2;
     User details = 3;
 }
@@ -214,7 +214,7 @@ message ActiveReq {
 }
 
 message ActiveRep{
-    sint32 code = 1;
+    uint32 code = 1;
     string message =2;
 }
 
@@ -225,7 +225,7 @@ message GetReq {
 }
 
 message GetRep {
-    sint32 code = 1;
+    uint32 code = 1;
     string message =2;
     User details = 3;
 }
@@ -254,7 +254,7 @@ message EditReq {
 }
 
 message EditRep {
-    sint32 code = 1;
+    uint32 code = 1;
     string msg = 2;
 }
 
@@ -268,7 +268,7 @@ message LoginReq {
 }
 
 message LoginRep {
-    sint32 code = 1;
+    uint32 code = 1;
     string message = 2;
     LoginDetails details = 3;
     message LoginDetails{
@@ -284,7 +284,7 @@ message LogoutReq {
 }
 
 message LogoutRep {
-    sint32 code = 1;
+    uint32 code = 1;
     string msg = 2;
 }
 
