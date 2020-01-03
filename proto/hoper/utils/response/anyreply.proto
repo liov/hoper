@@ -21,13 +21,13 @@ option (gogoproto.messagename_all) = true;
 option (gogoproto.populate_all) = true;
 
 message Reply {
-    sint32 code = 1;
+    uint32 code = 1;
     string message = 2;
     google.protobuf.Any details = 3;
 }
 
 message BytesReply {
-    sint32 code = 1;
+    uint32 code = 1;
     string message =2;
     //字节数组json
     utils.any.Any details =3 [(gogoproto.nullable) = false];

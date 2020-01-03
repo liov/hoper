@@ -7,6 +7,7 @@ import (
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/internal/service"
+	"github.com/liov/hoper/go/v2/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -22,14 +23,11 @@ func filter(
 			log.Errorf("%v panic: %v", info, r)
 		}
 		//不能添加错误处理，除非所有返回的结构相同
-		/*		if err != nil {
-				s,_:=status.FromError(err)
-				resp = &response.AnyReply{
-					Code: 1000,
-					Message:  s.Message(),
-				}
-				err = nil
-			}*/
+		if err != nil {
+			if errcode, ok := err.(errorcode.ErrCode); ok {
+				err = errcode.Err()
+			}
+		}
 	}()
 
 	return handler(ctx, req)

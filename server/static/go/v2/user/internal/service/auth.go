@@ -14,7 +14,7 @@ import (
 func Auth(w http.ResponseWriter, r *http.Request) {
 	tokens := r.Header["Authorization"]
 	errHandle := func(w http.ResponseWriter) {
-		authErr := response.ResData{Code: int(errorcode.Auth), Message: errorcode.Auth.Error()}
+		authErr := response.ResData{Code: uint32(errorcode.Auth), Message: errorcode.Auth.Error()}
 		resp, _ := json.Json.Marshal(&authErr)
 		w.Write(resp)
 	}
