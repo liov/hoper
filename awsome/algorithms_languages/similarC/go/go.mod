@@ -19,8 +19,10 @@ require (
 	github.com/mattn/go-runewidth v0.0.7 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1
+	github.com/robfig/cron v1.2.0
 	github.com/sirupsen/logrus v1.4.2 // indirect
 	github.com/spf13/viper v1.4.0
+	github.com/tidwall/gjson v1.3.5
 	github.com/unicorn-engine/unicorn v0.0.0-20191119163456-3cea38bff7bf
 	golang.org/x/exp v0.0.0-20191129062945-2f5052295587
 	golang.org/x/mobile v0.0.0-20191130191448-5c0e7e404af8
