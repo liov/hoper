@@ -14,9 +14,8 @@ option (gogoproto.goproto_registration) = true;
 option (gogoproto.messagename_all) = true;
 option (gogoproto.populate_all) = true;
 //返回数据为字符串，用于新建修改删除类的成功失败提示
-message NewCommonRep {
-    sint32 code = 1;
+message CommonRep {
+    uint32 code = 1;
     string message = 2;
-    //验证码
     string details = 3;
 }

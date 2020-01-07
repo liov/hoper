@@ -65,10 +65,3 @@ const (
 	ResetDuration            = 24 * 60 * 60
 	VerificationCodeDuration = 5 * 60
 )
-
-type Authority uint64
-
-const (
-	DeleteUser Authority = 1 << iota
-	EditUser
-)

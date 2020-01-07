@@ -250,6 +250,8 @@ message EditReq {
         string signature = 11 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
         string avatarURL = 12 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
         string coverURL = 13 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
+        repeated Resume eduExps = 15;
+        repeated Resume WorkExps = 16;
     }
 }
 

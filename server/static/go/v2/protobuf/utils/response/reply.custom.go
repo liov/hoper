@@ -17,7 +17,7 @@ func (m *StringReply) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
 }
 
 type GoReply struct {
-	Code    int32
+	Code    uint32
 	Message string
 	Details proto.Message
 }

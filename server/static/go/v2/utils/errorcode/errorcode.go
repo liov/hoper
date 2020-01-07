@@ -13,9 +13,9 @@ const (
 	InActive                           //未激活账号
 	NoAuthority
 
-	ExistTag        ErrCode = 10001
-	NotExistTag     ErrCode = 10002
-	NotExistArticle ErrCode = 10003
+	ExistTag ErrCode = 10001 + iota
+	NotExistTag
+	NotExistArticle
 
 	AuthCheckTokenFail ErrCode = 20001 + iota
 	AuthCheckTokenTimeout

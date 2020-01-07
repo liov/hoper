@@ -23,10 +23,10 @@ func (e ErrCode) Err() error {
 	return &statusError{Code: uint32(e), Message: e.Error()}
 }
 
-func (e ErrCode) ErrWithMessage(msg string) error {
+func (e ErrCode) WithMessage(msg string) error {
 	return &statusError{Code: uint32(e), Message: msg}
 }
 
-func (e ErrCode) ErrWithError(err error) error {
+func (e ErrCode) WithError(err error) error {
 	return &statusError{Code: uint32(e), Message: err.Error()}
 }
