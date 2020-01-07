@@ -3,9 +3,9 @@ package dao
 import (
 	"time"
 
+	"github.com/jinzhu/gorm"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/time2"
 )
 
 type UserDao struct{}
@@ -25,13 +25,17 @@ func (*UserDao) ExitByEmailORPhone(email, phone string) (bool, error) {
 	return count == 1, nil
 }
 
-func (*UserDao) GetByEmailORPhone(email, phone string) (*model.User, error) {
+func (d *UserDao) GetByEmailORPhone(email, phone string, db *gorm.DB) (*model.User, error) {
+	if db == nil {
+		db = Dao.GORMDB
+	}
 	var user model.User
+	now := time.Now()
 	var err error
 	if email != "" {
-		err = Dao.GORMDB.Where("email = ?", email).Find(&user).Error
+		err = db.Where("email = ?", email).Find(&user).Error
 	} else {
-		err = Dao.GORMDB.Where("phone = ?", phone).Find(&user).Error
+		err = db.Where("phone = ?", phone).Find(&user).Error
 	}
 	if err != nil {
 		log.Error("UserDao.GetByEmailORPhone: ", err)
@@ -40,21 +44,54 @@ func (*UserDao) GetByEmailORPhone(email, phone string) (*model.User, error) {
 	return &user, nil
 }
 
-func (*UserDao) Creat(user *model.User) error {
-	defer time2.TimeCost(time.Now())
-	if err := Dao.GORMDB.Create(user).Error; err != nil {
+func (*UserDao) Creat(user *model.User, db *gorm.DB) error {
+	if db == nil {
+		db = Dao.GORMDB
+	}
+	if err := db.Create(user).Error; err != nil {
 		log.Error("UserDao.Creat: ", err)
 		return err
 	}
 	return nil
 }
 
-func (*UserDao) GetByPrimaryKey(id uint64) (*model.User, error) {
-	defer time2.TimeCost(time.Now())
+func (*UserDao) GetByPrimaryKey(id uint64, db *gorm.DB) (*model.User, error) {
+	if db == nil {
+		db = Dao.GORMDB
+	}
 	var user model.User
-	if err := Dao.GORMDB.First(&user, id).Error; err != nil {
+	if err := db.First(&user, id).Error; err != nil {
 		log.Error("UserDao.GetByPrimaryKey: ", err)
 		return nil, err
 	}
 	return &user, nil
+}
+
+func (*UserDao) SaveResume(userId uint64, resumes []*model.Resume, db *gorm.DB) error {
+	if db == nil {
+		db = Dao.GORMDB
+	}
+	var err error
+
+	for _, resume := range resumes {
+		resume.UserId = userId
+		resume.Status = 1
+		if resume.Id != 0 {
+			err = db.Model(&resume).Updates(&resume).Error
+		} else {
+			err = db.Create(&resume).Error
+		}
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (*UserDao) ActionLog(log *model.UserActionLog, db *gorm.DB) error {
+	err := db.Create(&log).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }

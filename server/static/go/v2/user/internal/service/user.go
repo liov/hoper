@@ -26,9 +26,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/valid"
 	"github.com/liov/hoper/go/v2/utils/verification/code"
 	"github.com/liov/hoper/go/v2/utils/verification/luosimao"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/status"
 )
 
 type UserService struct{}
@@ -49,18 +47,18 @@ func (*UserService) VerifyCode(ctx context.Context, req *utils.Empty) (*model.Ve
 func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*model.SingUpVerifyRep, error) {
 	err := valid.Validate.Struct(req)
 	if err != nil {
-		return nil, errorcode.InvalidParams.ErrWithMessage(valid.Trans(err))
+		return nil, errorcode.InvalidParams.WithMessage(valid.Trans(err))
 	}
 
 	if req.Mail == "" && req.Phone == "" {
-		return nil, errorcode.InvalidParams.ErrWithMessage("请填写邮箱或手机号")
+		return nil, errorcode.InvalidParams.WithMessage("请填写邮箱或手机号")
 	}
 
 	if exist, _ := userDao.ExitByEmailORPhone(req.Mail, req.Phone); exist {
 		if req.Mail != "" {
-			return nil, errorcode.InvalidParams.ErrWithMessage("邮箱已被注册")
+			return nil, errorcode.InvalidParams.WithMessage("邮箱已被注册")
 		} else {
-			return nil, errorcode.InvalidParams.ErrWithMessage("手机号已被注册")
+			return nil, errorcode.InvalidParams.WithMessage("手机号已被注册")
 		}
 	}
 	vcode := code.Generate()
@@ -71,7 +69,7 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 
 	if _, err := RedisConn.Do("SET", key, vcode, "EX", modelconst.VerificationCodeDuration); err != nil {
 		log.Error("UserService.Verify,RedisConn.Do: ", err)
-		return nil, errorcode.ERROR.ErrWithMessage("新建出错")
+		return nil, errorcode.ERROR.WithMessage("新建出错")
 	}
 	var rep = &model.SingUpVerifyRep{}
 	rep.Details = vcode
@@ -83,18 +81,18 @@ func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*model.Si
 
 	err := valid.Validate.Struct(req)
 	if err != nil {
-		return nil, errorcode.InvalidParams.ErrWithMessage(valid.Trans(err))
+		return nil, errorcode.InvalidParams.WithMessage(valid.Trans(err))
 	}
 
 	if req.Mail == "" && req.Phone == "" {
-		return nil, errorcode.InvalidParams.ErrWithMessage("请填写邮箱或手机号")
+		return nil, errorcode.InvalidParams.WithMessage("请填写邮箱或手机号")
 	}
 
 	if exist, _ := userDao.ExitByEmailORPhone(req.Mail, req.Phone); exist {
 		if req.Mail != "" {
-			return nil, errorcode.InvalidParams.ErrWithMessage("邮箱已被注册")
+			return nil, errorcode.InvalidParams.WithMessage("邮箱已被注册")
 		} else {
-			return nil, errorcode.InvalidParams.ErrWithMessage("手机号已被注册")
+			return nil, errorcode.InvalidParams.WithMessage("手机号已被注册")
 		}
 	}
 	var user = &model.User{}
@@ -106,9 +104,9 @@ func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*model.Si
 	user.Status = modelconst.UserStatusInActive
 	user.AvatarURL = modelconst.DefaultAvatar
 	user.Password = encryptPassword(req.Password)
-	if err = userDao.Creat(user); err != nil {
+	if err = userDao.Creat(user, nil); err != nil {
 		log.Error(err)
-		return nil, errorcode.ERROR.ErrWithMessage("新建出错")
+		return nil, errorcode.ERROR.WithMessage("新建出错")
 	}
 	var rep = &model.SignupRep{Message: "新建成功", Details: user}
 
@@ -198,12 +196,12 @@ func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.Ac
 		return nil, errorcode.ErrorWithMessage(errorcode.InvalidParams, "无效的链接")
 	}
 
-	user, err := userDao.GetByPrimaryKey(req.Id)
+	user, err := userDao.GetByPrimaryKey(req.Id, nil)
 	if err != nil {
 		return nil, errorcode.Error(errorcode.ERROR)
 	}
 	if user.Status != 0 {
-		return nil, errorcode.ERROR.ErrWithMessage("已激活")
+		return nil, errorcode.ERROR.WithMessage("已激活")
 	}
 	secretStr := strconv.Itoa((int)(emailTime)) + user.Mail + user.Password
 
@@ -219,8 +217,32 @@ func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.Ac
 	return rep, nil
 }
 
-func (*UserService) Edit(context.Context, *model.EditReq) (*model.EditRep, error) {
-	panic("implement me")
+func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*model.EditRep, error) {
+	defer time2.TimeCost(time.Now())
+	user, err := u.Auth(ctx)
+	if err != nil || user.Id != req.Id {
+		return nil, err
+	}
+	tx := dao.Dao.GORMDB.Begin()
+	err = userDao.SaveResume(req.Id, req.Details.EduExps, tx)
+	if err != nil {
+		tx.Rollback()
+		return nil, errorcode.ERROR.WithMessage("更新失败")
+	}
+	err = userDao.SaveResume(req.Id, req.Details.WorkExps, tx)
+	if err != nil {
+		tx.Rollback()
+		return nil, errorcode.ERROR.WithMessage("更新失败")
+	}
+	var nUser model.User
+	tx.First(&nUser, user.Id)
+	err = tx.Model(&user).Updates(nUser).Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errorcode.ERROR.WithMessage("更新失败")
+	}
+	tx.Commit()
+	return &model.EditRep{Msg: "修改成功"}, nil
 }
 
 func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginRep, error) {
@@ -228,11 +250,11 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 	verifyErr := luosimao.LuosimaoVerify(config.Conf.Server.LuosimaoVerifyURL, config.Conf.Server.LuosimaoAPIKey, req.Luosimao)
 
 	if verifyErr != nil {
-		return nil, errorcode.InvalidParams.ErrWithMessage(verifyErr.Error())
+		return nil, errorcode.InvalidParams.WithMessage(verifyErr.Error())
 	}
 
 	if req.Input == "" {
-		return nil, errorcode.InvalidParams.ErrWithMessage("账号错误")
+		return nil, errorcode.InvalidParams.WithMessage("账号错误")
 	}
 	var sql string
 	emailMatch, _ := regexp.MatchString(`^([a-zA-Z0-9]+[_.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_.]?)*[a-zA-Z0-9]+.[a-zA-Z]{2,3}$`, req.Input)
@@ -247,11 +269,11 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 
 	var user model.User
 	if err := dao.Dao.GORMDB.Where(sql, req.Input).Find(&user).Error; err != nil {
-		return nil, errorcode.ERROR.ErrWithMessage("账号不存在")
+		return nil, errorcode.ERROR.WithMessage("账号不存在")
 	}
 
 	if !checkPassword(req.Password, &user) {
-		return nil, errorcode.InvalidParams.ErrWithMessage("密码错误")
+		return nil, errorcode.InvalidParams.WithMessage("密码错误")
 	}
 	if user.Status == modelconst.UserStatusInActive {
 		//没看懂
@@ -305,7 +327,7 @@ func (u *UserService) AuthInfo(ctx context.Context, req *utils.Empty) (*model.Us
 func (*UserService) Auth(ctx context.Context) (*model.UserMainInfo, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	tokens := md.Get("authorization")
-	authErr := status.Error(codes.Code(errorcode.Auth), errorcode.Auth.Error())
+	authErr := errorcode.Auth
 	if len(tokens) == 0 || tokens[0] == "" {
 		return nil, authErr
 	}
