@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
 	"os/signal"
 	"strings"
@@ -21,7 +20,7 @@ var kqReq *http.Request
 var lastId int64
 var ding Ding
 var at = map[string]string{
-	"000002204": "手机号",
+	"000002204": "xxx",
 }
 
 type Ding struct {
@@ -51,9 +50,7 @@ func main() {
 	)
 	urlStr := `http://218.17.157.34:1234/grid/att/CheckInOutGrid/`
 	kqReq, _ = http.NewRequest("POST", urlStr, strings.NewReader("page=1&rp=10"))
-	kqReq.PostForm = url.Values{}
-	kqReq.PostForm.Set("userid", "3769")
-	kqReq.Header.Set("Cookie", "sessionidadms=dcb3c8480a5e0ed75123a131bc239bd4")
+	kqReq.Header.Set("Cookie", "sessionidadms=")
 	kqReq.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
 	Request()
 	c := cron.New()
@@ -82,10 +79,10 @@ func Request() {
 		if utf8.RuneCountInString(name) == 2 {
 			name = name + "    "
 		}
-
+		depName := obj["DeptName"].String()
 		checktime := obj["checktime"].String()
 
-		if id > lastId {
+		if id > lastId && depName == "平台研发中心" {
 			lastId = id
 			ding.MsgType = "text"
 			ding.Text.Content = ding.Text.Content + name + ` : ` + checktime + "\n"
