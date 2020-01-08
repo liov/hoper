@@ -1,8 +1,6 @@
 package dao
 
 import (
-	"time"
-
 	"github.com/jinzhu/gorm"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/utils/log"
@@ -30,7 +28,6 @@ func (d *UserDao) GetByEmailORPhone(email, phone string, db *gorm.DB) (*model.Us
 		db = Dao.GORMDB
 	}
 	var user model.User
-	now := time.Now()
 	var err error
 	if email != "" {
 		err = db.Where("email = ?", email).Find(&user).Error
