@@ -61,9 +61,13 @@ func main() {
 	<-ch
 }
 
+//请求在循环体外会报body length 0 的错误，原因是req.closeBody()，奇怪的是正常运行了几个小时才报这样的错误
+//NewRequest中会把没有close方法的结构体套一层noClose，事实证明同样会报错
+//真正的原因是strings.Reader的Read方法会改变内部索引长度，下次读就为0了，奇怪的是为什么正常发请求一段时间才报错
 func Request() {
 	resp, err := http.DefaultClient.Do(kqReq)
 	if err != nil {
+		kqReq.Body = ioutil.NopCloser(strings.NewReader("page=1&rp=10"))
 		log.Println(err)
 		return
 	}
