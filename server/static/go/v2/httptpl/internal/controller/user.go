@@ -10,7 +10,7 @@ import (
 	"github.com/liov/hoper/go/v2/httptpl/internal/service"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils"
-	"github.com/liov/hoper/go/v2/utils/http/iris_plus"
+	iris_plus "github.com/liov/hoper/go/v2/utils/http/iris/plus"
 
 	"github.com/liov/hoper/go/v2/utils/log"
 )

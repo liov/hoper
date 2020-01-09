@@ -7,6 +7,6 @@ go_library(
         "flag.go",
         "init.go",
     ],
-    importpath = "github.com/liov/hoper/go/v2/gateway/internal/config",
-    visibility = ["//v2/gateway:__subpackages__"],
+    importpath = "github.com/liov/hoper/go/v2/iris_gateway/internal/config",
+    visibility = ["//v2/iris_gateway:__subpackages__"],
 )

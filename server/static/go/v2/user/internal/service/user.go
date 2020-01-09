@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gomodule/redigo/redis"
@@ -327,20 +328,51 @@ func (u *UserService) AuthInfo(ctx context.Context, req *utils.Empty) (*model.Us
 func (*UserService) Auth(ctx context.Context) (*model.UserMainInfo, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	tokens := md.Get("authorization")
-	authErr := errorcode.Auth
 	if len(tokens) == 0 || tokens[0] == "" {
-		return nil, authErr
+		tokens = md.Get("gprcgateway-cookie")
+		if len(tokens) == 0 || tokens[0] == "" {
+			return nil, errorcode.Auth
+		}
 	}
 	claims, err := token.ParseToken(tokens[0], config.Conf.Server.TokenSecret)
 	if err != nil {
-		return nil, authErr
+		return nil, err
 	}
 	user, err := UserHashFromRedis(claims.UserID)
 	if err != nil {
-		return nil, authErr
+		return nil, errorcode.Auth
 	}
 
 	return user, nil
+}
+
+func (*UserService) Device(ctx context.Context) (*model.UserDeviceInfo, error) {
+	var info model.UserDeviceInfo
+	md, _ := metadata.FromIncomingContext(ctx)
+	deviceInfo := md.Get("user-device-info")
+	if len(deviceInfo) == 0 || deviceInfo[0] == "" {
+		infos := strings.Split(deviceInfo[0], "-")
+		info.Device = infos[0]
+		info.Device = infos[1]
+		info.AppCode = infos[2]
+		info.AppVersion = infos[3]
+	}
+	location := md.Get("location")
+	if len(location) == 0 || location[0] == "" {
+		infos := strings.Split(deviceInfo[0], "-")
+		info.Area = infos[0]
+		info.Lng, _ = strconv.ParseFloat(infos[0], 64)
+		info.Lat, _ = strconv.ParseFloat(infos[1], 64)
+	}
+
+	userAgent := md.Get("user-agent")
+	if len(userAgent) != 0 && userAgent[0] != "" {
+		info.UserAgent = userAgent[0]
+	}
+	ip := md.Get("x-forwarded-for")
+	if len(ip) != 0 && ip[0] != "" {
+		info.IP = userAgent[0]
+	}
 }
 
 func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.GetRep, error) {
@@ -453,6 +485,9 @@ func UserHashFromRedis(userID uint64) (*model.UserMainInfo, error) {
 	if err != nil {
 		log.Error(err)
 		return nil, err
+	}
+	if len(userArgs) == 0 {
+		return nil, errorcode.Auth
 	}
 	var user model.UserMainInfo
 	uValue := reflect.ValueOf(&user).Elem()

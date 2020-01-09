@@ -6,6 +6,7 @@ require (
 	cloud.google.com/go v0.37.4 // indirect
 	git.apache.org/thrift.git v0.13.0 // indirect
 	github.com/360EntSecGroup-Skylar/excelize/v2 v2.0.2 // indirect
+	github.com/CloudyKit/fastprinter v0.0.0-20170127035650-74b38d55f37a // indirect
 	github.com/Shopify/sarama v1.24.0
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/biogo/store v0.0.0-20190426020002-884f370e325d // indirect
@@ -49,9 +50,9 @@ require (
 	github.com/jinzhu/gorm v1.9.12-0.20191206142228-79a77d771dee
 	github.com/json-iterator/go v1.1.7
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
-	github.com/kataras/golog v0.0.9
-	github.com/kataras/iris/v12 v12.0.1
-	github.com/kataras/pio v0.0.0-20190103105442-ea782b38602d
+	github.com/kataras/golog v0.0.10
+	github.com/kataras/iris/v12 v12.1.4
+	github.com/kataras/pio v0.0.2
 	github.com/leodido/go-urn v1.1.0 // indirect
 	github.com/lni/dragonboat v2.1.7+incompatible
 	github.com/magiconair/properties v1.8.1
@@ -68,6 +69,7 @@ require (
 	github.com/peterbourgon/g2s v0.0.0-20170223122336-d4e7ad98afea // indirect
 	github.com/russross/blackfriday v2.0.0+incompatible
 	github.com/sergi/go-diff v1.0.0 // indirect
+	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/smartystreets/assertions v0.0.0-20190116191733-b6c0e53d7304 // indirect
 	github.com/spf13/viper v1.6.1
 	github.com/stretchr/testify v1.4.0
@@ -80,7 +82,7 @@ require (
 	github.com/yudai/pp v2.0.1+incompatible // indirect
 	go.uber.org/atomic v1.4.0
 	go.uber.org/zap v1.10.0
-	golang.org/x/net v0.0.0-20191011234655-491137f69257
+	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553
 	google.golang.org/grpc v1.26.0
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.30.0

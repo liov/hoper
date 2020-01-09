@@ -128,7 +128,7 @@ message Resume {
     uint32 status = 28 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"default:0\"", (gogoproto.casttype) = "uint8"];
 }
 
-message UserMainInfo{
+message UserMainInfo {
     uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key;\""];
     uint32 role = 24 [(gogoproto.moretags) = "gorm:\"default:0\""];
     string lastActiveAt = 23 [(gogoproto.moretags) = "gorm:\"type:timestamptz(6);default:'0001-01-01 00:00:00'\""];
@@ -138,12 +138,14 @@ message UserMainInfo{
     uint32 status = 28 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"default:0\"", (gogoproto.casttype) = "uint8"];
 }
 
-message UserOtherInfo{
+message UserDeviceInfo {
     //设备
-    string device = 4 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string device = 1 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string os = 4 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
     string userAgent = 5 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
     string IP = 3 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
-    string location = 1 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    double lng = 8 [(gogoproto.moretags) = "gorm:\"type:numeric(10,6)\""];
+    double lat = 9 [(gogoproto.moretags) = "gorm:\"type:numeric(10,6)\""];
     string area = 2 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
     string appCode = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
     string appVersion = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];

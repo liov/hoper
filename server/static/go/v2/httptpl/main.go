@@ -26,6 +26,7 @@ func main() {
 		defer trace.Stop()*/
 	defer initialize.Start(config.Conf, nil)()
 	app := router.App()
+	iris_build.WithConfiguration(app, initialize.ConfUrl)
 	ch := make(chan os.Signal, 1)
 Loop:
 	for {
@@ -46,7 +47,7 @@ Loop:
 			if err := app.Run(iris.Addr(config.Conf.Server.Port, func(su *host.Supervisor) {
 				su.Server.WriteTimeout = config.Conf.Server.WriteTimeout
 				su.Server.ReadTimeout = config.Conf.Server.ReadTimeout
-			}), iris.WithConfiguration(*iris_build.Configuration(initialize.ConfUrl))); err != nil && err != http.ErrServerClosed {
+			})); err != nil && err != http.ErrServerClosed {
 				log.Error(err)
 			}
 		}

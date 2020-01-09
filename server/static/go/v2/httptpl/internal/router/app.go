@@ -9,8 +9,8 @@ import (
 	"github.com/liov/hoper/go/v2/httptpl/internal/config"
 	"github.com/liov/hoper/go/v2/initialize"
 	"github.com/liov/hoper/go/v2/utils/http/iris/api"
-	iris_log_mid "github.com/liov/hoper/go/v2/utils/http/iris/log"
-	"github.com/liov/hoper/go/v2/utils/http/iris_plus"
+	iris_log "github.com/liov/hoper/go/v2/utils/http/iris/log"
+	"github.com/liov/hoper/go/v2/utils/http/iris/plus"
 
 	"github.com/liov/hoper/go/v2/utils/log"
 )
@@ -61,9 +61,9 @@ func App() *iris.Application {
 		app.Use(globalLocale)*/
 	//请求日志
 	logger := (&log.Config{Development: config.Conf.Env == initialize.PRODUCT}).NewLogger()
-	app.Use(iris_log_mid.LogMid(logger, false))
+	iris_log.SetLog(app, logger, false)
 
-	app.OnAnyErrorCode(iris_log_mid.LogMid(logger, true), func(ctx iris.Context) {
+	app.OnAnyErrorCode(iris_log.LogMid(logger, true), func(ctx iris.Context) {
 		//这应该被添加到日志中，因为`logger.config＃MessageContextKey`
 		ctx.Values().Set("logger_message",
 			ctx.Request())

@@ -2,9 +2,9 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "go_default_library",
-    srcs = ["gateway.go"],
-    importpath = "github.com/liov/hoper/go/v2/gateway/internal/server",
-    visibility = ["//v2/gateway:__subpackages__"],
+    srcs = ["iris_gateway.go"],
+    importpath = "github.com/liov/hoper/go/v2/iris_gateway/internal/server",
+    visibility = ["//v2/iris_gateway:__subpackages__"],
     deps = [
         "@com_github_gogo_gateway//:go_default_library",
         "@com_github_grpc_ecosystem_grpc_gateway//runtime:go_default_library",
