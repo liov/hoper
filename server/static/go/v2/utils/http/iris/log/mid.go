@@ -1,4 +1,4 @@
-package iris_log_mid
+package iris_log
 
 import (
 	"strings"
@@ -58,4 +58,8 @@ func LogMid(logger2 *log.Logger, hasErr bool) iris.Handler {
 	})
 	h := logger.New(c)
 	return h
+}
+
+func SetLog(app *iris.Application, logger2 *log.Logger, hasErr bool) {
+	app.Use(LogMid(logger2, hasErr))
 }

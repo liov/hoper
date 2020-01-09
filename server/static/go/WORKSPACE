@@ -447,7 +447,7 @@ go_repository(
 
 go_repository(
     name = "com_github_gogo_gateway",
-    importpath = "github.com/gogo/gateway",
+    importpath = "github.com/gogo/iris_gateway",
     sum = "h1:u0SuhL9+Il+UbjM9VIE3ntfRujKbvVpFvNB4HbjeVQ0=",
     version = "v1.1.0",
 )
@@ -594,7 +594,7 @@ go_repository(
 
 go_repository(
     name = "com_github_grpc_ecosystem_grpc_gateway",
-    importpath = "github.com/grpc-ecosystem/grpc-gateway",
+    importpath = "github.com/grpc-ecosystem/grpc-iris_gateway",
     sum = "h1:bUDfHRK8aKGdya+msYJHffDwNxB8Eileyl7Jf2qqYjI=",
     version = "v1.11.2",
 )

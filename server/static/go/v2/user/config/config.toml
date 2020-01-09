@@ -8,7 +8,7 @@ HasAddConfig  = true
 [iris]
 DisableStartupLog= false
 DisableInterruptHandler= false
-DisablePathCorrection= false
+DisablePathCorrection= true
 EnablePathEscape= false
 FireMethodNotAllowed= false
 DisableBodyConsumptionOnUnmarshal= false

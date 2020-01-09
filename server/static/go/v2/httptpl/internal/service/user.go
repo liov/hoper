@@ -15,7 +15,7 @@ type UserService struct{}
 func (*UserService) VerificationCode(req *utils.Empty) *model.VerifyRep {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-	rep, err := grpcclient.UserClient.Verify(ctx, req)
+	rep, err := grpcclient.UserClient.VerifyCode(ctx, req)
 	if err != nil {
 		log.Errorf("could not greet: %v", err)
 	}

@@ -9,7 +9,7 @@ filegroup(
     name = "all-srcs",
     srcs = [
         ":package-srcs",
-        "//v2/gateway:all-srcs",
+        "//v2/iris_gateway:all-srcs",
         "//v2/helloworld:all-srcs",
         "//v2/httptpl:all-srcs",
         "//v2/initialize:all-srcs",

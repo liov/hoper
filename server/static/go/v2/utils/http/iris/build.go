@@ -13,12 +13,12 @@ type Config struct {
 }
 
 func Build(app *iris.Application, filename string) {
-	if err := app.Build(); err != nil {
-		log.Fatal(err)
-	}
 	//将来这块用配置中心
 	if filename != "" {
-		app.Configure(iris.WithConfiguration(*Configuration(filename)))
+		WithConfiguration(app, filename)
+	}
+	if err := app.Build(); err != nil {
+		log.Fatal(err)
 	}
 }
 
@@ -33,4 +33,8 @@ func Configuration(filename string) *iris.Configuration {
 		log.Fatalf("配置错误: %v", err)
 	}
 	return &c.Iris
+}
+
+func WithConfiguration(mux *iris.Application, filename string) {
+	mux.Configure(iris.WithConfiguration(*Configuration(filename)))
 }

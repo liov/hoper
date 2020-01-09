@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/liov/hoper/go/v2/httptpl/internal/controller"
-	"github.com/liov/hoper/go/v2/utils/http/iris_plus"
+	"github.com/liov/hoper/go/v2/utils/http/iris/plus"
 )
 
 func route() []iris_plus.Controller {
