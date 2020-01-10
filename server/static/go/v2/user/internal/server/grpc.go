@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"runtime/debug"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
@@ -20,7 +21,9 @@ func filter(
 ) (resp interface{}, err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			log.Errorf("%v panic: %v", info, r)
+			log.CallTwo.Errorf("%v panic: %v", info, r)
+			debug.PrintStack()
+			err = errorcode.SysError.Err()
 		}
 		//不能添加错误处理，除非所有返回的结构相同
 		if err != nil {

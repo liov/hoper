@@ -30,3 +30,7 @@ func (e ErrCode) WithMessage(msg string) error {
 func (e ErrCode) WithError(err error) error {
 	return &statusError{Code: uint32(e), Message: err.Error()}
 }
+
+var SysErr = []byte(`{"code":10000,
+"message":"系统错误"
+}`)

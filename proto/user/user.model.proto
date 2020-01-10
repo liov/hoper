@@ -95,16 +95,11 @@ message UserActionLog {
     uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key\""];
     uint64 userId = 2 [(gogoproto.moretags) = "gorm:\"index\""];
     //类型
-    uint32 action = 3 [(gogoproto.moretags) = "gorm:\"\""];
+    uint32 action = 3 [(gogoproto.casttype) = "github.com/liov/hoper/go/v2/user/internal/model.Action"];
     //相关id
+    string relatedId = 5[(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
     //设备
-    string device = 4 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
-    string IP = 5 [(gogoproto.moretags) = "gorm:\"type:varchar(32)\""];
-    string location = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
-    string area = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
-    string appCode = 9 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
-    string appVersion = 10 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
-    string lastValue = 11 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    UserDeviceInfo device = 4 [(gogoproto.embed) = true];
     string newValue = 12 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
     string createdAt = 20 [(gogoproto.moretags) = "gorm:\"type:timestamptz(6)\""];
     string remark = 22 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
@@ -142,11 +137,11 @@ message UserDeviceInfo {
     //设备
     string device = 1 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
     string os = 4 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
-    string userAgent = 5 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
-    string IP = 3 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
-    double lng = 8 [(gogoproto.moretags) = "gorm:\"type:numeric(10,6)\""];
-    double lat = 9 [(gogoproto.moretags) = "gorm:\"type:numeric(10,6)\""];
-    string area = 2 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
     string appCode = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
     string appVersion = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string IP = 3 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string lng = 8 [(gogoproto.moretags) = "gorm:\"type:numeric(10,6)\""];
+    string lat = 9 [(gogoproto.moretags) = "gorm:\"type:numeric(10,6)\""];
+    string area = 2 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    string userAgent = 5 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
 }

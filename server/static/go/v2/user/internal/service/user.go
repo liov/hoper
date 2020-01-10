@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/md5"
 	"fmt"
+	"net/url"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -36,7 +37,9 @@ func NewUserService(server model.UserServiceServer) *UserService {
 	return &UserService{}
 }
 
-func (*UserService) VerifyCode(ctx context.Context, req *utils.Empty) (*model.VerifyRep, error) {
+func (u *UserService) VerifyCode(ctx context.Context, req *utils.Empty) (*model.VerifyRep, error) {
+	device := u.Device(ctx)
+	log.Debug(device)
 	var rep = &model.VerifyRep{}
 	vcode := code.Generate()
 	log.Info(vcode)
@@ -224,13 +227,14 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*model.Edit
 	if err != nil || user.Id != req.Id {
 		return nil, err
 	}
+	device := u.Device(ctx)
 	tx := dao.Dao.GORMDB.Begin()
-	err = userDao.SaveResume(req.Id, req.Details.EduExps, tx)
+	err = userDao.SaveResume(req.Id, req.Details.EduExps, device, tx)
 	if err != nil {
 		tx.Rollback()
 		return nil, errorcode.ERROR.WithMessage("更新失败")
 	}
-	err = userDao.SaveResume(req.Id, req.Details.WorkExps, tx)
+	err = userDao.SaveResume(req.Id, req.Details.WorkExps, device, tx)
 	if err != nil {
 		tx.Rollback()
 		return nil, errorcode.ERROR.WithMessage("更新失败")
@@ -346,33 +350,41 @@ func (*UserService) Auth(ctx context.Context) (*model.UserMainInfo, error) {
 	return user, nil
 }
 
-func (*UserService) Device(ctx context.Context) (*model.UserDeviceInfo, error) {
+func (*UserService) Device(ctx context.Context) *model.UserDeviceInfo {
 	var info model.UserDeviceInfo
 	md, _ := metadata.FromIncomingContext(ctx)
-	deviceInfo := md.Get("user-device-info")
-	if len(deviceInfo) == 0 || deviceInfo[0] == "" {
+	deviceInfo := md.Get("device-info")
+	if deviceInfo[0] != "" {
 		infos := strings.Split(deviceInfo[0], "-")
-		info.Device = infos[0]
-		info.Device = infos[1]
-		info.AppCode = infos[2]
-		info.AppVersion = infos[3]
+		if len(infos) == 4 {
+			info.Device = infos[0]
+			info.Os = infos[1]
+			info.AppCode = infos[2]
+			info.AppVersion = infos[3]
+		}
 	}
 	location := md.Get("location")
-	if len(location) == 0 || location[0] == "" {
-		infos := strings.Split(deviceInfo[0], "-")
-		info.Area = infos[0]
-		info.Lng, _ = strconv.ParseFloat(infos[0], 64)
-		info.Lat, _ = strconv.ParseFloat(infos[1], 64)
+	if location[0] != "" {
+		info.Area, _ = url.PathUnescape(location[0])
+	}
+
+	if location[1] != "" {
+		infos := strings.Split(location[1], ",")
+		if len(infos) == 2 {
+			info.Lng = infos[0]
+			info.Lat = infos[1]
+		}
 	}
 
 	userAgent := md.Get("user-agent")
-	if len(userAgent) != 0 && userAgent[0] != "" {
+	if userAgent[0] != "" {
 		info.UserAgent = userAgent[0]
 	}
 	ip := md.Get("x-forwarded-for")
-	if len(ip) != 0 && ip[0] != "" {
-		info.IP = userAgent[0]
+	if ip[0] != "" {
+		info.IP = ip[0]
 	}
+	return &info
 }
 
 func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.GetRep, error) {

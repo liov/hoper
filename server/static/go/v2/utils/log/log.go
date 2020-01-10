@@ -39,7 +39,7 @@ func (lf *Config) NewLogger() *Logger {
 
 var Default *Logger = (&Config{Development: true, Skip: true, Level: -1}).NewLogger()
 var NoCall = (&Config{Development: true}).NewLogger()
-var CallTwo = Default.Desugar().WithOptions(zap.AddCallerSkip(3)).Sugar()
+var CallTwo = Default.Desugar().WithOptions(zap.AddCallerSkip(2)).Sugar()
 
 func init() {
 	output.RegisterSink()

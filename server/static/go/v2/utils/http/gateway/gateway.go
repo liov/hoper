@@ -22,14 +22,13 @@ func Gateway(gatewayHandle func(context.Context, *runtime.ServeMux)) http.Handle
 		runtime.WithProtoErrorHandler(runtime.DefaultHTTPProtoErrorHandler),
 		runtime.WithMetadata(func(ctx context.Context, request *http.Request) metadata.MD {
 			return map[string][]string{
-				"user-device-info": {request.RemoteAddr, request.UserAgent()},
+				"device-info": {request.Header.Get("device-info")},
+				"location":    {request.Header.Get("area"), request.Header.Get("location")},
 			}
 		}),
 		runtime.WithIncomingHeaderMatcher(func(key string) (string, bool) {
 			switch key {
 			case
-				"User-Device-Info",
-				"Location",
 				"Accept",
 				"Accept-Charset",
 				"Accept-Language",
