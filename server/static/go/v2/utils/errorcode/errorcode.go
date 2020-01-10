@@ -51,6 +51,7 @@ func (e ErrCode) Error() string {
 var MsgFlags = map[ErrCode]string{
 	SUCCESS:                "ok",
 	ERROR:                  "fail",
+	SysError:               "系统错误",
 	InvalidParams:          "请求参数错误",
 	ExistTag:               "已存在该标签名称",
 	NotExistTag:            "该标签不存在",

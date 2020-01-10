@@ -3,6 +3,7 @@ package dao
 import (
 	"github.com/jinzhu/gorm"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
+	modelconst "github.com/liov/hoper/go/v2/user/internal/model"
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
@@ -64,12 +65,15 @@ func (*UserDao) GetByPrimaryKey(id uint64, db *gorm.DB) (*model.User, error) {
 	return &user, nil
 }
 
-func (*UserDao) SaveResume(userId uint64, resumes []*model.Resume, db *gorm.DB) error {
+func (*UserDao) SaveResume(userId uint64, resumes []*model.Resume, device *model.UserDeviceInfo, db *gorm.DB) error {
 	if db == nil {
 		db = Dao.GORMDB
 	}
 	var err error
-
+	var log model.UserActionLog
+	log.UserId = userId
+	log.UserDeviceInfo = device
+	log.Action = modelconst.EditResume
 	for _, resume := range resumes {
 		resume.UserId = userId
 		resume.Status = 1

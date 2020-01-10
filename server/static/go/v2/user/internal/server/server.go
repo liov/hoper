@@ -4,10 +4,12 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"runtime/debug"
 	"strings"
 	"syscall"
 
 	"github.com/liov/hoper/go/v2/user/internal/config"
+	"github.com/liov/hoper/go/v2/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -33,7 +35,9 @@ func Serve() {
 	handle := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if r := recover(); r != nil {
-				log.CallTwo.Errorf(" panic: %v", r)
+				log.CallTwo.Error(" panic: ", r)
+				debug.PrintStack()
+				w.Write(errorcode.SysErr)
 			}
 		}()
 		if r.ProtoMajor != 2 {
