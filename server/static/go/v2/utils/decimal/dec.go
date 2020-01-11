@@ -2,20 +2,20 @@ package decimal
 
 import "fmt"
 
-type dec struct {
+type Decimal struct {
 	form        byte
 	neg         bool
 	coefficient [16]byte
 	exponent    int32
 }
 
-func (d dec) Decompose(buf []byte) (form byte, negative bool, coefficient []byte, exponent int32) {
+func (d Decimal) Decompose(buf []byte) (form byte, negative bool, coefficient []byte, exponent int32) {
 	coef := make([]byte, 16)
 	copy(coef, d.coefficient[:])
 	return d.form, d.neg, coef, d.exponent
 }
 
-func (d *dec) Compose(form byte, negative bool, coefficient []byte, exponent int32) error {
+func (d *Decimal) Compose(form byte, negative bool, coefficient []byte, exponent int32) error {
 	switch form {
 	default:
 		return fmt.Errorf("unknown form %d", form)
