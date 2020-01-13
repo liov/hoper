@@ -17,6 +17,12 @@ import (
 	"github.com/liov/hoper/go/v2/utils/strings2"
 )
 
+type App iris.Application
+
+func (a *App) Original() *iris.Application {
+	return (*iris.Application)(a)
+}
+
 func ApiDoc(ctrl []Controller) {
 	handler := &Handler{apiInfo: &apiInfo{}}
 	for i := range ctrl {
