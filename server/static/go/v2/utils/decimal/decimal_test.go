@@ -7,7 +7,7 @@ import (
 )
 
 func Test_Dec(t *testing.T) {
-	fmt.Printf("%#v", Decimal{exponent: 6})
+	fmt.Printf("%#v", Decimal{exp: 6})
 }
 
 const maxUint64 uint64 = 1<<64 - 1
@@ -21,9 +21,12 @@ func Test_Decimal(t *testing.T) {
 	d, _ := New11("0.89", 8)
 	fmt.Println(c.Add(d))
 	e := New3(215, -2, true)
-	f := New3(2, -2, false)
-	fmt.Println(e.Add(*f))
+	f := New3(2, 2, false)
+	fmt.Println(e.Sub(*f))
 	fmt.Println(e.Mul(*f))
+	fmt.Println(e.Div(*f))
+	g := &Decimal{mant: []byte("123456"), exp: 10}
+	fmt.Println(g)
 }
 
 func Test_Float(t *testing.T) {
