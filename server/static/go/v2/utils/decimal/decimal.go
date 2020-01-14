@@ -122,8 +122,7 @@ func exponent(a, n uint64) uint64 {
 }
 
 type Decimal11 struct {
-	Int uint64
-	//小数部分翻转 0.001 =》 100
+	Int       uint64
 	dec       uint64
 	effective int
 }
@@ -181,46 +180,6 @@ func (x *Decimal11) Add(v *Decimal11) *Decimal11 {
 	return &dec
 }
 
-type Decimal2 struct {
-	mant []byte // mantissa ASCII digits, big-endian
-	exp  int    // exponent
-}
-
-func (x *Decimal2) String() string {
-	if len(x.mant) == 0 {
-		return "0"
-	}
-
-	var buf []byte
-	switch {
-	case x.exp <= 0:
-		// 0.00ddd
-		buf = append(buf, "0."...)
-		buf = appendZeros(buf, -x.exp)
-		buf = append(buf, x.mant...)
-
-	case /* 0 < */ x.exp < len(x.mant):
-		// dd.ddd
-		buf = append(buf, x.mant[:x.exp]...)
-		buf = append(buf, '.')
-		buf = append(buf, x.mant[x.exp:]...)
-
-	default: // len(x.mant) <= x.exp
-		// ddd00
-		buf = append(buf, x.mant...)
-		buf = appendZeros(buf, x.exp-len(x.mant))
-	}
-
-	return string(buf)
-}
-
-func appendZeros(buf []byte, n int) []byte {
-	for ; n > 0; n-- {
-		buf = append(buf, '0')
-	}
-	return buf
-}
-
 type Decimal3 struct {
 	mant uint64
 	exp  int
@@ -262,27 +221,45 @@ func (x *Decimal3) Add(v Decimal3) *Decimal3 {
 }
 
 func (x *Decimal3) Sub(v Decimal3) *Decimal3 {
-	return x
+	v.neg = !v.neg
+	return x.Add(v)
 }
 
 func (x *Decimal3) Mul(v Decimal3) *Decimal3 {
 	if x.mant == 0 || v.mant == 0 {
 		return &Decimal3{}
 	}
-	if x.exp == 0 || v.exp == 0 {
-		return &v
-	}
 	v.mant *= x.mant
 	v.exp += x.exp
+	return &v
+}
+
+func (x *Decimal3) Div(v Decimal3) *Decimal3 {
+	if x.mant == 0 {
+		return &Decimal3{}
+	}
+	if v.mant == 0 {
+		panic("除数不能为0")
+	}
+	if v.exp == 0 {
+		return &*x
+	}
+	d1 := x.mant
+	d2 := v.mant
+
+	if v.exp < 0 {
+		d1 = x.mant * uint64(math.Pow10(0-v.exp))
+	} else {
+		v.exp = x.exp - v.exp
+	}
+
+	v.mant = d1 / d2
 	return &v
 }
 
 func (x *Decimal3) String() string {
 	if x.mant == 0 {
 		return "0"
-	}
-	if x.exp == 0 {
-		return "1"
 	}
 	d := x.mant
 	if x.exp > 0 {
@@ -295,11 +272,16 @@ func (x *Decimal3) String() string {
 		in = "-"
 	}
 	if len(str)+x.exp < 0 {
-		in = "0"
-		de = strings.Repeat("0", -x.exp-len(str)) + str
+		in += "0"
+		de = "." + strings.Repeat("0", -x.exp-len(str)) + str
 	} else {
-		in += str[:len(str)+x.exp]
-		de = str[len(str)+x.exp:]
+		if x.exp >= 0 {
+			in += str
+		} else {
+			in += str[:len(str)+x.exp]
+			de = "." + str[len(str)+x.exp:]
+		}
+
 	}
 
 	for i := len(de) - 1; i >= 0; i-- {
@@ -311,5 +293,5 @@ func (x *Decimal3) String() string {
 			break
 		}
 	}
-	return fmt.Sprintf("%s.%s", in, de)
+	return fmt.Sprintf("%s%s", in, de)
 }
