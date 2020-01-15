@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"strings"
+	"unsafe"
 )
 
 /*Sizeof函数返回的大小只包括数据结构中固定的部分，例如字符串对应结构体中的指针和字符串长度部分，但是并不包含指针指向的字符串的内容。Go语言中非聚合类型通常有一个固定的大小，尽管在不同工具链下生成的实际大小可能会有所不同。考虑到可移植性，引用类型或包含引用类型的大小在32位平台上是4个字节，在64位平台上是8个字节。
@@ -17,15 +19,25 @@ import (
 在64位系统中，1字（word）=8字节（byte）=64位（bit）*/
 func ViewBin(v interface{}) {
 	vv := reflect.ValueOf(v)
-	switch i := v.(type) {
+	var binary string
+	switch v.(type) {
 	case int, int8, int16, int32, int64:
 		if vv.Int() < 0 {
 			f := fmt.Sprintf("%064b", uint64(vv.Int()))
-			fmt.Printf("%s %v\n", f[len(f)-int(vv.Type().Size())*8:], i)
+			binary = f[len(f)-int(vv.Type().Size())*8:]
 		} else {
-			fmt.Printf("%0"+strconv.Itoa(int(vv.Type().Size())*8)+"b %v\n", v, i)
+			binary = fmt.Sprintf("%0"+strconv.Itoa(int(vv.Type().Size())*8)+"b", v)
 		}
 	case uint, uint8, uint16, uint32, uint64:
-		fmt.Printf("%0"+strconv.Itoa(int(vv.Type().Size())*8)+"b %v\n", v, i)
+		binary = fmt.Sprintf("%0"+strconv.Itoa(int(vv.Type().Size())*8)+"b", v)
+	case float32, float64:
+		f := vv.Float()
+		ViewBin(*(*int64)(unsafe.Pointer(&f)))
+		return
 	}
+	var out []string
+	for i := 0; i < 8; i++ {
+		out = append(out, binary[i*8:(i+1)*8])
+	}
+	fmt.Println(strings.Join(out, " "), " ", v)
 }

@@ -1,11 +1,13 @@
 package decimal
 
 import (
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"math"
 	"strconv"
 	"strings"
+	"unsafe"
 
 	"github.com/liov/hoper/go/v2/utils/log"
 )
@@ -100,10 +102,10 @@ func (d *Decimal1) Add(v Decimal1) Decimal1 {
 func (d *Decimal1) Multi(v Decimal1) {
 	/*	i := d.Int * v.Int
 		Decimal := d.Decimal * v.Int
-		Decimal = Decimal + d.Int*v.Decimal + (d.Decimal*d.Decimal)/(int(exponent(10, uint64(d.effective*2))))
-		i = i + Decimal/(int(exponent(10, uint64(d.effective))))
+		Decimal = Decimal + d.Int*v.Decimal + (d.Decimal*d.Decimal)/(int(exponent(10, uint64(d.accuracy*2))))
+		i = i + Decimal/(int(exponent(10, uint64(d.accuracy))))
 		d.Int = i
-		d.Decimal = Decimal % (int(exponent(10, uint64(d.effective))))*/
+		d.Decimal = Decimal % (int(exponent(10, uint64(d.accuracy))))*/
 }
 
 func (d Decimal1) String() string {
@@ -122,9 +124,9 @@ func exponent(a, n uint64) uint64 {
 }
 
 type Decimal11 struct {
-	Int       uint64
-	dec       uint64
-	effective int
+	Int      uint64
+	dec      uint64
+	accuracy int
 }
 
 func New11(Dec string, eff int) (dec *Decimal11, err error) {
@@ -143,7 +145,7 @@ func New11(Dec string, eff int) (dec *Decimal11, err error) {
 		log.Error(err)
 		return
 	}
-	dec.effective = eff
+	dec.accuracy = eff
 	if len(nums[1]) >= eff {
 		nums[1] = nums[1][0:eff]
 	} else {
@@ -155,23 +157,23 @@ func New11(Dec string, eff int) (dec *Decimal11, err error) {
 
 func (x *Decimal11) String() string {
 	dec := strconv.FormatUint(x.dec, 10)
-	dec = dec + strings.Repeat("0", x.effective-len(dec))
+	dec = dec + strings.Repeat("0", x.accuracy-len(dec))
 	return fmt.Sprintf("%d.%s", x.Int, dec)
 }
 
 func (x *Decimal11) Add(v *Decimal11) *Decimal11 {
 	var dec = *x
 	dec.Int += v.Int
-	if x.effective > v.effective {
-		dec.effective = v.effective
-		dec.dec = x.dec / exponent(uint64(x.effective-v.effective), 10)
-	} else if x.effective < v.effective {
-		dec.dec = x.dec / exponent(uint64(v.effective-x.effective), 10)
+	if x.accuracy > v.accuracy {
+		dec.accuracy = v.accuracy
+		dec.dec = x.dec / exponent(uint64(x.accuracy-v.accuracy), 10)
+	} else if x.accuracy < v.accuracy {
+		dec.dec = x.dec / exponent(uint64(v.accuracy-x.accuracy), 10)
 	}
 	d := dec.dec + v.dec
 	dStr := strconv.FormatUint(d, 10)
 
-	if len(dStr) > x.effective {
+	if len(dStr) > x.accuracy {
 		dec.dec, _ = strconv.ParseUint(dStr[1:], 10, 64)
 		dec.Int += 1
 	} else {
@@ -187,6 +189,18 @@ type Decimal3 struct {
 }
 
 func New3(mant uint64, exp int, neg bool) *Decimal3 {
+	if mant == 0 {
+		return &Decimal3{}
+	}
+	mantStr := strconv.FormatUint(mant, 10)
+	for i := len(mantStr) - 1; i >= 0; i-- {
+		if mantStr[i] == '0' {
+			mant /= 10
+			exp += 1
+		} else {
+			break
+		}
+	}
 	return &Decimal3{
 		mant: mant,
 		exp:  exp,
@@ -194,16 +208,42 @@ func New3(mant uint64, exp int, neg bool) *Decimal3 {
 	}
 }
 
+func New3FromStr(str string) (Decimal3, error) {
+	var dec Decimal3
+	if str != "" && str[0] == '-' {
+		dec.neg = true
+		str = str[1:]
+	}
+
+	nums := strings.Split(str, ".")
+	if len(nums) == 2 {
+		for i := len(nums[1]) - 1; i >= 0; i-- {
+			if nums[1][i] == '0' {
+				nums[1] = nums[1][:i]
+			} else {
+				break
+			}
+		}
+		dec.exp = -len(nums[1])
+		str = nums[0] + nums[1]
+	} else {
+		str = nums[0]
+	}
+
+	dec.mant, _ = strconv.ParseUint(str, 10, 64)
+
+	return dec, nil
+}
+
 func (x *Decimal3) Add(v Decimal3) *Decimal3 {
 	var dec = *x
-	if x.exp < 0 || v.exp < 0 {
-		if x.exp > v.exp {
-			dec.exp = v.exp
-			dec.mant = dec.mant * uint64(math.Pow10(x.exp-v.exp))
-		} else if x.exp < v.exp {
-			v.mant = v.mant * uint64(math.Pow10(v.exp-x.exp))
-			v.exp = x.exp
-		}
+
+	if x.exp > v.exp {
+		dec.exp = v.exp
+		dec.mant = dec.mant * uint64(math.Pow10(x.exp-v.exp))
+	} else if x.exp < v.exp {
+		v.mant = v.mant * uint64(math.Pow10(v.exp-x.exp))
+		v.exp = x.exp
 	}
 
 	if x.neg == v.neg {
@@ -231,10 +271,21 @@ func (x *Decimal3) Mul(v Decimal3) *Decimal3 {
 	}
 	v.mant *= x.mant
 	v.exp += x.exp
+	if x.neg != v.neg {
+		v.neg = true
+	}
 	return &v
 }
 
-func (x *Decimal3) Div(v Decimal3) *Decimal3 {
+type RoundingMode uint8
+
+const (
+	UP RoundingMode = iota
+	DOWN
+	HALFUP
+)
+
+func (x *Decimal3) Div(v Decimal3, mode RoundingMode) *Decimal3 {
 	if x.mant == 0 {
 		return &Decimal3{}
 	}
@@ -254,9 +305,38 @@ func (x *Decimal3) Div(v Decimal3) *Decimal3 {
 	}
 
 	v.mant = d1 / d2
+	if x.neg != v.neg {
+		v.neg = true
+	}
 	return &v
 }
 
+func (x *Decimal3) DivInt(v int, mode RoundingMode) *Decimal3 {
+	dec := *x
+	dec.mant = dec.mant / uint64(v)
+	return &dec
+}
+
+func (x *Decimal3) Float() float64 {
+	if x.neg {
+		return -float64(x.mant) / math.Pow10(abs(x.exp))
+	}
+	return float64(x.mant) / math.Pow10(abs(x.exp))
+}
+
+func abs(x int) int {
+	if x >= 0 {
+		return x
+	}
+	return -x
+}
+
+/*func (x *Decimal3) Div2(v Decimal3) *Decimal3 {
+	f1:=big.NewFloat(x.Float())
+	f2:=big.NewFloat(v.Float())
+	f3,_:=f1.Quo(f1,f2).Float64()
+}
+*/
 func (x *Decimal3) String() string {
 	if x.mant == 0 {
 		return "0"
@@ -284,14 +364,34 @@ func (x *Decimal3) String() string {
 
 	}
 
-	for i := len(de) - 1; i >= 0; i-- {
-		if de[i] == '0' {
-			x.mant /= 10
-			x.exp += 1
-			de = de[:len(de)-1]
-		} else {
-			break
-		}
-	}
 	return fmt.Sprintf("%s%s", in, de)
+}
+
+func (x *Decimal3) Decompose(buf []byte) (form byte, negative bool, mant []byte, exponent int32) {
+	return 0, x.neg, (*(*[8]byte)(unsafe.Pointer(&x.mant)))[:], int32(x.exp)
+}
+
+func (x *Decimal3) Compose(form byte, negative bool, mant []byte, exponent int32) error {
+	x.neg = negative
+	x.exp = int(exponent)
+	var array [8]byte
+	copy(array[:], mant)
+	x.mant = *(*uint64)(unsafe.Pointer(&array))
+	return nil
+}
+
+func (x *Decimal3) Scan(raw interface{}) error {
+	var err error
+	switch v := raw.(type) {
+	case []byte:
+		*x, err = New3FromStr(string(v))
+	case string:
+		*x, err = New3FromStr(v)
+	default:
+		return fmt.Errorf("cannot sql.Scan() strfmt.Base64 from: %#v", v)
+	}
+	if err != nil {
+		return err
+	}
+	return nil
 }

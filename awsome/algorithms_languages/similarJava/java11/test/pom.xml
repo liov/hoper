@@ -32,11 +32,11 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
-                    <release>12</release>
-                    <compilerArgs>
-                        <arg>--add-opens=java.base/jdk.internal.misc=test</arg>
-                        <arg>--add-exports=java.base/jdk.internal.misc=test</arg>
-                    </compilerArgs>
+                    <release>13</release>
+                    <!--<compilerArgs>
+                        <arg>&#45;&#45;add-opens=java.base/jdk.internal.misc=test</arg>
+                        <arg>&#45;&#45;add-exports=java.base/jdk.internal.misc=test</arg>
+                    </compilerArgs>-->
                 </configuration>
             </plugin>
             <plugin>
