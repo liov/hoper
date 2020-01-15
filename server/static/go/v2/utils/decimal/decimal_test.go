@@ -4,6 +4,10 @@ import (
 	"fmt"
 	"math/big"
 	"testing"
+	"time"
+	"unsafe"
+
+	"github.com/liov/hoper/go/v2/utils/dao/db/get"
 )
 
 func Test_Dec(t *testing.T) {
@@ -20,13 +24,16 @@ func Test_Decimal(t *testing.T) {
 	c, _ := New11("2.11", 8)
 	d, _ := New11("0.89", 8)
 	fmt.Println(c.Add(d))
-	e := New3(215, -2, true)
+	e := New3(205, -2, true)
 	f := New3(2, 2, false)
 	fmt.Println(e.Sub(*f))
 	fmt.Println(e.Mul(*f))
-	fmt.Println(e.Div(*f))
+	fmt.Println(e.Div(*f, HALFUP))
 	g := &Decimal{mant: []byte("123456"), exp: 10}
 	fmt.Println(g)
+	ViewBin(9007199254741004.0)
+	h := uint64(111)
+	fmt.Println(*(*float64)(unsafe.Pointer(&h)))
 }
 
 func Test_Float(t *testing.T) {
@@ -38,4 +45,15 @@ func Test_Float(t *testing.T) {
 	f3 := f2.Mul(f1, f2)
 	data, _ := f3.MarshalText()
 	fmt.Println(a*b, f3, string(data))
+}
+
+func Test_DB(t *testing.T) {
+	type DecTest struct {
+		Id   uint64
+		Dec  Decimal3 `gorm:"type:decimal(10,2)"`
+		Time time.Time
+	}
+	get.OrmDB.DropTable(&DecTest{})
+	get.OrmDB.CreateTable(&DecTest{})
+	get.OrmDB.Save(&DecTest{Dec: Decimal3{123, -2, false}})
 }

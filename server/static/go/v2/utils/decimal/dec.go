@@ -44,7 +44,7 @@ func appendZeros(buf []byte, n int) []byte {
 	return buf
 }
 
-func (d Decimal) Decompose(buf []byte) (form byte, negative bool, coefficient []byte, exponent int32) {
+func (d *Decimal) Decompose(buf []byte) (form byte, negative bool, coefficient []byte, exponent int32) {
 	return d.form, d.neg, d.mant, int32(d.exp)
 }
 

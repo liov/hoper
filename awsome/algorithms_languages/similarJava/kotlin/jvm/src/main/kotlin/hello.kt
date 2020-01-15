@@ -19,9 +19,9 @@ fun  aaa(i:Float) {
 
     if(a == b) b += 1
 
-    var c = (a * b  + a / b - a*a)
+    val c = (a * b  + a / b - a*a)
 
-    var d = s.substring(0, s.indexOf("kkb")) + c.toString()
+    val d = s.substring(0, s.indexOf("kkb")) + c.toString()
 
     println(d)
 }

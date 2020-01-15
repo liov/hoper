@@ -3,5 +3,5 @@ module test {
     requires org.apache.commons.lang3;
     requires org.objenesis;
     requires java.base;
-    requires io.netty.all;
+    requires netty.all;
 }
