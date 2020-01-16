@@ -12,12 +12,11 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
-
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils"
 	"github.com/liov/hoper/go/v2/user/internal/config"
 	"github.com/liov/hoper/go/v2/user/internal/dao"
-	modelconst "github.com/liov/hoper/go/v2/user/internal/model"
+	modelconst "github.com/liov/hoper/go/v2/user/model"
 	"github.com/liov/hoper/go/v2/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/http/token"
 	"github.com/liov/hoper/go/v2/utils/json"
@@ -214,8 +213,8 @@ func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.Ac
 	if req.Secret != secretStr {
 		return nil, errorcode.ErrorWithMessage(errorcode.InvalidParams, "无效的链接")
 	}
-	user.Status = 1
-	dao.Dao.GORMDB.Model(user).Update("activated_at", time.Now(), "status", 1)
+
+	dao.Dao.GORMDB.Model(user).Updates(map[string]interface{}{"activated_at": time.Now().Format(time.RFC3339Nano), "status": 1})
 	var rep = &model.ActiveRep{}
 	rep.Message = "激活成功"
 	return rep, nil
@@ -228,13 +227,16 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*model.Edit
 		return nil, err
 	}
 	device := u.Device(ctx)
-	tx := dao.Dao.GORMDB.Begin()
-	err = userDao.SaveResume(req.Id, req.Details.EduExps, device, tx)
+
+	originalIds, err := userDao.ResumesIds(user.Id, nil)
 	if err != nil {
-		tx.Rollback()
-		return nil, errorcode.ERROR.WithMessage("更新失败")
+		return nil, errorcode.DBError.WithMessage("更新失败")
 	}
-	err = userDao.SaveResume(req.Id, req.Details.WorkExps, device, tx)
+	var resumes []*model.Resume
+	resumes = append(req.Details.EduExps, req.Details.WorkExps...)
+
+	tx := dao.Dao.GORMDB.Begin()
+	err = userDao.SaveResumes(req.Id, resumes, originalIds, device, tx)
 	if err != nil {
 		tx.Rollback()
 		return nil, errorcode.ERROR.WithMessage("更新失败")
@@ -353,6 +355,7 @@ func (*UserService) Auth(ctx context.Context) (*model.UserMainInfo, error) {
 func (*UserService) Device(ctx context.Context) *model.UserDeviceInfo {
 	var info model.UserDeviceInfo
 	md, _ := metadata.FromIncomingContext(ctx)
+	//Device-Info:device-osInfo-appCode-appVersion
 	deviceInfo := md.Get("device-info")
 	if deviceInfo[0] != "" {
 		infos := strings.Split(deviceInfo[0], "-")
@@ -363,6 +366,8 @@ func (*UserService) Device(ctx context.Context) *model.UserDeviceInfo {
 			info.AppVersion = infos[3]
 		}
 	}
+	//area:xxx
+	//location:1.23456,2.123456
 	location := md.Get("location")
 	if location[0] != "" {
 		info.Area, _ = url.PathUnescape(location[0])

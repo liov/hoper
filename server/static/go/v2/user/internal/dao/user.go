@@ -1,25 +1,30 @@
 package dao
 
 import (
+	"encoding/json"
+	"strconv"
+	"time"
+
 	"github.com/jinzhu/gorm"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
-	modelconst "github.com/liov/hoper/go/v2/user/internal/model"
+	modelconst "github.com/liov/hoper/go/v2/user/model"
+	"github.com/liov/hoper/go/v2/utils/array"
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
 type UserDao struct{}
 
-func (*UserDao) ExitByEmailORPhone(email, phone string) (bool, error) {
+func (*UserDao) ExitByEmailORPhone(mail, phone string) (bool, error) {
 	var err error
 	var count int
-	if email != "" {
-		err = Dao.StdDB.QueryRow(`SELECT EXISTS(select  1 FROM user WHERE mail =  ?)`, email).Scan(&count)
+	if mail != "" {
+		err = Dao.GORMDB.Table("user").Where(`mail = ?`, mail).Count(&count).Error
 	} else {
-		err = Dao.StdDB.QueryRow(`SELECT EXISTS(select  1 FROM user WHERE phone =  ?)`, phone).Scan(&count)
+		err = Dao.GORMDB.Table("user").Where(`phone = ?`, phone).Count(&count).Error
 	}
 	if err != nil {
 		log.Error("UserDao.ExitByEmailORPhone: ", err)
-		return false, err
+		return true, err
 	}
 	return count == 1, nil
 }
@@ -65,25 +70,55 @@ func (*UserDao) GetByPrimaryKey(id uint64, db *gorm.DB) (*model.User, error) {
 	return &user, nil
 }
 
-func (*UserDao) SaveResume(userId uint64, resumes []*model.Resume, device *model.UserDeviceInfo, db *gorm.DB) error {
+func (*UserDao) SaveResumes(userId uint64, resumes []*model.Resume, originalIds []uint64, device *model.UserDeviceInfo, db *gorm.DB) error {
 	if db == nil {
 		db = Dao.GORMDB
 	}
 	var err error
-	var log model.UserActionLog
-	log.UserId = userId
-	log.UserDeviceInfo = device
-	log.Action = modelconst.EditResume
-	for _, resume := range resumes {
-		resume.UserId = userId
-		resume.Status = 1
-		if resume.Id != 0 {
-			err = db.Model(&resume).Updates(&resume).Error
+	var actionLog model.UserActionLog
+	actionLog.CreatedAt = time.Now().Format(time.RFC3339Nano)
+	actionLog.UserId = userId
+	actionLog.UserDeviceInfo = device
+	actionLog.Action = modelconst.EditResume
+	tableName := db.NewScope(&model.Resume{}).TableName()
+
+	var editIds []uint64
+
+	for i := range resumes {
+		resumes[i].UserId = userId
+		resumes[i].Status = 1
+		if resumes[i].Id != 0 {
+			err = db.Save(resumes[i]).Error
+			actionLog.Action = modelconst.CreateResume
+			actionLog.LastValue, _ = json.Marshal(resumes[i])
+			editIds = append(editIds, resumes[i].Id)
 		} else {
-			err = db.Create(&resume).Error
+			err = db.Create(resumes[i]).Error
+			actionLog.Action = modelconst.EditResume
 		}
 		if err != nil {
 			return err
+		}
+		actionLog.Id = 0
+		actionLog.RelatedId = tableName + strconv.FormatUint(resumes[i].Id, 10)
+		if err = db.Create(&actionLog).Error; err != nil {
+			log.Error(err)
+		}
+
+	}
+
+	//差集
+	var differenceIds []uint64
+	if len(originalIds) > 0 {
+		differenceIds = array.Intersection(editIds, originalIds)
+	}
+	db.Model(&model.Resume{}).Where("id in (?)", differenceIds).Update("status", 0)
+	for _, id := range differenceIds {
+		actionLog.Id = 0
+		actionLog.Action = modelconst.DELETEResume
+		actionLog.RelatedId = tableName + strconv.FormatUint(id, 10)
+		if err = db.Create(&actionLog).Error; err != nil {
+			log.Error(err)
 		}
 	}
 	return nil
@@ -95,4 +130,16 @@ func (*UserDao) ActionLog(log *model.UserActionLog, db *gorm.DB) error {
 		return err
 	}
 	return nil
+}
+
+func (*UserDao) ResumesIds(userId uint64, db *gorm.DB) ([]uint64, error) {
+	if db == nil {
+		db = Dao.GORMDB
+	}
+	var resumeIds []uint64
+	err := db.Find(new(model.Resume)).Where("user_id = ?", userId).Pluck("id", &resumeIds).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+	return resumeIds, nil
 }

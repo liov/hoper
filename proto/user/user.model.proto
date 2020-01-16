@@ -95,20 +95,24 @@ message UserActionLog {
     uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key\""];
     uint64 userId = 2 [(gogoproto.moretags) = "gorm:\"index\""];
     //类型
-    uint32 action = 3 [(gogoproto.casttype) = "github.com/liov/hoper/go/v2/user/internal/model.Action"];
+    uint32 action = 3 [(gogoproto.casttype) = "github.com/liov/hoper/go/v2/user/model.Action"];
     //相关id
     string relatedId = 5[(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
     //设备
     UserDeviceInfo device = 4 [(gogoproto.embed) = true];
-    string newValue = 12 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    bytes lastValue = 12 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
     string createdAt = 20 [(gogoproto.moretags) = "gorm:\"type:timestamptz(6)\""];
     string remark = 22 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
 }
 
 //简历
 message Resume {
-    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key\""];
-    uint64 userId = 2 [(gogoproto.moretags) = "gorm:\"index\""];
+    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key\"",(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+           type:INTEGER
+    }];
+    uint64 userId = 2 [(gogoproto.moretags) = "gorm:\"index\"",(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+           type:INTEGER
+    }];
     //公司或组织或学校
     string company = 3 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
     //职位或学历

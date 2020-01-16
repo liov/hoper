@@ -3,10 +3,11 @@ package errorcode
 type ErrCode uint32
 
 const (
-	SUCCESS       ErrCode = 0
-	ERROR         ErrCode = 1
-	InvalidParams ErrCode = 2
-	SysError      ErrCode = 3
+	SUCCESS ErrCode = iota
+	ERROR
+	InvalidParams
+	SysError
+	DBError
 
 	LoginError   ErrCode = 1000 + iota //用户名或密码错误
 	LoginTimeout                       //登录超时
@@ -66,6 +67,7 @@ var MsgFlags = map[ErrCode]string{
 	LoginError:             "用户名或密码错误",
 	LoginTimeout:           "登录超时",
 	InActive:               "未激活账号",
+	DBError:                "数据库错误",
 }
 
 const (

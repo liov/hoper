@@ -2,6 +2,7 @@ package decimal
 
 import (
 	"fmt"
+	"log"
 	"math/big"
 	"testing"
 	"time"
@@ -53,7 +54,14 @@ func Test_DB(t *testing.T) {
 		Dec  Decimal3 `gorm:"type:decimal(10,2)"`
 		Time time.Time
 	}
-	get.OrmDB.DropTable(&DecTest{})
-	get.OrmDB.CreateTable(&DecTest{})
-	get.OrmDB.Save(&DecTest{Dec: Decimal3{123, -2, false}})
+	tx := get.OrmDB.Begin()
+	/*	tx.DropTable(&DecTest{})
+		tx.CreateTable(&DecTest{})*/
+	var dec = DecTest{Dec: Decimal3{123, -2, false}}
+	tx.Save(&dec)
+	log.Println(dec.Id)
+	var dec1 DecTest
+	tx.First(&dec1)
+	tx.Commit()
+	fmt.Println(dec1)
 }

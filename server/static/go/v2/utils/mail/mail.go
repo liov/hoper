@@ -11,6 +11,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
+//550,Mailbox not found or access denied.是因为收件邮箱不存在
 type Mail struct {
 	FromName, From, Subject, ContentType, Content string
 	To                                            []string
