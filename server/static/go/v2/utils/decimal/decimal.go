@@ -1,7 +1,7 @@
 package decimal
 
 import (
-	"encoding/base64"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
@@ -337,7 +337,7 @@ func abs(x int) int {
 	f3,_:=f1.Quo(f1,f2).Float64()
 }
 */
-func (x *Decimal3) String() string {
+func (x Decimal3) String() string {
 	if x.mant == 0 {
 		return "0"
 	}
@@ -394,4 +394,8 @@ func (x *Decimal3) Scan(raw interface{}) error {
 		return err
 	}
 	return nil
+}
+
+func (x Decimal3) Value() (driver.Value, error) {
+	return driver.Value(x.String()), nil
 }

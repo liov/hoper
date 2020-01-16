@@ -178,7 +178,7 @@ message SingUpVerifyReq {
 }
 
 message SingUpVerifyRep {
-    uint32 code = 1;
+    uint32 code = 1 [(gogoproto.jsontag) = "code"];
     string message = 2;
     //验证码
     string details = 3;
@@ -200,7 +200,7 @@ message SignupReq {
 }
 
 message SignupRep {
-    uint32 code = 1;
+    uint32 code = 1 [(gogoproto.jsontag) = "code"];
     string message = 2;
     User details = 3;
 }
@@ -214,7 +214,7 @@ message ActiveReq {
 }
 
 message ActiveRep{
-    uint32 code = 1;
+    uint32 code = 1 [(gogoproto.jsontag) = "code"];
     string message =2;
 }
 
@@ -225,7 +225,7 @@ message GetReq {
 }
 
 message GetRep {
-    uint32 code = 1;
+    uint32 code = 1 [(gogoproto.jsontag) = "code"];
     string message =2;
     User details = 3;
 }
@@ -256,7 +256,7 @@ message EditReq {
 }
 
 message EditRep {
-    uint32 code = 1;
+    uint32 code = 1 [(gogoproto.jsontag) = "code"];
     string msg = 2;
 }
 
@@ -270,7 +270,7 @@ message LoginReq {
 }
 
 message LoginRep {
-    uint32 code = 1;
+    uint32 code = 1[(gogoproto.jsontag) = "code"];
     string message = 2;
     LoginDetails details = 3;
     message LoginDetails{
@@ -286,7 +286,7 @@ message LogoutReq {
 }
 
 message LogoutRep {
-    uint32 code = 1;
+    uint32 code = 1 [(gogoproto.jsontag) = "code"];
     string msg = 2;
 }
 

@@ -1,7 +1,6 @@
 package main
 
 import (
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/utils/dao/db/get"
 )
