@@ -21,7 +21,7 @@ func init() {
 		log.Fatal(err)
 	}
 	var config = struct {
-		Database struct {
+		GetOrm struct {
 			Type     string
 			User     string
 			Password string
@@ -34,14 +34,14 @@ func init() {
 		log.Fatal(err)
 	}
 	var url string
-	if config.Database.Type == "mysql" {
-		url = fmt.Sprintf("%s:%s@tcp(%s:3306)/test?charset=utf8mb4&parseTime=True&loc=Local", config.Database.User, config.Database.Password, config.Database.Host)
-	} else if config.Database.Type == "postgres" {
+	if config.GetOrm.Type == "mysql" {
+		url = fmt.Sprintf("%s:%s@tcp(%s:3306)/test?charset=utf8mb4&parseTime=True&loc=Local", config.GetOrm.User, config.GetOrm.Password, config.GetOrm.Host)
+	} else if config.GetOrm.Type == "postgres" {
 		url = fmt.Sprintf("host=%s user=%s dbname=test sslmode=disable password=%s",
-			config.Database.Host, config.Database.User, config.Database.Password)
+			config.GetOrm.Host, config.GetOrm.User, config.GetOrm.Password)
 	}
 
-	OrmDB, err = gorm.Open(config.Database.Type, url)
+	OrmDB, err = gorm.Open(config.GetOrm.Type, url)
 	if err != nil {
 		log.Fatalln(err)
 	}

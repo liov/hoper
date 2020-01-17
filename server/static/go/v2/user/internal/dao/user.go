@@ -80,7 +80,7 @@ func (*UserDao) SaveResumes(userId uint64, resumes []*model.Resume, originalIds 
 	actionLog.UserId = userId
 	actionLog.UserDeviceInfo = device
 	actionLog.Action = modelconst.EditResume
-	tableName := db.NewScope(&model.Resume{}).TableName()
+	tableName := db.NewScope(&model.Resume{}).TableName() + "."
 
 	var editIds []uint64
 
@@ -110,7 +110,7 @@ func (*UserDao) SaveResumes(userId uint64, resumes []*model.Resume, originalIds 
 	//差集
 	var differenceIds []uint64
 	if len(originalIds) > 0 {
-		differenceIds = array.Intersection(editIds, originalIds)
+		differenceIds = array.Difference(editIds, originalIds)
 	}
 	db.Model(&model.Resume{}).Where("id in (?)", differenceIds).Update("status", 0)
 	for _, id := range differenceIds {
@@ -137,7 +137,7 @@ func (*UserDao) ResumesIds(userId uint64, db *gorm.DB) ([]uint64, error) {
 		db = Dao.GORMDB
 	}
 	var resumeIds []uint64
-	err := db.Find(new(model.Resume)).Where("user_id = ?", userId).Pluck("id", &resumeIds).Error
+	err := db.Model(new(model.Resume)).Where("user_id = ? AND status > 0", userId).Pluck("id", &resumeIds).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}

@@ -9,6 +9,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/http/iris/response"
 	"github.com/liov/hoper/go/v2/utils/http/token"
 	"github.com/liov/hoper/go/v2/utils/json"
+	"github.com/liov/hoper/go/v2/utils/log"
 )
 
 func Auth(w http.ResponseWriter, r *http.Request) {
@@ -30,6 +31,7 @@ func Auth(w http.ResponseWriter, r *http.Request) {
 	}
 	user, err := UserFromRedis(claims.UserID)
 	if err != nil {
+		log.Error(err)
 		errHandle(w)
 		return
 	}

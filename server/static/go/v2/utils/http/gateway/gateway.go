@@ -3,6 +3,7 @@ package gateway
 import (
 	"context"
 	"net/http"
+	"net/url"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/liov/hoper/go/v2/utils/json"
@@ -21,9 +22,13 @@ func Gateway(gatewayHandle func(context.Context, *runtime.ServeMux)) http.Handle
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, jsonpb),
 		runtime.WithProtoErrorHandler(runtime.DefaultHTTPProtoErrorHandler),
 		runtime.WithMetadata(func(ctx context.Context, request *http.Request) metadata.MD {
+			area, err := url.PathUnescape(request.Header.Get("area"))
+			if err != nil {
+				area = ""
+			}
 			return map[string][]string{
 				"device-info": {request.Header.Get("device-info")},
-				"location":    {request.Header.Get("area"), request.Header.Get("location")},
+				"location":    {area, request.Header.Get("location")},
 			}
 		}),
 		runtime.WithIncomingHeaderMatcher(func(key string) (string, bool) {

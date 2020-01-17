@@ -22,7 +22,7 @@ type GoReply struct {
 	Details proto.Message
 }
 
-func (m *Reply) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
+func (m *AnyReply) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
 	var err error
 	reply := GoReply{Code: m.Code, Message: m.Message}
 	reply.Details, err = any.ResolveAny(m.Details.TypeUrl)
