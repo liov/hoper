@@ -31,12 +31,6 @@ const (
 	UserSexFemale // 女
 )
 
-//用户操作
-const (
-	SignUp = iota
-	ModifyPassword
-)
-
 const (
 	// 用户名的最大长度
 	MaxUserNameLen = 10

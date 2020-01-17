@@ -27,7 +27,7 @@ func (d Dir) Open(name string) (*os.File, error) {
 
 //path和filepath两个包，filepath文件专用
 func FindFile(path string) (string, error) {
-	files, err := FindFiles(path, 6, 1)
+	files, err := FindFiles(path, 8, 1)
 	if err != nil {
 		return "", err
 	}

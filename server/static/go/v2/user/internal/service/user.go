@@ -6,14 +6,15 @@ import (
 	"fmt"
 	"net/url"
 	"reflect"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/gomodule/redigo/redis"
+	"github.com/jinzhu/gorm"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils"
+	"github.com/liov/hoper/go/v2/protobuf/utils/response"
 	"github.com/liov/hoper/go/v2/user/internal/config"
 	"github.com/liov/hoper/go/v2/user/internal/dao"
 	modelconst "github.com/liov/hoper/go/v2/user/model"
@@ -27,6 +28,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/valid"
 	"github.com/liov/hoper/go/v2/utils/verification/code"
 	"github.com/liov/hoper/go/v2/utils/verification/luosimao"
+	"github.com/liov/hoper/go/v2/utils/verification/prm"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -36,10 +38,10 @@ func NewUserService(server model.UserServiceServer) *UserService {
 	return &UserService{}
 }
 
-func (u *UserService) VerifyCode(ctx context.Context, req *utils.Empty) (*model.VerifyRep, error) {
+func (u *UserService) VerifyCode(ctx context.Context, req *utils.Empty) (*response.CommonRep, error) {
 	device := u.Device(ctx)
 	log.Debug(device)
-	var rep = &model.VerifyRep{}
+	var rep = &response.CommonRep{}
 	vcode := code.Generate()
 	log.Info(vcode)
 	rep.Details = vcode
@@ -47,7 +49,7 @@ func (u *UserService) VerifyCode(ctx context.Context, req *utils.Empty) (*model.
 	return rep, nil
 }
 
-func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*model.SingUpVerifyRep, error) {
+func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*response.TinyRep, error) {
 	err := valid.Validate.Struct(req)
 	if err != nil {
 		return nil, errorcode.InvalidParams.WithMessage(valid.Trans(err))
@@ -65,7 +67,7 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 		}
 	}
 	vcode := code.Generate()
-	log.Info(vcode)
+	log.Debug(vcode)
 	key := modelconst.VerificationCodeKey + req.Mail + req.Phone
 	RedisConn := dao.Dao.Redis.Get()
 	defer RedisConn.Close()
@@ -74,9 +76,9 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 		log.Error("UserService.Verify,RedisConn.Do: ", err)
 		return nil, errorcode.ERROR.WithMessage("新建出错")
 	}
-	var rep = &model.SingUpVerifyRep{}
-	rep.Details = vcode
-	rep.Message = "字符串有问题吗啊"
+	var rep = &response.TinyRep{}
+
+	rep.Message = "验证码已发送"
 	return rep, err
 }
 
@@ -122,11 +124,11 @@ func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*model.Si
 	if _, err := RedisConn.Do("SET", activeUser, curTime, "EX", modelconst.ActiveDuration); err != nil {
 		log.Error("UserService.Signup,RedisConn.Do: ", err)
 	}
-	go func() {
-		if req.Mail != "" {
-			sendMail("/active", "账号激活", curTime, user)
-		}
-	}()
+
+	if req.Mail != "" {
+		go sendMail(modelconst.Active, curTime, user)
+	}
+
 	return rep, nil
 }
 
@@ -141,29 +143,31 @@ func encryptPassword(password string) string {
 	return fmt.Sprintf("%x", md5.Sum(strings2.ToBytes(hash)))
 }
 
-func sendMail(action string, title string, curTime int64, user *model.User) {
+func sendMail(action modelconst.Action, curTime int64, user *model.User) {
 	siteName := "hoper"
 	siteURL := "https://" + config.Conf.Server.Domain
+	var content string
+	title := action.String()
 	secretStr := strconv.FormatInt(curTime, 10) + user.Mail + user.Password
 	secretStr = fmt.Sprintf("%x", md5.Sum(strings2.ToBytes(secretStr)))
-	actionURL := siteURL + "/user" + action + "/"
-
+	actionURL := siteURL + "/user/rest/" + secretStr
 	actionURL = actionURL + strconv.FormatUint(user.Id, 10) + "/" + secretStr
-	log.Debug(actionURL)
-
-	content := "<p><b>亲爱的" + user.Name + ":</b></p>" +
-		"<p>我们收到您在 " + siteName + " 的注册信息, 请点击下面的链接, 或粘贴到浏览器地址栏来激活帐号.</p>" +
-		"<a href=\"" + actionURL + "\">" + actionURL + "</a>" +
-		"<p>如果您没有在 " + siteName + " 填写过注册信息, 说明有人滥用了您的邮箱, 请删除此邮件, 我们对给您造成的打扰感到抱歉.</p>" +
-		"<p>" + siteName + " 谨上.</p>"
-
-	if action == "/reset" {
+	switch action {
+	case modelconst.Active:
+		log.Debug(actionURL)
+		content = "<p><b>亲爱的" + user.Name + ":</b></p>" +
+			"<p>我们收到您在 " + siteName + " 的注册信息, 请点击下面的链接, 或粘贴到浏览器地址栏来激活帐号.</p>" +
+			"<a href=\"" + actionURL + "\">" + actionURL + "</a>" +
+			"<p>如果您没有在 " + siteName + " 填写过注册信息, 说明有人滥用了您的邮箱, 请删除此邮件, 我们对给您造成的打扰感到抱歉.</p>" +
+			"<p>" + siteName + " 谨上.</p>"
+	case modelconst.RestPassword:
 		content = "<p><b>亲爱的" + user.Name + ":</b></p>" +
 			"<p>你的密码重设要求已经得到验证。请点击以下链接, 或粘贴到浏览器地址栏来设置新的密码: </p>" +
 			"<a href=\"" + actionURL + "\">" + actionURL + "</a>" +
 			"<p>感谢你对" + siteName + "的支持，希望你在" + siteName + "的体验有益且愉快。</p>" +
 			"<p>(这是一封自动产生的email，请勿回复。)</p>"
 	}
+
 	//content += "<p><img src=\"" + siteURL + "/images/logo.png\" style=\"height: 42px;\"/></p>"
 	//fmt.Println(content)
 
@@ -189,7 +193,7 @@ func checkPassword(password string, user *model.User) bool {
 	return encryptPassword(password) == user.Password
 }
 
-func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.ActiveRep, error) {
+func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*response.TinyRep, error) {
 	RedisConn := dao.Dao.Redis.Get()
 	defer RedisConn.Close()
 
@@ -215,12 +219,10 @@ func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.Ac
 	}
 
 	dao.Dao.GORMDB.Model(user).Updates(map[string]interface{}{"activated_at": time.Now().Format(time.RFC3339Nano), "status": 1})
-	var rep = &model.ActiveRep{}
-	rep.Message = "激活成功"
-	return rep, nil
+	return &response.TinyRep{Message: "激活成功"}, nil
 }
 
-func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*model.EditRep, error) {
+func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.TinyRep, error) {
 	defer time2.TimeCost(time.Now())
 	user, err := u.Auth(ctx)
 	if err != nil || user.Id != req.Id {
@@ -249,14 +251,12 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*model.Edit
 		return nil, errorcode.ERROR.WithMessage("更新失败")
 	}
 	tx.Commit()
-	return &model.EditRep{Msg: "修改成功"}, nil
+	return &response.TinyRep{Message: "修改成功"}, nil
 }
 
 func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginRep, error) {
-	resp := &model.LoginRep{}
-	verifyErr := luosimao.LuosimaoVerify(config.Conf.Server.LuosimaoVerifyURL, config.Conf.Server.LuosimaoAPIKey, req.Luosimao)
 
-	if verifyErr != nil {
+	if verifyErr := luosimao.LuosimaoVerify(config.Conf.Server.LuosimaoVerifyURL, config.Conf.Server.LuosimaoAPIKey, req.Luosimao); verifyErr != nil {
 		return nil, errorcode.InvalidParams.WithMessage(verifyErr.Error())
 	}
 
@@ -264,14 +264,12 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 		return nil, errorcode.InvalidParams.WithMessage("账号错误")
 	}
 	var sql string
-	emailMatch, _ := regexp.MatchString(`^([a-zA-Z0-9]+[_.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_.]?)*[a-zA-Z0-9]+.[a-zA-Z]{2,3}$`, req.Input)
-	if emailMatch {
+
+	switch prm.PhoneOrMail(req.Input) {
+	case prm.Mail:
 		sql = "mail = ?"
-	} else {
-		phoneMatch, _ := regexp.MatchString(`^1[0-9]{10}$`, req.Input)
-		if phoneMatch {
-			sql = "phone = ?"
-		}
+	case prm.Phone:
+		sql = "phone = ?"
 	}
 
 	var user model.User
@@ -285,9 +283,17 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 	if user.Status == modelconst.UserStatusInActive {
 		//没看懂
 		//encodedEmail := base64.StdEncoding.EncodeToString(strings2.ToBytes(user.Mail))
-		resp.Message = "账号未激活,请进去邮箱点击激活"
-		go sendMail("/active", "账号激活", time.Now().Unix(), &user)
-		return resp, nil
+		activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
+		RedisConn := dao.Dao.Redis.Get()
+		defer RedisConn.Close()
+
+		curTime := time.Now().Unix()
+		if _, err := RedisConn.Do("SET", activeUser, curTime, "EX", modelconst.ActiveDuration); err != nil {
+			log.Error("UserService.Signup,RedisConn.Do: ", err)
+			return nil, errorcode.RedisErr
+		}
+		go sendMail(modelconst.Active, curTime, &user)
+		return nil, errorcode.Auth.WithMessage("账号未激活,请进去邮箱点击激活")
 	}
 
 	tokenString, err := token.GenerateToken(user.Id, config.Conf.Server.TokenMaxAge, config.Conf.Server.TokenSecret)
@@ -305,7 +311,7 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 	}); err != nil {
 		return nil, errorcode.ERROR
 	}
-
+	resp := &model.LoginRep{}
 	resp.Details = &model.LoginRep_LoginDetails{Token: tokenString, User: &user}
 	resp.Message = "登录成功"
 
@@ -323,8 +329,10 @@ func (u *UserService) Logout(ctx context.Context, req *model.LogoutReq) (*model.
 	defer RedisConn.Close()
 
 	if _, err := RedisConn.Do("DEL", modelconst.LoginUserKey+strconv.FormatUint(user.Id, 10)); err != nil {
+		log.Error(err)
+		return nil, errorcode.RedisErr
 	}
-	return &model.LogoutRep{Msg: "已注销"}, nil
+	return &model.LogoutRep{Message: "已注销"}, nil
 }
 
 func (u *UserService) AuthInfo(ctx context.Context, req *utils.Empty) (*model.UserMainInfo, error) {
@@ -335,7 +343,7 @@ func (*UserService) Auth(ctx context.Context) (*model.UserMainInfo, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	tokens := md.Get("authorization")
 	if len(tokens) == 0 || tokens[0] == "" {
-		tokens = md.Get("gprcgateway-cookie")
+		tokens = md.Get("cookie")
 		if len(tokens) == 0 || tokens[0] == "" {
 			return nil, errorcode.Auth
 		}
@@ -400,6 +408,41 @@ func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.Ge
 	return &model.GetRep{Details: &model.User{Id: user.Id, Role: user.Role}}, nil
 }
 
+func (u *UserService) RestPassword(ctx context.Context, req *model.LoginReq) (*response.TinyRep, error) {
+	if verifyErr := luosimao.LuosimaoVerify(config.Conf.Server.LuosimaoVerifyURL, config.Conf.Server.LuosimaoAPIKey, req.Luosimao); verifyErr != nil {
+		return nil, errorcode.InvalidParams.WithMessage(verifyErr.Error())
+	}
+
+	if req.Input == "" {
+		return nil, errorcode.InvalidParams.WithMessage("账号错误")
+	}
+	user, err := userDao.GetByEmailORPhone(req.Input, req.Input, nil)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			if prm.PhoneOrMail(req.Input) != prm.Phone {
+				return nil, errorcode.InvalidParams.WithMessage("邮箱不存在")
+			} else {
+				return nil, errorcode.InvalidParams.WithMessage("手机号不存在")
+			}
+		}
+		log.Error(err)
+		return nil, errorcode.DBError
+	}
+	restPassword := modelconst.ResetTimeKey + req.Input
+	RedisConn := dao.Dao.Redis.Get()
+	defer RedisConn.Close()
+
+	curTime := time.Now().Unix()
+	if _, err := RedisConn.Do("SET", restPassword, curTime, "EX", modelconst.ResetDuration); err != nil {
+		log.Error("redis set failed:", err)
+		return nil, errorcode.RedisErr
+	}
+
+	go sendMail(modelconst.RestPassword, curTime, user)
+
+	return &response.TinyRep{}, nil
+}
+
 // UserToRedis 将用户信息存到redis
 func UserToRedis(user *model.UserMainInfo) error {
 	UserString, err := json.Json.MarshalToString(user)
@@ -427,7 +470,6 @@ func UserFromRedis(userID uint64) (*model.UserMainInfo, error) {
 	conn.Send("SELECT", modelconst.UserIndex)
 	userString, err := redis.String(conn.Do("GET", loginUser))
 	if err != nil {
-		log.Error(err)
 		return nil, err
 	}
 	var user model.UserMainInfo
@@ -446,7 +488,6 @@ func UserLastActiveTime(userID uint64) error {
 	_, err = conn.Do("ZADD", modelconst.LoginUserKey+"ActiveTime",
 		time.Now().Unix(), strconv.FormatUint(userID, 10))
 	if err != nil {
-		log.Error(err)
 		return err
 	}
 	return nil
@@ -526,7 +567,6 @@ func UserHashFromRedis(userID uint64) (*model.UserMainInfo, error) {
 			v, _ := strconv.ParseBool(userArgs[i+1])
 			fieldValue.SetBool(v)
 		}
-
 	}
 	return &user, nil
 }

@@ -6,6 +6,7 @@ import "protoc-gen-swagger/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
 import "utils/empty.proto";
+import "utils/response/any.proto";
 
 
 option java_package = "xyz.hoper.protobuf.user";
@@ -34,7 +35,7 @@ service UserService {
 		description: "用户相关接口"
     };
     //验证码
-    rpc VerifyCode (utils.Empty) returns (VerifyRep) {
+    rpc VerifyCode (utils.Empty) returns (response.CommonRep) {
         option (google.api.http) = {
             get: "/api/v1/verifyCode"
         };
@@ -46,7 +47,7 @@ service UserService {
     }
 
     //注册验证
-    rpc SignupVerify (SingUpVerifyReq) returns (SingUpVerifyRep) {
+    rpc SignupVerify (SingUpVerifyReq) returns (response.TinyRep) {
         option (google.api.http) = {
             post: "/api/v1/user/signupVerify"
             body: "*"
@@ -72,7 +73,7 @@ service UserService {
     }
 
     //激活
-    rpc Active (ActiveReq) returns (ActiveRep) {
+    rpc Active (ActiveReq) returns (response.TinyRep) {
         option (google.api.http) = {
             get: "/api/v1/user/active/{id}/{secret}"
         };
@@ -83,7 +84,7 @@ service UserService {
         };
     }
     //编辑
-    rpc Edit (EditReq) returns (EditRep) {
+    rpc Edit (EditReq) returns (response.TinyRep) {
         option (google.api.http) = {
             put: "/api/v1/user/{id}"
             body: "details"
@@ -129,6 +130,18 @@ service UserService {
     rpc AuthInfo (utils.Empty) returns (UserMainInfo) {
 
     }
+
+    //重置密码
+    rpc RestPassword (LoginReq) returns (response.TinyRep) {
+    option (google.api.http) = {
+                get: "/api/v1/restPassword"
+            };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+                tags:["用户相关接口","v1.0.0"]
+                summary : "重置密码"
+                description : "重置密码接口"
+            };
+    }
     //获取用户信息
     rpc GetUser (GetReq) returns (GetRep) {
         option (google.api.http) = {
@@ -155,13 +168,6 @@ service UserService {
     }
 }
 
-message VerifyRep{
-    uint32 code = 1;
-    string message = 2;
-    //验证码
-    string details = 3;
-}
-
 message SingUpVerifyReq {
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_schema) = {
         json_schema: {
@@ -175,13 +181,6 @@ message SingUpVerifyReq {
     string mail = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" comment:\"邮箱\""];
     //手机号
     string phone = 7 [(gogoproto.moretags) = "validate:\"omitempty,phone\" comment:\"手机号\""];
-}
-
-message SingUpVerifyRep {
-    uint32 code = 1 [(gogoproto.jsontag) = "code"];
-    string message = 2;
-    //验证码
-    string details = 3;
 }
 
 message SignupReq {
@@ -211,11 +210,6 @@ message ActiveReq {
     type: INTEGER}];
     string secret = 2 [(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
     title:"密钥"}];
-}
-
-message ActiveRep{
-    uint32 code = 1 [(gogoproto.jsontag) = "code"];
-    string message =2;
 }
 
 message GetReq {
@@ -255,11 +249,6 @@ message EditReq {
     }
 }
 
-message EditRep {
-    uint32 code = 1 [(gogoproto.jsontag) = "code"];
-    string msg = 2;
-}
-
 message LoginReq {
     string input = 1;
     string password = 2 [(validator.field) = {
@@ -286,12 +275,6 @@ message LogoutReq {
 }
 
 message LogoutRep {
-    uint32 code = 1 [(gogoproto.jsontag) = "code"];
-    string msg = 2;
-}
-
-message UserInfo {
-    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"default:0\"", (gogoproto.casttype) = "uint8", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
-           type:INTEGER
-    }];
+    uint32 code = 1[(gogoproto.jsontag) = "code"];
+    string message = 2;
 }
