@@ -63,7 +63,7 @@ func GetEnumType(field *google_protobuf.EnumDescriptorProto) string {
 		return ""
 	}
 	if field.Options != nil {
-		v, err := proto.GetExtension(field.Options, E_EnumvalueCN)
+		v, err := proto.GetExtension(field.Options, E_GoprotoEnumType)
 		if err == nil && v.(*string) != nil {
 			return *(v.(*string))
 		}
