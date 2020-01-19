@@ -9,3 +9,5 @@ package model
 func (m *Resume) CmpKey() uint64 {
 	return m.Id
 }
+
+var UserService_serviceDesc = &_UserService_serviceDesc

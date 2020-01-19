@@ -132,16 +132,29 @@ service UserService {
     }
 
     //重置密码
-    rpc RestPassword (LoginReq) returns (response.TinyRep) {
+    rpc ForgetPassword (LoginReq) returns (response.TinyRep) {
     option (google.api.http) = {
-                get: "/api/v1/restPassword"
+                get: "/api/v1/user/forgetPassword"
             };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
                 tags:["用户相关接口","v1.0.0"]
-                summary : "重置密码"
-                description : "重置密码接口"
+                summary : "忘记密码"
+                description : "忘记密码接口"
             };
     }
+
+    rpc ResetPassword (ResetPasswordReq) returns (response.TinyRep) {
+    option (google.api.http) = {
+                    patch: "/api/v1/user/resetPassword/{id}/{secret}"
+                    body: "password"
+                };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+                    tags:["用户相关接口","v1.0.0"]
+                    summary : "重置密码"
+                    description : "重置密码接口"
+                };
+    }
+
     //获取用户信息
     rpc GetUser (GetReq) returns (GetRep) {
         option (google.api.http) = {
@@ -277,4 +290,14 @@ message LogoutReq {
 message LogoutRep {
     uint32 code = 1[(gogoproto.jsontag) = "code"];
     string message = 2;
+}
+
+message ResetPasswordReq {
+    uint64 id = 1 [(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    title:"ID"
+    type: INTEGER}];
+    string secret = 2 [(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    title:"密钥"}];
+    string password = 3 [(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    title:"密码"}];
 }

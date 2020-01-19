@@ -1,0 +1,21 @@
+syntax = "proto3";
+package model;
+import "utils/enum.proto";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.goproto_enum_prefix_all) = false;
+
+enum Action {
+    Signup = 0 [(enumproto.enumvalue_cn)= "注册"];
+    Active = 1 [(enumproto.enumvalue_cn)= "激活"];
+    RestPassword = 2 [(enumproto.enumvalue_cn)= "重置密码"];
+    EditPassword = 3 [(enumproto.enumvalue_cn)= "修改密码"];
+    CreateResume = 4 [(enumproto.enumvalue_cn)= "新建简历"];
+    DELETEResume = 5 [(enumproto.enumvalue_cn)= "删除简历"];
+}
+
+enum Role {
+    option (enumproto.enum_customtype) = "uint8";
+    A = 0;
+    B = 1;
+}
