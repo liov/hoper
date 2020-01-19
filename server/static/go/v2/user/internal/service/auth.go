@@ -29,7 +29,7 @@ func Auth(w http.ResponseWriter, r *http.Request) {
 		errHandle(w)
 		return
 	}
-	user, err := UserFromRedis(claims.UserID)
+	user, err := UserHashFromRedis(claims.UserID)
 	if err != nil {
 		log.Error(err)
 		errHandle(w)

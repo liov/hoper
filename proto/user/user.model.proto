@@ -158,3 +158,10 @@ message UserDeviceInfo {
     string area = 2 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
     string userAgent = 5 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
 }
+
+message Response{
+    oneof res {
+        uint32 code = 1;
+        string msg = 2;
+    }
+}

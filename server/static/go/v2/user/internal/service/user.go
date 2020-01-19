@@ -32,7 +32,9 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-type UserService struct{}
+type UserService struct {
+	model.UnimplementedUserServiceServer
+}
 
 func NewUserService(server model.UserServiceServer) *UserService {
 	return &UserService{}
@@ -126,7 +128,7 @@ func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*model.Si
 	}
 
 	if req.Mail != "" {
-		go sendMail(modelconst.Active, curTime, user)
+		go sendMail(model.Active, curTime, user)
 	}
 
 	return rep, nil
@@ -143,24 +145,24 @@ func encryptPassword(password string) string {
 	return fmt.Sprintf("%x", md5.Sum(strings2.ToBytes(hash)))
 }
 
-func sendMail(action modelconst.Action, curTime int64, user *model.User) {
+func sendMail(action model.Action, curTime int64, user *model.User) {
 	siteName := "hoper"
 	siteURL := "https://" + config.Conf.Server.Domain
 	var content string
 	title := action.String()
 	secretStr := strconv.FormatInt(curTime, 10) + user.Mail + user.Password
 	secretStr = fmt.Sprintf("%x", md5.Sum(strings2.ToBytes(secretStr)))
-	actionURL := siteURL + "/user/rest/" + secretStr
-	actionURL = actionURL + strconv.FormatUint(user.Id, 10) + "/" + secretStr
 	switch action {
-	case modelconst.Active:
+	case model.Active:
+		actionURL := siteURL + "/user/active/" + secretStr + strconv.FormatUint(user.Id, 10) + "/" + secretStr
 		log.Debug(actionURL)
 		content = "<p><b>亲爱的" + user.Name + ":</b></p>" +
 			"<p>我们收到您在 " + siteName + " 的注册信息, 请点击下面的链接, 或粘贴到浏览器地址栏来激活帐号.</p>" +
 			"<a href=\"" + actionURL + "\">" + actionURL + "</a>" +
 			"<p>如果您没有在 " + siteName + " 填写过注册信息, 说明有人滥用了您的邮箱, 请删除此邮件, 我们对给您造成的打扰感到抱歉.</p>" +
 			"<p>" + siteName + " 谨上.</p>"
-	case modelconst.RestPassword:
+	case model.RestPassword:
+		actionURL := siteURL + "/user/resetPassword/" + secretStr + strconv.FormatUint(user.Id, 10) + "/" + secretStr
 		content = "<p><b>亲爱的" + user.Name + ":</b></p>" +
 			"<p>你的密码重设要求已经得到验证。请点击以下链接, 或粘贴到浏览器地址栏来设置新的密码: </p>" +
 			"<a href=\"" + actionURL + "\">" + actionURL + "</a>" +
@@ -197,15 +199,16 @@ func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*response
 	RedisConn := dao.Dao.Redis.Get()
 	defer RedisConn.Close()
 
-	emailTime, err := redis.Int64(RedisConn.Do("GET", modelconst.ActiveTimeKey+strconv.FormatUint(req.Id, 10)))
+	redisKey := modelconst.ActiveTimeKey + strconv.FormatUint(req.Id, 10)
+	emailTime, err := redis.Int64(RedisConn.Do("GET", redisKey))
 	if err != nil {
 		log.Error("UserService.Active,redis.Int64", err)
-		return nil, errorcode.ErrorWithMessage(errorcode.InvalidParams, "无效的链接")
+		return nil, errorcode.InvalidParams.WithMessage("无效的链接")
 	}
 
 	user, err := userDao.GetByPrimaryKey(req.Id, nil)
 	if err != nil {
-		return nil, errorcode.Error(errorcode.ERROR)
+		return nil, errorcode.DBError
 	}
 	if user.Status != 0 {
 		return nil, errorcode.ERROR.WithMessage("已激活")
@@ -215,10 +218,11 @@ func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*response
 	secretStr = fmt.Sprintf("%x", md5.Sum(strings2.ToBytes(secretStr)))
 
 	if req.Secret != secretStr {
-		return nil, errorcode.ErrorWithMessage(errorcode.InvalidParams, "无效的链接")
+		return nil, errorcode.InvalidParams.WithMessage("无效的链接")
 	}
 
 	dao.Dao.GORMDB.Model(user).Updates(map[string]interface{}{"activated_at": time.Now().Format(time.RFC3339Nano), "status": 1})
+	RedisConn.Do("DEL", redisKey)
 	return &response.TinyRep{Message: "激活成功"}, nil
 }
 
@@ -292,7 +296,7 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 			log.Error("UserService.Signup,RedisConn.Do: ", err)
 			return nil, errorcode.RedisErr
 		}
-		go sendMail(modelconst.Active, curTime, &user)
+		go sendMail(model.Active, curTime, &user)
 		return nil, errorcode.Auth.WithMessage("账号未激活,请进去邮箱点击激活")
 	}
 
@@ -408,7 +412,7 @@ func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.Ge
 	return &model.GetRep{Details: &model.User{Id: user.Id, Role: user.Role}}, nil
 }
 
-func (u *UserService) RestPassword(ctx context.Context, req *model.LoginReq) (*response.TinyRep, error) {
+func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (*response.TinyRep, error) {
 	if verifyErr := luosimao.LuosimaoVerify(config.Conf.Server.LuosimaoVerifyURL, config.Conf.Server.LuosimaoAPIKey, req.Luosimao); verifyErr != nil {
 		return nil, errorcode.InvalidParams.WithMessage(verifyErr.Error())
 	}
@@ -416,7 +420,7 @@ func (u *UserService) RestPassword(ctx context.Context, req *model.LoginReq) (*r
 	if req.Input == "" {
 		return nil, errorcode.InvalidParams.WithMessage("账号错误")
 	}
-	user, err := userDao.GetByEmailORPhone(req.Input, req.Input, nil)
+	user, err := userDao.GetByEmailORPhone(req.Input, req.Input, nil, "id", "name", "password")
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			if prm.PhoneOrMail(req.Input) != prm.Phone {
@@ -428,7 +432,7 @@ func (u *UserService) RestPassword(ctx context.Context, req *model.LoginReq) (*r
 		log.Error(err)
 		return nil, errorcode.DBError
 	}
-	restPassword := modelconst.ResetTimeKey + req.Input
+	restPassword := modelconst.ResetTimeKey + strconv.FormatUint(user.Id, 10)
 	RedisConn := dao.Dao.Redis.Get()
 	defer RedisConn.Close()
 
@@ -438,9 +442,43 @@ func (u *UserService) RestPassword(ctx context.Context, req *model.LoginReq) (*r
 		return nil, errorcode.RedisErr
 	}
 
-	go sendMail(modelconst.RestPassword, curTime, user)
+	go sendMail(model.RestPassword, curTime, user)
 
 	return &response.TinyRep{}, nil
+}
+
+func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswordReq) (*response.TinyRep, error) {
+	RedisConn := dao.Dao.Redis.Get()
+	defer RedisConn.Close()
+
+	redisKey := modelconst.ResetTimeKey + strconv.FormatUint(req.Id, 10)
+	emailTime, err := redis.Int64(RedisConn.Do("GET", redisKey))
+	if err != nil {
+		log.Error(model.UserService_serviceDesc.ServiceName, "ResetPassword,redis.Int64", err)
+		return nil, errorcode.InvalidParams.WithMessage("无效的链接")
+	}
+
+	user, err := userDao.GetByPrimaryKey(req.Id, nil)
+	if err != nil {
+		return nil, errorcode.DBError
+	}
+	if user.Status != 1 {
+		return nil, errorcode.ERROR.WithMessage("无效账号")
+	}
+	secretStr := strconv.Itoa((int)(emailTime)) + user.Mail + user.Password
+
+	secretStr = fmt.Sprintf("%x", md5.Sum(strings2.ToBytes(secretStr)))
+
+	if req.Secret != secretStr {
+		return nil, errorcode.InvalidParams.WithMessage("无效的链接")
+	}
+
+	if err := dao.Dao.GORMDB.Model(user).Update("password", req.Password).Error; err != nil {
+		log.Error("UserService.ResetPassword,DB.Update", err)
+		return nil, errorcode.DBError
+	}
+	RedisConn.Do("DEL", redisKey)
+	return nil, nil
 }
 
 // UserToRedis 将用户信息存到redis

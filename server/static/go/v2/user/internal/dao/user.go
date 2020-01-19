@@ -29,12 +29,15 @@ func (*UserDao) ExitByEmailORPhone(mail, phone string) (bool, error) {
 	return count == 1, nil
 }
 
-func (d *UserDao) GetByEmailORPhone(email, phone string, db *gorm.DB) (*model.User, error) {
+func (d *UserDao) GetByEmailORPhone(email, phone string, db *gorm.DB, fields ...string) (*model.User, error) {
 	if db == nil {
 		db = Dao.GORMDB
 	}
 	var user model.User
 	var err error
+	if len(fields) > 0 {
+		db = db.Select(fields)
+	}
 	if email != "" {
 		err = db.Where("email = ?", email).Find(&user).Error
 	} else {

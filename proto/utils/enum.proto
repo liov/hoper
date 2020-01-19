@@ -1,0 +1,17 @@
+syntax = "proto2";
+package enumproto;
+
+import "google/protobuf/descriptor.proto";
+
+option java_package = "com.google.protobuf";
+option java_outer_classname = "EnumProtos";
+option go_package = "github.com/liov/v2/utils";
+
+extend google.protobuf.EnumOptions {
+    optional string enum_customtype = 62025;
+
+}
+
+extend google.protobuf.EnumValueOptions {
+    optional string enumvalue_cn = 66002;
+}
