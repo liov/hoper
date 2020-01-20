@@ -11,7 +11,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	plugin_go "github.com/gogo/protobuf/protoc-gen-gogo/plugin"
 	"github.com/gogo/protobuf/vanity/command"
-	"github.com/liov/hoper/go/v2/tools/protoEnum/generator"
+	"github.com/liov/hoper/go/v2/tools/protoc-gen-enum/generator"
 )
 
 func Read() *plugin_go.CodeGeneratorRequest {
