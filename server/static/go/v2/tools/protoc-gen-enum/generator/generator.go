@@ -64,7 +64,7 @@ import (
 	"github.com/gogo/protobuf/gogoproto"
 	"github.com/gogo/protobuf/proto"
 	descriptor "github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
-	"github.com/liov/hoper/go/v2/tools/protoEnum/generator/internal/remap"
+	"github.com/liov/hoper/go/v2/tools/protoc-gen-enum/generator/internal/remap"
 
 	plugin "github.com/gogo/protobuf/protoc-gen-gogo/plugin"
 )
@@ -1411,6 +1411,19 @@ func (g *Generator) generateEnum(enum *EnumDescriptor) {
 		}
 		g.P(duplicate, e.Name, ": ", strconv.Quote(name), ",")
 		generated[*e.Number] = true
+	}
+	g.Out()
+	g.P("}")
+	g.P()
+
+	g.P("var ", ccTypeName, "_value = map[string]"+ccTypeName+"{")
+	g.In()
+	for _, e := range enum.Value {
+		name := *e.Name
+		if IsEnumValueCN(e) {
+			name = GetEnumValueCN(e)
+		}
+		g.P(strconv.Quote(name), ": ", e.Name, ",")
 	}
 	g.Out()
 	g.P("}")
