@@ -7,7 +7,6 @@ import (
 
 	"github.com/jinzhu/gorm"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
-	modelconst "github.com/liov/hoper/go/v2/user/model"
 	"github.com/liov/hoper/go/v2/utils/array"
 	"github.com/liov/hoper/go/v2/utils/log"
 )
@@ -82,7 +81,7 @@ func (*UserDao) SaveResumes(userId uint64, resumes []*model.Resume, originalIds 
 	actionLog.CreatedAt = time.Now().Format(time.RFC3339Nano)
 	actionLog.UserId = userId
 	actionLog.UserDeviceInfo = device
-	actionLog.Action = modelconst.EditResume
+	actionLog.Action = model.EditResume
 	tableName := db.NewScope(&model.Resume{}).TableName() + "."
 
 	var editIds []uint64
@@ -92,12 +91,12 @@ func (*UserDao) SaveResumes(userId uint64, resumes []*model.Resume, originalIds 
 		resumes[i].Status = 1
 		if resumes[i].Id != 0 {
 			err = db.Save(resumes[i]).Error
-			actionLog.Action = modelconst.CreateResume
+			actionLog.Action = model.CreateResume
 			actionLog.LastValue, _ = json.Marshal(resumes[i])
 			editIds = append(editIds, resumes[i].Id)
 		} else {
 			err = db.Create(resumes[i]).Error
-			actionLog.Action = modelconst.EditResume
+			actionLog.Action = model.EditResume
 		}
 		if err != nil {
 			return err
@@ -118,7 +117,7 @@ func (*UserDao) SaveResumes(userId uint64, resumes []*model.Resume, originalIds 
 	db.Model(&model.Resume{}).Where("id in (?)", differenceIds).Update("status", 0)
 	for _, id := range differenceIds {
 		actionLog.Id = 0
-		actionLog.Action = modelconst.DELETEResume
+		actionLog.Action = model.DELETEResume
 		actionLog.RelatedId = tableName + strconv.FormatUint(id, 10)
 		if err = db.Create(&actionLog).Error; err != nil {
 			log.Error(err)

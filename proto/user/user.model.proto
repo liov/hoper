@@ -1,5 +1,6 @@
 syntax = "proto3";
 package model;
+import "user/user.enum.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 
@@ -99,7 +100,7 @@ message UserActionLog {
     uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key\""];
     uint64 userId = 2 [(gogoproto.moretags) = "gorm:\"index\""];
     //类型
-    uint32 action = 3 [(gogoproto.casttype) = "github.com/liov/hoper/go/v2/user/model.Action"];
+    Action action = 3;
     //相关id
     string relatedId = 4[(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
     bytes lastValue = 5 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];

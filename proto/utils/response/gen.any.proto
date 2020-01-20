@@ -26,12 +26,12 @@ message BytesReply {
     uint32 code = 1 [(gogoproto.jsontag) = "code"];
     string message =2;
     //字节数组json
-    utils.any.Any details =3 [(gogoproto.nullable) = false];
+    any.Any details =3 [(gogoproto.nullable) = false];
 }
 
 message StringReply {
     uint32 code = 1 [(gogoproto.jsontag) = "code"];
     string message = 2;
     //字符串json
-    utils.any.StringJson details = 3 [(gogoproto.nullable) = false];
+    any.StringJson details = 3 [(gogoproto.nullable) = false];
 }

@@ -1,6 +1,7 @@
 syntax = "proto3";
-package response;
+package errorcode;
 
+import "utils/errorcode/enum.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 option (gogoproto.goproto_enum_prefix_all) = false;
@@ -15,7 +16,7 @@ option (gogoproto.goproto_registration) = true;
 option (gogoproto.messagename_all) = true;
 option (gogoproto.populate_all) = true;
 
-message ErrorCode {
-    uint32 code = 1 [(gogoproto.jsontag) = "code",(gogoproto.casttype)="github.com/liov/hoper/go/v2/utils/errorcode.ErrCode"];
+message ErrRep {
+    ErrCode code = 1 [(gogoproto.jsontag) = "code"];
     string message = 2;
 }

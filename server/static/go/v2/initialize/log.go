@@ -3,23 +3,12 @@ package initialize
 import (
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/reflect3"
-	"go.uber.org/zap/zapcore"
 )
 
-type LogConfig struct {
-	Level       int8
-	Skip        bool
-	OutputPaths map[string][]string
-}
+type LogConfig log.Config
 
 func (conf *LogConfig) Generate() *log.Config {
-	return &log.Config{
-		Development: true,
-		ModuleName:  "",
-		Skip:        conf.Skip,
-		Level:       zapcore.Level(conf.Level),
-		OutputPaths: conf.OutputPaths,
-	}
+	return (*log.Config)(conf)
 }
 
 func (init *Init) P1Log() {

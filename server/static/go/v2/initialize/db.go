@@ -63,11 +63,11 @@ func (init *Init) P2DB() *gorm.DB {
 	}
 
 	db := conf.Generate()
-	if init.Env != PRODUCT {
-		//b不set输出空白
-		//db.SetLogger(gorm.Logger{stdlog.New(os.Stderr, "", 0)})
-		db.LogMode(true)
-	}
+
+	//b不set输出空白,bug已修复
+	//db.SetLogger(gorm.Logger{stdlog.New(os.Stderr, "", 0)})
+	db.LogMode(init.Env != PRODUCT)
+
 	db.SingularTable(true)
 	db.DB().SetMaxIdleConns(conf.MaxIdleConns)
 	db.DB().SetMaxOpenConns(conf.MaxOpenConns)

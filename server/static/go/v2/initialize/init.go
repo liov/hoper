@@ -106,7 +106,7 @@ func Start(conf config, dao dao) func() {
 		}
 		log.Sync()
 		/*for _, f := range closes {
-			res := reflect.ValueOf(f).Call(nil)
+			res := reflect.ValueOf(f).Caller(nil)
 			if len(res) > 0 && res[0].IsValid() {
 				log.Error(res[0].Interface())
 			}

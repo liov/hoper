@@ -4,8 +4,9 @@ title = "user-config"
 Volume = "../../data"
 
 [server]
-Host =  "user.hoper.xyz"
-HttpPort = ":8000"
+Protocol = "https"
+Domain =  "user.hoper.xyz"
+Port = ":8080"
 ReadTimeout = 60
 WriteTimeout = 60
 
@@ -57,12 +58,11 @@ MaxIdle = 30
 MaxActive = 30
 IdleTimeout = 200
 
-
 #日志
 [log]
-Level = 0
-Skip = true
-OutputPaths = {consele = ["stderr"],json = []}
+Level = "debug"
+Caller = true
+OutputPaths = {console = [],json = ["stderr"]}
 
 #邮件
 [mail]
@@ -70,3 +70,12 @@ Host = "smtp.qq.com"
 Port = ":465"
 User =  "lby.i@qq.com"
 Password = "123456"
+
+[apollo]
+Addr = "192.168.1.212:8080"
+AppId = "hoper"
+Cluster = "default"
+NameSpace = ["application"]
+
+[consul]
+Addr = "192.168.1.212:8500"

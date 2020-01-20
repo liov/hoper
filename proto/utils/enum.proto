@@ -9,7 +9,8 @@ option go_package = "github.com/liov/v2/utils";
 
 extend google.protobuf.EnumOptions {
     optional string enum_customtype = 62025;
-
+    optional bool enum_genvaluemap = 62026;
+    optional bool enum_numorder = 62027;
 }
 
 extend google.protobuf.EnumValueOptions {

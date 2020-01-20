@@ -179,6 +179,17 @@ service UserService {
             };
         };
     }
+
+    rpc ActionLogList (ActionLogListReq) returns (ActionLogListRep) {
+        option (google.api.http) = {
+                    get: "/api/v1/userActionLog"
+                };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+                            tags:["用户相关接口","v1.0.0"]
+                            summary : "操作日志"
+                            description : "操作日志接口"
+                        };
+        }
 }
 
 message SingUpVerifyReq {
@@ -286,7 +297,7 @@ message LogoutReq {
            type:INTEGER
     }];
 }
-
+//特殊，设置cookie用
 message LogoutRep {
     uint32 code = 1[(gogoproto.jsontag) = "code"];
     string message = 2;
@@ -300,4 +311,15 @@ message ResetPasswordReq {
     title:"密钥"}];
     string password = 3 [(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
     title:"密码"}];
+}
+
+message ActionLogListReq {
+    string startTime = 1;
+    string endTime = 2;
+}
+
+message ActionLogListRep {
+    uint32 code = 1[(gogoproto.jsontag) = "code"];
+    string message = 2;
+    repeated UserActionLog details =3;
 }

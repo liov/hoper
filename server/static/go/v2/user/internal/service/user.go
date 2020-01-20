@@ -14,11 +14,12 @@ import (
 	"github.com/jinzhu/gorm"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils"
+	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/protobuf/utils/response"
 	"github.com/liov/hoper/go/v2/user/internal/config"
 	"github.com/liov/hoper/go/v2/user/internal/dao"
 	modelconst "github.com/liov/hoper/go/v2/user/model"
-	"github.com/liov/hoper/go/v2/utils/errorcode"
+
 	"github.com/liov/hoper/go/v2/utils/http/token"
 	"github.com/liov/hoper/go/v2/utils/json"
 	"github.com/liov/hoper/go/v2/utils/log"
@@ -479,6 +480,17 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 	}
 	RedisConn.Do("DEL", redisKey)
 	return nil, nil
+}
+
+func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListReq) (*model.ActionLogListRep, error) {
+	rep := &model.ActionLogListRep{}
+	var logs []*model.UserActionLog
+	err := dao.Dao.GORMDB.Offset(0).Limit(10).Find(&logs).Error
+	if err != nil {
+		return nil, errorcode.DBError.Log(err)
+	}
+	rep.Details = logs
+	return rep, nil
 }
 
 // UserToRedis 将用户信息存到redis

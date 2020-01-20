@@ -4,8 +4,9 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/user/internal/config"
-	"github.com/liov/hoper/go/v2/utils/errorcode"
+
 	"github.com/liov/hoper/go/v2/utils/http/iris/response"
 	"github.com/liov/hoper/go/v2/utils/http/token"
 	"github.com/liov/hoper/go/v2/utils/json"

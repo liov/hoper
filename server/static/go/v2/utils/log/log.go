@@ -3,6 +3,7 @@ package log
 import (
 	"log"
 	"os"
+	"runtime"
 	"time"
 
 	"github.com/liov/hoper/go/v2/utils/log/output"
@@ -24,7 +25,7 @@ func GetLogger() *Logger {
 
 type Config struct {
 	Development bool
-	Skip        bool
+	Caller      bool
 	Level       zapcore.Level
 	OutputPaths map[string][]string
 	ModuleName  string //系统名称namespace.service
@@ -37,7 +38,7 @@ func (lf *Config) NewLogger() *Logger {
 	}
 }
 
-var Default *Logger = (&Config{Development: true, Skip: true, Level: -1}).NewLogger()
+var Default = (&Config{Development: true, Caller: true, Level: -1}).NewLogger()
 var NoCall = (&Config{Development: true}).NewLogger()
 var CallTwo = Default.Desugar().WithOptions(zap.AddCallerSkip(2)).Sugar()
 
@@ -50,7 +51,7 @@ func (lf *Config) SetLogger() {
 }
 
 func (lf *Config) SetNoCall() {
-	lf.Skip = false
+	lf.Caller = false
 	NoCall.SugaredLogger = lf.initLogger().Sugar()
 }
 
@@ -58,19 +59,21 @@ func (lf *Config) SetNoCall() {
 func (lf *Config) initLogger() *zap.Logger {
 
 	encoderConfig := zapcore.EncoderConfig{
-		TimeKey:    "time",
-		LevelKey:   "level",
-		NameKey:    lf.ModuleName,
-		CallerKey:  "caller",
-		MessageKey: "msg",
-		//StacktraceKey: "stacktrace",
-		LineEnding:  zapcore.DefaultLineEnding,
-		EncodeLevel: zapcore.CapitalColorLevelEncoder,
+		TimeKey:       "time",
+		LevelKey:      "level",
+		NameKey:       lf.ModuleName,
+		CallerKey:     "caller",
+		MessageKey:    "msg",
+		StacktraceKey: "stacktrace",
+		LineEnding:    zapcore.DefaultLineEnding,
+		EncodeLevel:   zapcore.CapitalColorLevelEncoder,
 		EncodeTime: func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-			enc.AppendString(t.Format("2006/01/02 - 15:04:05.000"))
+			enc.AppendString(t.Format("2006/01/02 15:04:05.000"))
 		},
 		EncodeDuration: zapcore.SecondsDurationEncoder,
-		EncodeCaller:   zapcore.ShortCallerEncoder,
+		EncodeCaller: func(caller zapcore.EntryCaller, encoder zapcore.PrimitiveArrayEncoder) {
+			encoder.AppendString(runtime.FuncForPC(caller.PC).Name() + ` ` + caller.TrimmedPath())
+		},
 	}
 
 	if lf.Development {
@@ -118,9 +121,9 @@ func (lf *Config) hook() []zap.Option {
 	}
 
 	if lf.Development {
-		hooks = append(hooks, zap.Development())
+		hooks = append(hooks, zap.Development(), zap.AddStacktrace(zapcore.DPanicLevel))
 	}
-	if lf.Skip {
+	if lf.Caller {
 		hooks = append(hooks, zap.AddCaller(), zap.AddCallerSkip(1))
 	}
 	return hooks
