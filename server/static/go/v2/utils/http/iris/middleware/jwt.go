@@ -6,7 +6,9 @@ import (
 
 	"github.com/kataras/iris/v12"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
-	"github.com/liov/hoper/go/v2/utils/errorcode"
+	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
+	"github.com/liov/hoper/go/v2/utils/http/token"
+
 	"github.com/liov/hoper/go/v2/utils/http/iris/response"
 )
 

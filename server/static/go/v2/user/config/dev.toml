@@ -58,8 +58,8 @@ IdleTimeout = 200
 
 #日志
 [log]
-Level = -1
-Skip = true
+Level = "debug"
+Caller = true
 OutputPaths = {console = ["stderr"],json = []}
 
 

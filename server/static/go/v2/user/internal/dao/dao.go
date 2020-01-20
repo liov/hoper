@@ -62,6 +62,5 @@ func (d *dao) Custom() {
 	//db.Callback().Create().Replace("gorm:save_before_associations", saveBeforeAssociationsCallback)
 	//db.Callback().Create().Replace("gorm:save_after_associations", saveAfterAssociationsCallback)
 	db.Callback().Delete().Replace("gorm:delete", gormCallback.DeleteCallback)
-	d.GORMDB = db
 	d.StdDB = db.DB()
 }

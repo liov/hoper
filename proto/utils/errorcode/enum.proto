@@ -1,0 +1,31 @@
+syntax = "proto3";
+package errorcode;
+import "utils/enum.proto";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.goproto_enum_prefix_all) = false;
+
+enum ErrCode {
+    SUCCESS = 0 [(enumproto.enumvalue_cn)= "成功"];
+    ERROR = 1 [(enumproto.enumvalue_cn)= "错误"];
+    InvalidParams = 2 [(enumproto.enumvalue_cn)= "无效的参数"];
+    SysError = 3 [(enumproto.enumvalue_cn)= "系统错误"];
+    DBError = 4 [(enumproto.enumvalue_cn)= "数据库错误"];
+    RedisErr = 5 [(enumproto.enumvalue_cn)= "Redis错误"];
+
+    LoginError = 1000 [(enumproto.enumvalue_cn)= "用户名或密码错误"];
+    LoginTimeout = 1001 [(enumproto.enumvalue_cn)= "登录超时"];
+    InActive = 1002 [(enumproto.enumvalue_cn)= "未激活账号"];
+    NoAuthority = 1003 [(enumproto.enumvalue_cn)= "无权限"];
+    Auth = 10004 [(enumproto.enumvalue_cn)= "Token错误"];
+
+    AuthCheckTokenFail = 10001 [(enumproto.enumvalue_cn)= "Token鉴权失败"];
+    AuthCheckTokenTimeout = 10002 [(enumproto.enumvalue_cn)= "Token已超时"];
+    AuthToken = 10003 [(enumproto.enumvalue_cn)= "Token生成失败"];
+
+    UploadSaveImageFail = 30001 [(enumproto.enumvalue_cn)= "保存图片失败"];
+    UploadCheckImageFail = 30002 [(enumproto.enumvalue_cn)= "检查图片失败"];
+    UploadCheckImageFormat = 30003 [(enumproto.enumvalue_cn)= "校验图片错误，图片格式或大小有问题"];
+
+    TimeTooMuch = 30004 [(enumproto.enumvalue_cn)= "尝试次数过多"];
+}

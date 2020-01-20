@@ -5,7 +5,8 @@ import (
 	"runtime/debug"
 
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
-	"github.com/liov/hoper/go/v2/utils/errorcode"
+	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
+
 	"github.com/liov/hoper/go/v2/utils/log"
 	"google.golang.org/grpc"
 )

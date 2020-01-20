@@ -1386,11 +1386,16 @@ func (g *Generator) generateEnum(enum *EnumDescriptor) {
 				name = gogoproto.GetEnumValueCustomName(e)
 			}
 			name = ccPrefix + name
-			if i == 0 {
-				g.P(Annotate(enum.file, etorPath, name), " ", ccTypeName, " = iota ", deprecatedValue)
+			if EnabledEnumNumOrder(enum.file.FileDescriptorProto, enum.EnumDescriptorProto) {
+				if i == 0 {
+					g.P(Annotate(enum.file, etorPath, name), " ", ccTypeName, " = iota ", deprecatedValue)
+				} else {
+					g.P(Annotate(enum.file, etorPath, name), " ", deprecatedValue)
+				}
 			} else {
-				g.P(Annotate(enum.file, etorPath, name), " ", deprecatedValue)
+				g.P(Annotate(enum.file, etorPath, name), " ", ccTypeName, " = ", e.Number, " ", deprecatedValue)
 			}
+
 			g.file.addExport(enum, constOrVarSymbol{name, "const", ccTypeName})
 		}
 		g.Out()
@@ -1416,18 +1421,20 @@ func (g *Generator) generateEnum(enum *EnumDescriptor) {
 	g.P("}")
 	g.P()
 
-	g.P("var ", ccTypeName, "_value = map[string]"+ccTypeName+"{")
-	g.In()
-	for _, e := range enum.Value {
-		name := *e.Name
-		if IsEnumValueCN(e) {
-			name = GetEnumValueCN(e)
+	if EnabledGoEnumValueMap(enum.file.FileDescriptorProto, enum.EnumDescriptorProto) {
+		g.P("var ", ccTypeName, "_value = map[string]"+ccTypeName+"{")
+		g.In()
+		for _, e := range enum.Value {
+			name := *e.Name
+			if IsEnumValueCN(e) {
+				name = GetEnumValueCN(e)
+			}
+			g.P(strconv.Quote(name), ": ", e.Name, ",")
 		}
-		g.P(strconv.Quote(name), ": ", e.Name, ",")
+		g.Out()
+		g.P("}")
+		g.P()
 	}
-	g.Out()
-	g.P("}")
-	g.P()
 
 	if !enum.proto3() {
 		g.P("func (x ", ccTypeName, ") Enum() *", ccTypeName, " {")
@@ -2773,7 +2780,7 @@ func CamelCase(s string) string {
 	for ; i < len(s); i++ {
 		c := s[i]
 		if c == '_' && i+1 < len(s) && isASCIILower(s[i+1]) {
-			continue // Skip the underscore in s.
+			continue // Caller the underscore in s.
 		}
 		if isASCIIDigit(c) {
 			t = append(t, c)
