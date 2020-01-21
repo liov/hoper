@@ -61,6 +61,6 @@ IdleTimeout = 200
 
 #日志
 [log]
-Level = 0
-Skip = true
+Level = "debug"
+Caller = true
 OutputPaths = {console = ["stderr"],json = ["socket://123"]}

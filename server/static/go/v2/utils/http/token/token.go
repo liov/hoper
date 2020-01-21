@@ -14,12 +14,12 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func GenerateToken(UserID uint64, maxAge int64, secret string) (string, error) {
+func GenerateToken(UserID uint64, now, maxAge int64, secret string) (string, error) {
 	claims := Claims{
 		UserID: UserID,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Unix() + maxAge,
-			IssuedAt:  time.Now().Unix(),
+			ExpiresAt: now + maxAge,
+			IssuedAt:  now,
 			Issuer:    "hoper",
 		},
 	}

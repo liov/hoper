@@ -145,6 +145,7 @@ message UserMainInfo {
     uint32 status = 28 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"default:0\"", (gogoproto.casttype) = "uint8", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
            read_only:true
     }];
+    int64 loginTime =16;
 }
 
 message UserDeviceInfo {

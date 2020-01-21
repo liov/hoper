@@ -4,8 +4,8 @@ import (
 	"context"
 	"crypto/md5"
 	"fmt"
+	"net/http"
 	"net/url"
-	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -19,7 +19,8 @@ import (
 	"github.com/liov/hoper/go/v2/user/internal/config"
 	"github.com/liov/hoper/go/v2/user/internal/dao"
 	modelconst "github.com/liov/hoper/go/v2/user/model"
-
+	"github.com/liov/hoper/go/v2/utils/dao/redis/hash"
+	"github.com/liov/hoper/go/v2/utils/http/gateway"
 	"github.com/liov/hoper/go/v2/utils/http/token"
 	"github.com/liov/hoper/go/v2/utils/json"
 	"github.com/liov/hoper/go/v2/utils/log"
@@ -300,8 +301,8 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 		go sendMail(model.Active, curTime, &user)
 		return nil, errorcode.Auth.WithMessage("账号未激活,请进去邮箱点击激活")
 	}
-
-	tokenString, err := token.GenerateToken(user.Id, config.Conf.Server.TokenMaxAge, config.Conf.Server.TokenSecret)
+	now := time.Now().Unix()
+	tokenString, err := token.GenerateToken(user.Id, now, config.Conf.Server.TokenMaxAge, config.Conf.Server.TokenSecret)
 	if err != nil {
 		return nil, errorcode.ERROR
 	}
@@ -309,10 +310,11 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 	dao.Dao.GORMDB.Model(&user).UpdateColumn("last_activated_at", time.Now())
 
 	if err := UserHashToRedis(&model.UserMainInfo{
-		Id:     user.Id,
-		Score:  user.Score,
-		Status: user.Status,
-		Role:   user.Role,
+		Id:        user.Id,
+		Score:     user.Score,
+		Status:    user.Status,
+		Role:      user.Role,
+		LoginTime: now,
 	}); err != nil {
 		return nil, errorcode.ERROR
 	}
@@ -320,6 +322,18 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 	resp.Details = &model.LoginRep_LoginDetails{Token: tokenString, User: &user}
 	resp.Message = "登录成功"
 
+	cookie := (&http.Cookie{
+		Name:  "token",
+		Value: tokenString,
+		Path:  "/",
+		//Domain:   "hoper.xyz",
+		Expires:  time.Now().Add(time.Duration(config.Conf.Server.TokenMaxAge) * time.Second),
+		MaxAge:   int(time.Duration(config.Conf.Server.TokenMaxAge) * time.Second),
+		Secure:   false,
+		HttpOnly: true,
+	}).String()
+	gateway.GrpcSetCookie(ctx, cookie)
+	resp.Cookie = cookie
 	return resp, nil
 }
 
@@ -337,7 +351,18 @@ func (u *UserService) Logout(ctx context.Context, req *model.LogoutReq) (*model.
 		log.Error(err)
 		return nil, errorcode.RedisErr
 	}
-	return &model.LogoutRep{Message: "已注销"}, nil
+	cookie := (&http.Cookie{
+		Name:  "token",
+		Value: "del",
+		Path:  "/",
+		//Domain:   "hoper.xyz",
+		Expires:  time.Now().Add(-1),
+		MaxAge:   -1,
+		Secure:   false,
+		HttpOnly: true,
+	}).String()
+	gateway.GrpcSetCookie(ctx, cookie)
+	return &model.LogoutRep{Message: "已注销", Cookie: cookie}, nil
 }
 
 func (u *UserService) AuthInfo(ctx context.Context, req *utils.Empty) (*model.UserMainInfo, error) {
@@ -346,12 +371,9 @@ func (u *UserService) AuthInfo(ctx context.Context, req *utils.Empty) (*model.Us
 
 func (*UserService) Auth(ctx context.Context) (*model.UserMainInfo, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
-	tokens := md.Get("authorization")
+	tokens := md.Get("auth")
 	if len(tokens) == 0 || tokens[0] == "" {
-		tokens = md.Get("cookie")
-		if len(tokens) == 0 || tokens[0] == "" {
-			return nil, errorcode.Auth
-		}
+		return nil, errorcode.Auth
 	}
 	claims, err := token.ParseToken(tokens[0], config.Conf.Server.TokenSecret)
 	if err != nil {
@@ -361,7 +383,9 @@ func (*UserService) Auth(ctx context.Context) (*model.UserMainInfo, error) {
 	if err != nil {
 		return nil, errorcode.Auth
 	}
-
+	if user.LoginTime != claims.IssuedAt {
+		return nil, errorcode.Auth
+	}
 	return user, nil
 }
 
@@ -564,12 +588,7 @@ func UserHashToRedis(user *model.UserMainInfo) error {
 	var redisArgs []interface{}
 	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
 	redisArgs = append(redisArgs, loginUserKey)
-
-	uValue := reflect.ValueOf(user).Elem()
-	uType := uValue.Type()
-	for i := 0; i < uValue.NumField(); i++ {
-		redisArgs = append(redisArgs, uType.Field(i).Name, uValue.Field(i).Interface())
-	}
+	redisArgs = append(redisArgs, hash.Marshal(user)...)
 
 	conn := dao.Dao.Redis.Get()
 	defer conn.Close()
@@ -598,25 +617,6 @@ func UserHashFromRedis(userID uint64) (*model.UserMainInfo, error) {
 		return nil, errorcode.Auth
 	}
 	var user model.UserMainInfo
-	uValue := reflect.ValueOf(&user).Elem()
-	for i := 0; i < uValue.NumField(); i += 2 {
-		fieldValue := uValue.FieldByName(userArgs[i])
-		switch fieldValue.Kind() {
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			v, _ := strconv.ParseInt(userArgs[i+1], 10, 64)
-			fieldValue.SetInt(v)
-		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-			v, _ := strconv.ParseUint(userArgs[i+1], 10, 64)
-			fieldValue.SetUint(v)
-		case reflect.String:
-			fieldValue.SetString(userArgs[i+1])
-		case reflect.Float32, reflect.Float64:
-			v, _ := strconv.ParseFloat(userArgs[i+1], 64)
-			fieldValue.SetFloat(v)
-		case reflect.Bool:
-			v, _ := strconv.ParseBool(userArgs[i+1])
-			fieldValue.SetBool(v)
-		}
-	}
+	hash.UnMarshal(&user, userArgs)
 	return &user, nil
 }

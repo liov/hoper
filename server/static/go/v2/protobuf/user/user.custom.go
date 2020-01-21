@@ -11,3 +11,11 @@ func (m *Resume) CmpKey() uint64 {
 }
 
 var UserService_serviceDesc = &_UserService_serviceDesc
+
+func (m *LoginRep) GetCookie() string {
+	return m.Cookie
+}
+
+func (m *LogoutRep) GetCookie() string {
+	return m.Cookie
+}

@@ -5,8 +5,14 @@ import (
 	"reflect"
 )
 
-func Marshal(v interface{}) []string {
-	return nil
+func Marshal(v interface{}) []interface{} {
+	uValue := reflect.ValueOf(v).Elem()
+	uType := uValue.Type()
+	var redisArgs = make([]interface{}, 0, uValue.NumField())
+	for i := 0; i < uValue.NumField(); i++ {
+		redisArgs = append(redisArgs, uType.Field(i).Name, uValue.Field(i).Interface())
+	}
+	return redisArgs
 }
 
 type encodeState struct {
