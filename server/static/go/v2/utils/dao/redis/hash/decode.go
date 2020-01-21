@@ -1,5 +1,10 @@
 package hash
 
+import (
+	"reflect"
+	"strconv"
+)
+
 type decodeState struct {
 	strings []string
 }
@@ -37,3 +42,26 @@ type decodeState struct {
 	}
 }
 */
+
+func UnMarshal(v interface{}, redisArgs []string) {
+	uValue := reflect.ValueOf(v).Elem()
+	for i := 0; i < len(redisArgs); i += 2 {
+		fieldValue := uValue.FieldByName(redisArgs[i])
+		switch fieldValue.Kind() {
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			v, _ := strconv.ParseInt(redisArgs[i+1], 10, 64)
+			fieldValue.SetInt(v)
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			v, _ := strconv.ParseUint(redisArgs[i+1], 10, 64)
+			fieldValue.SetUint(v)
+		case reflect.String:
+			fieldValue.SetString(redisArgs[i+1])
+		case reflect.Float32, reflect.Float64:
+			v, _ := strconv.ParseFloat(redisArgs[i+1], 64)
+			fieldValue.SetFloat(v)
+		case reflect.Bool:
+			v, _ := strconv.ParseBool(redisArgs[i+1])
+			fieldValue.SetBool(v)
+		}
+	}
+}

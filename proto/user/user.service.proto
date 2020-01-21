@@ -290,6 +290,7 @@ message LoginRep {
         User user = 1;
         string token = 2;
     }
+    string cookie = 4[(gogoproto.jsontag) = "-"];
 }
 
 message LogoutReq {
@@ -301,6 +302,7 @@ message LogoutReq {
 message LogoutRep {
     uint32 code = 1[(gogoproto.jsontag) = "code"];
     string message = 2;
+    string cookie = 3[(gogoproto.jsontag) = "-"];
 }
 
 message ResetPasswordReq {

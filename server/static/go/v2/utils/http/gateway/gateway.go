@@ -26,9 +26,18 @@ func Gateway(gatewayHandle func(context.Context, *runtime.ServeMux)) http.Handle
 			if err != nil {
 				area = ""
 			}
+			var auth string
+			cookie, _ := request.Cookie("token")
+			value, _ := url.QueryUnescape(cookie.Value)
+			if value == "" {
+				auth = request.Header.Get("authorization")
+			} else {
+				auth = value
+			}
 			return map[string][]string{
 				"device-info": {request.Header.Get("device-info")},
 				"location":    {area, request.Header.Get("location")},
+				"auth":        {auth},
 			}
 		}),
 		runtime.WithIncomingHeaderMatcher(func(key string) (string, bool) {
@@ -38,10 +47,10 @@ func Gateway(gatewayHandle func(context.Context, *runtime.ServeMux)) http.Handle
 				"Accept-Charset",
 				"Accept-Language",
 				"Accept-Ranges",
-				"Authorization",
+				//"Authorization",
 				"Cache-Control",
 				"Content-Type",
-				"Cookie",
+				//"Cookie",
 				"Date",
 				"Expect",
 				"From",
@@ -61,7 +70,18 @@ func Gateway(gatewayHandle func(context.Context, *runtime.ServeMux)) http.Handle
 				return key, true
 			}
 			return "", false
-		}))
+		}),
+		runtime.WithOutgoingHeaderMatcher(
+			func(key string) (string, bool) {
+				switch key {
+				case
+					"set-cookie":
+					return key, true
+				}
+				return "", false
+			}))
+
+	runtime.WithForwardResponseOption(CookieHook)(gwmux)
 	if gatewayHandle != nil {
 		gatewayHandle(ctx, gwmux)
 	}

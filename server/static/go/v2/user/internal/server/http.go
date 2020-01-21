@@ -6,7 +6,6 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/kataras/iris/v12"
-	"github.com/liov/hoper/go/v2/gateway/response"
 	"github.com/liov/hoper/go/v2/initialize"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/internal/config"
@@ -20,7 +19,6 @@ import (
 
 func Http() http.Handler {
 	gatewayHandle := func(ctx context.Context, gwmux *runtime.ServeMux) {
-		runtime.WithForwardResponseOption(response.UserHook(config.Conf.Server.TokenMaxAge))(gwmux)
 		err := model.RegisterUserServiceHandlerServer(ctx, gwmux, service.UserSvc)
 		if err != nil {
 			log.Fatal(err)
