@@ -21,11 +21,13 @@ import (
 type EnvVar map[string]string
 
 var ConfUrl string
+
+//附加配置，不对外公开的的配置,特定文件名,启用文件搜寻查找
 var AddConfig string
 
 func init() {
 	flag.StringVar(&ConfUrl, "c", "./config/config.toml", "配置文件夹路径")
-	flag.StringVar(&AddConfig, "add", "add-config.toml", "额外配置文件名")
+	flag.StringVar(&AddConfig, "add", "", "额外配置文件名")
 }
 
 const (
@@ -44,11 +46,10 @@ type BasicConfig struct {
 }
 
 type Init struct {
-	Module, Env  string
-	HasAddConfig bool //附加配置，不对外公开的的配置,特定文件名,启用文件搜寻查找
-	NoInit       []string
-	conf         needInit
-	dao          dao
+	Module, Env string
+	NoInit      []string
+	conf        needInit
+	dao         dao
 	//closes     []interface{}
 }
 
@@ -121,7 +122,7 @@ func (init *Init) config() {
 	if err != nil {
 		log.Fatalf("配置错误: %v", err)
 	}
-	if init.HasAddConfig {
+	if AddConfig != "" {
 		adCongPath, err := fs.FindFile(AddConfig)
 		if err == nil {
 			err := configor.New(&configor.Config{Debug: init.Env != PRODUCT}).
