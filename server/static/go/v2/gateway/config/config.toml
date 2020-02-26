@@ -3,7 +3,7 @@ NoInit = ["Cache"]
 Module = "gateway"
 #dev | test | prod
 Env = "dev"
-Additional  = ""
+
 
 [iris]
 DisableStartupLog= false

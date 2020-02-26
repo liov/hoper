@@ -3,7 +3,6 @@ NoInit = ["Cache"]
 Module = "user"
 #dev | test | prod
 Env = "dev"
-HasAddConfig  = true
 
 [iris]
 DisableStartupLog= false

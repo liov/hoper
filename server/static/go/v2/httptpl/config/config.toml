@@ -3,7 +3,6 @@ NoInit = ["Cache"]
 Module = "httptpl"
 #dev | test | prod
 Env = "dev"
-Additional  = ""
 
 [iris]
 DisableStartupLog= false
