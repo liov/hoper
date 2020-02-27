@@ -287,7 +287,7 @@ message LoginRep {
     string message = 2;
     LoginDetails details = 3;
     message LoginDetails{
-        User user = 1;
+        UserBaseInfo user = 1;
         string token = 2;
     }
     string cookie = 4[(gogoproto.jsontag) = "-"];

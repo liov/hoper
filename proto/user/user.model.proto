@@ -135,6 +135,13 @@ message Resume {
     }];
 }
 
+message UserBaseInfo {
+    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key;\""];
+    uint64 score = 2 [(gogoproto.jsontag) = "score", (gogoproto.moretags) = "gorm:\"default:0\"", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    title:"分数"
+    type: INTEGER}];
+}
+
 message UserMainInfo {
     uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key;\""];
     uint32 role = 24 [(gogoproto.moretags) = "gorm:\"default:0\""];

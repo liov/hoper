@@ -296,26 +296,31 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 		go sendMail(model.Active, curTime, &user)
 		return nil, errorcode.Auth.WithMessage("账号未激活,请进去邮箱点击激活")
 	}
-	now := time.Now().Unix()
-	tokenString, err := token.GenerateToken(user.Id, now, config.Conf.Server.TokenMaxAge, config.Conf.Server.TokenSecret)
+	now := time.Now()
+	nowStamp := now.Unix()
+	tokenString, err := token.GenerateToken(user.Id, nowStamp, config.Conf.Server.TokenMaxAge, config.Conf.Server.TokenSecret)
 	if err != nil {
 		return nil, errorcode.ERROR
 	}
 
-	dao.Dao.GORMDB.Model(&user).UpdateColumn("last_activated_at", time.Now())
+	dao.Dao.GORMDB.Model(&user).UpdateColumn("last_activated_at", now)
 	conn := dao.NewUserRedis()
 	defer conn.Close()
 	if err := conn.EfficientUserHashToRedis(&model.UserMainInfo{
-		Id:        user.Id,
-		Score:     user.Score,
-		Status:    user.Status,
-		Role:      user.Role,
-		LoginTime: now,
+		Id:           user.Id,
+		LastActiveAt: nowStamp,
+		Score:        user.Score,
+		Status:       user.Status,
+		Role:         user.Role,
+		LoginTime:    nowStamp,
 	}); err != nil {
 		return nil, errorcode.ERROR
 	}
 	resp := &model.LoginRep{}
-	resp.Details = &model.LoginRep_LoginDetails{Token: tokenString, User: &user}
+	resp.Details = &model.LoginRep_LoginDetails{Token: tokenString, User: &model.UserBaseInfo{
+		Id:    user.Id,
+		Score: user.Score,
+	}}
 	resp.Message = "登录成功"
 
 	cookie := (&http.Cookie{
