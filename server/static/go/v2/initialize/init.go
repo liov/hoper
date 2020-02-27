@@ -2,7 +2,6 @@ package initialize
 
 import (
 	"flag"
-	"os"
 	"path"
 	"path/filepath"
 	"reflect"
@@ -55,9 +54,6 @@ type Init struct {
 
 func NewInit(conf config, dao dao) *Init {
 	init := &Init{conf: conf, dao: dao}
-	if _, err := os.Stat(ConfUrl); os.IsNotExist(err) {
-		log.Fatalf("配置文件不存在：", err)
-	}
 	err := configor.New(&configor.Config{Debug: false}).
 		Load(init, ConfUrl) //"./config/config.toml"
 	if err != nil {
@@ -131,7 +127,7 @@ func (init *Init) config() {
 				log.Fatalf("配置错误: %v", err)
 			}
 		} else {
-			log.Fatalf("配置错误: %v", err)
+			log.Fatalf("找不到附加配置: %v", err)
 		}
 	}
 }

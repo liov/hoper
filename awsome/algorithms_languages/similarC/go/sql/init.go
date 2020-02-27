@@ -13,7 +13,7 @@ import (
 var (
 	sqlDB      *sql.DB
 	ormDB      *gorm.DB
-	configPath = "../../../config/add-config.toml"
+	configPath = "D:\\add-config.toml"
 )
 
 func init() {

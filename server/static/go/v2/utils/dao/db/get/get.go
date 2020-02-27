@@ -16,7 +16,7 @@ var (
 )
 
 func init() {
-	path, err := fs.FindFile("config/add-config.toml")
+	path, err := fs.FindFile("add-config.toml")
 	if err != nil {
 		log.Fatal(err)
 	}

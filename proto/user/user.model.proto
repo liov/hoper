@@ -138,7 +138,7 @@ message Resume {
 message UserMainInfo {
     uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key;\""];
     uint32 role = 24 [(gogoproto.moretags) = "gorm:\"default:0\""];
-    string lastActiveAt = 23 [(gogoproto.moretags) = "gorm:\"type:timestamptz(6);default:'0001-01-01 00:00:00'\""];
+    int64 lastActiveAt = 23;
     uint64 score = 15 [(gogoproto.jsontag) = "score", (gogoproto.moretags) = "gorm:\"default:0\"", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
     title:"分数"
     type: INTEGER}];

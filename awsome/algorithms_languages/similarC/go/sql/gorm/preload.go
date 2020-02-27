@@ -12,7 +12,7 @@ import (
 var (
 	DB1        *gorm.DB
 	DB2        *gorm.DB
-	configPath = "../../../config/add-config.toml"
+	configPath = "D:\\config/add-config.toml"
 )
 
 func init() {

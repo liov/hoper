@@ -13,13 +13,20 @@ import (
 
 type UserDao struct{}
 
-func (*UserDao) ExitByEmailORPhone(mail, phone string) (bool, error) {
+func DBNotNil(db **gorm.DB) {
+	if *db == nil {
+		*db = Dao.GORMDB
+	}
+}
+
+func (*UserDao) ExitByEmailORPhone(db *gorm.DB, mail, phone string) (bool, error) {
+	DBNotNil(&db)
 	var err error
 	var count int
 	if mail != "" {
-		err = Dao.GORMDB.Table("user").Where(`mail = ?`, mail).Count(&count).Error
+		err = db.Table("user").Where(`mail = ?`, mail).Count(&count).Error
 	} else {
-		err = Dao.GORMDB.Table("user").Where(`phone = ?`, phone).Count(&count).Error
+		err = db.Table("user").Where(`phone = ?`, phone).Count(&count).Error
 	}
 	if err != nil {
 		log.Error("UserDao.ExitByEmailORPhone: ", err)
@@ -28,10 +35,8 @@ func (*UserDao) ExitByEmailORPhone(mail, phone string) (bool, error) {
 	return count == 1, nil
 }
 
-func (d *UserDao) GetByEmailORPhone(email, phone string, db *gorm.DB, fields ...string) (*model.User, error) {
-	if db == nil {
-		db = Dao.GORMDB
-	}
+func (d *UserDao) GetByEmailORPhone(db *gorm.DB, email, phone string, fields ...string) (*model.User, error) {
+	DBNotNil(&db)
 	var user model.User
 	var err error
 	if len(fields) > 0 {
@@ -49,10 +54,8 @@ func (d *UserDao) GetByEmailORPhone(email, phone string, db *gorm.DB, fields ...
 	return &user, nil
 }
 
-func (*UserDao) Creat(user *model.User, db *gorm.DB) error {
-	if db == nil {
-		db = Dao.GORMDB
-	}
+func (*UserDao) Creat(db *gorm.DB, user *model.User) error {
+	DBNotNil(&db)
 	if err := db.Create(user).Error; err != nil {
 		log.Error("UserDao.Creat: ", err)
 		return err
@@ -60,10 +63,8 @@ func (*UserDao) Creat(user *model.User, db *gorm.DB) error {
 	return nil
 }
 
-func (*UserDao) GetByPrimaryKey(id uint64, db *gorm.DB) (*model.User, error) {
-	if db == nil {
-		db = Dao.GORMDB
-	}
+func (*UserDao) GetByPrimaryKey(db *gorm.DB, id uint64) (*model.User, error) {
+	DBNotNil(&db)
 	var user model.User
 	if err := db.First(&user, id).Error; err != nil {
 		log.Error("UserDao.GetByPrimaryKey: ", err)
@@ -72,10 +73,8 @@ func (*UserDao) GetByPrimaryKey(id uint64, db *gorm.DB) (*model.User, error) {
 	return &user, nil
 }
 
-func (*UserDao) SaveResumes(userId uint64, resumes []*model.Resume, originalIds []uint64, device *model.UserDeviceInfo, db *gorm.DB) error {
-	if db == nil {
-		db = Dao.GORMDB
-	}
+func (*UserDao) SaveResumes(db *gorm.DB, userId uint64, resumes []*model.Resume, originalIds []uint64, device *model.UserDeviceInfo) error {
+	DBNotNil(&db)
 	var err error
 	var actionLog model.UserActionLog
 	actionLog.CreatedAt = time.Now().Format(time.RFC3339Nano)
@@ -126,7 +125,7 @@ func (*UserDao) SaveResumes(userId uint64, resumes []*model.Resume, originalIds 
 	return nil
 }
 
-func (*UserDao) ActionLog(log *model.UserActionLog, db *gorm.DB) error {
+func (*UserDao) ActionLog(db *gorm.DB, log *model.UserActionLog) error {
 	err := db.Create(&log).Error
 	if err != nil {
 		return err
@@ -134,10 +133,8 @@ func (*UserDao) ActionLog(log *model.UserActionLog, db *gorm.DB) error {
 	return nil
 }
 
-func (*UserDao) ResumesIds(userId uint64, db *gorm.DB) ([]uint64, error) {
-	if db == nil {
-		db = Dao.GORMDB
-	}
+func (*UserDao) ResumesIds(db *gorm.DB, userId uint64) ([]uint64, error) {
+	DBNotNil(&db)
 	var resumeIds []uint64
 	err := db.Model(new(model.Resume)).Where("user_id = ? AND status > 0", userId).Pluck("id", &resumeIds).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
