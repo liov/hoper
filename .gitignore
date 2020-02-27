@@ -15,4 +15,4 @@ wasm_exec.js
 *.lock
 node_modules
 dist
-/config/add-config.toml
+add-config.toml

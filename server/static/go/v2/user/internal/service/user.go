@@ -5,9 +5,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/gomodule/redigo/redis"
@@ -19,10 +17,8 @@ import (
 	"github.com/liov/hoper/go/v2/user/internal/config"
 	"github.com/liov/hoper/go/v2/user/internal/dao"
 	modelconst "github.com/liov/hoper/go/v2/user/model"
-	"github.com/liov/hoper/go/v2/utils/dao/redis/hash"
 	"github.com/liov/hoper/go/v2/utils/http/gateway"
 	"github.com/liov/hoper/go/v2/utils/http/token"
-	"github.com/liov/hoper/go/v2/utils/json"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/mail"
 	"github.com/liov/hoper/go/v2/utils/strings2"
@@ -31,7 +27,6 @@ import (
 	"github.com/liov/hoper/go/v2/utils/verification/code"
 	"github.com/liov/hoper/go/v2/utils/verification/luosimao"
 	"github.com/liov/hoper/go/v2/utils/verification/prm"
-	"google.golang.org/grpc/metadata"
 )
 
 type UserService struct {
@@ -63,7 +58,7 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 		return nil, errorcode.InvalidParams.WithMessage("请填写邮箱或手机号")
 	}
 
-	if exist, _ := userDao.ExitByEmailORPhone(req.Mail, req.Phone); exist {
+	if exist, _ := userDao.ExitByEmailORPhone(nil, req.Mail, req.Phone); exist {
 		if req.Mail != "" {
 			return nil, errorcode.InvalidParams.WithMessage("邮箱已被注册")
 		} else {
@@ -97,7 +92,7 @@ func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*model.Si
 		return nil, errorcode.InvalidParams.WithMessage("请填写邮箱或手机号")
 	}
 
-	if exist, _ := userDao.ExitByEmailORPhone(req.Mail, req.Phone); exist {
+	if exist, _ := userDao.ExitByEmailORPhone(nil, req.Mail, req.Phone); exist {
 		if req.Mail != "" {
 			return nil, errorcode.InvalidParams.WithMessage("邮箱已被注册")
 		} else {
@@ -113,7 +108,7 @@ func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*model.Si
 	user.Status = modelconst.UserStatusInActive
 	user.AvatarURL = modelconst.DefaultAvatar
 	user.Password = encryptPassword(req.Password)
-	if err = userDao.Creat(user, nil); err != nil {
+	if err = userDao.Creat(nil, user); err != nil {
 		log.Error(err)
 		return nil, errorcode.ERROR.WithMessage("新建出错")
 	}
@@ -208,7 +203,7 @@ func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*response
 		return nil, errorcode.InvalidParams.WithMessage("无效的链接")
 	}
 
-	user, err := userDao.GetByPrimaryKey(req.Id, nil)
+	user, err := userDao.GetByPrimaryKey(nil, req.Id)
 	if err != nil {
 		return nil, errorcode.DBError
 	}
@@ -236,7 +231,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.T
 	}
 	device := u.Device(ctx)
 
-	originalIds, err := userDao.ResumesIds(user.Id, nil)
+	originalIds, err := userDao.ResumesIds(nil, user.Id)
 	if err != nil {
 		return nil, errorcode.DBError.WithMessage("更新失败")
 	}
@@ -244,7 +239,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.T
 	resumes = append(req.Details.EduExps, req.Details.WorkExps...)
 
 	tx := dao.Dao.GORMDB.Begin()
-	err = userDao.SaveResumes(req.Id, resumes, originalIds, device, tx)
+	err = userDao.SaveResumes(tx, req.Id, resumes, originalIds, device)
 	if err != nil {
 		tx.Rollback()
 		return nil, errorcode.ERROR.WithMessage("更新失败")
@@ -308,8 +303,9 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 	}
 
 	dao.Dao.GORMDB.Model(&user).UpdateColumn("last_activated_at", time.Now())
-
-	if err := UserHashToRedis(&model.UserMainInfo{
+	conn := dao.NewUserRedis()
+	defer conn.Close()
+	if err := conn.EfficientUserHashToRedis(&model.UserMainInfo{
 		Id:        user.Id,
 		Score:     user.Score,
 		Status:    user.Status,
@@ -369,66 +365,6 @@ func (u *UserService) AuthInfo(ctx context.Context, req *utils.Empty) (*model.Us
 	return u.Auth(ctx)
 }
 
-func (*UserService) Auth(ctx context.Context) (*model.UserMainInfo, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	tokens := md.Get("auth")
-	if len(tokens) == 0 || tokens[0] == "" {
-		return nil, errorcode.Auth
-	}
-	claims, err := token.ParseToken(tokens[0], config.Conf.Server.TokenSecret)
-	if err != nil {
-		return nil, err
-	}
-	user, err := UserHashFromRedis(claims.UserID)
-	if err != nil {
-		return nil, errorcode.Auth
-	}
-	if user.LoginTime != claims.IssuedAt {
-		return nil, errorcode.Auth
-	}
-	return user, nil
-}
-
-func (*UserService) Device(ctx context.Context) *model.UserDeviceInfo {
-	var info model.UserDeviceInfo
-	md, _ := metadata.FromIncomingContext(ctx)
-	//Device-Info:device-osInfo-appCode-appVersion
-	deviceInfo := md.Get("device-info")
-	if deviceInfo[0] != "" {
-		infos := strings.Split(deviceInfo[0], "-")
-		if len(infos) == 4 {
-			info.Device = infos[0]
-			info.Os = infos[1]
-			info.AppCode = infos[2]
-			info.AppVersion = infos[3]
-		}
-	}
-	//area:xxx
-	//location:1.23456,2.123456
-	location := md.Get("location")
-	if location[0] != "" {
-		info.Area, _ = url.PathUnescape(location[0])
-	}
-
-	if location[1] != "" {
-		infos := strings.Split(location[1], ",")
-		if len(infos) == 2 {
-			info.Lng = infos[0]
-			info.Lat = infos[1]
-		}
-	}
-
-	userAgent := md.Get("user-agent")
-	if userAgent[0] != "" {
-		info.UserAgent = userAgent[0]
-	}
-	ip := md.Get("x-forwarded-for")
-	if ip[0] != "" {
-		info.IP = ip[0]
-	}
-	return &info
-}
-
 func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.GetRep, error) {
 	user, err := u.Auth(ctx)
 	if err != nil {
@@ -445,7 +381,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 	if req.Input == "" {
 		return nil, errorcode.InvalidParams.WithMessage("账号错误")
 	}
-	user, err := userDao.GetByEmailORPhone(req.Input, req.Input, nil, "id", "name", "password")
+	user, err := userDao.GetByEmailORPhone(nil, req.Input, req.Input, "id", "name", "password")
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			if prm.PhoneOrMail(req.Input) != prm.Phone {
@@ -483,7 +419,7 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 		return nil, errorcode.InvalidParams.WithMessage("无效的链接")
 	}
 
-	user, err := userDao.GetByPrimaryKey(req.Id, nil)
+	user, err := userDao.GetByPrimaryKey(nil, req.Id)
 	if err != nil {
 		return nil, errorcode.DBError
 	}
@@ -515,108 +451,4 @@ func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListR
 	}
 	rep.Details = logs
 	return rep, nil
-}
-
-// UserToRedis 将用户信息存到redis
-func UserToRedis(user *model.UserMainInfo) error {
-	UserString, err := json.Json.MarshalToString(user)
-	if err != nil {
-		return err
-	}
-
-	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
-
-	conn := dao.Dao.Redis.Get()
-	defer conn.Close()
-	conn.Send("SELECT", modelconst.UserIndex)
-	if _, redisErr := conn.Do("SET", loginUserKey, UserString, "EX", config.Conf.Server.TokenMaxAge); redisErr != nil {
-		return redisErr
-	}
-	return nil
-}
-
-// UserFromRedis 从redis中取出用户信息
-func UserFromRedis(userID uint64) (*model.UserMainInfo, error) {
-	loginUser := modelconst.LoginUserKey + strconv.FormatUint(userID, 10)
-
-	conn := dao.Dao.Redis.Get()
-	defer conn.Close()
-	conn.Send("SELECT", modelconst.UserIndex)
-	userString, err := redis.String(conn.Do("GET", loginUser))
-	if err != nil {
-		return nil, err
-	}
-	var user model.UserMainInfo
-	err = json.Json.UnmarshalFromString(userString, &user)
-	if err != nil {
-		return nil, err
-	}
-	return &user, nil
-}
-
-func UserLastActiveTime(userID uint64) error {
-	conn := dao.Dao.Redis.Get()
-	defer conn.Close()
-
-	err := conn.Send("SELECT", modelconst.CronIndex)
-	_, err = conn.Do("ZADD", modelconst.LoginUserKey+"ActiveTime",
-		time.Now().Unix(), strconv.FormatUint(userID, 10))
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func EditRedisUser(user *model.UserMainInfo) error {
-	UserString, err := json.Json.MarshalToString(user)
-	if err != nil {
-		return err
-	}
-	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
-
-	conn := dao.Dao.Redis.Get()
-	defer conn.Close()
-	conn.Send("SELECT", modelconst.UserIndex)
-	if _, redisErr := conn.Do("SET", loginUserKey, UserString); redisErr != nil {
-		return redisErr
-	}
-	return nil
-}
-
-// UserToRedis 将用户信息存到redis
-func UserHashToRedis(user *model.UserMainInfo) error {
-	var redisArgs []interface{}
-	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
-	redisArgs = append(redisArgs, loginUserKey)
-	redisArgs = append(redisArgs, hash.Marshal(user)...)
-
-	conn := dao.Dao.Redis.Get()
-	defer conn.Close()
-	conn.Send("SELECT", modelconst.UserIndex)
-	conn.Send("HMSET", redisArgs...)
-	if _, redisErr := conn.Do("EXPIRE", loginUserKey, config.Conf.Server.TokenMaxAge); redisErr != nil {
-		return redisErr
-	}
-	return nil
-}
-
-// UserFromRedis 从redis中取出用户信息
-func UserHashFromRedis(userID uint64) (*model.UserMainInfo, error) {
-	loginUser := modelconst.LoginUserKey + strconv.FormatUint(userID, 10)
-
-	conn := dao.Dao.Redis.Get()
-	defer conn.Close()
-	conn.Send("SELECT", modelconst.UserIndex)
-	userArgs, err := redis.Strings(conn.Do("HGETALL", loginUser))
-	log.Debug(userArgs)
-	if err != nil {
-		log.Error(err)
-		return nil, err
-	}
-	if len(userArgs) == 0 {
-		return nil, errorcode.Auth
-	}
-	var user model.UserMainInfo
-	hash.UnMarshal(&user, userArgs)
-	return &user, nil
 }
