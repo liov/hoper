@@ -68,7 +68,7 @@ func (*UserService) Auth(ctx context.Context) (*model.UserMainInfo, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	tokens := md.Get("auth")
 	if len(tokens) == 0 || tokens[0] == "" {
-		return nil, errorcode.Auth
+		return nil, errorcode.NoLogin
 	}
 	claims, err := token.ParseToken(tokens[0], config.Conf.Server.TokenSecret)
 	if err != nil {

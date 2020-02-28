@@ -24,7 +24,7 @@ func filter(
 		}
 		//不能添加错误处理，除非所有返回的结构相同
 		if err != nil {
-			if errcode, ok := err.(errorcode.ErrCode); ok {
+			if errcode, ok := err.(errorcode.GrpcErr); ok {
 				err = errcode.Err()
 			}
 		}

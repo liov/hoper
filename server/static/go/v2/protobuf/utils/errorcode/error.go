@@ -4,6 +4,10 @@ import "github.com/liov/hoper/go/v2/utils/log"
 
 type statusError ErrRep
 
+type GrpcErr interface {
+	Err() error
+}
+
 func (se *statusError) Error() string {
 	p := (*ErrRep)(se)
 	return p.Message
@@ -20,6 +24,10 @@ func (x ErrCode) WithMessage(msg string) error {
 func (x ErrCode) Log(err error) error {
 	log.Default.Error(err)
 	return &statusError{Code: x, Message: x.Error()}
+}
+
+func (x ErrCode) Error() string {
+	return x.String()
 }
 
 var SysErr = []byte(`{"code":10000,
