@@ -19,3 +19,11 @@ func ToSting(b []byte) string {
 func ToBytes(s string) []byte {
 	return *(*[]byte)(unsafe.Pointer(&s))
 }
+
+func QuoteToBytes(s string) []byte {
+	b := make([]byte, 0, len(s)+2)
+	b = append(b, '"')
+	b = append(b, []byte(s)...)
+	b = append(b, '"')
+	return b
+}

@@ -1,0 +1,19 @@
+syntax = "proto3";
+package model;
+
+//暴露给外部
+
+//用户操作
+enum Action {
+    A=0;
+}
+//用户角色
+enum Role {
+    R=0;
+}
+
+
+//用户角色
+enum UserStatus {
+    U=0;
+}

@@ -12,6 +12,7 @@ func init() {
 	proto.RegisterExtension(E_EnumType)
 	proto.RegisterExtension(E_GenEnumValueMap)
 	proto.RegisterExtension(E_EnumNumOrder)
+	proto.RegisterExtension(E_EnumJsonMarshal)
 }
 
 var E_EnumvalueCN = &proto.ExtensionDesc{
@@ -91,6 +92,7 @@ func TurnOffGoEnumValueMap(enum *descriptor.EnumDescriptorProto) {
 	vanity.SetBoolEnumOption(E_GenEnumValueMap, false)(enum)
 }
 
+//不用手动标序号，= iota
 var E_EnumNumOrder = &proto.ExtensionDesc{
 	ExtendedType:  (*descriptor.EnumOptions)(nil),
 	ExtensionType: (*bool)(nil),
@@ -106,4 +108,22 @@ func EnabledEnumNumOrder(file *google_protobuf.FileDescriptorProto, enum *google
 
 func TurnOffEnumNumOrder(enum *descriptor.EnumDescriptorProto) {
 	vanity.SetBoolEnumOption(E_EnumNumOrder, false)(enum)
+}
+
+//不用手动标序号，= iota
+var E_EnumJsonMarshal = &proto.ExtensionDesc{
+	ExtendedType:  (*descriptor.EnumOptions)(nil),
+	ExtensionType: (*bool)(nil),
+	Field:         62028,
+	Name:          "enumproto.enum_numorder",
+	Tag:           "varint,62028,opt,name=enum_jsonmarshal",
+	Filename:      "enum.proto",
+}
+
+func EnabledEnumJsonMarshal(file *google_protobuf.FileDescriptorProto, enum *google_protobuf.EnumDescriptorProto) bool {
+	return proto.GetBoolExtension(enum.Options, E_EnumJsonMarshal, true)
+}
+
+func TurnOffEnumJsonMarshal(enum *descriptor.EnumDescriptorProto) {
+	vanity.SetBoolEnumOption(E_EnumJsonMarshal, false)(enum)
 }

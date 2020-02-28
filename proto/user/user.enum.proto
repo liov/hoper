@@ -1,10 +1,12 @@
 syntax = "proto3";
 package model;
 import "utils/enum.proto";
-import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+//import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
-option (gogoproto.goproto_enum_prefix_all) = false;
+//写在这里必然要暴露出去
 
+//option (gogoproto.goproto_enum_prefix_all) = false;
+//用户操作
 enum Action {
     option (enumproto.enum_genvaluemap) = true;
     option (enumproto.enum_numorder) = true;
@@ -16,9 +18,20 @@ enum Action {
     EditResume = 5 [(enumproto.enumvalue_cn)= "编辑简历"];
     DELETEResume = 6 [(enumproto.enumvalue_cn)= "删除简历"];
 }
-
+//用户角色
 enum Role {
+    UserRoleNormal = 0 [(enumproto.enumvalue_cn)= "普通用户"];
+    UserRoleAdmin = 1 [(enumproto.enumvalue_cn)= "管理员"];
+    UserRoleSuperAdmin = 2 [(enumproto.enumvalue_cn)= "超级管理员"];
+}
+
+
+//用户角色
+enum UserStatus {
+    option (enumproto.enum_numorder) = true;
     option (enumproto.enum_customtype) = "uint8";
-    A = 0;
-    B = 255;
+    option (enumproto.enum_jsonmarshal) = false;
+    InActive = 0 [(enumproto.enumvalue_cn)= "未激活"];
+    Activated = 1 [(enumproto.enumvalue_cn)= "已激活"];
+    Frozen = 2 [(enumproto.enumvalue_cn)= "已冻结"];
 }
