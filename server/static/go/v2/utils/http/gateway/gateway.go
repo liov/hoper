@@ -28,12 +28,15 @@ func Gateway(gatewayHandle func(context.Context, *runtime.ServeMux)) http.Handle
 			}
 			var auth string
 			cookie, _ := request.Cookie("token")
-			value, _ := url.QueryUnescape(cookie.Value)
-			if value == "" {
-				auth = request.Header.Get("authorization")
-			} else {
-				auth = value
+			if cookie != nil {
+				value, _ := url.QueryUnescape(cookie.Value)
+				if value == "" {
+					auth = request.Header.Get("authorization")
+				} else {
+					auth = value
+				}
 			}
+
 			return map[string][]string{
 				"device-info": {request.Header.Get("device-info")},
 				"location":    {area, request.Header.Get("location")},

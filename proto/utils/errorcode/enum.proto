@@ -18,6 +18,7 @@ enum ErrCode {
     InActive = 1002 [(enumproto.enumvalue_cn)= "未激活账号"];
     NoAuthority = 1003 [(enumproto.enumvalue_cn)= "无权限"];
     Auth = 10004 [(enumproto.enumvalue_cn)= "Token错误"];
+    NoLogin = 10005 [(enumproto.enumvalue_cn)= "未登录"];
 
     AuthCheckTokenFail = 10001 [(enumproto.enumvalue_cn)= "Token鉴权失败"];
     AuthCheckTokenTimeout = 10002 [(enumproto.enumvalue_cn)= "Token已超时"];
