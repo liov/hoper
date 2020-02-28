@@ -1215,7 +1215,7 @@ func (g *Generator) generate(file *FileDescriptor) {
 	g.Buffer = new(bytes.Buffer)
 	g.annotations = nil
 	g.generateHeader()
-	//g.generateImports()
+	g.generateImports()
 	if !g.writeOutput {
 		return
 	}
@@ -1347,6 +1347,18 @@ func (g *Generator) weak(i int32) bool {
 	return false
 }
 
+func (g *Generator) generateImports() {
+	g.P("import (")
+	for _, enum := range g.file.enum {
+		if EnabledGoEnumValueMap(enum.file.FileDescriptorProto, enum.EnumDescriptorProto) {
+			g.PrintImport("", "errors")
+			break
+		}
+	}
+	g.PrintImport("", "github.com/liov/hoper/go/v2/utils/strings2")
+	g.P(")")
+}
+
 // Generate the enum definitions for this EnumDescriptor.
 func (g *Generator) generateEnum(enum *EnumDescriptor) {
 	// The full type name
@@ -1402,34 +1414,65 @@ func (g *Generator) generateEnum(enum *EnumDescriptor) {
 		g.P(")")
 	}
 	g.P()
-	g.P("var ", ccTypeName, "_name = map["+ccTypeName+"]string{")
-	g.In()
-	generated := make(map[int32]bool) // avoid duplicate values
-	for _, e := range enum.Value {
-		duplicate := ""
-		if _, present := generated[*e.Number]; present {
-			duplicate = "// Duplicate value: "
+	if len(enum.Value) > 64 {
+		if EnabledEnumNumOrder(enum.file.FileDescriptorProto, enum.EnumDescriptorProto) {
+			g.P("var ", ccTypeName, "_name = ["+strconv.Itoa(len(enum.Value))+"]string{")
+			g.In()
+			generated := make(map[int32]bool) // avoid duplicate values
+			for _, e := range enum.Value {
+				duplicate := ""
+				if _, present := generated[*e.Number]; present {
+					duplicate = "// Duplicate value: "
+				}
+				name := *e.Name
+				if IsEnumValueCN(e) {
+					name = GetEnumValueCN(e)
+				}
+				g.P(duplicate, strconv.Quote(name), ",")
+				generated[*e.Number] = true
+			}
+			g.Out()
+			g.P("}")
+			g.P()
+		} else {
+			g.P("var ", ccTypeName, "_name = map["+ccTypeName+"]string{")
+			g.In()
+			generated := make(map[int32]bool) // avoid duplicate values
+			for i, e := range enum.Value {
+				duplicate := ""
+				if _, present := generated[*e.Number]; present {
+					duplicate = "// Duplicate value: "
+				}
+				name := *e.Name
+				etorPath := fmt.Sprintf("%s,%d,%d", enum.path, enumValuePath, i)
+				g.PrintComments(etorPath)
+				name = ccPrefix + name
+				key := Annotate(enum.file, etorPath, name)
+				if IsEnumValueCN(e) {
+					name = GetEnumValueCN(e)
+				}
+				g.P(duplicate, key, ": ", strconv.Quote(name), ",")
+				generated[*e.Number] = true
+			}
+			g.Out()
+			g.P("}")
+			g.P()
 		}
-		name := *e.Name
-		if IsEnumValueCN(e) {
-			name = GetEnumValueCN(e)
-		}
-		g.P(duplicate, e.Name, ": ", strconv.Quote(name), ",")
-		generated[*e.Number] = true
 	}
-	g.Out()
-	g.P("}")
-	g.P()
 
 	if EnabledGoEnumValueMap(enum.file.FileDescriptorProto, enum.EnumDescriptorProto) {
 		g.P("var ", ccTypeName, "_value = map[string]"+ccTypeName+"{")
 		g.In()
-		for _, e := range enum.Value {
+		for i, e := range enum.Value {
 			name := *e.Name
+			etorPath := fmt.Sprintf("%s,%d,%d", enum.path, enumValuePath, i)
+			g.PrintComments(etorPath)
+			name = ccPrefix + name
+			key := Annotate(enum.file, etorPath, name)
 			if IsEnumValueCN(e) {
 				name = GetEnumValueCN(e)
 			}
-			g.P(strconv.Quote(name), ": ", e.Name, ",")
+			g.P(strconv.Quote(name), ": ", key, ",")
 		}
 		g.Out()
 		g.P("}")
@@ -1450,31 +1493,51 @@ func (g *Generator) generateEnum(enum *EnumDescriptor) {
 	if gogoproto.IsGoEnumStringer(g.file.FileDescriptorProto, enum.EnumDescriptorProto) {
 		g.P("func (x ", ccTypeName, ") String() string {")
 		g.In()
-		g.P("return ", ccTypeName, "_name[x]")
+		if len(enum.Value) > 64 {
+			g.P("return ", ccTypeName, "_name[x]")
+		} else {
+			g.P("switch x {")
+			for i, e := range enum.Value {
+				name := *e.Name
+				etorPath := fmt.Sprintf("%s,%d,%d", enum.path, enumValuePath, i)
+				g.PrintComments(etorPath)
+				name = ccPrefix + name
+				key := Annotate(enum.file, etorPath, name)
+				if IsEnumValueCN(e) {
+					name = GetEnumValueCN(e)
+				}
+				g.P("case ", key, " :")
+				g.In()
+				g.P("return ", strconv.Quote(name))
+				g.Out()
+			}
+		}
+		g.P("}")
+		g.P("return ", strconv.Quote(""))
 		g.Out()
 		g.P("}")
 		g.P()
 	}
 
-	if !enum.proto3() && !gogoproto.IsGoEnumStringer(g.file.FileDescriptorProto, enum.EnumDescriptorProto) {
+	if EnabledEnumJsonMarshal(enum.file.FileDescriptorProto, enum.EnumDescriptorProto) && gogoproto.IsGoEnumStringer(g.file.FileDescriptorProto, enum.EnumDescriptorProto) {
 		g.P("func (x ", ccTypeName, ") MarshalJSON() ([]byte, error) {")
 		g.In()
-		g.P("return ", g.Pkg["proto"], ".MarshalJSONEnum(", ccTypeName, "_name, int32(x))")
+		g.P("return ", "strings2.QuoteToBytes(x.String())", ", nil")
 		g.Out()
 		g.P("}")
 		g.P()
 	}
-	if !enum.proto3() {
+	if EnabledGoEnumValueMap(enum.file.FileDescriptorProto, enum.EnumDescriptorProto) {
 		g.P("func (x *", ccTypeName, ") UnmarshalJSON(data []byte) error {")
 		g.In()
-		g.P("value, err := ", g.Pkg["proto"], ".UnmarshalJSONEnum(", ccTypeName, `_value, data, "`, ccTypeName, `")`)
-		g.P("if err != nil {")
+		g.P("value, ok := ", ccTypeName, `_value[string(data)]`)
+		g.P("if ok {")
 		g.In()
-		g.P("return err")
+		g.P("*x = ", "value")
+		g.P("return nil")
 		g.Out()
 		g.P("}")
-		g.P("*x = ", ccTypeName, "(value)")
-		g.P("return nil")
+		g.P(`return errors.New("无效的`, ccTypeName, `")`)
 		g.Out()
 		g.P("}")
 		g.P()

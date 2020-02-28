@@ -1,6 +1,6 @@
 syntax = "proto3";
 package model;
-import "user/user.enum.proto";
+import "user/user.enum.pub.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 
@@ -27,7 +27,9 @@ message User {
     string mail = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(16);default:''\" validate:\"email\" comment:\"邮箱\""];
     string phone = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(32);default:''\" validate:\"phone\" comment:\"手机号\""];
     //性别，0未填写，1男，2女
-    uint32 gender = 8 [(gogoproto.moretags) = "gorm:\"default:0\"", (gogoproto.casttype) = "uint8"];
+    uint32 gender = 8 [(gogoproto.moretags) = "gorm:\"default:0\"", (gogoproto.casttype) = "github.com/liov/hoper/go/v2/user/model.Gender", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+           type:INTEGER
+    }];
     string birthday = 9 [(gogoproto.moretags) = "gorm:\"type:timestamptz(6);default:'0001-01-01 00:00:00'\""];
     string address = 14 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
     string introduction = 10 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
@@ -38,10 +40,10 @@ message User {
     uint64 score = 15 [(gogoproto.jsontag) = "score", (gogoproto.moretags) = "gorm:\"default:0\"", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
     title:"分数"
     type: INTEGER}];
-    uint32 role = 24 [(gogoproto.moretags) = "gorm:\"default:0\""];
+    Role role = 24 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"default:0\""];
     string createdAt = 25 [(gogoproto.moretags) = "gorm:\"type:timestamptz(6);default:current_timestamp\""];
     string bannedAt = 27 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"type:timestamptz(6);default:'0001-01-01 00:00:00'\""];
-    uint32 status = 28 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"default:0\"", (gogoproto.casttype) = "uint8", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    UserStatus status = 28 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"default:0\"",  (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
            read_only:true
     }];
 }
@@ -140,16 +142,19 @@ message UserBaseInfo {
     uint64 score = 2 [(gogoproto.jsontag) = "score", (gogoproto.moretags) = "gorm:\"default:0\"", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
     title:"分数"
     type: INTEGER}];
+    uint32 gender = 8 [(gogoproto.jsontag) = "gender", (gogoproto.moretags) = "gorm:\"default:0\"", (gogoproto.casttype) = "github.com/liov/hoper/go/v2/user/model.Gender", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+           type:INTEGER
+    }];
 }
 
 message UserMainInfo {
     uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key;\""];
-    uint32 role = 24 [(gogoproto.moretags) = "gorm:\"default:0\""];
+    Role role = 24 [(gogoproto.moretags) = "gorm:\"default:0\""];
     int64 lastActiveAt = 23;
     uint64 score = 15 [(gogoproto.jsontag) = "score", (gogoproto.moretags) = "gorm:\"default:0\"", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
     title:"分数"
     type: INTEGER}];
-    uint32 status = 28 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"default:0\"", (gogoproto.casttype) = "uint8", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    UserStatus status = 28 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"default:0\"",  (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
            read_only:true
     }];
     int64 loginTime =16;

@@ -119,10 +119,10 @@ func (conn *UserRedis) EfficientUserHashToRedis(user *model.UserMainInfo) error 
 	conn.Send("SELECT", modelconst.UserIndex)
 	conn.Send("HMSET", loginUserKey,
 		"Id", user.Id,
-		"Role", user.Role,
+		"Role", uint32(user.Role),
 		"LastActiveAt", user.LastActiveAt,
 		"Score", user.Score,
-		"Status", user.Status,
+		"Status", uint8(user.Status),
 		"LoginTime", user.LoginTime)
 	if _, redisErr := conn.Do("EXPIRE", loginUserKey, config.Conf.Server.TokenMaxAge); redisErr != nil {
 		return redisErr
@@ -152,11 +152,11 @@ func (conn *UserRedis) EfficientUserHashFromRedis(userID uint64) (*model.UserMai
 	var user model.UserMainInfo
 	user.Id, err = strconv.ParseUint(userArgs[1], 10, 64)
 	n, err := strconv.ParseUint(userArgs[3], 10, 32)
-	user.Role = uint32(n)
+	user.Role = model.Role(n)
 	user.LastActiveAt, err = strconv.ParseInt(userArgs[5], 10, 64)
 	user.Score, err = strconv.ParseUint(userArgs[7], 10, 64)
 	n, err = strconv.ParseUint(userArgs[9], 10, 8)
-	user.Status = uint8(n)
+	user.Status = model.UserStatus(n)
 	user.LoginTime, err = strconv.ParseInt(userArgs[11], 10, 64)
 	return &user, nil
 }

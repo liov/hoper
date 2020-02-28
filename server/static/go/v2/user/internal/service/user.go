@@ -101,11 +101,11 @@ func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*model.Si
 	}
 	var user = &model.User{}
 	user.Mail = req.Mail
-	user.Gender = modelconst.UserSexNil
+	user.Gender = modelconst.GenderUnfilled
 	user.CreatedAt = time2.Format(time.Now())
 	user.LastActiveAt = user.CreatedAt
-	user.Role = modelconst.UserRoleNormal
-	user.Status = modelconst.UserStatusInActive
+	user.Role = model.Role_UserRoleNormal
+	user.Status = model.UserStatus_InActive
 	user.AvatarURL = modelconst.DefaultAvatar
 	user.Password = encryptPassword(req.Password)
 	if err = userDao.Creat(nil, user); err != nil {
@@ -125,7 +125,7 @@ func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*model.Si
 	}
 
 	if req.Mail != "" {
-		go sendMail(model.Active, curTime, user)
+		go sendMail(model.Action_Active, curTime, user)
 	}
 
 	return rep, nil
@@ -150,7 +150,7 @@ func sendMail(action model.Action, curTime int64, user *model.User) {
 	secretStr := strconv.FormatInt(curTime, 10) + user.Mail + user.Password
 	secretStr = fmt.Sprintf("%x", md5.Sum(strings2.ToBytes(secretStr)))
 	switch action {
-	case model.Active:
+	case model.Action_Active:
 		actionURL := siteURL + "/user/active/" + secretStr + strconv.FormatUint(user.Id, 10) + "/" + secretStr
 		log.Debug(actionURL)
 		content = "<p><b>亲爱的" + user.Name + ":</b></p>" +
@@ -158,7 +158,7 @@ func sendMail(action model.Action, curTime int64, user *model.User) {
 			"<a href=\"" + actionURL + "\">" + actionURL + "</a>" +
 			"<p>如果您没有在 " + siteName + " 填写过注册信息, 说明有人滥用了您的邮箱, 请删除此邮件, 我们对给您造成的打扰感到抱歉.</p>" +
 			"<p>" + siteName + " 谨上.</p>"
-	case model.RestPassword:
+	case model.Action_RestPassword:
 		actionURL := siteURL + "/user/resetPassword/" + secretStr + strconv.FormatUint(user.Id, 10) + "/" + secretStr
 		content = "<p><b>亲爱的" + user.Name + ":</b></p>" +
 			"<p>你的密码重设要求已经得到验证。请点击以下链接, 或粘贴到浏览器地址栏来设置新的密码: </p>" +
@@ -180,7 +180,7 @@ func sendMail(action model.Action, curTime int64, user *model.User) {
 	}
 	err := mail.SendMailTLS(addr, dao.Dao.MailAuth, &m)
 	if err != nil {
-		log.Error("sendMail", err)
+		log.Error("sendMail:", err)
 	}
 }
 
@@ -281,7 +281,7 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 	if !checkPassword(req.Password, &user) {
 		return nil, errorcode.InvalidParams.WithMessage("密码错误")
 	}
-	if user.Status == modelconst.UserStatusInActive {
+	if user.Status == model.UserStatus_InActive {
 		//没看懂
 		//encodedEmail := base64.StdEncoding.EncodeToString(strings2.ToBytes(user.Mail))
 		activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
@@ -293,7 +293,7 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 			log.Error("UserService.Signup,RedisConn.Do: ", err)
 			return nil, errorcode.RedisErr
 		}
-		go sendMail(model.Active, curTime, &user)
+		go sendMail(model.Action_Active, curTime, &user)
 		return nil, errorcode.Auth.WithMessage("账号未激活,请进去邮箱点击激活")
 	}
 	now := time.Now()
@@ -318,8 +318,9 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 	}
 	resp := &model.LoginRep{}
 	resp.Details = &model.LoginRep_LoginDetails{Token: tokenString, User: &model.UserBaseInfo{
-		Id:    user.Id,
-		Score: user.Score,
+		Id:     user.Id,
+		Score:  user.Score,
+		Gender: user.Gender,
 	}}
 	resp.Message = "登录成功"
 
@@ -371,11 +372,15 @@ func (u *UserService) AuthInfo(ctx context.Context, req *utils.Empty) (*model.Us
 }
 
 func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.GetRep, error) {
-	user, err := u.Auth(ctx)
+	_, err := u.Auth(ctx)
 	if err != nil {
 		return &model.GetRep{Details: &model.User{Id: req.Id}}, nil
 	}
-	return &model.GetRep{Details: &model.User{Id: user.Id, Role: user.Role}}, nil
+	var user1 model.User
+	if err := dao.Dao.GORMDB.Find(&user1, req.Id).Error; err != nil {
+		return nil, errorcode.ERROR.WithMessage("账号不存在")
+	}
+	return &model.GetRep{Details: &user1}, nil
 }
 
 func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (*response.TinyRep, error) {
@@ -408,7 +413,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 		return nil, errorcode.RedisErr
 	}
 
-	go sendMail(model.RestPassword, curTime, user)
+	go sendMail(model.Action_RestPassword, curTime, user)
 
 	return &response.TinyRep{}, nil
 }
