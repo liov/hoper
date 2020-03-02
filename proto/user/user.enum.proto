@@ -4,7 +4,7 @@ import "utils/enum.proto";
 //import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 //写在这里必然要暴露出去
-
+option java_package = "xyz.hoper.protobuf.user";
 //option (gogoproto.goproto_enum_prefix_all) = false;
 //用户操作
 enum Action {
@@ -20,11 +20,20 @@ enum Action {
 }
 //用户角色
 enum Role {
+    option (enumproto.enum_numorder) = true;
     UserRoleNormal = 0 [(enumproto.enumvalue_cn)= "普通用户"];
     UserRoleAdmin = 1 [(enumproto.enumvalue_cn)= "管理员"];
     UserRoleSuperAdmin = 2 [(enumproto.enumvalue_cn)= "超级管理员"];
 }
 
+//用户性别
+enum Gender{
+    option (enumproto.enum_numorder) = true;
+    option (enumproto.enum_customtype) = "uint8";
+    GenderUnfilled = 0 [(enumproto.enumvalue_cn)= "未填"];
+    GenderMale = 1 [(enumproto.enumvalue_cn)= "男"];
+    GenderFemale = 2 [(enumproto.enumvalue_cn)= "女"];
+}
 
 //用户角色
 enum UserStatus {

@@ -11,7 +11,10 @@ enum Action {
 enum Role {
     R=0;
 }
-
+//用户性别
+enum Gender{
+    G=0;
+}
 
 //用户角色
 enum UserStatus {

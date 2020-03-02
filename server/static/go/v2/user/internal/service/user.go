@@ -101,7 +101,7 @@ func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*model.Si
 	}
 	var user = &model.User{}
 	user.Mail = req.Mail
-	user.Gender = modelconst.GenderUnfilled
+	user.Gender = model.Gender_GenderUnfilled
 	user.CreatedAt = time2.Format(time.Now())
 	user.LastActiveAt = user.CreatedAt
 	user.Role = model.Role_UserRoleNormal
