@@ -6,23 +6,28 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 option (gogoproto.goproto_enum_prefix_all) = false;
 
 enum ErrCode {
+    option (enumproto.enum_jsonmarshal) = false;
     SUCCESS = 0 [(enumproto.enumvalue_cn)= "成功"];
-    ERROR = 1 [(enumproto.enumvalue_cn)= "错误"];
-    InvalidParams = 2 [(enumproto.enumvalue_cn)= "无效的参数"];
-    SysError = 3 [(enumproto.enumvalue_cn)= "系统错误"];
-    DBError = 4 [(enumproto.enumvalue_cn)= "数据库错误"];
-    RedisErr = 5 [(enumproto.enumvalue_cn)= "Redis错误"];
+    Canceled = 1 [(enumproto.enumvalue_cn)= "操作取消"];
+    Unknown = 2 [(enumproto.enumvalue_cn)= "未知错误"];
+    InvalidArgument = 3 [(enumproto.enumvalue_cn)= "无效的参数"];
+    DeadlineExceeded = 4 [(enumproto.enumvalue_cn)= "响应超时"];
+    NotFound = 5 [(enumproto.enumvalue_cn)= "未发现"];
+    AlreadyExists = 6 [(enumproto.enumvalue_cn)= "已经存在"];
+    PermissionDenied = 7 [(enumproto.enumvalue_cn)= "操作无权限"];
+    ResourceExhausted = 8 [(enumproto.enumvalue_cn)= "资源不足"];
+    FailedPrecondition = 9 [(enumproto.enumvalue_cn)= "操作被拒绝"];
+    Aborted = 10 [(enumproto.enumvalue_cn)= "操作终止"];
+    OutOfRange = 11 [(enumproto.enumvalue_cn)= "超出范围"];
+    Unimplemented = 12 [(enumproto.enumvalue_cn)= "未实现"];
+    Internal = 13 [(enumproto.enumvalue_cn)= "内部错误"];
+    Unavailable = 14 [(enumproto.enumvalue_cn)= "无效的操作"];
+    DataLoss = 15 [(enumproto.enumvalue_cn)= "数据丢失"];
+    Unauthenticated = 16 [(enumproto.enumvalue_cn)= "无有效证书"];
+    SysError = 17 [(enumproto.enumvalue_cn)= "系统错误"];
+    DBError = 18 [(enumproto.enumvalue_cn)= "数据库错误"];
+    RedisErr = 19 [(enumproto.enumvalue_cn)= "Redis错误"];
 
-    LoginError = 1000 [(enumproto.enumvalue_cn)= "用户名或密码错误"];
-    LoginTimeout = 1001 [(enumproto.enumvalue_cn)= "登录超时"];
-    InActive = 1002 [(enumproto.enumvalue_cn)= "未激活账号"];
-    NoAuthority = 1003 [(enumproto.enumvalue_cn)= "无权限"];
-    Auth = 10004 [(enumproto.enumvalue_cn)= "Token错误"];
-    NoLogin = 10005 [(enumproto.enumvalue_cn)= "未登录"];
-
-    AuthCheckTokenFail = 10001 [(enumproto.enumvalue_cn)= "Token鉴权失败"];
-    AuthCheckTokenTimeout = 10002 [(enumproto.enumvalue_cn)= "Token已超时"];
-    AuthToken = 10003 [(enumproto.enumvalue_cn)= "Token生成失败"];
 
     UploadSaveImageFail = 30001 [(enumproto.enumvalue_cn)= "保存图片失败"];
     UploadCheckImageFail = 30002 [(enumproto.enumvalue_cn)= "检查图片失败"];

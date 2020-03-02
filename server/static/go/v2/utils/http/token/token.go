@@ -4,8 +4,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
-
+	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 )
 
@@ -39,11 +38,11 @@ func ParseToken(token, secret string) (*Claims, error) {
 		if claims, ok := tokenClaims.Claims.(*Claims); ok && tokenClaims.Valid {
 			now := time.Now().Unix()
 			if claims.VerifyExpiresAt(now, false) == false {
-				return nil, errorcode.LoginTimeout
+				return nil, model.UserErr_LoginTimeout
 			}
 			return claims, nil
 		}
 	}
 
-	return nil, errorcode.LoginError
+	return nil, model.UserErr_LoginError
 }

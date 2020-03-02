@@ -26,7 +26,7 @@ func Response(ctx iris.Context, res ...interface{}) {
 	var resData ResData
 
 	if len(res) == 1 {
-		resData.Code = uint32(errorcode.ERROR)
+		resData.Code = uint32(errorcode.Unknown)
 		if msgTmp, ok := res[0].(string); ok {
 			resData.Message = msgTmp
 			resData.Details = nil

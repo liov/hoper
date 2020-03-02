@@ -8,7 +8,6 @@ import (
 	"time"
 
 	model "github.com/liov/hoper/go/v2/protobuf/user"
-	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/user/internal/config"
 	"github.com/liov/hoper/go/v2/user/internal/dao"
 	"google.golang.org/grpc/metadata"
@@ -29,7 +28,7 @@ func Auth(w http.ResponseWriter, r *http.Request) {
 		auth = value
 	}
 	errHandle := func(w http.ResponseWriter) {
-		authErr := response.ResData{Code: uint32(errorcode.Auth), Message: errorcode.Auth.Error()}
+		authErr := response.ResData{Code: uint32(model.UserErr_InvalidToken), Message: model.UserErr_InvalidToken.Error()}
 		resp, _ := json.Json.Marshal(&authErr)
 		http.SetCookie(w, &http.Cookie{
 			Name:  "token",
@@ -68,7 +67,7 @@ func (*UserService) Auth(ctx context.Context) (*model.UserMainInfo, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	tokens := md.Get("auth")
 	if len(tokens) == 0 || tokens[0] == "" {
-		return nil, errorcode.NoLogin
+		return nil, model.UserErr_NoLogin
 	}
 	claims, err := token.ParseToken(tokens[0], config.Conf.Server.TokenSecret)
 	if err != nil {
@@ -79,11 +78,11 @@ func (*UserService) Auth(ctx context.Context) (*model.UserMainInfo, error) {
 	defer conn.Close()
 	user, err := conn.EfficientUserHashFromRedis(claims.UserID)
 	if err != nil {
-		return nil, errorcode.Auth
+		return nil, model.UserErr_InvalidToken
 	}
 
 	if user.LoginTime != claims.IssuedAt {
-		return nil, errorcode.Auth
+		return nil, model.UserErr_InvalidToken
 	}
 	return user, nil
 }

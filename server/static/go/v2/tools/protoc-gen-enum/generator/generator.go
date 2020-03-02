@@ -1348,15 +1348,34 @@ func (g *Generator) weak(i int32) bool {
 }
 
 func (g *Generator) generateImports() {
-	g.P("import (")
+	var pkg []string
+
 	for _, enum := range g.file.enum {
 		if EnabledGoEnumValueMap(enum.file.FileDescriptorProto, enum.EnumDescriptorProto) {
-			g.PrintImport("", "errors")
+			pkg = append(pkg, "errors")
 			break
 		}
 	}
-	g.PrintImport("", "github.com/liov/hoper/go/v2/utils/strings2")
-	g.P(")")
+	for _, enum := range g.file.enum {
+		if EnabledEnumErrorCode(enum.EnumDescriptorProto) {
+			pkg = append(pkg, "github.com/liov/hoper/go/v2/protobuf/utils/errorcode")
+			pkg = append(pkg, "github.com/liov/hoper/go/v2/utils/log")
+			break
+		}
+	}
+	for _, enum := range g.file.enum {
+		if EnabledEnumJsonMarshal(g.file.FileDescriptorProto, enum.EnumDescriptorProto) {
+			pkg = append(pkg, "github.com/liov/hoper/go/v2/utils/strings2")
+		}
+	}
+	if len(pkg) > 0 {
+		g.P("import (")
+		for _, p := range pkg {
+			g.PrintImport("", GoImportPath(p))
+		}
+		g.P(")")
+	}
+
 }
 
 // Generate the enum definitions for this EnumDescriptor.
@@ -1538,6 +1557,34 @@ func (g *Generator) generateEnum(enum *EnumDescriptor) {
 		g.Out()
 		g.P("}")
 		g.P(`return errors.New("无效的`, ccTypeName, `")`)
+		g.Out()
+		g.P("}")
+		g.P()
+	}
+
+	if EnabledEnumErrorCode(enum.EnumDescriptorProto) {
+		g.P("func (x ", ccTypeName, ") Error() string {")
+		g.In()
+		g.P(`return x.String()`)
+		g.Out()
+		g.P("}")
+		g.P()
+		g.P("func (x ", ccTypeName, ") GrpcErr() error {")
+		g.In()
+		g.P(`return &errorcode.ErrRep{Code: errorcode.ErrCode(x), Message: x.String()}`)
+		g.Out()
+		g.P("}")
+		g.P()
+		g.P("func (x ", ccTypeName, ") WithMessage(msg string) error {")
+		g.In()
+		g.P(`return &errorcode.ErrRep{Code: errorcode.ErrCode(x), Message: msg}`)
+		g.Out()
+		g.P("}")
+		g.P()
+		g.P("func (x ", ccTypeName, ") Log(err error) error {")
+		g.In()
+		g.P(`log.Default.Error(err)`)
+		g.P(`return &errorcode.ErrRep{Code: errorcode.ErrCode(x), Message: x.String()}`)
 		g.Out()
 		g.P("}")
 		g.P()
