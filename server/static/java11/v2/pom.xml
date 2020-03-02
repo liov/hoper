@@ -27,7 +27,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <grpc.version>1.25.0</grpc.version><!-- CURRENT_GRPC_VERSION -->
+        <grpc.version>1.27.2</grpc.version><!-- CURRENT_GRPC_VERSION -->
         <protobuf.version>3.10.0</protobuf.version>
         <protoc.version>3.10.0</protoc.version>
         <java.version>12</java.version>
@@ -127,10 +127,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-jpa</artifactId>
             </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-jdbc</artifactId>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -172,15 +168,24 @@
                 <artifactId>protobuf-maven-plugin</artifactId>
                 <version>0.6.1</version>
                 <configuration>
+                    <additionalProtoPathElements>
+                        <param>${env.GOPATH}/src</param>
+                        <param>${env.GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway</param>
+                        <param>${env.GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis</param>
+                        <param>${env.GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis</param>
+                        <param>${env.GOPATH}/src/github.com/gogo/protobuf/protobuf</param>
+                    </additionalProtoPathElements>
                     <protocArtifact>com.google.protobuf:protoc:${protoc.version}:exe:${os.detected.classifier}</protocArtifact>
                     <pluginId>grpc-java</pluginId>
-                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.25.0:exe:${os.detected.classifier}</pluginArtifact>
+                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
                     <protoSourceRoot>${project.basedir}/../../../../../proto</protoSourceRoot>
                     <includes>
-                        <param>**/*.proto</param>
+                        <include>user/*enum.proto</include>
+                        <include>user/*model.proto</include>
+                        <include>user/*service.proto</include>
                     </includes>
                     <excludes>
-                        <exclude>google/**/*.proto</exclude>
+                        <exclude>user/*enum.pub.proto</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -189,30 +194,6 @@
                             <goal>compile</goal>
                             <goal>compile-custom</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.mysema.maven</groupId>
-                <artifactId>apt-maven-plugin</artifactId>
-                <version>1.0.8</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.mysema.querydsl</groupId>
-                        <artifactId>querydsl-apt</artifactId>
-                        <version>${querydsl.version}</version>
-                    </dependency>
-                </dependencies>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>process</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>target/generated-sources</outputDirectory>
-                            <processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

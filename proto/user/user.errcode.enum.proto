@@ -2,6 +2,8 @@ syntax = "proto3";
 package model;
 import "utils/enum.proto";
 
+option java_package = "xyz.hoper.protobuf.user";
+
 enum UserErr {
     option (enumproto.enum_errorcode) = true;
     option (enumproto.enum_jsonmarshal) = false;

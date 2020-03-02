@@ -21,9 +21,9 @@ enum ErrCode {
     OutOfRange = 11 [(enumproto.enumvalue_cn)= "超出范围"];
     Unimplemented = 12 [(enumproto.enumvalue_cn)= "未实现"];
     Internal = 13 [(enumproto.enumvalue_cn)= "内部错误"];
-    Unavailable = 14 [(enumproto.enumvalue_cn)= "无效的操作"];
+    Unavailable = 14 [(enumproto.enumvalue_cn)= "服务不可用"];
     DataLoss = 15 [(enumproto.enumvalue_cn)= "数据丢失"];
-    Unauthenticated = 16 [(enumproto.enumvalue_cn)= "无有效证书"];
+    Unauthenticated = 16 [(enumproto.enumvalue_cn)= "身份未验证"];
     SysError = 17 [(enumproto.enumvalue_cn)= "系统错误"];
     DBError = 18 [(enumproto.enumvalue_cn)= "数据库错误"];
     RedisErr = 19 [(enumproto.enumvalue_cn)= "Redis错误"];

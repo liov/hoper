@@ -1,6 +1,7 @@
 syntax = "proto3";
 package model;
 import "user/user.model.proto";
+import "user/user.enum.pub.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
@@ -259,7 +260,7 @@ message EditReq {
         string mail = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(16);default:''\" validate:\"email\" comment:\"邮箱\""];
         string phone = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(32);default:''\" validate:\"phone\" comment:\"手机号\""];
         //性别，0未填写，1男，2女
-        uint32 gender = 8 [(gogoproto.moretags) = "gorm:\"default:0\"", (gogoproto.casttype) = "github.com/liov/hoper/go/v2/user/model.Gender", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+        Gender gender = 8 [(gogoproto.moretags) = "gorm:\"default:0\"", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
            type:INTEGER
     }];
         string birthday = 9 [(gogoproto.moretags) = "gorm:\"type:timestamptz(6);default:0\""];
