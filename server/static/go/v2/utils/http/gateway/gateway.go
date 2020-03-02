@@ -20,7 +20,7 @@ func Gateway(gatewayHandle func(context.Context, *runtime.ServeMux)) http.Handle
 
 	gwmux := runtime.NewServeMux(
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, jsonpb),
-		runtime.WithProtoErrorHandler(runtime.DefaultHTTPProtoErrorHandler),
+		runtime.WithProtoErrorHandler(CustomHTTPError),
 		runtime.WithMetadata(func(ctx context.Context, request *http.Request) metadata.MD {
 			area, err := url.PathUnescape(request.Header.Get("area"))
 			if err != nil {

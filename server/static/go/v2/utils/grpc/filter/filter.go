@@ -20,12 +20,12 @@ func filter(
 		if r := recover(); r != nil {
 			log.CallTwo.Errorf("%v panic: %v", info, r)
 			debug.PrintStack()
-			err = errorcode.SysError.Err()
+			err = errorcode.SysError.GRPCErr()
 		}
 		//不能添加错误处理，除非所有返回的结构相同
 		if err != nil {
-			if errcode, ok := err.(errorcode.GrpcErr); ok {
-				err = errcode.Err()
+			if errcode, ok := err.(errorcode.GRPCErr); ok {
+				err = errcode.GRPCErr()
 			}
 		}
 	}()

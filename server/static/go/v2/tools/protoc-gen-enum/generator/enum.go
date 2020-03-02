@@ -13,6 +13,7 @@ func init() {
 	proto.RegisterExtension(E_GenEnumValueMap)
 	proto.RegisterExtension(E_EnumNumOrder)
 	proto.RegisterExtension(E_EnumJsonMarshal)
+	proto.RegisterExtension(E_EnumErrorCode)
 }
 
 var E_EnumvalueCN = &proto.ExtensionDesc{
@@ -110,7 +111,7 @@ func TurnOffEnumNumOrder(enum *descriptor.EnumDescriptorProto) {
 	vanity.SetBoolEnumOption(E_EnumNumOrder, false)(enum)
 }
 
-//不用手动标序号，= iota
+//生成JsonMarshal
 var E_EnumJsonMarshal = &proto.ExtensionDesc{
 	ExtendedType:  (*descriptor.EnumOptions)(nil),
 	ExtensionType: (*bool)(nil),
@@ -121,9 +122,27 @@ var E_EnumJsonMarshal = &proto.ExtensionDesc{
 }
 
 func EnabledEnumJsonMarshal(file *google_protobuf.FileDescriptorProto, enum *google_protobuf.EnumDescriptorProto) bool {
-	return proto.GetBoolExtension(enum.Options, E_EnumJsonMarshal, true)
+	return proto.GetBoolExtension(enum.Options, E_EnumJsonMarshal, false)
 }
 
 func TurnOffEnumJsonMarshal(enum *descriptor.EnumDescriptorProto) {
 	vanity.SetBoolEnumOption(E_EnumJsonMarshal, false)(enum)
+}
+
+//是errorcode
+var E_EnumErrorCode = &proto.ExtensionDesc{
+	ExtendedType:  (*descriptor.EnumOptions)(nil),
+	ExtensionType: (*bool)(nil),
+	Field:         62029,
+	Name:          "enumproto.enum_errorcode",
+	Tag:           "varint,62029,opt,name=enum_errorcode",
+	Filename:      "enum.proto",
+}
+
+func EnabledEnumErrorCode(enum *google_protobuf.EnumDescriptorProto) bool {
+	return proto.GetBoolExtension(enum.Options, E_EnumErrorCode, false)
+}
+
+func TurnOffEnumErrorCode(enum *descriptor.EnumDescriptorProto) {
+	vanity.SetBoolEnumOption(E_EnumErrorCode, false)(enum)
 }

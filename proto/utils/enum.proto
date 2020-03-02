@@ -12,6 +12,7 @@ extend google.protobuf.EnumOptions {
     optional bool enum_genvaluemap = 62026;
     optional bool enum_numorder = 62027;
     optional bool enum_jsonmarshal = 62028;
+    optional bool enum_errorcode = 62029;
 }
 
 extend google.protobuf.EnumValueOptions {

@@ -6,7 +6,6 @@ import (
 
 	"github.com/gomodule/redigo/redis"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
-	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/user/internal/config"
 	modelconst "github.com/liov/hoper/go/v2/user/model"
 	"github.com/liov/hoper/go/v2/utils/dao/redis/hash"
@@ -105,7 +104,7 @@ func (conn *UserRedis) UserHashFromRedis(userID uint64) (*model.UserMainInfo, er
 		return nil, err
 	}
 	if len(userArgs) == 0 {
-		return nil, errorcode.Auth
+		return nil, model.UserErr_InvalidToken
 	}
 	var user model.UserMainInfo
 	hash.UnMarshal(&user, userArgs)
@@ -147,7 +146,7 @@ func (conn *UserRedis) EfficientUserHashFromRedis(userID uint64) (*model.UserMai
 		return nil, err
 	}
 	if len(userArgs) == 0 {
-		return nil, errorcode.Auth
+		return nil, model.UserErr_InvalidToken
 	}
 	var user model.UserMainInfo
 	user.Id, err = strconv.ParseUint(userArgs[1], 10, 64)
