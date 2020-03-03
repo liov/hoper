@@ -372,10 +372,10 @@ func (u *UserService) AuthInfo(ctx context.Context, req *utils.Empty) (*model.Us
 }
 
 func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.GetRep, error) {
-	_, err := u.Auth(ctx)
-	if err != nil {
-		return &model.GetRep{Details: &model.User{Id: req.Id}}, nil
-	}
+	/*	_, err := u.Auth(ctx)
+		if err != nil {
+			return &model.GetRep{Details: &model.User{Id: req.Id}}, nil
+		}*/
 	var user1 model.User
 	if err := dao.Dao.GORMDB.Find(&user1, req.Id).Error; err != nil {
 		return nil, errorcode.DBError.WithMessage("账号不存在")

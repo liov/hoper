@@ -127,9 +127,14 @@ func main() {
 	// "Go 世界！123 Hello."
 
 	// 特殊字符的查找
-	reg = regexp.MustCompile(`[\f\t\n\r\v\123\x7F\x{10FFFF}\\\^\$\.\*\+\?\{\}\(\)\[\]\|]`)
+	reg = regexp.MustCompile(`[\f\t\n\r\v\123\x7F\x{10FFFF}\\^$.*+?{}()\[\]|]`)
 	fmt.Printf("%q\n", reg.ReplaceAllString("\f\t\n\r\v\123\x7F\U0010FFFF\\^$.*+?{}()[]|", "-"))
 	// "----------------------"
+
+	//在不匹配中文时，正则表达式可以写在特殊符号``中，但是匹配中文时，符号``和\u会冲突，所以最好统一写在英文双引号里，就不会报错。
+	//双引号的转义字符是\\
+	reg = regexp.MustCompile("\\[\\([\\w\\s.)=\":\\\\;\n\\-('{},\u4e00-\u9fa5]*]")
+
 	end := time.Now()
 	fmt.Println(end.Sub(now))
 }

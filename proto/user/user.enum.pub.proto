@@ -1,6 +1,7 @@
 syntax = "proto3";
 package model;
 
+option java_package = "xyz.hoper.protobuf.user";
 //暴露给外部
 
 //用户操作
