@@ -14,8 +14,8 @@ import (
 var in, out string
 
 func main() {
-	flag.StringVar(&in, "in", "../protobuf", "go protobuf")
-	flag.StringVar(&out, "out", "../../../proto/hoper", "通用 protobuf")
+	flag.StringVar(&in, "in", "../../../../proto", "go protobuf")
+	flag.StringVar(&out, "out", "../../../../server/proto", "通用 protobuf")
 	flag.Parse()
 	_, err := os.Stat(out)
 	if os.IsNotExist(err) {
@@ -55,11 +55,17 @@ func replace(src string) {
 			log.Error(err)
 		}
 		newFilePath := strings.Replace(src, in, out, 1)
-		reg := regexp.MustCompile(`import \"github.com/gogo/protobuf/gogoproto.*\n`)
+		reg := regexp.MustCompile(`import \"github.*\n`)
 		data = reg.ReplaceAll([]byte(data), nil)
-		reg = regexp.MustCompile(`\[.*\]`)
+		reg = regexp.MustCompile(`import \"protoc-gen-swagger.*\n`)
 		data = reg.ReplaceAll([]byte(data), nil)
-		reg = regexp.MustCompile(`option \(gogoproto.*\n`)
+		reg = regexp.MustCompile(`import \"utils/enum.proto.*\n`)
+		data = reg.ReplaceAll([]byte(data), nil)
+		reg = regexp.MustCompile(`import \"google/api/annotations.proto.*\n`)
+		data = reg.ReplaceAll([]byte(data), nil)
+		reg = regexp.MustCompile("\\[\\([\\w\\s\\.\\)\\=\"/\\:\\\\;\n\\-\\(\\'\\{\\}\\,\u4e00-\u9fa5\uff0c]*\\]")
+		data = reg.ReplaceAll([]byte(data), nil)
+		reg = regexp.MustCompile("option \\([\\w\\s\\.\\)/\\[\\]=\":*@\n\\-\\('\\{\\}\\,\u4e00-\u9fa5]*;")
 		data = reg.ReplaceAll(data, nil)
 		err = ioutil.WriteFile(newFilePath, data, 0666)
 		if err != nil {

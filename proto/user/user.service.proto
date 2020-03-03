@@ -26,7 +26,7 @@ option (gogoproto.populate_all) = true;
 
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
   info: {
-    version: "1.0";
+    version: "1.0"
   }
 };
 
@@ -96,11 +96,12 @@ service UserService {
             description : "编辑接口"
             security: {
 				security_requirement: {
-					key: "Authorization";
-                    value: {}
+					key: "Authorization"
+                    value: {
+                        scope: "read"
+                    }
                 }
-            };
-
+            }
         };
     }
     //登录
@@ -166,18 +167,20 @@ service UserService {
             summary : "获取用户信息"
             description : "获取用户信息接口"
             security: {
+                 security_requirement: {
+                        key: "OAuth2"
+                        value: {
+                            scope: "read"
+                        }
+                    }
 				security_requirement: {
-					key: "Authorization";
-                    value: {}
-                }
-                security_requirement: {
-                    key: "OAuth2";
+					key: "Authorization"
                     value: {
-                        scope: "read";
-                        scope: "write";
+                        scope: ["read","write"]
                     }
                 }
-            };
+
+            }
         };
     }
 
@@ -197,7 +200,7 @@ message SingUpVerifyReq {
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_schema) = {
         json_schema: {
                 title: "注册验证请求"  //和message前注释一样的效果
-		    };
+		    }
         example: {
             value: '{ "mail": "123@qq.com", "phone": "12345678901"}'
             }
