@@ -25,3 +25,22 @@ link /DLL /IMPLIB:lua5.3.0.lib /OUT:lua5.3.0.dll *.obj
 link /OUT:lua.exe lua.o lua5.3.0.lib
 lib /OUT:lua5.3.0-static.lib *.obj
 link /OUT:luac.exe luac.o lua5.3.0-static.lib
+
+1.打开VS开发人员命令提示符
+2.cd到源码的src目录
+3.依次执行以下命令
+cl /MD /O2 /c /DLUA_BUILD_AS_DLL *.c
+ren lua.obj lua.o
+ren luac.obj luac.o
+link /DLL /IMPLIB:lua5.3.5.lib /OUT:lua5.3.5.dll *.obj
+link /OUT:lua.exe lua.o lua5.3.5.lib
+lib /OUT:lua5.3.5-static.lib *.obj
+link /OUT:luac.exe luac.o lua5.3.5-static.lib
+4.新建文件夹命名为lua，并在该文件夹中新建bin，include，lib三个文件夹
+5.将src目录中生成的 lua.exe，lua5.3.5.dll，luac.exe 复制到lua/bin中
+6.将src目录中生成的 lua5.3.5.exp，lua5.3.5.lib，lua5.3.5-static.lib，luac.exp，luac.lib 复制到lua/lib中
+7.将 lauxlib.h，lua.h，lua.hpp，luacnf.h，lualib.h 复制到lua/include中
+
+lua jit
+cd src
+msvcbuild
