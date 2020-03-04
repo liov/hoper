@@ -1,3 +1,5 @@
+local mobdebug = require("mobdebug.mobdebug");
+mobdebug.start();
 ngx.say("URL错了哦<br>")
 local cjson = require "cjson"
 ngx.say(cjson.encode(router_filter).."<br>")
