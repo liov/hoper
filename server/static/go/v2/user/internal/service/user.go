@@ -11,7 +11,7 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/jinzhu/gorm"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
-	"github.com/liov/hoper/go/v2/protobuf/utils"
+	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/protobuf/utils/response"
 	"github.com/liov/hoper/go/v2/user/internal/config"
@@ -37,7 +37,7 @@ func NewUserService(server model.UserServiceServer) *UserService {
 	return &UserService{}
 }
 
-func (u *UserService) VerifyCode(ctx context.Context, req *utils.Empty) (*response.CommonRep, error) {
+func (u *UserService) VerifyCode(ctx context.Context, req *empty.Empty) (*response.CommonRep, error) {
 	device := u.Device(ctx)
 	log.Debug(device)
 	var rep = &response.CommonRep{}
@@ -367,7 +367,7 @@ func (u *UserService) Logout(ctx context.Context, req *model.LogoutReq) (*model.
 	return &model.LogoutRep{Message: "已注销", Cookie: cookie}, nil
 }
 
-func (u *UserService) AuthInfo(ctx context.Context, req *utils.Empty) (*model.UserMainInfo, error) {
+func (u *UserService) AuthInfo(ctx context.Context, req *empty.Empty) (*model.UserMainInfo, error) {
 	return u.Auth(ctx)
 }
 
