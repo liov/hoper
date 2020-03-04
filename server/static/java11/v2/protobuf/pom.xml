@@ -82,10 +82,7 @@
                         <include>**/*.proto</include>
                     </includes>
                     <excludes>
-                        <exclude>user/*enum.proto</exclude>
-                        <exclude>utils/*enum.proto</exclude>
-                        <exclude>utils/response/*gen.*.proto</exclude>
-                        <exclude>utils/*gen.empty.proto</exclude>
+                        <exclude>utils/proto/*enum.proto</exclude>
                     </excludes>
                 </configuration>
                 <executions>

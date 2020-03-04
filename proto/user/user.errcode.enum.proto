@@ -1,6 +1,6 @@
 syntax = "proto3";
 package model;
-import "utils/enum.proto";
+import "utils/proto/enum.proto";
 
 option java_package = "xyz.hoper.protobuf.user";
 

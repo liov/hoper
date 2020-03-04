@@ -1,0 +1,8 @@
+syntax = "proto3";
+package empty;
+
+option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/empty";
+option java_package = "xyz.hoper.protobuf.utils.empty";
+
+message Empty {
+}

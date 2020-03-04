@@ -1,6 +1,6 @@
 syntax = "proto3";
 package errorcode;
-import "utils/enum.proto";
+import "utils/proto/enum.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 option java_package = "xyz.hoper.protobuf.errorcode";

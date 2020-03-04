@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"io/ioutil"
 	"os"
@@ -50,6 +51,9 @@ func parse(src string) {
 
 func replace(src string) {
 	if path.Ext(src) == ".proto" {
+		if strings.HasSuffix(src, ".pub.proto") || strings.HasSuffix(src, ".imp.proto") {
+			return
+		}
 		data, err := ioutil.ReadFile(src)
 		if err != nil {
 			log.Error(err)
@@ -59,7 +63,7 @@ func replace(src string) {
 		data = reg.ReplaceAll([]byte(data), nil)
 		reg = regexp.MustCompile(`import \"protoc-gen-swagger.*\n`)
 		data = reg.ReplaceAll([]byte(data), nil)
-		reg = regexp.MustCompile(`import \"utils/enum.proto.*\n`)
+		reg = regexp.MustCompile(`import \"utils/proto/enum.proto.*\n`)
 		data = reg.ReplaceAll([]byte(data), nil)
 		reg = regexp.MustCompile(`import \"google/api/annotations.proto.*\n`)
 		data = reg.ReplaceAll([]byte(data), nil)
@@ -67,6 +71,8 @@ func replace(src string) {
 		data = reg.ReplaceAll([]byte(data), nil)
 		reg = regexp.MustCompile("option \\([\\w\\s\\.\\)/\\[\\]=\":*@\n\\-\\('\\{\\}\\,\u4e00-\u9fa5]*;")
 		data = reg.ReplaceAll(data, nil)
+		data = bytes.ReplaceAll(data, []byte(".pub.proto"), []byte(".proto"))
+		data = bytes.ReplaceAll(data, []byte(".imp.proto"), []byte(".gen.proto"))
 		err = ioutil.WriteFile(newFilePath, data, 0666)
 		if err != nil {
 			log.Error(err)
