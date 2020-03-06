@@ -12,3 +12,8 @@ count(case when job ='SALESMAN' then '1' end) 销售人数,
 count(case when job ='MANAGER' then '1' end) 主管人数
 from emp
 group by deptno;--如果不group，会认为所有数据是一组，返回一个数据
+
+SELECT count(case when order_status =8 then '1' end),
+count(case when order_status =9 then '1' end),
+count(case when service_status IN (1,2) then '1' end)
+FROM `order_info`;

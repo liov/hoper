@@ -19,6 +19,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.7 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1
+	github.com/reactivex/rxgo v1.0.0
 	github.com/robfig/cron v1.2.0
 	github.com/sirupsen/logrus v1.4.2 // indirect
 	github.com/spf13/viper v1.4.0
