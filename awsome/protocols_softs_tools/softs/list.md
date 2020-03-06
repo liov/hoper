@@ -1,0 +1,9 @@
+idea
+vscode
+git
+xshell
+navicat
+nginx
+netcat
+jdk
+terminal

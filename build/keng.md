@@ -55,3 +55,6 @@ So the problem is just the shutdown of the connection, which is not actually a p
 强制把redis快照关闭了导致不能持久化
 1.Redis客户端执行：config set stop-writes-on-bgsave-error no
 2.修改redis.conf文件，stop-writes-on-bgsave-error=yes修改为stop-writes-on-bgsave-error=no
+
+## Unsupported class file major version 57
+升级到最新gradle
