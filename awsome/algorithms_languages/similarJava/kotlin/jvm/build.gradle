@@ -1,65 +1,89 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.3.70'
-    id 'application'
-    id 'com.github.johnrengelman.shadow' version '5.0.0'
+  id 'org.jetbrains.kotlin.jvm' version '1.3.61'
+  id 'application'
+  id 'com.github.johnrengelman.shadow' version '5.0.0'
 }
 
-group 'xyz.hoper'
-version '1.0-SNAPSHOT'
+group = 'hoper.xyz'
+version = '1.0.0-SNAPSHOT'
 
 repositories {
-    mavenCentral()
-    jcenter()
+  mavenCentral()
+  jcenter()
 }
 
 ext {
-    kotlinVersion = '1.3.70'
-    vertxVersion = '3.8.0'
-    junitJupiterEngineVersion = '5.4.0'
+  kotlinVersion = '1.3.61'
+  vertxVersion = '3.8.5'
+  junitJupiterEngineVersion = '5.4.0'
 }
 
 application {
-    mainClassName = 'io.vertx.core.Launcher'
+  mainClassName = 'io.vertx.core.Launcher'
 }
 
 
-def mainVerticleName = 'xyz.hoper.starter.MainVerticle'
+def mainVerticleName = 'hoper.xyz.MainVerticle'
 def watchForChange = 'src/**/*'
 def doOnChange = './gradlew classes'
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation "io.vertx:vertx-lang-kotlin:$vertxVersion"
+  implementation "io.vertx:vertx-auth-jwt:$vertxVersion"
+  implementation "io.vertx:vertx-web:$vertxVersion"
+  implementation "io.vertx:vertx-grpc:$vertxVersion"
+  implementation "io.vertx:vertx-mysql-client:$vertxVersion"
+  implementation "io.vertx:vertx-service-discovery:$vertxVersion"
+  implementation "io.vertx:vertx-http-service-factory:$vertxVersion"
+  implementation "io.vertx:vertx-web-api-contract:$vertxVersion"
+  implementation "io.vertx:vertx-auth-oauth2:$vertxVersion"
+  implementation "io.vertx:vertx-redis-client:$vertxVersion"
+  implementation "io.vertx:vertx-mqtt:$vertxVersion"
+  implementation "io.vertx:vertx-config:$vertxVersion"
+  implementation "io.vertx:vertx-web-graphql:$vertxVersion"
+  implementation "io.vertx:vertx-rx-java2:$vertxVersion"
+  implementation "io.vertx:vertx-junit5:$vertxVersion"
+  implementation "io.vertx:vertx-maven-service-factory:$vertxVersion"
+  implementation "io.vertx:vertx-service-factory:$vertxVersion"
+  implementation "io.vertx:vertx-pg-client:$vertxVersion"
+  implementation "io.vertx:vertx-circuit-breaker:$vertxVersion"
+  implementation "io.vertx:vertx-lang-kotlin-coroutines:$vertxVersion"
+  implementation "io.vertx:vertx-rabbitmq-client:$vertxVersion"
+  implementation "io.vertx:vertx-lang-kotlin:$vertxVersion"
 
-    testImplementation "io.vertx:vertx-junit5:$vertxVersion"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiterEngineVersion"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitJupiterEngineVersion"
+  implementation "org.slf4j:slf4j-log4j12:2.0.0-alpha1"
+
+  testImplementation "io.vertx:vertx-junit5:$vertxVersion"
+  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiterEngineVersion"
+  testImplementation "org.junit.jupiter:junit-jupiter-api:$junitJupiterEngineVersion"
+  implementation "org.jetbrains.kotlin:kotlin-script-runtime:1.3.61"
 }
 
 compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+  kotlinOptions.jvmTarget = '1.8'
 }
 
+compileTestKotlin {
+  kotlinOptions.jvmTarget = '1.8'
+}
+
+
 shadowJar {
-    classifier = 'fat'
-    manifest {
-        attributes 'Main-Verticle': mainVerticleName
-    }
-    mergeServiceFiles {
-        include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
-    }
+  classifier = 'fat'
+  manifest {
+    attributes 'Main-Verticle': mainVerticleName
+  }
+  mergeServiceFiles {
+    include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
+  }
 }
 
 test {
-    useJUnitPlatform()
-    testLogging {
-        events 'PASSED', 'FAILED', 'SKIPPED'
-    }
+  useJUnitPlatform()
+  testLogging {
+    events 'PASSED', 'FAILED', 'SKIPPED'
+  }
 }
 
 run {
-    args = ['run', mainVerticleName, "--redeploy=$watchForChange", "--launcher-class=$mainClassName", "--on-redeploy=$doOnChange"]
+  args = ['run', mainVerticleName, "--redeploy=$watchForChange", "--launcher-class=$mainClassName", "--on-redeploy=$doOnChange"]
 }
