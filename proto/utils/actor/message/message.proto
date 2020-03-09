@@ -8,13 +8,30 @@ option (gogoproto.goproto_unrecognized_all) = false;
 option (gogoproto.goproto_unkeyed_all) = false;
 option (gogoproto.goproto_sizecache_all) = false;
 
-// this is the message the actor on node 1 will send to the remote actor on node 2
-message Echo {
-    actor.PID Sender = 1; // this is the PID the remote actor should reply to
+message Connect {
+    actor.PID Sender = 1;
+}
+
+message Connected {
+    string Message = 1;
+}
+
+message SayRequest {
+    string UserName = 1;
     string Message = 2;
 }
 
-// this is the message the remote actor should reply with
-message Response {
-    string SomeValue = 1;
+message SayResponse {
+    string UserName = 1;
+    string Message = 2;
+}
+
+message NickRequest {
+    string OldUserName = 1;
+    string NewUserName = 2;
+}
+
+message NickResponse {
+    string OldUserName = 1;
+    string NewUserName = 2;
 }
