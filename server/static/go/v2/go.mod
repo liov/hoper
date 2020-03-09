@@ -3,7 +3,6 @@ module github.com/liov/hoper/go/v2
 go 1.13
 
 require (
-	cloud.google.com/go v0.37.4 // indirect
 	git.apache.org/thrift.git v0.13.0 // indirect
 	github.com/360EntSecGroup-Skylar/excelize/v2 v2.0.2 // indirect
 	github.com/CloudyKit/fastprinter v0.0.0-20170127035650-74b38d55f37a // indirect
@@ -32,7 +31,7 @@ require (
 	github.com/gogo/googleapis v1.3.0
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/groupcache v0.0.0-20191027212112-611e8accdfc9
-	github.com/golang/mock v1.2.0
+	github.com/golang/mock v1.3.1
 	github.com/golang/protobuf v1.3.2
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/go-querystring v1.0.0 // indirect
@@ -48,7 +47,7 @@ require (
 	github.com/iris-contrib/httpexpect v0.0.0-20180314041918-ebe99fcebbce // indirect
 	github.com/jinzhu/configor v1.1.1
 	github.com/jinzhu/gorm v1.9.12-0.20191206142228-79a77d771dee
-	github.com/json-iterator/go v1.1.7
+	github.com/json-iterator/go v1.1.8
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/golog v0.0.10
 	github.com/kataras/iris/v12 v12.1.4
@@ -57,8 +56,6 @@ require (
 	github.com/lni/dragonboat v2.1.7+incompatible
 	github.com/magiconair/properties v1.8.1
 	github.com/markbates/goth v1.60.0
-	github.com/mattn/go-colorable v0.1.0 // indirect
-	github.com/mattn/go-isatty v0.0.4 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/modern-go/reflect2 v1.0.1
 	github.com/moul/http2curl v1.0.0 // indirect

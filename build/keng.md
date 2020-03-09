@@ -58,3 +58,11 @@ So the problem is just the shutdown of the connection, which is not actually a p
 
 ## Unsupported class file major version 57
 升级到最新gradle
+
+## Idea SpringBoot工程提示 "Error running 'xxxx'": Command line is too long.
+1、找到workspace.xml文件
+
+2、在<component name="PropertiesComponent">中添加<property name="dynamic.classpath" value="true" />一行
+
+## spring.cloud.nacos.config.server-addr不生效
+新建bootstrap.properties文件,该配置必须在启动加载配置文件中

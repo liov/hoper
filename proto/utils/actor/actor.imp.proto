@@ -1,0 +1,27 @@
+syntax = "proto3";
+package actor;
+
+option go_package = "github.com/AsynkronIT/protoactor-go/actor";
+option java_package = "xyz.hoper.protobuf.utils.empty";
+
+message PID {
+
+}
+
+// user messages
+message PoisonPill {}
+
+// system messages
+message Watch {
+
+}
+
+message Unwatch {
+
+}
+
+message Terminated {
+
+}
+
+message Stop {}
