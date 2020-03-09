@@ -3,10 +3,11 @@
 找到不同语言的适用点并且专注
 虽然我最初设想的是不同语言构成的后端互通，但是这是一个伪技能和伪需求，这得多大的公司才能用到这么多语言
 
-go java就应该做web服务
+go java就应该做互联网
 js ts 就应该做前端
 c rust就应该在性能敏感的地方
 python 专注于数据和脚本
+
 lua openresty ,游戏热更新,嘿嘿嘿，k8s ingress上了openresty，lua目前也实在没理由用，就看有没有机会搞游戏了
 cpp csharp就应该做GUI 虽然csharp如此诱人，但我可能精力不够了 如果我有机会做游戏的话+lua
 dart...再说

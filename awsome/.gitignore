@@ -11,3 +11,4 @@ target
 *.exe
 cmake-build-debug
 ts/*/*.js
+*.pb.go
