@@ -1,10 +1,10 @@
-package xyz.hoper.v2
+package xyz.hoper.user
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class V2ApplicationTests {
+class ApplicationTests {
 
 	@Test
 	fun contextLoads() {
