@@ -31,13 +31,11 @@ func main() {
 	message := &messages.Echo{Message: "hej", Sender: pid}
 
 	// this is to spawn remote actor we want to communicate with
-	spawnResponse, _ := remote.SpawnNamed("localhost:8091", "myactor", "hello", time.Second)
+	spawnResponse, _ := remote.SpawnNamed("localhost:8091", "myactor", "hello", 5*time.Second)
 
 	// get spawned PID
 
-	for i := 0; i < 10; i++ {
-		context.Send(spawnResponse.Pid, message)
-	}
+	context.Send(spawnResponse.Pid, message)
 
 	console.ReadLine()
 }
