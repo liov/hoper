@@ -7,42 +7,48 @@ import (
 	"github.com/AsynkronIT/protoactor-go/actor"
 	"github.com/AsynkronIT/protoactor-go/examples/chat/messages"
 	"github.com/AsynkronIT/protoactor-go/remote"
-	"github.com/emirpasic/gods/sets/hashset"
 )
 
-// define root context
-var rootContext = actor.EmptyRootContext
-
-func notifyAll(clients *hashset.Set, message interface{}) {
-	for _, tmp := range clients.Values() {
-		client := tmp.(*actor.PID)
-		rootContext.Send(client, message)
-	}
-}
-
 func main() {
-	remote.Start("127.0.0.1:8080")
-	clients := hashset.New()
+	remote.Start("127.0.0.1:0")
 
+	server := actor.NewPID("127.0.0.1:8080", "chatserver")
+
+	// define root context
+	rootContext := actor.EmptyRootContext
+
+	// spawn our chat client inline
 	props := actor.PropsFromFunc(func(context actor.Context) {
 		switch msg := context.Message().(type) {
-		case *messages.Connect:
-			log.Printf("Client %v connected", msg.Sender)
-			clients.Add(msg.Sender)
-			context.Send(msg.Sender, &messages.Connected{Message: "Welcome!"})
-		case *messages.SayRequest:
-			notifyAll(clients, &messages.SayResponse{
-				UserName: msg.UserName,
-				Message:  msg.Message,
-			})
-		case *messages.NickRequest:
-			notifyAll(clients, &messages.NickResponse{
-				OldUserName: msg.OldUserName,
-				NewUserName: msg.NewUserName,
-			})
+		case *messages.Connected:
+			log.Println(msg.Message)
+		case *messages.SayResponse:
+			log.Printf("%v: %v", msg.UserName, msg.Message)
+		case *messages.NickResponse:
+			log.Printf("%v is now known as %v", msg.OldUserName, msg.NewUserName)
 		}
 	})
 
-	rootContext.SpawnNamed(props, "chatserver")
-	console.ReadLine()
+	client := rootContext.Spawn(props)
+
+	rootContext.Send(server, &messages.Connect{
+		Sender: client,
+	})
+
+	nick := "Roger"
+	cons := console.NewConsole(func(text string) {
+		rootContext.Send(server, &messages.SayRequest{
+			UserName: nick,
+			Message:  text,
+		})
+	})
+	// write /nick NAME to change your chat username
+	cons.Command("/nick", func(newNick string) {
+		rootContext.Send(server, &messages.NickRequest{
+			OldUserName: nick,
+			NewUserName: newNick,
+		})
+		nick = newNick
+	})
+	cons.Run()
 }
