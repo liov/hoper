@@ -19,6 +19,9 @@ pluginManagement {
             }
             println("resolutionStrategy for plugin=$plugin : $module")
             useModule(module)
+            if (requested.id.id == "com.google.protobuf") {
+                useModule("com.google.protobuf:protobuf-gradle-plugin:${requested.version}")
+            }
         }
     }
 }

@@ -10,7 +10,8 @@ import com.google.protobuf.gradle.protoc
 plugins {
     id("org.jetbrains.kotlin.jvm")
     //id("com.squareup.wire") version "3.1.0"
-    id("com.google.protobuf") version "0.8.10"
+    id("com.google.protobuf") version "0.8.12"
+    id("idea")
 }
 
 
@@ -26,7 +27,14 @@ plugins {
 //    }
 //}
 
-
+sourceSets{
+    main {
+        proto {
+            srcDir("${rootDir}/../../../proto")
+            println(srcDirs)
+        }
+    }
+}
 
 protobuf {
     protoc {
@@ -37,9 +45,9 @@ protobuf {
         id("grpc") {
             artifact = "io.grpc:protoc-gen-grpc-java:1.27.2"
         }
-        id("reactor") {
-            artifact = "com.salesforce.servicelibs:reactor-grpc:1.0.0"
-        }
+//        id("reactor") {
+//            artifact = "com.salesforce.servicelibs:reactor-grpc:1.0.0"
+//        }
     }
 
     generateProtoTasks {
@@ -47,10 +55,14 @@ protobuf {
             generateProtoTask
                     .plugins {
                         id("grpc")
-                        id("reactor")
+                        //id("reactor")
                     }
         }
     }
+}
+
+idea{
+
 }
 
 
@@ -59,4 +71,12 @@ dependencies{
     implementation ("io.grpc:grpc-protobuf:1.27.2")
     implementation ("io.grpc:grpc-stub:1.27.2")
     implementation("io.github.lognet:grpc-spring-boot-starter:3.5.2")
+    //api("com.squareup.wire:wire-runtime:3.1.0")
+    //api("com.squareup.wire:wire-schema-multiplatform:3.1.0")
+    if (JavaVersion.current().isJava9Compatible) {
+        // Workaround for @javax.annotation.Generated
+        // see: https://github.com/grpc/grpc-java/issues/3633
+        implementation("javax.annotation:javax.annotation-api:1.3.1")
+    }
+   // protobuf(files("${rootDir}../../../proto/"))
 }

@@ -60,7 +60,6 @@ subprojects{
         implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.1")
         implementation("org.springframework.kafka:spring-kafka")
         compileOnly("org.projectlombok:lombok")
-        compileOnly("com.squareup.wire:wire-runtime:3.1.0")
         developmentOnly("org.springframework.boot:spring-boot-devtools")
         runtimeOnly("mysql:mysql-connector-java")
         runtimeOnly("org.postgresql:postgresql")
