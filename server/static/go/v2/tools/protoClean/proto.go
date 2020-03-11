@@ -33,6 +33,10 @@ func parse(src string) {
 	for i := range fileInfos {
 		fileName := src + "/" + fileInfos[i].Name()
 		if fileInfos[i].IsDir() {
+			///utils/proto文件夹不需要过去
+			if strings.HasSuffix(fileName, "utils/proto") {
+				continue
+			}
 			newPath := strings.Replace(fileName, in, out, 1)
 			_, err := os.Stat(newPath)
 			if os.IsNotExist(err) {
