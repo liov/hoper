@@ -66,3 +66,29 @@ So the problem is just the shutdown of the connection, which is not actually a p
 
 ## spring.cloud.nacos.config.server-addr不生效
 新建bootstrap.properties文件,该配置必须在启动加载配置文件中
+
+## Gradle kotlin Springboot多模块导致无法引用kotlin的类文件(BootJar)
+BUG项目 由于以Kotlin和Springboot中的多模块内容进行编写架构中，
+发现 bootJar我用kotlin编写的jar包无法被正常的引用到，通过Gradle和SpringBoot项目下的Issue询问 ，
+发现是由于Springboot插件，由于我的子模块集成了父容器的SpringBoot插件，导致 默认关闭了jar任务。原因连接[https://docs.spring.io/spring-boot/docs/2.1.4.RELEASE/gradle-plugin/reference/html/#managing-dependencies-using-in-isolation]
+在你的子模块内容开发jar包任务如下
+如果是Grovvy管理的：
+```groovy
+jar {
+	enabled = true
+}
+```
+
+
+如果是kotlin的kts管理的：
+```kotlin
+tasks.getByName<Jar>("jar") {
+	enabled = true
+}
+
+```
+[https://github.com/spring-projects/spring-boot/issues/16689]
+[https://github.com/gradle/gradle/issues/9310]
+
+## idea go debug 枚举值不显示值
+右键 as Hex as Decimal as Binaty

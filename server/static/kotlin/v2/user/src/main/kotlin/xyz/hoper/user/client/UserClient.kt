@@ -1,6 +1,7 @@
 package xyz.hoper.user.client
 
 
+import io.grpc.StatusRuntimeException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -29,11 +30,15 @@ class UserClient {
     }
 
     fun call(){
-        val channel = grpcClientMananer?.getChannel(host,port);
-        val stub = UserServiceGrpc.newBlockingStub(channel);
-        val request = UserServiceOuterClass.GetReq.newBuilder().setId(1).build();
-        val reply = stub.getUser(request);
-        log.info("time: "+ reply);
+        val channel = grpcClientMananer?.getChannel(host,port)
+        val stub = UserServiceGrpc.newBlockingStub(channel)
+        val request = UserServiceOuterClass.GetReq.newBuilder().setId(2).build()
+        try{
+            val reply = stub.getUser(request)
+            log.info("time: $reply")
+        }catch (e: StatusRuntimeException) {
+            log.error(e.message)
+        }
     }
 
 }
