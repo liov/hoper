@@ -64,7 +64,12 @@ protobuf {
 idea{
 
 }
-
+//卧槽
+//https://blog.csdn.net/qq_15807167/article/details/89737226
+//
+tasks.getByName<Jar>("jar") {
+    enabled = true
+}
 
 dependencies{
     implementation ("io.grpc:grpc-netty-shaded:1.27.2")

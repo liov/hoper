@@ -151,7 +151,7 @@ func sendMail(action model.Action, curTime int64, user *model.User) {
 	secretStr = fmt.Sprintf("%x", md5.Sum(strings2.ToBytes(secretStr)))
 	switch action {
 	case model.Action_Active:
-		actionURL := siteURL + "/user/active/" + secretStr + strconv.FormatUint(user.Id, 10) + "/" + secretStr
+		actionURL := siteURL + "/user/active/" + strconv.FormatUint(user.Id, 10) + "/" + secretStr
 		log.Debug(actionURL)
 		content = "<p><b>亲爱的" + user.Name + ":</b></p>" +
 			"<p>我们收到您在 " + siteName + " 的注册信息, 请点击下面的链接, 或粘贴到浏览器地址栏来激活帐号.</p>" +
