@@ -12,8 +12,8 @@ type Rtype struct {
 	align      uint8    // alignment of variable with this type
 	fieldAlign uint8    // alignment of struct field with this type
 	Kind       uint8    // enumeration for C
-	alg        *typeAlg // algorithm table
-	gcdata     *byte    // garbage collection data
+	Alg        *typeAlg // algorithm table
+	Gcdata     *byte    // garbage collection data
 	str        nameOff  // string form
 	ptrToThis  typeOff  // type for pointer to this type, may be zero
 }
@@ -131,4 +131,10 @@ type name struct {
 type EmptyInterface struct {
 	Typ  *Rtype
 	Word unsafe.Pointer
+}
+
+type Value struct {
+	Typ  *Rtype
+	Ptr  unsafe.Pointer
+	Flag uintptr
 }
