@@ -92,3 +92,7 @@ tasks.getByName<Jar>("jar") {
 
 ## idea go debug 枚举值不显示值
 右键 as Hex as Decimal as Binaty
+
+## no Go source files
+手动添加go.mod文件google.golang.org/protobuf（不知道有没有效）
+idea 文件直接import需要的包，然后sync packages of 

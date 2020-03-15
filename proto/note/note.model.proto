@@ -1,0 +1,5 @@
+syntax = "proto3";
+import "utils/proto/policy.proto";
+message MyMessage {
+    string public_name = 1 [(policyproto.non_sensitive) = true];
+}
