@@ -1,0 +1,17 @@
+NoInit = ["Cache"]
+
+Module = "user"
+#dev | test | prod
+Env = "dev"
+
+[iris]
+DisableStartupLog= false
+DisableInterruptHandler= false
+DisablePathCorrection= true
+EnablePathEscape= false
+FireMethodNotAllowed= false
+DisableBodyConsumptionOnUnmarshal= false
+DisableAutoFireStatusCode= false
+TimeFormat= "Mon, 01 Jan 2006 15=04=05 GMT"
+Charset= "UTF-8"
+EnableOptimizations= true

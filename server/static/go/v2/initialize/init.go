@@ -25,7 +25,7 @@ var ConfUrl string
 var AddConfig string
 
 func init() {
-	flag.StringVar(&ConfUrl, "c", "./config/config.toml", "配置文件夹路径")
+	flag.StringVar(&ConfUrl, "c", "./Config/Config.toml", "配置文件夹路径")
 	flag.StringVar(&AddConfig, "add", "", "额外配置文件名")
 }
 
@@ -48,34 +48,34 @@ type Init struct {
 	Module, Env string
 	NoInit      []string
 	conf        needInit
-	dao         dao
+	dao         Dao
 	//closes     []interface{}
 }
 
-func NewInit(conf config, dao dao) *Init {
+func NewInit(conf Config, dao Dao) *Init {
 	init := &Init{conf: conf, dao: dao}
 	err := configor.New(&configor.Config{Debug: false}).
-		Load(init, ConfUrl) //"./config/config.toml"
+		Load(init, ConfUrl) //"./Config/Config.toml"
 	if err != nil {
 		log.Fatalf("配置错误: %v", err)
 	}
 	return init
 }
 
-type Config interface {
-	Generate(dao)
+//配置作用于dao，但是这么写dao不直观，无法跳转，不利于阅读
+type config interface {
+	Generate(Dao)
 }
 
 type needInit interface {
 	Custom()
 }
 
-type config interface {
-	//BasicConfig() *BasicConfig
+type Config interface {
 	needInit
 }
 
-type dao interface {
+type Dao interface {
 	Close()
 	needInit
 }
@@ -88,7 +88,7 @@ var alreadyRun struct {
 var once sync.Once
 
 //init函数命名规则，P+数字（优先级）+ 功能名
-func Start(conf config, dao dao) func() {
+func Start(conf Config, dao Dao) func() {
 	if !flag.Parsed() {
 		flag.Parse()
 	}
@@ -96,7 +96,7 @@ func Start(conf config, dao dao) func() {
 	init.config()
 	//从config到dao的过渡
 	init.setDao()
-	//go Watcher(conf, dao)
+	//go Watcher(conf, Dao)
 	return func() {
 		if dao != nil {
 			dao.Close()
@@ -114,7 +114,7 @@ func Start(conf config, dao dao) func() {
 func (init *Init) config() {
 	dir, file := filepath.Split(ConfUrl)
 	err := configor.New(&configor.Config{Debug: init.Env != PRODUCT}).
-		Load(init.conf, ConfUrl, dir+init.Env+path.Ext(file)) //"./config/{{env}}.toml"
+		Load(init.conf, ConfUrl, dir+init.Env+path.Ext(file)) //"./Config/{{env}}.toml"
 	if err != nil {
 		log.Fatalf("配置错误: %v", err)
 	}
@@ -167,7 +167,7 @@ func (init *Init) setDao() {
 	}
 }
 
-func Watcher(conf config, dao dao) {
+func Watcher(conf Config, dao Dao) {
 	watcher, err := watch.New(time.Second)
 	if err != nil {
 		log.Fatal(err)
@@ -184,7 +184,7 @@ func Watcher(conf config, dao dao) {
 	})
 }
 
-func Refresh(conf config, dao dao) {
+func Refresh(conf Config, dao Dao) {
 	init := NewInit(conf, dao)
 	dao.Close()
 	init.setDao()

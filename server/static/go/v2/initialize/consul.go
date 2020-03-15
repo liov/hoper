@@ -21,15 +21,15 @@ func (init *Init) P0ConsulOnce() {
 	runtime_viper.AddRemoteProvider("consul", conf.Addr, InitKey)
 	runtime_viper.SetConfigType("toml") // because there is no file extension in a stream of bytes, supported extensions are "json", "toml", "yaml", "yml", "properties", "props", "prop", "env", "dotenv"
 
-	// read from remote config the first time.
+	// read from remote Config the first time.
 	err := runtime_viper.ReadRemoteConfig()
 	if err != nil {
 		log.Error(err)
 
 	}
-	// unmarshal config
+	// unmarshal Config
 	cCopy := init.conf
-	//dCopy := init.dao
+	//dCopy := init.Dao
 	runtime_viper.Unmarshal(cCopy)
 	log.Debug(cCopy)
 	// open a goroutine to watch remote changes forever
@@ -41,12 +41,12 @@ func (init *Init) P0ConsulOnce() {
 			// currently, only tested with etcd support
 			err := runtime_viper.WatchRemoteConfig()
 			if err != nil {
-				log.Errorf("unable to read remote config: %v", err)
+				log.Errorf("unable to read remote Config: %v", err)
 				continue
 			}
 			conf :=runtime_viper.AllSettings()
 			log.Debug(conf)
-			// unmarshal new config into our runtime config struct. you can also use channel
+			// unmarshal new Config into our runtime Config struct. you can also use channel
 			// to implement a signal to notify the system of the changes
 			runtime_viper.Unmarshal(cCopy)
 			Refresh(cCopy, dCopy)
