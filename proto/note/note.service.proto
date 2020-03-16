@@ -1,0 +1,46 @@
+syntax = "proto3";
+package model;
+import "note/note.model.proto";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+import "github.com/mwitkow/go-proto-validators/validator.proto";
+import "google/api/annotations.proto";
+import "utils/empty/empty.imp.proto";
+import "utils/response/response.imp.proto";
+
+option (gogoproto.goproto_enum_prefix_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.goproto_unrecognized_all) = false;
+option (gogoproto.goproto_unkeyed_all) = false;
+option (gogoproto.goproto_sizecache_all) = false;
+option (gogoproto.goproto_registration) = true;
+option (gogoproto.messagename_all) = true;
+option (gogoproto.populate_all) = true;
+
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+  info: {
+    version: "1.0"
+  }
+};
+
+service NoteService {
+
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_tag) = {
+		description: "笔记相关接口"
+    };
+    //验证码
+    rpc Create (model.Note) returns (response.CommonRep) {
+        option (google.api.http) = {
+            post: "/api/v1/note"
+        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            tags:["笔记相关接口","v1.0.0"]
+            summary : "创建笔记"
+            description : "创建笔记接口"
+        };
+    }
+}
+

@@ -41,6 +41,7 @@ subprojects{
     extra["springCloudAlibabaVersion"] = "2.2.0.RELEASE"
 
     dependencies {
+        implementation("org.apache.logging.log4j:log4j-core:2.12.1")
         implementation("org.springframework.boot:spring-boot-starter-actuator")
         implementation("org.springframework.boot:spring-boot-starter-amqp")
         implementation("org.springframework.boot:spring-boot-starter-data-jdbc")

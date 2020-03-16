@@ -1,20 +1,20 @@
 syntax = "proto3";
 package model;
-import "utils/proto/enum.proto";
+import "utils/proto/gogo/enum.proto";
 
 option java_package = "xyz.hoper.protobuf.user";
 
 enum UserErr {
-    option (enumproto.enum_errorcode) = true;
-    option (enumproto.enum_jsonmarshal) = false;
-    UserErrZero = 0 [(enumproto.enumvalue_cn)= ""];
-    LoginError = 1000 [(enumproto.enumvalue_cn)= "用户名或密码错误"];
-    LoginTimeout = 1001 [(enumproto.enumvalue_cn)= "登录超时"];
-    NoActive = 1002 [(enumproto.enumvalue_cn)= "未激活账号"];
-    NoAuthority = 1003 [(enumproto.enumvalue_cn)= "无权限"];
-    InvalidToken = 10004 [(enumproto.enumvalue_cn)= "Token错误"];
-    NoLogin = 10005 [(enumproto.enumvalue_cn)= "未登录"];
+    option (cuzproto.enum_errorcode) = true;
+    option (cuzproto.enum_jsonmarshal) = false;
+    UserErrZero = 0 [(cuzproto.enumvalue_cn)= ""];
+    LoginError = 1000 [(cuzproto.enumvalue_cn)= "用户名或密码错误"];
+    LoginTimeout = 1001 [(cuzproto.enumvalue_cn)= "登录超时"];
+    NoActive = 1002 [(cuzproto.enumvalue_cn)= "未激活账号"];
+    NoAuthority = 1003 [(cuzproto.enumvalue_cn)= "无权限"];
+    InvalidToken = 10004 [(cuzproto.enumvalue_cn)= "Token错误"];
+    NoLogin = 10005 [(cuzproto.enumvalue_cn)= "未登录"];
 
-    TokenTimeout = 10002 [(enumproto.enumvalue_cn)= "Token已超时"];
-    GenerateTokenFail = 10003 [(enumproto.enumvalue_cn)= "Token生成失败"];
+    TokenTimeout = 10002 [(cuzproto.enumvalue_cn)= "Token已超时"];
+    GenerateTokenFail = 10003 [(cuzproto.enumvalue_cn)= "Token生成失败"];
 }

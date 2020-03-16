@@ -5,25 +5,8 @@ import (
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	google_protobuf "github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	"github.com/gogo/protobuf/vanity"
+	cuzproto "github.com/liov/hoper/go/v2/protobuf/utils/proto/gogo"
 )
-
-func init() {
-	proto.RegisterExtension(E_EnumvalueCN)
-	proto.RegisterExtension(E_EnumType)
-	proto.RegisterExtension(E_GenEnumValueMap)
-	proto.RegisterExtension(E_EnumNumOrder)
-	proto.RegisterExtension(E_EnumJsonMarshal)
-	proto.RegisterExtension(E_EnumErrorCode)
-}
-
-var E_EnumvalueCN = &proto.ExtensionDesc{
-	ExtendedType:  (*descriptor.EnumValueOptions)(nil),
-	ExtensionType: (*string)(nil),
-	Field:         66002,
-	Name:          "enumproto.enumvalue_cn",
-	Tag:           "bytes,66002,opt,name=enumvalue_cn",
-	Filename:      "enum.proto",
-}
 
 func IsEnumValueCN(field *google_protobuf.EnumValueDescriptorProto) bool {
 	name := GetEnumValueCN(field)
@@ -38,21 +21,12 @@ func GetEnumValueCN(field *google_protobuf.EnumValueDescriptorProto) string {
 		return ""
 	}
 	if field.Options != nil {
-		v, err := proto.GetExtension(field.Options, E_EnumvalueCN)
+		v, err := proto.GetExtension(field.Options, cuzproto.E_EnumvalueCn)
 		if err == nil && v.(*string) != nil {
 			return *(v.(*string))
 		}
 	}
 	return ""
-}
-
-var E_EnumType = &proto.ExtensionDesc{
-	ExtendedType:  (*descriptor.EnumOptions)(nil),
-	ExtensionType: (*string)(nil),
-	Field:         62025,
-	Name:          "enumproto.enum_customtype",
-	Tag:           "bytes,62025,opt,name=enum_customtype",
-	Filename:      "enum.proto",
 }
 
 func IsEnumType(field *google_protobuf.EnumDescriptorProto) bool {
@@ -68,7 +42,7 @@ func GetEnumType(field *google_protobuf.EnumDescriptorProto) string {
 		return ""
 	}
 	if field.Options != nil {
-		v, err := proto.GetExtension(field.Options, E_EnumType)
+		v, err := proto.GetExtension(field.Options, cuzproto.E_EnumCustomtype)
 		if err == nil && v.(*string) != nil {
 			return *(v.(*string))
 		}
@@ -76,73 +50,34 @@ func GetEnumType(field *google_protobuf.EnumDescriptorProto) string {
 	return ""
 }
 
-var E_GenEnumValueMap = &proto.ExtensionDesc{
-	ExtendedType:  (*descriptor.EnumOptions)(nil),
-	ExtensionType: (*bool)(nil),
-	Field:         62026,
-	Name:          "enumproto.enum_genvaluemap",
-	Tag:           "varint,62026,opt,name=enum_genvaluemap",
-	Filename:      "enum.proto",
-}
-
 func EnabledGoEnumValueMap(file *google_protobuf.FileDescriptorProto, enum *google_protobuf.EnumDescriptorProto) bool {
-	return proto.GetBoolExtension(enum.Options, E_GenEnumValueMap, false)
+	return proto.GetBoolExtension(enum.Options, cuzproto.E_EnumGenvaluemap, false)
 }
 
 func TurnOffGoEnumValueMap(enum *descriptor.EnumDescriptorProto) {
-	vanity.SetBoolEnumOption(E_GenEnumValueMap, false)(enum)
-}
-
-//不用手动标序号，= iota
-var E_EnumNumOrder = &proto.ExtensionDesc{
-	ExtendedType:  (*descriptor.EnumOptions)(nil),
-	ExtensionType: (*bool)(nil),
-	Field:         62027,
-	Name:          "enumproto.enum_numorder",
-	Tag:           "varint,62027,opt,name=enum_numorder",
-	Filename:      "enum.proto",
+	vanity.SetBoolEnumOption(cuzproto.E_EnumGenvaluemap, false)(enum)
 }
 
 func EnabledEnumNumOrder(file *google_protobuf.FileDescriptorProto, enum *google_protobuf.EnumDescriptorProto) bool {
-	return proto.GetBoolExtension(enum.Options, E_EnumNumOrder, false)
+	return proto.GetBoolExtension(enum.Options, cuzproto.E_EnumNumorder, false)
 }
 
 func TurnOffEnumNumOrder(enum *descriptor.EnumDescriptorProto) {
-	vanity.SetBoolEnumOption(E_EnumNumOrder, false)(enum)
-}
-
-//生成JsonMarshal
-var E_EnumJsonMarshal = &proto.ExtensionDesc{
-	ExtendedType:  (*descriptor.EnumOptions)(nil),
-	ExtensionType: (*bool)(nil),
-	Field:         62028,
-	Name:          "enumproto.enum_numorder",
-	Tag:           "varint,62028,opt,name=enum_jsonmarshal",
-	Filename:      "enum.proto",
+	vanity.SetBoolEnumOption(cuzproto.E_EnumNumorder, false)(enum)
 }
 
 func EnabledEnumJsonMarshal(file *google_protobuf.FileDescriptorProto, enum *google_protobuf.EnumDescriptorProto) bool {
-	return proto.GetBoolExtension(enum.Options, E_EnumJsonMarshal, false)
+	return proto.GetBoolExtension(enum.Options, cuzproto.E_EnumJsonmarshal, false)
 }
 
 func TurnOffEnumJsonMarshal(enum *descriptor.EnumDescriptorProto) {
-	vanity.SetBoolEnumOption(E_EnumJsonMarshal, false)(enum)
-}
-
-//是errorcode
-var E_EnumErrorCode = &proto.ExtensionDesc{
-	ExtendedType:  (*descriptor.EnumOptions)(nil),
-	ExtensionType: (*bool)(nil),
-	Field:         62029,
-	Name:          "enumproto.enum_errorcode",
-	Tag:           "varint,62029,opt,name=enum_errorcode",
-	Filename:      "enum.proto",
+	vanity.SetBoolEnumOption(cuzproto.E_EnumJsonmarshal, false)(enum)
 }
 
 func EnabledEnumErrorCode(enum *google_protobuf.EnumDescriptorProto) bool {
-	return proto.GetBoolExtension(enum.Options, E_EnumErrorCode, false)
+	return proto.GetBoolExtension(enum.Options, cuzproto.E_EnumErrorcode, false)
 }
 
 func TurnOffEnumErrorCode(enum *descriptor.EnumDescriptorProto) {
-	vanity.SetBoolEnumOption(E_EnumErrorCode, false)(enum)
+	vanity.SetBoolEnumOption(cuzproto.E_EnumErrorcode, false)(enum)
 }
