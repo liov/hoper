@@ -22,8 +22,8 @@ var files = map[string][]string{
 	"/utils/errorcode/*enum.proto": {"enum_out=plugins=grpc"},
 	"/utils/actor/message/*.proto": {"gogo_out=plugins=grpc"},
 	"/utils/response/*.gen.proto":  {"gogo_out=plugins=grpc"},
-	"/utils/proto/gogo/*.proto":    {"gogo_out=plugins=grpc"},
-	"/utils/proto/go/*.proto":      {"go_out=plugins=grpc"},
+	//"/utils/proto/gogo/*.proto":    {"gogo_out=plugins=grpc"},
+	"/utils/proto/go/*gen.proto": {"go_out=plugins=grpc"},
 	"/user/*service.proto": {"gogo_out=plugins=grpc",
 		"grpc-gateway_out=logtostderr=true",
 		"swagger_out=logtostderr=true",
@@ -45,7 +45,6 @@ var env = []string{
 
 func main() {
 	pwd, _ := os.Getwd()
-	log.Println(pwd)
 	*proto = pwd + "/" + *proto
 	path := os.Getenv("GOPATH")
 	include := "-I" + *proto + " -I" + path + "/src -I" + path + "/src/github.com/grpc-ecosystem/grpc-gateway -I" + path + "/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis -I" + path + "/src/github.com/gogo/protobuf/protobuf "
@@ -55,6 +54,9 @@ func main() {
 			arg := "protoc " + include + *proto + k + " --" + plugin + ",Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types,Mgoogle/api/annotations.proto=github.com/gogo/googleapis/google/api,Mgoogle/protobuf/field_mask.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/any.proto=github.com/gogo/protobuf/types:" + pwd + "/protobuf"
 			if strings.HasPrefix(plugin, "swagger_out") {
 				arg = arg + "/api"
+			}
+			if strings.HasPrefix(k, "/utils/proto/go/") {
+				arg = "-I" + *proto + " " + *proto + "/utils/proto/go/*gen.proto --go_out=plugins=grpc:" + pwd + "/protobuf"
 			}
 			words := split(arg)
 			cmd := exec.Command(words[0], words[1:]...)

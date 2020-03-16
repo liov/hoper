@@ -1,0 +1,7 @@
+syntax = "proto3";
+import "google/protobuf/descriptor.proto";
+
+package cuzproto;
+extend google.protobuf.FieldOptions {
+    bool non_sensitive = 50000;
+}

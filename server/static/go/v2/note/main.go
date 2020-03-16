@@ -7,7 +7,7 @@ import (
 	"github.com/liov/hoper/go/v2/note/internal/config"
 	"github.com/liov/hoper/go/v2/note/internal/dao"
 	"github.com/liov/hoper/go/v2/note/internal/service"
-	model "github.com/liov/hoper/go/v2/protobuf/user"
+	model "github.com/liov/hoper/go/v2/protobuf/note"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/server"
 	"google.golang.org/grpc"
@@ -18,10 +18,10 @@ func main() {
 		Conf: config.Conf,
 		Dao:  dao.Dao,
 		GRPCRegistr: func(g *grpc.Server) {
-			model.RegisterUserServiceServer(g, service.NoteSvc)
+			model.RegisterNoteServiceServer(g, service.NoteSvc)
 		},
 		HTTPRegistr: func(ctx context.Context, mux *runtime.ServeMux) {
-			err := model.RegisterUserServiceHandlerServer(ctx, mux, service.NoteSvc)
+			err := model.RegisterNoteServiceHandlerServer(ctx, mux, service.NoteSvc)
 			if err != nil {
 				log.Fatal(err)
 			}

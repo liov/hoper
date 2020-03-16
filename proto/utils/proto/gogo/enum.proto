@@ -5,6 +5,7 @@ import "google/protobuf/descriptor.proto";
 
 option java_package = "xyz.hoper.protobuf";
 option java_outer_classname = "EnumProtos";
+option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/proto/gogo";
 
 extend google.protobuf.EnumOptions {
     //自定义类型
