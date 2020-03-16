@@ -1,2 +1,0 @@
-set JAVA_HOME=E:\jdk-13.0.1
-mvn -U idea:idea

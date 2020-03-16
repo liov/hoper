@@ -1,6 +1,6 @@
 syntax = "proto3";
 package model;
-import "utils/proto/enum.proto";
+import "utils/proto/gogo/enum.proto";
 //import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 //写在这里必然要暴露出去
@@ -8,39 +8,39 @@ option java_package = "xyz.hoper.protobuf.user";
 //option (gogoproto.goproto_enum_prefix_all) = false;
 //用户操作
 enum Action {
-    option (enumproto.enum_genvaluemap) = true;
-    option (enumproto.enum_numorder) = true;
-    Signup = 0 [(enumproto.enumvalue_cn)= "注册"];
-    Active = 1 [(enumproto.enumvalue_cn)= "激活"];
-    RestPassword = 2 [(enumproto.enumvalue_cn)= "重置密码"];
-    EditPassword = 3 [(enumproto.enumvalue_cn)= "修改密码"];
-    CreateResume = 4 [(enumproto.enumvalue_cn)= "新建简历"];
-    EditResume = 5 [(enumproto.enumvalue_cn)= "编辑简历"];
-    DELETEResume = 6 [(enumproto.enumvalue_cn)= "删除简历"];
+    option (cuzproto.enum_genvaluemap) = true;
+    option (cuzproto.enum_numorder) = true;
+    Signup = 0 [(cuzproto.enumvalue_cn)= "注册"];
+    Active = 1 [(cuzproto.enumvalue_cn)= "激活"];
+    RestPassword = 2 [(cuzproto.enumvalue_cn)= "重置密码"];
+    EditPassword = 3 [(cuzproto.enumvalue_cn)= "修改密码"];
+    CreateResume = 4 [(cuzproto.enumvalue_cn)= "新建简历"];
+    EditResume = 5 [(cuzproto.enumvalue_cn)= "编辑简历"];
+    DELETEResume = 6 [(cuzproto.enumvalue_cn)= "删除简历"];
 }
 //用户角色
 enum Role {
-    option (enumproto.enum_numorder) = true;
-    UserRoleNormal = 0 [(enumproto.enumvalue_cn)= "普通用户"];
-    UserRoleAdmin = 1 [(enumproto.enumvalue_cn)= "管理员"];
-    UserRoleSuperAdmin = 2 [(enumproto.enumvalue_cn)= "超级管理员"];
+    option (cuzproto.enum_numorder) = true;
+    UserRoleNormal = 0 [(cuzproto.enumvalue_cn)= "普通用户"];
+    UserRoleAdmin = 1 [(cuzproto.enumvalue_cn)= "管理员"];
+    UserRoleSuperAdmin = 2 [(cuzproto.enumvalue_cn)= "超级管理员"];
 }
 
 //用户性别
 enum Gender{
-    option (enumproto.enum_numorder) = true;
-    option (enumproto.enum_customtype) = "uint8";
-    GenderUnfilled = 0 [(enumproto.enumvalue_cn)= "未填"];
-    GenderMale = 1 [(enumproto.enumvalue_cn)= "男"];
-    GenderFemale = 2 [(enumproto.enumvalue_cn)= "女"];
+    option (cuzproto.enum_numorder) = true;
+    option (cuzproto.enum_customtype) = "uint8";
+    GenderUnfilled = 0 [(cuzproto.enumvalue_cn)= "未填"];
+    GenderMale = 1 [(cuzproto.enumvalue_cn)= "男"];
+    GenderFemale = 2 [(cuzproto.enumvalue_cn)= "女"];
 }
 
 //用户角色
 enum UserStatus {
-    option (enumproto.enum_numorder) = true;
-    option (enumproto.enum_customtype) = "uint8";
-    option (enumproto.enum_jsonmarshal) = false;
-    InActive = 0 [(enumproto.enumvalue_cn)= "未激活"];
-    Activated = 1 [(enumproto.enumvalue_cn)= "已激活"];
-    Frozen = 2 [(enumproto.enumvalue_cn)= "已冻结"];
+    option (cuzproto.enum_numorder) = true;
+    option (cuzproto.enum_customtype) = "uint8";
+    option (cuzproto.enum_jsonmarshal) = false;
+    InActive = 0 [(cuzproto.enumvalue_cn)= "未激活"];
+    Activated = 1 [(cuzproto.enumvalue_cn)= "已激活"];
+    Frozen = 2 [(cuzproto.enumvalue_cn)= "已冻结"];
 }

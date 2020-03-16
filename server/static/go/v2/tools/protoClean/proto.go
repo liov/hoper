@@ -67,7 +67,7 @@ func replace(src string) {
 		data = reg.ReplaceAll([]byte(data), nil)
 		reg = regexp.MustCompile(`import \"protoc-gen-swagger.*\n`)
 		data = reg.ReplaceAll([]byte(data), nil)
-		reg = regexp.MustCompile(`import \"utils/proto/enum.proto.*\n`)
+		reg = regexp.MustCompile(`import \"utils/proto/gogo/enum.proto.*\n`)
 		data = reg.ReplaceAll([]byte(data), nil)
 		reg = regexp.MustCompile(`import \"google/api/annotations.proto.*\n`)
 		data = reg.ReplaceAll([]byte(data), nil)

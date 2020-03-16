@@ -1,38 +1,38 @@
 syntax = "proto3";
 package errorcode;
-import "utils/proto/enum.proto";
+import "utils/proto/gogo/enum.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 option java_package = "xyz.hoper.protobuf.errorcode";
 option (gogoproto.goproto_enum_prefix_all) = false;
 
 enum ErrCode {
-    option (enumproto.enum_jsonmarshal) = false;
-    SUCCESS = 0 [(enumproto.enumvalue_cn)= "成功"];
-    Canceled = 1 [(enumproto.enumvalue_cn)= "操作取消"];
-    Unknown = 2 [(enumproto.enumvalue_cn)= "未知错误"];
-    InvalidArgument = 3 [(enumproto.enumvalue_cn)= "无效的参数"];
-    DeadlineExceeded = 4 [(enumproto.enumvalue_cn)= "响应超时"];
-    NotFound = 5 [(enumproto.enumvalue_cn)= "未发现"];
-    AlreadyExists = 6 [(enumproto.enumvalue_cn)= "已经存在"];
-    PermissionDenied = 7 [(enumproto.enumvalue_cn)= "操作无权限"];
-    ResourceExhausted = 8 [(enumproto.enumvalue_cn)= "资源不足"];
-    FailedPrecondition = 9 [(enumproto.enumvalue_cn)= "操作被拒绝"];
-    Aborted = 10 [(enumproto.enumvalue_cn)= "操作终止"];
-    OutOfRange = 11 [(enumproto.enumvalue_cn)= "超出范围"];
-    Unimplemented = 12 [(enumproto.enumvalue_cn)= "未实现"];
-    Internal = 13 [(enumproto.enumvalue_cn)= "内部错误"];
-    Unavailable = 14 [(enumproto.enumvalue_cn)= "服务不可用"];
-    DataLoss = 15 [(enumproto.enumvalue_cn)= "数据丢失"];
-    Unauthenticated = 16 [(enumproto.enumvalue_cn)= "身份未验证"];
-    SysError = 17 [(enumproto.enumvalue_cn)= "系统错误"];
-    DBError = 18 [(enumproto.enumvalue_cn)= "数据库错误"];
-    RedisErr = 19 [(enumproto.enumvalue_cn)= "Redis错误"];
+    option (cuzproto.enum_jsonmarshal) = false;
+    SUCCESS = 0 [(cuzproto.enumvalue_cn)= "成功"];
+    Canceled = 1 [(cuzproto.enumvalue_cn)= "操作取消"];
+    Unknown = 2 [(cuzproto.enumvalue_cn)= "未知错误"];
+    InvalidArgument = 3 [(cuzproto.enumvalue_cn)= "无效的参数"];
+    DeadlineExceeded = 4 [(cuzproto.enumvalue_cn)= "响应超时"];
+    NotFound = 5 [(cuzproto.enumvalue_cn)= "未发现"];
+    AlreadyExists = 6 [(cuzproto.enumvalue_cn)= "已经存在"];
+    PermissionDenied = 7 [(cuzproto.enumvalue_cn)= "操作无权限"];
+    ResourceExhausted = 8 [(cuzproto.enumvalue_cn)= "资源不足"];
+    FailedPrecondition = 9 [(cuzproto.enumvalue_cn)= "操作被拒绝"];
+    Aborted = 10 [(cuzproto.enumvalue_cn)= "操作终止"];
+    OutOfRange = 11 [(cuzproto.enumvalue_cn)= "超出范围"];
+    Unimplemented = 12 [(cuzproto.enumvalue_cn)= "未实现"];
+    Internal = 13 [(cuzproto.enumvalue_cn)= "内部错误"];
+    Unavailable = 14 [(cuzproto.enumvalue_cn)= "服务不可用"];
+    DataLoss = 15 [(cuzproto.enumvalue_cn)= "数据丢失"];
+    Unauthenticated = 16 [(cuzproto.enumvalue_cn)= "身份未验证"];
+    SysError = 17 [(cuzproto.enumvalue_cn)= "系统错误"];
+    DBError = 18 [(cuzproto.enumvalue_cn)= "数据库错误"];
+    RedisErr = 19 [(cuzproto.enumvalue_cn)= "Redis错误"];
 
 
-    UploadSaveImageFail = 30001 [(enumproto.enumvalue_cn)= "保存图片失败"];
-    UploadCheckImageFail = 30002 [(enumproto.enumvalue_cn)= "检查图片失败"];
-    UploadCheckImageFormat = 30003 [(enumproto.enumvalue_cn)= "校验图片错误，图片格式或大小有问题"];
+    UploadSaveImageFail = 30001 [(cuzproto.enumvalue_cn)= "保存图片失败"];
+    UploadCheckImageFail = 30002 [(cuzproto.enumvalue_cn)= "检查图片失败"];
+    UploadCheckImageFormat = 30003 [(cuzproto.enumvalue_cn)= "校验图片错误，图片格式或大小有问题"];
 
-    TimeTooMuch = 30004 [(enumproto.enumvalue_cn)= "尝试次数过多"];
+    TimeTooMuch = 30004 [(cuzproto.enumvalue_cn)= "尝试次数过多"];
 }

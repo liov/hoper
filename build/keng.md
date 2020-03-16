@@ -96,3 +96,9 @@ tasks.getByName<Jar>("jar") {
 ## no Go source files
 手动添加go.mod文件google.golang.org/protobuf（不知道有没有效）
 idea 文件直接import需要的包，然后sync packages of 
+
+##  no Go files in
+main包路径不对
+go install github.com/golang/protobuf
+can't load package: package github.com/golang/protobuf: no Go files in E:\gopath\src\github.com\golang\protobuf
+go install github.com/golang/protobuf/protoc-gen-go

@@ -1,0 +1,23 @@
+syntax = "proto2";
+package cuzproto;
+
+import "google/protobuf/descriptor.proto";
+
+option java_package = "xyz.hoper.protobuf";
+option java_outer_classname = "EnumProtos";
+
+extend google.protobuf.EnumOptions {
+    //自定义类型
+    optional string enum_customtype = 62025;
+    optional bool enum_genvaluemap = 62026;
+    //不用手动标序号，= iota
+    optional bool enum_numorder = 62027;
+    //生成JsonMarshal
+    optional bool enum_jsonmarshal = 62028;
+    //是errorcode
+    optional bool enum_errorcode = 62029;
+}
+
+extend google.protobuf.EnumValueOptions {
+    optional string enumvalue_cn = 66002;
+}

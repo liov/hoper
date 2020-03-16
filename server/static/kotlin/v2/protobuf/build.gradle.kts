@@ -72,10 +72,9 @@ tasks.getByName<Jar>("jar") {
 }
 
 dependencies{
-    implementation ("io.grpc:grpc-netty-shaded:1.27.2")
-    implementation ("io.grpc:grpc-protobuf:1.27.2")
-    implementation ("io.grpc:grpc-stub:1.27.2")
-    implementation("io.github.lognet:grpc-spring-boot-starter:3.5.2")
+    api ("io.grpc:grpc-netty-shaded:1.27.2")
+    api ("io.grpc:grpc-protobuf:1.27.2")
+    api ("io.grpc:grpc-stub:1.27.2")
     //api("com.squareup.wire:wire-runtime:3.1.0")
     //api("com.squareup.wire:wire-schema-multiplatform:3.1.0")
     if (JavaVersion.current().isJava9Compatible) {

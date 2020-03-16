@@ -1,5 +1,27 @@
 syntax = "proto3";
-import "utils/proto/policy.proto";
-message MyMessage {
-    string public_name = 1 [(policyproto.non_sensitive) = true];
+package model;
+import "utils/proto/go/policy.proto";
+import "user/user.enum.pub.proto";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+
+option java_package = "xyz.hoper.protobuf.user";
+
+option (gogoproto.goproto_enum_prefix_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.goproto_unrecognized_all) = false;
+option (gogoproto.goproto_unkeyed_all) = false;
+option (gogoproto.goproto_sizecache_all) = false;
+option (gogoproto.goproto_registration) = true;
+option (gogoproto.messagename_all) = true;
+option (gogoproto.populate_all) = true;
+
+message Note {
+    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key;\""];
+    string title = 2 [(gogoproto.moretags) = "gorm:\"type:varchar(10)\" validate:\"gte=3,lte=10\" comment:\"标题\""];
+    string content = 3 [(gogoproto.moretags)="gorm:\"type:text"];
+    string public_name = 4 [(cuzproto.non_sensitive) = true];
 }
