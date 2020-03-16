@@ -13,6 +13,22 @@ type Session struct {
 	ClientIp     string `json:"clientIp"`
 }
 
+type ErpSession struct {
+	PiId          int      `json:"piId"`
+	EmployeeId    int      `json:"employeeId"`
+	EmployeeName  string   `json:"employeeName"`
+	DeptId        int      `json:"deptId"`
+	DeptName      string   `json:"deptName"`
+	CompId        int      `json:"compId"`
+	CompName      string   `json:"compName"`
+	EnglishName   string   `json:"englishName"`
+	Phone         string   `json:"phone"`
+	RoleCodeList  []string `json:"roleCodeList"`
+	Type          int      `json:"type"`
+	FilterIds     []int    `json:"filterIds"`
+	FilterDeptIds []int    `json:"filterDeptIds"`
+}
+
 func main() {
 	sess := &Session{UserID: 699}
 	data, _ := json.Marshal(sess)
