@@ -1,11 +1,11 @@
-title = "user-config"
+title = "note-config"
 #文件存储在Volume+Module下
 
 Volume = "../../data"
 
 [server]
 Protocol = "https"
-Domain =  "user.hoper.xyz"
+Domain =  "note.hoper.xyz"
 Port = ":8080"
 ReadTimeout = 60
 WriteTimeout = 60
