@@ -6,6 +6,7 @@ require (
 	git.apache.org/thrift.git v0.13.0 // indirect
 	github.com/360EntSecGroup-Skylar/excelize/v2 v2.0.2 // indirect
 	github.com/AsynkronIT/protoactor-go v0.0.0-20200221110811-81497e71df85
+	github.com/BurntSushi/toml v0.3.1
 	github.com/CloudyKit/fastprinter v0.0.0-20170127035650-74b38d55f37a // indirect
 	github.com/Shopify/sarama v1.24.0
 	github.com/ajg/form v1.5.1 // indirect

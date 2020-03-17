@@ -29,7 +29,7 @@ func (init *Init) P0ConsulOnce() {
 	}
 	// unmarshal Config
 	cCopy := init.conf
-	//dCopy := init.Dao
+	//dCopy := init.dao
 	runtime_viper.Unmarshal(cCopy)
 	log.Debug(cCopy)
 	// open a goroutine to watch remote changes forever
