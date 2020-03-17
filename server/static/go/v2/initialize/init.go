@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/BurntSushi/toml"
 	"github.com/fsnotify/fsnotify"
 	"github.com/jinzhu/configor"
 	"github.com/liov/hoper/go/v2/utils/fs"
@@ -45,10 +46,10 @@ type BasicConfig struct {
 }
 
 type Init struct {
-	Module, Env string
-	NoInit      []string
-	conf        needInit
-	dao         Dao
+	BasicConfig
+	NoInit []string
+	conf   NeedInit
+	dao    Dao
 	//closes     []interface{}
 }
 
@@ -67,17 +68,17 @@ type config interface {
 	Generate(Dao)
 }
 
-type needInit interface {
+type NeedInit interface {
 	Custom()
 }
 
 type Config interface {
-	needInit
+	NeedInit
 }
 
 type Dao interface {
 	Close()
-	needInit
+	NeedInit
 }
 
 var alreadyRun struct {
@@ -95,8 +96,8 @@ func Start(conf Config, dao Dao) func() {
 	init := NewInit(conf, dao)
 	init.config()
 	//从config到dao的过渡
-	init.setDao()
-	//go Watcher(conf, Dao)
+	init.SetDao()
+	//go Watcher(conf, dao)
 	return func() {
 		if dao != nil {
 			dao.Close()
@@ -133,8 +134,11 @@ func (init *Init) config() {
 }
 
 //反射方法命名规范,P+优先级+方法名+(执行一次+Once)
-func (init *Init) setDao() {
+func (init *Init) SetDao() {
 	init.conf.Custom()
+	if init.dao == nil {
+		return
+	}
 	value := reflect.ValueOf(init)
 	noInit := strings.Join(init.NoInit, " ")
 	typeOf := value.Type()
@@ -145,10 +149,7 @@ func (init *Init) setDao() {
 				continue
 			}
 		}
-		if strings.Contains(noInit, methodName[2:]) {
-			continue
-		}
-		if typeOf.Method(i).Type.NumOut() > 0 && init.dao == nil {
+		if strings.Contains(noInit, methodName[2:]) || !strings.HasPrefix(methodName, "P") {
 			continue
 		}
 
@@ -176,7 +177,7 @@ func Watcher(conf Config, dao Dao) {
 		dao.Close()
 		init := NewInit(conf, dao)
 		init.config()
-		init.setDao()
+		init.SetDao()
 	})
 
 	watcher.Add(".watch", fsnotify.Write, func() {
@@ -185,7 +186,11 @@ func Watcher(conf Config, dao Dao) {
 }
 
 func Refresh(conf Config, dao Dao) {
-	init := NewInit(conf, dao)
 	dao.Close()
-	init.setDao()
+	init := NewInit(conf, dao)
+	init.SetDao()
+}
+
+func (init *Init) Unmarshal(bytes []byte) {
+	toml.Unmarshal(bytes, init.conf)
 }

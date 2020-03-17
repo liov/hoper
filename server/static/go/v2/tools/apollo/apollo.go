@@ -10,6 +10,12 @@ import (
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
+const (
+	GetConfigUrl     = "http://%s/configfiles/json/%s/%s/%s"
+	NoCacheUrl       = "http://%s/configs/%s/%s/%s"
+	NotificationsUrl = "http://%s/notifications/v2?appId=%s&cluster=%s"
+)
+
 type Config struct {
 	Addr    string
 	AppId   string `json:"appId"`
@@ -27,7 +33,7 @@ func NewConfig(addr, appId, cluster, ip string) *Config {
 }
 
 func (c *Config) GetInitConfig(namespace string) (map[string]string, error) {
-	url := fmt.Sprintf("http://%s/configfiles/json/%s/%s/%s", c.Addr, c.AppId, c.Cluster, namespace)
+	url := fmt.Sprintf(GetConfigUrl, c.Addr, c.AppId, c.Cluster, namespace)
 	if c.IP != "" {
 		url += "?ip=" + c.IP
 	}
@@ -106,7 +112,7 @@ func (e *NoChangeError) Error() string {
 }
 
 func (c *Client) GetCacheConfig(namespace string) error {
-	url := fmt.Sprintf("http://%s/configfiles/json/%s/%s/%s", c.Addr, c.AppId, c.Cluster, namespace)
+	url := fmt.Sprintf(GetConfigUrl, c.Addr, c.AppId, c.Cluster, namespace)
 	if c.IP != "" {
 		url += "?ip=" + c.IP
 	}
@@ -131,7 +137,7 @@ func (c *Client) GetCacheConfig(namespace string) error {
 }
 
 func (c *Client) GetNoCacheConfig(namespace string) error {
-	url := fmt.Sprintf("http://%c/configs/%c/%c/%c", c.Addr, c.AppId, c.Cluster, namespace)
+	url := fmt.Sprintf(NoCacheUrl, c.Addr, c.AppId, c.Cluster, namespace)
 	_, ok := c.Configurations[namespace]
 	if !ok {
 		c.Configurations[namespace] = &Apollo{}
@@ -207,7 +213,7 @@ func (nm NotificationMap) Update(ns []NotificationInfo) {
 }
 
 func (c *Client) UpdateConfig(appId, clusterName string) error {
-	urlStr := fmt.Sprintf("http://%c/notifications/v2?appId=%c&cluster=%c",
+	urlStr := fmt.Sprintf(NotificationsUrl,
 		c.Addr, appId, clusterName)
 	req, err := http.NewRequest("GET", urlStr, nil)
 	if err != nil {

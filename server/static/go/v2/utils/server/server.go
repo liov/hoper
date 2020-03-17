@@ -12,6 +12,7 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/liov/hoper/go/v2/initialize"
+	v2 "github.com/liov/hoper/go/v2/initialize/v2"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"golang.org/x/net/http2"
@@ -84,7 +85,7 @@ type Server struct {
 
 //
 func (s *Server) Start() {
-	defer initialize.Start(s.Conf, s.Dao)()
+	defer v2.Start(s.Conf, s.Dao)()
 Loop:
 	for {
 		signal.Notify(ch,
