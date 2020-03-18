@@ -1,32 +1,31 @@
 package main
 
 import (
-	"os/signal"
-	"syscall"
+	"context"
 
-	"github.com/liov/hoper/go/v2/initialize"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/internal/config"
 	"github.com/liov/hoper/go/v2/user/internal/dao"
-	"github.com/liov/hoper/go/v2/user/internal/server"
+	"github.com/liov/hoper/go/v2/user/internal/service"
+	"github.com/liov/hoper/go/v2/utils/log"
+	"github.com/liov/hoper/go/v2/utils/server"
+	"google.golang.org/grpc"
 )
 
 func main() {
-	defer initialize.Start(config.Conf, dao.Dao)()
-Loop:
-	for {
-		signal.Notify(server.SignalChan(),
-			// kill -SIGINT XXXX 或 Ctrl+c
-			syscall.SIGINT, // register that too, it should be ok
-			// os.Kill等同于syscall.Kill
-			syscall.SIGKILL, // register that too, it should be ok
-			// kill -SIGTERM XXXX
-			syscall.SIGTERM,
-		)
-		select {
-		case <-server.SignalChan():
-			break Loop
-		default:
-			server.Serve()
-		}
+	s := server.Server{
+		Conf: config.Conf,
+		Dao:  dao.Dao,
+		GRPCRegistr: func(g *grpc.Server) {
+			model.RegisterUserServiceServer(g, service.UserSvc)
+		},
+		HTTPRegistr: func(ctx context.Context, mux *runtime.ServeMux) {
+			err := model.RegisterUserServiceHandlerServer(ctx, mux, service.UserSvc)
+			if err != nil {
+				log.Fatal(err)
+			}
+		},
 	}
+	s.Start()
 }

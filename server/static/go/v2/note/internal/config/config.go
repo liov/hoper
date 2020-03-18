@@ -6,16 +6,9 @@ import (
 
 	"github.com/liov/hoper/go/v2/initialize"
 	"github.com/liov/hoper/go/v2/utils/fs"
-	"github.com/liov/hoper/go/v2/utils/server"
 )
 
 type serverConfig struct {
-	Protocol     string
-	Domain       string
-	Port         string
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
-
 	PassSalt    string
 	TokenMaxAge int64
 	TokenSecret string
@@ -49,9 +42,10 @@ type config struct {
 	//必须
 	initialize.BasicConfig
 	//自定义的配置
-	Server serverConfig
+	Customize serverConfig
 	//命令参数大于配置
 	Flag     flagValue
+	Server   initialize.ServerConfig
 	Mail     initialize.MailConfig
 	Database initialize.DatabaseConfig
 	Redis    initialize.RedisConfig
@@ -74,7 +68,7 @@ func (d *duration) UnmarshalText(text []byte) error {
 
 func (c *config) Custom() {
 	if runtime.GOOS == "windows" {
-		c.Server.LuosimaoAPIKey = ""
+		c.Customize.LuosimaoAPIKey = ""
 		if c.Flag.Password != "" {
 			c.Database.Password = c.Flag.Password
 			c.Redis.Password = c.Database.Password
@@ -84,14 +78,7 @@ func (c *config) Custom() {
 		}
 	}
 
-	c.Server.UploadMaxSize = c.Server.UploadMaxSize * 1024 * 1024
+	c.Customize.UploadMaxSize = c.Customize.UploadMaxSize * 1024 * 1024
 	c.Server.ReadTimeout = c.Server.ReadTimeout * time.Second
 	c.Server.WriteTimeout = c.Server.WriteTimeout * time.Second
-}
-
-func (c *config) ServerBasicConfig() *server.BasicConfig {
-	return &server.BasicConfig{
-		Port:        c.Server.Port,
-		BasicConfig: initialize.BasicConfig{Env: c.Env},
-	}
 }

@@ -2,6 +2,7 @@ package v2
 
 import (
 	"flag"
+	"unsafe"
 
 	"github.com/jinzhu/configor"
 	"github.com/liov/hoper/go/v2/initialize"
@@ -9,32 +10,58 @@ import (
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
-type Init struct {
-	Dev  nacos.Config
-	Test nacos.Config
-	Prod nacos.Config
+type EnvConfig struct {
+	nacos.Config
+	NoInit []string
+}
+
+type InitConfig struct {
+	Dev, Test, Prod nacos.Config
 	initialize.Init
 }
 
-func NewInit(conf initialize.Config, dao initialize.Dao) *Init {
-	init := &Init{Init: *initialize.NewInit(conf, dao)}
-	err := configor.New(&configor.Config{Debug: false}).
-		Load(init, initialize.ConfUrl) //"./Config/Config.toml"
+type Init struct {
+	envConfig nacos.Config
+	initialize.Init
+}
+
+func NewInitWithLoadConfig(conf initialize.Config, dao initialize.Dao) *Init {
+	initConfig := &InitConfig{}
+	log.Info(int64(uintptr(unsafe.Pointer(initConfig))))
+	err := configor.New(&configor.Config{Debug: true}).
+		Load(initConfig, initialize.ConfUrl) //"./Config/Config.toml"
 	if err != nil {
 		log.Fatalf("配置错误: %v", err)
 	}
+	init := NewInit(conf, dao)
+	log.Info(int64(uintptr(unsafe.Pointer(init))))
+	init.BasicConfig = initConfig.BasicConfig
+	init.NoInit = initConfig.NoInit
+	switch initConfig.Env {
+	case initialize.DEVELOPMENT:
+		init.envConfig = initConfig.Dev
+	case initialize.TEST:
+		init.envConfig = initConfig.Test
+	case initialize.PRODUCT:
+		init.envConfig = initConfig.Prod
+	}
 	return init
+}
+
+func NewInit(conf initialize.Config, dao initialize.Dao) *Init {
+	return &Init{Init: *initialize.NewInit(conf, dao)}
 }
 
 func Start(conf initialize.Config, dao initialize.Dao) func() {
 	if !flag.Parsed() {
 		flag.Parse()
 	}
-	init := NewInit(conf, dao)
+	//逃逸到堆上了
+	init := NewInitWithLoadConfig(conf, dao)
 	nacosClient := init.config()
 
 	go nacosClient.Listener(func(bytes []byte) {
-		init := NewInit(conf, dao)
+		init.Unmarshal(bytes)
 		dao.Close()
 		init.SetDao()
 	})
@@ -54,19 +81,13 @@ func Start(conf initialize.Config, dao initialize.Dao) func() {
 }
 
 func (init *Init) config() *nacos.Client {
-	var nacosClient *nacos.Client
-	switch init.Env {
-	case initialize.DEVELOPMENT:
-		nacosClient = init.Dev.NewClient()
-	case initialize.TEST:
-		nacosClient = init.Test.NewClient()
-	case initialize.PRODUCT:
-		nacosClient = init.Prod.NewClient()
-	}
+	nacosClient := init.envConfig.NewClient()
+
 	if nacosClient == nil {
 		log.Fatal("配置错误")
 	}
 	nacosClient.GetConfigAllInfoHandle(init.Unmarshal)
+
 	init.SetDao()
 	return nacosClient
 }

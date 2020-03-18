@@ -1,8 +1,8 @@
-NoInit = ["Cache"]
-
 Module = "user"
 #dev | test | prod
 Env = "dev"
+
+NoInit = ["Cache","Apollo","Consul"]
 
 [iris]
 DisableStartupLog= false
@@ -15,3 +15,21 @@ DisableAutoFireStatusCode= false
 TimeFormat= "Mon, 01 Jan 2006 15=04=05 GMT"
 Charset= "UTF-8"
 EnableOptimizations= true
+
+[dev]
+Addr = "192.168.1.212:9001"
+Tenant = "e0119132-f523-4a84-bd42-7830235eb9cf"
+Group = "DEFAULT_GROUP"
+DataId = "test"
+
+[test]
+Addr = "192.168.1.212:9001"
+Tenant = ""
+Group = "DEFAULT_GROUP"
+DataId = "test"
+
+[prod]
+Addr = "192.168.1.212:9001"
+Tenant = ""
+Group = "DEFAULT_GROUP"
+DataId = "test"

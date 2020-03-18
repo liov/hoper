@@ -11,8 +11,6 @@ type NoCloseBody struct {
 	prevRune int   // index of previous rune; or < 0
 }
 
-// Len returns the number of bytes of the unread portion of the
-// string.
 func (r *NoCloseBody) Len() int {
 	if r.i >= int64(len(r.s)) {
 		return 0
@@ -20,10 +18,6 @@ func (r *NoCloseBody) Len() int {
 	return int(int64(len(r.s)) - r.i)
 }
 
-// Size returns the original length of the underlying string.
-// Size is the number of bytes available for reading via ReadAt.
-// The returned value is always the same and is not affected by calls
-// to any other method.
 func (r *NoCloseBody) Size() int64 { return int64(len(r.s)) }
 
 func (r *NoCloseBody) Read(b []byte) (n int, err error) {

@@ -15,7 +15,7 @@ import (
 func (s *Server) Http() http.Handler {
 	irisHandle := func(mux *iris.Application) {
 		iris_build.WithConfiguration(mux, initialize.ConfUrl)
-		logger := (&log.Config{Development: s.Conf.ServerBasicConfig().Env == initialize.PRODUCT}).NewLogger()
+		logger := (&log.Config{Development: s.Conf.GetBasicConfig().Env == initialize.PRODUCT}).NewLogger()
 		iris_log.SetLog(mux, logger, false)
 		api.OpenApi(mux, "../protobuf/api/")
 	}
