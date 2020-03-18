@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strings"
 
+	"github.com/liov/hoper/go/v2/utils/http/request"
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
@@ -97,11 +97,13 @@ func (c *Client) GetConfigAllInfoHandle(handle func([]byte)) error {
 func (c *Client) Listener(handle func([]byte)) error {
 	urlStr := fmt.Sprintf(ListenerUrl, c.Addr)
 	listeningConfigs := fmt.Sprintf(Param, c.DataId, c.Group, c.MD5, c.Tenant)
-	req, err := http.NewRequest(http.MethodPost, urlStr, strings.NewReader(listeningConfigs))
+	req, err := http.NewRequest(http.MethodPost, urlStr, nil)
+	request.NewNoCloseRequest(req, listeningConfigs)
 	if err != nil {
 		return err
 	}
 	req.Header["Long-Pulling-Timeout"] = []string{"30000"}
+	req.Header["Content-Type"] = []string{"application/x-www-form-urlencoded"}
 
 	var ch = make(chan struct{}, 1)
 	ch <- struct{}{}
