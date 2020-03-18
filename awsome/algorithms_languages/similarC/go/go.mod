@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	bou.ke/monkey v1.0.1
-	github.com/360EntSecGroup-Skylar/excelize/v2 v2.0.2
+	github.com/360EntSecGroup-Skylar/excelize/v2 v2.1.0
 	github.com/AsynkronIT/goconsole v0.0.0-20160504192649-bfa12eebf716
 	github.com/AsynkronIT/protoactor-go v0.0.0-20200221110811-81497e71df85
 	github.com/aws/aws-lambda-go v1.13.3 // indirect
@@ -27,7 +27,7 @@ require (
 	github.com/unicorn-engine/unicorn v0.0.0-20191119163456-3cea38bff7bf
 	golang.org/x/exp v0.0.0-20191129062945-2f5052295587
 	golang.org/x/mobile v0.0.0-20191130191448-5c0e7e404af8
-	golang.org/x/net v0.0.0-20191116160921-f9c825593386
+	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553
 	golang.org/x/sys v0.0.0-20191118013547-6254a7c3cac6
 )
 
