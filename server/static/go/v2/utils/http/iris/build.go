@@ -1,6 +1,7 @@
 package iris_build
 
 import (
+	"net/url"
 	"os"
 
 	"github.com/jinzhu/configor"
@@ -23,11 +24,19 @@ func Build(app *iris.Application, filename string) {
 }
 
 func Configuration(filename string) *iris.Configuration {
+	url, err := url.Parse(filename)
+	if err != nil {
+		log.Fatalf("url解析错误：", err)
+	}
+	if url.Scheme == "nacos" {
+
+	}
+
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		log.Fatalf("配置文件不存在：", err)
 	}
 	var c Config
-	err := configor.New(&configor.Config{Debug: false}).
+	err = configor.New(&configor.Config{Debug: false}).
 		Load(&c, filename) //"./config/config.toml"
 	if err != nil {
 		log.Fatalf("配置错误: %v", err)

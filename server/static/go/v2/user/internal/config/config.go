@@ -9,11 +9,7 @@ import (
 )
 
 type serverConfig struct {
-	Protocol     string
-	Domain       string
-	Port         string
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
+	Volume fs.Dir
 
 	PassSalt    string
 	TokenMaxAge int64
@@ -47,8 +43,9 @@ var MongoSettings = &MongoConfig{}*/
 type config struct {
 	//必须
 	initialize.BasicConfig
+	initialize.ServerConfig
 	//自定义的配置
-	Server serverConfig
+	Customize serverConfig
 	//命令参数大于配置
 	Flag     flagValue
 	Mail     initialize.MailConfig
@@ -73,7 +70,7 @@ func (d *duration) UnmarshalText(text []byte) error {
 
 func (c *config) Custom() {
 	if runtime.GOOS == "windows" {
-		c.Server.LuosimaoAPIKey = ""
+		c.Customize.LuosimaoAPIKey = ""
 		if c.Flag.Password != "" {
 			c.Database.Password = c.Flag.Password
 			c.Redis.Password = c.Database.Password
@@ -83,7 +80,7 @@ func (c *config) Custom() {
 		}
 	}
 
-	c.Server.UploadMaxSize = c.Server.UploadMaxSize * 1024 * 1024
+	c.Customize.UploadMaxSize = c.Customize.UploadMaxSize * 1024 * 1024
 	c.Server.ReadTimeout = c.Server.ReadTimeout * time.Second
 	c.Server.WriteTimeout = c.Server.WriteTimeout * time.Second
 }

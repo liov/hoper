@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
-	"github.com/liov/hoper/go/v2/utils/http/request"
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
@@ -14,7 +14,7 @@ const (
 	GetConfigUrl        = "http://%s/nacos/v1/cs/configs?tenant=%s&group=%s&dataId=%s"
 	GetConfigAllInfoUrl = "http://%s/nacos/v1/cs/configs?show=all&tenant=%s&group=%s&dataId=%s"
 	ListenerUrl         = "http://%s/nacos/v1/cs/configs/listener"
-	Param               = "Listening-Configs=%s" + string(rune(2)) + "%s" + string(rune(2)) + "%s" + string(rune(2)) + "%s" + string(rune(1))
+	InitParam           = "Listening-Configs=%s" + string(rune(2)) + "%s" + string(rune(2)) + "%s" + string(rune(2)) + "%s" + string(rune(1))
 )
 
 type Config struct {
@@ -25,20 +25,14 @@ type Config struct {
 }
 
 type Client struct {
-	Addr   string `json:"addr"`
-	Tenant string `json:"tenant"`
-	Group  string `json:"group"`
-	DataId string `json:"dataId"`
-	MD5    string `json:"md5"`
-	close  chan struct{}
+	*Config
+	MD5   string `json:"md5"`
+	close chan struct{}
 }
 
 func (c *Config) NewClient() *Client {
 	return &Client{
-		Addr:   c.Addr,
-		Tenant: c.Tenant,
-		Group:  c.Group,
-		DataId: c.DataId,
+		Config: c,
 		close:  make(chan struct{}),
 	}
 }
@@ -94,13 +88,12 @@ func (c *Client) GetConfigAllInfoHandle(handle func([]byte)) error {
 	return nil
 }
 
-func (c *Client) Listener(handle func([]byte)) error {
+func (c *Client) Listener(handle func([]byte)) {
 	urlStr := fmt.Sprintf(ListenerUrl, c.Addr)
-	listeningConfigs := fmt.Sprintf(Param, c.DataId, c.Group, c.MD5, c.Tenant)
-	req, err := http.NewRequest(http.MethodPost, urlStr, nil)
-	request.NewNoCloseRequest(req, listeningConfigs)
+	listeningConfigs := fmt.Sprintf(InitParam, c.DataId, c.Group, c.MD5, c.Tenant)
+	req, err := http.NewRequest(http.MethodPost, urlStr, strings.NewReader(listeningConfigs))
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
 	req.Header["Long-Pulling-Timeout"] = []string{"30000"}
 	req.Header["Content-Type"] = []string{"application/x-www-form-urlencoded"}
@@ -111,17 +104,17 @@ Loop:
 	for {
 		select {
 		case <-ch:
+			listeningConfigs = fmt.Sprintf(InitParam, c.DataId, c.Group, c.MD5, c.Tenant)
+			req.Body = ioutil.NopCloser(strings.NewReader(listeningConfigs))
 			log.Debug("发送请求", req.URL)
 			resp, err := http.DefaultClient.Do(req)
 			if err != nil {
 				log.Error(err)
-				return err
 			}
 
 			body, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
 				log.Error(err)
-				return err
 			}
 			if resp.StatusCode != 200 {
 				log.Error(string(body))
@@ -130,6 +123,8 @@ Loop:
 			}
 
 			if len(body) != 0 {
+				params := strings.Split(string(body), "%02")
+				c.MD5 = params[2][:len(params[2])-4]
 				c.GetConfigAllInfoHandle(handle)
 			}
 			ch <- struct{}{}
@@ -139,5 +134,4 @@ Loop:
 			break Loop
 		}
 	}
-	return nil
 }

@@ -1,8 +1,8 @@
-NoInit = ["Cache","Apollo","Consul"]
-
 Module = "note"
 #dev | test | prod
 Env = "dev"
+
+NoInit = ["Cache","Apollo","Consul"]
 
 [iris]
 DisableStartupLog= false

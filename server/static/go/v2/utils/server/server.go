@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"reflect"
 	"syscall"
 
 	"runtime/debug"
@@ -52,8 +53,19 @@ func (s *Server) Serve() {
 		return
 	})
 	h2Handler := h2c.NewHandler(handle, &http2.Server{})
-	server := &http.Server{Addr: s.Conf.ServerBasicConfig().Port, Handler: h2Handler}
+	//反射从配置中取port
+	serverConfig := initialize.ServerConfig{Port: ":8080"}
+	serverConfigType := reflect.TypeOf(&serverConfig).Elem()
+	value := reflect.ValueOf(s.Conf).Elem()
+	for i := 0; i < value.NumField(); i++ {
+		if value.Field(i).Type() == serverConfigType {
+			serverConfig = value.Field(i).Interface().(initialize.ServerConfig)
+		}
+	}
+
+	server := &http.Server{Addr: serverConfig.Port, Handler: h2Handler}
 	go func() {
+		log.Infof("listening%v", server.Addr)
 		if err := server.ListenAndServe(); err != nil {
 			log.Fatalf("failed to serve: %v", err)
 		}
@@ -73,7 +85,7 @@ type BasicConfig struct {
 
 type Config interface {
 	initialize.Config
-	ServerBasicConfig() *BasicConfig
+	GetBasicConfig() *initialize.BasicConfig
 }
 
 type Server struct {

@@ -42,5 +42,20 @@ service NoteService {
             description : "创建笔记接口"
         };
     }
+
+    rpc GC(GCReq) returns(empty.Empty){
+        option (google.api.http) = {
+            get: "/api/v1/gc/{address}"
+        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            tags:["笔记相关接口","v1.0.0"]
+            summary : "根据地址取值测试该值是否被回收"
+            description : "测试接口"
+        };
+    }
 }
 
+
+message GCReq {
+    int64 address = 1;
+}

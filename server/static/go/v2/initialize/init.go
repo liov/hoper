@@ -42,7 +42,22 @@ const (
 type BasicConfig struct {
 	Module string
 	Env    string
-	Volume fs.Dir
+}
+
+func (c *BasicConfig) GetBasicConfig() *BasicConfig {
+	return c
+}
+
+type ServerConfig struct {
+	Protocol     string
+	Domain       string
+	Port         string
+	ReadTimeout  time.Duration
+	WriteTimeout time.Duration
+}
+
+func (c *ServerConfig) GetServerConfig() *ServerConfig {
+	return c
 }
 
 type Init struct {
@@ -53,7 +68,7 @@ type Init struct {
 	//closes     []interface{}
 }
 
-func NewInit(conf Config, dao Dao) *Init {
+func NewInitWithLoadConfig(conf Config, dao Dao) *Init {
 	init := &Init{conf: conf, dao: dao}
 	err := configor.New(&configor.Config{Debug: false}).
 		Load(init, ConfUrl) //"./Config/Config.toml"
@@ -61,6 +76,10 @@ func NewInit(conf Config, dao Dao) *Init {
 		log.Fatalf("配置错误: %v", err)
 	}
 	return init
+}
+
+func NewInit(conf Config, dao Dao) *Init {
+	return &Init{conf: conf, dao: dao}
 }
 
 //配置作用于dao，但是这么写dao不直观，无法跳转，不利于阅读
@@ -93,7 +112,7 @@ func Start(conf Config, dao Dao) func() {
 	if !flag.Parsed() {
 		flag.Parse()
 	}
-	init := NewInit(conf, dao)
+	init := NewInitWithLoadConfig(conf, dao)
 	init.config()
 	//从config到dao的过渡
 	init.SetDao()
@@ -175,7 +194,7 @@ func Watcher(conf Config, dao Dao) {
 	}
 	watcher.Add(ConfUrl, fsnotify.Write, func() {
 		dao.Close()
-		init := NewInit(conf, dao)
+		init := NewInitWithLoadConfig(conf, dao)
 		init.config()
 		init.SetDao()
 	})
@@ -187,7 +206,7 @@ func Watcher(conf Config, dao Dao) {
 
 func Refresh(conf Config, dao Dao) {
 	dao.Close()
-	init := NewInit(conf, dao)
+	init := NewInitWithLoadConfig(conf, dao)
 	init.SetDao()
 }
 

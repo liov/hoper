@@ -6,8 +6,8 @@ func main() {
 	var a = []int{0, 1, 2}
 	var b = a
 	var c []int
-	copy(c, a) //copy的是长度,0长度不copy任何元素
-	var d = make([]int, 3)
+	copy(c, a) //copy的是元素替换,0长度不copy任何元素
+	var d = make([]int, len(a))
 	copy(d, a)
 	a[0] = 5
 	fmt.Println("a: ", a)
