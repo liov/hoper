@@ -102,3 +102,6 @@ main包路径不对
 go install github.com/golang/protobuf
 can't load package: package github.com/golang/protobuf: no Go files in E:\gopath\src\github.com\golang\protobuf
 go install github.com/golang/protobuf/protoc-gen-go
+
+## nacos post请求报参数错误
+手动加请求头Content-Type:application/x-www-form-urlencoded
