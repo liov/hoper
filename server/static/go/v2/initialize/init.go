@@ -60,6 +60,11 @@ func (c *ServerConfig) GetServerConfig() *ServerConfig {
 	return c
 }
 
+func (c *ServerConfig) Customer() {
+	c.ReadTimeout = c.ReadTimeout * time.Second
+	c.WriteTimeout = c.WriteTimeout * time.Second
+}
+
 type Init struct {
 	BasicConfig
 	NoInit []string
