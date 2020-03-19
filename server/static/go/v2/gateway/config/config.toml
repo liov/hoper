@@ -1,14 +1,17 @@
-NoInit = ["Cache"]
-
 Module = "gateway"
 #dev | test | prod
 Env = "dev"
 
+NoInit = ["Cache","Apollo","Consul"]
+
+NacosAddr = "192.168.1.212:9001"
+NacosGroup = "hoper"
+NacosDataId = "gateway"
 
 [iris]
 DisableStartupLog= false
 DisableInterruptHandler= false
-DisablePathCorrection= false
+DisablePathCorrection= true
 EnablePathEscape= false
 FireMethodNotAllowed= false
 DisableBodyConsumptionOnUnmarshal= false
@@ -16,3 +19,12 @@ DisableAutoFireStatusCode= false
 TimeFormat= "Mon, 01 Jan 2006 15=04=05 GMT"
 Charset= "UTF-8"
 EnableOptimizations= true
+
+[dev]
+Tenant = "e0119132-f523-4a84-bd42-7830235eb9cf"
+
+[test]
+Tenant = ""
+
+[prod]
+Tenant = ""

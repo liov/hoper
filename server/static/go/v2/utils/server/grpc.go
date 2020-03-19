@@ -8,6 +8,9 @@ import (
 )
 
 func (s *Server) Grpc() *grpc.Server {
+	if s.GRPCRegistr == nil {
+		return nil
+	}
 	gs := grpc.NewServer(
 		//filter应该在最前
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(filter.CommonUnaryServerInterceptor()...)),

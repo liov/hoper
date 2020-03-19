@@ -42,11 +42,12 @@ func (s *Server) Serve() {
 			httpServer.ServeHTTP(w, r)
 			return
 		}
-		if strings.Contains(
-			r.Header.Get("Content-Type"), "application/grpc",
-		) {
-			grpcServer.ServeHTTP(w, r) // gRPC Server
-			return
+		if grpcServer != nil {
+			if strings.Contains(
+				r.Header.Get("Content-Type"), "application/grpc") {
+				grpcServer.ServeHTTP(w, r) // gRPC Server
+				return
+			}
 		}
 
 		httpServer.ServeHTTP(w, r)
@@ -72,7 +73,9 @@ func (s *Server) Serve() {
 	}()
 
 	<-ch
-	grpcServer.Stop()
+	if grpcServer != nil {
+		grpcServer.Stop()
+	}
 	if err := server.Close(); err != nil {
 		log.Error(err)
 	}
@@ -110,6 +113,7 @@ Loop:
 		)
 		select {
 		case <-ch:
+			log.Info("关闭服务")
 			break Loop
 		default:
 			s.Serve()

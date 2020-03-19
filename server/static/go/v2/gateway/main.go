@@ -1,31 +1,33 @@
 package main
 
 import (
-	"os/signal"
-	"syscall"
+	"context"
+	"log"
 
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/liov/hoper/go/v2/gateway/internal/config"
-	"github.com/liov/hoper/go/v2/gateway/internal/server"
-	"github.com/liov/hoper/go/v2/initialize"
+	note "github.com/liov/hoper/go/v2/protobuf/note"
+	user "github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/utils/server"
+	"google.golang.org/grpc"
 )
 
 func main() {
-	defer initialize.Start(config.Conf, nil)()
-Loop:
-	for {
-		signal.Notify(server.SignalChan(),
-			// kill -SIGINT XXXX 或 Ctrl+c
-			syscall.SIGINT, // register that too, it should be ok
-			// os.Kill等同于syscall.Kill
-			syscall.SIGKILL, // register that too, it should be ok
-			// kill -SIGTERM XXXX
-			syscall.SIGTERM,
-		)
-		select {
-		case <-server.SignalChan():
-			break Loop
-		default:
-			server.GateWay()
-		}
+	s := server.Server{
+		Conf:        config.Conf,
+		Dao:         nil,
+		GRPCRegistr: nil,
+		HTTPRegistr: func(ctx context.Context, mux *runtime.ServeMux) {
+			opts := []grpc.DialOption{grpc.WithInsecure()}
+			err := user.RegisterUserServiceHandlerFromEndpoint(ctx, mux, config.Conf.Customize.GrpcService["user"], opts)
+			if err != nil {
+				log.Fatal(err)
+			}
+			err = note.RegisterNoteServiceHandlerFromEndpoint(ctx, mux, config.Conf.Customize.GrpcService["note"], opts)
+			if err != nil {
+				log.Fatal(err)
+			}
+		},
 	}
+	s.Start()
 }
