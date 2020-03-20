@@ -7,6 +7,7 @@ import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
 import "utils/empty/empty.imp.proto";
 import "utils/response/response.imp.proto";
+import "utils/proto/go/policy.imp.proto";
 
 option (gogoproto.goproto_enum_prefix_all) = false;
 option (gogoproto.goproto_getters_all) = false;
@@ -49,11 +50,34 @@ service NoteService {
             get: "/api/v1/gc/{address}"
         };
         option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
-            tags:["笔记相关接口","v1.0.0"]
-            summary : "根据地址取值测试该值是否被回收"
-            description : "测试接口"
+            tags:["笔记相关接口","v1.0.0","test"]
+            summary : "测试接口"
+            description : "根据地址取值测试该值是否被回收"
         };
     }
+
+    rpc Register(empty.Empty) returns(empty.Empty){
+        option (google.api.http) = {
+            get: "/api/v1/register"
+        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            tags:["笔记相关接口","v1.0.0","test"]
+            summary : "服务注册"
+            description : "服务注册测试接口"
+        };
+    }
+
+    rpc Restart(empty.Empty) returns(empty.Empty) {
+        option (google.api.http) = {
+            get: "/api/v1/restart"
+        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            tags:["笔记相关接口","v1.0.0","test"]
+            summary : "重启"
+            description : "重启测试接口"
+        };
+    }
+
 }
 
 message CreateNoteReq {

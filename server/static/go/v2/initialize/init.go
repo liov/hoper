@@ -218,3 +218,14 @@ func Refresh(conf Config, dao Dao) {
 func (init *Init) Unmarshal(bytes []byte) {
 	toml.Unmarshal(bytes, init.conf)
 }
+
+func (init *Init) GetServiceName() string {
+	value := reflect.ValueOf(init.conf).Elem()
+	for i := 0; i < value.NumField(); i++ {
+		if conf, ok := value.Field(i).Interface().(ServerConfig); ok {
+			return conf.Domain
+
+		}
+	}
+	return ""
+}

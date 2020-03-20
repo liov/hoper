@@ -1,31 +1,23 @@
 package server
 
 import (
-	"context"
 	"net/http"
 	"os"
 	"os/signal"
 	"reflect"
-	"syscall"
-
 	"runtime/debug"
 	"strings"
+	"syscall"
 
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/liov/hoper/go/v2/initialize"
 	v2 "github.com/liov/hoper/go/v2/initialize/v2"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
+	"github.com/liov/hoper/go/v2/utils/http/gateway"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	"google.golang.org/grpc"
 )
-
-var ch = make(chan os.Signal, 1)
-
-func SignalChan() chan os.Signal {
-	return ch
-}
 
 func (s *Server) Serve() {
 	httpServer := s.Http()
@@ -55,30 +47,43 @@ func (s *Server) Serve() {
 	})
 	h2Handler := h2c.NewHandler(handle, &http2.Server{})
 	//反射从配置中取port
-	serverConfig := initialize.ServerConfig{Port: ":8080"}
-	serverConfigType := reflect.TypeOf(&serverConfig).Elem()
-	value := reflect.ValueOf(s.Conf).Elem()
-	for i := 0; i < value.NumField(); i++ {
-		if value.Field(i).Type() == serverConfigType {
-			serverConfig = value.Field(i).Interface().(initialize.ServerConfig)
+
+	server := &http.Server{Addr: getPort(s.Conf), Handler: h2Handler}
+	cs := func() {
+		if grpcServer != nil {
+			grpcServer.Stop()
+		}
+		if err := server.Close(); err != nil {
+			log.Error(err)
 		}
 	}
-
-	server := &http.Server{Addr: serverConfig.Port, Handler: h2Handler}
 	go func() {
-		log.Infof("listening%v", server.Addr)
-		if err := server.ListenAndServe(); err != nil {
-			log.Fatalf("failed to serve: %v", err)
-		}
+		<-close
+		log.Info("关闭服务")
+		cs()
+		close <- syscall.SIGINT
 	}()
 
-	<-ch
-	if grpcServer != nil {
-		grpcServer.Stop()
+	go func() {
+		<-stop
+		log.Info("重启服务")
+		cs()
+	}()
+	log.Infof("listening%v", server.Addr)
+	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Fatalf("failed to serve: %v", err)
 	}
-	if err := server.Close(); err != nil {
-		log.Error(err)
+}
+
+func getPort(v interface{}) string {
+	value := reflect.ValueOf(v).Elem()
+	for i := 0; i < value.NumField(); i++ {
+		if conf, ok := value.Field(i).Interface().(initialize.ServerConfig); ok {
+			return conf.Port
+
+		}
 	}
+	return ":8080"
 }
 
 type BasicConfig struct {
@@ -95,28 +100,33 @@ type Server struct {
 	Conf        Config
 	Dao         initialize.Dao
 	GRPCRegistr func(*grpc.Server)
-	HTTPRegistr func(context.Context, *runtime.ServeMux)
+	HTTPRegistr gateway.GatewayHandle
 }
 
-//
+var close = make(chan os.Signal, 1)
+var stop = make(chan struct{}, 1)
+
 func (s *Server) Start() {
 	defer v2.Start(s.Conf, s.Dao)()
+	signal.Notify(close,
+		// kill -SIGINT XXXX 或 Ctrl+c
+		syscall.SIGINT, // register that too, it should be ok
+		// os.Kill等同于syscall.Kill
+		syscall.SIGKILL, // register that too, it should be ok
+		// kill -SIGTERM XXXX
+		syscall.SIGTERM,
+	)
 Loop:
 	for {
-		signal.Notify(ch,
-			// kill -SIGINT XXXX 或 Ctrl+c
-			syscall.SIGINT, // register that too, it should be ok
-			// os.Kill等同于syscall.Kill
-			syscall.SIGKILL, // register that too, it should be ok
-			// kill -SIGTERM XXXX
-			syscall.SIGTERM,
-		)
 		select {
-		case <-ch:
-			log.Info("关闭服务")
+		case <-close:
 			break Loop
 		default:
 			s.Serve()
 		}
 	}
+}
+
+func ReStart() {
+	stop <- struct{}{}
 }

@@ -22,8 +22,8 @@ var files = map[string][]string{
 	"/utils/errorcode/*enum.proto": {"enum_out=plugins=grpc"},
 	"/utils/actor/message/*.proto": {"gogo_out=plugins=grpc"},
 	"/utils/response/*.gen.proto":  {"gogo_out=plugins=grpc"},
-	//"/utils/proto/gogo/*.proto":    {"gogo_out=plugins=grpc"},
-	"/utils/proto/go/*gen.proto": {"go_out=plugins=grpc"},
+	"/utils/proto/gogo/*.proto":    {"gogo_out=plugins=grpc"},
+	"/utils/proto/go/*gen.proto":   {"go_out=plugins=grpc"},
 	"/user/*service.proto": {"gogo_out=plugins=grpc",
 		"grpc-gateway_out=logtostderr=true",
 		"swagger_out=logtostderr=true",
@@ -56,7 +56,10 @@ func main() {
 				arg = arg + "/api"
 			}
 			if strings.HasPrefix(k, "/utils/proto/go/") {
-				arg = "-I" + *proto + " " + *proto + "/utils/proto/go/*gen.proto --go_out=plugins=grpc:" + pwd + "/protobuf"
+				arg = "protoc -I" + *proto + " " + *proto + "/utils/proto/go/*gen.proto --go_out=plugins=grpc:" + pwd + "/protobuf"
+			}
+			if strings.HasPrefix(k, "/utils/proto/gogo/") {
+				arg = "protoc -I" + *proto + " " + *proto + "/utils/proto/gogo/*.proto --gogo_out=plugins=grpc:" + pwd + "/protobuf"
 			}
 			words := split(arg)
 			cmd := exec.Command(words[0], words[1:]...)
