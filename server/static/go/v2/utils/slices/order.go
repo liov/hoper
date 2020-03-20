@@ -1,4 +1,4 @@
-package array
+package slices
 
 func Intersection(a []uint64, b []uint64) []uint64 {
 	if len(a) > len(b) {

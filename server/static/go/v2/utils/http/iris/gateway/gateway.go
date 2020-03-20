@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/core/handlerconv"
 	"github.com/liov/hoper/go/v2/utils/http/debug"
@@ -13,7 +12,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
-func Http(irisHandle func(*iris.Application), gatewayHandle func(context.Context, *runtime.ServeMux)) http.Handler {
+func Http(irisHandle func(*iris.Application), gatewayHandle gateway.GatewayHandle) http.Handler {
 	gwmux := gateway.Gateway(gatewayHandle)
 	//openapi
 	mux := iris.New()

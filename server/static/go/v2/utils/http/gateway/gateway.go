@@ -11,7 +11,9 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-func Gateway(gatewayHandle func(context.Context, *runtime.ServeMux)) http.Handler {
+type GatewayHandle func(context.Context, *runtime.ServeMux)
+
+func Gateway(gatewayHandle GatewayHandle) http.Handler {
 	ctx := context.Background()
 
 	jsonpb := &jsonpb.JSONPb{

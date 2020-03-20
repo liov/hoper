@@ -1,8 +1,0 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
-
-go_library(
-    name = "go_default_library",
-    srcs = ["phone.go"],
-    importpath = "github.com/liov/hoper/go/v2/utils/third/phone",
-    visibility = ["//visibility:public"],
-)

@@ -2,7 +2,7 @@ package server
 
 import (
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	"github.com/liov/hoper/go/v2/utils/grpc/filter"
+	"github.com/liov/hoper/go/v2/utils/http/grpc/filter"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
