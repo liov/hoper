@@ -11,8 +11,8 @@ import (
 	"github.com/liov/hoper/go/v2/httptpl/internal/config"
 	"github.com/liov/hoper/go/v2/httptpl/internal/router"
 	"github.com/liov/hoper/go/v2/initialize"
-	iris_build "github.com/liov/hoper/go/v2/utils/http/iris"
 	"github.com/liov/hoper/go/v2/utils/log"
+	iris_build "github.com/liov/hoper/go/v2/utils/net/http/iris"
 )
 
 func main() {

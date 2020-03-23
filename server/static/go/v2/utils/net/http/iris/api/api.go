@@ -8,7 +8,7 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
 	"github.com/kataras/iris/v12/core/handlerconv"
-	"github.com/liov/hoper/go/v2/utils/http/api"
+	"github.com/liov/hoper/go/v2/utils/net/http/api"
 )
 
 func OpenApi(mux *iris.Application, filePath string) {

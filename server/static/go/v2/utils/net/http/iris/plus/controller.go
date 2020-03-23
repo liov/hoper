@@ -13,7 +13,7 @@ import (
 	"github.com/kataras/iris/v12/core/handlerconv"
 	"github.com/kataras/iris/v12/macro"
 	"github.com/kataras/pio"
-	"github.com/liov/hoper/go/v2/utils/http/api"
+	"github.com/liov/hoper/go/v2/utils/net/http/api"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 )
 
