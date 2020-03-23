@@ -17,9 +17,9 @@ type EnvConfig struct {
 }
 
 type BasicNacosConfig struct {
-	NacosAddr   string
-	NacosGroup  string
-	NacosDataId string
+	NacosAddr  string
+	NacosGroup string
+	//NacosDataId string DataId与Moudle相同
 }
 
 type InitConfig struct {
@@ -28,9 +28,11 @@ type InitConfig struct {
 	initialize.Init
 }
 
+var BasicConfig *Init
+
 type Init struct {
-	envConfig   *EnvConfig
-	nacosConfig *nacos.Config
+	EnvConfig   *EnvConfig
+	NacosConfig *nacos.Config
 	initialize.Init
 }
 
@@ -53,23 +55,23 @@ func NewInitWithLoadConfig(conf initialize.Config, dao initialize.Dao) *Init {
 	tmpTyp := reflect.TypeOf(&tmpConfig)
 	for i := 0; i < typ.NumField(); i++ {
 		if typ.Field(i).Type == tmpTyp && strings.ToUpper(typ.Field(i).Name) == strings.ToUpper(init.Env) {
-			/*			tmpConfig = value.Field(i).Interface().(*nacos.Config)
-						//真·深度复制
-						data,_:=json.Marshal(tmpConfig)
-						if err:=json.Unmarshal(data,init.envConfig);err!=nil{
-							log.Fatal(err)
-						}*/
+			/*				tmpConfig = value.Field(i).Interface().(*nacos.Config)
+							//真·深度复制
+							data,_:=json.Marshal(tmpConfig)
+							if err:=json.Unmarshal(data,init.EnvConfig);err!=nil{
+								log.Fatal(err)
+							}*/
 			//会被回收,也可能是被移动了？
 			tmpConfig = *value.Field(i).Interface().(*EnvConfig)
-			init.envConfig = &tmpConfig
+			init.EnvConfig = &tmpConfig
 			break
 		}
 	}
-	init.nacosConfig = &nacos.Config{
+	init.NacosConfig = &nacos.Config{
 		Addr:   initConfig.NacosAddr,
-		Tenant: init.envConfig.Tenant,
+		Tenant: init.EnvConfig.Tenant,
 		Group:  initConfig.NacosGroup,
-		DataId: initConfig.NacosDataId,
+		DataId: initConfig.Module,
 	}
 	return init
 }
@@ -85,7 +87,7 @@ func Start(conf initialize.Config, dao initialize.Dao) func() {
 	//逃逸到堆上了
 	init := NewInitWithLoadConfig(conf, dao)
 	nacosClient := init.config()
-
+	BasicConfig = init
 	go nacosClient.Listener(func(bytes []byte) {
 		init.Unmarshal(bytes)
 		if dao != nil {
@@ -103,7 +105,7 @@ func Start(conf initialize.Config, dao initialize.Dao) func() {
 }
 
 func (init *Init) config() *nacos.Client {
-	nacosClient := init.nacosConfig.NewClient()
+	nacosClient := init.NacosConfig.NewClient()
 	nacosClient.GetConfigAllInfoHandle(init.Unmarshal)
 	init.SetDao()
 	return nacosClient

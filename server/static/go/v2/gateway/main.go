@@ -8,7 +8,7 @@ import (
 	"github.com/liov/hoper/go/v2/gateway/internal/config"
 	note "github.com/liov/hoper/go/v2/protobuf/note"
 	user "github.com/liov/hoper/go/v2/protobuf/user"
-	"github.com/liov/hoper/go/v2/utils/http/server"
+	"github.com/liov/hoper/go/v2/utils/net/http/server"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 )

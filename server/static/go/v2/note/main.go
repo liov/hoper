@@ -8,8 +8,8 @@ import (
 	"github.com/liov/hoper/go/v2/note/internal/dao"
 	"github.com/liov/hoper/go/v2/note/internal/service"
 	model "github.com/liov/hoper/go/v2/protobuf/note"
-	"github.com/liov/hoper/go/v2/utils/http/server"
 	"github.com/liov/hoper/go/v2/utils/log"
+	"github.com/liov/hoper/go/v2/utils/net/http/server"
 	"google.golang.org/grpc"
 )
 

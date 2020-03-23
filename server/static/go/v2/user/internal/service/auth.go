@@ -12,10 +12,10 @@ import (
 	"github.com/liov/hoper/go/v2/user/internal/dao"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/liov/hoper/go/v2/utils/http/iris/response"
-	"github.com/liov/hoper/go/v2/utils/http/token"
 	"github.com/liov/hoper/go/v2/utils/json"
 	"github.com/liov/hoper/go/v2/utils/log"
+	"github.com/liov/hoper/go/v2/utils/net/http/iris/response"
+	"github.com/liov/hoper/go/v2/utils/net/http/token"
 )
 
 func Auth(w http.ResponseWriter, r *http.Request) {

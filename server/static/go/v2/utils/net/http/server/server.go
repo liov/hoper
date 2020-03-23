@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"reflect"
 	"runtime/debug"
 	"strings"
 	"syscall"
@@ -12,8 +11,8 @@ import (
 	"github.com/liov/hoper/go/v2/initialize"
 	v2 "github.com/liov/hoper/go/v2/initialize/v2"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
-	"github.com/liov/hoper/go/v2/utils/http/gateway"
 	"github.com/liov/hoper/go/v2/utils/log"
+	"github.com/liov/hoper/go/v2/utils/net/http/gateway"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	"google.golang.org/grpc"
@@ -48,7 +47,7 @@ func (s *Server) Serve() {
 	h2Handler := h2c.NewHandler(handle, &http2.Server{})
 	//反射从配置中取port
 
-	server := &http.Server{Addr: getPort(s.Conf), Handler: h2Handler}
+	server := &http.Server{Addr: v2.BasicConfig.GetServicePort(), Handler: h2Handler}
 	cs := func() {
 		if grpcServer != nil {
 			grpcServer.Stop()
@@ -75,25 +74,8 @@ func (s *Server) Serve() {
 	}
 }
 
-func getPort(v interface{}) string {
-	value := reflect.ValueOf(v).Elem()
-	for i := 0; i < value.NumField(); i++ {
-		if conf, ok := value.Field(i).Interface().(initialize.ServerConfig); ok {
-			return conf.Port
-
-		}
-	}
-	return ":8080"
-}
-
-type BasicConfig struct {
-	initialize.BasicConfig
-	Port string
-}
-
 type Config interface {
 	initialize.Config
-	GetBasicConfig() *initialize.BasicConfig
 }
 
 type Server struct {
@@ -108,6 +90,9 @@ var stop = make(chan struct{}, 1)
 
 func (s *Server) Start() {
 	defer v2.Start(s.Conf, s.Dao)()
+	if v2.BasicConfig == nil {
+		log.Fatal("初始化配置失败")
+	}
 	signal.Notify(close,
 		// kill -SIGINT XXXX 或 Ctrl+c
 		syscall.SIGINT, // register that too, it should be ok

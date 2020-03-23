@@ -9,7 +9,7 @@ import (
 	model "github.com/liov/hoper/go/v2/protobuf/note"
 	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/go/v2/protobuf/utils/response"
-	"github.com/liov/hoper/go/v2/utils/server"
+	"github.com/liov/hoper/go/v2/utils/net/http/server"
 )
 
 type NoteService struct {

@@ -7,9 +7,9 @@ import (
 
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/core/handlerconv"
-	"github.com/liov/hoper/go/v2/utils/http/debug"
-	"github.com/liov/hoper/go/v2/utils/http/gateway"
 	"github.com/liov/hoper/go/v2/utils/log"
+	"github.com/liov/hoper/go/v2/utils/net/http/debug"
+	"github.com/liov/hoper/go/v2/utils/net/http/gateway"
 )
 
 func Http(irisHandle func(*iris.Application), gatewayHandle gateway.GatewayHandle) http.Handler {

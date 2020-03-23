@@ -10,12 +10,12 @@ func TestNacos(t *testing.T) {
 		Config: &Config{
 			Addr:   "192.168.1.212:9001",
 			Tenant: "",
-			DataId: "test",
+			DataId: "user",
 			Group:  "DEFAULT_GROUP",
 		},
 		MD5:   "",
 		close: nil,
 	}
-	config, _ := c.GetService("user")
-	log.Println(string(config))
+	service, _ := c.GetService()
+	log.Println(service.Name)
 }

@@ -44,10 +44,6 @@ type BasicConfig struct {
 	Env    string
 }
 
-func (c *BasicConfig) GetBasicConfig() *BasicConfig {
-	return c
-}
-
 type ServerConfig struct {
 	Protocol     string
 	Domain       string
@@ -219,13 +215,13 @@ func (init *Init) Unmarshal(bytes []byte) {
 	toml.Unmarshal(bytes, init.conf)
 }
 
-func (init *Init) GetServiceName() string {
+func (init *Init) GetServicePort() string {
 	value := reflect.ValueOf(init.conf).Elem()
 	for i := 0; i < value.NumField(); i++ {
 		if conf, ok := value.Field(i).Interface().(ServerConfig); ok {
-			return conf.Domain
+			return conf.Port
 
 		}
 	}
-	return ""
+	return ":8080"
 }
