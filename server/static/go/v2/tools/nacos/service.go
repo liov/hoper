@@ -28,6 +28,7 @@ type Type struct {
 
 type Metadata struct {
 	Domain string `json:"domain"`
+	Port   string `json:"port"`
 }
 
 type Service struct {
@@ -72,6 +73,11 @@ func (c *Config) GetService(svcName string) (*Service, error) {
 	var service Service
 	json.Unmarshal(res, &service)
 	return &service, nil
+}
+
+func (c *Config) GetServiceEndPort(svcName string) string {
+	svc, _ := c.GetService(svcName)
+	return svc.Metadata.Domain + svc.Metadata.Port
 }
 
 func (c *Config) RegisterInstance(port, svcName string) error {
