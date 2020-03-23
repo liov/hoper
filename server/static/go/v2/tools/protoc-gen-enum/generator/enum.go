@@ -3,12 +3,11 @@ package generator
 import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
-	google_protobuf "github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	"github.com/gogo/protobuf/vanity"
 	cuzproto "github.com/liov/hoper/go/v2/protobuf/utils/proto/gogo"
 )
 
-func IsEnumValueCN(field *google_protobuf.EnumValueDescriptorProto) bool {
+func IsEnumValueCN(field *descriptor.EnumValueDescriptorProto) bool {
 	name := GetEnumValueCN(field)
 	if len(name) > 0 {
 		return true
@@ -16,7 +15,7 @@ func IsEnumValueCN(field *google_protobuf.EnumValueDescriptorProto) bool {
 	return false
 }
 
-func GetEnumValueCN(field *google_protobuf.EnumValueDescriptorProto) string {
+func GetEnumValueCN(field *descriptor.EnumValueDescriptorProto) string {
 	if field == nil {
 		return ""
 	}
@@ -29,7 +28,7 @@ func GetEnumValueCN(field *google_protobuf.EnumValueDescriptorProto) string {
 	return ""
 }
 
-func IsEnumType(field *google_protobuf.EnumDescriptorProto) bool {
+func IsEnumType(field *descriptor.EnumDescriptorProto) bool {
 	name := GetEnumType(field)
 	if len(name) > 0 {
 		return true
@@ -37,7 +36,7 @@ func IsEnumType(field *google_protobuf.EnumDescriptorProto) bool {
 	return false
 }
 
-func GetEnumType(field *google_protobuf.EnumDescriptorProto) string {
+func GetEnumType(field *descriptor.EnumDescriptorProto) string {
 	if field == nil {
 		return ""
 	}
@@ -50,7 +49,7 @@ func GetEnumType(field *google_protobuf.EnumDescriptorProto) string {
 	return ""
 }
 
-func EnabledGoEnumValueMap(file *google_protobuf.FileDescriptorProto, enum *google_protobuf.EnumDescriptorProto) bool {
+func EnabledGoEnumValueMap(file *descriptor.FileDescriptorProto, enum *descriptor.EnumDescriptorProto) bool {
 	return proto.GetBoolExtension(enum.Options, cuzproto.E_EnumGenvaluemap, false)
 }
 
@@ -58,7 +57,7 @@ func TurnOffGoEnumValueMap(enum *descriptor.EnumDescriptorProto) {
 	vanity.SetBoolEnumOption(cuzproto.E_EnumGenvaluemap, false)(enum)
 }
 
-func EnabledEnumNumOrder(file *google_protobuf.FileDescriptorProto, enum *google_protobuf.EnumDescriptorProto) bool {
+func EnabledEnumNumOrder(file *descriptor.FileDescriptorProto, enum *descriptor.EnumDescriptorProto) bool {
 	return proto.GetBoolExtension(enum.Options, cuzproto.E_EnumNumorder, false)
 }
 
@@ -66,7 +65,7 @@ func TurnOffEnumNumOrder(enum *descriptor.EnumDescriptorProto) {
 	vanity.SetBoolEnumOption(cuzproto.E_EnumNumorder, false)(enum)
 }
 
-func EnabledEnumJsonMarshal(file *google_protobuf.FileDescriptorProto, enum *google_protobuf.EnumDescriptorProto) bool {
+func EnabledEnumJsonMarshal(file *descriptor.FileDescriptorProto, enum *descriptor.EnumDescriptorProto) bool {
 	return proto.GetBoolExtension(enum.Options, cuzproto.E_EnumJsonmarshal, false)
 }
 
@@ -74,7 +73,7 @@ func TurnOffEnumJsonMarshal(enum *descriptor.EnumDescriptorProto) {
 	vanity.SetBoolEnumOption(cuzproto.E_EnumJsonmarshal, false)(enum)
 }
 
-func EnabledEnumErrorCode(enum *google_protobuf.EnumDescriptorProto) bool {
+func EnabledEnumErrorCode(enum *descriptor.EnumDescriptorProto) bool {
 	return proto.GetBoolExtension(enum.Options, cuzproto.E_EnumErrorcode, false)
 }
 

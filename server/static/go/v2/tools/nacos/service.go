@@ -6,15 +6,20 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/kataras/iris/v12/context"
 	"github.com/liov/hoper/go/v2/utils/net"
 )
 
 const (
-	CreateServiceUrl    = "http://%s/nacos/v1/ns/service?serviceName=%s&groupName=%s&namespaceId=%s"
-	GetServiceListUrl   = "http://%s/nacos/v1/ns/service/list?pageNo=%s&pageSize=%s&serviceName=%s&groupName=%s&namespaceId=%s"
-	RegisterInstanceUrl = "http://%s/nacos/v1/ns/instance?port=%s&ip=%s&serviceName=%s&groupName=%s&namespaceId=%s"
+	CreateServiceUrl      = "http://%s/nacos/v1/ns/service"
+	CreateServiceParam    = "serviceName=%s&groupName=%s&namespaceId=%s&protectThreshold=0&metadata=%s"
+	GetServiceUrl         = "http://%s/nacos/v1/ns/service?serviceName=%s&groupName=%s&namespaceId=%s&protectThreshold=0"
+	GetServiceListUrl     = "http://%s/nacos/v1/ns/service/list?pageNo=%s&pageSize=%s&serviceName=%s&groupName=%s&namespaceId=%s"
+	RegisterInstanceUrl   = "http://%s/nacos/v1/ns/instance"
+	RegisterInstanceParam = "port=%s&ip=%s&serviceName=%s&groupName=%s&namespaceId=%s"
+	BeatParam             = "serviceName=%s&groupName=%s&beat=%s"
 )
 
 type Type struct {
@@ -36,10 +41,14 @@ type Service struct {
 	}
 }
 
-func (c *Client) CreateService(svcName string) error {
-	urlStr := fmt.Sprintf(CreateServiceUrl,
-		c.Addr, svcName, c.Group, c.Tenant)
-	resp, err := http.Post(urlStr, context.ContentFormHeaderValue, nil)
+func (c *Config) CreateService(svcName string, metadata *Metadata) error {
+	urlStr := fmt.Sprintf(CreateServiceUrl, c.Addr)
+	var data []byte
+	if metadata != nil {
+		data, _ = json.Marshal(metadata)
+	}
+	param := fmt.Sprintf(CreateServiceParam, svcName, c.Group, c.Tenant, string(data))
+	resp, err := http.Post(urlStr, context.ContentFormHeaderValue, strings.NewReader(param))
 	if err != nil {
 		return err
 	}
@@ -49,8 +58,8 @@ func (c *Client) CreateService(svcName string) error {
 	return nil
 }
 
-func (c *Client) GetService(svcName string) (*Service, error) {
-	urlStr := fmt.Sprintf(CreateServiceUrl,
+func (c *Config) GetService(svcName string) (*Service, error) {
+	urlStr := fmt.Sprintf(GetServiceUrl,
 		c.Addr, svcName, c.Group, c.Tenant)
 	resp, err := http.Get(urlStr)
 	if err != nil {
@@ -65,10 +74,48 @@ func (c *Client) GetService(svcName string) (*Service, error) {
 	return &service, nil
 }
 
-func (c *Client) RegisterInstance(port, svcName string) error {
-	urlStr := fmt.Sprintf(RegisterInstanceUrl,
-		c.Addr, port, net.GetIP(), svcName, c.Group, c.Tenant)
-	resp, err := http.Post(urlStr, context.ContentFormHeaderValue, nil)
+func (c *Config) RegisterInstance(port, svcName string) error {
+	urlStr := fmt.Sprintf(RegisterInstanceUrl, c.Addr)
+	param := fmt.Sprintf(RegisterInstanceParam,
+		port[1:], net.GetIP(), svcName, c.Group, c.Tenant)
+	resp, err := http.Post(urlStr, context.ContentFormHeaderValue, strings.NewReader(param))
+	if err != nil {
+		return err
+	}
+	if res, _ := ioutil.ReadAll(resp.Body); resp.StatusCode != 200 {
+		return errors.New(string(res))
+	}
+	return nil
+}
+
+func (c *Config) DeleteInstance(port, svcName string) error {
+	urlStr := fmt.Sprintf(RegisterInstanceUrl, c.Addr)
+	param := fmt.Sprintf(RegisterInstanceParam,
+		port[1:], net.GetIP(), svcName, c.Group, c.Tenant)
+	req, err := http.NewRequest(http.MethodDelete, urlStr, strings.NewReader(param))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", context.ContentFormHeaderValue)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	if res, _ := ioutil.ReadAll(resp.Body); resp.StatusCode != 200 {
+		return errors.New(string(res))
+	}
+	return nil
+}
+
+func (c *Config) InstanceBeat(svcName string) error {
+	urlStr := fmt.Sprintf(RegisterInstanceUrl, c.Addr) + "/beat"
+	param := fmt.Sprintf(BeatParam, svcName, c.Group, `{"msg":"实例正常"}`)
+	req, err := http.NewRequest(http.MethodPut, urlStr, strings.NewReader(param))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", context.ContentFormHeaderValue)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return err
 	}

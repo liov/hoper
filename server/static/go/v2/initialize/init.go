@@ -225,3 +225,14 @@ func (init *Init) GetServicePort() string {
 	}
 	return ":8080"
 }
+
+func (init *Init) GetServiceDomain() string {
+	value := reflect.ValueOf(init.conf).Elem()
+	for i := 0; i < value.NumField(); i++ {
+		if conf, ok := value.Field(i).Interface().(ServerConfig); ok {
+			return conf.Domain
+
+		}
+	}
+	return ""
+}

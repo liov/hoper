@@ -52,7 +52,7 @@ type ConfigInfo struct {
 	Type       string `json:"type"`
 }
 
-func (c *Client) GetConfig() ([]byte, error) {
+func (c *Config) GetConfig() ([]byte, error) {
 	urlStr := fmt.Sprintf(GetConfigUrl,
 		c.Addr, c.Tenant, c.Group, c.DataId)
 	resp, err := http.Get(urlStr)

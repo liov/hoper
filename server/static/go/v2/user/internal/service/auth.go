@@ -47,7 +47,7 @@ func Auth(w http.ResponseWriter, r *http.Request) {
 		errHandle(w)
 		return
 	}
-	claims, err := token.ParseToken(auth, config.Conf.Server.TokenSecret)
+	claims, err := token.ParseToken(auth, config.Conf.Customize.TokenSecret)
 	if err != nil {
 		errHandle(w)
 		return
@@ -69,7 +69,7 @@ func (*UserService) Auth(ctx context.Context) (*model.UserMainInfo, error) {
 	if len(tokens) == 0 || tokens[0] == "" {
 		return nil, model.UserErr_NoLogin
 	}
-	claims, err := token.ParseToken(tokens[0], config.Conf.Server.TokenSecret)
+	claims, err := token.ParseToken(tokens[0], config.Conf.Customize.TokenSecret)
 	if err != nil {
 		return nil, err
 	}

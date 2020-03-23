@@ -138,7 +138,7 @@ func salt(password string) string {
 
 // EncryptPassword 给密码加密
 func encryptPassword(password string) string {
-	hash := salt(password) + config.Conf.Server.PassSalt + password[5:]
+	hash := salt(password) + config.Conf.Customize.PassSalt + password[5:]
 	return fmt.Sprintf("%x", md5.Sum(strings2.ToBytes(hash)))
 }
 
@@ -257,7 +257,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.T
 
 func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginRep, error) {
 
-	if verifyErr := luosimao.LuosimaoVerify(config.Conf.Server.LuosimaoVerifyURL, config.Conf.Server.LuosimaoAPIKey, req.Luosimao); verifyErr != nil {
+	if verifyErr := luosimao.LuosimaoVerify(config.Conf.Customize.LuosimaoVerifyURL, config.Conf.Customize.LuosimaoAPIKey, req.Luosimao); verifyErr != nil {
 		return nil, errorcode.InvalidArgument.WithMessage(verifyErr.Error())
 	}
 
@@ -298,7 +298,7 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 	}
 	now := time.Now()
 	nowStamp := now.Unix()
-	tokenString, err := token.GenerateToken(user.Id, nowStamp, config.Conf.Server.TokenMaxAge, config.Conf.Server.TokenSecret)
+	tokenString, err := token.GenerateToken(user.Id, nowStamp, config.Conf.Customize.TokenMaxAge, config.Conf.Customize.TokenSecret)
 	if err != nil {
 		return nil, errorcode.Internal
 	}
@@ -329,8 +329,8 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 		Value: tokenString,
 		Path:  "/",
 		//Domain:   "hoper.xyz",
-		Expires:  time.Now().Add(time.Duration(config.Conf.Server.TokenMaxAge) * time.Second),
-		MaxAge:   int(time.Duration(config.Conf.Server.TokenMaxAge) * time.Second),
+		Expires:  time.Now().Add(time.Duration(config.Conf.Customize.TokenMaxAge) * time.Second),
+		MaxAge:   int(time.Duration(config.Conf.Customize.TokenMaxAge) * time.Second),
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
@@ -384,7 +384,7 @@ func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.Ge
 }
 
 func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (*response.TinyRep, error) {
-	if verifyErr := luosimao.LuosimaoVerify(config.Conf.Server.LuosimaoVerifyURL, config.Conf.Server.LuosimaoAPIKey, req.Luosimao); verifyErr != nil {
+	if verifyErr := luosimao.LuosimaoVerify(config.Conf.Customize.LuosimaoVerifyURL, config.Conf.Customize.LuosimaoAPIKey, req.Luosimao); verifyErr != nil {
 		return nil, errorcode.InvalidArgument.WithMessage(verifyErr.Error())
 	}
 
