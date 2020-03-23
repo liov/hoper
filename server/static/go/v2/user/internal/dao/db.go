@@ -7,8 +7,8 @@ import (
 
 	"github.com/jinzhu/gorm"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
-	"github.com/liov/hoper/go/v2/utils/array"
 	"github.com/liov/hoper/go/v2/utils/log"
+	"github.com/liov/hoper/go/v2/utils/slices"
 )
 
 type UserDao struct{}
@@ -111,7 +111,7 @@ func (*UserDao) SaveResumes(db *gorm.DB, userId uint64, resumes []*model.Resume,
 	//差集
 	var differenceIds []uint64
 	if len(originalIds) > 0 {
-		differenceIds = array.Difference(editIds, originalIds)
+		differenceIds = slices.Difference(editIds, originalIds)
 	}
 	db.Model(&model.Resume{}).Where("id in (?)", differenceIds).Update("status", 0)
 	for _, id := range differenceIds {

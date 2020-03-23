@@ -2,6 +2,7 @@ package server
 
 import (
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	"github.com/liov/hoper/go/v2/initialize/v2"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/filter"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -19,5 +20,6 @@ func (s *Server) Grpc() *grpc.Server {
 	s.GRPCRegistr(gs)
 	// Register reflection service on gRPC server.
 	reflection.Register(gs)
+	initialize.BasicConfig.Register()
 	return gs
 }

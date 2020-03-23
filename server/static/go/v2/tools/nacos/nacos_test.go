@@ -16,6 +16,11 @@ func TestNacos(t *testing.T) {
 		MD5:   "",
 		close: nil,
 	}
-	service, _ := c.GetService()
+	service, _ := c.GetService("user")
 	log.Println(service.Name)
+}
+
+func TestBytes(t *testing.T) {
+	var data []byte
+	log.Println(string(data))
 }

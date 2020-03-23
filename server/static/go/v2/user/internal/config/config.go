@@ -41,11 +41,11 @@ var RedisSettings = &RedisConfig{}
 var MongoSettings = &MongoConfig{}*/
 
 type config struct {
-	initialize.ServerConfig
 	//自定义的配置
 	Customize serverConfig
 	//命令参数大于配置
 	Flag     flagValue
+	Server   initialize.ServerConfig
 	Mail     initialize.MailConfig
 	Database initialize.DatabaseConfig
 	Redis    initialize.RedisConfig

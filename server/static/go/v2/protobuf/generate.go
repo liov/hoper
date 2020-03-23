@@ -59,7 +59,7 @@ func main() {
 				arg = "protoc -I" + *proto + " " + *proto + "/utils/proto/go/*gen.proto --go_out=plugins=grpc:" + pwd + "/protobuf"
 			}
 			if strings.HasPrefix(k, "/utils/proto/gogo/") {
-				arg = "protoc -I" + *proto + " " + *proto + "/utils/proto/gogo/*.proto --gogo_out=plugins=grpc:" + pwd + "/protobuf"
+				arg = "protoc -I" + *proto + " " + *proto + "/utils/proto/gogo/*.proto --gogo_out=plugins=grpc,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor:" + pwd + "/protobuf"
 			}
 			words := split(arg)
 			cmd := exec.Command(words[0], words[1:]...)

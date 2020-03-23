@@ -10,7 +10,7 @@ import (
 
 func GetIP() string {
 	ip, _ := ExternalIP()
-	return string(ip)
+	return ip.String()
 }
 
 func ExternalIP() (net.IP, error) {
