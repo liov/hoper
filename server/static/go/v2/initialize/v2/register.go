@@ -9,7 +9,10 @@ func (init *Init) Register() {
 	svcName := init.NacosConfig.DataId
 	_, err := init.NacosConfig.GetService(svcName)
 	if err != nil {
-		err = init.NacosConfig.CreateService(svcName, &nacos.Metadata{Domain: init.GetServiceDomain()})
+		err = init.NacosConfig.CreateService(svcName, &nacos.Metadata{
+			Domain: init.GetServiceDomain(),
+			Port:init.GetServicePort(),
+		})
 		if err != nil {
 			log.Fatal(err)
 		}
