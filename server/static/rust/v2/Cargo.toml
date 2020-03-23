@@ -10,3 +10,9 @@ members = [
     "hello_v2",
     "hello_v3"
 ]
+
+[source.crates-io]
+replace-with = 'ustc'
+
+[source.ustc]
+registry = "git://mirrors.ustc.edu.cn/crates.io-index"
