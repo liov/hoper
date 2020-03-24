@@ -12,31 +12,57 @@ func init() {
 }
 
 func Mock(v interface{}) {
-	value := reflect.ValueOf(v).Elem()
+	value := reflect.ValueOf(v)
+	typMap := make(map[reflect.Type]int)
+	mock(value, typMap)
+}
+
+func mock(value reflect.Value, typMap map[reflect.Type]int) {
+	typ := value.Type()
 	switch value.Kind() {
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		r := rand.Uint64()
+		r := uint64(rand.Int63n(10000))
 		value.SetUint(r)
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		r := rand.Int63()
+		r := rand.Int63n(10000)
 		value.SetInt(r)
 	case reflect.Float32, reflect.Float64:
-		r := rand.Float64()
+		r := rand.ExpFloat64()
 		value.SetFloat(r)
 	case reflect.String:
 		value.SetString(RandString())
 	case reflect.Ptr:
-		if value.IsNil() {
-			value.Set(reflect.New(value.Type().Elem()))
+		if count := typMap[typ]; count == 3 {
+			return
 		}
-		Mock(value.Interface())
+		typMap[typ] = typMap[typ] + 1
+		if value.IsNil() {
+			value.Set(reflect.New(typ.Elem()))
+		}
+		mock(value.Elem(), typMap)
 	case reflect.Struct:
 		for i := 0; i < value.NumField(); i++ {
 			field := value.Field(i)
-			Mock(field.Addr().Interface())
+			mock(field, typMap)
 		}
 	case reflect.Array:
-
+		for i := 0; i < value.Len(); i++ {
+			mock(value.Index(i), typMap)
+		}
+	case reflect.Slice:
+		value.Set(reflect.MakeSlice(typ, 3, 3))
+		for i := 0; i < 3; i++ {
+			mock(value.Index(i), typMap)
+		}
+	case reflect.Map:
+		value.Set(reflect.MakeMapWithSize(typ, 3))
+		for i := 0; i < 3; i++ {
+			mk := reflect.New(typ.Key()).Elem()
+			mock(mk, typMap)
+			mv := reflect.New(typ.Elem()).Elem()
+			mock(mv, typMap)
+			value.SetMapIndex(mk, mv)
+		}
 	}
 }
 
