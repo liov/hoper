@@ -2,6 +2,7 @@ package reflect3
 
 import (
 	"fmt"
+	"log"
 	"reflect"
 	"runtime"
 	"unsafe"
@@ -54,8 +55,12 @@ func FindFuncWithName(name string) (uintptr, error) {
 	for moduleData := &Firstmoduledata; moduleData != nil; moduleData = moduleData.next {
 		for _, ftab := range moduleData.ftab {
 			f := (*runtime.Func)(unsafe.Pointer(&moduleData.pclntable[ftab.funcoff]))
+			log.Println(f.Name())
 			if f.Name() == name {
 				return f.Entry(), nil
+			}
+			if f.Name() == "main.main" {
+				return 0, fmt.Errorf("Invalid function name: %s", name)
 			}
 		}
 	}
