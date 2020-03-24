@@ -105,3 +105,7 @@ go install github.com/golang/protobuf/protoc-gen-go
 
 ## nacos post请求报参数错误
 手动加请求头Content-Type:application/x-www-form-urlencoded
+
+## 编译postwoman报错
+清除npm缓存，npm i
+好吧，postwoman那界面我受不了，内存大点就大点吧，其实apipost是真好用

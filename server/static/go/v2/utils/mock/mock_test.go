@@ -30,6 +30,13 @@ type Bar1 struct {
 type Bar2 struct {
 	Field1 int
 	Field2 string
+	Field3 []*Bar3
+}
+
+type Bar3 struct {
+	Field1 float64
+	Field2 string
+	Field3 map[string]int
 }
 
 func TestMock(t *testing.T) {
