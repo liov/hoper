@@ -10,7 +10,7 @@ require (
 	github.com/aws/aws-lambda-go v1.13.3 // indirect
 	github.com/aws/aws-sdk-go v1.27.0 // indirect
 	github.com/bcongdon/corral v0.0.0-20190319213343-1f4ad49dee34
-	github.com/brahma-adshonor/gohook v0.0.0-20190919050457-00027f26cd2e
+	github.com/brahma-adshonor/gohook v0.0.0-20200311033618-28b944a6fdfa
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gogo/protobuf v1.3.1
 	github.com/google/flatbuffers v1.11.0

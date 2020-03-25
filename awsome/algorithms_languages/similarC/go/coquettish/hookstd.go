@@ -31,7 +31,10 @@ func PreHookPrintln(a ...interface{}) (n int, err error) {
 func main() {
 	gohook.Hook(strconv.Atoi, hook, preHook)
 	fmt.Println(strconv.Atoi("123456"))
+	fmt.Println(preHook("123456"))
 	//windows amd64 1.13无法hook
+	//我估计是fmt.Println在release模式下会被内联，然而-cflags '-l' 不如用动态语言更自由
 	gohook.Hook(fmt.Println, hookPrintln, PreHookPrintln)
-	fmt.Println(`hello,world!`)
+	fmt.Println(fmt.Println(`hello,world!`))
+	fmt.Println(PreHookPrintln(`hello,world!`))
 }
