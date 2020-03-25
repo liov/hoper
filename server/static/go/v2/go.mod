@@ -3,6 +3,7 @@ module github.com/liov/hoper/go/v2
 go 1.13
 
 require (
+	bou.ke/monkey v1.0.2
 	git.apache.org/thrift.git v0.13.0 // indirect
 	github.com/360EntSecGroup-Skylar/excelize/v2 v2.0.2 // indirect
 	github.com/AsynkronIT/protoactor-go v0.0.0-20200221110811-81497e71df85
