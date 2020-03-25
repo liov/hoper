@@ -14,4 +14,5 @@ func llog() { log.Println("log") }
 func TestAop(t *testing.T) {
 	Invoke(llog, &foo1)
 	foo1()
+	foo1()
 }
