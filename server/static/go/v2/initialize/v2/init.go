@@ -2,6 +2,7 @@ package initialize
 
 import (
 	"flag"
+	"os"
 	"reflect"
 	"strings"
 	"unsafe"
@@ -38,15 +39,19 @@ type Init struct {
 
 func NewInitWithLoadConfig(conf initialize.Config, dao initialize.Dao) *Init {
 	initConfig := InitConfig{}
-	log.Info(int64(uintptr(unsafe.Pointer(&initConfig))))
+	log.Debug(int64(uintptr(unsafe.Pointer(&initConfig))))
+	if _, err := os.Stat(initialize.ConfUrl); os.IsNotExist(err) {
+		log.Fatalf("配置错误: 请确保可执行文件和配置目录在同一目录下")
+	}
 	err := configor.New(&configor.Config{Debug: true}).
-		Load(&initConfig, initialize.ConfUrl) //"./Config/Config.toml"
+		Load(&initConfig, initialize.ConfUrl)
 	if err != nil {
 		log.Fatalf("配置错误: %v", err)
 	}
 	init := NewInit(conf, dao)
 
 	init.BasicConfig = initConfig.BasicConfig
+	init.Env = initialize.Env
 	init.NoInit = initConfig.NoInit
 
 	value := reflect.ValueOf(&initConfig).Elem()

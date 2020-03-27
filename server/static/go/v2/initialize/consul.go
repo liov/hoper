@@ -19,7 +19,7 @@ func (init *Init) P0ConsulOnce() {
 	var runtime_viper = viper.New()
 
 	runtime_viper.AddRemoteProvider("consul", conf.Addr, InitKey)
-	runtime_viper.SetConfigType("toml") // because there is no file extension in a stream of bytes, supported extensions are "json", "toml", "yaml", "yml", "properties", "props", "prop", "env", "dotenv"
+	runtime_viper.SetConfigType("toml") // because there is no file extension in a stream of bytes, supported extensions are "json", "toml", "yaml", "yml", "properties", "props", "prop", "Env", "dotenv"
 
 	// read from remote Config the first time.
 	err := runtime_viper.ReadRemoteConfig()

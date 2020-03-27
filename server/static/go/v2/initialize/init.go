@@ -2,6 +2,7 @@ package initialize
 
 import (
 	"flag"
+	"os"
 	"path"
 	"path/filepath"
 	"reflect"
@@ -18,15 +19,16 @@ import (
 	"github.com/liov/hoper/go/v2/utils/watch"
 )
 
-type EnvVar map[string]string
+//约定大于配置
+var ConfUrl = "./Config/config.toml"
 
-var ConfUrl string
+var Env string
 
 //附加配置，不对外公开的的配置,特定文件名,启用文件搜寻查找
 var AddConfig string
 
 func init() {
-	flag.StringVar(&ConfUrl, "c", "./Config/Config.toml", "配置文件夹路径")
+	flag.StringVar(&Env, "env", DEVELOPMENT, "环境")
 	flag.StringVar(&AddConfig, "add", "", "额外配置文件名")
 }
 
@@ -71,8 +73,12 @@ type Init struct {
 
 func NewInitWithLoadConfig(conf Config, dao Dao) *Init {
 	init := &Init{conf: conf, dao: dao}
+	if _, err := os.Stat(ConfUrl); os.IsNotExist(err) {
+		log.Panic("配置错误: 请确保可执行文件和配置目录在同一目录下")
+	}
 	err := configor.New(&configor.Config{Debug: false}).
 		Load(init, ConfUrl) //"./Config/Config.toml"
+	init.Env = Env
 	if err != nil {
 		log.Fatalf("配置错误: %v", err)
 	}
@@ -135,7 +141,7 @@ func Start(conf Config, dao Dao) func() {
 func (init *Init) config() {
 	dir, file := filepath.Split(ConfUrl)
 	err := configor.New(&configor.Config{Debug: init.Env != PRODUCT}).
-		Load(init.conf, ConfUrl, dir+init.Env+path.Ext(file)) //"./Config/{{env}}.toml"
+		Load(init.conf, ConfUrl, dir+init.Env+path.Ext(file)) //"./Config/{{Env}}.toml"
 	if err != nil {
 		log.Fatalf("配置错误: %v", err)
 	}
