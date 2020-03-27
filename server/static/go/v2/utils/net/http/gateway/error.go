@@ -4,13 +4,28 @@ import (
 	"context"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"google.golang.org/grpc/grpclog"
+	"google.golang.org/grpc/status"
 )
 
+//黑科技
+var ReConnect = make(map[string]func() error)
+
 func CustomHTTPError(ctx context.Context, mux *runtime.ServeMux, marshaler runtime.Marshaler, w http.ResponseWriter, _ *http.Request, err error) {
+
+	s, ok := status.FromError(err)
+	if ok && s.Code() == 14 && strings.HasSuffix(s.Message(), `refused it."`) {
+		if len(ReConnect) > 0 {
+			for _, f := range ReConnect {
+				f()
+			}
+		}
+	}
+
 	const fallback = `{"code": 14, "message": "failed to marshal error message"}`
 
 	w.Header().Del("Trailer")
