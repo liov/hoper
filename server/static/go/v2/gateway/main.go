@@ -9,6 +9,7 @@ import (
 	"github.com/liov/hoper/go/v2/initialize/v2"
 	note "github.com/liov/hoper/go/v2/protobuf/note"
 	user "github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/utils/net/http/gateway"
 	"github.com/liov/hoper/go/v2/utils/net/http/server"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
@@ -21,7 +22,7 @@ func main() {
 		GRPCRegistr: nil,
 		HTTPRegistr: func(ctx context.Context, mux *runtime.ServeMux) {
 			opts := []grpc.DialOption{grpc.WithInsecure()}
-			err := user.RegisterUserServiceHandlerFromEndpoint(ctx, mux, initialize.BasicConfig.NacosConfig.GetServiceEndPort("user"), opts)
+			err := user.RegisterUserServiceHandlerFromModuleWithReConnect(ctx, mux, "user", opts, gateway.ReConnect)
 			if err != nil {
 				log.Fatal(err)
 			}
