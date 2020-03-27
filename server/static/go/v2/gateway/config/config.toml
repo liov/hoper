@@ -1,6 +1,4 @@
 Module = "gateway"
-#dev | test | prod
-Env = "dev"
 
 NoInit = ["Cache","Apollo","Consul"]
 
@@ -16,10 +14,11 @@ EnablePathEscape= false
 FireMethodNotAllowed= false
 DisableBodyConsumptionOnUnmarshal= false
 DisableAutoFireStatusCode= false
-TimeFormat= "Mon, 01 Jan 2006 15=04=05 GMT"
+TimeFormat= "2006-01-02 15:04:05"
 Charset= "UTF-8"
 EnableOptimizations= true
 
+#env
 [dev]
 Tenant = "e0119132-f523-4a84-bd42-7830235eb9cf"
 
