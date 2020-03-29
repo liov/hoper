@@ -27,10 +27,11 @@ type ErpSession struct {
 	Type          int      `json:"type"`
 	FilterIds     []int    `json:"filterIds"`
 	FilterDeptIds []int    `json:"filterDeptIds"`
+	FilterCompIds []int    `json:"filterCompIds"`
 }
 
 func main() {
-	sess := &Session{UserID: 699}
+	sess := &ErpSession{EmployeeId: 1, Type: 3, FilterCompIds: []int{10002}}
 	data, _ := json.Marshal(sess)
 	log.Println("X-Session-Data", base64.StdEncoding.EncodeToString(data))
 }
