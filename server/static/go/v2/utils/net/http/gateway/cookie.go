@@ -25,7 +25,11 @@ func CookieHook(ctx context.Context, writer http.ResponseWriter, message proto.M
 }
 
 func GrpcSetCookie(ctx context.Context, cookie string) {
-	grpc.SendHeader(ctx, metadata.MD{"Set-Cookie": []string{cookie}})
+	err := grpc.SendHeader(ctx, metadata.MD{"Set-Cookie": []string{cookie}})
+	if err != nil {
+		md, _ := metadata.FromIncomingContext(ctx)
+		md.Set("Set-Cookie", cookie)
+	}
 }
 
 type SetCookie interface {
