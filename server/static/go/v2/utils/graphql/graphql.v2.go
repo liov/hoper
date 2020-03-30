@@ -14,18 +14,10 @@ import (
 func GraphqlRouterV2(app *iris.Application) {
 	// Schema
 	user := graphql.NewObject(graphql.ObjectConfig{Name: "User", Fields: graphql.Fields{
-		"Name": &graphql.Field{
-			Type: graphql.String,
-		},
-		"Id": &graphql.Field{
-			Type: graphql.String,
-		},
-		"Gender": &graphql.Field{
-			Type: graphql.String,
-		},
-		"Phone": &graphql.Field{
-			Type: graphql.String,
-		},
+		"Name":   &graphql.Field{Type: graphql.String},
+		"Id":     &graphql.Field{Type: graphql.String},
+		"Gender": &graphql.Field{Type: graphql.String},
+		"Phone":  &graphql.Field{Type: graphql.String},
 	}})
 	query := graphql.NewObject(graphql.ObjectConfig{Name: "Query", Fields: graphql.Fields{
 		"getUser": &graphql.Field{

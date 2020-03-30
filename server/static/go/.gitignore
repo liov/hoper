@@ -4,3 +4,6 @@
 *.micro.go
 *.mock.go
 *.swagger.json
+*.gqlgen.pb.go
+*.gqlgen.pb.yml
+*.pb.graphqls
