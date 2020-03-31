@@ -54,11 +54,10 @@ type ServerConfig struct {
 	WriteTimeout time.Duration
 }
 
-func (c *ServerConfig) GetServerConfig() *ServerConfig {
-	return c
-}
-
-func (c *ServerConfig) Customer() {
+func (c *ServerConfig) Custom() {
+	if c.Port == "" {
+		c.Port = ":8080"
+	}
 	c.ReadTimeout = c.ReadTimeout * time.Second
 	c.WriteTimeout = c.WriteTimeout * time.Second
 }
@@ -161,6 +160,12 @@ func (init *Init) config() {
 
 //反射方法命名规范,P+优先级+方法名+(执行一次+Once)
 func (init *Init) SetDao() {
+	confValue := reflect.ValueOf(init.conf).Elem()
+	for i := 0; i < confValue.NumField(); i++ {
+		if conf, ok := confValue.Field(i).Interface().(NeedInit); ok {
+			conf.Custom()
+		}
+	}
 	init.conf.Custom()
 	if init.dao == nil {
 		return
@@ -221,24 +226,13 @@ func (init *Init) Unmarshal(bytes []byte) {
 	toml.Unmarshal(bytes, init.conf)
 }
 
-func (init *Init) GetServicePort() string {
+func (init *Init) GetServiceConfig() *ServerConfig {
 	value := reflect.ValueOf(init.conf).Elem()
 	for i := 0; i < value.NumField(); i++ {
 		if conf, ok := value.Field(i).Interface().(ServerConfig); ok {
-			return conf.Port
+			return &conf
 
 		}
 	}
-	return ":8080"
-}
-
-func (init *Init) GetServiceDomain() string {
-	value := reflect.ValueOf(init.conf).Elem()
-	for i := 0; i < value.NumField(); i++ {
-		if conf, ok := value.Field(i).Interface().(ServerConfig); ok {
-			return conf.Domain
-
-		}
-	}
-	return ""
+	return nil
 }

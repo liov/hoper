@@ -1,4 +1,4 @@
-Module = "httptpl"
+Module = "httptpl2"
 #dev | test | prod
 Env = "dev"
 

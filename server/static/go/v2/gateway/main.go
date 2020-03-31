@@ -20,7 +20,7 @@ func main() {
 		Conf:        config.Conf,
 		Dao:         nil,
 		GRPCRegistr: nil,
-		HTTPRegistr: func(ctx context.Context, mux *runtime.ServeMux) {
+		GatewayRegistr: func(ctx context.Context, mux *runtime.ServeMux) {
 			opts := []grpc.DialOption{grpc.WithInsecure()}
 			err := user.RegisterUserServiceHandlerFromModuleWithReConnect(ctx, mux, "user", opts, gateway.ReConnect)
 			if err != nil {

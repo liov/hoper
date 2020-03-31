@@ -1,4 +1,4 @@
-package iris_plus
+package api
 
 import (
 	"fmt"
@@ -9,13 +9,17 @@ import (
 
 	"github.com/go-openapi/spec"
 	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/context"
 	"github.com/kataras/iris/v12/core/handlerconv"
 	"github.com/kataras/iris/v12/macro"
 	"github.com/kataras/pio"
 	"github.com/liov/hoper/go/v2/utils/net/http/api"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 )
+
+type Session interface {
+	Crypto() []byte
+	Decrypter([]byte)
+}
 
 type App iris.Application
 
@@ -50,7 +54,10 @@ func ApiDoc(ctrl []Controller) {
 }
 
 func Register(app *iris.Application, ctrl []Controller, genApi bool) {
-	handler := &Handler{apiInfo: &apiInfo{}, app: app, genApi: genApi}
+	handler := &Handler{apiInfo: &apiInfo{},
+		docParam: &docParam{genApi: genApi},
+		app:      app}
+
 	for i := range ctrl {
 		value := reflect.ValueOf(ctrl[i])
 		if value.Kind() != reflect.Ptr {
@@ -65,7 +72,13 @@ func Register(app *iris.Application, ctrl []Controller, genApi bool) {
 			panic("Handler field必须在第一个")
 		}
 		handler.middle = ctrl[i].Middle()
-		value1.Field(0).Set(reflect.ValueOf(handler))
+		handleValue := reflect.ValueOf(handler)
+		handleType := handleValue.Type()
+		for j := 0; j < value1.NumField(); j++ {
+			if value1.Field(j).Type() == handleType {
+				value1.Field(j).Set(handleValue)
+			}
+		}
 
 		for j := 0; j < value.NumMethod(); j++ {
 			method := value.Type().Method(j)
@@ -93,7 +106,7 @@ func Register(app *iris.Application, ctrl []Controller, genApi bool) {
 				api.PrefixUri+reflect.TypeOf(ctrl[i]).Elem().Name()+`相关接口</a>"`)
 		}
 		openApi := strings.Join(mod, "<br>")
-		app.Get(api.PrefixUri, func(context context.Context) {
+		app.Get(api.PrefixUri, func(context iris.Context) {
 			context.WriteString(openApi)
 		})
 	}
@@ -107,18 +120,22 @@ type Controller interface {
 
 type Handler struct {
 	*apiInfo
+	*docParam
 	middle []iris.Handler
 	app    *iris.Application
-	genApi bool
+}
+
+type docParam struct {
+	//生成api用的参数，不优雅的实现
+	request, response, service interface{}
+	genApi                     bool
 }
 
 type apiInfo struct {
-	path, method, describe, date string
-	//生成api用的参数，不优雅的实现
-	request, response, service interface{}
-	version                    int
-	changelog                  []changelog
-	createlog                  changelog
+	auth, path, method, describe, date string
+	version                            int
+	changelog                          []changelog
+	createlog                          changelog
 }
 
 type changelog struct {
@@ -183,13 +200,22 @@ func (h *Handler) Handle(hs ...iris.Handler) *Handler {
 		return h
 	}
 	if h.path == "" || h.method == "" || h.describe == "" ||
-		h.version == 0 || h.request == nil || h.response == nil ||
-		h.createlog.version == "" {
+		h.version == 0 || h.createlog.version == "" {
 		panic("接口路径,方法,描述,版本,创建日志均为必填")
 	}
 
 	path := "/api/v" + strconv.Itoa(h.version) + h.path
 	handles := append(h.middle, hs...)
+	/*	var handle iris.Handler
+		handle = reflect.MakeFunc(reflect.TypeOf(handle),
+			func(args []reflect.Value) (results []reflect.Value) {
+				return nil
+		}).Interface().(iris.Handler)
+		handles = append(handles, func(context context.Context) {
+			if context.Method() == http.MethodGet {
+
+			}
+		})*/
 	h.app.Handle(h.method, path, handles...)
 	fmt.Printf(" %s\t %s %s\t %s\n",
 		pio.Green("API:"),
@@ -202,6 +228,9 @@ func (h *Handler) Handle(hs ...iris.Handler) *Handler {
 	h.createlog.version = ""
 	return h
 }
+
+var contextType = reflect.TypeOf((*Session)(nil)).Elem()
+var errorType = reflect.TypeOf((*error)(nil)).Elem()
 
 func (h *Handler) Api() {
 	doc := api.GetDoc()
@@ -236,6 +265,33 @@ func (h *Handler) Api() {
 		parameters[i].Format = tmpl.Params[i].Type.Indent()
 		exclude[i] = tmpl.Params[i].Name
 	}
+
+	if h.service != nil {
+		serviceType := reflect.TypeOf(h.service)
+		numIn := serviceType.NumIn()
+		numOut := serviceType.NumOut()
+		if numIn > 0 {
+			if numIn > 2 {
+				panic("service参数最多为两个")
+			}
+			for i := 0; i < numIn; i++ {
+				if !serviceType.In(i).Implements(contextType) {
+					h.request = reflect.New(serviceType.In(i)).Interface()
+				}
+			}
+		}
+		if numOut > 0 {
+			if numOut > 2 {
+				panic("service返回最多为两个")
+			}
+			for i := 0; i < numOut; i++ {
+				if !serviceType.Out(i).Implements(errorType) {
+					h.response = reflect.New(serviceType.Out(i)).Interface()
+				}
+			}
+		}
+	}
+
 	if h.request != nil {
 		idx := len(tmpl.Params)
 		parameters[idx] = spec.Parameter{

@@ -20,7 +20,7 @@ func main() {
 		GRPCRegistr: func(g *grpc.Server) {
 			model.RegisterUserServiceServer(g, service.UserSvc)
 		},
-		HTTPRegistr: func(ctx context.Context, mux *runtime.ServeMux) {
+		GatewayRegistr: func(ctx context.Context, mux *runtime.ServeMux) {
 			err := model.RegisterUserServiceHandlerServer(ctx, mux, service.UserSvc)
 			if err != nil {
 				log.Fatal(err)

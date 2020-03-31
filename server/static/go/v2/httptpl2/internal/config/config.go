@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/liov/hoper/go/v2/initialize"
-	"github.com/liov/hoper/go/v2/utils/fs"
 )
 
 type serverConfig struct {
@@ -84,11 +83,11 @@ func (c *config) Custom() {
 			c.Redis.Password = c.Database.Password
 		}
 		if c.Flag.MailPassword != "" {
-			c.Server.MailPassword = c.Flag.MailPassword
+			c.Customize.MailPassword = c.Flag.MailPassword
 		}
 	}
 
-	c.Server.UploadMaxSize = c.Server.UploadMaxSize * 1024 * 1024
+	c.Customize.UploadMaxSize = c.Customize.UploadMaxSize * 1024 * 1024
 	c.Server.ReadTimeout = c.Server.ReadTimeout * time.Second
 	c.Server.WriteTimeout = c.Server.WriteTimeout * time.Second
 	c.Redis.IdleTimeout = c.Redis.IdleTimeout * time.Second
