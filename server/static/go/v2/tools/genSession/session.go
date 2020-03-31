@@ -14,7 +14,7 @@ type Session struct {
 }
 
 type ErpSession struct {
-	PiId          int      `json:"piId"`
+	PiId          string   `json:"piId"`
 	EmployeeId    int      `json:"employeeId"`
 	EmployeeName  string   `json:"employeeName"`
 	DeptId        int      `json:"deptId"`

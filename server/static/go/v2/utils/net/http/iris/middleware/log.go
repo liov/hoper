@@ -1,4 +1,4 @@
-package iris_log
+package middleware
 
 import (
 	"strings"

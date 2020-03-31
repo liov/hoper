@@ -2,12 +2,13 @@ package router
 
 import (
 	"github.com/liov/hoper/go/v2/httptpl/internal/controller"
-	"github.com/liov/hoper/go/v2/utils/net/http/iris/plus"
+	"github.com/liov/hoper/go/v2/httptpl/internal/service"
+	"github.com/liov/hoper/go/v2/utils/net/http/iris/api"
 )
 
-func route() []iris_plus.Controller {
+func Route() []api.Controller {
 	//controller注册
-	return []iris_plus.Controller{
-		&controller.UserController{},
+	return []api.Controller{
+		&controller.UserController{Service: &service.UserService{}},
 	}
 }

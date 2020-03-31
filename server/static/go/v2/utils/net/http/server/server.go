@@ -8,6 +8,7 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/kataras/iris/v12"
 	"github.com/liov/hoper/go/v2/initialize"
 	v2 "github.com/liov/hoper/go/v2/initialize/v2"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
@@ -46,8 +47,13 @@ func (s *Server) Serve() {
 	})
 	h2Handler := h2c.NewHandler(handle, &http2.Server{})
 	//反射从配置中取port
-
-	server := &http.Server{Addr: v2.BasicConfig.GetServicePort(), Handler: h2Handler}
+	serviceConfig := v2.BasicConfig.GetServiceConfig()
+	server := &http.Server{
+		Addr:         serviceConfig.Port,
+		Handler:      h2Handler,
+		ReadTimeout:  serviceConfig.ReadTimeout,
+		WriteTimeout: serviceConfig.WriteTimeout,
+	}
 	cs := func() {
 		if grpcServer != nil {
 			grpcServer.Stop()
@@ -79,10 +85,11 @@ type Config interface {
 }
 
 type Server struct {
-	Conf        Config
-	Dao         initialize.Dao
-	GRPCRegistr func(*grpc.Server)
-	HTTPRegistr gateway.GatewayHandle
+	Conf           Config
+	Dao            initialize.Dao
+	GRPCRegistr    func(*grpc.Server)
+	GatewayRegistr gateway.GatewayHandle
+	IrisHandle     func(*iris.Application)
 }
 
 var close = make(chan os.Signal, 1)

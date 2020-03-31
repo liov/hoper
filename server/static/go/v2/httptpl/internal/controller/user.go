@@ -9,14 +9,15 @@ import (
 	"github.com/liov/hoper/go/v2/httptpl/internal/grpcclient"
 	"github.com/liov/hoper/go/v2/httptpl/internal/service"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
-	"github.com/liov/hoper/go/v2/protobuf/utils"
-	iris_plus "github.com/liov/hoper/go/v2/utils/net/http/iris/plus"
+	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
+	"github.com/liov/hoper/go/v2/utils/net/http/iris/api"
 
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
 type UserController struct {
-	*iris_plus.Handler
+	*api.Handler
+	Service *service.UserService
 }
 
 func (u *UserController) Middle() []iris.Handler {
@@ -32,8 +33,7 @@ func (u *UserController) VerificationCode() {
 		Path("/user/verification").
 		Method(http.MethodPost).
 		//这些信息不应该放在源代码里,都会打包进二进制文件
-		Request(new(utils.Empty)).
-		Response(new(model.VerifyRep)).
+		Service(u.Service.VerificationCode).
 		Describe("获取验证码").
 		Version(1).
 		CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
@@ -41,9 +41,9 @@ func (u *UserController) VerificationCode() {
 		Handle(
 			//不用反射做
 			func(c iris.Context) {
-				var req utils.Empty
+				var req empty.Empty
 				c.ReadJSON(&req)
-				c.JSON(service.UserSvc.VerificationCode(&req))
+				c.JSON(u.Service.VerificationCode(&req))
 			})
 }
 
@@ -51,8 +51,7 @@ func (u *UserController) Add() {
 	u.Handler.
 		Path("/user").
 		Method(http.MethodPost).
-		Request(new(model.SignupReq)).
-		Response(new(model.SignupRep)).
+		Service(u.Service.Add).
 		Describe("新增用户").
 		Version(1).
 		CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
@@ -60,7 +59,7 @@ func (u *UserController) Add() {
 			func(c iris.Context) {
 				var req model.SignupReq
 				c.ReadJSON(&req)
-				c.JSON(service.UserSvc.Add(&req))
+				c.JSON(u.Service.Add(&req))
 			})
 
 }
