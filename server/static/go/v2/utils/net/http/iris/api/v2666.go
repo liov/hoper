@@ -10,7 +10,6 @@ import (
 
 	"github.com/go-openapi/spec"
 	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/macro"
 	"github.com/kataras/pio"
 	"github.com/liov/hoper/go/v2/utils/net/http/api"
 	"github.com/liov/hoper/go/v2/utils/strings2"
@@ -24,8 +23,8 @@ func Api(f func() interface{}) {
 	}
 }
 
-func Path(p string) *apiInfo {
-	return &apiInfo{path: p}
+func Method(m string) *apiInfo {
+	return &apiInfo{method: m}
 }
 
 func (h *apiInfo) Date(d string) *apiInfo {
@@ -43,16 +42,6 @@ func (h *apiInfo) CreateLog(v, auth, date, log string) *apiInfo {
 		panic("创建记录只允许一条")
 	}
 	h.createlog = changelog{v, auth, date, log}
-	return h
-}
-
-func (h *apiInfo) Version(v int) *apiInfo {
-	h.version = v
-	return h
-}
-
-func (h *apiInfo) Method(m string) *apiInfo {
-	h.method = m
 	return h
 }
 
@@ -91,19 +80,19 @@ func RegisterAllService(app *iris.Application, svcs []Service, genApi bool) {
 			if methodInfo == nil {
 				log.Fatalf("%s未注册", method.Name)
 			}
-			if methodInfo.path == "" || methodInfo.method == "" || methodInfo.describe == "" ||
-				methodInfo.version == 0 || methodInfo.createlog.version == "" {
-				log.Fatalf("接口路径,方法,描述,版本,创建日志均为必填")
+			if methodInfo.method == "" || methodInfo.describe == "" || methodInfo.createlog.version == "" {
+				log.Fatalf("接口路径,方法,描述,创建日志均为必填")
 			}
-			path := "/api/v" + strconv.Itoa(methodInfo.version) + "/" + svcs[i].Name() + methodInfo.path
+			mName, version := parseMethodName(method.Name)
+			methodInfo.path = "/api/v" + strconv.Itoa(version) + "/" + svcs[i].Name() + "/" + mName
 			handles := append(svcs[i].Middle(), commonHandler)
-			app.Handle(methodInfo.method, path, handles...)
+			app.Handle(methodInfo.method, methodInfo.path, handles...)
 			fmt.Printf(" %s\t %s %s\t %s\n",
 				pio.Green("API:"),
 				pio.Yellow(strings2.FormatLen(methodInfo.method, 6)),
-				pio.Blue(strings2.FormatLen(path, 50)), pio.Purple(h.describe))
+				pio.Blue(strings2.FormatLen(methodInfo.path, 50)), pio.Purple(methodInfo.describe))
 			if genApi {
-				methodInfo.Api()
+				methodInfo.Api(value.Method(j).Type())
 			}
 		}
 	}
@@ -138,12 +127,35 @@ func getMethodInfo(fv reflect.Value) (info *apiInfo) {
 	return nil
 }
 
-func (h *apiInfo) Api(app *iris.Application) {
+// 从方法名称分析出接口名和版本号
+func parseMethodName(originName string) (name string, version int) {
+	idx := strings.LastIndexByte(originName, 'V')
+	version = 1
+	if idx > 0 {
+		if v, err := strconv.Atoi(originName[idx+1:]); err == nil {
+			version = v
+		}
+	} else {
+		idx = len(originName)
+	}
+	name = lowerFirst(originName[:idx])
+	return
+}
+
+// 仅首位小写（更符合接口的规范）
+func lowerFirst(t string) string {
+	b := []byte(t)
+	if 'A' <= b[0] && b[0] <= 'Z' {
+		b[0] += 'a' - 'A'
+	}
+	return string(b)
+}
+
+func (h *apiInfo) Api(serviceType reflect.Type) {
 	doc := api.GetDoc()
 	var pathItem *spec.PathItem
-	path := "/api/v" + strconv.Itoa(h.version) + h.path
 	if doc.Paths != nil && doc.Paths.Paths != nil {
-		if path, ok := doc.Paths.Paths[path]; ok {
+		if path, ok := doc.Paths.Paths[h.path]; ok {
 			pathItem = &path
 		} else {
 			pathItem = new(spec.PathItem)
@@ -153,110 +165,88 @@ func (h *apiInfo) Api(app *iris.Application) {
 		pathItem = new(spec.PathItem)
 	}
 
-	tmpl, err := macro.Parse(h.path, *app.Macros())
-	if err != nil {
-		panic(err)
+	//我觉得路径参数并没有那么值得非用不可
+	parameters := make([]spec.Parameter, 0, 1)
+	in := "body"
+	if h.method == http.MethodGet {
+		in = "query"
 	}
-	var exclude = make([]string, len(tmpl.Params))
-	parameters := make([]spec.Parameter, len(tmpl.Params)+1)
-	for i := 0; i < len(tmpl.Params); i++ {
-		parameters[i] = spec.Parameter{
-			ParamProps: spec.ParamProps{
-				Name:     tmpl.Params[i].Name,
-				In:       "path",
-				Required: true,
-			},
+	numIn := serviceType.NumIn()
+	numOut := serviceType.NumOut()
+	if numIn > 0 {
+		if numIn > 2 {
+			panic("service参数最多为两个")
 		}
-		parameters[i].Type = "string"
-		parameters[i].Format = tmpl.Params[i].Type.Indent()
-		exclude[i] = tmpl.Params[i].Name
-	}
+		for i := 0; i < numIn; i++ {
+			if !serviceType.In(i).Implements(contextType) {
+				param := spec.Parameter{
+					ParamProps: spec.ParamProps{
+						Name: "body",
+						In:   in,
+					},
+				}
 
-	if h.service != nil {
-		serviceType := reflect.TypeOf(h.service)
-		numIn := serviceType.NumIn()
-		numOut := serviceType.NumOut()
-		if numIn > 0 {
-			if numIn > 2 {
-				panic("service参数最多为两个")
+				param.Schema = new(spec.Schema)
+				param.Schema.Ref = spec.MustCreateRef("#/definitions/" + serviceType.In(i).Elem().Name())
+				parameters = append(parameters, param)
+				if doc.Definitions == nil {
+					doc.Definitions = make(map[string]spec.Schema)
+				}
+				DefinitionsApi(doc.Definitions, reflect.New(serviceType.In(i)).Interface(), nil)
 			}
-			for i := 0; i < numIn; i++ {
-				if !serviceType.In(i).Implements(contextType) {
-					h.request = reflect.New(serviceType.In(i)).Interface()
+		}
+	}
+	if numOut > 0 {
+		if numOut > 2 {
+			panic("service返回最多为两个")
+		}
+		for i := 0; i < numOut; i++ {
+			if !serviceType.Out(i).Implements(errorType) {
+				var responses spec.Responses
+				responses.StatusCodeResponses = make(map[int]spec.Response)
+				response := spec.Response{ResponseProps: spec.ResponseProps{Schema: new(spec.Schema)}}
+				response.Schema.Ref = spec.MustCreateRef("#/definitions/" + serviceType.Out(i).Elem().Name())
+				response.Description = "一个成功的返回"
+				DefinitionsApi(doc.Definitions, reflect.New(serviceType.Out(i)).Interface(), nil)
+				responses.StatusCodeResponses[200] = response
+				op := spec.Operation{
+					OperationProps: spec.OperationProps{
+						Summary:    h.describe,
+						ID:         h.path + h.method,
+						Parameters: parameters,
+						Responses:  &responses,
+					},
+				}
+
+				var tags, desc []string
+				tags = append(tags, h.createlog.version)
+				desc = append(desc, h.createlog.log)
+				for i := range h.changelog {
+					tags = append(tags, h.changelog[i].version)
+					desc = append(desc, h.changelog[i].log)
+				}
+				op.Tags = tags
+				op.Description = strings.Join(desc, "\n")
+
+				switch h.method {
+				case http.MethodGet:
+					pathItem.Get = &op
+				case http.MethodPost:
+					pathItem.Post = &op
+				case http.MethodPut:
+					pathItem.Put = &op
+				case http.MethodDelete:
+					pathItem.Delete = &op
+				case http.MethodOptions:
+					pathItem.Options = &op
+				case http.MethodPatch:
+					pathItem.Patch = &op
+				case http.MethodHead:
+					pathItem.Head = &op
 				}
 			}
 		}
-		if numOut > 0 {
-			if numOut > 2 {
-				panic("service返回最多为两个")
-			}
-			for i := 0; i < numOut; i++ {
-				if !serviceType.Out(i).Implements(errorType) {
-					h.response = reflect.New(serviceType.Out(i)).Interface()
-				}
-			}
-		}
 	}
 
-	if h.request != nil {
-		idx := len(tmpl.Params)
-		parameters[idx] = spec.Parameter{
-			ParamProps: spec.ParamProps{
-				Name: "body",
-				In:   "body",
-			},
-		}
-
-		parameters[idx].Schema = new(spec.Schema)
-		parameters[idx].Schema.Ref = spec.MustCreateRef("#/definitions/" + reflect.TypeOf(h.request).Elem().Name())
-		if doc.Definitions == nil {
-			doc.Definitions = make(map[string]spec.Schema)
-		}
-		DefinitionsApi(doc.Definitions, h.request, exclude)
-	}
-	if h.response != nil {
-		var responses spec.Responses
-		responses.StatusCodeResponses = make(map[int]spec.Response)
-		response := spec.Response{ResponseProps: spec.ResponseProps{Schema: new(spec.Schema)}}
-		response.Schema.Ref = spec.MustCreateRef("#/definitions/" + reflect.TypeOf(h.response).Elem().Name())
-		response.Description = "一个成功的返回"
-		DefinitionsApi(doc.Definitions, h.response, nil)
-		responses.StatusCodeResponses[200] = response
-		op := spec.Operation{
-			OperationProps: spec.OperationProps{
-				Summary:    h.describe,
-				ID:         h.path + h.method,
-				Parameters: parameters,
-				Responses:  &responses,
-			},
-		}
-
-		var tags, desc []string
-		tags = append(tags, h.createlog.version)
-		desc = append(desc, h.createlog.log)
-		for i := range h.changelog {
-			tags = append(tags, h.changelog[i].version)
-			desc = append(desc, h.changelog[i].log)
-		}
-		op.Tags = tags
-		op.Description = strings.Join(desc, "\n")
-
-		switch h.method {
-		case http.MethodGet:
-			pathItem.Get = &op
-		case http.MethodPost:
-			pathItem.Post = &op
-		case http.MethodPut:
-			pathItem.Put = &op
-		case http.MethodDelete:
-			pathItem.Delete = &op
-		case http.MethodOptions:
-			pathItem.Options = &op
-		case http.MethodPatch:
-			pathItem.Patch = &op
-		case http.MethodHead:
-			pathItem.Head = &op
-		}
-	}
-	doc.Paths.Paths[path] = *pathItem
+	doc.Paths.Paths[h.path] = *pathItem
 }

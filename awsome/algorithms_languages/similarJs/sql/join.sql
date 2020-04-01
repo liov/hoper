@@ -36,3 +36,5 @@ AND table1.status = 0 AND table1.field4 = 0;
 
 SELECT count(*) as t_count;
 SELECT count(case when table1.field4 = 0 then '1' end) as t_count;
+
+--这是三张表的左连接查询；

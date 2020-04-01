@@ -1,0 +1,50 @@
+<form action="deploy" method="post" name="dep">
+    <label>
+        项目：
+        <input list="projects" name="project">
+    </label>
+
+    <datalist id="projects">
+        {{range .Projects}}
+        <option value="{{.}}"></option>
+        {{end}}
+    </datalist>
+    <br>
+    <label>
+        环境：
+        <input list="envs" name="env">
+    </label>
+
+    <datalist id="envs">
+        <option value="dev">
+        <option value="stage">
+        <option value="prod">
+    </datalist>
+    <br>
+    <label>
+        flow：
+        <input list="flows" name="flow">
+    </label>
+
+    <datalist id="flows">
+        <option value="all">
+        <option value="svc">
+        <option value="ing">
+        <option value="dep">
+        <option value="build">
+        <option value="push">
+    </datalist>
+    <br>
+    <label>
+        版本：
+        <input type="text" name="version">
+        例如：1.1.0
+    </label>
+    <br>
+    <label>
+        发布人：
+        <input type="text" name="user">
+    </label>
+    <br>
+    <button type="button" onclick="commit()">提交</button>
+</form>
