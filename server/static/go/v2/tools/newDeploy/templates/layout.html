@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>deploy</title>
+    <style>
+        input {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+    </style>
+    <script type="text/javascript">
+        var commit = function (){
+            console.log("开始")
+            let o = {};
+            o.project = document.dep.project.value;
+            o.env = document.dep.env.value;
+            o.flow = document.dep.flow.value;
+            o.version = document.dep.version.value;
+            o.user = document.dep.user.value;
+            let url = window.location.href+'/deploy'
+            fetch(url, {
+                method: 'post', body: JSON.stringify(o), headers: {
+                    "Content-Type": "application/json"
+                }
+            }) .then(res => {
+                return res.text();
+            }).then(text => {
+                alert(text)
+            })
+
+        }
+    </script>
+</head>
+<body>
+<h1>Deploy</h1>
+{{ yield }}
+</body>
+</html>

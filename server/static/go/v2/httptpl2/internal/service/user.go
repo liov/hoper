@@ -25,10 +25,8 @@ func (*UserService) Middle() []iris.Handler {
 func (*UserService) Add(req *model.SignupReq) (*model.SignupRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	api.Api(func() interface{} {
-		return api.Path("/user").
-			Method(http.MethodPut).
+		return api.Method(http.MethodPut).
 			Describe("用户注册").
-			Version(1).
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建")
 	})
 
@@ -38,10 +36,8 @@ func (*UserService) Add(req *model.SignupReq) (*model.SignupRep, error) {
 func (*UserService) Edit(req *model.EditReq) (*model.EditReq_EditDetails, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	api.Api(func() interface{} {
-		return api.Path("/user/{id:uint64}").
-			Method(http.MethodPut).
+		return api.Method(http.MethodPut).
 			Describe("用户编辑").
-			Version(1).
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建")
 	})
 
