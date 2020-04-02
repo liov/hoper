@@ -3,12 +3,15 @@ package api
 import (
 	"mime"
 	"net/http"
+	"reflect"
+	"strings"
 
 	"github.com/go-openapi/spec"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
 	"github.com/kataras/iris/v12/core/handlerconv"
 	"github.com/liov/hoper/go/v2/utils/net/http/api"
+	"github.com/liov/hoper/go/v2/utils/reflect3"
 )
 
 func OpenApi(mux *iris.Application, filePath string) {
@@ -89,4 +92,68 @@ func ApiMiddle(ctx context.Context) {
 	}
 	doc.Paths.Paths[currentRouteName] = *pathItem
 	ctx.Next()
+}
+
+func DefinitionsApi(definitions map[string]spec.Schema, v interface{}, exclude []string) {
+	schema := spec.Schema{
+		SchemaProps: spec.SchemaProps{
+			Type:       []string{"object"},
+			Properties: make(map[string]spec.Schema),
+		},
+	}
+
+	body := reflect.TypeOf(v).Elem()
+	var typ, subFieldName string
+	for i := 0; i < body.NumField(); i++ {
+		json := strings.Split(body.Field(i).Tag.Get("json"), ",")[0]
+		if json == "" || json == "-" {
+			continue
+		}
+		fieldType := body.Field(i).Type
+		switch fieldType.Kind() {
+		case reflect.Struct:
+			typ = "object"
+			v = reflect.ValueOf(v).Elem().Field(i).Addr().Interface()
+			subFieldName = fieldType.Name()
+		case reflect.Ptr:
+			typ = "object"
+			v = reflect.New(fieldType.Elem()).Interface()
+			subFieldName = fieldType.Elem().Name()
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+			reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			typ = "integer"
+		case reflect.Array, reflect.Slice:
+			typ = "array"
+			v = reflect.New(reflect3.GetDereferenceType(fieldType)).Interface()
+			subFieldName = reflect3.GetDereferenceType(fieldType).Name()
+		case reflect.Float32, reflect.Float64:
+			typ = "number"
+		case reflect.String:
+			typ = "string"
+		case reflect.Bool:
+			typ = "boolean"
+
+		}
+		subSchema := spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{typ},
+			},
+		}
+		if typ == "object" {
+			subSchema.Ref = spec.MustCreateRef("#/definitions/" + subFieldName)
+			DefinitionsApi(definitions, v, nil)
+		}
+		if typ == "array" {
+			subSchema.Items = new(spec.SchemaOrArray)
+			subSchema.Items.Schema = &spec.Schema{}
+			subSchema.Items.Schema.Ref = spec.MustCreateRef("#/definitions/" + subFieldName)
+			DefinitionsApi(definitions, v, nil)
+		}
+		schema.Properties[json] = subSchema
+	}
+	definitions[body.Name()] = schema
+}
+
+func genSchema(v interface{}) *spec.Schema {
+	return nil
 }

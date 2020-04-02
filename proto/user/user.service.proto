@@ -1,13 +1,15 @@
 syntax = "proto3";
 package model;
 import "user/user.model.proto";
-import "user/user.enum.pub.proto";
+import "user/user.enum.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
 import "utils/empty/empty.imp.proto";
 import "utils/response/response.imp.proto";
+import "utils/proto/gogo/graphql.imp.proto";
+import "github.com/danielvladco/go-proto-gql/pb/gql.proto";
 
 
 option java_package = "xyz.hoper.protobuf.user";
@@ -45,6 +47,7 @@ service UserService {
             summary : "验证码"
             description : "验证码生成接口"
         };
+        option (gql.rpc_type) = QUERY;
     }
 
     //注册验证
@@ -58,6 +61,7 @@ service UserService {
             summary : "注册验证"
             description : "注册验证接口"
         };
+         option (gql.rpc_type) = MUTATION;
     }
 
     //注册
@@ -71,6 +75,7 @@ service UserService {
             summary : "注册"
             description : "注册接口"
         };
+         option (gql.rpc_type) = MUTATION;
     }
 
     //激活
@@ -83,6 +88,7 @@ service UserService {
             summary : "激活"
             description : "激活接口"
         };
+         option (gql.rpc_type) = MUTATION;
     }
     //编辑
     rpc Edit (EditReq) returns (response.TinyRep) {
@@ -103,6 +109,7 @@ service UserService {
                 }
             }
         };
+         option (gql.rpc_type) = MUTATION;
     }
     //登录
     rpc Login (LoginReq) returns (LoginRep) {
@@ -115,6 +122,7 @@ service UserService {
             summary : "登录"
             description : "登录接口"
         };
+        option (gql.rpc_type) = QUERY;
     }
     //退出
     rpc Logout (LogoutReq) returns (LogoutRep) {
@@ -126,11 +134,12 @@ service UserService {
             summary : "退出"
             description : "退出接口"
         };
+        option (gql.rpc_type) = QUERY;
     }
 
     //鉴权
     rpc AuthInfo (empty.Empty) returns (UserMainInfo) {
-
+        option (gql.rpc_type) = QUERY;
     }
 
     //重置密码
@@ -143,6 +152,7 @@ service UserService {
                 summary : "忘记密码"
                 description : "忘记密码接口"
             };
+     option (gql.rpc_type) = MUTATION;
     }
 
     rpc ResetPassword (ResetPasswordReq) returns (response.TinyRep) {
@@ -155,6 +165,7 @@ service UserService {
                     summary : "重置密码"
                     description : "重置密码接口"
                 };
+     option (gql.rpc_type) = MUTATION;
     }
 
     //获取用户信息
@@ -182,6 +193,7 @@ service UserService {
 
             }
         };
+        option (gql.rpc_type) = QUERY;
     }
 
     rpc ActionLogList (ActionLogListReq) returns (ActionLogListRep) {
@@ -193,6 +205,7 @@ service UserService {
                             summary : "操作日志"
                             description : "操作日志接口"
                         };
+        option (gql.rpc_type) = QUERY;
         }
 }
 
@@ -273,7 +286,7 @@ message EditReq {
         string avatarURL = 12 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
         string coverURL = 13 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
         repeated Resume eduExps = 15;
-        repeated Resume WorkExps = 16;
+        repeated Resume workExps = 16;
     }
 }
 

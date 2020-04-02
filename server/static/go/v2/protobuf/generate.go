@@ -16,20 +16,22 @@ import (
 
 //go:generate mockgen -destination ../protobuf/user/mock/user.mock.go -package mock -source ../protobuf/user/user.service.pb.go UserServiceServer
 
+func main() { run() }
+
 var files = map[string][]string{
 	"/utils/empty/*.gen.proto":      {"gogo_out=plugins=grpc"},
 	"/utils/errorcode/errrep.proto": {"gogo_out=plugins=grpc"},
 	"/utils/errorcode/*enum.proto":  {"enum_out=plugins=grpc"},
 	"/utils/actor/message/*.proto":  {"gogo_out=plugins=grpc"},
 	"/utils/response/*.gen.proto":   {"gogo_out=plugins=grpc"},
-	"/utils/proto/gogo/*.proto":     {"gogo_out=plugins=grpc"},
-	"/utils/proto/go/*gen.proto":    {"go_out=plugins=grpc"},
+	"/utils/proto/gogo/*.gen.proto": {"gogo_out=plugins=grpc"},
+	"/utils/proto/go/*.gen.proto":   {"go_out=plugins=grpc"},
 	"/user/*service.proto": {"gogo_out=plugins=grpc",
 		"grpc-gateway_out=logtostderr=true",
 		"swagger_out=logtostderr=true",
 		"govalidators_out=gogoimport=true",
 		//"gogqlgen_out=gogoimport=false,paths=source_relative",
-		//"gqlgencfg_out=paths=source_relative",
+		"gqlgencfg_out=paths=source_relative",
 		"gql_out=paths=source_relative"},
 	"/user/*model.proto": {"gogo_out=plugins=grpc"},
 	"/user/*enum.proto":  {"enum_out=plugins=grpc"},
@@ -46,7 +48,7 @@ var env = []string{
 	"GOOS=" + runtime.GOOS,
 }
 
-func main() {
+func run() {
 	pwd, _ := os.Getwd()
 	*proto = pwd + "/" + *proto
 	path := os.Getenv("GOPATH")
@@ -58,11 +60,14 @@ func main() {
 			if strings.HasPrefix(plugin, "swagger_out") {
 				arg = arg + "/api"
 			}
+			if strings.HasPrefix(plugin, "gql_out") || strings.HasPrefix(plugin, "gqlgencfg_out") {
+				arg = arg + "/gql"
+			}
 			if strings.HasPrefix(k, "/utils/proto/go/") {
-				arg = "protoc -I" + *proto + " " + *proto + "/utils/proto/go/*gen.proto --go_out=plugins=grpc:" + pwd + "/protobuf"
+				arg = "protoc -I" + *proto + " " + *proto + k + " --go_out=plugins=grpc:" + pwd + "/protobuf"
 			}
 			if strings.HasPrefix(k, "/utils/proto/gogo/") {
-				arg = "protoc -I" + *proto + " " + *proto + "/utils/proto/gogo/*.proto --gogo_out=plugins=grpc,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor:" + pwd + "/protobuf"
+				arg = "protoc -I" + *proto + " " + *proto + k + " --gogo_out=plugins=grpc,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor:" + pwd + "/protobuf"
 			}
 			words := split(arg)
 			cmd := exec.Command(words[0], words[1:]...)

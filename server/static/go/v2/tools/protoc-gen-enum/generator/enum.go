@@ -9,7 +9,7 @@ import (
 
 func IsEnumValueCN(field *descriptor.EnumValueDescriptorProto) bool {
 	name := GetEnumValueCN(field)
-	if len(name) > 0 {
+	if name != "" {
 		return true
 	}
 	return false
