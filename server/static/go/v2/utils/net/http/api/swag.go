@@ -14,7 +14,7 @@ import (
 )
 
 var PrefixUri = "/api-doc/"
-var FilePath = "../protobuf/"
+var FilePath = "../protobuf/api/"
 
 func HttpHandle(w http.ResponseWriter, r *http.Request) {
 	if r.RequestURI[len(r.RequestURI)-5:] == ".json" {

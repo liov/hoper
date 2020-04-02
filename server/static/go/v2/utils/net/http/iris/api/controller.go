@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"reflect"
@@ -9,12 +10,17 @@ import (
 
 	"github.com/go-openapi/spec"
 	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/core/handlerconv"
 	"github.com/kataras/iris/v12/macro"
 	"github.com/kataras/pio"
 	"github.com/liov/hoper/go/v2/utils/net/http/api"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 )
+
+type sessionKey struct{}
+
+func GetSession(ctx context.Context) {
+
+}
 
 type Session interface {
 	Crypto() []byte
@@ -53,7 +59,7 @@ func ApiDoc(ctrl []Controller) {
 	}
 }
 
-func Register(app *iris.Application, ctrl []Controller, genApi bool) {
+func Register(app *iris.Application, ctrl []Controller, genApi bool, modName string) {
 	handler := &Handler{apiInfo: &apiInfo{},
 		docParam: &docParam{genApi: genApi},
 		app:      app}
@@ -90,25 +96,9 @@ func Register(app *iris.Application, ctrl []Controller, genApi bool) {
 			}
 			value.Method(j).Call(nil)
 		}
-		if genApi {
-			app.Get(api.PrefixUri+"{mod:path}", handlerconv.FromStd(api.HttpHandle))
-			api.FilePath = "./api/"
-			api.WriteToFile(api.FilePath, ctrl[i].Name())
-			api.GetDoc().Paths = nil
-		}
 	}
 	if genApi {
-		api.FilePath = "./api"
-		var mod []string
-		for i := range ctrl {
-			mod = append(mod, `<a href =">`+
-				api.PrefixUri+reflect.TypeOf(ctrl[i]).Elem().Name()+`">`+
-				api.PrefixUri+reflect.TypeOf(ctrl[i]).Elem().Name()+`相关接口</a>"`)
-		}
-		openApi := strings.Join(mod, "<br>")
-		app.Get(api.PrefixUri, func(context iris.Context) {
-			context.WriteString(openApi)
-		})
+		api.WriteToFile(api.FilePath, modName)
 	}
 	handler = nil
 }
@@ -276,7 +266,7 @@ func (h *Handler) Api() {
 			}
 			for i := 0; i < numIn; i++ {
 				if !serviceType.In(i).Implements(contextType) {
-					h.request = reflect.New(serviceType.In(i)).Interface()
+					h.request = reflect.New(serviceType.In(i)).Elem().Interface()
 				}
 			}
 		}
@@ -286,7 +276,7 @@ func (h *Handler) Api() {
 			}
 			for i := 0; i < numOut; i++ {
 				if !serviceType.Out(i).Implements(errorType) {
-					h.response = reflect.New(serviceType.Out(i)).Interface()
+					h.response = reflect.New(serviceType.Out(i)).Elem().Interface()
 				}
 			}
 		}
@@ -353,53 +343,6 @@ func (h *Handler) Api() {
 		}
 	}
 	doc.Paths.Paths[path] = *pathItem
-}
-
-func DefinitionsApi(definitions map[string]spec.Schema, v interface{}, exclude []string) {
-	schema := spec.Schema{
-		SchemaProps: spec.SchemaProps{
-			Type:       []string{"object"},
-			Properties: make(map[string]spec.Schema),
-		},
-	}
-
-	body := reflect.TypeOf(v).Elem()
-	var typ, subFieldName string
-	for i := 0; i < body.NumField(); i++ {
-		switch body.Field(i).Type.Kind() {
-		case reflect.Struct:
-			typ = "object"
-			v = reflect.ValueOf(v).Elem().Field(i).Addr().Interface()
-			subFieldName = body.Field(i).Type.Name()
-		case reflect.Ptr:
-			typ = "object"
-			v = reflect.New(reflect.TypeOf(v).Elem().Field(i).Type.Elem()).Interface()
-			subFieldName = body.Field(i).Type.Elem().Name()
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
-			reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-			typ = "integer"
-		case reflect.Array, reflect.Slice:
-			typ = "array"
-		case reflect.Float32, reflect.Float64:
-			typ = "number"
-		case reflect.String:
-			typ = "string"
-		case reflect.Bool:
-			typ = "boolean"
-
-		}
-		subSchema := spec.Schema{
-			SchemaProps: spec.SchemaProps{
-				Type: []string{typ},
-			},
-		}
-		if typ == "object" {
-			subSchema.Ref = spec.MustCreateRef("#/definitions/" + subFieldName)
-			DefinitionsApi(definitions, v, nil)
-		}
-		schema.Properties[body.Field(i).Name] = subSchema
-	}
-	definitions[body.Name()] = schema
 }
 
 type HandlerFunc func(*Handler)

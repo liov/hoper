@@ -5,6 +5,7 @@ import (
 	"github.com/liov/hoper/go/v2/httptpl/internal/config"
 	"github.com/liov/hoper/go/v2/httptpl/internal/router"
 	"github.com/liov/hoper/go/v2/initialize"
+	v2 "github.com/liov/hoper/go/v2/initialize/v2"
 	"github.com/liov/hoper/go/v2/utils/net/http/iris/api"
 	"github.com/liov/hoper/go/v2/utils/net/http/server"
 )
@@ -21,7 +22,9 @@ func main() {
 	s := server.Server{
 		Conf: config.Conf,
 		IrisHandle: func(application *iris.Application) {
-			api.Register(application, router.Route(), initialize.Env == initialize.DEVELOPMENT)
+			api.Register(application, router.Route(),
+				initialize.Env == initialize.DEVELOPMENT,
+				v2.BasicConfig.Module)
 		},
 	}
 	s.Start()

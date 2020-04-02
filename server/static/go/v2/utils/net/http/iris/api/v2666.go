@@ -61,7 +61,7 @@ type Service interface {
 	Middle() []iris.Handler
 }
 
-func RegisterAllService(app *iris.Application, svcs []Service, genApi bool) {
+func RegisterAllService(app *iris.Application, svcs []Service, genApi bool, modName string) {
 	for i := range svcs {
 		value := reflect.ValueOf(svcs[i])
 		if value.Kind() != reflect.Ptr {
@@ -93,6 +93,7 @@ func RegisterAllService(app *iris.Application, svcs []Service, genApi bool) {
 				pio.Blue(strings2.FormatLen(methodInfo.path, 50)), pio.Purple(methodInfo.describe))
 			if genApi {
 				methodInfo.Api(value.Method(j).Type())
+				api.WriteToFile(api.FilePath, modName)
 			}
 		}
 	}
@@ -166,11 +167,7 @@ func (h *apiInfo) Api(serviceType reflect.Type) {
 	}
 
 	//我觉得路径参数并没有那么值得非用不可
-	parameters := make([]spec.Parameter, 0, 1)
-	in := "body"
-	if h.method == http.MethodGet {
-		in = "query"
-	}
+	parameters := make([]spec.Parameter, 0)
 	numIn := serviceType.NumIn()
 	numOut := serviceType.NumOut()
 	if numIn > 0 {
@@ -179,20 +176,34 @@ func (h *apiInfo) Api(serviceType reflect.Type) {
 		}
 		for i := 0; i < numIn; i++ {
 			if !serviceType.In(i).Implements(contextType) {
-				param := spec.Parameter{
-					ParamProps: spec.ParamProps{
-						Name: "body",
-						In:   in,
-					},
-				}
+				if h.method == http.MethodGet {
+					InType := serviceType.In(i).Elem()
+					for j := 0; j < InType.NumField(); j++ {
+						param := spec.Parameter{
+							ParamProps: spec.ParamProps{
+								Name: InType.Field(i).Name,
+								In:   "query",
+							},
+						}
+						parameters = append(parameters, param)
+					}
+				} else {
+					reqName := serviceType.In(i).Elem().Name()
+					param := spec.Parameter{
+						ParamProps: spec.ParamProps{
+							Name: reqName,
+							In:   "body",
+						},
+					}
 
-				param.Schema = new(spec.Schema)
-				param.Schema.Ref = spec.MustCreateRef("#/definitions/" + serviceType.In(i).Elem().Name())
-				parameters = append(parameters, param)
-				if doc.Definitions == nil {
-					doc.Definitions = make(map[string]spec.Schema)
+					param.Schema = new(spec.Schema)
+					param.Schema.Ref = spec.MustCreateRef("#/definitions/" + reqName)
+					parameters = append(parameters, param)
+					if doc.Definitions == nil {
+						doc.Definitions = make(map[string]spec.Schema)
+					}
+					DefinitionsApi(doc.Definitions, reflect.New(serviceType.In(i)).Elem().Interface(), nil)
 				}
-				DefinitionsApi(doc.Definitions, reflect.New(serviceType.In(i)).Interface(), nil)
 			}
 		}
 	}
@@ -207,7 +218,7 @@ func (h *apiInfo) Api(serviceType reflect.Type) {
 				response := spec.Response{ResponseProps: spec.ResponseProps{Schema: new(spec.Schema)}}
 				response.Schema.Ref = spec.MustCreateRef("#/definitions/" + serviceType.Out(i).Elem().Name())
 				response.Description = "一个成功的返回"
-				DefinitionsApi(doc.Definitions, reflect.New(serviceType.Out(i)).Interface(), nil)
+				DefinitionsApi(doc.Definitions, reflect.New(serviceType.Out(i)).Elem().Interface(), nil)
 				responses.StatusCodeResponses[200] = response
 				op := spec.Operation{
 					OperationProps: spec.OperationProps{

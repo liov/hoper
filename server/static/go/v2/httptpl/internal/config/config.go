@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/liov/hoper/go/v2/initialize"
-	"github.com/liov/hoper/go/v2/utils/fs"
 )
 
 type serverConfig struct {
@@ -33,11 +32,6 @@ type serverConfig struct {
 	SiteName string
 	Host     string
 
-	MailHost     string
-	MailPort     string
-	MailUser     string
-	MailPassword string
-
 	LuosimaoVerifyURL string
 	LuosimaoAPIKey    string
 
@@ -58,6 +52,7 @@ type config struct {
 	Customize serverConfig
 	//命令参数大于配置
 	Flag     flagValue
+	Mail     initialize.MailConfig
 	Server   initialize.ServerConfig
 	Database initialize.DatabaseConfig
 	Redis    initialize.RedisConfig
@@ -84,11 +79,11 @@ func (c *config) Custom() {
 			c.Redis.Password = c.Database.Password
 		}
 		if c.Flag.MailPassword != "" {
-			c.Server.MailPassword = c.Flag.MailPassword
+			c.Mail.Password = c.Flag.MailPassword
 		}
 	}
 
-	c.Server.UploadMaxSize = c.Server.UploadMaxSize * 1024 * 1024
+	c.Customize.UploadMaxSize = c.Customize.UploadMaxSize * 1024 * 1024
 	c.Server.ReadTimeout = c.Server.ReadTimeout * time.Second
 	c.Server.WriteTimeout = c.Server.WriteTimeout * time.Second
 	c.Redis.IdleTimeout = c.Redis.IdleTimeout * time.Second

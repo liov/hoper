@@ -16,7 +16,7 @@ import (
 )
 
 type UserController struct {
-	*api.Handler
+	Handler *api.Handler
 	Service *service.UserService
 }
 
