@@ -2,8 +2,8 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "go_default_library",
-    srcs = ["valid.go"],
-    importpath = "github.com/liov/hoper/go/v2/utils/valid",
+    srcs = ["validator.go"],
+    importpath = "github.com/liov/hoper/go/v2/utils/validator",
     visibility = ["//visibility:public"],
     deps = [
         "@com_github_go_playground_locales//zh:go_default_library",

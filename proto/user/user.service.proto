@@ -1,5 +1,5 @@
 syntax = "proto3";
-package model;
+package user;
 import "user/user.model.proto";
 import "user/user.enum.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
@@ -47,7 +47,7 @@ service UserService {
             summary : "验证码"
             description : "验证码生成接口"
         };
-        option (gql.rpc_type) = QUERY;
+        option (cuzproto.graphql_operation) = Query;
     }
 
     //注册验证
@@ -61,7 +61,7 @@ service UserService {
             summary : "注册验证"
             description : "注册验证接口"
         };
-         option (gql.rpc_type) = MUTATION;
+        option (cuzproto.graphql_operation) = Mutation;
     }
 
     //注册
@@ -75,7 +75,7 @@ service UserService {
             summary : "注册"
             description : "注册接口"
         };
-         option (gql.rpc_type) = MUTATION;
+        option (cuzproto.graphql_operation) = Mutation;
     }
 
     //激活
@@ -88,7 +88,7 @@ service UserService {
             summary : "激活"
             description : "激活接口"
         };
-         option (gql.rpc_type) = MUTATION;
+        option (cuzproto.graphql_operation) = Mutation;
     }
     //编辑
     rpc Edit (EditReq) returns (response.TinyRep) {
@@ -109,7 +109,7 @@ service UserService {
                 }
             }
         };
-         option (gql.rpc_type) = MUTATION;
+        option (cuzproto.graphql_operation) = Mutation;
     }
     //登录
     rpc Login (LoginReq) returns (LoginRep) {
@@ -122,7 +122,7 @@ service UserService {
             summary : "登录"
             description : "登录接口"
         };
-        option (gql.rpc_type) = QUERY;
+        option (cuzproto.graphql_operation) = Query;
     }
     //退出
     rpc Logout (LogoutReq) returns (LogoutRep) {
@@ -134,12 +134,12 @@ service UserService {
             summary : "退出"
             description : "退出接口"
         };
-        option (gql.rpc_type) = QUERY;
+        option (cuzproto.graphql_operation) = Query;
     }
 
     //鉴权
     rpc AuthInfo (empty.Empty) returns (UserMainInfo) {
-        option (gql.rpc_type) = QUERY;
+        option (cuzproto.graphql_operation) = Query;
     }
 
     //重置密码
@@ -152,7 +152,7 @@ service UserService {
                 summary : "忘记密码"
                 description : "忘记密码接口"
             };
-     option (gql.rpc_type) = MUTATION;
+    option (cuzproto.graphql_operation) = Mutation;
     }
 
     rpc ResetPassword (ResetPasswordReq) returns (response.TinyRep) {
@@ -165,7 +165,7 @@ service UserService {
                     summary : "重置密码"
                     description : "重置密码接口"
                 };
-     option (gql.rpc_type) = MUTATION;
+    option (cuzproto.graphql_operation) = Mutation;
     }
 
     //获取用户信息
@@ -193,7 +193,7 @@ service UserService {
 
             }
         };
-        option (gql.rpc_type) = QUERY;
+        option (cuzproto.graphql_operation) = Query;
     }
 
     rpc ActionLogList (ActionLogListReq) returns (ActionLogListRep) {
@@ -205,7 +205,7 @@ service UserService {
                             summary : "操作日志"
                             description : "操作日志接口"
                         };
-        option (gql.rpc_type) = QUERY;
+        option (cuzproto.graphql_operation) = Query;
         }
 }
 

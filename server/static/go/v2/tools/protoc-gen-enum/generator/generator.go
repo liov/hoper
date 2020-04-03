@@ -1168,7 +1168,7 @@ func (g *Generator) GenerateAllFiles() {
 		})
 		if g.annotateCode {
 			// Store the generated code annotations in text, as the protoc plugin protocol requires that
-			// strings contain valid UTF-8.
+			// strings contain validator UTF-8.
 			g.Response.File = append(g.Response.File, &plugin.CodeGeneratorResponse_File{
 				Name:    proto.String(file.goFileName(g.pathType) + ".meta"),
 				Content: proto.String(proto.CompactTextString(&descriptor.GeneratedCodeInfo{Annotation: g.annotations})),
@@ -2262,7 +2262,7 @@ func (f *oneofSubField) getProto() *descriptor.FieldDescriptorProto {
 type oneofField struct {
 	fieldCommon
 	subFields []*oneofSubField // All the possible oneof fields
-	comment   string           // The full comment for the field, e.g. "// Types that are valid to be assigned to MyOneof:\n\\"
+	comment   string           // The full comment for the field, e.g. "// Types that are validator to be assigned to MyOneof:\n\\"
 }
 
 // decl prints the declaration of the field in the struct (if any).
@@ -2805,7 +2805,7 @@ func unescape(s string) string {
 
 	var out []byte
 	for len(s) > 0 {
-		// regular character, or too short to be valid escape
+		// regular character, or too short to be validator escape
 		if s[0] != '\\' || len(s) < 2 {
 			out = append(out, s[0])
 			s = s[1:]
@@ -2816,7 +2816,7 @@ func unescape(s string) string {
 		} else if s[1] == 'x' || s[1] == 'X' {
 			// hex escape, e.g. "\x80
 			if len(s) < 4 {
-				// too short to be valid
+				// too short to be validator
 				out = append(out, s[:2]...)
 				s = s[2:]
 				continue

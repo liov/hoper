@@ -6,6 +6,7 @@ require (
 	bou.ke/monkey v1.0.2
 	git.apache.org/thrift.git v0.13.0 // indirect
 	github.com/360EntSecGroup-Skylar/excelize/v2 v2.0.2 // indirect
+	github.com/99designs/gqlgen v0.11.3
 	github.com/AsynkronIT/protoactor-go v0.0.0-20200221110811-81497e71df85
 	github.com/BurntSushi/toml v0.3.1
 	github.com/CloudyKit/fastprinter v0.0.0-20170127035650-74b38d55f37a // indirect
@@ -16,6 +17,7 @@ require (
 	github.com/boombuler/barcode v1.0.0
 	github.com/brahma-adshonor/gohook v0.0.0-20200311033618-28b944a6fdfa // indirect
 	github.com/cenk/backoff v2.2.1+incompatible // indirect
+	github.com/danielvladco/go-proto-gql/pb v0.6.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/etcd-io/bbolt v1.3.3
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
@@ -71,13 +73,13 @@ require (
 	github.com/pelletier/go-toml v1.2.0
 	github.com/peterbourgon/g2s v0.0.0-20170223122336-d4e7ad98afea // indirect
 	github.com/russross/blackfriday v2.0.0+incompatible
-	github.com/sergi/go-diff v1.0.0 // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/smartystreets/assertions v0.0.0-20190116191733-b6c0e53d7304 // indirect
 	github.com/spf13/viper v1.6.1
 	github.com/stretchr/testify v1.4.0
 	github.com/tidwall/gjson v1.3.5 // indirect
 	github.com/valyala/fasthttp v1.7.0 // indirect
+	github.com/vektah/gqlparser/v2 v2.0.1
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
 	github.com/yalp/jsonpath v0.0.0-20180802001716-5cc68e5049a0 // indirect
 	github.com/yudai/gojsondiff v1.0.0 // indirect

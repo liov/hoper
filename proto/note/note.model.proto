@@ -1,5 +1,5 @@
 syntax = "proto3";
-package model;
+package note;
 import "utils/proto/go/policy.imp.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "protoc-gen-swagger/options/annotations.proto";

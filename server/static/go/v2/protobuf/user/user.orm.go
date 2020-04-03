@@ -1,4 +1,4 @@
-package model
+package user
 
 func (m *User) TableName() string {
 	if m.Id < 1_000_000 {

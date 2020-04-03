@@ -6,6 +6,7 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/liov/hoper/go/v2/initialize"
 	v2 "github.com/liov/hoper/go/v2/initialize/v2"
+	gql "github.com/liov/hoper/go/v2/utils/api/graphql"
 	"github.com/liov/hoper/go/v2/utils/log"
 	iris_build "github.com/liov/hoper/go/v2/utils/net/http/iris"
 	"github.com/liov/hoper/go/v2/utils/net/http/iris/api"
@@ -19,6 +20,10 @@ func (s *Server) Http() http.Handler {
 		logger := (&log.Config{Development: v2.BasicConfig.Env == initialize.PRODUCT}).NewLogger()
 		middleware.SetLog(mux, logger, false)
 		api.OpenApi(mux, "../protobuf/api/")
+		gql.GraphqlRouter(mux)
+		if s.GraphqlResolve != nil {
+			gql.Graphql(mux, "../protobuf/gql/", v2.BasicConfig.Module, s.GraphqlResolve)
+		}
 		if s.IrisHandle != nil {
 			s.IrisHandle(mux)
 		}
