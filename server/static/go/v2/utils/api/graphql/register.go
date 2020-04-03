@@ -1,4 +1,4 @@
-package graphql
+package gql
 
 //性能强迫症适合用go吗，一个graphql-go/graphql实现，schema定义占一大波内存，完了取值是用过反射遍历字段，
 //各种用反射，各种循环，是为了功能又费内存又费cpu

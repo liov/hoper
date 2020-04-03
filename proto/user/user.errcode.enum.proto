@@ -1,5 +1,5 @@
 syntax = "proto3";
-package model;
+package user;
 import "utils/proto/gogo/enum.imp.proto";
 
 option java_package = "xyz.hoper.protobuf.user";

@@ -18,12 +18,12 @@ import (
 	"github.com/liov/hoper/go/v2/user/internal/dao"
 	modelconst "github.com/liov/hoper/go/v2/user/model"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/mail"
 	"github.com/liov/hoper/go/v2/utils/net/http/gateway"
 	"github.com/liov/hoper/go/v2/utils/net/http/token"
+	"github.com/liov/hoper/go/v2/utils/net/mail"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 	"github.com/liov/hoper/go/v2/utils/time2"
-	"github.com/liov/hoper/go/v2/utils/valid"
+	"github.com/liov/hoper/go/v2/utils/validator"
 	"github.com/liov/hoper/go/v2/utils/verification/code"
 	"github.com/liov/hoper/go/v2/utils/verification/luosimao"
 	"github.com/liov/hoper/go/v2/utils/verification/prm"
@@ -48,10 +48,14 @@ func (u *UserService) VerifyCode(ctx context.Context, req *empty.Empty) (*respon
 	return rep, nil
 }
 
+func (u *UserService) VerifyCodeWithEmptyParam(ctx context.Context) (*response.CommonRep, error) {
+	return u.VerifyCode(ctx, nil)
+}
+
 func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*response.TinyRep, error) {
-	err := valid.Validate.Struct(req)
+	err := validator.Validate.Struct(req)
 	if err != nil {
-		return nil, errorcode.InvalidArgument.WithMessage(valid.Trans(err))
+		return nil, errorcode.InvalidArgument.WithMessage(validator.Trans(err))
 	}
 
 	if req.Mail == "" && req.Phone == "" {
@@ -83,9 +87,9 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 
 func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*model.SignupRep, error) {
 
-	err := valid.Validate.Struct(req)
+	err := validator.Validate.Struct(req)
 	if err != nil {
-		return nil, errorcode.InvalidArgument.WithMessage(valid.Trans(err))
+		return nil, errorcode.InvalidArgument.WithMessage(validator.Trans(err))
 	}
 
 	if req.Mail == "" && req.Phone == "" {
@@ -368,6 +372,10 @@ func (u *UserService) Logout(ctx context.Context, req *model.LogoutReq) (*model.
 }
 
 func (u *UserService) AuthInfo(ctx context.Context, req *empty.Empty) (*model.UserMainInfo, error) {
+	return u.Auth(ctx)
+}
+
+func (u *UserService) AuthInfoWithEmptyParam(ctx context.Context) (*model.UserMainInfo, error) {
 	return u.Auth(ctx)
 }
 

@@ -1,5 +1,5 @@
 syntax = "proto3";
-package model;
+package user;
 import "user/user.enum.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "protoc-gen-swagger/options/annotations.proto";

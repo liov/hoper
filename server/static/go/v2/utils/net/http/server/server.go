@@ -90,6 +90,7 @@ type Server struct {
 	GRPCRegistr    func(*grpc.Server)
 	GatewayRegistr gateway.GatewayHandle
 	IrisHandle     func(*iris.Application)
+	GraphqlResolve interface{}
 }
 
 var close = make(chan os.Signal, 1)

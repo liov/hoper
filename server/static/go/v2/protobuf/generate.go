@@ -32,7 +32,7 @@ var files = map[string][]string{
 		"govalidators_out=gogoimport=true",
 		//"gogqlgen_out=gogoimport=false,paths=source_relative",
 		"gqlgencfg_out=paths=source_relative",
-		"gql_out=paths=source_relative"},
+		"graphql_out=paths=source_relative"},
 	"/user/*model.proto": {"gogo_out=plugins=grpc"},
 	"/user/*enum.proto":  {"enum_out=plugins=grpc"},
 	"/note/*service.proto": {"gogo_out=plugins=grpc",
@@ -60,7 +60,7 @@ func run() {
 			if strings.HasPrefix(plugin, "swagger_out") {
 				arg = arg + "/api"
 			}
-			if strings.HasPrefix(plugin, "gql_out") || strings.HasPrefix(plugin, "gqlgencfg_out") {
+			if strings.HasPrefix(plugin, "graphql_out") || strings.HasPrefix(plugin, "gqlgencfg_out") {
 				arg = arg + "/gql"
 			}
 			if strings.HasPrefix(k, "/utils/proto/go/") {

@@ -20,7 +20,7 @@ import (
 )
 
 //约定大于配置
-var ConfUrl = "./Config/config.toml"
+var ConfUrl = "./config.toml"
 
 var Env string
 

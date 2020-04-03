@@ -26,6 +26,7 @@ func main() {
 				log.Fatal(err)
 			}
 		},
+		GraphqlResolve: service.UserSvc,
 	}
 	s.Start()
 }
