@@ -9,7 +9,6 @@ import "google/api/annotations.proto";
 import "utils/empty/empty.imp.proto";
 import "utils/response/response.imp.proto";
 import "utils/proto/gogo/graphql.imp.proto";
-import "github.com/danielvladco/go-proto-gql/pb/gql.proto";
 
 
 option java_package = "xyz.hoper.protobuf.user";

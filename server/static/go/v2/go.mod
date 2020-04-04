@@ -17,7 +17,6 @@ require (
 	github.com/boombuler/barcode v1.0.0
 	github.com/brahma-adshonor/gohook v0.0.0-20200311033618-28b944a6fdfa // indirect
 	github.com/cenk/backoff v2.2.1+incompatible // indirect
-	github.com/danielvladco/go-proto-gql/pb v0.6.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/etcd-io/bbolt v1.3.3
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
@@ -78,6 +77,7 @@ require (
 	github.com/spf13/viper v1.6.1
 	github.com/stretchr/testify v1.4.0
 	github.com/tidwall/gjson v1.3.5 // indirect
+	github.com/urfave/cli/v2 v2.2.0 // indirect
 	github.com/valyala/fasthttp v1.7.0 // indirect
 	github.com/vektah/gqlparser/v2 v2.0.1
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect

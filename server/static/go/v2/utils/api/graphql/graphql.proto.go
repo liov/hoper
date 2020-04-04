@@ -3,16 +3,11 @@ package gql
 import (
 	"io/ioutil"
 	"os"
-	"runtime"
 
-	"github.com/99designs/gqlgen/example/todo"
-	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
 	"github.com/kataras/iris/v12"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/vektah/gqlparser/v2"
-	"github.com/vektah/gqlparser/v2/ast"
 )
 
 var FilePath = "../protobuf/gql/"
@@ -37,7 +32,7 @@ func Graphql(app *iris.Application, filePath, modName string, resolver interface
 	app.Post("/api/graphql", iris.FromStd(&relay.Handler{Schema: schema}))
 }
 
-func GraphqlV2(app *iris.Application, filePath, modName string, resolver interface{}) {
+/*func GraphqlV2(app *iris.Application, filePath, modName string, resolver interface{}) {
 	FilePath = filePath
 	f, err := os.Open(FilePath + modName + "/" + modName + ".service.pb.graphqls")
 	if err != nil {
@@ -52,6 +47,7 @@ func GraphqlV2(app *iris.Application, filePath, modName string, resolver interfa
 		{Name: "schema.graphql", Input: string(data), BuiltIn: false}}
 	var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
-	srv := handler.NewDefaultServer(todo.NewExecutableSchema(todo.New()))
+	srv := handler.NewDefaultServer(svc)
 	app.Post("/api/graphql", iris.FromStd(srv))
 }
+*/

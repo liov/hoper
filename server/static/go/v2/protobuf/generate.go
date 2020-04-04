@@ -31,7 +31,7 @@ var files = map[string][]string{
 		"swagger_out=logtostderr=true",
 		"govalidators_out=gogoimport=true",
 		//"gogqlgen_out=gogoimport=false,paths=source_relative",
-		"gqlgencfg_out=paths=source_relative",
+		//"gqlgencfg_out=paths=source_relative",
 		"graphql_out=paths=source_relative"},
 	"/user/*model.proto": {"gogo_out=plugins=grpc"},
 	"/user/*enum.proto":  {"enum_out=plugins=grpc"},

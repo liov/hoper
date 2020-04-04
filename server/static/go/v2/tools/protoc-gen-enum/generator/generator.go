@@ -1362,6 +1362,9 @@ func (g *Generator) generateImports() {
 			pkg = append(pkg, "github.com/liov/hoper/go/v2/utils/log")
 			break
 		}
+		if EnabledEnumGqlGen(enum.EnumDescriptorProto) || EnabledFileEnumGqlGen(g.file.FileDescriptorProto) {
+			pkg = append(pkg, "io")
+		}
 	}
 	for _, enum := range g.file.enum {
 		if EnabledEnumJsonMarshal(g.file.FileDescriptorProto, enum.EnumDescriptorProto) {
@@ -1585,6 +1588,26 @@ func (g *Generator) generateEnum(enum *EnumDescriptor) {
 		g.In()
 		g.P(`log.Default.Error(err)`)
 		g.P(`return &errorcode.ErrRep{Code: errorcode.ErrCode(x), Message: x.String()}`)
+		g.Out()
+		g.P("}")
+		g.P()
+	}
+
+	if EnabledEnumGqlGen(enum.EnumDescriptorProto) || EnabledFileEnumGqlGen(g.file.FileDescriptorProto) {
+		typ := "uint32"
+		if IsEnumType(enum.EnumDescriptorProto) {
+			typ = GetEnumType(enum.EnumDescriptorProto)
+		}
+		g.P("func (x ", ccTypeName, ") MarshalGQL(w io.Writer) {")
+		g.In()
+		g.P(`w.Write([]byte(x.String()))`)
+		g.Out()
+		g.P("}")
+		g.P()
+		g.P("func (x *", ccTypeName, ") UnmarshalGQL(v interface{}) error {")
+		g.In()
+		g.P(`*x = `, ccTypeName, "(v.(", typ, "))")
+		g.P("return nil")
 		g.Out()
 		g.P("}")
 		g.P()

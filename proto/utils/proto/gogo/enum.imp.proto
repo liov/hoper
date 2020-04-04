@@ -17,8 +17,13 @@ extend google.protobuf.EnumOptions {
     optional bool enum_jsonmarshal = 62028;
     //是errorcode
     optional bool enum_errorcode = 62029;
+    optional bool enum_gqlgen = 62030;
 }
 
 extend google.protobuf.EnumValueOptions {
     optional string enumvalue_cn = 66002;
+}
+
+extend google.protobuf.FileOptions {
+    optional bool enum_gqlgen_all = 1001;
 }
