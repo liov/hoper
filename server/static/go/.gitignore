@@ -7,3 +7,4 @@
 *.gqlgen.pb.go
 *.gqlgen.pb.yml
 *.pb.graphqls
+*.gql.go

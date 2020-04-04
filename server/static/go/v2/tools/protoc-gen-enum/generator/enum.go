@@ -80,3 +80,19 @@ func EnabledEnumErrorCode(enum *descriptor.EnumDescriptorProto) bool {
 func TurnOffEnumErrorCode(enum *descriptor.EnumDescriptorProto) {
 	vanity.SetBoolEnumOption(cuzproto.E_EnumErrorcode, false)(enum)
 }
+
+func EnabledEnumGqlGen(enum *descriptor.EnumDescriptorProto) bool {
+	return proto.GetBoolExtension(enum.Options, cuzproto.E_EnumGqlgen, false)
+}
+
+func TurnOffEnumGqlGen(enum *descriptor.EnumDescriptorProto) {
+	vanity.SetBoolEnumOption(cuzproto.E_EnumGqlgen, false)(enum)
+}
+
+func EnabledFileEnumGqlGen(file *descriptor.FileDescriptorProto) bool {
+	return proto.GetBoolExtension(file.Options, cuzproto.E_EnumGqlgenAll, false)
+}
+
+func TurnOffFileEnumGqlGen(file *descriptor.FileDescriptorProto) {
+	vanity.SetBoolFileOption(cuzproto.E_EnumGqlgenAll, false)(file)
+}

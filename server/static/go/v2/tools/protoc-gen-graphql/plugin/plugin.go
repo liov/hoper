@@ -625,7 +625,7 @@ func (p *Plugin) InitFile(file *generator.FileDescriptor) {
 	}
 
 	//p.mapToScalar()
-	p.defineGqlTypes(p.inputs, "Input")
+	p.defineGqlTypes(p.inputs)
 	p.defineGqlTypes(p.types)
 	p.defineGqlTypes(p.enums)
 	p.defineGqlTypes(p.maps)

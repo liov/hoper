@@ -33,7 +33,7 @@ service NoteService {
 		description: "笔记相关接口"
     };
     //验证码
-    rpc Create (model.Note) returns (response.CommonRep) {
+    rpc Create (note.Note) returns (response.CommonRep) {
         option (google.api.http) = {
             post: "/api/v1/note"
             body: "*"
