@@ -1,6 +1,7 @@
 package plugin
 
 import (
+	"github.com/gogo/protobuf/gogoproto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/generator"
 	cuzproto "github.com/liov/hoper/go/v2/protobuf/utils/proto/gogo"
 
@@ -82,3 +83,35 @@ func Params(gen *generator.Generator) map[string]string {
 }
 
 var BasicType = []string{}
+
+func badToUnderscore(r rune) rune {
+	if unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_' {
+		return r
+	}
+	return '_'
+}
+
+func splitCPackageType(ctype string) (packageName string, typ string) {
+	ss := strings.Split(ctype, ".")
+	if len(ss) == 1 {
+		return "", ctype
+	}
+	packageName = strings.Join(ss[0:len(ss)-1], ".")
+	typeName := ss[len(ss)-1]
+	importStr := strings.Map(badToUnderscore, packageName)
+	typ = importStr + "." + typeName
+	return packageName, typ
+}
+
+func getCastType(field *descriptor.FieldDescriptorProto) (packageName string, typ string, err error) {
+	if field.Options != nil {
+		var v interface{}
+		v, err = proto.GetExtension(field.Options, gogoproto.E_Casttype)
+		if err == nil && v.(*string) != nil {
+			ctype := *(v.(*string))
+			packageName, typ = splitCPackageType(ctype)
+			return packageName, typ, nil
+		}
+	}
+	return "", "", err
+}

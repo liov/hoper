@@ -30,7 +30,7 @@ var files = map[string][]string{
 		"grpc-gateway_out=logtostderr=true",
 		"swagger_out=logtostderr=true",
 		"govalidators_out=gogoimport=true",
-		//"gogqlgen_out=gogoimport=false,paths=source_relative",
+		"gqlgen_out=gogoimport=false,paths=source_relative",
 		//"gqlgencfg_out=paths=source_relative",
 		"graphql_out=paths=source_relative"},
 	"/user/*model.proto": {"gogo_out=plugins=grpc"},

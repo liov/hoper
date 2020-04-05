@@ -14,6 +14,10 @@ federation:
 model:
   filename: ../protobuf/user/models.gql.go
   package: user
+
+resolver:
+  filename: internal/service/resolver.go
+  package: service
 # Optional: turn on use ` + "`" + `gqlgen:"fieldName"` + "`" + ` tags in your models
 # struct_tag: json
 
@@ -27,6 +31,7 @@ model:
 # if they match it will use them, otherwise it will generate them.
 autobind:
   - "github.com/liov/hoper/go/v2/protobuf/user"
+  - "github.com/liov/hoper/go/v2/protobuf/utils/response"
 
 # This section declares type mapping between the GraphQL and go type systems
 #

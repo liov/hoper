@@ -26,7 +26,8 @@ func main() {
 				log.Fatal(err)
 			}
 		},
-		GraphqlResolve: service.UserSvc,
+		GraphqlResolve: model.NewExecutableSchema(model.Config{
+			Resolvers: &model.UserServiceGQLServer{Service: service.UserSvc}}),
 	}
 	s.Start()
 }
