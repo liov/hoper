@@ -343,7 +343,7 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 	return resp, nil
 }
 
-func (u *UserService) Logout(ctx context.Context, req *model.LogoutReq) (*model.LogoutRep, error) {
+func (u *UserService) Logout(ctx context.Context, req *empty.Empty) (*model.LogoutRep, error) {
 	user, err := u.Auth(ctx)
 	if err != nil {
 		return nil, err
@@ -369,6 +369,10 @@ func (u *UserService) Logout(ctx context.Context, req *model.LogoutReq) (*model.
 	}).String()
 	gateway.GrpcSetCookie(ctx, cookie)
 	return &model.LogoutRep{Message: "已注销", Cookie: cookie}, nil
+}
+
+func (u *UserService) LogoutWithEmptyParam(ctx context.Context) (*model.LogoutRep, error) {
+	return u.Logout(ctx, nil)
 }
 
 func (u *UserService) AuthInfo(ctx context.Context, req *empty.Empty) (*model.UserMainInfo, error) {

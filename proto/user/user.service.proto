@@ -124,7 +124,7 @@ service UserService {
         option (cuzproto.graphql_operation) = Query;
     }
     //退出
-    rpc Logout (LogoutReq) returns (LogoutRep) {
+    rpc Logout (empty.Empty) returns (LogoutRep) {
         option (google.api.http) = {
             get: "/api/v1/user/logout"
         };
@@ -309,11 +309,6 @@ message LoginRep {
     string cookie = 4[(gogoproto.jsontag) = "-"];
 }
 
-message LogoutReq {
-    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"default:0\"", (gogoproto.casttype) = "uint8", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
-           type:INTEGER
-    }];
-}
 //特殊，设置cookie用
 message LogoutRep {
     uint32 code = 1[(gogoproto.jsontag) = "code"];
