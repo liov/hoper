@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gogo/protobuf/gogoproto"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	"github.com/gogo/protobuf/protoc-gen-gogo/generator"
@@ -24,6 +25,8 @@ const (
 	ScalarFloat32    = "Float32"
 	ScalarInt64      = "Int64"
 	ScalarInt32      = "Int32"
+	ScalarInt8       = "Int8"
+	ScalarUint8      = "Uint8"
 	ScalarUint32     = "Uint32"
 	ScalarUint64     = "Uint64"
 	ScalarAny        = "Any"
@@ -285,7 +288,7 @@ func (p *Plugin) getMessageType(file *descriptor.FileDescriptorProto, typeName s
 			// Any is considered to be scalar
 			if p.IsAny(typeName) {
 				p.scalars[typeName] = &Type{ModelDescriptor: ModelDescriptor{
-					PackageDir: "github.com/danielvladco/go-proto-gql/pb", //TODO generate gqlgen.yml
+					PackageDir: "github.com/liov/hoper/go/v2/utils/api/graphql", //TODO generate gqlgen.yml
 					TypeName:   ScalarAny,
 				}}
 				return nil
@@ -328,30 +331,40 @@ func (p *Plugin) fillTypeMap(typeName string, objects map[string]*Type, inputFie
 				}
 
 				// defines scalars for unsupported graphql types
-				switch *field.Type {
-				case descriptor.FieldDescriptorProto_TYPE_BYTES:
-					p.scalars[ScalarBytes] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/danielvladco/go-proto-gql/pb", TypeName: ScalarBytes}}
+				if gogoproto.IsCastType(field) {
+					_, typ, _ := getCastType(field)
+					switch typ {
+					case "int8":
+						p.scalars[ScalarInt8] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/liov/hoper/go/v2/utils/api/graphql", TypeName: ScalarInt8}}
+					case "uint8":
+						p.scalars[ScalarUint8] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/liov/hoper/go/v2/utils/api/graphql", TypeName: ScalarUint8}}
+					}
+				} else {
+					switch *field.Type {
+					case descriptor.FieldDescriptorProto_TYPE_BYTES:
+						p.scalars[ScalarBytes] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/liov/hoper/go/v2/utils/api/graphql", TypeName: ScalarBytes}}
 
-				case descriptor.FieldDescriptorProto_TYPE_FLOAT:
-					p.scalars[ScalarFloat32] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/danielvladco/go-proto-gql/pb", TypeName: ScalarFloat32}}
+					case descriptor.FieldDescriptorProto_TYPE_FLOAT:
+						p.scalars[ScalarFloat32] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/liov/hoper/go/v2/utils/api/graphql", TypeName: ScalarFloat32}}
 
-				case descriptor.FieldDescriptorProto_TYPE_INT64,
-					descriptor.FieldDescriptorProto_TYPE_SINT64,
-					descriptor.FieldDescriptorProto_TYPE_SFIXED64:
-					p.scalars[ScalarInt64] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/danielvladco/go-proto-gql/pb", TypeName: ScalarInt64}}
+					case descriptor.FieldDescriptorProto_TYPE_INT64,
+						descriptor.FieldDescriptorProto_TYPE_SINT64,
+						descriptor.FieldDescriptorProto_TYPE_SFIXED64:
+						p.scalars[ScalarInt64] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/liov/hoper/go/v2/utils/api/graphql", TypeName: ScalarInt64}}
 
-				case descriptor.FieldDescriptorProto_TYPE_INT32,
-					descriptor.FieldDescriptorProto_TYPE_SINT32,
-					descriptor.FieldDescriptorProto_TYPE_SFIXED32:
-					p.scalars[ScalarInt32] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/danielvladco/go-proto-gql/pb", TypeName: ScalarInt32}}
+					case descriptor.FieldDescriptorProto_TYPE_INT32,
+						descriptor.FieldDescriptorProto_TYPE_SINT32,
+						descriptor.FieldDescriptorProto_TYPE_SFIXED32:
+						p.scalars[ScalarInt32] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/liov/hoper/go/v2/utils/api/graphql", TypeName: ScalarInt32}}
 
-				case descriptor.FieldDescriptorProto_TYPE_UINT32,
-					descriptor.FieldDescriptorProto_TYPE_FIXED32:
-					p.scalars[ScalarUint32] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/danielvladco/go-proto-gql/pb", TypeName: ScalarUint32}}
+					case descriptor.FieldDescriptorProto_TYPE_UINT32,
+						descriptor.FieldDescriptorProto_TYPE_FIXED32:
+						p.scalars[ScalarUint32] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/liov/hoper/go/v2/utils/api/graphql", TypeName: ScalarUint32}}
 
-				case descriptor.FieldDescriptorProto_TYPE_UINT64,
-					descriptor.FieldDescriptorProto_TYPE_FIXED64:
-					p.scalars[ScalarUint64] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/danielvladco/go-proto-gql/pb", TypeName: ScalarUint64}}
+					case descriptor.FieldDescriptorProto_TYPE_UINT64,
+						descriptor.FieldDescriptorProto_TYPE_FIXED64:
+						p.scalars[ScalarUint64] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/liov/hoper/go/v2/utils/api/graphql", TypeName: ScalarUint64}}
+					}
 				}
 
 				if !field.IsMessage() && !field.IsEnum() {
@@ -516,7 +529,15 @@ func (p *Plugin) GraphQLType(field *descriptor.FieldDescriptorProto, messagesIn 
 	default:
 		panic("unknown proto field type")
 	}
-
+	if gogoproto.IsCastType(field) {
+		_, typ, _ := getCastType(field)
+		switch typ {
+		case "int8":
+			gqltype = ScalarInt8
+		case "uint8":
+			gqltype = ScalarUint8
+		}
+	}
 	suffix := ""
 	prefix := ""
 	if field.IsRepeated() {
@@ -560,9 +581,6 @@ func (p *Plugin) defineMethods(file *generator.FileDescriptor) {
 				Index:                  rpci,
 				MethodDescriptorProto:  rpc,
 				ServiceDescriptorProto: svc,
-			}
-			if *rpc.InputType == ".empty.Empty" {
-				m.Name += "WithEmptyParam"
 			}
 
 			if rpc.GetClientStreaming() && rpc.GetServerStreaming() {
@@ -631,4 +649,11 @@ func (p *Plugin) InitFile(file *generator.FileDescriptor) {
 	p.defineGqlTypes(p.maps)
 	p.defineGqlTypes(p.scalars)
 	p.defineGqlTypes(p.oneofs)
+}
+
+func (p *Plugin) GraphQLFieldName(field *descriptor.FieldDescriptorProto) string {
+	if gogoproto.IsEmbed(field) {
+		return p.GraphQLType(field, p.Types())
+	}
+	return field.GetName()
 }

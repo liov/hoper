@@ -140,7 +140,7 @@ func (p *plugin) generate(file *generator.FileDescriptor) {
 			if f.OneofIndex != nil {
 				oneof = fmt.Sprintf("@oneof(name: %q)", p.GqlModelNames()[p.GetOneof(OneofRef{Parent: m, Index: f.GetOneofIndex()})])
 			}
-			p.P(ToLowerFirst(generator.CamelCase(f.GetName())), ": ", p.GraphQLType(f, p.Inputs()), " ", oneof, " ", opts.GetDirs())
+			p.P(ToLowerFirst(generator.CamelCase(p.GraphQLFieldName(f))), ": ", p.GraphQLType(f, p.Inputs()), " ", oneof, " ", opts.GetDirs())
 		}
 		p.Out()
 		p.P("}\n")
@@ -180,7 +180,7 @@ func (p *plugin) generate(file *generator.FileDescriptor) {
 				}
 			}
 
-			p.P(ToLowerFirst(generator.CamelCase(f.GetName())), opts.GetParams(), ": ", p.GraphQLType(f, p.Types()), " ", opts.GetDirs())
+			p.P(ToLowerFirst(generator.CamelCase(p.GraphQLFieldName(f))), opts.GetParams(), ": ", p.GraphQLType(f, p.Types()), " ", opts.GetDirs())
 		}
 		p.Out()
 		p.P("}\n")

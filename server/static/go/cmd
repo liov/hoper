@@ -11,6 +11,7 @@ go get github.com/danielvladco/go-proto-gql
 go install github.com/danielvladco/go-proto-gql/protoc-gen-gql
 go install github.com/danielvladco/go-proto-gql/protoc-gen-gogqlgen
 go install github.com/danielvladco/go-proto-gql/protoc-gen-gqlgencfg
+go get github.com/99designs/gqlgen
 
 //go get  github.com/rakyll/statik 静态文件打包的
 go get github.com/gobuffalo/packr/v2/packr2

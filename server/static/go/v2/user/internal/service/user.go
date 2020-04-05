@@ -48,10 +48,6 @@ func (u *UserService) VerifyCode(ctx context.Context, req *empty.Empty) (*respon
 	return rep, nil
 }
 
-func (u *UserService) VerifyCodeWithEmptyParam(ctx context.Context) (*response.CommonRep, error) {
-	return u.VerifyCode(ctx, nil)
-}
-
 func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*response.TinyRep, error) {
 	err := validator.Validate.Struct(req)
 	if err != nil {
@@ -371,15 +367,7 @@ func (u *UserService) Logout(ctx context.Context, req *empty.Empty) (*model.Logo
 	return &model.LogoutRep{Message: "已注销", Cookie: cookie}, nil
 }
 
-func (u *UserService) LogoutWithEmptyParam(ctx context.Context) (*model.LogoutRep, error) {
-	return u.Logout(ctx, nil)
-}
-
 func (u *UserService) AuthInfo(ctx context.Context, req *empty.Empty) (*model.UserMainInfo, error) {
-	return u.Auth(ctx)
-}
-
-func (u *UserService) AuthInfoWithEmptyParam(ctx context.Context) (*model.UserMainInfo, error) {
 	return u.Auth(ctx)
 }
 

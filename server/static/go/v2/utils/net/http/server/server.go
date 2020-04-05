@@ -8,6 +8,7 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/kataras/iris/v12"
 	"github.com/liov/hoper/go/v2/initialize"
 	v2 "github.com/liov/hoper/go/v2/initialize/v2"
@@ -90,7 +91,7 @@ type Server struct {
 	GRPCRegistr    func(*grpc.Server)
 	GatewayRegistr gateway.GatewayHandle
 	IrisHandle     func(*iris.Application)
-	GraphqlResolve interface{}
+	GraphqlResolve graphql.ExecutableSchema
 }
 
 var close = make(chan os.Signal, 1)
