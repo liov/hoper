@@ -18,6 +18,8 @@ git gc --aggressive --prune=now
  
 git push --force
 
+git filter-repo
+
 git fetch --all && git reset --hard origin/master && git pull
 
 使用 git config --system --unset credential.helper 方法 清除保存好的账号密码
