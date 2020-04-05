@@ -30,7 +30,7 @@ func UnmarshalBytes(v interface{}) ([]byte, error) {
 	case []byte:
 		return v, nil
 	case json.RawMessage:
-		return []byte(v), nil
+		return v, nil
 	default:
 		return nil, fmt.Errorf("%T is not []byte", v)
 	}
@@ -101,6 +101,26 @@ func UnmarshalInt64(v interface{}) (int64, error) {
 	}
 }
 
+func MarshalUint8(any uint8) Marshaler {
+	return WriterFunc(func(w io.Writer) {
+		_, _ = w.Write([]byte(strconv.Itoa(int(any))))
+	})
+}
+
+func UnmarshalUint8(v interface{}) (uint8, error) {
+	switch v := v.(type) {
+	case int:
+		return uint8(v), nil
+	case uint8:
+		return v, nil //TODO add an unmarshal mechanism
+	case json.Number:
+		i, err := v.Int64()
+		return uint8(i), err
+	default:
+		return 0, fmt.Errorf("%T is not uint64", v)
+	}
+}
+
 func MarshalUint32(any uint32) Marshaler {
 	return WriterFunc(func(w io.Writer) {
 		_, _ = w.Write([]byte(strconv.Itoa(int(any))))
@@ -158,6 +178,20 @@ func UnmarshalFloat32(v interface{}) (float32, error) {
 		return float32(f), err
 	default:
 		return 0, fmt.Errorf("%T is not float32", v)
+	}
+}
+
+func Int64(v interface{}) int64 {
+	switch v := v.(type) {
+	case int:
+		return int64(v)
+	case int64:
+		return v
+	case json.Number:
+		f, _ := v.Int64()
+		return f
+	default:
+		return 0
 	}
 }
 

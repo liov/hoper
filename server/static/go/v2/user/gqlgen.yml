@@ -46,6 +46,9 @@ models:
   Int64:
     model:
       - github.com/99designs/gqlgen/graphql.Int64
+  Uint8:
+    model:
+      - github.com/liov/hoper/go/v2/utils/api/graphql.Uint8
   Uint:
     model:
       - github.com/liov/hoper/go/v2/utils/api/graphql.Uint
