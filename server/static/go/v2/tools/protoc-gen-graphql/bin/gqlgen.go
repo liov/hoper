@@ -134,6 +134,9 @@ func (p *plugin) Generate(file *generator.FileDescriptor) {
 						p.Generator.P("func (s *", svc.GetName(), "GQLServer) ", methodName, "(ctx ", p.contextPkg.Use(), ".Context", in, ") (*", typeOut, ", error) { return s.Service.", generator.CamelCase(rpc.GetName()), "(ctx", inref, ") }")
 					}
 				}
+				p.Generator.P("\n")
+				p.Generator.P("func (s *", svc.GetName(), "GQLServer)  Mutation() MutationResolver { return s }\n")
+				p.Generator.P("func (s *", svc.GetName(), "GQLServer)  Query() QueryResolver { return s }")
 			}
 			for _, msg := range file.Messages() {
 				if msg.GetOptions().GetMapEntry() {

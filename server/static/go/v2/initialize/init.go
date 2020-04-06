@@ -2,6 +2,9 @@ package initialize
 
 import (
 	"flag"
+	"net"
+	"net/http"
+	"net/url"
 	"os"
 	"path"
 	"path/filepath"
@@ -30,6 +33,19 @@ var AddConfig string
 func init() {
 	flag.StringVar(&Env, "env", DEVELOPMENT, "环境")
 	flag.StringVar(&AddConfig, "add", "", "额外配置文件名")
+	agent := flag.Bool("agent", false, "是否启用代理")
+	flag.Parse()
+	log.Debug(*agent)
+	if *agent {
+		proxyURL, _ := url.Parse("socks5://localhost:1080")
+		http.DefaultClient.Transport = &http.Transport{
+			Proxy: http.ProxyURL(proxyURL),
+			DialContext: (&net.Dialer{
+				Timeout:   30 * time.Second,
+				KeepAlive: 30 * time.Second,
+			}).DialContext,
+		}
+	}
 }
 
 const (
