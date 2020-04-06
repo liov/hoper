@@ -2,8 +2,10 @@ package json
 
 import (
 	"encoding/json"
+	"log"
 	"testing"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/json-iterator/go/extra"
 	"github.com/magiconair/properties/assert"
 )
@@ -25,4 +27,22 @@ func TestJson(t *testing.T) {
 		t.Log(f)
 		assert.Equal(t, string(data), `{"a":1,"b":"str","c":null}`)
 	})
+}
+
+func TestJson2(t *testing.T) {
+	data := []byte(`{"getUser":{"details":{"name":"","id":1,"gender":男,"phone":""}}}`)
+	var j = &graphql.Response{
+		Data: data,
+	}
+	b, err := json.Marshal(j)
+	if err != nil {
+		log.Println(err)
+	}
+	log.Println(b)
+	var j2 = json.RawMessage(data)
+	b, err = json.Marshal(j2)
+	if err != nil {
+		log.Println(err)
+	}
+	log.Println(b)
 }

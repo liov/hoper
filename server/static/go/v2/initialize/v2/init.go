@@ -111,7 +111,10 @@ func Start(conf initialize.Config, dao initialize.Dao) func() {
 
 func (init *Init) config() *nacos.Client {
 	nacosClient := init.NacosConfig.NewClient()
-	nacosClient.GetConfigAllInfoHandle(init.Unmarshal)
+	err := nacosClient.GetConfigAllInfoHandle(init.Unmarshal)
+	if err != nil {
+		log.Fatal(err)
+	}
 	init.SetDao()
 	return nacosClient
 }

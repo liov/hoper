@@ -1364,6 +1364,8 @@ func (g *Generator) generateImports() {
 		}
 		if EnabledEnumGqlGen(enum.EnumDescriptorProto) || EnabledFileEnumGqlGen(g.file.FileDescriptorProto) {
 			pkg = append(pkg, "io")
+			pkg = append(pkg, "errors")
+			pkg = append(pkg, "github.com/liov/hoper/go/v2/utils/strings2")
 		}
 	}
 	for _, enum := range g.file.enum {
@@ -1600,14 +1602,19 @@ func (g *Generator) generateEnum(enum *EnumDescriptor) {
 		}
 		g.P("func (x ", ccTypeName, ") MarshalGQL(w io.Writer) {")
 		g.In()
-		g.P(`w.Write([]byte(x.String()))`)
+		g.P(`w.Write(strings2.QuoteToBytes(x.String()))`)
 		g.Out()
 		g.P("}")
 		g.P()
 		g.P("func (x *", ccTypeName, ") UnmarshalGQL(v interface{}) error {")
 		g.In()
-		g.P(`*x = `, ccTypeName, "(v.(", typ, "))")
+		g.P(`if i, ok := v.(`, typ, "); ok {")
+		g.In()
+		g.P(`*x = `, ccTypeName, `(i)`)
 		g.P("return nil")
+		g.P("}")
+		g.Out()
+		g.P(`return errors.New("枚举值需要数字类型")`)
 		g.Out()
 		g.P("}")
 		g.P()
