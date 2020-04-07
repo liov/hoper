@@ -3,8 +3,7 @@ use libc::c_uint;
 use libc::c_ulonglong;
 use libc::c_void;
 use libc::size_t;
-use std::ffi::CStr;
-use std::ffi::CString;
+use std::ffi::{CStr,CString, c_void};
 use std::os::raw::c_char;
 use std::time::{Duration, SystemTime};
 #[link(name = "ffi")]
@@ -12,7 +11,7 @@ extern {
     fn fibonacci(n: c_uint) -> c_ulonglong;
     fn your_func(arg1: c_int, arg2: *mut c_void) -> size_t; // 声明ffi函数
     fn your_func2(arg1: c_int, arg2: *mut c_void) -> size_t;
-    static ffi_global: c_int; // 声明ffi全局变量
+    static FFI_GLOBAL: c_int; // 声明ffi全局变量
     fn run_callback(data: i32, cb: extern fn(i32));
     fn char_func() -> *mut c_char;
     fn my_printer(s: *const c_char);
@@ -46,12 +45,12 @@ fn main(){
     unsafe {
         my_printer(c_to_print.as_ptr()); // 使用 as_ptr 将CString转化成char指针传给c函数
     }*/
-    c_bib();
+    c_fib();
     rust_fib();
 }
 
 
-fn c_bib(){
+fn c_fib(){
     let now = SystemTime::now();
     let value = unsafe{
       fibonacci(43)

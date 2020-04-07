@@ -24,7 +24,7 @@ func main() {
 		IrisHandle: func(application *iris.Application) {
 			api.RegisterAllService(application, router.Route(),
 				initialize.Env == initialize.DEVELOPMENT,
-				v2.BasicConfig.Module)
+				v2.BasicConfig.Module, config.Conf.Customize.TokenSecret)
 		},
 	}
 	s.Start()

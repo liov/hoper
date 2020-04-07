@@ -61,7 +61,8 @@ type Service interface {
 	Middle() []iris.Handler
 }
 
-func RegisterAllService(app *iris.Application, svcs []Service, genApi bool, modName string) {
+func RegisterAllService(app *iris.Application, svcs []Service, genApi bool,
+	modName string, validateSession func(string, interface{}) error) {
 	for i := range svcs {
 		value := reflect.ValueOf(svcs[i])
 		if value.Kind() != reflect.Ptr {
@@ -85,7 +86,7 @@ func RegisterAllService(app *iris.Application, svcs []Service, genApi bool, modN
 			}
 			mName, version := parseMethodName(method.Name)
 			methodInfo.path = "/api/v" + strconv.Itoa(version) + "/" + svcs[i].Name() + "/" + mName
-			handles := append(svcs[i].Middle(), commonHandler)
+			handles := append(svcs[i].Middle(), commonHandler(validateSession))
 			app.Handle(methodInfo.method, methodInfo.path, handles...)
 			fmt.Printf(" %s\t %s %s\t %s\n",
 				pio.Green("API:"),

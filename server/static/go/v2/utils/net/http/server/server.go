@@ -18,11 +18,17 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 func (s *Server) Serve() {
 	httpServer := s.Http()
-	grpcServer := s.Grpc()
+
+	if s.GRPCServer != nil {
+		reflection.Register(s.GRPCServer)
+		v2.BasicConfig.Register()
+	}
+
 	handle := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if r := recover(); r != nil {
@@ -35,10 +41,10 @@ func (s *Server) Serve() {
 			httpServer.ServeHTTP(w, r)
 			return
 		}
-		if grpcServer != nil {
+		if s.GRPCServer != nil {
 			if strings.Contains(
 				r.Header.Get("Content-Type"), "application/grpc") {
-				grpcServer.ServeHTTP(w, r) // gRPC Server
+				s.GRPCServer.ServeHTTP(w, r) // gRPC Server
 				return
 			}
 		}
@@ -88,7 +94,7 @@ type Config interface {
 type Server struct {
 	Conf           Config
 	Dao            initialize.Dao
-	GRPCRegistr    func(*grpc.Server)
+	GRPCServer     *grpc.Server
 	GatewayRegistr gateway.GatewayHandle
 	IrisHandle     func(*iris.Application)
 	GraphqlResolve graphql.ExecutableSchema

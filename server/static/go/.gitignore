@@ -8,3 +8,4 @@
 *.gqlgen.pb.yml
 *.pb.graphqls
 *.gql.go
+*.pb.yml
