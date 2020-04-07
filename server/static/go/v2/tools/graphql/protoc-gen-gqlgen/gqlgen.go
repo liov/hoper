@@ -10,7 +10,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/generator"
 	"github.com/gogo/protobuf/vanity"
-	gqlplugin "github.com/liov/hoper/go/v2/tools/protoc-gen-graphql/plugin"
+	gqlplugin "github.com/liov/hoper/go/v2/tools/graphql/plugin"
 )
 
 func main() {
