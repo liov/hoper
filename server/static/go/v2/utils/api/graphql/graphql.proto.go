@@ -32,7 +32,10 @@ func Graphql(app *iris.Application, filePath, modName string, resolver interface
 	app.Post("/api/graphql", iris.FromStd(&relay.Handler{Schema: schema}))
 }
 
-/*func GraphqlV2(app *iris.Application, filePath, modName string, resolver interface{}) {
+/*
+//太复杂了
+//Deprecated
+func GraphqlV2(app *iris.Application, filePath, modName string, resolver interface{}) {
 	FilePath = filePath
 	f, err := os.Open(FilePath + modName + "/" + modName + ".service.pb.graphqls")
 	if err != nil {
@@ -47,7 +50,7 @@ func Graphql(app *iris.Application, filePath, modName string, resolver interface
 		{Name: "schema.graphql", Input: string(data), BuiltIn: false}}
 	var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
-	srv := handler.NewDefaultServer(svc)
+	srv := handler.NewDefaultServer(parsedSchema)
 	app.Post("/api/graphql", iris.FromStd(srv))
 }
 */

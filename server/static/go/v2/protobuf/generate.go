@@ -2,12 +2,14 @@ package main
 
 import (
 	"flag"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"runtime"
 	"strconv"
 	"strings"
+	"text/template"
 )
 
 /*
@@ -15,6 +17,7 @@ import (
  */
 
 //go:generate mockgen -destination ../protobuf/user/mock/user.mock.go -package mock -source ../protobuf/user/user.service.pb.go UserServiceServer
+//go:generate gqlgen --verbose
 
 func main() { run() }
 
@@ -54,14 +57,20 @@ func run() {
 	path := os.Getenv("GOPATH")
 	include := "-I" + *proto + " -I" + path + "/src -I" + path + "/src/github.com/grpc-ecosystem/grpc-gateway -I" + path + "/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis -I" + path + "/src/github.com/gogo/protobuf/protobuf "
 
+	var gqlgen []string
 	for k, v := range files {
 		for _, plugin := range v {
 			arg := "protoc " + include + *proto + k + " --" + plugin + ",Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types,Mgoogle/api/annotations.proto=github.com/gogo/googleapis/google/api,Mgoogle/protobuf/field_mask.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/any.proto=github.com/gogo/protobuf/types:" + pwd + "/protobuf"
 			if strings.HasPrefix(plugin, "swagger_out") {
 				arg = arg + "/api"
 			}
-			if strings.HasPrefix(plugin, "graphql_out") || strings.HasPrefix(plugin, "gqlgencfg_out") {
+			if strings.HasPrefix(plugin, "graphql_out") || strings.HasPrefix(plugin, "gqlcfg_out") {
 				arg = arg + "/gql"
+			}
+			//protoc-gen-gqlgen应该在最后生成，gqlgen会调用go编译器，protoc-gen-gqlgen会生成不存在的接口，编译不过去
+			if strings.HasPrefix(plugin, "gqlgen_out") {
+				gqlgen = append(gqlgen, arg)
+				continue
 			}
 			if strings.HasPrefix(k, "/utils/proto/go/") {
 				arg = "protoc -I" + *proto + " " + *proto + k + " --go_out=plugins=grpc:" + pwd + "/protobuf"
@@ -75,8 +84,50 @@ func run() {
 			cmd.Stderr = os.Stderr
 			cmd.Run()
 		}
-
 	}
+	gqldir := pwd + "/protobuf/gql"
+	fileInfos, err := ioutil.ReadDir(gqldir)
+	if err != nil {
+		log.Panicln(err)
+	}
+	for i := range fileInfos {
+		if fileInfos[i].IsDir() {
+			os.Chdir(gqldir + "/" + fileInfos[i].Name())
+			//这里用模板生成yml
+			t := template.Must(template.New("yml").Parse(ymlTpl))
+			config := fileInfos[i].Name() + `.service.pb.yml`
+			_, err := os.Stat(config)
+			var file *os.File
+			if os.IsNotExist(err) {
+				file, err = os.Create(config)
+				if err != nil {
+					log.Panicln(err)
+				}
+			} else {
+				file, err = os.Open(config)
+				if err != nil {
+					log.Panicln(err)
+				}
+			}
+			t.Execute(file, fileInfos[i].Name())
+			file.Close()
+			words := split(`gqlgen --verbose --config ` + config)
+			cmd := exec.Command(words[0], words[1:]...)
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			cmd.Run()
+		}
+	}
+	os.Chdir(pwd)
+
+	for i := range gqlgen {
+		words := split(gqlgen[i])
+		cmd := exec.Command(words[0], words[1:]...)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Run()
+	}
+
 }
 
 func split(line string) []string {
@@ -137,3 +188,67 @@ func expandVar(word string) string {
 	}
 	return os.Getenv(word)
 }
+
+const ymlTpl = `schema:
+  - ./*.graphqls
+
+# Where should the generated server code go?
+exec:
+  filename: ../../{{.}}/generated.gql.go
+  package: user
+
+# Enable Apollo federation support
+federation:
+  filename: ../../{{.}}/federation.gql.go
+  package: user
+
+model:
+  filename: ../../{{.}}/models.gql.go
+  package: user
+
+resolver:
+  filename: ../../../{{.}}/internal/service/resolver.go
+  package: service
+
+autobind:
+  - "github.com/liov/hoper/go/v2/protobuf/{{.}}"
+  - "github.com/liov/hoper/go/v2/protobuf/utils/response"
+
+models:
+  ID:
+    model:
+      - github.com/liov/hoper/go/v2/utils/api/graphql.UInt64
+  Int:
+    model:
+      - github.com/99designs/gqlgen/graphql.Int
+  Int32:
+    model:
+      - github.com/99designs/gqlgen/graphql.Int32
+  Int64:
+    model:
+      - github.com/99designs/gqlgen/graphql.Int64
+  Uint8:
+    model:
+      - github.com/liov/hoper/go/v2/utils/api/graphql.Uint8
+  Uint:
+    model:
+      - github.com/liov/hoper/go/v2/utils/api/graphql.Uint
+  Uint32:
+      model:
+        - github.com/liov/hoper/go/v2/utils/api/graphql.Uint32
+  Uint64:
+      model:
+        - github.com/liov/hoper/go/v2/utils/api/graphql.Uint64
+  Float32:
+    model:
+      - github.com/liov/hoper/go/v2/utils/api/graphql.Float32
+  Float64:
+    model:
+      - github.com/liov/hoper/go/v2/utils/api/graphql.Float64
+  Float:
+    model:
+      - github.com/99designs/gqlgen/graphql.Float
+  Bytes:
+    model:
+      - github.com/liov/hoper/go/v2/utils/api/graphql.Bytes
+`
