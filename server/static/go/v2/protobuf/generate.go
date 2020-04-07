@@ -95,7 +95,7 @@ func run() {
 			os.Chdir(gqldir + "/" + fileInfos[i].Name())
 			//这里用模板生成yml
 			t := template.Must(template.New("yml").Parse(ymlTpl))
-			config := fileInfos[i].Name() + `.service.pb.yml`
+			config := fileInfos[i].Name() + `.service.gqlgen.yml`
 			_, err := os.Stat(config)
 			var file *os.File
 			if os.IsNotExist(err) {

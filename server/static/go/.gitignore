@@ -5,7 +5,6 @@
 *.mock.go
 *.swagger.json
 *.gqlgen.pb.go
-*.gqlgen.pb.yml
+*.gqlgen.yml
 *.pb.graphqls
 *.gql.go
-*.pb.yml
