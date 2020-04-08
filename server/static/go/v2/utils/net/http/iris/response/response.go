@@ -1,6 +1,8 @@
 package response
 
 import (
+	"net/http"
+
 	"github.com/kataras/iris/v12"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/log"
@@ -79,4 +81,9 @@ func Res(c iris.Context, code uint32, msg string, data interface{}) {
 	if err != nil {
 		log.Error(num, err)
 	}
+}
+
+type File struct {
+	File http.File
+	Name string
 }

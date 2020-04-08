@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/kataras/golog"
-	"github.com/liov/hoper/go/v2/utils/json"
-	"github.com/olivere/elastic"
-
 	"reflect"
+
+	"github.com/kataras/golog"
+	"github.com/liov/hoper/go/v2/utils/encoding/json"
+	"github.com/olivere/elastic"
 )
 
 /**

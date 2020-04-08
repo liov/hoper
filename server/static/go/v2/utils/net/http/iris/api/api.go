@@ -10,15 +10,15 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
 	"github.com/kataras/iris/v12/core/handlerconv"
-	"github.com/liov/hoper/go/v2/utils/net/http/api"
+	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	"github.com/liov/hoper/go/v2/utils/reflect3"
 )
 
 func OpenApi(mux *iris.Application, filePath string) {
 	_ = mime.AddExtensionType(".svg", "image/svg+xml")
-	api.FilePath = filePath
-	mux.Get(api.PrefixUri, handlerconv.FromStd(api.ApiMod))
-	mux.Get(api.PrefixUri+"{mod:path}", handlerconv.FromStd(api.HttpHandle))
+	apidoc.FilePath = filePath
+	mux.Get(apidoc.PrefixUri, handlerconv.FromStd(apidoc.ApiMod))
+	mux.Get(apidoc.PrefixUri+"{mod:path}", handlerconv.FromStd(apidoc.HttpHandle))
 }
 
 // Deprecated
@@ -27,7 +27,7 @@ func ApiMiddle(ctx context.Context) {
 
 	var pathItem *spec.PathItem
 
-	doc := api.GetDoc("../")
+	doc := apidoc.GetDoc("../")
 
 	if doc.Paths != nil && doc.Paths.Paths != nil {
 		if path, ok := doc.Paths.Paths[currentRouteName]; ok {
@@ -58,7 +58,7 @@ func ApiMiddle(ctx context.Context) {
 	}
 
 	if ctx.URLParam("apidoc") == "stop" {
-		defer api.WriteToFile("../")
+		defer apidoc.WriteToFile("../")
 	}
 
 	var res spec.Responses

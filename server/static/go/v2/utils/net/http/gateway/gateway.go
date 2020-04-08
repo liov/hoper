@@ -6,8 +6,8 @@ import (
 	"net/url"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/liov/hoper/go/v2/utils/json"
-	"github.com/liov/hoper/go/v2/utils/protobuf/jsonpb"
+	"github.com/liov/hoper/go/v2/utils/encoding/json"
+	"github.com/liov/hoper/go/v2/utils/encoding/protobuf/jsonpb"
 	"google.golang.org/grpc/metadata"
 )
 

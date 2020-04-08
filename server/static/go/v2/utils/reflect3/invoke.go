@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/liov/hoper/go/v2/utils/json"
+	"github.com/liov/hoper/go/v2/utils/encoding/json"
 )
 
 type Request struct {

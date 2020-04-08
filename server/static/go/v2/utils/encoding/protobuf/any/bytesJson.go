@@ -2,7 +2,7 @@ package any
 
 import (
 	"github.com/gogo/protobuf/jsonpb"
-	"github.com/liov/hoper/go/v2/utils/json"
+	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 

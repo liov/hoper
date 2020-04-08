@@ -1,7 +1,6 @@
 package api
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"reflect"
@@ -12,19 +11,12 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/macro"
 	"github.com/kataras/pio"
-	"github.com/liov/hoper/go/v2/utils/net/http/api"
+	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 )
 
-type sessionKey struct{}
-
-func GetSession(ctx context.Context) {
-
-}
-
-type Session interface {
-	Crypto() []byte
-	Decrypter([]byte)
+type Claims interface {
+	ParseToken(string) error
 }
 
 type App iris.Application
@@ -98,7 +90,7 @@ func Register(app *iris.Application, ctrl []Controller, genApi bool, modName str
 		}
 	}
 	if genApi {
-		api.WriteToFile(api.FilePath, modName)
+		apidoc.WriteToFile(apidoc.FilePath, modName)
 	}
 	handler = nil
 }
@@ -219,11 +211,11 @@ func (h *Handler) Handle(hs ...iris.Handler) *Handler {
 	return h
 }
 
-var contextType = reflect.TypeOf((*Session)(nil)).Elem()
+var contextType = reflect.TypeOf((*Claims)(nil)).Elem()
 var errorType = reflect.TypeOf((*error)(nil)).Elem()
 
 func (h *Handler) Api() {
-	doc := api.GetDoc()
+	doc := apidoc.GetDoc()
 	var pathItem *spec.PathItem
 	path := "/api/v" + strconv.Itoa(h.version) + h.path
 	if doc.Paths != nil && doc.Paths.Paths != nil {
