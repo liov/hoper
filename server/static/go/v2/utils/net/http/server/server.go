@@ -62,8 +62,8 @@ func (s *Server) Serve() {
 		WriteTimeout: serviceConfig.WriteTimeout,
 	}
 	cs := func() {
-		if grpcServer != nil {
-			grpcServer.Stop()
+		if s.GRPCServer != nil {
+			s.GRPCServer.Stop()
 		}
 		if err := server.Close(); err != nil {
 			log.Error(err)

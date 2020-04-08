@@ -52,6 +52,7 @@ require (
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/iris-contrib/formBinder v5.0.0+incompatible // indirect
 	github.com/iris-contrib/httpexpect v0.0.0-20180314041918-ebe99fcebbce // indirect
+	github.com/iris-contrib/schema v0.0.1
 	github.com/jinzhu/configor v1.1.1
 	github.com/jinzhu/gorm v1.9.12-0.20191206142228-79a77d771dee
 	github.com/json-iterator/go v1.1.8
@@ -62,7 +63,7 @@ require (
 	github.com/leodido/go-urn v1.1.0 // indirect
 	github.com/lni/dragonboat v2.1.7+incompatible
 	github.com/magiconair/properties v1.8.1
-	github.com/markbates/goth v1.60.0
+	github.com/markbates/goth v1.63.0
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/modern-go/reflect2 v1.0.1
 	github.com/moul/http2curl v1.0.0 // indirect
@@ -89,7 +90,7 @@ require (
 	go.uber.org/atomic v1.4.0
 	go.uber.org/zap v1.10.0
 	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553
-	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d // indirect
+	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	google.golang.org/grpc v1.26.0
 	google.golang.org/protobuf v1.20.1
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect

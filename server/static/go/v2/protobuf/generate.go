@@ -217,7 +217,7 @@ autobind:
 models:
   ID:
     model:
-      - github.com/liov/hoper/go/v2/utils/api/graphql.UInt64
+      - github.com/liov/hoper/go/v2/utils/net/http/api/graphql.UInt64
   Int:
     model:
       - github.com/99designs/gqlgen/graphql.Int
@@ -229,26 +229,26 @@ models:
       - github.com/99designs/gqlgen/graphql.Int64
   Uint8:
     model:
-      - github.com/liov/hoper/go/v2/utils/api/graphql.Uint8
+      - github.com/liov/hoper/go/v2/utils/net/http/api/graphql.Uint8
   Uint:
     model:
-      - github.com/liov/hoper/go/v2/utils/api/graphql.Uint
+      - github.com/liov/hoper/go/v2/utils/net/http/api/graphql.Uint
   Uint32:
       model:
-        - github.com/liov/hoper/go/v2/utils/api/graphql.Uint32
+        - github.com/liov/hoper/go/v2/utils/net/http/api/graphql.Uint32
   Uint64:
       model:
-        - github.com/liov/hoper/go/v2/utils/api/graphql.Uint64
+        - github.com/liov/hoper/go/v2/utils/net/http/api/graphql.Uint64
   Float32:
     model:
-      - github.com/liov/hoper/go/v2/utils/api/graphql.Float32
+      - github.com/liov/hoper/go/v2/utils/net/http/api/graphql.Float32
   Float64:
     model:
-      - github.com/liov/hoper/go/v2/utils/api/graphql.Float64
+      - github.com/liov/hoper/go/v2/utils/net/http/api/graphql.Float64
   Float:
     model:
       - github.com/99designs/gqlgen/graphql.Float
   Bytes:
     model:
-      - github.com/liov/hoper/go/v2/utils/api/graphql.Bytes
+      - github.com/liov/hoper/go/v2/utils/net/http/api/graphql.Bytes
 `

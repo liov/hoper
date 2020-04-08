@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/liov/hoper/go/v2/utils/json"
+	"github.com/liov/hoper/go/v2/utils/encoding/json"
 )
 
 type InvokeFoo struct{}

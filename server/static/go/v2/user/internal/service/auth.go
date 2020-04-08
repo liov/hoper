@@ -12,7 +12,7 @@ import (
 	"github.com/liov/hoper/go/v2/user/internal/dao"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/liov/hoper/go/v2/utils/json"
+	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/net/http/iris/response"
 	"github.com/liov/hoper/go/v2/utils/net/http/token"

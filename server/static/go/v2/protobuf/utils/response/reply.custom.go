@@ -5,7 +5,7 @@ import (
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/gogo/protobuf/proto"
-	"github.com/liov/hoper/go/v2/utils/protobuf/any"
+	"github.com/liov/hoper/go/v2/utils/encoding/protobuf/any"
 )
 
 func (m *BytesReply) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {

@@ -9,7 +9,7 @@ import (
 	"github.com/liov/hoper/go/v2/user/internal/config"
 	modelconst "github.com/liov/hoper/go/v2/user/model"
 	"github.com/liov/hoper/go/v2/utils/dao/redis/hash"
-	"github.com/liov/hoper/go/v2/utils/json"
+	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
