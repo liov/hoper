@@ -109,3 +109,8 @@ go install github.com/golang/protobuf/protoc-gen-go
 ## 编译postwoman报错
 清除npm缓存，npm i
 好吧，postwoman那界面我受不了，内存大点就大点吧，其实apipost是真好用
+
+## go Type.NumIn不一致
+value := reflect.ValueOf(func)
+value.Type().Method(j).Type.NumIn() 3 //方法第一个参数为接收器
+value.Method(j).Type().NumIn() 2

@@ -176,6 +176,7 @@ func WriteToFile(args ...string) {
 			log.Error(err)
 		}
 	}
+	Doc = nil
 }
 
 func NilDoc() {
