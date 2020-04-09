@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package any;
-option go_package = "github.com/liov/hoper/go/v2/utils/protobuf/any";
+option go_package = "github.com/liov/hoper/go/v2/utils/encoding/protobuf/any";
 option java_package = "xyz.hoper.protobuf.utils.any";
 
 message BytesJson {

@@ -27,11 +27,6 @@ func Method(m string) *apiInfo {
 	return &apiInfo{method: m}
 }
 
-func (h *apiInfo) Date(d string) *apiInfo {
-	h.date = d
-	return h
-}
-
 func (h *apiInfo) ChangeLog(v, auth, date, log string) *apiInfo {
 	h.changelog = append(h.changelog, changelog{v, auth, date, log})
 	return h
@@ -45,14 +40,25 @@ func (h *apiInfo) CreateLog(v, auth, date, log string) *apiInfo {
 	return h
 }
 
-func (h *apiInfo) Describe(d string) *apiInfo {
-	h.describe = d
+func (h *apiInfo) Title(d string) *apiInfo {
+	h.title = d
 	return h
 }
 
-func (h *apiInfo) Auth(a string) *apiInfo {
-	h.auth = a
+func (h *apiInfo) Deprecated(v, auth, date, log string) *apiInfo {
+	h.deprecated = &changelog{v, auth, date, log}
 	return h
+}
+
+//获取负责人
+func (h *apiInfo) getPrincipal() string {
+	if len(h.changelog) == 0 {
+		return h.createlog.auth
+	}
+	if h.deprecated != nil {
+		return h.deprecated.auth
+	}
+	return h.changelog[len(h.changelog)-1].auth
 }
 
 type Service interface {
@@ -75,21 +81,20 @@ func RegisterAllService(app *iris.Application, genApi bool, modName string) {
 	for k, v := range svcs {
 		value := reflect.ValueOf(v)
 		if value.Kind() != reflect.Ptr {
-			panic("必须传入指针")
+			log.Fatal("必须传入指针")
 		}
 
 		for j := 0; j < value.NumMethod(); j++ {
 			method := value.Type().Method(j)
-			if method.Name == "Middle" || method.Type.NumOut() == 1 {
+			if method.Type.NumIn() < 2 || method.Type.NumOut() != 2 {
 				continue
 			}
-
 			methodInfo := getMethodInfo(value.Method(j))
 			if methodInfo == nil {
 				log.Fatalf("%s未注册", method.Name)
 			}
-			if methodInfo.method == "" || methodInfo.describe == "" || methodInfo.createlog.version == "" {
-				log.Fatalf("接口路径,方法,描述,创建日志均为必填")
+			if methodInfo.method == "" || methodInfo.title == "" || methodInfo.createlog.version == "" {
+				log.Fatal("接口路径,方法,描述,创建日志均为必填")
 			}
 			mName, version := parseMethodName(method.Name)
 			methodInfo.path = "/api/v" + strconv.Itoa(version) + "/" + k + "/" + mName
@@ -99,15 +104,19 @@ func RegisterAllService(app *iris.Application, genApi bool, modName string) {
 			fmt.Printf(" %s\t %s %s\t %s\n",
 				pio.Green("API:"),
 				pio.Yellow(strings2.FormatLen(methodInfo.method, 6)),
-				pio.Blue(strings2.FormatLen(methodInfo.path, 50)), pio.Purple(methodInfo.describe))
+				pio.Blue(strings2.FormatLen(methodInfo.path, 50)), pio.Purple(methodInfo.title))
 			if genApi {
-				methodInfo.Api(value.Method(j).Type())
+				methodInfo.Api(value.Method(j).Type(), v.Describe(), value.Type().Name())
 				apidoc.WriteToFile(apidoc.FilePath, modName)
 			}
 		}
 	}
-	app.Get("/api-doc/html", HTML)
-	app.Get("/api-doc/md", MD)
+	if genApi {
+		doc := doc(modName)
+		app.Get("/api-doc/md", func(ctx iris.Context) {
+			ctx.Text("[TOC]\n\n" + doc)
+		})
+	}
 
 	registered()
 }
@@ -123,27 +132,27 @@ func getMethodInfo(fv reflect.Value) (info *apiInfo) {
 			}
 		}
 	}()
-	serviceType := fv.Type()
+	methodType := fv.Type()
 	params := make([]reflect.Value, 0, fv.Type().NumIn())
-	numIn := serviceType.NumIn()
-	numOut := serviceType.NumOut()
-	if numIn == 0 {
-		panic("service至少一个参数且参数必须实现Claims接口")
+	numIn := methodType.NumIn()
+	numOut := methodType.NumOut()
+	if numIn == 1 {
+		panic("method至少一个参数且参数必须实现Claims接口")
 	}
 	if numIn > 2 {
-		panic("service参数最多为两个")
+		panic("method参数最多为两个")
 	}
 	if numOut != 2 {
-		panic("service返回值必须为两个")
+		panic("method返回值必须为两个")
 	}
-	if !serviceType.In(0).Implements(contextType) {
+	if !methodType.In(0).Implements(contextType) {
 		panic("service第一个参数必须实现Claims接口")
 	}
-	if !serviceType.Out(1).Implements(errorType) {
+	if !methodType.Out(1).Implements(errorType) {
 		panic("service第二个返回值必须为error类型")
 	}
 	for i := 0; i < numIn; i++ {
-		params = append(params, reflect.New(serviceType.In(i).Elem()))
+		params = append(params, reflect.New(methodType.In(i).Elem()))
 	}
 	fv.Call(params)
 	return nil
@@ -160,20 +169,11 @@ func parseMethodName(originName string) (name string, version int) {
 	} else {
 		idx = len(originName)
 	}
-	name = lowerFirst(originName[:idx])
+	name = strings2.LowerFirst(originName[:idx])
 	return
 }
 
-// 仅首位小写（更符合接口的规范）
-func lowerFirst(t string) string {
-	b := []byte(t)
-	if 'A' <= b[0] && b[0] <= 'Z' {
-		b[0] += 'a' - 'A'
-	}
-	return string(b)
-}
-
-func (h *apiInfo) Api(serviceType reflect.Type) {
+func (h *apiInfo) Api(methodType reflect.Type, tag, dec string) {
 	doc := apidoc.GetDoc()
 	var pathItem *spec.PathItem
 	if doc.Paths != nil && doc.Paths.Paths != nil {
@@ -189,12 +189,12 @@ func (h *apiInfo) Api(serviceType reflect.Type) {
 
 	//我觉得路径参数并没有那么值得非用不可
 	parameters := make([]spec.Parameter, 0)
-	numIn := serviceType.NumIn()
+	numIn := methodType.NumIn()
 
 	if numIn == 2 {
-		if !serviceType.In(1).Implements(contextType) {
+		if !methodType.In(1).Implements(contextType) {
 			if h.method == http.MethodGet {
-				InType := serviceType.In(1).Elem()
+				InType := methodType.In(1).Elem()
 				for j := 0; j < InType.NumField(); j++ {
 					param := spec.Parameter{
 						ParamProps: spec.ParamProps{
@@ -205,7 +205,7 @@ func (h *apiInfo) Api(serviceType reflect.Type) {
 					parameters = append(parameters, param)
 				}
 			} else {
-				reqName := serviceType.In(1).Elem().Name()
+				reqName := methodType.In(1).Elem().Name()
 				param := spec.Parameter{
 					ParamProps: spec.ParamProps{
 						Name: reqName,
@@ -219,22 +219,22 @@ func (h *apiInfo) Api(serviceType reflect.Type) {
 				if doc.Definitions == nil {
 					doc.Definitions = make(map[string]spec.Schema)
 				}
-				DefinitionsApi(doc.Definitions, reflect.New(serviceType.In(1)).Elem().Interface(), nil)
+				DefinitionsApi(doc.Definitions, reflect.New(methodType.In(1)).Elem().Interface(), nil)
 			}
 		}
 	}
 
-	if !serviceType.Out(0).Implements(errorType) {
+	if !methodType.Out(0).Implements(errorType) {
 		var responses spec.Responses
 		responses.StatusCodeResponses = make(map[int]spec.Response)
 		response := spec.Response{ResponseProps: spec.ResponseProps{Schema: new(spec.Schema)}}
-		response.Schema.Ref = spec.MustCreateRef("#/definitions/" + serviceType.Out(0).Elem().Name())
+		response.Schema.Ref = spec.MustCreateRef("#/definitions/" + methodType.Out(0).Elem().Name())
 		response.Description = "一个成功的返回"
-		DefinitionsApi(doc.Definitions, reflect.New(serviceType.Out(0)).Elem().Interface(), nil)
+		DefinitionsApi(doc.Definitions, reflect.New(methodType.Out(0)).Elem().Interface(), nil)
 		responses.StatusCodeResponses[200] = response
 		op := spec.Operation{
 			OperationProps: spec.OperationProps{
-				Summary:    h.describe,
+				Summary:    h.title,
 				ID:         h.path + h.method,
 				Parameters: parameters,
 				Responses:  &responses,
@@ -242,8 +242,8 @@ func (h *apiInfo) Api(serviceType reflect.Type) {
 		}
 
 		var tags, desc []string
-		tags = append(tags, h.createlog.version)
-		desc = append(desc, h.createlog.log)
+		tags = append(tags, tag, h.createlog.version)
+		desc = append(desc, dec, h.createlog.log)
 		for i := range h.changelog {
 			tags = append(tags, h.changelog[i].version)
 			desc = append(desc, h.changelog[i].log)

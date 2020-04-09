@@ -28,7 +28,7 @@ func init() {
 	Validate = validator.New()
 	zh_translations.RegisterDefaultTranslations(Validate, trans)
 	Validate.RegisterTagNameFunc(func(sf reflect.StructField) string {
-		return sf.Tag.Get("comment")
+		return sf.Tag.Get("annotation")
 	})
 	Validate.RegisterValidation("phone", func(fl validator.FieldLevel) bool {
 		match, _ := regexp.MatchString(`^1[0-9]{10}$`, fl.Field().String())

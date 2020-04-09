@@ -34,7 +34,7 @@ func (u *UserController) VerificationCode() {
 		Method(http.MethodPost).
 		//这些信息不应该放在源代码里,都会打包进二进制文件
 		Service(u.Service.VerificationCode).
-		Describe("获取验证码").
+		Title("获取验证码").
 		Version(1).
 		CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
 		ChangeLog("1.0.1", "jyb", "2019/12/16", "修改").
@@ -52,7 +52,7 @@ func (u *UserController) Add() {
 		Path("/user").
 		Method(http.MethodPost).
 		Service(u.Service.Add).
-		Describe("新增用户").
+		Title("新增用户").
 		Version(1).
 		CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
 		Handle(
@@ -70,7 +70,7 @@ func (u *UserController) Get() {
 		Method(http.MethodGet).
 		Request(new(model.GetReq)).
 		Response(new(model.GetRep)).
-		Describe("获取用户信息").
+		Title("获取用户信息").
 		Version(1).
 		CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
 		Handle(
@@ -92,7 +92,7 @@ func (u *UserController) Edit() {
 		Method(http.MethodPut).
 		Request(new(model.EditReq)).
 		Response(new(model.LoginRep)).
-		Describe("用户编辑").
+		Title("用户编辑").
 		Version(1).
 		CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
 		Handle(func(c iris.Context) {})
@@ -102,7 +102,7 @@ func (u *UserController) Shutdown() {
 	u.Handler.
 		Path("/restart").
 		Method(http.MethodGet).
-		Describe("系统重启").
+		Title("系统重启").
 		Version(1).
 		CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
 		Handle(

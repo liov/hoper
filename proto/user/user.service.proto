@@ -218,24 +218,24 @@ message SingUpVerifyReq {
             }
     };
     //邮箱
-    string mail = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" comment:\"邮箱\""];
+    string mail = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" annotation:\"邮箱\""];
     //手机号
-    string phone = 7 [(gogoproto.moretags) = "validate:\"omitempty,phone\" comment:\"手机号\""];
+    string phone = 7 [(gogoproto.moretags) = "validate:\"omitempty,phone\" annotation:\"手机号\""];
 }
 
 message SignupReq {
     //密码
-    string password = 4 [(gogoproto.moretags) = "validate:\"required,gte=6,lte=15\" comment:\"密码\"", (validator.field) = {
+    string password = 4 [(gogoproto.moretags) = "validate:\"required,gte=6,lte=15\" annotation:\"密码\"", (validator.field) = {
             length_gt: 5
             human_error: "密码最短6位"
         }, (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {title: "密码"
                         min_length: 6}];
     //邮箱
-    string mail = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" comment:\"邮箱\""];
+    string mail = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" annotation:\"邮箱\""];
     //手机号
-    string phone = 7 [(gogoproto.moretags) = "validate:\"omitempty,phone\" comment:\"手机号\""];
+    string phone = 7 [(gogoproto.moretags) = "validate:\"omitempty,phone\" annotation:\"手机号\""];
     //验证码
-    string vCode = 8 [(gogoproto.moretags) = "validate:\"required,numeric\" comment:\"验证码\""];
+    string vCode = 8 [(gogoproto.moretags) = "validate:\"required,numeric\" annotation:\"验证码\""];
 }
 
 message SignupRep {
@@ -270,10 +270,10 @@ message EditReq {
     type: INTEGER}];
     EditDetails details = 2;
     message EditDetails {
-        string name = 2 [(gogoproto.moretags) = "gorm:\"type:varchar(10);not null\" validate:\"required,gte=3,lte=10\" comment:\"名字\""];
-        string password = 5 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"type:varchar(32);not null\" validate:\"gte=8,lte=15\" comment:\"密码\""];
-        string mail = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(16);default:''\" validate:\"email\" comment:\"邮箱\""];
-        string phone = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(32);default:''\" validate:\"phone\" comment:\"手机号\""];
+        string name = 2 [(gogoproto.moretags) = "gorm:\"type:varchar(10);not null\" validate:\"required,gte=3,lte=10\" annotation:\"名字\""];
+        string password = 5 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"type:varchar(32);not null\" validate:\"gte=8,lte=15\" annotation:\"密码\""];
+        string mail = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(16);default:''\" validate:\"email\" annotation:\"邮箱\""];
+        string phone = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(32);default:''\" validate:\"phone\" annotation:\"手机号\""];
         //性别，0未填写，1男，2女
         Gender gender = 8 [(gogoproto.moretags) = "gorm:\"default:0\"", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
            type:INTEGER

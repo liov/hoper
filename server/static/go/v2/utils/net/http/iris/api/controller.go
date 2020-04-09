@@ -114,10 +114,11 @@ type docParam struct {
 }
 
 type apiInfo struct {
-	auth, path, method, describe, date string
-	version                            int
-	changelog                          []changelog
-	createlog                          changelog
+	path, method, title string
+	version             int
+	changelog           []changelog
+	createlog           changelog
+	deprecated          *changelog
 }
 
 type changelog struct {
@@ -126,11 +127,6 @@ type changelog struct {
 
 func (h *Handler) Path(p string) *Handler {
 	h.path = p
-	return h
-}
-
-func (h *Handler) Date(d string) *Handler {
-	h.date = d
 	return h
 }
 
@@ -157,8 +153,8 @@ func (h *Handler) Method(m string) *Handler {
 	return h
 }
 
-func (h *Handler) Describe(d string) *Handler {
-	h.describe = d
+func (h *Handler) Title(d string) *Handler {
+	h.title = d
 	return h
 }
 
@@ -181,7 +177,7 @@ func (h *Handler) Handle(hs ...iris.Handler) *Handler {
 	if h.app == nil {
 		return h
 	}
-	if h.path == "" || h.method == "" || h.describe == "" ||
+	if h.path == "" || h.method == "" || h.title == "" ||
 		h.version == 0 || h.createlog.version == "" {
 		panic("接口路径,方法,描述,版本,创建日志均为必填")
 	}
@@ -202,7 +198,7 @@ func (h *Handler) Handle(hs ...iris.Handler) *Handler {
 	fmt.Printf(" %s\t %s %s\t %s\n",
 		pio.Green("API:"),
 		pio.Yellow(strings2.FormatLen(h.method, 6)),
-		pio.Blue(strings2.FormatLen(path, 50)), pio.Purple(h.describe))
+		pio.Blue(strings2.FormatLen(path, 50)), pio.Purple(h.title))
 	if h.genApi {
 		h.Api()
 	}
@@ -300,7 +296,7 @@ func (h *Handler) Api() {
 		responses.StatusCodeResponses[200] = response
 		op := spec.Operation{
 			OperationProps: spec.OperationProps{
-				Summary:    h.describe,
+				Summary:    h.title,
 				ID:         h.path + h.method,
 				Parameters: parameters,
 				Responses:  &responses,
@@ -351,6 +347,6 @@ func (handler HandlerFunc) Handle(hs ...iris.Handler) HandlerFunc {
 		fmt.Printf(" %s\t %s %s\t %s\n",
 			pio.Purple("API:"),
 			pio.Yellow(strings2.FormatLen(h.method, 6)),
-			pio.Blue(strings2.FormatLen(path, 50)), pio.Green(h.describe))
+			pio.Blue(strings2.FormatLen(path, 50)), pio.Green(h.title))
 	}
 }

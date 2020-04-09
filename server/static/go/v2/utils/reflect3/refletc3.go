@@ -32,3 +32,11 @@ func Set(o interface{}, field string, v interface{}) {
 		f.Set(o, v)
 	}
 }
+
+func OriginalType(typ reflect.Type) reflect.Type {
+	switch typ.Kind() {
+	case reflect.Array, reflect.Chan, reflect.Map, reflect.Ptr, reflect.Slice:
+		return OriginalType(typ.Elem())
+	}
+	return typ
+}

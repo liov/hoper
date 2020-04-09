@@ -88,7 +88,7 @@ func (p *plugin) Generate(file *generator.FileDescriptor) {
 	p.PluginImports = generator.NewPluginImports(p.Generator)
 	p.fmtPkg = p.NewImport("fmt")
 	p.ioPkg = p.NewImport("io")
-	p.graphqlPkg = p.NewImport("github.com/liov/hoper/go/v2/utils/api/graphql")
+	p.graphqlPkg = p.NewImport("github.com/liov/hoper/go/v2/utils/net/http/api/graphql")
 	p.jsonPkg = p.NewImport("encoding/json")
 	p.contextPkg = p.NewImport("context")
 
