@@ -23,7 +23,7 @@ func TestMarshal(t *testing.T) {
 
 type Bar1 struct {
 	Field1 int
-	Field2 string
+	Field2 string `mock:"example:'1',type:'\\w'"`
 	Field3 *Bar2
 }
 

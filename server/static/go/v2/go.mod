@@ -23,15 +23,16 @@ require (
 	github.com/facebookgo/ensure v0.0.0-20160127193407-b4ab57deab51 // indirect
 	github.com/facebookgo/stack v0.0.0-20160209184415-751773369052 // indirect
 	github.com/facebookgo/subset v0.0.0-20150612182917-8dac2c3c4870 // indirect
-	github.com/fasthttp-contrib/websocket v0.0.0-20160511215533-1f3b11f56072 // indirect
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/gavv/monotime v0.0.0-20190418164738-30dba4353424 // indirect
+	github.com/go-oauth2/oauth2 v3.9.2+incompatible // indirect
 	github.com/go-openapi/loads v0.19.4
 	github.com/go-openapi/runtime v0.19.8
 	github.com/go-openapi/spec v0.19.3
 	github.com/go-openapi/swag v0.19.5
-	github.com/go-playground/locales v0.12.1
-	github.com/go-playground/universal-translator v0.16.0
+	github.com/go-playground/locales v0.13.0
+	github.com/go-playground/universal-translator v0.17.0
+	github.com/go-playground/validator/v10 v10.2.0
 	github.com/gogo/gateway v1.1.0 // indirect
 	github.com/gogo/googleapis v1.3.0
 	github.com/gogo/protobuf v1.3.1
@@ -44,6 +45,7 @@ require (
 	github.com/gorilla/handlers v1.4.2 // indirect
 	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/gorilla/schema v1.1.0 // indirect
+	github.com/gorilla/sessions v1.2.0 // indirect
 	github.com/graph-gophers/graphql-go v0.0.0-20200309224638-dae41bde9ef9
 	github.com/graphql-go/graphql v0.7.9
 	github.com/grpc-ecosystem/go-grpc-middleware v1.1.0
@@ -60,7 +62,6 @@ require (
 	github.com/kataras/golog v0.0.10
 	github.com/kataras/iris/v12 v12.1.4
 	github.com/kataras/pio v0.0.2
-	github.com/leodido/go-urn v1.1.0 // indirect
 	github.com/lni/dragonboat v2.1.7+incompatible
 	github.com/magiconair/properties v1.8.1
 	github.com/markbates/goth v1.63.0
@@ -78,9 +79,10 @@ require (
 	github.com/smartystreets/assertions v0.0.0-20190116191733-b6c0e53d7304 // indirect
 	github.com/spf13/viper v1.6.1
 	github.com/stretchr/testify v1.4.0
+	github.com/tidwall/buntdb v1.1.2 // indirect
 	github.com/tidwall/gjson v1.3.5 // indirect
 	github.com/urfave/cli/v2 v2.2.0 // indirect
-	github.com/valyala/fasthttp v1.7.0 // indirect
+	github.com/valyala/fasthttp v1.9.0 // indirect
 	github.com/vektah/gqlparser/v2 v2.0.1
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
 	github.com/yalp/jsonpath v0.0.0-20180802001716-5cc68e5049a0 // indirect
@@ -93,9 +95,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	google.golang.org/grpc v1.26.0
 	google.golang.org/protobuf v1.20.1
-	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
-	gopkg.in/go-playground/validator.v9 v9.30.0
-	gopkg.in/yaml.v2 v2.2.5
+	gopkg.in/oauth2.v3 v3.12.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20191010095647-fc94e3f71652
 	sigs.k8s.io/yaml v1.1.0 // indirect
 )

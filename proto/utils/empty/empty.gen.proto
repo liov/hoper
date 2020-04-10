@@ -3,7 +3,6 @@ package empty;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
-option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/empty";
 option java_package = "xyz.hoper.protobuf.utils.empty";
 
 option (gogoproto.goproto_enum_prefix_all) = false;
