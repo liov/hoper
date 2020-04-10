@@ -3,11 +3,11 @@ package json
 import (
 	"encoding/json"
 	"log"
+	"reflect"
 	"testing"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/json-iterator/go/extra"
-	"github.com/magiconair/properties/assert"
 )
 
 type Foo struct {
@@ -25,7 +25,7 @@ func TestJson(t *testing.T) {
 		var f Foo
 		Json.Unmarshal(data, &f)
 		t.Log(f)
-		assert.Equal(t, string(data), `{"a":1,"b":"str","c":null}`)
+		reflect.DeepEqual(string(data), `{"a":1,"b":"str","c":null}`)
 	})
 }
 

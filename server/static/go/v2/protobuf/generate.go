@@ -21,6 +21,7 @@ import (
 
 func main() { run() }
 
+var notgengql = true
 var files = map[string][]string{
 	"/utils/empty/*.gen.proto":      {"gogo_out=plugins=grpc"},
 	"/utils/errorcode/errrep.proto": {"gogo_out=plugins=grpc"},
@@ -46,6 +47,7 @@ var files = map[string][]string{
 }
 
 var proto = flag.String("proto", "../../../../proto", "proto路径")
+
 var env = []string{
 	"GOARCH=" + runtime.GOARCH,
 	"GOOS=" + runtime.GOOS,
@@ -84,6 +86,9 @@ func run() {
 			cmd.Stderr = os.Stderr
 			cmd.Run()
 		}
+	}
+	if notgengql {
+		return
 	}
 	gqldir := pwd + "/protobuf/gql"
 	fileInfos, err := ioutil.ReadDir(gqldir)

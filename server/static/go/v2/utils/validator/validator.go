@@ -7,9 +7,9 @@ import (
 
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
+	"github.com/go-playground/validator/v10"
+	zh_translations "github.com/go-playground/validator/v10/translations/zh"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"gopkg.in/go-playground/validator.v9"
-	zh_translations "gopkg.in/go-playground/validator.v9/translations/zh"
 )
 
 var (
@@ -18,8 +18,8 @@ var (
 )
 
 func init() {
-	zh := zh.New()
-	uni := ut.New(zh, zh)
+	zhcn := zh.New()
+	uni := ut.New(zhcn, zhcn)
 
 	// this is usually know or extracted from http 'Accept-Language' header
 	// also see uni.FindTranslator(...)
@@ -28,7 +28,13 @@ func init() {
 	Validate = validator.New()
 	zh_translations.RegisterDefaultTranslations(Validate, trans)
 	Validate.RegisterTagNameFunc(func(sf reflect.StructField) string {
-		return sf.Tag.Get("annotation")
+		if annotation := sf.Tag.Get("annotation"); annotation != "" {
+			return annotation
+		}
+		if json := sf.Tag.Get("json"); json != "" {
+			return json
+		}
+		return sf.Name
 	})
 	Validate.RegisterValidation("phone", func(fl validator.FieldLevel) bool {
 		match, _ := regexp.MatchString(`^1[0-9]{10}$`, fl.Field().String())
@@ -40,6 +46,9 @@ func init() {
 }
 
 func Trans(err error) string {
+	if err == nil {
+		return ""
+	}
 	var msg []string
 	ve, ok := err.(validator.ValidationErrors)
 	if !ok {
@@ -53,7 +62,6 @@ func Trans(err error) string {
 }
 
 func translateFunc(ut ut.Translator, fe validator.FieldError) string {
-
 	t, err := ut.T(fe.Tag(), fe.Field())
 	if err != nil {
 		log.Errorf("警告: 翻译字段错误: %#v", fe)

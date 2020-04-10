@@ -17,6 +17,12 @@ func Mock(v interface{}) {
 	mock(value, typMap)
 }
 
+//数组长度
+const length = 1
+
+//一个类型最大重复次数
+const times = 3
+
 func mock(value reflect.Value, typMap map[reflect.Type]int) {
 	typ := value.Type()
 	switch value.Kind() {
@@ -32,7 +38,7 @@ func mock(value reflect.Value, typMap map[reflect.Type]int) {
 	case reflect.String:
 		value.SetString(RandString())
 	case reflect.Ptr:
-		if count := typMap[typ]; count == 3 {
+		if count := typMap[typ]; count == times {
 			return
 		}
 		typMap[typ] = typMap[typ] + 1
@@ -50,13 +56,13 @@ func mock(value reflect.Value, typMap map[reflect.Type]int) {
 			mock(value.Index(i), typMap)
 		}
 	case reflect.Slice:
-		value.Set(reflect.MakeSlice(typ, 3, 3))
-		for i := 0; i < 3; i++ {
+		value.Set(reflect.MakeSlice(typ, length, length))
+		for i := 0; i < length; i++ {
 			mock(value.Index(i), typMap)
 		}
 	case reflect.Map:
-		value.Set(reflect.MakeMapWithSize(typ, 3))
-		for i := 0; i < 3; i++ {
+		value.Set(reflect.MakeMapWithSize(typ, length))
+		for i := 0; i < length; i++ {
 			mk := reflect.New(typ.Key()).Elem()
 			mock(mk, typMap)
 			mv := reflect.New(typ.Elem()).Elem()

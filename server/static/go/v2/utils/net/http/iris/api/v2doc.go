@@ -1,14 +1,17 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/liov/hoper/go/v2/utils/mock"
 	"github.com/liov/hoper/go/v2/utils/reflect3"
 	"github.com/liov/hoper/go/v2/utils/strings2"
+	"github.com/liov/hoper/go/v2/utils/validator"
 )
 
 //有swagger,有没有必要做
@@ -53,7 +56,7 @@ func doc(modName string) string {
 			fmt.Fprint(buf, "### 参数信息  \n")
 			if method.Type.NumIn() == 3 {
 				fmt.Fprint(buf, "|字段名称|字段类型|字段描述|校验要求|  \n")
-				fmt.Fprint(buf, "| :----: | :----: | :----: | :----: |  \n")
+				fmt.Fprint(buf, "| :----  | :----: | :----: | :----: |  \n")
 				params := getParamTable(method.Type.In(2).Elem(), "")
 				for i := range params {
 					fmt.Fprintf(buf, "|%s|%s|%s|%s|  \n", params[i].json, params[i].typ, params[i].annotation, params[i].validator)
@@ -62,6 +65,27 @@ func doc(modName string) string {
 			} else {
 				fmt.Fprint(buf, "无需参数")
 			}
+			fmt.Fprint(buf, "__请求示例__  \n")
+			fmt.Fprint(buf, "```json  \n")
+			newParam := reflect.New(method.Type.In(2).Elem()).Interface()
+			mock.Mock(newParam)
+			data, _ := json.MarshalIndent(newParam, "", "\t")
+			fmt.Fprint(buf, string(data), "  \n")
+			fmt.Fprint(buf, "```  \n")
+			fmt.Fprint(buf, "### 返回信息  \n")
+			fmt.Fprint(buf, "|字段名称|字段类型|字段描述|  \n")
+			fmt.Fprint(buf, "| :----  | :----: | :----: | \n")
+			params := getParamTable(method.Type.Out(0).Elem(), "")
+			for i := range params {
+				fmt.Fprintf(buf, "|%s|%s|%s|  \n", params[i].json, params[i].typ, params[i].annotation)
+			}
+			fmt.Fprint(buf, "__返回示例__  \n")
+			fmt.Fprint(buf, "```json  \n")
+			newRes := reflect.New(method.Type.Out(0).Elem()).Interface()
+			mock.Mock(newRes)
+			data, _ = json.MarshalIndent(newRes, "", "\t")
+			fmt.Fprint(buf, string(data), "  \n")
+			fmt.Fprint(buf, "```  \n")
 		}
 	}
 	return buf.String()
@@ -73,7 +97,7 @@ type ParamTable struct {
 
 func getParamTable(param reflect.Type, pre string) []*ParamTable {
 	param = reflect3.OriginalType(param)
-
+	newParam := reflect.New(param).Interface()
 	var res []*ParamTable
 	for i := 0; i < param.NumField(); i++ {
 		/*		if param.AssignableTo(reflect.TypeOf(response.File{})) {
@@ -81,24 +105,33 @@ func getParamTable(param reflect.Type, pre string) []*ParamTable {
 			}*/
 		var p ParamTable
 		field := param.Field(i)
-		p.json = strings.Split(field.Tag.Get("json"), ",")[0]
-		if p.json == "-" {
+		if field.Anonymous {
 			continue
 		}
-		if p.json == "" {
-			p.json = pre + strings2.ConvertToCamelCase(p.json)
+		json := strings.Split(field.Tag.Get("json"), ",")[0]
+		if json == "-" {
+			continue
+		}
+		if json == "" {
+			p.json = pre + strings2.ConvertToCamelCase(json)
 		} else {
-			p.json = pre + p.json
+			p.json = pre + json
 		}
 		p.annotation = field.Tag.Get("annotation")
 		if p.annotation == "-" {
 			p.annotation = p.json
 		}
 		p.typ = getJsType(field.Type)
-		res = append(res, &p)
+		if valid := validator.Trans(validator.Validate.StructPartial(newParam, field.Name)); valid != "" {
+			p.validator = valid[len(p.annotation):]
+		}
 		if p.typ == "object" || p.typ == "[]object" {
-			sub := getParamTable(field.Type, p.json+".")
+			p.json = "**" + p.json + "**"
+			res = append(res, &p)
+			sub := getParamTable(field.Type, json+".")
 			res = append(res, sub...)
+		} else {
+			res = append(res, &p)
 		}
 	}
 	return res
@@ -123,6 +156,8 @@ func getJsType(typ reflect.Type) string {
 		return getJsType(typ.Elem())
 	case reflect.Struct:
 		return "object"
+	case reflect.Bool:
+		return "boolean"
 	}
 	return "string"
 }
