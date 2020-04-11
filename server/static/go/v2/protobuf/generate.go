@@ -17,7 +17,6 @@ import (
  */
 
 //go:generate mockgen -destination ../protobuf/user/mock/user.mock.go -package mock -source ../protobuf/user/user.service.pb.go UserServiceServer
-//go:generate gqlgen --verbose
 
 func main() { run() }
 
