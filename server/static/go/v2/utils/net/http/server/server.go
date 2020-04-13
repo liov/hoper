@@ -14,7 +14,7 @@ import (
 	v2 "github.com/liov/hoper/go/v2/initialize/v2"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/net/http/gateway"
+	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	"google.golang.org/grpc"

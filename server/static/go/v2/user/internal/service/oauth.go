@@ -6,18 +6,27 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/go-oauth2/oauth2/errors"
-	"github.com/go-oauth2/oauth2/generates"
-	"github.com/go-oauth2/oauth2/manage"
-	"github.com/go-oauth2/oauth2/models"
-	"github.com/go-oauth2/oauth2/server"
-	"github.com/go-oauth2/oauth2/store"
+	model "github.com/liov/hoper/go/v2/protobuf/user"
+	ghttp "github.com/liov/hoper/go/v2/protobuf/utils/http"
+	goauth "github.com/liov/hoper/go/v2/protobuf/utils/oauth"
+	"github.com/liov/hoper/go/v2/user/internal/config"
+	"github.com/liov/hoper/go/v2/user/internal/dao"
+	"github.com/liov/hoper/go/v2/utils/net/http/auth/oauth"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"gopkg.in/oauth2.v3/errors"
+	"gopkg.in/oauth2.v3/generates"
+	"gopkg.in/oauth2.v3/manage"
+	"gopkg.in/oauth2.v3/models"
+	"gopkg.in/oauth2.v3/server"
+	"gopkg.in/oauth2.v3/store"
 )
 
-func init() {
+func Oauth() {
 	manager := manage.NewDefaultManager()
 	manager.SetAuthorizeCodeTokenCfg(manage.DefaultAuthorizeCodeTokenCfg)
 
@@ -25,10 +34,10 @@ func init() {
 	manager.MustTokenStorage(store.NewMemoryTokenStore())
 
 	// generate jwt access token
-	manager.MapAccessGenerate(generates.NewJWTAccessGenerate([]byte("00000000"), jwt.SigningMethodHS512))
+	manager.MapAccessGenerate(generates.NewJWTAccessGenerate([]byte(config.Conf.Customize.TokenSecret), jwt.SigningMethodHS512))
 
-	clientStore := store.NewClientStore()
-	clientStore.Set("222222", &models.Client{
+	clientStore := oauth.NewClientStore(dao.Dao.GORMDB)
+	clientStore.Set(&models.Client{
 		ID:     "222222",
 		Secret: "22222222",
 		Domain: "http://localhost:9094",
@@ -38,10 +47,13 @@ func init() {
 	srv := server.NewServer(server.NewConfig(), manager)
 
 	srv.SetPasswordAuthorizationHandler(func(username, password string) (userID string, err error) {
-		if username == "test" && password == "test" {
-			userID = "test"
+		loginRep, err := UserSvc.Login(
+			context.Background(),
+			&model.LoginReq{Input: username, Password: password})
+		if err != nil {
+			return "", err
 		}
-		return
+		return strconv.FormatUint(loginRep.Details.User.Id, 10), nil
 	})
 
 	srv.SetUserAuthorizationHandler(userAuthorizeHandler)
@@ -184,6 +196,10 @@ func outputHTML(w http.ResponseWriter, req *http.Request, filename string) {
 	http.ServeContent(w, req, file.Name(), fi.ModTime(), file)
 }
 
-func (u UserService) OAuth2(ctx context.Context) {
+func (*UserService) OauthAuthorize(ctx context.Context, req *goauth.OauthReq) (*ghttp.Response, error) {
 
+}
+
+func (*UserService) OauthToken(ctx context.Context, req *goauth.OauthReq) (*ghttp.Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OauthToken not implemented")
 }

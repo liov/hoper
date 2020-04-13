@@ -9,7 +9,7 @@ import (
 	"github.com/liov/hoper/go/v2/initialize/v2"
 	note "github.com/liov/hoper/go/v2/protobuf/note"
 	user "github.com/liov/hoper/go/v2/protobuf/user"
-	"github.com/liov/hoper/go/v2/utils/net/http/gateway"
+	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"
 	"github.com/liov/hoper/go/v2/utils/net/http/server"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"

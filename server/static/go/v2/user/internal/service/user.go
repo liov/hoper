@@ -18,8 +18,8 @@ import (
 	"github.com/liov/hoper/go/v2/user/internal/dao"
 	modelconst "github.com/liov/hoper/go/v2/user/model"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/net/http/gateway"
-	"github.com/liov/hoper/go/v2/utils/net/http/token"
+	"github.com/liov/hoper/go/v2/utils/net/http/auth/jwt"
+	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"
 	"github.com/liov/hoper/go/v2/utils/net/mail"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 	"github.com/liov/hoper/go/v2/utils/time2"
@@ -298,7 +298,15 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 	}
 	now := time.Now()
 	nowStamp := now.Unix()
-	tokenString, err := token.GenerateToken(user.Id, nowStamp, config.Conf.Customize.TokenMaxAge, config.Conf.Customize.TokenSecret)
+	userInfo := &model.UserMainInfo{
+		Id:           user.Id,
+		LastActiveAt: nowStamp,
+		Score:        user.Score,
+		Status:       user.Status,
+		Role:         user.Role,
+		LoginTime:    nowStamp,
+	}
+	tokenString, err := jwt.GenerateToken(userInfo, nowStamp, config.Conf.Customize.TokenMaxAge, config.Conf.Customize.TokenSecret)
 	if err != nil {
 		return nil, errorcode.Internal
 	}
@@ -306,14 +314,7 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 	dao.Dao.GORMDB.Model(&user).UpdateColumn("last_activated_at", now)
 	conn := dao.NewUserRedis()
 	defer conn.Close()
-	if err := conn.EfficientUserHashToRedis(&model.UserMainInfo{
-		Id:           user.Id,
-		LastActiveAt: nowStamp,
-		Score:        user.Score,
-		Status:       user.Status,
-		Role:         user.Role,
-		LoginTime:    nowStamp,
-	}); err != nil {
+	if err := conn.EfficientUserHashToRedis(userInfo); err != nil {
 		return nil, errorcode.RedisErr
 	}
 	resp := &model.LoginRep{}

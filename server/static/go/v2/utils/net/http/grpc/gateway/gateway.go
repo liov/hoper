@@ -83,6 +83,7 @@ func Gateway(gatewayHandle GatewayHandle) http.Handler {
 			}))
 
 	runtime.WithForwardResponseOption(CookieHook)(gwmux)
+	runtime.WithForwardResponseOption(ResponseHook)(gwmux)
 	if gatewayHandle != nil {
 		gatewayHandle(ctx, gwmux)
 	}

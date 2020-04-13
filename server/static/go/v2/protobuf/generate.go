@@ -27,6 +27,8 @@ var files = map[string][]string{
 	"/utils/errorcode/*enum.proto":  {"enum_out=plugins=grpc"},
 	"/utils/actor/message/*.proto":  {"gogo_out=plugins=grpc"},
 	"/utils/response/*.gen.proto":   {"gogo_out=plugins=grpc"},
+	"/utils/http/*.gen.proto":       {"gogo_out=plugins=grpc"},
+	"/utils/oauth/*.gen.proto":      {"gogo_out=plugins=grpc"},
 	"/utils/proto/gogo/*.gen.proto": {"gogo_out=plugins=grpc"},
 	"/utils/proto/go/*.gen.proto":   {"go_out=plugins=grpc"},
 	"/user/*service.proto": {"gogo_out=plugins=grpc",
