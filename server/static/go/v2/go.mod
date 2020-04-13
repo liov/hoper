@@ -25,7 +25,6 @@ require (
 	github.com/facebookgo/subset v0.0.0-20150612182917-8dac2c3c4870 // indirect
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/gavv/monotime v0.0.0-20190418164738-30dba4353424 // indirect
-	github.com/go-oauth2/oauth2 v3.9.2+incompatible // indirect
 	github.com/go-openapi/loads v0.19.4
 	github.com/go-openapi/runtime v0.19.8
 	github.com/go-openapi/spec v0.19.3
@@ -95,7 +94,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	google.golang.org/grpc v1.26.0
 	google.golang.org/protobuf v1.20.1
-	gopkg.in/oauth2.v3 v3.12.0 // indirect
+	gopkg.in/oauth2.v3 v3.12.0
 	gopkg.in/yaml.v3 v3.0.0-20191010095647-fc94e3f71652
 	sigs.k8s.io/yaml v1.1.0 // indirect
 )

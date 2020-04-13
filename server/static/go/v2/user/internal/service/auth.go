@@ -10,12 +10,12 @@ import (
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/internal/config"
 	"github.com/liov/hoper/go/v2/user/internal/dao"
+	"github.com/liov/hoper/go/v2/utils/net/http/auth/jwt"
 	"google.golang.org/grpc/metadata"
 
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/net/http/iris/response"
-	"github.com/liov/hoper/go/v2/utils/net/http/token"
 )
 
 func Auth(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +47,7 @@ func Auth(w http.ResponseWriter, r *http.Request) {
 		errHandle(w)
 		return
 	}
-	claims, err := token.ParseToken(auth, config.Conf.Customize.TokenSecret)
+	claims, err := jwt.ParseToken(auth, config.Conf.Customize.TokenSecret)
 	if err != nil {
 		errHandle(w)
 		return
@@ -69,7 +69,7 @@ func (*UserService) Auth(ctx context.Context) (*model.UserMainInfo, error) {
 	if len(tokens) == 0 || tokens[0] == "" {
 		return nil, model.UserErr_NoLogin
 	}
-	claims, err := token.ParseToken(tokens[0], config.Conf.Customize.TokenSecret)
+	claims, err := jwt.ParseToken(tokens[0], config.Conf.Customize.TokenSecret)
 	if err != nil {
 		return nil, err
 	}

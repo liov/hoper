@@ -1,4 +1,4 @@
-package token
+package jwt
 
 import (
 	"time"
@@ -8,6 +8,10 @@ import (
 	"github.com/liov/hoper/go/v2/utils/strings2"
 )
 
+//如果只存一个id，jwt的意义在哪呢，跟session_id有什么区别
+//jwt应该存放一些用户不能更改的信息，所以不能全存在jwt里
+//或者说用户每更改一次信息就刷新token（貌似可行）
+//有泛型这里多好写
 type Claims struct {
 	UserID uint64 `json:"user_id"`
 	jwt.StandardClaims

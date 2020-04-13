@@ -10,6 +10,8 @@ import (
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
+var LuosimaoErr = errors.New("人机识别验证失败")
+
 // LuosimaoVerify 对前端的验证码进行验证
 func LuosimaoVerify(reqURL, apiKey, response string) error {
 	if apiKey == "" {
@@ -26,7 +28,7 @@ func LuosimaoVerify(reqURL, apiKey, response string) error {
 	res, err := http.PostForm(reqURL, reqData)
 	if err != nil {
 		log.Error(err)
-		return errors.New("人机识别验证失败")
+		return LuosimaoErr
 	}
 
 	defer res.Body.Close()
@@ -35,7 +37,7 @@ func LuosimaoVerify(reqURL, apiKey, response string) error {
 
 	if readErr != nil {
 		log.Error(readErr)
-		return errors.New("人机识别验证失败")
+		return LuosimaoErr
 	}
 
 	type LuosimaoResult struct {
@@ -46,11 +48,11 @@ func LuosimaoVerify(reqURL, apiKey, response string) error {
 	var luosimaoResult LuosimaoResult
 	if err := json.Unmarshal(resBody, &luosimaoResult); err != nil {
 		log.Error(err)
-		return errors.New("人机识别验证失败")
+		return LuosimaoErr
 	}
 	if luosimaoResult.Res != "success" {
 		log.Info("luosimaoResult.Res", luosimaoResult.Res)
-		return errors.New("人机识别验证失败")
+		return LuosimaoErr
 	}
 	return nil
 }
