@@ -19,8 +19,9 @@ func main() {
 
 		trace.Start(f)
 		defer trace.Stop()*/
+	defer v2.Start(config.Conf, nil)()
+
 	s := server.Server{
-		Conf: config.Conf,
 		IrisHandle: func(application *iris.Application) {
 			api.Register(application, router.Route(),
 				initialize.Env == initialize.DEVELOPMENT,

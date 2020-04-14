@@ -5,7 +5,8 @@ import (
 )
 
 var (
-	UserSvc = &UserService{}
+	userSvc  = &UserService{}
+	oauthSvc *OauthService
 
 	userDao = &dao.UserDao{}
 )

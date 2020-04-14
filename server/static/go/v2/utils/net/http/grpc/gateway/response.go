@@ -5,11 +5,11 @@ import (
 	"net/http"
 
 	"github.com/golang/protobuf/proto"
-	ihttp "github.com/liov/hoper/go/v2/protobuf/utils/http"
+	"github.com/liov/hoper/go/v2/protobuf/utils/response"
 )
 
 func ResponseHook(ctx context.Context, writer http.ResponseWriter, message proto.Message) error {
-	if res, ok := message.(*ihttp.Response); ok {
+	if res, ok := message.(*response.HttpResponse); ok {
 		for k, v := range res.Header {
 			writer.Header().Add(k, v)
 		}

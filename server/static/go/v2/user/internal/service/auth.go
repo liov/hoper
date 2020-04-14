@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"time"
 
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/internal/config"
@@ -13,12 +12,10 @@ import (
 	"github.com/liov/hoper/go/v2/utils/net/http/auth/jwt"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/net/http/iris/response"
 )
 
-func Auth(w http.ResponseWriter, r *http.Request) {
+func Auth(r *http.Request) (*model.UserMainInfo, error) {
 	var auth string
 	cookie, _ := r.Cookie("token")
 	value, _ := url.QueryUnescape(cookie.Value)
@@ -27,40 +24,22 @@ func Auth(w http.ResponseWriter, r *http.Request) {
 	} else {
 		auth = value
 	}
-	errHandle := func(w http.ResponseWriter) {
-		authErr := response.ResData{Code: uint32(model.UserErr_InvalidToken), Message: model.UserErr_InvalidToken.Error()}
-		resp, _ := json.Json.Marshal(&authErr)
-		http.SetCookie(w, &http.Cookie{
-			Name:  "token",
-			Value: "del",
-			Path:  "/",
-			//Domain:  "hoper.xyx",
-			Expires:  time.Now().Add(-1),
-			MaxAge:   -1,
-			Secure:   false,
-			HttpOnly: true,
-		})
-		w.Write(resp)
-	}
 
 	if auth == "" {
-		errHandle(w)
-		return
+		return nil, model.UserErr_NoLogin
 	}
 	claims, err := jwt.ParseToken(auth, config.Conf.Customize.TokenSecret)
 	if err != nil {
-		errHandle(w)
-		return
+		return nil, model.UserErr_InvalidToken
 	}
 	conn := dao.NewUserRedis()
 	defer conn.Close()
 	user, err := conn.EfficientUserHashFromRedis(claims.UserID)
 	if err != nil {
 		log.Error(err)
-		errHandle(w)
-		return
+		return nil, model.UserErr_InvalidToken
 	}
-	r.WithContext(context.WithValue(r.Context(), "auth", user))
+	return user, nil
 }
 
 func (*UserService) Auth(ctx context.Context) (*model.UserMainInfo, error) {

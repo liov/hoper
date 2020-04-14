@@ -1,8 +1,0 @@
-syntax = "proto3";
-package http;
-
-option java_package = "xyz.hoper.protobuf.http";
-option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/http";
-
-message Response{
-}

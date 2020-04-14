@@ -21,6 +21,8 @@ type Foo2 struct {
 
 type Foo3 Foo2
 
+var foo *Foo2
+
 func main() {
 	foo1 := Foo1{}
 	foo2 := Foo2{}
@@ -45,4 +47,11 @@ func main() {
 	log.Println(typ5.AssignableTo(typ3))
 	log.Println(typ3.AssignableTo(typ1.Field(3).Type)) //true
 	log.Println(typ1.Field(2))
+	SetFoo(foo)
+}
+
+func SetFoo(v interface{}) {
+	value := reflect.ValueOf(v)
+	value.Set(reflect.New(value.Type().Elem()).Elem())
+	log.Println(foo.Field2)
 }

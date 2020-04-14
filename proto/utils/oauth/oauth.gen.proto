@@ -19,21 +19,19 @@ option (gogoproto.messagename_all) = true;
 option (gogoproto.populate_all) = true;
 
 message OauthReq{
-    string responseType =1;
-    string clientID =2;
+    string response_type =1 ;
+    string client_id =2;
     string scope =3;
-    string redirectURI =4;
+    string redirect_uri =4;
     string state =5;
-    string userID =6;
-    int64 accessTokenExp =7;
-    string clientSecret =11;
+    string user_id =6 ;
+    int64 access_token_exp =7 ;
+    string client_secret =11 ;
     string code =12;
-    string refreshToken =13;
-    string grantType = 14;
-    string accessType = 15;
-    string username =8;
-    string password =9;
-    string verifyCode =10;
+    string refresh_token =13 ;
+    string grant_type = 14 [(gogoproto.casttype)="gopkg.in/oauth2.v3.GrantType"];
+    string access_type = 15;
+    string login_uri = 16;
 }
 
 message Client{

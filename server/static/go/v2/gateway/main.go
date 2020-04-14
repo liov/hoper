@@ -18,9 +18,9 @@ import (
 )
 
 func main() {
+	defer initialize.Start(config.Conf, nil)()
+
 	s := server.Server{
-		Conf: config.Conf,
-		Dao:  nil,
 		GatewayRegistr: func(ctx context.Context, mux *runtime.ServeMux) {
 			opts := []grpc.DialOption{grpc.WithInsecure(),
 				grpc.WithPerRPCCredentials(oauth.NewOauthAccess(&oauth2.Token{

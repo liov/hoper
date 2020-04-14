@@ -92,8 +92,6 @@ type Config interface {
 }
 
 type Server struct {
-	Conf           Config
-	Dao            initialize.Dao
 	GRPCServer     *grpc.Server
 	GatewayRegistr gateway.GatewayHandle
 	IrisHandle     func(*iris.Application)
@@ -104,9 +102,11 @@ var close = make(chan os.Signal, 1)
 var stop = make(chan struct{}, 1)
 
 func (s *Server) Start() {
-	defer v2.Start(s.Conf, s.Dao)()
 	if v2.BasicConfig == nil {
-		log.Fatal("初始化配置失败")
+		log.Fatal(`初始化配置失败:
+	main 函数的第一行应为
+	defer v2.Start(config.Conf, dao.Dao)()
+`)
 	}
 	signal.Notify(close,
 		// kill -SIGINT XXXX 或 Ctrl+c

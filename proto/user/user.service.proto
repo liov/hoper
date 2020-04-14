@@ -10,7 +10,7 @@ import "utils/empty/empty.imp.proto";
 import "utils/response/response.imp.proto";
 import "utils/proto/gogo/graphql.imp.proto";
 import "utils/oauth/oauth.imp.proto";
-import "utils/http/response.imp.proto";
+import "utils/response/httpresponse.imp.proto";
 
 
 option java_package = "xyz.hoper.protobuf.user";
@@ -208,30 +208,35 @@ service UserService {
                         };
         option (cuzproto.graphql_operation) = Query;
         }
+}
 
-        rpc OauthAuthorize (oauth.OauthReq) returns (http.Response) {
-            option (google.api.http) = {
+service OauthService{
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_tag) = {
+		description: "Oauth相关接口"
+    };
+    rpc OauthAuthorize (oauth.OauthReq) returns (response.HttpResponse) {
+        option (google.api.http) = {
                                 get: "/api/v1/oauth/authorize"
                             };
-            option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
                                         tags:["用户相关接口","v1.0.0","oauth"]
                                         summary : "oauth验证"
                                         description : "oauth验证"
                                     };
-            option (cuzproto.graphql_operation) = Query;
-        }
-
-        rpc OauthToken (oauth.OauthReq) returns (http.Response) {
-        option (google.api.http) = {
-                                        get: "/api/v1/oauth/token"
-                                    };
-        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
-                                                tags:["用户相关接口","v1.0.0","oauth"]
-                                                summary : "签发token"
-                                                description : "签发token"
-                                            };
         option (cuzproto.graphql_operation) = Query;
-}
+    }
+
+    rpc OauthToken (oauth.OauthReq) returns (response.HttpResponse) {
+        option (google.api.http) = {
+                                            get: "/api/v1/oauth/token"
+                                        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+                                                    tags:["用户相关接口","v1.0.0","oauth"]
+                                                    summary : "签发token"
+                                                    description : "签发token"
+                                                };
+        option (cuzproto.graphql_operation) = Query;
+    }
 }
 
 message SingUpVerifyReq {

@@ -16,7 +16,7 @@ type (
 	ClientScopeHandler func(clientID, scope string) (allowed bool, err error)
 
 	// UserAuthorizationHandler get user id from request authorization
-	UserAuthorizationHandler func(token string) (userID string, err error)
+	UserAuthorizationHandler func(token string) (userID, loginUri string)
 
 	// PasswordAuthorizationHandler get user id from username and password
 	PasswordAuthorizationHandler func(username, password, verifyCode string) (userID string, err error)

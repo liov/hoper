@@ -59,7 +59,7 @@ func Response(ctx iris.Context, res ...interface{}) {
 	}
 }
 
-/*func Response(ctx iris.Context,data interface{},msg string,code int){
+/*func HttpResponse(ctx iris.Context,data interface{},msg string,code int){
 	num, err := ctx.JSON(iris.Map{
 		"code": code,
 		"msg":  msg,

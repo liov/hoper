@@ -7,24 +7,23 @@ import (
 	"net/url"
 	"time"
 
-	ihttp "github.com/liov/hoper/go/v2/protobuf/utils/http"
 	"github.com/liov/hoper/go/v2/protobuf/utils/oauth"
+	"github.com/liov/hoper/go/v2/protobuf/utils/response"
 	"gopkg.in/oauth2.v3"
 	"gopkg.in/oauth2.v3/errors"
 	"gopkg.in/oauth2.v3/server"
 )
 
 type Server struct {
-	Config                       *server.Config
-	Manager                      oauth2.Manager
-	ClientAuthorizedHandler      ClientAuthorizedHandler
-	ClientScopeHandler           ClientScopeHandler
-	UserAuthorizationHandler     UserAuthorizationHandler
-	PasswordAuthorizationHandler PasswordAuthorizationHandler
-	RefreshingScopeHandler       RefreshingScopeHandler
-	ResponseErrorHandler         ResponseErrorHandler
-	InternalErrorHandler         InternalErrorHandler
-	ExtensionFieldsHandler       ExtensionFieldsHandler
+	Config                   *server.Config
+	Manager                  oauth2.Manager
+	ClientAuthorizedHandler  ClientAuthorizedHandler
+	ClientScopeHandler       ClientScopeHandler
+	UserAuthorizationHandler UserAuthorizationHandler
+	RefreshingScopeHandler   RefreshingScopeHandler
+	ResponseErrorHandler     ResponseErrorHandler
+	InternalErrorHandler     InternalErrorHandler
+	ExtensionFieldsHandler   ExtensionFieldsHandler
 }
 
 func NewDefaultServer(manager oauth2.Manager) *Server {
@@ -38,24 +37,17 @@ func NewServer(cfg *server.Config, manager oauth2.Manager) *Server {
 		Manager: manager,
 	}
 
-	srv.UserAuthorizationHandler = func(token string) (userID string, err error) {
-		err = errors.ErrAccessDenied
-		return
-	}
-
-	srv.PasswordAuthorizationHandler = func(username, password, verifyCode string) (userID string, err error) {
-		err = errors.ErrAccessDenied
-		return
-	}
 	return srv
 }
 
 func (s *Server) GetRedirectURI(req *oauth.OauthReq, data map[string]interface{}) (uri string, err error) {
-	u, err := url.Parse(req.RedirectURI)
-	if err != nil {
-		return
+	u := &url.URL{Path: req.LoginUri}
+	if req.LoginUri == "" {
+		u, err = url.Parse(req.RedirectUri)
+		if err != nil {
+			return
+		}
 	}
-
 	q := u.Query()
 	if req.State != "" {
 		q.Set("state", req.State)
@@ -89,20 +81,18 @@ func (s *Server) CheckResponseType(rt oauth2.ResponseType) bool {
 	return false
 }
 
-func (s *Server) ValidationAuthorizeRequest(req *oauth.OauthReq) (*oauth.OauthReq, error) {
-	if req.ClientID == "" || req.RedirectURI == "" {
-		return nil, errors.ErrInvalidRequest
+func (s *Server) ValidationAuthorizeRequest(req *oauth.OauthReq) error {
+	if req.ClientId == "" || req.RedirectUri == "" {
+		return errors.ErrInvalidRequest
 	}
 
 	if req.ResponseType == "" {
-		err := errors.ErrUnsupportedResponseType
-		return nil, err
+		return errors.ErrUnsupportedResponseType
 	} else if allowed := s.CheckResponseType(oauth2.ResponseType(req.ResponseType)); !allowed {
-		err := errors.ErrUnauthorizedClient
-		return nil, err
+		return errors.ErrUnauthorizedClient
 	}
 
-	return req, nil
+	return nil
 }
 
 func (s *Server) GetAuthorizeToken(req *oauth.OauthReq) (ti oauth2.TokenInfo, err error) {
@@ -114,7 +104,7 @@ func (s *Server) GetAuthorizeToken(req *oauth.OauthReq) (ti oauth2.TokenInfo, er
 			gt = oauth2.Implicit
 		}
 
-		allowed, verr := fn(req.ClientID, gt)
+		allowed, verr := fn(req.ClientId, gt)
 		if verr != nil {
 			err = verr
 			return
@@ -127,7 +117,7 @@ func (s *Server) GetAuthorizeToken(req *oauth.OauthReq) (ti oauth2.TokenInfo, er
 	// check the client allows the authorized scope
 	if fn := s.ClientScopeHandler; fn != nil {
 
-		allowed, verr := fn(req.ClientID, req.Scope)
+		allowed, verr := fn(req.ClientId, req.Scope)
 		if verr != nil {
 			err = verr
 			return
@@ -138,9 +128,9 @@ func (s *Server) GetAuthorizeToken(req *oauth.OauthReq) (ti oauth2.TokenInfo, er
 	}
 
 	tgr := &oauth2.TokenGenerateRequest{
-		ClientID:       req.ClientID,
-		UserID:         req.UserID,
-		RedirectURI:    req.RedirectURI,
+		ClientID:       req.ClientId,
+		UserID:         req.UserId,
+		RedirectURI:    req.RedirectUri,
 		Scope:          req.Scope,
 		AccessTokenExp: time.Duration(req.AccessTokenExp),
 		Request:        nil,
@@ -150,41 +140,37 @@ func (s *Server) GetAuthorizeToken(req *oauth.OauthReq) (ti oauth2.TokenInfo, er
 	return
 }
 
-func (s *Server) redirectError(req *oauth.OauthReq, err error) (*ihttp.Response, error) {
-	if req == nil {
-		return nil, err
-	}
+func (s *Server) redirectError(req *oauth.OauthReq, err error) *response.HttpResponse {
 	data, _, _ := s.GetErrorData(err)
 	return s.redirect(req, data)
 }
 
-func (s *Server) redirect(req *oauth.OauthReq, data map[string]interface{}) (*ihttp.Response, error) {
+func (s *Server) redirect(req *oauth.OauthReq, data map[string]interface{}) *response.HttpResponse {
+	w := &response.HttpResponse{Header: make(map[string]string)}
 	uri, err := s.GetRedirectURI(req, data)
 	if err != nil {
-		return nil, err
+		w.Body = []byte(err.Error())
+		return w
 	}
-	w := &ihttp.Response{}
 	w.Header["Location"] = uri
 	w.StatusCode = 302
-	return w, nil
+	return w
 }
 
-func (s *Server) HandleAuthorizeRequest(r *oauth.OauthReq, token string) (w *ihttp.Response, err error) {
-	req, verr := s.ValidationAuthorizeRequest(r)
+func (s *Server) HandleAuthorizeRequest(req *oauth.OauthReq, token string) (w *response.HttpResponse) {
+	verr := s.ValidationAuthorizeRequest(req)
 	if verr != nil {
 		return s.redirectError(req, verr)
 	}
 
 	// user authorization
-	userID, verr := s.UserAuthorizationHandler(token)
+	userID, loginUri := s.UserAuthorizationHandler(token)
 
-	if verr != nil {
-		return s.redirectError(req, verr)
-	} else if userID == "" {
-		return
+	if loginUri != "" || userID == "" {
+		return s.redirect(req, nil)
 	}
 
-	req.UserID = userID
+	req.UserId = userID
 
 	// specify the scope of authorization
 
@@ -290,32 +276,21 @@ func (s *Server) ValidationTokenRequest(r *oauth.OauthReq) (*oauth2.TokenGenerat
 	}
 
 	tgr := &oauth2.TokenGenerateRequest{
-		ClientID:     r.ClientID,
+		ClientID:     r.ClientId,
 		ClientSecret: r.ClientSecret,
 		Request:      nil,
 	}
 
-	switch oauth2.GrantType(r.GrantType) {
+	switch r.GrantType {
 	case oauth2.AuthorizationCode:
-		tgr.RedirectURI = r.RedirectURI
+		tgr.RedirectURI = r.RedirectUri
 		tgr.Code = r.Code
 		if tgr.RedirectURI == "" ||
 			tgr.Code == "" {
 			return nil, errors.ErrInvalidRequest
 		}
 	case oauth2.PasswordCredentials:
-		tgr.Scope = r.Scope
-		if r.Username == "" || r.Password == "" {
-			return nil, errors.ErrInvalidRequest
-		}
-
-		userID, err := s.PasswordAuthorizationHandler(r.Username, r.Password, r.VerifyCode)
-		if err != nil {
-			return nil, err
-		} else if userID == "" {
-			return nil, errors.ErrInvalidGrant
-		}
-		tgr.UserID = userID
+		return nil, errors.ErrInvalidGrant
 	case oauth2.ClientCredentials:
 		tgr.Scope = r.Scope
 	case oauth2.Refreshing:
@@ -328,13 +303,13 @@ func (s *Server) ValidationTokenRequest(r *oauth.OauthReq) (*oauth2.TokenGenerat
 	return tgr, nil
 }
 
-func (s *Server) HandleTokenRequest(r *oauth.OauthReq) (*ihttp.Response, error) {
+func (s *Server) HandleTokenRequest(r *oauth.OauthReq) (*response.HttpResponse, error) {
 	tgr, err := s.ValidationTokenRequest(r)
 	if err != nil {
 		return s.tokenError(err)
 	}
 
-	ti, err := s.GetAccessToken(oauth2.GrantType(r.GrantType), tgr)
+	ti, err := s.GetAccessToken(r.GrantType, tgr)
 	if err != nil {
 		return s.tokenError(err)
 	}
@@ -342,12 +317,12 @@ func (s *Server) HandleTokenRequest(r *oauth.OauthReq) (*ihttp.Response, error) 
 	return s.token(s.GetTokenData(ti), nil)
 }
 
-func (s *Server) tokenError(err error) (*ihttp.Response, error) {
+func (s *Server) tokenError(err error) (*response.HttpResponse, error) {
 	data, statusCode, header := s.GetErrorData(err)
 	return s.token(data, header, statusCode)
 }
-func (s *Server) token(data map[string]interface{}, header http.Header, statusCode ...int) (*ihttp.Response, error) {
-	res := &ihttp.Response{}
+func (s *Server) token(data map[string]interface{}, header http.Header, statusCode ...int) (*response.HttpResponse, error) {
+	res := &response.HttpResponse{}
 	res.Header["Content-Type"] = "application/json;charset=UTF-8"
 	res.Header["Cache-Control"] = "no-store"
 	res.Header["Pragma"] = "no-cache"

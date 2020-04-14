@@ -5,6 +5,7 @@ import (
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	v2 "github.com/liov/hoper/go/v2/initialize/v2"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/internal/config"
 	"github.com/liov/hoper/go/v2/user/internal/dao"
@@ -16,9 +17,9 @@ import (
 )
 
 func main() {
+	//配置初始化应该在第一位
+	defer v2.Start(config.Conf, dao.Dao)()
 	s := server.Server{
-		Conf: config.Conf,
-		Dao:  dao.Dao,
 		//为了可以自定义中间件
 		GRPCServer: func() *grpc.Server {
 			gs := grpc.NewServer(
@@ -32,17 +33,23 @@ func main() {
 						filter.StreamServerInterceptor()...,
 					)),
 			)
-			model.RegisterUserServiceServer(gs, service.UserSvc)
+			model.RegisterUserServiceServer(gs, service.GetUserService())
 			return gs
 		}(),
 		GatewayRegistr: func(ctx context.Context, mux *runtime.ServeMux) {
-			err := model.RegisterUserServiceHandlerServer(ctx, mux, service.UserSvc)
-			if err != nil {
+			if err := model.RegisterUserServiceHandlerServer(ctx, mux, service.GetUserService()); err != nil {
 				log.Fatal(err)
 			}
+			if err := model.RegisterOauthServiceHandlerServer(ctx, mux, service.GetOauthService()); err != nil {
+				log.Fatal(err)
+			}
+
 		},
 		GraphqlResolve: model.NewExecutableSchema(model.Config{
-			Resolvers: &model.UserServiceGQLServer{Service: service.UserSvc}}),
+			Resolvers: &model.GQLServer{
+				UserService:  service.GetUserService(),
+				OauthService: service.GetOauthService(),
+			}}),
 	}
 	s.Start()
 }
