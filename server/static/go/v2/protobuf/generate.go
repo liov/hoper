@@ -27,7 +27,6 @@ var files = map[string][]string{
 	"/utils/errorcode/*enum.proto":  {"enum_out=plugins=grpc"},
 	"/utils/actor/message/*.proto":  {"gogo_out=plugins=grpc"},
 	"/utils/response/*.gen.proto":   {"gogo_out=plugins=grpc"},
-	"/utils/http/*.gen.proto":       {"gogo_out=plugins=grpc"},
 	"/utils/oauth/*.gen.proto":      {"gogo_out=plugins=grpc"},
 	"/utils/proto/gogo/*.gen.proto": {"gogo_out=plugins=grpc"},
 	"/utils/proto/go/*.gen.proto":   {"go_out=plugins=grpc"},
@@ -219,6 +218,7 @@ resolver:
 autobind:
   - "github.com/liov/hoper/go/v2/protobuf/{{.}}"
   - "github.com/liov/hoper/go/v2/protobuf/utils/response"
+  - "github.com/liov/hoper/go/v2/protobuf/utils/oauth"
 
 models:
   ID:

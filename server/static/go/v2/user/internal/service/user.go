@@ -33,8 +33,12 @@ type UserService struct {
 	model.UnimplementedUserServiceServer
 }
 
-func NewUserService(server model.UserServiceServer) *UserService {
-	return &UserService{}
+func GetUserService() *UserService {
+	if userSvc != nil {
+		return userSvc
+	}
+	userSvc = &UserService{}
+	return userSvc
 }
 
 func (u *UserService) VerifyCode(ctx context.Context, req *empty.Empty) (*response.CommonRep, error) {
@@ -306,7 +310,7 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 		Role:         user.Role,
 		LoginTime:    nowStamp,
 	}
-	tokenString, err := jwt.GenerateToken(userInfo, nowStamp, config.Conf.Customize.TokenMaxAge, config.Conf.Customize.TokenSecret)
+	tokenString, err := jwt.GenerateToken(userInfo.Id, nowStamp, config.Conf.Customize.TokenMaxAge, config.Conf.Customize.TokenSecret)
 	if err != nil {
 		return nil, errorcode.Internal
 	}

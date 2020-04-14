@@ -1,10 +1,10 @@
 syntax = "proto3";
-package http;
+package response;
 import "google/protobuf/any.proto";
 import "utils/any/any.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
-option java_package = "xyz.hoper.protobuf.http";
+option java_package = "xyz.hoper.protobuf.response";
 
 option (gogoproto.goproto_enum_prefix_all) = false;
 option (gogoproto.goproto_getters_all) = false;
@@ -18,7 +18,7 @@ option (gogoproto.goproto_registration) = true;
 option (gogoproto.messagename_all) = true;
 option (gogoproto.populate_all) = true;
 
-message Response{
+message HttpResponse{
     map<string, string> Header =1;
     bytes body = 2;
     uint32 statusCode = 3;

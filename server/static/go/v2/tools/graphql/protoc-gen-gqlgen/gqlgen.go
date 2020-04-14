@@ -93,11 +93,22 @@ func (p *plugin) Generate(file *generator.FileDescriptor) {
 	p.contextPkg = p.NewImport("context")
 
 	p.Scalars()
+
 	for _, r := range p.Request.FileToGenerate {
 		if r == file.GetName() {
 			p.InitFile(file)
+			p.Generator.P(`type GQLServer struct {`)
+			p.Generator.In()
 			for _, svc := range file.GetService() {
-				p.Generator.P(`type `, svc.GetName(), `GQLServer struct { Service `, svc.GetName(), `Server }`)
+				p.Generator.P(svc.GetName(), ` `, svc.GetName(), `Server `)
+			}
+			p.Generator.Out()
+			p.Generator.P("}")
+			p.Generator.P("\n")
+			p.Generator.P("func (s *GQLServer)  Mutation() MutationResolver { return s }\n")
+			p.Generator.P("func (s *GQLServer)  Query() QueryResolver { return s }\n")
+
+			for _, svc := range file.GetService() {
 				for _, rpc := range svc.GetMethod() {
 					if rpc.GetClientStreaming() || rpc.GetServerStreaming() {
 						continue
@@ -129,14 +140,11 @@ func (p *plugin) Generate(file *generator.FileDescriptor) {
 						in, inref = "", ", &"+typeIn+"{}"
 					}
 					if p.IsEmpty(p.Types()[rpc.GetOutputType()]) {
-						p.Generator.P("func (s *", svc.GetName(), "GQLServer) ", methodName, "(ctx ", p.contextPkg.Use(), ".Context", in, ") (*bool, error) { _, err := s.Service.", generator.CamelCase(rpc.GetName()), "(ctx", inref, ")\n return nil, err }")
+						p.Generator.P("func (s *GQLServer) ", methodName, "(ctx ", p.contextPkg.Use(), ".Context", in, ") (*bool, error) { _, err := s.", svc.GetName(), ".", generator.CamelCase(rpc.GetName()), "(ctx", inref, ")\n return nil, err }")
 					} else {
-						p.Generator.P("func (s *", svc.GetName(), "GQLServer) ", methodName, "(ctx ", p.contextPkg.Use(), ".Context", in, ") (*", typeOut, ", error) { return s.Service.", generator.CamelCase(rpc.GetName()), "(ctx", inref, ") }")
+						p.Generator.P("func (s *GQLServer) ", methodName, "(ctx ", p.contextPkg.Use(), ".Context", in, ") (*", typeOut, ", error) { return s.", svc.GetName(), ".", generator.CamelCase(rpc.GetName()), "(ctx", inref, ") }")
 					}
 				}
-				p.Generator.P("\n")
-				p.Generator.P("func (s *", svc.GetName(), "GQLServer)  Mutation() MutationResolver { return s }\n")
-				p.Generator.P("func (s *", svc.GetName(), "GQLServer)  Query() QueryResolver { return s }")
 			}
 			for _, msg := range file.Messages() {
 				if msg.GetOptions().GetMapEntry() {
