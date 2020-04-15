@@ -20,6 +20,6 @@ option (gogoproto.populate_all) = true;
 
 message HttpResponse{
     map<string, string> Header =1;
-    bytes body = 2;
+    bytes body = 2 [(gogoproto.casttype)="encoding/json.RawMessage"];
     uint32 statusCode = 3;
 }

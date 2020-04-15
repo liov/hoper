@@ -13,6 +13,7 @@ func ResponseHook(ctx context.Context, writer http.ResponseWriter, message proto
 		for k, v := range res.Header {
 			writer.Header().Add(k, v)
 		}
+		writer.WriteHeader(int(res.StatusCode))
 	}
 	return nil
 }

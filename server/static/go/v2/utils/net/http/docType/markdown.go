@@ -1,4 +1,4 @@
-package bluemonday
+package docType
 
 import (
 	"github.com/liov/hoper/go/v2/utils/strings2"

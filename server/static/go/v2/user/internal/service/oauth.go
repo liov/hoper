@@ -41,16 +41,15 @@ func GetOauthService() *OauthService {
 
 	srv := oauth.NewServer(server.NewConfig(), manager)
 
-	srv.UserAuthorizationHandler = func(token string) (userID, loginUri string) {
-		loginUri = "loginUri"
+	srv.UserAuthorizationHandler = func(token string) (userID string, err error) {
 		if token == "" {
-			return
+			return "", errors.ErrInvalidAccessToken
 		}
 		claims, err := ijwt.ParseToken(token, config.Conf.Customize.TokenSecret)
 		if err != nil {
-			return
+			return "", err
 		}
-		return strconv.FormatUint(claims.UserID, 10), ""
+		return strconv.FormatUint(claims.UserID, 10), nil
 	}
 
 	srv.InternalErrorHandler = func(err error) (re *errors.Response) {
@@ -75,7 +74,7 @@ func (u *OauthService) OauthAuthorize(ctx context.Context, req *goauth.OauthReq)
 	tokens := md.Get("auth")
 	tokens = append(tokens, "")
 	req.AccessTokenExp = config.Conf.Customize.TokenMaxAge
-	req.LoginUri = "/login"
+	req.LoginUri = "/oauth/login"
 	res := u.Server.HandleAuthorizeRequest(req, tokens[0])
 	return res, nil
 }

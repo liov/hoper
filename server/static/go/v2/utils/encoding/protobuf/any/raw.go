@@ -6,9 +6,9 @@ import (
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
-type BytesJson []byte
+type RawJson []byte
 
-func NewAny(v interface{}) BytesJson {
+func NewAny(v interface{}) RawJson {
 	data, err := json.Json.Marshal(v)
 	if err != nil {
 		log.Error(err)
@@ -16,40 +16,40 @@ func NewAny(v interface{}) BytesJson {
 	return data
 }
 
-func BytesToJsonAny(b []byte) BytesJson {
+func BytesToJsonAny(b []byte) RawJson {
 	b = append([]byte{'"'}, b...)
 	return append(b, '"')
 }
 
-func StringToJsonAny(s string) BytesJson {
+func StringToJsonAny(s string) RawJson {
 	return []byte("\"" + s + "\"")
 }
 
-func (a *BytesJson) MarshalJSON() ([]byte, error) {
+func (a *RawJson) MarshalJSON() ([]byte, error) {
 	if len(*a) == 0 {
 		return []byte("null"), nil
 	}
 	return *a, nil
 }
 
-func (a *BytesJson) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
+func (a *RawJson) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
 	return a.MarshalJSON()
 }
 
-func (a *BytesJson) Size() int {
+func (a *RawJson) Size() int {
 	return len(*a)
 }
 
-func (a *BytesJson) MarshalTo(b []byte) (int, error) {
+func (a *RawJson) MarshalTo(b []byte) (int, error) {
 	return copy(b, *a), nil
 }
 
-func (a *BytesJson) Unmarshal(b []byte) error {
+func (a *RawJson) Unmarshal(b []byte) error {
 	*a = b
 	return nil
 }
 
-func (a *BytesJson) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (a *RawJson) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	i -= len(*a)
 	copy(dAtA[i:], *a)
@@ -65,9 +65,9 @@ type randyBytesJson interface {
 	Intn(n int) int
 }
 
-func NewPopulatedBytesJson(r randyBytesJson, easy bool) *BytesJson {
+func NewPopulatedRawJson(r randyBytesJson, easy bool) *RawJson {
 	if !easy && r.Intn(10) != 0 {
 	}
-	any := BytesJson("{}")
+	any := RawJson("{}")
 	return &any
 }
