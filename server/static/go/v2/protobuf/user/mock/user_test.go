@@ -25,7 +25,7 @@ func TestUserService(t *testing.T) {
 	req := model.NewPopulatedActiveReq(r, false)
 	m.EXPECT().
 		Active(context.Background(), req).
-		Return(response.NewPopulatedBytesReply(r, false), nil).
+		Return(response.NewPopulatedRawReply(r, false), nil).
 		AnyTimes()
 	res, _ := m.Active(context.Background(), req)
 	log.Info(res)

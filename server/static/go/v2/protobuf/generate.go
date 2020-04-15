@@ -212,7 +212,7 @@ model:
   package: user
 
 resolver:
-  filename: ../../../{{.}}/internal/service/resolver.go
+  filename: ../../../{{.}}/internal/service/resolver.gql.go
   package: service
 
 autobind:

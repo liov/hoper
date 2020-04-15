@@ -9,7 +9,6 @@ require (
 	github.com/99designs/gqlgen v0.11.3
 	github.com/AsynkronIT/protoactor-go v0.0.0-20200221110811-81497e71df85
 	github.com/BurntSushi/toml v0.3.1
-	github.com/CloudyKit/fastprinter v0.0.0-20170127035650-74b38d55f37a // indirect
 	github.com/Shopify/sarama v1.24.0
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/biogo/store v0.0.0-20190426020002-884f370e325d // indirect
@@ -56,10 +55,10 @@ require (
 	github.com/iris-contrib/schema v0.0.1
 	github.com/jinzhu/configor v1.1.1
 	github.com/jinzhu/gorm v1.9.12-0.20191206142228-79a77d771dee
-	github.com/json-iterator/go v1.1.8
+	github.com/json-iterator/go v1.1.9
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/golog v0.0.10
-	github.com/kataras/iris/v12 v12.1.4
+	github.com/kataras/iris/v12 v12.1.8
 	github.com/kataras/pio v0.0.2
 	github.com/lni/dragonboat v2.1.7+incompatible
 	github.com/magiconair/properties v1.8.1
@@ -95,7 +94,7 @@ require (
 	google.golang.org/grpc v1.26.0
 	google.golang.org/protobuf v1.20.1
 	gopkg.in/oauth2.v3 v3.12.0
-	gopkg.in/yaml.v3 v3.0.0-20191010095647-fc94e3f71652
+	gopkg.in/yaml.v3 v3.0.0-20191120175047-4206685974f2
 	sigs.k8s.io/yaml v1.1.0 // indirect
 )
 

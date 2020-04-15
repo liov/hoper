@@ -1,4 +1,4 @@
-package bluemonday
+package docType
 
 import "github.com/microcosm-cc/bluemonday"
 

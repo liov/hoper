@@ -4,10 +4,6 @@ package any;
 option go_package = "github.com/liov/hoper/go/v2/utils/encoding/protobuf/any";
 option java_package = "xyz.hoper.protobuf.utils.any";
 
-message BytesJson {
+message RawJson {
     bytes b = 1;
-}
-
-message StringJson {
-    string s = 1;
 }

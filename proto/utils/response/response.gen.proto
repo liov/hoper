@@ -24,18 +24,11 @@ message AnyReply {
     google.protobuf.Any details = 3;
 }
 
-message BytesReply {
+message RawReply {
     uint32 code = 1 [(gogoproto.jsontag) = "code"];
     string message =2;
     //字节数组json
-    any.BytesJson details =3 [(gogoproto.nullable) = false];
-}
-
-message StringReply {
-    uint32 code = 1 [(gogoproto.jsontag) = "code"];
-    string message = 2;
-    //字符串json
-    any.StringJson details = 3 [(gogoproto.nullable) = false];
+    any.RawJson details =3 [(gogoproto.nullable) = false];
 }
 
 //返回数据为字符串，用于新建修改删除类的成功失败提示

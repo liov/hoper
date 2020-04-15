@@ -8,12 +8,8 @@ import (
 	"github.com/liov/hoper/go/v2/utils/encoding/protobuf/any"
 )
 
-func (m *BytesReply) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
-	return json.Marshal(m)
-}
-
-func (m *StringReply) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
-	return json.Marshal(m)
+func (m *RawReply) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
+	return m.Details, nil
 }
 
 type GoReply struct {
@@ -34,4 +30,12 @@ func (m *AnyReply) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
 		return nil, err
 	}
 	return json.Marshal(reply)
+}
+
+func (m *HttpResponse) GetContentType() string {
+	return "text/template"
+}
+
+func (m *HttpResponse) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
+	return m.Body, nil
 }

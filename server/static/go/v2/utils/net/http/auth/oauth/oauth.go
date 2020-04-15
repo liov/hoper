@@ -152,27 +152,26 @@ func (s *Server) redirect(req *oauth.OauthReq, data map[string]interface{}) *res
 		w.Body = []byte(err.Error())
 		return w
 	}
+	if req.LoginUri != "" {
+		w.Body = []byte("未登录")
+	}
 	w.Header["Location"] = uri
 	w.StatusCode = 302
 	return w
 }
 
 func (s *Server) HandleAuthorizeRequest(req *oauth.OauthReq, token string) (w *response.HttpResponse) {
-	verr := s.ValidationAuthorizeRequest(req)
-	if verr != nil {
-		return s.redirectError(req, verr)
+	err := s.ValidationAuthorizeRequest(req)
+	if err != nil {
+		return s.redirectError(req, err)
 	}
 
 	// user authorization
-	userID, loginUri := s.UserAuthorizationHandler(token)
+	req.UserId, err = s.UserAuthorizationHandler(token)
 
-	if loginUri != "" || userID == "" {
+	if err != nil || req.UserId == "" {
 		return s.redirect(req, nil)
 	}
-
-	req.UserId = userID
-
-	// specify the scope of authorization
 
 	// specify the expiration time of access token
 

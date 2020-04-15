@@ -20,4 +20,11 @@ func main() {
 	for i := 0; i < typ.NumField(); i++ {
 		log.Println(typ.Field(i).Type.Kind())
 	}
+
+	var data = []byte("哈哈")
+	b, _ = json.Marshal(data)
+	log.Println(string(b))
+	var str = "哈哈"
+	b, _ = json.Marshal(str)
+	log.Println(string(b))
 }

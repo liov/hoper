@@ -5,4 +5,7 @@ option java_package = "xyz.hoper.protobuf.http";
 option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/response";
 
 message HttpResponse{
+    map<string, string> Header =1;
+    bytes body = 2;
+    uint32 statusCode = 3;
 }
