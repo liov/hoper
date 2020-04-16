@@ -329,7 +329,7 @@ func (s *Server) tokenError(err error) (*response.HttpResponse, error) {
 	return s.token(data, header, statusCode)
 }
 func (s *Server) token(data map[string]interface{}, header http.Header, statusCode ...int) (*response.HttpResponse, error) {
-	res := &response.HttpResponse{}
+	res := &response.HttpResponse{Header: map[string]string{}}
 	res.Header["Content-Type"] = "application/json;charset=UTF-8"
 	res.Header["Cache-Control"] = "no-store"
 	res.Header["Pragma"] = "no-cache"

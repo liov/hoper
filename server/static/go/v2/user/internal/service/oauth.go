@@ -12,9 +12,8 @@ import (
 	"github.com/liov/hoper/go/v2/user/internal/dao"
 	ijwt "github.com/liov/hoper/go/v2/utils/net/http/auth/jwt"
 	"github.com/liov/hoper/go/v2/utils/net/http/auth/oauth"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/status"
+	"gopkg.in/oauth2.v3"
 	"gopkg.in/oauth2.v3/errors"
 	"gopkg.in/oauth2.v3/generates"
 	"gopkg.in/oauth2.v3/manage"
@@ -79,6 +78,8 @@ func (u *OauthService) OauthAuthorize(ctx context.Context, req *goauth.OauthReq)
 	return res, nil
 }
 
-func (*OauthService) OauthToken(ctx context.Context, req *goauth.OauthReq) (*response.HttpResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method OauthToken not implemented")
+func (u *OauthService) OauthToken(ctx context.Context, req *goauth.OauthReq) (*response.HttpResponse, error) {
+	req.GrantType = oauth2.AuthorizationCode
+	res, _ := u.Server.HandleTokenRequest(req)
+	return res, nil
 }
