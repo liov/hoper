@@ -228,13 +228,14 @@ service OauthService{
 
     rpc OauthToken (oauth.OauthReq) returns (response.HttpResponse) {
         option (google.api.http) = {
-                                            get: "/api/v1/oauth/token"
-                                        };
+                 post: "/api/v1/oauth/token"
+                 body: "*"
+                                   };
         option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
-                                                    tags:["用户相关接口","v1.0.0","oauth"]
-                                                    summary : "签发token"
-                                                    description : "签发token"
-                                                };
+                tags:["用户相关接口","v1.0.0","oauth"]
+                summary : "签发token"
+                description : "签发token"
+                };
         option (cuzproto.graphql_operation) = Query;
     }
 }
