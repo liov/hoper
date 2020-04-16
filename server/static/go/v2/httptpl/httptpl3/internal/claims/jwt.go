@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/liov/hoper/go/v2/httptpl2/internal/config"
+	"github.com/liov/hoper/go/v2/httptpl/httptpl3/internal/config"
 	"github.com/liov/hoper/go/v2/protobuf/user"
 )
 

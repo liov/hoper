@@ -50,5 +50,5 @@ func Test_Oauth2(t *testing.T) {
 	app.Get("/auth/{provider}", CallBack)
 	app.Get("/auth/{provider}/callback", CallBack)
 	app.Get("/logout/{provider}", Logout)
-	app.Run(iris.Addr(":8070"))
+	app.Run(iris.Addr(":8080"))
 }

@@ -51,13 +51,13 @@ func ApiDoc(ctrl []Controller) {
 	}
 }
 
-func Register(app *iris.Application, ctrl []Controller, genApi bool, modName string) {
+func Register(app *iris.Application, genApi bool, modName string) {
 	handler := &Handler{apiInfo: &apiInfo{},
 		docParam: &docParam{genApi: genApi},
 		app:      app}
 
-	for i := range ctrl {
-		value := reflect.ValueOf(ctrl[i])
+	for i := range svcs {
+		value := reflect.ValueOf(svcs[i])
 		if value.Kind() != reflect.Ptr {
 			panic("必须传入指针")
 		}
@@ -69,7 +69,7 @@ func Register(app *iris.Application, ctrl []Controller, genApi bool, modName str
 		if value1.Field(0).Type() != reflect.TypeOf(handler) {
 			panic("Handler field必须在第一个")
 		}
-		handler.middle = ctrl[i].Middle()
+		handler.middle = svcs[i].Middle()
 		handleValue := reflect.ValueOf(handler)
 		handleType := handleValue.Type()
 		for j := 0; j < value1.NumField(); j++ {
@@ -97,7 +97,7 @@ func Register(app *iris.Application, ctrl []Controller, genApi bool, modName str
 
 type Controller interface {
 	Middle() []iris.Handler
-	Name() string
+	Describe() string
 }
 
 type Handler struct {

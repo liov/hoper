@@ -9,6 +9,7 @@ import (
 
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/sessions"
+	"github.com/liov/hoper/go/v2/utils/net/http/auth/oauth/provider"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/amazon"
 	"github.com/markbates/goth/providers/auth0"
@@ -227,6 +228,7 @@ func NewAuth() *ProviderIndex {
 		//Auth0 allocates domain per customer, a domain must be provided for auth0 to work
 		auth0.New(os.Getenv("AUTH0_KEY"), os.Getenv("AUTH0_SECRET"), "http://localhost/api/auth/auth0/callback", os.Getenv("AUTH0_DOMAIN")),
 		yandex.New(os.Getenv("YANDEX_KEY"), os.Getenv("YANDEX_SECRET"), "http://localhost/api/auth/yandex/callback"),
+		provider.New(os.Getenv("HOPER_KEY"), os.Getenv("HOPER_SECRET"), "http://localhost:8080/auth/hoper/callback"),
 	)
 
 	// OpenID Connect is based on OpenID Connect Auto Discovery URL (https://openid.net/specs/openid-connect-discovery-1_0-17.html)
@@ -257,6 +259,7 @@ func NewAuth() *ProviderIndex {
 	m["paypal"] = "Paypal"
 	m["twitter"] = "Twitter"
 	m["auth0"] = "Auth0"
+	m["hoper"] = "hoper"
 
 	var keys []string
 	for k := range m {

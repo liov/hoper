@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
-	"github.com/liov/hoper/go/v2/httptpl3/internal/config"
-	"github.com/liov/hoper/go/v2/httptpl3/internal/service"
-	_ "github.com/liov/hoper/go/v2/httptpl3/internal/service"
+	"github.com/liov/hoper/go/v2/httptpl/httptpl3/internal/config"
+	"github.com/liov/hoper/go/v2/httptpl/httptpl3/internal/service"
+	_ "github.com/liov/hoper/go/v2/httptpl/httptpl3/internal/service"
 	v2 "github.com/liov/hoper/go/v2/initialize/v2"
 	"github.com/liov/hoper/go/v2/utils/net/http/server"
 )

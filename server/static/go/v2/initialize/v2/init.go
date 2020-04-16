@@ -91,14 +91,14 @@ func Start(conf initialize.Config, dao initialize.Dao) func() {
 	}
 	//逃逸到堆上了
 	init := NewInitWithLoadConfig(conf, dao)
-	nacosClient := init.config()
+	nacosClient := init.getConfig()
 	BasicConfig = init
 	go nacosClient.Listener(func(bytes []byte) {
 		init.Unmarshal(bytes)
 		if dao != nil {
 			dao.Close()
 		}
-		init.SetDao()
+		init.SetConfigAndDao()
 	})
 
 	return func() {
@@ -109,12 +109,12 @@ func Start(conf initialize.Config, dao initialize.Dao) func() {
 	}
 }
 
-func (init *Init) config() *nacos.Client {
+func (init *Init) getConfig() *nacos.Client {
 	nacosClient := init.NacosConfig.NewClient()
 	err := nacosClient.GetConfigAllInfoHandle(init.Unmarshal)
 	if err != nil {
 		log.Fatal(err)
 	}
-	init.SetDao()
+	init.SetConfigAndDao()
 	return nacosClient
 }

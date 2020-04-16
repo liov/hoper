@@ -2,8 +2,7 @@ package main
 
 import (
 	"github.com/kataras/iris/v12"
-	"github.com/liov/hoper/go/v2/httptpl2/internal/config"
-	_ "github.com/liov/hoper/go/v2/httptpl2/internal/service"
+	"github.com/liov/hoper/go/v2/httptpl/httptpl1/internal/config"
 	"github.com/liov/hoper/go/v2/initialize"
 	v2 "github.com/liov/hoper/go/v2/initialize/v2"
 	"github.com/liov/hoper/go/v2/utils/net/http/iris/api"
@@ -23,7 +22,7 @@ func main() {
 
 	s := server.Server{
 		IrisHandle: func(application *iris.Application) {
-			api.RegisterAllService(application,
+			api.Register(application,
 				initialize.Env == initialize.DEVELOPMENT,
 				v2.BasicConfig.Module)
 		},

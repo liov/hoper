@@ -16,7 +16,7 @@ import (
 	"github.com/liov/hoper/go/v2/protobuf/utils/response"
 	"github.com/liov/hoper/go/v2/user/internal/config"
 	"github.com/liov/hoper/go/v2/user/internal/dao"
-	modelconst "github.com/liov/hoper/go/v2/user/model"
+	modelconst "github.com/liov/hoper/go/v2/user/internal/model"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/net/http/auth/jwt"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"

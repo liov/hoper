@@ -135,9 +135,7 @@ func Start(conf Config, dao Dao) func() {
 		flag.Parse()
 	}
 	init := NewInitWithLoadConfig(conf, dao)
-	init.config()
-	//从config到dao的过渡
-	init.SetDao()
+	init.getConfig().SetConfigAndDao()
 	//go Watcher(conf, dao)
 	return func() {
 		if dao != nil {
@@ -153,7 +151,7 @@ func Start(conf Config, dao Dao) func() {
 	}
 }
 
-func (init *Init) config() {
+func (init *Init) getConfig() *Init {
 	dir, file := filepath.Split(ConfUrl)
 	err := configor.New(&configor.Config{Debug: init.Env != PRODUCT}).
 		Load(init.conf, ConfUrl, dir+init.Env+path.Ext(file)) //"./Config/{{Env}}.toml"
@@ -172,13 +170,14 @@ func (init *Init) config() {
 			log.Fatalf("找不到附加配置: %v", err)
 		}
 	}
+	return init
 }
 
 //反射方法命名规范,P+优先级+方法名+(执行一次+Once)
-func (init *Init) SetDao() {
+func (init *Init) SetConfigAndDao() {
 	confValue := reflect.ValueOf(init.conf).Elem()
 	for i := 0; i < confValue.NumField(); i++ {
-		if conf, ok := confValue.Field(i).Interface().(NeedInit); ok {
+		if conf, ok := confValue.Field(i).Addr().Interface().(NeedInit); ok {
 			conf.Custom()
 		}
 	}
@@ -222,9 +221,8 @@ func Watcher(conf Config, dao Dao) {
 	}
 	watcher.Add(ConfUrl, fsnotify.Write, func() {
 		dao.Close()
-		init := NewInitWithLoadConfig(conf, dao)
-		init.config()
-		init.SetDao()
+		NewInitWithLoadConfig(conf, dao).getConfig().SetConfigAndDao()
+
 	})
 
 	watcher.Add(".watch", fsnotify.Write, func() {
@@ -233,9 +231,10 @@ func Watcher(conf Config, dao Dao) {
 }
 
 func Refresh(conf Config, dao Dao) {
-	dao.Close()
-	init := NewInitWithLoadConfig(conf, dao)
-	init.SetDao()
+	if dao != nil {
+		dao.Close()
+	}
+	NewInit(conf, dao).SetConfigAndDao()
 }
 
 func (init *Init) Unmarshal(bytes []byte) {
