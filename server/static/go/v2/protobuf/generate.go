@@ -20,7 +20,7 @@ import (
 
 func main() { run() }
 
-var notgengql = true
+var gengql = false
 var files = map[string][]string{
 	"/utils/empty/*.gen.proto":      {"gogo_out=plugins=grpc"},
 	"/utils/errorcode/errrep.proto": {"gogo_out=plugins=grpc"},
@@ -87,40 +87,39 @@ func run() {
 			cmd.Run()
 		}
 	}
-	if notgengql {
-		return
-	}
-	gqldir := pwd + "/protobuf/gql"
-	fileInfos, err := ioutil.ReadDir(gqldir)
-	if err != nil {
-		log.Panicln(err)
-	}
-	for i := range fileInfos {
-		if fileInfos[i].IsDir() {
-			os.Chdir(gqldir + "/" + fileInfos[i].Name())
-			//这里用模板生成yml
-			t := template.Must(template.New("yml").Parse(ymlTpl))
-			config := fileInfos[i].Name() + `.service.gqlgen.yml`
-			_, err := os.Stat(config)
-			var file *os.File
-			if os.IsNotExist(err) {
-				file, err = os.Create(config)
-				if err != nil {
-					log.Panicln(err)
+	if gengql {
+		gqldir := pwd + "/protobuf/gql"
+		fileInfos, err := ioutil.ReadDir(gqldir)
+		if err != nil {
+			log.Panicln(err)
+		}
+		for i := range fileInfos {
+			if fileInfos[i].IsDir() {
+				os.Chdir(gqldir + "/" + fileInfos[i].Name())
+				//这里用模板生成yml
+				t := template.Must(template.New("yml").Parse(ymlTpl))
+				config := fileInfos[i].Name() + `.service.gqlgen.yml`
+				_, err := os.Stat(config)
+				var file *os.File
+				if os.IsNotExist(err) {
+					file, err = os.Create(config)
+					if err != nil {
+						log.Panicln(err)
+					}
+				} else {
+					file, err = os.Open(config)
+					if err != nil {
+						log.Panicln(err)
+					}
 				}
-			} else {
-				file, err = os.Open(config)
-				if err != nil {
-					log.Panicln(err)
-				}
+				t.Execute(file, fileInfos[i].Name())
+				file.Close()
+				words := split(`gqlgen --verbose --config ` + config)
+				cmd := exec.Command(words[0], words[1:]...)
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				cmd.Run()
 			}
-			t.Execute(file, fileInfos[i].Name())
-			file.Close()
-			words := split(`gqlgen --verbose --config ` + config)
-			cmd := exec.Command(words[0], words[1:]...)
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			cmd.Run()
 		}
 	}
 	os.Chdir(pwd)

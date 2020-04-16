@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/kataras/iris/v12"
-	"github.com/liov/hoper/go/v2/httptpl/internal/grpcclient"
-	"github.com/liov/hoper/go/v2/httptpl/internal/service"
+	"github.com/liov/hoper/go/v2/httptpl/httptpl1/internal/grpcclient"
+	"github.com/liov/hoper/go/v2/httptpl/httptpl1/internal/service"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/go/v2/utils/net/http/iris/api"
@@ -24,8 +24,8 @@ func (u *UserController) Middle() []iris.Handler {
 	return nil
 }
 
-func (u *UserController) Name() string {
-	return "user"
+func (u *UserController) Describe() string {
+	return "用户相关接口"
 }
 
 func (u *UserController) VerificationCode() {

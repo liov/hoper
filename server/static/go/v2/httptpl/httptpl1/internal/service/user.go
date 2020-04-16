@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/liov/hoper/go/v2/httptpl/internal/grpcclient"
+	"github.com/liov/hoper/go/v2/httptpl/httptpl1/internal/grpcclient"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/go/v2/protobuf/utils/response"

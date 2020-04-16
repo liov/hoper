@@ -41,16 +41,24 @@ func NewServer(cfg *server.Config, manager oauth2.Manager) *Server {
 }
 
 func (s *Server) GetRedirectURI(req *oauth.OauthReq, data map[string]interface{}) (uri string, err error) {
-	u := &url.URL{Path: req.LoginUri}
-	if req.LoginUri == "" {
-		u, err = url.Parse(req.RedirectUri)
-		if err != nil {
-			return
-		}
+	u, err := url.Parse(req.RedirectUri)
+	if err != nil {
+		return
+	}
+	if req.LoginUri != "" {
+		u = &url.URL{Path: req.LoginUri}
 	}
 	q := u.Query()
-	if req.State != "" {
-		q.Set("state", req.State)
+	if req.LoginUri != "" {
+		q.Set("client_id", req.ClientId)
+		q.Set("access_type", req.AccessType)
+		q.Set("redirect_uri", req.RedirectUri)
+		q.Set("response_type", req.ResponseType)
+		q.Set("scope", req.Scope)
+	} else {
+		if req.State != "" {
+			q.Set("state", req.State)
+		}
 	}
 
 	for k, v := range data {
@@ -172,7 +180,7 @@ func (s *Server) HandleAuthorizeRequest(req *oauth.OauthReq, token string) (w *r
 	if err != nil || req.UserId == "" {
 		return s.redirect(req, nil)
 	}
-
+	req.LoginUri = ""
 	// specify the expiration time of access token
 
 	ti, verr := s.GetAuthorizeToken(req)

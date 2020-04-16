@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/kataras/iris/v12"
-	"github.com/liov/hoper/go/v2/httptpl2/internal/claims"
+	"github.com/liov/hoper/go/v2/httptpl/httptpl2/internal/claims"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/utils/net/http/iris/api"
 )
