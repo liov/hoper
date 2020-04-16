@@ -9,6 +9,7 @@ import (
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/internal/config"
 	"github.com/liov/hoper/go/v2/user/internal/dao"
+	"github.com/liov/hoper/go/v2/utils/net/http/auth"
 	"github.com/liov/hoper/go/v2/utils/net/http/auth/jwt"
 	"google.golang.org/grpc/metadata"
 
@@ -16,19 +17,11 @@ import (
 )
 
 func Auth(r *http.Request) (*model.UserMainInfo, error) {
-	var auth string
-	cookie, _ := r.Cookie("token")
-	value, _ := url.QueryUnescape(cookie.Value)
-	if value == "" {
-		auth = r.Header.Get("authorization")
-	} else {
-		auth = value
-	}
-
-	if auth == "" {
+	token:=auth.GetToken(r)
+	if token == "" {
 		return nil, model.UserErr_NoLogin
 	}
-	claims, err := jwt.ParseToken(auth, config.Conf.Customize.TokenSecret)
+	claims, err := jwt.ParseToken(token, config.Conf.Customize.TokenSecret)
 	if err != nil {
 		return nil, model.UserErr_InvalidToken
 	}

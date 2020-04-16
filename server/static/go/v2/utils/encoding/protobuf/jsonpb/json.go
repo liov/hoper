@@ -34,14 +34,12 @@ func (j *JSONPb) Delimiter() []byte {
 
 // NewDecoder returns a runtime.Decoder which reads JSON stream from "r".
 func (j *JSONPb) NewDecoder(r io.Reader) runtime.Decoder {
-	d := j.API.NewDecoder(r)
-	return runtime.DecoderFunc(func(v interface{}) error { return d.Decode(v) })
+	return j.API.NewDecoder(r)
 }
 
 // NewEncoder returns an Encoder which writes JSON stream into "w".
 func (j *JSONPb) NewEncoder(w io.Writer) runtime.Encoder {
-	e := j.API.NewEncoder(w)
-	return runtime.EncoderFunc(func(v interface{}) error { return e.Encode(w) })
+	return j.API.NewEncoder(w)
 }
 
 func (j *JSONPb) ContentTypeFromMessage(v interface{}) string {

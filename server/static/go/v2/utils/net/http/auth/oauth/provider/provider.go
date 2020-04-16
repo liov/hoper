@@ -16,8 +16,8 @@ import (
 )
 
 var (
-	AuthURL    = "http://localhost:8070/api/v1/oauth/authorize"
-	TokenURL   = "http://localhost:8070/api/v1/oauth/token"
+	AuthURL    = "http://localhost:8070/oauth/authorize"
+	TokenURL   = "http://localhost:8070/oauth/token"
 	ProfileURL = "http://api.github.com/user"
 	EmailURL   = "http://api.github.com/user/emails"
 )

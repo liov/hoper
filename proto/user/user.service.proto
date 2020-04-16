@@ -216,7 +216,7 @@ service OauthService{
     };
     rpc OauthAuthorize (oauth.OauthReq) returns (response.HttpResponse) {
         option (google.api.http) = {
-                                get: "/api/v1/oauth/authorize"
+                                get: "/oauth/authorize"
                             };
         option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
                                         tags:["用户相关接口","v1.0.0","oauth"]
@@ -228,7 +228,7 @@ service OauthService{
 
     rpc OauthToken (oauth.OauthReq) returns (response.HttpResponse) {
         option (google.api.http) = {
-                 post: "/api/v1/oauth/token"
+                 post: "/oauth/access_token"
                  body: "*"
                                    };
         option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
