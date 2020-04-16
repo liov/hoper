@@ -14,6 +14,7 @@ import (
 	"github.com/liov/hoper/go/v2/user/internal/service"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/filter"
+	"github.com/liov/hoper/go/v2/utils/net/http/iris/oauth"
 	"github.com/liov/hoper/go/v2/utils/net/http/server"
 	"google.golang.org/grpc"
 )
@@ -42,12 +43,9 @@ func main() {
 			if err := model.RegisterUserServiceHandlerServer(ctx, mux, service.GetUserService()); err != nil {
 				log.Fatal(err)
 			}
-			if err := model.RegisterOauthServiceHandlerServer(ctx, mux, service.GetOauthService()); err != nil {
-				log.Fatal(err)
-			}
-
 		},
 		IrisHandle: func(app *iris.Application) {
+			oauth.RegisterOauthServiceHandlerServer(app, service.GetOauthService())
 			app.Get("/oauth/login", func(ctx context2.Context) {
 				ctx.ServeFile("./static/login.html", false)
 			})

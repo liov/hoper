@@ -8,6 +8,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	"github.com/liov/hoper/go/v2/utils/encoding/protobuf/jsonpb"
+	"github.com/liov/hoper/go/v2/utils/net/http/auth"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -18,27 +19,18 @@ func Gateway(gatewayHandle GatewayHandle) http.Handler {
 
 	gwmux := runtime.NewServeMux(
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, &jsonpb.JSONPb{API: json.Json}),
-		runtime.WithProtoErrorHandler(CustomHTTPError),
+		//runtime.WithProtoErrorHandler(CustomHTTPError),
 		runtime.WithMetadata(func(ctx context.Context, request *http.Request) metadata.MD {
 			area, err := url.PathUnescape(request.Header.Get("area"))
 			if err != nil {
 				area = ""
 			}
-			var auth string
-			cookie, _ := request.Cookie("token")
-			if cookie != nil {
-				value, _ := url.QueryUnescape(cookie.Value)
-				if value == "" {
-					auth = request.Header.Get("authorization")
-				} else {
-					auth = value
-				}
-			}
+			var token = auth.GetToken(request)
 
 			return map[string][]string{
 				"device-info": {request.Header.Get("device-info")},
 				"location":    {area, request.Header.Get("location")},
-				"auth":        {auth},
+				"auth":        {token},
 			}
 		}),
 		runtime.WithIncomingHeaderMatcher(func(key string) (string, bool) {

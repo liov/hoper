@@ -2,6 +2,7 @@ package response
 
 import (
 	"encoding/json"
+	"net/http"
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/gogo/protobuf/proto"
@@ -38,4 +39,12 @@ func (m *HttpResponse) GetContentType() string {
 
 func (m *HttpResponse) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
 	return m.Body, nil
+}
+
+func (m *HttpResponse) Response(w http.ResponseWriter) {
+	w.Write(m.Body)
+	for k,v:=range m.Header{
+		w.Header().Set(k,v)
+	}
+	w.WriteHeader(int(m.StatusCode))
 }

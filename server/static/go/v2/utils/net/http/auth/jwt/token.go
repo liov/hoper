@@ -50,3 +50,4 @@ func ParseToken(token, secret string) (*Claims, error) {
 
 	return nil, model.UserErr_LoginError
 }
+

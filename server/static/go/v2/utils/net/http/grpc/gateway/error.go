@@ -8,19 +8,19 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
+	"github.com/liov/hoper/go/v2/utils/net/http/grpc/reconn"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/status"
 )
 
-//黑科技
-var ReConnect = make(map[string]func() error)
 
 func CustomHTTPError(ctx context.Context, mux *runtime.ServeMux, marshaler runtime.Marshaler, w http.ResponseWriter, _ *http.Request, err error) {
 
 	s, ok := status.FromError(err)
 	if ok && s.Code() == 14 && strings.HasSuffix(s.Message(), `refused it."`) {
-		if len(ReConnect) > 0 {
-			for _, f := range ReConnect {
+		//提供一个思路，这里应该是哪条连接失败重连哪条，不能这么粗暴，map的key是个关键
+		if len(reconn.ReConnectMap) > 0 {
+			for _, f := range reconn.ReConnectMap {
 				f()
 			}
 		}

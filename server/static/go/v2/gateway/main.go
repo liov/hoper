@@ -9,11 +9,8 @@ import (
 	"github.com/liov/hoper/go/v2/initialize/v2"
 	note "github.com/liov/hoper/go/v2/protobuf/note"
 	user "github.com/liov/hoper/go/v2/protobuf/user"
-	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"
 	"github.com/liov/hoper/go/v2/utils/net/http/server"
-	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/oauth"
 	"google.golang.org/grpc/grpclog"
 )
 
@@ -22,11 +19,8 @@ func main() {
 
 	s := server.Server{
 		GatewayRegistr: func(ctx context.Context, mux *runtime.ServeMux) {
-			opts := []grpc.DialOption{grpc.WithInsecure(),
-				grpc.WithPerRPCCredentials(oauth.NewOauthAccess(&oauth2.Token{
-					AccessToken: config.Conf.Customize.TokenSecret,
-				}))}
-			err := user.RegisterUserServiceHandlerFromModuleWithReConnect(ctx, mux, "user", opts, gateway.ReConnect)
+			opts := []grpc.DialOption{grpc.WithInsecure()}
+			err := user.RegisterUserServiceHandlerFromEndpoint(ctx, mux, initialize.BasicConfig.NacosConfig.GetServiceEndPort("user"), opts)
 			if err != nil {
 				log.Fatal(err)
 			}
