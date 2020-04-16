@@ -57,7 +57,7 @@ func UnmarshalAny(v interface{}) (any.Any, error) {
 	case json.RawMessage:
 		return any.Any{}, nil
 	default:
-		return any.Any{}, fmt.Errorf("%T is not json.RawJson", v)
+		return any.Any{}, fmt.Errorf("%T is not json.RawMessage", v)
 	}
 }
 

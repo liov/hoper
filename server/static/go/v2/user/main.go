@@ -6,6 +6,7 @@ import (
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/kataras/iris/v12"
+	context2 "github.com/kataras/iris/v12/context"
 	v2 "github.com/liov/hoper/go/v2/initialize/v2"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/internal/config"
@@ -47,7 +48,9 @@ func main() {
 
 		},
 		IrisHandle: func(app *iris.Application) {
-			app.Get("/oauth/login")
+			app.Get("/oauth/login", func(ctx context2.Context) {
+				ctx.ServeFile("./static/login.html", false)
+			})
 		},
 		GraphqlResolve: model.NewExecutableSchema(model.Config{
 			Resolvers: &model.GQLServer{
