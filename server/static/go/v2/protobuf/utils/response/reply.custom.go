@@ -42,9 +42,12 @@ func (m *HttpResponse) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
 }
 
 func (m *HttpResponse) Response(w http.ResponseWriter) {
-	w.Write(m.Body)
-	for k,v:=range m.Header{
-		w.Header().Set(k,v)
+	//我尼玛也是头一次知道要按顺序来的 response.wroteHeader
+	//先设置请求头，再设置状态码，再写body
+	//原因是http里每次操作都要判断wroteHeader(表示已经写过header了，不可以再写了)
+	for k, v := range m.Header {
+		w.Header().Set(k, v)
 	}
 	w.WriteHeader(int(m.StatusCode))
+	w.Write(m.Body)
 }

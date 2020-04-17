@@ -7,10 +7,9 @@ import (
 
 func GetToken(r *http.Request) string {
 	cookie, _ := r.Cookie("token")
-	value, _ := url.QueryUnescape(cookie.Value)
-	if value != "" {
+	if cookie != nil {
+		value, _ := url.QueryUnescape(cookie.Value)
 		return value
 	}
 	return r.Header.Get("authorization")
 }
-

@@ -139,7 +139,30 @@ service UserService {
     }
 
     //鉴权
-    rpc AuthInfo (empty.Empty) returns (UserMainInfo) {
+    rpc AuthInfo (empty.Empty) returns (UserAuthInfo) {
+        option (google.api.http) = {
+                            get: "/api/v1/auth"
+                        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+                    tags:["用户相关接口","v1.0.0"]
+                    summary : "获取用户信息"
+                    description : "获取用户信息接口"
+                    security: {
+                         security_requirement: {
+                                key: "OAuth2"
+                                value: {
+                                    scope: "read"
+                                }
+                            }
+                        security_requirement: {
+                            key: "Authorization"
+                            value: {
+                                scope: ["read","write"]
+                            }
+                        }
+
+                    }
+                };
         option (cuzproto.graphql_operation) = Query;
     }
 
@@ -177,22 +200,7 @@ service UserService {
         option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
             tags:["用户相关接口","v1.0.0"]
             summary : "获取用户信息"
-            description : "获取用户信息接口"
-            security: {
-                 security_requirement: {
-                        key: "OAuth2"
-                        value: {
-                            scope: "read"
-                        }
-                    }
-				security_requirement: {
-					key: "Authorization"
-                    value: {
-                        scope: ["read","write"]
-                    }
-                }
-
-            }
+            description : "根据Id获取用户信息接口"
         };
         option (cuzproto.graphql_operation) = Query;
     }

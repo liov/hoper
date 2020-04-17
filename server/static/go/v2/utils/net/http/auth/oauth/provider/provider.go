@@ -11,33 +11,32 @@ import (
 	"strconv"
 	"strings"
 
+	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/markbates/goth"
 	"golang.org/x/oauth2"
 )
 
 var (
 	AuthURL    = "http://localhost:8070/oauth/authorize"
-	TokenURL   = "http://localhost:8070/oauth/token"
-	ProfileURL = "http://api.github.com/user"
-	EmailURL   = "http://api.github.com/user/emails"
+	TokenURL   = "http://localhost:8070/oauth/access_token"
+	ProfileURL = "http://localhost:8070/api/v1/auth"
 )
 
 // New creates a new Github provider, and sets up important connection details.
 // You should always call `github.New` to get a new Provider. Never try to create
 // one manually.
 func New(clientKey, secret, callbackURL string, scopes ...string) *Provider {
-	return NewCustomisedURL(clientKey, secret, callbackURL, AuthURL, TokenURL, ProfileURL, EmailURL, scopes...)
+	return NewCustomisedURL(clientKey, secret, callbackURL, AuthURL, TokenURL, ProfileURL, scopes...)
 }
 
 // NewCustomisedURL is similar to New(...) but can be used to set custom URLs to connect to
-func NewCustomisedURL(clientKey, secret, callbackURL, authURL, tokenURL, profileURL, emailURL string, scopes ...string) *Provider {
+func NewCustomisedURL(clientKey, secret, callbackURL, authURL, tokenURL, profileURL string, scopes ...string) *Provider {
 	p := &Provider{
 		ClientKey:    clientKey,
 		Secret:       secret,
 		CallbackURL:  callbackURL,
 		providerName: "hoper",
 		profileURL:   profileURL,
-		emailURL:     emailURL,
 	}
 	p.config = newConfig(p, authURL, tokenURL, scopes)
 	return p
@@ -51,7 +50,6 @@ type Provider struct {
 	config       *oauth2.Config
 	providerName string
 	profileURL   string
-	emailURL     string
 }
 
 // Name is the name used to retrieve this provider later.
@@ -92,7 +90,7 @@ func (p *Provider) FetchUser(session goth.Session) (goth.User, error) {
 	}
 
 	req, err := http.NewRequest("GET", p.profileURL, nil)
-	req.Header.Add("Authorization", "Bearer "+sess.AccessToken)
+	req.Header.Add("Authorization", sess.AccessToken)
 	response, err := p.Client().Do(req)
 	if err != nil {
 		return user, err
@@ -118,30 +116,11 @@ func (p *Provider) FetchUser(session goth.Session) (goth.User, error) {
 		return user, err
 	}
 
-	if user.Email == "" {
-		for _, scope := range p.config.Scopes {
-			if strings.TrimSpace(scope) == "user" || strings.TrimSpace(scope) == "user:email" {
-				user.Email, err = getPrivateMail(p, sess)
-				if err != nil {
-					return user, err
-				}
-				break
-			}
-		}
-	}
 	return user, err
 }
 
 func userFromReader(reader io.Reader, user *goth.User) error {
-	u := struct {
-		ID       int    `json:"id"`
-		Email    string `json:"email"`
-		Bio      string `json:"bio"`
-		Name     string `json:"name"`
-		Login    string `json:"login"`
-		Picture  string `json:"avatar_url"`
-		Location string `json:"location"`
-	}{}
+	u := model.UserAuthInfo{}
 
 	err := json.NewDecoder(reader).Decode(&u)
 	if err != nil {
@@ -149,48 +128,14 @@ func userFromReader(reader io.Reader, user *goth.User) error {
 	}
 
 	user.Name = u.Name
-	user.NickName = u.Login
-	user.Email = u.Email
-	user.Description = u.Bio
-	user.AvatarURL = u.Picture
-	user.UserID = strconv.Itoa(u.ID)
+	user.NickName = u.Name
+	user.Email = u.Mail
+	user.Description = u.Introduction
+	user.AvatarURL = u.AvatarURL
+	user.UserID = strconv.FormatUint(u.Id, 10)
 	user.Location = u.Location
 
 	return err
-}
-
-func getPrivateMail(p *Provider, sess *Session) (email string, err error) {
-	req, err := http.NewRequest("GET", p.emailURL, nil)
-	req.Header.Add("Authorization", "Bearer "+sess.AccessToken)
-	response, err := p.Client().Do(req)
-	if err != nil {
-		if response != nil {
-			response.Body.Close()
-		}
-		return email, err
-	}
-	defer response.Body.Close()
-
-	if response.StatusCode != http.StatusOK {
-		return email, fmt.Errorf("Hoper API responded with a %d trying to fetch user email", response.StatusCode)
-	}
-
-	var mailList = []struct {
-		Email    string `json:"email"`
-		Primary  bool   `json:"primary"`
-		Verified bool   `json:"verified"`
-	}{}
-	err = json.NewDecoder(response.Body).Decode(&mailList)
-	if err != nil {
-		return email, err
-	}
-	for _, v := range mailList {
-		if v.Primary && v.Verified {
-			return v.Email, nil
-		}
-	}
-	// can't get primary email - shouldn't be possible
-	return
 }
 
 func newConfig(provider *Provider, authURL, tokenURL string, scopes []string) *oauth2.Config {

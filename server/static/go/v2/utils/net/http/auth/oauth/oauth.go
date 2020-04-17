@@ -288,7 +288,7 @@ func (s *Server) ValidationTokenRequest(r *oauth.OauthReq) (*oauth2.TokenGenerat
 		Request:      nil,
 	}
 
-	switch r.GrantType {
+	switch oauth2.GrantType(r.GrantType) {
 	case oauth2.AuthorizationCode:
 		tgr.RedirectURI = r.RedirectUri
 		tgr.Code = r.Code
@@ -316,7 +316,7 @@ func (s *Server) HandleTokenRequest(r *oauth.OauthReq) (*response.HttpResponse, 
 		return s.tokenError(err)
 	}
 
-	ti, err := s.GetAccessToken(r.GrantType, tgr)
+	ti, err := s.GetAccessToken(oauth2.GrantType(r.GrantType), tgr)
 	if err != nil {
 		return s.tokenError(err)
 	}

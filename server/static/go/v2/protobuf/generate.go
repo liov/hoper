@@ -20,7 +20,7 @@ import (
 
 func main() { run() }
 
-var gengql = false
+var gengql = true
 var files = map[string][]string{
 	"/utils/empty/*.gen.proto":      {"gogo_out=plugins=grpc"},
 	"/utils/errorcode/errrep.proto": {"gogo_out=plugins=grpc"},
@@ -37,8 +37,9 @@ var files = map[string][]string{
 		"gqlgen_out=gogoimport=false,paths=source_relative",
 		//"gqlgencfg_out=paths=source_relative",
 		"graphql_out=paths=source_relative"},
-	"/user/*model.proto": {"gogo_out=plugins=grpc"},
-	"/user/*enum.proto":  {"enum_out=plugins=grpc"},
+	"/user/*model.proto":   {"gogo_out=plugins=grpc"},
+	"/user/*enum.proto":    {"enum_out=plugins=grpc"},
+	"/user/*errcode.proto": {"enum_out=plugins=grpc"},
 	"/note/*service.proto": {"gogo_out=plugins=grpc",
 		"grpc-gateway_out=logtostderr=true",
 		"swagger_out=logtostderr=true",
@@ -101,16 +102,9 @@ func run() {
 				config := fileInfos[i].Name() + `.service.gqlgen.yml`
 				_, err := os.Stat(config)
 				var file *os.File
-				if os.IsNotExist(err) {
-					file, err = os.Create(config)
-					if err != nil {
-						log.Panicln(err)
-					}
-				} else {
-					file, err = os.Open(config)
-					if err != nil {
-						log.Panicln(err)
-					}
+				file, err = os.Create(config)
+				if err != nil {
+					log.Panicln(err)
 				}
 				t.Execute(file, fileInfos[i].Name())
 				file.Close()
@@ -210,10 +204,6 @@ model:
   filename: ../../{{.}}/models.gql.go
   package: user
 
-resolver:
-  filename: ../../../{{.}}/internal/service/resolver.gql.go
-  package: service
-
 autobind:
   - "github.com/liov/hoper/go/v2/protobuf/{{.}}"
   - "github.com/liov/hoper/go/v2/protobuf/utils/response"
@@ -256,4 +246,10 @@ models:
   Bytes:
     model:
       - github.com/liov/hoper/go/v2/utils/net/http/api/graphql.Bytes
+  HttpResponse_HeaderEntry:
+    model:
+      - github.com/liov/hoper/go/v2/utils/net/http/api/graphql.HttpResponse_HeaderEntry
 `
+
+//经过一番查找，发现yaml语法对格式是非常严格的，不可以有制表符！不可以有制表符！不可以有制表符！
+//缩进也有要求
