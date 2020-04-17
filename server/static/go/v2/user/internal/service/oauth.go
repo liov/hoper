@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"strconv"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	goauth "github.com/liov/hoper/go/v2/protobuf/utils/oauth"
@@ -48,7 +49,7 @@ func GetOauthService() *OauthService {
 		if err != nil {
 			return "", err
 		}
-		return strconv.FormatUint(claims.UserID, 10), nil
+		return strconv.FormatUint(claims.UserId, 10), nil
 	}
 
 	srv.InternalErrorHandler = func(err error) (re *errors.Response) {
@@ -72,14 +73,14 @@ func (u *OauthService) OauthAuthorize(ctx context.Context, req *goauth.OauthReq)
 	md, _ := metadata.FromIncomingContext(ctx)
 	tokens := md.Get("auth")
 	tokens = append(tokens, "")
-	req.AccessTokenExp = config.Conf.Customize.TokenMaxAge
+	req.AccessTokenExp = int64(24 * time.Hour)
 	req.LoginUri = "/oauth/login"
 	res := u.Server.HandleAuthorizeRequest(req, tokens[0])
 	return res, nil
 }
 
 func (u *OauthService) OauthToken(ctx context.Context, req *goauth.OauthReq) (*response.HttpResponse, error) {
-	req.GrantType = oauth2.AuthorizationCode
+	req.GrantType = string(oauth2.AuthorizationCode)
 	res, _ := u.Server.HandleTokenRequest(req)
 	return res, nil
 }

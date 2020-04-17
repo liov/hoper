@@ -21,7 +21,8 @@ option (gogoproto.populate_all) = true;
 // 用户
 message User {
     uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key;\""];
-    string name = 2 [(gogoproto.moretags) = "gorm:\"type:varchar(10);not null\" validate:\"required,gte=3,lte=10\" annotation:\"名字\""];
+    string name = 2 [(gogoproto.moretags) = "gorm:\"type:varchar(10);not null\" annotation:\"名字\""];
+    string nickName = 17 [(gogoproto.moretags) = "gorm:\"type:varchar(10);not null\" validate:\"required,gte=3,lte=10\" annotation:\"昵称\""];
     string activatedAt = 3 [(gogoproto.moretags) = "gorm:\"type:timestamptz(6);default:'0001-01-01 00:00:00'\""];
     string password = 5 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"type:varchar(32);not null\" validate:\"gte=8,lte=15\" annotation:\"密码\""];
     string mail = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(16);default:''\" validate:\"email\" annotation:\"邮箱\""];
@@ -31,6 +32,7 @@ message User {
            type:INTEGER
     }];
     string birthday = 9 [(gogoproto.moretags) = "gorm:\"type:timestamptz(6);default:'0001-01-01 00:00:00'\""];
+    string location = 16[(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
     string address = 14 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
     string introduction = 10 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
     string signature = 11 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
@@ -42,7 +44,6 @@ message User {
     type: INTEGER}];
     Role role = 24 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"default:0\""];
     string createdAt = 25 [(gogoproto.moretags) = "gorm:\"type:timestamptz(6);default:current_timestamp\""];
-    string bannedAt = 27 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"type:timestamptz(6);default:'0001-01-01 00:00:00'\""];
     UserStatus status = 28 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"default:0\"",  (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
            read_only:true
     }];
@@ -93,8 +94,9 @@ message UserBannedLog {
     uint64 userId = 2 [(gogoproto.moretags) = "gorm:\"index\""];
     uint64 duration = 3 [(gogoproto.moretags) = "gorm:\"\""];
     string reason = 4 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
-    string createdAt = 5 [(gogoproto.moretags) = "gorm:\"type:timestamptz(6)\""];
-    string remark = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
+    BannedType type = 5 ;
+    string bannedAt = 6 [(gogoproto.moretags) = "gorm:\"type:timestamptz(6);default:'0001-01-01 00:00:00'\""];
+    string remark = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
 }
 
 //用户操作日志
@@ -158,6 +160,16 @@ message UserMainInfo {
            read_only:true
     }];
     int64 loginTime =16;
+}
+//用户授权信息
+message UserAuthInfo {
+    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key;\""];
+    string name = 2 [(gogoproto.moretags) = "gorm:\"type:varchar(10);not null\" annotation:\"名字\""];
+    string nickName = 17 [(gogoproto.moretags) = "gorm:\"type:varchar(10);not null\" validate:\"required,gte=3,lte=10\" annotation:\"昵称\""];
+    string mail = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(16);default:''\" validate:\"email\" annotation:\"邮箱\""];
+    string location = 16[(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
+    string introduction = 10 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
+    string avatarURL = 12 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
 }
 
 message UserDeviceInfo {

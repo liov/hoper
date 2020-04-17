@@ -29,7 +29,7 @@ message OauthReq{
     string client_secret =11 ;
     string code =12;
     string refresh_token =13 ;
-    string grant_type = 14 [(gogoproto.casttype)="gopkg.in/oauth2.v3.GrantType"];
+    string grant_type = 14;
     string access_type = 15;
     string login_uri = 16;
 }

@@ -17,7 +17,7 @@ import (
 )
 
 func Auth(r *http.Request) (*model.UserMainInfo, error) {
-	token:=auth.GetToken(r)
+	token := auth.GetToken(r)
 	if token == "" {
 		return nil, model.UserErr_NoLogin
 	}
@@ -27,7 +27,7 @@ func Auth(r *http.Request) (*model.UserMainInfo, error) {
 	}
 	conn := dao.NewUserRedis()
 	defer conn.Close()
-	user, err := conn.EfficientUserHashFromRedis(claims.UserID)
+	user, err := conn.EfficientUserHashFromRedis(claims.UserId)
 	if err != nil {
 		log.Error(err)
 		return nil, model.UserErr_InvalidToken
@@ -35,20 +35,24 @@ func Auth(r *http.Request) (*model.UserMainInfo, error) {
 	return user, nil
 }
 
-func (*UserService) Auth(ctx context.Context) (*model.UserMainInfo, error) {
+func (*UserService) AuthClaims(ctx context.Context) (*jwt.Claims, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	tokens := md.Get("auth")
 	if len(tokens) == 0 || tokens[0] == "" {
 		return nil, model.UserErr_NoLogin
 	}
-	claims, err := jwt.ParseToken(tokens[0], config.Conf.Customize.TokenSecret)
+	return jwt.ParseToken(tokens[0], config.Conf.Customize.TokenSecret)
+}
+
+func (u *UserService) AuthMainInfo(ctx context.Context) (*model.UserMainInfo, error) {
+	claims, err := u.AuthClaims(ctx)
 	if err != nil {
 		return nil, err
 	}
 	//redis
 	conn := dao.NewUserRedis()
 	defer conn.Close()
-	user, err := conn.EfficientUserHashFromRedis(claims.UserID)
+	user, err := conn.EfficientUserHashFromRedis(claims.UserId)
 	if err != nil {
 		return nil, model.UserErr_InvalidToken
 	}

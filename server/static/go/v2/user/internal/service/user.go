@@ -229,7 +229,7 @@ func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*response
 
 func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.TinyRep, error) {
 	defer time2.TimeCost(time.Now())
-	user, err := u.Auth(ctx)
+	user, err := u.AuthMainInfo(ctx)
 	if err != nil || user.Id != req.Id {
 		return nil, err
 	}
@@ -345,7 +345,7 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 }
 
 func (u *UserService) Logout(ctx context.Context, req *empty.Empty) (*model.LogoutRep, error) {
-	user, err := u.Auth(ctx)
+	user, err := u.AuthMainInfo(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -372,12 +372,21 @@ func (u *UserService) Logout(ctx context.Context, req *empty.Empty) (*model.Logo
 	return &model.LogoutRep{Message: "已注销", Cookie: cookie}, nil
 }
 
-func (u *UserService) AuthInfo(ctx context.Context, req *empty.Empty) (*model.UserMainInfo, error) {
-	return u.Auth(ctx)
+func (u *UserService) AuthInfo(ctx context.Context, req *empty.Empty) (*model.UserAuthInfo, error) {
+	claims, err := u.AuthClaims(ctx)
+	if err != nil {
+		return nil, model.UserErr_InvalidToken
+	}
+	id, _ := strconv.ParseUint(claims.Subject, 10, 64)
+	var user model.UserAuthInfo
+	if err := dao.Dao.GORMDB.Find(&user, id).Error; err != nil {
+		return nil, errorcode.DBError.WithMessage("账号不存在")
+	}
+	return &user, nil
 }
 
 func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.GetRep, error) {
-	/*	_, err := u.Auth(ctx)
+	/*	_, err := u.AuthMainInfo(ctx)
 		if err != nil {
 			return &model.GetRep{Details: &model.User{Id: req.Id}}, nil
 		}*/

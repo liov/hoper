@@ -20,3 +20,10 @@ func (m *UserBaseInfo) TableName() string {
 	}
 	return "user_" + string(byte(m.Id/1_000_000+49))
 }
+
+func (m *UserAuthInfo) TableName() string {
+	if m.Id < 1_000_000 {
+		return "user"
+	}
+	return "user_" + string(byte(m.Id/1_000_000+49))
+}

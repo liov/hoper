@@ -44,3 +44,12 @@ enum UserStatus {
     Activated = 1 [(cuzproto.enumvalue_cn)= "已激活"];
     Frozen = 2 [(cuzproto.enumvalue_cn)= "已冻结"];
 }
+
+//封禁类型
+enum BannedType{
+    option (cuzproto.enum_numorder) = true;
+    option (cuzproto.enum_customtype) = "uint8";
+    option (cuzproto.enum_jsonmarshal) = false;
+    Post = 0 [(cuzproto.enumvalue_cn)= "禁言"];
+    Login = 1 [(cuzproto.enumvalue_cn)= "禁止登录"];
+}

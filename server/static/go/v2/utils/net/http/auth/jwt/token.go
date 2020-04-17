@@ -13,13 +13,13 @@ import (
 //或者说用户每更改一次信息就刷新token（貌似可行）
 //有泛型这里多好写
 type Claims struct {
-	UserID uint64 `json:"user_id"`
+	UserId uint64 `json:"user_id"`
 	jwt.StandardClaims
 }
 
-func GenerateToken(UserID uint64, now, maxAge int64, secret string) (string, error) {
+func GenerateToken(userId uint64, now, maxAge int64, secret string) (string, error) {
 	claims := Claims{
-		UserID: UserID,
+		UserId: userId,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: now + maxAge,
 			IssuedAt:  now,
@@ -50,4 +50,3 @@ func ParseToken(token, secret string) (*Claims, error) {
 
 	return nil, model.UserErr_LoginError
 }
-
