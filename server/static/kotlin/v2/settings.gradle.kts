@@ -2,6 +2,7 @@ rootProject.name = "v2"
 include("hello")
 include("user")
 include("protobuf")
+include("web")
 
 pluginManagement {
     repositories {
