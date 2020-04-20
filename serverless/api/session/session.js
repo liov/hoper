@@ -16,6 +16,10 @@ function gen() {
         "filterCompIds": [10002]
     }
     console.log(Buffer.from(JSON.stringify(header)).toString('base64'))
+    let crm_header = {
+        "userId":200
+    }
+    console.log(Buffer.from(JSON.stringify(crm_header)).toString('base64'))
 }
 
 gen()

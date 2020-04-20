@@ -3,6 +3,7 @@ include("hello")
 include("user")
 include("protobuf")
 include("web")
+include("vertx")
 
 pluginManagement {
     repositories {

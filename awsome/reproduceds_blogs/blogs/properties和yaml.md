@@ -1,0 +1,4 @@
+properties没发现有什么优点
+yaml直观，写起来简单，但是对缩进空格有严格要求
+综合下来springboot改用yanl
+还是toml

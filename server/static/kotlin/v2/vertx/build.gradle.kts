@@ -6,7 +6,6 @@ plugins {
     application
     java
     id("com.github.johnrengelman.shadow") version "5.1.0"
-    kotlin("kapt")
 }
 
 ext {
@@ -14,9 +13,9 @@ ext {
     set("junitJupiterEngineVersion", "5.4.0")
 }
 
-
+var mainClassName = "io.vertx.core.Launcher"
 application {
-    mainClassName = "xyz.hoper.web.Application"
+    mainClassName = mainClassName
 }
 
 sourceSets {
@@ -48,10 +47,6 @@ dependencies {
     implementation("io.vertx:vertx-lang-kotlin:${project.ext["vertxVersion"]}")
     implementation("org.reflections:reflections:0.9.12")
 
-    compileOnly("io.vertx:vertx-service-proxy:${project.ext["vertxVersion"]}")
-    compileOnly("io.vertx:vertx-codegen:${project.ext["vertxVersion"]}")
-    annotationProcessor("io.vertx:vertx-service-proxy:${project.ext["vertxVersion"]}")
-    kapt("io.vertx:vertx-codegen:${project.ext["vertxVersion"]}:processor")
     testImplementation("io.vertx:vertx-junit5:${project.ext["vertxVersion"]}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${project.ext["junitJupiterEngineVersion"]}")
     testImplementation("org.junit.jupiter:junit-jupiter-api:${project.ext["junitJupiterEngineVersion"]}")
@@ -65,9 +60,22 @@ tasks.withType<Test> {
     }
 }
 
-tasks.withType<JavaCompile> {
-    options.annotationProcessorGeneratedSourcesDirectory = file("$projectDir/build/generated")
-    options.compilerArgs = listOf(
-            "-Acodegen.output=src/main"
-    )
+var mainVerticleName = "xyz.hoper.vertx.MainVerticle"
+var watchForChange = "src/**/*"
+var doOnChange = "../gradlew classes"
+
+tasks.withType<ShadowJar> {
+    manifest {
+        attributes (mapOf("Main-Verticle" to mainVerticleName))
+    }
+    mergeServiceFiles {
+        include("META-INF/services/io.vertx.core.spi.VerticleFactory")
+    }
+}
+
+tasks{
+    getByName<BootRun>("bootRun") {
+        main = "xyz.hoper.web.ApplicationKt"
+        args("run, $mainVerticleName, --redeploy=$watchForChange, --launcher-class=$mainClassName, --on-redeploy=$doOnChange")
+    }
 }
