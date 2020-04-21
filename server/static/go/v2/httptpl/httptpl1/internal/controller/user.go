@@ -10,13 +10,11 @@ import (
 	"github.com/liov/hoper/go/v2/httptpl/httptpl1/internal/service"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
-	"github.com/liov/hoper/go/v2/utils/net/http/iris/api"
-
 	"github.com/liov/hoper/go/v2/utils/log"
+	"github.com/liov/hoper/go/v2/utils/net/http/iris/api"
 )
 
 type UserController struct {
-	Handler *api.Handler
 	Service *service.UserService
 }
 
@@ -29,8 +27,7 @@ func (u *UserController) Describe() string {
 }
 
 func (u *UserController) VerificationCode() {
-	u.Handler.
-		Path("/user/verification").
+	api.Path("/user/verification").
 		Method(http.MethodPost).
 		//这些信息不应该放在源代码里,都会打包进二进制文件
 		Service(u.Service.VerificationCode).
@@ -48,8 +45,7 @@ func (u *UserController) VerificationCode() {
 }
 
 func (u *UserController) Add() {
-	u.Handler.
-		Path("/user").
+	api.Path("/user").
 		Method(http.MethodPost).
 		Service(u.Service.Add).
 		Title("新增用户").
@@ -65,11 +61,9 @@ func (u *UserController) Add() {
 }
 
 func (u *UserController) Get() {
-	u.Handler.
-		Path("/user/{id:uint64}").
+	api.Path("/user/{id:uint64}").
 		Method(http.MethodGet).
-		Request(new(model.GetReq)).
-		Response(new(model.GetRep)).
+		Service(u.Service.Add).
 		Title("获取用户信息").
 		Version(1).
 		CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
@@ -87,20 +81,25 @@ func (u *UserController) Get() {
 }
 
 func (u *UserController) Edit() {
-	u.Handler.
-		Path("/user/{id:uint64}").
+	api.Path("/user/{id:uint64}").
 		Method(http.MethodPut).
-		Request(new(model.EditReq)).
-		Response(new(model.LoginRep)).
+		Service(u.Service.Add).
 		Title("用户编辑").
 		Version(1).
-		CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
-		Handle(func(c iris.Context) {})
+		CreateLog("1.0.0", "jyb", "2019/12/16", "创建")
+}
+
+func (u *UserController) Test() {
+	api.Path("/test").
+		Method(http.MethodGet).
+		Service(u.Service.Add).
+		Title("测试").
+		Version(1).
+		CreateLog("1.0.0", "jyb", "2019/12/16", "创建")
 }
 
 func (u *UserController) Shutdown() {
-	u.Handler.
-		Path("/restart").
+	api.Path("/restart").
 		Method(http.MethodGet).
 		Title("系统重启").
 		Version(1).

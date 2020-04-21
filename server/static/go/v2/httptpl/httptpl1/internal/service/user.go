@@ -11,7 +11,9 @@ import (
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
-type UserService struct{}
+type UserService struct {
+	model.UnimplementedUserServiceServer
+}
 
 func (*UserService) VerificationCode(req *empty.Empty) *response.CommonRep {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
