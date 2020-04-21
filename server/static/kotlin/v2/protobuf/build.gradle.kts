@@ -14,7 +14,7 @@ plugins {
     id("idea")
 }
 
-
+extra["wire_version"]="3.1.0"
 //wire {
 //    sourcePath {
 //        srcDir ("${rootDir}\\..\\..\\..\\proto")
@@ -38,12 +38,15 @@ sourceSets{
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.10.0"
+        artifact = "com.google.protobuf:protoc:${rootProject.ext["protobuf_version"]}"
     }
 
     plugins {
         id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.27.2"
+            artifact = "io.grpc:protoc-gen-grpc-java:${rootProject.ext["grpc_version"]}"
+        }
+        id("grpckt") {
+            artifact = "io.grpc:protoc-gen-grpc-kotlin:${rootProject.ext["grpc_kotlin_version"]}"
         }
 //        id("reactor") {
 //            artifact = "com.salesforce.servicelibs:reactor-grpc:1.0.0"

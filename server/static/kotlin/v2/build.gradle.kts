@@ -7,6 +7,16 @@ plugins {
     kotlin("plugin.spring") version "1.3.70"
 }
 
+ext{
+    set("vertxVersion", "3.9.0")
+    set("junitJupiterEngineVersion", "5.4.0")
+    set("grpc_kotlin_version", "0.1.1")
+    set("protobuf_version", "3.11.1")
+    set("grpc_version", "1.28.0")
+    set("kotlin_version", "1.3.70")
+    set("springCloudAlibabaVersion", "2.2.0.RELEASE")
+}
+
 allprojects {
     apply<JavaPlugin>()
     group = "xyz.hoper"
@@ -16,6 +26,9 @@ allprojects {
     repositories {
         mavenCentral()
         gradlePluginPortal()
+        google()
+        jcenter()
+        mavenLocal()
     }
 }
 
@@ -35,9 +48,6 @@ subprojects{
             extendsFrom(configurations.annotationProcessor.get())
         }
     }
-
-
-    extra["springCloudAlibabaVersion"] = "2.2.0.RELEASE"
 
     dependencies {
         implementation("org.springframework.boot:spring-boot-starter")

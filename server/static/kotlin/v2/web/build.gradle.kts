@@ -9,11 +9,6 @@ plugins {
     kotlin("kapt")
 }
 
-ext {
-    set("vertxVersion", "3.9.0")
-    set("junitJupiterEngineVersion", "5.4.0")
-}
-
 
 application {
     mainClassName = "xyz.hoper.web.Application"
@@ -28,33 +23,33 @@ sourceSets {
 }
 
 dependencies {
-    implementation("io.vertx:vertx-web-client:${project.project.ext["vertxVersion"]}")
-    implementation("io.vertx:vertx-auth-jwt:${project.ext["vertxVersion"]}")
-    implementation("io.vertx:vertx-web:${project.ext["vertxVersion"]}")
-    implementation("io.vertx:vertx-grpc:${project.ext["vertxVersion"]}")
-    implementation("io.vertx:vertx-service-proxy:${project.ext["vertxVersion"]}:processor")
-    implementation("io.vertx:vertx-mysql-client:${project.ext["vertxVersion"]}")
-    implementation("io.vertx:vertx-web-api-contract:${project.ext["vertxVersion"]}")
-    implementation("io.vertx:vertx-auth-oauth2:${project.ext["vertxVersion"]}")
-    implementation("io.vertx:vertx-redis-client:${project.ext["vertxVersion"]}")
-    implementation("io.vertx:vertx-reactive-streams:${project.ext["vertxVersion"]}")
-    implementation("io.vertx:vertx-web-graphql:${project.ext["vertxVersion"]}")
-    implementation("io.vertx:vertx-rx-java2:${project.ext["vertxVersion"]}")
-    implementation("io.vertx:vertx-junit5:${project.ext["vertxVersion"]}")
-    implementation("io.vertx:vertx-service-factory:${project.ext["vertxVersion"]}")
-    implementation("io.vertx:vertx-pg-client:${project.ext["vertxVersion"]}")
-    implementation("io.vertx:vertx-lang-kotlin-coroutines:${project.ext["vertxVersion"]}")
-    implementation("io.vertx:vertx-rabbitmq-client:${project.ext["vertxVersion"]}")
-    implementation("io.vertx:vertx-lang-kotlin:${project.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-web-client:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-auth-jwt:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-web:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-grpc:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-service-proxy:${rootProject.ext["vertxVersion"]}:processor")
+    implementation("io.vertx:vertx-mysql-client:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-web-api-contract:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-auth-oauth2:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-redis-client:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-reactive-streams:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-web-graphql:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-rx-java2:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-junit5:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-service-factory:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-pg-client:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-rabbitmq-client:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-lang-kotlin:${rootProject.ext["vertxVersion"]}")
     implementation("org.reflections:reflections:0.9.12")
 
-    compileOnly("io.vertx:vertx-service-proxy:${project.ext["vertxVersion"]}")
-    compileOnly("io.vertx:vertx-codegen:${project.ext["vertxVersion"]}")
-    annotationProcessor("io.vertx:vertx-service-proxy:${project.ext["vertxVersion"]}")
-    kapt("io.vertx:vertx-codegen:${project.ext["vertxVersion"]}:processor")
-    testImplementation("io.vertx:vertx-junit5:${project.ext["vertxVersion"]}")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${project.ext["junitJupiterEngineVersion"]}")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:${project.ext["junitJupiterEngineVersion"]}")
+    compileOnly("io.vertx:vertx-service-proxy:${rootProject.ext["vertxVersion"]}")
+    compileOnly("io.vertx:vertx-codegen:${rootProject.ext["vertxVersion"]}")
+    annotationProcessor("io.vertx:vertx-service-proxy:${rootProject.ext["vertxVersion"]}")
+    kapt("io.vertx:vertx-codegen:${rootProject.ext["vertxVersion"]}:processor")
+    testImplementation("io.vertx:vertx-junit5:${rootProject.ext["vertxVersion"]}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${rootProject.ext["junitJupiterEngineVersion"]}")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${rootProject.ext["junitJupiterEngineVersion"]}")
 }
 
 

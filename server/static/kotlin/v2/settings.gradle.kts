@@ -4,6 +4,7 @@ include("user")
 include("protobuf")
 include("web")
 include("vertx")
+include("grpc")
 
 pluginManagement {
     repositories {

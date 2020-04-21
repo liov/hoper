@@ -71,6 +71,7 @@ require (
 	github.com/olivere/elastic v6.2.23+incompatible
 	github.com/pelletier/go-toml v1.2.0
 	github.com/peterbourgon/g2s v0.0.0-20170223122336-d4e7ad98afea // indirect
+	github.com/prometheus/client_golang v1.5.1
 	github.com/robfig/cron v1.2.0
 	github.com/russross/blackfriday v2.0.0+incompatible
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
