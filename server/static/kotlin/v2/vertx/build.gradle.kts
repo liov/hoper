@@ -1,5 +1,4 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.springframework.boot.gradle.tasks.bundling.BootJar
 import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
@@ -75,7 +74,6 @@ tasks.withType<ShadowJar> {
 
 tasks{
     getByName<BootRun>("bootRun") {
-        main = "xyz.hoper.web.ApplicationKt"
         args("run, $mainVerticleName, --redeploy=$watchForChange, --launcher-class=$mainClassName, --on-redeploy=$doOnChange")
     }
 }
