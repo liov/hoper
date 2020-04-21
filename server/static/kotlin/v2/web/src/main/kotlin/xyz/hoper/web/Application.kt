@@ -4,17 +4,18 @@ import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
 import io.vertx.core.eventbus.EventBusOptions
 import io.vertx.ext.web.Router
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.runApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.event.ApplicationReadyEvent
+import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.event.EventListener
-import xyz.hoper.utils.vertx.VertxUtil
-import xyz.hoper.utils.vertx.factory.RouterHandlerFactory
-import xyz.hoper.utils.vertx.verticle.DeployVertxServer
+import xyz.hoper.vertx.util.VertxUtil
+import xyz.hoper.vertx.vertx.factory.RouterHandlerFactory
+import xyz.hoper.vertx.util.verticle.DeployVertxServer
 import java.io.IOException
 
+@ComponentScan("xyz.hoper")
 @SpringBootApplication
 open class Application {
     /**
