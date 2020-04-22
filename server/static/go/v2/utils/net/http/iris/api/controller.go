@@ -25,32 +25,6 @@ func (a *App) Original() *iris.Application {
 	return (*iris.Application)(a)
 }
 
-func ApiDoc(ctrl []Controller) {
-	handler := &Handler{apiInfo: &apiInfo{}}
-	for i := range ctrl {
-		value := reflect.ValueOf(ctrl[i])
-		if value.Kind() != reflect.Ptr {
-			panic("必须传入指针")
-		}
-
-		value1 := value.Elem()
-		if value1.NumField() == 0 {
-			panic("controller必须有一个类型为Handler的field")
-		}
-		if value1.Field(0).Type() != reflect.TypeOf(handler) {
-			panic("Handler field必须在第一个")
-		}
-		value1.Field(0).Set(reflect.ValueOf(handler))
-
-		for j := 0; j < value.NumMethod(); j++ {
-			value.Method(j).Call(nil)
-		}
-
-		path := "/api/v" + strconv.Itoa(handler.version) + handler.path
-		fmt.Println(path)
-	}
-}
-
 func Register(app *iris.Application, genApi bool, modName string) {
 	for i := range svcs {
 		value := reflect.ValueOf(svcs[i])
@@ -80,6 +54,7 @@ func Register(app *iris.Application, genApi bool, modName string) {
 				handle = reflect.MakeFunc(reflect.TypeOf(handle),
 					func(args []reflect.Value) (results []reflect.Value) {
 						ctx := args[0].Interface().(iris.Context)
+						//依赖注入
 						ctx.WriteString("测试")
 						return nil
 					}).Interface().(iris.Handler)
