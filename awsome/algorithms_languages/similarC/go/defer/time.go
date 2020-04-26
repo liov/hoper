@@ -7,9 +7,8 @@ import (
 
 func main() {
 	defer timeCost(time.Now())
-	defer func(start time.Time) {
-		fmt.Println("这种计时有意义吗", time.Since(start))
-	}(time.Now())
+	defer func(start time.Time) { fmt.Println("这种计时有意义吗", time.Since(start)) }(time.Now())
+
 	fmt.Println("start program")
 	time.Sleep(5 * time.Second)
 	fmt.Println("finish program")

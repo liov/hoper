@@ -18,6 +18,7 @@ type apiInfo struct {
 	changelog           []changelog
 	createlog           changelog
 	deprecated          *changelog
+	middleware          http.HandlerFunc
 }
 
 type changelog struct {
@@ -67,6 +68,11 @@ func (api *apiInfo) Deprecated(v, auth, date, log string) *apiInfo {
 	return api
 }
 
+func (api *apiInfo) Middleware(m http.HandlerFunc) *apiInfo {
+	api.middleware = m
+	return api
+}
+
 //获取负责人
 func (api *apiInfo) getPrincipal() string {
 	if len(api.changelog) == 0 {
@@ -78,11 +84,11 @@ func (api *apiInfo) getPrincipal() string {
 	return api.changelog[len(api.changelog)-1].auth
 }
 
-func (h *apiInfo) Api(methodType reflect.Type, tag, dec string) {
+func (api *apiInfo) Api(methodType reflect.Type, tag, dec string) {
 	doc := apidoc.GetDoc()
 	var pathItem *spec.PathItem
 	if doc.Paths != nil && doc.Paths.Paths != nil {
-		if path, ok := doc.Paths.Paths[h.path]; ok {
+		if path, ok := doc.Paths.Paths[api.path]; ok {
 			pathItem = &path
 		} else {
 			pathItem = new(spec.PathItem)
@@ -98,7 +104,7 @@ func (h *apiInfo) Api(methodType reflect.Type, tag, dec string) {
 
 	if numIn == 2 {
 		if !methodType.In(1).Implements(contextType) {
-			if h.method == http.MethodGet {
+			if api.method == http.MethodGet {
 				InType := methodType.In(1).Elem()
 				for j := 0; j < InType.NumField(); j++ {
 					param := spec.Parameter{
@@ -139,24 +145,24 @@ func (h *apiInfo) Api(methodType reflect.Type, tag, dec string) {
 		responses.StatusCodeResponses[200] = response
 		op := spec.Operation{
 			OperationProps: spec.OperationProps{
-				Summary:    h.title,
-				ID:         h.path + h.method,
+				Summary:    api.title,
+				ID:         api.path + api.method,
 				Parameters: parameters,
 				Responses:  &responses,
 			},
 		}
 
 		var tags, desc []string
-		tags = append(tags, tag, h.createlog.version)
-		desc = append(desc, dec, h.createlog.log)
-		for i := range h.changelog {
-			tags = append(tags, h.changelog[i].version)
-			desc = append(desc, h.changelog[i].log)
+		tags = append(tags, tag, api.createlog.version)
+		desc = append(desc, dec, api.createlog.log)
+		for i := range api.changelog {
+			tags = append(tags, api.changelog[i].version)
+			desc = append(desc, api.changelog[i].log)
 		}
 		op.Tags = tags
 		op.Description = strings.Join(desc, "\n")
 
-		switch h.method {
+		switch api.method {
 		case http.MethodGet:
 			pathItem.Get = &op
 		case http.MethodPost:
@@ -174,7 +180,7 @@ func (h *apiInfo) Api(methodType reflect.Type, tag, dec string) {
 		}
 	}
 
-	doc.Paths.Paths[h.path] = *pathItem
+	doc.Paths.Paths[api.path] = *pathItem
 }
 
 func DefinitionsApi(definitions map[string]spec.Schema, v interface{}, exclude []string) {
