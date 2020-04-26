@@ -137,6 +137,9 @@ type Router struct {
 	paramsPool sync.Pool
 	maxParams  uint16
 
+	//前后调用
+	middleware HandlerFuncs
+
 	// If enabled, adds the matched route path onto the http.Request context
 	// before invoking the handler.
 	// The matched route path is only added to handlers of routes that were
@@ -290,6 +293,10 @@ func (r *Router) ServeFiles(path string, root string) {
 	})))
 }
 
+func (r *Router) Use(middleware ...http.HandlerFunc) {
+	r.middleware = append(r.middleware, middleware...)
+}
+
 func (r *Router) recv(w http.ResponseWriter, req *http.Request) {
 	if rcv := recover(); rcv != nil {
 		r.PanicHandler(w, req, rcv)
@@ -354,7 +361,8 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	path := req.URL.Path
 
-	if root := r.trees[req.Method]; root != nil || root.handle.IsValid() {
+	if root := r.trees[req.Method]; root != nil && root.handle.IsValid() {
+		r.middleware.ServeHTTP(w, req)
 		if handle, ps, tsr := root.getValue(path, r.getParams); handle.IsValid() {
 			if handler, ok := handle.Interface().(http.HandlerFunc); ok {
 				handler(w, req)

@@ -5,6 +5,7 @@
 package pick
 
 import (
+	"net/http"
 	"reflect"
 	"strings"
 	"unicode"
@@ -73,13 +74,14 @@ const (
 )
 
 type node struct {
-	path      string
-	indices   string
-	wildChild bool
-	nType     nodeType
-	priority  uint32
-	children  []*node
-	handle    reflect.Value
+	path       string
+	indices    string
+	wildChild  bool
+	nType      nodeType
+	priority   uint32
+	children   []*node
+	middleware http.HandlerFunc
+	handle     reflect.Value
 }
 
 // Increments priority of the given child and reorders if necessary
