@@ -37,6 +37,7 @@ func New(genApi bool, modName string) *Router {
 		HandleOPTIONS:          true,
 		middleware:             make([]http.HandlerFunc, 0),
 	}
+	methods := make(map[string]struct{})
 	for _, v := range svcs {
 		describe, preUrl, _ := v.Service()
 		value := reflect.ValueOf(v)
@@ -63,7 +64,7 @@ func New(genApi bool, modName string) *Router {
 			}
 
 			router.Handle(methodInfo.method, methodInfo.path, value.Method(j))
-
+			methods[methodInfo.method] = struct{}{}
 			fmt.Printf(" %s\t %s %s\t %s\n",
 				pio.Green("API:"),
 				pio.Yellow(strings2.FormatLen(methodInfo.method, 6)),
@@ -74,6 +75,11 @@ func New(genApi bool, modName string) *Router {
 			}
 		}
 	}
+	allowed := make([]string, 0, 9)
+	for k := range methods {
+		allowed = append(allowed, k)
+	}
+	router.globalAllowed = allowedMethod(allowed)
 	registered()
 	return router
 }

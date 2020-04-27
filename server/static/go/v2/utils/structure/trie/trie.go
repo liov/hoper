@@ -51,7 +51,7 @@ type node struct {
 	cType    nodeType //if>3 wildChild,代替原来的wildChild
 	priority uint8
 
-	mchildren map[string]*node
+	//mchildren map[string]*node
 	//tchildren  []*node
 	middleware http.HandlerFunc
 	handle     []*methodHandle
@@ -71,7 +71,7 @@ func (n *node) addRoute(path string, handle *methodHandle) {
 	n.priority++
 
 	// Empty tree
-	if len(n.path) == 0 && len(n.schildren) == 0 && len(n.mchildren) == 0 {
+	if len(n.path) == 0 && len(n.schildren) == 0 {
 		n.insertChild(path, fullPath, handle)
 		n.nType = root
 		return
@@ -104,11 +104,9 @@ walk:
 		if i < len(path) {
 			path = path[i:]
 
-			idx := insertGetIndex(n.indices, path[0])
-			if idx > -1 { // / path
-				n = n.schildren[idx]
+			if n.cType >= param && (path[0] == ':' || path[0] == '*') {
+				n = n.schildren[0]
 				n.priority++
-
 				// /:name/:names
 				if n.nType == catchAll ||
 					(n.nType == param && (len(path) < len(n.path) || n.path != path[:len(n.path)])) ||
@@ -125,12 +123,14 @@ walk:
 						"' in existing prefix '" + prefix +
 						"'")
 				}
-				// Check if the wildcard matches
+			}
 
-				// Adding a child to a catchAll is not possible
-				if n.nType != catchAll {
-					continue walk
-				}
+			idx := insertGetIndex(n.indices, path[0])
+			if idx > -1 { // / path
+				n = n.schildren[idx]
+				n.priority++
+
+				continue walk
 			}
 
 			// []byte for proper unicode char conversion, see #65
@@ -200,9 +200,6 @@ func (n *node) insertChild(path, fullPath string, handle *methodHandle) {
 			return
 		}
 
-		n.path = path[:i]
-		path = path[i:]
-
 		if wildcard[0] == '*' { // catchAll
 			if i+len(wildcard) != len(path) {
 				panic("catch-all routes are only allowed at the end of the path in path '" + fullPath + "'")
@@ -216,7 +213,7 @@ func (n *node) insertChild(path, fullPath string, handle *methodHandle) {
 			if path[i-1] != '/' {
 				panic("no / before catch-all in path '" + fullPath + "'")
 			}
-
+			n.path = path[:i]
 			n.cType = n.cType | catchAll
 			// First node: catchAll node with empty path
 			child := &node{
@@ -234,7 +231,8 @@ func (n *node) insertChild(path, fullPath string, handle *methodHandle) {
 		}
 
 		if wildcard[0] == ':' { // param
-
+			n.path = path[:i]
+			path = path[i:]
 			n.cType = n.cType | param
 
 			child := &node{
@@ -265,9 +263,8 @@ func (n *node) insertChild(path, fullPath string, handle *methodHandle) {
 			if handle != nil {
 				n.handle = []*methodHandle{handle}
 			}
-			return
-
 		}
+		return
 	}
 	// If no wildcard was found, simply insert the path and handle
 	n.path = path
@@ -287,15 +284,7 @@ func (n *node) incrementChildPrio(pos int) int {
 	for ; newPos > 0 && cs[newPos-1].priority < prio; newPos-- {
 		// Swap node positions
 		cs[newPos-1], cs[newPos] = cs[newPos], cs[newPos-1]
-
-	}
-
-	// Build new index char string
-	if newPos != pos {
-		indices := append(n.indices[:newPos], n.indices[pos:pos+1]...)
-		indices = append(indices, n.indices[newPos:pos]...)
-		indices = append(indices, n.indices[pos+1:]...)
-		n.indices = indices
+		n.indices[newPos-1], n.indices[newPos] = n.indices[newPos], n.indices[newPos-1]
 	}
 
 	return newPos
@@ -394,7 +383,7 @@ type Param struct {
 
 type Params []Param
 
-func (n *node) getValue(path string, params func() *Params) (handle *methodHandle, ps *Params, tsr bool) {
+/*func (n *node) getValue(path string, params func() *Params) (handle *methodHandle, ps *Params, tsr bool) {
 walk: // Outer loop for walking the tree
 	for {
 		prefix := n.path
@@ -527,3 +516,4 @@ walk: // Outer loop for walking the tree
 		return
 	}
 }
+*/
