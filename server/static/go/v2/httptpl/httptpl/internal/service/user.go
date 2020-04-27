@@ -30,8 +30,8 @@ func (*UserService) Add(ctx *claims.Claims, req *model.SignupReq) (*model.Signup
 
 func (*UserService) Edit(ctx *claims.Claims, req *model.EditReq) (*model.EditReq_EditDetails, error) {
 	pick.Api(func() interface{} {
-		return pick.Path("/id").
-			Method(http.MethodGet).
+		return pick.Path("/:id").
+			Method(http.MethodPut).
 			Title("用户编辑").
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
 			Deprecated("1.0.0", "jyb", "2019/12/16", "删除")
@@ -43,11 +43,29 @@ func (*UserService) Edit(ctx *claims.Claims, req *model.EditReq) (*model.EditReq
 func (*UserService) Get(ctx *claims.Claims, req *model.GetReq) (*model.GetRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() interface{} {
-		return pick.Path("/id/*name").
+		return pick.Path("/:id").
 			Method(http.MethodGet).
 			Title("用户注册").
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建")
 	})
 
 	return &model.GetRep{Code: uint32(req.Id), Message: "测试"}, nil
+}
+
+type StaticService struct{}
+
+func (*StaticService) Service() (string, string, http.HandlerFunc) {
+	return "静态资源", "/api/${version}/static", nil
+}
+
+func (*StaticService) Get2(ctx *claims.Claims, req *model.SignupReq) (*model.GetRep, error) {
+	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
+	pick.Api(func() interface{} {
+		return pick.Path("/*mail").
+			Method(http.MethodGet).
+			Title("用户注册").
+			CreateLog("1.0.0", "jyb", "2019/12/16", "创建")
+	})
+
+	return &model.GetRep{Message: req.Mail}, nil
 }
