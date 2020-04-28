@@ -2,6 +2,7 @@ package claims
 
 import (
 	"errors"
+	"net/http"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -27,19 +28,7 @@ func (claims *Claims) GenerateToken() (string, error) {
 	return token, err
 }
 
-func (claims *Claims) ParseToken(token string) error {
-	tokenClaims, _ := (&jwt.Parser{SkipClaimsValidation: true}).ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
-		return config.Conf.Customize.TokenSecret, nil
-	})
-
-	if tokenClaims != nil {
-		if claims, ok := tokenClaims.Claims.(*Claims); ok && tokenClaims.Valid {
-			now := time.Now().Unix()
-			if claims.VerifyExpiresAt(now, false) == false {
-				return errors.New("登录超时")
-			}
-			return nil
-		}
-	}
+func (claims *Claims) ParseToken(req *http.Request) error {
+	claims.Id = req.URL.Path
 	return errors.New("未登录")
 }

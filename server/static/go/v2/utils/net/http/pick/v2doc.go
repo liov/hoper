@@ -1,4 +1,4 @@
-package api
+package pick
 
 import (
 	"encoding/json"
@@ -19,8 +19,9 @@ func doc(modName string) string {
 	buf := new(strings.Builder)
 	fmt.Fprintf(buf, "# %s接口文档  \n", modName)
 	fmt.Fprint(buf, "----------  \n")
-	for k, v := range svcs {
-		fmt.Fprintf(buf, "# %s  \n", v.Describe())
+	for _, v := range svcs {
+		describe, preUrl, _ := v.Service()
+		fmt.Fprintf(buf, "# %s  \n", describe)
 		fmt.Fprint(buf, "----------  \n")
 		value := reflect.ValueOf(v)
 		for j := 0; j < value.NumMethod(); j++ {
@@ -30,7 +31,7 @@ func doc(modName string) string {
 			}
 			methodInfo := getMethodInfo(value.Method(j))
 			mName, version := parseMethodName(method.Name)
-			methodInfo.path = "/api/v" + strconv.Itoa(version) + "/" + k + "/" + mName
+			methodInfo.path = "/api/v" + strconv.Itoa(version) + "/" + preUrl + "/" + mName
 			//title
 			if methodInfo.deprecated != nil {
 				fmt.Fprintf(buf, "## ~~%s-v%d(废弃)(`%s`)~~  \n", methodInfo.title, version, methodInfo.path)

@@ -25,6 +25,17 @@ func (a *App) Original() *iris.Application {
 	return (*iris.Application)(a)
 }
 
+type Service interface {
+	Describe() string
+	Middle() []iris.Handler
+}
+
+var svcs = make(map[string]Service)
+
+func RegisterService(svc Service, tag string) {
+	svcs[tag] = svc
+}
+
 func Register(app *iris.Application, genApi bool, modName string) {
 	for i := range svcs {
 		value := reflect.ValueOf(svcs[i])

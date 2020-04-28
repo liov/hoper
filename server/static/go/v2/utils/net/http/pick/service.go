@@ -75,11 +75,13 @@ func New(genApi bool, modName string) *Router {
 			}
 		}
 	}
+
 	allowed := make([]string, 0, 9)
 	for k := range methods {
 		allowed = append(allowed, k)
 	}
 	router.globalAllowed = allowedMethod(allowed)
+
 	registered()
 	return router
 }
