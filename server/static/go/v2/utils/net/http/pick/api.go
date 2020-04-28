@@ -35,6 +35,10 @@ func Path(p string) *apiInfo {
 	return &apiInfo{path: p}
 }
 
+func Method(m string) *apiInfo {
+	return &apiInfo{method: m}
+}
+
 func (api *apiInfo) Method(m string) *apiInfo {
 	api.method = m
 	return api

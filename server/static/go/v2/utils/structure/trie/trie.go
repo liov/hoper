@@ -96,6 +96,7 @@ walk:
 			n.path = path[:i]
 			n.indices = []byte{child.path[0]}
 			n.schildren = []*node{child}
+			n.cType = static
 			n.handle = nil
 			n.sortIndices()
 		}
@@ -104,11 +105,11 @@ walk:
 		if i < len(path) {
 			path = path[i:]
 
-			if n.cType >= param && (path[0] == ':' || path[0] == '*') {
+			if n.cType >= catchAll || (n.cType >= param && path[0] == ':') {
 				n = n.schildren[0]
 				n.priority++
 				// /:name/:names
-				if n.nType == catchAll ||
+				if (n.nType == catchAll && path != n.path) ||
 					(n.nType == param && (len(path) < len(n.path) || n.path != path[:len(n.path)])) ||
 					(n.nType == param && len(path) > len(n.path) && path[len(n.path)] != '/') {
 
@@ -123,6 +124,7 @@ walk:
 						"' in existing prefix '" + prefix +
 						"'")
 				}
+				continue walk
 			}
 
 			idx := insertGetIndex(n.indices, path[0])

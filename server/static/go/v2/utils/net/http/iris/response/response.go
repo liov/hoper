@@ -1,6 +1,7 @@
 package response
 
 import (
+	"io"
 	"net/http"
 
 	"github.com/kataras/iris/v12"
@@ -86,4 +87,9 @@ func Res(c iris.Context, code uint32, msg string, data interface{}) {
 type File struct {
 	File http.File
 	Name string
+}
+
+type HttpFile interface {
+	io.Reader
+	Name() string
 }

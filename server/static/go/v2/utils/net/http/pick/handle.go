@@ -47,24 +47,16 @@ func commonHandler(w http.ResponseWriter, req *http.Request, handle reflect.Valu
 			params[i] = reflect.New(handleTyp.In(i).Elem())
 			if handleTyp.In(i).Implements(contextType) {
 				sess := params[i].Interface().(Claims)
-				/*				cookie,err := req.Cookie("token")
-								if err != nil {
-
-								}
-								value, _ := url.QueryUnescape(cookie.Value)
-								if len(token) == 0 {
-									token = req.Header.Get("Authorization")
-								}*/
-
 				sess.ParseToken(req)
-
 			} else {
 				if ps != nil || req.URL.RawQuery != "" {
 					src := req.URL.Query()
-					pathParam := *ps
-					if len(pathParam) > 0 {
-						for i := range pathParam {
-							src.Set(pathParam[i].Key, pathParam[i].Value)
+					if ps != nil {
+						pathParam := *ps
+						if len(pathParam) > 0 {
+							for i := range pathParam {
+								src.Set(pathParam[i].Key, pathParam[i].Value)
+							}
 						}
 					}
 					decoder.PickDecode(params[i], src)

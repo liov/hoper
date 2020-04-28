@@ -1,13 +1,11 @@
 package main
 
 import (
-	"github.com/kataras/iris/v12"
-	"github.com/liov/hoper/go/v2/httptpl/httptpl2/internal/config"
+	"log"
+	"net/http"
+
 	_ "github.com/liov/hoper/go/v2/httptpl/httptpl2/internal/service"
-	"github.com/liov/hoper/go/v2/initialize"
-	v2 "github.com/liov/hoper/go/v2/initialize/v2"
-	"github.com/liov/hoper/go/v2/utils/net/http/iris/api"
-	"github.com/liov/hoper/go/v2/utils/net/http/server"
+	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 )
 
 func main() {
@@ -19,14 +17,8 @@ func main() {
 
 		trace.Start(f)
 		defer trace.Stop()*/
-	defer v2.Start(config.Conf, nil)()
-
-	s := server.Server{
-		IrisHandle: func(application *iris.Application) {
-			api.RegisterAllService(application,
-				initialize.Env == initialize.DEVELOPMENT,
-				v2.BasicConfig.Module)
-		},
-	}
-	s.Start()
+	router := pick.NewEasyRouter(false, "httptpl")
+	router.ServeFiles("/static", "E:/")
+	log.Println("visit http://localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", router))
 }

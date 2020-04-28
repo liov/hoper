@@ -1,7 +1,7 @@
 package service
 
-import "github.com/liov/hoper/go/v2/utils/net/http/iris/api"
+import "github.com/liov/hoper/go/v2/utils/net/http/pick"
 
 func init() {
-	api.RegisterService(&UserService{}, "user")
+	pick.RegisterService(&UserService{})
 }
