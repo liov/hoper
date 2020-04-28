@@ -75,17 +75,30 @@ const (
 )
 
 type methodHandle struct {
-	method string
-	handle reflect.Value
+	method      string
+	middleware  []http.Handler
+	httpHandler http.Handler
+	handle      reflect.Value
 }
 
-func getHandle(method string, mhs []*methodHandle) reflect.Value {
-	for _, mh := range mhs {
-		if mh.method == method {
-			return mh.handle
+func getHandle(method string, mhs []*methodHandle) (http.Handler, reflect.Value) {
+	if len(mhs) == 1 {
+		if mhs[0].method == MethodAny || mhs[0].method == method {
+			return mhs[0].httpHandler, mhs[0].handle
+		} else {
+			return nil, reflect.Value{}
 		}
 	}
-	return reflect.Value{}
+	for _, mh := range mhs {
+		if mh.method == method {
+			return mh.httpHandler, mh.handle
+		}
+	}
+	return nil, reflect.Value{}
+}
+
+func handleValid(h1 http.Handler, h2 reflect.Value) bool {
+	return h1 != nil || h2.IsValid()
 }
 
 type node struct {
@@ -119,12 +132,12 @@ func (n *node) incrementChildPrio(pos int) int {
 
 // addRoute adds a node with the given handle to the path.
 // Not concurrency-safe!
-func (n *node) addRoute(method, path string, handle reflect.Value) {
+func (n *node) addRoute(method, path string, middleware []http.Handler, httpHandler http.Handler, handle reflect.Value) {
 	fullPath := path
 	n.priority++
 	var mHandle *methodHandle
-	if handle.IsValid() {
-		mHandle = &methodHandle{method, handle}
+	if handleValid(httpHandler, handle) {
+		mHandle = &methodHandle{method, middleware, httpHandler, handle}
 	}
 	// Empty tree
 	if len(n.path) == 0 && len(n.indices) == 0 {
@@ -143,18 +156,21 @@ walk:
 		// Split edge
 		if i < len(n.path) {
 			child := node{
-				path:     n.path[i:],
-				cType:    n.cType,
-				nType:    static,
-				indices:  n.indices,
-				children: n.children,
-				handle:   n.handle,
-				priority: n.priority - 1,
+				path:       n.path[i:],
+				cType:      n.cType,
+				nType:      static,
+				indices:    n.indices,
+				children:   n.children,
+				middleware: n.middleware,
+				handle:     n.handle,
+				priority:   n.priority - 1,
 			}
 
 			n.children = []*node{&child}
 			// []byte for proper unicode char conversion, see #65
 			n.indices = []byte{n.path[i]}
+			n.middleware = nil
+			n.handle = nil
 			n.path = path[:i]
 			n.cType = static
 		}
@@ -616,7 +632,7 @@ walk: // Outer loop for walking the tree
 
 				// Nothing found. We can recommend to redirect to the same URL
 				// without a trailing slash if a leaf exists for that path
-				if fixTrailingSlash && path == "/" && getHandle(method, n.handle).IsValid() {
+				if fixTrailingSlash && path == "/" && handleValid(getHandle(method, n.handle)) {
 					return ciPath
 				}
 				return nil
@@ -651,13 +667,13 @@ walk: // Outer loop for walking the tree
 					return nil
 				}
 
-				if getHandle(method, n.handle).IsValid() {
+				if handleValid(getHandle(method, n.handle)) {
 					return ciPath
 				} else if fixTrailingSlash && len(n.children) == 1 {
 					// No handle found. Check if a handle for this path + a
 					// trailing slash exists
 					n = n.children[0]
-					if n.path == "/" && getHandle(method, n.handle).IsValid() {
+					if n.path == "/" && handleValid(getHandle(method, n.handle)) {
 						return append(ciPath, '/')
 					}
 				}
@@ -672,18 +688,18 @@ walk: // Outer loop for walking the tree
 		} else {
 			// We should have reached the node containing the handle.
 			// Check if this node has a handle registered.
-			if getHandle(method, n.handle).IsValid() {
+			if handleValid(getHandle(method, n.handle)) {
 				return ciPath
 			}
 
 			// No handle found.
 			// Try to fix the path by adding a trailing slash
 			if fixTrailingSlash {
-				for i, c := range []byte(n.indices) {
+				for i, c := range n.indices {
 					if c == '/' {
 						n = n.children[i]
-						if (len(n.path) == 1 && getHandle(method, n.handle).IsValid()) ||
-							(n.nType == catchAll && getHandle(method, n.children[0].handle).IsValid()) {
+						if (len(n.path) == 1 && handleValid(getHandle(method, n.handle))) ||
+							(n.nType == catchAll && handleValid(getHandle(method, n.children[0].handle))) {
 							return append(ciPath, '/')
 						}
 						return nil
@@ -701,7 +717,7 @@ walk: // Outer loop for walking the tree
 			return ciPath
 		}
 		if len(path)+1 == npLen && n.path[len(path)] == '/' &&
-			strings.EqualFold(path[1:], n.path[1:len(path)]) && getHandle(method, n.handle).IsValid() {
+			strings.EqualFold(path[1:], n.path[1:len(path)]) && handleValid(getHandle(method, n.handle)) {
 			return append(ciPath, n.path...)
 		}
 	}

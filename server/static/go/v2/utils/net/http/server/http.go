@@ -4,31 +4,27 @@ import (
 	"net/http"
 
 	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/core/handlerconv"
-	"github.com/liov/hoper/go/v2/initialize"
 	v2 "github.com/liov/hoper/go/v2/initialize/v2"
-	"github.com/liov/hoper/go/v2/utils/log"
-	iris_build "github.com/liov/hoper/go/v2/utils/net/http/iris"
-	"github.com/liov/hoper/go/v2/utils/net/http/iris/api"
-	"github.com/liov/hoper/go/v2/utils/net/http/iris/gateway"
-	"github.com/liov/hoper/go/v2/utils/net/http/iris/middleware"
+	"github.com/liov/hoper/go/v2/utils/net/http/api"
+	"github.com/liov/hoper/go/v2/utils/net/http/debug"
+	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"
+	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 )
 
 func (s *Server) Http() http.Handler {
-	irisHandle := func(mux *iris.Application) {
-		iris_build.WithConfiguration(mux, initialize.ConfUrl)
-		logger := (&log.Config{Development: v2.BasicConfig.Env == initialize.PRODUCT}).NewLogger()
-		middleware.SetLog(mux, logger, false)
-		api.OpenApi(mux, "../protobuf/api/")
+	router := pick.NewEasyRouter(false, v2.BasicConfig.Module)
+	http.DefaultServeMux.Handle("/", router)
+	api.OpenApi(router, "../protobuf/api/")
 
-		if s.GraphqlResolve != nil {
-			mux.Post("/api/graphql", handlerconv.FromStd(handler.NewDefaultServer(s.GraphqlResolve)))
-		}
-		if s.IrisHandle != nil {
-			s.IrisHandle(mux)
-		}
+	if s.GraphqlResolve != nil {
+		http.DefaultServeMux.Handle("/api/graphql", handler.NewDefaultServer(s.GraphqlResolve))
 	}
-	mux := iris_gateway.Http(irisHandle, s.GatewayRegistr)
-	return mux
+	if s.PickHandle != nil {
+		s.PickHandle(router)
+	}
+	gwmux := gateway.Gateway(s.GatewayRegistr)
+	//openapi
+	router.Handle(pick.MethodAny, "/", gwmux)
+	router.Handle(pick.MethodAny, "/debug/", debug.Debug())
+	return router
 }

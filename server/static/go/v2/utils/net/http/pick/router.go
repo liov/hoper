@@ -227,7 +227,7 @@ func (r *Router) putParams(ps *Params) {
 // This function is intended for bulk loading and to allow the usage of less
 // frequently used, non-standardized or custom methods (e.g. for internal
 // communication with a proxy).
-func (r *Router) Handle(method, path string, handle reflect.Value) {
+func (r *Router) Handle(method, path string, middleware []http.Handler, handle reflect.Value) {
 	varsCount := uint16(0)
 
 	if method == "" {
@@ -249,7 +249,45 @@ func (r *Router) Handle(method, path string, handle reflect.Value) {
 		r.trees = new(node)
 	}
 
-	r.trees.addRoute(method, path, handle)
+	r.trees.addRoute(method, path, middleware, nil, handle)
+
+	// Update maxParams
+	if paramsCount := countParams(path); paramsCount+varsCount > r.maxParams {
+		r.maxParams = paramsCount + varsCount
+	}
+
+	// Lazy-init paramsPool alloc func
+	if r.paramsPool.New == nil && r.maxParams > 0 {
+		r.paramsPool.New = func() interface{} {
+			ps := make(Params, 0, r.maxParams)
+			return &ps
+		}
+	}
+}
+
+func (r *Router) Handler(method, path string, handle ...http.Handler) {
+	varsCount := uint16(0)
+
+	if method == "" {
+		panic("method must not be empty")
+	}
+	if len(path) < 1 || path[0] != '/' {
+		panic("path must begin with '/' in path '" + path + "'")
+	}
+
+	if handle == nil {
+		panic("handle must not be empty")
+	}
+
+	if r.SaveMatchedRoutePath {
+		varsCount++
+	}
+
+	if r.trees == nil {
+		r.trees = new(node)
+	}
+
+	r.trees.addRoute(method, path, handle[:len(handle)-1], handle[len(handle)-1], reflect.Value{})
 
 	// Update maxParams
 	if paramsCount := countParams(path); paramsCount+varsCount > r.maxParams {
@@ -279,10 +317,10 @@ func (r *Router) ServeFiles(path string, root string) {
 
 	fileServer := http.FileServer(http.Dir(root))
 
-	r.Handle(http.MethodGet, path+"/*filepath", reflect.ValueOf(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+	r.Handler(http.MethodGet, path+"/*filepath", nil, http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		req.URL.Path = req.URL.Path[len(path):]
 		fileServer.ServeHTTP(w, req)
-	})))
+	}))
 }
 
 func (r *Router) Use(middleware ...http.HandlerFunc) {
@@ -346,18 +384,18 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if root := r.trees; root != nil {
 		r.middleware.ServeHTTP(w, req)
 		if handles, ps, tsr := root.getValue(path, r.getParams); handles != nil {
-			if handle := getHandle(req.Method, handles); handle.IsValid() {
-				if handler, ok := handle.Interface().(http.HandlerFunc); ok {
-					handler(w, req)
-					return
-				}
+			httpHandel, handle := getHandle(req.Method, handles)
+			if httpHandel != nil {
+				httpHandel.ServeHTTP(w, req)
+				return
+			}
+			if handle.IsValid() {
 				if r.SaveMatchedRoutePath {
 					*ps = append(*ps, Param{Key: MatchedRoutePathParam, Value: path})
 				}
 				commonHandler(w, req, handle, ps)
 				return
 			}
-
 			if allow := r.allowed(path, req.Method, handles); allow != "" {
 				w.Header().Set("Allow", allow)
 				if req.Method == http.MethodOptions && r.HandleOPTIONS && r.GlobalOPTIONS != nil {
@@ -382,7 +420,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 				code = http.StatusPermanentRedirect
 			}
 
-			if r.RedirectTrailingSlash && tsr != nil && getHandle(req.Method, tsr.handle).IsValid() {
+			if r.RedirectTrailingSlash && tsr != nil && handleValid(getHandle(req.Method, tsr.handle)) {
 				if len(path) > 1 && path[len(path)-1] == '/' {
 					req.URL.Path = path[:len(path)-1]
 				} else {
