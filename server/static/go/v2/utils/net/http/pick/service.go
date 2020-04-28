@@ -63,7 +63,7 @@ func New(genApi bool, modName string) *Router {
 				log.Fatal("接口路径,方法,描述,创建日志均为必填")
 			}
 
-			router.Handle(methodInfo.method, methodInfo.path, value.Method(j))
+			router.Handle(methodInfo.method, methodInfo.path, methodInfo.middleware, value.Method(j))
 			methods[methodInfo.method] = struct{}{}
 			fmt.Printf(" %s\t %s %s\t %s\n",
 				pio.Green("API:"),

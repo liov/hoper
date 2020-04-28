@@ -5,8 +5,10 @@ import (
 	"log"
 	"net/http"
 	"reflect"
+	"sort"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/kataras/pio"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
@@ -14,16 +16,20 @@ import (
 )
 
 type EasyRouter struct {
+	mu           sync.RWMutex
 	route        map[string][]*methodHandle
-	serveFiles   []serveFile
-	middleware   HandlerFuncs
+	es           []muxEntry
+	middleware   Handlers
 	NotFound     http.Handler
 	PanicHandler func(http.ResponseWriter, *http.Request, interface{})
+	hosts        bool
 }
 
-type serveFile struct {
+const MethodAny = "*"
+
+type muxEntry struct {
 	preUrl string
-	handle http.HandlerFunc
+	handle []*methodHandle
 }
 
 func NewEasyRouter(genApi bool, modName string) *EasyRouter {
@@ -56,14 +62,14 @@ func NewEasyRouter(genApi bool, modName string) *EasyRouter {
 				log.Fatal("接口路径,方法,描述,创建日志均为必填")
 			}
 			if mh, ok := router.route[methodInfo.path]; ok {
-				if getHandle(methodInfo.method, mh).IsValid() {
+				if _, h2 := getHandle(methodInfo.method, mh); h2.IsValid() {
 					panic("url：" + methodInfo.path + "已注册")
 				} else {
-					mh = append(mh, &methodHandle{methodInfo.method, value.Method(j)})
+					mh = append(mh, &methodHandle{methodInfo.method, methodInfo.middleware, nil, value.Method(j)})
 					router.route[methodInfo.path] = mh
 				}
 			} else {
-				router.route[methodInfo.path] = []*methodHandle{{methodInfo.method, value.Method(j)}}
+				router.route[methodInfo.path] = []*methodHandle{{methodInfo.method, methodInfo.middleware, nil, value.Method(j)}}
 			}
 			fmt.Printf(" %s\t %s %s\t %s\n",
 				pio.Green("API:"),
@@ -95,13 +101,67 @@ func (r *EasyRouter) ServeFiles(path string, root string) {
 
 	fileServer := http.FileServer(http.Dir(root))
 
-	r.serveFiles = append(r.serveFiles, serveFile{
+	r.es = appendSorted(r.es, muxEntry{
 		path,
-		func(w http.ResponseWriter, req *http.Request) {
-			req.URL.Path = req.URL.Path[len(path):]
-			fileServer.ServeHTTP(w, req)
+		[]*methodHandle{{
+			http.MethodGet,
+			nil,
+			http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+				req.URL.Path = req.URL.Path[len(path):]
+				fileServer.ServeHTTP(w, req)
+			}),
+			reflect.Value{},
+		},
 		},
 	})
+}
+
+func (r *EasyRouter) Use(middleware ...http.Handler) {
+	r.middleware = append(r.middleware, middleware...)
+}
+
+func (r *EasyRouter) Handle(method, path string, handle ...http.Handler) {
+	newMh := &methodHandle{method, handle[:len(handle)-1], handle[len(handle)-1], reflect.Value{}}
+	if mh, ok := r.route[path]; ok {
+		if h, _ := getHandle(method, mh); h != nil {
+			panic("url：" + path + "已注册")
+		}
+	} else {
+		r.route[path] = append(mh, newMh)
+		if path[len(path)-1] == '/' {
+			r.es = appendSorted(r.es, muxEntry{path, []*methodHandle{newMh}})
+		}
+	}
+
+	if path[0] != '/' {
+		r.hosts = true
+	}
+	fmt.Printf(" %s\t %s %s\t %s\n",
+		pio.Green("API:"),
+		pio.Yellow(strings2.FormatLen(method, 6)),
+		pio.Blue(strings2.FormatLen(path, 50)), pio.Purple(path))
+}
+
+func appendSorted(es []muxEntry, e muxEntry) []muxEntry {
+	for i, mh := range es {
+		if mh.preUrl == e.preUrl {
+			es[i].handle = append(es[i].handle, e.handle...)
+			return es
+		}
+	}
+
+	n := len(es)
+	i := sort.Search(n, func(i int) bool {
+		return len(es[i].preUrl) < len(e.preUrl)
+	})
+	if i == n {
+		return append(es, e)
+	}
+	// we now know that i points at where we want to insert
+	es = append(es, muxEntry{}) // try to grow the slice in place, any entry works.
+	copy(es[i+1:], es[i:])      // Move shorter entries down
+	es[i] = e
+	return es
 }
 
 func (r *EasyRouter) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -110,14 +170,19 @@ func (r *EasyRouter) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	r.middleware.ServeHTTP(w, req)
 	if mh, ok := r.route[req.URL.Path]; ok {
-		if handle := getHandle(req.Method, mh); handle.IsValid() {
-			commonHandler(w, req, handle, nil)
-			return
+		h1, h2 := getHandle(req.Method, mh)
+		if h1 != nil {
+			h1.ServeHTTP(w, req)
 		}
+		if h2.IsValid() {
+			commonHandler(w, req, h2, nil)
+		}
+		return
 	}
-	for i := range r.serveFiles {
-		if strings.HasPrefix(req.URL.Path, r.serveFiles[i].preUrl) {
-			r.serveFiles[i].handle(w, req)
+	for i := range r.es {
+		if strings.HasPrefix(req.URL.Path, r.es[i].preUrl) {
+			h1, _ := getHandle(req.Method, r.es[i].handle)
+			h1.ServeHTTP(w, req)
 			return
 		}
 	}

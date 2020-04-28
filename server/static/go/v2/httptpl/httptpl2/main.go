@@ -9,14 +9,6 @@ import (
 )
 
 func main() {
-	/*	f, err := os.Create("trace.out")
-		if err != nil {
-			panic(err)
-		}
-		defer f.Close()
-
-		trace.Start(f)
-		defer trace.Stop()*/
 	router := pick.NewEasyRouter(false, "httptpl")
 	router.ServeFiles("/static", "E:/")
 	log.Println("visit http://localhost:8080")
