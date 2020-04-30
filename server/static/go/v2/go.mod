@@ -24,6 +24,7 @@ require (
 	github.com/facebookgo/subset v0.0.0-20150612182917-8dac2c3c4870 // indirect
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/gavv/monotime v0.0.0-20190418164738-30dba4353424 // indirect
+	github.com/gin-gonic/gin v1.4.0
 	github.com/go-openapi/loads v0.19.4
 	github.com/go-openapi/runtime v0.19.8
 	github.com/go-openapi/spec v0.19.3
@@ -60,7 +61,6 @@ require (
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/golog v0.0.10
 	github.com/kataras/iris/v12 v12.1.8
-	github.com/kataras/pio v0.0.2
 	github.com/lni/dragonboat v2.1.7+incompatible
 	github.com/magiconair/properties v1.8.1
 	github.com/markbates/goth v1.63.0
@@ -97,7 +97,9 @@ require (
 	google.golang.org/protobuf v1.20.1
 	gopkg.in/oauth2.v3 v3.12.0
 	gopkg.in/yaml.v3 v3.0.0-20191120175047-4206685974f2
-	sigs.k8s.io/yaml v1.1.0 // indirect
 )
 
-replace github.com/coreos/etcd v3.3.10+incompatible => github.com/coreos/etcd v3.3.18+incompatible
+replace (
+    github.com/coreos/etcd v3.3.10+incompatible => github.com/coreos/etcd v3.3.18+incompatible
+    github.com/ugorji/go v1.1.4 => github.com/ugorji/go/codec v0.0.0-20190204201341-e444a5086c43
+)

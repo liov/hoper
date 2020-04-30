@@ -22,7 +22,7 @@ func main() {
 	defer v2.Start(config.Conf, nil)()
 
 	s := server.Server{
-		PickHandle: func(app *iris.Application) {
+		IrisHandle: func(app *iris.Application) {
 			svc := &service.UserService{}
 			mvc.New(app).Register(mvc.AutoBinding).Handle(svc)
 			app.DI().Handle(iris.MethodPost, "/{id:int}", svc.Add)

@@ -10,7 +10,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/kataras/pio"
+	"github.com/liov/hoper/go/v2/utils/concolor"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 )
@@ -19,7 +19,7 @@ type EasyRouter struct {
 	mu           sync.RWMutex
 	route        map[string][]*methodHandle
 	es           []muxEntry
-	middleware   Handlers
+	middleware   HandlerFuncs
 	NotFound     http.Handler
 	PanicHandler func(http.ResponseWriter, *http.Request, interface{})
 	hosts        bool
@@ -72,21 +72,17 @@ func NewEasyRouter(genApi bool, modName string) *EasyRouter {
 				router.route[methodInfo.path] = []*methodHandle{{methodInfo.method, methodInfo.middleware, nil, value.Method(j)}}
 			}
 			fmt.Printf(" %s\t %s %s\t %s\n",
-				pio.Green("API:"),
-				pio.Yellow(strings2.FormatLen(methodInfo.method, 6)),
-				pio.Blue(strings2.FormatLen(methodInfo.path, 50)), pio.Purple(methodInfo.title))
+				concolor.Green("API:"),
+				concolor.Yellow(strings2.FormatLen(methodInfo.method, 6)),
+				concolor.Blue(strings2.FormatLen(methodInfo.path, 50)), concolor.Purple(methodInfo.title))
 			if genApi {
 				methodInfo.Api(value.Method(j).Type(), describe, value.Type().Name())
-				apidoc.WriteToFile(apidoc.FilePath, modName)
 			}
 		}
 	}
-	/*	if genApi {
-		doc := doc(modName)
-		router.route["/api-doc/md"], func(ctx iris.Context) {
-			ctx.Text("[TOC]\n\n" + doc)
-		})
-	}*/
+	if genApi {
+		OpenApi(router, apidoc.FilePath, modName)
+	}
 	registered()
 	return router
 }
@@ -116,11 +112,11 @@ func (r *EasyRouter) ServeFiles(path string, root string) {
 	})
 }
 
-func (r *EasyRouter) Use(middleware ...http.Handler) {
+func (r *EasyRouter) Use(middleware ...http.HandlerFunc) {
 	r.middleware = append(r.middleware, middleware...)
 }
 
-func (r *EasyRouter) Handle(method, path string, handle ...http.Handler) {
+func (r *EasyRouter) Handle(method, path, describe string, handle ...http.HandlerFunc) {
 	newMh := &methodHandle{method, handle[:len(handle)-1], handle[len(handle)-1], reflect.Value{}}
 	if mh, ok := r.route[path]; ok {
 		if h, _ := getHandle(method, mh); h != nil {
@@ -137,9 +133,9 @@ func (r *EasyRouter) Handle(method, path string, handle ...http.Handler) {
 		r.hosts = true
 	}
 	fmt.Printf(" %s\t %s %s\t %s\n",
-		pio.Green("API:"),
-		pio.Yellow(strings2.FormatLen(method, 6)),
-		pio.Blue(strings2.FormatLen(path, 50)), pio.Purple(path))
+		concolor.Green("API:"),
+		concolor.Yellow(strings2.FormatLen(method, 6)),
+		concolor.Blue(strings2.FormatLen(path, 50)), concolor.Purple(describe))
 }
 
 func appendSorted(es []muxEntry, e muxEntry) []muxEntry {

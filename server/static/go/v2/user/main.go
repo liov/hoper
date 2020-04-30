@@ -5,6 +5,8 @@ import (
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/kataras/iris/v12"
+	context2 "github.com/kataras/iris/v12/context"
 	v2 "github.com/liov/hoper/go/v2/initialize/v2"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/internal/config"
@@ -12,7 +14,7 @@ import (
 	"github.com/liov/hoper/go/v2/user/internal/service"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/filter"
-	"github.com/liov/hoper/go/v2/utils/net/http/pick"
+	"github.com/liov/hoper/go/v2/utils/net/http/iris/oauth"
 	"github.com/liov/hoper/go/v2/utils/net/http/server"
 	"google.golang.org/grpc"
 )
@@ -42,11 +44,11 @@ func main() {
 				log.Fatal(err)
 			}
 		},
-		PickHandle: func(app *pick.EasyRouter) {
-			/*			oauth.RegisterOauthServiceHandlerServer(app, service.GetOauthService())
-						app.Get("/oauth/login", func(ctx context2.Context) {
-							ctx.ServeFile("./static/login.html", false)
-						})*/
+		IrisHandle: func(app *iris.Application) {
+			oauth.RegisterOauthServiceHandlerServer(app, service.GetOauthService())
+			app.Get("/oauth/login", func(ctx context2.Context) {
+				ctx.ServeFile("./static/login.html", false)
+			})
 		},
 		GraphqlResolve: model.NewExecutableSchema(model.Config{
 			Resolvers: &model.GQLServer{

@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	router := pick.NewEasyRouter(false, "httptpl")
+	router := pick.NewEasyRouter(true, "httptpl")
 	router.ServeFiles("/static", "E:/")
 	log.Println("visit http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", router))

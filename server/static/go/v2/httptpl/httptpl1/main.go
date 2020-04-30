@@ -21,7 +21,7 @@ func main() {
 	defer v2.Start(config.Conf, nil)()
 
 	s := server.Server{
-		PickHandle: func(application *iris.Application) {
+		IrisHandle: func(application *iris.Application) {
 			api.Register(application,
 				initialize.Env == initialize.DEVELOPMENT,
 				v2.BasicConfig.Module)

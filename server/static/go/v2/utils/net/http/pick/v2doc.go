@@ -3,26 +3,51 @@ package pick
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+	"mime"
+	"net/http"
+	"os"
+	"path/filepath"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/liov/hoper/go/v2/utils/mock"
+	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	"github.com/liov/hoper/go/v2/utils/reflect3"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 	"github.com/liov/hoper/go/v2/utils/validator"
 )
 
+func OpenApi(mux *EasyRouter, filePath, modName string) {
+	apidoc.WriteToFile(apidoc.FilePath, modName)
+	doc(apidoc.FilePath, modName)
+	_ = mime.AddExtensionType(".svg", "image/svg+xml")
+	apidoc.FilePath = filePath
+	mux.Handle(http.MethodGet, "/api-doc/md", "api文档", func(w http.ResponseWriter, req *http.Request) {
+		http.ServeFile(w, req, filePath+"apidoc.md")
+	})
+	mux.Handle(http.MethodGet, "/api-doc/swagger", "swagger文档", apidoc.HttpHandle)
+	mux.Handle(http.MethodGet, "/api-doc/swagger.json", "swagger.json", apidoc.HttpHandle)
+}
+
 //有swagger,有没有必要做
-func doc(modName string) string {
-	buf := new(strings.Builder)
-	fmt.Fprintf(buf, "# %s接口文档  \n", modName)
-	fmt.Fprint(buf, "----------  \n")
+func doc(filePath, modName string) {
+	buf, err := genFile(filePath, modName)
+	if err != nil {
+		log.Println(err)
+	}
+	defer buf.Close()
+	fmt.Fprintln(buf, "[TOC]")
+	if modName != "" {
+		fmt.Fprintf(buf, "# %s接口文档  \n", modName)
+		fmt.Fprintln(buf, "----------")
+	}
 	for _, v := range svcs {
 		describe, preUrl, _ := v.Service()
 		fmt.Fprintf(buf, "# %s  \n", describe)
-		fmt.Fprint(buf, "----------  \n")
+		fmt.Fprintln(buf, "----------")
 		value := reflect.ValueOf(v)
 		for j := 0; j < value.NumMethod(); j++ {
 			method := value.Type().Method(j)
@@ -30,13 +55,17 @@ func doc(modName string) string {
 				continue
 			}
 			methodInfo := getMethodInfo(value.Method(j))
-			mName, version := parseMethodName(method.Name)
-			methodInfo.path = "/api/v" + strconv.Itoa(version) + "/" + preUrl + "/" + mName
+			methodInfo.path, methodInfo.version = parseMethodName(method.Name)
+			if methodInfo.version == 0 {
+				methodInfo.version = 1
+			}
+			methodInfo.path = preUrl + "/" + methodInfo.path
+			methodInfo.path = strings.Replace(methodInfo.path, "${version}", "v"+strconv.Itoa(methodInfo.version), 1)
 			//title
 			if methodInfo.deprecated != nil {
-				fmt.Fprintf(buf, "## ~~%s-v%d(废弃)(`%s`)~~  \n", methodInfo.title, version, methodInfo.path)
+				fmt.Fprintf(buf, "## ~~%s-v%d(废弃)(`%s`)~~  \n", methodInfo.title, methodInfo.version, methodInfo.path)
 			} else {
-				fmt.Fprintf(buf, "## %s-v%d(`%s`)  \n", methodInfo.title, version, methodInfo.path)
+				fmt.Fprintf(buf, "## %s-v%d(`%s`)  \n", methodInfo.title, methodInfo.version, methodInfo.path)
 			}
 			//api
 			fmt.Fprintf(buf, "**%s** `%s` _(Principal %s)_  \n", methodInfo.method, methodInfo.path, methodInfo.getPrincipal())
@@ -89,7 +118,28 @@ func doc(modName string) string {
 			fmt.Fprint(buf, "```  \n")
 		}
 	}
-	return buf.String()
+}
+
+func genFile(filePath, modName string) (*os.File, error) {
+
+	filePath = filePath + modName
+
+	err := os.MkdirAll(filePath, 0666)
+	if err != nil {
+		return nil, err
+	}
+
+	filePath = filepath.Join(filePath, modName+"apidoc.md")
+
+	if _, err := os.Stat(filePath); err == nil {
+		os.Remove(filePath)
+	}
+	var file *os.File
+	file, err = os.Create(filePath)
+	if err != nil {
+		return nil, err
+	}
+	return file, nil
 }
 
 type ParamTable struct {
