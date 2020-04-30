@@ -58,7 +58,7 @@ func ApiMiddle(ctx context.Context) {
 	}
 
 	if ctx.URLParam("apidoc") == "stop" {
-		defer apidoc.WriteToFile("../")
+		defer apidoc.WriteToFile("../", "")
 	}
 
 	var res spec.Responses

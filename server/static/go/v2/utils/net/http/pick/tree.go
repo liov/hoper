@@ -76,7 +76,7 @@ const (
 
 type methodHandle struct {
 	method      string
-	middleware  []http.Handler
+	middleware  HandlerFuncs
 	httpHandler http.Handler
 	handle      reflect.Value
 }
@@ -132,7 +132,7 @@ func (n *node) incrementChildPrio(pos int) int {
 
 // addRoute adds a node with the given handle to the path.
 // Not concurrency-safe!
-func (n *node) addRoute(method, path string, middleware []http.Handler, httpHandler http.Handler, handle reflect.Value) {
+func (n *node) addRoute(method, path string, middleware []http.HandlerFunc, httpHandler http.Handler, handle reflect.Value) {
 	fullPath := path
 	n.priority++
 	var mHandle *methodHandle

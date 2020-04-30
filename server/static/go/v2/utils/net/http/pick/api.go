@@ -18,7 +18,7 @@ type apiInfo struct {
 	changelog           []changelog
 	createlog           changelog
 	deprecated          *changelog
-	middleware          []http.Handler
+	middleware          []http.HandlerFunc
 }
 
 type changelog struct {
@@ -72,7 +72,7 @@ func (api *apiInfo) Deprecated(v, auth, date, log string) *apiInfo {
 	return api
 }
 
-func (api *apiInfo) Middleware(m ...http.Handler) *apiInfo {
+func (api *apiInfo) Middleware(m ...http.HandlerFunc) *apiInfo {
 	api.middleware = m
 	return api
 }
@@ -113,7 +113,7 @@ func (api *apiInfo) Api(methodType reflect.Type, tag, dec string) {
 				for j := 0; j < InType.NumField(); j++ {
 					param := spec.Parameter{
 						ParamProps: spec.ParamProps{
-							Name: InType.Field(1).Name,
+							Name: InType.Field(j).Name,
 							In:   "query",
 						},
 					}

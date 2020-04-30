@@ -3,6 +3,8 @@ package http
 import (
 	"net/http"
 	"testing"
+
+	"github.com/gin-gonic/gin"
 )
 
 func TestRoute(t *testing.T) {
@@ -15,4 +17,8 @@ func TestRoute(t *testing.T) {
 	sv.HandleFunc("/b", f)
 	sv.HandleFunc("/b/a/c/d", f)
 	sv.HandleFunc("/c/", f)
+	g := gin.New()
+	g.GET("/:id", func(context *gin.Context) {})
+	//g.GET("/:name", func(context *gin.Context) {})
+	g.GET("/*file", func(context *gin.Context) {})
 }

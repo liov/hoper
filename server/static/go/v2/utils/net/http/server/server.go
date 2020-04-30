@@ -9,12 +9,12 @@ import (
 	"syscall"
 
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/kataras/iris/v12"
 	"github.com/liov/hoper/go/v2/initialize"
 	v2 "github.com/liov/hoper/go/v2/initialize/v2"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"
-	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	"google.golang.org/grpc"
@@ -94,7 +94,7 @@ type Config interface {
 type Server struct {
 	GRPCServer     *grpc.Server
 	GatewayRegistr gateway.GatewayHandle
-	PickHandle     func(*pick.EasyRouter)
+	IrisHandle     func(*iris.Application)
 	GraphqlResolve graphql.ExecutableSchema
 }
 

@@ -227,7 +227,7 @@ func (r *Router) putParams(ps *Params) {
 // This function is intended for bulk loading and to allow the usage of less
 // frequently used, non-standardized or custom methods (e.g. for internal
 // communication with a proxy).
-func (r *Router) Handle(method, path string, middleware []http.Handler, handle reflect.Value) {
+func (r *Router) Handle(method, path string, middleware []http.HandlerFunc, handle reflect.Value) {
 	varsCount := uint16(0)
 
 	if method == "" {
@@ -265,7 +265,7 @@ func (r *Router) Handle(method, path string, middleware []http.Handler, handle r
 	}
 }
 
-func (r *Router) Handler(method, path string, handle ...http.Handler) {
+func (r *Router) Handler(method, path string, handle ...http.HandlerFunc) {
 	varsCount := uint16(0)
 
 	if method == "" {

@@ -10,7 +10,7 @@ import (
 	"github.com/go-openapi/spec"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/macro"
-	"github.com/kataras/pio"
+	"github.com/liov/hoper/go/v2/utils/concolor"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 )
@@ -74,9 +74,9 @@ func Register(app *iris.Application, genApi bool, modName string) {
 			app.Handle(handler.method, path, handles...)
 
 			fmt.Printf(" %s\t %s %s\t %s\n",
-				pio.Green("API:"),
-				pio.Yellow(strings2.FormatLen(handler.method, 6)),
-				pio.Blue(strings2.FormatLen(path, 50)), pio.Purple(handler.title))
+				concolor.Green("API:"),
+				concolor.Yellow(strings2.FormatLen(handler.method, 6)),
+				concolor.Blue(strings2.FormatLen(path, 50)), concolor.Purple(handler.title))
 			if genApi {
 				handler.Api(app)
 			}

@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kataras/pio"
+	"github.com/liov/hoper/go/v2/utils/concolor"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 )
@@ -66,16 +66,17 @@ func New(genApi bool, modName string) *Router {
 			router.Handle(methodInfo.method, methodInfo.path, methodInfo.middleware, value.Method(j))
 			methods[methodInfo.method] = struct{}{}
 			fmt.Printf(" %s\t %s %s\t %s\n",
-				pio.Green("API:"),
-				pio.Yellow(strings2.FormatLen(methodInfo.method, 6)),
-				pio.Blue(strings2.FormatLen(methodInfo.path, 50)), pio.Purple(methodInfo.title))
+				concolor.Green("API:"),
+				concolor.Yellow(strings2.FormatLen(methodInfo.method, 6)),
+				concolor.Blue(strings2.FormatLen(methodInfo.path, 50)), concolor.Purple(methodInfo.title))
 			if genApi {
 				methodInfo.Api(value.Method(j).Type(), describe, value.Type().Name())
-				apidoc.WriteToFile(apidoc.FilePath, modName)
 			}
 		}
 	}
-
+	if genApi {
+		apidoc.WriteToFile(apidoc.FilePath, modName)
+	}
 	allowed := make([]string, 0, 9)
 	for k := range methods {
 		allowed = append(allowed, k)

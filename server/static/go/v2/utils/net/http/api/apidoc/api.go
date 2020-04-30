@@ -10,7 +10,6 @@ import (
 	"github.com/go-openapi/spec"
 	"github.com/go-openapi/swag"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"gopkg.in/yaml.v3"
 )
 
 var Doc *spec.Swagger
@@ -124,58 +123,47 @@ func generate() *spec.Swagger {
 	return Doc
 }
 
-func WriteToFile(args ...string) {
+func WriteToFile(realPath, modName string) {
 	if Doc == nil {
 		generate()
 	}
-	realPath := "."
-	if len(args) > 0 {
-		realPath = args[0]
+	if realPath == "" {
+		realPath = "."
 	}
 
-	mod := ""
-	if len(args) > 1 {
-		mod = args[1]
-		realPath = realPath + mod
-		err := os.MkdirAll(realPath, 0666)
-		if err != nil {
-			log.Error(err)
-		}
+	realPath = realPath + modName
+	err := os.MkdirAll(realPath, 0666)
+	if err != nil {
+		log.Error(err)
 	}
 
-	apiType := "json"
-	if len(args) > 2 {
-		apiType = args[1]
-	}
-
-	realPath = filepath.Join(realPath, mod+".service.swagger."+apiType)
+	realPath = filepath.Join(realPath, modName+".service.swagger.json")
 
 	if _, err := os.Stat(realPath); err == nil {
 		os.Remove(realPath)
 	}
 	var file *os.File
-	file, err := os.Create(realPath)
+	file, err = os.Create(realPath)
 	if err != nil {
 		log.Error(err)
 	}
 	defer file.Close()
 
-	if apiType == "json" {
-		enc := json.NewEncoder(file)
-		enc.SetIndent("", "  ")
-		err = enc.Encode(Doc)
-		if err != nil {
-			log.Error(err)
-		}
-	} else {
-		b, err := yaml.Marshal(swag.ToDynamicJSON(Doc))
-		if err != nil {
-			log.Error(err)
-		}
-		if _, err := file.Write(b); err != nil {
-			log.Error(err)
-		}
+	enc := json.NewEncoder(file)
+	enc.SetIndent("", "  ")
+	err = enc.Encode(Doc)
+	if err != nil {
+		log.Error(err)
 	}
+
+	/*b, err := yaml.Marshal(swag.ToDynamicJSON(Doc))
+	  if err != nil {
+	  	log.Error(err)
+	  }
+	  if _, err := file.Write(b); err != nil {
+	  	log.Error(err)
+	  }*/
+
 	Doc = nil
 }
 
