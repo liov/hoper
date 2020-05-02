@@ -30,4 +30,11 @@ fn foo2()-> Box<dyn Fly>{
     box Duck
 }
 
-fn  main(){}
+fn foo3<T:Fly>(t:T)->T{t}
+
+// fn foo<T:Fly>(t:T)->T{Duck} expected type parameter `T`, found struct `Duck`
+
+fn  main(){
+    //foo3(Duck) expected `()`, found struct `Duck`
+    let a:Duck= foo3(Duck);
+}

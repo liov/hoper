@@ -26,7 +26,7 @@ fn load_config(value:&(dyn Any + 'static)) -> Vec<String>{
 //目前只找到dyn和impl的用法，至于为何这么用原因不清楚
 fn load_config_impl(value:&(impl Any + Debug)) -> Vec<String>{
     let mut cfgs: Vec<String>= vec![];
-    let value = value as &Any;
+    let value = value as &dyn Any;
     match value.downcast_ref::<String>() {
         Some(cfp) => cfgs.push(cfp.clone()),
         None => (),
@@ -34,7 +34,7 @@ fn load_config_impl(value:&(impl Any + Debug)) -> Vec<String>{
     cfgs
 }
 //dyn是为了区分struct和Trait
-fn load_config_stc(value: &Any) -> Vec<String>{
+fn load_config_stc(value: &dyn Any) -> Vec<String>{
     let mut cfgs: Vec<String>= vec![];
     match value.downcast_ref::<String>() {
         Some(cfp) => cfgs.push(cfp.clone()),
@@ -45,7 +45,7 @@ fn load_config_stc(value: &Any) -> Vec<String>{
 
 fn load_config_gen<T:Any+Debug>(value: &T) -> Vec<String>{
     let mut cfgs: Vec<String>= vec![];
-    let value = value as &Any;
+    let value = value as &dyn Any;
     match value.downcast_ref::<String>() {
         Some(cfp) => cfgs.push(cfp.clone()),
         None => (),
