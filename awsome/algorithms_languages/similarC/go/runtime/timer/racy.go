@@ -1,6 +1,9 @@
 package main
 
-import "time"
+import (
+	"log"
+	"time"
+)
 
 //go:generate git clone https://github.com/changkun/gobase.git && cd gobase && git checkout bad-timer && cd sched
 /*
@@ -18,6 +21,10 @@ func main() {
 	for i := 0; i < 2; i++ {
 		go func() {
 			for {
+				if !t.Stop() {
+					<-t.C
+				}
+				log.Println("重置")
 				t.Reset(time.Second)
 			}
 		}()
