@@ -81,34 +81,38 @@ type methodHandle struct {
 	handle      reflect.Value
 }
 
-func getHandle(method string, mhs []*methodHandle) (http.Handler, reflect.Value) {
+func getHandle(method string, mhs []*methodHandle) (mh *methodHandle) {
 	if len(mhs) == 1 {
 		if mhs[0].method == MethodAny || mhs[0].method == method {
-			return mhs[0].httpHandler, mhs[0].handle
+			return mhs[0]
 		} else {
-			return nil, reflect.Value{}
+			return nil
 		}
 	}
 	for _, mh := range mhs {
 		if mh.method == method {
-			return mh.httpHandler, mh.handle
+			return mh
 		}
 	}
-	return nil, reflect.Value{}
+	return nil
 }
 
 func handleValid(h1 http.Handler, h2 reflect.Value) bool {
 	return h1 != nil || h2.IsValid()
 }
 
+func (h *methodHandle) Valid() bool {
+	return h != nil && (h.httpHandler != nil || h.handle.IsValid())
+}
+
 type node struct {
 	path       string
 	nType      nodeType
-	priority   uint32
+	priority   uint16
 	indices    []byte
 	cType      nodeType //if>3 wildChild,代替原来的wildChild
 	children   []*node
-	middleware http.HandlerFunc
+	middleware []http.HandlerFunc
 	handle     []*methodHandle
 }
 
@@ -135,10 +139,8 @@ func (n *node) incrementChildPrio(pos int) int {
 func (n *node) addRoute(method, path string, middleware []http.HandlerFunc, httpHandler http.Handler, handle reflect.Value) {
 	fullPath := path
 	n.priority++
-	var mHandle *methodHandle
-	if handleValid(httpHandler, handle) {
-		mHandle = &methodHandle{method, middleware, httpHandler, handle}
-	}
+	mHandle := &methodHandle{method, middleware, httpHandler, handle}
+
 	// Empty tree
 	if len(n.path) == 0 && len(n.indices) == 0 {
 		n.insertChild(path, fullPath, mHandle)
@@ -243,8 +245,10 @@ walk:
 				}
 			}
 		}
-		if mHandle != nil {
+		if mHandle.Valid() {
 			n.handle = append(n.handle, mHandle)
+		} else {
+			n.middleware = mHandle.middleware
 		}
 		return
 	}
@@ -305,8 +309,10 @@ func (n *node) insertChild(path, fullPath string, handle *methodHandle) {
 			}
 
 			// Otherwise we're done. Insert the handle in the new leaf
-			if handle != nil {
+			if handle.Valid() {
 				n.handle = []*methodHandle{handle}
+			} else {
+				n.middleware = handle.middleware
 			}
 			return
 
@@ -329,10 +335,14 @@ func (n *node) insertChild(path, fullPath string, handle *methodHandle) {
 			child := &node{
 				path:     path[i:],
 				nType:    catchAll,
-				handle:   []*methodHandle{handle},
 				priority: 1,
 			}
 
+			if handle.Valid() {
+				child.handle = []*methodHandle{handle}
+			} else {
+				child.middleware = handle.middleware
+			}
 			n.cType = n.cType | catchAll
 			n.children = []*node{child}
 			return
@@ -341,9 +351,16 @@ func (n *node) insertChild(path, fullPath string, handle *methodHandle) {
 
 	// If no wildcard was found, simply insert the path and handle
 	n.path = path
-	if handle != nil {
+
+	if handle.Valid() {
 		n.handle = []*methodHandle{handle}
+	} else {
+		n.middleware = handle.middleware
 	}
+}
+
+func (n *node) use(path string, middleware ...http.HandlerFunc) {
+	n.addRoute("", path, middleware, nil, reflect.Value{})
 }
 
 //排序
@@ -361,7 +378,7 @@ func (n *node) sortIndices() {
 // If no handle can be found, a TSR (trailing slash redirect) recommendation is
 // made if a handle exists with an extra (without the) trailing slash for the
 // given path.
-func (n *node) getValue(path string, params func() *Params) (handles []*methodHandle, ps *Params, tsr *node) {
+func (n *node) getValue(path string, params func() *Params) (middleware []http.HandlerFunc, handles []*methodHandle, ps *Params, tsr *node) {
 walk: // Outer loop for walking the tree
 	for {
 		prefix := n.path
@@ -376,6 +393,9 @@ walk: // Outer loop for walking the tree
 					idxc := path[0]
 					for i, c := range n.indices {
 						if c == idxc {
+							if n.middleware != nil {
+								middleware = append(middleware, n.middleware...)
+							}
 							n = n.children[i]
 							continue walk
 						}
@@ -390,6 +410,9 @@ walk: // Outer loop for walking the tree
 				}
 
 				// Handle wildcard child
+				if n.middleware != nil {
+					middleware = append(middleware, n.middleware...)
+				}
 				n = n.children[0]
 				switch n.nType {
 				case param:
@@ -632,7 +655,7 @@ walk: // Outer loop for walking the tree
 
 				// Nothing found. We can recommend to redirect to the same URL
 				// without a trailing slash if a leaf exists for that path
-				if fixTrailingSlash && path == "/" && handleValid(getHandle(method, n.handle)) {
+				if fixTrailingSlash && path == "/" && getHandle(method, n.handle).Valid() {
 					return ciPath
 				}
 				return nil
@@ -667,13 +690,13 @@ walk: // Outer loop for walking the tree
 					return nil
 				}
 
-				if handleValid(getHandle(method, n.handle)) {
+				if getHandle(method, n.handle).Valid() {
 					return ciPath
 				} else if fixTrailingSlash && len(n.children) == 1 {
 					// No handle found. Check if a handle for this path + a
 					// trailing slash exists
 					n = n.children[0]
-					if n.path == "/" && handleValid(getHandle(method, n.handle)) {
+					if n.path == "/" && getHandle(method, n.handle).Valid() {
 						return append(ciPath, '/')
 					}
 				}
@@ -688,7 +711,7 @@ walk: // Outer loop for walking the tree
 		} else {
 			// We should have reached the node containing the handle.
 			// Check if this node has a handle registered.
-			if handleValid(getHandle(method, n.handle)) {
+			if getHandle(method, n.handle).Valid() {
 				return ciPath
 			}
 
@@ -698,8 +721,8 @@ walk: // Outer loop for walking the tree
 				for i, c := range n.indices {
 					if c == '/' {
 						n = n.children[i]
-						if (len(n.path) == 1 && handleValid(getHandle(method, n.handle))) ||
-							(n.nType == catchAll && handleValid(getHandle(method, n.children[0].handle))) {
+						if (len(n.path) == 1 && getHandle(method, n.handle).Valid()) ||
+							(n.nType == catchAll && getHandle(method, n.children[0].handle).Valid()) {
 							return append(ciPath, '/')
 						}
 						return nil
@@ -717,7 +740,7 @@ walk: // Outer loop for walking the tree
 			return ciPath
 		}
 		if len(path)+1 == npLen && n.path[len(path)] == '/' &&
-			strings.EqualFold(path[1:], n.path[1:len(path)]) && handleValid(getHandle(method, n.handle)) {
+			strings.EqualFold(path[1:], n.path[1:len(path)]) && getHandle(method, n.handle).Valid() {
 			return append(ciPath, n.path...)
 		}
 	}

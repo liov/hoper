@@ -10,7 +10,7 @@ import (
 
 type TestService struct{}
 
-func (*TestService) Service() (string, string, http.HandlerFunc) {
+func (*TestService) Service() (string, string, []http.HandlerFunc) {
 	return "测试相关", "/api/${version}/test", nil
 }
 

@@ -20,16 +20,16 @@ import (
 	"github.com/liov/hoper/go/v2/utils/validator"
 )
 
-func OpenApi(mux *EasyRouter, filePath, modName string) {
+func OpenApi(mux *Router, filePath, modName string) {
 	apidoc.WriteToFile(apidoc.FilePath, modName)
 	doc(apidoc.FilePath, modName)
 	_ = mime.AddExtensionType(".svg", "image/svg+xml")
 	apidoc.FilePath = filePath
-	mux.Handle(http.MethodGet, "/api-doc/md", "api文档", func(w http.ResponseWriter, req *http.Request) {
+	mux.Handler(http.MethodGet, "/api-doc/md", func(w http.ResponseWriter, req *http.Request) {
 		http.ServeFile(w, req, filePath+"apidoc.md")
 	})
-	mux.Handle(http.MethodGet, "/api-doc/swagger", "swagger文档", apidoc.HttpHandle)
-	mux.Handle(http.MethodGet, "/api-doc/swagger.json", "swagger.json", apidoc.HttpHandle)
+	mux.Handler(http.MethodGet, "/api-doc/swagger", apidoc.HttpHandle)
+	mux.Handler(http.MethodGet, "/api-doc/swagger.json", apidoc.HttpHandle)
 }
 
 //有swagger,有没有必要做
@@ -56,9 +56,6 @@ func doc(filePath, modName string) {
 			}
 			methodInfo := getMethodInfo(value.Method(j))
 			methodInfo.path, methodInfo.version = parseMethodName(method.Name)
-			if methodInfo.version == 0 {
-				methodInfo.version = 1
-			}
 			methodInfo.path = preUrl + "/" + methodInfo.path
 			methodInfo.path = strings.Replace(methodInfo.path, "${version}", "v"+strconv.Itoa(methodInfo.version), 1)
 			//title

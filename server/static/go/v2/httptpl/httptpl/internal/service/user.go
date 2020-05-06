@@ -4,14 +4,15 @@ import (
 	"net/http"
 
 	"github.com/liov/hoper/go/v2/httptpl/httptpl/internal/claims"
+	"github.com/liov/hoper/go/v2/httptpl/httptpl/internal/middle"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 )
 
 type UserService struct{}
 
-func (*UserService) Service() (string, string, http.HandlerFunc) {
-	return "用户相关", "/api/${version}/user", nil
+func (*UserService) Service() (string, string, []http.HandlerFunc) {
+	return "用户相关", "/api/${version}/user", []http.HandlerFunc{middle.Log}
 }
 
 func (*UserService) Add(ctx *claims.Claims, req *model.SignupReq) (*model.SignupRep, error) {
@@ -54,7 +55,7 @@ func (*UserService) Get(ctx *claims.Claims, req *model.GetReq) (*model.GetRep, e
 
 type StaticService struct{}
 
-func (*StaticService) Service() (string, string, http.HandlerFunc) {
+func (*StaticService) Service() (string, string, []http.HandlerFunc) {
 	return "静态资源", "/api/${version}/static", nil
 }
 
