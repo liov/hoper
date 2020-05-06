@@ -1,21 +1,18 @@
 package pick
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"reflect"
 	"strconv"
 	"strings"
 
-	"github.com/liov/hoper/go/v2/utils/concolor"
-	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 )
 
 type Service interface {
 	//返回描述，url的前缀，中间件
-	Service() (describe, prefix string, middleware http.HandlerFunc)
+	Service() (describe, prefix string, middleware []http.HandlerFunc)
 }
 
 var svcs = make([]Service, 0)
@@ -27,64 +24,6 @@ func RegisterService(svc ...Service) {
 func registered() {
 	isRegistered = true
 	svcs = nil
-}
-
-func New(genApi bool, modName string) *Router {
-	router := &Router{
-		RedirectTrailingSlash:  true,
-		RedirectFixedPath:      true,
-		HandleMethodNotAllowed: true,
-		HandleOPTIONS:          true,
-		middleware:             make([]http.HandlerFunc, 0),
-	}
-	methods := make(map[string]struct{})
-	for _, v := range svcs {
-		describe, preUrl, _ := v.Service()
-		value := reflect.ValueOf(v)
-		if value.Kind() != reflect.Ptr {
-			log.Fatal("必须传入指针")
-		}
-
-		for j := 0; j < value.NumMethod(); j++ {
-			method := value.Type().Method(j)
-			if method.Type.NumIn() < 2 || method.Type.NumOut() != 2 {
-				continue
-			}
-			methodInfo := getMethodInfo(value.Method(j))
-			if methodInfo == nil {
-				log.Fatalf("%s未注册", method.Name)
-			}
-			if methodInfo.version == 0 {
-				methodInfo.version = 1
-			}
-			methodInfo.path = preUrl + methodInfo.path
-			methodInfo.path = strings.Replace(methodInfo.path, "${version}", "v"+strconv.Itoa(methodInfo.version), 1)
-			if methodInfo.path == "" || methodInfo.method == "" || methodInfo.title == "" || methodInfo.createlog.version == "" {
-				log.Fatal("接口路径,方法,描述,创建日志均为必填")
-			}
-
-			router.Handle(methodInfo.method, methodInfo.path, methodInfo.middleware, value.Method(j))
-			methods[methodInfo.method] = struct{}{}
-			fmt.Printf(" %s\t %s %s\t %s\n",
-				concolor.Green("API:"),
-				concolor.Yellow(strings2.FormatLen(methodInfo.method, 6)),
-				concolor.Blue(strings2.FormatLen(methodInfo.path, 50)), concolor.Purple(methodInfo.title))
-			if genApi {
-				methodInfo.Api(value.Method(j).Type(), describe, value.Type().Name())
-			}
-		}
-	}
-	if genApi {
-		apidoc.WriteToFile(apidoc.FilePath, modName)
-	}
-	allowed := make([]string, 0, 9)
-	for k := range methods {
-		allowed = append(allowed, k)
-	}
-	router.globalAllowed = allowedMethod(allowed)
-
-	registered()
-	return router
 }
 
 type Claims interface {
@@ -100,6 +39,9 @@ func getMethodInfo(fv reflect.Value) (info *apiInfo) {
 		if err := recover(); err != nil {
 			if v, ok := err.(*apiInfo); ok {
 				info = v
+				if info.version == 0 {
+					info.version = 1
+				}
 			} else {
 				log.Panic(err)
 			}

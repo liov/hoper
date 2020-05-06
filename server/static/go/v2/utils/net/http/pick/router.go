@@ -78,10 +78,14 @@ package pick
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"reflect"
+	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 )
 
 // Param is a single URL parameter, consisting of a key and a value.
@@ -219,6 +223,60 @@ func (r *Router) putParams(ps *Params) {
 	}
 }
 
+func New(genApi bool, modName string) *Router {
+	router := &Router{
+		RedirectTrailingSlash:  true,
+		RedirectFixedPath:      true,
+		HandleMethodNotAllowed: true,
+		HandleOPTIONS:          true,
+		middleware:             make([]http.HandlerFunc, 0),
+	}
+	methods := make(map[string]struct{})
+	for _, v := range svcs {
+		describe, preUrl, middleware := v.Service()
+		value := reflect.ValueOf(v)
+		if value.Kind() != reflect.Ptr {
+			log.Fatal("必须传入指针")
+		}
+
+		for j := 0; j < value.NumMethod(); j++ {
+			method := value.Type().Method(j)
+			if method.Type.NumIn() < 2 || method.Type.NumOut() != 2 {
+				continue
+			}
+			methodInfo := getMethodInfo(value.Method(j))
+			if methodInfo == nil {
+				log.Fatalf("%s未注册", method.Name)
+			}
+			methodInfo.path, methodInfo.version = parseMethodName(method.Name)
+			preUrl = strings.Replace(preUrl, "${version}", "v"+strconv.Itoa(methodInfo.version), 1)
+			methodInfo.path = preUrl + "/" + methodInfo.path
+			if methodInfo.path == "" || methodInfo.method == "" || methodInfo.title == "" || methodInfo.createlog.version == "" {
+				log.Fatal("接口路径,方法,描述,创建日志均为必填")
+			}
+
+			router.Handle(methodInfo.method, methodInfo.path, methodInfo.middleware, value.Method(j))
+			methods[methodInfo.method] = struct{}{}
+			Log(methodInfo.method, methodInfo.path, methodInfo.title)
+			if genApi {
+				methodInfo.Api(value.Method(j).Type(), describe, value.Type().Name())
+			}
+		}
+		router.GroupUse(preUrl, middleware...)
+	}
+	if genApi {
+		apidoc.WriteToFile(apidoc.FilePath, modName)
+	}
+	allowed := make([]string, 0, 9)
+	for k := range methods {
+		allowed = append(allowed, k)
+	}
+	router.globalAllowed = allowedMethod(allowed)
+
+	registered()
+	return router
+}
+
 // Handle registers a new request handle with the given path and method.
 //
 // For GET, POST, PUT, PATCH and DELETE requests the respective shortcut
@@ -327,6 +385,13 @@ func (r *Router) Use(middleware ...http.HandlerFunc) {
 	r.middleware = append(r.middleware, middleware...)
 }
 
+func (r *Router) GroupUse(path string, middleware ...http.HandlerFunc) {
+	if r.trees == nil {
+		r.trees = new(node)
+	}
+	r.trees.use(path, middleware...)
+}
+
 func (r *Router) recv(w http.ResponseWriter, req *http.Request) {
 	if rcv := recover(); rcv != nil {
 		r.PanicHandler(w, req, rcv)
@@ -383,17 +448,25 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	if root := r.trees; root != nil {
 		r.middleware.ServeHTTP(w, req)
-		if handles, ps, tsr := root.getValue(path, r.getParams); handles != nil {
-			httpHandel, handle := getHandle(req.Method, handles)
-			if httpHandel != nil {
-				httpHandel.ServeHTTP(w, req)
+		if middleware, handles, ps, tsr := root.getValue(path, r.getParams); handles != nil {
+			mh := getHandle(req.Method, handles)
+			if mh.Valid() {
+				for i := range middleware {
+					middleware[i](w, req)
+				}
+				for i := range mh.middleware {
+					mh.middleware[i](w, req)
+				}
+			}
+			if mh.httpHandler != nil {
+				mh.httpHandler.ServeHTTP(w, req)
 				return
 			}
-			if handle.IsValid() {
+			if mh.handle.IsValid() {
 				if r.SaveMatchedRoutePath {
 					*ps = append(*ps, Param{Key: MatchedRoutePathParam, Value: path})
 				}
-				commonHandler(w, req, handle, ps)
+				commonHandler(w, req, mh.handle, ps)
 				return
 			}
 			if allow := r.allowed(path, req.Method, handles); allow != "" {
@@ -420,7 +493,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 				code = http.StatusPermanentRedirect
 			}
 
-			if r.RedirectTrailingSlash && tsr != nil && handleValid(getHandle(req.Method, tsr.handle)) {
+			if r.RedirectTrailingSlash && tsr != nil && getHandle(req.Method, tsr.handle).Valid() {
 				if len(path) > 1 && path[len(path)-1] == '/' {
 					req.URL.Path = path[:len(path)-1]
 				} else {

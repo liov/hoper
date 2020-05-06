@@ -21,7 +21,7 @@ allprojects {
     apply<JavaPlugin>()
     group = "xyz.hoper"
     version = "0.0.1-SNAPSHOT"
-    java.sourceCompatibility = JavaVersion.VERSION_1_8
+    java.sourceCompatibility = JavaVersion.VERSION_11
 
     repositories {
         mavenCentral()
@@ -50,9 +50,10 @@ subprojects{
     }
 
     dependencies {
-        implementation("org.springframework.boot:spring-boot-starter")
+        implementation("org.springframework.boot:spring-boot-starter-webflux")
         implementation("org.apache.logging.log4j:log4j-core:2.12.1")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+        implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
         implementation("org.jetbrains.kotlin:kotlin-reflect")
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
@@ -66,6 +67,7 @@ subprojects{
         testImplementation("org.springframework.amqp:spring-rabbit-test")
         testImplementation("org.springframework.kafka:spring-kafka-test")
         testImplementation("org.springframework.security:spring-security-test")
+        testImplementation("io.projectreactor:reactor-test")
     }
 
     dependencyManagement {

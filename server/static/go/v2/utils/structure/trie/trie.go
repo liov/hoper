@@ -52,8 +52,7 @@ type node struct {
 	priority uint8
 
 	//mchildren map[string]*node
-	//tchildren  []*node
-	middleware http.HandlerFunc
+	middleware []http.HandlerFunc
 	handle     []*methodHandle
 }
 
@@ -98,14 +97,13 @@ walk:
 			n.schildren = []*node{child}
 			n.cType = static
 			n.handle = nil
-			n.sortIndices()
 		}
 		/// /:def
 		// Make new node a child of this node
 		if i < len(path) {
 			path = path[i:]
 
-			if n.cType >= catchAll || (n.cType >= param && path[0] == ':') {
+			if n.cType >= param && (path[0] == ':' || path[0] == '*') {
 				n = n.schildren[0]
 				n.priority++
 				// /:name/:names
@@ -117,6 +115,7 @@ walk:
 					if n.nType != catchAll {
 						pathSeg = strings.SplitN(pathSeg, "/", 2)[0]
 					}
+					//这里有问题 /test/id/path/path/path
 					prefix := fullPath[:strings.Index(fullPath, pathSeg)] + n.path
 					panic("'" + pathSeg +
 						"' in new path '" + fullPath +
@@ -385,7 +384,7 @@ type Param struct {
 
 type Params []Param
 
-/*func (n *node) getValue(path string, params func() *Params) (handle *methodHandle, ps *Params, tsr bool) {
+func (n *node) getValue(path string, params func() *Params) (handle *methodHandle, ps *Params, tsr bool) {
 walk: // Outer loop for walking the tree
 	for {
 		prefix := n.path
@@ -518,4 +517,3 @@ walk: // Outer loop for walking the tree
 		return
 	}
 }
-*/

@@ -1,0 +1,3 @@
+package pick
+
+const MethodAny = "*"

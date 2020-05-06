@@ -1,13 +1,16 @@
 package pick
 
 import (
+	"fmt"
 	"net/http"
 	"reflect"
 	"strings"
 
 	"github.com/go-openapi/spec"
+	"github.com/liov/hoper/go/v2/utils/concolor"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	"github.com/liov/hoper/go/v2/utils/reflect3"
+	"github.com/liov/hoper/go/v2/utils/strings2"
 )
 
 var isRegistered = false
@@ -245,4 +248,11 @@ func DefinitionsApi(definitions map[string]spec.Schema, v interface{}, exclude [
 		schema.Properties[json] = subSchema
 	}
 	definitions[body.Name()] = schema
+}
+
+func Log(method, path, title string) {
+	fmt.Printf(" %s\t %s %s\t %s\n",
+		concolor.Green("API:"),
+		concolor.Yellow(strings2.FormatLen(method, 6)),
+		concolor.Blue(strings2.FormatLen(path, 50)), concolor.Purple(title))
 }

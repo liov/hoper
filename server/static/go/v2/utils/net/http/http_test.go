@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/gin-gonic/gin"
+	"github.com/kataras/iris/v12"
 )
 
 func TestRoute(t *testing.T) {
@@ -17,8 +17,13 @@ func TestRoute(t *testing.T) {
 	sv.HandleFunc("/b", f)
 	sv.HandleFunc("/b/a/c/d", f)
 	sv.HandleFunc("/c/", f)
-	g := gin.New()
-	g.GET("/:id", func(context *gin.Context) {})
+	//g := gin.New()
+	//g.GET("/:id", func(context *gin.Context) {})
 	//g.GET("/:name", func(context *gin.Context) {})
-	g.GET("/*file", func(context *gin.Context) {})
+	//g.GET("/*file", func(context *gin.Context) {})
+
+	i := iris.New()
+	i.Get("/:id/:name/:path", func(context iris.Context) { context.WriteString("/:id/:name/:path") })
+	i.Get("/id/name/path", func(context iris.Context) { context.WriteString("/id/name/path") })
+	i.Run(iris.Addr(":8080"))
 }
