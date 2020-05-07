@@ -19,3 +19,14 @@ ts/js 专注前端吧，干后端的活再说吧，也许也可以当胶水语�
 
 有ts有必要用js吗？？
 有kotlin有必要用java吗？？
+
+如果是这样的话，java了解到11模块化就可以了
+可以专注于kotlin了
+
+https://www.kotlincn.net/docs/reference/
+
+看了下这个网站的测试benchmarksgame-team.pages.debian.net/benchmarksgame
+c rust julia一个梯队
+c# java go 一个梯队
+js lua dart一个梯队
+python一个梯队
