@@ -10,9 +10,9 @@ import java.util.concurrent.locks.ReentrantLock;
  * @modified By：
  */
 public class PrintABCUsingLock {
-    private int times;
+    private final int times;
     private int state;
-    private Lock lock = new ReentrantLock();
+    private final Lock lock = new ReentrantLock();
 
     public PrintABCUsingLock(int times) {
         this.times = times;

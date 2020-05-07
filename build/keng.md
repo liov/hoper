@@ -114,3 +114,11 @@ go install github.com/golang/protobuf/protoc-gen-go
 value := reflect.ValueOf(func)
 value.Type().Method(j).Type.NumIn() 3 //方法第一个参数为接收器
 value.Method(j).Type().NumIn() 2
+
+## java11 Error: -p requires module path specification
+在启用module的情况下，idea启动shorten command line 选user-local default: @argfile 会报这个错
+选none不报错
+原因是短命令行有个-p用来指定模块路径，然而并没有设置
+If your command line is too long (OS is unable to create a process from command line of such length), IDEA provides you means to shorten the command line. The balloon should contain a link where you can switch between `none`|`classpath file`|`JAR-Manifest`|`args file (only available for jdk 9)`. If you run with any option but `none`, the command line would be shortened and OS should be able to start the process.
+
+Do you still have a balloon when use one of the suggested (except `none`, please) options? If so, please enable debug option #com.intellij.execution.runners.ExecutionUtil (Help | Debug Log Settings), repeat running tests and attach idea.log (Help | Show log)
