@@ -4,13 +4,9 @@ async function test(): Promise<number> {
     }));
 }
 
-function fib(n: number): number {
-    return n < 2 ? 1 : fib(n - 2) + fib(n - 1)
-}
-
 async function fibAsync(n: number): Promise<number> {
     return new Promise(function (resolve, reject) {
-        resolve(fib(n));
+        resolve(fibonacci(n));
     })
 }
 

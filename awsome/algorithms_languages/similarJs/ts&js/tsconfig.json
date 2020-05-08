@@ -11,18 +11,10 @@
     "emitDecoratorMetadata": true
   },
   "include": [
-    "./js/*",
-    "./src/*"
+    "./ts/*"
   ],
   "exclude": [
     "node_modules",
     "**/*.spec.ts"
-  ],
-  "files": [
-    "src/main.ts",
-    "tests/decorators.ts",
-    "tests/interface.ts",
-    "tests/generic.ts",
-    "tests/wrap.ts"
   ]
 }
