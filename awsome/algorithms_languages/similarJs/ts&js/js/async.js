@@ -82,7 +82,7 @@ function longTime(path){
   }
   temp.copy(buf, 10*i, 0, buf_size-parseInt(buf_size/10)*10);
   // write to file
-  fs.open(path, 'w', 0666, function(err, fd){
+  fs.open(path, 'w', 0o666, function(err, fd){
     if (err) throw reject(err);
     var i=0;
     function write(err, written) {
