@@ -6,19 +6,19 @@ class ZooKeeper {
     nametag: string;
 }
 
-class Animal {
+class GAnimal {
     numLegs: number;
 }
 
-class Bee extends Animal {
+class Bee extends GAnimal {
     keeper: BeeKeeper;
 }
 
-class Lion extends Animal {
+class Lion extends GAnimal {
     keeper: ZooKeeper;
 }
 
-function createInstance<A extends Animal>(c: new () => A): A {
+function createInstance<A extends GAnimal>(c: new () => A): A {
     return new c();
 }
 

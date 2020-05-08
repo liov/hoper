@@ -1,17 +1,23 @@
 {
   "compilerOptions": {
+    "outDir": "./dist/",
     "module": "commonjs",
-    "target": "es5",
-    "sourceMap": true,
-    "strict": true,
-    "allowJs": true,
-    "outDir": "./dist",
-    "types": ["node"]
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": false,
+    "target": "es2016",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": [
-    "client.ts"
+    "./ts/*"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "**/*.spec.ts"
+  ],
+  "files": [
+    "./src/main.ts"
   ]
 }

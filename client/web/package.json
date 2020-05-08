@@ -1,18 +1,31 @@
 {
-  "name": "grpc-web",
-  "version": "0.1.0",
-  "description": "gRPC-Web",
+  "name": "ts",
+  "version": "1.0.0",
+  "description": "test",
+  "main": "main.js",
+  "author": "jyb",
+  "license": "MIT",
+  "scripts": {
+    "post-update": "yarn upgrade --latest"
+  },
   "devDependencies": {
-    "@babel/preset-env": "^7.6.2",
-    "@grpc/proto-loader": "^0.5.2",
-    "@types/google-protobuf": "^3.7.2",
-    "google-protobuf": "^3.9.2",
-    "grpc": "^1.24.0",
-    "grpc-web": "^1.0.6",
-    "import-local": "^3.0.2",
-    "ts-loader": "^6.2.0",
-    "typescript": "^3.6.3",
-    "webpack": "^5.0.0-alpha.28",
-    "webpack-cli": "^4.0.0-alpha-5"
+    "@babel/core": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "babelify": "^10.0.0",
+    "browserify": "^16.2.3",
+    "gulp": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-typescript": "^5.0.1",
+    "gulp-uglify": "^3.0.2",
+    "gulp-util": "^3.0.8",
+    "tsify": "^4.0.1",
+    "typescript": "^3.5.1",
+    "vinyl-buffer": "^1.0.1",
+    "vinyl-source-stream": "^2.0.0",
+    "watchify": "^3.11.1"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.4.4",
+    "reflect-metadata": "^0.1.13"
   }
 }
