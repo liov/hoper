@@ -7,7 +7,7 @@ function main() {
     const client = new GreeterClient('localhost:50051',  grpc.credentials.createInsecure());
     const request = new HelloRequest();
     request.setName('web client!');
-    client.sayHello(request, (err,response:HelloReply|undefined) => {
+    client.sayHello(request, (err:any,response:HelloReply|undefined) => {
         console.log('Greeting:', response? response.getMessage():err);
     });
 }
