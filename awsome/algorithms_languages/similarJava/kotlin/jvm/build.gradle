@@ -8,7 +8,7 @@ plugins {
 group = 'hoper.xyz'
 version = '1.0.0-SNAPSHOT'
 java.sourceCompatibility = JavaVersion.VERSION_11
-java.targetCompatibility = JavaVersion.VERSION_1_8
+java.targetCompatibility = JavaVersion.VERSION_11
 
 repositories {
   mavenCentral()
@@ -31,6 +31,10 @@ def watchForChange = 'src/**/*'
 def doOnChange = './gradlew classes'
 
 dependencies {
+  implementation "$kotlin-stdlib-jdk8"
+  implementation "$kotlin-reflect"
+
+  implementation fileTree(include: ['*.jar'], dir: 'libs')
   implementation "org.apache.commons:commons-lang3:3.8.1"
   implementation "org.objenesis:objenesis:3.0.1"
   compileOnly    "io.netty:netty-all:[5.0.0.Alpha2,)"
@@ -64,19 +68,23 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-script-runtime:1.3.61"
 }
 
+[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+
 compileJava {
-  options.encoding = "utf-8"
-  sourceCompatibility = JavaVersion.VERSION_11
-  targetCompatibility = JavaVersion.VERSION_1_8
-  options.compilerArgs << "--add-opens=java.base/jdk.internal.misc=jvm" << "--add-exports=java.base/jdk.internal.misc=jvm"
+    options.compilerArgs = [
+      "--add-opens=java.base/jdk.internal.misc=jvm",
+      "--add-exports=java.base/jdk.internal.misc=jvm",
+      '--module-path', classpath.asPath,
+    ]
+     classpath = files()
 }
 
 compileKotlin {
-  kotlinOptions.jvmTarget = '1.8'
+  kotlinOptions.jvmTarget = '11'
 }
 
 compileTestKotlin {
-  kotlinOptions.jvmTarget = '1.8'
+  kotlinOptions.jvmTarget = '11'
 }
 
 
