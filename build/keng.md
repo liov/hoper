@@ -122,3 +122,6 @@ value.Method(j).Type().NumIn() 2
 If your command line is too long (OS is unable to create a process from command line of such length), IDEA provides you means to shorten the command line. The balloon should contain a link where you can switch between `none`|`classpath file`|`JAR-Manifest`|`args file (only available for jdk 9)`. If you run with any option but `none`, the command line would be shortened and OS should be able to start the process.
 
 Do you still have a balloon when use one of the suggested (except `none`, please) options? If so, please enable debug option #com.intellij.execution.runners.ExecutionUtil (Help | Debug Log Settings), repeat running tests and attach idea.log (Help | Show log)
+
+# 'Java SE 11' using tool chain : 'JDK 8 (1.8)'
+JAVA_HOME
