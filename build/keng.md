@@ -124,4 +124,16 @@ If your command line is too long (OS is unable to create a process from command 
 Do you still have a balloon when use one of the suggested (except `none`, please) options? If so, please enable debug option #com.intellij.execution.runners.ExecutionUtil (Help | Debug Log Settings), repeat running tests and attach idea.log (Help | Show log)
 
 # 'Java SE 11' using tool chain : 'JDK 8 (1.8)'
-JAVA_HOME
+ sourceCompatibility = JavaVersion.VERSION_11
+ 
+# gradle java moudle
+设置moduleName
+ inputs.property("moduleName", moduleName)
+  options.compilerArgs = listOf(
+    "--module-path", classpath.asPath)
+  classpath = files()
+其他待解决问题：
+vertx的依赖问题
+同时读取io.netty
+slf4j.log4j12 的依赖问题
+错误: 模块 jvm 同时从 slf4j.log4j12 和 log4j 读取程序包 org.apache.log4j
