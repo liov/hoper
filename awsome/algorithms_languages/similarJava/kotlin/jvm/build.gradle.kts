@@ -38,7 +38,8 @@ tasks {
         options.compilerArgs = listOf(
           "--add-opens=java.base/jdk.internal.misc=jvm",
           "--add-exports=java.base/jdk.internal.misc=jvm",
-          "--module-path", classpath.asPath
+          "--module-path", classpath.asPath,
+          "--patch-module", "$moduleName=${sourceSets["main"].output.asPath}"
         )
         classpath = files()
     }
