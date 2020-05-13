@@ -137,3 +137,6 @@ vertx的依赖问题
 同时读取io.netty
 slf4j.log4j12 的依赖问题
 错误: 模块 jvm 同时从 slf4j.log4j12 和 log4j 读取程序包 org.apache.log4j
+
+# Every derived table must have its own alias
+在做多表查询，或者查询的时候产生新的表的时候会出现这个错误：Every derived table must have its own alias（每一个派生出来的表都必须有一个自己的别名）。

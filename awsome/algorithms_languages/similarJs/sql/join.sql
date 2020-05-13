@@ -22,67 +22,55 @@
 -- 2. 对于inner join，满足on后面的条件表的数据才能查出，可以起到过滤作用。也可以把条件放到where后面。
 
 
-SELECT count(*) as t_count,
-count(case when field1 - field2 <= field3 then '1' end) as w_count,
-count(case when field1 = field2 then '1' end) as f_count FROM `table2`
-left join table1 on table2.table2_id = table1.id
-AND table1.status = 0 AND table1.field4 = 0;
+SELECT count(*)                                                as t_count,
+       count(case when field1 - field2 <= field3 then '1' end) as w_count,
+       count(case when field1 = field2 then '1' end)           as f_count
+FROM `table2`
+         left join table1 on table2.table2_id = table1.id
+    AND table1.status = 0 AND table1.field4 = 0;
 
-SELECT count(*) as t_count,
-count(case when field1 - field2 <= field3 then '1' end) as w_count,
-count(case when field1 = field2 then '1' end) as f_count FROM `table2`
-right join table1 on table2.table2_id = table1.id
-AND table1.status = 0 AND table1.field4 = 0;
+SELECT count(*)                                                as t_count,
+       count(case when field1 - field2 <= field3 then '1' end) as w_count,
+       count(case when field1 = field2 then '1' end)           as f_count
+FROM `table2`
+         right join table1 on table2.table2_id = table1.id
+    AND table1.status = 0 AND table1.field4 = 0;
 
 SELECT count(*) as t_count;
 SELECT count(case when table1.field4 = 0 then '1' end) as t_count;
 
 --这是三张表的左连接查询；
-SELECT
-	a.plan_order_id,
-	a.employee_account,
-	a.employee_name,
-	a.amount AS distribute_score,
-	b.user_id,
-	a.amount - sum( c.total_balance_amount ) + sum( c.invilad ) AS exchange_score,
-	sum( c.available_balance_amount ) AS available_score
-FROM
-	d_kaop.t_plan_detail a
-	LEFT JOIN d_kaop.t_operator_employee b ON a.employee_account = b.employee_account
-	LEFT JOIN (
-	SELECT
-		d.total_balance_amount,
-		d.available_balance_amount,
-		e.invilad,
-		d.user_id,
-		d.batch_num
-	FROM
-		d_aura_jike.user_balance d
-		LEFT JOIN (
-		SELECT
-			sum( balance_amount ) AS invilad,
-			user_id,
-			batch_num
-		FROM
-			d_aura_jike.user_balance_history
-		WHERE
-			type IN ( 6, 7 )
-		GROUP BY
-			user_id,
-			batch_num
-		) e ON d.batch_num = e.batch_num
-		AND d.user_id = e.user_id
-	WHERE
-		d.STATUS = 0
-		AND d.batch_num IN (
-		SELECT
-			batch_no
-		FROM
-			`d_kaop`.`t_plan_score_batch`
-		WHERE
-		( plan_order_id = '20200330163927629198' AND is_deleted = 0 ))
-	) c ON b.user_id = c.user_id
-WHERE
-	( a.plan_order_id = '20200330163927629198' AND a.is_deleted = 0 )
-GROUP BY
-	a.employee_account;
+SELECT a.plan_order_id,
+       a.employee_account,
+       a.employee_name,
+       a.amount                                                AS distribute_score,
+       b.user_id,
+       a.amount - sum(c.total_balance_amount) + sum(c.invilad) AS exchange_score,
+       sum(c.available_balance_amount)                         AS available_score
+FROM d_kaop.t_plan_detail a
+         LEFT JOIN d_kaop.t_operator_employee b ON a.employee_account = b.employee_account
+         LEFT JOIN (
+    SELECT d.total_balance_amount,
+           d.available_balance_amount,
+           e.invilad,
+           d.user_id,
+           d.batch_num
+    FROM d_aura_jike.user_balance d
+             LEFT JOIN (
+        SELECT sum(balance_amount) AS invilad,
+               user_id,
+               batch_num
+        FROM d_aura_jike.user_balance_history
+        WHERE type IN (6, 7)
+        GROUP BY user_id,
+                 batch_num
+    ) e ON d.batch_num = e.batch_num
+        AND d.user_id = e.user_id
+    WHERE d.STATUS = 0
+      AND d.batch_num IN (
+        SELECT batch_no
+        FROM `d_kaop`.`t_plan_score_batch`
+        WHERE (plan_order_id = '20200330163927629198' AND is_deleted = 0))
+) c ON b.user_id = c.user_id
+WHERE (a.plan_order_id = '20200330163927629198' AND a.is_deleted = 0)
+GROUP BY a.employee_account;
