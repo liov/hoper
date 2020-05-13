@@ -139,7 +139,7 @@ public class StreamTest {
         List<Integer> squaresList = new ArrayList<Integer>();
 
         for(Integer number: numbers){
-            Integer square = new Integer(number.intValue() * number.intValue());
+            Integer square = number * number;
 
             if(!squaresList.contains(square)){
                 squaresList.add(square);

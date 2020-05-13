@@ -33,15 +33,12 @@ var moduleName = "jvm"
 
 tasks {
     compileJava{
-        inputs.property("moduleName", moduleName)
         options.encoding = "UTF-8"
         options.compilerArgs = listOf(
+          "-Xlint:deprecation",
           "--add-opens=java.base/jdk.internal.misc=jvm",
-          "--add-exports=java.base/jdk.internal.misc=jvm",
-          "--module-path", classpath.asPath,
-          "--patch-module", "$moduleName=${sourceSets["main"].output.asPath}"
+          "--add-exports=java.base/jdk.internal.misc=jvm"
         )
-        classpath = files()
     }
 
     compileKotlin {
