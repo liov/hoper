@@ -2,8 +2,8 @@ package xyz.hoper.test.netty;
 
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
 
 /**
@@ -11,7 +11,7 @@ import io.netty.util.ReferenceCountUtil;
  * @date ：Created in 2019/6/6
  * @description：handle
  */
-public class ClientHandler extends ChannelInboundHandlerAdapter {
+public class ClientHandler extends ChannelHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
     }

@@ -2,15 +2,15 @@ package xyz.hoper.test.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 
 /**
  * @author ：lbyi
  * @date ：Created in 2019/6/6
  * @description：handle
  */
-public class ServerHandler extends ChannelInboundHandlerAdapter {
+public class ServerHandler extends ChannelHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("server channel active... ");
