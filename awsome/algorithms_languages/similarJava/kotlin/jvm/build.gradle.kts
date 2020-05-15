@@ -16,6 +16,8 @@ var junitJupiterEngineVersion = "5.4.0"
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+    implementation(kotlin("reflect"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.3.3")
     implementation("org.objenesis:objenesis:3.0.1")
     implementation("org.apache.commons:commons-lang3:3.8.1")
     compileOnly("org.projectlombok:lombok:1.18.12")
