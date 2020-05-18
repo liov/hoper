@@ -1,4 +1,4 @@
-package xyz.hoper.test
+package xyz.hoper.test.collection
 
 //集合的基本操作，rust中是对实现迭代器类型的操作map,filter,reduce,take,zip,
 fun main(args: Array<String>) {

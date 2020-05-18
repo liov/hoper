@@ -1,4 +1,4 @@
-package xyz.hoper.test
+package xyz.hoper.test.collection
 
 fun main(args: Array<String>) {
   val oddNumbers1 = generateSequence(1) { it + 2 } // `it` 是上一个元素
