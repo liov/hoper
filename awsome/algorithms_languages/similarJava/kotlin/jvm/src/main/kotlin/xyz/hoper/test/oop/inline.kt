@@ -1,4 +1,4 @@
-package xyz.hoper.test
+package xyz.hoper.test.oop
 
 inline class Password(val value: String)
 

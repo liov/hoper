@@ -1,4 +1,4 @@
-package xyz.hoper.test
+package xyz.hoper.test.oop
 
 import kotlin.properties.Delegates
 import kotlin.properties.ReadOnlyProperty
