@@ -1,4 +1,4 @@
-package xyz.hoper.test
+package xyz.hoper.test.oop
 
 sealed class Expr
 data class Const(val number: Double) : Expr()

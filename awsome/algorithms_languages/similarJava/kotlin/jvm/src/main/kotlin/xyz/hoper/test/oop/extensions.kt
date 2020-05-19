@@ -1,4 +1,4 @@
-package xyz.hoper.test
+package xyz.hoper.test.oop
 
 //扩展
 fun <T> MutableList<T>.swap(index1: Int, index2: Int) {

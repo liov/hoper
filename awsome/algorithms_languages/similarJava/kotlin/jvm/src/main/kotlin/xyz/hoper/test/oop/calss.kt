@@ -1,4 +1,4 @@
-package xyz.hoper.test
+package xyz.hoper.test.oop
 
 import java.io.File
 import javax.naming.Context
@@ -30,7 +30,7 @@ class Person(val name: String) {
 
 @ExperimentalUnsignedTypes
 fun main(args: Array<String>){
-  var p = Person("test",5u)
+  var p = Person("test", 5u)
   print(p.age)
 }
 
@@ -110,7 +110,7 @@ object DataProviderManager {
       if (_allDataProviders == null) {
         _allDataProviders = listOf()
       }
-      return _allDataProviders?:throw AssertionError("Set to null by another thread")
+      return _allDataProviders ?:throw AssertionError("Set to null by another thread")
     }
 }
 

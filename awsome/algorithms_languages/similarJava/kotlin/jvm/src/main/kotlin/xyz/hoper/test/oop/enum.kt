@@ -1,6 +1,5 @@
-package xyz.hoper.test
+package xyz.hoper.test.oop
 
-import java.io.File
 import java.util.function.BinaryOperator
 import java.util.function.IntBinaryOperator
 
@@ -41,7 +40,7 @@ inline fun <reified T : Enum<T>> printAllValues() {
 
 
 fun main(args: Array<String>){
-  printAllValues<RGB>()
+    printAllValues<RGB>()
   println(enumValueOf<RGB>("RED"))
 }
 

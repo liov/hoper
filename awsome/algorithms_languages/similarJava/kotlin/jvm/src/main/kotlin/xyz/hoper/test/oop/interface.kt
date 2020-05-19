@@ -1,4 +1,4 @@
-package xyz.hoper.test
+package xyz.hoper.test.oop
 
 interface MyInterface {
   val prop: Int // 抽象的

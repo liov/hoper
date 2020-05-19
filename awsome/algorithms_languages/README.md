@@ -30,3 +30,7 @@ c rust julia一个梯队
 c# java go 一个梯队
 js lua dart一个梯队
 python一个梯队
+
+c go rust js必学
+学了kotlin回不去java了 kotlin c# java 三选一的话选kotlin，兼顾语法和生态
+ts dart python lua 用时可选
