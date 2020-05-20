@@ -1,8 +1,0 @@
-# Created by .ignore support plugin (hsz.mobi)
-### Example user template template
-### Example user template
-
-# IntelliJ project files
-__pycache__
-*_pb2.py
-*_pb2_grpc.py
