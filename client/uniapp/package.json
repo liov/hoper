@@ -46,7 +46,9 @@
     "vue": "^2.6.11",
     "vue-class-component": "^6.3.2",
     "vue-property-decorator": "^8.0.0",
-    "vuex": "^3.0.1"
+    "vuex": "^3.0.1",
+    "@babel/polyfill": "^7.4.5",
+    "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
     "@babel/plugin-syntax-typescript": "^7.2.0",
@@ -65,8 +67,30 @@
     "babel-plugin-import": "^1.11.0",
     "cross-env": "^7.0.2",
     "postcss-comment": "^2.0.0",
-    "typescript": "^3.0.0",
-    "vue-template-compiler": "^2.6.11"
+    "vue-template-compiler": "^2.6.11",
+    "@babel/core": "^7.4.5",
+    "@babel/preset-env": "^7.6.2",
+    "babelify": "^10.0.0",
+    "browserify": "^16.2.3",
+    "gulp": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-typescript": "^5.0.1",
+    "gulp-uglify": "^3.0.2",
+    "gulp-util": "^3.0.8",
+    "tsify": "^4.0.1",
+    "typescript": "^3.8.3",
+    "vinyl-buffer": "^1.0.1",
+    "vinyl-source-stream": "^2.0.0",
+    "watchify": "^3.11.1",
+    "@grpc/proto-loader": "^0.5.2",
+    "@types/google-protobuf": "^3.7.2",
+    "google-protobuf": "^3.9.2",
+    "grpc": "^1.24.0",
+    "grpc-web": "^1.0.6",
+    "import-local": "^3.0.2",
+    "ts-loader": "^6.2.0",
+    "webpack": "^5.0.0-alpha.28",
+    "webpack-cli": "^4.0.0-alpha-5"
   },
   "browserslist": [
     "Android >= 4",
