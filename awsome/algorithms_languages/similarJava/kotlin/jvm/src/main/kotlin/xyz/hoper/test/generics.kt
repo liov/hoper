@@ -22,6 +22,7 @@ interface Source<out T> {
 
 fun demo(strs: Source<String>) {
   val objects: Source<Any> = strs // 这个没问题，因为 T 是一个 out-参数
+  objects.nextT()
   // ……
 }
 
@@ -32,14 +33,11 @@ fun demo(strs: Source<String>) {
  * 我们相信 in 和 out 两词是自解释的（因为它们已经在 C# 中成功使用很长时间了）， 因此上面提到的助记符不是真正需要的，并且可以将其改写为更高的目标：
  */
 
-interface Comparable<in T> {
-  operator fun compareTo(other: T): Int
-}
-
 fun demo(x: Comparable<Number>) {
-  x.compareTo(1.0) // 1.0 拥有类型 Double，它是 Number 的子类型
+  //x.compareTo(1.0) // 1.0 拥有类型 Double，它是 Number 的子类型
   // 因此，我们可以将 x 赋给类型为 Comparable <Double> 的变量
   val y: Comparable<Double> = x // OK！
+  println(y)
 }
 
 
@@ -83,4 +81,13 @@ fun <T> copyWhenGreater(list: List<T>, threshold: T): List<String>
   where T : CharSequence,
         T : Comparable<T> {
   return list.filter { it > threshold }.map { it.toString() }
+}
+
+operator fun <T:Comparable<T>> Int.compareTo(other:T):Int{
+  return 0
+}
+
+fun main(args: Array<String>) {
+  var i = 1
+  demo(i as Comparable<Number>)
 }
