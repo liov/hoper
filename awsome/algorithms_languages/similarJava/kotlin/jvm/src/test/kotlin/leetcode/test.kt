@@ -40,4 +40,16 @@ class Solution {
     val nums = intArrayOf(1,1,-2)
     println(threeSum(nums))
   }
+
+  @Test
+  fun mergeTwoLists(){
+    val node1 = ListNode(1).apply { next = ListNode(2).apply { next = ListNode(4)}}
+    val node2 = ListNode(1).apply { next = ListNode(3).apply { next = ListNode(4)}}
+    println(mergeTwoLists(node1,node2))
+  }
+
+  @Test
+  fun isValid(){
+    println(isValidV2("{[]}"))
+  }
 }
