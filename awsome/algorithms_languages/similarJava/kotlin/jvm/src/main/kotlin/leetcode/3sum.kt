@@ -21,14 +21,36 @@ package leetcode
 链接：https://leetcode-cn.com/problems/3sum
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
  */
+
+//516 ms , 在所有 Kotlin 提交中击败了 51.35% 的用户,这也太惨了
 fun threeSum(nums: IntArray): List<List<Int>> {
   nums.sort()
-  val ans:List<List<Int>> = emptyList()
+  val ans = mutableListOf<List<Int>>() //val ans:List<List<Int>> 这种写法不能add，因为List没有add方法
   if (nums.isEmpty() || nums[0] > 0) return ans
   val map = HashMap<Int, Int>()
-  for(i in nums.indices){
-    map[nums[i]] = map[nums[i]] ?: 0
-    map[nums[i]] = map[nums[i]]!! + 1
+  for ((i, v) in nums.withIndex()) {
+    map[v] = i
+  }
+
+  var third: Int
+  var idx: Int
+  var zeroRecord = false //当0出现后，检查是否存在三个0的情况
+  for (i in nums.indices) {
+    if (i > 0 && nums[i] == nums[i - 1]) continue
+    if (zeroRecord) break
+    if (nums[i] == 0) {
+      if (nums.size - i > 2 && nums[i + 1] == 0 && nums[i + 2] == 0) ans.add(listOf(0, 0, 0))
+      zeroRecord = true
+    }
+    for (j in i + 1 until nums.lastIndex) {
+      third = 0 - nums[i] - nums[j]
+      if (j > i + 1 && nums[j] == nums[j - 1]) continue //去重及两数已经大于0不可能存在第三个数
+      if (third <= 0) break
+      idx = map[third] ?: continue //是否存在第三个数
+      if (idx <= j) continue //第三个数只能在右边
+      ans.add(listOf(nums[i], nums[j], third))
+    }
   }
   return ans
 }
+
