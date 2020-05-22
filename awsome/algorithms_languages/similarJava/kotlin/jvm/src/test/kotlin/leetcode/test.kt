@@ -29,9 +29,15 @@ class Solution {
   }
 
   @Test
-  fun findMedianSortedArrays(){
+  fun findMedianSortedArrays() {
     val nums1 = intArrayOf(3)
-    val nums2 = intArrayOf(-2,-1)
-    println(findMedianSortedArrays(nums1,nums2))
+    val nums2 = intArrayOf(-2, -1)
+    println(findMedianSortedArrays(nums1, nums2))
+  }
+
+  @Test
+  fun threeSum() {
+    val nums = intArrayOf(1,1,-2)
+    println(threeSum(nums))
   }
 }
