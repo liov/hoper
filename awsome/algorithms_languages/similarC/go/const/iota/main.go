@@ -3,15 +3,15 @@ package main
 import "fmt"
 
 const (
-	a = iota
-	b
-	c
+	a1 = iota
+	b1
+	c1
 )
 
 const (
-	d = iota
-	e = 8
-	f
+	d1 = iota
+	e1 = 8
+	f1
 )
 
 type ByteSize float64
@@ -35,5 +35,10 @@ func main() {
 	var float64Var float64 = a
 	var complex64Var complex64 = a
 	fmt.Println("intVar", intVar, "\nint32Var", int32Var, "\nfloat64Var", float64Var, "\ncomplex64Var", complex64Var)
-	fmt.Println(f) //8
+	fmt.Println(f1) //8
+	fmt.Println(a1)
+	fmt.Println(b1)
+	fmt.Println(c1)
+	fmt.Println(d1)
+	fmt.Println(e1)
 }
