@@ -26,6 +26,7 @@ const (
 	f = iota
 )
 
+//-1 1 2
 const (
 	g = -1
 	h = iota
@@ -46,6 +47,6 @@ func main() {
 	fmt.Println(mutexLocked)
 	fmt.Println(mutexWoken)
 	fmt.Println(mutexStarving)
-	fmt.Println(mutexStarving)
+	fmt.Println(mutexWaiterShift)
 	fmt.Println(starvationThresholdNs)
 }
