@@ -29,26 +29,23 @@ fun threeSum(nums: IntArray): List<List<Int>> {
   if (nums.isEmpty() || nums[0] > 0) return ans
   val map = HashMap<Int, Int>()
   for ((i, v) in nums.withIndex()) {
-    map[v] = i
+    if (v > 0) map[v] = i
   }
 
   var third: Int
-  var idx: Int
   var zeroRecord = false //当0出现后，检查是否存在三个0的情况
   for (i in nums.indices) {
     if (i > 0 && nums[i] == nums[i - 1]) continue
-    if (zeroRecord) break
+    if (zeroRecord) break //0及0以上不用遍历
     if (nums[i] == 0) {
       if (nums.size - i > 2 && nums[i + 1] == 0 && nums[i + 2] == 0) ans.add(listOf(0, 0, 0))
       zeroRecord = true
     }
     for (j in i + 1 until nums.lastIndex) {
       third = 0 - nums[i] - nums[j]
-      if (j > i + 1 && nums[j] == nums[j - 1]) continue //去重及两数已经大于0不可能存在第三个数
-      if (third <= 0) break
-      idx = map[third] ?: continue //是否存在第三个数
-      if (idx <= j) continue //第三个数只能在右边
-      ans.add(listOf(nums[i], nums[j], third))
+      if (j > i + 1 && nums[j] == nums[j - 1]) continue //去重
+      if (third <= 0) break //两数已经大于0不可能存在第三个数
+      if (map[third] ?: 0 > j) ans.add(listOf(nums[i], nums[j], third)) //是否存在第三个数,第三个数只能在右边
     }
   }
   return ans
