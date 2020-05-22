@@ -26,14 +26,26 @@ const (
 	f = iota
 )
 
+const (
+	g = -1
+	h = iota
+	i
+)
+
 //3011201
 func main() {
-	fmt.Println(mutexWaiterShift)
-
 	fmt.Println(a)
 	fmt.Println(b)
 	fmt.Println(c)
 	fmt.Println(d)
 	fmt.Println(e)
 	fmt.Println(f)
+	fmt.Println(g)
+	fmt.Println(h)
+	fmt.Println(i)
+	fmt.Println(mutexLocked)
+	fmt.Println(mutexWoken)
+	fmt.Println(mutexStarving)
+	fmt.Println(mutexStarving)
+	fmt.Println(starvationThresholdNs)
 }
