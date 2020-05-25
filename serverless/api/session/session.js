@@ -1,3 +1,5 @@
+const magicNumber = 0xf1234fff
+
 function gen() {
     let header = {
         "piId": "",
@@ -18,6 +20,10 @@ function gen() {
     console.log(Buffer.from(JSON.stringify(header)).toString('base64'))
     let crm_header = {
         "userId":200
+    }
+    console.log(Buffer.from(JSON.stringify(crm_header)).toString('base64'))
+    crm_header = {
+        "userId": new Date().getTime() ^ magicNumber
     }
     console.log(Buffer.from(JSON.stringify(crm_header)).toString('base64'))
 }
