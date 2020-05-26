@@ -51,19 +51,6 @@ fun nSum(nums: IntArray, subStart: Int, target: Int, n: Int, map: HashMap<Int, I
     }
     return
   }
-  /*
-  if (n == 2) {
-    for (i in subStart until nums.size) {
-      if (i > subStart && nums[i - 1] == nums[i]) continue
-      if ((target > 0 && nums[i] > target || target < 0 && nums.last() < target)) break
-      if (map[target - nums[i]] != null && map[target - nums[i]]!! > i) {
-        ans.add(mutableListOf(target - nums[i], nums[i]))
-      }
-  }
-  return
-  }
-   循环合并时间从600ms上升到900ms，主要耗时的地方在循环获得结果
-   */
   for (i in subStart until nums.size) {
     if (i > subStart && nums[i - 1] == nums[i]) continue
     if ((target > 0 && nums[i] > target || target < 0 && nums.last() < target)) break
