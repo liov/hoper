@@ -25,21 +25,30 @@ package leetcode
 
 //哈哈哈哈，执行用时 : 620 ms , 在所有 Kotlin 提交中击败了 8.00% 的用户
 fun fourSum(nums: IntArray, target: Int): List<List<Int>> {
+  return nSum(nums, target, 4)
+}
+
+fun nSum(nums: IntArray, target: Int, n: Int): List<List<Int>> {
   nums.sort()
   if (nums.isEmpty() || (target > 0 && nums[0] > target || target < 0 && nums.last() < target)) return mutableListOf()
   val map = HashMap<Int, Int>()
   for ((i, v) in nums.withIndex()) {
     map[v] = i
   }
-  val ans = mutableListOf<MutableList<Int>>()
-  nSum(nums.toList(), 0, target, 4, map, ans)
+  val ans = mutableListOf<List<Int>>()
+  val tmp = IntArray(n)
+  nSum(nums, 0, target, n, map, ans, tmp)
   return ans
 }
 
 //subList改为起始结束位置
-fun nSum(nums: List<Int>, subStart: Int, target: Int, n: Int, map: HashMap<Int, Int>, ans: MutableList<MutableList<Int>>) {
+fun nSum(nums: IntArray, subStart: Int, target: Int, n: Int, map: HashMap<Int, Int>,
+         ans: MutableList<List<Int>>, tmp: IntArray) {
   if (n == 1) {
-    if (map[target] != null && map[target]!! >= subStart) ans.add(mutableListOf(target))
+    if (map[target] != null && map[target]!! >= subStart) {
+      tmp[tmp.size - n] = target
+      ans.add(tmp.toList())
+    }
     return
   }
   /*
@@ -58,9 +67,7 @@ fun nSum(nums: List<Int>, subStart: Int, target: Int, n: Int, map: HashMap<Int, 
   for (i in subStart until nums.size) {
     if (i > subStart && nums[i - 1] == nums[i]) continue
     if ((target > 0 && nums[i] > target || target < 0 && nums.last() < target)) break
-    nSum(nums, i + 1, target - nums[i], n - 1, map, ans)
-    for (j in ans.indices) {//耗时的地方
-      if (ans[j].size == n - 1) ans[j].add(nums[i])
-    }
+    tmp[tmp.size - n] = nums[i]
+    nSum(nums, i + 1, target - nums[i], n - 1, map, ans, tmp)
   }
 }
