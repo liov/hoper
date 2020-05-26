@@ -87,4 +87,13 @@ class Solution {
     val arr = intArrayOf(1, 0, -1, 0, -2, 2)
     println(fourSum(arr,0))
   }
+
+  @Test
+   fun removeNthFromEnd(){
+    val node = ListNode(1).apply { next = ListNode(2).
+    apply { next = ListNode(3).
+    apply { next = ListNode(4).
+    apply { next = ListNode(5)}}} }
+    println(removeNthFromEnd(node,2))
+  }
 }

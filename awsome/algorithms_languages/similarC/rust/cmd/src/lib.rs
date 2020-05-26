@@ -10,3 +10,19 @@ mod test{
         println!("{:?}",c);
     }
 }
+
+mod hoper{
+     mod hash{
+         pub mod map{
+             use std::collections::hash_map::RandomState;
+             //什么操作啊
+             use hashbrown::hash_map as base;
+             pub struct HashMap<K, V, S = RandomState> {
+                 base: base::HashMap<K, V, S>,
+             }
+         }
+     }
+    mod hash_map{
+        pub use super::hash::map::*;
+    }
+}
