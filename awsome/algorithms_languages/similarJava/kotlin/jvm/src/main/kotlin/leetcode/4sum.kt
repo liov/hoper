@@ -22,39 +22,45 @@ package leetcode
 链接：https://leetcode-cn.com/problems/4sum
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
  */
+
+//哈哈哈哈，执行用时 : 620 ms , 在所有 Kotlin 提交中击败了 8.00% 的用户
 fun fourSum(nums: IntArray, target: Int): List<List<Int>> {
   nums.sort()
-  if (nums.isEmpty() || nums[0] > target) return mutableListOf()
+  if (nums.isEmpty() || (target > 0 && nums[0] > target || target < 0 && nums.last() < target)) return mutableListOf()
   val map = HashMap<Int, Int>()
   for ((i, v) in nums.withIndex()) {
-    if (v > 0) map[v] = i
+    map[v] = i
   }
-  return nSum(nums.toList(), target, 4, map)
-}
-
-fun nSum(nums: List<Int>, target: Int, n: Int, map: HashMap<Int, Int>): List<List<Int>> {
   val ans = mutableListOf<MutableList<Int>>()
-  for (i in nums.indices) {
-    if ((i > 0 && nums[i - 1] == nums[i]) || nums[i] > target) continue
-    nSumIter(nums.subList(i + 1, nums.size), target - nums[i], n - 1, map)?.apply { add(nums[i]) }?.let { ans.add(it) }
-  }
+  nSum(nums.toList(), 0, target, 4, map, ans)
   return ans
 }
 
-fun nSumIter(nums: List<Int>, target: Int, n: Int, map: HashMap<Int, Int>): MutableList<Int>? {
-  if (n != 2) {
-    for (i in nums.indices) {
-      if ((i > 0 && nums[i - 1] == nums[i]) || nums[i] > target) continue
-      return nSumIter(nums.subList(i + 1, nums.size), target - nums[i], n - 1, map)?.apply { add(nums[i]) }
+//subList改为起始结束位置
+fun nSum(nums: List<Int>, subStart: Int, target: Int, n: Int, map: HashMap<Int, Int>, ans: MutableList<MutableList<Int>>) {
+  if (n == 1) {
+    if (map[target] != null && map[target]!! >= subStart) ans.add(mutableListOf(target))
+    return
+  }
+  /*
+  if (n == 2) {
+    for (i in subStart until nums.size) {
+      if (i > subStart && nums[i - 1] == nums[i]) continue
+      if ((target > 0 && nums[i] > target || target < 0 && nums.last() < target)) break
+      if (map[target - nums[i]] != null && map[target - nums[i]]!! > i) {
+        ans.add(mutableListOf(target - nums[i], nums[i]))
+      }
+  }
+  return
+  }
+   循环合并时间从600ms上升到900ms，主要耗时的地方在循环获得结果
+   */
+  for (i in subStart until nums.size) {
+    if (i > subStart && nums[i - 1] == nums[i]) continue
+    if ((target > 0 && nums[i] > target || target < 0 && nums.last() < target)) break
+    nSum(nums, i + 1, target - nums[i], n - 1, map, ans)
+    for (j in ans.indices) {//耗时的地方
+      if (ans[j].size == n - 1) ans[j].add(nums[i])
     }
   }
-
-  for (i in nums.indices) {
-    if (map[target - nums[i]] != null && map[target - nums[i]]!! > i + (map.size - nums.size)) {
-      println("${target - nums[i]},${nums[i]}")
-      return mutableListOf(target - nums[i], nums[i])
-    }
-    if ((i > 0 && nums[i - 1] == nums[i]) || nums[i] > target) continue
-  }
-  return null
 }
