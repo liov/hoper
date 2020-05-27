@@ -16,5 +16,5 @@ wasm_exec.js
 node_modules
 dist
 add-config.toml
-/server/proto
+std_proto
 .vscode
