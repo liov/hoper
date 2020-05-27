@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 namespace RectangleApplication
 {
     class Rectangle
@@ -31,6 +31,16 @@ namespace RectangleApplication
             r.Acceptdetails();
             r.Display();
             Console.ReadLine();
+        }
+        
+        [TestMethod]
+        public void subTest(){
+            Stopwatch sw = new Stopwatch(); 
+            sw.Start();
+            sleep(1000);
+            sw.Stop(); 
+            TimeSpan ts2 = sw.Elapsed; 
+            Console.WriteLine("Stopwatch总共花费{0}ms.", ts2.TotalMilliseconds); 
         }
     }
 }
