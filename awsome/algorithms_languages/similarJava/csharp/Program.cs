@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.Threading;
 namespace RectangleApplication
 {
     class Rectangle
@@ -33,11 +35,10 @@ namespace RectangleApplication
             Console.ReadLine();
         }
         
-        [TestMethod]
-        public void subTest(){
+        public void subTest() {
             Stopwatch sw = new Stopwatch(); 
             sw.Start();
-            sleep(1000);
+            Thread.Sleep(500);
             sw.Stop(); 
             TimeSpan ts2 = sw.Elapsed; 
             Console.WriteLine("Stopwatch总共花费{0}ms.", ts2.TotalMilliseconds); 

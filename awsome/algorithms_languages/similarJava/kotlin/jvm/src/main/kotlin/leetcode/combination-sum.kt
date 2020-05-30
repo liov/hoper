@@ -1,5 +1,9 @@
 package leetcode
 
+import java.util.*
+import kotlin.collections.ArrayDeque
+import kotlin.collections.ArrayList
+
 /**
  * 给定一个无重复元素的数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
 
@@ -31,16 +35,37 @@ candidates 中的数字可以无限制重复被选取。
 链接：https://leetcode-cn.com/problems/combination-sum
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
  */
+
 fun combinationSum(candidates: IntArray, target: Int): List<List<Int>> {
   candidates.sort()
   val set = HashSet<Int>()
-  for(i in candidates.indices){
+  for (i in candidates.indices) {
     set.add(candidates[i])
   }
   val ans = ArrayList<List<Int>>()
-  for((i,j) in candidates.withIndex()){
-    val n = target/j
-    if (target%j == 0) ans.add( List(n) { j })
-  }
+  find(candidates, 0, target, ans, set, Stack())
   return ans
+}
+
+fun find(candidates: IntArray, start: Int, target: Int, ans: MutableList<List<Int>>, set: HashSet<Int>, path: Stack<Int>) {
+
+  if (set.contains(target)) {
+    path.push(target)
+    ans.add(path.toList())
+    path.pop()
+    if (target == candidates[start]) return
+  }
+
+  for (i in start until candidates.size) {
+    if (path.isNotEmpty() && candidates[i] < path.last()) continue
+    path.push(candidates[i])
+    if (target - candidates[i] < path.last()) {
+      path.pop()
+      break
+    }
+    var newStart = start
+    if (path.size == 1) newStart = i
+    find(candidates, newStart, target - candidates[i], ans, set, path)
+    path.pop()
+  }
 }
