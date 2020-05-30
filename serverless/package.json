@@ -1,0 +1,14 @@
+{
+  "name": "serverless",
+  "version": "1.0.0",
+  "description": "一个serverless的方案https://github.com/zeit/now",
+  "main": "n",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "liov",
+  "license": "MIT",
+  "devDependencies": {
+    "@now/node": "^1.6.1"
+  }
+}

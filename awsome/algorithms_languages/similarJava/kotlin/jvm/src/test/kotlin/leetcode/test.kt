@@ -96,4 +96,11 @@ class Solution {
     apply { next = ListNode(5)}}} }
     println(removeNthFromEnd(node,2))
   }
+
+
+  @Test
+  fun combinationSum(){
+    val arr = intArrayOf(1,2)
+    println(combinationSum(arr,4))
+  }
 }
