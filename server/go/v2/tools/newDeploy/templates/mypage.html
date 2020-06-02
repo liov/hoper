@@ -1,49 +1,47 @@
 <form action="deploy" method="post" name="dep">
     <label>
         项目：
-        <input list="projects" name="project">
+        <select  name="project" oninput="callFunc(this.value)">
+            {{range .Projects}}
+                <option value="{{.}}">{{.}}</option>
+            {{end}}
+        </select>
     </label>
 
-    <datalist id="projects">
-        {{range .Projects}}
-        <option value="{{.}}"></option>
-        {{end}}
-    </datalist>
     <br>
     <label>
         环境：
-        <input list="envs" name="env">
+        <select name="env">
+            <option value="dev">dev</option>
+            <option value="stage">stage</option>
+            <option value="prod">prod</option>
+        </select>
     </label>
 
-    <datalist id="envs">
-        <option value="dev">
-        <option value="stage">
-        <option value="prod">
-    </datalist>
     <br>
     <label>
         flow：
-        <input list="flows" name="flow">
+        <select name="flow">
+            <option value="all">all</option>
+            <option value="svc">svc</option>
+            <option value="ing">ing</option>
+            <option value="dep">dep</option>
+            <option value="build">build</option>
+            <option value="push">push</option>
+        </select>
     </label>
 
-    <datalist id="flows">
-        <option value="all">
-        <option value="svc">
-        <option value="ing">
-        <option value="dep">
-        <option value="build">
-        <option value="push">
-    </datalist>
+
+    <br>
+    <label>
+        分支：
+        <select name="branch"></select>
+    </label>
     <br>
     <label>
         版本：
         <input type="text" name="version">
         例如：1.1.0
-    </label>
-    <br>
-    <label>
-        发布人：
-        <input type="text" name="user">
     </label>
     <br>
     <button type="button" onclick="commit()">提交</button>

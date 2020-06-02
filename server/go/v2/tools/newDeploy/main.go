@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"runtime"
 	"strings"
 	"sync"
@@ -65,6 +66,7 @@ func main() {
 
 	app.RegisterView(iris.HTML("./templates", ".html").Layout("layout.html"))
 	app.Get("/{project}", handle)
+	app.Get("/{project}/project/{mod}", branches)
 	app.Post("/{project}/deploy", deploy)
 	if err := app.Run(iris.Addr(":9090")); err != nil && err != http.ErrServerClosed {
 		log.Println(err)
@@ -85,12 +87,26 @@ func handle(ctx iris.Context) {
 	ctx.View("mypage.html")
 }
 
+func branches(ctx iris.Context) {
+	ctx.Gzip(true)
+	GOPATH := os.Getenv("GOPATH")
+	path := GOPATH + "/src/maizuo.com/" + ctx.Params().Get("project") + "/" + ctx.Params().Get("mod")
+	cmd := exec.Command("/bin/bash", "-c", "cd "+path+"\ngit branch -r")
+	out, err := cmd.CombinedOutput()
+	log.Println(string(out))
+	if err != nil {
+		log.Println("获取分支失败,错误原因是: ", err)
+	}
+	arr := strings.Split(string(out), "\n")
+	ctx.JSON(map[string]interface{}{"data": arr[:len(arr)-1]})
+}
+
 type Dep struct {
 	Project string `json:"project"`
 	Flow    string `json:"flow"`
 	Env     string `json:"env"`
 	Version string `json:"version"`
-	User    string `json:"user"`
+	Branch  string `json:"branch"`
 }
 
 var dep Dep
