@@ -80,7 +80,7 @@ func SetupConfig(systemName string, filePath string) {
 	CommitNote = GetBranchNote()
 	log.Println("发布内容特性: ", CommitNote)
 	//获取发布者名称
-	UserName = dep.User
+	UserName = "线上发布程序"
 	log.Println("发布人: ", UserName)
 
 	//从配置文件读取配置
