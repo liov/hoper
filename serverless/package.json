@@ -1,7 +1,7 @@
 {
   "name": "serverless",
   "version": "1.0.0",
-  "description": "一个serverless的方案https://github.com/zeit/now",
+  "description": "一个serverless的方案",
   "main": "n",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
