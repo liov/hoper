@@ -117,6 +117,7 @@ func deploy(ctx iris.Context) {
 	fmt.Println(dep)
 	Env = dep.Env
 	Flow = dep.Flow
+	BranchName = dep.Branch
 	Namespace = ctx.Params().Get("project")
 	m, ok := mutexMap[Namespace]
 	if ok {

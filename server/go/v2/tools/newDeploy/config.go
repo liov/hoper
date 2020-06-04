@@ -73,8 +73,6 @@ func SetupConfig(systemName string, filePath string) {
 		log.Println("获取到的tag版本是: ", Version)
 	}
 
-	//获取分支名称
-	BranchName = GetBranchName()
 	log.Println("发布分支是: ", BranchName)
 	//获取发布内容
 	CommitNote = GetBranchNote()

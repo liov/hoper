@@ -1,24 +1,22 @@
 fn main() {
+    let a = 5;
+    let add_a = &a as *const i32;
+    println!("{}", unsafe { *add_a });
+    let b = Box::new(5);
+    let addr_b = &*b as *const i32;
+    println!("{:p}:{:p}", *&b, addr_b);
+    test1(b); //注释此行，获取正确的值，不注释，错误的值
+    println!("{:p}:地址addr_b的值：{}", addr_b, unsafe { *addr_b });
 
-        let a = 5;
-        let add_a = &a as *const i32;
-        println!("{}", unsafe { *add_a });
-        let b = Box::new(5);
-        let addr_b = &*b as *const i32;
-        println!("{:p}:{:p}", *&b, addr_b);
-        test1(b); //注释此行，获取正确的值，不注释，错误的值
-        println!("{:p}:地址addr_b的值：{}", addr_b, unsafe { *addr_b });
+    let c = Some(User { name: String::from("jyb"), age: 16 });
+    let addr_c = c.as_ref().unwrap();
+    println!("{:p},{:?}", addr_c, *addr_c);
+    let addr_cc = &c.unwrap();
+    println!("{:p},{:?}", addr_cc, *addr_cc);
+    //test3(c);
 
-        let c = Some(User { name: String::from("jyb"), age: 16 });
-        let addr_c = c.as_ref().unwrap();
-        println!("{:p},{:?}", addr_c, *addr_c);
-        let addr_cc = &c.unwrap();
-        println!("{:p},{:?}", addr_cc, *addr_cc);
-        //test3(c);
-
-    let d =Box::new(5);
-    print!("{:p}:{:p}",&d,d.as_ref())
-
+    let d = Box::new(5);
+    print!("{:p}:{:p}", &d, d.as_ref())
 }
 
 fn test1(a: Box<i32>) {
