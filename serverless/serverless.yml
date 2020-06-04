@@ -21,5 +21,12 @@ inputs:
           description: The service of Serverless Framework
           environment: release
           endpoints:
-            - path: /index
+            - path: /{id}
               method: GET
+              param:
+                - name: id
+                  position: PATH
+                  required: 'TRUE'
+                  type: number
+                  defaultValue: 200
+                  desc: mytest

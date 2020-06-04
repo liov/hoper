@@ -17,13 +17,10 @@ import (
 func GitPull(filePath string) {
 	log.Println("正在获取当前项目git最新代码")
 	err, _ := execCommand("cd " + filePath + "\ngit fetch --all && git reset --hard origin/master && git pull")
-	if Env == "dev" {
-		err, _ := execCommand("cd " + filePath + "\ngit checkout -b dev origin/dev")
-		if err != nil {
-			execCommand("cd " + filePath + "\ngit checkout dev")
-		}
-	} else {
-		execCommand("cd " + filePath + "\ngit checkout deploy")
+
+	err, _ = execCommand("cd " + filePath + "\ngit checkout -b " + BranchName + " origin/" + BranchName)
+	if err != nil {
+		execCommand("cd " + filePath + "\ngit checkout " + BranchName)
 	}
 
 	err, _ = execCommand("cd " + filePath + "\ngit pull")
@@ -40,7 +37,7 @@ func GetGitTag(filePath string) string {
 		log.Println("获取tag失败,错误原因是: ", err.Error())
 		return ""
 	}
-	arr := strings.Split(string(result[:]), "\n")
+	arr := strings.Split(result[:], "\n")
 	if len(arr) < 2 {
 		return ""
 	}

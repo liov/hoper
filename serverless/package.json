@@ -8,7 +8,8 @@
   },
   "author": "liov",
   "license": "MIT",
-  "devDependencies": {
-    "@now/node": "^1.6.1"
+  "devDependencies": {},
+  "dependencies": {
+    "serverless-plugin-typescript": "^1.1.9"
   }
 }

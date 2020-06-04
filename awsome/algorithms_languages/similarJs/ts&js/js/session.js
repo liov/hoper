@@ -19,7 +19,7 @@ function gen() {
     }
     console.log(Buffer.from(JSON.stringify(header)).toString('base64'))
     let crm_header = {
-        "userId":1870
+        "userId":200
     }
     console.log(Buffer.from(JSON.stringify(crm_header)).toString('base64'))
     crm_header = {
