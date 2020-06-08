@@ -12,32 +12,18 @@ pub struct MyTree<T: PartialOrd + Debug> {
 impl<T: PartialOrd + Debug> MyTree<T> {
     pub fn insert(&mut self, data: T) {
         match self.data {
-            Some(ref mut rdata) =>
-                if data < **rdata {
-                    match self.left {
-                        Some(ref mut left) =>
-                            left.insert(data),
-                        None =>
-                            {
-                                self.left = Some(Box::new(MyTree::new()));
-                                if let Some(ref mut left) = self.left {
-                                    left.insert(data)
-                                }
-                            }
-                    }
-                } else {
-                    match self.right {
-                        Some(ref mut right) =>
-                            right.insert(data),
-                        None =>
-                            {
-                                self.right = Some(Box::new(MyTree::new()));
-                                if let Some(ref mut right) = self.right {
-                                    right.insert(data)
-                                }
-                            }
-                    }
+            Some(ref mut rdata) => {
+                let node = if data < **rdata { &mut self.left } else { &mut self.right };
+                match node {
+                    Some(ref mut node) =>
+                        node.insert(data),
+                    None =>
+                        {
+                            *node = Some(Box::new(MyTree::new()));
+                            node.as_mut().unwrap().insert(data)
+                        }
                 }
+            }
             None => self.data = Some(Box::new(data)),
         }
     }
@@ -52,16 +38,12 @@ impl<T: PartialOrd + Debug> MyTree<T> {
     pub fn peek(&self) {
         match self.data {
             Some(ref data) => {
-                println!("{:?}", **data);
-                match self.left {
-                    Some(ref left) =>
-                        left.peek(),
-                    None => {}
+                if let Some(ref left) = self.left {
+                    left.peek()
                 }
-                match self.right {
-                    Some(ref right) =>
-                        right.peek(),
-                    None => {}
+                println!("{:?}", **data);
+                if let Some(ref right) = self.right {
+                    right.peek()
                 }
             }
             None => {}
@@ -129,12 +111,12 @@ pub struct TNode<T> {
     right: TTree<T>,
 }
 
-impl<T> TNode<T>{
-    fn new(t:T) ->TNode<T> {
-        TNode{
+impl<T> TNode<T> {
+    fn new(t: T) -> TNode<T> {
+        TNode {
             elem: t,
             left: None,
-            right: None
+            right: None,
         }
     }
 }
@@ -143,7 +125,7 @@ impl<T> TNode<T>{
 pub type TTree<T> = Option<Box<TNode<T>>>;
 
 pub trait TreeT<T> {
-    fn new() -> TTree<T> ;
+    fn new() -> TTree<T>;
     fn insert(&mut self, data: T);
 }
 
@@ -157,11 +139,11 @@ Here's one example of this error:*/
 //1.类型别名不能实现方法,不能为crate外的类型实现方法，必须通过trait
 impl<T: PartialOrd + Debug + Display> TreeT<T> for Option<Box<TNode<T>>> {
     fn new() -> TTree<T> {
-       None
-   }
+        None
+    }
 
     //E0449A visibility qualifier was used when it was unnecessary. Erroneous code examples:
-     fn insert(&mut self, data: T) {
+    fn insert(&mut self, data: T) {
         match self {
             Some(ref mut node) =>
                 if node.elem > data {

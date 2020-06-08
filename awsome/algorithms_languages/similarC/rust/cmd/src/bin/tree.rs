@@ -1,4 +1,4 @@
-#![feature(async_await,await_macro, futures_api)]
+#![feature(async_await, futures_api)]
 
 use hoper::utils::tree::MyTree;
 use std::ops::Deref;
@@ -67,10 +67,10 @@ enum Message {
 impl Message {
     async  fn call(&self) {
        // 在这里定义方法体
-       await!(async {
+       async {
             // 省略业务代码
             "set state".to_owned()
-        });
+        };
    }
 }
 

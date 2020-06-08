@@ -9,3 +9,7 @@ docker login
 docker push liovjyb/pause:3.1
 sudo ./k3s server --pause-image=liovjyb/pause:3.1
 https://github.com/rancher/k3s/issues/396
+
+docker pull mirrorgooglecontainers/xxx:vx.y.z
+
+docker tag mirrorgooglecontainers/xxx:vx.y.z k8s.gcr.io/xxx:vx.y.z

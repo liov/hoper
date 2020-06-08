@@ -7,7 +7,7 @@ build = "build.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-cpp = "0.5.3"
+cpp = "0.5"
 
 [build-dependencies]
-cpp_build = "0.5.3"
+cpp_build = "0.5"

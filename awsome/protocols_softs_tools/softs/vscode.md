@@ -1,2 +1,18 @@
 vscode的启动速度已经快到可以接受的程度了
 似乎要与sublime说再见了
+
+remote-ssh 设置配置文件
+
+ssh $user@$domain -p $port -A
+
+Host dev
+    HostName 192.168.1.212
+    User crm
+    Port 10000
+    ForwardAgent no #ssh转发
+    IdentityFile ~/.ssh/id_rsa-remote-ssh
+    
+连接输密码（推荐使用IdentityFile ）
+
+vscode remote 爱了啊，打印调用行数能直接跳转,除了不能保存密码
+要不是xshell极低的资源占用
