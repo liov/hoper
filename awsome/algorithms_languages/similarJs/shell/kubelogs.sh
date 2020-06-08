@@ -3,6 +3,12 @@
 # shellcheck disable=SC2006
 kubectl config use-context stage -n namespace&& pod=`kubectl get pods |grep -oE podname[a-zA-Z0-9-]*` && kubectl logs -f $pod
 
+pods=$(kubectl get pods --selector=job-name=pi --output=jsonpath={.items..metadata.name}) && kubectl logs $pods
+
+kubectl describe deployment data-center
+
+pods=$(kubectl get pods --selector=app=data-center --output=jsonpath={.items..metadata.name}) && kubectl logs -f $pods
+
 ../deploy/main -flow all -env dev -name ${PWD##*/} -ns openmng -path . -ver v1.1.0-$(date "+%Y%m%d%H%M%S")
 
 # 获取当前时间
