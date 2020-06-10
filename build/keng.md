@@ -140,3 +140,18 @@ slf4j.log4j12 的依赖问题
 
 # Every derived table must have its own alias
 在做多表查询，或者查询的时候产生新的表的时候会出现这个错误：Every derived table must have its own alias（每一个派生出来的表都必须有一个自己的别名）。
+
+# windows OpenSSH WARNING: UNPROTECTED PRIVATE KEY FILE!
+ssh-keygen -t rsa
+
+$env:username
+更改文件所有者
+
+vim /etc/ssh/sshd_config
+AuthorizedKeysFile   .ssh/authorized_keys   //公钥公钥认证文件
+RSAAuthentication yes
+PubkeyAuthentication yes   //可以使用公钥登录
+
+vim ~/.ssh/authorized_keys
+
+service sshd restart
