@@ -40,7 +40,7 @@ function bubbleSort(array) {
     return array;
 }
 
-console.log(bubbleSort(arr));
+//console.log(bubbleSort(arr));
 
 /*
 改进冒泡排序： 设置一标志性变量pos,用于记录每趟排序中最后一次进行交换的位置。由于pos位置之后的记录均已交换到位,故在进行下一趟排序时只要扫描到pos位置即可。
@@ -64,7 +64,7 @@ function bubbleSort2(array) {
     return array;
 }
 
-console.log(bubbleSort2(arr));
+//console.log(bubbleSort2(arr));
 
 function bubbleSort3(array) {
     var low = 0;
@@ -91,7 +91,7 @@ function bubbleSort3(array) {
     return array;
 }
 
-console.log(bubbleSort3(arr));
+//console.log(bubbleSort3(arr));
 
 function bubbleSort4(array) {
     var low = 0;
@@ -119,7 +119,7 @@ function bubbleSort4(array) {
     return array;
 }
 
-console.log(bubbleSort4(arr));
+//console.log(bubbleSort4(arr));
 
 /*2.选择排序（Selection Sort）
 表现最稳定的排序算法之一(这个稳定不是指算法层面上的稳定哈，相信聪明的你能明白我说的意思2333)，因为无论什么数据进去都是O(n²)的时 间复杂度.....所以用到它的时候，数据规模越小越好。唯一的好处可能就是不占用额外的内存空间了吧。理论上讲，选择排序可能也是平时排序一般人想到的 最多的排序方法了吧。
@@ -158,7 +158,7 @@ function selectionSort(array) {
     return array;
 }
 
-console.log(selectionSort(arr));
+//console.log(selectionSort(arr));
 
 /*3.插入排序（Insertion Sort）
 插入排序的代码实现虽然没有冒泡排序和选择排序那么简单粗暴，但它的原理应该是最容易理解的了，因为只要打过扑克牌的人都应该能够秒懂。当然，如果你说你打扑克牌摸牌的时候从来不按牌的大小整理牌，那估计这辈子你对插入排序的算法都不会产生任何兴趣了.....
@@ -200,7 +200,7 @@ function insertionSort(array) {
     }
 }
 
-console.log(insertionSort(arr));
+//console.log(insertionSort(arr));
 
 //改进插入排序： 查找插入位置时使用二分查找的方式
 
