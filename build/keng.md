@@ -155,3 +155,6 @@ PubkeyAuthentication yes   //可以使用公钥登录
 vim ~/.ssh/authorized_keys
 
 service sshd restart
+
+# nginx nginx: [emerg] unexpected "}" in
+空格与制表符，nginx每行配置不支持空格开头

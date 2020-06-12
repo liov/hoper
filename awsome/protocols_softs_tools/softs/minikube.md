@@ -8,5 +8,7 @@ docker中部署Kubernetes
 minikube start --driver=docker 
 外网通过代理访问docker中的服务
 --url只打印url不自动打开浏览器
-//暴露给外网
-minikube kubectl --  proxy --port=8001 --address='192.168.1.212' --accept-hosts='^.*' &
+//通过代理暴露集群内ip
+kubectl proxy --port=8001 --address='0.0.0.0' --accept-hosts='^.*' &
+& 号将命令放到后台运行
+http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/#/overview?namespace=default
