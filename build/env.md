@@ -56,7 +56,7 @@ tar -Jxvf
 # yarn
 wget https://yarnpkg.com/latest.tar.gz
 
-tar zvxf latest.tar.gz
+tar -zvxf latest.tar.gz
 
 
 # git

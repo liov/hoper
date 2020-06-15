@@ -1,1 +1,0 @@
-看了下ant，不如花功夫在bazel和gradle上，自定义任务的在构建中很关键，抛弃maven了

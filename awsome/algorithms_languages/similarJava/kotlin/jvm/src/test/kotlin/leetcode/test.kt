@@ -103,4 +103,9 @@ class Solution {
     val arr = intArrayOf(1,2)
     println(combinationSum(arr,4))
   }
+
+  @Test
+  fun strStr() {
+    println(strStr("hello","llo"))
+  }
 }

@@ -7,3 +7,5 @@ nginx
 netcat
 jdk
 terminal
+bazel
+apollo/nacos 比较后选用nacos
