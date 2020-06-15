@@ -36,3 +36,39 @@ kubectl create -n <namespace> -f <your-app-spec>.yaml
 在没有istio-injection标签的命名空间中，您可以使用 istioctl kube-inject 在部署它们之前在应用程序窗格中手动注入Envoy容器：
 istioctl kube-inject -f <your-app-spec>.yaml | kubectl apply -f -
 ```
+
+# 2020-06-15
+```bash
+cd istio-1.6.2
+export PATH=$PWD/bin:$PATH
+istioctl manifest apply --set profile=demo
+```
+## 卸载
+```bash
+istioctl manifest generate --set profile=demo | kubectl delete -f -
+```
+
+# Helm 部署(已弃用)
+```bash
+curl -L https://git.io/getLatestIstio | sh -
+sudo apt-get install -y jq
+ISTIO_VERSION=$(curl -L -s https://api.github.com/repos/istio/istio/releases/latest | jq -r .tag_name)
+cd istio-${ISTIO_VERSION}
+cp bin/istioctl /usr/local/bin
+
+kubectl create -f install/kubernetes/helm/helm-service-account.yaml
+helm init --service-account tiller
+
+kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
+helm install install/kubernetes/helm/istio --name istio --namespace istio-system \
+  --set ingress.enabled=true \
+  --set gateways.enabled=true \
+  --set galley.enabled=true \
+  --set sidecarInjectorWebhook.enabled=true \
+  --set mixer.enabled=true \
+  --set prometheus.enabled=true \
+  --set grafana.enabled=true \
+  --set servicegraph.enabled=true \
+  --set tracing.enabled=true \
+  --set kiali.enabled=false
+```
