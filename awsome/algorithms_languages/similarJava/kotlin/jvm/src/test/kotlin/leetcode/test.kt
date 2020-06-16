@@ -108,4 +108,18 @@ class Solution {
   fun strStr() {
     println(strStr("hello","llo"))
   }
+  @Test
+  fun serialize(){
+    val node = TreeNode(0).apply {
+      left = TreeNode(0).apply {
+        left = TreeNode(0)
+      }
+      right = TreeNode(0).apply {
+        right = TreeNode(1).apply {
+          right = TreeNode(2)
+        }
+      }
+    }
+    println(serialize(node))
+  }
 }

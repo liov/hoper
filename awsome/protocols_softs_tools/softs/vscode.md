@@ -11,6 +11,9 @@ Host dev
     Port 10000
     ForwardAgent no #ssh转发
     IdentityFile ~/.ssh/id_rsa-remote-ssh
+    DynamicForward 1080
+    ForwardX11 yes
+    ForwardX11Trusted yes
     
 连接输密码（推荐使用IdentityFile ）
 
