@@ -120,9 +120,9 @@ class BinaryTree<T : Comparable<T>> {
    */
   fun midRecursive(node: Node<T>? = root) {
     if (node != null) {
-      midRecursive(node.left);
-      print("${node.value} ");
-      midRecursive(node.right);
+      midRecursive(node.left)
+      print("${node.value} ")
+      midRecursive(node.right)
     }
   }
 
