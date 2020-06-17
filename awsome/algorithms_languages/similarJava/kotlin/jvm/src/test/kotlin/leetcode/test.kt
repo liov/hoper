@@ -120,6 +120,10 @@ class Solution {
         }
       }
     }
-    println(serialize(node))
+    println(serialize(deserialize("0,0,0,0,null,null,1,null,null,null,2")))
+  }
+  @Test
+  fun maxScoreSightseeingPair(){
+    println(maxScoreSightseeingPair(intArrayOf(8,1,5,2,6)))
   }
 }
