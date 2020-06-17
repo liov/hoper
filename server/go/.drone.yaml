@@ -22,9 +22,9 @@ steps:
       password:
         from_secret: repo_pass
         #上面配置drone项目中设置的secret就是在此处调用的
-      repo: reg.miz.so/sanger/go-example
+      repo: reg.hoper.xyz/sanger/go-example
       # 你的仓库和项目的地址
-      registry: reg.miz.so/sanger
+      registry: reg.hoper.xyz/sanger
       # 你的仓库的地址
       tags: ${DRONE_BUILD_NUMBER}
       #这一个drone的环境变量，表示本次的构建号
