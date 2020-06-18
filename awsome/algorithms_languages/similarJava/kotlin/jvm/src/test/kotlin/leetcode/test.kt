@@ -126,4 +126,8 @@ class Solution {
   fun maxScoreSightseeingPair(){
     println(maxScoreSightseeingPair(intArrayOf(8,1,5,2,6)))
   }
+  @Test
+  fun recoverFromPreorder(){
+    println(serialize(recoverFromPreorder("7-6--2--10---1----7-----4----10---4")))
+  }
 }
