@@ -130,4 +130,23 @@ class Solution {
   fun recoverFromPreorder(){
     println(serialize(recoverFromPreorder("7-6--2--10---1----7-----4----10---4")))
   }
+  @Test
+  fun isPalindrome(){
+    println(isPalindrome("0P"))
+  }
+  @Test
+  fun rotate(){
+    val arr = arrayOf(
+      intArrayOf(5, 1, 9,11),
+      intArrayOf(2, 4, 8,10),
+      intArrayOf(13, 3, 6, 7),
+      intArrayOf(15,14,12,16)
+    )
+    rotate(arr)
+    println(arr)
+  }
+  @Test
+  fun firstMissingPositive(){
+    println(firstMissingPositive(intArrayOf(0,-1,3,1)))
+  }
 }
