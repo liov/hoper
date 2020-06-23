@@ -45,5 +45,8 @@ fun firstMissingPositive(nums: IntArray): Int {
       if (nums[minZeroIdx] != 0) minZeroIdx = i
     }
   }
-  return if (nums[0] == 1 && minZeroIdx == 0 && nums.last() == nums.size) return nums.size + 1 else minZeroIdx + 1
+  for(i in nums.indices){
+    if (nums[i] == 0) return i+1
+  }
+  return if (nums[0] == 1 && minZeroIdx == 0 && nums.last() == nums.size) return nums.size + 1 else 1
 }

@@ -149,4 +149,8 @@ class Solution {
   fun firstMissingPositive(){
     println(firstMissingPositive(intArrayOf(0,-1,3,1)))
   }
+  @Test
+  fun addBinary(){
+    println(addBinary("1010","1011"))
+  }
 }
