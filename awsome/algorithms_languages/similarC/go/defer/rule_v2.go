@@ -16,6 +16,9 @@ func main() {
 	fmt.Println("=========================")
 
 	fmt.Println("return:", fun4())
+	fmt.Println("=========================")
+
+	fmt.Println("return:", fun5(8))
 }
 
 func fun1() (i int) {
@@ -67,5 +70,13 @@ func fun4() int {
 		fmt.Println(i)
 	}(i)
 	i = 19
+	return i
+}
+
+func fun5(i int) int {
+	defer func() {
+		i += 1
+		fmt.Println(i)
+	}()
 	return i
 }
