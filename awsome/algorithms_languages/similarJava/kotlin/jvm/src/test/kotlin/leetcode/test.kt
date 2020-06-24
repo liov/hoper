@@ -153,4 +153,19 @@ class Solution {
   fun addBinary(){
     println(addBinary("1010","1011"))
   }
+  @Test
+  fun threeSumClosest(){
+    println(threeSumClosest(intArrayOf(1,6,9,14,16,70),81))
+  }
+  @Test
+  fun myPow(){
+    println(Int.MIN_VALUE)
+    println(Int.MAX_VALUE)
+    println(myPow(2.00000 ,-2147483648))
+  }
+  @Test
+  fun searchRange(){
+    val arr = searchRange(intArrayOf(2,2,2),2)
+    println("${arr[0]},${arr[1]}")
+  }
 }
