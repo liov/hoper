@@ -34,16 +34,16 @@ fun addBinary(a: String, b: String): String {
   var carry = false
   var oneCount = 0 //1出现的次数，偶数该位置0且进一位
   val ret = StringBuilder(maxLen + 1)
-  var aIdx:Int
-  var bIdx:Int
+  var aIdx: Int
+  var bIdx: Int
   for (i in 0 until maxLen) {
-    aIdx = a.length-1-i
-    bIdx = b.length-1-i
+    aIdx = a.length - 1 - i
+    bIdx = b.length - 1 - i
     if (aIdx >= 0 && a[aIdx] == '1') oneCount++
     if (bIdx >= 0 && b[bIdx] == '1') oneCount++
     if (carry) oneCount++
     ret.append('0' + (oneCount and 1))
-    carry = oneCount > 1 //多余两个1进1位
+    carry = oneCount > 1 //两个或三个1进1位
     oneCount = 0
   }
   if (carry) ret.append('1')
