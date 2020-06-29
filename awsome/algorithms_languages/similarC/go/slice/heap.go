@@ -55,3 +55,23 @@ func (h *MinHeap) Less(i, j int) bool   { return (*h)[i] < (*h)[j] }
 func (h *MinHeap) Swap(i, j int)        { (*h)[i], (*h)[j] = (*h)[j], (*h)[i] }
 func (h *MinHeap) Push(x interface{})   { *h = append(*h, x.(int)) }
 func (h *MinHeap) Pop() (i interface{}) { i, *h = (*h)[len(*h)-1], (*h)[:len(*h)-1]; return i }
+
+func buildMaxHeap(a []int, heapSize int) {
+	for i := heapSize / 2; i >= 0; i-- {
+		maxHeapify(a, i, heapSize)
+	}
+}
+
+func maxHeapify(a []int, i, heapSize int) {
+	l, r, largest := i*2+1, i*2+2, i
+	if l < heapSize && a[l] > a[largest] {
+		largest = l
+	}
+	if r < heapSize && a[r] > a[largest] {
+		largest = r
+	}
+	if largest != i {
+		a[i], a[largest] = a[largest], a[i]
+		maxHeapify(a, largest, heapSize)
+	}
+}
