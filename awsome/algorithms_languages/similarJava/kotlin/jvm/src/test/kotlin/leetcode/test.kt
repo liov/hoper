@@ -83,33 +83,37 @@ class Solution {
   }
 
   @Test
-  fun fourSum(){
+  fun fourSum() {
     val arr = intArrayOf(1, 0, -1, 0, -2, 2)
-    println(fourSum(arr,0))
+    println(fourSum(arr, 0))
   }
 
   @Test
-   fun removeNthFromEnd(){
-    val node = ListNode(1).apply { next = ListNode(2).
-    apply { next = ListNode(3).
-    apply { next = ListNode(4).
-    apply { next = ListNode(5)}}} }
-    println(removeNthFromEnd(node,2))
+  fun removeNthFromEnd() {
+    val node = ListNode(1).apply {
+      next = ListNode(2).apply {
+        next = ListNode(3).apply {
+          next = ListNode(4).apply { next = ListNode(5) }
+        }
+      }
+    }
+    println(removeNthFromEnd(node, 2))
   }
 
 
   @Test
-  fun combinationSum(){
-    val arr = intArrayOf(1,2)
-    println(combinationSum(arr,4))
+  fun combinationSum() {
+    val arr = intArrayOf(1, 2)
+    println(combinationSum(arr, 4))
   }
 
   @Test
   fun strStr() {
-    println(strStr("hello","llo"))
+    println(strStr("hello", "llo"))
   }
+
   @Test
-  fun serialize(){
+  fun serialize() {
     val node = TreeNode(0).apply {
       left = TreeNode(0).apply {
         left = TreeNode(0)
@@ -122,50 +126,85 @@ class Solution {
     }
     println(serialize(deserialize("0,0,0,0,null,null,1,null,null,null,2")))
   }
+
   @Test
-  fun maxScoreSightseeingPair(){
-    println(maxScoreSightseeingPair(intArrayOf(8,1,5,2,6)))
+  fun maxScoreSightseeingPair() {
+    println(maxScoreSightseeingPair(intArrayOf(8, 1, 5, 2, 6)))
   }
+
   @Test
-  fun recoverFromPreorder(){
+  fun recoverFromPreorder() {
     println(serialize(recoverFromPreorder("7-6--2--10---1----7-----4----10---4")))
   }
+
   @Test
-  fun isPalindrome(){
+  fun isPalindrome() {
     println(isPalindrome("0P"))
   }
+
   @Test
-  fun rotate(){
+  fun rotate() {
     val arr = arrayOf(
-      intArrayOf(5, 1, 9,11),
-      intArrayOf(2, 4, 8,10),
+      intArrayOf(5, 1, 9, 11),
+      intArrayOf(2, 4, 8, 10),
       intArrayOf(13, 3, 6, 7),
-      intArrayOf(15,14,12,16)
+      intArrayOf(15, 14, 12, 16)
     )
     rotate(arr)
     println(arr)
   }
+
   @Test
-  fun firstMissingPositive(){
-    println(firstMissingPositive(intArrayOf(0,-1,3,1)))
+  fun firstMissingPositive() {
+    println(firstMissingPositive(intArrayOf(0, -1, 3, 1)))
   }
+
   @Test
-  fun addBinary(){
-    println(addBinary("1010","1011"))
+  fun addBinary() {
+    println(addBinary("1010", "1011"))
   }
+
   @Test
-  fun threeSumClosest(){
-    println(threeSumClosest(intArrayOf(1,6,9,14,16,70),81))
+  fun threeSumClosest() {
+    println(threeSumClosest(intArrayOf(1, 6, 9, 14, 16, 70), 81))
   }
+
   @Test
-  fun myPow(){
+  fun myPow() {
     println(Int.MIN_VALUE)
     println(Int.MAX_VALUE)
-    println(myPow(2.00000 ,-2147483648))
+    println(myPow(2.00000, -2147483648))
+  }
+
+  @Test
+  fun searchRange() {
+    val arr = searchRange(intArrayOf(2, 2, 2), 2)
+    println("${arr[0]},${arr[1]}")
+  }
+
+  @Test
+  fun minSubArrayLen() {
+    println(minSubArrayLen(7, intArrayOf(2, 3, 1, 2, 4, 3)))
+  }
+
+  @Test
+  fun longestValidParentheses() {
+    println(longestValidParentheses("(()("))
+  }
+
+  @Test
+  fun isValidSudoku() {
+    for (i in 0 until 9) {
+      println("---$i---")
+      for (j in 0 until 9) {
+        val x = j / 3 + (i / 3) * 3
+        val y = j % 3 + (i % 3) * 3
+        println("($x,$y)")
+      }
+    }
   }
   @Test
-  fun searchRange(){
-    val arr = searchRange(intArrayOf(2,2,2),2)
-    println("${arr[0]},${arr[1]}")
+  fun findKthLargest(){
+    println(findKthLargest(intArrayOf(3,2,1,5,6,4),2))
   }
 }

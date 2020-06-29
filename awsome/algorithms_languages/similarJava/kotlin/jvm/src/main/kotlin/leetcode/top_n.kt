@@ -139,7 +139,7 @@ fun topMaxN() {
 /***
  * 遍历数据组，并维护最小堆
  */
-private fun findTopMaxN(heap: IntArray, topN: Int) {
+fun findTopMaxN(heap: IntArray, topN: Int) {
   for (i in topN until heap.size) {
     adjustDownTopMaxN(heap, topN, i)
   }
@@ -148,22 +148,8 @@ private fun findTopMaxN(heap: IntArray, topN: Int) {
 /***
  * 创建最小堆
  */
-private fun createHeapMin(heap: IntArray, size: Int) {
-  for (i in 1 until size) {
-    adjustUpMin(heap, i)
-  }
-}
-
-/***
- * 向上调整新加入节点位置
- */
-private fun adjustUpMin(heap: IntArray, _pos: Int) {
-  var pos = _pos
-  while (parent(pos) >= 0 && heap[parent(pos)] > heap[pos]) {
-    val parent = parent(pos)
-    swap(heap, parent, pos)
-    pos = parent
-  }
+fun createHeapMin(heap: IntArray, size: Int) {
+  createHeap(heap, size){i,j->i>j}
 }
 
 /***
@@ -193,9 +179,13 @@ private fun adjustDownTopMaxN(heap: IntArray, topN: Int, pos: Int) {
 }
 
 private fun adjustDownTopMaxN(heap: IntArray, v: Int) {
+  adjustDownTop(heap,v){i,j->i >= j}
+}
+
+private fun adjustDownTop(heap: IntArray, v: Int,less: (Int,Int) -> Boolean){
   //比topN中最小的还要小直接返回
 
-  if (heap[0] >= v) {
+  if (less(heap[0],v)) {
     return
   }
   var pos = 0
@@ -244,26 +234,28 @@ private fun findTopMinN(heap: IntArray, topN: Int) {
   }
 }
 
-/***
- * 创建最大堆
- */
-private fun createHeapMax(heap: IntArray, size: Int) {
+
+private fun createHeap(heap: IntArray, size: Int,less: (Int,Int) -> Boolean) {
   for (i in 1 until size) {
-    adjustUpMax(heap, i)
+    adjustUp(heap, i,less)
   }
 }
 
-/***
- * 向上调整新加入节点位置
- */
-private fun adjustUpMax(heap: IntArray, pos: Int) {
+private fun adjustUp(heap: IntArray, pos: Int,less: (Int,Int) -> Boolean) {
   var pos = pos
-  while (parent(pos) >= 0 && heap[parent(pos)] < heap[pos]) {
+  while (parent(pos) >= 0 && less(heap[parent(pos)],heap[pos])) {
     val parent = parent(pos)
     swap(heap, parent, pos)
     pos = parent
   }
 }
+/***
+ * 创建最大堆
+ */
+private fun createHeapMax(heap: IntArray, size: Int) {
+  createHeap(heap, size){i,j->i<j}
+}
+
 
 /***
  * 向下调整新加入节点位置，并维护最大堆
