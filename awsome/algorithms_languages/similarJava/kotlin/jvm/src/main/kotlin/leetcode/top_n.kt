@@ -107,9 +107,7 @@ fun printArrSorted(arr: IntArray) {
  * 打印数组
  */
 fun printArr(arr: IntArray) {
-  for (i in arr) {
-    print("$i ")
-  }
+  for (i in arr) print("$i ")
   println()
 }
 
@@ -136,74 +134,6 @@ fun topMaxN() {
   printArrSorted(heap)
 }
 
-/***
- * 遍历数据组，并维护最小堆
- */
-fun findTopMaxN(heap: IntArray, topN: Int) {
-  for (i in topN until heap.size) {
-    adjustDownTopMaxN(heap, topN, i)
-  }
-}
-
-/***
- * 创建最小堆
- */
-fun createHeapMin(heap: IntArray, size: Int) {
-  createHeap(heap, size){i,j->i>j}
-}
-
-/***
- * 向下调整新加入节点位置，并维护最小堆
- */
-private fun adjustDownTopMaxN(heap: IntArray, topN: Int, pos: Int) {
-  //比topN中最小的还要小直接返回
-  var pos = pos
-  if (heap[0] >= heap[pos]) {
-    return
-  }
-  swap(heap, 0, pos)
-  pos = 0
-  while (leftChild(pos) < topN) {
-    var child = leftChild(pos)
-    //判断左右孩子的大小，child代表较小的孩子
-    if (child + 1 < topN && heap[child + 1] < heap[child]) {
-      child++
-    }
-    //新节点比较小的孩子都小，说明找到对应位置，直接跳出循环
-    if (heap[child] >= heap[pos]) {
-      break
-    }
-    swap(heap, pos, child)
-    pos = child
-  }
-}
-
-private fun adjustDownTopMaxN(heap: IntArray, v: Int) {
-  adjustDownTop(heap,v){i,j->i >= j}
-}
-
-private fun adjustDownTop(heap: IntArray, v: Int,less: (Int,Int) -> Boolean){
-  //比topN中最小的还要小直接返回
-
-  if (less(heap[0],v)) {
-    return
-  }
-  var pos = 0
-  heap[0] = v
-  while (leftChild(pos) < heap.size) {
-    var child = leftChild(pos)
-    //判断左右孩子的大小，child代表较小的孩子
-    if (child + 1 < heap.size && heap[child + 1] < heap[child]) {
-      child++
-    }
-    //新节点比较小的孩子都小，说明找到对应位置，直接跳出循环
-    if (heap[child] >= heap[pos]) {
-      break
-    }
-    swap(heap, pos, child)
-    pos = child
-  }
-}
 
 /***
  * 前N个最小值
@@ -225,63 +155,110 @@ fun topMinN() {
   printArrSorted(heap)
 }
 
+
 /***
- * 遍历数据组，并维护最大堆
+ * 遍历数据组，并维护最小堆
  */
-private fun findTopMinN(heap: IntArray, topN: Int) {
-  for (i in topN until heap.size) {
-    adjustDownTopMinN(heap, topN, i)
-  }
+fun findTopMaxN(heap: IntArray, topN: Int) {
+  findTopN(heap, topN){i, j -> i < j}
 }
 
 
-private fun createHeap(heap: IntArray, size: Int,less: (Int,Int) -> Boolean) {
+fun createHeap(heap: IntArray, size: Int, less: (Int, Int) -> Boolean) {
   for (i in 1 until size) {
-    adjustUp(heap, i,less)
+    adjustUp(heap, i, less)
   }
 }
 
-private fun adjustUp(heap: IntArray, pos: Int,less: (Int,Int) -> Boolean) {
+private fun adjustUp(heap: IntArray, pos: Int, less: (Int, Int) -> Boolean) {
   var pos = pos
-  while (parent(pos) >= 0 && less(heap[parent(pos)],heap[pos])) {
+  while (parent(pos) >= 0 && less(heap[pos],heap[parent(pos)])) {
     val parent = parent(pos)
     swap(heap, parent, pos)
     pos = parent
   }
 }
+
 /***
- * 创建最大堆
+ * 遍历数据组，并维护最大堆
  */
-private fun createHeapMax(heap: IntArray, size: Int) {
-  createHeap(heap, size){i,j->i<j}
+private fun findTopN(heap: IntArray, topN: Int, less: (Int, Int) -> Boolean) {
+  for (i in topN until heap.size) {
+    adjustDownTopN(heap, topN, i,less)
+  }
+}
+
+private fun adjustDown(heap: IntArray, i: Int, less: (Int, Int) -> Boolean) {
+  var pos = i
+  while (leftChild(pos) < heap.size) {
+    var child = leftChild(pos)
+    //判断左右孩子的大小，child代表较小的孩子
+    if (child + 1 < heap.size && less(heap[child + 1],heap[child]))  child++
+    //新节点比较小的孩子都小，说明找到对应位置，直接跳出循环
+    if (less(heap[pos],heap[child])) break
+    swap(heap, pos, child)
+    pos = child
+  }
+}
+
+private fun adjustDownTop(heap: IntArray, v: Int, less: (Int, Int) -> Boolean) {
+  //比topN中最小的还要小直接返回
+  if (less(v,heap[0])) return
+  heap[0] = v
+  adjustDown(heap,0,less)
 }
 
 
 /***
  * 向下调整新加入节点位置，并维护最大堆
  */
-private fun adjustDownTopMinN(heap: IntArray, topN: Int, pos: Int) {
+private fun adjustDownTopN(heap: IntArray, topN: Int, pos: Int, less: (Int, Int) -> Boolean) {
   //比topN中最大的还要大直接返回
-  var pos = pos
-  if (heap[0] <= heap[pos]) {
-    return
-  }
+  if (less(heap[pos], heap[0])) return
   swap(heap, 0, pos)
-  pos = 0
-  while (leftChild(pos) < topN) {
-    var child = leftChild(pos)
-    //判断左右孩子的大小，child代表较大的孩子
-    if (child + 1 < topN && heap[child + 1] > heap[child]) {
-      child++
-    }
-    //新节点比较大的孩子都大，说明找到位置，直接跳出循环
-    if (heap[child] <= heap[pos]) {
-      break
-    }
-    swap(heap, pos, child)
-    pos = child
-  }
+  adjustDown(heap,0,less)
 }
+
+/***
+ * 创建最大堆
+ */
+private fun createHeapMax(heap: IntArray, size: Int) {
+  createHeap(heap, size) { i, j -> i > j }
+}
+
+
+/***
+ * 创建最小堆
+ */
+fun createHeapMin(heap: IntArray, size: Int) {
+  createHeap(heap, size) { i, j -> i < j }
+}
+
+/***
+ * 向下调整新加入节点位置，并维护最大堆
+ */
+private fun adjustDownTopMinN(heap: IntArray, topN: Int, pos: Int) {
+  adjustDownTopN(heap, topN, pos) { i, j -> i > j }
+}
+
+/***
+ * 遍历数据组，并维护最大堆
+ */
+private fun findTopMinN(heap: IntArray, topN: Int) {
+  findTopN(heap, topN){i, j -> i > j}
+}
+
+/***
+ * 向下调整新加入节点位置，并维护最小堆
+ */
+private fun adjustDownTopMaxN(heap: IntArray, topN: Int, pos: Int) {
+  adjustDownTopN(heap, topN, pos) { i, j -> i < j }
+}
+
+private fun adjustDownTopMaxN(heap: IntArray, v: Int) {
+  adjustDownTop(heap, v) { i, j -> i < j }
+}
+
 
 //原来一直疑惑topN为什么用小顶堆，我还想要用最大堆，然后插进来一个元素就剔除最小的那个，原来最小堆直接剔除根节点就行了...
 /*首先，我们需要构建一个大小为N的小顶堆，小顶堆的性质如下：
