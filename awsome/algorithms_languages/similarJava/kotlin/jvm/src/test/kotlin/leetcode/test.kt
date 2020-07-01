@@ -207,4 +207,8 @@ class Solution {
   fun findKthLargest(){
     println(findKthLargest(intArrayOf(3,2,1,5,6,4),2))
   }
+  @Test
+  fun findLength(){
+    println(findLength(intArrayOf(3,2,1,5),intArrayOf(1,5)))
+  }
 }
