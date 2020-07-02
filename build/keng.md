@@ -158,3 +158,6 @@ service sshd restart
 
 # nginx nginx: [emerg] unexpected "}" in
 空格与制表符，nginx每行配置不支持空格开头
+
+# nacos k8s 部署503
+[执行sql](https://github.com/alibaba/nacos/blob/b9ff53b49cec5ca7cf37736ebc9c1c2bb4a108a8/config/src/main/resources/META-INF/nacos-db.sql)
