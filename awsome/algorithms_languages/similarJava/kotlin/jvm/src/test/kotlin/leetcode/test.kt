@@ -211,4 +211,8 @@ class Solution {
   fun findLength(){
     println(findLength(intArrayOf(3,2,1,5),intArrayOf(1,5)))
   }
+  @Test
+  fun sortedArrayToBST(){
+   sortedArrayToBST(intArrayOf(0,1,2,3,4,5))
+  }
 }
