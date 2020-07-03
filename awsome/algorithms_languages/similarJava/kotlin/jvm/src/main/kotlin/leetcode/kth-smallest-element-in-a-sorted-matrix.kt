@@ -30,7 +30,7 @@ fun kthSmallest(matrix: Array<IntArray>, k: Int): Int {
   var left = matrix[0][0]
   var right = matrix[n - 1][n - 1]
   while (left < right) {
-    val mid = left + (right - left shr 1)
+    val mid = right + left shr 1
     if (check(matrix, mid, k, n)) right = mid else  left = mid + 1
   }
   return left
@@ -42,10 +42,12 @@ fun check(matrix: Array<IntArray>, mid: Int, k: Int, n: Int): Boolean {
   var num = 0
   while (i >= 0 && j < n) {
     if (matrix[i][j] <= mid) {
+      //每一列都比中值小
       num += i + 1
       j++
     } else i--
   }
+  //比中值小的个数跟K比，大于K在左边，小于在右边
   return num >= k
 }
 
