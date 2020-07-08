@@ -72,14 +72,6 @@ private fun rightChild(pos: Int): Int {
   return pos * 2 + 2
 }
 
-/***
- * 值交换
- */
-private fun swap(heap: IntArray, i: Int, j: Int) {
-  val tmp = heap[i]
-  heap[i] = heap[j]
-  heap[j] = tmp
-}
 
 /***
  * 按树结构打印
@@ -92,22 +84,6 @@ fun printHeap(heap: IntArray, size: Int) {
       a *= 2
     }
   }
-  println()
-}
-
-/***
- * 打印排序后数组
- */
-fun printArrSorted(arr: IntArray) {
-  arr.sort()
-  printArr(arr)
-}
-
-/***
- * 打印数组
- */
-fun printArr(arr: IntArray) {
-  for (i in arr) print("$i ")
   println()
 }
 
@@ -174,7 +150,7 @@ private fun adjustUp(heap: IntArray, pos: Int, less: (Int, Int) -> Boolean) {
   var pos = pos
   while (parent(pos) >= 0 && less(heap[pos],heap[parent(pos)])) {
     val parent = parent(pos)
-    swap(heap, parent, pos)
+    heap.swap(parent, pos)
     pos = parent
   }
 }
@@ -196,7 +172,7 @@ private fun adjustDown(heap: IntArray, i: Int, less: (Int, Int) -> Boolean) {
     if (child + 1 < heap.size && less(heap[child + 1],heap[child]))  child++
     //新节点比较小的孩子都小，说明找到对应位置，直接跳出循环
     if (less(heap[pos],heap[child])) break
-    swap(heap, pos, child)
+    heap.swap(pos, child)
     pos = child
   }
 }
@@ -215,7 +191,7 @@ private fun adjustDownTop(heap: IntArray, v: Int, less: (Int, Int) -> Boolean) {
 private fun adjustDownTopN(heap: IntArray, topN: Int, pos: Int, less: (Int, Int) -> Boolean) {
   //比topN中最大的还要大直接返回
   if (less(heap[pos], heap[0])) return
-  swap(heap, 0, pos)
+  heap.swap(0, pos)
   adjustDown(heap,0,less)
 }
 

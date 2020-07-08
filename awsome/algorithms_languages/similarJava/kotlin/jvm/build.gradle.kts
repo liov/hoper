@@ -15,7 +15,7 @@ repositories {
 var junitJupiterEngineVersion = "5.4.0"
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
+    implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.3.3")
     implementation("org.objenesis:objenesis:3.0.1")
@@ -25,7 +25,7 @@ dependencies {
     implementation("io.netty:netty-all:5.0.0.Alpha2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterEngineVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterEngineVersion")
-    implementation("org.jetbrains.kotlin:kotlin-script-runtime:1.3.61")
+    implementation(kotlin("script-runtime"))
 }
 
 configure<JavaPluginConvention> {

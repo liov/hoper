@@ -3,8 +3,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("org.springframework.boot") version "2.2.5.RELEASE"
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
-    kotlin("jvm") version "1.3.70"
-    kotlin("plugin.spring") version "1.3.70"
+    kotlin("jvm") version "1.3.72"
+    kotlin("plugin.spring") version "1.3.72"
 }
 
 ext{
@@ -54,8 +54,8 @@ subprojects{
         implementation("org.apache.logging.log4j:log4j-core:2.12.1")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
         implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
-        implementation("org.jetbrains.kotlin:kotlin-reflect")
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+        implementation(kotlin("reflect"))
+        implementation(kotlin("stdlib"))
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
         compileOnly("org.projectlombok:lombok")
         developmentOnly("org.springframework.boot:spring-boot-devtools")

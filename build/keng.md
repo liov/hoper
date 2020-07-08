@@ -161,3 +161,27 @@ service sshd restart
 
 # nacos k8s 部署503
 [执行sql](https://github.com/alibaba/nacos/blob/b9ff53b49cec5ca7cf37736ebc9c1c2bb4a108a8/config/src/main/resources/META-INF/nacos-db.sql)
+
+# docker修改/etc/docker/daemon.json后无法重启
+
+vim /usr/lib/systemd/system/docker.service 删除冲突配置
+systemctl daemon-reload
+systemctl restart docker.service
+
+# k8s.gcr.io
+docker pull registry.aliyuncs.com/google_containers/<imagename>:<version>
+docker tag registry.aliyuncs.com/google_containers/<imagename>:<version> k8s.gcr.io/<imagename>:<version>
+```bash
+eval $(echo ${images}|
+        sed 's/k8s\.gcr\.io/anjia0532\/google-containers/g;s/gcr\.io/anjia0532/g;s/\//\./g;s/ /\n/g;s/anjia0532\./anjia0532\//g' |
+        uniq |
+        awk '{print "docker pull "$1";"}'
+       )
+for img in $(docker images --format "{{.Repository}}:{{.Tag}}"| grep "anjia0532"); do
+  n=$(echo ${img}| awk -F'[/.:]' '{printf "gcr.io/%s",$2}')
+  image=$(echo ${img}| awk -F'[/.:]' '{printf "/%s",$3}')
+  tag=$(echo ${img}| awk -F'[:]' '{printf ":%s",$2}')
+  docker tag $img "${n}${image}${tag}"
+  [[ ${n} == "gcr.io/google-containers" ]] && docker tag $img "k8s.gcr.io${image}${tag}"
+done
+```
