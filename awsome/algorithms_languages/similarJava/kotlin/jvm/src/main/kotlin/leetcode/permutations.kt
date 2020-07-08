@@ -23,5 +23,20 @@ package leetcode
 
 
 fun permute(nums: IntArray): List<List<Int>> {
-  
+  if (nums.size == 1) return listOf(listOf(nums[0]))
+  var count = 1
+  for (i in 2..nums.size) {
+    count *= i
+  }
+  val ret = ArrayList<ArrayList<Int>>(count)
+  ret.add(ArrayList<Int>(nums.size).apply { this.add(nums[0]) })
+  for (i in 1 until nums.size) {
+    for (j in 0 until ret.size) {
+      for (x in 0 until ret[j].size) {
+        ret.add((ret[j].clone() as ArrayList<Int>).apply { this.add(x, nums[i]) } )
+      }
+      ret[j].add(nums[i])
+    }
+  }
+  return ret
 }

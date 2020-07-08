@@ -33,12 +33,6 @@ fun findKthLargestV1(nums: IntArray, k: Int): Int {
   return nums[k - 1]
 }
 
-fun IntArray.swap(i: Int, j: Int) {
-  val tmp = this[i]
-  this[i] = this[j]
-  this[j] = tmp
-}
-
 fun findKthLargest(nums: IntArray, k: Int): Int {
   createHeap(nums, k) { i, j -> i > j }
   findTopMaxN(nums, k)

@@ -215,4 +215,16 @@ class Solution {
   fun sortedArrayToBST(){
    sortedArrayToBST(intArrayOf(0,1,2,3,4,5))
   }
+  @Test
+  fun permute(){
+    println(permute(intArrayOf(1,2,3,4)))
+  }
+  @Test
+  fun hasPathSum(){
+    println(hasPathSum(deserialize("5,4,8,11,null,13,4,7,2,null,null,null,1"),22))
+  }
+  @Test
+  fun divingBoard(){
+    printArr(divingBoard(1,2,5))
+  }
 }
