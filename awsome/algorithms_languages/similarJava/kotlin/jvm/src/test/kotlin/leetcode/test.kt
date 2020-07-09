@@ -227,4 +227,8 @@ class Solution {
   fun divingBoard(){
     printArr(divingBoard(1,2,5))
   }
+  @Test
+  fun trieTree(){
+    println(respace(arrayOf("looked","just","ju","like","her","brother"),"jesslookedjustliketimherbrother"))
+  }
 }
