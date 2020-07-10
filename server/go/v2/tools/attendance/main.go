@@ -40,6 +40,7 @@ type At struct {
 }
 
 func main() {
+	go http.ListenAndServe(":8080", nil)
 	log.SetFlags(15)
 	var ch = make(chan os.Signal, 1)
 	signal.Notify(ch,
