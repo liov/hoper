@@ -50,7 +50,7 @@ func main() {
 		// kill -SIGTERM XXXX
 		syscall.SIGTERM,
 	)
-	urlStr := `http://218.17.157.34:1234/grid/att/CheckInOutGrid/`
+	urlStr := `http://xx.xx.xx.xx:1234/grid/att/CheckInOutGrid/`
 	kqReq, _ = http.NewRequest("POST", urlStr, strings.NewReader("page=1&rp=10"))
 	kqReq.Header.Set("Cookie", "sessionidadms=xxx")
 	kqReq.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
@@ -90,7 +90,7 @@ func Request() {
 		depName := obj["DeptName"].String()
 		checktime := obj["checktime"].String()
 
-		if id > lastId && depName == "平台研发中心" {
+		if id > lastId && depName == "xxxx中心" {
 			lastId = id
 			ding.MsgType = "text"
 			ding.Text.Content = ding.Text.Content + name + ` : ` + checktime + "\n"
