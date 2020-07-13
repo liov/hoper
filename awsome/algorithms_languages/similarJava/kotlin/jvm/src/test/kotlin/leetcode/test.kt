@@ -231,4 +231,8 @@ class Solution {
   fun trieTree(){
     println(respace(arrayOf("looked","just","ju","like","her","brother"),"jesslookedjustliketimherbrother"))
   }
+  @Test
+  fun intersect(){
+    printArr(intersect(intArrayOf(4,9,5),intArrayOf(9,4,8,4)))
+  }
 }
