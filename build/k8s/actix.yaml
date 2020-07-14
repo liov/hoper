@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: actix
+  labels:
+    app: actix
+spec:
+  containers:
+    - name: actix
+      image: reg.miz.so/liov/actix:1.0
+      ports:
+        - containerPort: 8080
+  volumes:
+    - name: logs
+      hostPath:
+        path: /data/logs
+    - name: config
+      configMap:
+        name: my-config
+        items:
+          - key: dev.json
+            path: default.json

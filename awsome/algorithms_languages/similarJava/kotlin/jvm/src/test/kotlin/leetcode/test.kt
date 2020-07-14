@@ -235,4 +235,8 @@ class Solution {
   fun intersect(){
     printArr(intersect(intArrayOf(4,9,5),intArrayOf(9,4,8,4)))
   }
+  @Test
+  fun subsets(){
+    println(subsets(intArrayOf(1,2,3,4)))
+  }
 }
