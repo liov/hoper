@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: dashboard
+  namespace: kubernetes-dashboard
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /
+spec:
+  backend:
+    serviceName: default-http-backend
+    servicePort: 80
+  rules:
+    - host: dashboard.172.17.0.4.xip.io
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: kubernetes-dashboard
+              servicePort: 80
