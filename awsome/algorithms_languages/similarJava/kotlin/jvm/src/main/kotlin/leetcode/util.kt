@@ -12,8 +12,7 @@ fun printArrSorted(arr: IntArray) {
  * 打印数组
  */
 fun printArr(arr: IntArray) {
-  for (i in arr) print("$i ")
-  println()
+  println(arr.joinToString(prefix="[",postfix="]"))
 }
 
 /***
