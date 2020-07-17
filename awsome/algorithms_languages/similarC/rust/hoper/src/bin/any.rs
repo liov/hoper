@@ -1,4 +1,3 @@
-#![feature(const_string_new)]
 use std::any::{Any, TypeId};
 use std::fmt::Debug;
 

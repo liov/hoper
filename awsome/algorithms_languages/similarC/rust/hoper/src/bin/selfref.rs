@@ -21,13 +21,6 @@ impl<'a,T> Foo<'a,T> {
         self.val_ref.push(&(self.val[self.val.len()-1]));
     }
 
-    fn init() -> Self {
-        Foo {
-            val:vec![1,2,3],
-            val_ref:vec![&1,&2,&3]
-        }
-    }
-
 }
 
 struct Bar<T> {
@@ -36,7 +29,7 @@ struct Bar<T> {
 }
 
 fn main(){
-    let mut a = Foo::new();
+    let mut a = Foo::<i32>::new();
     //a.push(1);
     println!("{:?}",a);
 }

@@ -1,7 +1,6 @@
 use libc::c_int;
 use libc::c_uint;
 use libc::c_ulonglong;
-use libc::c_void;
 use libc::size_t;
 use std::ffi::{CStr,CString, c_void};
 use std::os::raw::c_char;
