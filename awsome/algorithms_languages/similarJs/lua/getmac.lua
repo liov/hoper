@@ -16,7 +16,6 @@ function getmac()
 
 				for line1 in file:lines() do --检查mac是否已经存在
 					if string.match(line1,mac) then
-
 						flag = flase
 					end
 				end

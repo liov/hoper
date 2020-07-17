@@ -1,3 +1,0 @@
-dotnet new grpc -o name
-%AppData%\Nuget\
-换源https://repo.huaweicloud.com/repository/nuget/v3/index.json

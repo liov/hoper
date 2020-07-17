@@ -29,3 +29,13 @@ fun numTrees(n: Int): Int {
   }
   return c
 }
+
+fun numTreesV2(n: Int): Int {
+  val arr = IntArray(n+1)
+  arr[0] = 1
+  arr[1] = 1
+  for(i in 2..n){
+    for(j in 1..i) arr[i] += arr[j-1]*arr[i-j]
+  }
+  return arr[n]
+}
