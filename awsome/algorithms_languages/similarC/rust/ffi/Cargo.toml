@@ -8,6 +8,7 @@ build = "build.rs"
 
 [dependencies]
 cpp = "0.5"
+libc="0.2.58"
 
 [build-dependencies]
 cpp_build = "0.5"

@@ -18,12 +18,12 @@ fn foo<T>()->&'static T where T:Fly{
 }
 */
 
-fn foo()->&'static dyn Fly {
+fn foo<'a>()->&'a dyn Fly {
     &Duck
 }
 
-fn foo1()->impl Fly{
-    Duck
+fn foo1<'a>()->&'a impl Fly{
+    &Duck
 }
 
 fn foo2()-> Box<dyn Fly>{
@@ -38,3 +38,5 @@ fn  main(){
     //foo3(Duck) expected `()`, found struct `Duck`
     let a:Duck= foo3(Duck);
 }
+
+//我明明看过的，impl是静态分发，dyn是动态分发

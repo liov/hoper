@@ -247,48 +247,14 @@ class Solution {
     cache.put(6, 11)
     cache.put(10, 5)
     cache.get(13)
-    cache.put(2, 19)
-    cache.get(2)
-    println(cache.get(3))      // 返回  1
-    cache.put(5, 25)    // 该操作会使得关键字 2 作废
-    println(cache.get(8))       // 返回 -1 (未找到)
-    cache.put(9, 22)
-    cache.put(5, 5)
-    cache.put(1, 30)
-    println(cache.get(11))       // 返回  3
-    cache.put(9, 12)
-    println(cache.get(7))
-    println(cache.get(5))
-    println(cache.get(8))
-    println(cache.get(9))
-    cache.put(4, 30)
-    cache.put(9, 3)
-    println(cache.get(9))
-    println(cache.get(10))
-    println(cache.get(10))
-    cache.put(6, 14)
-    cache.put(3, 1)
-    println(cache.get(3))
-    cache.put(10, 11)
-    println(cache.get(8))
-    cache.put(2, 14)
-    println(cache.get(1))
-    println(cache.get(5))
-    println(cache.get(4))
-    cache.put(11, 4)
-    cache.put(12, 24)
-    cache.put(5, 18)
-    println(cache.get(13))
-    cache.put(7, 23)
-    println(cache.get(8))
-    println(cache.get(12))
-    cache.put(3, 27)
-    cache.put(2, 12)
-    println(cache.get(5))
-    cache.put(2, 9)
-    cache.put(13, 4)
-    cache.put(8, 18)
-    cache.put(1, 7)
-    println(cache.get(6))
+  }
+  @Test
+  fun searchInsert(){
+    println(searchInsert(intArrayOf(1,3,5,6),5))
+  }
+  @Test
+  fun maxProfit(){
+    println(maxProfit(intArrayOf(7,6,4,5,8,10,1,5)))
+    println(maxProfitV4(intArrayOf(7,1,5,3,6,6,6)))
   }
 }

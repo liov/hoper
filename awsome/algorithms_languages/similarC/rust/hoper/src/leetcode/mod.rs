@@ -513,6 +513,8 @@ pub fn trap_rain_water(height_map: Vec<Vec<i32>>) -> i32 {
 
 //用Vec插入排开销太大，放弃
 use std::fmt::{Display, Debug};
+
+
 #[derive(PartialEq, Eq, PartialOrd, Ord, Debug, Hash, Clone, Copy)]
 struct Point2(i32, usize, usize, bool);
 
