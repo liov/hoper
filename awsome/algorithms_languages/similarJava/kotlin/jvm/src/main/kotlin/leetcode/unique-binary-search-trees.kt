@@ -1,7 +1,7 @@
 package leetcode
 
 /**
- 给定一个整数 n，求以 1 ... n 为节点组成的二叉搜索树有多少种？
+给定一个整数 n，求以 1 ... n 为节点组成的二叉搜索树有多少种？
 
 示例:
 
@@ -31,11 +31,38 @@ fun numTrees(n: Int): Int {
 }
 
 fun numTreesV2(n: Int): Int {
-  val arr = IntArray(n+1)
+  val arr = IntArray(n + 1)
   arr[0] = 1
   arr[1] = 1
-  for(i in 2..n){
-    for(j in 1..i) arr[i] += arr[j-1]*arr[i-j]
+  for (i in 2..n) {
+    for (j in 1..i) arr[i] += arr[j - 1] * arr[i - j]
   }
   return arr[n]
+}
+
+/**
+ * 生成二叉搜索树
+ */
+fun generateTrees(n: Int): List<TreeNode?> {
+  if (n == 1) return listOf(TreeNode(n))
+  return helper(1, n)
+}
+
+fun helper(start: Int, end: Int): List<TreeNode?> {
+  if (start > end) return listOf(null)
+  if (start == end) return listOf(TreeNode(start))
+  val list = ArrayList<TreeNode?>()
+  for (i in start..end) {
+    val left = helper(start, i - 1)
+    val right = helper(i + 1, end)
+    for (l in left.indices) {
+      for (r in right.indices) {
+        val tree = TreeNode(i)
+        tree.left = left[l]
+        tree.right = right[r]
+        list.add(tree)
+      }
+    }
+  }
+  return list
 }
