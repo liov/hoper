@@ -257,4 +257,8 @@ class Solution {
     println(maxProfit(intArrayOf(7,6,4,5,8,10,1,5)))
     println(maxProfitV4(intArrayOf(7,1,5,3,6,6,6)))
   }
+  @Test
+  fun generateTrees(){
+    println(generateTrees(3))
+  }
 }
