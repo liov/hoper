@@ -261,4 +261,8 @@ class Solution {
   fun generateTrees(){
     println(generateTrees(3))
   }
+  @Test
+  fun findMin(){
+    println(findMin(intArrayOf(1,1,3,4,5,6)))
+  }
 }
