@@ -265,4 +265,12 @@ class Solution {
   fun findMin(){
     println(findMin(intArrayOf(1,1,3,4,5,6)))
   }
+  @Test
+  fun minPathSum(){
+    println(minPathSum(arrayOf(
+      intArrayOf(1,3,1),
+      intArrayOf(1,5,1),
+      intArrayOf(4,2,1)
+    )))
+  }
 }
