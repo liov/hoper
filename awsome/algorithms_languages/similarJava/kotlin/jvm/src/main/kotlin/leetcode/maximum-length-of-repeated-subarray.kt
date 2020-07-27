@@ -23,8 +23,8 @@ B: [3,2,1,4,7]
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
  */
 
-var mod: Int = 1000000009
-var base = 113
+const val mod: Int = 1000000009
+const val base = 113
 
 fun findLength(A: IntArray, B: IntArray): Int {
   var left = 1
@@ -48,9 +48,7 @@ fun findLength(A: IntArray, B: IntArray): Int {
 fun check(A: IntArray, B: IntArray, len: Int): Boolean {
   var hashA: Long = 0
   //0到len-1的hash
-  for (i in 0 until len) {
-    hashA = (hashA * base + A[i]) % mod
-  }
+  for (i in 0 until len) hashA = (hashA * base + A[i]) % mod
   val bucketA: MutableSet<Long> = HashSet()
   bucketA.add(hashA)
   val mult = qPow(base.toLong(), len - 1.toLong())
@@ -60,9 +58,7 @@ fun check(A: IntArray, B: IntArray, len: Int): Boolean {
     bucketA.add(hashA)
   }
   var hashB: Long = 0
-  for (i in 0 until len) {
-    hashB = (hashB * base + B[i]) % mod
-  }
+  for (i in 0 until len) hashB = (hashB * base + B[i]) % mod
   if (bucketA.contains(hashB)) return true
   for (i in len until B.size) {
     hashB = ((hashB - B[i - len] * mult % mod + mod) % mod * base + B[i]) % mod
