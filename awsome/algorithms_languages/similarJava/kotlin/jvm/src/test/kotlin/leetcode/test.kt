@@ -109,7 +109,7 @@ class Solution {
 
   @Test
   fun strStr() {
-    println(strStr("hello", "llo"))
+    println(strStr("mississippi", "pi"))
   }
 
   @Test
@@ -272,5 +272,9 @@ class Solution {
       intArrayOf(1,5,1),
       intArrayOf(4,2,1)
     )))
+  }
+  @Test
+  fun isSubsequence(){
+    println(isSubsequenceV2("b","c"))
   }
 }

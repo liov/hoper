@@ -2,11 +2,12 @@ package leetcode
 
 
 fun strStr(haystack: String, needle: String): Int {
+  if (needle == "") return 0
+  if(haystack.length < needle.length) return -1
   return rabinKarp(haystack,needle)
 }
 
 fun KMP(raw: String, pat: String): Int {
-  if (pat == "") return 0
   val next = buildNext(pat)
   val n = raw.length
   var i = 0
@@ -38,7 +39,6 @@ fun buildNext(pat: String): IntArray {
 }
 
 fun Sunday(raw: String, pat: String): Int {
-  if (pat == "") return 0
   val n = raw.length
   var i = 0
   val m = pat.length
@@ -63,9 +63,7 @@ fun Sunday(raw: String, pat: String): Int {
 
 fun preBmBc(x: String, bmBc: IntArray) {
   // 计算字符串中每个字符距离字符串尾部的长度
-  for (i in x.indices) {
-    bmBc[x[i].toInt()] = x.length - i - 1;
-  }
+  for (i in x.indices) bmBc[x[i].toInt()] = x.length - i - 1
 }
 
 // 计算以i为边界，与模式串后缀匹配的最大长度（区间的概念）
@@ -114,18 +112,12 @@ fun preBmGs(s: String, bmGs: IntArray) {
   // 处理第二种情况
   for (i in len - 1 downTo 0) {
     if (suff[i] == i + 1) { // 找到合适位置
-      for (j in s.indices) {
-        if (bmGs[j] == len) { // 保证每个位置至多只能被修改一次
-          bmGs[j] = len - 1 - i;
-        }
-      }
+      for (j in s.indices) if (bmGs[j] == len) bmGs[j] = len - 1 - i // 保证每个位置至多只能被修改一次
     }
   }
 
   // 处理第一种情况，顺序是从前到后
-  for (i in s.indices) {
-    bmGs[len - 1 - suff[i]] = len - 1 - i;
-  }
+  for (i in s.indices)  bmGs[len - 1 - suff[i]] = len - 1 - i
 
 }
 
@@ -148,13 +140,10 @@ fun BM(raw: String, pat: String): Int {
   while (j <= n - m) {
     // 模式串向左边移动
     var i = m - 1
-    while (i >= 0 && pat[i] == raw[i + j]) {
-      i--
-    }
+    while (i >= 0 && pat[i] == raw[i + j]) i--
     // 给定字符串向右边移动
-    if (i < 0) {
-      return j// 移动到模式串的下一个位置
-    } else {
+    if (i < 0)  return j// 移动到模式串的下一个位置
+   else {
       // 取移动位数的最大值向右移动，前者好后缀，向右移动，后者坏字符，向左移动
       j += kotlin.math.max(bmGs[i], bmBc[raw[i + j].toInt()] - m + 1 + i);
     }
@@ -163,85 +152,72 @@ fun BM(raw: String, pat: String): Int {
 }
 
 //jvm没有无符号整型
+//go的子串算法
 @ExperimentalUnsignedTypes
 fun RabinKarp(s: String, substr: String): Int {
   // Rabin-Karp search
   val (hashss, pow) = hashStr(substr)
   val n = substr.length
-  var h: UInt = 0u
-  for (i in substr.indices) {
-    h = h * 16777619u + s[i].toInt().toUInt()
-  }
-  if (h == hashss && s.substring(0, n) == substr) {
-    return 0
-  }
-  var i = n
-  while (i < s.length) {
-    h *= 16777619u
-    h += s[i].toInt().toUInt()
-    h -= pow * s[i - n].toInt().toUInt()
-    i++
-    if (h == hashss && s.substring(i - n, i) == substr) {
-      return i - n
-    }
+  var h = 0u
+  for (i in substr.indices) h = h * 16777619u + s[i].toInt().toUInt()
+  if (h == hashss && s.substring(0, n) == substr)  return 0
+
+  for (i in n until s.length) {
+    h = h*16777619u + s[i].toInt().toUInt() - pow * s[i - n].toInt().toUInt()
+    if (h == hashss && s.substring(i - n, i) == substr) return i - n
   }
   return -1
 }
+
 @ExperimentalUnsignedTypes
 fun hashStr(sep: String): StrHash {
-  var hash: UInt = 0u
-  for (i in sep.indices) {
-    hash = hash * 16777619u + sep[i].toInt().toUInt()
-  }
+  var hash = 0u
+  for (i in sep.indices)  hash = hash * 16777619u + sep[i].toInt().toUInt()
   var pow = 1u
   var sq = 16777619u
   var i = sep.length
   while (i > 0) {
     i = i shr 1
-    if (i and 1 != 0) {
-      pow *= sq
-    }
+    if (i and 1 != 0)  pow *= sq
     sq *= sq
   }
   return StrHash(hash, pow)
 }
 @ExperimentalUnsignedTypes
-data class StrHash(val hash: UInt, val pos: UInt)
+data class StrHash(val hash: UInt, val pow: UInt)
 
-fun rabinKarp( str:String, pattern:String) :Int{
+@ExperimentalUnsignedTypes
+fun rabinKarp(str:String, pattern:String) :Int{
   val n = str.length
   val m = pattern.length
 
   //哈希时需要用到进制计算，这里只涉及26个字母所以使用26进制
-  val d = 26
+  val d = 26u
   //防止hash之后的值超出int范围，对最后的hash值取模
   //q取随机素数，满足q*d < INT_MAX即可
-  val q = 144451
+  val q = 16777619u
 
   //str子串的hash值
-  var strCode = str[0] - 'a';
+  var strCode = 0u
   //pattern的hash值
-  var patternCode = pattern[0] - 'a'
+  var patternCode = 0u
   //d的size2-1次幂，hash计算时，公式中会用到
-  var h = 1
+  var h = 1u
 
   //计算sCode、pCode、h
-  for (i in 1 until m) {
-    patternCode = (d*patternCode + (pattern[i]-'a')) % q;
+  for (i in 0 until m) {
+    patternCode = (d*patternCode + (pattern[i]-'a').toUInt()) % q
     //计算str第一个子串的hash
-    strCode = (d*strCode + (str[i]-'a')) % q;
-    h = (h*d) % q;
+    strCode = (d*strCode + (str[i]-'a').toUInt()) % q
+    h = (h*d) % q
   }
-
   //最大需要匹配的次数
-  val frequency = n - m + 1;
   //字符串开始匹配，对patternCode和strCode开始比较，并更新strCode的值
-  for (i in 0 until frequency) {
-    if(strCode == patternCode && ensureMatching(i, str, pattern)){
-      return i
-    }
+  for (i in 0 until n - m + 1) {
+    if(strCode == patternCode && ensureMatching(i, str, pattern)) return i
+    if(i == n-m) break
     //更新strCode的值，即计算str[i+1,i+m-1]子串的hashCode
-    strCode = ((strCode - h*(str[i]-'a'))*d + (str[i+m] - 'a'))
+    strCode = (strCode*d - h*(str[i]-'a').toUInt() + (str[i+m] - 'a').toUInt())%q
   }
   return -1
 }
