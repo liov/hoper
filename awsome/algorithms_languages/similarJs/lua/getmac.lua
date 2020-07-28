@@ -16,7 +16,7 @@ function getmac()
 
 				for line1 in file:lines() do --检查mac是否已经存在
 					if string.match(line1,mac) then
-						flag = flase
+						flag = false
 					end
 				end
 
@@ -30,7 +30,6 @@ function getmac()
 end
 
 function qiandao()
-
 	for line in io.lines("E:\\b.txt") do
 			local mac = string.match(line,"[%w:]+")
 			local name =string.match(line,".+",19)
@@ -49,6 +48,7 @@ function qiandao()
 		end
 	end
 end
+
 function split(szFullString, szSeparator)
     local nFindStartIndex = 1
     local nSplitIndex = 1

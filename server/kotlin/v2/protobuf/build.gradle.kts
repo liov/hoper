@@ -8,9 +8,10 @@ import com.google.protobuf.gradle.protobuf
 import com.google.protobuf.gradle.protoc
 
 plugins {
-    id("org.jetbrains.kotlin.jvm")
+    kotlin("jvm")
     //id("com.squareup.wire") version "3.1.0"
     id("com.google.protobuf") version "0.8.12"
+
     id("idea")
 }
 
@@ -29,6 +30,9 @@ extra["wire_version"]="3.1.0"
 
 sourceSets{
     main {
+        java {
+            srcDirs("src/main/java")
+        }
         proto {
             srcDir("${rootDir}/../../../std_proto")
             println(srcDirs)
@@ -58,7 +62,7 @@ protobuf {
             generateProtoTask
                     .plugins {
                         id("grpc")
-                        //id("reactor")
+                        id("grpckt")
                     }
         }
     }
@@ -75,9 +79,14 @@ tasks.getByName<Jar>("jar") {
 }
 
 dependencies{
-    api ("io.grpc:grpc-netty-shaded:1.27.2")
-    api ("io.grpc:grpc-protobuf:1.27.2")
-    api ("io.grpc:grpc-stub:1.27.2")
+    implementation("io.grpc:grpc-kotlin-stub:${rootProject.ext["grpc_kotlin_version"]}")
+    implementation("com.google.protobuf:protobuf-java:${rootProject.ext["protobuf_version"]}")
+    implementation("com.google.protobuf:protobuf-java-util:3.11.1")
+    api("io.grpc:grpc-netty-shaded:${rootProject.ext["grpc_version"]}")
+    api("io.grpc:grpc-protobuf:${rootProject.ext["grpc_version"]}")
+    api("io.grpc:grpc-stub:${rootProject.ext["grpc_version"]}")
+    compileOnly("javax.annotation:javax.annotation-api:1.2")
+    implementation("com.google.guava:guava:28.2-jre")
     //api("com.squareup.wire:wire-runtime:3.1.0")
     //api("com.squareup.wire:wire-schema-multiplatform:3.1.0")
     if (JavaVersion.current().isJava9Compatible) {
