@@ -1,10 +1,9 @@
 rootProject.name = "v2"
-include("hello")
+
 include("user")
 include("protobuf")
 include("web")
-include("vertx")
-include("grpc")
+include("quarkus")
 
 pluginManagement {
     repositories {
