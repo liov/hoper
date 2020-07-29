@@ -1,12 +1,13 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.springframework.boot.gradle.tasks.run.BootRun
+val elasticsearchVersion: String by project
+val quarkusPlatformGroupId: String by project
+val quarkusPlatformArtifactId: String by project
+val quarkusPlatformVersion: String by project
 
 plugins {
     application
     java
-    id("com.github.johnrengelman.shadow") version "5.1.0"
-    kotlin("jvm") version "1.3.72"
-    kotlin("plugin.allopen") version "1.3.72"
+    kotlin("jvm")
+    kotlin("plugin.allopen")
     id("io.quarkus")
 }
 
@@ -48,11 +49,8 @@ dependencies {
 }
 
 quarkus {
-    setOutputDirectory("$projectDir/build/classes/kotlin/main")
-}
-
-quarkusDev {
     setSourceDir("$projectDir/src/main/kotlin")
+    setOutputDirectory("$projectDir/build/classes/kotlin/main")
 }
 
 allOpen {
@@ -66,5 +64,5 @@ tasks.withType<Test> {
     testLogging {
         events("PASSED", "FAILED", "SKIPPED")
     }
-    systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
+    systemProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager")
 }

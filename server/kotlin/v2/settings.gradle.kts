@@ -12,6 +12,10 @@ pluginManagement {
         google()
         mavenCentral()
     }
+    plugins {
+        val quarkusPluginVersion: String by settings
+        id("io.quarkus") version quarkusPluginVersion
+    }
     resolutionStrategy {
         eachPlugin {
             val plugin = requested.id.id
