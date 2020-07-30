@@ -85,9 +85,7 @@ fun topN(less: (Int, Int) -> Boolean) {
  * 最小堆
  */
 
-fun topMaxN() {
-  topN() { i, j -> i < j }
-}
+fun topMaxN() = topN() { i, j -> i < j }
 
 
 /***
@@ -95,20 +93,17 @@ fun topMaxN() {
  * 最大堆
  */
 
-fun topMinN() {
-  topN() { i, j -> i > j }
-}
+fun topMinN() = topN() { i, j -> i > j }
 
-fun createHeapUp(heap: MutableList<Int>) {
+fun<T:Comparable<T>> createHeapUp(heap: MutableList<T>) {
   for (i in 1 until heap.size) adjustUp(heap, i)
 }
 
-fun createHeapDown(heap: MutableList<Int>) {
+fun<T:Comparable<T>> createHeapDown(heap: MutableList<T>) {
   for (i in heap.size/2-1 downTo 0 ) adjustDown(heap, i)
 }
 
-
-private fun adjustUp(heap: MutableList<Int>, pos: Int) {
+private fun<T:Comparable<T>> adjustUp(heap: MutableList<T>, pos: Int) {
   var pos = pos
   //比父节点大就上移
   while (parent(pos) >= 0 && heap[pos] > heap[parent(pos)]) {
@@ -118,7 +113,7 @@ private fun adjustUp(heap: MutableList<Int>, pos: Int) {
   }
 }
 
-private fun adjustDown(heap: MutableList<Int>, pos: Int) {
+private fun<T:Comparable<T>> adjustDown(heap: MutableList<T>, pos: Int) {
   var pos = pos
   while (leftChild(pos) < heap.size) {
     var child = leftChild(pos)
@@ -186,37 +181,24 @@ private fun adjustDownTopInPlace(heap: IntArray, pos: Int, less: (Int, Int) -> B
 /***
  * 向下调整新加入节点位置，并维护最小堆
  */
-private fun adjustDownTopMaxNInPlace(heap: IntArray, pos: Int) {
-  adjustDownTopInPlace(heap, pos) { i, j -> i < j }
-}
+private fun adjustDownTopMaxNInPlace(heap: IntArray, pos: Int) = adjustDownTopInPlace(heap, pos) { i, j -> i < j }
 
 /***
  * 向下调整新加入节点位置，并维护最大堆
  */
-private fun adjustDownTopMinNInPlace(heap: IntArray, topN: Int, pos: Int) {
-  adjustDownTopInPlace(heap, pos) { i, j -> i > j }
-}
-
+private fun adjustDownTopMinNInPlace(heap: IntArray, topN: Int, pos: Int) =  adjustDownTopInPlace(heap, pos) { i, j -> i > j }
 
 /***
  * 遍历数据组，并维护最小堆
  */
-fun findTopMaxNInPlace(heap: IntArray, topN: Int) {
-  findTopNInPlace(heap, topN) { i, j -> i < j }
-}
+fun findTopMaxNInPlace(heap: IntArray, topN: Int) = findTopNInPlace(heap, topN) { i, j -> i < j }
 
 /***
  * 遍历数据组，并维护最大堆
  */
-private fun findTopMinNInPlace(heap: IntArray, topN: Int) {
-  findTopNInPlace(heap, topN) { i, j -> i > j }
-}
+private fun findTopMinNInPlace(heap: IntArray, topN: Int) = findTopNInPlace(heap, topN) { i, j -> i > j }
 
-
-
-private fun adjustDownTopMaxN(heap: IntArray, v: Int) {
-  adjustDownTop(heap, v) { i, j -> i < j }
-}
+private fun adjustDownTopMaxN(heap: IntArray, v: Int) = adjustDownTop(heap, v) { i, j -> i < j }
 
 
 //原来一直疑惑topN为什么用小顶堆，我还想要用最大堆，然后插进来一个元素就剔除最小的那个，原来最小堆直接剔除根节点就行了...
@@ -226,26 +208,25 @@ private fun adjustDownTopMaxN(heap: IntArray, v: Int) {
 fun main(args: Array<String>) {
   topMaxN()
   //topMinN()
-  val list = MutableList(9) { it * 2 + 1 }
-  val toN = TopN(list)
+  val toN = TopN(MutableList(9) { it * 2 + 1 })
   val random = Random()
-  val lsit = ArrayList<Int>()
+  val list = ArrayList<Int>()
   var v: Int
   for (i in 0 until 20) {
     v = random.nextInt(1000)
     toN.insert(v)
-    lsit.add(v)
+    list.add(v)
   }
-  val mh = MaxHeap(lsit.clone() as MutableList<Int>)
+  val mh = MaxHeap(list.clone() as MutableList<Int>)
   println(mh.heap)
- val list1 = lsit.clone() as MutableList<Int>
+ val list1 = list.clone() as MutableList<Int>
   createHeapUp(list1)
   println(list1)
-  val list2 = lsit.clone() as MutableList<Int>
+  val list2 = list.clone() as MutableList<Int>
   createHeapDown(list2)
   println(list2)
-  lsit.sort()
-  for (i in 11..19)  print("${lsit[i]}, ")
+  list.sort()
+  for (i in 11..19)  print("${list[i]}, ")
   println()
   toN.list.sort()
   println(toN.list)

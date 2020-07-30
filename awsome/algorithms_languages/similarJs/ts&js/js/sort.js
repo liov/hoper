@@ -372,22 +372,24 @@ function quickSort(array, left, right) {
 }
 
 //方法二
-var quickSort2 = function(array) {
+const quickSort2 = function (array) {
 
-　　if (array.length <= 1) { return array; }
-　　var pivotIndex = Math.floor(array.length / 2);
-　　var pivot = array.splice(pivotIndex, 1)[0];
-　　var left = [];
-　　var right = [];
-　　for (var i = 0; i < array.length; i++){
-　　　　if (array[i] < pivot) {
-　　　　　　left.push(array[i]);
-　　　　} else {
-　　　　　　right.push(array[i]);
-　　　　}
-　　}
+    if (array.length <= 1) {
+        return array;
+    }
+    const pivotIndex = Math.floor(array.length / 2);
+    const pivot = array.splice(pivotIndex, 1)[0];
+    const left = [];
+    const right = [];
+    for (let i = 0; i < array.length; i++) {
+        if (array[i] < pivot) {
+            left.push(array[i]);
+        } else {
+            right.push(array[i]);
+        }
+    }
 
-　　return quickSort2(left).concat([pivot], quickSort2(right));
+    return quickSort2(left).concat([pivot], quickSort2(right));
 };
 
 console.time('1.快速排序耗时');
@@ -423,13 +425,13 @@ function heapSort(array) {
 console.time('堆排序耗时');
     if (Object.prototype.toString.call(array).slice(8, -1) === 'Array') {
         //建堆
-        var heapSize = array.length, temp;
-        for (var i = Math.floor(heapSize / 2) - 1; i >= 0; i--) {
+        let heapSize = array.length, temp;
+        for (let i = Math.floor(heapSize / 2) - 1; i >= 0; i--) {
             heapify(array, i, heapSize);
         }
 
         //堆排序
-        for (var j = heapSize - 1; j >= 1; j--) {
+        for (let j = heapSize - 1; j >= 1; j--) {
             temp = array[0];
             array[0] = array[j];
             array[j] = temp;
@@ -447,8 +449,8 @@ console.time('堆排序耗时');
 @param  len 堆大小*/
 function heapify(array, x, len) {
 if (Object.prototype.toString.call(array).slice(8, -1) === 'Array' && typeof x === 'number') {
-        var l = 2 * x + 1, r = 2 * x + 2, largest = x, temp;
-        if (l < len && array[l] > array[largest]) {
+    let l = 2 * x + 1, r = 2 * x + 2, largest = x, temp;
+    if (l < len && array[l] > array[largest]) {
             largest = l;
         }
         if (r < len && array[r] > array[largest]) {
@@ -489,20 +491,21 @@ console.log(heapSort(arr));
 Javascript代码实现：*/
 
 function countingSort(array) {
-    var len = array.length,
+    let len = array.length,
         B = [],
         C = [],
+        max,
         min = max = array[0];
     console.time('计数排序耗时');
-    for (var i = 0; i < len; i++) {
+    for (let i = 0; i < len; i++) {
         min = min <= array[i] ? min : array[i];
         max = max >= array[i] ? max : array[i];
         C[array[i]] = C[array[i]] ? C[array[i]] + 1 : 1;
     }
-    for (var j = min; j < max; j++) {
+    for (let j = min; j < max; j++) {
         C[j + 1] = (C[j + 1] || 0) + (C[j] || 0);
     }
-    for (var k = len - 1; k >= 0; k--) {
+    for (let k = len - 1; k >= 0; k--) {
         B[C[array[k]] - 1] = array[k];
         C[array[k]]--;
     }
@@ -537,21 +540,19 @@ Javascript代码实现:*/
     @param  array 数组
     @param  num   桶的数量*/
     function bucketSort(array, num) {
-        if (array.length <= 1) {
-            return array;
-        }
-        var len = array.length, buckets = [], result = [], min = max = array[0], regex = '/^[1-9]+[0-9]*$/', space, n = 0;
+        if (array.length <= 1) return array
+        let len = array.length, buckets = [], result = [], min = max = array[0], regex = '/^[1-9]+[0-9]*$/', space, n = 0;
         num = num || ((num > 1 && regex.test(num)) ? num : 10);
         console.time('桶排序耗时');
-        for (var i = 1; i < len; i++) {
+        for (let i = 1; i < len; i++) {
             min = min <= array[i] ? min : array[i];
             max = max >= array[i] ? max : array[i];
         }
         space = (max - min + 1) / num;
-        for (var j = 0; j < len; j++) {
-            var index = Math.floor((array[j] - min) / space);
+        for (let j = 0; j < len; j++) {
+            let index = Math.floor((array[j] - min) / space);
             if (buckets[index]) {   //  非空桶，插入排序
-                var k = buckets[index].length - 1;
+                let k = buckets[index].length - 1;
                 while (k >= 0 && buckets[index][k] > array[j]) {
                     buckets[index][k + 1] = buckets[index][k];
                     k--;
@@ -601,21 +602,21 @@ Javascript代码实现：*/
 //LSD Radix Sort
 
 function radixSort(array, maxDigit) {
-var mod = 10;
-var dev = 1;
-var counter = [];
+    let mod = 10;
+    let dev = 1;
+    let counter = [];
 console.time('基数排序耗时');
-    for (var i = 0; i < maxDigit; i++, dev *= 10, mod *= 10) {
-        for(var j = 0; j < array.length; j++) {
-            var bucket = Math.floor((array[j] % mod) / dev);
+    for (let i = 0; i < maxDigit; i++, dev *= 10, mod *= 10) {
+        for(let j = 0; j < array.length; j++) {
+            let bucket = Math.floor((array[j] % mod) / dev);
             if(counter[bucket]== null) {
                 counter[bucket] = [];
             }
             counter[bucket].push(array[j]);
         }
-        var pos = 0;
-        for(var j = 0; j < counter.length; j++) {
-            var value = null;
+        let pos = 0;
+        for(let j = 0; j < counter.length; j++) {
+            let value = null;
             if(counter[j]!=null) {
                 while ((value = counter[j].shift()) != null) {
                       array[pos++] = value;
