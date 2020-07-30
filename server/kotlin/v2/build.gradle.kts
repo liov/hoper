@@ -12,9 +12,10 @@ ext{
     set("junitJupiterEngineVersion", "5.4.0")
     set("grpc_kotlin_version", "0.1.1")
     set("protobuf_version", "3.11.1")
-    set("grpc_version", "1.28.0")
+    set("grpc_version", "1.30.2")
     set("kotlin_version", "1.3.70")
     set("springCloudAlibabaVersion", "2.2.0.RELEASE")
+    set("wire_version", "3.2.2")
 }
 
 allprojects {

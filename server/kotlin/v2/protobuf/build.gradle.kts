@@ -15,7 +15,6 @@ plugins {
     id("idea")
 }
 
-extra["wire_version"]="3.1.0"
 //wire {
 //    sourcePath {
 //        srcDir ("${rootDir}\\..\\..\\..\\proto")
@@ -85,14 +84,13 @@ dependencies{
     api("io.grpc:grpc-netty-shaded:${rootProject.ext["grpc_version"]}")
     api("io.grpc:grpc-protobuf:${rootProject.ext["grpc_version"]}")
     api("io.grpc:grpc-stub:${rootProject.ext["grpc_version"]}")
-    compileOnly("javax.annotation:javax.annotation-api:1.2")
     implementation("com.google.guava:guava:28.2-jre")
-    //api("com.squareup.wire:wire-runtime:3.1.0")
-    //api("com.squareup.wire:wire-schema-multiplatform:3.1.0")
+    //api("com.squareup.wire:wire-runtime:${rootProject.ext["wire_version"]}")
+    //api("com.squareup.wire:wire-schema-multiplatform:${rootProject.ext["wire_version"]}")
     if (JavaVersion.current().isJava9Compatible) {
         // Workaround for @javax.annotation.Generated
         // see: https://github.com/grpc/grpc-java/issues/3633
-        implementation("javax.annotation:javax.annotation-api:1.3.1")
+        implementation("org.apache.tomcat:annotations-api:6.0.53")
     }
    // protobuf(files("${rootDir}../../../proto/"))
 }
