@@ -277,4 +277,8 @@ class Solution {
   fun isSubsequence(){
     println(isSubsequenceV2("b","c"))
   }
+  @Test
+  fun integerBreak(){
+    println(integerBreak(10))
+  }
 }
