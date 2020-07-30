@@ -129,7 +129,11 @@ func deploy(ctx iris.Context) {
 	defer func() {
 		mutexMap[Namespace].Unlock()
 	}()
-	Version = "v" + dep.Version + "-" + time.Now().Format("20060102150405")
+	if dep.Version != "" {
+		Version = "v" + dep.Version + "-" + time.Now().Format("20060102150405")
+	} else {
+		Version = ""
+	}
 	SystemName := dep.Project
 	GOPATH := os.Getenv("GOPATH")
 	os.Chdir(GOPATH + "/src/hoper.com/" + ctx.Params().Get("project") + "/" + dep.Project + "/")

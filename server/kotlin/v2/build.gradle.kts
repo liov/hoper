@@ -7,7 +7,7 @@ plugins {
     kotlin("plugin.spring") version "1.3.72"
 }
 
-ext{
+ext {
     set("vertxVersion", "3.9.0")
     set("junitJupiterEngineVersion", "5.4.0")
     set("grpc_kotlin_version", "0.1.1")
@@ -25,6 +25,8 @@ allprojects {
     java.sourceCompatibility = JavaVersion.VERSION_11
 
     repositories {
+        maven("http://maven.aliyun.com/nexus/content/groups/public/")
+        maven("http://maven.aliyun.com/nexus/content/repositories/jcenter")
         mavenCentral()
         gradlePluginPortal()
         google()
@@ -33,10 +35,10 @@ allprojects {
     }
 }
 
-subprojects{
+subprojects {
+    apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "org.springframework.boot")
-    apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "org.jetbrains.kotlin.plugin.spring")
 
 

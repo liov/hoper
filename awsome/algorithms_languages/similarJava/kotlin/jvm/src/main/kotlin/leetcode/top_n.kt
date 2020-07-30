@@ -43,24 +43,16 @@ class MaxHeap<T : Comparable<T>> {
 }
 
 
-private fun parent(pos: Int): Int {
-  return (pos - 1) / 2
-}
-
-private fun leftChild(pos: Int): Int {
-  return pos * 2 + 1
-}
-
-private fun rightChild(pos: Int): Int {
-  return pos * 2 + 2
-}
+private fun parent(pos: Int): Int = (pos - 1) / 2
+private fun leftChild(pos: Int): Int = pos * 2 + 1
+private fun rightChild(pos: Int): Int = pos * 2 + 2
 
 
 /***
  * 按树结构打印
  */
 fun printHeap(heap: IntArray, size: Int) {
-  println(heap.joinToString(prefix="[",postfix="]",limit=size-1,truncated=heap[size-1].toString()))
+  println(heap.joinToString(prefix = "[", postfix = "]", limit = size - 1, truncated = heap[size - 1].toString()))
 }
 
 fun topN(less: (Int, Int) -> Boolean) {
@@ -68,7 +60,7 @@ fun topN(less: (Int, Int) -> Boolean) {
   val topN = 7
   val heap = IntArray(len)
   val random = Random()
-  for (i in 0 until len)  heap[i] = random.nextInt(10000)
+  for (i in 0 until len) heap[i] = random.nextInt(10000)
 
   //创建topN堆
   createHeap(heap, topN, less)
@@ -85,7 +77,7 @@ fun topN(less: (Int, Int) -> Boolean) {
  * 最小堆
  */
 
-fun topMaxN() = topN() { i, j -> i < j }
+fun topMaxN() = topN(Comp::Less)
 
 
 /***
@@ -93,17 +85,17 @@ fun topMaxN() = topN() { i, j -> i < j }
  * 最大堆
  */
 
-fun topMinN() = topN() { i, j -> i > j }
+fun topMinN() = topN(Comp::More)
 
-fun<T:Comparable<T>> createHeapUp(heap: MutableList<T>) {
+fun <T : Comparable<T>> createHeapUp(heap: MutableList<T>) {
   for (i in 1 until heap.size) adjustUp(heap, i)
 }
 
-fun<T:Comparable<T>> createHeapDown(heap: MutableList<T>) {
-  for (i in heap.size/2-1 downTo 0 ) adjustDown(heap, i)
+fun <T : Comparable<T>> createHeapDown(heap: MutableList<T>) {
+  for (i in heap.size / 2 - 1 downTo 0) adjustDown(heap, i)
 }
 
-private fun<T:Comparable<T>> adjustUp(heap: MutableList<T>, pos: Int) {
+private fun <T : Comparable<T>> adjustUp(heap: MutableList<T>, pos: Int) {
   var pos = pos
   //比父节点大就上移
   while (parent(pos) >= 0 && heap[pos] > heap[parent(pos)]) {
@@ -113,7 +105,7 @@ private fun<T:Comparable<T>> adjustUp(heap: MutableList<T>, pos: Int) {
   }
 }
 
-private fun<T:Comparable<T>> adjustDown(heap: MutableList<T>, pos: Int) {
+private fun <T : Comparable<T>> adjustDown(heap: MutableList<T>, pos: Int) {
   var pos = pos
   while (leftChild(pos) < heap.size) {
     var child = leftChild(pos)
@@ -126,11 +118,11 @@ private fun<T:Comparable<T>> adjustDown(heap: MutableList<T>, pos: Int) {
   }
 }
 
-fun createHeap(heap: IntArray, size: Int, less: (Int, Int) -> Boolean) {
+fun createHeap(heap: IntArray, size: Int, less: CompLambda) {
   for (i in 1 until size) adjustUp(heap, i, less)
 }
 
-private fun adjustUp(heap: IntArray, pos: Int, less: (Int, Int) -> Boolean) {
+private fun adjustUp(heap: IntArray, pos: Int, less: CompLambda) {
   var pos = pos
   //比父节点大就上移
   while (parent(pos) >= 0 && less(heap[pos], heap[parent(pos)])) {
@@ -143,11 +135,11 @@ private fun adjustUp(heap: IntArray, pos: Int, less: (Int, Int) -> Boolean) {
 /***
  * 遍历数据组，并维护最大堆
  */
-private fun findTopNInPlace(heap: IntArray, topN: Int, less: (Int, Int) -> Boolean) {
+private fun findTopNInPlace(heap: IntArray, topN: Int, less: CompLambda) {
   for (i in topN until heap.size) adjustDownTopInPlace(heap, i, less)
 }
 
-private fun adjustDown(heap: IntArray, i: Int, less: (Int, Int) -> Boolean) {
+private fun adjustDown(heap: IntArray, i: Int, less: CompLambda) {
   var pos = i
   while (leftChild(pos) < heap.size) {
     var child = leftChild(pos)
@@ -160,7 +152,7 @@ private fun adjustDown(heap: IntArray, i: Int, less: (Int, Int) -> Boolean) {
   }
 }
 
-private fun adjustDownTop(heap: IntArray, v: Int, less: (Int, Int) -> Boolean) {
+private fun adjustDownTop(heap: IntArray, v: Int, less: CompLambda) {
   //比topN中最小的还要小直接返回
   if (less(v, heap[0])) return
   heap[0] = v
@@ -171,7 +163,7 @@ private fun adjustDownTop(heap: IntArray, v: Int, less: (Int, Int) -> Boolean) {
 /***
  * 向下调整新加入节点位置，并维护最大堆
  */
-private fun adjustDownTopInPlace(heap: IntArray, pos: Int, less: (Int, Int) -> Boolean) {
+private fun adjustDownTopInPlace(heap: IntArray, pos: Int, less: CompLambda) {
   //比topN中最大的还要大直接返回
   if (less(heap[pos], heap[0])) return
   heap.swap(0, pos)
@@ -181,24 +173,33 @@ private fun adjustDownTopInPlace(heap: IntArray, pos: Int, less: (Int, Int) -> B
 /***
  * 向下调整新加入节点位置，并维护最小堆
  */
-private fun adjustDownTopMaxNInPlace(heap: IntArray, pos: Int) = adjustDownTopInPlace(heap, pos) { i, j -> i < j }
+private fun adjustDownTopMaxNInPlace(heap: IntArray, pos: Int) = adjustDownTopInPlace(heap, pos, Comp::Less)
 
 /***
  * 向下调整新加入节点位置，并维护最大堆
  */
-private fun adjustDownTopMinNInPlace(heap: IntArray, topN: Int, pos: Int) =  adjustDownTopInPlace(heap, pos) { i, j -> i > j }
+private fun adjustDownTopMinNInPlace(heap: IntArray, topN: Int, pos: Int) = adjustDownTopInPlace(heap, pos, Comp::More)
 
 /***
  * 遍历数据组，并维护最小堆
  */
-fun findTopMaxNInPlace(heap: IntArray, topN: Int) = findTopNInPlace(heap, topN) { i, j -> i < j }
+fun findTopMaxNInPlace(heap: IntArray, topN: Int) = findTopNInPlace(heap, topN, Comp::Less)
 
 /***
  * 遍历数据组，并维护最大堆
  */
-private fun findTopMinNInPlace(heap: IntArray, topN: Int) = findTopNInPlace(heap, topN) { i, j -> i > j }
+private fun findTopMinNInPlace(heap: IntArray, topN: Int) = findTopNInPlace(heap, topN, Comp::More)
 
-private fun adjustDownTopMaxN(heap: IntArray, v: Int) = adjustDownTop(heap, v) { i, j -> i < j }
+private fun adjustDownTopMaxN(heap: IntArray, v: Int) = adjustDownTop(heap, v, Comp::Less)
+
+typealias CompLambda = (Int, Int) -> Boolean
+
+object Comp {
+  @JvmStatic
+  fun Less(x: Int, y: Int) = x < y
+  @JvmStatic
+  fun More(x: Int, y: Int) = x > y
+}
 
 
 //原来一直疑惑topN为什么用小顶堆，我还想要用最大堆，然后插进来一个元素就剔除最小的那个，原来最小堆直接剔除根节点就行了...
@@ -211,22 +212,21 @@ fun main(args: Array<String>) {
   val toN = TopN(MutableList(9) { it * 2 + 1 })
   val random = Random()
   val list = ArrayList<Int>()
-  var v: Int
   for (i in 0 until 20) {
-    v = random.nextInt(1000)
+    val v = random.nextInt(1000)
     toN.insert(v)
     list.add(v)
   }
   val mh = MaxHeap(list.clone() as MutableList<Int>)
   println(mh.heap)
- val list1 = list.clone() as MutableList<Int>
+  val list1 = list.clone() as MutableList<Int>
   createHeapUp(list1)
   println(list1)
   val list2 = list.clone() as MutableList<Int>
   createHeapDown(list2)
   println(list2)
   list.sort()
-  for (i in 11..19)  print("${list[i]}, ")
+  for (i in 11..19) print("${list[i]}, ")
   println()
   toN.list.sort()
   println(toN.list)
@@ -236,14 +236,14 @@ fun main(args: Array<String>) {
   val heap1 = IntArray(9)
   val heap2 = TopN(MutableList(9) { 0 })
   val time1 = measureTimeMillis {
-    for ((_, value) in arr1.withIndex()) adjustDownTopMaxN(heap1, value)
+    for (value in arr1) adjustDownTopMaxN(heap1, value)
   }
 
   printArr(heap1)
   //好吧，费了两天时间写的环形优先级队列性能更差，10倍左右
   //2020/07/16 今天怎么测的性能更好了，两倍，难道lambda的开销？
   val time2 = measureTimeMillis {
-    for ((_, value) in arr2.withIndex())  heap2.insert(value)
+    for (value in arr2) heap2.insert(value)
   }
   println(heap2.list)
   println("$time1,$time2")
@@ -262,17 +262,11 @@ class TopN<T : Comparable<T>>(val list: MutableList<T>) {
   private val maxIdx: Int
     get() = if (minIdx == 0) list.size - 1 else minIdx - 1
 
-  fun convertIdx(idx: Int): Int {
-    return if (minIdx > list.size - idx - 1) idx + minIdx - list.size else idx + minIdx
-  }
+  fun convertIdx(idx: Int): Int = if (minIdx > list.size - idx - 1) idx + minIdx - list.size else idx + minIdx
 
-  fun minIdxRight(step: Int): Int {
-    return if (minIdx + step > list.size - 1) minIdx + step - list.size else minIdx + step
-  }
+  fun minIdxRight(step: Int): Int = if (minIdx + step > list.size - 1) minIdx + step - list.size else minIdx + step
 
-  fun minIdxLeft(step: Int): Int {
-    return if (minIdx - step >= 0) minIdx - step else minIdx - step + list.size
-  }
+  fun minIdxLeft(step: Int): Int = if (minIdx - step >= 0) minIdx - step else minIdx - step + list.size
 
   fun insert(v: T) {
     if (v <= list[minIdx]) return
