@@ -1,10 +1,7 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.springframework.boot.gradle.tasks.bundling.BootJar
-import org.springframework.boot.gradle.tasks.run.BootRun
-
 plugins {
     application
-    java
+    id("org.springframework.boot")
+    kotlin("plugin.spring")
     id("com.github.johnrengelman.shadow") version "5.1.0"
     kotlin("kapt")
 }
@@ -42,7 +39,13 @@ dependencies {
     implementation("io.vertx:vertx-rabbitmq-client:${rootProject.ext["vertxVersion"]}")
     implementation("io.vertx:vertx-lang-kotlin:${rootProject.ext["vertxVersion"]}")
     implementation("org.reflections:reflections:0.9.12")
-
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    compileOnly("org.projectlombok:lombok")
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    annotationProcessor("org.projectlombok:lombok")
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
+    }
     compileOnly("io.vertx:vertx-service-proxy:${rootProject.ext["vertxVersion"]}")
     compileOnly("io.vertx:vertx-codegen:${rootProject.ext["vertxVersion"]}")
     annotationProcessor("io.vertx:vertx-service-proxy:${rootProject.ext["vertxVersion"]}")

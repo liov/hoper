@@ -23,7 +23,6 @@ sourceSets {
 
 
 dependencies {
-    implementation("io.quarkus:quarkus-reactive-pg-client")
     implementation("io.quarkus:quarkus-resteasy-jackson")
     implementation("io.quarkus:quarkus-spring-di")
     implementation("io.quarkus:quarkus-kotlin")
@@ -39,7 +38,6 @@ dependencies {
     implementation("io.quarkus:quarkus-smallrye-jwt")
     implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
     implementation("io.quarkus:quarkus-resteasy")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:kotlin-extensions")
@@ -58,8 +56,5 @@ allOpen {
 
 tasks.withType<Test> {
     useJUnitPlatform()
-    testLogging {
-        events("PASSED", "FAILED", "SKIPPED")
-    }
     systemProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager")
 }
