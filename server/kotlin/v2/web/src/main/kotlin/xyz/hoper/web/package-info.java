@@ -2,3 +2,4 @@
 
 package xyz.hoper.web;
 
+import io.vertx.codegen.annotations.ModuleGen;

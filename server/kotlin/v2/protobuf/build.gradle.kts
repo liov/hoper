@@ -8,10 +8,8 @@ import com.google.protobuf.gradle.protobuf
 import com.google.protobuf.gradle.protoc
 
 plugins {
-    kotlin("jvm")
     //id("com.squareup.wire") version "3.1.0"
     id("com.google.protobuf") version "0.8.12"
-
     id("idea")
 }
 
@@ -61,7 +59,7 @@ protobuf {
             generateProtoTask
                     .plugins {
                         id("grpc")
-                        id("grpckt")
+                        //id("grpckt")
                     }
         }
     }
