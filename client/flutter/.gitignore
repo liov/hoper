@@ -5,3 +5,4 @@ lib/src/generated/**
 *.lock
 lib/src/generated/*
 .idea
+android/gradle/
