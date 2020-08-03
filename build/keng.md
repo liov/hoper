@@ -185,3 +185,10 @@ for img in $(docker images --format "{{.Repository}}:{{.Tag}}"| grep "anjia0532"
   [[ ${n} == "gcr.io/google-containers" ]] && docker tag $img "k8s.gcr.io${image}${tag}"
 done
 ```
+
+# spring + vertx 浏览器NOT Found
+```yaml
+server:
+  port: 8090
+```
+去掉这个配置,我们只用spring的依赖注入,springmvc或者springwebflux会自动读取占用端口开启服务

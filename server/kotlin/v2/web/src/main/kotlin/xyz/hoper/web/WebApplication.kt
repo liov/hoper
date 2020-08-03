@@ -11,13 +11,13 @@ import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.event.EventListener
 import xyz.hoper.vertx.util.VertxUtil
-import xyz.hoper.vertx.vertx.factory.RouterHandlerFactory
+import xyz.hoper.vertx.util.factory.RouterHandlerFactory
 import xyz.hoper.vertx.util.verticle.DeployVertxServer
 import java.io.IOException
 
 @ComponentScan("xyz.hoper")
 @SpringBootApplication
-open class Application {
+open class WebApplication {
     /**
      * web api所在包路径
      */
@@ -34,19 +34,19 @@ open class Application {
      * http服务器端口号
      */
     @Value("\${http-server-port}")
-    private val httpServerPort = 0
+    private val httpServerPort = 8080
 
     /**
      * 工作线程池大小（可根据实际情况调整）
      */
     @Value("\${worker-pool-size}")
-    private val workerPoolSize = 0
+    private val workerPoolSize = 20
 
     /**
      * 异步服务实例数量（建议和CPU核数相同）
      */
     @Value("\${async-service-instances}")
-    private val asyncServiceInstances = 0
+    private val asyncServiceInstances = 4
 
     @EventListener
     fun deployVerticle(event: ApplicationReadyEvent?) {
@@ -72,5 +72,5 @@ open class Application {
 
 
 fun main(args: Array<String>) {
-    runApplication<Application>(*args)
+    runApplication<WebApplication>(*args)
 }

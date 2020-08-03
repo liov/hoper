@@ -3,14 +3,14 @@ package xyz.hoper.vertx.resultvo
 import io.vertx.core.json.Json
 
 class ResultBean {
-    var code: String? = null
+    var code: Int = 0
         private set
-    var msg: String? = null
+    var msg: String = ""
         private set
     var data: Any? = null
         private set
 
-    fun setCode(code: String?): ResultBean {
+    fun setCode(code: Int): ResultBean {
         this.code = code
         return this
     }
@@ -20,7 +20,7 @@ class ResultBean {
         return this
     }
 
-    fun setMsg(msg: String?): ResultBean {
+    fun setMsg(msg: String): ResultBean {
         this.msg = msg
         return this
     }

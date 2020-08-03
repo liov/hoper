@@ -39,7 +39,6 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
 
 
-
     configurations {
         compileOnly {
             extendsFrom(configurations.annotationProcessor.get())

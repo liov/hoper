@@ -24,7 +24,7 @@ class UploadAndDownApi {
      */
     @RouteMapping(value = "/upload", method = RouteMethod.POST)
     fun upload(): Handler<RoutingContext> {
-        return Handler<RoutingContext> { ctx ->
+        return Handler { ctx ->
             val uploads: Set<FileUpload> = ctx.fileUploads()
             val fs: FileSystem = vertxInstance!!.fileSystem()
             uploads.forEach(Consumer<FileUpload> { fileUpload: FileUpload ->
@@ -35,7 +35,7 @@ class UploadAndDownApi {
                     }
                 }
             })
-            HttpUtil.jsonResponse(ctx.response(), HTTP_OK, ResultBean.build().setResultConstant(ResultConstant._000))
+            HttpUtil.jsonResponse(ctx.response(), HTTP_OK, ResultBean.build().setResultConstant(ResultConstant.SUCCESS))
         }
     }
 
@@ -45,7 +45,7 @@ class UploadAndDownApi {
      */
     @RouteMapping(value = "/down", method = RouteMethod.GET)
     fun download(): Handler<RoutingContext> {
-        return Handler<RoutingContext> { ctx ->
+        return Handler { ctx ->
             ctx.response().putHeader("content-Type", "application/x-png")
             ctx.response().putHeader("Content-Disposition", "attachment;filename=" + "hahaha.png")
             ctx.response().sendFile(ctx.queryParams().get("filepath"))

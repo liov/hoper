@@ -31,17 +31,17 @@ class UserApi {
             val param: JsonObject = ParamUtil.getRequest(ctx)!!
             if (!param.containsKey("id")) {
                 HttpUtil.jsonResponse(ctx.response(), HTTP_INTERNAL_ERROR,
-                        ResultBean.build().setMsg("缺少id参数").setCode(HTTP_INTERNAL_ERROR.toString()));
+                        ResultBean.build().setMsg("缺少id参数").setCode(HTTP_INTERNAL_ERROR));
                 return@Handler
             }
             userAsyncService.info(
                    param.getString("id").toLong(), Handler { ar ->
                 if (ar.succeeded()) {
                     val user = ar.result()
-                    HttpUtil.jsonResponse(ctx.response(), HTTP_OK, ResultBean.build().setResultConstant(ResultConstant._000, user))
+                    HttpUtil.jsonResponse(ctx.response(), HTTP_OK, ResultBean.build().setResultConstant(ResultConstant.SUCCESS, user))
                 } else {
                     HttpUtil.jsonResponse(ctx.response(), HTTP_INTERNAL_ERROR,
-                            ResultBean.build().setData(ar.cause().message).setCode(HTTP_INTERNAL_ERROR.toString()))
+                            ResultBean.build().setData(ar.cause().message).setCode(HTTP_INTERNAL_ERROR))
                     ar.cause().printStackTrace()
                 }
             })
