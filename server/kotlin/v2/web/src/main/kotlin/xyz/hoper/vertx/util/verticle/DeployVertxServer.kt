@@ -34,9 +34,4 @@ object DeployVertxServer {
             VertxUtil.vertxInstance?.deployVerticle(AsyncRegistVerticle(asyncServiceImplPackages!!), DeploymentOptions().setWorker(true))
         }
     }
-
-    @Throws(IOException::class)
-    fun startDeploy(router: Router?, asyncServiceImplPackages: String?, asyncServiceInstances: Int) {
-        startDeploy(router, asyncServiceImplPackages, 0, asyncServiceInstances)
-    }
 }

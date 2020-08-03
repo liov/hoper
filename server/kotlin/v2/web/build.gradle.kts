@@ -39,7 +39,7 @@ dependencies {
     implementation("io.vertx:vertx-rabbitmq-client:${rootProject.ext["vertxVersion"]}")
     implementation("io.vertx:vertx-lang-kotlin:${rootProject.ext["vertxVersion"]}")
     implementation("org.reflections:reflections:0.9.12")
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("org.springframework.boot:spring-boot-starter")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     annotationProcessor("org.projectlombok:lombok")

@@ -1,4 +1,4 @@
-package xyz.hoper.vertx.vertx.factory
+package xyz.hoper.vertx.util.factory
 
 
 import io.vertx.core.Handler
@@ -27,7 +27,7 @@ import java.util.stream.Stream
 class RouterHandlerFactory {
 
     companion object {
-        private val LOGGER = LoggerFactory.getLogger(RouterHandlerFactory::class.java)
+        private val LOGGER = LoggerFactory.getLogger(this.javaClass)
 
         @Volatile
         private lateinit var reflections: Reflections
@@ -76,7 +76,8 @@ class RouterHandlerFactory {
                 add(HttpMethod.HEAD)
             }
         }
-        /* 添加跨域的方法 **/router.route().handler(CorsHandler.create("*").allowedMethods(method))
+        /* 添加跨域的方法 **/
+        router.route().handler(CorsHandler.create("*").allowedMethods(method))
         router.route().handler(BodyHandler.create())
 
         //扫描处理器handler并注册到路由router，路由地址相同则比对两个路由权重顺序

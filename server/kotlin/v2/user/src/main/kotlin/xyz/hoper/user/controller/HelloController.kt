@@ -6,20 +6,22 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.core.publisher.MonoSink
 
 
 @RestController
 @RequestMapping("/api")
 class HelloController {
     val log = LoggerFactory.getLogger(this.javaClass)
+
     @GetMapping("mono")
     fun mono(): Mono<String> {
-        return Mono.create { monoSink ->
+        return Mono.create { monoSink: MonoSink<String> ->
             log.info("创建 Mono")
             monoSink.success("hello webflux")
-        }.doOnSubscribe{
-                    subscription -> log.info("{}", subscription)
-                }.doOnNext{ o -> log.info("{}", o) }
+        }.doOnSubscribe { subscription ->
+            log.info("{}", subscription)
+        }.doOnNext { o -> log.info("{}", o) }
     }
 
     @GetMapping("flux")
