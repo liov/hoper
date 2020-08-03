@@ -2,13 +2,14 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("org.springframework.boot") version "2.3.2.RELEASE" apply false
-    kotlin("plugin.spring") version "1.3.72"
+    kotlin("plugin.spring") version "1.3.72" apply false
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
     kotlin("jvm") version "1.3.72"
+    kotlin("plugin.jpa") version "1.3.72" apply false
 }
 
 ext {
-    set("vertxVersion", "3.9.0")
+    set("vertxVersion", "3.9.1")
     set("junitJupiterEngineVersion", "5.4.0")
     set("grpc_kotlin_version", "0.1.1")
     set("protobuf_version", "3.11.1")
@@ -51,7 +52,7 @@ subprojects {
         implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.0.2.RELEASE")
         implementation(kotlin("reflect"))
         implementation(kotlin("stdlib"))
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.3.3")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.3.8")
         implementation("io.projectreactor:reactor-core:3.3.5.RELEASE")
         testImplementation("io.projectreactor:reactor-test:3.3.5.RELEASE")
     }
@@ -61,7 +62,7 @@ subprojects {
             mavenBom("com.alibaba.cloud:spring-cloud-alibaba-dependencies:${property("springCloudAlibabaVersion")}")
         }
         dependencies {
-            dependency("org.apache.logging.log4j:log4j-core:2.12.1")
+            dependency("org.apache.logging.log4j:log4j-core:2.13.3")
         }
     }
 
