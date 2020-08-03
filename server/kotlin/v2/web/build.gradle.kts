@@ -8,7 +8,7 @@ plugins {
 
 
 application {
-    mainClassName = "xyz.hoper.web.Application"
+    mainClassName = "xyz.hoper.web.WebApplicationKt"
 }
 
 sourceSets {

@@ -4,12 +4,12 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 plugins {
     kotlin("jvm")
     id("org.springframework.boot")
-    kotlin("plugin.jpa") version "1.3.72"
+    kotlin("plugin.jpa")
     kotlin("plugin.spring")
 }
 
 tasks.getByName<BootJar>("bootJar") {
-    mainClassName = "xyz.hoper.user.ApplicationKt"
+    mainClassName = "xyz.hoper.user.UserApplicationKt"
 }
 
 sourceSets {

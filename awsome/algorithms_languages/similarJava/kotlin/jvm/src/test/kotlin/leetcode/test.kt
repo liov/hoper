@@ -281,4 +281,8 @@ class Solution {
   fun integerBreak(){
     println(integerBreak(10))
   }
+  @Test
+  fun addStrings(){
+    println(addStrings("1","1"))
+  }
 }
