@@ -1,6 +1,6 @@
 package xyz.hoper.leetcode;
 
-public class Solution {
+public class LengthOfLongestSubstring {
   public static int lengthOfLongestSubstring(String s) {
     var len = s.length();
     if (len <= 1) {
