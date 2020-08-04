@@ -1,7 +1,7 @@
 package leetcode
 
 import org.junit.jupiter.api.Test
-import xyz.hoper.leetcode.Solution
+import xyz.hoper.leetcode.LengthOfLongestSubstring
 import kotlin.system.measureTimeMillis
 
 class Solution {
@@ -15,7 +15,7 @@ class Solution {
     }
     val time2 = measureTimeMillis {
       repeat(100000) {
-        Solution.lengthOfLongestSubstringV2("abcabcbb")
+        LengthOfLongestSubstring.lengthOfLongestSubstringV2("abcabcbb")
       }
     }
     //kotlin还快一点
