@@ -1,5 +1,13 @@
 package leetcode
 
+import java.util.*
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
+
+
 /**
  * 你这个学期必须选修 numCourse 门课程，记为 0 到 numCourse-1 。
 
@@ -41,4 +49,36 @@ fun dfs(num:Int,set:HashSet<Int>,mem:HashSet<Int>,map: HashMap<Int,HashSet<Int>>
   }
   set.remove(num)
   return true
+}
+
+var valid = true
+fun canFinishV2(numCourses: Int, prerequisites: Array<IntArray>): Boolean {
+  val edges = ArrayList<ArrayList<Int>>()
+  for (arr in 0 until numCourses){
+    edges.add(ArrayList())
+  }
+  val visited = IntArray(numCourses)
+  for (arr in prerequisites){
+    edges[arr[1]].add(arr[0])
+  }
+  var i = 0
+  while (i < numCourses && valid) {
+    if (visited[i] == 0) dfs(i,visited,edges)
+    i++
+  }
+  return valid
+}
+
+fun dfs(u:Int,visited:IntArray,edges:ArrayList<ArrayList<Int>>) {
+  visited[u] = 1
+  for (v in edges[u]) {
+    if (visited[v] == 0) {
+      dfs(v,visited,edges)
+      if (!valid) return
+    } else if (visited[v] == 1) {
+      valid = false
+      return
+    }
+  }
+  visited[u] = 2
 }
