@@ -2,7 +2,10 @@ package leetcode
 
 import org.junit.jupiter.api.Test
 import xyz.hoper.leetcode.LengthOfLongestSubstring
+import xyz.hoper.leetcode.PalindromePairs
 import kotlin.system.measureTimeMillis
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
 
 class Solution {
   @Test
@@ -284,5 +287,22 @@ class Solution {
   @Test
   fun addStrings(){
     println(addStrings("1","1"))
+  }
+  @ExperimentalTime
+  @Test
+  fun palindromePairs(){
+    val t = arrayOf("abcd","dcba","lls","s","sssll")
+    val p = PalindromePairs()
+    val t1 = measureTime {
+        for(i in 0 until 10000000){
+          p.palindromePairs(t)
+        }
+    }
+    val t2 = measureTime {
+      for(i in 0 until 10000000){
+        palindromePairsV3(t)
+      }
+    }
+    println("$t1,$t2")
   }
 }
