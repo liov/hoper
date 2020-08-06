@@ -25,8 +25,7 @@ allprojects {
     java.sourceCompatibility = JavaVersion.VERSION_11
 
     repositories {
-        maven("http://maven.aliyun.com/nexus/content/groups/public/")
-        maven("http://maven.aliyun.com/nexus/content/repositories/jcenter")
+        maven("https://maven.aliyun.com/repository/public")
         mavenCentral()
         gradlePluginPortal()
         google()

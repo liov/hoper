@@ -1,7 +1,10 @@
+import 'package:app/signature.dart';
 import 'package:flutter/material.dart';
 
+import 'bottom.dart';
+
 void main() {
-  runApp(MyApp());
+  runApp(MaterialApp(home: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -93,6 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
             ),
+            Bottom(),
           ],
         ),
       ),
