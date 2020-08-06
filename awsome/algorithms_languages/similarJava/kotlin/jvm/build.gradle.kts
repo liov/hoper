@@ -9,8 +9,7 @@ group = "xyz.hoper"
 version = "1.0-SNAPSHOT"
 
 repositories {
-  maven("http://maven.aliyun.com/nexus/content/groups/public/")
-  maven("http://maven.aliyun.com/nexus/content/repositories/jcenter")
+  maven("https://maven.aliyun.com/repository/public")
   mavenCentral()
   gradlePluginPortal()
   google()

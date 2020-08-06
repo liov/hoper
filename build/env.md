@@ -93,3 +93,10 @@ tar -C /usr/local -xzf go1.xx.x.linux-amd64.tar.gz
 export PATH=$PATH:/usr/local/go/bin
 export GOPRIVATE=go.hoper.xyz
 export GOPROXY=https://goproxy.io,direct
+
+# gradle maven
+```groovy
+maven{ url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/google'}
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+```
