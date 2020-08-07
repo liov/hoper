@@ -1,7 +1,7 @@
 import 'package:app/signature.dart';
 import 'package:flutter/material.dart';
 
-import 'bottom.dart';
+import 'bottom/bottom.dart';
 
 void main() {
   runApp(MaterialApp(home: MyApp()));
@@ -23,8 +23,8 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.teal,
-        primaryColor: Colors.tealAccent[700],
+        primarySwatch: Colors.blue,
+        primaryColor: Colors.blueAccent[700],
         // This makes the visual density adapt to the platform that you run
         // the app on. For desktop platforms, the controls will be smaller and
         // closer together (more dense) than on mobile platforms.
@@ -56,6 +56,16 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
+  int _selectedIndex = 0;
+  static const TextStyle optionStyle =
+  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   void _incrementCounter() {
     setState(() {
       _counter++;
@@ -70,6 +80,48 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+     List<Widget> _widgetOptions = <Widget>[
+      Text(
+        'Index 0: Home',
+        style: optionStyle,
+      ),
+      Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text(
+            '点击下方加号:',
+          ),
+          Text(
+            '$_counter',
+            style: Theme.of(context).textTheme.headline4,
+          ),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              verticalDirection: VerticalDirection.up,
+              children: [
+                FloatingActionButton(
+                  onPressed: _incrementCounter,
+                  tooltip: 'Increment',
+                  child: Icon(Icons.add),
+                ),
+                SizedBox(width: 20),
+                FloatingActionButton(
+                  onPressed: _reduceCounter,
+                  tooltip: 'Reduce',
+                  child: Icon(Icons.remove),
+                )
+              ]),
+        ],
+      ),
+      Text(
+        'Index 2: School',
+        style: optionStyle,
+      ),
+      Text(
+        'Index 3: Search',
+        style: optionStyle,
+      ),
+    ];
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -86,36 +138,9 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              '点击下方加号:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-            Bottom(),
-          ],
-        ),
+        child: _widgetOptions.elementAt(_selectedIndex),
       ),
-      floatingActionButton: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          verticalDirection: VerticalDirection.up,
-          children: [
-            FloatingActionButton(
-              onPressed: _incrementCounter,
-              tooltip: 'Increment',
-              child: Icon(Icons.add),
-            ),
-            SizedBox(width: 20),
-            FloatingActionButton(
-              onPressed: _reduceCounter,
-              tooltip: 'Reduce',
-              child: Icon(Icons.remove),
-            )
-          ]),
+      bottomNavigationBar: Bottom(onTap: _onItemTapped),
       // This trailing comma makes auto-formatting nicer for build methods.
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
     );
