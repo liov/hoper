@@ -4,6 +4,7 @@ buildscript {
         maven{ url 'https://maven.aliyun.com/repository/public' }
         maven { url 'https://maven.aliyun.com/repository/google'}
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        maven { url 'http://download.flutter.io' }
     }
 
     dependencies {
@@ -17,6 +18,7 @@ allprojects {
         maven{ url 'https://maven.aliyun.com/repository/public' }
         maven { url 'https://maven.aliyun.com/repository/google'}
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        maven { url 'http://download.flutter.io' }
     }
 }
 

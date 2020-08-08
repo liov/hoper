@@ -6,3 +6,22 @@ dart xxx
 
 export PUB_HOSTED_URL=https://pub.flutter-io.cn
 export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
+
+maven { url 'http://download.flutter.io' }
+
+修改flutter安装目录下三个文件：flutter/packages/flutter_tools/gradle/resolve_dependencies.gradle
+
+flutter/packages/flutter_tools/gradle/aar_init_script.gradle
+
+flutter/packages/flutter_tools/gradle/flutter.gradle
+
+将其中的：https://storage.googleapis.com/download.flutter.io 替换为：http://download.flutter.io 后重新编译
+
+
+keytool -genkey -v -keystore D:/key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias key
+
+pub global activate protoc_plugin
+
+export PATH="$PATH:$HOME/.pub-cache/bin" //$HOME\AppData\Local\Pub\Cache\bin
+
+protoc --dart_out=grpc:lib/generated --proto_path=../../std_proto  -Iprotos ../../std_proto/user/user.enum.proto
