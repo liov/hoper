@@ -15,8 +15,8 @@ import (
 var in, out string
 
 func main() {
-	flag.StringVar(&in, "in", "../../../../proto", "go protobuf")
-	flag.StringVar(&out, "out", "../../../../std_proto", "通用 protobuf")
+	flag.StringVar(&in, "in", "../../../proto", "go protobuf")
+	flag.StringVar(&out, "out", "../../../std_proto", "通用 protobuf")
 	flag.Parse()
 	_, err := os.Stat(out)
 	if os.IsNotExist(err) {

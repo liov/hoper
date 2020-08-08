@@ -1,14 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-class MomentListView extends StatefulWidget {
-  MomentListStage createState() => MomentListStage();
-}
-
-class MomentListStage extends State<MomentListView> {
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
-  }
+@JsonSerializable(nullable: false)
+class Moment{
+  int id;
+  DateTime createdAt;
+  String content;
 
 }
