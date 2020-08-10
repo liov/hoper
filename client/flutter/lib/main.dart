@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_luakit_plugin/flutter_luakit_plugin.dart';
+import 'page/bottom/bottom.dart';
+import 'package:flutter_lua/flutter_lua.dart' show Lua;
 
-import 'bottom/bottom.dart';
-
-void main() {
+void main() async {
+  print(await Lua.version);
   runApp(MaterialApp(home: MyApp()));
 }
 
@@ -54,10 +56,22 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-
+  List<dynamic> weathers = new List<dynamic>();
   int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
+  @override
+  void initState() {
+    super.initState();
+    FlutterLuakitPlugin.callLuaFun("WeatherManager", "loadWeather").then((dynamic d) {
+      print("loadWeather" + d.toString());
+      setState(() {
+        if(d != null) {
+          weathers = d;
+        }
+      });
+    });
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -79,9 +93,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    Map<dynamic, dynamic> m = weathers[0];
      List<Widget> _widgetOptions = <Widget>[
       Text(
-        'Index 0: Home',
+        '${m["city"]} ' + "日出日落：" + '${m["sun_info"]} ',
         style: optionStyle,
       ),
       Column(
