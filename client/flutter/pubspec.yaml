@@ -34,8 +34,8 @@ dependencies:
   json_serializable: ^3.3.0
   http: ^0.12.2
   dio: ^3.0.10
-  flutter_lua: ^0.3.1
   flutter_luakit_plugin: ^1.0.20
+  webview_flutter: ^0.3.22+1
 
 dev_dependencies:
   flutter_test:

@@ -7,7 +7,7 @@ pods=$(kubectl get pods --selector=job-name=pi --output=jsonpath={.items..metada
 
 kubectl describe deployment data-center
 
-pods=$(kubectl get pods --selector=app=data-center --output=jsonpath={.items..metadata.name}) && kubectl logs -f $pods
+pods=$(kubectl get pods --selector=app=${PWD##*/} --output=jsonpath={.items..metadata.name}) && kubectl logs -f $pods
 
 ../deploy/main -flow all -env dev -name ${PWD##*/} -ns openmng -path . -ver v1.1.0-$(date "+%Y%m%d%H%M%S")
 

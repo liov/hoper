@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_luakit_plugin/flutter_luakit_plugin.dart';
 import 'page/bottom/bottom.dart';
-import 'package:flutter_lua/flutter_lua.dart' show Lua;
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
   runApp(MaterialApp(home: MyApp()));
 }
 
@@ -60,8 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  String version = "无数据";
-
+  String _platformVersion = 'Unknown';
   @override
   void initState() {
     super.initState();
@@ -74,11 +72,26 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       });
     });
-    Lua.version.then((value) => {
-          setState(() {
-            version = value;
-          })
-        });
+    testLua();
+  }
+
+  Future<void> testLua() async {
+    String platformVersion;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      platformVersion = await FlutterLuakitPlugin.callLuaFun("Lua", "getVersion");
+    } on PlatformException {
+      platformVersion = 'Failed to get platform version.';
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      _platformVersion = platformVersion;
+    });
   }
 
   void _onItemTapped(int index) {
@@ -137,11 +150,11 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       Text(
-        '$version',
+        _platformVersion,
         style: optionStyle,
       ),
       Text(
-        'Index 3: Search',
+        _platformVersion,
         style: optionStyle,
       ),
     ];

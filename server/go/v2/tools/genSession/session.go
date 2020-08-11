@@ -34,8 +34,8 @@ func main() {
 	sess := &ErpSession{
 		EmployeeId:    1,
 		Type:          0,
-		CompId:        11103,
-		FilterCompIds: []int{10002},
+		CompId:        11100,
+		FilterCompIds: []int{11100},
 	}
 	data, _ := json.Marshal(sess)
 	log.Println(string(data))
