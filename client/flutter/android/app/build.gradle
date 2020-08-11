@@ -64,6 +64,9 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
+            minifyEnabled false //安卓代码混淆的坑，不是JNI找不到类，就是注册不了
+            shrinkResources false
+            proguardFiles 'proguard-rules.pro'
         }
     }
 }
