@@ -7,6 +7,6 @@ import android.os.Bundle
 class MainActivity: FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LuaHelper.startLuaKit(this)
+        //LuaHelper.startLuaKit(this)
     }
 }
