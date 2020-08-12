@@ -69,3 +69,4 @@ Webview
 
 放弃flutter_boost整合原生+MLN为app提供热更新的能力，MLN小众，坑看起来也不少，lua bind 原生看起来也有学习成本,动态部分用webview替代实现
 RustFFI调试是个问题
+决定新开一个纯实验性质的坑

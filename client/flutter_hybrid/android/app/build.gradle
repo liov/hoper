@@ -48,6 +48,14 @@ android {
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        ndk {
+            abiFilters "armeabi-v7a"
+        }
+    }
+
+    packagingOptions {
+        // pickFirsts:当出现重复文件，会使用第一个匹配的文件打包进入apk
+        pickFirst 'lib/armeabi-v7a/libluajapi.so'
     }
 
     signingConfigs {
@@ -82,4 +90,27 @@ repositories {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation 'com.github.williamwen1986:LuakitJitpack:1.0.14'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0' //引入包的版本需在1.1.0以上
+    implementation "androidx.recyclerview:recyclerview:1.1.0" //引入包的版本需在1.1.0以上
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+
+    // 核心库
+    implementation "com.immomo.mlncore:core:1.0.1"
+    // view、工具桥接库
+    implementation "com.immomo.mls:mln:1.0.1"
+    // 代码生成库
+    annotationProcessor "com.immomo.mls:processor:1.0.0"
+    // 热重载，配合IDEA插件使用
+    debugImplementation "com.immomo.luanative:hotreload:1.0.1"
+    releaseImplementation "com.immomo.luanative:hotreload_empty:1.0.1"
+    // 配合热重载使用
+    debugImplementation "com.google.protobuf:protobuf-lite:3.0.1"
+
+    implementation 'com.google.zxing:core:3.4.0'
+    implementation 'com.google.zxing:android-core:3.3.0'
+    implementation 'com.alibaba:fastjson:1.2.58'
+    implementation 'com.github.bumptech.glide:glide:4.6.1'
 }

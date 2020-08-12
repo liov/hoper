@@ -192,3 +192,25 @@ server:
   port: 8090
 ```
 去掉这个配置,我们只用spring的依赖注入,springmvc或者springwebflux会自动读取占用端口开启服务
+
+# InteIIiJ IDEA Gradle 编码 GBK 的不可映射字符
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+# Android编译时报错：More than one file was found with OS independent path lib/armeabi-v7a/libluajapi.so
+
+packagingOptions {
+        // pickFirsts:当出现重复文件，会使用第一个匹配的文件打包进入apk
+        pickFirst 'lib/armeabi-v7a/libluajapi.so'
+    }
+    
+# Android Execution failed for JetifyTransform
+
+compileOptions{
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+# IDEA安装插件后打不开，插件木录  
+${Home}\AppData\Roaming\JetBrains\IntelliJIdea2020.1\plugins
