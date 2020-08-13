@@ -75,10 +75,6 @@ flutter {
     source '../..'
 }
 
-repositories {
-    maven { url "https://jitpack.io" }
-}
-
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation 'com.github.williamwen1986:LuakitJitpack:1.0.14'

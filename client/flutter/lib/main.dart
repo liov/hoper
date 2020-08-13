@@ -55,6 +55,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final MethodChannel _methodChannel = const MethodChannel('xyz.hoper.native/view');
   int _counter = 0;
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
@@ -76,6 +77,15 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _counter--;
     });
+  }
+
+  AppBar bar(){
+    return _selectedIndex!=0?AppBar(
+      centerTitle: true,
+      // Here we take the value from the MyHomePage object that was created by
+      // the App.build method, and use it to set our appbar title.
+      title: Text(widget.title),
+    ):null;
   }
 
   @override
@@ -126,18 +136,18 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
+      appBar: bar(),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: Bottom(onTap: _onItemTapped),
+      floatingActionButton: FloatingActionButton(
+        onPressed: ()=>_methodChannel.invokeMethod("toNative").then((value) => null),
+        tooltip: 'Reduce',
+        child: Icon(Icons.remove),
+      ),
       // This trailing comma makes auto-formatting nicer for build methods.
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
     );
