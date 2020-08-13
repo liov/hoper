@@ -1,5 +1,6 @@
 package xyz.hoper.dart
 
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.Drawable
@@ -49,18 +50,23 @@ class FlutterFragmentPageActivity : AppCompatActivity(), View.OnClickListener, S
         mTab2.setBackgroundColor(Color.WHITE)
         mTab3.setBackgroundColor(Color.WHITE)
         mTab4.setBackgroundColor(Color.WHITE)
-        mFragment = if (mTab1 === v) {
-            mTab1.setBackgroundColor(Color.YELLOW)
-            FlutterFragment.NewEngineFragmentBuilder().url("flutterFragment").build()
-        } else if (mTab2 === v) {
-            mTab2.setBackgroundColor(Color.YELLOW)
-            FlutterFragment.NewEngineFragmentBuilder().url("flutterFragment").build()
-        } else if (mTab3 === v) {
-            mTab3.setBackgroundColor(Color.YELLOW)
-            FlutterFragment.NewEngineFragmentBuilder().url("flutterFragment").build()
-        } else {
-            mTab4.setBackgroundColor(Color.YELLOW)
-            FlutterFragment.NewEngineFragmentBuilder().url("flutterFragment").build()
+        mFragment = when {
+            mTab1 === v -> {
+                mTab1.setBackgroundColor(Color.YELLOW)
+                FlutterFragment.NewEngineFragmentBuilder().url("flutterFragment").build()
+            }
+            mTab2 === v -> {
+                mTab2.setBackgroundColor(Color.YELLOW)
+                FlutterFragment.NewEngineFragmentBuilder().url("flutterFragment").build()
+            }
+            mTab3 === v -> {
+                mTab3.setBackgroundColor(Color.YELLOW)
+                FlutterFragment.NewEngineFragmentBuilder().url("flutterFragment").build()
+            }
+            else -> {
+                mTab4.setBackgroundColor(Color.YELLOW)
+                FlutterFragment.NewEngineFragmentBuilder().url("flutterFragment").build()
+            }
         }
         supportFragmentManager
                 .beginTransaction()
@@ -70,7 +76,7 @@ class FlutterFragmentPageActivity : AppCompatActivity(), View.OnClickListener, S
 
     override fun onResume() {
         super.onResume()
-        mTab1!!.performClick()
+        mTab1.performClick()
     }
 
     override fun provideSplashScreen(): SplashScreen? {
@@ -84,7 +90,8 @@ class FlutterFragmentPageActivity : AppCompatActivity(), View.OnClickListener, S
 
     // This is never expected to happen.
     private val splashScreenFromManifest: Drawable?
-        private get() = try {
+        @SuppressLint("WrongConstant")
+        get() = try {
             val activityInfo = packageManager.getActivityInfo(
                     componentName,
                     PackageManager.GET_META_DATA or PackageManager.GET_ACTIVITIES
