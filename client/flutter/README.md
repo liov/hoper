@@ -60,6 +60,10 @@ protoc --dart_out=grpc:lib/generated --proto_path=../../std_proto  -Iprotos ../.
 原来用的是[go实现的lua虚拟机](https://github.com/Shopify/go-lua),比clua慢6倍
 这有个[支持lua5.4的的clua](https://github.com/tgarm/flutter-luavm)
 
+
+flutter pub run pigeon --input pigeons/route.dart
+rustup target add x86_64-linux-android armv7-linux-androideabi
+cargo build --release --target=x86_64-linux-android
 flutter build apk --release --target-platform android-arm,android-arm64 --split-per-abi
 
 #todo

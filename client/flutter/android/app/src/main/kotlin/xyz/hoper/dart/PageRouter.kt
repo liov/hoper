@@ -1,9 +1,10 @@
 package xyz.hoper.dart
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.engine.FlutterEngineCache
 
 
 object PageRouter {
@@ -16,7 +17,8 @@ object PageRouter {
         Log.i("openPageByUrl", path)
         return try {
            if (url.startsWith(FLUTTER_PAGE_URL)) {
-                context.startActivity(Intent(context, MainActivity::class.java))
+                   context.startActivity(FlutterActivity.CachedEngineIntentBuilder(MainActivity::class.java,FlutterEngineFactory.ENGINE_ID)
+                           .build(context))
                 return true
             } else
                 context.startActivity(Intent(context, NativeActivity::class.java))
