@@ -5,7 +5,7 @@ import 'package:flutter_luakit_plugin/flutter_luakit_plugin.dart';
 
 
 class Lua extends StatefulWidget {
-  Lua({Key key, this.title}) : super(key: key);
+  Lua({Key key}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -15,8 +15,6 @@ class Lua extends StatefulWidget {
   // case the title) provided by the parent (in this case the App widget) and
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
-
-  final String title;
 
   @override
   LuaState createState() => LuaState();

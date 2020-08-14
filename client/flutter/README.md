@@ -62,9 +62,9 @@ protoc --dart_out=grpc:lib/generated --proto_path=../../std_proto  -Iprotos ../.
 
 
 flutter pub run pigeon --input pigeons/route.dart
-rustup target add x86_64-linux-android armv7-linux-androideabi
-cargo build --release --target=x86_64-linux-android
-flutter build apk --release --target-platform android-arm,android-arm64 --split-per-abi
+rustup target add x86_64-linux-android armv7-linux-androideabi aarch64-linux-android
+cargo build --release --target=aarch64-linux-android
+flutter build apk --release --target-platform android-arm64
 
 #todo
 集成[MLN](https://github.com/momotech/MLN) Demo都跑不起来，没必要为了一个热更新在客户端上浪费太多时间

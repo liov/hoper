@@ -214,3 +214,19 @@ compileOptions{
 
 # IDEA安装插件后打不开，插件木录  
 ${Home}\AppData\Roaming\JetBrains\IntelliJIdea2020.1\plugins
+
+# Android打包动态库
+lib目录应该跟src目录是同级
+```groovy
+android {
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['jniLibs']
+        }
+    }
+}
+dependencies {
+    implementation fileTree(dir: 'jniLibs', include: ['*.so'])
+}
+
+```

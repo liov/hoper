@@ -1,4 +1,5 @@
 import 'package:app/page/ffi/ffi.dart';
+import 'package:app/page/lua/lua.dart';
 import 'package:app/page/webview/webview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -125,10 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
         greeting(),
         style: optionStyle,
       ),
-      Text(
-        'Placeholder',
-        style: optionStyle,
-      ),
+      Lua(),
     ];
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
