@@ -3,6 +3,7 @@ package xyz.hoper.dart
 
 import android.util.Log
 import io.flutter.app.FlutterApplication
+import com.common.luakit.LuaHelper
 
 class App : FlutterApplication(){
 
@@ -10,7 +11,7 @@ class App : FlutterApplication(){
 
     override fun onCreate() {
         super.onCreate()
-        //LuaHelper.startLuaKit(this)
+        LuaHelper.startLuaKit(this)
         FlutterEngineFactory.createFlutterEngine(this)
     }
 

@@ -32,5 +32,5 @@ linker = "ndkbinpath\\aarch64-linux-android30-clang.cmd"
 ar =  "ndkbinpath\\aarch64-linux-android-ar"
 
 [target.armv7-linux-androideabi]
-linker = "ndkbinpath\\armv7-linux-androideabi30-clang.cmd"
-ar =  "ndkbinpath\\armv7-linux-androideabi-ar"
+linker = "ndkbinpath\\armv7a-linux-androideabi30-clang.cmd"
+ar =  "ndkbinpath\\armv7a-linux-androideabi-ar"

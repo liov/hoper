@@ -70,6 +70,15 @@ android {
             minifyEnabled false //安卓代码混淆的坑，不是JNI找不到类，就是注册不了
             shrinkResources false
             proguardFiles 'proguard-rules.pro'
+            ndk {
+                abiFilters "arm64-v8a"
+            }
+        }
+        debug{
+            ndk {
+                //这里要加上，否则debug包会出问题,后面三个为可选，x86建议加上不然部分模拟器回报错
+                abiFilters "arm64-v8a", "x86_64"
+            }
         }
     }
 
@@ -85,4 +94,5 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation 'com.github.williamwen1986:LuakitJitpack:1.0.14'
+    implementation fileTree(dir: 'jniLibs', include: ['*.so'])
 }

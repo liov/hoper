@@ -12,7 +12,7 @@ String findDynamicLibraryFile(String name, String dir) {
 }
 
 final DynamicLibrary nativeAddLib = Platform.isAndroid
-    ? DynamicLibrary.open(findDynamicLibraryFile("rust","lib"))
+    ? DynamicLibrary.open(findDynamicLibraryFile("rust",'libraries'))
     : DynamicLibrary.process();
 
 final Pointer<Utf8> Function(Pointer<Utf8> x) nativeGreeting =
@@ -23,5 +23,5 @@ nativeAddLib
 String greeting(){
   final String myString = "😎👿💬";
   final Pointer<Utf8> charPointer = Utf8.toUtf8(myString);
-  return nativeGreeting(charPointer).cast<Uint8>().toString();
+  return Utf8.fromUtf8(nativeGreeting(charPointer));
 }
