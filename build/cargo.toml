@@ -20,3 +20,17 @@ registry = "https://mirrors.sjtug.sjtu.edu.cn/git/crates.io-index"
 # rustcc社区
 [source.rustcc]
 registry = "git://crates.rustcc.cn/crates.io-index"
+
+
+
+[target.x86_64-linux-android]
+linker = "ndkbinpath\\x86_64-linux-android30-clang.cmd"
+ar =  "ndkbinpath\\x86_64-linux-android-ar"
+
+[target.aarch64-linux-android]
+linker = "ndkbinpath\\aarch64-linux-android30-clang.cmd"
+ar =  "ndkbinpath\\aarch64-linux-android-ar"
+
+[target.armv7-linux-androideabi]
+linker = "ndkbinpath\\armv7-linux-androideabi30-clang.cmd"
+ar =  "ndkbinpath\\armv7-linux-androideabi-ar"

@@ -28,8 +28,8 @@ class BottomState extends State<Bottom> {
           title: Text('瞬间'),
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.business),
-          title: Text('Business'),
+          icon: Icon(Icons.language),
+          title: Text('Browser'),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.search),

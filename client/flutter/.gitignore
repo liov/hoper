@@ -1,7 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 lib/generated/**
 lib/generated/*
-!lib/generated/donotmodify
+!lib/generated/up
 
 # Miscellaneous
 *.class

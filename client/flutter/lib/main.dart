@@ -1,3 +1,4 @@
+import 'package:app/page/ffi/ffi.dart';
 import 'package:app/page/webview/webview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -80,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   AppBar bar(){
-    return _selectedIndex!=0?AppBar(
+    return _selectedIndex!=1?AppBar(
       centerTitle: true,
       // Here we take the value from the MyHomePage object that was created by
       // the App.build method, and use it to set our appbar title.
@@ -91,7 +92,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     List<Widget> _widgetOptions = <Widget>[
-      WebViewExample(),
       Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -120,8 +120,9 @@ class _MyHomePageState extends State<MyHomePage> {
               ]),
         ],
       ),
+      WebViewExample(),
       Text(
-        'Placeholder',
+        greeting(),
         style: optionStyle,
       ),
       Text(
@@ -144,9 +145,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       bottomNavigationBar: Bottom(onTap: _onItemTapped),
       floatingActionButton: FloatingActionButton(
-        onPressed: ()=>_methodChannel.invokeMethod("toNative").then((value) => null),
-        tooltip: 'Reduce',
-        child: Icon(Icons.remove),
+        onPressed: ()=>_methodChannel.invokeMethod("toNative",{"route":"/"}).then((value) => null),
+        tooltip: 'ToBrowser',
+        child: Icon(Icons.send),
       ),
       // This trailing comma makes auto-formatting nicer for build methods.
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
