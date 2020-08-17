@@ -8,8 +8,8 @@ import com.immomo.mls.MLSEngine
 import com.immomo.mls.global.LVConfigBuilder
 import io.flutter.app.FlutterApplication
 import org.luaj.vm2.Globals
-import xyz.hoper.dart.bridge.LuaEnum
-import xyz.hoper.dart.bridge.SILuaBridge
+import hoper.xyz.dart.bridge.LuaEnum
+import hoper.xyz.dart.bridge.SILuaBridge
 import xyz.hoper.dart.momo.GlobalStateListener
 import xyz.hoper.dart.momo.MLSQrCaptureImpl
 import xyz.hoper.dart.momo.QRResultHandler
