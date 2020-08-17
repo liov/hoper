@@ -1,15 +1,15 @@
 package xyz.hoper.dart
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.Nullable
+import androidx.appcompat.app.AppCompatActivity
 import java.lang.ref.WeakReference
 
 
-class NativeActivity: Activity(), View.OnClickListener  {
+class NativeActivity: AppCompatActivity(), View.OnClickListener {
 
     private lateinit var mOpenNative: TextView
     private lateinit var mOpenFlutter: TextView
@@ -37,6 +37,7 @@ class NativeActivity: Activity(), View.OnClickListener  {
             PageRouter.openPageByUrl(this, PageRouter.FLUTTER_PAGE_URL, params)
         }
     }
+
 
     companion object {
         var sRef: WeakReference<NativeActivity?>? = null
