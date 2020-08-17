@@ -16,7 +16,7 @@ object FlutterEngineFactory {
     fun createFlutterEngine(context: Context) {
         if(flutterEngineCache.contains(ENGINE_ID)) return
         val engine = FlutterEngine(context)
-        //engine.navigationChannel.setInitialRoute("/route")
+        engine.navigationChannel.setInitialRoute("/")
         engine.dartExecutor
                 .executeDartEntrypoint(DartExecutor.DartEntrypoint.createDefault())
         flutterEngineCache.put(ENGINE_ID, engine)
