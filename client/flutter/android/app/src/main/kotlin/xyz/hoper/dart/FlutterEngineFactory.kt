@@ -20,7 +20,7 @@ object FlutterEngineFactory {
         engine.dartExecutor
                 .executeDartEntrypoint(DartExecutor.DartEntrypoint.createDefault())
         flutterEngineCache.put(ENGINE_ID, engine)
-        Log.i(Tag,"执行了吗")
+        Log.d(Tag,"执行了吗")
     }
 
     fun destroyEngine() {
