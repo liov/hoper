@@ -1,6 +1,5 @@
 package xyz.hoper.dart
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
@@ -11,14 +10,14 @@ import java.lang.ref.WeakReference
 
 class NativeActivity: AppCompatActivity(), View.OnClickListener {
 
-    private lateinit var mOpenNative: TextView
+    private lateinit var mOpenLuaPage: TextView
     private lateinit var mOpenFlutter: TextView
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         sRef = WeakReference(this)
         setContentView(R.layout.native_page)
-        mOpenNative = findViewById(R.id.open_native)
-        mOpenNative.setOnClickListener(this)
+        mOpenLuaPage = findViewById(R.id.open_lua_page)
+        mOpenLuaPage.setOnClickListener(this)
         mOpenFlutter = findViewById(R.id.open_flutter)
         mOpenFlutter.setOnClickListener(this)
     }
@@ -35,7 +34,9 @@ class NativeActivity: AppCompatActivity(), View.OnClickListener {
         //Add some params if needed.
        if (v === mOpenFlutter) {
             PageRouter.openPageByUrl(this, PageRouter.FLUTTER_PAGE_URL, params)
-        }
+        }else if (v === mOpenLuaPage){
+           PageRouter.openPageByUrl(this, PageRouter.Lua_PAGE_URL, params)
+       }
     }
 
 

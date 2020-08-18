@@ -3,7 +3,6 @@ import 'package:app/page/lua/lua.dart';
 import 'package:app/page/webview/webview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_luakit_plugin/flutter_luakit_plugin.dart';
 import 'page/bottom/bottom.dart';
 
 void main() async {
@@ -126,10 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
         greeting(),
         style: optionStyle,
       ),
-      Text(
-        "lua",
-        style: optionStyle,
-      ),
+      Lua(),
     ];
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.

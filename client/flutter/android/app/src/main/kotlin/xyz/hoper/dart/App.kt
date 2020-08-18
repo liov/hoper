@@ -3,6 +3,7 @@ package xyz.hoper.dart
 
 import android.os.Environment
 import android.util.Log
+import com.common.luakit.LuaHelper
 import com.immomo.mls.MLSBuilder
 import com.immomo.mls.MLSEngine
 import com.immomo.mls.global.LVConfigBuilder
@@ -23,7 +24,7 @@ class App : FlutterApplication() {
 
     override fun onCreate() {
         super.onCreate()
-        //LuaHelper.startLuaKit(this)
+        LuaHelper.startLuaKit(this)
         FlutterEngineFactory.createFlutterEngine(this)
         instance = this
         init()

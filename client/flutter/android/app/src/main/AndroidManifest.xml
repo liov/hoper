@@ -21,8 +21,7 @@
             android:name=".App"
             android:icon="@mipmap/ic_launcher"
             android:label="思琪">
-        <activity android:name=".LuaActivity">
-        </activity>
+
         <activity
                 android:name=".MainActivity"
                 android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
@@ -59,6 +58,17 @@
         </activity>
         <activity
                 android:name=".NativeActivity"
+                android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density"
+                android:hardwareAccelerated="true"
+                android:theme="@style/Theme.AppCompat"
+                android:windowSoftInputMode="adjustResize">
+            <meta-data
+                    android:name="io.flutter.embedding.android.SplashScreenDrawable"
+                    android:resource="@drawable/launch_background"/>
+        </activity>
+
+        <activity
+                android:name=".LuaActivity"
                 android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density"
                 android:hardwareAccelerated="true"
                 android:theme="@style/Theme.AppCompat"
