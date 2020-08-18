@@ -1,6 +1,7 @@
 package xyz.hoper.dart.momo.zing
 
-import  android.app.Activity
+
+import android.app.Activity
 import android.graphics.Bitmap
 import com.google.zxing.Result
 import java.util.*

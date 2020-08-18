@@ -1,19 +1,20 @@
 package xyz.hoper.dart
 
 
+import android.content.Intent
 import android.os.Environment
 import android.util.Log
 import com.common.luakit.LuaHelper
 import com.immomo.mls.MLSBuilder
 import com.immomo.mls.MLSEngine
 import com.immomo.mls.global.LVConfigBuilder
-import io.flutter.app.FlutterApplication
-import org.luaj.vm2.Globals
+import com.journeyapps.barcodescanner.CaptureActivity
 import hoper.xyz.dart.bridge.LuaEnum
 import hoper.xyz.dart.bridge.SILuaBridge
+import io.flutter.app.FlutterApplication
+import org.luaj.vm2.Globals
 import xyz.hoper.dart.momo.GlobalStateListener
-import xyz.hoper.dart.momo.MLSQrCaptureImpl
-import xyz.hoper.dart.momo.QRResultHandler
+import xyz.hoper.dart.momo.zing.QRResultHandler
 import xyz.hoper.dart.momo.provider.GlideImageProvider
 import xyz.hoper.dart.momo.zing.OuterResultHandler
 
@@ -38,7 +39,10 @@ class App : FlutterApplication() {
                         .build())
                 .setImageProvider(GlideImageProvider()) //lua加载图片工具，不实现的话，图片无法展示
                 .setGlobalStateListener(GlobalStateListener()) //设置全局脚本加载监听，可不设置
-                .setQrCaptureAdapter(MLSQrCaptureImpl()) //设置二维码工具，可不设置
+                .setQrCaptureAdapter {context->
+                    val intent = Intent(context, CaptureActivity::class.java)
+                    context.startActivity(intent)
+                } //设置二维码工具，可不设置
                 .setDefaultLazyLoadImage(false)
                 .registerSC() //注册静态Bridge
                 .registerUD() //注册Userdata

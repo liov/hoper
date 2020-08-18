@@ -31,8 +31,7 @@
 }
 
 #Fragment不需要在AndroidManifest.xml中注册，需要额外保护下
--keep public class * extends android.support.v4.app.Fragment
--keep public class * extends android.app.Fragment
+-keep public class * extends androidx.fragment.app.Fragment
 -keep class org.chromium.base.**
 
 # 保留所有的本地native方法不被混淆
@@ -44,7 +43,7 @@
 -dontnote junit.framework.**
 -dontnote junit.runner.**
 -dontwarn android.test.**
--dontwarn android.support.test.**
+-dontwarn androidx.support.test.**
 -dontwarn org.junit.**
 
 # 注解和被注解类不混淆
