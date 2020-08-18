@@ -32,7 +32,8 @@
 
 #Fragment不需要在AndroidManifest.xml中注册，需要额外保护下
 -keep public class * extends androidx.fragment.app.Fragment
--keep class org.chromium.base.**
+-keep class org.chromium.base.**{*;}
+-keep class com.common.luakit.**{*;}
 
 # 保留所有的本地native方法不被混淆
 -keepclasseswithmembernames class * {
