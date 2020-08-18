@@ -24,7 +24,7 @@ class LuaActivity : AppCompatActivity(), HotReloadHelper.ConnectListener {
         setContentView(frameLayout)
         val instance = MLSInstance(this, true, true)
         instance.setContainer(frameLayout)
-        val initData = InitData(Constants.ASSETS_PREFIX +"/lua/view/demo.lua") //MLSBundleUtils.parseFromBundle(bundle);MLSBundleUtils.createBundle(url)
+        val initData = InitData(Constants.ASSETS_PREFIX +"lua/view/demo.lua") //MLSBundleUtils.parseFromBundle(bundle);MLSBundleUtils.createBundle(url)
         instance.setData(initData)
         if (!instance.isValid) {
             //非法url

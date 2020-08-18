@@ -7,3 +7,4 @@ gradle-wrapper.jar
 GeneratedPluginRegistrant.java
 *.so
 *.a
+/app/src/main/java/io.flutter.plugins/

@@ -216,17 +216,16 @@ compileOptions{
 ${Home}\AppData\Roaming\JetBrains\IntelliJIdea2020.1\plugins
 
 # Android打包动态库
-lib目录应该跟src目录是同级
 ```groovy
 android {
     sourceSets {
         main {
-            jniLibs.srcDirs = ['jniLibs']
+            jniLibs.srcDirs = ['src/main/jniLibs']
         }
     }
 }
 dependencies {
-    implementation fileTree(dir: 'jniLibs', include: ['*.so'])
+    implementation fileTree(dir: 'lib', include: ['*.so'])
 }
 
 ```

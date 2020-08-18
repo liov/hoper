@@ -25,12 +25,12 @@
         android:layout_margin="8.0dp"
         android:padding="8.0dp"
         android:textColor="@android:color/black"
-        android:id="@+id/open_native"
+        android:id="@+id/open_lua_page"
         android:textAllCaps="false"
         android:textSize="16sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/open_native" />
+        android:text="@string/open_lua_page" />
 
     <TextView
         android:background="@android:color/holo_orange_dark"

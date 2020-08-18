@@ -37,7 +37,7 @@ android {
     sourceSets {
         main {
             java.srcDirs += 'src/main/kotlin'
-            jniLibs.srcDirs = ['jniLibs']
+            jniLibs.srcDirs = ['src/main/jniLibs']
         }
     }
 
@@ -60,6 +60,7 @@ android {
             keyPassword keystoreProperties['keyPassword']
             storeFile file(keystoreProperties['storeFile'])
             storePassword keystoreProperties['storePassword']
+            v2SigningEnabled true
         }
     }
 
@@ -83,6 +84,11 @@ android {
         }
     }
 
+    packagingOptions {
+        // pickFirsts:当出现重复文件，会使用第一个匹配的文件打包进入apk
+        pickFirst 'lib/armeabi-v7a/libluajapi.so'
+    }
+
     externalNativeBuild {
     }
 
@@ -95,7 +101,7 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation 'com.github.williamwen1986:LuakitJitpack:1.0.14'
-    implementation fileTree(dir: 'jniLibs', include: ['*.so'])
+    implementation fileTree(dir: 'libs', include: ['*.so'])
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
