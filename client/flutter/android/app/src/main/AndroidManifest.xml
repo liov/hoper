@@ -22,7 +22,8 @@
     <application
             android:name=".App"
             android:icon="@mipmap/ic_launcher"
-            android:label="思琪">
+            android:label="思琪"
+            android:usesCleartextTraffic="true">
 
         <activity
                 android:name=".MainActivity"
@@ -82,8 +83,19 @@
 
         <activity
                 android:name="com.journeyapps.barcodescanner.CaptureActivity"
+                android:hardwareAccelerated="true"
                 android:screenOrientation="fullSensor"
                 tools:replace="screenOrientation" />
+
+        <activity
+                android:name="com.immomo.mls.activity.LuaViewActivity"
+                android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density"
+                android:hardwareAccelerated="true"
+                android:theme="@style/Theme.AppCompat">
+            <meta-data
+                    android:name="io.flutter.embedding.android.SplashScreenDrawable"
+                    android:resource="@drawable/launch_background"/>
+        </activity>
 
         <!--
  Don't delete the meta-data below.

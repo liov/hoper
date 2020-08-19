@@ -44,7 +44,7 @@ class QRResultHandler : OuterResultHandler.IResultHandler {
             activity.finish()
             return true
         }
-        //            initData.doAutoPreload = !uri.getHost().startsWith("172.16") || uri.getPath().endsWith(".zip");
+        //initData.doAutoPreload = !uri.getHost().startsWith("172.16") || uri.getPath().endsWith(".zip");
         intent.putExtras(MLSBundleUtils.createBundle(initData))
         activity.startActivity(intent)
         return true

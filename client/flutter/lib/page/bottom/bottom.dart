@@ -25,19 +25,19 @@ class BottomState extends State<Bottom> {
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(Icons.movie),
-          title: Text('瞬间'),
+          title: Text('flutter'),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.language),
-          title: Text('Browser'),
+          title: Text('webview'),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.search),
-          title: Text('搜索'),
+          title: Text('rustffi'),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.chat_bubble_outline),
-          title: Text('聊天'),
+          title: Text('lua业务逻辑'),
         ),
       ],
       currentIndex: _selectedIndex,

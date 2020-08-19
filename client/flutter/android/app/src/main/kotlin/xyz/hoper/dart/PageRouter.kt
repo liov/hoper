@@ -13,6 +13,7 @@ object PageRouter {
     const val Lua_PAGE_URL = "luaPage"
 
     @JvmOverloads
+    @JvmStatic
     fun openPageByUrl(context: Context, url: String, params: Map<*, *>?, requestCode: Int = 0): Boolean {
         val path = url.split("\\?".toRegex()).toTypedArray()[0]
         Log.i("openPageByUrl", path)

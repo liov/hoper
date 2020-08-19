@@ -110,6 +110,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0' //引入包的版本需在1.1.0以上
     implementation "androidx.recyclerview:recyclerview:1.1.0" //引入包的版本需在1.1.0以上
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-rc1'
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
     // 核心库
     implementation "com.immomo.mlncore:core:1.0.1"
