@@ -11,6 +11,7 @@ import com.immomo.mls.wrapper.callback.IVoidCallback;
 
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
+import xyz.hoper.dart.PageRouter;
 
 /**
  * Created by MLN Template
@@ -39,14 +40,17 @@ public class SILuaBridge {
      * Lua构造函数，不需要虚拟机，不关心初始化参数
      */
     //public SILuaBridge() {}
-    //</editor-fold>
+
+    protected Globals globals;
     /**
      * Lua构造函数
      *
      * @param g    虚拟机
      * @param init 构造方法中传入的参数
      */
-    public SILuaBridge(@NonNull Globals g , @NonNull LuaValue[] init) {}
+    public SILuaBridge(@NonNull Globals g , @NonNull LuaValue[] init) {
+        globals = g;
+    }
 
     /**
      * 直接在属性中增加注解，可让Lua有相关属性
@@ -56,7 +60,7 @@ public class SILuaBridge {
      */
     @LuaBridge
     public int property;
-    //<editor-fold desc="Bridge API">
+
     /**
      * 获取上下文，一般情况，此上下文为Activity
      * @param globals 虚拟机，可通过构造函数存储
@@ -69,10 +73,11 @@ public class SILuaBridge {
     /**
      * Lua可通过对象方法调用此方法
      * eg:
-     * LuaBridge:openPage       ()
+     * LuaBridge:openPage()
      */
     @LuaBridge
-    public void openPage() {
+    public void openPage(String url) {
+        PageRouter.openPageByUrl(getContext(globals),url,null);
     }
 
     /**
@@ -102,11 +107,10 @@ public class SILuaBridge {
     @LuaBridge(alias = "methodC")
     public String[] methodB(int a, boolean b, String c, IVoidCallback d, LuaValue e) {
         return null;
-    } //</editor-fold>
-    //<editor-fold desc="Other">
+    }
+
     /**
      * Lua GC当前对象时调用，可不实现
      */
     //void __onLuaGc() {}
-    //</editor-fold>
 }

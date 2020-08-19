@@ -8,9 +8,11 @@ import com.common.luakit.LuaHelper
 import com.immomo.mls.MLSBuilder
 import com.immomo.mls.MLSEngine
 import com.immomo.mls.global.LVConfigBuilder
+import com.immomo.mls.wrapper.Register
 import com.journeyapps.barcodescanner.CaptureActivity
 import hoper.xyz.dart.bridge.LuaEnum
 import hoper.xyz.dart.bridge.SILuaBridge
+import hoper.xyz.dart.bridge.StaticBridge
 import io.flutter.app.FlutterApplication
 import org.luaj.vm2.Globals
 import xyz.hoper.dart.momo.GlobalStateListener
@@ -44,7 +46,7 @@ class App : FlutterApplication() {
                     context.startActivity(intent)
                 } //设置二维码工具，可不设置
                 .setDefaultLazyLoadImage(false)
-                .registerSC() //注册静态Bridge
+                .registerSC(Register.newSHolderWithLuaClass(StaticBridge.LUA_CLASS_NAME, StaticBridge::class.java)) //注册静态Bridge
                 .registerUD() //注册Userdata
                 .registerSingleInsance(MLSBuilder.SIHolder(SILuaBridge.LUA_CLASS_NAME, SILuaBridge::class.java))//注册单例
                 .registerConstants(LuaEnum::class.java) // enum in lua

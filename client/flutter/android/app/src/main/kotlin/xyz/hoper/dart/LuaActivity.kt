@@ -22,7 +22,7 @@ class LuaActivity : AppCompatActivity(), HotReloadHelper.ConnectListener {
         storageAndCameraPermission()
         val frameLayout = FrameLayout(this)
         setContentView(frameLayout)
-        val instance = MLSInstance(this, true, true)
+        val instance = MLSInstance(this, true, BuildConfig.DEBUG)
         instance.setContainer(frameLayout)
         val initData = InitData(Constants.ASSETS_PREFIX +"lua/view/demo.lua") //MLSBundleUtils.parseFromBundle(bundle);MLSBundleUtils.createBundle(url)
         instance.setData(initData)
