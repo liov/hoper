@@ -96,7 +96,10 @@ export GOPROXY=https://goproxy.io,direct
 
 # gradle maven
 ```groovy
-maven{ url 'https://maven.aliyun.com/repository/public' }
-        maven { url 'https://maven.aliyun.com/repository/google'}
-        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+maven { url 'https://maven.aliyun.com/repository/public' }//central和jcenter的聚合
+maven { url 'https://maven.aliyun.com/repository/central' }
+maven { url 'https://maven.aliyun.com/repository/jcenter' }
+maven { url 'https://maven.aliyun.com/repository/google'}
+maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+maven { url "https://jitpack.io" }
 ```

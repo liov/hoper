@@ -125,7 +125,10 @@ class _MyHomePageState extends State<MyHomePage> {
         greeting(),
         style: optionStyle,
       ),
-      Lua(),
+      Text(
+        "lua",
+        style: optionStyle,
+      ),
     ];
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.

@@ -23,7 +23,8 @@
             android:name=".App"
             android:icon="@mipmap/ic_launcher"
             android:label="思琪"
-            android:usesCleartextTraffic="true">
+            android:usesCleartextTraffic="true"
+            tools:replace="android:label">
 
         <activity
                 android:name=".MainActivity"
@@ -88,7 +89,7 @@
                 tools:replace="screenOrientation" />
 
         <activity
-                android:name="com.immomo.mls.activity.LuaViewActivity"
+                android:name="com.immomo.mmui.MMUIActivity"
                 android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density"
                 android:hardwareAccelerated="true"
                 android:theme="@style/Theme.AppCompat">

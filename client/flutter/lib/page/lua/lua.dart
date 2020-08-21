@@ -28,7 +28,6 @@ class LuaState extends State<Lua> {
     super.initState();
     FlutterLuakitPlugin.callLuaFun("WeatherManager", "loadWeather")
         .then((dynamic d) {
-      print("loadWeather" + d.toString());
       setState(() {
         if (d != null) {
           weathers = d;
