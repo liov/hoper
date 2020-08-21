@@ -1,10 +1,10 @@
 buildscript {
     ext.kotlin_version = '1.3.72'
+    ext.mln_version = '1.2.0'
     repositories {
-        maven{ url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/public' }
         maven { url 'https://maven.aliyun.com/repository/google'}
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
-        maven { url 'http://download.flutter.io' }
     }
 
     dependencies {
@@ -15,10 +15,9 @@ buildscript {
 
 allprojects {
     repositories {
-        maven{ url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/public' }
         maven { url 'https://maven.aliyun.com/repository/google'}
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
-        maven { url 'http://download.flutter.io' }
         maven { url "https://jitpack.io" }
     }
 }

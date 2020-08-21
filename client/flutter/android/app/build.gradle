@@ -32,7 +32,7 @@ keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
     ndkVersion '21.3.6528147'
-    compileSdkVersion 30
+    compileSdkVersion 29 //30没源码
 
     sourceSets {
         main {
@@ -49,7 +49,7 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "xyz.hoper.dart"
         minSdkVersion 23
-        targetSdkVersion 30
+        targetSdkVersion 29
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -113,16 +113,18 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
     // 核心库
-    implementation "com.immomo.mlncore:core:1.0.1"
+    implementation "com.immomo.mlncore:core:$mln_version"
     // view、工具桥接库
-    implementation "com.immomo.mls:mln:1.0.1"
+    implementation "com.immomo.mls:mln:$mln_version"
     // 代码生成库
-    annotationProcessor "com.immomo.mls:processor:1.0.0"
+    annotationProcessor "com.immomo.mls:processor:1.1.0"
+    implementation "com.immomo.mmui:mmui:1.0.0"
     // 热重载，配合IDEA插件使用
     debugImplementation "com.immomo.luanative:hotreload:1.0.1"
-    releaseImplementation "com.immomo.luanative:hotreload_empty:1.0.1"
+    releaseImplementation "com.immomo.luanative:hotreload_empty:$mln_version"
     // 配合热重载使用
     debugImplementation "com.google.protobuf:protobuf-lite:3.0.1"
+    implementation 'com.google.android.material:material:1.2.0'
 
     implementation('com.journeyapps:zxing-android-embedded:4.1.0') { transitive = false }
     implementation 'com.google.zxing:core:3.3.0'
