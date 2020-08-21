@@ -55,7 +55,7 @@ window_1_2_2:onClick(kvar6)
 local kvar7="open lua"
 local kvar8=Color(160, 103, 5, 18)
 local kvar9=function()
- Link:link("HotUpdate", Map(), AnimType.RightToLeft)
+ Navigator:gotoPage("https://hoper.xyz/static/lua/view.lua",Map(),AnimType.RightToLeft)
 end
 local window_1_2_3 = Label()
 ui_views.window_1_2_3 = window_1_2_3

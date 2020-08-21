@@ -2,6 +2,8 @@ package xyz.hoper.dart
 
 
 import android.content.Intent
+import android.os.Build
+import android.os.Environment
 import android.util.Log
 import com.common.luakit.LuaHelper
 import com.immomo.mls.MLSBuilder
@@ -60,7 +62,6 @@ class App : FlutterApplication() {
 
         MMUIEngine.init(applicationContext)
         MMUIEngine.preInit(1)
-        MMUIEngine.registerActivity(LinkHolder("HotUpdate", MMUIActivity::class.java))
         /// 设置二维码扫描结果处理工具
         OuterResultHandler.registerResultHandler(QRResultHandler())
         Log.d(TAG, "onCreate: " + Globals.isInit() + " " + Globals.isIs32bit())

@@ -34,6 +34,7 @@
 -keep public class * extends androidx.fragment.app.Fragment
 -keep class org.chromium.base.**{*;}
 -keep class com.common.luakit.**{*;}
+-keep class com.facebook.yoga.**{*;}
 
 # 保留所有的本地native方法不被混淆
 -keepclasseswithmembernames class * {
