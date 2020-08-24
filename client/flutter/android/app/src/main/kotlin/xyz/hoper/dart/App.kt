@@ -33,7 +33,7 @@ class App : FlutterApplication() {
         super.onCreate()
         FlutterEngineFactory.createFlutterEngine(this)
         instance = this
-        luaOpen()
+        //luaOpen()
     }
 
     fun luaOpen() {

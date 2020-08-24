@@ -7,7 +7,7 @@ local function load_module()
     local pathinfo = info.short_src
     --由于获取的路径为反斜杠(\)所以用上面的函数转为正斜杠(/)
     local filepath = string.match(path.conversion(pathinfo),"^(.*/).*/.*$")
-    package.loaded[ngx.var.lua_path] = dofile(filepath .."/lua/"..ngx.var.lua_path..".lua")
+    package.loaded[ngx.var.lua_path] = dofile(filepath .."handler/"..ngx.var.lua_path..".lua")
 end
 
 local function get_module(uri)
@@ -27,5 +27,5 @@ if need_module then
         end
     end
     ngx.var.module = get_module(string.gsub(ngx.var.lua_path,"/","."))
-    ngx.var.lua_path = "router"
+    ngx.var.lua_path = "handler/handler"
 end
