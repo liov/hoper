@@ -31,12 +31,12 @@ dependencies:
   async: ^2.4.2
   grpc: ^2.2.0
   protobuf: ^1.0.1
-  json_serializable: ^3.3.0
   http: ^0.12.2
   dio: ^3.0.10
   flutter_luakit_plugin: ^1.0.20
   webview_flutter: ^0.3.22+1
   ffi: ^0.1.3
+  json_annotation: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -44,6 +44,8 @@ dev_dependencies:
 
   test: ^1.15.3
   pigeon: ^0.1.4
+  build_runner: ^1.0.0
+  json_serializable: ^3.3.0
 
 dependency_overrides:
   test: ^1.15.2

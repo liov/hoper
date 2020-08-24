@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:app/generated/user/user.model.pb.dart';
-import 'package:app/const/const.dart';
+import 'package:app/model/moment/moment.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 
@@ -10,19 +10,17 @@ class MomentListView extends StatefulWidget {
 }
 
 class MomentListStage extends State<MomentListView> {
-  List<User> items;
+  List<Moment> items;
 
   _getItems() async{
-    var url = '$baseHost/api/';
-    var httpClient = HttpClient();
+    var url = '/moment';
 
-    List<User> result;
+    List<Moment> result;
+
     try {
-      var request = await httpClient.getUrl(Uri.parse(url));
-      var response = await request.close();
+      var response = await Dio().get(url);
       if (response.statusCode == HttpStatus.ok) {
-        var json = await response.transform(utf8.decoder).join();
-        var data = jsonDecode(json);
+        var data = jsonDecode(response.data);
         result = data['origin'];
       } else {
         result = null;
@@ -48,7 +46,7 @@ class MomentListStage extends State<MomentListView> {
         itemCount: items.length,
         itemBuilder: (context, index) {
           return ListTile(
-            title: Text('${items[index].name}'),
+            title: Text('${items[index].content}'),
           );
         }
     );
