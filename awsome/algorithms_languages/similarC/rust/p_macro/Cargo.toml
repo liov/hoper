@@ -14,7 +14,3 @@ proc-macro = true
 syn = { version = "1.0.30", features = ["full"] }
 quote = "1.0.6"
 proc-macro2 = "1.0.18"
-actix-web = "2"
-actix-rt = "1"
-rocket = "0.4.2"
-serde = "*"
