@@ -22,7 +22,7 @@ class Mood {
   Mood();
   String name;
   String description;
-  String expressionURL;
+  String expressionUrl;
   int status;
 
   factory Mood.fromJson(Map<String, dynamic> json) => _$MoodFromJson(json);
