@@ -22,7 +22,7 @@
     <application
             android:name=".App"
             android:icon="@mipmap/ic_launcher"
-            android:label="思琪"
+            android:label="四七"
             android:usesCleartextTraffic="true"
             tools:replace="android:label">
 
