@@ -1,5 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import 'user.dart';
+
 part 'moment.g.dart';
 
 @JsonSerializable(nullable: false)
@@ -11,6 +13,8 @@ class Moment {
   String imageUrl;
   Mood mood;
   List<Tag> tags;
+
+  User user;
 
   factory Moment.fromJson(Map<String, dynamic> json) => _$MomentFromJson(json);
 

@@ -1,4 +1,5 @@
 import 'package:app/page/ffi/ffi.dart';
+import 'package:app/page/index/index.dart';
 import 'package:app/page/lua/lua.dart';
 import 'package:app/page/moment/momentListView.dart';
 import 'package:app/page/webview/webview.dart';
@@ -33,13 +34,13 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: '🍀‬'),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key key}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -50,15 +51,12 @@ class MyHomePage extends StatefulWidget {
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
 
-  final String title;
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final MethodChannel _methodChannel = const MethodChannel('xyz.hoper.native/view');
-  int _counter = 0;
+
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
@@ -69,58 +67,10 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  void _reduceCounter() {
-    setState(() {
-      _counter--;
-    });
-  }
-
-  AppBar bar(){
-    return _selectedIndex!=1?AppBar(
-      centerTitle: true,
-      // Here we take the value from the MyHomePage object that was created by
-      // the App.build method, and use it to set our appbar title.
-      title: Text(widget.title),
-    ):null;
-  }
-
   @override
   Widget build(BuildContext context) {
     List<Widget> _widgetOptions = <Widget>[
-      Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-            '点击下方加号:',
-          ),
-          Text(
-            '$_counter',
-            style: Theme.of(context).textTheme.headline4,
-          ),
-          Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              verticalDirection: VerticalDirection.up,
-              children: [
-                FloatingActionButton(
-                  onPressed: _incrementCounter,
-                  tooltip: 'Increment',
-                  child: Icon(Icons.add),
-                ),
-                SizedBox(width: 20),
-                FloatingActionButton(
-                  onPressed: _reduceCounter,
-                  tooltip: 'Reduce',
-                  child: Icon(Icons.remove),
-                )
-              ]),
-        ],
-      ),
+      IndexPage(title:'🍀'),
       WebViewExample(),
       Text(
         greeting(),
@@ -135,20 +85,12 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: bar(),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: Bottom(onTap: _onItemTapped),
-      floatingActionButton: FloatingActionButton(
-        onPressed: ()=>_methodChannel.invokeMethod("toNative",{"route":"/"}).then((value) => null),
-        tooltip: 'ToBrowser',
-        child: Icon(Icons.send),
-      ),
-      // This trailing comma makes auto-formatting nicer for build methods.
-      floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
     );
   }
 }

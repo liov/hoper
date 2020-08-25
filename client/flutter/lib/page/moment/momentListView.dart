@@ -1,10 +1,10 @@
-import 'dart:convert';
-
 import 'package:app/model/moment.dart';
 import 'package:app/service/moment.dart';
 import 'package:app/util/dio.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
+
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 class MomentListView extends StatefulWidget {
   MomentListStage createState() => MomentListStage();
@@ -38,7 +38,8 @@ class MomentListStage extends State<MomentListView> {
     if (!mounted) return;
 
     setState(() {
-      items = result;
+      if(items == null) items = result;
+        else items.addAll(result);
     });
 
   }
@@ -50,11 +51,29 @@ class MomentListStage extends State<MomentListView> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return ListView.separated(
         itemCount: items!=null?items.length:0,
+        separatorBuilder: (BuildContext context, int index){
+          return Divider();
+        },
         itemBuilder: (context, index) {
-          return ListTile(
-            title: Text('${items[index].content}'),
+          return Column(
+            children:[
+              Row(
+                children:[
+                  Text('${items[index].user.name}  ${items[index].createdAt}'),
+                ]
+              ),
+              MarkdownBody(data:'${items[index].content}'),
+              Row(
+              children:[
+                Text('收藏：'),
+                Icon(Icons.star,color: Colors.blue,),
+                Text('喜欢'),
+                Icon(Icons.favorite,color: Colors.red,),
+              ]
+              )
+            ]
           );
         }
     );
