@@ -46,10 +46,3 @@ class BottomState extends State<Bottom> {
     );
   }
 }
-
-Bottom _bottom;
-
-Bottom commonBottom(){
-  if(_bottom == null) Bottom();
-    return _bottom;
-}

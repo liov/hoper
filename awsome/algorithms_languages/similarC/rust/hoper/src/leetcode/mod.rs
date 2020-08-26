@@ -210,10 +210,7 @@ pub fn letter_combinations(digits: String) -> Vec<String> {
     //let Y = |y|(|x|y(x(x)))(|x|y(|n|x(x)(n)));
 
     get(0, &mut result, &mut middle, &combination, &digits_vec);
-    for i in &result {
-        println!("{}", i)
-    }
-    vec![String::from("a")]
+    reult
 }
 
 
