@@ -12,7 +12,6 @@ class IndexPage extends StatefulWidget {
 
 class _IndexPageState extends State<IndexPage> {
   final MethodChannel _methodChannel = const MethodChannel('xyz.hoper.native/view');
-
   int _counter = 0;
 
   void _incrementCounter() {
@@ -72,7 +71,6 @@ class _IndexPageState extends State<IndexPage> {
       ),
       // This trailing comma makes auto-formatting nicer for build methods.
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
-
     );
   }
 
