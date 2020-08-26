@@ -11,61 +11,46 @@ class FourthPage extends StatefulWidget {
 }
 
 class FourthPageState extends State<FourthPage> {
+  final List<String> _tabValues = [
+    '关注',
+    '推荐',
+    '刚刚',
+  ];
+  TabController _controller;
+
   @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-        length: choices.length,
-        child: Scaffold(
-            appBar: AppBar(
-              title: const Text('Tabbed AppBar'),
-              bottom: TabBar(
-                isScrollable: true,
-                tabs: choices.map((Choice choice) {
-                  return Tab(
-                    text: choice.title,
-                  );
-                }).toList(),
-              ),
-            ),
-            body: MomentListView()));
+  void initState() {
+    super.initState();
+    _controller = TabController(
+      length: _tabValues.length,
+      initialIndex: 1,
+      vsync: ScrollableState(),
+    );
   }
-}
-
-class Choice {
-  const Choice({this.title, this.icon});
-
-  final String title;
-  final IconData icon;
-}
-
-const List<Choice> choices = const <Choice>[
-  const Choice(title: 'CAR', icon: Icons.directions_car),
-  const Choice(title: 'BICYCLE', icon: Icons.directions_bike),
-  const Choice(title: 'BOAT', icon: Icons.directions_boat),
-  const Choice(title: 'BUS', icon: Icons.directions_bus),
-  const Choice(title: 'TRAIN', icon: Icons.directions_railway),
-  const Choice(title: 'WALK', icon: Icons.directions_walk),
-];
-
-class ChoiceCard extends StatelessWidget {
-  const ChoiceCard({Key key, this.choice}) : super(key: key);
-
-  final Choice choice;
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle textStyle = Theme.of(context).textTheme.display1;
-    return new Card(
-      color: Colors.white,
-      child: new Center(
-        child: new Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            new Icon(choice.icon, size: 128.0, color: textStyle.color),
-            new Text(choice.title, style: textStyle),
-          ],
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: TabBar(
+          isScrollable: true,
+          tabs: _tabValues.map((choice) {
+            return Tab(
+              text: choice,
+            );
+          }).toList(),
+          controller: _controller,
         ),
+      ),
+      body: TabBarView(
+        controller: _controller,
+        children: _tabValues.map((f) {
+          if (f == "推荐") return MomentListView();
+          return Center(
+            child: Text(f),
+          );
+        }).toList(),
       ),
     );
   }

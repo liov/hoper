@@ -42,8 +42,7 @@ class _WebViewExampleState extends State<WebViewExample> {
       ),
       // We're using a Builder here so we have a context that is below the Scaffold
       // to allow calling Scaffold.of(context) so we can show a snackbar.
-      body: Builder(builder: (BuildContext context) {
-        return WebView(
+      body: WebView(
           initialUrl: 'https://hoper.xyz',
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController webViewController) {
@@ -69,8 +68,7 @@ class _WebViewExampleState extends State<WebViewExample> {
             print('Page finished loading: $url');
           },
           gestureNavigationEnabled: true,
-        );
-      }),
+        ),
       //floatingActionButton: favoriteButton(),
     );
   }

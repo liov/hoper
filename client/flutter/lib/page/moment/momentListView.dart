@@ -16,30 +16,16 @@ class MomentListStage extends State<MomentListView> {
   int pageSize = 10;
 
   _getItems() async{
-    var api = '/moment?page=$pageNo&pageSize=$pageSize';
 
-    List<Moment> result;
-
-    try {
-      var response = await httpClient().get(api);
-      if (response.statusCode == HttpStatus.ok) {
-        var list = MomentListResponse.fromJson(response.data);
-        result = list.data;
-      } else {
-        result = null;
-      }
-    } catch (exception) {
-      result = null;
-    }
-
+    var response = await getMomentList(pageNo, pageSize);
     // If the widget was removed from the tree while the message was in flight,
     // we want to discard the reply rather than calling setState to update our
     // non-existent appearance.
     if (!mounted) return;
 
     setState(() {
-      if(items == null) items = result;
-        else items.addAll(result);
+      if(items == null) items = response.data;
+        else items.addAll(response.data);
     });
 
   }
