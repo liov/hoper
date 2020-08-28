@@ -73,7 +73,7 @@ android {
             shrinkResources true
             proguardFiles 'proguard-rules.pro'
             ndk {
-                abiFilters "armeabi-v7a","arm64-v8a" //兼容第三方32位so库，可恶
+                abiFilters "arm64-v8a" //兼容第三方32位so库，可恶
             }
             buildConfigField "String","LUAFILEPATH",'"https://hoper.xyz/static/view.lua"'
         }
@@ -101,7 +101,7 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation 'com.github.williamwen1986:LuakitJitpack:1.0.14'
+
     implementation fileTree(dir: 'libs', include: ['*.so','*.jar'])
 
     testImplementation 'junit:junit:4.12'
@@ -111,6 +111,8 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:1.1.0" //引入包的版本需在1.1.0以上
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-rc1'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+
+    implementation 'com.github.williamwen1986:LuakitJitpack:1.0.14'
 
     // 核心库
     implementation "com.immomo.mlncore:core:$mln_version"
@@ -128,6 +130,5 @@ dependencies {
 
     implementation('com.journeyapps:zxing-android-embedded:4.1.0') { transitive = false }
     implementation 'com.google.zxing:core:3.3.0'
-    implementation 'com.alibaba:fastjson:1.1.72.android'
     implementation 'com.github.bumptech.glide:glide:4.6.1'
 }

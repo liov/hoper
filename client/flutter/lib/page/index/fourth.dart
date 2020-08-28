@@ -16,6 +16,7 @@ class FourthPageState extends State<FourthPage> {
     '推荐',
     '刚刚',
   ];
+
   TabController _controller;
 
   @override
