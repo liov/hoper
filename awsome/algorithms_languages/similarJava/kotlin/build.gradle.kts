@@ -37,7 +37,7 @@ configure<JavaPluginConvention> {
   sourceCompatibility = JavaVersion.VERSION_11
 }
 
-var moduleName = "jvm"
+var moduleName = "kotlin"
 
 
 tasks {
