@@ -65,7 +65,7 @@ flutter pub run pigeon --input pigeons/route.dart
 rustup target add x86_64-linux-android armv7-linux-androideabi aarch64-linux-android
 cargo build --release --target=armv7-linux-androideabi
 flutter build apk --release --target-platform android-arm64
-
+flutter pub run build_runner build
 #todo
 集成[MLN](https://github.com/momotech/MLN) Demo都跑不起来，没必要为了一个热更新在客户端上浪费太多时间
 Rust FFI
