@@ -29,7 +29,7 @@ class LuaActivity : AppCompatActivity(), HotReloadHelper.ConnectListener {
         val hr = intent.getBooleanExtra(KEY_HOT_RELOAD, false)
         instance = MMUIInstance(this, hr, BuildConfig.DEBUG)
         instance.setContainer(frameLayout)
-        val initData = InitData(Constants.ASSETS_PREFIX + "lua/view/demo.lua") //MLSBundleUtils.parseFromBundle(bundle);MLSBundleUtils.createBundle(url)
+        val initData = InitData(Constants.ASSETS_PREFIX + "view/demo.lua") //MLSBundleUtils.parseFromBundle(bundle);MLSBundleUtils.createBundle(url)
         instance.setData(initData)
         if (!instance.isValid) {
             //非法url
