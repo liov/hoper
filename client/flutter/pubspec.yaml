@@ -29,8 +29,6 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.3
   async: ^2.4.2
-  grpc: ^2.2.0
-  protobuf: ^1.0.1
   http: ^0.12.2
   dio: ^3.0.10
   flutter_luakit_plugin: ^1.0.20
@@ -38,10 +36,6 @@ dependencies:
   ffi: ^0.1.3
   json_annotation: ^3.0.1
   flutter_markdown: ^0.4.3
-  flutter_orm_plugin:
-    git:
-      url: https://github.com/liov/flutter_orm_plugin
-      ref: 1.0.0
   sqflite: ^1.3.1+1
   get: ^3.6.2
   flutter_local_notifications: ^1.4.4+4

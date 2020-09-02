@@ -23,7 +23,7 @@ import xyz.hoper.dart.momo.GlobalStateListener
 import xyz.hoper.dart.momo.provider.GlideImageProvider
 import xyz.hoper.dart.momo.zing.OuterResultHandler
 import xyz.hoper.dart.momo.zing.QRResultHandler
-
+import kotlinx.coroutines.*
 
 class App : FlutterApplication() {
 
@@ -33,12 +33,11 @@ class App : FlutterApplication() {
         super.onCreate()
         FlutterEngineFactory.createFlutterEngine(this)
         instance = this
-        //luaOpen()
+        //GlobalScope.launch { luaOpen() }// 在后台启动一个新的协程并继续
     }
 
-    fun luaOpen() {
+    private fun luaOpen() {
         LuaHelper.startLuaKit(this)
-        init()
         MLSEngine.init(this, BuildConfig.DEBUG)
                 .setLVConfig(LVConfigBuilder(this)
                         .setSdcardDir(SD_CARD_PATH) //设置sdcard目录
@@ -73,7 +72,7 @@ class App : FlutterApplication() {
         super.onTerminate()
     }
 
-    private fun init() {
+    init {
         try {
             //安卓Q API变化
             SD_CARD_PATH = getExternalFilesDir(null)!!.absolutePath
