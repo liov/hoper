@@ -1,7 +1,10 @@
 package xyz.hoper.dart
 
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Environment
 import android.util.Log
@@ -70,6 +73,24 @@ class App : FlutterApplication() {
     override fun onTerminate() {
         FlutterEngineFactory.destroyEngine()
         super.onTerminate()
+    }
+
+    /**
+     * 判断是否打开网络
+     * @return
+     */
+    fun isNetWorkAvailable(): Boolean {
+        val cm: ConnectivityManager = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val capabilities = cm.getNetworkCapabilities( cm.activeNetwork)
+        if (capabilities != null) {
+            if(capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                return true
+            }
+            if(capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)){
+                return true
+            }
+        }
+        return false
     }
 
     init {
