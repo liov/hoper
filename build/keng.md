@@ -229,3 +229,11 @@ dependencies {
 }
 
 ```
+
+# 服务器被挂马
+top
+ps -ef|grep xxx
+ls -l /proc/pid
+crontab -l
+crontab -r
+rm xxx
