@@ -3,14 +3,15 @@ package xyz.hoper.dart
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.sip.SipErrorCode
+import android.os.Handler
 import android.os.Message
 import android.util.AttributeSet
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageView
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.io.*
+import java.lang.ref.WeakReference
 import java.net.HttpURLConnection
 import java.net.URL
 import kotlin.math.roundToInt
@@ -26,11 +27,37 @@ class SplashView: AppCompatImageView {
     }
 
     constructor(context: Context):super(context){
-        GlobalScope.launch { useCacheImage() }
+        setImageBitmap()
     }
     constructor(context: Context, attrs: AttributeSet?):super(context, attrs)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int):super(context, attrs, defStyleAttr)
 
+    //子线程不能操作UI，通过Handler设置图片
+    class ViewHandler(view:SplashView):Handler(){
+        private val viewRef = WeakReference<SplashView>(view)
+        override fun handleMessage(msg: Message) {
+            super.handleMessage(msg)
+            val view = viewRef.get()!!
+            when (msg.what) {
+                GET_DATA_SUCCESS -> {
+                    val bitmap = msg.obj as Bitmap
+                    view.setImageBitmap(bitmap)
+                }
+                NETWORK_ERROR -> Toast.makeText(view.context, "网络连接失败", Toast.LENGTH_SHORT).show()
+                SERVER_ERROR -> Toast.makeText(view.context, "服务器发生错误", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private val handler = ViewHandler(this)
+
+    private fun setImageBitmap(){
+        object:Thread(){
+            override fun run() {
+                useCacheImage()
+            }
+        }.start()
+    }
 
     //设置网络图片
     private fun useNetWorkImage(path: String) {
@@ -66,7 +93,11 @@ class SplashView: AppCompatImageView {
                         val bitmap = getCompressBitmap(inputStream1)
                         //调用缓存图片方法
                         cacheImage(inputStream2)
-                        setImageBitmap(bitmap)
+                        val msg = Message.obtain().apply {
+                            obj = bitmap
+                            what = GET_DATA_SUCCESS
+                        }
+                        handler.sendMessage(msg)
                         inputStream.close()
                     }else {
                         //服务启发生错误
@@ -92,7 +123,11 @@ class SplashView: AppCompatImageView {
                 //调用压缩方法显示图片
                 val bitmap = getCompressBitmap(inputStream)
                 //利用Message把图片发给Handler
-                setImageBitmap(bitmap)
+                val msg = Message.obtain().apply {
+                    obj = bitmap
+                    what = GET_DATA_SUCCESS
+                }
+                handler.sendMessage(msg)
                 Log.e(TAG, "使用缓存图片")
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()
@@ -131,7 +166,7 @@ class SplashView: AppCompatImageView {
         val urlStr2 = StringBuilder()
         val strings = ImagePath.split("/")
         for (string in strings) {
-            urlStr2.append(string,"_")
+            urlStr2.append(string, "_")
         }
         Log.e(TAG, "文件名：$urlStr2")
         return urlStr2.toString()

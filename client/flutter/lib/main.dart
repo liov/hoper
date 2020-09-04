@@ -2,12 +2,24 @@ import 'package:app/page/ffi/ffi.dart';
 import 'package:app/page/index/fourth.dart';
 import 'package:app/page/index/index.dart';
 import 'package:app/page/lua/lua.dart';
+import 'package:app/page/moment/momentListView.dart';
 
 import 'package:app/page/webview/webview.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'model/state/global.dart';
+import 'model/state/user.dart';
 
 void main() async {
-  runApp(MaterialApp(home: MyApp()));
+  runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => UserInfo()),
+          Provider(create: (context) => GlobalState()),
+        ],
+        child:MyApp(),
+      ));
 }
 
 class MyApp extends StatelessWidget {
@@ -34,6 +46,9 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: MyHomePage(),
+      routes: {
+        '/moment': (context) => MomentListView(),
+      },
     );
   }
 }
