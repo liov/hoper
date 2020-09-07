@@ -1,8 +1,6 @@
 import 'package:app/model/moment.dart';
 import 'package:app/service/moment.dart';
-import 'package:app/util/dio.dart';
 import 'package:flutter/material.dart';
-import 'dart:io';
 
 import 'package:flutter_markdown/flutter_markdown.dart';
 

@@ -1,6 +1,7 @@
 import 'package:app/page/ffi/ffi.dart';
 import 'package:app/page/index/fourth.dart';
 import 'package:app/page/index/index.dart';
+import 'package:app/page/loginView.dart';
 import 'package:app/page/lua/lua.dart';
 import 'package:app/page/moment/momentListView.dart';
 
@@ -48,6 +49,7 @@ class MyApp extends StatelessWidget {
       home: MyHomePage(),
       routes: {
         '/moment': (context) => MomentListView(),
+        '/login': (context) => LoginView(),
       },
     );
   }
@@ -55,15 +57,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -86,72 +79,43 @@ class _MyHomePageState extends State<MyHomePage> {
     List<Widget> _widgetOptions = <Widget>[
       IndexPage(title:'🍀'),
       WebViewExample(),
-      Text(
-        greeting(),
-        style: optionStyle,
+      Container(
+      alignment:Alignment.center,
+        child:Text(
+          greeting(),
+          style: optionStyle,
+        )
       ),
       FourthPage(),
     ];
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+
     return Scaffold(
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: _widgetOptions.elementAt(_selectedIndex),
+      body: _widgetOptions.elementAt(_selectedIndex),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Theme.of(context).primaryColor.withAlpha(127),
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.movie),
+            title: Text('flutter'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.language),
+            title: Text('webview'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            title: Text('rustffi'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat_bubble_outline),
+            title: Text('lua业务逻辑'),
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Theme.of(context).canvasColor,
+        onTap: _onItemTapped,
       ),
-      bottomNavigationBar: Bottom(onTap: _onItemTapped),
-    );
-  }
-}
-
-class Bottom extends StatefulWidget {
-  final ValueChanged<int> onTap;
-
-  Bottom({key,@required this.onTap}): super(key: key);
-  BottomState createState() => BottomState();
-}
-
-class BottomState extends State<Bottom> {
-
-  int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    widget.onTap(_selectedIndex);
-  }
-  @override
-  Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      backgroundColor: Theme.of(context).primaryColor.withAlpha(127),
-      items: <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-          icon: Icon(Icons.movie),
-          title: Text('flutter'),
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.language),
-          title: Text('webview'),
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.search),
-          title: Text('rustffi'),
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.chat_bubble_outline),
-          title: Text('lua业务逻辑'),
-        ),
-      ],
-      currentIndex: _selectedIndex,
-      selectedItemColor: Theme.of(context).canvasColor,
-      onTap: _onItemTapped,
     );
   }
 }

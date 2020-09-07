@@ -7,9 +7,4 @@ class UserInfo extends ChangeNotifier {
   User user;
   String cookie;
   bool isActive;
-
-  login(String account, String password){
-    final api = "";
-    httpClient().post(api);
-  }
 }
