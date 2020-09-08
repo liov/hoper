@@ -24,7 +24,7 @@ require (
 	github.com/facebookgo/subset v0.0.0-20150612182917-8dac2c3c4870 // indirect
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/gavv/monotime v0.0.0-20190418164738-30dba4353424 // indirect
-	github.com/gin-gonic/gin v1.4.0
+	github.com/gin-gonic/gin v1.4.0 // indirect
 	github.com/go-openapi/loads v0.19.4
 	github.com/go-openapi/runtime v0.19.8
 	github.com/go-openapi/spec v0.19.3
@@ -37,7 +37,7 @@ require (
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/groupcache v0.0.0-20191027212112-611e8accdfc9
 	github.com/golang/mock v1.3.1
-	github.com/golang/protobuf v1.4.0-rc.4
+	github.com/golang/protobuf v1.4.2
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e // indirect
@@ -48,12 +48,13 @@ require (
 	github.com/graph-gophers/graphql-go v0.0.0-20200309224638-dae41bde9ef9
 	github.com/graphql-go/graphql v0.7.9
 	github.com/grpc-ecosystem/go-grpc-middleware v1.1.0
-	github.com/grpc-ecosystem/grpc-gateway v1.14.3
+	github.com/grpc-ecosystem/grpc-gateway v1.9.5
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.0.0-beta.4
 	github.com/hashicorp/consul v1.6.2 // indirect
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/iris-contrib/formBinder v5.0.0+incompatible // indirect
 	github.com/iris-contrib/httpexpect v0.0.0-20180314041918-ebe99fcebbce // indirect
-	github.com/iris-contrib/schema v0.0.1
+	github.com/iris-contrib/schema v0.0.1 // indirect
 	github.com/jinzhu/configor v1.1.1
 	github.com/jinzhu/gorm v1.9.12-0.20191206142228-79a77d771dee
 	github.com/json-iterator/go v1.1.9
@@ -62,18 +63,19 @@ require (
 	github.com/kataras/golog v0.0.10
 	github.com/kataras/iris/v12 v12.1.8
 	github.com/lni/dragonboat v2.1.7+incompatible
-	github.com/magiconair/properties v1.8.1
+	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/markbates/goth v1.63.0
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/modern-go/reflect2 v1.0.1
 	github.com/moul/http2curl v1.0.0 // indirect
 	github.com/mwitkow/go-proto-validators v0.2.0
+	github.com/nats-io/nats-server/v2 v2.1.8 // indirect
 	github.com/nsqio/go-nsq v1.0.7
 	github.com/olivere/elastic v6.2.23+incompatible
 	github.com/pelletier/go-toml v1.2.0
 	github.com/peterbourgon/g2s v0.0.0-20170223122336-d4e7ad98afea // indirect
 	github.com/prometheus/client_golang v1.5.1
-	github.com/robfig/cron v1.2.0
+	github.com/robfig/cron v1.2.0 // indirect
 	github.com/russross/blackfriday v2.0.0+incompatible
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/smartystreets/assertions v0.0.0-20190116191733-b6c0e53d7304 // indirect
@@ -93,13 +95,14 @@ require (
 	go.uber.org/zap v1.10.0
 	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	google.golang.org/grpc v1.26.0
-	google.golang.org/protobuf v1.20.1
+	google.golang.org/grpc v1.31.1
+	google.golang.org/protobuf v1.25.0
 	gopkg.in/oauth2.v3 v3.12.0
-	gopkg.in/yaml.v3 v3.0.0-20191120175047-4206685974f2
+	gopkg.in/yaml.v2 v2.2.5
+	gopkg.in/yaml.v3 v3.0.0-20191120175047-4206685974f2 // indirect
 )
 
 replace (
-    github.com/coreos/etcd v3.3.10+incompatible => github.com/coreos/etcd v3.3.18+incompatible
-    github.com/ugorji/go v1.1.4 => github.com/ugorji/go/codec v0.0.0-20190204201341-e444a5086c43
+	github.com/coreos/etcd v3.3.10+incompatible => github.com/coreos/etcd v3.3.18+incompatible
+	github.com/ugorji/go v1.1.4 => github.com/ugorji/go/codec v0.0.0-20190204201341-e444a5086c43
 )

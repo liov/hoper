@@ -10,9 +10,9 @@ func main() {
 	bar(b)
 }
 
-//go:linkname b link.a
+//go:linkname b bLinkA
 var b string
 
-//go:linkname bar link.foo
+//go:linkname bar barLinkFoo
 //go:noescape
 func bar(s string)

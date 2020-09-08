@@ -16,6 +16,6 @@ wasm_exec.js
 node_modules
 dist
 add-config.toml
-std_proto
+proto_std
 .vscode
 gradle

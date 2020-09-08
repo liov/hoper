@@ -32,7 +32,7 @@ var files = map[string][]string{
 	"/utils/proto/go/*.gen.proto":   {"go_out=plugins=grpc"},
 	"/user/*service.proto": {"gogo_out=plugins=grpc",
 		"grpc-gateway_out=logtostderr=true",
-		"swagger_out=logtostderr=true",
+		"openapiv2_out=logtostderr=true",
 		"govalidators_out=gogoimport=true",
 		"gqlgen_out=gogoimport=false,paths=source_relative",
 		//"gqlgencfg_out=paths=source_relative",
@@ -41,7 +41,7 @@ var files = map[string][]string{
 	"/user/*enum.proto":  {"enum_out=plugins=grpc"},
 	"/note/*service.proto": {"gogo_out=plugins=grpc",
 		"grpc-gateway_out=logtostderr=true",
-		"swagger_out=logtostderr=true",
+		"openapiv2_out=logtostderr=true",
 		"govalidators_out=gogoimport=true"},
 	"/note/*model.proto": {"gogo_out=plugins=grpc"},
 }
@@ -63,7 +63,7 @@ func run() {
 	for k, v := range files {
 		for _, plugin := range v {
 			arg := "protoc " + include + *proto + k + " --" + plugin + ",Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types,Mgoogle/api/annotations.proto=github.com/gogo/googleapis/google/api,Mgoogle/protobuf/field_mask.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/any.proto=github.com/gogo/protobuf/types:" + pwd + "/protobuf"
-			if strings.HasPrefix(plugin, "swagger_out") {
+			if strings.HasPrefix(plugin, "openapiv2_out") {
 				arg = arg + "/api"
 			}
 			if strings.HasPrefix(plugin, "graphql_out") || strings.HasPrefix(plugin, "gqlcfg_out") {

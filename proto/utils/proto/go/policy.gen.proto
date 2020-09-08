@@ -1,5 +1,6 @@
 syntax = "proto3";
 import "google/protobuf/descriptor.proto";
+option go_package = "utils/proto/go;cuzproto";
 
 package cuzproto;
 extend google.protobuf.FieldOptions {

@@ -3,7 +3,7 @@ package user;
 import "user/user.model.proto";
 import "user/user.enum.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-import "protoc-gen-swagger/options/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
 import "utils/empty/empty.imp.proto";
@@ -27,7 +27,7 @@ option (gogoproto.goproto_registration) = true;
 option (gogoproto.messagename_all) = true;
 option (gogoproto.populate_all) = true;
 
-option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
     version: "1.0"
   }
@@ -35,7 +35,7 @@ option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
 
 service UserService {
 
-    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_tag) = {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {
 		description: "用户相关接口"
     };
     //验证码
@@ -43,7 +43,7 @@ service UserService {
         option (google.api.http) = {
             get: "/api/v1/verifyCode"
         };
-        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             tags:["用户相关接口","util","v1.0.0"]
             summary : "验证码"
             description : "验证码生成接口"
@@ -57,7 +57,7 @@ service UserService {
             post: "/api/v1/user/signupVerify"
             body: "*"
         };
-        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             tags:["用户相关接口","v1.0.0"]
             summary : "注册验证"
             description : "注册验证接口"
@@ -71,7 +71,7 @@ service UserService {
             post: "/api/v1/user"
             body: "*"
         };
-        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             tags:["用户相关接口","v1.0.0"]
             summary : "注册"
             description : "注册接口"
@@ -84,7 +84,7 @@ service UserService {
         option (google.api.http) = {
             get: "/api/v1/user/active/{id}/{secret}"
         };
-        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             tags:["用户相关接口","v1.0.0"]
             summary : "激活"
             description : "激活接口"
@@ -97,7 +97,7 @@ service UserService {
             put: "/api/v1/user/{id}"
             body: "details"
         };
-        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             tags:["用户相关接口","v1.0.0"]
             summary : "编辑"
             description : "编辑接口"
@@ -118,7 +118,7 @@ service UserService {
             post: "/api/v1/user/login"
             body: "*"
         };
-        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             tags:["用户相关接口","v1.0.0"]
             summary : "登录"
             description : "登录接口"
@@ -130,7 +130,7 @@ service UserService {
         option (google.api.http) = {
             get: "/api/v1/user/logout"
         };
-        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             tags:["用户相关接口","v1.0.0"]
             summary : "退出"
             description : "退出接口"
@@ -143,7 +143,7 @@ service UserService {
         option (google.api.http) = {
                             get: "/api/v1/auth"
                         };
-        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
                     tags:["用户相关接口","v1.0.0"]
                     summary : "获取用户信息"
                     description : "获取用户信息接口"
@@ -171,7 +171,7 @@ service UserService {
     option (google.api.http) = {
                 get: "/api/v1/user/forgetPassword"
             };
-    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
                 tags:["用户相关接口","v1.0.0"]
                 summary : "忘记密码"
                 description : "忘记密码接口"
@@ -184,7 +184,7 @@ service UserService {
                     patch: "/api/v1/user/resetPassword/{id}/{secret}"
                     body: "password"
                 };
-    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
                     tags:["用户相关接口","v1.0.0"]
                     summary : "重置密码"
                     description : "重置密码接口"
@@ -197,7 +197,7 @@ service UserService {
         option (google.api.http) = {
             get: "/api/v1/user/{id}"
         };
-        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             tags:["用户相关接口","v1.0.0"]
             summary : "获取用户信息"
             description : "根据Id获取用户信息接口"
@@ -209,7 +209,7 @@ service UserService {
         option (google.api.http) = {
                     get: "/api/v1/userActionLog"
                 };
-        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
                             tags:["用户相关接口","v1.0.0"]
                             summary : "操作日志"
                             description : "操作日志接口"
@@ -219,14 +219,14 @@ service UserService {
 }
 
 service OauthService{
-    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_tag) = {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {
 		description: "Oauth相关接口"
     };
     rpc OauthAuthorize (oauth.OauthReq) returns (response.HttpResponse) {
         option (google.api.http) = {
                                 get: "/oauth/authorize"
                             };
-        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
                                         tags:["用户相关接口","v1.0.0","oauth"]
                                         summary : "oauth验证"
                                         description : "oauth验证"
@@ -239,7 +239,7 @@ service OauthService{
                  post: "/oauth/access_token"
                  body: "*"
                                    };
-        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
                 tags:["用户相关接口","v1.0.0","oauth"]
                 summary : "签发token"
                 description : "签发token"
@@ -249,13 +249,11 @@ service OauthService{
 }
 
 message SingUpVerifyReq {
-    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_schema) = {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
         json_schema: {
                 title: "注册验证请求"  //和message前注释一样的效果
 		    }
-        example: {
-            value: '{ "mail": "123@qq.com", "phone": "12345678901"}'
-            }
+        example: "{ \"mail\": \"123@qq.com\", \"phone\": \"12345678901\"}"
     };
     //邮箱
     string mail = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" annotation:\"邮箱\""];
@@ -268,7 +266,7 @@ message SignupReq {
     string password = 4 [(gogoproto.moretags) = "validate:\"required,gte=6,lte=15\" annotation:\"密码\"", (validator.field) = {
             length_gt: 5
             human_error: "密码最短6位"
-        }, (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {title: "密码"
+        }, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {title: "密码"
                         min_length: 6}];
     //邮箱
     string mail = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" annotation:\"邮箱\""];
@@ -285,15 +283,15 @@ message SignupRep {
 }
 
 message ActiveReq {
-    uint64 id = 1 [(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"ID"
     type: INTEGER}];
-    string secret = 2 [(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    string secret = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"密钥"}];
 }
 
 message GetReq {
-    uint64 id = 1 [(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"ID"
     type: INTEGER}];
 }
@@ -305,7 +303,7 @@ message GetRep {
 }
 
 message EditReq {
-    uint64 id = 1 [(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"ID"
     type: INTEGER}];
     EditDetails details = 2;
@@ -315,7 +313,7 @@ message EditReq {
         string mail = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(16);default:''\" validate:\"email\" annotation:\"邮箱\""];
         string phone = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(32);default:''\" validate:\"phone\" annotation:\"手机号\""];
         //性别，0未填写，1男，2女
-        Gender gender = 8 [(gogoproto.moretags) = "gorm:\"default:0\"", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+        Gender gender = 8 [(gogoproto.moretags) = "gorm:\"default:0\"", (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
            type:INTEGER
     }];
         string birthday = 9 [(gogoproto.moretags) = "gorm:\"type:timestamptz(6);default:0\""];
@@ -357,12 +355,12 @@ message LogoutRep {
 }
 
 message ResetPasswordReq {
-    uint64 id = 1 [(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"ID"
     type: INTEGER}];
-    string secret = 2 [(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    string secret = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"密钥"}];
-    string password = 3 [(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    string password = 3 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"密码"}];
 }
 
