@@ -54,7 +54,7 @@ pub global activate protoc_plugin
 
 export PATH="$PATH:$HOME/.pub-cache/bin" //$HOME\AppData\Local\Pub\Cache\bin
 
-protoc --dart_out=grpc:lib/generated --proto_path=../../std_proto  -Iprotos ../../std_proto/user/user.enum.proto
+protoc --dart_out=grpc:lib/generated --proto_path=../../proto_std  -Iprotos ../../proto_std/user/user.enum.proto
 
 怪不得[flutter_lua](https://github.com/drydart/flutter_lua)插件有libgojni.so 且只支持lua5.2,
 原来用的是[go实现的lua虚拟机](https://github.com/Shopify/go-lua),比clua慢6倍

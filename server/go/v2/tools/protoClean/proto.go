@@ -16,7 +16,7 @@ var in, out string
 
 func main() {
 	flag.StringVar(&in, "in", "../../../proto", "go protobuf")
-	flag.StringVar(&out, "out", "../../../std_proto", "通用 protobuf")
+	flag.StringVar(&out, "out", "../../../proto_std", "通用 protobuf")
 	flag.Parse()
 	_, err := os.Stat(out)
 	if os.IsNotExist(err) {
@@ -65,7 +65,7 @@ func replace(src string) {
 		newFilePath := strings.Replace(src, in, out, 1)
 		reg := regexp.MustCompile(`import \"github.*\n`)
 		data = reg.ReplaceAll(data, nil)
-		reg = regexp.MustCompile(`import \"protoc-gen-swagger.*\n`)
+		reg = regexp.MustCompile(`import \"protoc-gen-openapiv2.*\n`)
 		data = reg.ReplaceAll(data, nil)
 		reg = regexp.MustCompile(`import \"utils/proto/gogo/enum.imp.proto.*\n`)
 		data = reg.ReplaceAll(data, nil)

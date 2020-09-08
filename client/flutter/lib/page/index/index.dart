@@ -13,8 +13,7 @@ class IndexPage extends StatefulWidget {
 }
 
 class _IndexPageState extends State<IndexPage> {
-  final MethodChannel _methodChannel =
-      const MethodChannel('xyz.hoper.native/view');
+  final MethodChannel _methodChannel = MethodChannel('xyz.hoper.native/view');
   int _counter = 0;
 
   void _incrementCounter() {

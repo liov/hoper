@@ -2,7 +2,7 @@ syntax = "proto3";
 package note;
 import "note/note.model.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-import "protoc-gen-swagger/options/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
 import "utils/empty/empty.imp.proto";
@@ -21,7 +21,7 @@ option (gogoproto.goproto_registration) = true;
 option (gogoproto.messagename_all) = true;
 option (gogoproto.populate_all) = true;
 
-option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
     version: "1.0"
   }
@@ -29,7 +29,7 @@ option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
 
 service NoteService {
 
-    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_tag) = {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {
 		description: "笔记相关接口"
     };
     //验证码
@@ -38,7 +38,7 @@ service NoteService {
             post: "/api/v1/note"
             body: "*"
         };
-        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             tags:["笔记相关接口","v1.0.0"]
             summary : "创建笔记"
             description : "创建笔记接口"

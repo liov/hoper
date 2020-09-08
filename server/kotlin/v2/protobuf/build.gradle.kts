@@ -31,7 +31,7 @@ sourceSets{
             srcDirs("src/main/java")
         }
         proto {
-            srcDir("${rootDir}/../../../std_proto")
+            srcDir("${rootDir}/../../../proto_std")
             println(srcDirs)
         }
     }

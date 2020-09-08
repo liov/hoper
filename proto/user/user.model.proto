@@ -2,7 +2,7 @@ syntax = "proto3";
 package user;
 import "user/user.enum.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-import "protoc-gen-swagger/options/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 
 option java_package = "xyz.hoper.protobuf.user";
 
@@ -28,7 +28,7 @@ message User {
     string mail = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(16);default:''\" validate:\"email\" annotation:\"邮箱\""];
     string phone = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(32);default:''\" validate:\"phone\" annotation:\"手机号\""];
     //性别，0未填写，1男，2女
-    Gender gender = 8 [(gogoproto.moretags) = "gorm:\"default:0\"",  (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    Gender gender = 8 [(gogoproto.moretags) = "gorm:\"default:0\"",  (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
            type:INTEGER
     }];
     string birthday = 9 [(gogoproto.moretags) = "gorm:\"type:timestamptz(6);default:'0001-01-01 00:00:00'\""];
@@ -39,12 +39,12 @@ message User {
     string avatarURL = 12 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
     string coverURL = 13 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
     string lastActiveAt = 23 [(gogoproto.moretags) = "gorm:\"type:timestamptz(6);default:'0001-01-01 00:00:00'\""];
-    uint64 score = 15 [(gogoproto.jsontag) = "score", (gogoproto.moretags) = "gorm:\"default:0\"", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    uint64 score = 15 [(gogoproto.jsontag) = "score", (gogoproto.moretags) = "gorm:\"default:0\"", (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"分数"
     type: INTEGER}];
     Role role = 24 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"default:0\""];
     string createdAt = 25 [(gogoproto.moretags) = "gorm:\"type:timestamptz(6);default:current_timestamp\""];
-    UserStatus status = 28 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"default:0\"",  (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    UserStatus status = 28 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"default:0\"",  (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
            read_only:true
     }];
 }
@@ -65,7 +65,7 @@ message UserFollow {
     uint64 userId = 1 [(gogoproto.moretags) = "gorm:\"index\""]; //一个关注另一个，ID小的做UserID
     uint64 followId = 2 [(gogoproto.moretags) = "gorm:\"\""];
     string createdAt = 3 [(gogoproto.moretags) = "gorm:\"default:0\""]; //FollowUser关注User时间
-    uint32 status = 5 [(gogoproto.moretags) = "gorm:\"\"", (gogoproto.casttype) = "uint8",(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    uint32 status = 5 [(gogoproto.moretags) = "gorm:\"\"", (gogoproto.casttype) = "uint8",(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
            read_only:true
     }]; //状态：0无效，1有效
 }
@@ -117,10 +117,10 @@ message UserActionLog {
 
 //简历
 message Resume {
-    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key\"",(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key\"",(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
            type:INTEGER
     }];
-    uint64 userId = 2 [(gogoproto.moretags) = "gorm:\"index\"",(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    uint64 userId = 2 [(gogoproto.moretags) = "gorm:\"index\"",(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
            type:INTEGER
     }];
     //公司或组织或学校
@@ -134,17 +134,17 @@ message Resume {
     string remark = 11 [(gogoproto.moretags) = "gorm:\"type:varchar(255)\""];
     //0-Education 教育经历,1- Work 职业生涯
     uint32 type = 12 [(gogoproto.moretags) = "gorm:\"default:0\"", (gogoproto.casttype) = "uint8"];
-    uint32 status = 28 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"default:0\"", (gogoproto.casttype) = "uint8",(grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    uint32 status = 28 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"default:0\"", (gogoproto.casttype) = "uint8",(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
            read_only:true
     }];
 }
 
 message UserBaseInfo {
     uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key;\""];
-    uint64 score = 2 [(gogoproto.jsontag) = "score", (gogoproto.moretags) = "gorm:\"default:0\"", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    uint64 score = 2 [(gogoproto.jsontag) = "score", (gogoproto.moretags) = "gorm:\"default:0\"", (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"分数"
     type: INTEGER}];
-    Gender gender = 8 [(gogoproto.jsontag) = "gender", (gogoproto.moretags) = "gorm:\"default:0\"", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    Gender gender = 8 [(gogoproto.jsontag) = "gender", (gogoproto.moretags) = "gorm:\"default:0\"", (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
            type:INTEGER
     }];
 }
@@ -153,10 +153,10 @@ message UserMainInfo {
     uint64 id = 1 [(gogoproto.moretags) = "gorm:\"primary_key;\""];
     Role role = 24 [(gogoproto.moretags) = "gorm:\"default:0\""];
     int64 lastActiveAt = 23;
-    uint64 score = 15 [(gogoproto.jsontag) = "score", (gogoproto.moretags) = "gorm:\"default:0\"", (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    uint64 score = 15 [(gogoproto.jsontag) = "score", (gogoproto.moretags) = "gorm:\"default:0\"", (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"分数"
     type: INTEGER}];
-    UserStatus status = 28 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"default:0\"",  (grpc.gateway.protoc_gen_swagger.options.openapiv2_field) = {
+    UserStatus status = 28 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"default:0\"",  (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
            read_only:true
     }];
     int64 loginTime =16;
