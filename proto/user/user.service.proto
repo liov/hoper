@@ -2,7 +2,6 @@ syntax = "proto3";
 package user;
 import "user/user.model.proto";
 import "user/user.enum.proto";
-import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
@@ -15,17 +14,6 @@ import "utils/response/httpresponse.imp.proto";
 
 option java_package = "xyz.hoper.protobuf.user";
 
-option (gogoproto.goproto_enum_prefix_all) = false;
-option (gogoproto.goproto_getters_all) = false;
-option (gogoproto.unmarshaler_all) = true;
-option (gogoproto.marshaler_all) = true;
-option (gogoproto.sizer_all) = true;
-option (gogoproto.goproto_unrecognized_all) = false;
-option (gogoproto.goproto_unkeyed_all) = false;
-option (gogoproto.goproto_sizecache_all) = false;
-option (gogoproto.goproto_registration) = true;
-option (gogoproto.messagename_all) = true;
-option (gogoproto.populate_all) = true;
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
@@ -256,28 +244,28 @@ message SingUpVerifyReq {
         example: "{ \"mail\": \"123@qq.com\", \"phone\": \"12345678901\"}"
     };
     //邮箱
-    string mail = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" annotation:\"邮箱\""];
+    string mail = 6 [(go.field) = "validate:\"omitempty,email\" annotation:\"邮箱\""];
     //手机号
-    string phone = 7 [(gogoproto.moretags) = "validate:\"omitempty,phone\" annotation:\"手机号\""];
+    string phone = 7 [(go.field) = "validate:\"omitempty,phone\" annotation:\"手机号\""];
 }
 
 message SignupReq {
     //密码
-    string password = 4 [(gogoproto.moretags) = "validate:\"required,gte=6,lte=15\" annotation:\"密码\"", (validator.field) = {
+    string password = 4 [(go.field) = "validate:\"required,gte=6,lte=15\" annotation:\"密码\"", (validator.field) = {
             length_gt: 5
             human_error: "密码最短6位"
         }, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {title: "密码"
                         min_length: 6}];
     //邮箱
-    string mail = 6 [(gogoproto.moretags) = "validate:\"omitempty,email\" annotation:\"邮箱\""];
+    string mail = 6 [(go.field) = "validate:\"omitempty,email\" annotation:\"邮箱\""];
     //手机号
-    string phone = 7 [(gogoproto.moretags) = "validate:\"omitempty,phone\" annotation:\"手机号\""];
+    string phone = 7 [(go.field) = "validate:\"omitempty,phone\" annotation:\"手机号\""];
     //验证码
-    string vCode = 8 [(gogoproto.moretags) = "validate:\"required,numeric\" annotation:\"验证码\""];
+    string vCode = 8 [(go.field) = "validate:\"required,numeric\" annotation:\"验证码\""];
 }
 
 message SignupRep {
-    uint32 code = 1 [(gogoproto.jsontag) = "code"];
+    uint32 code = 1 ;
     string message = 2;
     User details = 3;
 }
@@ -297,7 +285,7 @@ message GetReq {
 }
 
 message GetRep {
-    uint32 code = 1 [(gogoproto.jsontag) = "code"];
+    uint32 code = 1;
     string message =2;
     User details = 3;
 }
@@ -308,20 +296,20 @@ message EditReq {
     type: INTEGER}];
     EditDetails details = 2;
     message EditDetails {
-        string name = 2 [(gogoproto.moretags) = "gorm:\"type:varchar(10);not null\" validate:\"required,gte=3,lte=10\" annotation:\"名字\""];
-        string password = 5 [(gogoproto.jsontag) = "-", (gogoproto.moretags) = "gorm:\"type:varchar(32);not null\" validate:\"gte=8,lte=15\" annotation:\"密码\""];
-        string mail = 6 [(gogoproto.moretags) = "gorm:\"type:varchar(16);default:''\" validate:\"email\" annotation:\"邮箱\""];
-        string phone = 7 [(gogoproto.moretags) = "gorm:\"type:varchar(32);default:''\" validate:\"phone\" annotation:\"手机号\""];
+        string name = 2 [(go.field) = {tags:'gorm:"type:varchar(10);not null" validate:"required,gte=3,lte=10" annotation:"名字"'}];
+        string password = 5 [(go.field) = {tags:'gorm:"type:varchar(32);not null" validate:"gte=8,lte=15" annotation:"密码"'}];
+        string mail = 6 [(go.field) = {tags:'gorm:"type:varchar(16);default:\'\'" validate:"email" annotation:"邮箱"'}];
+        string phone = 7 [(go.field) = {tags:'gorm:"type:varchar(32);default:\'\'" validate:"phone" annotation:"手机号"'}];
         //性别，0未填写，1男，2女
-        Gender gender = 8 [(gogoproto.moretags) = "gorm:\"default:0\"", (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        Gender gender = 8 [(go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
            type:INTEGER
     }];
-        string birthday = 9 [(gogoproto.moretags) = "gorm:\"type:timestamptz(6);default:0\""];
-        string address = 14 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
-        string introduction = 10 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
-        string signature = 11 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
-        string avatarURL = 12 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
-        string coverURL = 13 [(gogoproto.moretags) = "gorm:\"type:varchar(255);default:''\""];
+        string birthday = 9 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0"'}];
+        string address = 14 [(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
+        string introduction = 10 [(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
+        string signature = 11 [(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
+        string avatarURL = 12 [(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
+        string coverURL = 13 [(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
         repeated Resume eduExps = 15;
         repeated Resume workExps = 16;
     }
@@ -337,21 +325,21 @@ message LoginReq {
 }
 
 message LoginRep {
-    uint32 code = 1[(gogoproto.jsontag) = "code"];
+    uint32 code = 1;
     string message = 2;
     LoginDetails details = 3;
     message LoginDetails{
         UserBaseInfo user = 1;
         string token = 2;
     }
-    string cookie = 4[(gogoproto.jsontag) = "-"];
+    string cookie = 4;
 }
 
 //特殊，设置cookie用
 message LogoutRep {
-    uint32 code = 1[(gogoproto.jsontag) = "code"];
+    uint32 code = 1;
     string message = 2;
-    string cookie = 3[(gogoproto.jsontag) = "-"];
+    string cookie = 3;
 }
 
 message ResetPasswordReq {
