@@ -1,12 +1,8 @@
 syntax = "proto3";
 package message;
-import "utils/actor/actor.imp.proto"; // we need to import actor.proto, so our messages can include PID's
+import "utils/actor/actor.proto"; // we need to import actor.proto, so our messages can include PID's
 
-import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-
-option (gogoproto.goproto_unrecognized_all) = false;
-option (gogoproto.goproto_unkeyed_all) = false;
-option (gogoproto.goproto_sizecache_all) = false;
+option go_package = "github.com/liov/hoper/go/v2/actor/message";
 
 message Connect {
     actor.PID Sender = 1;

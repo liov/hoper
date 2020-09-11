@@ -22,31 +22,32 @@ func main() { run() }
 
 const goOut = "go-patch_out=plugin=go,paths=source_relative"
 const grpcOut = "go-patch_out=plugin=go-grpc,paths=source_relative"
-const enumOut = "enum_out=plugins=grpc"
-const gatewayOut = "grpc-gateway_out=logtostderr=true"
+const enumOut = "enum_out=plugins=grpc,paths=source_relative"
+const gatewayOut = "grpc-gateway_out=logtostderr=true,paths=source_relative"
 const openapiv2Out = "openapiv2_out=logtostderr=true"
-const govalidatorsOut = "govalidators_out=gogoimport=true"
+const govalidatorsOut = "govalidators_out=gogoimport=true,paths=source_relative"
+const gogoprotoOut = "gogo_out=plugins=grpc"
 
 var gengql = true
 var files = map[string][]string{
-	"/utils/empty/*.gen.proto":      {goOut, grpcOut},
-	"/utils/errorcode/errrep.proto": {goOut},
+	"/utils/empty/*.proto":          {goOut, grpcOut},
+	"/utils/errorcode/errrep.proto": {goOut, grpcOut},
 	"/utils/errorcode/*enum.proto":  {enumOut},
-	"/utils/actor/message/*.proto":  {goOut},
-	"/utils/response/*.gen.proto":   {goOut},
-	"/utils/oauth/*.gen.proto":      {grpcOut},
-	"/utils/proto/gogo/*.gen.proto": {grpcOut},
-	"/utils/proto/go/*.gen.proto":   {"go_out=plugins=grpc"},
-	"/user/*service.proto": {goOut,
+	"/utils/actor/message/*.proto":  {goOut, grpcOut},
+	"/utils/response/*.proto":       {goOut, grpcOut},
+	"/utils/oauth/*.proto":          {goOut, grpcOut},
+	"/utils/proto/gogo/*.gen.proto": {gogoprotoOut},
+	"/utils/proto/go/*.proto":       {"go_out=plugins=grpc"},
+	"/user/*service.proto": {goOut, grpcOut,
 		gatewayOut,
 		openapiv2Out,
 		govalidatorsOut,
 		"gqlgen_out=gogoimport=false,paths=source_relative",
 		//"gqlgencfg_out=paths=source_relative",
 		"graphql_out=paths=source_relative"},
-	"/user/*model.proto": {goOut},
+	"/user/*model.proto": {goOut, grpcOut},
 	"/user/*enum.proto":  {enumOut},
-	"/note/*service.proto": {goOut,
+	"/note/*service.proto": {goOut, grpcOut,
 		gatewayOut,
 		openapiv2Out,
 		govalidatorsOut},
@@ -60,8 +61,9 @@ func run() {
 	*proto = pwd + "/" + *proto
 	goList := `go list -m -f {{.Dir}} `
 	gateway, _ := cmd.CMD(goList + "github.com/grpc-ecosystem/grpc-gateway/v2")
-	protopatch, _ := cmd.CMD(goList + "github.com/alta/protopatch")
+	protopatch, _ := cmd.CMD(goList + "github.com/liov/protopatch")
 	protobuf, _ := cmd.CMD(goList + "google.golang.org/protobuf")
+	//gogoProtoOut, _ := cmd.CMD(goList + "github.com/gogo/protobuf")
 	path := os.Getenv("GOPATH")
 	include := "-I" + *proto + " -I" + gateway + " -I" + gateway + "/third_party/googleapis -I" + protopatch + " -I" + protobuf + " -I" + path + "/src"
 
@@ -81,12 +83,12 @@ func run() {
 				continue
 			}
 			if strings.HasPrefix(k, "/utils/proto/go/") {
-				arg = "protoc -I" + *proto + " " + *proto + k + " --go_out=plugins=grpc:" + pwd + "/protobuf"
+				arg = "protoc -I" + *proto + " " + *proto + k + " --go_out=plugins=grpc,paths=source_relative:" + pwd + "/protobuf"
 			}
 			if strings.HasPrefix(k, "/utils/proto/gogo/") {
 				arg = "protoc -I" + *proto + " " + *proto + k + " --gogo_out=plugins=grpc,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor:" + pwd + "/protobuf"
 			}
-			log.Println(arg)
+
 			words := cmd.Split(arg)
 			cmd := exec.Command(words[0], words[1:]...)
 			cmd.Stdout = os.Stdout

@@ -11,7 +11,7 @@ require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/Shopify/sarama v1.24.0
 	github.com/ajg/form v1.5.1 // indirect
-	github.com/alta/protopatch v0.0.0-20200702232458-c2bd0c612764 // indirect
+	github.com/alta/protopatch v0.0.0-20200702232458-c2bd0c612764
 	github.com/biogo/store v0.0.0-20190426020002-884f370e325d // indirect
 	github.com/bluele/gcache v0.0.0-20190518031135-bc40bd653833
 	github.com/boombuler/barcode v1.0.0
@@ -63,6 +63,7 @@ require (
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/golog v0.0.10
 	github.com/kataras/iris/v12 v12.1.8
+	github.com/liov/protopatch v0.0.0-20200911071140-b7b212d869a0 // indirect
 	github.com/lni/dragonboat v2.1.7+incompatible
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/markbates/goth v1.63.0
@@ -96,6 +97,7 @@ require (
 	go.uber.org/zap v1.10.0
 	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
+	google.golang.org/genproto v0.0.0-20200808173500-a06252235341
 	google.golang.org/grpc v1.31.1
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/oauth2.v3 v3.12.0
