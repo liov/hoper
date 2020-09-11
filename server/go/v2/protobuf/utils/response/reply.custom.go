@@ -10,7 +10,7 @@ import (
 )
 
 func (m *RawReply) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
-	return m.Details, nil
+	return *m.Details, nil
 }
 
 type GoReply struct {

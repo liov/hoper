@@ -12,14 +12,6 @@ func (m *Resume) CmpKey() uint64 {
 
 var UserService_serviceDesc = &_UserService_serviceDesc
 
-func (m *LoginRep) GetCookie() string {
-	return m.Cookie
-}
-
-func (m *LogoutRep) GetCookie() string {
-	return m.Cookie
-}
-
 /*
 func RegisterUserServiceHandlerFromModuleWithReConnect(ctx context.Context, mux *runtime.ServeMux, getEndPort func() string, opts []grpc.DialOption) (err error) {
 	endPort:=getEndPort()

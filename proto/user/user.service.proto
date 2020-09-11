@@ -5,15 +5,15 @@ import "user/user.enum.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
-import "utils/empty/empty.imp.proto";
-import "utils/response/response.imp.proto";
-import "utils/proto/gogo/graphql.imp.proto";
-import "utils/oauth/oauth.imp.proto";
-import "utils/response/httpresponse.imp.proto";
-
+import "utils/empty/empty.proto";
+import "utils/response/response.proto";
+import "utils/proto/gogo/graphql.proto";
+import "utils/oauth/oauth.proto";
+import "utils/response/httpresponse.proto";
+import "patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.user";
-
+option go_package = "github.com/liov/hoper/go/v2/protobuf/user";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
@@ -241,31 +241,31 @@ message SingUpVerifyReq {
         json_schema: {
                 title: "注册验证请求"  //和message前注释一样的效果
 		    }
-        example: "{ \"mail\": \"123@qq.com\", \"phone\": \"12345678901\"}"
+        //example: '{ "mail": "123@qq.com", "phone": "12345678901"}'
     };
     //邮箱
-    string mail = 6 [(go.field) = "validate:\"omitempty,email\" annotation:\"邮箱\""];
+    string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" annotation:"邮箱"'}];
     //手机号
-    string phone = 7 [(go.field) = "validate:\"omitempty,phone\" annotation:\"手机号\""];
+    string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" annotation:"手机号"'}];
 }
 
 message SignupReq {
     //密码
-    string password = 4 [(go.field) = "validate:\"required,gte=6,lte=15\" annotation:\"密码\"", (validator.field) = {
+    string password = 4 [(go.field) = {tags:'validate:"required,gte=6,lte=15" annotation:"密码"'}, (validator.field) = {
             length_gt: 5
             human_error: "密码最短6位"
         }, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {title: "密码"
                         min_length: 6}];
     //邮箱
-    string mail = 6 [(go.field) = "validate:\"omitempty,email\" annotation:\"邮箱\""];
+    string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" annotation:"邮箱"'}];
     //手机号
-    string phone = 7 [(go.field) = "validate:\"omitempty,phone\" annotation:\"手机号\""];
+    string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" annotation:"手机号"'}];
     //验证码
-    string vCode = 8 [(go.field) = "validate:\"required,numeric\" annotation:\"验证码\""];
+    string vCode = 8 [(go.field) = {tags:'validate:"required,numeric" annotation:"验证码"'}];
 }
 
 message SignupRep {
-    uint32 code = 1 ;
+    uint32 code = 1 [(go.field) = {json_tag: "code"}];
     string message = 2;
     User details = 3;
 }
@@ -285,7 +285,7 @@ message GetReq {
 }
 
 message GetRep {
-    uint32 code = 1;
+    uint32 code = 1[(go.field) = {json_tag: "code"}];
     string message =2;
     User details = 3;
 }
@@ -337,7 +337,7 @@ message LoginRep {
 
 //特殊，设置cookie用
 message LogoutRep {
-    uint32 code = 1;
+    uint32 code = 1 [(go.field) = {json_tag: "code"}];
     string message = 2;
     string cookie = 3;
 }
@@ -358,7 +358,7 @@ message ActionLogListReq {
 }
 
 message ActionLogListRep {
-    uint32 code = 1[(gogoproto.jsontag) = "code"];
+    uint32 code = 1[(go.field) = {json_tag: "code"}];
     string message = 2;
     repeated UserActionLog details =3;
 }

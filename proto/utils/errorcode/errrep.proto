@@ -2,23 +2,14 @@ syntax = "proto3";
 package errorcode;
 
 import "utils/errorcode/enum.proto";
-import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.errorcode";
+option go_package = "github.com/liov/hoper/go/v2/utils/errorcode";
 
-option (gogoproto.goproto_enum_prefix_all) = false;
-option (gogoproto.goproto_getters_all) = false;
-option (gogoproto.unmarshaler_all) = true;
-option (gogoproto.marshaler_all) = true;
-option (gogoproto.sizer_all) = true;
-option (gogoproto.goproto_unrecognized_all) = false;
-option (gogoproto.goproto_unkeyed_all) = false;
-option (gogoproto.goproto_sizecache_all) = false;
-option (gogoproto.goproto_registration) = true;
-option (gogoproto.messagename_all) = true;
-option (gogoproto.populate_all) = true;
+
 
 message ErrRep {
-    ErrCode code = 1 [(gogoproto.jsontag) = "code"];
+    ErrCode code = 1 [(go.field) = {json_tag:"code"}];
     string message = 2;
 }

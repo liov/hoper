@@ -1,11 +1,12 @@
 syntax = "proto3";
 package user;
-import "utils/proto/gogo/enum.imp.proto";
-//import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "utils/proto/gogo/enum.proto";
+
 option (cuzproto.enum_gqlgen_all) = true;
 //写在这里必然要暴露出去
 option java_package = "xyz.hoper.protobuf.user";
-//option (gogoproto.goproto_enum_prefix_all) = false;
+option go_package = "github.com/liov/hoper/go/v2/protobuf/user";
+
 //用户操作
 enum Action {
     option (cuzproto.enum_genvaluemap) = true;

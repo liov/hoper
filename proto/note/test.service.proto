@@ -1,24 +1,14 @@
 syntax = "proto3";
 package note;
 import "note/note.model.proto";
-import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
-import "utils/empty/empty.imp.proto";
-import "utils/response/response.imp.proto";
+import "utils/empty/empty.proto";
+import "utils/response/response.proto";
+import "patch/go.proto";
 
-option (gogoproto.goproto_enum_prefix_all) = false;
-option (gogoproto.goproto_getters_all) = false;
-option (gogoproto.unmarshaler_all) = true;
-option (gogoproto.marshaler_all) = true;
-option (gogoproto.sizer_all) = true;
-option (gogoproto.goproto_unrecognized_all) = false;
-option (gogoproto.goproto_unkeyed_all) = false;
-option (gogoproto.goproto_sizecache_all) = false;
-option (gogoproto.goproto_registration) = true;
-option (gogoproto.messagename_all) = true;
-option (gogoproto.populate_all) = true;
+option go_package = "github.com/liov/hoper/go/v2/protobuf/note";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
