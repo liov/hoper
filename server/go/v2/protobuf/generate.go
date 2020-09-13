@@ -46,7 +46,7 @@ var files = map[string][]string{
 		//"gqlgencfg_out=paths=source_relative",
 		"graphql_out=paths=source_relative"},
 	"/user/*model.proto": {goOut, grpcOut},
-	"/user/*enum.proto":  {enumOut},
+	"/user/*enum.proto":  {goOut, grpcOut},
 	"/note/*service.proto": {goOut, grpcOut,
 		gatewayOut,
 		openapiv2Out,
