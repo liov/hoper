@@ -11,3 +11,8 @@ import (
 )
 
 //go:generate go install ./protoc-gen-go-enum
+//go:generate go install github.com/golang/protobuf/protoc-gen-go
+//go:generate go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
+//go:generate go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
+//go:generate go install github.com/liov/protopatch/cmd/protoc-gen-go-patch
+//go:generate go install google.golang.org/grpc/cmd/protoc-gen-go-grpc

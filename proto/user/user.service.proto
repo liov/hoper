@@ -23,342 +23,344 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 
 service UserService {
 
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {
-		description: "用户相关接口"
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {
+    description: "用户相关接口"
+  };
+  //验证码
+  rpc VerifyCode (empty.Empty) returns (response.CommonRep) {
+    option (google.api.http) = {
+      get: "/api/v1/verifyCode"
     };
-    //验证码
-    rpc VerifyCode (empty.Empty) returns (response.CommonRep) {
-        option (google.api.http) = {
-            get: "/api/v1/verifyCode"
-        };
-        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            tags:["用户相关接口","util","v1.0.0"]
-            summary : "验证码"
-            description : "验证码生成接口"
-        };
-        option (cuzproto.graphql_operation) = Query;
-    }
-
-    //注册验证
-    rpc SignupVerify (SingUpVerifyReq) returns (response.TinyRep) {
-        option (google.api.http) = {
-            post: "/api/v1/user/signupVerify"
-            body: "*"
-        };
-        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            tags:["用户相关接口","v1.0.0"]
-            summary : "注册验证"
-            description : "注册验证接口"
-        };
-        option (cuzproto.graphql_operation) = Mutation;
-    }
-
-    //注册
-    rpc Signup (SignupReq) returns (SignupRep) {
-        option (google.api.http) = {
-            post: "/api/v1/user"
-            body: "*"
-        };
-        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            tags:["用户相关接口","v1.0.0"]
-            summary : "注册"
-            description : "注册接口"
-        };
-        option (cuzproto.graphql_operation) = Mutation;
-    }
-
-    //激活
-    rpc Active (ActiveReq) returns (response.TinyRep) {
-        option (google.api.http) = {
-            get: "/api/v1/user/active/{id}/{secret}"
-        };
-        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            tags:["用户相关接口","v1.0.0"]
-            summary : "激活"
-            description : "激活接口"
-        };
-        option (cuzproto.graphql_operation) = Mutation;
-    }
-    //编辑
-    rpc Edit (EditReq) returns (response.TinyRep) {
-        option (google.api.http) = {
-            put: "/api/v1/user/{id}"
-            body: "details"
-        };
-        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            tags:["用户相关接口","v1.0.0"]
-            summary : "编辑"
-            description : "编辑接口"
-            security: {
-				security_requirement: {
-					key: "Authorization"
-                    value: {
-                        scope: "read"
-                    }
-                }
-            }
-        };
-        option (cuzproto.graphql_operation) = Mutation;
-    }
-    //登录
-    rpc Login (LoginReq) returns (LoginRep) {
-        option (google.api.http) = {
-            post: "/api/v1/user/login"
-            body: "*"
-        };
-        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            tags:["用户相关接口","v1.0.0"]
-            summary : "登录"
-            description : "登录接口"
-        };
-        option (cuzproto.graphql_operation) = Query;
-    }
-    //退出
-    rpc Logout (empty.Empty) returns (LogoutRep) {
-        option (google.api.http) = {
-            get: "/api/v1/user/logout"
-        };
-        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            tags:["用户相关接口","v1.0.0"]
-            summary : "退出"
-            description : "退出接口"
-        };
-        option (cuzproto.graphql_operation) = Query;
-    }
-
-    //鉴权
-    rpc AuthInfo (empty.Empty) returns (UserAuthInfo) {
-        option (google.api.http) = {
-                            get: "/api/v1/auth"
-                        };
-        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-                    tags:["用户相关接口","v1.0.0"]
-                    summary : "获取用户信息"
-                    description : "获取用户信息接口"
-                    security: {
-                         security_requirement: {
-                                key: "OAuth2"
-                                value: {
-                                    scope: "read"
-                                }
-                            }
-                        security_requirement: {
-                            key: "Authorization"
-                            value: {
-                                scope: ["read","write"]
-                            }
-                        }
-
-                    }
-                };
-        option (cuzproto.graphql_operation) = Query;
-    }
-
-    //重置密码
-    rpc ForgetPassword (LoginReq) returns (response.TinyRep) {
-    option (google.api.http) = {
-                get: "/api/v1/user/forgetPassword"
-            };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-                tags:["用户相关接口","v1.0.0"]
-                summary : "忘记密码"
-                description : "忘记密码接口"
-            };
-    option (cuzproto.graphql_operation) = Mutation;
-    }
+      tags:["用户相关接口", "util", "v1.0.0"]
+      summary : "验证码"
+      description : "验证码生成接口"
+    };
+    option (cuzproto.graphql_operation) = Query;
+  }
 
-    rpc ResetPassword (ResetPasswordReq) returns (response.TinyRep) {
+  //注册验证
+  rpc SignupVerify (SingUpVerifyReq) returns (response.TinyRep) {
     option (google.api.http) = {
-                    patch: "/api/v1/user/resetPassword/{id}/{secret}"
-                    body: "password"
-                };
+      post: "/api/v1/user/signupVerify"
+      body: "*"
+    };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-                    tags:["用户相关接口","v1.0.0"]
-                    summary : "重置密码"
-                    description : "重置密码接口"
-                };
+      tags:["用户相关接口", "v1.0.0"]
+      summary : "注册验证"
+      description : "注册验证接口"
+    };
     option (cuzproto.graphql_operation) = Mutation;
-    }
+  }
 
-    //获取用户信息
-    rpc GetUser (GetReq) returns (GetRep) {
-        option (google.api.http) = {
-            get: "/api/v1/user/{id}"
-        };
-        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            tags:["用户相关接口","v1.0.0"]
-            summary : "获取用户信息"
-            description : "根据Id获取用户信息接口"
-        };
-        option (cuzproto.graphql_operation) = Query;
-    }
+  //注册
+  rpc Signup (SignupReq) returns (SignupRep) {
+    option (google.api.http) = {
+      post: "/api/v1/user"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["用户相关接口", "v1.0.0"]
+      summary : "注册"
+      description : "注册接口"
+    };
+    option (cuzproto.graphql_operation) = Mutation;
+  }
 
-    rpc ActionLogList (ActionLogListReq) returns (ActionLogListRep) {
-        option (google.api.http) = {
-                    get: "/api/v1/userActionLog"
-                };
-        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-                            tags:["用户相关接口","v1.0.0"]
-                            summary : "操作日志"
-                            description : "操作日志接口"
-                        };
-        option (cuzproto.graphql_operation) = Query;
+  //激活
+  rpc Active (ActiveReq) returns (response.TinyRep) {
+    option (google.api.http) = {
+      get: "/api/v1/user/active/{id}/{secret}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["用户相关接口", "v1.0.0"]
+      summary : "激活"
+      description : "激活接口"
+    };
+    option (cuzproto.graphql_operation) = Mutation;
+  }
+  //编辑
+  rpc Edit (EditReq) returns (response.TinyRep) {
+    option (google.api.http) = {
+      put: "/api/v1/user/{id}"
+      body: "details"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["用户相关接口", "v1.0.0"]
+      summary : "编辑"
+      description : "编辑接口"
+      security: {
+        security_requirement: {
+          key: "Authorization"
+          value: {
+            scope: "read"
+          }
         }
+      }
+    };
+    option (cuzproto.graphql_operation) = Mutation;
+  }
+  //登录
+  rpc Login (LoginReq) returns (LoginRep) {
+    option (google.api.http) = {
+      post: "/api/v1/user/login"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["用户相关接口", "v1.0.0"]
+      summary : "登录"
+      description : "登录接口"
+    };
+    option (cuzproto.graphql_operation) = Query;
+  }
+  //退出
+  rpc Logout (empty.Empty) returns (LogoutRep) {
+    option (google.api.http) = {
+      get: "/api/v1/user/logout"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["用户相关接口", "v1.0.0"]
+      summary : "退出"
+      description : "退出接口"
+    };
+    option (cuzproto.graphql_operation) = Query;
+  }
+
+  //鉴权
+  rpc AuthInfo (empty.Empty) returns (UserAuthInfo) {
+    option (google.api.http) = {
+      get: "/api/v1/auth"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["用户相关接口", "v1.0.0"]
+      summary : "获取用户信息"
+      description : "获取用户信息接口"
+      security: {
+        security_requirement: {
+          key: "OAuth2"
+          value: {
+            scope: "read"
+          }
+        }
+        security_requirement: {
+          key: "Authorization"
+          value: {
+            scope: ["read", "write"]
+          }
+        }
+
+      }
+    };
+    option (cuzproto.graphql_operation) = Query;
+  }
+
+  //重置密码
+  rpc ForgetPassword (LoginReq) returns (response.TinyRep) {
+    option (google.api.http) = {
+      get: "/api/v1/user/forgetPassword"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["用户相关接口", "v1.0.0"]
+      summary : "忘记密码"
+      description : "忘记密码接口"
+    };
+    option (cuzproto.graphql_operation) = Mutation;
+  }
+
+  rpc ResetPassword (ResetPasswordReq) returns (response.TinyRep) {
+    option (google.api.http) = {
+      patch: "/api/v1/user/resetPassword/{id}/{secret}"
+      body: "password"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["用户相关接口", "v1.0.0"]
+      summary : "重置密码"
+      description : "重置密码接口"
+    };
+    option (cuzproto.graphql_operation) = Mutation;
+  }
+
+  //获取用户信息
+  rpc GetUser (GetReq) returns (GetRep) {
+    option (google.api.http) = {
+      get: "/api/v1/user/{id}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["用户相关接口", "v1.0.0"]
+      summary : "获取用户信息"
+      description : "根据Id获取用户信息接口"
+    };
+    option (cuzproto.graphql_operation) = Query;
+  }
+
+  rpc ActionLogList (ActionLogListReq) returns (ActionLogListRep) {
+    option (google.api.http) = {
+      get: "/api/v1/userActionLog"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["用户相关接口", "v1.0.0"]
+      summary : "操作日志"
+      description : "操作日志接口"
+    };
+    option (cuzproto.graphql_operation) = Query;
+  }
 }
 
 service OauthService{
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {
-		description: "Oauth相关接口"
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {
+    description: "Oauth相关接口"
+  };
+  rpc OauthAuthorize (oauth.OauthReq) returns (response.HttpResponse) {
+    option (google.api.http) = {
+      get: "/oauth/authorize"
     };
-    rpc OauthAuthorize (oauth.OauthReq) returns (response.HttpResponse) {
-        option (google.api.http) = {
-                                get: "/oauth/authorize"
-                            };
-        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-                                        tags:["用户相关接口","v1.0.0","oauth"]
-                                        summary : "oauth验证"
-                                        description : "oauth验证"
-                                    };
-        option (cuzproto.graphql_operation) = Query;
-    }
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["用户相关接口", "v1.0.0", "oauth"]
+      summary : "oauth验证"
+      description : "oauth验证"
+    };
+    option (cuzproto.graphql_operation) = Query;
+  }
 
-    rpc OauthToken (oauth.OauthReq) returns (response.HttpResponse) {
-        option (google.api.http) = {
-                 post: "/oauth/access_token"
-                 body: "*"
-                                   };
-        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-                tags:["用户相关接口","v1.0.0","oauth"]
-                summary : "签发token"
-                description : "签发token"
-                };
-        option (cuzproto.graphql_operation) = Query;
-    }
+  rpc OauthToken (oauth.OauthReq) returns (response.HttpResponse) {
+    option (google.api.http) = {
+      post: "/oauth/access_token"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["用户相关接口", "v1.0.0", "oauth"]
+      summary : "签发token"
+      description : "签发token"
+    };
+    option (cuzproto.graphql_operation) = Query;
+  }
 }
 
 message SingUpVerifyReq {
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
-        json_schema: {
-                title: "注册验证请求"  //和message前注释一样的效果
-		    }
-        //example: '{ "mail": "123@qq.com", "phone": "12345678901"}'
-    };
-    //邮箱
-    string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" annotation:"邮箱"'}];
-    //手机号
-    string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" annotation:"手机号"'}];
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
+    json_schema: {
+      title: "注册验证请求"  //和message前注释一样的效果
+    }
+    example: {
+      value: '{ "mail": "123@qq.com", "phone": "12345678901"}'
+    }
+  };
+  //邮箱
+  string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" annotation:"邮箱"'}];
+  //手机号
+  string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" annotation:"手机号"'}];
 }
 
 message SignupReq {
-    //密码
-    string password = 4 [(go.field) = {tags:'validate:"required,gte=6,lte=15" annotation:"密码"'}, (validator.field) = {
-            length_gt: 5
-            human_error: "密码最短6位"
-        }, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {title: "密码"
-                        min_length: 6}];
-    //邮箱
-    string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" annotation:"邮箱"'}];
-    //手机号
-    string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" annotation:"手机号"'}];
-    //验证码
-    string vCode = 8 [(go.field) = {tags:'validate:"required,numeric" annotation:"验证码"'}];
+  //密码
+  string password = 4 [(go.field) = {tags:'validate:"required,gte=6,lte=15" annotation:"密码"'}, (validator.field) = {
+    length_gt: 5
+    human_error: "密码最短6位"
+  }, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {title: "密码"
+    min_length: 6}];
+  //邮箱
+  string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" annotation:"邮箱"'}];
+  //手机号
+  string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" annotation:"手机号"'}];
+  //验证码
+  string vCode = 8 [(go.field) = {tags:'validate:"required,numeric" annotation:"验证码"'}];
 }
 
 message SignupRep {
-    uint32 code = 1 [(go.field) = {json_tag: "code"}];
-    string message = 2;
-    User details = 3;
+  uint32 code = 1 [(go.field) = {json_tag: "code"}];
+  string message = 2;
+  User details = 3;
 }
 
 message ActiveReq {
-    uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"ID"
     type: INTEGER}];
-    string secret = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  string secret = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"密钥"}];
 }
 
 message GetReq {
-    uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"ID"
     type: INTEGER}];
 }
 
 message GetRep {
-    uint32 code = 1[(go.field) = {json_tag: "code"}];
-    string message =2;
-    User details = 3;
+  uint32 code = 1[(go.field) = {json_tag: "code"}];
+  string message = 2;
+  User details = 3;
 }
 
 message EditReq {
-    uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"ID"
     type: INTEGER}];
-    EditDetails details = 2;
-    message EditDetails {
-        string name = 2 [(go.field) = {tags:'gorm:"type:varchar(10);not null" validate:"required,gte=3,lte=10" annotation:"名字"'}];
-        string password = 5 [(go.field) = {tags:'gorm:"type:varchar(32);not null" validate:"gte=8,lte=15" annotation:"密码"'}];
-        string mail = 6 [(go.field) = {tags:'gorm:"type:varchar(16);default:\'\'" validate:"email" annotation:"邮箱"'}];
-        string phone = 7 [(go.field) = {tags:'gorm:"type:varchar(32);default:\'\'" validate:"phone" annotation:"手机号"'}];
-        //性别，0未填写，1男，2女
-        Gender gender = 8 [(go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-           type:INTEGER
+  EditDetails details = 2;
+  message EditDetails {
+    string name = 2 [(go.field) = {tags:'gorm:"type:varchar(10);not null" validate:"required,gte=3,lte=10" annotation:"名字"'}];
+    string password = 5 [(go.field) = {tags:'gorm:"type:varchar(32);not null" validate:"gte=8,lte=15" annotation:"密码"'}];
+    string mail = 6 [(go.field) = {tags:'gorm:"type:varchar(16);default:\'\'" validate:"email" annotation:"邮箱"'}];
+    string phone = 7 [(go.field) = {tags:'gorm:"type:varchar(32);default:\'\'" validate:"phone" annotation:"手机号"'}];
+    //性别，0未填写，1男，2女
+    Gender gender = 8 [(go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      type:INTEGER
     }];
-        string birthday = 9 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0"'}];
-        string address = 14 [(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
-        string introduction = 10 [(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
-        string signature = 11 [(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
-        string avatarURL = 12 [(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
-        string coverURL = 13 [(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
-        repeated Resume eduExps = 15;
-        repeated Resume workExps = 16;
-    }
+    string birthday = 9 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0"'}];
+    string address = 14 [(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
+    string introduction = 10 [(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
+    string signature = 11 [(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
+    string avatarURL = 12 [(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
+    string coverURL = 13 [(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
+    repeated Resume eduExps = 15;
+    repeated Resume workExps = 16;
+  }
 }
 
 message LoginReq {
-    string input = 1;
-    string password = 2 [(validator.field) = {
-            length_gt: 6
-            human_error: "密码错误"
-        }];
-    string luosimao = 3;
+  string input = 1;
+  string password = 2 [(validator.field) = {
+    length_gt: 6
+    human_error: "密码错误"
+  }];
+  string luosimao = 3;
 }
 
 message LoginRep {
-    uint32 code = 1;
-    string message = 2;
-    LoginDetails details = 3;
-    message LoginDetails{
-        UserBaseInfo user = 1;
-        string token = 2;
-    }
-    string cookie = 4;
+  uint32 code = 1;
+  string message = 2;
+  LoginDetails details = 3;
+  message LoginDetails{
+    UserBaseInfo user = 1;
+    string token = 2;
+  }
+  string cookie = 4;
 }
 
 //特殊，设置cookie用
 message LogoutRep {
-    uint32 code = 1 [(go.field) = {json_tag: "code"}];
-    string message = 2;
-    string cookie = 3;
+  uint32 code = 1 [(go.field) = {json_tag: "code"}];
+  string message = 2;
+  string cookie = 3;
 }
 
 message ResetPasswordReq {
-    uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"ID"
     type: INTEGER}];
-    string secret = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  string secret = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"密钥"}];
-    string password = 3 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  string password = 3 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"密码"}];
 }
 
 message ActionLogListReq {
-    string startTime = 1;
-    string endTime = 2;
+  string startTime = 1;
+  string endTime = 2;
 }
 
 message ActionLogListRep {
-    uint32 code = 1[(go.field) = {json_tag: "code"}];
-    string message = 2;
-    repeated UserActionLog details =3;
+  uint32 code = 1[(go.field) = {json_tag: "code"}];
+  string message = 2;
+  repeated UserActionLog details = 3;
 }
