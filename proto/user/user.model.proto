@@ -72,7 +72,7 @@ message UserFollowLog {
 message UserScoreLog {
     uint64 id = 1 [(go.field) = {tags:'gorm:"primary_key"'}];
     uint64 userId = 2 [(go.field) = {tags:'gorm:"index"'}];
-    sint64 score = 3 [(go.field) = {json_tag: "score", tags: 'gorm:""'}];
+    sint64 score = 3 [(go.field) = {tags: 'json:"score" gorm:""'}];
     string reason = 5 [(go.field) = {tags:'gorm:"type:varchar(255)"'}];
     string createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
     string remark = 7 [(go.field) = {tags:'gorm:"type:varchar(255)"'}];
