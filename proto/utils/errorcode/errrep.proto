@@ -10,6 +10,6 @@ option go_package = "github.com/liov/hoper/go/v2/utils/errorcode";
 
 
 message ErrRep {
-    ErrCode code = 1 [(go.field) = {json_tag:"code"}];
+    ErrCode code = 1 [(go.field) = {tags:'json:"code"'}];
     string message = 2;
 }

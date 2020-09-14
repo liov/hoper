@@ -267,7 +267,7 @@ message SignupReq {
 }
 
 message SignupRep {
-  uint32 code = 1 [(go.field) = {json_tag: "code"}];
+  uint32 code = 1 [(go.field) = {tags:'json:"code"'}];
   string message = 2;
   User details = 3;
 }
@@ -287,7 +287,7 @@ message GetReq {
 }
 
 message GetRep {
-  uint32 code = 1[(go.field) = {json_tag: "code"}];
+  uint32 code = 1[(go.field) = {tags:'json:"code"'}];
   string message = 2;
   User details = 3;
 }
@@ -339,7 +339,7 @@ message LoginRep {
 
 //特殊，设置cookie用
 message LogoutRep {
-  uint32 code = 1 [(go.field) = {json_tag: "code"}];
+  uint32 code = 1 [(go.field) = {tags:'json:"code"'}];
   string message = 2;
   string cookie = 3;
 }
@@ -360,7 +360,7 @@ message ActionLogListReq {
 }
 
 message ActionLogListRep {
-  uint32 code = 1[(go.field) = {json_tag: "code"}];
+  uint32 code = 1[(go.field) = {tags:'json:"code"'}];
   string message = 2;
   repeated UserActionLog details = 3;
 }
