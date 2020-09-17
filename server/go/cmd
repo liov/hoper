@@ -50,3 +50,5 @@ go env -w GO111MODULE=on
 github.com/tidwall/gjson
 github.com/gorilla/handlers
 github.com/gorilla/mux
+
+protoc -I. -IE:\protopatch2 -IE:\gopath\pkg\mod\google.golang.org\protobuf@v1.25.0 --go-patch_out=plugin=go,paths=source_relative:. --go-patch_out=plugin=go-grpc,paths=source_relative:. struct_tags.proto

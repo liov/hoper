@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	"github.com/liov/hoper/go/v2/utils/encoding/protobuf/jsonpb"
 	"github.com/liov/hoper/go/v2/utils/net/http/auth"

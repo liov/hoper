@@ -18,6 +18,7 @@ extend google.protobuf.EnumOptions {
     //是errorcode
     optional bool enum_errorcode = 62029;
     optional bool enum_gqlgen = 62030;
+    optional bool enum_prefix = 62031;
 }
 
 extend google.protobuf.EnumValueOptions {
@@ -26,4 +27,5 @@ extend google.protobuf.EnumValueOptions {
 
 extend google.protobuf.FileOptions {
     optional bool enum_gqlgen_all = 1001;
+    optional bool enum_prefix_all = 1002;
 }

@@ -79,7 +79,7 @@ func (*UserDao) SaveResumes(db *gorm.DB, userId uint64, resumes []*model.Resume,
 	var actionLog model.UserActionLog
 	actionLog.CreatedAt = time.Now().Format(time.RFC3339Nano)
 	actionLog.UserId = userId
-	actionLog.UserDeviceInfo = device
+	actionLog.Device = device
 	actionLog.Action = model.Action_EditResume
 	tableName := db.NewScope(&model.Resume{}).TableName() + "."
 

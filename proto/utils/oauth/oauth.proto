@@ -17,6 +17,7 @@ message OauthReq{
     string refreshToken =13;
     string grantType = 14;
     string accessType = 15;
+    string loginURI = 16;
 }
 
 message Client{

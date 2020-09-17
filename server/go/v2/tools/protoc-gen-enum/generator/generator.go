@@ -349,7 +349,7 @@ func (d *FileDescriptor) goFileName(pathType pathType) string {
 	if ext := path.Ext(name); ext == ".proto" || ext == ".protodevel" {
 		name = name[:len(name)-len(ext)]
 	}
-	name += ".pb.go"
+	name += ".ext.pb.go"
 
 	if pathType == pathTypeSourceRelative {
 		return name
@@ -1391,82 +1391,104 @@ func (g *Generator) generateEnum(enum *EnumDescriptor) {
 	ccTypeName := CamelCaseSlice(typeName)
 	ccPrefix := enum.prefix()
 
-	deprecatedEnum := ""
-	if enum.GetOptions().GetDeprecated() {
-		deprecatedEnum = deprecationComment
-	}
-
-	if !gogoproto.EnabledGoEnumPrefix(enum.file.FileDescriptorProto, enum.EnumDescriptorProto) {
+	if !EnabledGoEnumPrefix(enum.file.FileDescriptorProto, enum.EnumDescriptorProto) {
 		ccPrefix = ""
 	}
-	typ := " uint32"
-	if IsEnumType(enum.EnumDescriptorProto) {
-		typ = " " + GetEnumType(enum.EnumDescriptorProto)
-	}
-
-	if gogoproto.HasEnumDecl(enum.file.FileDescriptorProto, enum.EnumDescriptorProto) {
-		g.P("type ", Annotate(enum.file, enum.path, ccTypeName), typ, deprecatedEnum)
-		g.file.addExport(enum, enumSymbol{ccTypeName, enum.proto3()})
-		g.P("const (")
-		g.In()
-		for i, e := range enum.Value {
-			etorPath := fmt.Sprintf("%s,%d,%d", enum.path, enumValuePath, i)
-			g.PrintComments(etorPath)
-
-			deprecatedValue := ""
-			if e.GetOptions().GetDeprecated() {
-				deprecatedValue = deprecationComment
-			}
-			name := *e.Name
-			if gogoproto.IsEnumValueCustomName(e) {
-				name = gogoproto.GetEnumValueCustomName(e)
-			}
-			name = ccPrefix + name
-			if EnabledEnumNumOrder(enum.file.FileDescriptorProto, enum.EnumDescriptorProto) {
-				if i == 0 {
-					g.P(Annotate(enum.file, etorPath, name), " ", ccTypeName, " = iota ", deprecatedValue)
-				} else {
-					g.P(Annotate(enum.file, etorPath, name), " ", deprecatedValue)
-				}
-			} else {
-				g.P(Annotate(enum.file, etorPath, name), " ", ccTypeName, " = ", e.Number, " ", deprecatedValue)
-			}
-
-			g.file.addExport(enum, constOrVarSymbol{name, "const", ccTypeName})
+	/*
+		deprecatedEnum := ""
+		if enum.GetOptions().GetDeprecated() {
+			deprecatedEnum = deprecationComment
 		}
-		g.Out()
-		g.P(")")
-	}
-	g.P()
-	if len(enum.Value) > 64 {
-		if EnabledEnumNumOrder(enum.file.FileDescriptorProto, enum.EnumDescriptorProto) {
-			g.P("var ", ccTypeName, "_name = ["+strconv.Itoa(len(enum.Value))+"]string{")
+
+		typ := " uint32"
+		if IsEnumType(enum.EnumDescriptorProto) {
+			typ = " " + GetEnumType(enum.EnumDescriptorProto)
+		}
+
+		if gogoproto.HasEnumDecl(enum.file.FileDescriptorProto, enum.EnumDescriptorProto) {
+			g.P("type ", Annotate(enum.file, enum.path, ccTypeName), typ, deprecatedEnum)
+			g.file.addExport(enum, enumSymbol{ccTypeName, enum.proto3()})
+			g.P("const (")
 			g.In()
-			generated := make(map[int32]bool) // avoid duplicate values
-			for _, e := range enum.Value {
-				duplicate := ""
-				if _, present := generated[*e.Number]; present {
-					duplicate = "// Duplicate value: "
+			for i, e := range enum.Value {
+				etorPath := fmt.Sprintf("%s,%d,%d", enum.path, enumValuePath, i)
+				g.PrintComments(etorPath)
+
+				deprecatedValue := ""
+				if e.GetOptions().GetDeprecated() {
+					deprecatedValue = deprecationComment
 				}
 				name := *e.Name
-				if IsEnumValueCN(e) {
-					name = GetEnumValueCN(e)
+				if gogoproto.IsEnumValueCustomName(e) {
+					name = gogoproto.GetEnumValueCustomName(e)
 				}
-				g.P(duplicate, strconv.Quote(name), ",")
-				generated[*e.Number] = true
+				name = ccPrefix + name
+				if EnabledEnumNumOrder(enum.file.FileDescriptorProto, enum.EnumDescriptorProto) {
+					if i == 0 {
+						g.P(Annotate(enum.file, etorPath, name), " ", ccTypeName, " = iota ", deprecatedValue)
+					} else {
+						g.P(Annotate(enum.file, etorPath, name), " ", deprecatedValue)
+					}
+				} else {
+					g.P(Annotate(enum.file, etorPath, name), " ", ccTypeName, " = ", e.Number, " ", deprecatedValue)
+				}
+
+				g.file.addExport(enum, constOrVarSymbol{name, "const", ccTypeName})
 			}
 			g.Out()
-			g.P("}")
-			g.P()
-		} else {
-			g.P("var ", ccTypeName, "_name = map["+ccTypeName+"]string{")
-			g.In()
-			generated := make(map[int32]bool) // avoid duplicate values
-			for i, e := range enum.Value {
-				duplicate := ""
-				if _, present := generated[*e.Number]; present {
-					duplicate = "// Duplicate value: "
+			g.P(")")
+		}
+		g.P()
+		if len(enum.Value) > 64 {
+			if EnabledEnumNumOrder(enum.file.FileDescriptorProto, enum.EnumDescriptorProto) {
+				g.P("var ", ccTypeName, "_name = ["+strconv.Itoa(len(enum.Value))+"]string{")
+				g.In()
+				generated := make(map[int32]bool) // avoid duplicate values
+				for _, e := range enum.Value {
+					duplicate := ""
+					if _, present := generated[*e.Number]; present {
+						duplicate = "// Duplicate value: "
+					}
+					name := *e.Name
+					if IsEnumValueCN(e) {
+						name = GetEnumValueCN(e)
+					}
+					g.P(duplicate, strconv.Quote(name), ",")
+					generated[*e.Number] = true
 				}
+				g.Out()
+				g.P("}")
+				g.P()
+			} else {
+				g.P("var ", ccTypeName, "_name = map["+ccTypeName+"]string{")
+				g.In()
+				generated := make(map[int32]bool) // avoid duplicate values
+				for i, e := range enum.Value {
+					duplicate := ""
+					if _, present := generated[*e.Number]; present {
+						duplicate = "// Duplicate value: "
+					}
+					name := *e.Name
+					etorPath := fmt.Sprintf("%s,%d,%d", enum.path, enumValuePath, i)
+					g.PrintComments(etorPath)
+					name = ccPrefix + name
+					key := Annotate(enum.file, etorPath, name)
+					if IsEnumValueCN(e) {
+						name = GetEnumValueCN(e)
+					}
+					g.P(duplicate, key, ": ", strconv.Quote(name), ",")
+					generated[*e.Number] = true
+				}
+				g.Out()
+				g.P("}")
+				g.P()
+			}
+		}
+
+		if EnabledGoEnumValueMap(enum.file.FileDescriptorProto, enum.EnumDescriptorProto) {
+			g.P("var ", ccTypeName, "_value = map[string]"+ccTypeName+"{")
+			g.In()
+			for i, e := range enum.Value {
 				name := *e.Name
 				etorPath := fmt.Sprintf("%s,%d,%d", enum.path, enumValuePath, i)
 				g.PrintComments(etorPath)
@@ -1475,45 +1497,24 @@ func (g *Generator) generateEnum(enum *EnumDescriptor) {
 				if IsEnumValueCN(e) {
 					name = GetEnumValueCN(e)
 				}
-				g.P(duplicate, key, ": ", strconv.Quote(name), ",")
-				generated[*e.Number] = true
+				g.P(strconv.Quote(name), ": ", key, ",")
 			}
 			g.Out()
 			g.P("}")
 			g.P()
 		}
-	}
 
-	if EnabledGoEnumValueMap(enum.file.FileDescriptorProto, enum.EnumDescriptorProto) {
-		g.P("var ", ccTypeName, "_value = map[string]"+ccTypeName+"{")
-		g.In()
-		for i, e := range enum.Value {
-			name := *e.Name
-			etorPath := fmt.Sprintf("%s,%d,%d", enum.path, enumValuePath, i)
-			g.PrintComments(etorPath)
-			name = ccPrefix + name
-			key := Annotate(enum.file, etorPath, name)
-			if IsEnumValueCN(e) {
-				name = GetEnumValueCN(e)
-			}
-			g.P(strconv.Quote(name), ": ", key, ",")
+		if !enum.proto3() {
+			g.P("func (x ", ccTypeName, ") Enum() *", ccTypeName, " {")
+			g.In()
+			g.P("p := new(", ccTypeName, ")")
+			g.P("*p = x")
+			g.P("return p")
+			g.Out()
+			g.P("}")
+			g.P()
 		}
-		g.Out()
-		g.P("}")
-		g.P()
-	}
-
-	if !enum.proto3() {
-		g.P("func (x ", ccTypeName, ") Enum() *", ccTypeName, " {")
-		g.In()
-		g.P("p := new(", ccTypeName, ")")
-		g.P("*p = x")
-		g.P("return p")
-		g.Out()
-		g.P("}")
-		g.P()
-	}
-
+	*/
 	if gogoproto.IsGoEnumStringer(g.file.FileDescriptorProto, enum.EnumDescriptorProto) {
 		g.P("func (x ", ccTypeName, ") String() string {")
 		g.In()

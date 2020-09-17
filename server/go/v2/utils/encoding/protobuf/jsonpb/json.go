@@ -4,7 +4,7 @@ import (
 	"io"
 
 	"github.com/gogo/protobuf/jsonpb"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/liov/hoper/go/v2/protobuf/utils/response"
 )
@@ -13,7 +13,7 @@ type JSONPb struct {
 	jsoniter.API
 }
 
-func (*JSONPb) ContentType() string {
+func (*JSONPb) ContentType(v interface{}) string {
 	return "application/json"
 }
 
@@ -46,5 +46,5 @@ func (j *JSONPb) ContentTypeFromMessage(v interface{}) string {
 	if httpBody, ok := v.(*response.HttpResponse); ok {
 		return httpBody.GetContentType()
 	}
-	return j.ContentType()
+	return j.ContentType(v)
 }

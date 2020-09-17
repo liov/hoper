@@ -63,7 +63,7 @@ require (
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/golog v0.0.10
 	github.com/kataras/iris/v12 v12.1.8
-	github.com/liov/protopatch v0.0.0-20200911071140-b7b212d869a0
+	github.com/liov/protopatch2 v0.0.0-20200917092858-0c3cd79171e9
 	github.com/lni/dragonboat v2.1.7+incompatible
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/markbates/goth v1.63.0

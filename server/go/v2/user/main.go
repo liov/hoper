@@ -4,7 +4,7 @@ import (
 	"context"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/kataras/iris/v12"
 	context2 "github.com/kataras/iris/v12/context"
 	v2 "github.com/liov/hoper/go/v2/initialize/v2"

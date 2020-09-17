@@ -20,15 +20,6 @@ var (
 		5: "EditResume",
 		6: "DELETEResume",
 	}
-	Action_value = map[string]int32{
-		"Signup":       0,
-		"Active":       1,
-		"RestPassword": 2,
-		"EditPassword": 3,
-		"CreateResume": 4,
-		"EditResume":   5,
-		"DELETEResume": 6,
-	}
 )
 `
 
