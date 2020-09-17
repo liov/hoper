@@ -41,18 +41,18 @@ func NewServer(cfg *server.Config, manager oauth2.Manager) *Server {
 }
 
 func (s *Server) GetRedirectURI(req *oauth.OauthReq, data map[string]interface{}) (uri string, err error) {
-	u, err := url.Parse(req.RedirectUri)
+	u, err := url.Parse(req.RedirectURI)
 	if err != nil {
 		return
 	}
-	if req.LoginUri != "" {
-		u = &url.URL{Path: req.LoginUri}
+	if req.LoginURI != "" {
+		u = &url.URL{Path: req.LoginURI}
 	}
 	q := u.Query()
-	if req.LoginUri != "" {
-		q.Set("client_id", req.ClientId)
+	if req.LoginURI != "" {
+		q.Set("client_id", req.ClientID)
 		q.Set("access_type", req.AccessType)
-		q.Set("redirect_uri", req.RedirectUri)
+		q.Set("redirect_uri", req.RedirectURI)
 		q.Set("response_type", req.ResponseType)
 		q.Set("scope", req.Scope)
 	} else {
@@ -90,7 +90,7 @@ func (s *Server) CheckResponseType(rt oauth2.ResponseType) bool {
 }
 
 func (s *Server) ValidationAuthorizeRequest(req *oauth.OauthReq) error {
-	if req.ClientId == "" || req.RedirectUri == "" {
+	if req.ClientID == "" || req.RedirectURI == "" {
 		return errors.ErrInvalidRequest
 	}
 
@@ -112,7 +112,7 @@ func (s *Server) GetAuthorizeToken(req *oauth.OauthReq) (ti oauth2.TokenInfo, er
 			gt = oauth2.Implicit
 		}
 
-		allowed, verr := fn(req.ClientId, gt)
+		allowed, verr := fn(req.ClientID, gt)
 		if verr != nil {
 			err = verr
 			return
@@ -125,7 +125,7 @@ func (s *Server) GetAuthorizeToken(req *oauth.OauthReq) (ti oauth2.TokenInfo, er
 	// check the client allows the authorized scope
 	if fn := s.ClientScopeHandler; fn != nil {
 
-		allowed, verr := fn(req.ClientId, req.Scope)
+		allowed, verr := fn(req.ClientID, req.Scope)
 		if verr != nil {
 			err = verr
 			return
@@ -136,9 +136,9 @@ func (s *Server) GetAuthorizeToken(req *oauth.OauthReq) (ti oauth2.TokenInfo, er
 	}
 
 	tgr := &oauth2.TokenGenerateRequest{
-		ClientID:       req.ClientId,
-		UserID:         req.UserId,
-		RedirectURI:    req.RedirectUri,
+		ClientID:       req.ClientID,
+		UserID:         req.UserID,
+		RedirectURI:    req.RedirectURI,
 		Scope:          req.Scope,
 		AccessTokenExp: time.Duration(req.AccessTokenExp),
 		Request:        nil,
@@ -160,7 +160,7 @@ func (s *Server) redirect(req *oauth.OauthReq, data map[string]interface{}) *res
 		w.Body = []byte(err.Error())
 		return w
 	}
-	if req.LoginUri != "" {
+	if req.LoginURI != "" {
 		w.Body = []byte("未登录")
 	}
 	w.Header["Location"] = uri
@@ -175,12 +175,12 @@ func (s *Server) HandleAuthorizeRequest(req *oauth.OauthReq, token string) (w *r
 	}
 
 	// user authorization
-	req.UserId, err = s.UserAuthorizationHandler(token)
+	req.UserID, err = s.UserAuthorizationHandler(token)
 
-	if err != nil || req.UserId == "" {
+	if err != nil || req.UserID == "" {
 		return s.redirect(req, nil)
 	}
-	req.LoginUri = ""
+	req.LoginURI = ""
 	// specify the expiration time of access token
 
 	ti, verr := s.GetAuthorizeToken(req)
@@ -283,14 +283,14 @@ func (s *Server) ValidationTokenRequest(r *oauth.OauthReq) (*oauth2.TokenGenerat
 	}
 
 	tgr := &oauth2.TokenGenerateRequest{
-		ClientID:     r.ClientId,
+		ClientID:     r.ClientID,
 		ClientSecret: r.ClientSecret,
 		Request:      nil,
 	}
 
 	switch oauth2.GrantType(r.GrantType) {
 	case oauth2.AuthorizationCode:
-		tgr.RedirectURI = r.RedirectUri
+		tgr.RedirectURI = r.RedirectURI
 		tgr.Code = r.Code
 		if tgr.RedirectURI == "" ||
 			tgr.Code == "" {

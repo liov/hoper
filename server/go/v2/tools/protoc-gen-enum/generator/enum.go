@@ -96,3 +96,7 @@ func EnabledFileEnumGqlGen(file *descriptor.FileDescriptorProto) bool {
 func TurnOffFileEnumGqlGen(file *descriptor.FileDescriptorProto) {
 	vanity.SetBoolFileOption(cuzproto.E_EnumGqlgenAll, false)(file)
 }
+
+func EnabledGoEnumPrefix(file *descriptor.FileDescriptorProto, enum *descriptor.EnumDescriptorProto) bool {
+	return proto.GetBoolExtension(enum.Options, cuzproto.E_EnumPrefix, proto.GetBoolExtension(file.Options, cuzproto.E_EnumPrefixAll, true))
+}

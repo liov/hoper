@@ -74,7 +74,7 @@ func (u *OauthService) OauthAuthorize(ctx context.Context, req *goauth.OauthReq)
 	tokens := md.Get("auth")
 	tokens = append(tokens, "")
 	req.AccessTokenExp = int64(24 * time.Hour)
-	req.LoginUri = "/oauth/login"
+	req.LoginURI = "/oauth/login"
 	res := u.Server.HandleAuthorizeRequest(req, tokens[0])
 	return res, nil
 }

@@ -32,7 +32,7 @@ var gengql = true
 var files = map[string][]string{
 	"/utils/empty/*.proto":          {goOut, grpcOut},
 	"/utils/errorcode/errrep.proto": {goOut, grpcOut},
-	"/utils/errorcode/*enum.proto":  {enumOut},
+	"/utils/errorcode/*enum.proto":  {enumOut, goOut, grpcOut},
 	"/utils/actor/message/*.proto":  {goOut, grpcOut},
 	"/utils/response/*.proto":       {goOut, grpcOut},
 	"/utils/oauth/*.proto":          {goOut, grpcOut},
@@ -46,7 +46,7 @@ var files = map[string][]string{
 		//"gqlgencfg_out=paths=source_relative",
 		"graphql_out=paths=source_relative"},
 	"/user/*model.proto": {goOut, grpcOut},
-	"/user/*enum.proto":  {goOut, grpcOut},
+	"/user/*enum.proto":  {enumOut, goOut, grpcOut},
 	"/note/*service.proto": {goOut, grpcOut,
 		gatewayOut,
 		openapiv2Out,
@@ -61,7 +61,7 @@ func run() {
 	*proto = pwd + "/" + *proto
 	goList := `go list -m -f {{.Dir}} `
 	gateway, _ := cmd.CMD(goList + "github.com/grpc-ecosystem/grpc-gateway/v2")
-	protopatch, _ := cmd.CMD(goList + "github.com/liov/protopatch")
+	protopatch, _ := cmd.CMD(goList + "github.com/liov/protopatch2")
 	protobuf, _ := cmd.CMD(goList + "google.golang.org/protobuf")
 	//gogoProtoOut, _ := cmd.CMD(goList + "github.com/gogo/protobuf")
 	path := os.Getenv("GOPATH")

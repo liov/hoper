@@ -1,6 +1,7 @@
 syntax = "proto3";
 package user;
 import "utils/proto/gogo/enum.proto";
+import "patch/go.proto";
 
 option (cuzproto.enum_gqlgen_all) = true;
 //写在这里必然要暴露出去
@@ -9,8 +10,7 @@ option go_package = "github.com/liov/hoper/go/v2/protobuf/user";
 
 //用户操作
 enum Action {
-    option (cuzproto.enum_genvaluemap) = true;
-    option (cuzproto.enum_numorder) = true;
+    option (go.enum) = {stringer_name: 'OrigString'};
     Signup = 0 [(cuzproto.enumvalue_cn)= "注册"];
     Active = 1 [(cuzproto.enumvalue_cn)= "激活"];
     RestPassword = 2 [(cuzproto.enumvalue_cn)= "重置密码"];
@@ -21,7 +21,7 @@ enum Action {
 }
 //用户角色
 enum Role {
-    option (cuzproto.enum_numorder) = true;
+    option (go.enum) = {stringer_name: 'OrigString'};
     UserRoleNormal = 0 [(cuzproto.enumvalue_cn)= "普通用户"];
     UserRoleAdmin = 1 [(cuzproto.enumvalue_cn)= "管理员"];
     UserRoleSuperAdmin = 2 [(cuzproto.enumvalue_cn)= "超级管理员"];
@@ -29,8 +29,7 @@ enum Role {
 
 //用户性别
 enum Gender{
-    option (cuzproto.enum_numorder) = true;
-    option (cuzproto.enum_customtype) = "uint8";
+    option (go.enum) = {stringer_name: 'OrigString'};
     GenderUnfilled = 0 [(cuzproto.enumvalue_cn)= "未填"];
     GenderMale = 1 [(cuzproto.enumvalue_cn)= "男"];
     GenderFemale = 2 [(cuzproto.enumvalue_cn)= "女"];
@@ -38,8 +37,7 @@ enum Gender{
 
 //用户角色
 enum UserStatus {
-    option (cuzproto.enum_numorder) = true;
-    option (cuzproto.enum_customtype) = "uint8";
+    option (go.enum) = {stringer_name: 'OrigString'};
     option (cuzproto.enum_jsonmarshal) = false;
     InActive = 0 [(cuzproto.enumvalue_cn)= "未激活"];
     Activated = 1 [(cuzproto.enumvalue_cn)= "已激活"];
@@ -48,14 +46,14 @@ enum UserStatus {
 
 //封禁类型
 enum BannedType{
-    option (cuzproto.enum_numorder) = true;
-    option (cuzproto.enum_customtype) = "uint8";
+    option (go.enum) = {stringer_name: 'OrigString'};
     option (cuzproto.enum_jsonmarshal) = false;
     Post = 0 [(cuzproto.enumvalue_cn)= "禁言"];
     Login = 1 [(cuzproto.enumvalue_cn)= "禁止登录"];
 }
 
 enum UserErr {
+    option (go.enum) = {stringer_name: 'OrigString'};
     option (cuzproto.enum_errorcode) = true;
     option (cuzproto.enum_jsonmarshal) = false;
     UserErrZero = 0 [(cuzproto.enumvalue_cn)= ""];
