@@ -6,11 +6,11 @@ package user
 //var test []array.CmpKey
 //test = append(test,resumes[0]) 可行
 //test = append(test,resumes...) 不可行，可笑
-func (m *Resume) CmpKey() uint64 {
-	return m.Id
+func (x *Resume) CmpKey() uint64 {
+	return x.Id
 }
 
-var UserService_serviceDesc = &_UserService_serviceDesc
+var UserserviceServicedesc = &_UserService_serviceDesc
 
 /*
 func RegisterUserServiceHandlerFromModuleWithReConnect(ctx context.Context, mux *runtime.ServeMux, getEndPort func() string, opts []grpc.DialOption) (err error) {
@@ -24,3 +24,36 @@ func RegisterUserServiceHandlerFromModuleWithReConnect(ctx context.Context, mux 
 	return RegisterUserServiceHandlerClient(ctx, mux, client)
 }
 */
+
+/*----------------------------ORM-------------------------------*/
+func (x *User) TableName() string {
+	if x.Id < 1_000_000 {
+		return "user"
+	}
+	return "user_" + string(byte(x.Id/1_000_000+49))
+}
+
+func (x *UserMainInfo) TableName() string {
+	if x.Id < 1_000_000 {
+		return "user"
+	}
+	return "user_" + string(byte(x.Id/1_000_000+49))
+}
+
+func (x *UserBaseInfo) TableName() string {
+	if x.Id < 1_000_000 {
+		return "user"
+	}
+	return "user_" + string(byte(x.Id/1_000_000+49))
+}
+
+func (x *UserAuthInfo) TableName() string {
+	if x.Id < 1_000_000 {
+		return "user"
+	}
+	return "user_" + string(byte(x.Id/1_000_000+49))
+}
+
+func (x *Resume) TableName() string {
+	return "resume"
+}

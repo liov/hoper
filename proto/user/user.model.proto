@@ -100,7 +100,7 @@ message UserActionLog {
     string createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
     string remark = 7 [(go.field) = {tags:'gorm:"type:varchar(255)"'}];
     //设备
-    UserDeviceInfo device = 8 ;
+    UserDeviceInfo device = 8 [(go.field) = {tags:'gorm:"embedded"'}];
 
 }
 

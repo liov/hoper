@@ -3,7 +3,7 @@ package jsonpb
 import (
 	"io"
 
-	"github.com/gogo/protobuf/jsonpb"
+	"github.com/golang/protobuf/jsonpb"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/liov/hoper/go/v2/protobuf/utils/response"

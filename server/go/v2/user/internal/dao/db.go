@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/jinzhu/gorm"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/slices"
+	"gorm.io/gorm"
 )
 
 type UserDao struct{}
@@ -22,7 +22,7 @@ func DBNotNil(db **gorm.DB) {
 func (*UserDao) ExitByEmailORPhone(db *gorm.DB, mail, phone string) (bool, error) {
 	DBNotNil(&db)
 	var err error
-	var count int
+	var count int64
 	if mail != "" {
 		err = db.Table("user").Where(`mail = ?`, mail).Count(&count).Error
 	} else {
@@ -75,13 +75,16 @@ func (*UserDao) GetByPrimaryKey(db *gorm.DB, id uint64) (*model.User, error) {
 
 func (*UserDao) SaveResumes(db *gorm.DB, userId uint64, resumes []*model.Resume, originalIds []uint64, device *model.UserDeviceInfo) error {
 	DBNotNil(&db)
+	if len(resumes) == 0 {
+		return nil
+	}
 	var err error
 	var actionLog model.UserActionLog
 	actionLog.CreatedAt = time.Now().Format(time.RFC3339Nano)
 	actionLog.UserId = userId
 	actionLog.Device = device
 	actionLog.Action = model.Action_EditResume
-	tableName := db.NewScope(&model.Resume{}).TableName() + "."
+	tableName := resumes[0].TableName() + "."
 
 	var editIds []uint64
 

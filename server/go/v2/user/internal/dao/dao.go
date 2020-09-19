@@ -7,7 +7,8 @@ import (
 	"github.com/bluele/gcache"
 	"github.com/etcd-io/bbolt"
 	"github.com/gomodule/redigo/redis"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
+
 	"github.com/liov/hoper/go/v2/tools/apollo"
 	"github.com/liov/hoper/go/v2/utils/dao/gormCallback"
 )
@@ -41,7 +42,8 @@ func (d *dao) Close() {
 		d.Redis.Close()
 	}
 	if d.GORMDB != nil {
-		d.GORMDB.Close()
+		rawDB, _ := d.GORMDB.DB()
+		rawDB.Close()
 	}
 	if d.Apollo != nil {
 		d.Apollo.Close()
@@ -62,5 +64,5 @@ func (d *dao) Custom() {
 	//db.Callback().Create().Replace("gorm:save_before_associations", saveBeforeAssociationsCallback)
 	//db.Callback().Create().Replace("gorm:save_after_associations", saveAfterAssociationsCallback)
 	db.Callback().Delete().Replace("gorm:delete", gormCallback.DeleteCallback)
-	d.StdDB = db.DB()
+	d.StdDB, _ = db.DB()
 }

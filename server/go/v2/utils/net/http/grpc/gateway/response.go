@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/liov/hoper/go/v2/protobuf/utils/response"
+	"google.golang.org/protobuf/proto"
 )
 
 func ResponseHook(ctx context.Context, writer http.ResponseWriter, message proto.Message) error {

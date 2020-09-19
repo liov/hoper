@@ -15,6 +15,10 @@ type Logger struct {
 	*zap.SugaredLogger
 }
 
+func (l *Logger) Printf(format string, args ...interface{}) {
+	l.Infof(format, args...)
+}
+
 func (l *Logger) Print(args ...interface{}) {
 	l.Info(args...)
 }
@@ -134,7 +138,7 @@ func Sync() {
 }
 
 func Print(v ...interface{}) {
-
+	Default.Print(v...)
 }
 
 func Debug(v ...interface{}) {
@@ -159,6 +163,10 @@ func Panic(v ...interface{}) {
 
 func Fatal(v ...interface{}) {
 	Default.Fatal(v...)
+}
+
+func Printf(format string, v ...interface{}) {
+	Default.Printf(format, v...)
 }
 
 func Debugf(format string, v ...interface{}) {

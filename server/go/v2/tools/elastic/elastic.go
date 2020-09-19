@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/kataras/golog"
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
+	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/olivere/elastic"
 )
 
@@ -30,7 +30,7 @@ type Employee struct {
 func init() {
 
 	var err error
-	client, err = elastic.NewClient(elastic.SetErrorLog(golog.Default), elastic.SetURL(host))
+	client, err = elastic.NewClient(elastic.SetErrorLog(log.GetLogger()), elastic.SetURL(host))
 	if err != nil {
 		panic(err)
 	}

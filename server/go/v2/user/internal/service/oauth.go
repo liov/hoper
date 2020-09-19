@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/liov/hoper/go/v2/protobuf/user"
 	goauth "github.com/liov/hoper/go/v2/protobuf/utils/oauth"
 	"github.com/liov/hoper/go/v2/protobuf/utils/response"
 	"github.com/liov/hoper/go/v2/user/internal/config"
@@ -67,6 +68,7 @@ func GetOauthService() *OauthService {
 type OauthService struct {
 	Server      *oauth.Server
 	ClientStore *oauth.ClientStore
+	user.UnimplementedOauthServiceServer
 }
 
 func (u *OauthService) OauthAuthorize(ctx context.Context, req *goauth.OauthReq) (*response.HttpResponse, error) {

@@ -60,12 +60,12 @@ func NewInitWithLoadConfig(conf initialize.Config, dao initialize.Dao) *Init {
 	tmpTyp := reflect.TypeOf(&tmpConfig)
 	for i := 0; i < typ.NumField(); i++ {
 		if typ.Field(i).Type == tmpTyp && strings.ToUpper(typ.Field(i).Name) == strings.ToUpper(init.Env) {
-			/*				tmpConfig = value.Field(i).Interface().(*nacos.Config)
-							//真·深度复制
-							data,_:=json.Marshal(tmpConfig)
-							if err:=json.Unmarshal(data,init.EnvConfig);err!=nil{
-								log.Fatal(err)
-							}*/
+			/*tmpConfig = value.Field(i).Interface().(*nacos.Config)
+			//真·深度复制
+			data,_:=json.Marshal(tmpConfig)
+			if err:=json.Unmarshal(data,init.EnvConfig);err!=nil{
+				log.Fatal(err)
+			}*/
 			//会被回收,也可能是被移动了？
 			tmpConfig = *value.Field(i).Interface().(*EnvConfig)
 			init.EnvConfig = &tmpConfig

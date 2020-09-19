@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/gogo/protobuf/jsonpb"
-	"github.com/gogo/protobuf/proto"
-	"github.com/liov/hoper/go/v2/utils/encoding/protobuf/any"
+	"github.com/golang/protobuf/jsonpb"
+	"google.golang.org/protobuf/proto"
 )
 
 func (m *RawReply) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
@@ -22,7 +21,7 @@ type GoReply struct {
 func (m *AnyReply) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
 	var err error
 	reply := GoReply{Code: m.Code, Message: m.Message}
-	reply.Details, err = any.ResolveAny(m.Details.TypeUrl)
+	reply.Details, err = m.Details.UnmarshalNew()
 	if err != nil {
 		return nil, err
 	}
