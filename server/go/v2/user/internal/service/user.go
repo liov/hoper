@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
-	"github.com/jinzhu/gorm"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
@@ -439,7 +438,7 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 	redisKey := modelconst.ResetTimeKey + strconv.FormatUint(req.Id, 10)
 	emailTime, err := redis.Int64(RedisConn.Do("GET", redisKey))
 	if err != nil {
-		log.Error(model.UserService_serviceDesc.ServiceName, "ResetPassword,redis.Int64", err)
+		log.Error(model.UserserviceServicedesc.ServiceName, "ResetPassword,redis.Int64", err)
 		return nil, errorcode.InvalidArgument.WithMessage("无效的链接")
 	}
 

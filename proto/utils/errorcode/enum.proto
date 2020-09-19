@@ -5,7 +5,6 @@ import "patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.errorcode";
 option go_package = "github.com/liov/hoper/go/v2/utils/errorcode";
-import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 option (cuzproto.enum_prefix_all) = false;
 
 enum ErrCode {

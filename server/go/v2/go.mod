@@ -11,7 +11,6 @@ require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/Shopify/sarama v1.24.0
 	github.com/ajg/form v1.5.1 // indirect
-	github.com/alta/protopatch v0.0.0-20200702232458-c2bd0c612764
 	github.com/biogo/store v0.0.0-20190426020002-884f370e325d // indirect
 	github.com/bluele/gcache v0.0.0-20190518031135-bc40bd653833
 	github.com/boombuler/barcode v1.0.0
@@ -33,8 +32,6 @@ require (
 	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.2.0
-	github.com/gogo/gateway v1.1.0 // indirect
-	github.com/gogo/googleapis v1.3.0 // indirect
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e
 	github.com/golang/mock v1.4.4
@@ -43,7 +40,6 @@ require (
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e // indirect
 	github.com/gorilla/handlers v1.4.2 // indirect
-	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/gorilla/schema v1.1.0
 	github.com/gorilla/sessions v1.2.0 // indirect
 	github.com/graph-gophers/graphql-go v0.0.0-20200309224638-dae41bde9ef9
@@ -57,16 +53,16 @@ require (
 	github.com/iris-contrib/httpexpect v0.0.0-20180314041918-ebe99fcebbce // indirect
 	github.com/iris-contrib/schema v0.0.1 // indirect
 	github.com/jinzhu/configor v1.1.1
-	github.com/jinzhu/gorm v1.9.12-0.20191206142228-79a77d771dee
+	github.com/jinzhu/gorm v1.9.16
 	github.com/json-iterator/go v1.1.9
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
-	github.com/kataras/golog v0.0.10
 	github.com/kataras/iris/v12 v12.1.8
 	github.com/liov/protopatch2 v0.0.0-20200917092858-0c3cd79171e9
 	github.com/lni/dragonboat v2.1.7+incompatible
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/markbates/goth v1.63.0
+	github.com/mattn/go-sqlite3 v2.0.1+incompatible // indirect
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/modern-go/reflect2 v1.0.1
 	github.com/moul/http2curl v1.0.0 // indirect
@@ -82,7 +78,7 @@ require (
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/smartystreets/assertions v0.0.0-20190116191733-b6c0e53d7304 // indirect
 	github.com/spf13/viper v1.6.1
-	github.com/stretchr/testify v1.4.0
+	github.com/stretchr/testify v1.5.1
 	github.com/tidwall/buntdb v1.1.2 // indirect
 	github.com/tidwall/gjson v1.3.5 // indirect
 	github.com/urfave/cli/v2 v2.2.0 // indirect
@@ -93,18 +89,21 @@ require (
 	github.com/yudai/gojsondiff v1.0.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
-	go.uber.org/atomic v1.4.0
+	go.uber.org/atomic v1.6.0
 	go.uber.org/zap v1.10.0
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	google.golang.org/genproto v0.0.0-20200808173500-a06252235341
 	google.golang.org/grpc v1.31.1
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v0.0.0-20200626030347-424195440776
-	google.golang.org/grpc/examples v0.0.0-20200910201057-6591123024b3 // indirect
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/oauth2.v3 v3.12.0
 	gopkg.in/yaml.v2 v2.2.5
 	gopkg.in/yaml.v3 v3.0.0-20191120175047-4206685974f2 // indirect
+	gorm.io/driver/mysql v1.0.1
+	gorm.io/driver/postgres v1.0.0
+	gorm.io/driver/sqlite v1.1.3
+	gorm.io/gorm v1.20.1
 )
 
 replace (

@@ -21,7 +21,7 @@ Charset= "UTF-8"
 EnableOptimizations= true
 
 [dev]
-Tenant = "e0119132-f523-4a84-bd42-7830235eb9cf"
+Tenant = "b5b476ab-774f-4637-a8bf-e915635b4b24"
 
 [test]
 Tenant = ""
