@@ -1,8 +1,8 @@
 # hoper
 
 ## 大杂烩式的项目
-
-### -awesome
+```
+    -awesome
             -algorithms_languages  总结的各个语言的语法，坑和黑魔法，当然关于go的最多
             -os_compilers_graphics 操作系统，命令相关
             -protocols_softs_tools 协议，常用的软件和工具的安装操作
@@ -20,6 +20,7 @@
             -rust rust的grpc模块
    -serverless serverless尝试
    -tools 平时写的小工具
+```
 ## 架构设想
 istio+k8s
 https://github.com/kubernetes/ingress-nginx 已经用openresty了，哈哈哈
