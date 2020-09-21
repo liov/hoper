@@ -1,8 +1,0 @@
-*.log
-log/
-
-*.xml
-*.iml
-*.idea
-
-*.DS_Store
