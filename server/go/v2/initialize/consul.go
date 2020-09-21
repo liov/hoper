@@ -16,13 +16,13 @@ func (init *Init) P0ConsulOnce() {
 	if exist := reflect3.GetFieldValue(init.conf, conf); !exist {
 		return
 	}
-	var runtime_viper = viper.New()
+	var runtimeViper = viper.New()
 
-	runtime_viper.AddRemoteProvider("consul", conf.Addr, InitKey)
-	runtime_viper.SetConfigType("toml") // because there is no file extension in a stream of bytes, supported extensions are "json", "toml", "yaml", "yml", "properties", "props", "prop", "Env", "dotenv"
+	runtimeViper.AddRemoteProvider("consul", conf.Addr, InitKey)
+	runtimeViper.SetConfigType("toml") // because there is no file extension in a stream of bytes, supported extensions are "json", "toml", "yaml", "yml", "properties", "props", "prop", "Env", "dotenv"
 
 	// read from remote Config the first time.
-	err := runtime_viper.ReadRemoteConfig()
+	err := runtimeViper.ReadRemoteConfig()
 	if err != nil {
 		log.Error(err)
 
@@ -30,7 +30,7 @@ func (init *Init) P0ConsulOnce() {
 	// unmarshal Config
 	cCopy := init.conf
 	//dCopy := init.dao
-	runtime_viper.Unmarshal(cCopy)
+	runtimeViper.Unmarshal(cCopy)
 	log.Debug(cCopy)
 	// open a goroutine to watch remote changes forever
 	//这段实现不够优雅

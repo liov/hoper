@@ -1,0 +1,8 @@
+.DS_Store
+*.dll
+*.dylib
+*.exe
+*.exe~
+*.out
+*.so
+*.test

@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+// clang-format off
+package tests.enum;
+// clang-format on
+
+import "patch/go.proto";
+
+option go_package = "github.com/liov/protopatch2/tests/enum";
+
+enum CustomStringerEnum {
+	option (go.enum) = {
+		stringer_name: 'OrigString'
+	};
+	CUSTOM_STRINGER_INVALID = 0;
+	CUSTOM_STRINGER_A = 1;
+	CUSTOM_STRINGER_B = 2;
+	CUSTOM_STRINGER_C = 3;
+}
+
+enum DefaultStringerEnum {
+	DEFAULT_STRINGER_UNSET = 0;
+	DEFAULT_STRINGER_EXAMPLE = 1;
+}
