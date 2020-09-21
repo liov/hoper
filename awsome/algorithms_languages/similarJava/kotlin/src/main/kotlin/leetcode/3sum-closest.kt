@@ -31,17 +31,13 @@ fun threeSumClosest(nums: IntArray, target: Int): Int {
     var right = nums.size - 1
     while (left < right) {
       sum = nums[i] + nums[left] + nums[right]
-        //可以优化的
+      //可以优化的
       if (kotlin.math.abs(target - ret) > kotlin.math.abs(target - sum)) ret = sum
-      if (sum > target) {
-        right--
-        continue
+      when {
+        sum > target -> right--
+        sum < target -> left++
+        sum == target -> return target
       }
-      if (sum < target) {
-        left++
-        continue
-      }
-      if (sum == target) return target
     }
   }
   return ret

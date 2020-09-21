@@ -4,17 +4,17 @@ import (
 	"bytes"
 	"flag"
 	"io/ioutil"
+	"log"
 	"os"
 	"path"
 	"regexp"
 	"strings"
-
-	"github.com/liov/hoper/go/v2/utils/log"
 )
 
 var in, out string
 
 func main() {
+	log.SetFlags(15)
 	flag.StringVar(&in, "in", "../../../proto", "go protobuf")
 	flag.StringVar(&out, "out", "../../../proto_std", "通用 protobuf")
 	flag.Parse()
@@ -28,7 +28,7 @@ func main() {
 func parse(src string) {
 	fileInfos, err := ioutil.ReadDir(src)
 	if err != nil {
-		log.Error(err)
+		log.Println(err)
 	}
 	for i := range fileInfos {
 		fileName := src + "/" + fileInfos[i].Name()
@@ -42,12 +42,12 @@ func parse(src string) {
 			if os.IsNotExist(err) {
 				err = os.Mkdir(newPath, os.ModePerm)
 				if err != nil {
-					log.Error(err)
+					log.Println(err)
 				}
 			}
 			parse(fileName)
 		} else {
-			log.Info(fileName)
+			log.Println(fileName)
 			replace(fileName)
 		}
 	}
@@ -60,7 +60,7 @@ func replace(src string) {
 		}
 		data, err := ioutil.ReadFile(src)
 		if err != nil {
-			log.Error(err)
+			log.Println(err)
 		}
 		newFilePath := strings.Replace(src, in, out, 1)
 		reg := regexp.MustCompile(`import \"github.*\n`)
@@ -81,7 +81,7 @@ func replace(src string) {
 		data = bytes.ReplaceAll(data, []byte(".imp.proto"), []byte(".gen.proto"))
 		err = ioutil.WriteFile(newFilePath, data, 0666)
 		if err != nil {
-			log.Error(err)
+			log.Println(err)
 		}
 	}
 }
