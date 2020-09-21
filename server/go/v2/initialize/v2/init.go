@@ -9,8 +9,8 @@ import (
 
 	"github.com/jinzhu/configor"
 	"github.com/liov/hoper/go/v2/initialize"
-	"github.com/liov/hoper/go/v2/tools/nacos"
 	"github.com/liov/hoper/go/v2/utils/log"
+	"github.com/liov/hoper/go/v2/utils/nacos"
 )
 
 type EnvConfig struct {

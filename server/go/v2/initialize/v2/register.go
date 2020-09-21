@@ -1,8 +1,8 @@
 package initialize
 
 import (
-	"github.com/liov/hoper/go/v2/tools/nacos"
 	"github.com/liov/hoper/go/v2/utils/log"
+	"github.com/liov/hoper/go/v2/utils/nacos"
 )
 
 func (init *Init) Register() {

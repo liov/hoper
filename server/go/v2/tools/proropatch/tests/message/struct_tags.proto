@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package tests.message;
+
+import "patch/go.proto";
+
+option go_package = "github.com/liov/protopatch2/tests/message";
+
+message MessageWithTags {
+	string value = 1 [(go.field) = {tags: 'test:"value"'}];
+}
+
+message OuterMessageWithTags {
+	message InnerMessage {
+		string value = 1 [(go.field) = {tags: 'test:"value"'}];
+	}
+}
+
+message MessageWithOverrideTag {
+	string value1 = 1 [(go.field) = {tags: 'json:"value1" test:"value"'}];
+	string value2 = 2 [(go.field) = {tags: 'json:"-" test:"value"'}];
+	string value3 = 3 [(go.field) = {tags: 'test:"value" json:"value"'}];
+	string protobuf = 4 [(go.field) = {tags: 'protobuf:"bytes,4,opt,name=proto,proto3" test:"value"'}];
+}
+
+message OuterMessageOverrideTag {
+	message InnerMessage {
+		string value1 = 1 [(go.field) = {tags: 'json:"value1" test:"value"'}];
+		string value2 = 2 [(go.field) = {tags: 'json:"-" test:"value"'}];
+		string value3 = 3 [(go.field) = {tags: 'test:"value" json:"value"'}];
+		string protobuf = 4 [(go.field) = {tags: 'protobuf:"bytes,4,opt,name=proto,proto3" test:"value"'}];
+	}
+}
