@@ -2,10 +2,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("org.springframework.boot") version "2.3.2.RELEASE" apply false
-    kotlin("plugin.spring") version "1.3.72" apply false
+    kotlin("plugin.spring") version "1.4.10" apply false
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
-    kotlin("jvm") version "1.3.72"
-    kotlin("plugin.jpa") version "1.3.72" apply false
+    kotlin("jvm") version "1.4.10"
+    kotlin("plugin.jpa") version "1.4.10" apply false
+    kotlin("plugin.serialization") version "1.4.10"
 }
 
 ext {
@@ -48,11 +49,12 @@ subprojects {
     dependencies {
         implementation("org.apache.logging.log4j:log4j-core:2.12.1")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.1")
-        implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.0.2.RELEASE")
         implementation(kotlin("reflect"))
         implementation(kotlin("stdlib"))
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.3.8")
-        implementation("io.projectreactor:reactor-core:3.3.5.RELEASE")
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0-RC2")
+        implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.1.0-RC1")
         testImplementation("io.projectreactor:reactor-test:3.3.5.RELEASE")
     }
 

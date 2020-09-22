@@ -14,7 +14,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/liov/protopatch2/patch/ident"
+	"github.com/liov/hoper/go/v2/tools/proropatch/patch/ident"
 	"golang.org/x/tools/go/ast/astutil"
 
 	"google.golang.org/protobuf/compiler/protogen"

@@ -199,6 +199,8 @@ object Comp {
   fun Less(x: Int, y: Int) = x < y
   @JvmStatic
   fun More(x: Int, y: Int) = x > y
+  @JvmStatic
+  fun Equl(x: Int, y: Int) = x == y
 }
 
 
