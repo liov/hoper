@@ -4,45 +4,6 @@ import xyz.hoper.test.oop.swap
 import java.util.*
 import kotlin.system.measureTimeMillis
 
-
-//用树还真不好实现
-class MaxHeap<T : Comparable<T>> {
-  //不可以创建泛型数组，又是JVM语言的一个黑点
-  var heap: MutableList<T>
-  var size: Int = 0
-  private var cap: Int = 0
-
-  constructor(init: T) : this(10, init)
-
-  constructor(cap: Int, init: T) {
-    this.cap = cap
-    this.heap = MutableList(cap) { init }
-  }
-
-  constructor(list: MutableList<T>) {
-    this.size = list.size
-    this.heap = list
-    for (i in size / 2 - 1 downTo 0) {
-      adjustHeap(list, size, i)
-    }
-  }
-
-  private fun adjustHeap(list: MutableList<T>, size: Int, i: Int) {
-    val leftChild = 2 * i + 1    //左子节点索引
-    val rightChild = 2 * i + 2   //右子节点索引
-    var max = i             //选出当前结点与其左右孩子三者之中的最大值
-    if (leftChild < size && list[leftChild] > list[max]) max = leftChild
-
-    if (rightChild < size && list[rightChild] > list[max]) max = rightChild
-
-    if (max != i) {
-      list.swap(i, max)//将最大值节点与父节点互换
-      adjustHeap(list, size, max) //递归调用，继续从当前节点向下进行堆调整
-    }
-  }
-}
-
-
 private fun parent(pos: Int): Int = (pos - 1) / 2
 private fun leftChild(pos: Int): Int = pos * 2 + 1
 private fun rightChild(pos: Int): Int = pos * 2 + 2
@@ -62,10 +23,7 @@ fun topN(less: (Int, Int) -> Boolean) {
   val random = Random()
   for (i in 0 until len) heap[i] = random.nextInt(10000)
 
-  //创建topN堆
-  createHeap(heap, topN, less)
-  printArr(heap)
-  //遍历数组，并维护topN堆
+  //创建topN堆,遍历数组，并维护topN堆
   findTopNInPlace(heap, topN, less)
   printHeap(heap, topN)
   printArr(heap)
@@ -107,50 +65,42 @@ private fun <T : Comparable<T>> adjustUp(heap: MutableList<T>, pos: Int) {
 
 private fun <T : Comparable<T>> adjustDown(heap: MutableList<T>, pos: Int) {
   var pos = pos
-  while (leftChild(pos) < heap.size) {
-    var child = leftChild(pos)
-    //判断左右孩子的大小，child代表较小的孩子
+  var child = leftChild(pos)
+  while (child < heap.size) {
+    //判断左右孩子的大小，child代表较大的孩子
     if (child + 1 < heap.size && heap[child + 1] > heap[child]) child++
-    //新节点比较小的孩子都小，说明找到对应位置，直接跳出循环
-    if (heap[pos] > heap[child]) break
+    //已在对应位置，直接跳出循环
+    if (heap[pos]>=heap[child]) break
     heap.swap(pos, child)
     pos = child
+    child = leftChild(pos)
   }
 }
 
-fun createHeap(heap: IntArray, size: Int, less: CompLambda) {
-  for (i in 1 until size) adjustUp(heap, i, less)
+fun createHeap(heap: IntArray, size: Int, comp: CompLambda) {
+  for (i in 1 until size) adjustUp(heap, i, comp)
 }
 
-private fun adjustUp(heap: IntArray, pos: Int, less: CompLambda) {
+private fun adjustUp(heap: IntArray, pos: Int, comp: CompLambda) {
   var pos = pos
   //比父节点大就上移
-  while (parent(pos) >= 0 && less(heap[pos], heap[parent(pos)])) {
-    val parent = parent(pos)
+  var parent = parent(pos)
+  while (parent >= 0 && comp(heap[pos], heap[parent])) {
     heap.swap(parent, pos)
     pos = parent
+    parent = parent(pos)
   }
 }
 
 /***
- * 遍历数据组，并维护最大堆
+ * 遍历数据组，并维护堆
  */
-private fun findTopNInPlace(heap: IntArray, topN: Int, less: CompLambda) {
-  for (i in topN until heap.size) adjustDownTopInPlace(heap, i, less)
+private fun findTopNInPlace(heap: IntArray, topN: Int, comp: CompLambda) {
+  createHeap(heap, topN, comp)
+  for (i in topN until heap.size) adjustDownTopInPlace(heap, topN, i, comp)
 }
 
-private fun adjustDown(heap: IntArray, i: Int, less: CompLambda) {
-  var pos = i
-  while (leftChild(pos) < heap.size) {
-    var child = leftChild(pos)
-    //判断左右孩子的大小，child代表较小的孩子
-    if (child + 1 < heap.size && less(heap[child + 1], heap[child])) child++
-    //新节点比较小的孩子都小，说明找到对应位置，直接跳出循环
-    if (less(heap[pos], heap[child])) break
-    heap.swap(pos, child)
-    pos = child
-  }
-}
+private fun adjustDown(heap: IntArray, i: Int, comp: CompLambda) = adjustDownInPlace(heap, heap.size, i, comp)
 
 private fun adjustDownTop(heap: IntArray, v: Int, less: CompLambda) {
   //比topN中最小的还要小直接返回
@@ -159,26 +109,40 @@ private fun adjustDownTop(heap: IntArray, v: Int, less: CompLambda) {
   adjustDown(heap, 0, less)
 }
 
+private fun adjustDownInPlace(heap: IntArray, topN: Int, i: Int, comp: CompLambda) {
+  var pos = i
+  var child = leftChild(pos)
+  while (child < topN) {
+    //选出当前结点与其左右孩子三者之中的最大值（最大堆）或最小值（最小堆）
+    if (child + 1 < topN && comp(heap[child + 1], heap[child])) child++
+    //已在对应位置，直接跳出循环
+    if (comp(heap[pos], heap[child]) || heap[pos]== heap[child]) break
+    heap.swap(pos, child)
+    pos = child
+    child = leftChild(pos)
+  }
+}
+
 
 /***
  * 向下调整新加入节点位置，并维护最大堆
  */
-private fun adjustDownTopInPlace(heap: IntArray, pos: Int, less: CompLambda) {
+private fun adjustDownTopInPlace(heap: IntArray, topN: Int, pos: Int, comp: CompLambda) {
   //比topN中最大的还要大直接返回
-  if (less(heap[pos], heap[0])) return
+  if (comp(heap[pos], heap[0])) return
   heap.swap(0, pos)
-  adjustDown(heap, 0, less)
+  adjustDownInPlace(heap, topN, 0, comp)
 }
 
 /***
  * 向下调整新加入节点位置，并维护最小堆
  */
-private fun adjustDownTopMaxNInPlace(heap: IntArray, pos: Int) = adjustDownTopInPlace(heap, pos, Comp::Less)
+private fun adjustDownTopMaxNInPlace(heap: IntArray, topN: Int, pos: Int) = adjustDownTopInPlace(heap, topN, pos, Comp::Less)
 
 /***
  * 向下调整新加入节点位置，并维护最大堆
  */
-private fun adjustDownTopMinNInPlace(heap: IntArray, topN: Int, pos: Int) = adjustDownTopInPlace(heap, pos, Comp::More)
+private fun adjustDownTopMinNInPlace(heap: IntArray, topN: Int, pos: Int) = adjustDownTopInPlace(heap, topN, pos, Comp::More)
 
 /***
  * 遍历数据组，并维护最小堆
@@ -188,19 +152,21 @@ fun findTopMaxNInPlace(heap: IntArray, topN: Int) = findTopNInPlace(heap, topN, 
 /***
  * 遍历数据组，并维护最大堆
  */
-private fun findTopMinNInPlace(heap: IntArray, topN: Int) = findTopNInPlace(heap, topN, Comp::More)
+fun findTopMinNInPlace(heap: IntArray, topN: Int) = findTopNInPlace(heap, topN, Comp::More)
 
-private fun adjustDownTopMaxN(heap: IntArray, v: Int) = adjustDownTop(heap, v, Comp::Less)
+fun adjustDownTopMaxN(heap: IntArray, v: Int) = adjustDownTop(heap, v, Comp::Less)
 
 typealias CompLambda = (Int, Int) -> Boolean
 
 object Comp {
   @JvmStatic
   fun Less(x: Int, y: Int) = x < y
+
   @JvmStatic
   fun More(x: Int, y: Int) = x > y
+
   @JvmStatic
-  fun Equl(x: Int, y: Int) = x == y
+  fun Equal(x: Int, y: Int) = x == y
 }
 
 
@@ -219,8 +185,7 @@ fun main(args: Array<String>) {
     toN.insert(v)
     list.add(v)
   }
-  val mh = MaxHeap(list.clone() as MutableList<Int>)
-  println(mh.heap)
+
   val list1 = list.clone() as MutableList<Int>
   createHeapUp(list1)
   println(list1)

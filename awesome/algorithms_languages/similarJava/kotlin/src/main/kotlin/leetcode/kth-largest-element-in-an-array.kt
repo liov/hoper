@@ -34,7 +34,6 @@ fun findKthLargestV1(nums: IntArray, k: Int): Int {
 }
 
 fun findKthLargest(nums: IntArray, k: Int): Int {
-  createHeap(nums, k) { i, j -> i > j }
   findTopMaxNInPlace(nums, k)
   return nums[0]
 }

@@ -29,8 +29,6 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0-RC2")
   implementation("org.objenesis:objenesis:3.0.1")
   implementation("org.apache.commons:commons-lang3:3.8.1")
-  compileOnly("org.projectlombok:lombok:1.18.12")
-  annotationProcessor("org.projectlombok:lombok:1.18.12")
   implementation("io.netty:netty-all:5.0.0.Alpha2")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterEngineVersion")
   testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterEngineVersion")
