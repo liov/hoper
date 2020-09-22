@@ -37,7 +37,7 @@ var files = map[string][]string{
 	"/utils/response/*.proto":       {goOut, grpcOut},
 	"/utils/oauth/*.proto":          {goOut, grpcOut},
 	"/utils/proto/gogo/*.gen.proto": {gogoprotoOut},
-	"/utils/proto/go/*.proto":       {"go_out=plugins=grpc"},
+	"/utils/proto/go/*.proto":       {goOut},
 	"/user/*service.proto": {goOut, grpcOut,
 		gatewayOut,
 		openapiv2Out,
@@ -81,9 +81,6 @@ func run() {
 			if strings.HasPrefix(plugin, "gqlgen_out") {
 				gqlgen = append(gqlgen, arg)
 				continue
-			}
-			if strings.HasPrefix(k, "/utils/proto/go/") {
-				arg = "protoc -I" + *proto + " " + *proto + k + " --go_out=plugins=grpc,paths=source_relative:" + pwd + "/protobuf"
 			}
 			if strings.HasPrefix(k, "/utils/proto/gogo/") {
 				arg = "protoc -I" + *proto + " " + *proto + k + " --gogo_out=plugins=grpc,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor:" + pwd + "/protobuf"

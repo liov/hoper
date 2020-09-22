@@ -1,8 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
   java
-  kotlin("jvm") version "1.3.72"
+  kotlin("jvm") version "1.4.10"
+  kotlin("plugin.serialization") version "1.4.10"
 }
 
 group = "xyz.hoper"
@@ -20,9 +22,11 @@ repositories {
 var junitJupiterEngineVersion = "5.4.0"
 
 dependencies {
-  implementation(kotlin("stdlib"))
-  implementation(kotlin("reflect"))
+  implementation(kotlin("stdlib", KotlinCompilerVersion.VERSION))
+  implementation(kotlin("reflect", KotlinCompilerVersion.VERSION))
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.3.8")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0-RC2")
   implementation("org.objenesis:objenesis:3.0.1")
   implementation("org.apache.commons:commons-lang3:3.8.1")
   compileOnly("org.projectlombok:lombok:1.18.12")

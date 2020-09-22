@@ -1,10 +1,10 @@
 syntax = "proto2";
 
-package go;
+package cuzproto;
 
 import "google/protobuf/descriptor.proto";
 
-option go_package = "github.com/liov/protopatch2/patch/gopb";
+option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/go/cuzproto";
 
 // Options represent Go-specific options for Protobuf messages, fields, oneofs, enums, or enum values.
 message Options {

@@ -1,7 +1,7 @@
 syntax = "proto3";
 import "google/protobuf/descriptor.proto";
 
-option go_package = "github.com/liov/hoper/go/v2/protobuf/cuzproto";
+option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/go/cuzproto";
 
 package cuzproto;
 extend google.protobuf.FieldOptions {
