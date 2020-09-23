@@ -50,7 +50,6 @@ type config struct {
 	Database initialize.DatabaseConfig
 	Redis    initialize.RedisConfig
 	Log      initialize.LogConfig
-	Apollo   initialize.ApolloConfig
 	Consul   initialize.ConsulConfig
 }
 
