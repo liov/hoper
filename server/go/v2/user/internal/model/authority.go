@@ -8,10 +8,10 @@ const (
 	EditUser
 )
 
-var authority = map[Authority]string{
-	DeleteUser: "删除用户",
-}
-
 func (a Authority) String() string {
-	return authority[a]
+	switch a {
+	case DeleteUser:
+		return "删除用户"
+	}
+	return ""
 }
