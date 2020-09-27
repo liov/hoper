@@ -12,7 +12,7 @@ layout: page
 ```go
 // gorm.Model 定义
 type Model struct {
-  ID        uint `gorm:"primary_key"`
+  ID        uint `gorm:"primaryKey"`
   CreatedAt time.Time
   UpdatedAt time.Time
   DeletedAt *time.Time
@@ -44,7 +44,7 @@ type User struct {
 
 // 使用`AnimalID`作为主键
 type Animal struct {
-  AnimalID int64 `gorm:"primary_key"`
+  AnimalID int64 `gorm:"primaryKey"`
   Name     string
   Age      int64
 }
