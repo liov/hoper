@@ -1,9 +1,9 @@
 package oauth
 
 import (
-	"github.com/jinzhu/gorm"
 	"gopkg.in/oauth2.v3"
 	"gopkg.in/oauth2.v3/models"
+	"gorm.io/gorm"
 )
 
 // NewClientStore create client store

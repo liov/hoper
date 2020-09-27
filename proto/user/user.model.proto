@@ -9,37 +9,37 @@ option go_package = "github.com/liov/hoper/go/v2/protobuf/user";
 
 // 用户
 message User {
-    uint64 id = 1 [(go.field) = {tags:'gorm:"primary_key;"'}];
-    string name = 2 [(go.field) = {tags:'gorm:"type:varchar(10);not null" annotation:"名字"'}];
-    string nickName = 17 [(go.field) = {tags:'gorm:"type:varchar(10);not null" validate:"required,gte=3,lte=10" annotation:"昵称"'}];
+    uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
+    string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" annotation:"名字"'}];
+    string nickName = 17 [(go.field) = {tags:'gorm:"size:10;not null" validate:"required,gte=3,lte=10" annotation:"昵称"'}];
     string activatedAt = 3 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:\'0001-01-01 00:00:00\'"'}];
-    string password = 5 [(go.field) = {tags:'gorm:"type:varchar(32);not null" validate:"gte=8,lte=15" annotation:"密码"'}];
-    string mail = 6 [(go.field) = {tags:'gorm:"type:varchar(16);default:\'\'" validate:"email" annotation:"邮箱"'}];
-    string phone = 7 [(go.field) = {tags:'gorm:"type:varchar(32);default:\'\'" validate:"phone" annotation:"手机号"'}];
+    string password = 5 [(go.field) = {tags:'gorm:"size:32;not null" validate:"gte=8,lte=15" annotation:"密码"'}];
+    string mail = 6 [(go.field) = {tags:'gorm:"size:16;default:\'\'" validate:"email" annotation:"邮箱"'}];
+    string phone = 7 [(go.field) = {tags:'gorm:"size:32;default:\'\'" validate:"phone" annotation:"手机号"'}];
     //性别，0未填写，1男，2女
     Gender gender = 8 [(go.field) = {tags:'gorm:"default:0"'},  (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
            type:INTEGER
     }];
     string birthday = 9 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:\'0001-01-01 00:00:00\'"'}];
-    string location = 16[(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
-    string address = 14 [(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
-    string introduction = 10 [(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
-    string signature = 11 [(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
-    string avatarURL = 12 [(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
-    string coverURL = 13 [(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
+    string location = 16[(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
+    string address = 14 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
+    string introduction = 10 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
+    string signature = 11 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
+    string avatarURL = 12 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
+    string coverURL = 13 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
     string lastActiveAt = 23 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:\'0001-01-01 00:00:00\'"'}];
     uint64 score = 15 [(go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"分数"
     type: INTEGER}];
     Role role = 24 [(go.field) = {tags:'gorm:"default:0"'}];
-    string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:current_timestamp"'}];
+    string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:CURRENT_TIMESTAMP()"'}];
     UserStatus status = 28 [(go.field) = {tags:'gorm:"default:0"'},  (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
            read_only:true
     }];
 }
 
 message UserExtend {
-    uint64 id = 1 [(go.field) = {tags:'gorm:"primary_key;"'}];
+    uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
     uint64 followCount = 16 [(go.field) = {tags:'gorm:"default:0"'}];
     uint64 followedCount = 17 [(go.field) = {tags:'gorm:"default:0"'}];
     uint64 articleCount = 18 [(go.field) = {tags:'gorm:"default:0"'}];
@@ -61,7 +61,7 @@ message UserFollow {
 
 //关注日志
 message UserFollowLog {
-    uint64 id = 1 [(go.field) = {tags:'gorm:"primary_key"'}];
+    uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
     uint32 action = 2 [(go.field) = {tags:'gorm:""'}]; //类型：0添加关注，1移除关注
     uint64 userId = 3 [(go.field) = {tags:'gorm:""'}];
     uint64 followId = 4 [(go.field) = {tags:'gorm:""'}];
@@ -70,35 +70,35 @@ message UserFollowLog {
 
 //用户分数变化日志
 message UserScoreLog {
-    uint64 id = 1 [(go.field) = {tags:'gorm:"primary_key"'}];
+    uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
     uint64 userId = 2 [(go.field) = {tags:'gorm:"index"'}];
     sint64 score = 3 [(go.field) = {tags: 'json:"score" gorm:""'}];
-    string reason = 5 [(go.field) = {tags:'gorm:"type:varchar(255)"'}];
+    string reason = 5 [(go.field) = {tags:'gorm:"size:255"'}];
     string createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-    string remark = 7 [(go.field) = {tags:'gorm:"type:varchar(255)"'}];
+    string remark = 7 [(go.field) = {tags:'gorm:"size:255"'}];
 }
 //用户封禁日志
 message UserBannedLog {
-    uint64 id = 1 [(go.field) = {tags:'gorm:"primary_key"'}];
+    uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
     uint64 userId = 2 [(go.field) = {tags:'gorm:"index"'}];
     uint64 duration = 3 [(go.field) = {tags:'gorm:""'}];
-    string reason = 4 [(go.field) = {tags:'gorm:"type:varchar(255)"'}];
+    string reason = 4 [(go.field) = {tags:'gorm:"size:255"'}];
     BannedType type = 5 ;
     string bannedAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:\'0001-01-01 00:00:00\'"'}];
-    string remark = 7 [(go.field) = {tags:'gorm:"type:varchar(255)"'}];
+    string remark = 7 [(go.field) = {tags:'gorm:"size:255"'}];
 }
 
 //用户操作日志
 message UserActionLog {
-    uint64 id = 1 [(go.field) = {tags:'gorm:"primary_key"'}];
+    uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
     uint64 userId = 2 [(go.field) = {tags:'gorm:"index"'}];
     //类型
     Action action = 3;
     //相关id
-    string relatedId = 4[(go.field) = {tags:'gorm:"type:varchar(255)"'}];
-    bytes lastValue = 5 [(go.field) = {tags:'gorm:"type:varchar(255)"'}];
+    string relatedId = 4[(go.field) = {tags:'gorm:"size:255"'}];
+    bytes lastValue = 5 [(go.field) = {tags:'gorm:"size:255"'}];
     string createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-    string remark = 7 [(go.field) = {tags:'gorm:"type:varchar(255)"'}];
+    string remark = 7 [(go.field) = {tags:'gorm:"size:255"'}];
     //设备
     UserDeviceInfo device = 8 [(go.field) = {tags:'gorm:"embedded"'}];
 
@@ -106,21 +106,21 @@ message UserActionLog {
 
 //简历
 message Resume {
-    uint64 id = 1 [(go.field) = {tags:'gorm:"primary_key"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
            type:INTEGER
     }];
     uint64 userId = 2 [(go.field) = {tags:'gorm:"index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
            type:INTEGER
     }];
     //公司或组织或学校
-    string company = 3 [(go.field) = {tags:'gorm:"type:varchar(255)"'}];
+    string company = 3 [(go.field) = {tags:'gorm:"size:255"'}];
     //职位或学历
-    string title = 4 [(go.field) = {tags:'gorm:"type:varchar(255)"'}];
+    string title = 4 [(go.field) = {tags:'gorm:"size:255"'}];
     //部门或专业
-    string department = 5 [(go.field) = {tags:'gorm:"type:varchar(255)"'}];
+    string department = 5 [(go.field) = {tags:'gorm:"size:255"'}];
     string startTime = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
     string endTime = 7 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-    string remark = 11 [(go.field) = {tags:'gorm:"type:varchar(255)"'}];
+    string remark = 11 [(go.field) = {tags:'gorm:"size:255"'}];
     //0-Education 教育经历,1- Work 职业生涯
     uint32 type = 12 [(go.field) = {tags:'gorm:"default:0"'}];
     uint32 status = 28 [(go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
@@ -129,7 +129,7 @@ message Resume {
 }
 
 message UserBaseInfo {
-    uint64 id = 1 [(go.field) = {tags:'gorm:"primary_key;"'}];
+    uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
     uint64 score = 2 [(go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"分数"
     type: INTEGER}];
@@ -139,7 +139,7 @@ message UserBaseInfo {
 }
 
 message UserMainInfo {
-    uint64 id = 1 [(go.field) = {tags:'gorm:"primary_key;"'}];
+    uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
     Role role = 24 [(go.field) = {tags:'gorm:"default:0"'}];
     int64 lastActiveAt = 23;
     uint64 score = 15 [ (go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
@@ -152,26 +152,26 @@ message UserMainInfo {
 }
 //用户授权信息
 message UserAuthInfo {
-    uint64 id = 1 [(go.field) = {tags:'gorm:"primary_key;"'}];
-    string name = 2 [(go.field) = {tags:'gorm:"type:varchar(10);not null" annotation:\"名字\"'}];
-    string nickName = 17 [(go.field) = {tags:'gorm:"type:varchar(10);not null" validate:"required,gte=3,lte=10" annotation:"昵称"'}];
-    string mail = 6 [(go.field) = {tags:'gorm:"type:varchar(16);default:\'\'" validate:"email" annotation:"邮箱"'}];
-    string location = 16[(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
-    string introduction = 10 [(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
-    string avatarURL = 12 [(go.field) = {tags:'gorm:"type:varchar(255);default:\'\'"'}];
+    uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
+    string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" annotation:\"名字\"'}];
+    string nickName = 17 [(go.field) = {tags:'gorm:"size:10;not null" validate:"required,gte=3,lte=10" annotation:"昵称"'}];
+    string mail = 6 [(go.field) = {tags:'gorm:"size:16;default:\'\'" validate:"email" annotation:"邮箱"'}];
+    string location = 16[(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
+    string introduction = 10 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
+    string avatarURL = 12 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
 }
 
 message UserDeviceInfo {
     //设备
-    string device = 1 [(go.field) = {tags:'gorm:"type:varchar(255)"'}];
-    string os = 4 [(go.field) = {tags:'gorm:"type:varchar(255)"'}];
-    string appCode = 6 [(go.field) = {tags:'gorm:"type:varchar(255)"'}];
-    string appVersion = 7 [(go.field) = {tags:'gorm:"type:varchar(255)"'}];
-    string IP = 3 [(go.field) = {tags:'gorm:"type:varchar(255)"'}];
+    string device = 1 [(go.field) = {tags:'gorm:"size:255"'}];
+    string os = 4 [(go.field) = {tags:'gorm:"size:255"'}];
+    string appCode = 6 [(go.field) = {tags:'gorm:"size:255"'}];
+    string appVersion = 7 [(go.field) = {tags:'gorm:"size:255"'}];
+    string IP = 3 [(go.field) = {tags:'gorm:"size:255"'}];
     string lng = 8 [(go.field) = {tags:'gorm:"type:numeric(10,6)"'}];
     string lat = 9 [(go.field) = {tags:'gorm:"type:numeric(10,6)"'}];
-    string area = 2 [(go.field) = {tags:'gorm:"type:varchar(255)"'}];
-    string userAgent = 5 [(go.field) = {tags:'gorm:"type:varchar(255)"'}];
+    string area = 2 [(go.field) = {tags:'gorm:"size:255"'}];
+    string userAgent = 5 [(go.field) = {tags:'gorm:"size:255"'}];
 }
 
 message Response{

@@ -7,5 +7,6 @@ import (
 
 func Test_Time(t *testing.T) {
 	now := time.Now()
-	OrmDB.DB().Exec(`insert into education (deleted_at) values (?)`, now)
+	db, _ := GetDB().DB()
+	db.Exec(`insert into education (deleted_at) values (?)`, now)
 }

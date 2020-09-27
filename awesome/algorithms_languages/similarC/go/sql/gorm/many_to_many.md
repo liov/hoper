@@ -50,12 +50,12 @@ db.Model(&language).Related(&users,  "Users")
 
 ```go
 type CustomizePerson struct {
-  IdPerson string             `gorm:"primary_key:true"`
+  IdPerson string             `gorm:"primaryKey:true"`
   Accounts []CustomizeAccount `gorm:"many2many:PersonAccount;association_foreignkey:idAccount;foreignkey:idPerson"`
 }
 
 type CustomizeAccount struct {
-  IdAccount string `gorm:"primary_key:true"`
+  IdAccount string `gorm:"primaryKey:true"`
   Name      string
 }
 ```
@@ -68,12 +68,12 @@ Jointable ForeignKey，如果你想改变连接表的外键，你可以使用标
 
 ```go
 type CustomizePerson struct {
-  IdPerson string             `gorm:"primary_key:true"`
+  IdPerson string             `gorm:"primaryKey:true"`
   Accounts []CustomizeAccount `gorm:"many2many:PersonAccount;foreignkey:idPerson;association_foreignkey:idAccount;association_jointable_foreignkey:account_id;jointable_foreignkey:person_id;"`
 }
 
 type CustomizeAccount struct {
-  IdAccount string `gorm:"primary_key:true"`
+  IdAccount string `gorm:"primaryKey:true"`
   Name      string
 }
 ```

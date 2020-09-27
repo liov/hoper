@@ -7,8 +7,8 @@ layout: page
 
 ```go
 type Product struct {
-   ID           string `gorm:"primary_key"`
-   LanguageCode string `gorm:"primary_key"`
+   ID           string `gorm:"primaryKey"`
+   LanguageCode string `gorm:"primaryKey"`
    Code         string
    Name         string
 }

@@ -5,7 +5,6 @@ import (
 	"os"
 	"reflect"
 	"strings"
-	"unsafe"
 
 	"github.com/jinzhu/configor"
 	"github.com/liov/hoper/go/v2/initialize"
@@ -39,7 +38,6 @@ type Init struct {
 
 func NewInitWithLoadConfig(conf initialize.Config, dao initialize.Dao) *Init {
 	initConfig := InitConfig{}
-	log.Debug(int64(uintptr(unsafe.Pointer(&initConfig))))
 	if _, err := os.Stat(initialize.ConfUrl); os.IsNotExist(err) {
 		log.Fatalf("配置错误: 请确保可执行文件和配置目录在同一目录下")
 	}

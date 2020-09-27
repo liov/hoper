@@ -26,6 +26,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/verification/code"
 	"github.com/liov/hoper/go/v2/utils/verification/luosimao"
 	"github.com/liov/hoper/go/v2/utils/verification/prm"
+	"gorm.io/gorm"
 )
 
 type UserService struct {

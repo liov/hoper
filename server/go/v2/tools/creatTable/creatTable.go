@@ -17,6 +17,6 @@ var userMod = []interface{}{
 }
 
 func main() {
-	get.OrmDB.DropTable(userMod...)
-	get.OrmDB.CreateTable(userMod...)
+	get.GetDB().Migrator().DropTable(userMod...)
+	get.GetDB().Migrator().CreateTable(userMod...)
 }

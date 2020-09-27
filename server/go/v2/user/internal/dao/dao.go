@@ -8,9 +8,6 @@ import (
 	"github.com/etcd-io/bbolt"
 	"github.com/gomodule/redigo/redis"
 	"gorm.io/gorm"
-
-	"github.com/liov/hoper/go/v2/tools/apollo"
-	"github.com/liov/hoper/go/v2/utils/dao/gormCallback"
 )
 
 //原本是个单独模块，但是考虑到数据库必须初始化，所以合进来了
@@ -30,7 +27,6 @@ type dao struct {
 	McExpire    int32
 	//elastic
 	MailAuth smtp.Auth
-	Apollo   *apollo.Client
 }
 
 // Close close the resource.
@@ -45,24 +41,14 @@ func (d *dao) Close() {
 		rawDB, _ := d.GORMDB.DB()
 		rawDB.Close()
 	}
-	if d.Apollo != nil {
-		d.Apollo.Close()
-	}
 }
 
 func (d *dao) Custom() {
 	db := d.GORMDB
-	db.Callback().Create().Remove("gorm:update_time_stamp")
-	db.Callback().Create().Remove("gorm:force_reload_after_create")
-	db.Callback().Update().Remove("gorm:update_time_stamp")
 	db.Callback().Create().Remove("gorm:save_before_associations")
 	db.Callback().Create().Remove("gorm:save_after_associations")
 	db.Callback().Update().Remove("gorm:save_before_associations")
 	db.Callback().Update().Remove("gorm:save_after_associations")
-	//db.Callback().Create().Replace("gorm:update_time_stamp", updateTimeStampForCreateCallback)
-	//db.Callback().Update().Replace("gorm:update_time_stamp", updateTimeStampForUpdateCallback)
-	//db.Callback().Create().Replace("gorm:save_before_associations", saveBeforeAssociationsCallback)
-	//db.Callback().Create().Replace("gorm:save_after_associations", saveAfterAssociationsCallback)
-	db.Callback().Delete().Replace("gorm:delete", gormCallback.DeleteCallback)
+
 	d.StdDB, _ = db.DB()
 }
