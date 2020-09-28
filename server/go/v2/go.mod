@@ -51,7 +51,6 @@ require (
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/iris-contrib/schema v0.0.1 // indirect
 	github.com/jinzhu/configor v1.1.1
-	github.com/jinzhu/gorm v1.9.16
 	github.com/json-iterator/go v1.1.9
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
@@ -86,7 +85,7 @@ require (
 	github.com/yalp/jsonpath v0.0.0-20180802001716-5cc68e5049a0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	go.uber.org/atomic v1.6.0
-	go.uber.org/zap v1.10.0
+	go.uber.org/zap v1.16.0
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/tools v0.0.0-20200626032829-bcbc01e07a20

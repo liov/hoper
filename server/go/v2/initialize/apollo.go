@@ -37,11 +37,10 @@ func (init *Init) P0Apollo() *apollo.Client {
 		apolloConfigEnable(init.conf, aConf)*/
 	//监听指定namespace的更新
 	conf.NameSpace = append(conf.NameSpace, InitKey)
-	cCopy := init.conf
-	dCopy := init.dao
+
 	conf.InitConfig = apollo.SpecialConfig{NameSpace: InitKey, Callback: func(m map[string]string) {
-		apolloConfigEnable(cCopy, m)
-		Refresh(cCopy, dCopy)
+		apolloConfigEnable(init.conf, m)
+		init.Refresh()
 	}}
 	return conf.Generate()
 }

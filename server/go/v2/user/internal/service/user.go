@@ -222,7 +222,7 @@ func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*response
 		return nil, errorcode.InvalidArgument.WithMessage("无效的链接")
 	}
 
-	dao.Dao.GORMDB.Model(user).Updates(map[string]interface{}{"activated_at": time.Now().Format(time.RFC3339Nano), "status": 1})
+	dao.Dao.GORMDB.Model(user).Updates(map[string]interface{}{"activated_at": time.Now(), "status": 1})
 	RedisConn.Do("DEL", redisKey)
 	return &response.TinyRep{Message: "激活成功"}, nil
 }

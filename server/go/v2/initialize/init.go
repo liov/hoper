@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"path"
-	"path/filepath"
 	"reflect"
 	"strings"
 	"sync"
@@ -18,6 +16,7 @@ import (
 	"github.com/jinzhu/configor"
 	"github.com/liov/hoper/go/v2/utils/fs"
 	"github.com/liov/hoper/go/v2/utils/log"
+	"github.com/liov/hoper/go/v2/utils/nacos"
 	"github.com/liov/hoper/go/v2/utils/reflect3"
 	"github.com/liov/hoper/go/v2/utils/watch"
 )
@@ -29,6 +28,10 @@ var Env string
 
 //附加配置，不对外公开的的配置,特定文件名,启用文件搜寻查找
 var AddConfig string
+
+var InitConfig *Init
+
+var once sync.Once
 
 func init() {
 	flag.StringVar(&Env, "env", DEVELOPMENT, "环境")
@@ -54,30 +57,31 @@ const (
 	InitKey     = "initialize"
 )
 
-//var closes = []interface{}{log.Sync}
+type EnvConfig struct {
+	Tenant string
+}
 
 type BasicConfig struct {
 	Module string
 	Env    string
 }
 
-type ServerConfig struct {
-	Protocol     string
-	Domain       string
-	Port         string
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
+type BasicNacosConfig struct {
+	NacosAddr  string
+	NacosGroup string
+	//NacosDataId string DataId与Moudle相同
 }
 
-func (c *ServerConfig) Custom() {
-	if c.Port == "" {
-		c.Port = ":8080"
-	}
-	c.ReadTimeout = c.ReadTimeout * time.Second
-	c.WriteTimeout = c.WriteTimeout * time.Second
+type OnceConfig struct {
+	Dev, Test, Prod *EnvConfig
+	BasicNacosConfig
+	BasicConfig
+	NoInit []string
 }
 
 type Init struct {
+	EnvConfig   *EnvConfig
+	NacosConfig *nacos.Config
 	BasicConfig
 	NoInit []string
 	conf   NeedInit
@@ -86,26 +90,50 @@ type Init struct {
 }
 
 func NewInitWithLoadConfig(conf Config, dao Dao) *Init {
-	init := &Init{conf: conf, dao: dao}
+	onceConfig := OnceConfig{}
 	if _, err := os.Stat(ConfUrl); os.IsNotExist(err) {
-		log.Panic("配置错误: 请确保可执行文件和配置目录在同一目录下")
+		log.Fatalf("配置错误: 请确保可执行文件和配置目录在同一目录下")
 	}
-	err := configor.New(&configor.Config{Debug: false}).
-		Load(init, ConfUrl) //"./Config/Config.toml"
-	init.Env = Env
+	err := configor.New(&configor.Config{Debug: true}).
+		Load(&onceConfig, ConfUrl)
 	if err != nil {
 		log.Fatalf("配置错误: %v", err)
+	}
+	init := NewInit(conf, dao)
+
+	init.BasicConfig = onceConfig.BasicConfig
+	init.Env = Env
+	init.NoInit = onceConfig.NoInit
+
+	value := reflect.ValueOf(&onceConfig).Elem()
+	typ := reflect.TypeOf(&onceConfig).Elem()
+	var tmpConfig = EnvConfig{}
+	tmpTyp := reflect.TypeOf(&tmpConfig)
+	for i := 0; i < typ.NumField(); i++ {
+		if typ.Field(i).Type == tmpTyp && strings.ToUpper(typ.Field(i).Name) == strings.ToUpper(init.Env) {
+			/*tmpConfig = value.Field(i).Interface().(*nacos.Config)
+			//真·深度复制
+			data,_:=json.Marshal(tmpConfig)
+			if err:=json.Unmarshal(data,init.EnvConfig);err!=nil{
+				log.Fatal(err)
+			}*/
+			//会被回收,也可能是被移动了？
+			tmpConfig = *value.Field(i).Interface().(*EnvConfig)
+			init.EnvConfig = &tmpConfig
+			break
+		}
+	}
+	init.NacosConfig = &nacos.Config{
+		Addr:   onceConfig.NacosAddr,
+		Tenant: init.EnvConfig.Tenant,
+		Group:  onceConfig.NacosGroup,
+		DataId: onceConfig.Module,
 	}
 	return init
 }
 
 func NewInit(conf Config, dao Dao) *Init {
 	return &Init{conf: conf, dao: dao}
-}
-
-//配置作用于dao，但是这么写dao不直观，无法跳转，不利于阅读
-type config interface {
-	Generate(Dao)
 }
 
 type NeedInit interface {
@@ -126,39 +154,35 @@ var alreadyRun struct {
 	InitFunc    bool
 }
 
-var once sync.Once
-
 //init函数命名规则，P+数字（优先级）+ 功能名
 func Start(conf Config, dao Dao) func() {
 	if !flag.Parsed() {
 		flag.Parse()
 	}
+	//逃逸到堆上了
 	init := NewInitWithLoadConfig(conf, dao)
-	init.getConfig().SetConfigAndDao()
-	//go Watcher(conf, dao)
+	InitConfig = init
+	nacosClient := init.getConfig()
+	go nacosClient.Listener(init.UnmarshalAndSet)
+
 	return func() {
-		if dao != nil {
-			dao.Close()
-		}
+		InitConfig.CloseDao()
 		log.Sync()
-		/*for _, f := range closes {
-			res := reflect.ValueOf(f).Caller(nil)
-			if len(res) > 0 && res[0].IsValid() {
-				log.Error(res[0].Interface())
-			}
-		}*/
 	}
 }
 
-func (init *Init) getConfig() *Init {
-	dir, file := filepath.Split(ConfUrl)
-	err := configor.New(&configor.Config{Debug: init.Env != PRODUCT}).
-		Load(init.conf, ConfUrl, dir+init.Env+path.Ext(file)) //"./Config/{{Env}}.toml"
+func (init *Init) getConfig() *nacos.Client {
+	nacosClient := init.NacosConfig.NewClient()
+	err := nacosClient.GetConfigAllInfoHandle(init.UnmarshalAndSet)
 	if err != nil {
-		log.Fatalf("配置错误: %v", err)
+		log.Fatal(err)
 	}
-	if AddConfig != "" {
-		adCongPath, err := fs.FindFile(AddConfig)
+	return nacosClient
+}
+
+func (init *Init) AddConfig(addConfig string) *Init {
+	if addConfig != "" {
+		adCongPath, err := fs.FindFile(addConfig)
 		if err == nil {
 			err := configor.New(&configor.Config{Debug: init.Env != PRODUCT}).
 				Load(init.conf, adCongPath)
@@ -213,14 +237,14 @@ func (init *Init) SetConfigAndDao() {
 	}
 }
 
-func Watcher(conf Config, dao Dao) {
+func Watcher() {
 	watcher, err := watch.New(time.Second)
 	if err != nil {
 		log.Fatal(err)
 	}
 	watcher.Add(ConfUrl, fsnotify.Write, func() {
-		dao.Close()
-		NewInitWithLoadConfig(conf, dao).getConfig().SetConfigAndDao()
+		InitConfig.CloseDao()
+		InitConfig.SetConfigAndDao()
 
 	})
 
@@ -229,24 +253,22 @@ func Watcher(conf Config, dao Dao) {
 	})
 }
 
-func Refresh(conf Config, dao Dao) {
-	if dao != nil {
-		dao.Close()
-	}
-	NewInit(conf, dao).SetConfigAndDao()
+func (init *Init) Refresh() {
+	InitConfig.CloseDao()
+	InitConfig.SetConfigAndDao()
 }
 
 func (init *Init) Unmarshal(bytes []byte) {
 	toml.Unmarshal(bytes, init.conf)
 }
 
-func (init *Init) GetServiceConfig() *ServerConfig {
-	value := reflect.ValueOf(init.conf).Elem()
-	for i := 0; i < value.NumField(); i++ {
-		if conf, ok := value.Field(i).Interface().(ServerConfig); ok {
-			return &conf
-
-		}
+func (init *Init) CloseDao() {
+	if init.dao != nil {
+		init.dao.Close()
 	}
-	return nil
+}
+
+func (init *Init) UnmarshalAndSet(bytes []byte) {
+	init.Unmarshal(bytes)
+	init.Refresh()
 }

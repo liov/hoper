@@ -334,14 +334,14 @@ message LoginRep {
     UserBaseInfo user = 1;
     string token = 2;
   }
-  string cookie = 4;
+  string cookie = 4 [(go.field) = {tags:'json:"-"'}];
 }
 
 //特殊，设置cookie用
 message LogoutRep {
   uint32 code = 1 [(go.field) = {tags:'json:"code"'}];
   string message = 2;
-  string cookie = 3;
+  string cookie = 3 [(go.field) = {tags:'json:"-"'}];
 }
 
 message ResetPasswordReq {

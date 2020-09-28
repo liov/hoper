@@ -7,7 +7,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/kataras/iris/v12"
 	context2 "github.com/kataras/iris/v12/context"
-	v2 "github.com/liov/hoper/go/v2/initialize/v2"
+	"github.com/liov/hoper/go/v2/initialize"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/internal/config"
 	"github.com/liov/hoper/go/v2/user/internal/dao"
@@ -21,7 +21,7 @@ import (
 
 func main() {
 	//配置初始化应该在第一位
-	defer v2.Start(config.Conf, dao.Dao)()
+	defer initialize.Start(config.Conf, dao.Dao)()
 	s := server.Server{
 		//为了可以自定义中间件
 		GRPCServer: func() *grpc.Server {

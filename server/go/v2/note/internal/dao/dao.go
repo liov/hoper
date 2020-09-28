@@ -7,9 +7,8 @@ import (
 	"github.com/bluele/gcache"
 	"github.com/etcd-io/bbolt"
 	"github.com/gomodule/redigo/redis"
-	"github.com/jinzhu/gorm"
-	"github.com/liov/hoper/go/v2/tools/apollo"
-	"github.com/liov/hoper/go/v2/utils/dao/gormCallback"
+	"github.com/liov/hoper/go/v2/utils/apollo"
+	"gorm.io/gorm"
 )
 
 //原本是个单独模块，但是考虑到数据库必须初始化，所以合进来了
@@ -32,7 +31,7 @@ type dao struct {
 	Apollo   *apollo.Client
 }
 
-// Close close the resource.
+// CloseDao close the resource.
 func (d *dao) Close() {
 	if d.Bolt != nil {
 		d.Bolt.Close()
@@ -40,8 +39,8 @@ func (d *dao) Close() {
 	if d.Redis != nil {
 		d.Redis.Close()
 	}
-	if d.GORMDB != nil {
-		d.GORMDB.Close()
+	if d.StdDB != nil {
+		d.StdDB.Close()
 	}
 	if d.Apollo != nil {
 		d.Apollo.Close()
@@ -50,17 +49,10 @@ func (d *dao) Close() {
 
 func (d *dao) Custom() {
 	db := d.GORMDB
-	db.Callback().Create().Remove("gorm:update_time_stamp")
 	db.Callback().Create().Remove("gorm:force_reload_after_create")
-	db.Callback().Update().Remove("gorm:update_time_stamp")
 	db.Callback().Create().Remove("gorm:save_before_associations")
 	db.Callback().Create().Remove("gorm:save_after_associations")
 	db.Callback().Update().Remove("gorm:save_before_associations")
 	db.Callback().Update().Remove("gorm:save_after_associations")
-	//db.Callback().Create().Replace("gorm:update_time_stamp", updateTimeStampForCreateCallback)
-	//db.Callback().Update().Replace("gorm:update_time_stamp", updateTimeStampForUpdateCallback)
-	//db.Callback().Create().Replace("gorm:save_before_associations", saveBeforeAssociationsCallback)
-	//db.Callback().Create().Replace("gorm:save_after_associations", saveAfterAssociationsCallback)
-	db.Callback().Delete().Replace("gorm:delete", gormCallback.DeleteCallback)
-	d.StdDB = db.DB()
+	d.StdDB, _ = db.DB()
 }

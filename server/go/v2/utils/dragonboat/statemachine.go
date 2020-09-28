@@ -75,8 +75,8 @@ func (s *ExampleStateMachine) RecoverFromSnapshot(r io.Reader,
 	return nil
 }
 
-// Close closes the IStateMachine instance. There is nothing for us to cleanup
-// or release as this is a pure in memory data store. Note that the Close
+// CloseDao closes the IStateMachine instance. There is nothing for us to cleanup
+// or release as this is a pure in memory data store. Note that the CloseDao
 // method is not guaranteed to be called as node can crash at any time.
 func (s *ExampleStateMachine) Close() {}
 

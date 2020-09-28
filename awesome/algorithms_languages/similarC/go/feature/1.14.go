@@ -57,7 +57,7 @@ func main() {
 }
 
 //允许嵌入具有重叠方法集的接口
-//如下的接口定义在Go1.14之前是不允许的,因为io.ReadCloser和io.WriteCloser中Close方法重复了，编译时会提示：duplicate method Close。
+//如下的接口定义在Go1.14之前是不允许的,因为io.ReadCloser和io.WriteCloser中Close方法重复了，编译时会提示：duplicate method CloseDao。
 //Go1.14开始允许相同签名的方法可以内嵌入一个接口中，注意是相同签名，
 //如果报错，尝试把go mod 的go 1.1x-> go 1.14+
 type ReadWriteCloser interface {
@@ -67,7 +67,7 @@ type ReadWriteCloser interface {
 
 //下边的代码在Go1.14依然不能够执行，因为MyCloser接口中定义的Close方法和io.ReadCloser接口定义的Close方法的签名不同。
 /*type MyCloser interface {
-	Close()
+	CloseDao()
 }
 
 type ReadWriteCloser2 interface {
