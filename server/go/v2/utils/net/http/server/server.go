@@ -11,7 +11,6 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/kataras/iris/v12"
 	"github.com/liov/hoper/go/v2/initialize"
-	v2 "github.com/liov/hoper/go/v2/initialize/v2"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"
@@ -26,7 +25,7 @@ func (s *Server) Serve() {
 
 	if s.GRPCServer != nil {
 		reflection.Register(s.GRPCServer)
-		v2.BasicConfig.Register()
+		initialize.InitConfig.Register()
 	}
 
 	handle := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -54,7 +53,7 @@ func (s *Server) Serve() {
 	})
 	h2Handler := h2c.NewHandler(handle, &http2.Server{})
 	//反射从配置中取port
-	serviceConfig := v2.BasicConfig.GetServiceConfig()
+	serviceConfig := initialize.InitConfig.GetServiceConfig()
 	server := &http.Server{
 		Addr:         serviceConfig.Port,
 		Handler:      h2Handler,
@@ -87,10 +86,6 @@ func (s *Server) Serve() {
 	}
 }
 
-type Config interface {
-	initialize.Config
-}
-
 type Server struct {
 	GRPCServer     *grpc.Server
 	GatewayRegistr gateway.GatewayHandle
@@ -102,7 +97,7 @@ var close = make(chan os.Signal, 1)
 var stop = make(chan struct{}, 1)
 
 func (s *Server) Start() {
-	if v2.BasicConfig == nil {
+	if initialize.InitConfig == nil {
 		log.Fatal(`初始化配置失败:
 	main 函数的第一行应为
 	defer v2.Start(config.Conf, dao.Dao)()

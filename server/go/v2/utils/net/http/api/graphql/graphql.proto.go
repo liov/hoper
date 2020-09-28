@@ -45,7 +45,7 @@ func GraphqlV2(app *iris.Application, filePath, modName string, resolver interfa
 	if err != nil {
 		log.Fatal(err)
 	}
-	f.Close()
+	f.CloseDao()
 	var sources = []*ast.Source{
 		{Name: "schema.graphql", Input: string(data), BuiltIn: false}}
 	var parsedSchema = gqlparser.MustLoadSchema(sources...)

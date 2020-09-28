@@ -27,7 +27,7 @@ message User {
     string signature = 11 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
     string avatarURL = 12 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
     string coverURL = 13 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
-    string lastActiveAt = 23 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:\'0001-01-01 00:00:00\'"'}];
+    string lastActivatedAt = 23 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:\'0001-01-01 00:00:00\'"'}];
     uint64 score = 15 [(go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"分数"
     type: INTEGER}];

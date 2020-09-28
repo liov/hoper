@@ -28,7 +28,7 @@ func (conf *KafkaConfig) Generate() (sarama.SyncProducer, sarama.Consumer) {
 		if err != nil {
 			log.Info(err)
 		}
-		//closes = append(closes,producer.Close)
+		//closes = append(closes,producer.CloseDao)
 		return producer, nil
 	}
 	if conf.Model == 1 || conf.Model == 2 {
@@ -36,7 +36,7 @@ func (conf *KafkaConfig) Generate() (sarama.SyncProducer, sarama.Consumer) {
 		if err != nil {
 			log.Info(err)
 		}
-		//closes = append(closes,consumer.Close)
+		//closes = append(closes,consumer.CloseDao)
 		return nil, consumer
 	}
 	return nil, nil

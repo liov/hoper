@@ -48,7 +48,7 @@ func (s *Stopper) Stop() {
 	s.wg.Wait()
 }
 
-// Close closes the internal shouldStopc chan struct{} to signal all
+// CloseDao closes the internal shouldStopc chan struct{} to signal all
 // worker goroutines that they should stop.
 func (s *Stopper) Close() {
 	close(s.shouldStopC)

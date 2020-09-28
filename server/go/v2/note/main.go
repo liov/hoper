@@ -5,7 +5,7 @@ import (
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	v2 "github.com/liov/hoper/go/v2/initialize/v2"
+	"github.com/liov/hoper/go/v2/initialize"
 	"github.com/liov/hoper/go/v2/note/internal/config"
 	"github.com/liov/hoper/go/v2/note/internal/dao"
 	"github.com/liov/hoper/go/v2/note/internal/service"
@@ -17,7 +17,7 @@ import (
 )
 
 func main() {
-	defer v2.Start(config.Conf, dao.Dao)()
+	defer initialize.Start(config.Conf, dao.Dao)()
 
 	s := server.Server{
 		GRPCServer: func() *grpc.Server {

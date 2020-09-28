@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"unsafe"
 
-	"github.com/liov/hoper/go/v2/initialize/v2"
+	"github.com/liov/hoper/go/v2/initialize"
 	model "github.com/liov/hoper/go/v2/protobuf/note"
 	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/go/v2/utils/net/http/server"
@@ -17,7 +17,7 @@ type TestService struct {
 
 func (*TestService) GC(ctx context.Context, req *model.GCReq) (*empty.Empty, error) {
 	//address:= strconv.FormatUint()
-	init := (*initialize.InitConfig)(unsafe.Pointer(uintptr(req.Address)))
+	init := (*initialize.Init)(unsafe.Pointer(uintptr(req.Address)))
 	fmt.Println(*init)
 	return &empty.Empty{}, nil
 }

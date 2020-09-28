@@ -29,7 +29,7 @@ type dao struct {
 	MailAuth smtp.Auth
 }
 
-// Close close the resource.
+// CloseDao close the resource.
 func (d *dao) Close() {
 	if d.Bolt != nil {
 		d.Bolt.Close()

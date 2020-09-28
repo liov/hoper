@@ -7,9 +7,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/reflect3"
 	"gorm.io/driver/mysql"
-	_ "gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
-	_ "gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -83,9 +81,11 @@ func (init *Init) P2DB() *gorm.DB {
 	rawDB.SetMaxIdleConns(conf.MaxIdleConns)
 	rawDB.SetMaxOpenConns(conf.MaxOpenConns)
 	if init.Env == PRODUCT {
-		db.Config.Logger.LogMode(logger.Silent)
+		db.Config.Logger = logger.Default.LogMode(logger.Silent)
+	} else {
+		db.Config.Logger = logger.Default.LogMode(logger.Info)
 	}
-	//i.closes = append(i.closes,db.Close)
+	//i.closes = append(i.closes,db.CloseDao)
 	//closes = append(closes, func() {log.Info("数据库已关闭")})
 	return db
 }

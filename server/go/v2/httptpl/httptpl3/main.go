@@ -5,8 +5,7 @@ import (
 	"github.com/kataras/iris/v12/mvc"
 	"github.com/liov/hoper/go/v2/httptpl/httptpl3/internal/config"
 	"github.com/liov/hoper/go/v2/httptpl/httptpl3/internal/service"
-	_ "github.com/liov/hoper/go/v2/httptpl/httptpl3/internal/service"
-	v2 "github.com/liov/hoper/go/v2/initialize/v2"
+	"github.com/liov/hoper/go/v2/initialize"
 	"github.com/liov/hoper/go/v2/utils/net/http/server"
 )
 
@@ -15,11 +14,11 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		defer f.Close()
+		defer f.CloseDao()
 
 		trace.Start(f)
 		defer trace.Stop()*/
-	defer v2.Start(config.Conf, nil)()
+	defer initialize.Start(config.Conf, nil)()
 
 	s := server.Server{
 		IrisHandle: func(app *iris.Application) {

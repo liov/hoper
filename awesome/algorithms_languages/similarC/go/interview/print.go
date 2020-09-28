@@ -10,6 +10,6 @@ func main() {
 	s := fmt.Sprintf("%s bar", "foo")
 	println(s) //内置print输出顺序并不能确定
 	/*	file,_:=os.Create("interview/foo.txt")
-		defer file.Close()*/
+		defer file.CloseDao()*/
 	fmt.Fprintf(os.Stdout, "%s\n", "foo")
 }

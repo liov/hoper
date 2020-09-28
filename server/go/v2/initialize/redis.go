@@ -40,7 +40,7 @@ func (conf *RedisConfig) Generate() *redis.Pool {
 			return err
 		},
 	}
-	//closes = append(closes,pool.Close)
+	//closes = append(closes,pool.CloseDao)
 	return pool
 }
 

@@ -2,7 +2,6 @@ package get
 
 import (
 	"github.com/liov/hoper/go/v2/initialize"
-	v2 "github.com/liov/hoper/go/v2/initialize/v2"
 	"gorm.io/gorm"
 )
 
@@ -25,6 +24,6 @@ func GetDB() *gorm.DB {
 	if dao.GORMDB != nil {
 		return dao.GORMDB
 	}
-	v2.Start(&config, &dao)
+	initialize.Start(&config, &dao)
 	return dao.GORMDB
 }

@@ -4,9 +4,9 @@ import (
 	"context"
 	"log"
 
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/liov/hoper/go/v2/gateway/internal/config"
-	"github.com/liov/hoper/go/v2/initialize/v2"
+	"github.com/liov/hoper/go/v2/initialize"
 	note "github.com/liov/hoper/go/v2/protobuf/note"
 	user "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/utils/net/http/server"
@@ -20,11 +20,11 @@ func main() {
 	s := server.Server{
 		GatewayRegistr: func(ctx context.Context, mux *runtime.ServeMux) {
 			opts := []grpc.DialOption{grpc.WithInsecure()}
-			err := user.RegisterUserServiceHandlerFromEndpoint(ctx, mux, initialize.BasicConfig.NacosConfig.GetServiceEndPort("user"), opts)
+			err := user.RegisterUserServiceHandlerFromEndpoint(ctx, mux, initialize.InitConfig.NacosConfig.GetServiceEndPort("user"), opts)
 			if err != nil {
 				log.Fatal(err)
 			}
-			err = note.RegisterNoteServiceHandlerFromEndpoint(ctx, mux, initialize.BasicConfig.NacosConfig.GetServiceEndPort("note"), opts)
+			err = note.RegisterNoteServiceHandlerFromEndpoint(ctx, mux, initialize.InitConfig.NacosConfig.GetServiceEndPort("note"), opts)
 			if err != nil {
 				log.Fatal(err)
 			}
