@@ -9,6 +9,7 @@ import (
 	"reflect"
 	"strings"
 	"sync"
+	"testing"
 	"time"
 
 	"github.com/BurntSushi/toml"
@@ -37,6 +38,7 @@ func init() {
 	flag.StringVar(&Env, "env", DEVELOPMENT, "环境")
 	flag.StringVar(&AddConfig, "add", "", "额外配置文件名")
 	agent := flag.Bool("agent", false, "是否启用代理")
+	testing.Init()
 	flag.Parse()
 	if *agent {
 		proxyURL, _ := url.Parse("socks5://localhost:1080")
