@@ -18,6 +18,7 @@ require (
 	github.com/cenk/backoff v2.2.1+incompatible // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/etcd-io/bbolt v1.3.3
+	github.com/facebook/ent v0.4.3
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/facebookgo/ensure v0.0.0-20160127193407-b4ab57deab51 // indirect
 	github.com/facebookgo/stack v0.0.0-20160209184415-751773369052 // indirect
@@ -51,7 +52,7 @@ require (
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/iris-contrib/schema v0.0.1 // indirect
 	github.com/jinzhu/configor v1.1.1
-	github.com/json-iterator/go v1.1.9
+	github.com/json-iterator/go v1.1.10
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/iris/v12 v12.1.8
@@ -75,7 +76,7 @@ require (
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/smartystreets/assertions v0.0.0-20190116191733-b6c0e53d7304 // indirect
 	github.com/spf13/viper v1.6.1
-	github.com/stretchr/testify v1.5.1
+	github.com/stretchr/testify v1.6.1
 	github.com/tidwall/buntdb v1.1.2 // indirect
 	github.com/tidwall/gjson v1.3.5 // indirect
 	github.com/urfave/cli/v2 v2.2.0 // indirect
@@ -86,16 +87,15 @@ require (
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	go.uber.org/atomic v1.6.0
 	go.uber.org/zap v1.16.0
-	golang.org/x/net v0.0.0-20200707034311-ab3426394381
+	golang.org/x/net v0.0.0-20200822124328-c89045814202
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/tools v0.0.0-20200626032829-bcbc01e07a20
+	golang.org/x/tools v0.0.0-20200904185747-39188db58858
 	google.golang.org/genproto v0.0.0-20200808173500-a06252235341
 	google.golang.org/grpc v1.31.1
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v0.0.0-20200626030347-424195440776
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/oauth2.v3 v3.12.0
 	gopkg.in/yaml.v2 v2.2.5
-	gopkg.in/yaml.v3 v3.0.0-20191120175047-4206685974f2 // indirect
 	gorm.io/driver/mysql v1.0.1
 	gorm.io/driver/postgres v1.0.0
 	gorm.io/driver/sqlite v1.1.3

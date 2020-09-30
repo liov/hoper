@@ -4,7 +4,7 @@ import 'user.dart';
 
 part 'moment.g.dart';
 
-@JsonSerializable(nullable: false)
+@JsonSerializable(nullable: true)
 class Moment {
   Moment();
   int id;
