@@ -33,9 +33,12 @@ func (User) Fields() []ent.Field {
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("cars", Car.Type).StorageKey(edge.Column("owner_id")),
+		edge.To("pets", Pet.Type).StorageKey(edge.Column("owner_id")),
+		edge.To("friends", User.Type),
 		// Create an inverse-edge called "groups" of type `Group`
 		// and reference it to the "users" edge (in Group schema)
 		// explicitly using the `Ref` method.
 		edge.From("groups", Group.Type).Ref("users"),
+		edge.From("manage", Group.Type).Ref("admin"),
 	}
 }

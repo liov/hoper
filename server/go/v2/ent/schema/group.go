@@ -26,5 +26,6 @@ func (Group) Fields() []ent.Field {
 func (Group) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("users", User.Type),
+		edge.To("admin", User.Type).StorageKey(edge.Column("admin_id")).Unique(),
 	}
 }
