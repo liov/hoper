@@ -34,7 +34,12 @@
         width: 200upx;
         margin-top: 200upx;
     }
-	.title {
+  .text-area {
+    display: flex;
+    justify-content: center;
+  }
+
+  .title {
 		font-size: 36upx;
 		color: #8f8f94;
 	}
