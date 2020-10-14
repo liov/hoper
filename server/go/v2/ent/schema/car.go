@@ -29,6 +29,7 @@ func (Car) Edges() []ent.Edge {
 			Ref("cars").
 			// setting the edge to unique, ensure
 			// that a car can have only one owner.
-			Unique(),
+			Unique().
+			Required(),
 	}
 }
