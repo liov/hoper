@@ -33,9 +33,9 @@ type ErpSession struct {
 func main() {
 	sess := &ErpSession{
 		EmployeeId:    1,
-		Type:          0,
-		CompId:        11100,
-		FilterCompIds: []int{11100},
+		Type:          3,
+		CompId:        1,
+		FilterCompIds: []int{},
 	}
 	data, _ := json.Marshal(sess)
 	log.Println(string(data))
