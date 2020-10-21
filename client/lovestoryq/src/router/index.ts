@@ -1,33 +1,43 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
-import Moment from "../views/Moment.vue";
+import {
+  createRouter,
+  createWebHashHistory,
+  NavigationGuard,
+  RouteRecordRaw
+} from "vue-router";
 import store from "@/store/index";
+
+//鉴权
+const authenticated: NavigationGuard = (to, from, next) => {
+  console.log(store.state.user);
+  if (store.state.user != null) next();
+  else next({ name: "Login" });
+};
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    name: "Moment",
-    component: Moment
+    name: "Index",
+    component: () => import("../views/Moment.vue")
   },
   {
     path: "/about",
-    name: "About",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue")
+    component: () => import("../views/About.vue")
   },
   {
     path: "/me",
     name: "Home",
-    beforeEnter: (to, from, next) => {
-      if (store.state.user != null) next();
-      else next({ name: "Login" });
-    },
-    component: () => import(/* webpackChunkName: "about" */ "../views/Home.vue")
+    beforeEnter: authenticated,
+    component: () => import("../views/Home.vue")
   },
   {
     path: "/login",
     name: "Login",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/user/login.vue")
+    component: () => import("../views/user/login.vue")
+  },
+  {
+    path: "/moment/add",
+    //beforeEnter: authenticated,
+    component: () => import("../views/moment/add.vue")
   }
 ];
 

@@ -2,9 +2,12 @@ package claims
 
 import (
 	"errors"
+	"reflect"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/kataras/iris/v12/context"
+	"github.com/kataras/iris/v12/hero"
 	"github.com/liov/hoper/go/v2/httptpl/httptpl3/internal/config"
 	"github.com/liov/hoper/go/v2/protobuf/user"
 )
@@ -42,4 +45,11 @@ func (claims *Claims) ParseToken(token string) error {
 		}
 	}
 	return errors.New("未登录")
+}
+
+var SESSION = hero.Dependency{
+	Handle: func(ctx *context.Context, input *hero.Input) (reflect.Value, error) {
+		var claims = new(Claims)
+		return reflect.ValueOf(claims), nil
+	},
 }

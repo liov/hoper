@@ -18,11 +18,16 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-
-import { Toast, Notify } from "vant";
+import store from "@/store/index";
 
 @Options({})
-export default class App extends Vue {}
+export default class App extends Vue {
+  created() {
+    if (store.state.user == null) {
+      store.dispatch("getUser");
+    }
+  }
+}
 </script>
 
 <style lang="scss">
