@@ -21,7 +21,10 @@ import {
   Notify,
   Form,
   Field,
-  Button
+  Button,
+  Uploader,
+  Picker,
+  Popup
 } from "vant";
 
 createApp(App)
@@ -44,4 +47,7 @@ createApp(App)
   .use(Form)
   .use(Field)
   .use(Button)
+  .use(Uploader)
+  .use(Picker)
+  .use(Popup)
   .mount("#app");

@@ -42,13 +42,18 @@
 import { Options, Vue } from "vue-class-component";
 import MomentList from "@/components/moment/List.vue"; // @ is an alias to /src
 
+class Props {
+  propMessage!: string;
+}
+
 @Options({
   components: {
     MomentList
   }
 })
-export default class Moment extends Vue {
+export default class Moment extends Vue.props(Props) {
   active = 0;
+
   onChange(index: number) {
     this.$toast({ message: index });
   }

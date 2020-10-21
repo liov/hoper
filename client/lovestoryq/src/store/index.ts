@@ -1,6 +1,5 @@
 import { createStore } from "vuex";
 import axios from "axios";
-import CookieUtils from "@/plugin/utils/cookie";
 
 export default createStore({
   state: {
@@ -16,21 +15,19 @@ export default createStore({
     }
   },
   actions: {
-    async getUser({ commit }, store) {
-      if (store.state.user) return;
-
-      const token = CookieUtils.getCookie("token", document.cookie);
+    async getUser({ state, commit }, params) {
+      if (state.user) return;
+      const token = localStorage.getItem("token");
       if (token) {
         commit("SET_TOKEN", token);
-        await axios.get(`/api/user/get`).then(res => {
-          // 跟后端的初始化配合
-          if (res.status === 200) commit("SET_USER", res.data);
-        });
+        const res = await axios.get(`/api/user/get`);
+        // 跟后端的初始化配合
+        if (res.data.code === 200) commit("SET_USER", res.data.data);
       }
     },
     async login({ commit }, params) {
       try {
-        const { data } = await axios.post("/user/login", params);
+        const { data } = await axios.post("/api/user/login", params);
         commit("SET_USER", data);
       } catch (error) {
         if (error.response && error.response.status === 401) {

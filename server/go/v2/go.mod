@@ -9,6 +9,8 @@ require (
 	github.com/99designs/gqlgen v0.11.3
 	github.com/AsynkronIT/protoactor-go v0.0.0-20200221110811-81497e71df85 // indirect
 	github.com/BurntSushi/toml v0.3.1
+	github.com/CloudyKit/jet/v3 v3.0.0 // indirect
+	github.com/Joker/hpp v1.0.0 // indirect
 	github.com/Shopify/sarama v1.24.0
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/biogo/store v0.0.0-20190426020002-884f370e325d // indirect
@@ -16,6 +18,7 @@ require (
 	github.com/boombuler/barcode v1.0.0
 	github.com/brahma-adshonor/gohook v0.0.0-20200311033618-28b944a6fdfa // indirect
 	github.com/cenk/backoff v2.2.1+incompatible // indirect
+	github.com/dgraph-io/badger v1.6.0 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/etcd-io/bbolt v1.3.3
 	github.com/facebook/ent v0.4.3
@@ -23,7 +26,7 @@ require (
 	github.com/facebookgo/ensure v0.0.0-20160127193407-b4ab57deab51 // indirect
 	github.com/facebookgo/stack v0.0.0-20160209184415-751773369052 // indirect
 	github.com/facebookgo/subset v0.0.0-20150612182917-8dac2c3c4870 // indirect
-	github.com/fsnotify/fsnotify v1.4.7
+	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gavv/monotime v0.0.0-20190418164738-30dba4353424 // indirect
 	github.com/gin-gonic/gin v1.4.0 // indirect
 	github.com/go-openapi/loads v0.19.4
@@ -51,18 +54,19 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.0.0-beta.4
 	github.com/hashicorp/consul v1.6.2 // indirect
 	github.com/imkira/go-interpol v1.1.0 // indirect
-	github.com/iris-contrib/schema v0.0.1 // indirect
+	github.com/iris-contrib/blackfriday v2.0.0+incompatible // indirect
+	github.com/iris-contrib/pongo2 v0.0.1 // indirect
 	github.com/jinzhu/configor v1.1.1
 	github.com/json-iterator/go v1.1.10
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
-	github.com/kataras/iris/v12 v12.1.8
+	github.com/kataras/iris/v12 v12.2.0-alpha.0.20201018152601-b335ab9c78d2
 	github.com/liov/protopatch2 v0.0.0-20200917092858-0c3cd79171e9
 	github.com/lni/dragonboat v2.1.7+incompatible
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/markbates/goth v1.63.0
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible // indirect
-	github.com/microcosm-cc/bluemonday v1.0.2
+	github.com/microcosm-cc/bluemonday v1.0.4
 	github.com/modern-go/reflect2 v1.0.1
 	github.com/moul/http2curl v1.0.0 // indirect
 	github.com/mwitkow/go-proto-validators v0.2.0
@@ -88,7 +92,7 @@ require (
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	go.uber.org/atomic v1.6.0
 	go.uber.org/zap v1.16.0
-	golang.org/x/net v0.0.0-20200822124328-c89045814202
+	golang.org/x/net v0.0.0-20201002202402-0a1ea396d57c
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/tools v0.0.0-20200904185747-39188db58858
 	google.golang.org/genproto v0.0.0-20200808173500-a06252235341
@@ -96,7 +100,7 @@ require (
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v0.0.0-20200626030347-424195440776
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/oauth2.v3 v3.12.0
-	gopkg.in/yaml.v2 v2.2.5
+	gopkg.in/yaml.v2 v2.3.0
 	gorm.io/driver/mysql v1.0.1
 	gorm.io/driver/postgres v1.0.0
 	gorm.io/driver/sqlite v1.1.3

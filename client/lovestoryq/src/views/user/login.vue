@@ -5,7 +5,7 @@
         <van-form @submit="onSubmit">
           <van-field
             v-model="username"
-            name="username"
+            name="input"
             label="用户名"
             placeholder="用户名"
             :rules="[{ required: true, message: '请填写用户名' }]"
@@ -20,9 +20,9 @@
           />
           <div class="captcha">
             <div
-                class="l-captcha"
-                data-site-key="ff3498d2c6ffa1178cbf4fb6b445a8b3"
-                data-width="200"
+              class="l-captcha"
+              data-site-key="ff3498d2c6ffa1178cbf4fb6b445a8b3"
+              data-width="200"
             />
           </div>
           <div style="margin: 16px;">
@@ -38,7 +38,8 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import axios from "axios"
+import axios from "axios";
+import store from "@/store/index";
 
 @Options({
   components: {}
@@ -61,9 +62,21 @@ export default class Login extends Vue {
     s.parentNode?.removeChild(c);
   }
 
-  onSubmit(values: object) {
-    const captcha = (document.getElementById("lc-captcha-response") as HTMLInputElement).value
-    axios.post('/api/user/login',{...values,captcha:captcha})
+  async onSubmit(values: object) {
+    const captcha = (document.getElementById(
+      "lc-captcha-response"
+    ) as HTMLInputElement).value;
+    const res = await axios.post("/api/user/login", {
+      ...values,
+      luosimao: captcha
+    });
+    if (res.data.code == 200) {
+      store.commit("SET_USER", res.data.data);
+      store.commit("SET_TOKEN", res.data.token);
+      localStorage.setItem("token", res.data.token);
+      axios.defaults.headers.common["Authorization"] = res.data.token;
+      await this.$router.push("/");
+    }
   }
 }
 </script>
@@ -72,8 +85,8 @@ export default class Login extends Vue {
 .login {
   margin-top: 13rem;
 }
-.captcha{
-  display:flex;
+.captcha {
+  display: flex;
   justify-content: center;
 }
 </style>
