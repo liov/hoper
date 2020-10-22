@@ -54,7 +54,7 @@ func handleStringMessage(message *nsq.Message) error {
 	return nil
 }
 
-var reflectinvoker *reflect3.Reflectinvoker
+var reflectinvoker *reflect3.ReflectInvoker
 
 func handleJsonMessage(message *nsq.Message) error {
 

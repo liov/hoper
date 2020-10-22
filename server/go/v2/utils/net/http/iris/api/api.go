@@ -22,7 +22,7 @@ func OpenApi(mux *iris.Application, filePath string) {
 }
 
 // Deprecated
-func ApiMiddle(ctx context.Context) {
+func ApiMiddle(ctx *context.Context) {
 	currentRouteName := ctx.GetCurrentRoute().Name()[len(ctx.Method()):]
 
 	var pathItem *spec.PathItem
