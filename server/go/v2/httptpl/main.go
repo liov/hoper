@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/liov/hoper/go/v2/httptpl/httptpl/internal/config"
-	_ "github.com/liov/hoper/go/v2/httptpl/httptpl/internal/service"
+	"github.com/liov/hoper/go/v2/httptpl/internal/config"
+	_ "github.com/liov/hoper/go/v2/httptpl/internal/service"
 	"github.com/liov/hoper/go/v2/initialize"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 )

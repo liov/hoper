@@ -19,7 +19,7 @@ type Response struct {
 	ErrorMsg string        `json:"errorMsg"`
 }
 
-type Reflectinvoker struct {
+type ReflectInvoker struct {
 	Methods map[string]reflect.Value
 }
 
@@ -30,13 +30,13 @@ const (
 	ParameterNotMatch = "ParameterNotMatch"
 )
 
-func NewReflectinvoker() *Reflectinvoker {
-	return &Reflectinvoker{
+func NewReflectinvoker() *ReflectInvoker {
+	return &ReflectInvoker{
 		Methods: make(map[string]reflect.Value),
 	}
 }
 
-func (r *Reflectinvoker) RegisterMethod(v interface{}) {
+func (r *ReflectInvoker) RegisterMethod(v interface{}) {
 	reflectType := reflect.TypeOf(v)
 	value := reflect.ValueOf(v)
 
@@ -48,12 +48,12 @@ func (r *Reflectinvoker) RegisterMethod(v interface{}) {
 
 }
 
-func (r *Reflectinvoker) InvokeByReflectArgs(funcName string, par []reflect.Value) []reflect.Value {
+func (r *ReflectInvoker) InvokeByReflectArgs(funcName string, par []reflect.Value) []reflect.Value {
 
 	return r.Methods[funcName].Call(par)
 }
 
-func (r *Reflectinvoker) InvokeByInterfaceArgs(funcName string, Params []interface{}) []reflect.Value {
+func (r *ReflectInvoker) InvokeByInterfaceArgs(funcName string, Params []interface{}) []reflect.Value {
 
 	paramsValue, err := convertParam(r.Methods[funcName], Params)
 
@@ -64,7 +64,7 @@ func (r *Reflectinvoker) InvokeByInterfaceArgs(funcName string, Params []interfa
 	return r.Methods[funcName].Call(paramsValue)
 }
 
-func (r *Reflectinvoker) InvokeByJson(byteData []byte) []byte {
+func (r *ReflectInvoker) InvokeByJson(byteData []byte) []byte {
 
 	req := &Request{}
 	err := json.Json.Unmarshal(byteData, req)

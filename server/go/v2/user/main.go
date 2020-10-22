@@ -46,8 +46,8 @@ func main() {
 		},
 		IrisHandle: func(app *iris.Application) {
 			oauth.RegisterOauthServiceHandlerServer(app, service.GetOauthService())
-			app.Get("/oauth/login", func(ctx context2.Context) {
-				ctx.ServeFile("./static/login.html", false)
+			app.Get("/oauth/login", func(ctx *context2.Context) {
+				ctx.ServeFile("./static/login.html")
 			})
 		},
 		GraphqlResolve: model.NewExecutableSchema(model.Config{
