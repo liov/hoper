@@ -53,6 +53,8 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import axios from "axios";
+import {upload} from '@/plugin/utils/upload'
+
 @Options({})
 export default class MomentAdd extends Vue {
   message = "";
@@ -65,7 +67,8 @@ export default class MomentAdd extends Vue {
     console.log(file);
     this.$toast("文件大小不能超过 500kb");
   }
-  afterRead(file: File) {
+  afterRead(file: any) {
+    upload('moment',file.file)
     // 此时可以自行将文件上传至服务器
     console.log(file);
   }
@@ -82,7 +85,7 @@ export default class MomentAdd extends Vue {
     }
   }
   onConfirm(value: string) {
-    console.log(value)
+    console.log(value);
     this.permission = value;
     this.showPicker = false;
   }

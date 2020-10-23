@@ -13,7 +13,7 @@
               <img :src="item.user.avatar_url" />
               <div class="content">
                 <span>{{ item.user.name }}</span>
-                <span>{{ item.created_at }}</span>
+                <span>{{ $date2s(item.created_at) }}</span>
                 <div class="van-multi-ellipsis--l3">
                   {{ item.content }}
                 </div>
