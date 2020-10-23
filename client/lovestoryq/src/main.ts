@@ -4,6 +4,8 @@ import "./registerServiceWorker";
 import router from "./router";
 import store from "./store";
 import "@/plugin/axios";
+/// <reference path = "./plugin/plugin.d.ts" />;
+import HoperPlugin from "@/plugin/plugin"
 import {
   Col,
   Row,
@@ -50,4 +52,5 @@ createApp(App)
   .use(Uploader)
   .use(Picker)
   .use(Popup)
+  .use(HoperPlugin)
   .mount("#app");
