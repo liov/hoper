@@ -1,7 +1,10 @@
 package qrcode
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"image/jpeg"
+	"os"
 
 	"github.com/boombuler/barcode"
 	"github.com/boombuler/barcode/qr"
@@ -44,7 +47,9 @@ func GetQrCodeFullUrl(name string) string {
 }*/
 
 func GetQrCodeFileName(value string) string {
-	return EncodeMD5(value)
+	m := md5.New()
+	m.Write([]byte(value))
+	return hex.EncodeToString(m.Sum(nil))
 }
 
 func (q *QrCode) GetQrCodeExt() string {
@@ -53,17 +58,16 @@ func (q *QrCode) GetQrCodeExt() string {
 
 func (q *QrCode) CheckEncode(path string) bool {
 	src := path + GetQrCodeFileName(q.URL) + q.GetQrCodeExt()
-	if CheckNotExist(src) == true {
-		return false
-	}
+	_, err := os.Stat(src)
 
-	return true
+	return !os.IsNotExist(err)
 }
 
 func (q *QrCode) Encode(path string) (string, string, error) {
 	name := GetQrCodeFileName(q.URL) + q.GetQrCodeExt()
 	src := path + name
-	if CheckNotExist(src) == true {
+	_, err := os.Stat(src)
+	if os.IsNotExist(err) == true {
 		code, err := qr.Encode(q.URL, q.Level, q.Mode)
 		if err != nil {
 			return "", "", err
@@ -74,7 +78,7 @@ func (q *QrCode) Encode(path string) (string, string, error) {
 			return "", "", err
 		}
 
-		f, err := MustOpen(name, path)
+		f, err := os.Open(path + name)
 		if err != nil {
 			return "", "", err
 		}
