@@ -10,11 +10,10 @@ import (
 	"go/types"
 	"log"
 	"path/filepath"
-	"reflect"
 	"regexp"
 	"strings"
 
-	"github.com/liov/hoper/go/v2/tools/proropatch/patch/ident"
+	"github.com/liov/protopatch2/patch/ident"
 	"golang.org/x/tools/go/ast/astutil"
 
 	"google.golang.org/protobuf/compiler/protogen"
@@ -30,42 +29,38 @@ import (
 // - go_enum_name (Enum option) overrides the name of an enum type.
 // - go_value_name (EnumValue option) overrides the name of an enum const.
 type Patcher struct {
-	gen               *protogen.Plugin
-	fset              *token.FileSet
-	files             []*ast.File
-	filesByName       map[string]*ast.File
-	info              *types.Info
-	packages          []*Package
-	packagesByPath    map[string]*Package
-	packagesByName    map[string]*Package
-	renames           map[protogen.GoIdent]string
-	typeRenames       map[protogen.GoIdent]string
-	valueRenames      map[protogen.GoIdent]string
-	fieldRenames      map[protogen.GoIdent]string
-	methodRenames     map[protogen.GoIdent]string
-	objectRenames     map[types.Object]string
-	tags              map[protogen.GoIdent]string
-	fieldTags         map[types.Object]string
-	enumRenames       map[protogen.GoIdent]map[string]string
-	objectEnumRenames map[types.Object]map[string]string
+	gen            *protogen.Plugin
+	fset           *token.FileSet
+	files          []*ast.File
+	filesByName    map[string]*ast.File
+	info           *types.Info
+	packages       []*Package
+	packagesByPath map[string]*Package
+	packagesByName map[string]*Package
+	renames        map[protogen.GoIdent]string
+	typeRenames    map[protogen.GoIdent]string
+	valueRenames   map[protogen.GoIdent]string
+	fieldRenames   map[protogen.GoIdent]string
+	methodRenames  map[protogen.GoIdent]string
+	objectRenames  map[types.Object]string
+	tags           map[protogen.GoIdent]string
+	fieldTags      map[types.Object]string
 }
 
 // NewPatcher returns an initialized Patcher for gen.
 func NewPatcher(gen *protogen.Plugin) (*Patcher, error) {
 	p := &Patcher{
-		gen:               gen,
-		packagesByPath:    make(map[string]*Package),
-		packagesByName:    make(map[string]*Package),
-		renames:           make(map[protogen.GoIdent]string),
-		typeRenames:       make(map[protogen.GoIdent]string),
-		valueRenames:      make(map[protogen.GoIdent]string),
-		fieldRenames:      make(map[protogen.GoIdent]string),
-		methodRenames:     make(map[protogen.GoIdent]string),
-		objectRenames:     make(map[types.Object]string),
-		tags:              make(map[protogen.GoIdent]string),
-		fieldTags:         make(map[types.Object]string),
-		enumRenames:       make(map[protogen.GoIdent]map[string]string),
-		objectEnumRenames: make(map[types.Object]map[string]string),
+		gen:            gen,
+		packagesByPath: make(map[string]*Package),
+		packagesByName: make(map[string]*Package),
+		renames:        make(map[protogen.GoIdent]string),
+		typeRenames:    make(map[protogen.GoIdent]string),
+		valueRenames:   make(map[protogen.GoIdent]string),
+		fieldRenames:   make(map[protogen.GoIdent]string),
+		methodRenames:  make(map[protogen.GoIdent]string),
+		objectRenames:  make(map[types.Object]string),
+		tags:           make(map[protogen.GoIdent]string),
+		fieldTags:      make(map[types.Object]string),
 	}
 	return p, p.scan()
 }
@@ -109,30 +104,20 @@ func (p *Patcher) scanEnum(e *protogen.Enum) {
 	if stringerName != "" {
 		p.RenameMethod(ident.WithChild(e.GoIdent, "String"), stringerName)
 	}
-	noPrefix := opts.GetNoPrefix()
-	p.enumRenames[e.GoIdent] = make(map[string]string)
 	for _, v := range e.Values {
-		p.scanEnumValue(v, noPrefix)
+		p.scanEnumValue(v)
 	}
 }
 
-func (p *Patcher) scanEnumValue(v *protogen.EnumValue, noPrefix bool) {
+func (p *Patcher) scanEnumValue(v *protogen.EnumValue) {
 	e := v.Parent
 	opts := valueOptions(v)
 	newName := opts.GetName()
-	if noPrefix {
-		newName = replacePrefix(v.GoIdent.GoName, e.GoIdent.GoName, "")
-	}
-
 	if newName == "" && p.isRenamed(e.GoIdent) {
 		newName = replacePrefix(v.GoIdent.GoName, e.GoIdent.GoName, p.nameFor(e.GoIdent))
 	}
 	if newName != "" {
 		p.RenameValue(v.GoIdent, newName) // Value const
-	}
-	cnName := opts.GetCn()
-	if m, ok := p.enumRenames[e.GoIdent]; ok && cnName != "" {
-		m[fmt.Sprintf("%q", strings.TrimPrefix(v.GoIdent.GoName, e.GoIdent.GoName+"_"))] = fmt.Sprintf("%q", cnName)
 	}
 }
 
@@ -157,7 +142,7 @@ func (p *Patcher) scanMessage(m *protogen.Message, parent *protogen.Message) {
 }
 
 func replacePrefix(s, prefix, with string) string {
-	return with + strings.TrimPrefix(s, prefix)[1:]
+	return with + strings.TrimPrefix(s, prefix)
 }
 
 func (p *Patcher) scanOneof(o *protogen.Oneof) {
@@ -388,17 +373,6 @@ func (p *Patcher) checkGoFiles() error {
 		p.fieldTags[obj] = tags
 	}
 
-	for id, tags := range p.enumRenames {
-		obj, _ := p.find(ident.WithSuffix(id, "_name"))
-		if obj != nil {
-			p.objectEnumRenames[obj] = tags
-		}
-		obj, _ = p.find(ident.WithSuffix(id, "_value"))
-		if obj != nil {
-			p.objectEnumRenames[obj] = tags
-		}
-	}
-
 	return nil
 }
 
@@ -539,19 +513,6 @@ func (p *Patcher) patchGoFiles() error {
 }
 
 func (p *Patcher) patchIdent(id *ast.Ident, obj types.Object) {
-	//自定义值
-	if m := p.objectEnumRenames[obj]; m != nil {
-		for _, v := range id.Obj.Decl.(*ast.ValueSpec).Values {
-			for _, vv := range v.(*ast.CompositeLit).Elts {
-				if cn, ok := m[vv.(*ast.KeyValueExpr).Key.(*ast.BasicLit).Value]; ok {
-					vv.(*ast.KeyValueExpr).Key.(*ast.BasicLit).Value = cn
-				}
-				if cn, ok := m[vv.(*ast.KeyValueExpr).Value.(*ast.BasicLit).Value]; ok {
-					vv.(*ast.KeyValueExpr).Value.(*ast.BasicLit).Value = cn
-				}
-			}
-		}
-	}
 	// Renames
 	name := p.objectRenames[obj]
 	if name != "" {
@@ -571,7 +532,7 @@ func (p *Patcher) patchIdent(id *ast.Ident, obj types.Object) {
 				v.Tag = &ast.BasicLit{}
 			}
 
-			v.Tag.Value = "`" + mergeTags(v.Tag.Value, tags) + "`"
+			v.Tag.Value = mergeTags(v.Tag.Value, tags)
 			log.Printf("Add tags:\t%q.%s %s", obj.Pkg().Path(), id.Name, v.Tag.Value)
 		}
 	}
@@ -579,18 +540,41 @@ func (p *Patcher) patchIdent(id *ast.Ident, obj types.Object) {
 
 // Override tags
 func mergeTags(oldTag, newTag string) string {
-	oldTags := strings.Split(strings.TrimSpace(strings.Trim(oldTag, "` ")), " ")
-	var newTags []string
+	oldTags := strings.Split(strings.TrimSpace(strings.Trim(oldTag, "`")), " ")
+	var tagKeys []string
+	var kvMap = make(map[string]string)
 	for _, tag := range oldTags {
-		var key string
 		if kv := strings.Split(tag, ":"); len(kv) > 0 {
-			key = kv[0]
-		}
-		if value, exist := reflect.StructTag(newTag).Lookup(key); !exist || value == "" {
-			newTags = append(newTags, tag)
+			tagKeys = append(tagKeys, kv[0])
+			if len(kv) > 1 {
+				kvMap[kv[0]] = kv[1]
+			} else {
+				kvMap[kv[0]] = `""`
+			}
 		}
 	}
-	return strings.Join(append(newTags, newTag), " ")
+	newTags := strings.Split(strings.TrimSpace(strings.Trim(newTag, "`")), " ")
+	for _, tag := range newTags {
+		if kv := strings.Split(tag, ":"); len(kv) > 0 {
+			if _, ok := kvMap[kv[0]]; !ok {
+				tagKeys = append(tagKeys, kv[0])
+			}
+			if len(kv) > 1 && kv[1] != "" {
+				kvMap[kv[0]] = kv[1]
+			}
+		}
+	}
+	var builder strings.Builder
+	for i, tag := range tagKeys {
+		builder.WriteString(tag)
+		builder.WriteRune(':')
+		builder.WriteString(kvMap[tag])
+		if i < len(tagKeys)-1 {
+			builder.WriteRune(' ')
+		}
+	}
+
+	return "`" + builder.String() + "`"
 }
 
 func (p *Patcher) patchComments(id *ast.Ident, repl string) {

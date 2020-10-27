@@ -1,9 +1,9 @@
 syntax = "proto3";
 import "google/protobuf/descriptor.proto";
 
-option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/go/cuzproto";
+option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/proto/go";
 
-package cuzproto;
+package go;
 extend google.protobuf.FieldOptions {
     bool non_sensitive = 50000;
 }

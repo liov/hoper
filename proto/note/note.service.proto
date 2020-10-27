@@ -41,6 +41,6 @@ service NoteService {
 message CreateNoteReq {
     string title = 2 [(go.field) = {tags:'gorm:"type:varchar(10)" validate:"gte=3,lte=10" comment:"标题"'}];
     string content = 3 [(go.field)={tags:'gorm:"type:text"'}];
-    string public_name = 4 [(cuzproto.non_sensitive) = true];
+    string public_name = 4 [(go.non_sensitive) = true];
 
 }

@@ -5,7 +5,7 @@ package tools
 import (
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2"
-	_ "github.com/liov/protopatch/cmd/protoc-gen-go-patch"
+	_ "github.com/liov/protopatch2/cmd/protoc-gen-go-patch"
 	_ "google.golang.org/grpc/cmd/protoc-gen-go-grpc"
 	_ "google.golang.org/protobuf/cmd/protoc-gen-go"
 )
@@ -14,5 +14,5 @@ import (
 //go:generate go install google.golang.org/protobuf/cmd/protoc-gen-go
 //go:generate go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
 //go:generate go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
-//go:generate go install github.com/liov/protopatch/cmd/protoc-gen-go-patch
+//go:generate go install github.com/liov/protopatch2/cmd/protoc-gen-go-patch
 //go:generate go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
