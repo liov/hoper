@@ -1,5 +1,5 @@
 syntax = "proto2";
-package cuzproto;
+package gogo;
 
 import "google/protobuf/descriptor.proto";
 

@@ -8,7 +8,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/kataras/iris/v12/context"
 	"github.com/kataras/iris/v12/hero"
-	"github.com/liov/hoper/go/v2/httptpl/httptpl3/internal/config"
+	"github.com/liov/hoper/go/v2/gateway/internal/config"
 	"github.com/liov/hoper/go/v2/protobuf/user"
 )
 
