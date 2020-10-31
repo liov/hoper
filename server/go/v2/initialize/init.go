@@ -16,10 +16,10 @@ import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/jinzhu/configor"
 	"github.com/liov/hoper/go/v2/utils/fs"
+	"github.com/liov/hoper/go/v2/utils/fs/watch"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/nacos"
 	"github.com/liov/hoper/go/v2/utils/reflect3"
-	"github.com/liov/hoper/go/v2/utils/watch"
 )
 
 //约定大于配置

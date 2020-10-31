@@ -1,4 +1,4 @@
-package iris_gateway
+package iris_build
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 )
 
 func Http(irisHandle func(*iris.Application), gatewayHandle gateway.GatewayHandle) http.Handler {
-	gwmux := gateway.Gateway(gatewayHandle)
+
 	//openapi
 	mux := iris.New()
 	iris.RegisterOnInterrupt(func() {
@@ -22,7 +22,11 @@ func Http(irisHandle func(*iris.Application), gatewayHandle gateway.GatewayHandl
 		defer cancel()
 		mux.Shutdown(ctx)
 	})
-	mux.Any("/{grpc:path}", handlerconv.FromStd(gwmux))
+	if gatewayHandle != nil {
+		gwmux := gateway.Gateway(gatewayHandle)
+		mux.Any("/{grpc:path}", handlerconv.FromStd(gwmux))
+	}
+
 	mux.Any("/debug/{path:path}", handlerconv.FromStd(debug.Debug()))
 	if irisHandle != nil {
 		irisHandle(mux)

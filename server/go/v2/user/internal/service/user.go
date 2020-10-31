@@ -22,10 +22,8 @@ import (
 	"github.com/liov/hoper/go/v2/utils/net/mail"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 	"github.com/liov/hoper/go/v2/utils/time2"
-	"github.com/liov/hoper/go/v2/utils/validator"
-	"github.com/liov/hoper/go/v2/utils/verification/code"
-	"github.com/liov/hoper/go/v2/utils/verification/luosimao"
-	"github.com/liov/hoper/go/v2/utils/verification/prm"
+	"github.com/liov/hoper/go/v2/utils/verification"
+	"github.com/liov/hoper/go/v2/utils/verification/validator"
 	"gorm.io/gorm"
 )
 
@@ -45,7 +43,7 @@ func (u *UserService) VerifyCode(ctx context.Context, req *empty.Empty) (*respon
 	device := u.Device(ctx)
 	log.Debug(device)
 	var rep = &response.CommonRep{}
-	vcode := code.Generate()
+	vcode := verification.GenerateCode()
 	log.Info(vcode)
 	rep.Details = vcode
 	rep.Message = "字符串有问题吗啊"
@@ -69,7 +67,7 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 			return nil, errorcode.InvalidArgument.WithMessage("手机号已被注册")
 		}
 	}
-	vcode := code.Generate()
+	vcode := verification.GenerateCode()
 	log.Debug(vcode)
 	key := modelconst.VerificationCodeKey + req.Mail + req.Phone
 	RedisConn := dao.Dao.Redis.Get()
@@ -261,7 +259,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.T
 
 func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginRep, error) {
 
-	if verifyErr := luosimao.LuosimaoVerify(config.Conf.Customize.LuosimaoVerifyURL, config.Conf.Customize.LuosimaoAPIKey, req.Luosimao); verifyErr != nil {
+	if verifyErr := verification.LuosimaoVerify(config.Conf.Customize.LuosimaoVerifyURL, config.Conf.Customize.LuosimaoAPIKey, req.Luosimao); verifyErr != nil {
 		return nil, errorcode.InvalidArgument.WithMessage(verifyErr.Error())
 	}
 
@@ -270,10 +268,10 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 	}
 	var sql string
 
-	switch prm.PhoneOrMail(req.Input) {
-	case prm.Mail:
+	switch verification.PhoneOrMail(req.Input) {
+	case verification.Mail:
 		sql = "mail = ?"
-	case prm.Phone:
+	case verification.Phone:
 		sql = "phone = ?"
 	}
 
@@ -398,7 +396,7 @@ func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.Ge
 }
 
 func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (*response.TinyRep, error) {
-	if verifyErr := luosimao.LuosimaoVerify(config.Conf.Customize.LuosimaoVerifyURL, config.Conf.Customize.LuosimaoAPIKey, req.Luosimao); verifyErr != nil {
+	if verifyErr := verification.LuosimaoVerify(config.Conf.Customize.LuosimaoVerifyURL, config.Conf.Customize.LuosimaoAPIKey, req.Luosimao); verifyErr != nil {
 		return nil, errorcode.InvalidArgument.WithMessage(verifyErr.Error())
 	}
 
@@ -408,7 +406,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 	user, err := userDao.GetByEmailORPhone(nil, req.Input, req.Input, "id", "name", "password")
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			if prm.PhoneOrMail(req.Input) != prm.Phone {
+			if verification.PhoneOrMail(req.Input) != verification.Phone {
 				return nil, errorcode.InvalidArgument.WithMessage("邮箱不存在")
 			} else {
 				return nil, errorcode.InvalidArgument.WithMessage("手机号不存在")
