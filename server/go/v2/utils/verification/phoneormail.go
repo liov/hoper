@@ -1,4 +1,4 @@
-package prm
+package verification
 
 import "regexp"
 

@@ -1,4 +1,4 @@
-package decimal
+package number
 
 import (
 	"database/sql/driver"

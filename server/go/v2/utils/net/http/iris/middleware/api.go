@@ -1,28 +1,18 @@
-package api
+package middleware
 
 import (
-	"mime"
 	"net/http"
 	"reflect"
 	"strings"
 
 	"github.com/go-openapi/spec"
 	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/context"
-	"github.com/kataras/iris/v12/core/handlerconv"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	"github.com/liov/hoper/go/v2/utils/reflect3"
 )
 
-func OpenApi(mux *iris.Application, filePath string) {
-	_ = mime.AddExtensionType(".svg", "image/svg+xml")
-	apidoc.FilePath = filePath
-	mux.Get(apidoc.PrefixUri, handlerconv.FromStd(apidoc.ApiMod))
-	mux.Get(apidoc.PrefixUri+"{mod:path}", handlerconv.FromStd(apidoc.HttpHandle))
-}
-
 // Deprecated
-func ApiMiddle(ctx *context.Context) {
+func ApiMiddle(ctx *iris.Context) {
 	currentRouteName := ctx.GetCurrentRoute().Name()[len(ctx.Method()):]
 
 	var pathItem *spec.PathItem

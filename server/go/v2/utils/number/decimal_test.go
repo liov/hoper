@@ -1,4 +1,4 @@
-package decimal
+package number
 
 import (
 	"fmt"
@@ -54,7 +54,7 @@ func Test_DB(t *testing.T) {
 		Dec  Decimal3 `gorm:"type:decimal(10,2)"`
 		Time time.Time
 	}
-	tx := get.OrmDB.Begin()
+	tx := get.GetDB().Begin()
 	/*	tx.DropTable(&DecTest{})
 		tx.CreateTable(&DecTest{})*/
 	var dec = DecTest{Dec: Decimal3{123, -2, false}}

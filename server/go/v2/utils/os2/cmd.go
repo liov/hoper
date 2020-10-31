@@ -1,4 +1,4 @@
-package cmd
+package os2
 
 import (
 	"log"
