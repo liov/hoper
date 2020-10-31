@@ -27,6 +27,8 @@ const gatewayOut = "grpc-gateway_out=logtostderr=true,paths=source_relative"
 const openapiv2Out = "openapiv2_out=logtostderr=true"
 const govalidatorsOut = "govalidators_out=gogoimport=true,paths=source_relative"
 const gogoprotoOut = "gogo_out=plugins=grpc"
+const gqlNogogoOut = "gqlgen_out=gogoimport=false,paths=source_relative"
+const gqlOut = "graphql_out=paths=source_relative"
 
 var gengql = true
 var files = map[string][]string{
@@ -39,18 +41,14 @@ var files = map[string][]string{
 	"/utils/proto/gogo/*.gen.proto": {gogoprotoOut},
 	"/utils/proto/go/*.proto":       {goOut},
 	"/user/*service.proto": {goOut, grpcOut,
-		gatewayOut,
-		openapiv2Out,
-		govalidatorsOut,
-		"gqlgen_out=gogoimport=false,paths=source_relative",
+		gatewayOut, openapiv2Out, govalidatorsOut,
+		gqlNogogoOut, gqlOut,
 		//"gqlgencfg_out=paths=source_relative",
-		"graphql_out=paths=source_relative"},
+	},
 	"/user/*model.proto": {goOut, grpcOut},
 	"/user/*enum.proto":  {enumOut, goOut, grpcOut},
 	"/note/*service.proto": {goOut, grpcOut,
-		gatewayOut,
-		openapiv2Out,
-		govalidatorsOut},
+		gatewayOut, openapiv2Out, govalidatorsOut},
 	"/note/*model.proto": {goOut, grpcOut},
 }
 
