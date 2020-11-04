@@ -8,6 +8,6 @@
 *.gqlgen.yml
 *.pb.graphqls
 *.gql.go
-/ent/
-!/ent/generate.go
-!/ent/schema/
+/protobuf/ent/
+!/protobuf/ent/generate.go
+!/protobuf/ent/schema/
