@@ -16,7 +16,7 @@ func (m *ErrRep) Error() string {
 	return m.Message
 }
 
-func (x ErrRep) GRPCStatus() *status.Status {
+func (x *ErrRep) GRPCStatus() *status.Status {
 	return status.New(codes.Code(x.Code), x.Message)
 }
 

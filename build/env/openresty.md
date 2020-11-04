@@ -49,5 +49,5 @@ apt install libssl-dev libpq-dev libpcre3-dev libxml2-dev libxslt-dev libgd2-dev
 make
 sudo make install DESTDIR=/whereto make install
 ./nginx -c nginx.conf
-
+./nginx -c nginx.conf -s reload
 ```
