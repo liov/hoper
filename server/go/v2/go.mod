@@ -7,7 +7,6 @@ require (
 	git.apache.org/thrift.git v0.13.0 // indirect
 	github.com/360EntSecGroup-Skylar/excelize/v2 v2.0.2 // indirect
 	github.com/99designs/gqlgen v0.11.3
-	github.com/AsynkronIT/protoactor-go v0.0.0-20200221110811-81497e71df85
 	github.com/BurntSushi/toml v0.3.1
 	github.com/CloudyKit/jet/v3 v3.0.0 // indirect
 	github.com/Joker/hpp v1.0.0 // indirect
@@ -48,7 +47,6 @@ require (
 	github.com/gorilla/sessions v1.2.0 // indirect
 	github.com/graph-gophers/graphql-go v0.0.0-20200309224638-dae41bde9ef9
 	github.com/grpc-ecosystem/go-grpc-middleware v1.1.0
-	github.com/grpc-ecosystem/grpc-gateway v1.9.5
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.0.0-beta.4
 	github.com/hashicorp/consul v1.6.2 // indirect
 	github.com/imkira/go-interpol v1.1.0 // indirect
@@ -96,7 +94,6 @@ require (
 	google.golang.org/genproto v0.0.0-20200808173500-a06252235341
 	google.golang.org/grpc v1.33.1
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v0.0.0-20200626030347-424195440776
-	google.golang.org/grpc/examples v0.0.0-20201014215113-7b167fd6eca1 // indirect
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/oauth2.v3 v3.12.0
 	gopkg.in/yaml.v2 v2.3.0

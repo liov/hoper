@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/reconn"
 	"google.golang.org/grpc/grpclog"
@@ -28,7 +28,7 @@ func CustomHTTPError(ctx context.Context, mux *runtime.ServeMux, marshaler runti
 	const fallback = `{"code": 14, "message": "failed to marshal error message"}`
 
 	w.Header().Del("Trailer")
-	contentType := marshaler.ContentType()
+	contentType := marshaler.ContentType(nil)
 	w.Header().Set("Content-Type", contentType)
 	se, ok := err.(*errorcode.ErrRep)
 	if !ok {

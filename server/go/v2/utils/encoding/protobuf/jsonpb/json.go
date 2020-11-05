@@ -13,7 +13,7 @@ type JSONPb struct {
 	jsoniter.API
 }
 
-func (*JSONPb) ContentType(v interface{}) string {
+func (*JSONPb) ContentType(_ interface{}) string {
 	return "application/json"
 }
 

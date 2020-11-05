@@ -13,7 +13,7 @@ import (
 	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/protobuf/utils/response"
-	"github.com/liov/hoper/go/v2/user/config"
+	"github.com/liov/hoper/go/v2/user/conf"
 	"github.com/liov/hoper/go/v2/user/dao"
 	modelconst "github.com/liov/hoper/go/v2/user/model"
 	"github.com/liov/hoper/go/v2/utils/log"
@@ -140,13 +140,13 @@ func salt(password string) string {
 
 // EncryptPassword 给密码加密
 func encryptPassword(password string) string {
-	hash := salt(password) + config.Conf.Customize.PassSalt + password[5:]
+	hash := salt(password) + conf.Config.Customize.PassSalt + password[5:]
 	return fmt.Sprintf("%x", md5.Sum(strings2.ToBytes(hash)))
 }
 
 func sendMail(action model.Action, curTime int64, user *model.User) {
 	siteName := "hoper"
-	siteURL := "https://" + config.Conf.Server.Domain
+	siteURL := "https://" + conf.Config.Server.Domain
 	var content string
 	title := action.String()
 	secretStr := strconv.FormatInt(curTime, 10) + user.Mail + user.Password
@@ -172,10 +172,10 @@ func sendMail(action model.Action, curTime int64, user *model.User) {
 	//content += "<p><img src=\"" + siteURL + "/images/logo.png\" style=\"height: 42px;\"/></p>"
 	//fmt.Println(content)
 
-	addr := config.Conf.Mail.Host + config.Conf.Mail.Port
+	addr := conf.Config.Mail.Host + conf.Config.Mail.Port
 	m := mail.Mail{
 		FromName: siteName,
-		From:     config.Conf.Mail.From,
+		From:     conf.Config.Mail.From,
 		Subject:  title,
 		Content:  content,
 		To:       []string{user.Mail},
@@ -259,7 +259,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.T
 
 func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginRep, error) {
 
-	if verifyErr := verification.LuosimaoVerify(config.Conf.Customize.LuosimaoVerifyURL, config.Conf.Customize.LuosimaoAPIKey, req.Luosimao); verifyErr != nil {
+	if verifyErr := verification.LuosimaoVerify(conf.Config.Customize.LuosimaoVerifyURL, conf.Config.Customize.LuosimaoAPIKey, req.Luosimao); verifyErr != nil {
 		return nil, errorcode.InvalidArgument.WithMessage(verifyErr.Error())
 	}
 
@@ -308,7 +308,7 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 		Role:         user.Role,
 		LoginTime:    nowStamp,
 	}
-	tokenString, err := jwt.GenerateToken(userInfo.Id, nowStamp, config.Conf.Customize.TokenMaxAge, config.Conf.Customize.TokenSecret)
+	tokenString, err := jwt.GenerateToken(userInfo.Id, nowStamp, conf.Config.Customize.TokenMaxAge, conf.Config.Customize.TokenSecret)
 	if err != nil {
 		return nil, errorcode.Internal
 	}
@@ -332,8 +332,8 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 		Value: tokenString,
 		Path:  "/",
 		//Domain:   "hoper.xyz",
-		Expires:  time.Now().Add(time.Duration(config.Conf.Customize.TokenMaxAge) * time.Second),
-		MaxAge:   int(time.Duration(config.Conf.Customize.TokenMaxAge) * time.Second),
+		Expires:  time.Now().Add(time.Duration(conf.Config.Customize.TokenMaxAge) * time.Second),
+		MaxAge:   int(time.Duration(conf.Config.Customize.TokenMaxAge) * time.Second),
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
@@ -396,7 +396,7 @@ func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.Ge
 }
 
 func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (*response.TinyRep, error) {
-	if verifyErr := verification.LuosimaoVerify(config.Conf.Customize.LuosimaoVerifyURL, config.Conf.Customize.LuosimaoAPIKey, req.Luosimao); verifyErr != nil {
+	if verifyErr := verification.LuosimaoVerify(conf.Config.Customize.LuosimaoVerifyURL, conf.Config.Customize.LuosimaoAPIKey, req.Luosimao); verifyErr != nil {
 		return nil, errorcode.InvalidArgument.WithMessage(verifyErr.Error())
 	}
 

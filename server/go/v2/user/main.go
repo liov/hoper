@@ -9,9 +9,9 @@ import (
 	context2 "github.com/kataras/iris/v12/context"
 	"github.com/liov/hoper/go/v2/initialize"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
-	"github.com/liov/hoper/go/v2/user/internal/config"
-	"github.com/liov/hoper/go/v2/user/internal/dao"
-	"github.com/liov/hoper/go/v2/user/internal/service"
+	"github.com/liov/hoper/go/v2/user/conf"
+	"github.com/liov/hoper/go/v2/user/dao"
+	"github.com/liov/hoper/go/v2/user/service"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/filter"
 	"github.com/liov/hoper/go/v2/utils/net/http/iris/oauth"
@@ -21,7 +21,7 @@ import (
 
 func main() {
 	//配置初始化应该在第一位
-	defer initialize.Start(config.Conf, dao.Dao)()
+	defer initialize.Start(conf.Config, dao.Dao)()
 	s := server.Server{
 		//为了可以自定义中间件
 		GRPCServer: func() *grpc.Server {

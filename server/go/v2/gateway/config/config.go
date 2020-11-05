@@ -59,16 +59,6 @@ type config struct {
 
 var Conf = &config{}
 
-type duration struct {
-	time.Duration
-}
-
-func (d *duration) UnmarshalText(text []byte) error {
-	var err error
-	d.Duration, err = time.ParseDuration(string(text))
-	return err
-}
-
 //固定函数名，init时反射用
 func (c *config) Custom() {
 	if runtime.GOOS == "windows" {

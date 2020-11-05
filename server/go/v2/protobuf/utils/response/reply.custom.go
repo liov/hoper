@@ -33,7 +33,7 @@ func (m *AnyReply) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
 }
 
 func (m *HttpResponse) GetContentType() string {
-	return "text/template"
+	return m.Header["Content-Type"]
 }
 
 func (m *HttpResponse) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {

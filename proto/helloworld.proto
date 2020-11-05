@@ -23,5 +23,5 @@ message HelloRequest {
 
 // The response message containing the greetings
 message HelloReply {
-  int64 time = 1 [(gogoproto.casttype) = "github.com/liov/hoper/go/v2/utils/time2.Time"];
+  int64 time = 1 ;
 }
