@@ -6,8 +6,8 @@ import (
 
 	"github.com/gomodule/redigo/redis"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
-	"github.com/liov/hoper/go/v2/user/internal/config"
-	modelconst "github.com/liov/hoper/go/v2/user/internal/model"
+	"github.com/liov/hoper/go/v2/user/conf"
+	modelconst "github.com/liov/hoper/go/v2/user/model"
 	"github.com/liov/hoper/go/v2/utils/dao/redis/hash"
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	"github.com/liov/hoper/go/v2/utils/log"
@@ -37,7 +37,7 @@ func (conn *UserRedis) UserToRedis(user *model.UserMainInfo) error {
 	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
 
 	conn.Send("SELECT", modelconst.UserIndex)
-	if _, redisErr := conn.Do("SET", loginUserKey, UserString, "EX", config.Conf.Customize.TokenMaxAge); redisErr != nil {
+	if _, redisErr := conn.Do("SET", loginUserKey, UserString, "EX", conf.Config.Customize.TokenMaxAge); redisErr != nil {
 		return redisErr
 	}
 	return nil
@@ -85,7 +85,7 @@ func (conn *UserRedis) UserHashToRedis(user *model.UserMainInfo) error {
 
 	conn.Send("SELECT", modelconst.UserIndex)
 	conn.Send("HMSET", redisArgs...)
-	if _, redisErr := conn.Do("EXPIRE", loginUserKey, config.Conf.Customize.TokenMaxAge); redisErr != nil {
+	if _, redisErr := conn.Do("EXPIRE", loginUserKey, conf.Config.Customize.TokenMaxAge); redisErr != nil {
 		return redisErr
 	}
 	return nil
@@ -123,7 +123,7 @@ func (conn *UserRedis) EfficientUserHashToRedis(user *model.UserMainInfo) error 
 		"Score", user.Score,
 		"Status", uint8(user.Status),
 		"LoginTime", user.LoginTime)
-	if _, redisErr := conn.Do("EXPIRE", loginUserKey, config.Conf.Customize.TokenMaxAge); redisErr != nil {
+	if _, redisErr := conn.Do("EXPIRE", loginUserKey, conf.Config.Customize.TokenMaxAge); redisErr != nil {
 		return redisErr
 	}
 	return nil

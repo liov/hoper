@@ -6,7 +6,6 @@ require (
 	bou.ke/monkey v1.0.1
 	github.com/360EntSecGroup-Skylar/excelize/v2 v2.1.0
 	github.com/AsynkronIT/goconsole v0.0.0-20160504192649-bfa12eebf716
-	github.com/AsynkronIT/protoactor-go v0.0.0-20200221110811-81497e71df85
 	github.com/aws/aws-lambda-go v1.13.3 // indirect
 	github.com/aws/aws-sdk-go v1.27.0 // indirect
 	github.com/bcongdon/corral v0.0.0-20190319213343-1f4ad49dee34

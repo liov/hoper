@@ -1,14 +1,15 @@
-package config
+package conf
 
 import (
 	"runtime"
-	"time"
 
 	"github.com/liov/hoper/go/v2/initialize"
 	"github.com/liov/hoper/go/v2/utils/fs"
 )
 
 type serverConfig struct {
+	Volume fs.Dir
+
 	PassSalt    string
 	TokenMaxAge int64
 	TokenSecret string
@@ -51,17 +52,7 @@ type config struct {
 	Consul   initialize.ConsulConfig
 }
 
-var Conf = &config{}
-
-type duration struct {
-	time.Duration
-}
-
-func (d *duration) UnmarshalText(text []byte) error {
-	var err error
-	d.Duration, err = time.ParseDuration(string(text))
-	return err
-}
+var Config = &config{}
 
 func (c *config) Custom() {
 	if runtime.GOOS == "windows" {
@@ -76,6 +67,4 @@ func (c *config) Custom() {
 	}
 
 	c.Customize.UploadMaxSize = c.Customize.UploadMaxSize * 1024 * 1024
-	c.Server.ReadTimeout = c.Server.ReadTimeout * time.Second
-	c.Server.WriteTimeout = c.Server.WriteTimeout * time.Second
 }
