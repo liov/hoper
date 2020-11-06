@@ -5,15 +5,15 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"github.com/go-openapi/spec"
-	"github.com/kataras/iris/v12"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	"github.com/liov/hoper/go/v2/utils/reflect3"
 )
 
 // Deprecated
-func ApiMiddle(ctx *iris.Context) {
-	currentRouteName := ctx.GetCurrentRoute().Name()[len(ctx.Method()):]
+func ApiMiddle(ctx *gin.Context) {
+	currentRouteName := ctx.Request.RequestURI[len(ctx.Request.Method):]
 
 	var pathItem *spec.PathItem
 
@@ -30,9 +30,9 @@ func ApiMiddle(ctx *iris.Context) {
 		pathItem = new(spec.PathItem)
 	}
 
-	parameters := make([]spec.Parameter, ctx.Params().Store.Len(), ctx.Params().Store.Len())
+	parameters := make([]spec.Parameter, len(ctx.Params), len(ctx.Params))
 
-	params := ctx.Params().Store
+	params := ctx.Params
 
 	for i := range params {
 		key := params[i].Key
@@ -47,7 +47,7 @@ func ApiMiddle(ctx *iris.Context) {
 		}
 	}
 
-	if ctx.URLParam("apidoc") == "stop" {
+	if stop, _ := ctx.GetQuery("apidoc"); stop == "stop" {
 		defer apidoc.WriteToFile("../", "")
 	}
 
@@ -58,13 +58,13 @@ func ApiMiddle(ctx *iris.Context) {
 			Consumes:    []string{"application/x-www-form-urlencoded"},
 			Tags:        []string{"Tags"},
 			Summary:     "Summary",
-			ID:          "currentRouteName" + ctx.Method(),
+			ID:          "currentRouteName" + ctx.Request.Method,
 			Parameters:  parameters,
 			Responses:   &res,
 		},
 	}
 
-	switch ctx.Method() {
+	switch ctx.Request.Method {
 	case http.MethodGet:
 		pathItem.Get = &op
 	case http.MethodPost:

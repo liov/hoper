@@ -10,7 +10,7 @@ spec:
     serviceName: default-http-backend
     servicePort: 80
   rules:
-    - host: dashboard.172.17.0.4.xip.io
+    - host: dashboard.172.17.0.3.xip.io
       http:
         paths:
           - path: /

@@ -5,7 +5,7 @@ go 1.13
 require (
 	bou.ke/monkey v1.0.2
 	git.apache.org/thrift.git v0.13.0 // indirect
-	github.com/360EntSecGroup-Skylar/excelize/v2 v2.0.2 // indirect
+	github.com/360EntSecGroup-Skylar/excelize/v2 v2.0.2
 	github.com/99designs/gqlgen v0.11.3
 	github.com/BurntSushi/toml v0.3.1
 	github.com/CloudyKit/jet/v3 v3.0.0 // indirect
@@ -21,16 +21,16 @@ require (
 	github.com/etcd-io/bbolt v1.3.3
 	github.com/facebook/ent v0.4.3
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
-	github.com/facebookgo/ensure v0.0.0-20160127193407-b4ab57deab51 // indirect
+	github.com/facebookgo/ensure v0.0.0-20200202191622-63f1cf65ac4c // indirect
 	github.com/facebookgo/stack v0.0.0-20160209184415-751773369052 // indirect
-	github.com/facebookgo/subset v0.0.0-20150612182917-8dac2c3c4870 // indirect
+	github.com/facebookgo/subset v0.0.0-20200203212716-c811ad88dec4 // indirect
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gavv/monotime v0.0.0-20190418164738-30dba4353424 // indirect
-	github.com/gin-gonic/gin v1.4.0 // indirect
-	github.com/go-openapi/loads v0.19.4
-	github.com/go-openapi/runtime v0.19.8
-	github.com/go-openapi/spec v0.19.3
-	github.com/go-openapi/swag v0.19.5
+	github.com/gin-gonic/gin v1.6.3
+	github.com/go-openapi/loads v0.19.5
+	github.com/go-openapi/runtime v0.19.23
+	github.com/go-openapi/spec v0.19.8
+	github.com/go-openapi/swag v0.19.9
 	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.2.0
@@ -44,19 +44,16 @@ require (
 	github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e // indirect
 	github.com/gorilla/handlers v1.4.2 // indirect
 	github.com/gorilla/schema v1.1.0
-	github.com/gorilla/sessions v1.2.0 // indirect
+	github.com/gorilla/sessions v1.2.1
 	github.com/graph-gophers/graphql-go v0.0.0-20200309224638-dae41bde9ef9
 	github.com/grpc-ecosystem/go-grpc-middleware v1.1.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.0.0-beta.4
 	github.com/hashicorp/consul v1.6.2 // indirect
 	github.com/imkira/go-interpol v1.1.0 // indirect
-	github.com/iris-contrib/blackfriday v2.0.0+incompatible // indirect
-	github.com/iris-contrib/pongo2 v0.0.1 // indirect
-	github.com/jinzhu/configor v1.1.1
+	github.com/jinzhu/configor v1.2.0
 	github.com/json-iterator/go v1.1.10
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
-	github.com/kataras/iris/v12 v12.2.0-alpha.0.20201018152601-b335ab9c78d2
 	github.com/liov/protopatch2 v0.0.0-20200917092858-0c3cd79171e9
 	github.com/lni/dragonboat v2.1.7+incompatible
 	github.com/magiconair/properties v1.8.1 // indirect
@@ -69,7 +66,7 @@ require (
 	github.com/nats-io/nats-server/v2 v2.1.8 // indirect
 	github.com/nsqio/go-nsq v1.0.7
 	github.com/olivere/elastic v6.2.23+incompatible
-	github.com/pelletier/go-toml v1.2.0
+	github.com/pelletier/go-toml v1.8.1
 	github.com/peterbourgon/g2s v0.0.0-20170223122336-d4e7ad98afea // indirect
 	github.com/prometheus/client_golang v1.5.1
 	github.com/robfig/cron v1.2.0 // indirect
@@ -94,13 +91,18 @@ require (
 	google.golang.org/genproto v0.0.0-20200808173500-a06252235341
 	google.golang.org/grpc v1.33.1
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v0.0.0-20200626030347-424195440776
+	google.golang.org/grpc/examples v0.0.0-20201106075115-5d7f8c9ae422 // indirect
 	google.golang.org/protobuf v1.25.0
+	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
+	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
 	gopkg.in/oauth2.v3 v3.12.0
 	gopkg.in/yaml.v2 v2.3.0
+	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
 	gorm.io/driver/mysql v1.0.1
 	gorm.io/driver/postgres v1.0.0
 	gorm.io/driver/sqlite v1.1.3
 	gorm.io/gorm v1.20.1
+	sigs.k8s.io/yaml v1.2.0 // indirect
 )
 
 replace (

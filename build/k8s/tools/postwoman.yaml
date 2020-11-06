@@ -55,7 +55,7 @@ spec:
     serviceName: default-http-backend
     servicePort: 80
   rules:
-    - host: postwoman.172.17.0.4.xip.io
+    - host: postwoman.172.17.0.3.xip.io
       http:
         paths:
           - path: /

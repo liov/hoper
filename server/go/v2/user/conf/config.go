@@ -52,7 +52,7 @@ type config struct {
 	Consul   initialize.ConsulConfig
 }
 
-var Config = &config{}
+var Conf = &config{}
 
 func (c *config) Custom() {
 	if runtime.GOOS == "windows" {

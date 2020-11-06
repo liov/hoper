@@ -2,7 +2,8 @@ package tnsq
 
 import (
 	"fmt"
-	"github.com/kataras/iris/v12"
+
+	"github.com/gin-gonic/gin"
 	"github.com/nsqio/go-nsq"
 )
 
@@ -46,13 +47,13 @@ func publish(topic string, message string) error {
 	return fmt.Errorf("producer is nil", err)
 }
 
-func Start(c iris.Context) {
-	stringType := c.URLParam("st")
+func Start(c *gin.Context) {
+	stringType := c.Query("st")
 	if stringType == "0" {
-		message := c.URLParam("message")
+		message := c.Query("message")
 		publish("topic_string", message)
 	} else {
-		message := c.FormValue("message")
+		message := c.Query("message")
 		publish("topic_json", message)
 	}
 }

@@ -8,17 +8,8 @@ NacosAddr = "192.168.1.212:9001"
 NacosGroup = "hoper"
 #NacosDataId = "user"
 
-[iris]
-DisableStartupLog= false
-DisableInterruptHandler= false
-DisablePathCorrection= true
-EnablePathEscape= false
-FireMethodNotAllowed= false
-DisableBodyConsumptionOnUnmarshal= false
-DisableAutoFireStatusCode= false
-TimeFormat= "Mon, 01 Jan 2006 15=04=05 GMT"
-Charset= "UTF-8"
-EnableOptimizations= true
+[gin]
+
 
 [dev]
 Tenant = "b5b476ab-774f-4637-a8bf-e915635b4b24"

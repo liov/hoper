@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/kataras/iris/v12/sessions"
+	"github.com/gorilla/sessions"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 )
 

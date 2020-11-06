@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"reflect"
 
-	"github.com/liov/hoper/go/v2/utils/net/http/iris/response"
+	"github.com/liov/hoper/go/v2/utils/net/http/gin/response"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick/schema"
 )
 

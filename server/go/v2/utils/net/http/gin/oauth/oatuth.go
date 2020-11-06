@@ -5,10 +5,9 @@ import (
 	"html/template"
 	"net/http"
 	"os"
-	"time"
 
-	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/sessions"
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/sessions"
 	"github.com/liov/hoper/go/v2/utils/net/http/auth/oauth/provider"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/amazon"
@@ -34,13 +33,12 @@ import (
 	"github.com/markbates/goth/providers/yandex"
 )
 
-var sessionsManager *sessions.Sessions
+var store *sessions.CookieStore
+
+const SessionName = "session-name"
 
 func init() {
-	sessionsManager = sessions.New(sessions.Config{
-		Cookie:  ".cookiesession.id",
-		Expires: time.Minute,
-	})
+	store = sessions.NewCookieStore([]byte(os.Getenv(".cookiesession.id")))
 }
 
 // These are some function helpers that you may use if you want
@@ -50,20 +48,20 @@ func init() {
 // the URL query string. If you provide it in a different way,
 // assign your own function to this variable that returns the provider
 // name for your request.
-var GetProviderName = func(ctx iris.Context) (string, error) {
+var GetProviderName = func(ctx *gin.Context) (string, error) {
 	// try to get it from the url param "provider"
-	if p := ctx.URLParam("provider"); p != "" {
+	if p, ok := ctx.GetQuery("provider"); ok {
 		return p, nil
 	}
 
 	// try to get it from the url PATH parameter "{provider} or :provider or {provider:string} or {provider:alphabetical}"
-	if p := ctx.Params().Get("provider"); p != "" {
+	if p := ctx.PostForm("provider"); p != "" {
 		return p, nil
 	}
 
 	// try to get it from context's per-request storage
-	if p := ctx.Values().GetString("provider"); p != "" {
-		return p, nil
+	if p, _ := ctx.Get("provider"); p.(string) != "" {
+		return p.(string), nil
 	}
 	// if not found then return an empty string with the corresponding error
 	return "", errors.New("you must select a provider")
@@ -77,15 +75,15 @@ BeginAuthHandler will redirect the user to the appropriate authentication end-po
 for the requested provider.
 See https://github.com/markbates/goth/examples/main.go to see this in action.
 */
-func BeginAuthHandler(ctx iris.Context) {
+func BeginAuthHandler(ctx *gin.Context) {
 	url, err := GetAuthURL(ctx)
 	if err != nil {
-		ctx.StatusCode(iris.StatusBadRequest)
-		ctx.Writef("%v", err)
+		ctx.Status(http.StatusBadRequest)
+		ctx.Writer.WriteString(err.Error())
 		return
 	}
 
-	ctx.Redirect(url, iris.StatusTemporaryRedirect)
+	ctx.Redirect(http.StatusTemporaryRedirect, url)
 }
 
 /*
@@ -96,7 +94,7 @@ as either "provider" or ":provider" or from the context's value of "provider" ke
 I would recommend using the BeginAuthHandler instead of doing all of these steps
 yourself, but that's entirely up to you.
 */
-func GetAuthURL(ctx iris.Context) (string, error) {
+func GetAuthURL(ctx *gin.Context) (string, error) {
 	providerName, err := GetProviderName(ctx)
 	if err != nil {
 		return "", err
@@ -115,8 +113,8 @@ func GetAuthURL(ctx iris.Context) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	session := sessionsManager.Start(ctx)
-	session.Set(providerName, sess.Marshal())
+	session, _ := store.Get(ctx.Request, SessionName)
+	session.Values[providerName] = sess.Marshal()
 	return url, nil
 }
 
@@ -124,9 +122,8 @@ func GetAuthURL(ctx iris.Context) (string, error) {
 // If no state string is associated with the request, one will be generated.
 // This state is sent to the provider and can be retrieved during the
 // callback.
-var SetState = func(ctx iris.Context) string {
-	state := ctx.URLParam("state")
-	if len(state) > 0 {
+var SetState = func(ctx *gin.Context) string {
+	if state, ok := ctx.GetQuery("state"); ok {
 		return state
 	}
 
@@ -137,8 +134,8 @@ var SetState = func(ctx iris.Context) string {
 // GetState gets the state returned by the provider during the callback.
 // This is used to prevent CSRF attacks, see
 // http://tools.ietf.org/html/rfc6749#section-10.12
-var GetState = func(ctx iris.Context) string {
-	return ctx.URLParam("state")
+var GetState = func(ctx *gin.Context) string {
+	return ctx.Query("state")
 }
 
 /*
@@ -148,7 +145,7 @@ It expects to be able to get the name of the provider from the query parameters
 as either "provider" or ":provider".
 See https://github.com/markbates/goth/examples/main.go to see this in action.
 */
-var CompleteUserAuth = func(ctx iris.Context) (goth.User, error) {
+var CompleteUserAuth = func(ctx *gin.Context) (goth.User, error) {
 	providerName, err := GetProviderName(ctx)
 	if err != nil {
 		return goth.User{}, err
@@ -158,8 +155,8 @@ var CompleteUserAuth = func(ctx iris.Context) (goth.User, error) {
 	if err != nil {
 		return goth.User{}, err
 	}
-	session := sessionsManager.Start(ctx)
-	value := session.GetString(providerName)
+	session, _ := store.Get(ctx.Request, SessionName)
+	value := session.Values[providerName].(string)
 	if value == "" {
 		return goth.User{}, errors.New("session value for " + providerName + " not found")
 	}
@@ -176,26 +173,26 @@ var CompleteUserAuth = func(ctx iris.Context) (goth.User, error) {
 	}
 
 	// get new token and retry fetch
-	_, err = sess.Authorize(provider, ctx.Request().URL.Query())
+	_, err = sess.Authorize(provider, ctx.Request.URL.Query())
 	if err != nil {
 		return goth.User{}, err
 	}
 
-	session.Set(providerName, sess.Marshal())
+	session.Values[providerName] = sess.Marshal()
 	return provider.FetchUser(sess)
 }
 
 // Logout invalidates a user session.
-func Logout(ctx iris.Context) {
+func Logout(ctx *gin.Context) {
 	providerName, err := GetProviderName(ctx)
 	if err != nil {
-		ctx.WriteString(err.Error())
+		ctx.Writer.WriteString(err.Error())
 		return
 	}
-	session := sessionsManager.Start(ctx)
-	session.Delete(providerName)
+	session, _ := store.Get(ctx.Request, SessionName)
+	delete(session.Values, providerName)
 	ctx.Header("Location", "/")
-	ctx.StatusCode(http.StatusTemporaryRedirect)
+	ctx.Status(http.StatusTemporaryRedirect)
 }
 
 // End of the "some function helpers".
@@ -275,14 +272,14 @@ type ProviderIndex struct {
 	ProvidersMap map[string]string
 }
 
-func CallBack(ctx iris.Context) {
+func CallBack(ctx *gin.Context) {
 	user, err := CompleteUserAuth(ctx)
 	if err != nil {
 		BeginAuthHandler(ctx)
 		return
 	}
 	t, _ := template.New("foo").Parse(userTemplate)
-	t.Execute(ctx.ResponseWriter(), user)
+	t.Execute(ctx.Writer, user)
 }
 
 var indexTemplate = `{{range $key,$value:=.Providers}}

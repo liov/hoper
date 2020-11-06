@@ -6,7 +6,7 @@ NacosAddr = "192.168.1.212:9001"
 NacosGroup = "hoper"
 NacosDataId = "gateway"
 
-[iris]
+[gin]
 DisableStartupLog= false
 DisableInterruptHandler= false
 DisablePathCorrection= true

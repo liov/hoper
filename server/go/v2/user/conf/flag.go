@@ -8,6 +8,6 @@ type flagValue struct {
 }
 
 func init() {
-	flag.StringVar(&Config.Flag.Password, "p", "", "password")
-	flag.StringVar(&Config.Flag.MailPassword, "mp", "", "password")
+	flag.StringVar(&Conf.Flag.Password, "p", "", "password")
+	flag.StringVar(&Conf.Flag.MailPassword, "mp", "", "password")
 }

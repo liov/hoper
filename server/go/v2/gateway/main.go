@@ -4,12 +4,9 @@ import (
 	"context"
 	"log"
 
+	"github.com/gin-gonic/gin"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/mvc"
-	"github.com/liov/hoper/go/v2/gateway/internal/claims"
-	"github.com/liov/hoper/go/v2/gateway/internal/config"
-	"github.com/liov/hoper/go/v2/gateway/internal/service"
+	"github.com/liov/hoper/go/v2/gateway/config"
 	"github.com/liov/hoper/go/v2/initialize"
 	"github.com/liov/hoper/go/v2/protobuf/note"
 	"github.com/liov/hoper/go/v2/protobuf/user"
@@ -34,12 +31,7 @@ func main() {
 			}
 		},
 
-		IrisHandle: func(app *iris.Application) {
-			svc := &service.UserService{}
-			mvc.New(app).Register(claims.SESSION).Handle(svc)
-			app.ConfigureContainer(func(api *iris.APIContainer) {
-				api.Post("/{id:int}", svc.Add)
-			})
+		GinHandle: func(app *gin.Engine) {
 		},
 	}
 	s.Start()
