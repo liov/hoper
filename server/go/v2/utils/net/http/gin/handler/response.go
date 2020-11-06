@@ -4,9 +4,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/kataras/iris/v12"
+	"github.com/gin-gonic/gin"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
-	"github.com/liov/hoper/go/v2/utils/log"
 )
 
 type H map[string]interface{}
@@ -24,7 +23,7 @@ type ResData struct {
 //3.data,msg |code默认SUCCESS
 //4.msg |data默认nil code默认ERROR
 //5.data |msg默认"",code默认SUCCESS
-func Response(ctx iris.Context, res ...interface{}) {
+func Response(ctx *gin.Context, res ...interface{}) {
 
 	var resData ResData
 
@@ -53,35 +52,16 @@ func Response(ctx iris.Context, res ...interface{}) {
 		resData.Code = res[2].(uint32)
 	}
 
-	num, err := ctx.JSON(&resData)
-
-	if err != nil {
-		log.Error(num, err)
-	}
+	ctx.JSON(http.StatusOK, &resData)
 }
 
-/*func HttpResponse(ctx iris.Context,data interface{},msg string,code int){
-	num, err := ctx.JSON(iris.Map{
-		"code": code,
-		"msg":  msg,
-		"data": data,
-	})
-
-	if err != nil {
-		ulog.Error(num, err)
-	}
-}*/
-
-func Res(c iris.Context, code uint32, msg string, data interface{}) {
+func Res(c *gin.Context, code uint32, msg string, data interface{}) {
 	var resData = ResData{
 		Code:    code,
 		Message: msg,
 		Details: data,
 	}
-	num, err := c.JSON(&resData)
-	if err != nil {
-		log.Error(num, err)
-	}
+	c.JSON(http.StatusOK, &resData)
 }
 
 type File struct {

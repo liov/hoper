@@ -4,10 +4,11 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/gin-gonic/gin"
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
-	"github.com/kataras/iris/v12"
 	"github.com/liov/hoper/go/v2/utils/log"
+	"github.com/liov/hoper/go/v2/utils/net/http/gin/handlerconv"
 )
 
 var FilePath = "../protobuf/gql/"
@@ -16,7 +17,7 @@ var FilePath = "../protobuf/gql/"
 //js最大整数值明明是Math.pow(2, 53) - 1     // 9007199254740991
 //凭什么限定i32，况且js还有bigNumber
 //浪费时间，知道这库为啥star不多了，垃圾
-func Graphql(app *iris.Application, filePath, modName string, resolver interface{}) {
+func Graphql(app *gin.Engine, filePath, modName string, resolver interface{}) {
 	FilePath = filePath
 	f, err := os.Open(FilePath + modName + "/" + modName + ".service.pb.graphqls")
 	if err != nil {
@@ -29,28 +30,5 @@ func Graphql(app *iris.Application, filePath, modName string, resolver interface
 	f.Close()
 	schema := graphql.MustParseSchema(string(data), resolver,
 		graphql.UseStringDescriptions(), graphql.UseFieldResolvers())
-	app.Post("/api/graphql", iris.FromStd(&relay.Handler{Schema: schema}))
+	app.POST("/api/graphql", handlerconv.FromStd(&relay.Handler{Schema: schema}))
 }
-
-/*
-//太复杂了
-//Deprecated
-func GraphqlV2(app *iris.Application, filePath, modName string, resolver interface{}) {
-	FilePath = filePath
-	f, err := os.Open(FilePath + modName + "/" + modName + ".service.pb.graphqls")
-	if err != nil {
-		log.Fatal(err)
-	}
-	data, err := ioutil.ReadAll(f)
-	if err != nil {
-		log.Fatal(err)
-	}
-	f.CloseDao()
-	var sources = []*ast.Source{
-		{Name: "schema.graphql", Input: string(data), BuiltIn: false}}
-	var parsedSchema = gqlparser.MustLoadSchema(sources...)
-
-	srv := handler.NewDefaultServer(parsedSchema)
-	app.Post("/api/graphql", iris.FromStd(srv))
-}
-*/

@@ -9,7 +9,7 @@ import (
 	"syscall"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/kataras/iris/v12"
+	"github.com/gin-gonic/gin"
 	"github.com/liov/hoper/go/v2/initialize"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/log"
@@ -89,7 +89,7 @@ func (s *Server) Serve() {
 type Server struct {
 	GRPCServer     *grpc.Server
 	GatewayRegistr gateway.GatewayHandle
-	IrisHandle     func(*iris.Application)
+	GinHandle      func(engine *gin.Engine)
 	GraphqlResolve graphql.ExecutableSchema
 }
 

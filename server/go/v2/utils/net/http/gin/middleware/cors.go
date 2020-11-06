@@ -1,10 +1,12 @@
 package middleware
 
 import (
-	"github.com/kataras/iris/v12"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-func Cors(ctx iris.Context) {
+func Cors(ctx *gin.Context) {
 	/*		//method := c.Request.Method
 
 			origin := c.Request.Header.Get("Origin")
@@ -42,8 +44,8 @@ func Cors(ctx iris.Context) {
 	ctx.Header("Access-Control-Expose-Headers", "Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type")
 	// c.Header("Access-Control-Max-Age", "172800")
 	ctx.Header("Access-Control-Allow-Credentials", "true")
-	ctx.ContentType("application/json")
-	if ctx.Method() == "OPTIONS" {
-		ctx.JSON("Options Request!")
+	ctx.Header("Content-Type", "application/json")
+	if ctx.Request.Method == "OPTIONS" {
+		ctx.JSON(http.StatusOK, "Options Request!")
 	}
 }

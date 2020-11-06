@@ -10,8 +10,8 @@ import (
 	"github.com/liov/hoper/go/v2/protobuf/user"
 	goauth "github.com/liov/hoper/go/v2/protobuf/utils/oauth"
 	"github.com/liov/hoper/go/v2/protobuf/utils/response"
-	"github.com/liov/hoper/go/v2/user/internal/config"
-	"github.com/liov/hoper/go/v2/user/internal/dao"
+	"github.com/liov/hoper/go/v2/user/conf"
+	"github.com/liov/hoper/go/v2/user/dao"
 	ijwt "github.com/liov/hoper/go/v2/utils/net/http/auth/jwt"
 	"github.com/liov/hoper/go/v2/utils/net/http/auth/oauth"
 	"google.golang.org/grpc/metadata"
@@ -34,7 +34,7 @@ func GetOauthService() *OauthService {
 	manager.MustTokenStorage(store.NewMemoryTokenStore())
 
 	// generate jwt access token
-	manager.MapAccessGenerate(generates.NewJWTAccessGenerate([]byte(config.Conf.Customize.TokenSecret), jwt.SigningMethodHS512))
+	manager.MapAccessGenerate(generates.NewJWTAccessGenerate([]byte(conf.Conf.Customize.TokenSecret), jwt.SigningMethodHS512))
 
 	clientStore := oauth.NewClientStore(dao.Dao.GORMDB)
 
@@ -46,7 +46,7 @@ func GetOauthService() *OauthService {
 		if token == "" {
 			return "", errors.ErrInvalidAccessToken
 		}
-		claims, err := ijwt.ParseToken(token, config.Conf.Customize.TokenSecret)
+		claims, err := ijwt.ParseToken(token, conf.Conf.Customize.TokenSecret)
 		if err != nil {
 			return "", err
 		}

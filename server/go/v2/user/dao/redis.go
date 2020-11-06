@@ -37,7 +37,7 @@ func (conn *UserRedis) UserToRedis(user *model.UserMainInfo) error {
 	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
 
 	conn.Send("SELECT", modelconst.UserIndex)
-	if _, redisErr := conn.Do("SET", loginUserKey, UserString, "EX", conf.Config.Customize.TokenMaxAge); redisErr != nil {
+	if _, redisErr := conn.Do("SET", loginUserKey, UserString, "EX", conf.Conf.Customize.TokenMaxAge); redisErr != nil {
 		return redisErr
 	}
 	return nil
@@ -85,7 +85,7 @@ func (conn *UserRedis) UserHashToRedis(user *model.UserMainInfo) error {
 
 	conn.Send("SELECT", modelconst.UserIndex)
 	conn.Send("HMSET", redisArgs...)
-	if _, redisErr := conn.Do("EXPIRE", loginUserKey, conf.Config.Customize.TokenMaxAge); redisErr != nil {
+	if _, redisErr := conn.Do("EXPIRE", loginUserKey, conf.Conf.Customize.TokenMaxAge); redisErr != nil {
 		return redisErr
 	}
 	return nil
@@ -123,7 +123,7 @@ func (conn *UserRedis) EfficientUserHashToRedis(user *model.UserMainInfo) error 
 		"Score", user.Score,
 		"Status", uint8(user.Status),
 		"LoginTime", user.LoginTime)
-	if _, redisErr := conn.Do("EXPIRE", loginUserKey, conf.Config.Customize.TokenMaxAge); redisErr != nil {
+	if _, redisErr := conn.Do("EXPIRE", loginUserKey, conf.Conf.Customize.TokenMaxAge); redisErr != nil {
 		return redisErr
 	}
 	return nil

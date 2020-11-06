@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: attendance
+  labels:
+    app: attendance
+spec:
+  containers:
+    - name: attendance
+      image: reg.miz.so/liov/attendance:1.8

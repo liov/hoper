@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	model "github.com/liov/hoper/go/v2/protobuf/user"
-	"github.com/liov/hoper/go/v2/user/internal/config"
-	"github.com/liov/hoper/go/v2/user/internal/dao"
+	"github.com/liov/hoper/go/v2/user/conf"
+	"github.com/liov/hoper/go/v2/user/dao"
 	"github.com/liov/hoper/go/v2/utils/net/http/auth"
 	"github.com/liov/hoper/go/v2/utils/net/http/auth/jwt"
 	"google.golang.org/grpc/metadata"
@@ -21,7 +21,7 @@ func Auth(r *http.Request) (*model.UserMainInfo, error) {
 	if token == "" {
 		return nil, model.UserErr_NoLogin
 	}
-	claims, err := jwt.ParseToken(token, config.Conf.Customize.TokenSecret)
+	claims, err := jwt.ParseToken(token, conf.Conf.Customize.TokenSecret)
 	if err != nil {
 		return nil, model.UserErr_InvalidToken
 	}
@@ -41,7 +41,7 @@ func (*UserService) AuthClaims(ctx context.Context) (*jwt.Claims, error) {
 	if len(tokens) == 0 || tokens[0] == "" {
 		return nil, model.UserErr_NoLogin
 	}
-	return jwt.ParseToken(tokens[0], config.Conf.Customize.TokenSecret)
+	return jwt.ParseToken(tokens[0], conf.Conf.Customize.TokenSecret)
 }
 
 func (u *UserService) AuthMainInfo(ctx context.Context) (*model.UserMainInfo, error) {

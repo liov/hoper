@@ -12,14 +12,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/BurntSushi/toml"
 	"github.com/fsnotify/fsnotify"
-	"github.com/jinzhu/configor"
+	"github.com/liov/hoper/go/v2/utils/configor"
 	"github.com/liov/hoper/go/v2/utils/fs"
 	"github.com/liov/hoper/go/v2/utils/fs/watch"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/nacos"
 	"github.com/liov/hoper/go/v2/utils/reflect3"
+	"github.com/pelletier/go-toml"
 )
 
 //约定大于配置
@@ -166,7 +166,7 @@ func Start(conf Config, dao Dao) func() {
 	InitConfig = init
 	nacosClient := init.getConfig()
 	go nacosClient.Listener(init.UnmarshalAndSet)
-
+	log.Debug(conf)
 	return func() {
 		InitConfig.CloseDao()
 		log.Sync()

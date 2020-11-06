@@ -9,7 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kataras/iris/v12"
+	"github.com/gin-gonic/gin"
+	"github.com/liov/hoper/go/v2/utils/net/http/gin/handlerconv"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
 )
@@ -45,10 +46,10 @@ func Test_Oauth(t *testing.T) {
 }
 
 func Test_Oauth2(t *testing.T) {
-	app := iris.New()
-	app.Get("/", iris.FromStd(Index))
-	app.Get("/auth/{provider}", CallBack)
-	app.Get("/auth/{provider}/callback", CallBack)
-	app.Get("/logout/{provider}", Logout)
-	app.Run(iris.Addr(":8080"))
+	r := gin.New()
+	r.GET("/", handlerconv.FromStd(Index))
+	r.GET("/auth/{provider}", CallBack)
+	r.GET("/auth/{provider}/callback", CallBack)
+	r.GET("/logout/{provider}", Logout)
+	r.Run(":8080")
 }

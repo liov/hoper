@@ -117,7 +117,7 @@ spec:
     serviceName: default-http-backend
     servicePort: 80
   rules:
-    - host: nacos.172.17.0.4.xip.io
+    - host: nacos.172.17.0.3.xip.io
       http:
         paths:
           - path: /
