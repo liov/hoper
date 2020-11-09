@@ -1,4 +1,4 @@
-package server
+package tailmon
 
 import (
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"

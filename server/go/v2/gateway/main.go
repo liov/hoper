@@ -10,7 +10,7 @@ import (
 	"github.com/liov/hoper/go/v2/initialize"
 	"github.com/liov/hoper/go/v2/protobuf/note"
 	"github.com/liov/hoper/go/v2/protobuf/user"
-	"github.com/liov/hoper/go/v2/utils/net/http/server"
+	"github.com/liov/hoper/go/v2/utils/net/http/tailmon"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 )
@@ -18,7 +18,7 @@ import (
 func main() {
 	defer initialize.Start(config.Conf, nil)()
 
-	s := server.Server{
+	s := tailmon.Server{
 		GatewayRegistr: func(ctx context.Context, mux *runtime.ServeMux) {
 			opts := []grpc.DialOption{grpc.WithInsecure()}
 			err := user.RegisterUserServiceHandlerFromEndpoint(ctx, mux, initialize.InitConfig.NacosConfig.GetServiceEndPort("user"), opts)

@@ -11,8 +11,8 @@ import (
 type H map[string]interface{}
 
 type ResData struct {
-	Code    uint32 `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Code    errorcode.ErrCode `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
+	Message string            `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	//验证码
 	Details interface{} `protobuf:"bytes,3,opt,name=details,proto3" json:"details,omitempty"`
 }
@@ -28,34 +28,34 @@ func Response(ctx *gin.Context, res ...interface{}) {
 	var resData ResData
 
 	if len(res) == 1 {
-		resData.Code = uint32(errorcode.Unknown)
+		resData.Code = errorcode.Unknown
 		if msgTmp, ok := res[0].(string); ok {
 			resData.Message = msgTmp
 			resData.Details = nil
 		} else {
 			resData.Details = res[0]
-			resData.Code = uint32(errorcode.SUCCESS)
+			resData.Code = errorcode.SUCCESS
 		}
 	} else if len(res) == 2 {
 		if msgTmp, ok := res[0].(string); ok {
 			resData.Details = nil
 			resData.Message = msgTmp
-			resData.Code = res[1].(uint32)
+			resData.Code = res[1].(errorcode.ErrCode)
 		} else {
 			resData.Details = res[0]
 			resData.Message = res[1].(string)
-			resData.Code = uint32(errorcode.SUCCESS)
+			resData.Code = errorcode.SUCCESS
 		}
 	} else {
 		resData.Details = res[0]
 		resData.Message = res[1].(string)
-		resData.Code = res[2].(uint32)
+		resData.Code = res[2].(errorcode.ErrCode)
 	}
 
 	ctx.JSON(http.StatusOK, &resData)
 }
 
-func Res(c *gin.Context, code uint32, msg string, data interface{}) {
+func Res(c *gin.Context, code errorcode.ErrCode, msg string, data interface{}) {
 	var resData = ResData{
 		Code:    code,
 		Message: msg,
