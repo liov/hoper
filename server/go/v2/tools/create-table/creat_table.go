@@ -19,4 +19,20 @@ var userMod = []interface{}{
 func main() {
 	get.GetDB().Migrator().DropTable(userMod...)
 	get.GetDB().Migrator().CreateTable(userMod...)
+	get.GetDB().Exec(`CREATE OR REPLACE FUNCTION del_tabs(username IN VARCHAR) RETURNS void AS $$
+		DECLARE
+		statements CURSOR FOR
+		SELECT tablename FROM pg_tables
+		WHERE tableowner = username AND schemaname = 'public';
+		BEGIN
+		FOR stmt IN statements LOOP
+		EXECUTE 'DROP TABLE ' || quote_ident(stmt.tablename) || ' CASCADE;';
+		END LOOP;
+		END;
+		$$ LANGUAGE plpgsql`)
 }
+
+//清空所有表
+//SELECT truncate_tables('postgres');
+//删除所有表
+//SELECT del_tabs('postgres');

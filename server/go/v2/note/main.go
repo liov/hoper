@@ -12,14 +12,14 @@ import (
 	model "github.com/liov/hoper/go/v2/protobuf/note"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/filter"
-	"github.com/liov/hoper/go/v2/utils/net/http/server"
+	"github.com/liov/hoper/go/v2/utils/net/http/tailmon"
 	"google.golang.org/grpc"
 )
 
 func main() {
 	defer initialize.Start(conf.Config, dao.Dao)()
 
-	s := server.Server{
+	s := tailmon.Server{
 		GRPCServer: func() *grpc.Server {
 			gs := grpc.NewServer(
 				//filter应该在最前

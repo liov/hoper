@@ -1,4 +1,4 @@
-package debug
+package http
 
 import (
 	_ "expvar"

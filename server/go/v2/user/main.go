@@ -15,14 +15,14 @@ import (
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/net/http/gin/oauth"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/filter"
-	"github.com/liov/hoper/go/v2/utils/net/http/server"
+	"github.com/liov/hoper/go/v2/utils/net/http/tailmon"
 	"google.golang.org/grpc"
 )
 
 func main() {
 	//配置初始化应该在第一位
 	defer initialize.Start(conf.Conf, dao.Dao)()
-	s := server.Server{
+	s := tailmon.Server{
 		//为了可以自定义中间件
 		GRPCServer: func() *grpc.Server {
 			gs := grpc.NewServer(
