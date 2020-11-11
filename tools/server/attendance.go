@@ -16,6 +16,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+//到处充满性能强迫症的痕迹，各种内存复用
 var kqReq *http.Request
 var lastId int64
 var ding Ding
