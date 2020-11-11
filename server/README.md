@@ -17,3 +17,7 @@ k8s ingress controller 从openresty又切回了nginx
 但是目前折腾意义不大，所以目前没有动态语言提供服务的场景，我能想到的就是python做数据分析，
 然而这块我也不熟，先留着，目前也没必要用openresty自己实现一个ingress，有动态服务需求的可以
 用js
+
+lua 前端
+go kotlin 业务
+rust 基础设施

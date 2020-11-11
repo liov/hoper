@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: attendance
+  labels:
+    app: attendance
+spec:
+  containers:
+  - name: attendance
+    image: reg.hoper.xyz/liov/attendance:latest
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: attendance
+  namespace: attendance
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: attendance
+  template:
+    metadata:
+      labels:
+        app: attendance

@@ -45,6 +45,7 @@ require (
 	github.com/gorilla/handlers v1.4.2 // indirect
 	github.com/gorilla/schema v1.1.0
 	github.com/gorilla/sessions v1.2.1
+	github.com/gorilla/websocket v1.4.2
 	github.com/graph-gophers/graphql-go v0.0.0-20200309224638-dae41bde9ef9
 	github.com/grpc-ecosystem/go-grpc-middleware v1.1.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.0.0-beta.4
@@ -54,6 +55,7 @@ require (
 	github.com/json-iterator/go v1.1.10
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
+	github.com/kataras/golog v0.1.5 // indirect
 	github.com/liov/protopatch2 v0.0.0-20200917092858-0c3cd79171e9
 	github.com/lni/dragonboat v2.1.7+incompatible
 	github.com/magiconair/properties v1.8.1 // indirect
@@ -71,6 +73,7 @@ require (
 	github.com/prometheus/client_golang v1.5.1
 	github.com/robfig/cron v1.2.0 // indirect
 	github.com/russross/blackfriday v2.0.0+incompatible
+	github.com/satori/go.uuid v1.2.0
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/smartystreets/assertions v0.0.0-20190116191733-b6c0e53d7304 // indirect
 	github.com/spf13/viper v1.6.1
