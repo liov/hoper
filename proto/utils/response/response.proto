@@ -35,3 +35,9 @@ message TinyRep {
     uint32 code = 1 [(go.field) = {tags:'json:"code"'}];
     string message = 2;
 }
+
+message HttpResponse{
+    map<string, string> Header =1;
+    bytes body = 2;
+    uint32 statusCode = 3;
+}
