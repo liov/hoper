@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
+	"github.com/tealeg/xlsx/v3"
 )
 
 func NewFile(sheet string, header []string) *excelize.File {
@@ -37,4 +38,15 @@ func NewSheet(f *excelize.File, sheet string, header []string) {
 		f.SetCellValue(sheet, ColumnLetter[i]+"1", header[i])
 	}
 	f.SetRowHeight(sheet, 1, 30)
+}
+
+func NewXlsxFile(sheetName string, header []string) (*xlsx.File, *xlsx.Sheet) {
+	f := xlsx.NewFile()
+	sheet, _ := f.AddSheet(sheetName)
+	row := sheet.AddRow()
+	for _, v := range header {
+		cell := row.AddCell()
+		cell.Value = v
+	}
+	return f, sheet
 }
