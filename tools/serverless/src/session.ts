@@ -28,8 +28,8 @@ interface Session {
 function generate() {
     const sess: ErpUserPara = {
         employeeId: 1,
-        type: 3,
-        compId:1,
+        type: 1,
+        compId:10001,
         filterCompIds:[10001]
     }
     console.log(Buffer.from(JSON.stringify(sess)).toString('base64'))
