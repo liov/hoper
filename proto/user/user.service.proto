@@ -9,7 +9,6 @@ import "utils/empty/empty.proto";
 import "utils/response/response.proto";
 import "utils/proto/gogo/graphql.proto";
 import "utils/oauth/oauth.proto";
-import "utils/response/httpresponse.proto";
 import "patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.user";
