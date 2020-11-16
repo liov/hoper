@@ -13,7 +13,7 @@
     "build:swan": "taro build --type swan",
     "build:alipay": "taro build --type alipay",
     "build:tt": "taro build --type tt",
-    "build:h5": "taro build --type h5",
+    "build:h5": "node ./config/h5-building-script.js && taro build --type h5",
     "build:rn": "taro build --type rn",
     "build:qq": "taro build --type qq",
     "build:quickapp": "taro build --type quickapp",
@@ -39,8 +39,11 @@
     "@tarojs/runtime": "3.0.16",
     "@tarojs/taro": "3.0.16",
     "axios": "^0.21.0",
-    "taro-ui-vue3": "^1.0.0-dev.1",
+    "dayjs": "^1.9.6",
+    "spark-md5": "^3.0.1",
+    "taro-ui-vue3": "v1.0.0-alpha.13",
     "vue": "^3.0.0",
+    "vue-class-component": "^8.0.0-0",
     "vuex": "^4.0.0-beta.4"
   },
   "devDependencies": {
