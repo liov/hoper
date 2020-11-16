@@ -82,6 +82,3 @@ func Difference(a []uint64, b []uint64) []uint64 {
 	return ret
 }
 
-type CmpKey interface {
-	CmpKey() uint64
-}

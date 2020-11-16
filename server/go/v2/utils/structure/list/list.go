@@ -9,13 +9,12 @@ import (
 //链表结点
 type Node struct {
 	data interface{}
-	next *Node
+	next,prev *Node
 }
 
 //链表
 type LinkList struct {
-	head *Node
-	tail *Node
+	head,tail *Node
 	size int
 }
 

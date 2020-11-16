@@ -10,17 +10,14 @@ import (
 
 	_ "golang.org/x/exp/shiny/driver"
 	_ "test/cgo/crosscompile/a"
-	"test/cgo/crosscompile/excel"
-	"test/cgo/crosscompile/logrus"
 	"test/cgo/crosscompile/mobile"
 )
 
 func main() {
-	excel.Excel()
+
 	//unicorn.Unicorn()
 	//a.Hello()
 	mobile.Mobile()
-	logrus.Logrus()
 	ctxt := new(build.Context)
 	*ctxt = build.Default
 	ctxt.CgoEnabled = false

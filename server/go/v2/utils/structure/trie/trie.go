@@ -48,7 +48,7 @@ type node struct {
 	schildren []*node
 
 	nType    nodeType
-	cType    nodeType //if>3 wildChild,代替原来的wildChild
+	cType    nodeType //if>=3 wildChild,代替原来的wildChild
 	priority uint8
 
 	//mchildren map[string]*node
@@ -384,7 +384,7 @@ type Param struct {
 
 type Params []Param
 
-func (n *node) getValue(path string, params func() *Params) (handle *methodHandle, ps *Params, tsr bool) {
+func (n *node) getValue(path string, params func() *Params) (handle []*methodHandle, ps *Params, tsr bool) {
 walk: // Outer loop for walking the tree
 	for {
 		prefix := n.path
@@ -448,13 +448,13 @@ walk: // Outer loop for walking the tree
 						return
 					}
 
-					if handle = n.handle; handle.IsValid() {
+					if handle = n.handle; handle!=nil {
 						return
-					} else if len(n.children) == 1 {
+					} else if len(n.schildren) == 1 {
 						// No handle found. Check if a handle for this path + a
 						// trailing slash exists for TSR recommendation
-						n = n.children[0]
-						tsr = n.path == "/" && n.handle.IsValid()
+						n = n.schildren[0]
+						tsr = n.path == "/" && n.handle!=nil
 					}
 
 					return
@@ -491,7 +491,7 @@ walk: // Outer loop for walking the tree
 			// If there is no handle for this route, but this route has a
 			// wildcard child, there must be a handle for this path with an
 			// additional trailing slash
-			if path == "/" && n.wildChild && n.nType != root {
+			if path == "/" && n.cType>= param && n.nType != root {
 				tsr = true
 				return
 			}

@@ -44,7 +44,7 @@ func NewEsQueue(capaciity uint32) *EsQueue {
 func (q *EsQueue) String() string {
 	getPos := atomic.LoadUint32(&q.getPos)
 	putPos := atomic.LoadUint32(&q.putPos)
-	return fmt.Sprintf("NmQueue{capaciity: %v, capMod: %v, putPos: %v, getPos: %v}",
+	return fmt.Sprintf("ListQueue{capaciity: %v, capMod: %v, putPos: %v, getPos: %v}",
 		q.capaciity, q.capMod, putPos, getPos)
 }
 
@@ -140,7 +140,7 @@ func (q *EsQueue) Puts(values []interface{}) (puts, quantity uint32) {
 	}
 
 	for posNew, v := putPos+1, uint32(0); v < putCnt; posNew, v = posNew+1, v+1 {
-		var cache *esCache = &q.cache[posNew&capMod]
+		var cache = &q.cache[posNew&capMod]
 		for {
 			getNo := atomic.LoadUint32(&cache.getNo)
 			putNo := atomic.LoadUint32(&cache.putNo)
