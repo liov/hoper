@@ -5,7 +5,7 @@ import (
 	"reflect"
 )
 
-type  Stack struct {
+type Stack struct {
 	v []interface{}
 }
 

@@ -1,7 +1,7 @@
 syntax = "proto3";
 package note;
 
-import "patch/go.proto";
+import "utils/proto/go/go.proto";
 
 
 option java_package = "xyz.hoper.protobuf.user";

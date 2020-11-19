@@ -3,7 +3,7 @@ const axios = require('axios').default;
 
 const scheduleCron = () => {
     //每分钟的第30秒定时执行一次:
-    schedule.scheduleJob('*/20 * 0,8,9,13,18,19,20,21,22,23 * * *', request);
+    schedule.scheduleJob('*/20 * 0,8,9,10,13,18,19,20,21,22,23 * * *', request);
 }
 
 let last_id = 0;
@@ -15,13 +15,14 @@ const at = new Map([
 
 async function request() {
     const res = await axios.post(`http://inmail.miz.so:1234/grid/att/CheckInOutGrid/`,
-        "page=1&rp=20", {
+        "page=3&rp=100", {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded; param=value',
-                'Cookie': 'sessionidadms=xxx',
+                'Cookie': 'sessionidadms=93e5c9bb2f79a3af699ef9464511c504',
             }
         })
-    const ding = {
+    console.log(res.data)
+/*    const ding = {
         msgtype: "text",
         text: {
             content: ''
@@ -48,7 +49,7 @@ async function request() {
             'Content-Type': 'application/json',
         }
     })
-    console.log("请求钉钉")
+    console.log("请求钉钉")*/
 }
 
-scheduleCron()
+request()

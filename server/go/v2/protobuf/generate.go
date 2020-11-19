@@ -58,11 +58,11 @@ func run() {
 	*proto = pwd + "/" + *proto
 	goList := `go list -m -f {{.Dir}} `
 	gateway, _ := os2.CMD(goList + "github.com/grpc-ecosystem/grpc-gateway/v2")
-	protopatch, _ := os2.CMD(goList + "github.com/liov/protopatch2")
+	//protopatch, _ := os2.CMD(goList + "github.com/liov/protopatch2")
 	protobuf, _ := os2.CMD(goList + "google.golang.org/protobuf")
 	//gogoProtoOut, _ := cmd.CMD(goList + "github.com/gogo/protobuf")
 	path := os.Getenv("GOPATH")
-	include := "-I" + *proto + " -I" + gateway + " -I" + gateway + "/third_party/googleapis -I" + protopatch + " -I" + protobuf + " -I" + path + "/src"
+	include := "-I" + *proto + " -I" + gateway + " -I" + gateway + "/third_party/googleapis -I" + protobuf + " -I" + path + "/src"
 
 	var gqlgen []string
 	for k, v := range files {

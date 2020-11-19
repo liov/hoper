@@ -28,7 +28,9 @@ interface Session {
 function generate() {
     const sess: ErpUserPara = {
         employeeId: 1,
-        type: 1,
+        type: 3,
+        platformType:101,
+        thirdCompId:0,
         compId:10001,
         filterCompIds:[10001]
     }

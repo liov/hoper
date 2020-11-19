@@ -4,7 +4,6 @@ import random
 import sys
 
 
-
 def get_pic(pic_code, pic_name):
     image = open(pic_name, 'wb')
     image.write(b64decode(pic_code))
@@ -15,6 +14,15 @@ def get_pic(pic_code, pic_name):
 WIDTH, HEIGHT = 1024, 576
 screen = pygame.display.set_mode((WIDTH, HEIGHT), 0, 32)
 pygame.display.set_caption('小姐姐，你的快递到了。')
+# unlike
+unlike_pos_width = 450
+unlike_pos_height = 55
+unlike_color = (115, 76, 243)
+# like
+like_pos_width = 450
+like_pos_height = 55
+like_color = (115, 76, 243)
+
 
 # 添加文本信息
 def title(text, screen, scale, color=(0, 0, 0)):
@@ -78,18 +86,12 @@ def main():
     # 设置不同意按钮属性
     unlike_pos_x = 130
     unlike_pos_y = 375
-    unlike_pos_width = 450
-    unlike_pos_height = 55
-    unlike_color = (115, 76, 243)
+
     # 设置同意按钮属性
     like_pos_x = 130
     like_pos_y = 280
-    like_pos_width = 450
-    like_pos_height = 55
-    like_color = (115, 76, 243)
 
-    running = True
-    while running:
+    while True:
         # 填充窗口
         screen.fill((255, 255, 255))
         # 添加背景图
@@ -98,15 +100,15 @@ def main():
 
         # 获取鼠标坐标
         pos = pygame.mouse.get_pos()
-        if pos[0] < unlike_pos_x + unlike_pos_width + 5 and pos[0] > unlike_pos_x - 5 and pos[
-            1] < unlike_pos_y + unlike_pos_height + 5 and pos[1] > unlike_pos_y - 5:
+        if unlike_pos_x + unlike_pos_width + 5 > pos[0] > unlike_pos_x - 5 and \
+                unlike_pos_y + unlike_pos_height + 5 > pos[1] > unlike_pos_y - 5:
             while True:
                 if num > 5:
                     break
                 num += 1
                 unlike_pos_x, unlike_pos_y = get_random_pos()
-                if pos[0] < unlike_pos_x + unlike_pos_width + 5 and pos[0] > unlike_pos_x - 5 and pos[
-                    1] < unlike_pos_y + unlike_pos_height + 5 and pos[1] > unlike_pos_y - 5:
+                if unlike_pos_x + unlike_pos_width + 5 > pos[0] > unlike_pos_x - 5 and \
+                        unlike_pos_y + unlike_pos_height + 5 > pos[1] > unlike_pos_y - 5:
                     continue
                 break
 
@@ -143,17 +145,17 @@ def main():
 
         # 点击套路按钮
         if num > 5:
-            if pos[0] < unlike_pos_x + unlike_pos_width + 5 and pos[0] > unlike_pos_x - 5 and pos[
-                1] < unlike_pos_y + unlike_pos_height + 5 and pos[1] > unlike_pos_y - 5:
+            if unlike_pos_x + unlike_pos_width + 5 > pos[0] > unlike_pos_x - 5 and \
+                    unlike_pos_y + unlike_pos_height + 5 > pos[1] > unlike_pos_y - 5:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     show_unlike_interface(screen)
-
+        # 设置关闭选项属性
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
         # 点击同意按钮
-        if pos[0] < like_pos_x + like_pos_width + 5 and pos[0] > like_pos_x - 5 and pos[
-            1] < like_pos_y + like_pos_height + 5 and pos[1] > like_pos_y - 5:
+        if like_pos_x + like_pos_width + 5 > pos[0] > like_pos_x - 5 and \
+                like_pos_y + like_pos_height + 5 > pos[1] > like_pos_y - 5:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 show_like_interface(screen)
 

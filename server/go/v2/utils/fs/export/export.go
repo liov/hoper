@@ -7,6 +7,7 @@ import (
 	"github.com/tealeg/xlsx/v3"
 )
 
+// 360 excel库文档宣称性能很强，实际性能很差，尤其合并单元格
 func NewFile(sheet string, header []string) *excelize.File {
 	endColumn := ColumnLetter[len(header)-1]
 	f := excelize.NewFile()
@@ -19,6 +20,8 @@ func NewFile(sheet string, header []string) *excelize.File {
 		log.Println(err)
 	}
 	for i := range header {
+		/*		axis, _ := excelize.CoordinatesToCellName(i+1, 1)
+				f.SetCellValue(sheet, axis, header[i])*/
 		f.SetCellValue(sheet, ColumnLetter[i]+"1", header[i])
 	}
 	f.SetRowHeight(sheet, 1, 30)
@@ -46,7 +49,14 @@ func NewXlsxFile(sheetName string, header []string) (*xlsx.File, *xlsx.Sheet) {
 	row := sheet.AddRow()
 	for _, v := range header {
 		cell := row.AddCell()
-		cell.Value = v
+		cell.SetString(v)
 	}
 	return f, sheet
+}
+
+func XlsxWriteValue(row *xlsx.Row, values []interface{}) {
+	for _, v := range values {
+		cell := row.AddCell()
+		cell.SetValue(v)
+	}
 }

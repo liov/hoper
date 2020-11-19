@@ -53,3 +53,7 @@ extend google.protobuf.EnumOptions {
 extend google.protobuf.EnumValueOptions {
 	optional Options value = 7001;
 }
+
+extend google.protobuf.FileOptions {
+	optional bool non_omitempty = 7001;
+}
