@@ -28,7 +28,7 @@ def downloadpic(url):
     # 套图标题
     title = BeautifulSoup(html, 'lxml').find("h5").get_text()
     # 获取页码
-    page = beautifulsoup4(html, 'lxml').find("span", {"class": "page-ch"}).get_text()
+    page = BeautifulSoup(html, 'lxml').find("span", {"class": "page-ch"}).get_text()
     print(page)
     pattern = re.compile('\d*')
     page = pattern.findall(page)[1]
