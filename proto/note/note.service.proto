@@ -8,7 +8,7 @@ import "google/api/annotations.proto";
 import "utils/empty/empty.proto";
 import "utils/response/response.proto";
 import "utils/proto/go/policy.proto";
-import "patch/go.proto";
+import "utils/proto/go/go.proto";
 
 option go_package = "github.com/liov/hoper/go/v2/protobuf/note";
 

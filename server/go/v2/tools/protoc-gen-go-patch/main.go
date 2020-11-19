@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/liov/hoper/go/v2/tools/proropatch/patch"
+	"github.com/liov/hoper/go/v2/tools/protoc-gen-go-patch/patch"
 	"google.golang.org/protobuf/compiler/protogen"
 )
 

@@ -25,3 +25,7 @@ func fieldOptions(f *protogen.Field) *gopb.Options {
 func oneofOptions(o *protogen.Oneof) *gopb.Options {
 	return proto.GetExtension(o.Desc.Options(), gopb.E_Oneof).(*gopb.Options)
 }
+
+func fileNonOmit(o *protogen.File) bool {
+	return proto.GetExtension(o.Desc.Options(), gopb.E_NonOmitempty).(bool)
+}
