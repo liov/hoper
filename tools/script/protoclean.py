@@ -4,7 +4,7 @@ import sys, getopt
 
 
 def clean(inputpath, outputpath):
-    print(inputpath,"[", outputpath,"]")
+    print(inputpath, "[", outputpath, "]")
     if not os.path.exists(outputpath):
         os.makedirs(outputpath)
     files = os.listdir(inputpath)
