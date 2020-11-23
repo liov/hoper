@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path"
 	"strings"
+	"text/template"
 	"time"
 )
 
@@ -18,9 +19,9 @@ func GitPull(filePath string) {
 	log.Println("正在获取当前项目git最新代码")
 	err, _ := execCommand("cd " + filePath + "\ngit fetch --all && git reset --hard origin/master && git pull")
 
-	err, _ = execCommand("cd " + filePath + "\ngit checkout -b " + BranchName + " origin/" + BranchName)
+	err, _ = execCommand("cd " + filePath + "\ngit checkout -b " + config.BranchName + " origin/" + config.BranchName)
 	if err != nil {
-		execCommand("cd " + filePath + "\ngit checkout " + BranchName)
+		execCommand("cd " + filePath + "\ngit checkout " + config.BranchName)
 	}
 
 	err, _ = execCommand("cd " + filePath + "\ngit pull")
@@ -32,7 +33,7 @@ func GitPull(filePath string) {
 
 func GetGitTag(filePath string) string {
 	log.Println("正在获取当前项目git最新tag")
-	err, result := execCommand(("cd " + filePath + "\ngit tag"))
+	err, result := execCommand("cd " + filePath + "\ngit tag")
 	if err != nil {
 		log.Println("获取tag失败,错误原因是: ", err.Error())
 		return ""
@@ -62,181 +63,86 @@ func execCommand(command string) (error, string) {
 
 func BuildDockerfile() {
 	var dockerfile string
-	if Type == "go" {
+	switch config.Type {
+	case "go":
 		dockerfile = Dockerfile_Go
-	} else if Type == "java" {
-		dockerfile = Dockerfile_Java
-	} else if Type == "war" {
-		dockerfile = Dockerfile_War
-	} else if Type == "web" {
-		dockerfile = Dockerfile_Web
-	} else if Type == "jar" {
+	case "jar":
 		dockerfile = Dockerfile_Jar
 	}
-
-	dockerfile = strings.Replace(dockerfile, "[name]", Name, -1)
-	dockerfile = strings.Replace(dockerfile, "[env]", Env, -1)
-	WriteFile("./Dockerfile", dockerfile)
+	t := template.Must(template.New("dockerfile").Parse(dockerfile))
+	file := WriteFile("./Dockerfile")
+	defer file.Close()
+	err := t.Execute(file, &config)
+	log.Println(err)
 }
 
 func BuildIngress() {
-	//替换配置内容
-	if Domain == "" {
-		panic("项目缺少 domain配置")
-	}
-	ingress := Ingress
-	ingress = strings.Replace(ingress, "[name]", Name, -1)
-	ingress = strings.Replace(ingress, "[namespace]", Namespace, -1)
-	ingress = strings.Replace(ingress, "[domain]", Domain, -1)
-	ingress = strings.Replace(ingress, "[port]", Port, -1)
-	ingress = strings.Replace(ingress, "[version]", Version, -1)
-	ingress = strings.Replace(ingress, "[proxyStatus]", ProxyStatus, -1)
-	WriteFile("./k8s/ing.yaml", ingress)
-
+	t := template.Must(template.New("ingress").Parse(Ingress))
+	file := WriteFile("./k8s/ing.yaml")
+	defer file.Close()
+	err := t.Execute(file, &config)
+	log.Println(err)
 }
 
 func BuildService() {
-	//替换配置内容
-	service := Service
-	if Type == "jar" {
-		service = ServiceJar
-	} else if Env == "dev" {
-		service = ServiceDev
-		service = strings.Replace(service, "[exportPort]", ExportPort, -1)
-	}
-
-	if ServicePort == "" {
-		ServicePort = "8080"
-	}
-	service = strings.Replace(service, "[namespace]", Namespace, -1)
-	service = strings.Replace(service, "[name]", Name, -1)
-	service = strings.Replace(service, "[servicePort]", ServicePort, -1)
-	service = strings.Replace(service, "[port]", Port, -1)
-	service = strings.Replace(service, "[version]", Version, -1)
-	//service = strings.Replace(service, "[annotations]", Annotations, -1)
-
-	WriteFile("./k8s/svc.yaml", service)
+	t := template.Must(template.New("msg").Parse(Service))
+	file := WriteFile("./k8s/svc.yaml")
+	defer file.Close()
+	err := t.Execute(file, &config)
+	log.Println(err)
 
 }
 
 func BuildDeployment() {
 	log.Println("正在构建deployment文件......")
-	if CpuLimit == "" {
-		CpuLimit = "200m"
-	}
-	if MemoryLimit == "" {
-		MemoryLimit = "256Mi"
-	}
-	if CpuRequest == "" {
-		CpuRequest = "100m"
-	}
-	if MemoryRequest == "" {
-		MemoryRequest = "128Mi"
-	}
-	if LogPath == "" {
-		LogPath = "/data/logs"
+
+	if config.CmdArgs == "" {
+		config.CmdArgs += "&& cp ../../config/default.json default.json && nohup ./{{name}} -conf default"
 	}
 
-	if CmdArgs == "" {
-		if Type == "go" || Type == "web" {
-			CmdArgs = "cp ../../config/default.json default.json && nohup ./[name] -conf default"
-		} else if Type == "java" {
-			CmdArgs = "/usr/local/tomcat/bin/catalina.sh run"
-		}
-	} else if Type == "go" || Type == "web" {
-		CmdArgs += "&& cp ../../config/default.json default.json && nohup ./[name] -conf default"
-	}
-
-	//替换配置内容
-	var deployment string
-	if Env == "dev" {
-		if Type == "go" {
-			deployment = Deployment_Go_Dev
-		} else if Type == "java" {
-			deployment = Deployment_Java_Dev
-		} else if Type == "war" {
-			deployment = Deployment_Java_Dev
-		} else if Type == "web" {
-			deployment = Deployment_Web_Dev
-		} else if Type == "jar" {
-			deployment = Deployment_Java_Dev
-		}
-	} else {
-		if Type == "go" {
-			deployment = Deployment_Go
-		} else if Type == "java" {
-			deployment = Deployment_Java
-		} else if Type == "war" {
-			deployment = Deployment_Java
-		} else if Type == "web" {
-			deployment = Deployment_Web
-		} else if Type == "jar" {
-			deployment = Deployment_Java
-		}
-	}
-
-	deployment = strings.Replace(deployment, "[namespace]", Namespace, -1)
-	deployment = strings.Replace(deployment, "[cmdArgs]", CmdArgs, -1)
-	deployment = strings.Replace(deployment, "[version]", Version, -1)
-	deployment = strings.Replace(deployment, "[name]", Name, -1)
-	deployment = strings.Replace(deployment, "[replicas]", Replicas, -1)
-	deployment = strings.Replace(deployment, "[author]", Author, -1)
-	deployment = strings.Replace(deployment, "[url]", Url, -1)
-	deployment = strings.Replace(deployment, "[logPath]", LogPath, -1)
-	deployment = strings.Replace(deployment, "[logTargetPath]", LogTargetPath, -1)
-	deployment = strings.Replace(deployment, "[cpuLimit]", CpuLimit, -1)
-	deployment = strings.Replace(deployment, "[memoryLimit]", MemoryLimit, -1)
-	deployment = strings.Replace(deployment, "[cpuRequest]", CpuRequest, -1)
-	deployment = strings.Replace(deployment, "[memoryRequest]", MemoryRequest, -1)
-	deployment = strings.Replace(deployment, "[author]", Author, -1)
-	deployment = strings.Replace(deployment, "[configName]", ConfigName, -1)
-	deployment = strings.Replace(deployment, "[configMapName]", ConfigMapName, -1)
-
-	WriteFile("./k8s/dep.yaml", deployment)
+	t := template.Must(template.New("deployment").Parse(Deployment))
+	file := WriteFile("./k8s/dep.yaml")
+	defer file.Close()
+	err := t.Execute(file, &config)
+	log.Println(err)
 }
 
 func Build(filePath string) {
-	if Type == "go" {
-		log.Println("正在打包go项目......")
-		execAndPrint("env", "GOOS=linux", "GOARCH=amd64", "go", "build", "-o", "./build/main", filePath+"/main.go")
-	} else if Type == "java" {
-		log.Println("正在打包java项目......")
-		execAndPrint("mvn", "clean", "-f", filePath+"/pom.xml")
-		execAndPrint("mvn", "package", "-f", filePath+"/pom.xml")
-
-		execAndPrint("cp", "-r", filePath+"/target/"+Name, "./build/"+Name)
-	} else if Type == "war" {
-		log.Println("正在打包java项目war包......")
-		execAndPrint("gradle", "-b", filePath+"/build.gradle", "clean", "war", "-Pprofile="+Env)
-		execAndPrint("cp", "-r", filePath+"/build/libs/"+Name+".war", "./build/"+Name+".war")
-		execAndPrint("cp", "-r", filePath+"/config/tomcat/server.xml", "./build/server.xml")
-	} else if Type == "web" {
-		log.Println("正在打包web项目......")
-		execAndPrint("env", "GOOS=linux", "GOARCH=amd64", "go", "build", "-o", "./build/main", filePath+"/main.go")
-		pwd := os.Getenv("PWD")
-		os.Chdir(filePath)
-		execAndPrint("npm", "i")
-		execAndPrint("npm", "run-script", "build")
-		os.Chdir(pwd)
-		execAndPrint("cp", "-r", filePath+"/build", "./build/")
-	} else if Type == "jar" {
-		log.Println("正在打包java项目jar包......")
-		execAndPrint("gradle", "-b", filePath+"/build.gradle", "clean", "jar", "-Pprofile="+Env)
-		execAndPrint("cp", "-r", filePath+"/build/libs/"+Name+".jar", "./build/"+Name+".jar")
-
+	switch config.Type {
+	case "go":
+		{
+			log.Println("正在打包go项目......")
+			execAndPrint("env", "GOOS=linux", "GOARCH=amd64", "go", "build", "-o", "./main", filePath+"/main.go")
+		}
+	case "web":
+		{
+			log.Println("正在打包web项目......")
+			execAndPrint("env", "GOOS=linux", "GOARCH=amd64", "go", "build", "-o", "./build/main", filePath+"/main.go")
+			pwd := os.Getenv("PWD")
+			os.Chdir(filePath)
+			execAndPrint("npm", "i")
+			execAndPrint("npm", "run-script", "build")
+			os.Chdir(pwd)
+			execAndPrint("cp", "-r", filePath+"/build", "./build/")
+		}
+	case "jar":
+		{
+			log.Println("正在打包java项目jar包......")
+			execAndPrint("gradle", "-b", filePath+"/build.gradle", "clean", "jar", "-Pprofile="+config.Env)
+			execAndPrint("cp", "-r", filePath+"/build/libs/"+config.Name+".jar", "./build/"+config.Name+".jar")
+		}
 	}
-
 	time.Sleep(time.Second * 2)
 
 }
 
 func DockerRun() {
 	log.Println("本地测试运行go项目......")
-	execAndPrint("docker", "run", "-ti", "--rm", Url+"/"+Author+"/"+Name+":"+Version)
+	execAndPrint("docker", "run", "-ti", "--rm", config.ImageTag)
 }
 
 func CopyConfig() {
-	log.Println("正在复制配置", Type, "项目文件到发布系统中......")
+	log.Println("正在复制配置", config.Type, "项目文件到发布系统中......")
 	err1 := os.RemoveAll("./build/")
 	if err1 != nil {
 		log.Println("删除原配置文件失败：" + "./build/config/")
@@ -248,15 +154,16 @@ func CopyConfig() {
 		return
 	}
 	execAndPrint("pwd")
-	if Type == "go" {
-		execAndPrint("cp", "-f", Conf+".json", ConfigFile)
-	} else if Type == "java" {
-		execAndPrint("cp", "-r", ConfigPath+Env, "./build/config")
-	} else if Type == "war" {
+	switch config.Type {
+	case "go":
+		execAndPrint("cp", "-f", config.Conf+".json", config.ConfigFile)
+	case "java":
+		execAndPrint("cp", "-r", config.ConfigPath+config.Env, "./build/config")
+	case "war":
 
-	} else if Type == "web" {
-		execAndPrint("cp", "-f", Conf+".json", ConfigFile)
-	} else if Type == "jar" {
+	case "web":
+		execAndPrint("cp", "-f", config.Conf+".json", config.ConfigFile)
+	case "jar":
 
 	}
 
@@ -265,23 +172,23 @@ func CopyConfig() {
 func BuildDockerImage(path string) {
 	os.Chdir(path)
 	log.Println("正在构建docker镜像......")
-	execAndPrint("docker", "build", "-t", Url+"/"+Author+"/"+Name+":"+Version, ".")
+	execAndPrint("docker", "build", "-t", config.ImageTag, ".")
 }
 
 func PushDockerImage() {
 	log.Println("正在推送docker镜像......")
-	execAndPrint("docker", "push", Url+"/"+Author+"/"+Name+":"+Version)
+	execAndPrint("docker", "push", config.ImageTag)
 }
 
 func ChangeEnv() {
 	log.Println("正在切换k8s环境......")
 	pwd, _ := os.Getwd()
 	os.Chdir("/home/crm/k8s")
-	command := exec.Command("/bin/bash", "-c", "./kube.sh "+Env)
+	command := exec.Command("/bin/bash", "-c", "./kube.sh "+config.Env)
 	command.Start()
 	command.Wait()
-	execAndPrint("kubectl", "config", "use-context", Env)
-	log.Println("已切换到" + Env)
+	execAndPrint("kubectl", "config", "use-context", config.Env)
+	log.Println("已切换到" + config.Env)
 	os.Chdir(pwd)
 }
 
@@ -302,9 +209,9 @@ func ApplyIngress() {
 }
 
 func ApplyConfigMap() {
-	if Type == "go" || Type == "web" {
+	if config.Type == "go" || config.Type == "web" {
 		log.Println("正在发布配置文件.....")
-		execAndPrint("kubectl", "create", "configmap", ConfigMapName, "--from-file="+ConfigPath)
+		execAndPrint("kubectl", "create", "configmap", config.ConfigMapName, "--from-file="+config.ConfigPath)
 	}
 }
 
@@ -329,15 +236,15 @@ func DelIngress() {
 }
 
 func DelConfigMap() {
-	if Type == "go" || Type == "web" {
+	if config.Type == "go" || config.Type == "web" {
 		log.Println("正在发布配置文件.....")
-		execAndPrint("kubectl", "delete", "configmap", ConfigMapName)
+		execAndPrint("kubectl", "delete", "configmap", config.ConfigMapName)
 	}
 }
 
 func ChangeNameSpace() {
-	execAndPrint("kubectl", "config", "set-context", Env, "--namespace="+Namespace)
-	log.Println(Env, "环境的命名空间已切换成", Namespace)
+	execAndPrint("kubectl", "config", "set-context", config.Env, "--namespace="+config.Namespace)
+	log.Println(config.Env, "环境的命名空间已切换成", config.Namespace)
 }
 
 func execAndPrint(commandName string, params ...string) string {
@@ -376,13 +283,12 @@ func execAndPrint(commandName string, params ...string) string {
 	return endLine
 }
 
-func WriteFile(fileName, context string) {
+func WriteFile(fileName string) *os.File {
 	var file *os.File
 	var err error
 	if checkFileIsExist(fileName) {
 		//如果文件存在
 		file, err = os.OpenFile(fileName, os.O_TRUNC|os.O_WRONLY, 0666) //打开文件
-		defer file.Close()
 		if err != nil {
 			log.Println("写入文件失败1:", fileName, err)
 		}
@@ -397,11 +303,7 @@ func WriteFile(fileName, context string) {
 			log.Println("写入文件失败3:", fileName, err)
 		}
 	}
-	n, err := io.WriteString(file, context) //写入文件(字符串)
-	if err != nil {
-		log.Println("写入文件失败4:", fileName, err)
-	}
-	fmt.Printf("写入%d个字节,构建%s文件成功\n", n, fileName)
+	return file
 }
 
 /**
@@ -417,29 +319,33 @@ func checkFileIsExist(fileName string) bool {
 
 //发送钉钉信息
 func SendDingTalk() {
-	log.Println("Env:" + Env)
+	log.Println("Env:" + config.Env)
 	//if Env != "prod" {
 	//	return
 	//}
 	//发送钉钉信息
 	hookUrl := "https://oapi.dingtalk.com/robot/send?access_token=dd01e86251264d6c5d089d295ffdc3c3d4a7ac59cce2e7c7d66782adb4f8ec5f"
-	noteArray := strings.Split(CommitNote, "\n")
+	noteArray := strings.Split(config.CommitNote, "\n")
 	note := strings.Join(noteArray[0:len(noteArray)-1], " \n - ")
-	text := `#### 系统：` + Name + `.` + Namespace + ` \n` +
-		`#### 环境：` + Env + ` \n ` +
-		`#### 时间：` + time.Now().Format("2006年01月02日 15:04:05") + ` \n ` +
-		`#### 模块：` + Name + ` \n ` +
-		`#### 分支：` + BranchName + ` \n ` +
-		`#### 版本：` + Version + ` \n ` +
-		`#### 特性： \n ` +
-		`- ` + note + ` \n ` +
-		`#### 发布人：` + UserName + ` \n `
+
+	text := `#### 系统：{{Name}}.{{Namespace}} \n
+		#### 环境：{{Env}} \n 
+		#### 时间：` + time.Now().Format("2006年01月02日 15:04:05") + ` \n
+		#### 模块：{{Name}}\n 
+		#### 分支：{{BranchName}}\n
+		#### 版本：{{Version}}\n 
+		#### 特性：\n 
+		- ` + note + `\n
+		#### 发布人：{{UserName}} \n `
+	t := template.Must(template.New("dingding").Parse(text))
+	buf := new(bytes.Buffer)
+	t.Execute(buf, &config)
 	str := `
 		{
 		     "msgtype": "markdown",
 		     "markdown": {
 			 "title":"系统发布",
-			 "text": "` + text + `"
+			 "text": "` + buf.String() + `"
 		     },
 		    "at": {
 			"atMobiles": [],
@@ -455,12 +361,12 @@ func SendDingTalk() {
 回滚读取配置文件
 */
 func RollBackConfig() {
-	if (Type == "go" || Type == "web") && Env == "prod" {
-		dir := "./history/" + Name + "/" + Namespace + "/" + Env
+	if (config.Type == "go" || config.Type == "web") && config.Env == "prod" {
+		dir := "./history/" + config.Name + "/" + config.Namespace + "/" + config.Env
 		log.Println("读取历史版本发布配置config")
 		//备份当前配置文件config
 		execAndPrint("mkdir", "build")
-		execAndPrint("cp", "-f", dir+"/"+Version+".json", ConfigFile)
+		execAndPrint("cp", "-f", dir+"/"+config.Version+".json", config.ConfigFile)
 	}
 }
 
@@ -468,8 +374,8 @@ func RollBackConfig() {
 备份发布历史配置文件config.json
 */
 func backupConfig() {
-	if (Type == "go" || Type == "web") && Env == "prod" {
-		dir := "./history/" + Name + "/" + Namespace + "/" + Env
+	if (config.Type == "go" || config.Type == "web") && config.Env == "prod" {
+		dir := "./history/" + config.Name + "/" + config.Namespace + "/" + config.Env
 		//创建备份目录
 		err := os.MkdirAll(dir, os.ModePerm)
 		if err != nil {
@@ -479,7 +385,7 @@ func backupConfig() {
 		//java项目不复制配置文件
 		log.Println("备份当前发布配置config")
 		//备份当前配置文件config
-		execAndPrint("cp", "-f", ConfigFile, dir+"/"+Version+".json")
+		execAndPrint("cp", "-f", config.ConfigFile, dir+"/"+config.Version+".json")
 	}
 	//备份完后删除build目录
 	os.RemoveAll("./build/")
@@ -488,7 +394,7 @@ func backupConfig() {
 func GetBranchNote() string {
 	log.Println("正在获取当前分支的注释")
 	//err, result := execCommand("cd ../" + Name + " && git branch -v|awk '{print $NF}'")
-	err, result := execCommand("cd ../" + Name + " && git log --pretty=format:'%s' -n 3")
+	err, result := execCommand("cd ../" + config.Name + " && git log --pretty=format:'%s' -n 3")
 	if err != nil {
 		log.Println("获取注释异常,错误原因是: ", err.Error())
 		return ""
@@ -498,7 +404,7 @@ func GetBranchNote() string {
 
 func GetBranchName() string {
 	log.Println("正在获取当前发布的分支名称")
-	err, result := execCommand("cd ../" + Name + " && git symbolic-ref --short -q HEAD")
+	err, result := execCommand("cd ../" + config.Name + " && git symbolic-ref --short -q HEAD")
 	if err != nil {
 		log.Println("获取分支失败,错误原因是: ", err.Error())
 		return ""
