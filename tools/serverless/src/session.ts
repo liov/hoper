@@ -28,7 +28,7 @@ interface Session {
 function generate() {
     const sess: ErpUserPara = {
         employeeId: 1,
-        type: 3,
+        type: 1,
         platformType:101,
         thirdCompId:0,
         compId:10001,
@@ -37,4 +37,5 @@ function generate() {
     console.log(Buffer.from(JSON.stringify(sess)).toString('base64'))
 }
 
+const skipValidation = "e30="
 generate()

@@ -20,7 +20,7 @@ import mongoDb
 
 '''
 妹子图网站的反爬虫机制, Referer
-'''r66
+'''
 
 
 class CrawMzitu(crawBase.CrawMzBase):

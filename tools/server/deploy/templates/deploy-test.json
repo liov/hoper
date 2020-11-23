@@ -1,0 +1,20 @@
+{
+  "version": "1.0",
+  "domain": "export-center.openmng",
+  "namespace":"hoper",
+  "cpuLimit": "500m",
+  "memoryLimit": "512Mi",
+  "cpuRequest": "100m",
+  "memoryRequest": "64Mi",
+  "name": "export-center",
+  "author": "openmng",
+  "url": "reg.hoper.xyz",
+  "log": {
+    "path": "/data/logs",
+    "targetPath": "/data/logs"
+  },
+  "cmdArgs": "",
+  "configName": "stage.json",
+  "replicas": "1",
+  "type": "go"
+}

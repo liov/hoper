@@ -115,32 +115,32 @@ var mutexMap = make(map[string]*sync.Mutex)
 func deploy(ctx iris.Context) {
 	ctx.ReadJSON(&dep)
 	fmt.Println(dep)
-	Env = dep.Env
-	Flow = dep.Flow
-	BranchName = dep.Branch
-	Namespace = ctx.Params().Get("project")
-	m, ok := mutexMap[Namespace]
+	config.Env = dep.Env
+	config.Flow = dep.Flow
+	config.BranchName = dep.Branch
+	config.Namespace = ctx.Params().Get("project")
+	m, ok := mutexMap[config.Namespace]
 	if ok {
 		m.Lock()
 	} else {
-		mutexMap[Namespace] = &sync.Mutex{}
-		mutexMap[Namespace].Lock()
+		mutexMap[config.Namespace] = &sync.Mutex{}
+		mutexMap[config.Namespace].Lock()
 	}
 	defer func() {
-		mutexMap[Namespace].Unlock()
+		mutexMap[config.Namespace].Unlock()
 	}()
 	if dep.Version != "" {
-		Version = "v" + dep.Version + "-" + time.Now().Format("20060102150405")
+		config.Version = "v" + dep.Version + "-" + time.Now().Format("20060102150405")
 	} else {
-		Version = ""
+		config.Version = ""
 	}
 	SystemName := dep.Project
 	GOPATH := os.Getenv("GOPATH")
 	os.Chdir(GOPATH + "/src/hoper.com/" + ctx.Params().Get("project") + "/" + dep.Project + "/")
-	ProjectPath = GOPATH + "/src/hoper.com/" + ctx.Params().Get("project") + "/" + dep.Project
+	config.ProjectPath = GOPATH + "/src/hoper.com/" + ctx.Params().Get("project") + "/" + dep.Project
 
-	if Flow != "help" {
-		if Namespace == "" || Flow == "" || Env == "" || SystemName == "" {
+	if config.Flow != "help" {
+		if config.Namespace == "" || config.Flow == "" || config.Env == "" || SystemName == "" {
 			ctx.Write([]byte("缺少必要参数 flow,name,env,ns"))
 			Help()
 			return
@@ -148,8 +148,8 @@ func deploy(ctx iris.Context) {
 	}
 
 	names := strings.Split(SystemName, ",")
-	paths := strings.Split(ProjectPath, ",")
-	if ProjectPath != "" {
+	paths := strings.Split(config.ProjectPath, ",")
+	if config.ProjectPath != "" {
 		if len(paths) != len(names) {
 			ctx.Write([]byte("参数关系不对应 name,path"))
 			return
@@ -158,12 +158,12 @@ func deploy(ctx iris.Context) {
 
 	for i, sName := range names {
 		filePath := "../" + sName
-		if ProjectPath != "" && paths[i] != "" {
+		if config.ProjectPath != "" && paths[i] != "" {
 			filePath = paths[i]
 		}
 		//读取配置文件
 		SetupConfig(sName, filePath)
-		switch Flow {
+		switch config.Flow {
 		case "all":
 			//拷贝项目配置文件
 			CopyConfig()

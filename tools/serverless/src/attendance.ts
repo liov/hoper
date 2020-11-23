@@ -14,11 +14,11 @@ const at = new Map([
 ])
 
 async function request() {
-    const res = await axios.post(`http://inmail.miz.so:1234/grid/att/CheckInOutGrid/`,
+    const res = await axios.post(`http://xxx/grid/att/CheckInOutGrid/`,
         "page=3&rp=100", {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded; param=value',
-                'Cookie': 'sessionidadms=93e5c9bb2f79a3af699ef9464511c504',
+                'Cookie': 'sessionidadms=xxx',
             }
         })
     console.log(res.data)
