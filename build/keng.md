@@ -237,3 +237,13 @@ ls -l /proc/pid
 crontab -l
 crontab -r
 rm xxx
+
+#windows 文件夹删不掉 该项目不在 请确认该项目的位置
+```bat
+DEL /F /A /Q \\?\%1
+RD /S /Q \\?\%1
+```
+拖着要删除东西拉到bat文件上
+
+# cmd中文乱码
+chcp 65001

@@ -2,6 +2,7 @@ package tdragonboat
 
 import (
 	"encoding/binary"
+	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/lni/dragonboat/statemachine"
 	"io"
 	"io/ioutil"
@@ -43,7 +44,7 @@ func (s *SecondStateMachine) Lookup(query []byte) []byte {
 func (s *SecondStateMachine) Update(data []byte) uint64 {
 	// in this example, we regard the input as a question.
 	s.Count++
-	ulog.Infof("got a question from user: %s, count:%d\n", string(data), s.Count)
+	log.Infof("got a question from user: %s, count:%d\n", string(data), s.Count)
 	return uint64(len(data))
 }
 
