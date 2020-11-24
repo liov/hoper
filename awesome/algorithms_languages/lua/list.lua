@@ -54,7 +54,7 @@ end
 function display()  
     local l=list.next  
     while l do  
-        print(l.data.." ")  
+        print(l.data.." ")
         l=l.next  
     end  
     print('\n-- display ok --')  
@@ -147,7 +147,7 @@ function getLen()
 end  
   
 --主方法  
-function main()  
+function main()
     init()  
     addRear(5)  
     addRear(7)  
@@ -158,7 +158,7 @@ function main()
     display()  
       
       
-    print('输入你要删除的元素的位置:')  
+    print('输入你要删除的元素的位置:')
     pos=io.read('*number')  
     ret=delete(pos)  
     if not ret then  
@@ -167,13 +167,13 @@ function main()
         print('你要删除的元素是:'..ret)  
     end  
     print('删除后的链表的内容为:')  
-    display()  
-      
-    print('输入你想要得到的元素的位置:')  
+    display()
+
+    print('输入你想要得到的元素的位置:')
     pos=io.read('*number')  
     print('第'..pos..'个元素内容是:'..getData(pos))  
-    print('链表的长度为:'..getLen())  
-      
+    print('链表的长度为:'..getLen())
+
     destory() --销毁链表  
     print('-- main end --')  
 end  

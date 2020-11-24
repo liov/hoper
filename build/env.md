@@ -103,10 +103,3 @@ maven { url 'https://maven.aliyun.com/repository/google'}
 maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
 maven { url "https://jitpack.io" }
 ```
-
-#windows 文件夹删不掉 该项目不在 请确认该项目的位置
-```bat
-DEL /F /A /Q \\?\%1
-RD /S /Q \\?\%1
-```
-拖着要删除东西拉到bat文件上
