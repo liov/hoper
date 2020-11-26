@@ -9,6 +9,6 @@ local path = string.match(path.conversion(pathinfo),"^(.*/).*/.*$")
 package.path = string.format("%s?.lua;%s?/init.lua;%s", path, path, package.path)
 
 
-router_filter = require("router.filter"):new("router.config")
+router_filter = require("init.filter"):new("config")
 
 test_var_exec_every_time = os.date("%c")
