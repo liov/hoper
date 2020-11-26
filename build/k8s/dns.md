@@ -1,0 +1,1 @@
+etcd-minikube.kube-system.svc.cluster.local
