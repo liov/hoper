@@ -105,7 +105,7 @@ func (lf *Config) initLogger() *zap.Logger {
 		}
 		cores = append(cores, zapcore.NewCore(jsonEncoder, sink, lf.Level))
 	}
-
+	//如果没有设置输出，默认控制台
 	if len(cores) == 0 {
 		consoleEncoder = zapcore.NewConsoleEncoder(encoderConfig)
 		cores = append(cores, zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stderr), lf.Level))

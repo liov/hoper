@@ -1,4 +1,4 @@
-package page
+package param
 
 type Pagination struct {
 	PageNo   uint32

@@ -2,8 +2,12 @@ package initialize
 
 import (
 	"fmt"
+	stdlog "log"
+	"os"
 	"runtime"
+	"time"
 
+	v2 "github.com/liov/hoper/go/v2/utils/dao/db/gorm/v2"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/reflect3"
 	"gorm.io/driver/mysql"
@@ -83,7 +87,11 @@ func (init *Init) P2DB() *gorm.DB {
 	if init.Env == PRODUCT {
 		db.Config.Logger = logger.Default.LogMode(logger.Silent)
 	} else {
-		db.Config.Logger = logger.Default.LogMode(logger.Info)
+		db.Config.Logger = v2.New(stdlog.New(os.Stdout, "\r\n", stdlog.LstdFlags), &logger.Config{
+			LogLevel:      logger.Info,
+			Colorful:      true,
+			SlowThreshold: 100 * time.Millisecond,
+		})
 	}
 	//i.closes = append(i.closes,db.CloseDao)
 	//closes = append(closes, func() {log.Info("数据库已关闭")})
