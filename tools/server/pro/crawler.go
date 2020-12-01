@@ -22,8 +22,9 @@ import (
 )
 
 const commonUrl = "https://f1113.wonderfulday27.live/viewthread.php?tid=%d"
-const loop = 50
+const loop = 20
 const commonDir = `E:\pic\`
+const interval = time.Second
 
 var userAgent = []string{
 	`Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36`,
@@ -47,67 +48,43 @@ func init() {
 	http.DefaultClient.Transport = &http.Transport{
 		Proxy: http.ProxyURL(proxyURL),
 		DialContext: (&net.Dialer{
-			Timeout:   60 * time.Second,
+			Timeout:   300 * time.Second,
 			KeepAlive: 60 * time.Second,
 		}).DialContext,
 	}
 	picClient.Transport = &http.Transport{
 		Proxy: http.ProxyURL(proxyURL),
 		DialContext: (&net.Dialer{
-			Timeout:   60 * time.Second,
+			Timeout:   300 * time.Second,
 			KeepAlive: 60 * time.Second,
 		}).DialContext,
 	}
 }
 
-func main() {
-	start := 360000
-	end := 370000
-	sd := NewSpeed(loop)
-	wg := new(sync.WaitGroup)
-	go func() {
-		wg.Add(1)
-		f, _ := os.Create(commonDir + "fail_" + time.Now().Format("2006_01_02_15_04_05") + `.txt`)
-		for txt := range sd.fail {
-			f.WriteString(txt + "\n")
-		}
-		f.Close()
-		wg.Done()
-	}()
-	go func() {
-		wg.Add(1)
-		f, _ := os.Create(commonDir + "fail_pic_" + time.Now().Format("2006_01_02_15_04_05") + `.txt`)
-		for txt := range sd.failPic {
-			f.WriteString(txt + "\n")
-		}
-		f.Close()
-		wg.Done()
-	}()
-	for i := start; i < end; i++ {
-		sd.Add(1)
-		go fetch(i, sd)
-		time.Sleep(time.Second)
-	}
-	sd.Wait()
-	close(sd.fail)
-	close(sd.failPic)
-	wg.Wait()
-}
-
 type speed struct {
 	wg            *sync.WaitGroup
-	c             chan struct{}
+	web, pic      chan struct{}
 	fail, failPic chan string
 }
 
 func (s *speed) Add(i int) {
 	s.wg.Add(i)
-	s.c <- struct{}{}
+	s.pic <- struct{}{}
+}
+
+func (s *speed) WebAdd(i int) {
+	s.wg.Add(i)
+	s.web <- struct{}{}
 }
 
 func (s *speed) Done() {
 	s.wg.Done()
-	<-s.c
+	<-s.pic
+}
+
+func (s *speed) WebDone() {
+	s.wg.Done()
+	<-s.web
 }
 
 func (s *speed) Wait() {
@@ -117,14 +94,15 @@ func (s *speed) Wait() {
 func NewSpeed(cap int) *speed {
 	return &speed{
 		wg:      new(sync.WaitGroup),
-		c:       make(chan struct{}, cap),
+		pic:     make(chan struct{}, cap),
+		web:     make(chan struct{}, cap),
 		fail:    make(chan string, cap),
 		failPic: make(chan string, cap),
 	}
 }
 
 func fetch(id int, wg *speed) {
-	defer wg.Done()
+	defer wg.WebDone()
 	tid := strconv.Itoa(id)
 	reader, err := request(http.DefaultClient, fmt.Sprintf(commonUrl, id))
 	if err != nil {
@@ -182,7 +160,7 @@ func fetch(id int, wg *speed) {
 		if url, ok := s.Attr("file"); ok {
 			wg.Add(1)
 			go download(url, dir, wg)
-			time.Sleep(time.Second)
+			time.Sleep(interval)
 		}
 	})
 }
@@ -200,7 +178,6 @@ func parseHtml(doc *goquery.Document) (string, string, string, *goquery.Selectio
 
 func download(url, dir string, wg *speed) {
 	defer wg.Done()
-
 	reader, err := request(picClient, url)
 	if err != nil {
 		log.Println(err, "url:", url)
@@ -229,6 +206,8 @@ func download(url, dir string, wg *speed) {
 	_, err = io.Copy(f, reader)
 	if err != nil {
 		log.Println("写入文件错误：", err)
+		wg.failPic <- url + " " + dir
+		return
 	}
 	log.Printf("下载成功：%s,目录：%s\n", url, dir)
 }
