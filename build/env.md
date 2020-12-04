@@ -103,3 +103,8 @@ maven { url 'https://maven.aliyun.com/repository/google'}
 maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
 maven { url "https://jitpack.io" }
 ```
+
+# gateway
+openresty
+懒得折腾就kong ingress
+折腾就apisix 

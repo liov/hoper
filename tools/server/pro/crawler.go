@@ -1,30 +1,30 @@
-package main
+package pro
 
 import (
 	"compress/gzip"
 	"context"
 	"errors"
 	"fmt"
-	"golang.org/x/net/html"
 	"io"
 	"log"
 	"math/rand"
-	"net"
 	"net/http"
-	"net/url"
 	"os"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/liov/hoper/go/v2/utils/fs"
+	"golang.org/x/net/html"
+	py "tools/pinyin"
 )
 
-const commonUrl = "https://f1113.wonderfulday27.live/viewthread.php?tid=%d"
-const loop = 20
-const commonDir = `E:\pic\`
-const interval = time.Second
+const CommonUrl = "https://f1113.wonderfulday27.live/viewthread.php?tid=%s"
+const Loop = 20
+const CommonDir = `F:\pic\`
+const Interval = 200 * time.Millisecond
+const Sep = string(os.PathSeparator)
 
 var userAgent = []string{
 	`Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36`,
@@ -36,79 +36,79 @@ var userAgent = []string{
 	`Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36`,
 }
 
-var reqCache = make([]*http.Request, 1, loop)
+var reqCache = make([]*http.Request, 1, Loop)
 var picClient = new(http.Client)
 
 func init() {
-	req, _ := newRequest(commonUrl)
+	req, _ := newRequest(CommonUrl)
 	reqCache[0] = req.Clone(context.Background())
-	http.DefaultClient.Timeout = 300 * time.Second
-	picClient.Timeout = 300 * time.Second
-	proxyURL, _ := url.Parse("socks5://localhost:8080")
-	http.DefaultClient.Transport = &http.Transport{
-		Proxy: http.ProxyURL(proxyURL),
-		DialContext: (&net.Dialer{
-			Timeout:   300 * time.Second,
-			KeepAlive: 60 * time.Second,
-		}).DialContext,
-	}
-	picClient.Transport = &http.Transport{
-		Proxy: http.ProxyURL(proxyURL),
-		DialContext: (&net.Dialer{
-			Timeout:   300 * time.Second,
-			KeepAlive: 60 * time.Second,
-		}).DialContext,
-	}
+	/*	http.DefaultClient.Timeout = 300 * time.Second
+		picClient.Timeout = 300 * time.Second
+		proxyURL, _ := url.Parse("socks5://localhost:8080")
+		http.DefaultClient.Transport = &http.Transport{
+			Proxy: http.ProxyURL(proxyURL),
+			DialContext: (&net.Dialer{
+				Timeout:   300 * time.Second,
+				KeepAlive: 60 * time.Second,
+			}).DialContext,
+		}
+		picClient.Transport = &http.Transport{
+			Proxy: http.ProxyURL(proxyURL),
+			DialContext: (&net.Dialer{
+				Timeout:   300 * time.Second,
+				KeepAlive: 60 * time.Second,
+			}).DialContext,
+		}*/
 }
 
-type speed struct {
+type Speed struct {
 	wg            *sync.WaitGroup
 	web, pic      chan struct{}
-	fail, failPic chan string
+	Fail, FailPic chan string
 }
 
-func (s *speed) Add(i int) {
+func (s *Speed) Add(i int) {
 	s.wg.Add(i)
 	s.pic <- struct{}{}
 }
 
-func (s *speed) WebAdd(i int) {
+func (s *Speed) WebAdd(i int) {
 	s.wg.Add(i)
 	s.web <- struct{}{}
 }
 
-func (s *speed) Done() {
+func (s *Speed) Done() {
 	s.wg.Done()
 	<-s.pic
 }
 
-func (s *speed) WebDone() {
+func (s *Speed) WebDone() {
 	s.wg.Done()
 	<-s.web
 }
 
-func (s *speed) Wait() {
+func (s *Speed) Wait() {
 	s.wg.Wait()
 }
 
-func NewSpeed(cap int) *speed {
-	return &speed{
+func NewSpeed(cap int) *Speed {
+	return &Speed{
 		wg:      new(sync.WaitGroup),
 		pic:     make(chan struct{}, cap),
 		web:     make(chan struct{}, cap),
-		fail:    make(chan string, cap),
-		failPic: make(chan string, cap),
+		Fail:    make(chan string, cap),
+		FailPic: make(chan string, cap),
 	}
 }
 
-func fetch(id int, wg *speed) {
-	defer wg.WebDone()
-	tid := strconv.Itoa(id)
-	reader, err := request(http.DefaultClient, fmt.Sprintf(commonUrl, id))
+func Fetch(tid string, sd *Speed) {
+	defer sd.WebDone()
+
+	reader, err := Request(http.DefaultClient, fmt.Sprintf(CommonUrl, tid))
 	if err != nil {
 		log.Println(err, "id:", tid)
 		if !strings.HasPrefix(err.Error(), "返回错误") {
-			wg.fail <- tid
+			sd.Fail <- tid
 		}
 		return
 	}
@@ -122,19 +122,22 @@ func fetch(id int, wg *speed) {
 		return
 	}
 	auth, title, text, htl := parseHtml(doc)
-	dir := commonDir
+	dir := CommonDir
+
 	if auth != "" {
-		dir += auth + `\`
+		dir += py.FistLetter(auth) + Sep + auth + Sep
 	}
 	if title != "" {
-		dir += title + `_` + tid + `\`
+		dir += title + `_` + tid + Sep
 	}
-
+	dir = fs.PathClean(dir)
 	_, err = os.Stat(dir)
 	if os.IsNotExist(err) {
 		err = os.MkdirAll(dir, 0666)
 		if err != nil {
 			log.Println(err, dir)
+			sd.Fail <- tid
+			return
 		}
 	}
 	if text != "" {
@@ -158,9 +161,9 @@ func fetch(id int, wg *speed) {
 
 	s.Each(func(i int, s *goquery.Selection) {
 		if url, ok := s.Attr("file"); ok {
-			wg.Add(1)
-			go download(url, dir, wg)
-			time.Sleep(interval)
+			sd.Add(1)
+			go Download(url, dir, sd)
+			time.Sleep(Interval)
 		}
 	})
 }
@@ -171,18 +174,20 @@ func parseHtml(doc *goquery.Document) (string, string, string, *goquery.Selectio
 	content := doc.Find(".t_msgfont").First()
 	text := content.Contents().Not(".t_attach").Text()
 	html := content.Not(".t_attach").Not("span")
-	auth = strings.ReplaceAll(auth, " ", "")
-	title = strings.ReplaceAll(title, " ", "")
+	auth = strings.ReplaceAll(auth, "\\", "")
+	auth = strings.ReplaceAll(auth, "/", "")
+	title = strings.ReplaceAll(title, "\\", "")
+	title = strings.ReplaceAll(title, "/", "")
 	return auth, title, text, html
 }
 
-func download(url, dir string, wg *speed) {
+func Download(url, dir string, wg *Speed) {
 	defer wg.Done()
-	reader, err := request(picClient, url)
+	reader, err := Request(picClient, url)
 	if err != nil {
 		log.Println(err, "url:", url)
 		if !strings.HasPrefix(err.Error(), "返回错误") {
-			wg.failPic <- url + " " + dir
+			wg.FailPic <- url + "<->" + dir
 		}
 		return
 	}
@@ -206,13 +211,13 @@ func download(url, dir string, wg *speed) {
 	_, err = io.Copy(f, reader)
 	if err != nil {
 		log.Println("写入文件错误：", err)
-		wg.failPic <- url + " " + dir
+		wg.FailPic <- url + "<->" + dir
 		return
 	}
 	log.Printf("下载成功：%s,目录：%s\n", url, dir)
 }
 
-func request(client *http.Client, url string) (io.ReadCloser, error) {
+func Request(client *http.Client, url string) (io.ReadCloser, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
@@ -281,4 +286,32 @@ func newRequest(url string) (*http.Request, error) {
 	req.Header.Set("Connection", "keep-alive")
 	http.DefaultClient.Timeout = 300 * time.Second
 	return req, nil
+}
+
+func Start(job func(sd *Speed)) {
+	sd := NewSpeed(Loop)
+	wg := new(sync.WaitGroup)
+	go func() {
+		wg.Add(1)
+		f, _ := os.Create(CommonDir + "fail_" + time.Now().Format("2006_01_02_15_04_05") + `.txt`)
+		for txt := range sd.Fail {
+			f.WriteString(txt + "\n")
+		}
+		f.Close()
+		wg.Done()
+	}()
+	go func() {
+		wg.Add(1)
+		f, _ := os.Create(CommonDir + "fail_pic_" + time.Now().Format("2006_01_02_15_04_05") + `.txt`)
+		for txt := range sd.FailPic {
+			f.WriteString(txt + "\n")
+		}
+		f.Close()
+		wg.Done()
+	}()
+	job(sd)
+	sd.Wait()
+	close(sd.Fail)
+	close(sd.FailPic)
+	wg.Wait()
 }
