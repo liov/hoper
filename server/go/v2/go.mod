@@ -63,7 +63,7 @@ require (
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible // indirect
 	github.com/microcosm-cc/bluemonday v1.0.4
 	github.com/modern-go/reflect2 v1.0.1
-	github.com/moul/http2curl v1.0.0 // indirect
+	github.com/moul/http2curl v1.0.0
 	github.com/mwitkow/go-proto-validators v0.2.0
 	github.com/nats-io/nats-server/v2 v2.1.8 // indirect
 	github.com/nsqio/go-nsq v1.0.7

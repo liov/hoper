@@ -1,9 +1,10 @@
-package http2
+package client
 
 import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -36,30 +37,67 @@ func init() {
 	}
 }
 
+type Pair struct {
+	K, V string
+}
+
+type LogCallback func(string, string, []byte,int, []byte)
+
 // RequestParams ...
 type RequestParams struct {
+	url, method        string
 	Timeout            time.Duration
 	AuthUser, AuthPass string
 	ContentType        string
 	Param              interface{}
+	Header             []Pair
+	logger             LogCallback
 }
 
-var DefaultRequest = &RequestParams{
-	Timeout:     0,
-	AuthUser:    "",
-	AuthPass:    "",
-	ContentType: "",
-	Param:       nil,
+func NewRequest(url, method string, param interface{}) *RequestParams {
+	return &RequestParams{url: url, method: strings.ToUpper(method), Param: param}
+}
+
+func (req *RequestParams) SetHeader(k, v string) *RequestParams {
+	req.Header = append(req.Header, Pair{K: k, V: v})
+	return req
+}
+
+func (req *RequestParams) SetLogger(logger LogCallback) *RequestParams {
+	req.logger = logger
+	return req
+}
+
+type responseBody interface {
+	CheckError() error
+}
+
+type ResponseBody struct {
+	Status int         `json:"status"`
+	Data   interface{} `json:"data"`
+	Msg    string      `json:"msg"`
+}
+
+func CommonResponse(response interface{}) interface{} {
+	return &ResponseBody{Data: response}
+}
+
+func (res *ResponseBody) CheckError() error {
+	if res.Status != 0 {
+		return errors.New(res.Msg)
+	}
+	return nil
 }
 
 // HTTPRequest create a HTTP request
-func HTTPRequest(url, method string, req *RequestParams, response interface{}) (err error) {
+func (req *RequestParams) HTTPRequest(response interface{}) (err error) {
 	defer func() {
 		if err != nil {
 			err = fmt.Errorf("utils: HTTPRequest error: %v", err)
 		}
 	}()
-	method = strings.ToUpper(method)
+	method := req.method
+	url := req.url
 	if req.Timeout != 0 {
 		if req.Timeout < time.Second {
 			req.Timeout = req.Timeout * time.Second
@@ -77,17 +115,18 @@ func HTTPRequest(url, method string, req *RequestParams, response interface{}) (
 		}
 	}
 	var body io.Reader
+	var reqBody []byte
 	if method == http.MethodGet {
 		url += "?" + getParam(req.Param)
 	} else {
 		if req.ContentType != "" {
 			body = strings.NewReader(getParam(req.Param))
 		} else {
-			data, err := json.Marshal(req.Param)
+			reqBody, err = json.Marshal(req.Param)
 			if err != nil {
 				return
 			}
-			body = bytes.NewReader(data)
+			body = bytes.NewReader(reqBody)
 		}
 
 	}
@@ -102,6 +141,11 @@ func HTTPRequest(url, method string, req *RequestParams, response interface{}) (
 	} else {
 		request.Header.Set("Content-Type", "application/json;charset=utf-8")
 	}
+	if len(req.Header) != 0 {
+		for _, pair := range req.Header {
+			request.Header.Set(pair.K, pair.V)
+		}
+	}
 
 	resp, err := client.Do(request)
 	if err != nil {
@@ -110,11 +154,24 @@ func HTTPRequest(url, method string, req *RequestParams, response interface{}) (
 	defer func() {
 		err = resp.Body.Close()
 	}()
+
 	respBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return
 	}
+	if req.logger != nil {
+		req.logger(url, method, reqBody,resp.StatusCode, respBytes)
+	}
+	if resp.StatusCode != 200 {
+		return errors.New("status:" + resp.Status)
+	}
 	err = json.Unmarshal(respBytes, response)
+	if err != nil {
+		return
+	}
+	if v, ok := response.(responseBody); ok {
+		err = v.CheckError()
+	}
 	return
 }
 
