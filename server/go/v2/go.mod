@@ -18,7 +18,7 @@ require (
 	github.com/brahma-adshonor/gohook v0.0.0-20200311033618-28b944a6fdfa // indirect
 	github.com/cenk/backoff v2.2.1+incompatible // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/etcd-io/bbolt v1.3.3
+	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/facebook/ent v0.4.3
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/facebookgo/ensure v0.0.0-20200202191622-63f1cf65ac4c // indirect
@@ -49,13 +49,10 @@ require (
 	github.com/graph-gophers/graphql-go v0.0.0-20200309224638-dae41bde9ef9
 	github.com/grpc-ecosystem/go-grpc-middleware v1.1.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.0.0-beta.4
-	github.com/hashicorp/consul v1.6.2 // indirect
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/jinzhu/configor v1.2.0
 	github.com/json-iterator/go v1.1.10
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
-	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
-	github.com/kataras/golog v0.1.5 // indirect
 	github.com/liov/protopatch2 v0.0.0-20200917092858-0c3cd79171e9
 	github.com/lni/dragonboat v2.1.7+incompatible
 	github.com/magiconair/properties v1.8.1 // indirect
@@ -76,7 +73,7 @@ require (
 	github.com/satori/go.uuid v1.2.0
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/smartystreets/assertions v0.0.0-20190116191733-b6c0e53d7304 // indirect
-	github.com/spf13/viper v1.6.1
+	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.6.1
 	github.com/tealeg/xlsx/v3 v3.2.1 // indirect
 	github.com/tidwall/buntdb v1.1.2 // indirect
@@ -87,13 +84,14 @@ require (
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
 	github.com/yalp/jsonpath v0.0.0-20180802001716-5cc68e5049a0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
+	go.etcd.io/bbolt v1.3.5 // indirect
 	go.uber.org/atomic v1.6.0
 	go.uber.org/zap v1.16.0
 	golang.org/x/net v0.0.0-20201002202402-0a1ea396d57c
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/tools v0.0.0-20200904185747-39188db58858
 	google.golang.org/genproto v0.0.0-20200808173500-a06252235341
-	google.golang.org/grpc v1.33.1
+	google.golang.org/grpc v1.34.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v0.0.0-20200626030347-424195440776
 	google.golang.org/grpc/examples v0.0.0-20201106075115-5d7f8c9ae422 // indirect
 	google.golang.org/protobuf v1.25.0
@@ -109,7 +107,4 @@ require (
 	sigs.k8s.io/yaml v1.2.0 // indirect
 )
 
-replace (
-	github.com/coreos/etcd v3.3.10+incompatible => github.com/coreos/etcd v3.3.18+incompatible
-	github.com/ugorji/go v1.1.4 => github.com/ugorji/go/codec v0.0.0-20190204201341-e444a5086c43
-)
+replace github.com/ugorji/go v1.1.4 => github.com/ugorji/go/codec v0.0.0-20190204201341-e444a5086c43

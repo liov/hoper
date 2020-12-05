@@ -10,21 +10,25 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/liov/hoper/go/v2/utils/dao/db/get"
 	"github.com/liov/hoper/go/v2/utils/fs"
 	"golang.org/x/net/html"
+	"gorm.io/gorm"
 	py "tools/pinyin"
 )
 
 const CommonUrl = "https://f1113.wonderfulday27.live/viewthread.php?tid=%s"
-const Loop = 20
+const Loop = 50
 const CommonDir = `F:\pic\`
 const Interval = 200 * time.Millisecond
 const Sep = string(os.PathSeparator)
+const Ext = `.txt`
 
 var userAgent = []string{
 	`Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36`,
@@ -62,9 +66,10 @@ func init() {
 }
 
 type Speed struct {
-	wg            *sync.WaitGroup
-	web, pic      chan struct{}
-	Fail, FailPic chan string
+	wg                        *sync.WaitGroup
+	web, pic                  chan struct{}
+	Fail, FailPic             chan string
+	FailPost, FailInvalidPost chan string
 }
 
 func (s *Speed) Add(i int) {
@@ -93,22 +98,29 @@ func (s *Speed) Wait() {
 
 func NewSpeed(cap int) *Speed {
 	return &Speed{
-		wg:      new(sync.WaitGroup),
-		pic:     make(chan struct{}, cap),
-		web:     make(chan struct{}, cap),
-		Fail:    make(chan string, cap),
-		FailPic: make(chan string, cap),
+		wg:              new(sync.WaitGroup),
+		pic:             make(chan struct{}, cap),
+		web:             make(chan struct{}, cap),
+		Fail:            make(chan string, cap),
+		FailPic:         make(chan string, cap),
+		FailPost:        make(chan string, cap),
+		FailInvalidPost: make(chan string, cap),
 	}
 }
 
-func Fetch(tid string, sd *Speed) {
+func Fetch(id int, sd *Speed) {
 	defer sd.WebDone()
-
+	tid := strconv.Itoa(id)
 	reader, err := Request(http.DefaultClient, fmt.Sprintf(CommonUrl, tid))
 	if err != nil {
 		log.Println(err, "id:", tid)
 		if !strings.HasPrefix(err.Error(), "返回错误") {
 			sd.Fail <- tid
+		}
+		invalidPost := &InvalidPost{TId: id, Reason: 0}
+		err := DB.Save(invalidPost).Error
+		if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
+			sd.FailInvalidPost <- tid + " 0"
 		}
 		return
 	}
@@ -119,9 +131,19 @@ func Fetch(tid string, sd *Speed) {
 	reader.Close()
 	s := doc.Find(`img[src="images/common/none.gif"]`)
 	if s.Length() < 1 {
+		invalidPost := &InvalidPost{TId: id, Reason: 1}
+		err := DB.Save(invalidPost).Error
+		if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
+			sd.FailInvalidPost <- tid + " 1"
+		}
 		return
 	}
-	auth, title, text, htl := parseHtml(doc)
+	auth, title, text, postTime, htl, post := ParseHtml(doc)
+	post.TId = id
+	err = DB.Save(post).Error
+	if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
+		sd.FailPost <- tid
+	}
 	dir := CommonDir
 
 	if auth != "" {
@@ -141,7 +163,7 @@ func Fetch(tid string, sd *Speed) {
 		}
 	}
 	if text != "" {
-		f, err := os.Create(dir + `content.txt`)
+		f, err := os.Create(dir + postTime + Ext)
 		f.WriteString(text)
 		f.Close()
 		if err != nil {
@@ -168,26 +190,45 @@ func Fetch(tid string, sd *Speed) {
 	})
 }
 
-func parseHtml(doc *goquery.Document) (string, string, string, *goquery.Selection) {
+func ParseHtml(doc *goquery.Document) (string, string, string, string, *goquery.Selection, *Post) {
 	auth := doc.Find(".mainbox td.postauthor .postinfo a").First().Text()
 	title := doc.Find("#threadtitle h1").Text()
+	postTime := doc.Find(".authorinfo em").First().Text()
+	post := &Post{
+		TId:   0,
+		Auth:  auth,
+		Title: title,
+	}
+	if strings.HasPrefix(postTime, "发表于") {
+		post.CreatedAt = postTime[len(`发表于 `):]
+	}
+	postTime = strings.ReplaceAll(postTime, ":", "-")
 	content := doc.Find(".t_msgfont").First()
 	text := content.Contents().Not(".t_attach").Text()
 	html := content.Not(".t_attach").Not("span")
+	post.Content = text
 	auth = strings.ReplaceAll(auth, "\\", "")
 	auth = strings.ReplaceAll(auth, "/", "")
+	auth = strings.ReplaceAll(auth, ":", "")
+	if strings.HasSuffix(auth, ".") {
+		auth += "$"
+	}
 	title = strings.ReplaceAll(title, "\\", "")
 	title = strings.ReplaceAll(title, "/", "")
-	return auth, title, text, html
+	title = strings.ReplaceAll(title, ":", "")
+	if strings.HasSuffix(title, ".") {
+		title += "$"
+	}
+	return auth, title, text, postTime, html, post
 }
 
-func Download(url, dir string, wg *Speed) {
-	defer wg.Done()
+func Download(url, dir string, sd *Speed) {
+	defer sd.Done()
 	reader, err := Request(picClient, url)
 	if err != nil {
 		log.Println(err, "url:", url)
 		if !strings.HasPrefix(err.Error(), "返回错误") {
-			wg.FailPic <- url + "<->" + dir
+			sd.FailPic <- url + "<->" + dir
 		}
 		return
 	}
@@ -210,8 +251,8 @@ func Download(url, dir string, wg *Speed) {
 	defer f.Close()
 	_, err = io.Copy(f, reader)
 	if err != nil {
-		log.Println("写入文件错误：", err)
-		wg.FailPic <- url + "<->" + dir
+		log.Printf("写入文件错误：%v, 下载失败：%s,目录：%s\n", err, url, dir)
+		sd.FailPic <- url + "<->" + dir
 		return
 	}
 	log.Printf("下载成功：%s,目录：%s\n", url, dir)
@@ -291,9 +332,9 @@ func newRequest(url string) (*http.Request, error) {
 func Start(job func(sd *Speed)) {
 	sd := NewSpeed(Loop)
 	wg := new(sync.WaitGroup)
+	wg.Add(4)
 	go func() {
-		wg.Add(1)
-		f, _ := os.Create(CommonDir + "fail_" + time.Now().Format("2006_01_02_15_04_05") + `.txt`)
+		f, _ := os.Create(CommonDir + "fail_" + time.Now().Format("2006_01_02_15_04_05") + Ext)
 		for txt := range sd.Fail {
 			f.WriteString(txt + "\n")
 		}
@@ -301,9 +342,24 @@ func Start(job func(sd *Speed)) {
 		wg.Done()
 	}()
 	go func() {
-		wg.Add(1)
-		f, _ := os.Create(CommonDir + "fail_pic_" + time.Now().Format("2006_01_02_15_04_05") + `.txt`)
+		f, _ := os.Create(CommonDir + "fail_pic_" + time.Now().Format("2006_01_02_15_04_05") + Ext)
 		for txt := range sd.FailPic {
+			f.WriteString(txt + "\n")
+		}
+		f.Close()
+		wg.Done()
+	}()
+	go func() {
+		f, _ := os.Create(CommonDir + "fail_post_" + time.Now().Format("2006_01_02_15_04_05") + Ext)
+		for txt := range sd.FailPost {
+			f.WriteString(txt + "\n")
+		}
+		f.Close()
+		wg.Done()
+	}()
+	go func() {
+		f, _ := os.Create(CommonDir + "fail_invalid_post_" + time.Now().Format("2006_01_02_15_04_05") + Ext)
+		for txt := range sd.FailInvalidPost {
 			f.WriteString(txt + "\n")
 		}
 		f.Close()
@@ -313,5 +369,28 @@ func Start(job func(sd *Speed)) {
 	sd.Wait()
 	close(sd.Fail)
 	close(sd.FailPic)
+	close(sd.FailPost)
+	close(sd.FailInvalidPost)
 	wg.Wait()
+}
+
+var DB *gorm.DB
+
+func SetDB() {
+	DB = get.GetDB()
+}
+
+type Post struct {
+	ID        int
+	TId       int `gorm:"uniqueIndex"`
+	Auth      string
+	Title     string
+	Content   string `gorm:"type:text"`
+	CreatedAt string
+}
+
+type InvalidPost struct {
+	ID     int
+	TId    int `gorm:"uniqueIndex"`
+	Reason int
 }
