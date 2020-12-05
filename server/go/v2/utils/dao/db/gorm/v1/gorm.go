@@ -9,7 +9,7 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/go-sql-driver/mysql"
+	"gorm.io/driver/mysql"
 	"github.com/liov/hoper/go/v2/utils/log/output"
 	"go.uber.org/zap"
 )

@@ -11,32 +11,38 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/liov/hoper/go/v2/utils/fs"
-	"golang.org/x/net/html"
 	py "tools/pinyin"
 	"tools/pro"
 )
 
 func main() {
+	pro.SetDB()
 	pro.Start(history)
 }
 
 func history(sd *pro.Speed) {
-	start := 300000
-	end := 360000
+	start := 353182
+	end := 400000
 	for i := start; i < end; i++ {
 		sd.WebAdd(1)
-		go fetchHistory(strconv.Itoa(i), sd)
+		go fetchHistory(i, sd)
 		time.Sleep(pro.Interval)
 	}
 }
 
-func fetchHistory(tid string, sd *pro.Speed) {
+func fetchHistory(id int, sd *pro.Speed) {
 	defer sd.WebDone()
+	tid := strconv.Itoa(id)
 	reader, err := pro.Request(http.DefaultClient, fmt.Sprintf(pro.CommonUrl, tid))
 	if err != nil {
-		log.Println(err, "id:", tid)
+		//log.Println(err, "id:", tid)
 		if !strings.HasPrefix(err.Error(), "返回错误") {
 			sd.Fail <- tid
+		}
+		invalidPost := &pro.InvalidPost{TId: id, Reason: 0}
+		err := pro.DB.Save(invalidPost).Error
+		if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
+			sd.FailInvalidPost <- tid
 		}
 		return
 	}
@@ -49,9 +55,19 @@ func fetchHistory(tid string, sd *pro.Speed) {
 	reader.Close()
 	s := doc.Find(`img[src="images/common/none.gif"]`)
 	if s.Length() < 1 {
+		invalidPost := &pro.InvalidPost{TId: id, Reason: 1}
+		err = pro.DB.Save(invalidPost).Error
+		if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
+			sd.FailInvalidPost <- tid + " 0"
+		}
 		return
 	}
-	auth, title, text, htl, postTime, his := parseHtmlHistory(doc)
+	auth, title, postTime, post := parseHtmlHistory(doc)
+	post.TId = id
+	err = pro.DB.Save(post).Error
+	if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
+		sd.FailPost <- tid + " 1"
+	}
 
 	dir := pro.CommonDir
 
@@ -61,93 +77,45 @@ func fetchHistory(tid string, sd *pro.Speed) {
 	if title != "" {
 		dir += title + `_` + tid + pro.Sep
 	}
-	if his {
-		dir = fs.PathClean(dir)
-	}
 
-	_, err = os.Stat(dir)
-	if os.IsNotExist(err) {
-		err = os.MkdirAll(dir, 0666)
-		if err != nil {
-			log.Println(err, dir)
-			sd.Fail <- tid
-			return
-		}
+	dir = fs.PathClean(dir)
+	_, err = os.Stat(dir + `content.txt`)
+	if !os.IsNotExist(err) {
+		os.Rename(dir+`content.txt`, dir+postTime+`.txt`)
+		log.Println("rename:", dir+postTime)
 	}
-	id, _ := strconv.Atoi(tid)
-	if his && text != "" {
-		f, err := os.Create(dir + postTime + `.txt`)
-		f.WriteString(text)
-		f.Close()
-		if err != nil {
-			log.Println(err)
-		}
-		if id < 307000 {
-			os.Remove(dir + auth + `.txt`)
-		}
-		if htl.Length() > 0 {
-			f, err = os.Create(dir + `index.html`)
-			for c := htl.Nodes[0].FirstChild; c != nil; c = c.NextSibling {
-				html.Render(f, c)
-			}
-			f.Close()
-			if err != nil {
-				log.Println(err)
-			}
-		}
-	}
-	if !his {
-
-		if id < 307000 {
-			os.Rename(dir+auth+`.txt`, dir+postTime+`.txt`)
-		} else {
-			os.Rename(dir+`content.txt`, dir+postTime+`.txt`)
-		}
-
-		return
-	}
-	s.Each(func(i int, s *goquery.Selection) {
-		if url, ok := s.Attr("file"); ok {
-			sd.Add(1)
-			go pro.Download(url, dir, sd)
-			time.Sleep(pro.Interval)
-
-		}
-	})
 }
 
-func parseHtmlHistory(doc *goquery.Document) (string, string, string, *goquery.Selection, string, bool) {
+func parseHtmlHistory(doc *goquery.Document) (string, string, string, *pro.Post) {
 	auth := doc.Find(".mainbox td.postauthor .postinfo a").First().Text()
-	postTime := doc.Find(".authorinfo em").First().Text()
-	postTime = strings.ReplaceAll(postTime, ":", "-")
 	title := doc.Find("#threadtitle h1").Text()
-	content := doc.Find(".t_msgfont").First()
-
-	if strings.Contains(auth, "\\") ||
-		strings.Contains(auth, "/") ||
-		strings.Contains(auth, ":") ||
-		strings.Contains(auth, "<") ||
-		strings.Contains(auth, ">") ||
-		strings.Contains(auth, "\"") ||
-		strings.Contains(auth, "|") ||
-		strings.Contains(auth, "?") ||
-		strings.Contains(auth, "*") ||
-		strings.Contains(title, "\\") ||
-		strings.Contains(title, "/") ||
-		strings.Contains(title, ":") ||
-		strings.Contains(title, "<") ||
-		strings.Contains(title, ">") ||
-		strings.Contains(title, "\"") ||
-		strings.Contains(title, "|") ||
-		strings.Contains(title, "?") ||
-		strings.Contains(title, "*") {
-		auth = strings.ReplaceAll(auth, "\\", "")
-		auth = strings.ReplaceAll(auth, "/", "")
-		title = strings.ReplaceAll(title, "\\", "")
-		title = strings.ReplaceAll(title, "/", "")
-		text := content.Contents().Not(".t_attach").Text()
-		html := content.Not(".t_attach").Not("span")
-		return auth, title, text, html, postTime, true
+	postTime := doc.Find(".authorinfo em").First().Text()
+	post := &pro.Post{
+		TId:   0,
+		Auth:  auth,
+		Title: title,
 	}
-	return auth, title, "", nil, postTime, false
+	if strings.HasPrefix(postTime, "发表于") {
+		post.CreatedAt = postTime[len(`发表于 `):]
+	}
+	postTime = strings.ReplaceAll(postTime, ":", "-")
+
+	auth = strings.ReplaceAll(auth, "\\", "")
+	auth = strings.ReplaceAll(auth, "/", "")
+	auth = strings.ReplaceAll(auth, ":", "")
+	if strings.HasSuffix(auth, ".") {
+		auth += "$"
+	}
+	title = strings.ReplaceAll(title, "\\", "")
+	title = strings.ReplaceAll(title, "/", "")
+	title = strings.ReplaceAll(title, ":", "")
+	if strings.HasSuffix(title, ".") {
+		title += "$"
+	}
+
+	postTime = strings.ReplaceAll(postTime, ":", "-")
+	content := doc.Find(".t_msgfont").First()
+	text := content.Contents().Not(".t_attach").Text()
+	post.Content = text
+	return auth, title, postTime, post
 }

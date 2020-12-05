@@ -85,10 +85,10 @@ func (init *Init) P2DB() *gorm.DB {
 	rawDB.SetMaxIdleConns(conf.MaxIdleConns)
 	rawDB.SetMaxOpenConns(conf.MaxOpenConns)
 	if init.Env == PRODUCT {
-		db.Config.Logger = logger.Default.LogMode(logger.Silent)
+		db.Config.Logger = logger.Default.LogMode(logger.Error)
 	} else {
 		db.Config.Logger = v2.New(stdlog.New(os.Stdout, "\r\n", stdlog.LstdFlags), &logger.Config{
-			LogLevel:      logger.Info,
+			LogLevel:      logger.Error,
 			Colorful:      true,
 			SlowThreshold: 100 * time.Millisecond,
 		})

@@ -5,14 +5,20 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
+	"github.com/liov/hoper/go/v2/utils/fs"
 	"tools/pro"
 )
 
 func main() {
-	pro.Start(fix)
+	pro.Start(fixOne)
+}
+
+func fixOne(sd *pro.Speed) {
+	fixPic(`fail_pic_2020_12_02_16_04_01`, sd)
 }
 
 func fix(sd *pro.Speed) {
@@ -32,7 +38,7 @@ func fix(sd *pro.Speed) {
 }
 
 func fixPic(path string, sd *pro.Speed) {
-	f, err := os.Open(pro.CommonDir + path)
+	f, err := os.Open(pro.CommonDir + path + pro.Ext)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -42,6 +48,8 @@ func fixPic(path string, sd *pro.Speed) {
 	for scanner.Scan() {
 		s := strings.Split(scanner.Text(), "<->")
 		img, dir := s[0], s[1]
+		dir = fs.PathClean(dir)
+		log.Println(img, dir)
 		sd.Add(1)
 		go pro.Download(img, dir, sd)
 		time.Sleep(pro.Interval)
@@ -61,7 +69,8 @@ func fixWeb(path string, sd *pro.Speed) {
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		sd.WebAdd(1)
-		go pro.Fetch(scanner.Text(), sd)
+		id, _ := strconv.Atoi(scanner.Text())
+		go pro.Fetch(id, sd)
 		time.Sleep(pro.Interval)
 	}
 	if err := scanner.Err(); err != nil {
