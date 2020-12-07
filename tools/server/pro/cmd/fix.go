@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
@@ -18,7 +17,7 @@ func main() {
 }
 
 func fixOne(sd *pro.Speed) {
-	fixPic(`fail_pic_2020_12_02_16_04_01`, sd)
+	fixPic(`fail_pic_2020_12_05_18_54_19`, sd)
 }
 
 func fix(sd *pro.Speed) {
@@ -31,7 +30,7 @@ func fix(sd *pro.Speed) {
 			if strings.HasSuffix(fileInfos[i].Name(), "fail_pic") {
 				fixPic(fileInfos[i].Name(), sd)
 			} else {
-				fixWeb(fileInfos[i].Name(), sd)
+				pro.FixWeb(fileInfos[i].Name(), sd, pro.Fetch)
 			}
 		}
 	}
@@ -57,24 +56,4 @@ func fixPic(path string, sd *pro.Speed) {
 	if err := scanner.Err(); err != nil {
 		panic(err)
 	}
-}
-
-func fixWeb(path string, sd *pro.Speed) {
-	f, err := os.Open(pro.CommonDir + path)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
-
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		sd.WebAdd(1)
-		id, _ := strconv.Atoi(scanner.Text())
-		go pro.Fetch(id, sd)
-		time.Sleep(pro.Interval)
-	}
-	if err := scanner.Err(); err != nil {
-		panic(err)
-	}
-
 }

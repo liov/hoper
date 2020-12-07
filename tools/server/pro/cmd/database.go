@@ -6,5 +6,5 @@ import (
 )
 
 func main() {
-	get.GetDB().Migrator().CreateTable(&pro.Post{}, &pro.InvalidPost{})
+	get.GetDB().Migrator().CreateTable(&pro.Post{})
 }

@@ -14,29 +14,24 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/liov/hoper/go/v2/utils/configor"
+	"github.com/liov/hoper/go/v2/utils/configor/nacos"
 	"github.com/liov/hoper/go/v2/utils/fs"
 	"github.com/liov/hoper/go/v2/utils/fs/watch"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/nacos"
 	"github.com/liov/hoper/go/v2/utils/reflect3"
+	"github.com/liov/hoper/go/v2/utils/slices"
 	"github.com/pelletier/go-toml"
 )
 
 //约定大于配置
-var ConfUrl = "./config.toml"
-
-var Env string
-
-//附加配置，不对外公开的的配置,特定文件名,启用文件搜寻查找
-var AddConfig string
-
-var InitConfig *Init
+var InitConfig = &Init{}
 
 var once sync.Once
 
 func init() {
-	flag.StringVar(&Env, "env", DEVELOPMENT, "环境")
-	flag.StringVar(&AddConfig, "add", "", "额外配置文件名")
+	flag.StringVar(&InitConfig.Env, "env", DEVELOPMENT, "环境")
+	flag.StringVar(&InitConfig.ConfUrl, "./config.toml", DEVELOPMENT, "配置文件路径")
+	flag.StringVar(&InitConfig.AddConfigPath, "add", "", "额外配置文件名")
 	agent := flag.Bool("agent", false, "是否启用代理")
 	testing.Init()
 	flag.Parse()
@@ -60,57 +55,52 @@ const (
 )
 
 type EnvConfig struct {
-	Tenant string
+	NacosTenant string
 }
 
 type BasicConfig struct {
 	Module string
-	Env    string
-}
-
-type BasicNacosConfig struct {
-	NacosAddr  string
-	NacosGroup string
-	//NacosDataId string DataId与Moudle相同
-}
-
-type OnceConfig struct {
-	Dev, Test, Prod *EnvConfig
-	BasicNacosConfig
-	BasicConfig
 	NoInit []string
 }
 
 type Init struct {
-	EnvConfig   *EnvConfig
-	NacosConfig *nacos.Config
+	EnvConfig *EnvConfig
+	// TODO: 接口抽象，可切换的配置中心
+	ConfigCenter *nacos.Config
 	BasicConfig
-	NoInit []string
-	conf   NeedInit
-	dao    Dao
+	Env, ConfUrl string
+	//附加配置，不对外公开的的配置,特定文件名,启用文件搜寻查找
+	AddConfigPath string
+	conf          NeedInit
+	dao           Dao
 	//closes     []interface{}
 }
 
-func NewInitWithLoadConfig(conf Config, dao Dao) *Init {
-	onceConfig := OnceConfig{}
-	if _, err := os.Stat(ConfUrl); os.IsNotExist(err) {
+func (init *Init) LoadConfig() *Init {
+	onceConfig := struct {
+		Dev, Test, Prod *EnvConfig
+		Nacos           struct {
+			Addr  string
+			Group string
+			Watch bool
+		}
+		BasicConfig
+	}{}
+	if _, err := os.Stat(InitConfig.ConfUrl); os.IsNotExist(err) {
 		log.Fatalf("配置错误: 请确保可执行文件和配置目录在同一目录下")
 	}
 	err := configor.New(&configor.Config{Debug: true}).
-		Load(&onceConfig, ConfUrl)
+		Load(&onceConfig, InitConfig.ConfUrl)
 	if err != nil {
 		log.Fatalf("配置错误: %v", err)
 	}
-	init := NewInit(conf, dao)
-
 	init.BasicConfig = onceConfig.BasicConfig
-	init.Env = Env
 	init.NoInit = onceConfig.NoInit
 
 	value := reflect.ValueOf(&onceConfig).Elem()
 	typ := reflect.TypeOf(&onceConfig).Elem()
-	var tmpConfig = EnvConfig{}
-	tmpTyp := reflect.TypeOf(&tmpConfig)
+
+	tmpTyp := reflect.TypeOf(&EnvConfig{})
 	for i := 0; i < typ.NumField(); i++ {
 		if typ.Field(i).Type == tmpTyp && strings.ToUpper(typ.Field(i).Name) == strings.ToUpper(init.Env) {
 			/*tmpConfig = value.Field(i).Interface().(*nacos.Config)
@@ -120,18 +110,23 @@ func NewInitWithLoadConfig(conf Config, dao Dao) *Init {
 				log.Fatal(err)
 			}*/
 			//会被回收,也可能是被移动了？
-			tmpConfig = *value.Field(i).Interface().(*EnvConfig)
-			init.EnvConfig = &tmpConfig
+			init.EnvConfig = &(*value.Field(i).Interface().(*EnvConfig))
 			break
 		}
 	}
-	init.NacosConfig = &nacos.Config{
-		Addr:   onceConfig.NacosAddr,
-		Tenant: init.EnvConfig.Tenant,
-		Group:  onceConfig.NacosGroup,
+	init.ConfigCenter = &nacos.Config{
+		Addr:   onceConfig.Nacos.Addr,
+		Tenant: init.EnvConfig.NacosTenant,
+		Group:  onceConfig.Nacos.Group,
 		DataId: onceConfig.Module,
+		Watch:  onceConfig.Nacos.Watch,
 	}
 	return init
+}
+
+func (init *Init) SetInit(conf Config, dao Dao) {
+	init.conf = conf
+	init.dao = dao
 }
 
 func NewInit(conf Config, dao Dao) *Init {
@@ -162,10 +157,11 @@ func Start(conf Config, dao Dao) func() {
 		flag.Parse()
 	}
 	//逃逸到堆上了
-	init := NewInitWithLoadConfig(conf, dao)
-	InitConfig = init
-	nacosClient := init.getConfig()
-	go nacosClient.Listener(init.UnmarshalAndSet)
+
+	InitConfig.SetInit(conf, dao)
+	InitConfig.LoadConfig()
+	nacosClient := InitConfig.getConfig()
+	go nacosClient.Listener(InitConfig.UnmarshalAndSet)
 	log.Debug(conf)
 	return func() {
 		InitConfig.CloseDao()
@@ -173,8 +169,9 @@ func Start(conf Config, dao Dao) func() {
 	}
 }
 
+// 从nacos拉取配置并返回nacos client
 func (init *Init) getConfig() *nacos.Client {
-	nacosClient := init.NacosConfig.NewClient()
+	nacosClient := init.ConfigCenter.NewClient()
 	err := nacosClient.GetConfigAllInfoHandle(init.UnmarshalAndSet)
 	if err != nil {
 		log.Fatal(err)
@@ -182,6 +179,7 @@ func (init *Init) getConfig() *nacos.Client {
 	return nacosClient
 }
 
+// 额外的配置文件
 func (init *Init) AddConfig(addConfig string) *Init {
 	if addConfig != "" {
 		adCongPath, err := fs.FindFile(addConfig)
@@ -211,16 +209,15 @@ func (init *Init) SetConfigAndDao() {
 		return
 	}
 	value := reflect.ValueOf(init)
-	noInit := strings.Join(init.NoInit, " ")
 	typeOf := value.Type()
 	for i := 0; i < value.NumMethod(); i++ {
 		methodName := typeOf.Method(i).Name
-		if strings.Contains(typeOf.Method(i).Name, "Once") {
-			if strings.Contains(noInit, methodName[2:len(methodName)-4]) || alreadyRun.InitFunc {
+		if strings.Contains(methodName, "Once") {
+			if alreadyRun.InitFunc || slices.StringContains(init.NoInit, methodName[2:len(methodName)-4]) {
 				continue
 			}
 		}
-		if strings.Contains(noInit, methodName[2:]) || !strings.HasPrefix(methodName, "P") {
+		if !strings.HasPrefix(methodName, "P") || slices.StringContains(init.NoInit, methodName[2:]) {
 			continue
 		}
 
@@ -244,7 +241,7 @@ func Watcher() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	watcher.Add(ConfUrl, fsnotify.Write, func() {
+	watcher.Add(InitConfig.ConfUrl, fsnotify.Write, func() {
 		InitConfig.CloseDao()
 		InitConfig.SetConfigAndDao()
 

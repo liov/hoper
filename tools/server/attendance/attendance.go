@@ -12,7 +12,7 @@ import (
 	"syscall"
 	"unicode/utf8"
 
-	"github.com/robfig/cron"
+	"github.com/robfig/cron/v3"
 	"github.com/tidwall/gjson"
 )
 

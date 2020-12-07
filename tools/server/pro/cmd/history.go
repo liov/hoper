@@ -4,14 +4,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/liov/hoper/go/v2/utils/fs"
-	py "tools/pinyin"
 	"tools/pro"
 )
 
@@ -21,7 +18,7 @@ func main() {
 }
 
 func history(sd *pro.Speed) {
-	start := 353182
+	start := 300100
 	end := 400000
 	for i := start; i < end; i++ {
 		sd.WebAdd(1)
@@ -39,10 +36,10 @@ func fetchHistory(id int, sd *pro.Speed) {
 		if !strings.HasPrefix(err.Error(), "返回错误") {
 			sd.Fail <- tid
 		}
-		invalidPost := &pro.InvalidPost{TId: id, Reason: 0}
+		invalidPost := &pro.Post{TId: id, Status: 2}
 		err := pro.DB.Save(invalidPost).Error
 		if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
-			sd.FailInvalidPost <- tid
+			sd.FailDB <- tid + " 2"
 		}
 		return
 	}
@@ -54,35 +51,16 @@ func fetchHistory(id int, sd *pro.Speed) {
 	}
 	reader.Close()
 	s := doc.Find(`img[src="images/common/none.gif"]`)
-	if s.Length() < 1 {
-		invalidPost := &pro.InvalidPost{TId: id, Reason: 1}
-		err = pro.DB.Save(invalidPost).Error
-		if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
-			sd.FailInvalidPost <- tid + " 0"
-		}
-		return
-	}
-	auth, title, postTime, post := parseHtmlHistory(doc)
+	_, _, _, post := parseHtmlHistory(doc)
 	post.TId = id
+	post.PicNum = int8(s.Length())
+	status := "0"
+	if post.PicNum == 0 {
+		status = "1"
+	}
 	err = pro.DB.Save(post).Error
 	if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
-		sd.FailPost <- tid + " 1"
-	}
-
-	dir := pro.CommonDir
-
-	if auth != "" {
-		dir += py.FistLetter(auth) + pro.Sep + auth + pro.Sep
-	}
-	if title != "" {
-		dir += title + `_` + tid + pro.Sep
-	}
-
-	dir = fs.PathClean(dir)
-	_, err = os.Stat(dir + `content.txt`)
-	if !os.IsNotExist(err) {
-		os.Rename(dir+`content.txt`, dir+postTime+`.txt`)
-		log.Println("rename:", dir+postTime)
+		sd.FailDB <- tid + " " + status
 	}
 }
 

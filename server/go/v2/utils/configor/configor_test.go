@@ -8,8 +8,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/BurntSushi/toml"
-	"gopkg.in/yaml.v2"
+	"github.com/pelletier/go-toml"
+	"gopkg.in/yaml.v3"
 )
 
 type Anonymous struct {
@@ -207,24 +207,6 @@ func TestUnmatchedKeyInTomltestConfigFile(t *testing.T) {
 			t.Errorf("Should NOT get error when loading configuration with extra keys")
 		}
 
-		// Return an error when there are unmatched keys and ErrorOnUnmatchedKeys is true
-		err := New(&Config{ErrorOnUnmatchedKeys: true}).Load(&result, filename)
-		if err == nil {
-			t.Errorf("Should get error when loading configuration with extra keys")
-		}
-
-		// The error should be of type UnmatchedTomlKeysError
-		tomlErr, ok := err.(*UnmatchedTomlKeysError)
-		if !ok {
-			t.Errorf("Should get UnmatchedTomlKeysError error when loading configuration with extra keys")
-		}
-
-		// The error.Keys() function should return the "Test" key
-		keys := GetStringTomlKeys(tomlErr.Keys)
-		if len(keys) != 1 || keys[0] != "Test" {
-			t.Errorf("The UnmatchedTomlKeysError should contain the Test key")
-		}
-
 	} else {
 		t.Errorf("failed to marshal config")
 	}
@@ -248,18 +230,6 @@ func TestUnmatchedKeyInTomltestConfigFile(t *testing.T) {
 	err = New(&Config{ErrorOnUnmatchedKeys: true}).Load(&result, filename)
 	if err == nil {
 		t.Errorf("Should get error when loading configuration with extra keys")
-	}
-
-	// The error should be of type UnmatchedTomlKeysError
-	tomlErr, ok := err.(*UnmatchedTomlKeysError)
-	if !ok {
-		t.Errorf("Should get UnmatchedTomlKeysError error when loading configuration with extra keys")
-	}
-
-	// The error.Keys() function should return the "Test" key
-	keys := GetStringTomlKeys(tomlErr.Keys)
-	if len(keys) != 1 || keys[0] != "Test" {
-		t.Errorf("The UnmatchedTomlKeysError should contain the Test key")
 	}
 
 }

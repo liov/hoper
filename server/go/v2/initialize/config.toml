@@ -1,23 +1,26 @@
 Module = "test"
-#dev | test | prod
-Env = "dev"
-
+# dev | test | prod
+# 命令行参数获取
+# Env = "dev"
+# 不需要初始化的函数
 NoInit = ["Cache","Apollo","Consul"]
 
-NacosAddr = "192.168.1.212:9001"
-NacosGroup = "hoper"
-#NacosDataId = "user"
+[nacos]
+Addr = "192.168.1.212:9001"
+Group = "hoper"
+# DataId = "user"
+Watch  = false
 
 [gin]
-TimeFormat= "Mon, 01 Jan 2006 15=04=05 GMT"
+TimeFormat= "2006-01-02 15:04:05"
 Charset= "UTF-8"
 EnableOptimizations= true
 
 [dev]
-Tenant = "b5b476ab-774f-4637-a8bf-e915635b4b24"
+NacosTenant = "b5b476ab-774f-4637-a8bf-e915635b4b24"
 
 [test]
-Tenant = ""
+NacosTenant = ""
 
 [prod]
-Tenant = ""
+NacosTenant = ""
