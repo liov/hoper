@@ -8,7 +8,7 @@ import (
 
 func main() {
 	pro.SetDB()
-	pro.Start(normal)
+	one(351556)
 }
 
 func normal(sd *pro.Speed) {

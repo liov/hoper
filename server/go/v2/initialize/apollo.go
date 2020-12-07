@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/liov/hoper/go/v2/utils/apollo"
+	"github.com/liov/hoper/go/v2/utils/configor/apollo"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/reflect3"
 	"github.com/pelletier/go-toml"

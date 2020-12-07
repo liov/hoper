@@ -1,6 +1,7 @@
 package pro
 
 import (
+	"bufio"
 	"compress/gzip"
 	"context"
 	"errors"
@@ -66,10 +67,9 @@ func init() {
 }
 
 type Speed struct {
-	wg                        *sync.WaitGroup
-	web, pic                  chan struct{}
-	Fail, FailPic             chan string
-	FailPost, FailInvalidPost chan string
+	wg                    *sync.WaitGroup
+	web, pic              chan struct{}
+	Fail, FailPic, FailDB chan string
 }
 
 func (s *Speed) Add(i int) {
@@ -98,13 +98,12 @@ func (s *Speed) Wait() {
 
 func NewSpeed(cap int) *Speed {
 	return &Speed{
-		wg:              new(sync.WaitGroup),
-		pic:             make(chan struct{}, cap),
-		web:             make(chan struct{}, cap),
-		Fail:            make(chan string, cap),
-		FailPic:         make(chan string, cap),
-		FailPost:        make(chan string, cap),
-		FailInvalidPost: make(chan string, cap),
+		wg:      new(sync.WaitGroup),
+		pic:     make(chan struct{}, cap),
+		web:     make(chan struct{}, cap),
+		Fail:    make(chan string, cap),
+		FailPic: make(chan string, cap),
+		FailDB:  make(chan string, cap),
 	}
 }
 
@@ -117,10 +116,10 @@ func Fetch(id int, sd *Speed) {
 		if !strings.HasPrefix(err.Error(), "返回错误") {
 			sd.Fail <- tid
 		}
-		invalidPost := &InvalidPost{TId: id, Reason: 0}
+		invalidPost := &Post{TId: id, Status: 2}
 		err := DB.Save(invalidPost).Error
 		if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
-			sd.FailInvalidPost <- tid + " 0"
+			sd.FailDB <- tid + " 2"
 		}
 		return
 	}
@@ -130,19 +129,17 @@ func Fetch(id int, sd *Speed) {
 	}
 	reader.Close()
 	s := doc.Find(`img[src="images/common/none.gif"]`)
-	if s.Length() < 1 {
-		invalidPost := &InvalidPost{TId: id, Reason: 1}
-		err := DB.Save(invalidPost).Error
-		if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
-			sd.FailInvalidPost <- tid + " 1"
-		}
-		return
-	}
+
 	auth, title, text, postTime, htl, post := ParseHtml(doc)
 	post.TId = id
+	post.PicNum = int8(s.Length())
+	status := "0"
+	if post.PicNum == 0 {
+		status = "1"
+	}
 	err = DB.Save(post).Error
 	if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
-		sd.FailPost <- tid
+		sd.FailDB <- tid + " " + status
 	}
 	dir := CommonDir
 
@@ -332,7 +329,7 @@ func newRequest(url string) (*http.Request, error) {
 func Start(job func(sd *Speed)) {
 	sd := NewSpeed(Loop)
 	wg := new(sync.WaitGroup)
-	wg.Add(4)
+	wg.Add(3)
 	go func() {
 		f, _ := os.Create(CommonDir + "fail_" + time.Now().Format("2006_01_02_15_04_05") + Ext)
 		for txt := range sd.Fail {
@@ -351,26 +348,18 @@ func Start(job func(sd *Speed)) {
 	}()
 	go func() {
 		f, _ := os.Create(CommonDir + "fail_post_" + time.Now().Format("2006_01_02_15_04_05") + Ext)
-		for txt := range sd.FailPost {
+		for txt := range sd.FailDB {
 			f.WriteString(txt + "\n")
 		}
 		f.Close()
 		wg.Done()
 	}()
-	go func() {
-		f, _ := os.Create(CommonDir + "fail_invalid_post_" + time.Now().Format("2006_01_02_15_04_05") + Ext)
-		for txt := range sd.FailInvalidPost {
-			f.WriteString(txt + "\n")
-		}
-		f.Close()
-		wg.Done()
-	}()
+
 	job(sd)
 	sd.Wait()
 	close(sd.Fail)
 	close(sd.FailPic)
-	close(sd.FailPost)
-	close(sd.FailInvalidPost)
+	close(sd.FailDB)
 	wg.Wait()
 }
 
@@ -382,15 +371,32 @@ func SetDB() {
 
 type Post struct {
 	ID        int
-	TId       int `gorm:"uniqueIndex"`
-	Auth      string
-	Title     string
+	TId       int    `gorm:"uniqueIndex"`
+	Auth      string `gorm:"size:255;default:''"`
+	Title     string `gorm:"size:255;default:''"`
 	Content   string `gorm:"type:text"`
-	CreatedAt string
+	CreatedAt string `gorm:"type:timestamptz(6);default:'0001-01-01 00:00:00'"`
+	PicNum    int8   `gorm:"default:0"`
+	Score     int8   `gorm:"default:0"`
+	Status    int8   `gorm:"default:0"`
 }
 
-type InvalidPost struct {
-	ID     int
-	TId    int `gorm:"uniqueIndex"`
-	Reason int
+func FixWeb(path string, sd *Speed, handle func(int, *Speed)) {
+	f, err := os.Open(CommonDir + path + Ext)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		sd.WebAdd(1)
+		id, _ := strconv.Atoi(scanner.Text())
+		go handle(id, sd)
+		time.Sleep(Interval)
+	}
+	if err := scanner.Err(); err != nil {
+		panic(err)
+	}
+
 }

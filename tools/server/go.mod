@@ -10,7 +10,7 @@ require (
 	github.com/robfig/cron v1.2.0
 	github.com/spf13/viper v1.7.1
 	github.com/tidwall/gjson v1.6.3
-	golang.org/x/net v0.0.0-20201002202402-0a1ea396d57c
+	golang.org/x/net v0.0.0-20201016165138-7b1cca2348c0
 	gorm.io/gorm v1.20.7
 )
 

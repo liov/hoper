@@ -1,16 +1,16 @@
 package initialize
 
 import (
+	"github.com/liov/hoper/go/v2/utils/configor/nacos"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/nacos"
 )
 
 func (init *Init) Register() {
-	svcName := init.NacosConfig.DataId
-	_, err := init.NacosConfig.GetService(svcName)
+	svcName := init.BasicConfig.Module
+	_, err := init.ConfigCenter.GetService(svcName)
 	serviceConfig := init.GetServiceConfig()
 	if err != nil {
-		err = init.NacosConfig.CreateService(svcName, &nacos.Metadata{
+		err = init.ConfigCenter.CreateService(svcName, &nacos.Metadata{
 			Domain: serviceConfig.Domain,
 			Port:   serviceConfig.Port,
 		})
@@ -18,7 +18,7 @@ func (init *Init) Register() {
 			log.Fatal(err)
 		}
 	}
-	err = init.NacosConfig.RegisterInstance(serviceConfig.Port, svcName)
+	err = init.ConfigCenter.RegisterInstance(serviceConfig.Port, svcName)
 	if err != nil {
 		log.Fatal(err)
 	}

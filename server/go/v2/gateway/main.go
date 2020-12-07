@@ -21,11 +21,11 @@ func main() {
 	s := tailmon.Server{
 		GatewayRegistr: func(ctx context.Context, mux *runtime.ServeMux) {
 			opts := []grpc.DialOption{grpc.WithInsecure()}
-			err := user.RegisterUserServiceHandlerFromEndpoint(ctx, mux, initialize.InitConfig.NacosConfig.GetServiceEndPort("user"), opts)
+			err := user.RegisterUserServiceHandlerFromEndpoint(ctx, mux, initialize.InitConfig.ConfigCenter.GetServiceEndPort("user"), opts)
 			if err != nil {
 				log.Fatal(err)
 			}
-			err = note.RegisterNoteServiceHandlerFromEndpoint(ctx, mux, initialize.InitConfig.NacosConfig.GetServiceEndPort("note"), opts)
+			err = note.RegisterNoteServiceHandlerFromEndpoint(ctx, mux, initialize.InitConfig.ConfigCenter.GetServiceEndPort("note"), opts)
 			if err != nil {
 				log.Fatal(err)
 			}

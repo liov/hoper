@@ -22,6 +22,7 @@ type Config struct {
 	Tenant string `json:"tenant"`
 	Group  string `json:"group"`
 	DataId string `json:"dataId"`
+	Watch  bool
 }
 
 type Client struct {
@@ -89,6 +90,9 @@ func (c *Client) GetConfigAllInfoHandle(handle func([]byte)) error {
 }
 
 func (c *Client) Listener(handle func([]byte)) {
+	if c.Watch == false {
+		return
+	}
 	urlStr := fmt.Sprintf(ListenerUrl, c.Addr)
 	listeningConfigs := fmt.Sprintf(InitParam, c.DataId, c.Group, c.MD5, c.Tenant)
 	req, err := http.NewRequest(http.MethodPost, urlStr, strings.NewReader(listeningConfigs))
