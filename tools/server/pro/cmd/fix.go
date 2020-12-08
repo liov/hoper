@@ -17,7 +17,7 @@ func main() {
 }
 
 func fixOne(sd *pro.Speed) {
-	fixPic(`fail_pic_2020_12_05_18_54_19`, sd)
+	fixPic(`fail_pic_2020_12_08_13_07_15`, sd)
 }
 
 func fix(sd *pro.Speed) {
