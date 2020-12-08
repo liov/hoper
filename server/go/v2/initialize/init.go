@@ -30,7 +30,7 @@ var once sync.Once
 
 func init() {
 	flag.StringVar(&InitConfig.Env, "env", DEVELOPMENT, "环境")
-	flag.StringVar(&InitConfig.ConfUrl, "./config.toml", DEVELOPMENT, "配置文件路径")
+	flag.StringVar(&InitConfig.ConfUrl, "conf", `./config.toml`, "配置文件路径")
 	flag.StringVar(&InitConfig.AddConfigPath, "add", "", "额外配置文件名")
 	agent := flag.Bool("agent", false, "是否启用代理")
 	testing.Init()
@@ -94,6 +94,7 @@ func (init *Init) LoadConfig() *Init {
 	if err != nil {
 		log.Fatalf("配置错误: %v", err)
 	}
+	init.AddConfig()
 	init.BasicConfig = onceConfig.BasicConfig
 	init.NoInit = onceConfig.NoInit
 
@@ -156,8 +157,8 @@ func Start(conf Config, dao Dao) func() {
 	if !flag.Parsed() {
 		flag.Parse()
 	}
-	//逃逸到堆上了
 
+	//逃逸到堆上了
 	InitConfig.SetInit(conf, dao)
 	InitConfig.LoadConfig()
 	nacosClient := InitConfig.getConfig()
@@ -180,9 +181,9 @@ func (init *Init) getConfig() *nacos.Client {
 }
 
 // 额外的配置文件
-func (init *Init) AddConfig(addConfig string) *Init {
-	if addConfig != "" {
-		adCongPath, err := fs.FindFile(addConfig)
+func (init *Init) AddConfig() {
+	if init.AddConfigPath != "" {
+		adCongPath, err := fs.FindFile(init.AddConfigPath)
 		if err == nil {
 			err := configor.New(&configor.Config{Debug: init.Env != PRODUCT}).
 				Load(init.conf, adCongPath)
@@ -193,7 +194,6 @@ func (init *Init) AddConfig(addConfig string) *Init {
 			log.Fatalf("找不到附加配置: %v", err)
 		}
 	}
-	return init
 }
 
 //反射方法命名规范,P+优先级+方法名+(执行一次+Once)

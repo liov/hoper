@@ -26,7 +26,7 @@ import (
 
 const CommonUrl = "https://f1113.wonderfulday27.live/viewthread.php?tid=%s"
 const Loop = 50
-const CommonDir = `F:\pic\`
+const CommonDir = `F:\pic_2\`
 const Interval = 200 * time.Millisecond
 const Sep = string(os.PathSeparator)
 const Ext = `.txt`
@@ -197,8 +197,29 @@ func ParseHtml(doc *goquery.Document) (string, string, string, string, *goquery.
 		Title: title,
 	}
 	if strings.HasPrefix(postTime, "发表于") {
-		post.CreatedAt = postTime[len(`发表于 `):]
+		postTime = postTime[len(`发表于 `):]
 	}
+	if strings.Contains(postTime, "天") {
+		now := time.Now()
+		var day int
+		if strings.Contains(postTime, "天前") {
+			day, _ = strconv.Atoi(postTime[0:0])
+		} else {
+			describe := postTime[:6]
+			switch describe {
+			case "前天":
+				day = 2
+			case "昨天":
+				day = 1
+			case "今天":
+				day = 0
+			}
+		}
+		now.AddDate(0, 0, -day)
+		date := now.Format("2006-01-02")
+		postTime = date + " " + postTime[len(postTime)-5:]
+	}
+	post.CreatedAt = postTime
 	postTime = strings.ReplaceAll(postTime, ":", "-")
 	content := doc.Find(".t_msgfont").First()
 	text := content.Contents().Not(".t_attach").Text()

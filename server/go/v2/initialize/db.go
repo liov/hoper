@@ -25,17 +25,13 @@ const (
 )
 
 type DatabaseConfig struct {
-	Type         string
-	User         string
-	Password     string
-	Host         string
-	Charset      string
-	Database     string
-	TimeFormat   string
-	TablePrefix  string
-	MaxIdleConns int
-	MaxOpenConns int
-	Port         int32
+	Type, Charset, Database    string
+	Host, User, Password       string
+	TimeFormat                 string
+	TablePrefix                string
+	MaxIdleConns, MaxOpenConns int
+	Port                       int32
+	LogLevel                   logger.LogLevel
 }
 
 func (conf *DatabaseConfig) Generate() *gorm.DB {
@@ -88,7 +84,7 @@ func (init *Init) P2DB() *gorm.DB {
 		db.Config.Logger = logger.Default.LogMode(logger.Error)
 	} else {
 		db.Config.Logger = v2.New(stdlog.New(os.Stdout, "\r\n", stdlog.LstdFlags), &logger.Config{
-			LogLevel:      logger.Error,
+			LogLevel:      conf.LogLevel,
 			Colorful:      true,
 			SlowThreshold: 100 * time.Millisecond,
 		})
