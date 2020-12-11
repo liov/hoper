@@ -1,1 +1,0 @@
-ps x | grep 'nginx' | grep -v grep | awk '{print $1}' > ../logs/nginx.pid

@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net"
@@ -17,6 +16,7 @@ import (
 	"time"
 
 	"github.com/liov/hoper/go/v2/utils/number"
+	"github.com/liov/hoper/go/v2/utils/strings2"
 )
 
 var client = http.DefaultClient
@@ -41,7 +41,7 @@ type Pair struct {
 	K, V string
 }
 
-type LogCallback func(string, string, []byte,int, []byte)
+type LogCallback func(string, string, []byte, int, []byte)
 
 // RequestParams ...
 type RequestParams struct {
@@ -90,12 +90,8 @@ func (res *ResponseBody) CheckError() error {
 }
 
 // HTTPRequest create a HTTP request
-func (req *RequestParams) HTTPRequest(response interface{}) (err error) {
-	defer func() {
-		if err != nil {
-			err = fmt.Errorf("utils: HTTPRequest error: %v", err)
-		}
-	}()
+func (req *RequestParams) HTTPRequest(response interface{}) error {
+
 	method := req.method
 	url := req.url
 	if req.Timeout != 0 {
@@ -116,24 +112,29 @@ func (req *RequestParams) HTTPRequest(response interface{}) (err error) {
 	}
 	var body io.Reader
 	var reqBody []byte
+	var err error
 	if method == http.MethodGet {
 		url += "?" + getParam(req.Param)
 	} else {
 		if req.ContentType != "" {
-			body = strings.NewReader(getParam(req.Param))
+			param := getParam(req.Param)
+			reqBody = strings2.ToBytes(param)
+			body = strings.NewReader(param)
 		} else {
 			reqBody, err = json.Marshal(req.Param)
 			if err != nil {
-				return
+				return err
+			}
+			if req.logger != nil {
+
 			}
 			body = bytes.NewReader(reqBody)
 		}
-
 	}
 
 	request, err := http.NewRequest(method, url, body)
 	if err != nil {
-		return
+		return err
 	}
 	request.SetBasicAuth(req.AuthUser, req.AuthPass)
 	if req.ContentType != "" {
@@ -149,7 +150,7 @@ func (req *RequestParams) HTTPRequest(response interface{}) (err error) {
 
 	resp, err := client.Do(request)
 	if err != nil {
-		return
+		return err
 	}
 	defer func() {
 		err = resp.Body.Close()
@@ -157,22 +158,22 @@ func (req *RequestParams) HTTPRequest(response interface{}) (err error) {
 
 	respBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return
+		return err
 	}
 	if req.logger != nil {
-		req.logger(url, method, reqBody,resp.StatusCode, respBytes)
+		req.logger(url, method, reqBody, resp.StatusCode, respBytes)
 	}
 	if resp.StatusCode != 200 {
 		return errors.New("status:" + resp.Status)
 	}
 	err = json.Unmarshal(respBytes, response)
 	if err != nil {
-		return
+		return err
 	}
 	if v, ok := response.(responseBody); ok {
 		err = v.CheckError()
 	}
-	return
+	return err
 }
 
 func getParam(param interface{}) string {

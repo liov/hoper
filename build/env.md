@@ -108,3 +108,6 @@ maven { url "https://jitpack.io" }
 openresty
 懒得折腾就kong ingress
 折腾就apisix 
+
+# etcd
+etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/peer.crt --key=/etc/kubernetes/pki/etcd/peer.key member list

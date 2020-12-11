@@ -28,3 +28,41 @@ spec:
         path: /var/lib/minikube/etcd
         type: DirectoryOrCreate
       name: etcd-data
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: actix
+  labels:
+    app: actix
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 2379
+      name: server
+      targetPort: 2379
+  selector:
+    app: actix
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: actix
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /
+spec:
+  backend:
+    serviceName: actix
+    servicePort: 80
+  rules:
+    - host: actix.172.17.0.4.xip.io
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: actix
+              servicePort: 80
