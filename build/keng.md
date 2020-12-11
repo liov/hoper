@@ -247,3 +247,11 @@ RD /S /Q \\?\%1
 
 # cmd中文乱码
 chcp 65001
+
+# etcd 共用
+使用apisix，最初想与k8s集群共用etcd，但是minikube中无法实现,应该是minikube部署在docker中，docker重启IP变了，证书不认了
+
+# minikube The connection to the server localhost:8443 was refused - did you specify the right host or port? waiting for app.kubernetes.io/name=ingress-nginx pods: timed out waiting for the condition]
+
+
+            

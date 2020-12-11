@@ -15,18 +15,21 @@ func (nopCloserSink) Close() error { return nil }
 
 func RegisterSink() {
 	_ = zap.RegisterSink("http", func(url *url.URL) (sink zap.Sink, e error) {
-		return nil, nil
+		call := new(LoggerCall)
+		call.HookURL = []string{url.String()}
+		return nopCloserSink{zapcore.AddSync(call)}, nil
 	})
 	_ = zap.RegisterSink("https", func(url *url.URL) (sink zap.Sink, e error) {
-
-		return nil, nil
+		call := new(LoggerCall)
+		call.HookURL = []string{url.String()}
+		return nopCloserSink{zapcore.AddSync(call)}, nil
 	})
 	_ = zap.RegisterSink("socket", func(url *url.URL) (sink zap.Sink, e error) {
 		return nopCloserSink{zapcore.AddSync(os.Stdout)}, nil
 	})
 
 	_ = zap.RegisterSink("kafka", func(url *url.URL) (sink zap.Sink, e error) {
-		var kl LogKafka
+		kl := new(LogKafka)
 		kl.Topic = url.Query().Get("topic")
 		// 设置日志输入到Kafka的配置
 		config := sarama.NewConfig()
@@ -38,6 +41,6 @@ func RegisterSink() {
 		config.Producer.Return.Successes = true
 		config.Producer.Return.Errors = true
 		kl.Producer, e = sarama.NewSyncProducer([]string{url.Host}, config)
-		return nopCloserSink{zapcore.AddSync(&kl)}, nil
+		return nopCloserSink{zapcore.AddSync(kl)}, nil
 	})
 }
