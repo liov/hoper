@@ -5,9 +5,9 @@ import (
 	"net/smtp"
 
 	"github.com/bluele/gcache"
-	"github.com/etcd-io/bbolt"
 	"github.com/gomodule/redigo/redis"
 	"github.com/liov/hoper/go/v2/utils/configor/apollo"
+	"go.etcd.io/bbolt"
 	"gorm.io/gorm"
 )
 

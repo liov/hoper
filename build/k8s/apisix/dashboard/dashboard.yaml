@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: apisix-dashboard
+  labels:
+    app: apisix-dashboard
+spec:
+  containers:
+    - name: apisix-dashboard
+      image: dickens7/apisix-dashboard:2.1
+      ports:
+        - containerPort: 9000
+      volumeMounts:
+        - mountPath: /usr/local/apisix-dashboard/conf/conf.yaml
+          name: apisix-dashboard-cm
+          subPath: conf.yaml
+        - mountPath: /usr/local/apisix-dashboard/logs
+          name: logs
+  volumes:
+    - configMap:
+        name: apisix-dashboard-conf.yaml
+      name: apisix-dashboard-cm
+    - hostPath:
+        path: /home/crm/apisix/logs
+        type: DirectoryOrCreate
+      name: logs
