@@ -9,7 +9,6 @@ import (
 	"time"
 	"unicode"
 
-	"gorm.io/driver/mysql"
 	"github.com/liov/hoper/go/v2/utils/log/output"
 	"go.uber.org/zap"
 )
@@ -128,7 +127,7 @@ func (entry *loggerV1) Print(v ...interface{}) {
 			zap.Time("@timestamp", time.Now()),
 			zap.Any("@fields", &output.Kibana{
 				Interface: msgs[0].(string),
-				Result:    msgs[1].(*mysql.MySQLError).Error(),
+				Result:    msgs[1].(error).Error(),
 				Other:     "sql",
 			}))
 	}

@@ -95,8 +95,8 @@ apisix:
   #   udp:                        # UDP proxy port list
   #     - 9200
   #     - 9211
-  # dns_resolver:                   # If not set, read from `/etc/resolv.conf`
-  #  - 1.1.1.1
+  dns_resolver:                   # If not set, read from `/etc/resolv.conf`
+    - 1.1.1.1
   #  - 8.8.8.8
   dns_resolver_valid: 30          # valid time for dns result 30 seconds
   resolver_timeout: 5             # resolver timeout
@@ -152,7 +152,7 @@ nginx_config:                     # config for render the template to genarate n
 
 etcd:
   host:                           # it's possible to define multiple etcd hosts addresses of the same etcd cluster.
-    - "https://172.17.0.3:2379"     # multiple etcd address, if your etcd cluster enables TLS, please use https scheme,
+    - "https://etcd.deafult.svc.cluster.local:2379"     # multiple etcd address, if your etcd cluster enables TLS, please use https scheme,
                                   # e.g. "https://127.0.0.1:2379".
   prefix: "/apisix"               # apisix configurations prefix
   timeout: 30                     # 30 seconds

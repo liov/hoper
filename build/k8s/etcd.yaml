@@ -1,9 +1,11 @@
+---
 apiVersion: v1
 kind: Service
 metadata:
   name: etcd
   labels:
     app: etcd
+    namespace: kube-system
   annotations:
     service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
 spec:
@@ -14,35 +16,3 @@ spec:
       targetPort: 2379
   selector:
     app: etcd
-
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: box
-  labels:
-    app: box
-spec:
-  containers:
-    - name: box
-      image: k8s.gcr.io/etcd:3.4.3-0
-      command: [ "etcdctl",
-                 "--endpoints=https://172.17.0.3:2379",
-                 "--cacert=/var/lib/minikube/certs/etcd/ca.crt",
-                 "--cert=/var/lib/minikube/certs/etcd/server.crt",
-                 "--key=/var/lib/minikube/certs/etcd/server.key",
-                 "member","list" ]
-      volumeMounts:
-        - mountPath: /var/lib/minikube/etcd
-          name: etcd-data
-        - mountPath: /var/lib/minikube/certs/etcd
-          name: etcd-certs
-  volumes:
-    - hostPath:
-        path: /var/lib/minikube/certs/etcd
-        type: DirectoryOrCreate
-      name: etcd-certs
-    - hostPath:
-        path: /var/lib/minikube/etcd
-        type: DirectoryOrCreate
-      name: etcd-data

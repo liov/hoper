@@ -252,6 +252,29 @@ chcp 65001
 使用apisix，最初想与k8s集群共用etcd，但是minikube中无法实现,应该是minikube部署在docker中，docker重启IP变了，证书不认了
 
 # minikube The connection to the server localhost:8443 was refused - did you specify the right host or port? waiting for app.kubernetes.io/name=ingress-nginx pods: timed out waiting for the condition]
+delete start
+# pod内无法ping通svc
+```bash
+kubectl edit cm kube-proxy -n kube-system
+mode:"ipvs"
 
 
-            
+cat >> /etc/sysctl.conf << EOF
+net.ipv4.ip_forward = 1
+net.bridge.bridge-nf-call-iptables = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+EOF
+
+kubectl  get pod -n kube-system | grep kube-proxy | awk '{print $1}' | xargs kubectl delete pod -n kube-system
+```
+# root用户读不到环境变量
+sudo visudo
+
+Defaults    !env_reset
+
+# minikube diver=none minikube kubectl 无法使用
+sudo /usr/local/bin/minikube 
+
+# nodePort 80
+vim /etc/kubernetes/manifests/kube-apiserver.yaml
+command 下添加 --service-node-port-range=1-65535 参数
