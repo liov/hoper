@@ -15,6 +15,7 @@ require (
 	github.com/boombuler/barcode v1.0.0
 	github.com/brahma-adshonor/gohook v0.0.0-20200311033618-28b944a6fdfa // indirect
 	github.com/cenk/backoff v2.2.1+incompatible // indirect
+	github.com/cockroachdb/datadriven v0.0.0-20190809214429-80d97fb3cbaa // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/facebook/ent v0.4.3
@@ -74,6 +75,7 @@ require (
 	github.com/tealeg/xlsx/v3 v3.2.1
 	github.com/tidwall/buntdb v1.1.2 // indirect
 	github.com/tidwall/gjson v1.3.5 // indirect
+	github.com/urfave/cli v1.20.0 // indirect
 	github.com/urfave/cli/v2 v2.2.0 // indirect
 	github.com/valyala/fasthttp v1.17.0 // indirect
 	github.com/vektah/gqlparser/v2 v2.0.1

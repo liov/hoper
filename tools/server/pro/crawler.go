@@ -9,7 +9,9 @@ import (
 	"io"
 	"log"
 	"math/rand"
+	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -26,7 +28,7 @@ import (
 
 const CommonUrl = "https://f1113.wonderfulday27.live/viewthread.php?tid=%s"
 const Loop = 50
-const CommonDir = `F:\pic_2\`
+const CommonDir = `F:\pic_1\`
 const Interval = 200 * time.Millisecond
 const Sep = string(os.PathSeparator)
 const Ext = `.txt`
@@ -47,23 +49,22 @@ var picClient = new(http.Client)
 func init() {
 	req, _ := newRequest(CommonUrl)
 	reqCache[0] = req.Clone(context.Background())
-	/*	http.DefaultClient.Timeout = 300 * time.Second
-		picClient.Timeout = 300 * time.Second
-		proxyURL, _ := url.Parse("socks5://localhost:8080")
-		http.DefaultClient.Transport = &http.Transport{
-			Proxy: http.ProxyURL(proxyURL),
-			DialContext: (&net.Dialer{
-				Timeout:   300 * time.Second,
-				KeepAlive: 60 * time.Second,
-			}).DialContext,
-		}
-		picClient.Transport = &http.Transport{
-			Proxy: http.ProxyURL(proxyURL),
-			DialContext: (&net.Dialer{
-				Timeout:   300 * time.Second,
-				KeepAlive: 60 * time.Second,
-			}).DialContext,
-		}*/
+	/*	SetClient(http.DefaultClient,30,`socks5://localhost:8080`)
+		SetClient(picClient,30,`socks5://localhost:8080`)*/
+}
+
+func SetClient(client *http.Client, timeout time.Duration, proxyUrl string) {
+	if timeout < time.Second {
+		timeout = timeout * time.Second
+	}
+	proxyURL, _ := url.Parse(proxyUrl)
+	client.Transport = &http.Transport{
+		Proxy: http.ProxyURL(proxyURL),
+		DialContext: (&net.Dialer{
+			Timeout:   timeout,
+			KeepAlive: timeout,
+		}).DialContext,
+	}
 }
 
 type Speed struct {
