@@ -278,3 +278,6 @@ sudo /usr/local/bin/minikube
 # nodePort 80
 vim /etc/kubernetes/manifests/kube-apiserver.yaml
 command 下添加 --service-node-port-range=1-65535 参数
+
+# js正则匹配失败
+文件换行符CRLF -> LF

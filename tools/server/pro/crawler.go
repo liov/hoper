@@ -28,7 +28,7 @@ import (
 
 const CommonUrl = "https://f1113.wonderfulday27.live/viewthread.php?tid=%s"
 const Loop = 50
-const CommonDir = `F:\pic_1\`
+const CommonDir = `F:\pic_2\`
 const Interval = 200 * time.Millisecond
 const Sep = string(os.PathSeparator)
 const Ext = `.txt`

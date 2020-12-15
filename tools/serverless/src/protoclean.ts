@@ -49,12 +49,12 @@ function replace(inputfile: string, outputfile: string) {
         });
     })*/
     let data = fs.readFileSync(inputfile,'utf-8')
-    data = data.replace(/import "github.*\n/,'')
-    data = data.replace(/import "protoc-gen-openapiv2.*\n/,'')
-    data = data.replace(/import "utils\/proto\/gogo\/enum.proto.*\n/,'')
-    data = data.replace(/import "google\/api\/annotations.proto.*\n/,'')
-    data = data.replace(/\[\([\w.]*\) = [\[\]\\\n\w="',:;*@(){} \-\u4e00-\u9fa5\uff0c]*]/,'')
-    data = data.replace(/option \[\([\w.]*\) = [\[\]\\\n\w="',:;*@(){} \-\u4e00-\u9fa5]*;/,'')
+    data = data.replace(/import "github.*\n/g,'')
+    data = data.replace(/import "protoc-gen-openapiv2.*\n/g,'')
+    data = data.replace(/import "utils\/proto\/.*\n/g,'')
+    data = data.replace(/import "google\/api\/annotations.proto.*\n/g,'')
+    data = data.replace(/\[\([\w.]*\)[\\\n\w=/."',:;*@(){} \-\u4e00-\u9fa5]*]/g,'')
+    data = data.replace(/option \([\w.]*\)[\[\]\\\n\w=/."',:*@(){} \-\u4e00-\u9fa5]*;/g,'')
     fs.writeFileSync(outputfile,data)
 }
 

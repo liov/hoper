@@ -143,7 +143,7 @@ message UserMainInfo {
     uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
     Role role = 24 [(go.field) = {tags:'gorm:"default:0"'}];
     int64 lastActiveAt = 23;
-    uint64 score = 15 [ (go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    uint64 score = 15 [(go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"分数"
     type: INTEGER}];
     UserStatus status = 28 [(go.field) = {tags:'gorm:"default:0"'},  (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
