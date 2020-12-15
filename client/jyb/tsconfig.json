@@ -8,7 +8,7 @@
     "experimentalDecorators": true,
     "noImplicitAny": false,
     "allowSyntheticDefaultImports": true,
-    "outDir": "lib",
+    "outDir": "dist",
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "strictNullChecks": true,
