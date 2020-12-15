@@ -18,8 +18,8 @@ func main() {
 }
 
 func normal(sd *pro.Speed) {
-	start := 115474
-	end := 200000
+	start := 0
+	end := 100000
 	for i := start; i < end; i++ {
 		sd.WebAdd(1)
 		go pro.Fetch(i, sd)

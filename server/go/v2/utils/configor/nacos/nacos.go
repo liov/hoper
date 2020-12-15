@@ -99,7 +99,7 @@ func (c *Client) Listener(handle func([]byte)) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	req.Header["Long-Pulling-Timeout"] = []string{"30000"}
+	req.Header["Long-Pulling-timeout"] = []string{"30000"}
 	req.Header["Content-Type"] = []string{"application/x-www-form-urlencoded"}
 
 	var ch = make(chan struct{}, 1)

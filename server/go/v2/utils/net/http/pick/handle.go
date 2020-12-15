@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"reflect"
 
-	"github.com/liov/hoper/go/v2/utils/net/http/gin/response"
+	"github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick/schema"
 )
 
@@ -71,7 +71,7 @@ func commonHandler(w http.ResponseWriter, req *http.Request, handle reflect.Valu
 			json.NewEncoder(w).Encode(result[1].Interface())
 			return
 		}
-		if info, ok := result[0].Interface().(*response.File); ok {
+		if info, ok := result[0].Interface().(*http2.File); ok {
 			header := w.Header()
 			header.Set("Content-Type", "application/octet-stream")
 			header.Set("Content-Disposition", "attachment;filename="+info.Name)
@@ -82,7 +82,7 @@ func commonHandler(w http.ResponseWriter, req *http.Request, handle reflect.Valu
 			info.File.Close()
 			return
 		}
-		json.NewEncoder(w).Encode(response.ResData{
+		json.NewEncoder(w).Encode(http2.ResData{
 			Code:    0,
 			Message: "success",
 			Details: result[0].Interface(),

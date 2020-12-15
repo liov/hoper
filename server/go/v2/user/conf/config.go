@@ -49,7 +49,7 @@ type config struct {
 	Database initialize.DatabaseConfig
 	Redis    initialize.RedisConfig
 	Log      initialize.LogConfig
-	Consul   initialize.ConsulConfig
+	Consul   initialize.EtcdConfig
 }
 
 var Conf = &config{}

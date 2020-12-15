@@ -37,6 +37,23 @@ func init() {
 	}
 }
 
+func SetTimeout(timeout time.Duration) {
+	if timeout < time.Second {
+		timeout = timeout * time.Second
+	}
+	client.Transport = &http.Transport{
+		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+			c, err := net.DialTimeout(network, addr, timeout)
+			if err != nil {
+				return nil, err
+			}
+			c.SetDeadline(time.Now().Add(timeout))
+			return c, nil
+		},
+		DisableKeepAlives: true,
+	}
+}
+
 type Pair struct {
 	K, V string
 }
@@ -46,7 +63,7 @@ type LogCallback func(string, string, []byte, int, []byte)
 // RequestParams ...
 type RequestParams struct {
 	url, method        string
-	Timeout            time.Duration
+	timeout            time.Duration
 	AuthUser, AuthPass string
 	ContentType        string
 	Param              interface{}
@@ -65,6 +82,11 @@ func (req *RequestParams) SetHeader(k, v string) *RequestParams {
 
 func (req *RequestParams) SetLogger(logger LogCallback) *RequestParams {
 	req.logger = logger
+	return req
+}
+
+func (req *RequestParams) SetTimeout(timeout time.Duration) *RequestParams {
+	req.timeout = timeout
 	return req
 }
 
@@ -94,21 +116,9 @@ func (req *RequestParams) HTTPRequest(response interface{}) error {
 
 	method := req.method
 	url := req.url
-	if req.Timeout != 0 {
-		if req.Timeout < time.Second {
-			req.Timeout = req.Timeout * time.Second
-		}
-		client.Transport = &http.Transport{
-			DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-				c, err := net.DialTimeout(network, addr, req.Timeout)
-				if err != nil {
-					return nil, err
-				}
-				c.SetDeadline(time.Now().Add(req.Timeout))
-				return c, nil
-			},
-			DisableKeepAlives: true,
-		}
+	if req.timeout != 0 {
+		defer SetTimeout(timeout)
+		SetTimeout(req.timeout)
 	}
 	var body io.Reader
 	var reqBody []byte

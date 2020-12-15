@@ -30,13 +30,13 @@ func Response(w http.ResponseWriter, res ...interface{}) {
 	var resData ResData
 
 	if len(res) == 1 {
-		resData.Code = uint32(errorcode.Unknown)
+		resData.Code = uint32(errorcode.ErrCode_Unknown)
 		if msgTmp, ok := res[0].(string); ok {
 			resData.Message = msgTmp
 			resData.Details = nil
 		} else {
 			resData.Details = res[0]
-			resData.Code = uint32(errorcode.SUCCESS)
+			resData.Code = uint32(errorcode.ErrCode_SUCCESS)
 		}
 	} else if len(res) == 2 {
 		if msgTmp, ok := res[0].(string); ok {
@@ -46,7 +46,7 @@ func Response(w http.ResponseWriter, res ...interface{}) {
 		} else {
 			resData.Details = res[0]
 			resData.Message = res[1].(string)
-			resData.Code = uint32(errorcode.SUCCESS)
+			resData.Code = uint32(errorcode.ErrCode_SUCCESS)
 		}
 	} else {
 		resData.Details = res[0]

@@ -1,0 +1,1 @@
+etcdctl --endpoints=https://172.17.0.3:2379 --cacert=/var/lib/minikube/certs/etcd/ca.crt --cert=/var/lib/minikube/certs/etcd/server.crt --key=/var/lib/minikube/certs/etcd/server.key member list

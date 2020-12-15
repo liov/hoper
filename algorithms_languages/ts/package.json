@@ -1,0 +1,7 @@
+{
+  "name": "tsjs",
+  "version": "1.0.0",
+  "dependencies": {
+    "reflect-metadata": "^0.1.13"
+  }
+}
