@@ -9,7 +9,7 @@ require (
 	github.com/aws/aws-lambda-go v1.13.3 // indirect
 	github.com/aws/aws-sdk-go v1.27.0 // indirect
 	github.com/bcongdon/corral v0.0.0-20190319213343-1f4ad49dee34
-	github.com/brahma-adshonor/gohook v0.0.0-20200311033618-28b944a6fdfa
+	github.com/brahma-adshonor/gohook v1.1.9
 	github.com/changkun/gobase v0.0.0-20201105201623-2af93df6eadb // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/go-sql-driver/mysql v1.4.1

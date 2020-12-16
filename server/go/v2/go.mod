@@ -10,12 +10,10 @@ require (
 	github.com/CloudyKit/jet/v3 v3.0.0 // indirect
 	github.com/Shopify/sarama v1.27.2
 	github.com/aws/aws-sdk-go v1.36.7
-	github.com/biogo/store v0.0.0-20190426020002-884f370e325d // indirect
 	github.com/bluele/gcache v0.0.0-20190518031135-bc40bd653833
 	github.com/boombuler/barcode v1.0.0
 	github.com/brahma-adshonor/gohook v0.0.0-20200311033618-28b944a6fdfa // indirect
 	github.com/cenk/backoff v2.2.1+incompatible // indirect
-	github.com/cockroachdb/datadriven v0.0.0-20190809214429-80d97fb3cbaa // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/facebook/ent v0.4.3
@@ -75,7 +73,6 @@ require (
 	github.com/tealeg/xlsx/v3 v3.2.1
 	github.com/tidwall/buntdb v1.1.2 // indirect
 	github.com/tidwall/gjson v1.3.5 // indirect
-	github.com/urfave/cli v1.20.0 // indirect
 	github.com/urfave/cli/v2 v2.2.0 // indirect
 	github.com/valyala/fasthttp v1.17.0 // indirect
 	github.com/vektah/gqlparser/v2 v2.0.1

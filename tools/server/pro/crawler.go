@@ -21,6 +21,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/liov/hoper/go/v2/utils/dao/db/get"
 	"github.com/liov/hoper/go/v2/utils/fs"
+	"github.com/liov/hoper/go/v2/utils/strings2"
 	"golang.org/x/net/html"
 	"gorm.io/gorm"
 	py "tools/pinyin"
@@ -28,7 +29,7 @@ import (
 
 const CommonUrl = "https://f1113.wonderfulday27.live/viewthread.php?tid=%s"
 const Loop = 50
-const CommonDir = `F:\pic_2\`
+const CommonDir = `F:\pic_1\`
 const Interval = 200 * time.Millisecond
 const Sep = string(os.PathSeparator)
 const Ext = `.txt`
@@ -133,7 +134,7 @@ func Fetch(id int, sd *Speed) {
 
 	auth, title, text, postTime, htl, post := ParseHtml(doc)
 	post.TId = id
-	post.PicNum = int8(s.Length())
+	post.PicNum = uint32(s.Length())
 	status := "0"
 	if post.PicNum == 0 {
 		status = "1"
@@ -226,19 +227,15 @@ func ParseHtml(doc *goquery.Document) (string, string, string, string, *goquery.
 	text := content.Contents().Not(".t_attach").Text()
 	html := content.Not(".t_attach").Not("span")
 	post.Content = text
-	auth = strings.ReplaceAll(auth, "\\", "")
-	auth = strings.ReplaceAll(auth, "/", "")
-	auth = strings.ReplaceAll(auth, ":", "")
-	if strings.HasSuffix(auth, ".") {
-		auth += "$"
+	return FixPath(auth), FixPath(title), text, postTime, html, post
+}
+
+func FixPath(path string) string {
+	path = strings2.ReplaceRuneEmpty(path, []rune{'\\', '/', ':', ' '})
+	if strings.HasSuffix(path, ".") {
+		path += "$"
 	}
-	title = strings.ReplaceAll(title, "\\", "")
-	title = strings.ReplaceAll(title, "/", "")
-	title = strings.ReplaceAll(title, ":", "")
-	if strings.HasSuffix(title, ".") {
-		title += "$"
-	}
-	return auth, title, text, postTime, html, post
+	return path
 }
 
 func Download(url, dir string, sd *Speed) {
@@ -392,15 +389,15 @@ func SetDB() {
 }
 
 type Post struct {
-	ID        int
+	ID        uint32
 	TId       int    `gorm:"uniqueIndex"`
 	Auth      string `gorm:"size:255;default:''"`
 	Title     string `gorm:"size:255;default:''"`
 	Content   string `gorm:"type:text"`
 	CreatedAt string `gorm:"type:timestamptz(6);default:'0001-01-01 00:00:00'"`
-	PicNum    int8   `gorm:"default:0"`
-	Score     int8   `gorm:"default:0"`
-	Status    int8   `gorm:"default:0"`
+	PicNum    uint32 `gorm:"default:0"`
+	Score     uint8  `gorm:"default:0"`
+	Status    uint8  `gorm:"default:0"`
 }
 
 func FixWeb(path string, sd *Speed, handle func(int, *Speed)) {

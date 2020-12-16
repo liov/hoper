@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/brahma-adshonor/gohook"
@@ -27,8 +28,16 @@ func myPrintlnTramp(a ...interface{}) (n int, err error) {
 	return 0, nil
 }
 
+//go:noinline
+func warpPrintln(a ...interface{}) (n int, err error) {
+	return fmt.Fprintln(os.Stdout, a...)
+}
+
 func main() {
-	gohook.Hook(fmt.Println, myPrintln, myPrintlnTramp)
-	fmt.Println("hello world!")
+	err := gohook.Hook(warpPrintln, myPrintln, myPrintlnTramp)
+	if err != nil {
+		log.Println(err)
+	}
+	warpPrintln("hello world!")
 	myPrintlnTramp("测试")
 }

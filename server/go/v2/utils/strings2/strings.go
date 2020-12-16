@@ -125,3 +125,44 @@ func UpperCase(c byte) byte {
 	}
 	return c
 }
+
+func ReplaceRuneEmpty(s string, old []rune) string {
+	if len(old) == 0 {
+		return s // avoid allocation
+	}
+
+	// Apply replacements to buffer.
+	t := make([]byte, len(s))
+	w := 0
+	start := 0
+	needCoby := false
+	last := false
+	for i, r := range s {
+		if in(r, old) {
+			if needCoby {
+				w += copy(t[w:], s[start:i])
+				needCoby = false
+			}
+			last = true
+			continue
+		}
+		needCoby = true
+		if last {
+			start = i
+			last = false
+		}
+	}
+	if needCoby {
+		w += copy(t[w:], s[start:])
+	}
+	return string(t[0:w])
+}
+
+func in(r rune, bytes []rune) bool {
+	for i := range bytes {
+		if bytes[i] == r {
+			return true
+		}
+	}
+	return false
+}
