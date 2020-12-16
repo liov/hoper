@@ -19,4 +19,5 @@ func main() {
 	fmt.Println(buffer.String())
 
 	fmt.Println(`(?PHell|G)o`)
+	fmt.Println(`(?PHell|G)o`[0:0])
 }

@@ -9,6 +9,8 @@ func test() {
 	a := 100
 	for i := 1; i < 1000; i++ {
 		a = i*100/i + a
+		time.Sleep(time.Millisecond)
+		println(a)
 	}
 }
 

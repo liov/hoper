@@ -4,7 +4,7 @@ import (
 	"log"
 	"reflect"
 
-	"test/utils/imp"
+	"test/runtime/reflect/imp"
 )
 
 type Foo1 struct {
@@ -21,9 +21,8 @@ type Foo2 struct {
 
 type Foo3 Foo2
 
-var foo *Foo2
-
 func main() {
+	var foo *Foo2
 	foo1 := Foo1{}
 	foo2 := Foo2{}
 	foo3 := Foo3{}
@@ -48,10 +47,10 @@ func main() {
 	log.Println(typ3.AssignableTo(typ1.Field(3).Type)) //true
 	log.Println(typ1.Field(2))
 	SetFoo(foo)
+	log.Println(foo.Field2)
 }
 
 func SetFoo(v interface{}) {
 	value := reflect.ValueOf(v)
 	value.Set(reflect.New(value.Type().Elem()).Elem())
-	log.Println(foo.Field2)
 }

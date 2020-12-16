@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/modern-go/reflect2"
-	"test/custom/reflect/foo"
+	"test/runtime/reflect/foo"
 )
 
 func main() {

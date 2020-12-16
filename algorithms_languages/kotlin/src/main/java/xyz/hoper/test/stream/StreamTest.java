@@ -6,6 +6,7 @@ package xyz.hoper.test.stream;
  * @description：stream
  */
 
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class StreamTest {
