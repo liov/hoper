@@ -10,7 +10,7 @@ import (
 )
 
 func TestAddFloat64(t *testing.T) {
-	vs := []float64{}
+	var vs []float64
 	for i := 1; i <= 10; i++ {
 		vs = append(vs, float64(i))
 	}

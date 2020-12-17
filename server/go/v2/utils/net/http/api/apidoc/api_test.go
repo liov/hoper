@@ -15,10 +15,12 @@ var info = spec.Info{
 		Description: "A sample API that uses a petstore as an example to demonstrate features in " +
 			"the swagger-2.0 specification",
 		TermsOfService: "http://helloreverb.com/terms/",
-		Contact:        &spec.ContactInfo{Name: "wordnik api team", URL: "http://developer.wordnik.com"},
+		Contact:        &spec.ContactInfo{ContactInfoProps: spec.ContactInfoProps{Name: "wordnik api team", URL: "http://developer.wordnik.com"}},
 		License: &spec.License{
-			Name: "Creative Commons 4.0 International",
-			URL:  "http://creativecommons.org/licenses/by/4.0/",
+			LicenseProps: spec.LicenseProps{
+				Name: "Creative Commons 4.0 International",
+				URL:  "http://creativecommons.org/licenses/by/4.0/",
+			},
 		},
 	},
 	VendorExtensible: spec.VendorExtensible{Extensions: map[string]interface{}{"x-framework": "go-swagger"}},

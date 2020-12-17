@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/golang/groupcache"
@@ -22,7 +23,7 @@ func (s *Server) ServerHttp() {
 
 	peers.Set("http://localhost:8333", "http://localhost:8222")
 	groupcache.NewGroup(s.GroupName, s.CacheBytes, groupcache.GetterFunc(
-		func(ctx groupcache.Context, key string, dest groupcache.Sink) error {
+		func(ctx context.Context, key string, dest groupcache.Sink) error {
 			dest.SetString(key + me)
 			return nil
 		}))
