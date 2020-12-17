@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"net/smtp"
 
-	"github.com/bluele/gcache"
+	"github.com/cockroachdb/pebble"
 	"github.com/gomodule/redigo/redis"
-	"go.etcd.io/bbolt"
+	"github.com/liov/hoper/go/v2/utils/cache"
 	"gorm.io/gorm"
 )
 
@@ -19,11 +19,11 @@ type dao struct {
 	// GORMDB 数据库连接
 	GORMDB *gorm.DB
 	StdDB  *sql.DB
-	Bolt   *bbolt.DB
+	PebbleDB   *pebble.DB
 	// RedisPool Redis连接池
 	Redis       *redis.Pool
 	RedisExpire int32
-	Cache       gcache.Cache
+	Cache       cache.Cache
 	McExpire    int32
 	//elastic
 	MailAuth smtp.Auth
@@ -31,8 +31,8 @@ type dao struct {
 
 // CloseDao close the resource.
 func (d *dao) Close() {
-	if d.Bolt != nil {
-		d.Bolt.Close()
+	if d.PebbleDB != nil {
+		d.PebbleDB.Close()
 	}
 	if d.Redis != nil {
 		d.Redis.Close()

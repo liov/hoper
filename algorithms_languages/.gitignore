@@ -10,5 +10,5 @@ gen
 target
 *.exe
 cmake-build-debug
-ts/*/*.js
+ts/dist
 *.pb.go

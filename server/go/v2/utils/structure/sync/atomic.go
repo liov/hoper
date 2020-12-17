@@ -22,3 +22,15 @@ func AddFloat64(addr *float64, delta float64) (new float64) {
 	}
 	return
 }
+
+func AddFloat32(addr *float32, delta float32) (new float32) {
+	var old float32
+	for {
+		old = math.Float32frombits(atomic.LoadUint32((*uint32)(unsafe.Pointer(addr))))
+		if atomic.CompareAndSwapUint32((*uint32)(unsafe.Pointer(addr)),
+			math.Float32bits(old), math.Float32bits(old+delta)) {
+			break
+		}
+	}
+	return
+}

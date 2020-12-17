@@ -23,7 +23,6 @@ import (
 
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	"github.com/liov/hoper/go/v2/utils/net/http/content_type"
-	"github.com/moul/http2curl"
 	"golang.org/x/net/publicsuffix"
 )
 
@@ -1245,7 +1244,7 @@ func (s *SuperAgent) getResponseBytes() (*http.Response, []byte, []error) {
 
 	// Display CURL command line
 	if s.CurlCommand {
-		curl, err := http2curl.GetCurlCommand(req)
+		curl, err := GetCurlCommand(req)
 		s.logger.SetPrefix("[curl] ")
 		if err != nil {
 			s.logger.Println("Error:", err)
@@ -1459,7 +1458,7 @@ func (s *SuperAgent) AsCurlCommand() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	cmd, err := http2curl.GetCurlCommand(req)
+	cmd, err := GetCurlCommand(req)
 	if err != nil {
 		return "", err
 	}
