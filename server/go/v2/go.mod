@@ -16,7 +16,6 @@ require (
 	github.com/cockroachdb/pebble v0.0.0-20201215172116-745f6c801513 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dustin/go-humanize v1.0.0 // indirect
-	github.com/facebook/ent v0.4.3
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/facebookgo/ensure v0.0.0-20200202191622-63f1cf65ac4c // indirect
 	github.com/facebookgo/stack v0.0.0-20160209184415-751773369052 // indirect
@@ -30,7 +29,6 @@ require (
 	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.2.0
-	github.com/go-sql-driver/mysql v1.5.1-0.20200311113236-681ffa848bae
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e
 	github.com/golang/mock v1.4.4
@@ -45,7 +43,6 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware v1.1.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.0.0-beta.4
 	github.com/imkira/go-interpol v1.1.0 // indirect
-	github.com/jinzhu/configor v1.2.1
 	github.com/json-iterator/go v1.1.10
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	github.com/liov/protopatch2 v0.0.0-20200917092858-0c3cd79171e9
@@ -91,4 +88,5 @@ require (
 replace (
 	github.com/cenkalti/backoff v2.2.1+incompatible => github.com/cenkalti/backoff/v4 v4.1.0
 	github.com/ugorji/go v1.1.4 => github.com/ugorji/go/codec v0.0.0-20190204201341-e444a5086c43
+	github.com/lni/dragonboat v2.1.7+incompatible => github.com/lni/dragonboat/v3 v3.2.8
 )
