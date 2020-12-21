@@ -4,14 +4,14 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/liov/hoper/go/v2/httptpl/internal/config"
-	_ "github.com/liov/hoper/go/v2/httptpl/internal/service"
+	"github.com/liov/hoper/go/v2/httptpl/conf"
+	_ "github.com/liov/hoper/go/v2/httptpl/service"
 	"github.com/liov/hoper/go/v2/initialize"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 )
 
 func main() {
-	defer initialize.Start(config.Conf, nil)()
+	defer initialize.Start(conf.Conf, nil)()
 	router := pick.New(false, "httptpl")
 	router.ServeFiles("/static", "E:/")
 	log.Println("visit http://localhost:8080")

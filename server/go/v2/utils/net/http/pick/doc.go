@@ -17,7 +17,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	"github.com/liov/hoper/go/v2/utils/reflect3"
 	"github.com/liov/hoper/go/v2/utils/strings2"
-	"github.com/liov/hoper/go/v2/utils/validator"
+	"github.com/liov/hoper/go/v2/utils/verification/validator"
 )
 
 func OpenApi(mux *Router, filePath, modName string) {

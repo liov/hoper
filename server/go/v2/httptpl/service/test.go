@@ -3,7 +3,7 @@ package service
 import (
 	"net/http"
 
-	"github.com/liov/hoper/go/v2/httptpl/internal/claims"
+	"github.com/liov/hoper/go/v2/httptpl/claims"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 )

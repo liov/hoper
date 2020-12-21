@@ -11,10 +11,10 @@ import (
 )
 
 func Debug() http.Handler {
-	http.Handle("/metrics", promhttp.Handler())
-	http.Handle("/pprof", pprof.Handler("debug"))
-	http.Handle("/debug", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		debug.PrintStack()
+	http.Handle("/debug/metrics", promhttp.Handler())
+	http.Handle("/debug/pprof", pprof.Handler("debug"))
+	http.Handle("/debug/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write(debug.Stack())
 	}))
 	return http.DefaultServeMux
 }

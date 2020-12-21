@@ -67,7 +67,7 @@ func (r *ReflectInvoker) InvokeByInterfaceArgs(funcName string, Params []interfa
 func (r *ReflectInvoker) InvokeByJson(byteData []byte) []byte {
 
 	req := &Request{}
-	err := json.Json.Unmarshal(byteData, req)
+	err := json.Standard.Unmarshal(byteData, req)
 
 	resultData := &Response{}
 
@@ -95,7 +95,7 @@ func (r *ReflectInvoker) InvokeByJson(byteData []byte) []byte {
 
 	}
 	resultData.ErrorMsg = NoError
-	data, _ := json.Json.Marshal(resultData)
+	data, _ := json.Standard.Marshal(resultData)
 
 	return data
 }

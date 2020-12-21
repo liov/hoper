@@ -18,7 +18,7 @@ func Gateway(gatewayHandle GatewayHandle) http.Handler {
 	ctx := context.Background()
 
 	gwmux := runtime.NewServeMux(
-		runtime.WithMarshalerOption(runtime.MIMEWildcard, &jsonpb.JSONPb{API: json.Json}),
+		runtime.WithMarshalerOption(runtime.MIMEWildcard, &jsonpb.JSONPb{API: json.Standard}),
 		//runtime.WithProtoErrorHandler(CustomHTTPError),
 		runtime.WithMetadata(func(ctx context.Context, request *http.Request) metadata.MD {
 			area, err := url.PathUnescape(request.Header.Get("area"))

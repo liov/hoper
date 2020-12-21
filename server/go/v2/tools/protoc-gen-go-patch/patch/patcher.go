@@ -13,7 +13,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/liov/protopatch2/patch/ident"
+	gopb "github.com/liov/hoper/go/v2/protobuf/utils/proto/go"
+	"github.com/liov/hoper/go/v2/tools/protoc-gen-go-patch/patch/ident"
 	"golang.org/x/tools/go/ast/astutil"
 
 	"google.golang.org/protobuf/compiler/protogen"
@@ -45,6 +46,7 @@ type Patcher struct {
 	objectRenames  map[types.Object]string
 	tags           map[protogen.GoIdent]string
 	fieldTags      map[types.Object]string
+	fileOptions    *gopb.FileOptions
 }
 
 // NewPatcher returns an initialized Patcher for gen.
@@ -72,14 +74,12 @@ func (p *Patcher) scan() error {
 	return nil
 }
 
-var nonOmit bool
-
 func (p *Patcher) scanFile(f *protogen.File) {
 	log.Printf("\nScan proto:\t%s", f.Desc.Path())
 
-	nonOmit = fileNonOmit(f)
-
 	_ = p.getPackage(string(f.GoImportPath), string(f.GoPackageName), true)
+
+	p.fileOptions = fileOptions(f)
 
 	for _, e := range f.Enums {
 		p.scanEnum(e)
@@ -119,6 +119,10 @@ func (p *Patcher) scanEnumValue(v *protogen.EnumValue) {
 	newName := opts.GetName()
 	if newName == "" && p.isRenamed(e.GoIdent) {
 		newName = replacePrefix(v.GoIdent.GoName, e.GoIdent.GoName, p.nameFor(e.GoIdent))
+	} else {
+		if p.fileOptions.GetNoEnumPrefix() {
+			newName = replacePrefix(v.GoIdent.GoName, e.GoIdent.GoName+"_", "")
+		}
 	}
 	if newName != "" {
 		p.RenameValue(v.GoIdent, newName) // Value const
@@ -536,14 +540,14 @@ func (p *Patcher) patchIdent(id *ast.Ident, obj types.Object) {
 				v.Tag = &ast.BasicLit{}
 			}
 
-			v.Tag.Value = mergeTags(v.Tag.Value, tags)
+			v.Tag.Value = mergeTags(v.Tag.Value, tags, p.fileOptions.GetNonOmitempty())
 			log.Printf("Add tags:\t%q.%s %s", obj.Pkg().Path(), id.Name, v.Tag.Value)
 		}
 	}
 }
 
 // mergeTags overrides tags
-func mergeTags(oldTag, newTag string) string {
+func mergeTags(oldTag, newTag string, nonOmit bool) string {
 	var tagKeys []string
 	var kvMap = make(map[string]string)
 
