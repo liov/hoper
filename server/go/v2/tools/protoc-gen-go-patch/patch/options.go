@@ -10,6 +10,10 @@ func enumOptions(e *protogen.Enum) *gopb.Options {
 	return proto.GetExtension(e.Desc.Options(), gopb.E_Enum).(*gopb.Options)
 }
 
+func enumCN(e *protogen.Enum) string {
+	return proto.GetExtension(e.Desc.Options(), gopb.E_Cn).(string)
+}
+
 func valueOptions(v *protogen.EnumValue) *gopb.Options {
 	return proto.GetExtension(v.Desc.Options(), gopb.E_Value).(*gopb.Options)
 }
@@ -26,6 +30,6 @@ func oneofOptions(o *protogen.Oneof) *gopb.Options {
 	return proto.GetExtension(o.Desc.Options(), gopb.E_Oneof).(*gopb.Options)
 }
 
-func fileNonOmit(o *protogen.File) bool {
-	return proto.GetExtension(o.Desc.Options(), gopb.E_NonOmitempty).(bool)
+func fileOptions(o *protogen.File)  *gopb.FileOptions {
+	return proto.GetExtension(o.Desc.Options(), gopb.E_File).(*gopb.FileOptions)
 }

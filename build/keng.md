@@ -308,3 +308,7 @@ import github.com/user/p2
 
 ---go.mod
 github.com/user/p2
+
+# x86_64-w64-mingw32/bin/ld.exe: Error: export ordinal too large
+
+Go tool argument -buildmode=exe

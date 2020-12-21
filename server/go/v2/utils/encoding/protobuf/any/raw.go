@@ -9,7 +9,7 @@ import (
 type RawJson []byte
 
 func NewAny(v interface{}) RawJson {
-	data, err := json.Json.Marshal(v)
+	data, err := json.Standard.Marshal(v)
 	if err != nil {
 		log.Error(err)
 	}

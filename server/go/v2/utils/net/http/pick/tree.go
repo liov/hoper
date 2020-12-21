@@ -11,6 +11,8 @@ import (
 	"strings"
 	"unicode"
 	"unicode/utf8"
+
+	http2 "github.com/liov/hoper/go/v2/utils/net/http"
 )
 
 func min(a, b int) int {
@@ -76,9 +78,13 @@ const (
 
 type methodHandle struct {
 	method      string
-	middleware  HandlerFuncs
+	middleware  http2.HandlerFuncs
 	httpHandler http.Handler
 	handle      reflect.Value
+}
+
+func (mh *methodHandle) MarshalJSON() ([]byte, error) {
+	return []byte(`{"method":"` + mh.method + `"}`), nil
 }
 
 func getHandle(method string, mhs []*methodHandle) (mh *methodHandle) {
@@ -94,7 +100,7 @@ func getHandle(method string, mhs []*methodHandle) (mh *methodHandle) {
 			return mh
 		}
 	}
-	return nil
+	return &methodHandle{}
 }
 
 func handleValid(h1 http.Handler, h2 reflect.Value) bool {
@@ -102,7 +108,7 @@ func handleValid(h1 http.Handler, h2 reflect.Value) bool {
 }
 
 func (h *methodHandle) Valid() bool {
-	return h != nil && (h.httpHandler != nil || h.handle.IsValid())
+	return h.httpHandler != nil || h.handle.IsValid()
 }
 
 type node struct {
@@ -112,7 +118,7 @@ type node struct {
 	indices    []byte
 	cType      nodeType //if>3 wildChild,代替原来的wildChild
 	children   []*node
-	middleware []http.HandlerFunc
+	middleware http2.HandlerFuncs `json:"-"`
 	handle     []*methodHandle
 }
 
@@ -136,10 +142,15 @@ func (n *node) incrementChildPrio(pos int) int {
 
 // addRoute adds a node with the given handle to the path.
 // Not concurrency-safe!
-func (n *node) addRoute(method, path string, middleware []http.HandlerFunc, httpHandler http.Handler, handle reflect.Value) {
+func (n *node) addRoute(path string, mHandle *methodHandle) {
+	if mHandle == nil {
+		return
+	}
+	if mHandle.method == "" {
+		mHandle.method = MethodAny
+	}
 	fullPath := path
 	n.priority++
-	mHandle := &methodHandle{method, middleware, httpHandler, handle}
 
 	// Empty tree
 	if len(n.path) == 0 && len(n.indices) == 0 {
@@ -360,7 +371,7 @@ func (n *node) insertChild(path, fullPath string, handle *methodHandle) {
 }
 
 func (n *node) use(path string, middleware ...http.HandlerFunc) {
-	n.addRoute("", path, middleware, nil, reflect.Value{})
+	n.addRoute(path, &methodHandle{"", middleware, nil, reflect.Value{}})
 }
 
 //排序

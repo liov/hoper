@@ -22,8 +22,7 @@ func WithConfiguration(engine *gin.Engine, filename string) {
 		log.Fatalf("配置文件不存在：", err)
 	}
 
-	err = configor.New(&configor.Config{Debug: false}).
-		Load(&engine, filename) //"./config/config.toml"
+	err = configor.Load(engine, filename) //"./config/config.toml"
 	if err != nil {
 		log.Fatalf("配置错误: %v", err)
 	}

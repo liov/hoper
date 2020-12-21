@@ -3,12 +3,12 @@ Module = "test"
 # 命令行参数获取
 # Env = "dev"
 # 不需要初始化的函数
-NoInit = ["Cache","Apollo","Consul"]
+NoInit = ["Cache","Apollo","Etcd"]
 
 [nacos]
 Addr = "nacos.default"
 Group = "hoper"
-# DataId = "user"
+# DataId = "test"
 Watch  = false
 
 [gin]

@@ -12,6 +12,6 @@ import (
 func OpenApi(mux *gin.Engine, filePath string) {
 	_ = mime.AddExtensionType(".svg", "image/svg+xml")
 	apidoc.FilePath = filePath
-	mux.GET(apidoc.PrefixUri, handlerconv.FromStd(apidoc.ApiMod))
-	mux.GET(apidoc.PrefixUri+"{mod:path}", handlerconv.FromStd(apidoc.HttpHandle))
+	mux.GET(apidoc.PrefixUri[:len(apidoc.PrefixUri)-1], handlerconv.FromStd(apidoc.ApiMod))
+	mux.GET(apidoc.PrefixUri+"*mod", handlerconv.FromStd(apidoc.HttpHandle))
 }

@@ -85,6 +85,7 @@ import (
 	"strings"
 	"sync"
 
+	http2 "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 )
 
@@ -142,7 +143,7 @@ type Router struct {
 	maxParams  uint16
 
 	//前后调用
-	middleware HandlerFuncs
+	middleware http2.HandlerFuncs
 
 	// If enabled, adds the matched route path onto the http.Request context
 	// before invoking the handler.
@@ -307,7 +308,7 @@ func (r *Router) Handle(method, path string, middleware []http.HandlerFunc, hand
 		r.trees = new(node)
 	}
 
-	r.trees.addRoute(method, path, middleware, nil, handle)
+	r.trees.addRoute(path, &methodHandle{method, middleware, nil, handle})
 
 	// Update maxParams
 	if paramsCount := countParams(path); paramsCount+varsCount > r.maxParams {
@@ -345,7 +346,7 @@ func (r *Router) Handler(method, path string, handle ...http.HandlerFunc) {
 		r.trees = new(node)
 	}
 
-	r.trees.addRoute(method, path, handle[:len(handle)-1], handle[len(handle)-1], reflect.Value{})
+	r.trees.addRoute(path, &methodHandle{method,  handle[:len(handle)-1], handle[len(handle)-1], reflect.Value{}})
 
 	// Update maxParams
 	if paramsCount := countParams(path); paramsCount+varsCount > r.maxParams {
@@ -506,7 +507,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			// Try to fix the request path
 			if r.RedirectFixedPath {
 				fixedPath, found := root.findCaseInsensitivePath(
-					CleanPath(path),
+					http2.CleanPath(path),
 					req.Method,
 					r.RedirectTrailingSlash,
 				)

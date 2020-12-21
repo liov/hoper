@@ -2,6 +2,7 @@ package initialize
 
 import (
 	"flag"
+	"fmt"
 	"net"
 	"net/http"
 	"net/url"
@@ -89,11 +90,11 @@ func (init *Init) LoadConfig() *Init {
 	if _, err := os.Stat(InitConfig.ConfUrl); os.IsNotExist(err) {
 		log.Fatalf("配置错误: 请确保可执行文件和配置目录在同一目录下")
 	}
-	err := configor.New(&configor.Config{Debug: true}).
-		Load(&onceConfig, InitConfig.ConfUrl)
+	err := configor.Load(&onceConfig, InitConfig.ConfUrl)
 	if err != nil {
 		log.Fatalf("配置错误: %v", err)
 	}
+	fmt.Printf(`Load config from: %s\n`,InitConfig.ConfUrl)
 	init.AddConfig()
 	init.BasicConfig = onceConfig.BasicConfig
 	init.NoInit = onceConfig.NoInit
@@ -122,6 +123,7 @@ func (init *Init) LoadConfig() *Init {
 		DataId: onceConfig.Module,
 		Watch:  onceConfig.Nacos.Watch,
 	}
+	fmt.Printf("Configuration:\n  %#v\n", init)
 	return init
 }
 
@@ -268,6 +270,7 @@ func (init *Init) CloseDao() {
 }
 
 func (init *Init) UnmarshalAndSet(bytes []byte) {
+	log.Info(string(bytes))
 	init.Unmarshal(bytes)
 	init.Refresh()
 }

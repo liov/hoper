@@ -4,7 +4,6 @@ go 1.13
 
 require (
 	bou.ke/monkey v1.0.2
-	git.apache.org/thrift.git v0.13.0 // indirect
 	github.com/360EntSecGroup-Skylar/excelize/v2 v2.0.2
 	github.com/99designs/gqlgen v0.11.3
 	github.com/CloudyKit/jet/v3 v3.0.0 // indirect
@@ -13,7 +12,7 @@ require (
 	github.com/boombuler/barcode v1.0.0
 	github.com/brahma-adshonor/gohook v0.0.0-20200311033618-28b944a6fdfa // indirect
 	github.com/cenk/backoff v2.2.1+incompatible // indirect
-	github.com/cockroachdb/pebble v0.0.0-20201215172116-745f6c801513 // indirect
+	github.com/cockroachdb/pebble v0.0.0-20201215172116-745f6c801513
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
@@ -39,13 +38,11 @@ require (
 	github.com/gorilla/schema v1.1.0
 	github.com/gorilla/sessions v1.2.1
 	github.com/gorilla/websocket v1.4.2
-	github.com/graph-gophers/graphql-go v0.0.0-20200309224638-dae41bde9ef9
 	github.com/grpc-ecosystem/go-grpc-middleware v1.1.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.0.0-beta.4
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/json-iterator/go v1.1.10
-	github.com/julienschmidt/httprouter v1.3.0 // indirect
-	github.com/liov/protopatch2 v0.0.0-20200917092858-0c3cd79171e9
+	github.com/julienschmidt/httprouter v1.3.1-0.20200921135023-fe77dd05ab5a // indirect
 	github.com/lni/dragonboat v2.1.7+incompatible
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/markbates/goth v1.63.0
@@ -71,9 +68,10 @@ require (
 	go.uber.org/atomic v1.7.0
 	go.uber.org/zap v1.16.0
 	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b
-	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/tools v0.0.0-20200904185747-39188db58858
-	google.golang.org/genproto v0.0.0-20200808173500-a06252235341
+	golang.org/x/oauth2 v0.0.0-20201109201403-9fd604954f58
+	golang.org/x/tools v0.0.0-20201201161351-ac6f37ff4c2a
+	google.golang.org/api v0.36.0 // indirect
+	google.golang.org/genproto v0.0.0-20201201144952-b05cb90ed32e
 	google.golang.org/grpc v1.34.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v0.0.0-20200626030347-424195440776
 	google.golang.org/protobuf v1.25.0
@@ -87,6 +85,6 @@ require (
 
 replace (
 	github.com/cenkalti/backoff v2.2.1+incompatible => github.com/cenkalti/backoff/v4 v4.1.0
-	github.com/ugorji/go v1.1.4 => github.com/ugorji/go/codec v0.0.0-20190204201341-e444a5086c43
 	github.com/lni/dragonboat v2.1.7+incompatible => github.com/lni/dragonboat/v3 v3.2.8
+	github.com/ugorji/go v1.1.4 => github.com/ugorji/go/codec v0.0.0-20190204201341-e444a5086c43
 )

@@ -29,9 +29,6 @@ message Options {
 	// so a custom String() method can be implemented in its place.
 	optional string stringer_name = 30; // TODO: implement for messages
 
-	optional string cn = 40;
-
-	optional bool	no_prefix =50;
 }
 
 extend google.protobuf.MessageOptions {
@@ -48,12 +45,18 @@ extend google.protobuf.OneofOptions {
 
 extend google.protobuf.EnumOptions {
 	optional Options enum = 7001;
+	optional string cn = 7002;
 }
 
 extend google.protobuf.EnumValueOptions {
 	optional Options value = 7001;
 }
 
+message FileOptions{
+	optional bool non_omitempty = 1;
+	optional bool	no_enum_prefix = 10;
+}
+
 extend google.protobuf.FileOptions {
-	optional bool non_omitempty = 7001;
+	optional FileOptions file = 7001;
 }

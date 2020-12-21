@@ -105,7 +105,7 @@ func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*model.Si
 	user.Mail = req.Mail
 	user.Gender = model.Gender_GenderUnfilled
 	user.CreatedAt = time2.Format(time.Now())
-	user.LastActiveAt = user.CreatedAt
+	user.LastActivatedAt = user.CreatedAt
 	user.Role = model.Role_UserRoleNormal
 	user.Status = model.UserStatus_InActive
 	user.AvatarURL = modelconst.DefaultAvatar

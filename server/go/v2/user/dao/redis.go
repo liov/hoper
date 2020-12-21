@@ -29,7 +29,7 @@ func NewUserRedis() *UserRedis {
 // UserToRedis 将用户信息存到redis
 func (conn *UserRedis) UserToRedis(user *model.UserMainInfo) error {
 
-	UserString, err := json.Json.MarshalToString(user)
+	UserString, err := json.Standard.MarshalToString(user)
 	if err != nil {
 		return err
 	}
@@ -54,7 +54,7 @@ func (conn *UserRedis) UserFromRedis(userID uint64) (*model.UserMainInfo, error)
 		return nil, err
 	}
 	var user model.UserMainInfo
-	err = json.Json.UnmarshalFromString(userString, &user)
+	err = json.Standard.UnmarshalFromString(userString, &user)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (conn *UserRedis) UserFromRedis(userID uint64) (*model.UserMainInfo, error)
 
 func (conn *UserRedis) EditRedisUser(user *model.UserMainInfo) error {
 
-	UserString, err := json.Json.MarshalToString(user)
+	UserString, err := json.Standard.MarshalToString(user)
 	if err != nil {
 		return err
 	}

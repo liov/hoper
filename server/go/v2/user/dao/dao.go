@@ -6,7 +6,7 @@ import (
 
 	"github.com/cockroachdb/pebble"
 	"github.com/gomodule/redigo/redis"
-	"github.com/liov/hoper/go/v2/utils/cache"
+	"github.com/liov/hoper/go/v2/utils/dao/cache"
 	"gorm.io/gorm"
 )
 

@@ -1,7 +1,7 @@
 package initialize
 
 import (
-	"github.com/liov/hoper/go/v2/utils/cache"
+	"github.com/liov/hoper/go/v2/utils/dao/cache"
 )
 
 func (init *Init) P3Cache() cache.Cache {

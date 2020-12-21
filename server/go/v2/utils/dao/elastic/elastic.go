@@ -156,7 +156,7 @@ func query() {
 		for _, hit := range res.Hits.Hits {
 
 			var t Employee
-			err := json.Json.Unmarshal(*hit.Source, &t) //另外一种取数据的方法
+			err := json.Standard.Unmarshal(*hit.Source, &t) //另外一种取数据的方法
 			if err != nil {
 				fmt.Println("Deserialization failed")
 			}

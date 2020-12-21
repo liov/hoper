@@ -6,10 +6,12 @@ import "utils/proto/go/go.proto";
 option java_package = "xyz.hoper.protobuf.errorcode";
 option go_package = "github.com/liov/hoper/go/v2/utils/errorcode";
 option (gogo.enum_prefix_all) = false;
+option (go.file) = {no_enum_prefix:true};
 
 enum ErrCode {
-  option (go.enum) = {no_prefix:true,stringer_name: 'OrigString'};
+  option (go.enum) = {stringer_name: 'OrigString'};
   option (gogo.enum_jsonmarshal) = false;
+
   SUCCESS = 0 [(gogo.enumvalue_cn) = "成功"];
   Canceled = 1 [(gogo.enumvalue_cn) = "操作取消"];
   Unknown = 2 [(gogo.enumvalue_cn) = "未知错误"];

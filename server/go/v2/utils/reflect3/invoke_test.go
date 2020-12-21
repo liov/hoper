@@ -27,10 +27,10 @@ func TestInvokeByValues(t *testing.T) {
 	reflectinvoker.RegisterMethod(foo)
 	reflectinvoker.RegisterMethod(bar)
 	req := Request{FuncName: "InvokeFoo.FooFuncSwap", Params: []interface{}{"1", "2"}}
-	data, _ := json.Json.Marshal(req)
+	data, _ := json.Standard.Marshal(req)
 	resultJson := reflectinvoker.InvokeByJson(data)
 	result := Response{}
-	err := json.Json.Unmarshal(resultJson, &result)
+	err := json.Standard.Unmarshal(resultJson, &result)
 	if err != nil {
 		t.Log(err)
 	}
