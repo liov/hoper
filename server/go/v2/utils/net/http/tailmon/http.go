@@ -25,7 +25,7 @@ func (s *Server) Http() http.Handler {
 		}
 		if s.GatewayRegistr != nil {
 			gwmux := gateway.Gateway(s.GatewayRegistr)
-			mux.Any("/grpc/*path", handlerconv.FromStd(gwmux))
+			mux.NoRoute(handlerconv.FromStd(gwmux))// 因为httprouter的灵活性太差,一种围魏救赵的方法
 		}
 
 	}
