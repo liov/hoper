@@ -17,7 +17,7 @@ func commonHandler(w http.ResponseWriter, req *http.Request, handle reflect.Valu
 		params := make([]reflect.Value, handleNumIn)
 		for i := 0; i < handleNumIn; i++ {
 			params[i] = reflect.New(handleTyp.In(i).Elem())
-			if handleTyp.In(i).Implements(contextType) {
+			if handleTyp.In(i).Implements(claimsType) {
 				sess := params[i].Interface().(Claims)
 				sess.ParseToken(req)
 			} else {
@@ -39,12 +39,14 @@ func commonHandler(w http.ResponseWriter, req *http.Request, handle reflect.Valu
 			}
 		}
 		result := handle.Call(params)
+		header := w.Header()
+		header.Set("Content-Type", "application/json")
 		if !result[1].IsNil() {
 			json.NewEncoder(w).Encode(result[1].Interface())
 			return
 		}
+
 		if info, ok := result[0].Interface().(*http2.File); ok {
-			header := w.Header()
 			header.Set("Content-Type", "application/octet-stream")
 			header.Set("Content-Disposition", "attachment;filename="+info.Name)
 			io.Copy(w, info.File)

@@ -58,7 +58,7 @@ type Pair struct {
 	K, V string
 }
 
-type LogCallback func(string, string, []byte, int, []byte)
+type LogCallback func(string, string, []byte, int, []byte, time.Duration)
 
 // RequestParams ...
 type RequestParams struct {
@@ -113,7 +113,6 @@ func (res *ResponseBody) CheckError() error {
 
 // HTTPRequest create a HTTP request
 func (req *RequestParams) HTTPRequest(response interface{}) error {
-
 	method := req.method
 	url := req.url
 	if req.timeout != 0 {
@@ -121,7 +120,15 @@ func (req *RequestParams) HTTPRequest(response interface{}) error {
 		SetTimeout(req.timeout)
 	}
 	var body io.Reader
-	var reqBody []byte
+	var reqBody, respBytes []byte
+	var statusCode int
+	// 日志记录
+	defer func(now time.Time) {
+		if req.logger != nil {
+			req.logger(url, method, reqBody, statusCode, respBytes, time.Now().Sub(now))
+		}
+	}(time.Now())
+
 	var err error
 	if method == http.MethodGet {
 		url += "?" + getParam(req.Param)
@@ -160,19 +167,16 @@ func (req *RequestParams) HTTPRequest(response interface{}) error {
 
 	resp, err := client.Do(request)
 	if err != nil {
+		respBytes = strings2.ToBytes(err.Error())
 		return err
 	}
-	defer func() {
-		err = resp.Body.Close()
-	}()
+	defer resp.Body.Close()
 
-	respBytes, err := ioutil.ReadAll(resp.Body)
+	respBytes, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
-	if req.logger != nil {
-		req.logger(url, method, reqBody, resp.StatusCode, respBytes)
-	}
+	statusCode = resp.StatusCode
 	if resp.StatusCode != 200 {
 		return errors.New("status:" + resp.Status)
 	}

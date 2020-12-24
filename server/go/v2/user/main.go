@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/liov/hoper/go/v2/initialize"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
@@ -14,7 +13,8 @@ import (
 	"github.com/liov/hoper/go/v2/user/service"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/net/http/gin/oauth"
-	"github.com/liov/hoper/go/v2/utils/net/http/grpc/filter"
+	igrpc "github.com/liov/hoper/go/v2/utils/net/http/grpc"
+	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 	"github.com/liov/hoper/go/v2/utils/net/http/tailmon"
 	"google.golang.org/grpc"
 )
@@ -25,28 +25,24 @@ func main() {
 	s := tailmon.Server{
 		//为了可以自定义中间件
 		GRPCServer: func() *grpc.Server {
-			gs := grpc.NewServer(
-				//filter应该在最前
-				grpc.UnaryInterceptor(
-					grpc_middleware.ChainUnaryServer(
-						filter.UnaryServerInterceptor()...,
-					)),
-				grpc.StreamInterceptor(
-					grpc_middleware.ChainStreamServer(
-						filter.StreamServerInterceptor()...,
-					)),
-			)
+			gs := igrpc.DefaultGRPCServer(nil,nil)
 			model.RegisterUserServiceServer(gs, service.GetUserService())
+			model.RegisterOauthServiceServer(gs,service.GetOauthService())
 			return gs
 		}(),
 		GatewayRegistr: func(ctx context.Context, mux *runtime.ServeMux) {
 			if err := model.RegisterUserServiceHandlerServer(ctx, mux, service.GetUserService()); err != nil {
 				log.Fatal(err)
 			}
+			if err := model.RegisterOauthServiceHandlerServer(ctx, mux, service.GetOauthService()); err != nil {
+				log.Fatal(err)
+			}
 		},
 		GinHandle: func(app *gin.Engine) {
 			oauth.RegisterOauthServiceHandlerServer(app, service.GetOauthService())
 			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
+			pick.RegisterService(service.GetUserService())
+			pick.GrpcServiceToRestfulApi(app,service.NewContext,true,initialize.InitConfig.Module)
 		},
 		GraphqlResolve: model.NewExecutableSchema(model.Config{
 			Resolvers: &model.GQLServer{

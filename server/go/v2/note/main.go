@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 
-	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/liov/hoper/go/v2/initialize"
 	"github.com/liov/hoper/go/v2/note/conf"
@@ -11,7 +10,7 @@ import (
 	"github.com/liov/hoper/go/v2/note/service"
 	model "github.com/liov/hoper/go/v2/protobuf/note"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/net/http/grpc/filter"
+	igrpc "github.com/liov/hoper/go/v2/utils/net/http/grpc"
 	"github.com/liov/hoper/go/v2/utils/net/http/tailmon"
 	"google.golang.org/grpc"
 )
@@ -21,17 +20,7 @@ func main() {
 
 	s := tailmon.Server{
 		GRPCServer: func() *grpc.Server {
-			gs := grpc.NewServer(
-				//filter应该在最前
-				grpc.UnaryInterceptor(
-					grpc_middleware.ChainUnaryServer(
-						filter.UnaryServerInterceptor()...,
-					)),
-				grpc.StreamInterceptor(
-					grpc_middleware.ChainStreamServer(
-						filter.StreamServerInterceptor()...,
-					)),
-			)
+			gs := igrpc.DefaultGRPCServer(nil,nil)
 			model.RegisterNoteServiceServer(gs, service.NoteSvc)
 			return gs
 		}(),

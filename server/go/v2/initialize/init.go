@@ -132,10 +132,6 @@ func (init *Init) SetInit(conf Config, dao Dao) {
 	init.dao = dao
 }
 
-func NewInit(conf Config, dao Dao) *Init {
-	return &Init{conf: conf, dao: dao}
-}
-
 type NeedInit interface {
 	Custom()
 }

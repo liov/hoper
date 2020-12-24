@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
+	"github.com/liov/hoper/go/v2/httptpl/middle"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
@@ -31,11 +32,16 @@ type UserService struct {
 	model.UnimplementedUserServiceServer
 }
 
+func (*UserService) Service() (string, string, []http.HandlerFunc) {
+	return "用户相关", "/api/user", []http.HandlerFunc{middle.Log}
+}
+
+
 func GetUserService() *UserService {
 	if userSvc != nil {
 		return userSvc
 	}
-	userSvc = &UserService{}
+	userSvc = new(UserService)
 	return userSvc
 }
 
@@ -473,4 +479,8 @@ func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListR
 	}
 	rep.Details = logs
 	return rep, nil
+}
+
+func (*UserService) GetTest(ctx context.Context, req *model.GetReq) (*model.GetRep, error) {
+	return &model.GetRep{Code: uint32(req.Id), Message: "测试"}, nil
 }

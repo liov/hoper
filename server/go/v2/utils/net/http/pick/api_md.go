@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
-	"strconv"
 	"strings"
 	"time"
 
@@ -21,19 +20,19 @@ import (
 )
 
 func OpenApi(mux *Router, filePath, modName string) {
-	apidoc.WriteToFile(apidoc.FilePath, modName)
-	doc(apidoc.FilePath, modName)
-	_ = mime.AddExtensionType(".svg", "image/svg+xml")
 	apidoc.FilePath = filePath
+	md(filePath, modName)
+	_ = mime.AddExtensionType(".svg", "image/svg+xml")
 	mux.Handler(http.MethodGet, "/api-doc/md", func(w http.ResponseWriter, req *http.Request) {
 		http.ServeFile(w, req, filePath+"apidoc.md")
 	})
+	swagger(filePath, modName)
 	mux.Handler(http.MethodGet, "/api-doc/swagger", apidoc.HttpHandle)
 	mux.Handler(http.MethodGet, "/api-doc/swagger.json", apidoc.HttpHandle)
 }
 
 //有swagger,有没有必要做
-func doc(filePath, modName string) {
+func md(filePath, modName string) {
 	buf, err := genFile(filePath, modName)
 	if err != nil {
 		log.Println(err)
@@ -54,10 +53,8 @@ func doc(filePath, modName string) {
 			if method.Type.NumIn() < 2 || method.Type.NumOut() != 2 {
 				continue
 			}
-			methodInfo := getMethodInfo(value.Method(j))
-			methodInfo.path, methodInfo.version = parseMethodName(method.Name)
-			methodInfo.path = preUrl + "/" + methodInfo.path
-			methodInfo.path = strings.Replace(methodInfo.path, "${version}", "v"+strconv.Itoa(methodInfo.version), 1)
+			methodInfo := getMethodInfo(value.Method(j),preUrl)
+
 			//title
 			if methodInfo.deprecated != nil {
 				fmt.Fprintf(buf, "## ~~%s-v%d(废弃)(`%s`)~~  \n", methodInfo.title, methodInfo.version, methodInfo.path)
