@@ -7,6 +7,8 @@ import (
 
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
+	"github.com/liov/hoper/go/v2/utils/strings2"
+	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -22,8 +24,7 @@ func filter(
 ) (resp interface{}, err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			log.CallTwo.Errorf("%v panic: %v", info, r)
-			debug.PrintStack()
+			log.CallTwo.With(zap.String("stack",strings2.ToSting(debug.Stack()))).Errorf("%v panic: %v", info, r)
 			err = errorcode.SysError.GRPCErr()
 		}
 		//不能添加错误处理，除非所有返回的结构相同

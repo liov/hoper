@@ -78,15 +78,15 @@ package pick
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"net/http"
 	"reflect"
-	"strconv"
 	"strings"
 	"sync"
 
+	"github.com/liov/hoper/go/v2/utils/concolor"
 	http2 "github.com/liov/hoper/go/v2/utils/net/http"
-	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
+	"github.com/liov/hoper/go/v2/utils/strings2"
 )
 
 // Param is a single URL parameter, consisting of a key and a value.
@@ -232,49 +232,7 @@ func New(genApi bool, modName string) *Router {
 		HandleOPTIONS:          true,
 		middleware:             make([]http.HandlerFunc, 0),
 	}
-	methods := make(map[string]struct{})
-	for _, v := range svcs {
-		describe, preUrl, middleware := v.Service()
-		value := reflect.ValueOf(v)
-		if value.Kind() != reflect.Ptr {
-			log.Fatal("必须传入指针")
-		}
-
-		for j := 0; j < value.NumMethod(); j++ {
-			method := value.Type().Method(j)
-			if method.Type.NumIn() < 2 || method.Type.NumOut() != 2 {
-				continue
-			}
-			methodInfo := getMethodInfo(value.Method(j))
-			if methodInfo == nil {
-				log.Fatalf("%s未注册", method.Name)
-			}
-			methodInfo.path, methodInfo.version = parseMethodName(method.Name)
-			preUrl = strings.Replace(preUrl, "${version}", "v"+strconv.Itoa(methodInfo.version), 1)
-			methodInfo.path = preUrl + "/" + methodInfo.path
-			if methodInfo.path == "" || methodInfo.method == "" || methodInfo.title == "" || methodInfo.createlog.version == "" {
-				log.Fatal("接口路径,方法,描述,创建日志均为必填")
-			}
-
-			router.Handle(methodInfo.method, methodInfo.path, methodInfo.middleware, value.Method(j))
-			methods[methodInfo.method] = struct{}{}
-			Log(methodInfo.method, methodInfo.path, methodInfo.title)
-			if genApi {
-				methodInfo.Api(value.Method(j).Type(), describe, value.Type().Name())
-			}
-		}
-		router.GroupUse(preUrl, middleware...)
-	}
-	if genApi {
-		apidoc.WriteToFile(apidoc.FilePath, modName)
-	}
-	allowed := make([]string, 0, 9)
-	for k := range methods {
-		allowed = append(allowed, k)
-	}
-	router.globalAllowed = allowedMethod(allowed)
-
-	registered()
+	register(router, genApi, modName)
 	return router
 }
 
@@ -346,7 +304,7 @@ func (r *Router) Handler(method, path string, handle ...http.HandlerFunc) {
 		r.trees = new(node)
 	}
 
-	r.trees.addRoute(path, &methodHandle{method,  handle[:len(handle)-1], handle[len(handle)-1], reflect.Value{}})
+	r.trees.addRoute(path, &methodHandle{method, handle[:len(handle)-1], handle[len(handle)-1], reflect.Value{}})
 
 	// Update maxParams
 	if paramsCount := countParams(path); paramsCount+varsCount > r.maxParams {
@@ -526,4 +484,11 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	} else {
 		http.NotFound(w, req)
 	}
+}
+
+func Log(method, path, title string) {
+	fmt.Printf(" %s\t %s %s\t %s\n",
+		concolor.Green("API:"),
+		concolor.Yellow(strings2.FormatLen(method, 6)),
+		concolor.Blue(strings2.FormatLen(path, 50)), concolor.Purple(title))
 }

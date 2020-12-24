@@ -68,7 +68,7 @@ func (*UserService) Device(ctx context.Context) *model.UserDeviceInfo {
 	md, _ := metadata.FromIncomingContext(ctx)
 	//Device-Info:device-osInfo-appCode-appVersion
 	deviceInfo := md.Get("device-info")
-	if deviceInfo[0] != "" {
+	if len(deviceInfo)>0 && deviceInfo[0] != "" {
 		infos := strings.Split(deviceInfo[0], "-")
 		if len(infos) == 4 {
 			info.Device = infos[0]
@@ -80,11 +80,11 @@ func (*UserService) Device(ctx context.Context) *model.UserDeviceInfo {
 	//area:xxx
 	//location:1.23456,2.123456
 	location := md.Get("location")
-	if location[0] != "" {
+	if len(location)>0 && location[0] != "" {
 		info.Area, _ = url.PathUnescape(location[0])
 	}
 
-	if location[1] != "" {
+	if len(location)>1 && location[1] != "" {
 		infos := strings.Split(location[1], ",")
 		if len(infos) == 2 {
 			info.Lng = infos[0]
@@ -93,12 +93,26 @@ func (*UserService) Device(ctx context.Context) *model.UserDeviceInfo {
 	}
 
 	userAgent := md.Get("user-agent")
-	if userAgent[0] != "" {
+	if len(userAgent)>0 && userAgent[0] != "" {
 		info.UserAgent = userAgent[0]
 	}
 	ip := md.Get("x-forwarded-for")
-	if ip[0] != "" {
+	if len(ip)>0 && ip[0] != "" {
 		info.IP = ip[0]
 	}
 	return &info
+}
+
+type authKey struct{}
+
+// NewContext returns a new Context that carries value u.
+func NewContext(r *http.Request) context.Context {
+	user, _ := Auth(r)
+	return context.WithValue(r.Context(), authKey{}, user)
+}
+
+// FromContext returns the User value stored in ctx, if any.
+func FromContext(ctx context.Context) (*model.UserMainInfo, bool) {
+	user, ok := ctx.Value(authKey{}).(*model.UserMainInfo)
+	return user, ok
 }

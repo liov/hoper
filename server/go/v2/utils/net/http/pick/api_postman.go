@@ -27,7 +27,7 @@ type PMRequest struct {
 
 type PMUrl struct {
 	Raw      string    `json:"raw"`
-	Protocal string    `json:"protocal"`
+	Protocol string    `json:"protocol"`
 	Host     []string  `json:"host"`
 	Path     []string  `json:"path"`
 	Query    []PMQuery `json:"query"`

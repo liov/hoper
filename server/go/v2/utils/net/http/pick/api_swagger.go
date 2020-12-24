@@ -1,97 +1,39 @@
 package pick
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"reflect"
 	"strings"
 
 	"github.com/go-openapi/spec"
-	"github.com/liov/hoper/go/v2/utils/concolor"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	"github.com/liov/hoper/go/v2/utils/reflect3"
-	"github.com/liov/hoper/go/v2/utils/strings2"
 )
+func swagger(filePath, modName string) {
+	for _, v := range svcs {
+		describe, preUrl, _ := v.Service()
+		value := reflect.ValueOf(v)
+		if value.Kind() != reflect.Ptr {
+			log.Fatal("必须传入指针")
+		}
 
-var isRegistered = false
-
-type apiInfo struct {
-	path, method, title string
-	version             int
-	changelog           []changelog
-	createlog           changelog
-	deprecated          *changelog
-	middleware          []http.HandlerFunc
-}
-
-type changelog struct {
-	version, auth, date, log string
-}
-
-func Api(f func() interface{}) {
-	if !isRegistered {
-		panic(f())
+		for j := 0; j < value.NumMethod(); j++ {
+			method := value.Type().Method(j)
+			if method.Type.NumIn() < 2 || method.Type.NumOut() != 2 {
+				continue
+			}
+			methodInfo := getMethodInfo(value.Method(j),preUrl)
+			if methodInfo.path == "" || methodInfo.method == "" || methodInfo.title == "" || methodInfo.createlog.version == "" {
+				log.Fatal("接口路径,方法,描述,创建日志均为必填")
+			}
+			Swagger(methodInfo, value.Method(j).Type(), describe, value.Type().Name())
+		}
 	}
+	apidoc.WriteToFile(filePath, modName)
 }
 
-func Path(p string) *apiInfo {
-	return &apiInfo{path: p}
-}
-
-func Method(m string) *apiInfo {
-	return &apiInfo{method: m}
-}
-
-func (api *apiInfo) Method(m string) *apiInfo {
-	api.method = m
-	return api
-}
-
-func (api *apiInfo) ChangeLog(v, auth, date, log string) *apiInfo {
-	api.changelog = append(api.changelog, changelog{v, auth, date, log})
-	return api
-}
-
-func (api *apiInfo) CreateLog(v, auth, date, log string) *apiInfo {
-	if api.createlog.version != "" {
-		panic("创建记录只允许一条")
-	}
-	api.createlog = changelog{v, auth, date, log}
-	return api
-}
-
-func (api *apiInfo) Title(d string) *apiInfo {
-	api.title = d
-	return api
-}
-
-func (api *apiInfo) Version(v int) *apiInfo {
-	api.version = v
-	return api
-}
-
-func (api *apiInfo) Deprecated(v, auth, date, log string) *apiInfo {
-	api.deprecated = &changelog{v, auth, date, log}
-	return api
-}
-
-func (api *apiInfo) Middleware(m ...http.HandlerFunc) *apiInfo {
-	api.middleware = m
-	return api
-}
-
-//获取负责人
-func (api *apiInfo) getPrincipal() string {
-	if len(api.changelog) == 0 {
-		return api.createlog.auth
-	}
-	if api.deprecated != nil {
-		return api.deprecated.auth
-	}
-	return api.changelog[len(api.changelog)-1].auth
-}
-
-func (api *apiInfo) Api(methodType reflect.Type, tag, dec string) {
+func Swagger(api *apiInfo,methodType reflect.Type, tag, dec string) {
 	doc := apidoc.GetDoc()
 	var pathItem *spec.PathItem
 	if doc.Paths != nil && doc.Paths.Paths != nil {
@@ -110,7 +52,7 @@ func (api *apiInfo) Api(methodType reflect.Type, tag, dec string) {
 	numIn := methodType.NumIn()
 
 	if numIn == 2 {
-		if !methodType.In(1).Implements(contextType) {
+		if !methodType.In(1).Implements(claimsType) {
 			if api.method == http.MethodGet {
 				InType := methodType.In(1).Elem()
 				for j := 0; j < InType.NumField(); j++ {
@@ -209,7 +151,7 @@ func DefinitionsApi(definitions map[string]spec.Schema, v interface{}, exclude [
 		switch fieldType.Kind() {
 		case reflect.Struct:
 			typ = "object"
-			v = reflect.ValueOf(v).Elem().Field(i).Addr().Interface()
+			v = reflect.New(fieldType).Interface()
 			subFieldName = fieldType.Name()
 		case reflect.Ptr:
 			typ = "object"
@@ -219,16 +161,20 @@ func DefinitionsApi(definitions map[string]spec.Schema, v interface{}, exclude [
 			reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 			typ = "integer"
 		case reflect.Array, reflect.Slice:
-			typ = "array"
-			v = reflect.New(reflect3.GetDereferenceType(fieldType)).Interface()
-			subFieldName = reflect3.GetDereferenceType(fieldType).Name()
+			subType:=reflect3.GetDereferenceType(fieldType)
+			subFieldName = subType.Name()
+			typ = "array " + subFieldName
+			switch subType.Kind() {
+			case reflect.Struct,reflect.Ptr,reflect.Array, reflect.Slice:
+				v = reflect.New(subType).Interface()
+				typ = "array"
+			}
 		case reflect.Float32, reflect.Float64:
 			typ = "number"
 		case reflect.String:
 			typ = "string"
 		case reflect.Bool:
 			typ = "boolean"
-
 		}
 		subSchema := spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -239,7 +185,7 @@ func DefinitionsApi(definitions map[string]spec.Schema, v interface{}, exclude [
 			subSchema.Ref = spec.MustCreateRef("#/definitions/" + subFieldName)
 			DefinitionsApi(definitions, v, nil)
 		}
-		if typ == "array" {
+		if typ == "array"{
 			subSchema.Items = new(spec.SchemaOrArray)
 			subSchema.Items.Schema = &spec.Schema{}
 			subSchema.Items.Schema.Ref = spec.MustCreateRef("#/definitions/" + subFieldName)
@@ -248,11 +194,4 @@ func DefinitionsApi(definitions map[string]spec.Schema, v interface{}, exclude [
 		schema.Properties[json] = subSchema
 	}
 	definitions[body.Name()] = schema
-}
-
-func Log(method, path, title string) {
-	fmt.Printf(" %s\t %s %s\t %s\n",
-		concolor.Green("API:"),
-		concolor.Yellow(strings2.FormatLen(method, 6)),
-		concolor.Blue(strings2.FormatLen(path, 50)), concolor.Purple(title))
 }

@@ -1,4 +1,4 @@
-package smap
+package sync
 
 import "sync"
 
