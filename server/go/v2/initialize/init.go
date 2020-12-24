@@ -123,7 +123,7 @@ func (init *Init) LoadConfig() *Init {
 		DataId: onceConfig.Module,
 		Watch:  onceConfig.Nacos.Watch,
 	}
-	fmt.Printf("Configuration:\n  %#v\n", init)
+	log.Debugf("Configuration:\n  %#v\n", init)
 	return init
 }
 
@@ -266,7 +266,7 @@ func (init *Init) CloseDao() {
 }
 
 func (init *Init) UnmarshalAndSet(bytes []byte) {
-	log.Info(string(bytes))
+	log.Debug(string(bytes))
 	init.Unmarshal(bytes)
 	init.Refresh()
 }

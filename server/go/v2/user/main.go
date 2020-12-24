@@ -22,7 +22,7 @@ import (
 func main() {
 	//配置初始化应该在第一位
 	defer initialize.Start(conf.Conf, dao.Dao)()
-	s := tailmon.Server{
+	(&tailmon.Server{
 		//为了可以自定义中间件
 		GRPCServer: func() *grpc.Server {
 			gs := igrpc.DefaultGRPCServer(nil,nil)
@@ -49,6 +49,5 @@ func main() {
 				UserService:  service.GetUserService(),
 				OauthService: service.GetOauthService(),
 			}}),
-	}
-	s.Start()
+	}).Start()
 }

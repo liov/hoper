@@ -127,7 +127,7 @@ func (s *Server) Serve() {
 		log.Info("重启服务")
 		cs()
 	}()
-	log.Infof("listening%v", server.Addr)
+	log.Debugf("listening%v", server.Addr)
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("failed to serve: %v", err)
 	}
