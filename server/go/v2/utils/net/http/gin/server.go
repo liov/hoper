@@ -18,7 +18,6 @@ func Http(confPath,apiPath string,ginHandle func(engine *gin.Engine)) *gin.Engin
 	middleware.SetLog(r, logger, false)
 	r.Use(gin.Recovery())
 
-	OpenApi(r, apiPath)
 	r.Any("/debug/*path", handlerconv.FromStd(http2.Debug()))
 	if ginHandle != nil {
 		ginHandle(r)

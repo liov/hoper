@@ -21,7 +21,6 @@ import (
 	"github.com/liov/hoper/go/v2/utils/log"
 	gin_build "github.com/liov/hoper/go/v2/utils/net/http/gin"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"
-	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 	"go.uber.org/zap"
 	"golang.org/x/net/http2"
@@ -43,10 +42,7 @@ func (s *Server) httpHandler() http.HandlerFunc {
 	if s.GinHandle != nil {
 		ginServer = gin_build.Http(initialize.InitConfig.ConfUrl, "../protobuf/api/", s.GinHandle)
 	}
-	var pickServer *pick.Router
-	if s.PickHandle != nil {
-		pickServer = pick.New(false, initialize.InitConfig.Module)
-	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		now := time.Now()
 		/*		var result bytes.Buffer
@@ -55,14 +51,15 @@ func (s *Server) httpHandler() http.HandlerFunc {
 		body, _ := ioutil.ReadAll(r.Body)
 		r.Body = ioutil.NopCloser(bytes.NewReader(body))
 		runtime := r.Header.Get("Runtime")
+		if runtime == ""{
+			runtime = r.URL.Query().Get("runtime")
+		}
 		// 根据header判断走哪个runtime 而不是gin统一代理
 		if gatewayServer != nil && runtime == "gateway" {
 			gatewayServer.ServeHTTP(recorder, r)
 		} else if graphqlServer != nil && runtime == "graphql" {
 			graphqlServer.ServeHTTP(recorder, r)
-		} else if pickServer != nil && runtime == "pick" {
-			pickServer.ServeHTTP(recorder, r)
-		} else {
+		}else {
 			ginServer.ServeHTTP(recorder, r)
 		}
 
@@ -151,7 +148,6 @@ type Server struct {
 	GRPCServer     *grpc.Server
 	GatewayRegistr gateway.GatewayHandle
 	GinHandle      func(engine *gin.Engine)
-	PickHandle     func(engine *pick.Router)
 	GraphqlResolve graphql.ExecutableSchema
 }
 
