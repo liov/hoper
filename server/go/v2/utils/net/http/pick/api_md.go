@@ -23,12 +23,12 @@ func OpenApi(mux *Router, filePath, modName string) {
 	apidoc.FilePath = filePath
 	md(filePath, modName)
 	_ = mime.AddExtensionType(".svg", "image/svg+xml")
-	mux.Handler(http.MethodGet, "/api-doc/md", func(w http.ResponseWriter, req *http.Request) {
+	mux.Handler(http.MethodGet,  apidoc.PrefixUri+"md/*file", func(w http.ResponseWriter, req *http.Request) {
 		http.ServeFile(w, req, filePath+"apidoc.md")
 	})
 	swagger(filePath, modName)
-	mux.Handler(http.MethodGet, "/api-doc/swagger", apidoc.HttpHandle)
-	mux.Handler(http.MethodGet, "/api-doc/swagger.json", apidoc.HttpHandle)
+	mux.Handler(http.MethodGet,apidoc.PrefixUri[:len(apidoc.PrefixUri)-1], apidoc.ApiMod)
+	mux.Handler(http.MethodGet, apidoc.PrefixUri+"swagger/*file", apidoc.HttpHandle)
 }
 
 //有swagger,有没有必要做

@@ -42,8 +42,10 @@ func mock(value reflect.Value, typMap map[reflect.Type]int) {
 			return
 		}
 		typMap[typ] = typMap[typ] + 1
-		if value.IsNil() {
+		if value.IsNil() && value.CanSet() {
 			value.Set(reflect.New(typ.Elem()))
+		}else {
+			return
 		}
 		mock(value.Elem(), typMap)
 	case reflect.Struct:

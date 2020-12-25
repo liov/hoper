@@ -42,10 +42,7 @@ func main() {
 		GinHandle: func(app *gin.Engine) {
 			oauth.RegisterOauthServiceHandlerServer(app, service.GetOauthService())
 			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
-			pick.GrpcServiceToRestfulApi(app,service.AuthContext,true,initialize.InitConfig.Module)
-		},
-		PickHandle: func(router *pick.Router) {
-			router.ServeFiles("/static", "E:/")
+			pick.Gin(app,true,initialize.InitConfig.Module)
 		},
 		GraphqlResolve: model.NewExecutableSchema(model.Config{
 			Resolvers: &model.GQLServer{
