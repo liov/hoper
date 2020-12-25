@@ -2,10 +2,10 @@ package pick
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"reflect"
 
+	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 )
 
@@ -52,10 +52,10 @@ func register(router *Router, genApi bool, modName string) {
 
 		for j := 0; j < value.NumMethod(); j++ {
 			method := value.Type().Method(j)
-			if method.Type.NumIn() < 2 || method.Type.NumOut() != 2 {
+			methodInfo := getMethodInfo(&method, preUrl)
+			if methodInfo == nil{
 				continue
 			}
-			methodInfo := getMethodInfo(value.Method(j), preUrl)
 			if methodInfo.path == "" || methodInfo.method == "" || methodInfo.title == "" || methodInfo.createlog.version == "" {
 				log.Fatal("接口路径,方法,描述,创建日志均为必填")
 			}

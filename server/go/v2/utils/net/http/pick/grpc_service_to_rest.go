@@ -33,12 +33,11 @@ func GrpcServiceToRestfulApi(engine *gin.Engine, authCtx AuthCtx, genApi bool, m
 		group := engine.Group(preUrl, handlerconv.Convert(middleware)...)
 		for j := 0; j < value.NumMethod(); j++ {
 			method := value.Type().Method(j)
-			if method.Type.NumIn() < 3 || method.Type.NumOut() != 2 {
-				continue
-			}
 			methodType := method.Type
 			methodValue := method.Func
-			if !methodType.In(1).Implements(contextType) || !methodType.Out(1).Implements(errorType) {
+			if method.Type.NumIn() < 3 || method.Type.NumOut() != 2 ||
+				!methodType.In(1).Implements(contextType) ||
+				!methodType.Out(1).Implements(errorType){
 				continue
 			}
 

@@ -1,6 +1,7 @@
 package pick
 
 import (
+	"errors"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -82,44 +83,51 @@ func (api *apiInfo) getPrincipal() string {
 
 
 //简直就是精髓所在，真的是脑洞大开才能想到
-func getMethodInfo(fv reflect.Value,preUrl string) (info *apiInfo) {
+func getMethodInfo(method *reflect.Method,preUrl string) (info *apiInfo) {
 	defer func() {
 		if err := recover(); err != nil {
 			if v, ok := err.(*apiInfo); ok {
 				info = v
-				if info.version == 0 {
-					info.version = 1
-				}
-				_, info.version = parseMethodName(fv.Type().Name())
+				_, info.version = parseMethodName(method.Name)
 				info.path = preUrl + "/v" + strconv.Itoa(info.version) + info.path
-			} else {
-				log.Panic(err)
 			}
 		}
 	}()
-	methodType := fv.Type()
-	params := make([]reflect.Value, 0, fv.Type().NumIn())
+	methodValue:=method.Func
+	methodType := methodValue.Type()
 	numIn := methodType.NumIn()
 	numOut := methodType.NumOut()
+	var err error
+	defer func() {
+		if err!=nil{
+			log.Debugf("%s %s 未注册:%v",preUrl,method.Name,err)
+		}
+	}()
 	if numIn == 1 {
-		panic("method至少一个参数且参数必须实现Claims接口")
+		err = errors.New("method至少一个参数且参数必须实现Claims接口")
+		return
 	}
-	if numIn > 2 {
-		panic("method参数最多为两个")
+	if numIn > 3 {
+		err = errors.New("method参数最多为两个")
+		return
 	}
 	if numOut != 2 {
-		panic("method返回值必须为两个")
+		err =errors.New("method返回值必须为两个")
+		return
 	}
-	if !methodType.In(0).Implements(claimsType) {
-		panic("service第一个参数必须实现Claims接口")
+	if !methodType.In(1).Implements(claimsType) {
+		err = errors.New("service第一个参数必须实现Claims接口")
+		return
 	}
 	if !methodType.Out(1).Implements(errorType) {
-		panic("service第二个返回值必须为error类型")
+		err = errors.New("service第二个返回值必须为error类型")
+		return
 	}
+	params := make([]reflect.Value, 0, numIn)
 	for i := 0; i < numIn; i++ {
 		params = append(params, reflect.New(methodType.In(i).Elem()))
 	}
-	fv.Call(params)
+	methodValue.Call(params)
 	return nil
 }
 
