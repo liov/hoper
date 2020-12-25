@@ -1,6 +1,7 @@
 package tailmon
 
 import (
+	"bytes"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -43,7 +44,7 @@ func (s *Server) httpHandler() http.HandlerFunc {
 		ginServer = gin_build.Http(initialize.InitConfig.ConfUrl, "../protobuf/api/", s.GinHandle)
 	}
 	var pickServer *pick.Router
-	if s.PickHandle !=nil{
+	if s.PickHandle != nil {
 		pickServer = pick.New(false, initialize.InitConfig.Module)
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -51,20 +52,18 @@ func (s *Server) httpHandler() http.HandlerFunc {
 		/*		var result bytes.Buffer
 				rsp := io.MultiWriter(w, &result)*/
 		recorder := httptest.NewRecorder()
+		body, _ := ioutil.ReadAll(r.Body)
+		r.Body = ioutil.NopCloser(bytes.NewReader(body))
+		runtime := r.Header.Get("Runtime")
 		// 根据header判断走哪个runtime 而不是gin统一代理
-		if gatewayServer != nil && r.Header.Get("Runtime") == "gateway" {
+		if gatewayServer != nil && runtime == "gateway" {
 			gatewayServer.ServeHTTP(recorder, r)
-			return
-		}else if graphqlServer != nil && r.Header.Get("Runtime") == "graphql" {
+		} else if graphqlServer != nil && runtime == "graphql" {
 			graphqlServer.ServeHTTP(recorder, r)
-			return
-		}else {
+		} else if pickServer != nil && runtime == "pick" {
+			pickServer.ServeHTTP(recorder, r)
+		} else {
 			ginServer.ServeHTTP(recorder, r)
-		}
-
-		if recorder.Code == http.StatusNotFound && pickServer !=nil {
-			recorder = httptest.NewRecorder()
-			pickServer.ServeHTTP(recorder,r)
 		}
 
 		// 从 recorder 中提取记录下来的 Response Header，设置为 ResponseWriter 的 Header
@@ -81,7 +80,11 @@ func (s *Server) httpHandler() http.HandlerFunc {
 			w.Write(recorder.Body.Bytes())
 		}
 
-		AccessLog(strings2.ToSting(recorder.Body.Bytes()), r, "Cookie", now)
+		(&AccessLog{
+			strings2.ToSting(recorder.Body.Bytes()),
+			strings2.ToSting(body),
+			"Cookie", now,r,
+		}).log()
 	}
 }
 
@@ -185,24 +188,29 @@ func ReStart() {
 	stop <- struct{}{}
 }
 
-func AccessLog(resp string, r *http.Request, authKey string, start time.Time) {
+type AccessLog struct {
+	resp,body,authKey string
+	start time.Time
+	r *http.Request
+}
+
+func (a *AccessLog) log() {
 	//参数处理
 	var param string
-	if r.Method == "GET" {
-		param = r.URL.RawQuery
+	if a.r.Method == http.MethodGet {
+		param = a.r.URL.RawQuery
 	} else {
-		rawData, _ := ioutil.ReadAll(r.Body)
-		param = strings2.ToSting(rawData)
+		param = a.body
 	}
 	//头信息处理
 	//获取请求头的报文信息
-	authHeader := r.Header.Get(authKey)
+	authHeader := a.r.Header.Get(a.authKey)
 
 	log.Default.With(
-		zap.String("interface", r.RequestURI),
+		zap.String("interface", a.r.RequestURI),
 		zap.String("param", param),
-		zap.Duration("processTime", time.Now().Sub(start)),
-		zap.String("result", resp),
+		zap.Duration("processTime", time.Now().Sub(a.start)),
+		zap.String("result", a.resp),
 		zap.String("other", authHeader),
 		zap.String("source", initialize.InitConfig.Module),
 	).Info()
