@@ -50,11 +50,10 @@ func md(filePath, modName string) {
 		value := reflect.ValueOf(v)
 		for j := 0; j < value.NumMethod(); j++ {
 			method := value.Type().Method(j)
-			if method.Type.NumIn() < 2 || method.Type.NumOut() != 2 {
+			methodInfo := getMethodInfo(&method,preUrl)
+			if methodInfo == nil{
 				continue
 			}
-			methodInfo := getMethodInfo(value.Method(j),preUrl)
-
 			//title
 			if methodInfo.deprecated != nil {
 				fmt.Fprintf(buf, "## ~~%s-v%d(废弃)(`%s`)~~  \n", methodInfo.title, methodInfo.version, methodInfo.path)

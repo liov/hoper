@@ -20,6 +20,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/log"
 	gin_build "github.com/liov/hoper/go/v2/utils/net/http/gin"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"
+	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 	"go.uber.org/zap"
 	"golang.org/x/net/http2"
@@ -41,6 +42,10 @@ func (s *Server) httpHandler() http.HandlerFunc {
 	if s.GinHandle != nil {
 		ginServer = gin_build.Http(initialize.InitConfig.ConfUrl, "../protobuf/api/", s.GinHandle)
 	}
+	var pickServer *pick.Router
+	if s.PickHandle !=nil{
+		pickServer = pick.New(false, initialize.InitConfig.Module)
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		now := time.Now()
 		/*		var result bytes.Buffer
@@ -50,12 +55,18 @@ func (s *Server) httpHandler() http.HandlerFunc {
 		if gatewayServer != nil && r.Header.Get("Runtime") == "gateway" {
 			gatewayServer.ServeHTTP(recorder, r)
 			return
-		}
-		if graphqlServer != nil && r.Header.Get("Runtime") == "graphql" {
+		}else if graphqlServer != nil && r.Header.Get("Runtime") == "graphql" {
 			graphqlServer.ServeHTTP(recorder, r)
 			return
+		}else {
+			ginServer.ServeHTTP(recorder, r)
 		}
-		ginServer.ServeHTTP(recorder, r)
+
+		if recorder.Code == http.StatusNotFound && pickServer !=nil {
+			recorder = httptest.NewRecorder()
+			pickServer.ServeHTTP(recorder,r)
+		}
+
 		// 从 recorder 中提取记录下来的 Response Header，设置为 ResponseWriter 的 Header
 		for key, value := range recorder.Header() {
 			for _, val := range value {
@@ -137,6 +148,7 @@ type Server struct {
 	GRPCServer     *grpc.Server
 	GatewayRegistr gateway.GatewayHandle
 	GinHandle      func(engine *gin.Engine)
+	PickHandle     func(engine *pick.Router)
 	GraphqlResolve graphql.ExecutableSchema
 }
 
@@ -174,8 +186,6 @@ func ReStart() {
 }
 
 func AccessLog(resp string, r *http.Request, authKey string, start time.Time) {
-	//接口名称
-	_interface := r.Host + r.URL.Path
 	//参数处理
 	var param string
 	if r.Method == "GET" {
@@ -189,7 +199,7 @@ func AccessLog(resp string, r *http.Request, authKey string, start time.Time) {
 	authHeader := r.Header.Get(authKey)
 
 	log.Default.With(
-		zap.String("interface", _interface),
+		zap.String("interface", r.RequestURI),
 		zap.String("param", param),
 		zap.Duration("processTime", time.Now().Sub(start)),
 		zap.String("result", resp),

@@ -9,17 +9,18 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
-	"github.com/liov/hoper/go/v2/httptpl/middle"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/protobuf/utils/response"
 	"github.com/liov/hoper/go/v2/user/conf"
 	"github.com/liov/hoper/go/v2/user/dao"
+	"github.com/liov/hoper/go/v2/user/middle"
 	modelconst "github.com/liov/hoper/go/v2/user/model"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/net/http/auth/jwt"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"
+	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 	"github.com/liov/hoper/go/v2/utils/net/mail"
 	"github.com/liov/hoper/go/v2/utils/strings2"
 	"github.com/liov/hoper/go/v2/utils/time2"
@@ -483,4 +484,18 @@ func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListR
 
 func (*UserService) GetTest(ctx context.Context, req *model.GetReq) (*model.GetRep, error) {
 	return &model.GetRep{Code: uint32(req.Id), Message: "测试"}, nil
+}
+
+
+func (*UserService) Add(ctx *Claims, req *model.SignupReq) (*model.SignupRep, error) {
+	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
+	pick.Api(func() interface{} {
+		return pick.Method(http.MethodPost).
+			Title("用户注册").
+			Version(2).
+			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
+			ChangeLog("1.0.1", "jyb", "2019/12/16", "修改测试")
+	})
+
+	return &model.SignupRep{Message: "测试"}, nil
 }

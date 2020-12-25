@@ -22,6 +22,7 @@ import (
 func main() {
 	//配置初始化应该在第一位
 	defer initialize.Start(conf.Conf, dao.Dao)()
+	pick.RegisterService(service.GetUserService())
 	(&tailmon.Server{
 		//为了可以自定义中间件
 		GRPCServer: func() *grpc.Server {
@@ -41,8 +42,10 @@ func main() {
 		GinHandle: func(app *gin.Engine) {
 			oauth.RegisterOauthServiceHandlerServer(app, service.GetOauthService())
 			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
-			pick.RegisterService(service.GetUserService())
-			pick.GrpcServiceToRestfulApi(app,service.NewContext,true,initialize.InitConfig.Module)
+			pick.GrpcServiceToRestfulApi(app,service.AuthContext,true,initialize.InitConfig.Module)
+		},
+		PickHandle: func(router *pick.Router) {
+			router.ServeFiles("/static", "E:/")
 		},
 		GraphqlResolve: model.NewExecutableSchema(model.Config{
 			Resolvers: &model.GQLServer{

@@ -20,10 +20,10 @@ func swagger(filePath, modName string) {
 
 		for j := 0; j < value.NumMethod(); j++ {
 			method := value.Type().Method(j)
-			if method.Type.NumIn() < 2 || method.Type.NumOut() != 2 {
+			methodInfo := getMethodInfo(&method,preUrl)
+			if methodInfo == nil{
 				continue
 			}
-			methodInfo := getMethodInfo(value.Method(j),preUrl)
 			if methodInfo.path == "" || methodInfo.method == "" || methodInfo.title == "" || methodInfo.createlog.version == "" {
 				log.Fatal("接口路径,方法,描述,创建日志均为必填")
 			}
@@ -142,6 +142,7 @@ func DefinitionsApi(definitions map[string]spec.Schema, v interface{}, exclude [
 
 	body := reflect.TypeOf(v).Elem()
 	var typ, subFieldName string
+	var arraySubType string
 	for i := 0; i < body.NumField(); i++ {
 		json := strings.Split(body.Field(i).Tag.Get("json"), ",")[0]
 		if json == "" || json == "-" {
@@ -161,13 +162,21 @@ func DefinitionsApi(definitions map[string]spec.Schema, v interface{}, exclude [
 			reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 			typ = "integer"
 		case reflect.Array, reflect.Slice:
+			typ = "array"
 			subType:=reflect3.GetDereferenceType(fieldType)
 			subFieldName = subType.Name()
-			typ = "array " + subFieldName
 			switch subType.Kind() {
 			case reflect.Struct,reflect.Ptr,reflect.Array, reflect.Slice:
 				v = reflect.New(subType).Interface()
-				typ = "array"
+			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+				reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+				arraySubType = "integer"
+			case reflect.Float32, reflect.Float64:
+				arraySubType = "number"
+			case reflect.String:
+				arraySubType = "string"
+			case reflect.Bool:
+				arraySubType = "boolean"
 			}
 		case reflect.Float32, reflect.Float64:
 			typ = "number"
@@ -188,8 +197,13 @@ func DefinitionsApi(definitions map[string]spec.Schema, v interface{}, exclude [
 		if typ == "array"{
 			subSchema.Items = new(spec.SchemaOrArray)
 			subSchema.Items.Schema = &spec.Schema{}
-			subSchema.Items.Schema.Ref = spec.MustCreateRef("#/definitions/" + subFieldName)
-			DefinitionsApi(definitions, v, nil)
+			if arraySubType == ""{
+				subSchema.Items.Schema.Ref = spec.MustCreateRef("#/definitions/" + subFieldName)
+				DefinitionsApi(definitions, v, nil)
+			}else {
+				subSchema.Items.Schema.Type = []string{arraySubType}
+			}
+
 		}
 		schema.Properties[json] = subSchema
 	}
