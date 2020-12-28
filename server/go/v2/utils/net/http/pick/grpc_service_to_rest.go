@@ -5,13 +5,14 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"path/filepath"
 	"reflect"
 	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/liov/hoper/go/v2/utils/log"
-	http2 "github.com/liov/hoper/go/v2/utils/net/http"
+	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	"github.com/liov/hoper/go/v2/utils/net/http/gin/handlerconv"
 )
@@ -19,10 +20,12 @@ import (
 type MapRouter map[string]methodHandle
 
 type AuthCtx func(r *http.Request) context.Context
-
+// Deprecated:这种方法不推荐使用了，目前就两种定义api的方式，一种grpc-gateway，一种pick自定义
+// 该方法适用于不使用grpc-gateway的情况，只用该方法定义api
 func GrpcServiceToRestfulApi(engine *gin.Engine, authCtx AuthCtx, genApi bool, modName string) {
 	httpMethods := []string{http.MethodGet, http.MethodOptions, http.MethodPut, http.MethodDelete,
 		http.MethodPatch, http.MethodConnect, http.MethodHead, http.MethodTrace}
+	doc := apidoc.GetDoc(filepath.Join(apidoc.FilePath+modName,modName+apidoc.EXT))
 	methods := make(map[string]struct{})
 	for _, v := range svcs {
 		describe, preUrl, middleware := v.Service()
@@ -57,7 +60,7 @@ func GrpcServiceToRestfulApi(engine *gin.Engine, authCtx AuthCtx, genApi bool, m
 					json.NewEncoder(ctx.Writer).Encode(result[1].Interface())
 					return
 				}
-				if info, ok := result[0].Interface().(*http2.File); ok {
+				if info, ok := result[0].Interface().(*httpi.File); ok {
 					header := ctx.Writer.Header()
 					header.Set("Content-Type", "application/octet-stream")
 					header.Set("Content-Disposition", "attachment;filename="+info.Name)
@@ -72,7 +75,7 @@ func GrpcServiceToRestfulApi(engine *gin.Engine, authCtx AuthCtx, genApi bool, m
 			})
 			methods[methodInfo.method] = struct{}{}
 			if genApi {
-				Swagger(methodInfo,value.Method(j).Type(), describe, value.Type().Name())
+				methodInfo.Swagger(doc,value.Method(j).Type(), describe, value.Type().Name())
 			}
 		}
 

@@ -21,7 +21,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/liov/hoper/go/v2/utils/dao/db/get"
 	"github.com/liov/hoper/go/v2/utils/fs"
-	"github.com/liov/hoper/go/v2/utils/strings2"
+	"github.com/liov/hoper/go/v2/utils/strings"
 	"golang.org/x/net/html"
 	"gorm.io/gorm"
 	py "tools/pinyin"
@@ -231,7 +231,7 @@ func ParseHtml(doc *goquery.Document) (string, string, string, string, *goquery.
 }
 
 func FixPath(path string) string {
-	path = strings2.ReplaceRuneEmpty(path, []rune{'\\', '/', ':', ' '})
+	path = stringsi.ReplaceRuneEmpty(path, []rune{'\\', '/', ':', ' '})
 	if strings.HasSuffix(path, ".") {
 		path += "$"
 	}

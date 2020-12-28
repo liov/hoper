@@ -9,7 +9,7 @@ import (
 
 	v2 "github.com/liov/hoper/go/v2/utils/dao/db/gorm/v2"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/reflect3"
+	"github.com/liov/hoper/go/v2/utils/reflect"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
@@ -71,7 +71,7 @@ func (conf *DatabaseConfig) Generate() *gorm.DB {
 
 func (init *Init) P2DB() *gorm.DB {
 	conf := &DatabaseConfig{}
-	if exist := reflect3.GetFieldValue(init.conf, conf); !exist {
+	if exist := reflecti.GetFieldValue(init.conf, conf); !exist {
 		return nil
 	}
 

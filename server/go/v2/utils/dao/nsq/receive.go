@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/reflect3"
+	"github.com/liov/hoper/go/v2/utils/reflect"
 	"github.com/nsqio/go-nsq"
 )
 
@@ -54,12 +54,12 @@ func handleStringMessage(message *nsq.Message) error {
 	return nil
 }
 
-var reflectinvoker *reflect3.ReflectInvoker
+var reflectinvoker *reflecti.ReflectInvoker
 
 func handleJsonMessage(message *nsq.Message) error {
 
 	resultJson := reflectinvoker.InvokeByJson([]byte(message.Body))
-	result := reflect3.Response{}
+	result := reflecti.Response{}
 	err := json.Unmarshal(resultJson, &result)
 	if err != nil {
 		return err

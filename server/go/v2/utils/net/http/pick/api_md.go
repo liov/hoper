@@ -14,8 +14,8 @@ import (
 
 	"github.com/liov/hoper/go/v2/utils/mock"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
-	"github.com/liov/hoper/go/v2/utils/reflect3"
-	"github.com/liov/hoper/go/v2/utils/strings2"
+	"github.com/liov/hoper/go/v2/utils/reflect"
+	"github.com/liov/hoper/go/v2/utils/strings"
 	"github.com/liov/hoper/go/v2/utils/verification/validator"
 )
 
@@ -140,7 +140,7 @@ type ParamTable struct {
 }
 
 func getParamTable(param reflect.Type, pre string) []*ParamTable {
-	param = reflect3.OriginalType(param)
+	param = reflecti.OriginalType(param)
 	newParam := reflect.New(param).Interface()
 	var res []*ParamTable
 	for i := 0; i < param.NumField(); i++ {
@@ -157,7 +157,7 @@ func getParamTable(param reflect.Type, pre string) []*ParamTable {
 			continue
 		}
 		if json == "" {
-			p.json = pre + strings2.ConvertToCamelCase(json)
+			p.json = pre + stringsi.ConvertToCamelCase(json)
 		} else {
 			p.json = pre + json
 		}

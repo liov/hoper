@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"io/ioutil"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"os/signal"
 	"runtime/debug"
@@ -19,9 +18,10 @@ import (
 	"github.com/liov/hoper/go/v2/initialize"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/log"
+	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	gin_build "github.com/liov/hoper/go/v2/utils/net/http/gin"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"
-	"github.com/liov/hoper/go/v2/utils/strings2"
+	"github.com/liov/hoper/go/v2/utils/strings"
 	"go.uber.org/zap"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -30,37 +30,32 @@ import (
 )
 
 func (s *Server) httpHandler() http.HandlerFunc {
-	var graphqlServer http.Handler
+	//默认使用gin
+	ginServer := gin_build.Http(initialize.InitConfig.ConfUrl, "../protobuf/api/", s.GinHandle)
+
 	if s.GraphqlResolve != nil {
-		graphqlServer = handler.NewDefaultServer(s.GraphqlResolve)
+		graphqlServer := handler.NewDefaultServer(s.GraphqlResolve)
+		ginServer.Handle(http.MethodPost,"/api/graphql", func(ctx *gin.Context) {
+			graphqlServer.ServeHTTP(ctx.Writer,ctx.Request)
+		})
 	}
 	var gatewayServer http.Handler
 	if s.GatewayRegistr != nil {
 		gatewayServer = gateway.Gateway(s.GatewayRegistr)
-	}
-	var ginServer *gin.Engine
-	if s.GinHandle != nil {
-		ginServer = gin_build.Http(initialize.InitConfig.ConfUrl, "../protobuf/api/", s.GinHandle)
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		now := time.Now()
 		/*		var result bytes.Buffer
 				rsp := io.MultiWriter(w, &result)*/
-		recorder := httptest.NewRecorder()
+		recorder := httpi.NewRecorder()
 		body, _ := ioutil.ReadAll(r.Body)
 		r.Body = ioutil.NopCloser(bytes.NewReader(body))
-		runtime := r.Header.Get("Runtime")
-		if runtime == ""{
-			runtime = r.URL.Query().Get("runtime")
-		}
-		// 根据header判断走哪个runtime 而不是gin统一代理
-		if gatewayServer != nil && runtime == "gateway" {
+
+		ginServer.ServeHTTP(recorder, r)
+		if recorder.Code ==http.StatusNotFound && gatewayServer != nil{
+			recorder.Clear()
 			gatewayServer.ServeHTTP(recorder, r)
-		} else if graphqlServer != nil && runtime == "graphql" {
-			graphqlServer.ServeHTTP(recorder, r)
-		}else {
-			ginServer.ServeHTTP(recorder, r)
 		}
 
 		// 从 recorder 中提取记录下来的 Response Header，设置为 ResponseWriter 的 Header
@@ -78,8 +73,8 @@ func (s *Server) httpHandler() http.HandlerFunc {
 		}
 
 		(&AccessLog{
-			strings2.ToSting(recorder.Body.Bytes()),
-			strings2.ToSting(body),
+			stringsi.ToSting(recorder.Body.Bytes()),
+			stringsi.ToSting(body),
 			"Cookie", now,r,
 		}).log()
 	}
@@ -93,7 +88,7 @@ func (s *Server) Serve() {
 	handle := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if r := recover(); r != nil {
-				log.CallTwo.With(zap.String("stack", strings2.ToSting(debug.Stack()))).Error(" panic: ", r)
+				log.CallTwo.With(zap.String("stack", stringsi.ToSting(debug.Stack()))).Error(" panic: ", r)
 				w.Write(errorcode.SysErr)
 			}
 		}()

@@ -14,7 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/fs"
-	"github.com/liov/hoper/go/v2/utils/time2"
+	"github.com/liov/hoper/go/v2/utils/time"
 	"github.com/satori/go.uuid"
 )
 
@@ -46,7 +46,7 @@ func PathMerge(path1, path2 string) string {
 
 func GenerateUploadedInfo(uploadDir, ext string) FileUploadInfo {
 
-	ymStr := time2.GetTodayYM(string(os.PathSeparator))
+	ymStr := timei.GetTodayYM(string(os.PathSeparator))
 
 	uuidName := uuid.NewV4().String()
 	filename := uuidName + ext
@@ -88,7 +88,7 @@ func GetExt(file *multipart.FileHeader) (string, error) {
 func GetDirAndUrl(uploadDir string, info *multipart.FileHeader) (string, error) {
 	//sep := string(os.PathSeparator)
 	sep := "/"
-	ymdStr := time2.GetTodayYMD(sep)
+	ymdStr := timei.GetTodayYMD(sep)
 	ext, err := GetExt(info)
 	if err != nil {
 		return "", err

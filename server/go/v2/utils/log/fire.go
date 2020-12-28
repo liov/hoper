@@ -3,7 +3,7 @@ package log
 import (
 	"fmt"
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
-	"github.com/liov/hoper/go/v2/utils/strings2"
+	"github.com/liov/hoper/go/v2/utils/strings"
 	"github.com/spf13/viper"
 	"go.uber.org/zap/zapcore"
 	"time"
@@ -28,7 +28,7 @@ type KibanaField struct {
 
 func (th *TalkHook) FormatLog(e *zapcore.Entry) error {
 	fields := new(KibanaField)
-	json.Unmarshal(strings2.ToBytes(e.Message), fields)
+	json.Unmarshal(stringsi.ToBytes(e.Message), fields)
 	t := e.Time
 	url := fmt.Sprintf("http://"+viper.GetString("domain.kibana")+"/app/kibana#/discover?_g=%28refreshInterval:%28display:Off,pause:!f,value:0%29,time:%28from:'%s',mode:absolute,to:'%s'%29%29&_a=%28columns:!%28_source%29,index:'8c289dc0-83ed-11e8-9c6f-f5bb9ff824a1',interval:auto,query:%28language:lucene,query:'@source:%%22%+v%%22%%20%%20AND%%20@fields.uuid:%%22[%+v]%%22'%29%29",
 		t.Add(-time.Minute).Format("2006-01-02T15:04:05+08:00"), t.Add(time.Minute).Format("2006-01-02T15:04:05+08:00"), e.Caller.String(), fields.Id,

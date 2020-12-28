@@ -1,7 +1,7 @@
 package content_type
 
 import (
-	"github.com/liov/hoper/go/v2/utils/strings2"
+	"github.com/liov/hoper/go/v2/utils/strings"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
 )
@@ -37,7 +37,7 @@ func MarkdownToHTML(md string) string {
 	options = blackfriday.WithExtensions(myExtensions)
 
 	bytes := blackfriday.Run([]byte(md), options)
-	theHTML := strings2.ToSting(bytes)
+	theHTML := stringsi.ToSting(bytes)
 	return bluemonday.UGCPolicy().Sanitize(theHTML)
 }
 

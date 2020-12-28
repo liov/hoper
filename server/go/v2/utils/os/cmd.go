@@ -1,4 +1,4 @@
-package os2
+package osi
 
 import (
 	"log"

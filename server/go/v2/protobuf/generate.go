@@ -9,7 +9,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/liov/hoper/go/v2/utils/os2"
+	"github.com/liov/hoper/go/v2/utils/os"
 )
 
 /*
@@ -57,9 +57,9 @@ func run() {
 	pwd, _ := os.Getwd()
 	*proto = pwd + "/" + *proto
 	goList := `go list -m -f {{.Dir}} `
-	gateway, _ := os2.CMD(goList + "github.com/grpc-ecosystem/grpc-gateway/v2")
+	gateway, _ := osi.CMD(goList + "github.com/grpc-ecosystem/grpc-gateway/v2")
 	//protopatch, _ := os2.CMD(goList + "github.com/liov/protopatch2")
-	protobuf, _ := os2.CMD(goList + "google.golang.org/protobuf")
+	protobuf, _ := osi.CMD(goList + "google.golang.org/protobuf")
 	//gogoProtoOut, _ := cmd.CMD(goList + "github.com/gogo/protobuf")
 	path := os.Getenv("GOPATH")
 	include := "-I" + *proto + " -I" + gateway + " -I" + gateway + "/third_party/googleapis -I" + protobuf + " -I" + path + "/src"
@@ -83,7 +83,7 @@ func run() {
 				arg = "protoc -I" + *proto + " " + *proto + k + " --gogo_out=plugins=grpc,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor:" + pwd + "/protobuf"
 			}
 
-			words := os2.Split(arg)
+			words := osi.Split(arg)
 			cmd := exec.Command(words[0], words[1:]...)
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -110,7 +110,7 @@ func run() {
 				}
 				t.Execute(file, fileInfos[i].Name())
 				file.Close()
-				words := os2.Split(`gqlgen --verbose --config ` + config)
+				words := osi.Split(`gqlgen --verbose --config ` + config)
 				cmd := exec.Command(words[0], words[1:]...)
 				cmd.Stdout = os.Stdout
 				cmd.Stderr = os.Stderr
@@ -121,7 +121,7 @@ func run() {
 	os.Chdir(pwd)
 
 	for i := range gqlgen {
-		words := os2.Split(gqlgen[i])
+		words := osi.Split(gqlgen[i])
 		cmd := exec.Command(words[0], words[1:]...)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr

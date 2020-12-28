@@ -22,8 +22,8 @@ import (
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 	"github.com/liov/hoper/go/v2/utils/net/mail"
-	"github.com/liov/hoper/go/v2/utils/strings2"
-	"github.com/liov/hoper/go/v2/utils/time2"
+	"github.com/liov/hoper/go/v2/utils/strings"
+	"github.com/liov/hoper/go/v2/utils/time"
 	"github.com/liov/hoper/go/v2/utils/verification"
 	"github.com/liov/hoper/go/v2/utils/verification/validator"
 	"gorm.io/gorm"
@@ -111,7 +111,7 @@ func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*model.Si
 	var user = &model.User{}
 	user.Mail = req.Mail
 	user.Gender = model.Gender_GenderUnfilled
-	user.CreatedAt = time2.Format(time.Now())
+	user.CreatedAt = timei.Format(time.Now())
 	user.LastActivatedAt = user.CreatedAt
 	user.Role = model.Role_UserRoleNormal
 	user.Status = model.UserStatus_InActive
@@ -148,7 +148,7 @@ func salt(password string) string {
 // EncryptPassword 给密码加密
 func encryptPassword(password string) string {
 	hash := salt(password) + conf.Conf.Customize.PassSalt + password[5:]
-	return fmt.Sprintf("%x", md5.Sum(strings2.ToBytes(hash)))
+	return fmt.Sprintf("%x", md5.Sum(stringsi.ToBytes(hash)))
 }
 
 func sendMail(action model.Action, curTime int64, user *model.User) {
@@ -157,7 +157,7 @@ func sendMail(action model.Action, curTime int64, user *model.User) {
 	var content string
 	title := action.String()
 	secretStr := strconv.FormatInt(curTime, 10) + user.Mail + user.Password
-	secretStr = fmt.Sprintf("%x", md5.Sum(strings2.ToBytes(secretStr)))
+	secretStr = fmt.Sprintf("%x", md5.Sum(stringsi.ToBytes(secretStr)))
 	switch action {
 	case model.Action_Active:
 		actionURL := siteURL + "/user/active/" + strconv.FormatUint(user.Id, 10) + "/" + secretStr
@@ -221,7 +221,7 @@ func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*response
 	}
 	secretStr := strconv.Itoa((int)(emailTime)) + user.Mail + user.Password
 
-	secretStr = fmt.Sprintf("%x", md5.Sum(strings2.ToBytes(secretStr)))
+	secretStr = fmt.Sprintf("%x", md5.Sum(stringsi.ToBytes(secretStr)))
 
 	if req.Secret != secretStr {
 		return nil, errorcode.InvalidArgument.WithMessage("无效的链接")
@@ -233,7 +233,7 @@ func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*response
 }
 
 func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.TinyRep, error) {
-	defer time2.TimeCost(time.Now())
+	defer timei.TimeCost(time.Now())
 	user, err := u.AuthMainInfo(ctx)
 	if err != nil || user.Id != req.Id {
 		return nil, err
@@ -292,7 +292,7 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 	}
 	if user.Status == model.UserStatus_InActive {
 		//没看懂
-		//encodedEmail := base64.StdEncoding.EncodeToString(strings2.ToBytes(user.Mail))
+		//encodedEmail := base64.StdEncoding.EncodeToString(stringsi.ToBytes(user.Mail))
 		activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
 		RedisConn := dao.Dao.Redis.Get()
 		defer RedisConn.Close()
@@ -457,7 +457,7 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 	}
 	secretStr := strconv.Itoa((int)(emailTime)) + user.Mail + user.Password
 
-	secretStr = fmt.Sprintf("%x", md5.Sum(strings2.ToBytes(secretStr)))
+	secretStr = fmt.Sprintf("%x", md5.Sum(stringsi.ToBytes(secretStr)))
 
 	if req.Secret != secretStr {
 		return nil, errorcode.InvalidArgument.WithMessage("无效的链接")

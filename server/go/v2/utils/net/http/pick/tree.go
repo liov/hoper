@@ -12,7 +12,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	http2 "github.com/liov/hoper/go/v2/utils/net/http"
+	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 )
 
 func min(a, b int) int {
@@ -78,7 +78,7 @@ const (
 
 type methodHandle struct {
 	method      string
-	middleware  http2.HandlerFuncs
+	middleware  httpi.HandlerFuncs
 	httpHandler http.Handler
 	handle      reflect.Value
 }
@@ -118,7 +118,7 @@ type node struct {
 	indices    []byte
 	cType      nodeType //if>3 wildChild,代替原来的wildChild
 	children   []*node
-	middleware http2.HandlerFuncs `json:"-"`
+	middleware httpi.HandlerFuncs `json:"-"`
 	handle     []*methodHandle
 }
 

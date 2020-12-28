@@ -3,7 +3,7 @@ package initialize
 import (
 	"log"
 
-	"github.com/liov/hoper/go/v2/utils/reflect3"
+	"github.com/liov/hoper/go/v2/utils/reflect"
 	"github.com/nsqio/go-nsq"
 )
 
@@ -54,7 +54,7 @@ func (conf *NsqConfig) Generate() (*nsq.Producer, *nsq.Consumer) {
 
 func (init *Init) P2NSQ() (*nsq.Producer, *nsq.Consumer) {
 	conf := &NsqConfig{}
-	if exist := reflect3.GetFieldValue(init.conf, conf); !exist {
+	if exist := reflecti.GetFieldValue(init.conf, conf); !exist {
 		return nil, nil
 	}
 	return conf.Generate()

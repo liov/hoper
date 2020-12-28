@@ -1,4 +1,4 @@
-package strings2
+package stringsi
 
 import "unicode"
 

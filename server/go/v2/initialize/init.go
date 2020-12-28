@@ -19,7 +19,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/fs"
 	"github.com/liov/hoper/go/v2/utils/fs/watch"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/reflect3"
+	"github.com/liov/hoper/go/v2/utils/reflect"
 	"github.com/liov/hoper/go/v2/utils/slices"
 	"github.com/pelletier/go-toml"
 )
@@ -223,7 +223,7 @@ func (init *Init) SetConfigAndDao() {
 			daoValue := reflect.ValueOf(init.dao).Elem()
 			for j := range res {
 				if res[j].IsValid() {
-					reflect3.SetFieldValue(daoValue, res[j])
+					reflecti.SetFieldValue(daoValue, res[j])
 				}
 			}
 		}

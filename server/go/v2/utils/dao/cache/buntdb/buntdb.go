@@ -16,7 +16,7 @@ import (
 	"time"
 
 	"github.com/liov/hoper/go/v2/utils/encoding/json/gjson"
-	match "github.com/liov/hoper/go/v2/utils/strings2"
+	match "github.com/liov/hoper/go/v2/utils/strings"
 	"github.com/liov/hoper/go/v2/utils/structure/tree/btree"
 	"github.com/liov/hoper/go/v2/utils/structure/tree/rtree"
 	grect "github.com/liov/hoper/go/v2/utils/structure/rect"

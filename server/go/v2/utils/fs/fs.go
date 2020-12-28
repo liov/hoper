@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	runtime2 "github.com/liov/hoper/go/v2/utils/runtime"
+	runtimei "github.com/liov/hoper/go/v2/utils/runtime"
 )
 
 type Dir string
@@ -113,7 +113,7 @@ func FindFiles2(path string, deep int8, num int) ([]string, error) {
 	}
 	var file = make(chan string)
 	//属于回调而不是通知
-	ctx := runtime2.New(func() {
+	ctx := runtimei.New(func() {
 		close(file)
 	})
 	defer ctx.Cancel()
@@ -140,7 +140,7 @@ func FindFiles2(path string, deep int8, num int) ([]string, error) {
 	return files, nil
 }
 
-func subDirFiles2(dir, path, exclude string, file chan string, deep, step int8, ctx *runtime2.NumGoroutine) {
+func subDirFiles2(dir, path, exclude string, file chan string, deep, step int8, ctx *runtimei.NumGoroutine) {
 	defer ctx.End()
 	step += 1
 	if step-1 == deep {
@@ -171,7 +171,7 @@ func subDirFiles2(dir, path, exclude string, file chan string, deep, step int8, 
 	}
 }
 
-func supDirFiles2(dir, path string, file chan string, deep, step int8, ctx *runtime2.NumGoroutine) {
+func supDirFiles2(dir, path string, file chan string, deep, step int8, ctx *runtimei.NumGoroutine) {
 	defer ctx.End()
 	step += 1
 	if step-1 == deep {

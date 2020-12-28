@@ -15,13 +15,13 @@ import (
 var Doc *spec.Swagger
 
 //参数为路径和格式
-func GetDoc(args ...string) *spec.Swagger {
+func GetDoc(path string) *spec.Swagger {
 	if Doc != nil {
 		return Doc
 	}
-	targetPath := "."
-	if len(args) > 0 {
-		targetPath = args[0]
+	targetPath := "." + string(os.PathSeparator) + "swagger.json"
+	if path != "" {
+		targetPath = path
 	} else {
 		return generate()
 	}
@@ -31,12 +31,7 @@ func GetDoc(args ...string) *spec.Swagger {
 		log.Error(err)
 	}
 
-	apiType := "json"
-	if len(args) > 1 {
-		apiType = args[1]
-	}
-
-	realPath = filepath.Join(realPath, "swagger."+apiType)
+	apiType := filepath.Ext(targetPath)
 
 	if _, err := os.Stat(realPath); os.IsNotExist(err) {
 		return generate()
@@ -55,7 +50,7 @@ func GetDoc(args ...string) *spec.Swagger {
 		if err != nil {
 			ulog.Error(err)
 		}*/
-		if apiType == "json" {
+		if apiType == ".json" {
 			err = json.Unmarshal(data, &Doc)
 			if err != nil {
 				log.Error(err)
@@ -125,7 +120,7 @@ func generate() *spec.Swagger {
 
 func WriteToFile(realPath, modName string) {
 	if Doc == nil {
-		generate()
+		return
 	}
 	if realPath == "" {
 		realPath = "."

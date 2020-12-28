@@ -46,7 +46,7 @@ func commonHandler(w http.ResponseWriter, req *http.Request, handle reflect.Valu
 			return
 		}
 
-		if info, ok := result[0].Interface().(*http2.File); ok {
+		if info, ok := result[0].Interface().(*httpi.File); ok {
 			header.Set("Content-Type", "application/octet-stream")
 			header.Set("Content-Disposition", "attachment;filename="+info.Name)
 			io.Copy(w, info.File)
@@ -56,7 +56,7 @@ func commonHandler(w http.ResponseWriter, req *http.Request, handle reflect.Valu
 			info.File.Close()
 			return
 		}
-		json.NewEncoder(w).Encode(http2.ResData{
+		json.NewEncoder(w).Encode(httpi.ResData{
 			Code:    0,
 			Message: "success",
 			Details: result[0].Interface(),

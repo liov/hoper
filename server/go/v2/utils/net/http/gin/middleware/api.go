@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-openapi/spec"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
-	"github.com/liov/hoper/go/v2/utils/reflect3"
+	"github.com/liov/hoper/go/v2/utils/reflect"
 )
 
 // Deprecated
@@ -17,7 +17,7 @@ func ApiMiddle(ctx *gin.Context) {
 
 	var pathItem *spec.PathItem
 
-	doc := apidoc.GetDoc("../")
+	doc := apidoc.GetDoc("../swagger.json")
 
 	if doc.Paths != nil && doc.Paths.Paths != nil {
 		if path, ok := doc.Paths.Paths[currentRouteName]; ok {
@@ -114,8 +114,8 @@ func DefinitionsApi(definitions map[string]spec.Schema, v interface{}, exclude [
 			typ = "integer"
 		case reflect.Array, reflect.Slice:
 			typ = "array"
-			v = reflect.New(reflect3.GetDereferenceType(fieldType)).Interface()
-			subFieldName = reflect3.GetDereferenceType(fieldType).Name()
+			v = reflect.New(reflecti.GetDereferenceType(fieldType)).Interface()
+			subFieldName = reflecti.GetDereferenceType(fieldType).Name()
 		case reflect.Float32, reflect.Float64:
 			typ = "number"
 		case reflect.String:

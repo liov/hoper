@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
-	"github.com/liov/hoper/go/v2/utils/reflect3"
+	"github.com/liov/hoper/go/v2/utils/reflect"
 )
 
 type RedisConfig struct {
@@ -46,7 +46,7 @@ func (conf *RedisConfig) Generate() *redis.Pool {
 
 func (init *Init) P2Redis() *redis.Pool {
 	conf := &RedisConfig{}
-	if exist := reflect3.GetFieldValue(init.conf, conf); !exist {
+	if exist := reflecti.GetFieldValue(init.conf, conf); !exist {
 		return nil
 	}
 

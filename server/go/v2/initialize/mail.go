@@ -3,7 +3,7 @@ package initialize
 import (
 	"net/smtp"
 
-	"github.com/liov/hoper/go/v2/utils/reflect3"
+	"github.com/liov/hoper/go/v2/utils/reflect"
 )
 
 type MailConfig struct {
@@ -19,7 +19,7 @@ func (conf *MailConfig) Generate() smtp.Auth {
 
 func (init *Init) P3Mail() smtp.Auth {
 	conf := &MailConfig{}
-	if exist := reflect3.GetFieldValue(init.conf, conf); !exist {
+	if exist := reflecti.GetFieldValue(init.conf, conf); !exist {
 		return nil
 	}
 	return conf.Generate()

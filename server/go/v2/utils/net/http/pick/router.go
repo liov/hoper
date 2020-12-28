@@ -85,8 +85,8 @@ import (
 	"sync"
 
 	"github.com/liov/hoper/go/v2/utils/concolor"
-	http2 "github.com/liov/hoper/go/v2/utils/net/http"
-	"github.com/liov/hoper/go/v2/utils/strings2"
+	httpi "github.com/liov/hoper/go/v2/utils/net/http"
+	"github.com/liov/hoper/go/v2/utils/strings"
 )
 
 // Param is a single URL parameter, consisting of a key and a value.
@@ -143,7 +143,7 @@ type Router struct {
 	maxParams  uint16
 
 	//前后调用
-	middleware http2.HandlerFuncs
+	middleware httpi.HandlerFuncs
 
 	// If enabled, adds the matched route path onto the http.Request context
 	// before invoking the handler.
@@ -465,7 +465,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			// Try to fix the request path
 			if r.RedirectFixedPath {
 				fixedPath, found := root.findCaseInsensitivePath(
-					http2.CleanPath(path),
+					httpi.CleanPath(path),
 					req.Method,
 					r.RedirectTrailingSlash,
 				)
@@ -489,6 +489,6 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 func Log(method, path, title string) {
 	fmt.Printf(" %s\t %s %s\t %s\n",
 		concolor.Green("API:"),
-		concolor.Yellow(strings2.FormatLen(method, 6)),
-		concolor.Blue(strings2.FormatLen(path, 50)), concolor.Purple(title))
+		concolor.Yellow(stringsi.FormatLen(method, 6)),
+		concolor.Blue(stringsi.FormatLen(path, 50)), concolor.Purple(title))
 }
