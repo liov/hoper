@@ -37,6 +37,8 @@ var files = map[string][]string{
 	"/utils/errorcode/*enum.proto":  {enumOut, goOut, grpcOut},
 	"/utils/response/*.proto":       {goOut, grpcOut},
 	"/utils/oauth/*.proto":          {goOut, grpcOut},
+	"/utils/time/*.proto":          {goOut, grpcOut},
+	"/utils/any/*.proto":          {goOut, grpcOut},
 	"/utils/proto/gogo/*.gen.proto": {gogoprotoOut},
 	"/utils/proto/go/*.proto":       {goOut},
 	"/user/*service.proto": {goOut, grpcOut,

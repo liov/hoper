@@ -5,9 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/liov/hoper/go/v2/utils/net/http/gin/handlerconv"
-
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
+	"github.com/liov/hoper/go/v2/utils/net/http/gin/handler"
 )
 
 func OpenApi(mux *gin.Engine, filePath string) {
@@ -17,6 +16,6 @@ func OpenApi(mux *gin.Engine, filePath string) {
 		mod:=ctx.Params.ByName("file")
 		http.ServeFile(ctx.Writer, ctx.Request, filePath+"/"+mod+"/"+mod+"apidoc.md")
 	})
-	mux.GET(apidoc.PrefixUri+"swagger", handlerconv.FromStd(apidoc.ApiMod))
-	mux.GET(apidoc.PrefixUri+"swagger/*file", handlerconv.FromStd(apidoc.HttpHandle))
+	mux.GET(apidoc.PrefixUri+"swagger", handler.FromStd(apidoc.ApiMod))
+	mux.GET(apidoc.PrefixUri+"swagger/*file", handler.FromStd(apidoc.HttpHandle))
 }

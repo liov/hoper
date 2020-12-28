@@ -312,3 +312,8 @@ github.com/user/p2
 # x86_64-w64-mingw32/bin/ld.exe: Error: export ordinal too large
 
 Go tool argument -buildmode=exe
+
+# Parameter 'xxx' implicitly has an 'any' type.
+tsconfig.json添加"noImplicitAny": false，
+
+或者 "strict": true,改为false

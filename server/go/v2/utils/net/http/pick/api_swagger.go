@@ -9,7 +9,7 @@ import (
 )
 
 func swagger(filePath, modName string) {
-	doc := apidoc.GetDoc(filepath.Join(filePath+modName, modName+apidoc.EXT))
+	doc := apidoc.GetDoc(filepath.Join(filePath+modName, modName+apidoc.GatewayEXT))
 	for _, v := range svcs {
 		describe, preUrl, _ := v.Service()
 		value := reflect.ValueOf(v)

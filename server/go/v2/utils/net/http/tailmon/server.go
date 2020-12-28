@@ -35,13 +35,16 @@ func (s *Server) httpHandler() http.HandlerFunc {
 
 	if s.GraphqlResolve != nil {
 		graphqlServer := handler.NewDefaultServer(s.GraphqlResolve)
-		ginServer.Handle(http.MethodPost,"/api/graphql", func(ctx *gin.Context) {
-			graphqlServer.ServeHTTP(ctx.Writer,ctx.Request)
+		ginServer.Handle(http.MethodPost, "/api/graphql", func(ctx *gin.Context) {
+			graphqlServer.ServeHTTP(ctx.Writer, ctx.Request)
 		})
 	}
 	var gatewayServer http.Handler
 	if s.GatewayRegistr != nil {
 		gatewayServer = gateway.Gateway(s.GatewayRegistr)
+		ginServer.NoRoute(func(ctx *gin.Context) {
+			gatewayServer.ServeHTTP(ctx.Writer, ctx.Request)
+		})
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -53,10 +56,6 @@ func (s *Server) httpHandler() http.HandlerFunc {
 		r.Body = ioutil.NopCloser(bytes.NewReader(body))
 
 		ginServer.ServeHTTP(recorder, r)
-		if recorder.Code ==http.StatusNotFound && gatewayServer != nil{
-			recorder.Clear()
-			gatewayServer.ServeHTTP(recorder, r)
-		}
 
 		// 从 recorder 中提取记录下来的 Response Header，设置为 ResponseWriter 的 Header
 		for key, value := range recorder.Header() {
@@ -73,9 +72,9 @@ func (s *Server) httpHandler() http.HandlerFunc {
 		}
 
 		(&AccessLog{
-			stringsi.ToSting(recorder.Body.Bytes()),
-			stringsi.ToSting(body),
-			"Cookie", now,r,
+			now, r,
+			recorder.Code, "Cookie",
+			stringsi.ToSting(body), stringsi.ToSting(recorder.Body.Bytes()),
 		}).log()
 	}
 }
@@ -180,9 +179,10 @@ func ReStart() {
 }
 
 type AccessLog struct {
-	resp,body,authKey string
-	start time.Time
-	r *http.Request
+	start               time.Time
+	r                   *http.Request
+	status              int
+	authKey, body, resp string
 }
 
 func (a *AccessLog) log() {
@@ -203,6 +203,7 @@ func (a *AccessLog) log() {
 		zap.Duration("processTime", time.Now().Sub(a.start)),
 		zap.String("result", a.resp),
 		zap.String("other", authHeader),
+		zap.Int("status", a.status),
 		zap.String("source", initialize.InitConfig.Module),
 	).Info()
 }

@@ -14,7 +14,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/log"
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
-	"github.com/liov/hoper/go/v2/utils/net/http/gin/handlerconv"
+	"github.com/liov/hoper/go/v2/utils/net/http/gin/handler"
 )
 
 type MapRouter map[string]methodHandle
@@ -25,7 +25,7 @@ type AuthCtx func(r *http.Request) context.Context
 func GrpcServiceToRestfulApi(engine *gin.Engine, authCtx AuthCtx, genApi bool, modName string) {
 	httpMethods := []string{http.MethodGet, http.MethodOptions, http.MethodPut, http.MethodDelete,
 		http.MethodPatch, http.MethodConnect, http.MethodHead, http.MethodTrace}
-	doc := apidoc.GetDoc(filepath.Join(apidoc.FilePath+modName,modName+apidoc.EXT))
+	doc := apidoc.GetDoc(filepath.Join(apidoc.FilePath+modName,modName+apidoc.GatewayEXT))
 	methods := make(map[string]struct{})
 	for _, v := range svcs {
 		describe, preUrl, middleware := v.Service()
@@ -33,7 +33,7 @@ func GrpcServiceToRestfulApi(engine *gin.Engine, authCtx AuthCtx, genApi bool, m
 		if value.Kind() != reflect.Ptr {
 			log.Fatal("必须传入指针")
 		}
-		group := engine.Group(preUrl, handlerconv.Convert(middleware)...)
+		group := engine.Group(preUrl, handler.Converts(middleware)...)
 		for j := 0; j < value.NumMethod(); j++ {
 			method := value.Type().Method(j)
 			methodType := method.Type
@@ -56,22 +56,7 @@ func GrpcServiceToRestfulApi(engine *gin.Engine, authCtx AuthCtx, genApi bool, m
 				in2 := reflect.New(in2Type.Elem())
 				ctx.Bind(in2.Interface())
 				result := methodValue.Call([]reflect.Value{value, in0, in2})
-				if !result[1].IsNil() {
-					json.NewEncoder(ctx.Writer).Encode(result[1].Interface())
-					return
-				}
-				if info, ok := result[0].Interface().(*httpi.File); ok {
-					header := ctx.Writer.Header()
-					header.Set("Content-Type", "application/octet-stream")
-					header.Set("Content-Disposition", "attachment;filename="+info.Name)
-					io.Copy(ctx.Writer, info.File)
-					if flusher, canFlush := ctx.Writer.(http.Flusher); canFlush {
-						flusher.Flush()
-					}
-					info.File.Close()
-					return
-				}
-				ctx.JSON(200, result[0].Interface())
+				ginResHandler(ctx,result)
 			})
 			methods[methodInfo.method] = struct{}{}
 			if genApi {
@@ -93,5 +78,24 @@ func parseGrpcMethodName(name string, methods []string) (string, string, int) {
 			return method, name[len(method):], version
 		}
 	}
-	return http.MethodGet, name, version
+	return http.MethodPost, name, version
+}
+
+func ginResHandler(ctx *gin.Context,result []reflect.Value)  {
+	if !result[1].IsNil() {
+		json.NewEncoder(ctx.Writer).Encode(result[1].Interface())
+		return
+	}
+	if info, ok := result[0].Interface().(*httpi.File); ok {
+		header := ctx.Writer.Header()
+		header.Set("Content-Type", "application/octet-stream")
+		header.Set("Content-Disposition", "attachment;filename="+info.Name)
+		io.Copy(ctx.Writer, info.File)
+		if flusher, canFlush := ctx.Writer.(http.Flusher); canFlush {
+			flusher.Flush()
+		}
+		info.File.Close()
+		return
+	}
+	ctx.JSON(200, result[0].Interface())
 }

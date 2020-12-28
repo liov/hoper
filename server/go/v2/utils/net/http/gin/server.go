@@ -3,7 +3,7 @@ package gin_build
 import (
 	"github.com/gin-gonic/gin"
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
-	"github.com/liov/hoper/go/v2/utils/net/http/gin/handlerconv"
+	"github.com/liov/hoper/go/v2/utils/net/http/gin/handler"
 )
 
 func Http(confPath,apiPath string,ginHandle func(engine *gin.Engine)) *gin.Engine {
@@ -15,7 +15,7 @@ func Http(confPath,apiPath string,ginHandle func(engine *gin.Engine)) *gin.Engin
 	middleware.SetLog(r, logger, false)*/
 	r.Use(gin.Recovery())
 
-	r.Any("/debug/*path", handlerconv.FromStd(httpi.Debug()))
+	r.Any("/debug/*path", handler.FromStd(httpi.Debug()))
 	if ginHandle != nil {
 		ginHandle(r)
 	}
