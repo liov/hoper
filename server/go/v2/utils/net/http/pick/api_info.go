@@ -40,14 +40,23 @@ func (api *apiInfo) Method(m string) *apiInfo {
 }
 
 func (api *apiInfo) ChangeLog(v, auth, date, log string) *apiInfo {
+	v = version(v)
 	api.changelog = append(api.changelog, changelog{v, auth, date, log})
 	return api
+}
+
+func version(v string) string {
+	if v[0] != 'v' {
+		return "v" + v
+	}
+	return v
 }
 
 func (api *apiInfo) CreateLog(v, auth, date, log string) *apiInfo {
 	if api.createlog.version != "" {
 		panic("创建记录只允许一条")
 	}
+	v = version(v)
 	api.createlog = changelog{v, auth, date, log}
 	return api
 }
@@ -63,6 +72,7 @@ func (api *apiInfo) Version(v int) *apiInfo {
 }
 
 func (api *apiInfo) Deprecated(v, auth, date, log string) *apiInfo {
+	v = version(v)
 	api.deprecated = &changelog{v, auth, date, log}
 	return api
 }
@@ -83,9 +93,8 @@ func (api *apiInfo) getPrincipal() string {
 	return api.changelog[len(api.changelog)-1].auth
 }
 
-
 //简直就是精髓所在，真的是脑洞大开才能想到
-func getMethodInfo(method *reflect.Method,preUrl string) (info *apiInfo) {
+func getMethodInfo(method *reflect.Method, preUrl string) (info *apiInfo) {
 	defer func() {
 		if err := recover(); err != nil {
 			if v, ok := err.(*apiInfo); ok {
@@ -95,14 +104,14 @@ func getMethodInfo(method *reflect.Method,preUrl string) (info *apiInfo) {
 			}
 		}
 	}()
-	methodValue:=method.Func
+	methodValue := method.Func
 	methodType := methodValue.Type()
 	numIn := methodType.NumIn()
 	numOut := methodType.NumOut()
 	var err error
 	defer func() {
-		if err!=nil{
-			log.Debugf("%s %s 未注册:%v",preUrl,method.Name,err)
+		if err != nil {
+			log.Debugf("%s %s 未注册:%v", preUrl, method.Name, err)
 		}
 	}()
 	if numIn == 1 {
@@ -114,7 +123,7 @@ func getMethodInfo(method *reflect.Method,preUrl string) (info *apiInfo) {
 		return
 	}
 	if numOut != 2 {
-		err =errors.New("method返回值必须为两个")
+		err = errors.New("method返回值必须为两个")
 		return
 	}
 	if !methodType.In(1).Implements(claimsType) {
@@ -150,7 +159,7 @@ func parseMethodName(originName string) (name string, version int) {
 	return
 }
 
-func (api *apiInfo) Swagger(doc *spec.Swagger,methodType reflect.Type, tag, dec string) {
+func (api *apiInfo) Swagger(doc *spec.Swagger, methodType reflect.Type, tag, dec string) {
 	var pathItem *spec.PathItem
 	if doc.Paths != nil && doc.Paths.Paths != nil {
 		if path, ok := doc.Paths.Paths[api.path]; ok {
@@ -279,10 +288,10 @@ func DefinitionsApi(definitions map[string]spec.Schema, v interface{}, exclude [
 			typ = "integer"
 		case reflect.Array, reflect.Slice:
 			typ = "array"
-			subType:= reflecti.GetDereferenceType(fieldType)
+			subType := reflecti.GetDereferenceType(fieldType)
 			subFieldName = subType.Name()
 			switch subType.Kind() {
-			case reflect.Struct,reflect.Ptr,reflect.Array, reflect.Slice:
+			case reflect.Struct, reflect.Ptr, reflect.Array, reflect.Slice:
 				v = reflect.New(subType).Interface()
 			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
 				reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
@@ -310,13 +319,13 @@ func DefinitionsApi(definitions map[string]spec.Schema, v interface{}, exclude [
 			subSchema.Ref = spec.MustCreateRef("#/definitions/" + subFieldName)
 			DefinitionsApi(definitions, v, nil)
 		}
-		if typ == "array"{
+		if typ == "array" {
 			subSchema.Items = new(spec.SchemaOrArray)
 			subSchema.Items.Schema = &spec.Schema{}
-			if arraySubType == ""{
+			if arraySubType == "" {
 				subSchema.Items.Schema.Ref = spec.MustCreateRef("#/definitions/" + subFieldName)
 				DefinitionsApi(definitions, v, nil)
-			}else {
+			} else {
 				subSchema.Items.Schema.Type = []string{arraySubType}
 			}
 

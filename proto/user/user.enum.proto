@@ -4,11 +4,11 @@ import "utils/proto/gogo/enum.proto";
 import "utils/proto/go/go.proto";
 
 option (gogo.enum_gqlgen_all) = true;
-//写在这里必然要暴露出去
+// 写在这里必然要暴露出去
 option java_package = "xyz.hoper.protobuf.user";
 option go_package = "github.com/liov/hoper/go/v2/protobuf/user";
 
-//用户操作
+// 用户操作
 enum Action {
     option (go.enum) = {stringer_name: 'OrigString'};
     Signup = 0 [(gogo.enumvalue_cn)= "注册"];
@@ -19,7 +19,7 @@ enum Action {
     EditResume = 5 [(gogo.enumvalue_cn)= "编辑简历"];
     DELETEResume = 6 [(gogo.enumvalue_cn)= "删除简历"];
 }
-//用户角色
+// 用户角色
 enum Role {
     option (go.enum) = {stringer_name: 'OrigString'};
     UserRoleNormal = 0 [(gogo.enumvalue_cn)= "普通用户"];
@@ -27,7 +27,7 @@ enum Role {
     UserRoleSuperAdmin = 2 [(gogo.enumvalue_cn)= "超级管理员"];
 }
 
-//用户性别
+// 用户性别
 enum Gender{
     option (go.enum) = {stringer_name: 'OrigString'};
     GenderUnfilled = 0 [(gogo.enumvalue_cn)= "未填"];
@@ -35,7 +35,7 @@ enum Gender{
     GenderFemale = 2 [(gogo.enumvalue_cn)= "女"];
 }
 
-//用户角色
+// 用户角色
 enum UserStatus {
     option (go.enum) = {stringer_name: 'OrigString'};
     option (gogo.enum_jsonmarshal) = false;
@@ -44,7 +44,7 @@ enum UserStatus {
     Frozen = 2 [(gogo.enumvalue_cn)= "已冻结"];
 }
 
-//封禁类型
+// 封禁类型
 enum BannedType{
     option (go.enum) = {stringer_name: 'OrigString'};
     option (gogo.enum_jsonmarshal) = false;

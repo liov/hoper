@@ -1,17 +1,13 @@
 package pick
 
 import (
-	"encoding/json"
-	"io"
 	"log"
-	"net/http"
 	"reflect"
 
 	"github.com/gin-gonic/gin"
-	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	gin_build "github.com/liov/hoper/go/v2/utils/net/http/gin"
-	"github.com/liov/hoper/go/v2/utils/net/http/gin/handlerconv"
+	"github.com/liov/hoper/go/v2/utils/net/http/gin/handler"
 )
 
 // 虽然我写的路由比httprouter更强大(没有map,lru cache)，但是还是选择用gin,理由是gin也用同样的方式改造了路由
@@ -24,7 +20,7 @@ func Gin(engine *gin.Engine, genApi bool,modName string) {
 		if value.Kind() != reflect.Ptr {
 			log.Fatal("必须传入指针")
 		}
-		engine.Group(preUrl,handlerconv.Convert(middleware)...)
+		engine.Group(preUrl, handler.Converts(middleware)...)
 		for j := 0; j < value.NumMethod(); j++ {
 			method := value.Type().Method(j)
 			methodInfo := getMethodInfo(&method, preUrl)
@@ -39,27 +35,11 @@ func Gin(engine *gin.Engine, genApi bool,modName string) {
 			in2Type := methodType.In(2)
 			engine.Handle(methodInfo.method, methodInfo.path, func(ctx *gin.Context) {
 				in1 := reflect.New(methodType.In(1).Elem())
-				sess := in1.Interface().(Claims)
-				sess.ParseToken(ctx.Request)
+				in1.Interface().(Claims).ParseToken(ctx.Request)
 				in2 := reflect.New(in2Type.Elem())
 				ctx.Bind(in2.Interface())
 				result := methodValue.Call([]reflect.Value{value, in1, in2})
-				if !result[1].IsNil() {
-					json.NewEncoder(ctx.Writer).Encode(result[1].Interface())
-					return
-				}
-				if info, ok := result[0].Interface().(*httpi.File); ok {
-					header := ctx.Writer.Header()
-					header.Set("Content-Type", "application/octet-stream")
-					header.Set("Content-Disposition", "attachment;filename="+info.Name)
-					io.Copy(ctx.Writer, info.File)
-					if flusher, canFlush := ctx.Writer.(http.Flusher); canFlush {
-						flusher.Flush()
-					}
-					info.File.Close()
-					return
-				}
-				ctx.JSON(200, result[0].Interface())
+				ginResHandler(ctx,result)
 			})
 			methods[methodInfo.method] = struct{}{}
 		}

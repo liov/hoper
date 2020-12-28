@@ -1,4 +1,4 @@
-package handlerconv
+package handler
 
 import (
 	"fmt"
@@ -48,4 +48,12 @@ func FromStdWithNext(h func(w http.ResponseWriter, r *http.Request, next http.Ha
 
 		h(ctx.Writer, ctx.Request, next)
 	}
+}
+
+func Converts(handlers []http.HandlerFunc) []gin.HandlerFunc{
+	var rets []gin.HandlerFunc
+	for _,handler:=range handlers{
+		rets = append(rets, FromStd(handler))
+	}
+	return rets
 }

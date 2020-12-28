@@ -233,7 +233,7 @@ Loop:
 				"notifications": []string{string(notifications)},
 			}.Encode()
 			req.URL.RawQuery = query + newQuery
-			log.Debug("发送请求", req.URL)
+			log.Debug("发送请求:", req.URL)
 			resp, err := http.DefaultClient.Do(req)
 			if err != nil {
 				return err

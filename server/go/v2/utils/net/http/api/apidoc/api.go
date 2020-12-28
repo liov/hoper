@@ -132,7 +132,7 @@ func WriteToFile(realPath, modName string) {
 		log.Error(err)
 	}
 
-	realPath = filepath.Join(realPath, modName+".service.swagger.json")
+	realPath = filepath.Join(realPath, modName+EXT)
 
 	if _, err := os.Stat(realPath); err == nil {
 		os.Remove(realPath)

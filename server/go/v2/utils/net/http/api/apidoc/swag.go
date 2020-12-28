@@ -16,7 +16,8 @@ import (
 var PrefixUri = "/api-doc/"
 var FilePath = "../protobuf/api/"
 const swagger = "swagger"
-const EXT = ".service.swagger.json"
+const GatewayEXT = ".service.swagger.json"
+const EXT = ".swagger.json"
 
 func HttpHandle(w http.ResponseWriter, r *http.Request) {
 	prefixUri:=PrefixUri+swagger+"/"

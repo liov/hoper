@@ -67,6 +67,7 @@ func (lf *Config) initLogger() *zap.Logger {
 		LevelKey:      "level",
 		NameKey:       lf.ModuleName,
 		CallerKey:     "caller",
+		FunctionKey:   "func",
 		MessageKey:    "msg",
 		StacktraceKey: "stacktrace",
 		LineEnding:    zapcore.DefaultLineEnding,

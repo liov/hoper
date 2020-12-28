@@ -110,7 +110,7 @@ Loop:
 		case <-ch:
 			listeningConfigs = fmt.Sprintf(InitParam, c.DataId, c.Group, c.MD5, c.Tenant)
 			req.Body = ioutil.NopCloser(strings.NewReader(listeningConfigs))
-			log.Debug("发送请求", req.URL)
+			log.Debug("发送请求:", req.URL)
 			resp, err := http.DefaultClient.Do(req)
 			if err != nil {
 				log.Error(err)

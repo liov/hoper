@@ -7,7 +7,7 @@ import {
 import store from "@/store/index";
 
 //鉴权
-const authenticated: NavigationGuard = (to, from, next) => {
+const authenticated: NavigationGuard = (_to, _from, next) => {
   console.log(store.state.user);
   if (store.state.user != null) next();
   else next({ name: "Login" });
