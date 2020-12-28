@@ -6,7 +6,7 @@ import (
 
 	"github.com/liov/hoper/go/v2/utils/configor/apollo"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/reflect3"
+	"github.com/liov/hoper/go/v2/utils/reflect"
 	"github.com/pelletier/go-toml"
 )
 
@@ -25,7 +25,7 @@ func (conf *ApolloConfig) Generate() *apollo.Client {
 
 func (init *Init) P0Apollo() *apollo.Client {
 	conf := &ApolloConfig{}
-	if exist := reflect3.GetFieldValue(init.conf, conf); !exist {
+	if exist := reflecti.GetFieldValue(init.conf, conf); !exist {
 		return nil
 	}
 	//初始化更新配置，这里不需要，开启实时更新时初始化会更新一次

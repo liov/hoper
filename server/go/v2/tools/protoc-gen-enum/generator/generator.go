@@ -1365,12 +1365,12 @@ func (g *Generator) generateImports() {
 		if EnabledEnumGqlGen(enum.EnumDescriptorProto) || EnabledFileEnumGqlGen(g.file.FileDescriptorProto) {
 			pkg = append(pkg, "io")
 			pkg = append(pkg, "errors")
-			pkg = append(pkg, "github.com/liov/hoper/go/v2/utils/strings2")
+			pkg = append(pkg, "github.com/liov/hoper/go/v2/utils/strings")
 		}
 	}
 	for _, enum := range g.file.enum {
 		if EnabledEnumJsonMarshal(g.file.FileDescriptorProto, enum.EnumDescriptorProto) {
-			pkg = append(pkg, "github.com/liov/hoper/go/v2/utils/strings2")
+			pkg = append(pkg, "github.com/liov/hoper/go/v2/utils/strings")
 		}
 	}
 	if len(pkg) > 0 {
@@ -1547,7 +1547,7 @@ func (g *Generator) generateEnum(enum *EnumDescriptor) {
 	if EnabledEnumJsonMarshal(enum.file.FileDescriptorProto, enum.EnumDescriptorProto) && gogoproto.IsGoEnumStringer(g.file.FileDescriptorProto, enum.EnumDescriptorProto) {
 		g.P("func (x ", ccTypeName, ") MarshalJSON() ([]byte, error) {")
 		g.In()
-		g.P("return ", "strings2.QuoteToBytes(x.String())", ", nil")
+		g.P("return ", "stringsi.QuoteToBytes(x.String())", ", nil")
 		g.Out()
 		g.P("}")
 		g.P()
@@ -1603,7 +1603,7 @@ func (g *Generator) generateEnum(enum *EnumDescriptor) {
 		}
 		g.P("func (x ", ccTypeName, ") MarshalGQL(w io.Writer) {")
 		g.In()
-		g.P(`w.Write(strings2.QuoteToBytes(x.String()))`)
+		g.P(`w.Write(stringsi.QuoteToBytes(x.String()))`)
 		g.Out()
 		g.P("}")
 		g.P()

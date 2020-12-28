@@ -2,7 +2,7 @@ package initialize
 
 import (
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/reflect3"
+	"github.com/liov/hoper/go/v2/utils/reflect"
 	"github.com/olivere/elastic"
 )
 
@@ -22,7 +22,7 @@ func (conf *ElasticConfig) Generate() *elastic.Client {
 
 func (init *Init) P2Elastic() *elastic.Client {
 	conf := &ElasticConfig{}
-	if exist := reflect3.GetFieldValue(init.conf, conf); !exist {
+	if exist := reflecti.GetFieldValue(init.conf, conf); !exist {
 		return nil
 	}
 	return conf.Generate()

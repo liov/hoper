@@ -3,7 +3,7 @@ package initialize
 import (
 	"github.com/Shopify/sarama"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/reflect3"
+	"github.com/liov/hoper/go/v2/utils/reflect"
 )
 
 type KafkaConfig struct {
@@ -44,7 +44,7 @@ func (conf *KafkaConfig) Generate() (sarama.SyncProducer, sarama.Consumer) {
 
 func (init *Init) P2Kafka() (sarama.SyncProducer, sarama.Consumer) {
 	conf := &KafkaConfig{}
-	if exist := reflect3.GetFieldValue(init.conf, conf); !exist {
+	if exist := reflecti.GetFieldValue(init.conf, conf); !exist {
 		return nil, nil
 	}
 	return conf.Generate()

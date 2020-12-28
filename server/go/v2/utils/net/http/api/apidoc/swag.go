@@ -16,6 +16,7 @@ import (
 var PrefixUri = "/api-doc/"
 var FilePath = "../protobuf/api/"
 const swagger = "swagger"
+const EXT = ".service.swagger.json"
 
 func HttpHandle(w http.ResponseWriter, r *http.Request) {
 	prefixUri:=PrefixUri+swagger+"/"
@@ -23,6 +24,7 @@ func HttpHandle(w http.ResponseWriter, r *http.Request) {
 		specDoc, err := loads.Spec(FilePath + r.RequestURI[len(prefixUri):])
 		if err != nil {
 			w.Write([]byte(err.Error()))
+			return
 		}
 		specDoc, err = specDoc.Expanded(&spec.ExpandOptions{
 			SkipSchemas:         false,
@@ -31,10 +33,12 @@ func HttpHandle(w http.ResponseWriter, r *http.Request) {
 		})
 		if err != nil {
 			w.Write([]byte(err.Error()))
+			return
 		}
 		b, err := json.MarshalIndent(specDoc.Spec(), "", "  ")
 		if err != nil {
 			w.Write([]byte(err.Error()))
+			return
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -45,7 +49,7 @@ func HttpHandle(w http.ResponseWriter, r *http.Request) {
 	mod := r.RequestURI[len(prefixUri):]
 	middleware.Redoc(middleware.RedocOpts{
 		BasePath: prefixUri,
-		SpecURL:  path.Join(prefixUri+mod, mod+".service.swagger.json"),
+		SpecURL:  path.Join(prefixUri+mod, mod+EXT),
 		Path:     mod,
 	}, http.NotFoundHandler()).ServeHTTP(w, r)
 }

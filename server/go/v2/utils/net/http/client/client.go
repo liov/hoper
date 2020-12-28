@@ -16,7 +16,7 @@ import (
 	"time"
 
 	"github.com/liov/hoper/go/v2/utils/number"
-	"github.com/liov/hoper/go/v2/utils/strings2"
+	"github.com/liov/hoper/go/v2/utils/strings"
 )
 
 var client = http.DefaultClient
@@ -135,7 +135,7 @@ func (req *RequestParams) HTTPRequest(response interface{}) error {
 	} else {
 		if req.ContentType != "" {
 			param := getParam(req.Param)
-			reqBody = strings2.ToBytes(param)
+			reqBody = stringsi.ToBytes(param)
 			body = strings.NewReader(param)
 		} else {
 			reqBody, err = json.Marshal(req.Param)
@@ -167,7 +167,7 @@ func (req *RequestParams) HTTPRequest(response interface{}) error {
 
 	resp, err := client.Do(request)
 	if err != nil {
-		respBytes = strings2.ToBytes(err.Error())
+		respBytes = stringsi.ToBytes(err.Error())
 		return err
 	}
 	defer resp.Body.Close()

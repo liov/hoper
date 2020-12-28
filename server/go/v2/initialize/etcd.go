@@ -2,7 +2,7 @@ package initialize
 
 import (
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/reflect3"
+	"github.com/liov/hoper/go/v2/utils/reflect"
 	"github.com/spf13/viper"
 	_ "github.com/spf13/viper/remote"
 )
@@ -13,7 +13,7 @@ type EtcdConfig struct {
 
 func (init *Init) P0EtcdOnce() {
 	conf := &EtcdConfig{}
-	if exist := reflect3.GetFieldValue(init.conf, conf); !exist {
+	if exist := reflecti.GetFieldValue(init.conf, conf); !exist {
 		return
 	}
 	var runtimeViper = viper.New()

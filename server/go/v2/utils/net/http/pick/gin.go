@@ -8,7 +8,7 @@ import (
 	"reflect"
 
 	"github.com/gin-gonic/gin"
-	http2 "github.com/liov/hoper/go/v2/utils/net/http"
+	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	gin_build "github.com/liov/hoper/go/v2/utils/net/http/gin"
 	"github.com/liov/hoper/go/v2/utils/net/http/gin/handlerconv"
@@ -48,7 +48,7 @@ func Gin(engine *gin.Engine, genApi bool,modName string) {
 					json.NewEncoder(ctx.Writer).Encode(result[1].Interface())
 					return
 				}
-				if info, ok := result[0].Interface().(*http2.File); ok {
+				if info, ok := result[0].Interface().(*httpi.File); ok {
 					header := ctx.Writer.Header()
 					header.Set("Content-Type", "application/octet-stream")
 					header.Set("Content-Disposition", "attachment;filename="+info.Name)

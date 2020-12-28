@@ -1,4 +1,4 @@
-package time2
+package timei
 
 import (
 	"database/sql/driver"

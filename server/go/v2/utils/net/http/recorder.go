@@ -1,4 +1,4 @@
-package http2
+package httpi
 
 import (
 	"bytes"
@@ -213,4 +213,10 @@ func parseContentLength(cl string) int64 {
 		return -1
 	}
 	return int64(n)
+}
+
+func (rw *ResponseRecorder) Clear() {
+	rw.wroteHeader = false
+	rw.Body.Reset()
+	delete(rw.HeaderMap,"Content-Type")
 }

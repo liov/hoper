@@ -1,5 +1,5 @@
 // Match provides a simple pattern matcher with unicode support.
-package strings2
+package stringsi
 
 import "unicode/utf8"
 

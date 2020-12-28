@@ -2,7 +2,7 @@ package initialize
 
 import (
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/reflect3"
+	"github.com/liov/hoper/go/v2/utils/reflect"
 )
 
 type LogConfig log.Config
@@ -13,7 +13,7 @@ func (conf *LogConfig) Generate() *log.Config {
 
 func (init *Init) P1Log() {
 	conf := &LogConfig{}
-	if exist := reflect3.GetFieldValue(init.conf, conf); !exist {
+	if exist := reflecti.GetFieldValue(init.conf, conf); !exist {
 		return
 	}
 	logConf := conf.Generate()
