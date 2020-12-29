@@ -1,5 +1,6 @@
 import axios from "axios";
 import store from "../store/index";
+import vue from "vue";
 
 //axios.defaults.baseURL = "https://" + window.location.host;
 //axios.defaults.baseURL = "https://hoper.xyz";

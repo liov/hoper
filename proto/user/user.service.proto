@@ -25,7 +25,7 @@ service UserService {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {
     description: "用户相关接口"
   };
-  //验证码
+  // 验证码
   rpc VerifyCode (empty.Empty) returns (response.CommonRep) {
     option (google.api.http) = {
       get: "/api/v1/verifyCode"
@@ -38,6 +38,19 @@ service UserService {
     option (gogo.graphql_operation) = Query;
   }
 
+  // 验证码
+  rpc SendVerifyCode (SendVerifyCodeReq) returns (response.CommonRep) {
+    option (google.api.http) = {
+      get: "/api/v1/SendVerifyCode"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["用户相关接口", "util", "v1.0.0"]
+      summary : "发送验证码"
+      description : "发送验证码"
+    };
+    option (gogo.graphql_operation) = Query;
+  }
+
   //注册验证
   rpc SignupVerify (SingUpVerifyReq) returns (response.TinyRep) {
     option (google.api.http) = {
@@ -46,8 +59,8 @@ service UserService {
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]
-      summary : "注册验证"
-      description : "注册验证接口"
+      summary : "发送验证码"
+      description : "发送验证码"
     };
     option (gogo.graphql_operation) = Mutation;
   }
@@ -257,12 +270,14 @@ message SignupReq {
     human_error: "密码最短6位"
   }, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {title: "密码"
     min_length: 6}];
+  string name = 1 [(go.field) = {tags:'validate:"required,gte=3,lte=10" annotation:"昵称"'}];
+  Gender gender = 3 [(go.field) = {tags:'validate:"required" annotation:"性别"'}];
   // 邮箱
   string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" annotation:"邮箱"'}];
   // 手机号
   string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" annotation:"手机号"'}];
   // 验证码
-  string vCode = 8 [(go.field) = {tags:'validate:"required,numeric" annotation:"验证码"'}];
+  string vCode = 8 [(go.field) = {tags:'validate:"required" annotation:"验证码"'}];
 }
 
 message SignupRep {
@@ -305,7 +320,7 @@ message EditReq {
     Gender gender = 8 [(go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
       type:INTEGER
     }];
-    string birthday = 9 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0"'}];
+    string birthday = 9 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:\'0001-01-01 00:00:00\'"'}];
     string address = 14 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
     string introduction = 10 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
     string signature = 11 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
@@ -362,4 +377,12 @@ message ActionLogListRep {
   uint32 code = 1[(go.field) = {tags:'json:"code"'}];
   string message = 2;
   repeated UserActionLog details = 3;
+}
+
+message SendVerifyCodeReq{
+  // 邮箱
+  string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" annotation:"邮箱"'}];
+  // 手机号
+  string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" annotation:"手机号"'}];
+  Action type = 2 [(go.field) = {tags:'gorm:"default:0" annotation:"操作类型"'}];
 }

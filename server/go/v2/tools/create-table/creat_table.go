@@ -17,9 +17,9 @@ var userMod = []interface{}{
 }
 
 func main() {
-	get.GetDB().Migrator().DropTable(userMod...)
-	get.GetDB().Migrator().CreateTable(userMod...)
-	get.GetDB().Exec(`CREATE OR REPLACE FUNCTION del_tabs(username IN VARCHAR) RETURNS void AS $$
+	get.GetDB().Debug().Migrator().DropTable(userMod...)
+	get.GetDB().Debug().Migrator().CreateTable(userMod...)
+/*	get.GetDB().Exec(`CREATE OR REPLACE FUNCTION del_tabs(username IN VARCHAR) RETURNS void AS $$
 		DECLARE
 		statements CURSOR FOR
 		SELECT tablename FROM pg_tables
@@ -29,7 +29,7 @@ func main() {
 		EXECUTE 'DROP TABLE ' || quote_ident(stmt.tablename) || ' CASCADE;';
 		END LOOP;
 		END;
-		$$ LANGUAGE plpgsql`)
+		$$ LANGUAGE plpgsql`)*/
 }
 
 //清空所有表

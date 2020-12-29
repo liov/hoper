@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
+	"github.com/google/uuid"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
@@ -36,7 +37,6 @@ type UserService struct {
 func (*UserService) Service() (string, string, []http.HandlerFunc) {
 	return "用户相关", "/api/user", []http.HandlerFunc{middle.Log}
 }
-
 
 func GetUserService() *UserService {
 	if userSvc != nil {
@@ -101,6 +101,10 @@ func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*model.Si
 		return nil, errorcode.InvalidArgument.WithMessage("请填写邮箱或手机号")
 	}
 
+	if err :=verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL,
+		conf.Conf.Customize.LuosimaoAPIKey, req.VCode);err!=nil{
+		return nil, errorcode.InvalidArgument.WithMessage(err.Error())
+	}
 	if exist, _ := userDao.ExitByEmailORPhone(nil, req.Mail, req.Phone); exist {
 		if req.Mail != "" {
 			return nil, errorcode.InvalidArgument.WithMessage("邮箱已被注册")
@@ -108,14 +112,21 @@ func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*model.Si
 			return nil, errorcode.InvalidArgument.WithMessage("手机号已被注册")
 		}
 	}
-	var user = &model.User{}
-	user.Mail = req.Mail
-	user.Gender = model.Gender_GenderUnfilled
-	user.CreatedAt = timei.Format(time.Now())
-	user.LastActivatedAt = user.CreatedAt
-	user.Role = model.Role_UserRoleNormal
-	user.Status = model.UserStatus_InActive
-	user.AvatarURL = modelconst.DefaultAvatar
+	now := time.Now()
+	formatNow := timei.Format(now)
+	var user = &model.User{
+		Name:            req.Name,
+		Account:         uuid.New().String(),
+		Mail:            req.Mail,
+		Phone:           req.Phone,
+		Gender:          req.Gender,
+		AvatarURL:       modelconst.DefaultAvatar,
+		LastActivatedAt: formatNow,
+		Role:            model.Role_UserRoleNormal,
+		CreatedAt:       formatNow,
+		Status:          model.UserStatus_InActive,
+	}
+
 	user.Password = encryptPassword(req.Password)
 	if err = userDao.Creat(nil, user); err != nil {
 		log.Error(err)
@@ -187,6 +198,7 @@ func sendMail(action model.Action, curTime int64, user *model.User) {
 		Content:  content,
 		To:       []string{user.Mail},
 	}
+	log.Debug(content)
 	err := mail.SendMailTLS(addr, dao.Dao.MailAuth, &m)
 	if err != nil {
 		log.Error("sendMail:", err)
@@ -485,7 +497,6 @@ func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListR
 func (*UserService) GetTest(ctx context.Context, req *model.GetReq) (*model.GetRep, error) {
 	return &model.GetRep{Code: uint32(req.Id), Message: "测试"}, nil
 }
-
 
 func (*UserService) Add(ctx *Claims, req *model.SignupReq) (*model.SignupRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用

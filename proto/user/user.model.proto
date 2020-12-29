@@ -11,8 +11,8 @@ option (go.file) = {non_omitempty:true};
 // 用户
 message User {
     uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
-    string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" annotation:"名字"'}];
-    string nickName = 17 [(go.field) = {tags:'gorm:"size:10;not null" validate:"required,gte=3,lte=10" annotation:"昵称"'}];
+    string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" annotation:"昵称"'}];
+    string account = 17 [(go.field) = {tags:'gorm:"size:20;not null;unique" validate:"required,gte=6,lte=20" annotation:"账号"'}];
     string activatedAt = 3 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:\'0001-01-01 00:00:00\'"'}];
     string password = 5 [(go.field) = {tags:'gorm:"size:32;not null" validate:"gte=8,lte=15" annotation:"密码"'}];
     string mail = 6 [(go.field) = {tags:'gorm:"size:16;default:\'\'" validate:"email" annotation:"邮箱"'}];
