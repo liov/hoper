@@ -26,7 +26,9 @@ import {
   Button,
   Uploader,
   Picker,
-  Popup
+  Popup,
+  RadioGroup,
+  Radio
 } from "vant";
 
 createApp(App)
@@ -53,4 +55,6 @@ createApp(App)
   .use(Picker)
   .use(Popup)
   .use(HoperPlugin)
+  .use(RadioGroup)
+  .use(Radio)
   .mount("#app");

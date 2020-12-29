@@ -15,8 +15,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/liov/hoper/go/v2/initialize"
+	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/number"
 	"github.com/liov/hoper/go/v2/utils/strings"
+	"go.uber.org/zap"
 )
 
 var client = http.DefaultClient
@@ -58,21 +61,46 @@ type Pair struct {
 	K, V string
 }
 
-type LogCallback func(string, string, []byte, int, []byte, time.Duration)
+type LogCallback func(url, method, auth, reqBody, respBytes string, status int, process time.Duration)
+
+func defaultLog(url, method, auth, reqBody, respBytes string, status int, process time.Duration) {
+	log.Default.With(
+		zap.String("interface", url),
+		zap.String("method", method),
+		zap.String("param", reqBody),
+		zap.Duration("processTime", process),
+		zap.String("result", respBytes),
+		zap.String("other", auth),
+		zap.Int("status", status),
+		zap.String("source", initialize.InitConfig.Module),
+	).Info()
+}
+
+type ContentType uint8
+
+const (
+	ContentTypeJson ContentType = iota
+	ContentTypeForm ContentType = iota
+)
 
 // RequestParams ...
 type RequestParams struct {
 	url, method        string
 	timeout            time.Duration
 	AuthUser, AuthPass string
-	ContentType        string
+	ContentType        ContentType
 	Param              interface{}
 	Header             []Pair
 	logger             LogCallback
 }
 
 func NewRequest(url, method string, param interface{}) *RequestParams {
-	return &RequestParams{url: url, method: strings.ToUpper(method), Param: param}
+	return &RequestParams{url: url, method: strings.ToUpper(method), Param: param, logger: defaultLog}
+}
+
+func (req *RequestParams) SetContentType(contentType ContentType) *RequestParams {
+	req.ContentType = contentType
+	return req
 }
 
 func (req *RequestParams) SetHeader(k, v string) *RequestParams {
@@ -120,32 +148,32 @@ func (req *RequestParams) HTTPRequest(response interface{}) error {
 		SetTimeout(req.timeout)
 	}
 	var body io.Reader
-	var reqBody, respBytes []byte
+	var reqBody, respBody string
 	var statusCode int
 	// 日志记录
 	defer func(now time.Time) {
 		if req.logger != nil {
-			req.logger(url, method, reqBody, statusCode, respBytes, time.Now().Sub(now))
+			req.logger(url, method, req.AuthUser, reqBody, respBody, statusCode, time.Now().Sub(now))
 		}
 	}(time.Now())
 
 	var err error
 	if method == http.MethodGet {
-		url += "?" + getParam(req.Param)
+		param := getParam(req.Param)
+		reqBody = param
+		url += "?" + param
 	} else {
-		if req.ContentType != "" {
-			param := getParam(req.Param)
-			reqBody = stringsi.ToBytes(param)
-			body = strings.NewReader(param)
-		} else {
-			reqBody, err = json.Marshal(req.Param)
+		if req.ContentType == ContentTypeJson {
+			reqBytes, err := json.Marshal(req.Param)
 			if err != nil {
 				return err
 			}
-			if req.logger != nil {
-
-			}
-			body = bytes.NewReader(reqBody)
+			body = bytes.NewReader(reqBytes)
+			reqBody = stringsi.ToSting(reqBytes)
+		} else {
+			param := getParam(req.Param)
+			reqBody = param
+			body = strings.NewReader(param)
 		}
 	}
 
@@ -154,10 +182,10 @@ func (req *RequestParams) HTTPRequest(response interface{}) error {
 		return err
 	}
 	request.SetBasicAuth(req.AuthUser, req.AuthPass)
-	if req.ContentType != "" {
-		request.Header.Set("Content-Type", "application/x-www-form-urlencoded;param=value")
-	} else {
+	if req.ContentType == ContentTypeJson {
 		request.Header.Set("Content-Type", "application/json;charset=utf-8")
+	} else {
+		request.Header.Set("Content-Type", "application/x-www-form-urlencoded;param=value")
 	}
 	if len(req.Header) != 0 {
 		for _, pair := range req.Header {
@@ -167,15 +195,16 @@ func (req *RequestParams) HTTPRequest(response interface{}) error {
 
 	resp, err := client.Do(request)
 	if err != nil {
-		respBytes = stringsi.ToBytes(err.Error())
+		respBody = err.Error()
 		return err
 	}
 	defer resp.Body.Close()
 
-	respBytes, err = ioutil.ReadAll(resp.Body)
+	respBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
+	respBody = stringsi.ToSting(respBytes)
 	statusCode = resp.StatusCode
 	if resp.StatusCode != 200 {
 		return errors.New("status:" + resp.Status)

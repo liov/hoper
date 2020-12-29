@@ -32,7 +32,7 @@ const gqlOut = "graphql_out=paths=source_relative"
 
 var gengql = true
 var files = map[string][]string{
-	"/utils/empty/*.proto":          {goOut, grpcOut},
+/*	"/utils/empty/*.proto":          {goOut, grpcOut},
 	"/utils/errorcode/errrep.proto": {goOut, grpcOut},
 	"/utils/errorcode/*enum.proto":  {enumOut, goOut, grpcOut},
 	"/utils/response/*.proto":       {goOut, grpcOut},
@@ -40,7 +40,7 @@ var files = map[string][]string{
 	"/utils/time/*.proto":          {goOut, grpcOut},
 	"/utils/any/*.proto":          {goOut, grpcOut},
 	"/utils/proto/gogo/*.gen.proto": {gogoprotoOut},
-	"/utils/proto/go/*.proto":       {goOut},
+	"/utils/proto/go/*.proto":       {goOut},*/
 	"/user/*service.proto": {goOut, grpcOut,
 		gatewayOut, openapiv2Out, govalidatorsOut,
 		gqlNogogoOut, gqlOut,

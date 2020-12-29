@@ -56,7 +56,6 @@ var Conf = &config{}
 
 func (c *config) Custom() {
 	if runtime.GOOS == "windows" {
-		c.Customize.LuosimaoAPIKey = ""
 		if c.Flag.Password != "" {
 			c.Database.Password = c.Flag.Password
 			c.Redis.Password = c.Database.Password

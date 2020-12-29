@@ -1,58 +1,50 @@
 package verification
 
 import (
-	"encoding/json"
 	"errors"
-	"io/ioutil"
 	"net/http"
-	"net/url"
 
-	"github.com/liov/hoper/go/v2/utils/log"
+	"github.com/liov/hoper/go/v2/utils/net/http/client"
 )
 
 var LuosimaoErr = errors.New("人机识别验证失败")
 
+type LuosimaoResult struct {
+	Error int    `json:"error"`
+	Res   string `json:"res"`
+	Msg   string `json:"msg"`
+}
+
+func (l *LuosimaoResult) CheckError() error {
+	if l.Res != "success" {
+		return LuosimaoErr
+	}
+	return nil
+}
+
 // LuosimaoVerify 对前端的验证码进行验证
 func LuosimaoVerify(reqURL, apiKey, response string) error {
-	if apiKey == "" {
+	if reqURL == "" || apiKey == "" {
 		// 没有配置LuosimaoAPIKey的话，就没有验证码功能
 		return nil
 	}
 	if response == "" {
-		return errors.New("人机识别验证失败")
+		return LuosimaoErr
 	}
-	reqData := make(url.Values)
-	reqData["api_key"] = []string{apiKey}
-	reqData["response"] = []string{response}
 
-	res, err := http.PostForm(reqURL, reqData)
+	req := struct {
+		ApiKey   string `json:"api_key"`
+		Response string `json:"response"`
+	}{
+		ApiKey:   apiKey,
+		Response: response,
+	}
+	result :=new(LuosimaoResult)
+
+	err := client.NewRequest(reqURL, http.MethodPost, &req).
+		SetContentType(client.ContentTypeForm).HTTPRequest(result)
 	if err != nil {
-		log.Error(err)
-		return LuosimaoErr
-	}
-
-	defer res.Body.Close()
-
-	resBody, readErr := ioutil.ReadAll(res.Body)
-
-	if readErr != nil {
-		log.Error(readErr)
-		return LuosimaoErr
-	}
-
-	type LuosimaoResult struct {
-		Error int    `json:"error"`
-		Res   string `json:"res"`
-		Msg   string `json:"msg"`
-	}
-	var luosimaoResult LuosimaoResult
-	if err := json.Unmarshal(resBody, &luosimaoResult); err != nil {
-		log.Error(err)
-		return LuosimaoErr
-	}
-	if luosimaoResult.Res != "success" {
-		log.Info("luosimaoResult.Res", luosimaoResult.Res)
-		return LuosimaoErr
+		return err
 	}
 	return nil
 }
