@@ -66,7 +66,7 @@ service UserService {
   }
 
   //注册
-  rpc Signup (SignupReq) returns (SignupRep) {
+  rpc Signup (SignupReq) returns (response.TinyRep) {
     option (google.api.http) = {
       post: "/api/v1/user"
       body: "*"
@@ -280,12 +280,6 @@ message SignupReq {
   string vCode = 8 [(go.field) = {tags:'validate:"required" annotation:"验证码"'}];
 }
 
-message SignupRep {
-  uint32 code = 1 [(go.field) = {tags:'json:"code"'}];
-  string message = 2;
-  User details = 3;
-}
-
 message ActiveReq {
   uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"ID"
@@ -337,11 +331,11 @@ message LoginReq {
     length_gt: 6
     human_error: "密码错误"
   }];
-  string luosimao = 3;
+  string vCode = 3;
 }
 
 message LoginRep {
-  uint32 code = 1;
+  uint32 code = 1 [(go.field) = {tags:'json:"code"'}];
   string message = 2;
   LoginDetails details = 3;
   message LoginDetails{

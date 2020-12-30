@@ -5,9 +5,8 @@ import (
 	"crypto/tls"
 	"net"
 	"net/smtp"
-	"strings"
-	"text/template"
 
+	templatei "github.com/liov/hoper/go/v2/utils/def/template"
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
@@ -17,24 +16,28 @@ type Mail struct {
 	To                                            []string
 }
 
-const msg = `To: {{join .To ",\n\t"}}
+const msg = `{{define "mail"}}To: {{join .To ",\n\t"}}
 From: {{.FromName}} <{{.From}}>
 Subject: {{.Subject}}
 Content-Type: {{if .ContentType}}{{.ContentType}}{{- else}}text/html; charset=UTF-8{{end}}
-{{.Content}}
+
+{{.Content}}{{end}}
 `
 
-func GenMsg(m *Mail) []byte {
-	t := template.Must(template.New("msg").Funcs(template.FuncMap{"join": strings.Join}).Parse(msg))
+func init() {
+	templatei.Parse(msg)
+}
+
+func (m *Mail) GenMsg() []byte {
 	var buf = new(bytes.Buffer)
-	err := t.Execute(buf, m)
+	err := templatei.Execute(buf,"mail", m)
 	if err != nil {
 		log.Error("executing template:", err)
 	}
 	return buf.Bytes()
 }
 
-func SendMailTLS(addr string, auth smtp.Auth, m *Mail) error {
+func (m *Mail)SendMailTLS(addr string, auth smtp.Auth) error {
 	client, err := createSMTPClient(addr)
 	if err != nil {
 		log.Error(err)
@@ -61,7 +64,7 @@ func SendMailTLS(addr string, auth smtp.Auth, m *Mail) error {
 	if err != nil {
 		return err
 	}
-	_, err = w.Write(GenMsg(m))
+	_, err = w.Write(m.GenMsg())
 	if err != nil {
 		return err
 	}

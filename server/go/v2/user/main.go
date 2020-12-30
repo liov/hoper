@@ -44,10 +44,10 @@ func main() {
 			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
 			pick.Gin(app,true,initialize.InitConfig.Module)
 		},
-		GraphqlResolve: model.NewExecutableSchema(model.Config{
+/*		GraphqlResolve: model.NewExecutableSchema(model.Config{
 			Resolvers: &model.GQLServer{
 				UserService:  service.GetUserService(),
 				OauthService: service.GetOauthService(),
-			}}),
+			}}),*/
 	}).Start()
 }

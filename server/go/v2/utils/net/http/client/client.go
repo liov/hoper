@@ -64,16 +64,14 @@ type Pair struct {
 type LogCallback func(url, method, auth, reqBody, respBytes string, status int, process time.Duration)
 
 func defaultLog(url, method, auth, reqBody, respBytes string, status int, process time.Duration) {
-	log.Default.With(
-		zap.String("interface", url),
+	log.Default.Logger.Info("third-request",zap.String("interface", url),
 		zap.String("method", method),
 		zap.String("param", reqBody),
 		zap.Duration("processTime", process),
 		zap.String("result", respBytes),
 		zap.String("other", auth),
 		zap.Int("status", status),
-		zap.String("source", initialize.InitConfig.Module),
-	).Info()
+		zap.String("source", initialize.InitConfig.Module))
 }
 
 type ContentType uint8

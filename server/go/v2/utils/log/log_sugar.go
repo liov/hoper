@@ -13,14 +13,7 @@ import (
 
 type Logger struct {
 	*zap.SugaredLogger
-}
-
-func (l *Logger) Printf(format string, args ...interface{}) {
-	l.Infof(format, args...)
-}
-
-func (l *Logger) Print(args ...interface{}) {
-	l.Info(args...)
+	Logger *zap.Logger
 }
 
 func GetLogger() *Logger {
@@ -37,14 +30,22 @@ type Config struct {
 
 //初始化日志对象
 func (lf *Config) NewLogger() *Logger {
-	return &Logger{
-		lf.initLogger().Sugar(),
-	}
+	logger := lf.initLogger().
+		With(
+			zap.String("source", lf.ModuleName),
+		)
+	return &Logger{logger.Sugar(), logger}
+}
+
+func (l *Logger) WithOptions(opts ...zap.Option) *Logger {
+	l.Logger = l.Logger.WithOptions(opts...)
+	l.SugaredLogger = l.Logger.Sugar()
+	return l
 }
 
 var Default = (&Config{Development: true, Caller: true, Level: -1}).NewLogger()
 var NoCall = (&Config{Development: true}).NewLogger()
-var CallTwo = Default.Desugar().WithOptions(zap.AddCallerSkip(2)).Sugar()
+var CallTwo = Default.WithOptions(zap.AddCallerSkip(2))
 
 func init() {
 	output.RegisterSink()
@@ -234,4 +235,45 @@ func Fatalw(msg string, keysAndValues ...interface{}) {
 		keysAndValues = append(keysAndValues, "")
 	}
 	Default.Fatalw(msg, keysAndValues...)
+}
+
+// 兼容gormv1
+func (l *Logger) Printf(format string, args ...interface{}) {
+	l.Infof(format, args...)
+}
+
+func (l *Logger) Print(args ...interface{}) {
+	l.Info(args...)
+}
+
+// 兼容grpclog
+func (l *Logger) Infoln(v ...interface{}) {
+	l.Info(v...)
+}
+
+func (l *Logger) Warning(v ...interface{}) {
+	l.Warn(v...)
+}
+
+func (l *Logger) Warningln(v ...interface{}) {
+	l.Warn(v...)
+}
+
+func (l *Logger) Warningf(format string, v ...interface{}) {
+	l.Warnf(format, v...)
+}
+
+func (l *Logger) Errorln(v ...interface{}) {
+	l.Warn(v...)
+}
+
+func (l *Logger) Fatalln(v ...interface{}) {
+	l.Warn(v...)
+}
+
+func (l *Logger) V(level int) bool {
+	if level == 3 {
+		level = 5
+	}
+	return l.Logger.Core().Enabled(zapcore.Level(level))
 }
