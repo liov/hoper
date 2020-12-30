@@ -2,8 +2,10 @@ package gateway
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net/http"
+	"net/textproto"
 	"strings"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -13,7 +15,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func CustomHTTPError(ctx context.Context, mux *runtime.ServeMux, marshaler runtime.Marshaler, w http.ResponseWriter, _ *http.Request, err error) {
+func CustomHTTPError(ctx context.Context, mux *runtime.ServeMux, marshaler runtime.Marshaler, w http.ResponseWriter, r *http.Request, err error) {
 
 	s, ok := status.FromError(err)
 	if ok && s.Code() == 14 && strings.HasSuffix(s.Message(), `refused it."`) {
@@ -35,6 +37,13 @@ func CustomHTTPError(ctx context.Context, mux *runtime.ServeMux, marshaler runti
 		se = &errorcode.ErrRep{Code: errorcode.Unknown, Message: err.Error()}
 	}
 
+	md, ok := runtime.ServerMetadataFromContext(ctx)
+	if !ok {
+		grpclog.Infof("Failed to extract ServerMetadata from context")
+	}
+
+	handleForwardResponseServerMetadata(w, mux, md)
+
 	buf, merr := marshaler.Marshal(se)
 	if merr != nil {
 		grpclog.Infof("Failed to marshal error message %q: %v", se, merr)
@@ -45,10 +54,21 @@ func CustomHTTPError(ctx context.Context, mux *runtime.ServeMux, marshaler runti
 		return
 	}
 
+	var wantsTrailers bool
+
+	if te := r.Header.Get("TE"); strings.Contains(strings.ToLower(te), "trailers") {
+		wantsTrailers = true
+		handleForwardResponseTrailerHeader(w, md)
+		w.Header().Set("Transfer-Encoding", "chunked")
+	}
+
 	st := HTTPStatusFromCode(se.Code)
 	w.WriteHeader(st)
 	if _, err := w.Write(buf); err != nil {
 		grpclog.Infof("Failed to write response: %v", err)
+	}
+	if wantsTrailers {
+		handleForwardResponseTrailer(w, md)
 	}
 }
 
@@ -93,4 +113,35 @@ func HTTPStatusFromCode(code errorcode.ErrCode) int {
 
 	grpclog.Infof("Unknown gRPC error code: %v", code)
 	return http.StatusInternalServerError
+}
+
+
+func outgoingHeaderMatcher(key string) (string, bool) {
+	return fmt.Sprintf("%s%s", runtime.MetadataHeaderPrefix, key), true
+}
+
+func handleForwardResponseServerMetadata(w http.ResponseWriter, mux *runtime.ServeMux, md runtime.ServerMetadata) {
+	for k, vs := range md.HeaderMD {
+		if h, ok := outgoingHeaderMatcher(k); ok {
+			for _, v := range vs {
+				w.Header().Add(h, v)
+			}
+		}
+	}
+}
+
+func handleForwardResponseTrailerHeader(w http.ResponseWriter, md runtime.ServerMetadata) {
+	for k := range md.TrailerMD {
+		tKey := textproto.CanonicalMIMEHeaderKey(fmt.Sprintf("%s%s", runtime.MetadataTrailerPrefix, k))
+		w.Header().Add("Trailer", tKey)
+	}
+}
+
+func handleForwardResponseTrailer(w http.ResponseWriter, md runtime.ServerMetadata) {
+	for k, vs := range md.TrailerMD {
+		tKey := fmt.Sprintf("%s%s", runtime.MetadataTrailerPrefix, k)
+		for _, v := range vs {
+			w.Header().Add(tKey, v)
+		}
+	}
 }

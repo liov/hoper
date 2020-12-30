@@ -43,7 +43,7 @@ var files = map[string][]string{
 	"/utils/proto/go/*.proto":       {goOut},*/
 	"/user/*service.proto": {goOut, grpcOut,
 		gatewayOut, openapiv2Out, govalidatorsOut,
-		gqlNogogoOut, gqlOut,
+		//gqlNogogoOut, gqlOut,
 		//"gqlgencfg_out=paths=source_relative",
 	},
 	"/user/*model.proto": {goOut, grpcOut},

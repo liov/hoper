@@ -1,6 +1,7 @@
 package service
 
 import (
+	"bytes"
 	"context"
 	"crypto/md5"
 	"fmt"
@@ -18,6 +19,7 @@ import (
 	"github.com/liov/hoper/go/v2/user/dao"
 	"github.com/liov/hoper/go/v2/user/middle"
 	modelconst "github.com/liov/hoper/go/v2/user/model"
+	templatei "github.com/liov/hoper/go/v2/utils/def/template"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/net/http/auth/jwt"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"
@@ -90,7 +92,7 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 	return rep, err
 }
 
-func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*model.SignupRep, error) {
+func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*response.TinyRep, error) {
 
 	err := validator.Validate.Struct(req)
 	if err != nil {
@@ -101,8 +103,8 @@ func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*model.Si
 		return nil, errorcode.InvalidArgument.WithMessage("请填写邮箱或手机号")
 	}
 
-	if err :=verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL,
-		conf.Conf.Customize.LuosimaoAPIKey, req.VCode);err!=nil{
+	if err := verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL,
+		conf.Conf.Customize.LuosimaoAPIKey, req.VCode); err != nil {
 		return nil, errorcode.InvalidArgument.WithMessage(err.Error())
 	}
 	if exist, _ := userDao.ExitByEmailORPhone(nil, req.Mail, req.Phone); exist {
@@ -132,7 +134,7 @@ func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*model.Si
 		log.Error(err)
 		return nil, errorcode.RedisErr.WithMessage("新建出错")
 	}
-	var rep = &model.SignupRep{Message: "新建成功", Details: user}
+	var rep = &response.TinyRep{Message: "新建成功,请前往邮箱激活"}
 
 	activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
 	RedisConn := dao.Dao.Redis.Get()
@@ -163,43 +165,41 @@ func encryptPassword(password string) string {
 }
 
 func sendMail(action model.Action, curTime int64, user *model.User) {
-	siteName := "hoper"
 	siteURL := "https://" + conf.Conf.Server.Domain
-	var content string
 	title := action.String()
 	secretStr := strconv.FormatInt(curTime, 10) + user.Mail + user.Password
 	secretStr = fmt.Sprintf("%x", md5.Sum(stringsi.ToBytes(secretStr)))
+	var ctiveOrRestPasswdValues = struct {
+		UserName, SiteName, SiteURL, ActionURL, SecretStr string
+	}{user.Name, "hoper", siteURL, "", secretStr}
+	var templ string
 	switch action {
 	case model.Action_Active:
-		actionURL := siteURL + "/user/active/" + strconv.FormatUint(user.Id, 10) + "/" + secretStr
-		log.Debug(actionURL)
-		content = "<p><b>亲爱的" + user.Name + ":</b></p>" +
-			"<p>我们收到您在 " + siteName + " 的注册信息, 请点击下面的链接, 或粘贴到浏览器地址栏来激活帐号.</p>" +
-			"<a href=\"" + actionURL + "\">" + actionURL + "</a>" +
-			"<p>如果您没有在 " + siteName + " 填写过注册信息, 说明有人滥用了您的邮箱, 请删除此邮件, 我们对给您造成的打扰感到抱歉.</p>" +
-			"<p>" + siteName + " 谨上.</p>"
+		ctiveOrRestPasswdValues.ActionURL = siteURL + "/user/active/" + strconv.FormatUint(user.Id, 10) + "/" + secretStr
+		templ = modelconst.ActionActiveContent
 	case model.Action_RestPassword:
-		actionURL := siteURL + "/user/resetPassword/" + secretStr + strconv.FormatUint(user.Id, 10) + "/" + secretStr
-		content = "<p><b>亲爱的" + user.Name + ":</b></p>" +
-			"<p>你的密码重设要求已经得到验证。请点击以下链接, 或粘贴到浏览器地址栏来设置新的密码: </p>" +
-			"<a href=\"" + actionURL + "\">" + actionURL + "</a>" +
-			"<p>感谢你对" + siteName + "的支持，希望你在" + siteName + "的体验有益且愉快。</p>" +
-			"<p>(这是一封自动产生的email，请勿回复。)</p>"
+		ctiveOrRestPasswdValues.ActionURL = siteURL + "/user/resetPassword/" + strconv.FormatUint(user.Id, 10) + "/" + secretStr
+		templ = modelconst.ActionRestPasswordContent
 	}
-
+	log.Debug(ctiveOrRestPasswdValues.ActionURL)
+	var buf = new(bytes.Buffer)
+	err := templatei.Execute(buf, templ, &ctiveOrRestPasswdValues)
+	if err != nil {
+		log.Error("executing template:", err)
+	}
 	//content += "<p><img src=\"" + siteURL + "/images/logo.png\" style=\"height: 42px;\"/></p>"
 	//fmt.Println(content)
-
+	content := buf.String()
 	addr := conf.Conf.Mail.Host + conf.Conf.Mail.Port
-	m := mail.Mail{
-		FromName: siteName,
+	m := &mail.Mail{
+		FromName: ctiveOrRestPasswdValues.SiteName,
 		From:     conf.Conf.Mail.From,
 		Subject:  title,
 		Content:  content,
 		To:       []string{user.Mail},
 	}
 	log.Debug(content)
-	err := mail.SendMailTLS(addr, dao.Dao.MailAuth, &m)
+	err = m.SendMailTLS(addr, dao.Dao.MailAuth)
 	if err != nil {
 		log.Error("sendMail:", err)
 	}
@@ -213,7 +213,7 @@ func checkPassword(password string, user *model.User) bool {
 	return encryptPassword(password) == user.Password
 }
 
-func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*response.TinyRep, error) {
+func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.LoginRep, error) {
 	RedisConn := dao.Dao.Redis.Get()
 	defer RedisConn.Close()
 
@@ -241,7 +241,7 @@ func (*UserService) Active(ctx context.Context, req *model.ActiveReq) (*response
 
 	dao.Dao.GORMDB.Model(user).Updates(map[string]interface{}{"activated_at": time.Now(), "status": 1})
 	RedisConn.Do("DEL", redisKey)
-	return &response.TinyRep{Message: "激活成功"}, nil
+	return u.login(ctx, user)
 }
 
 func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.TinyRep, error) {
@@ -276,9 +276,9 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.T
 	return &response.TinyRep{Message: "修改成功"}, nil
 }
 
-func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginRep, error) {
+func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginRep, error) {
 
-	if verifyErr := verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL, conf.Conf.Customize.LuosimaoAPIKey, req.Luosimao); verifyErr != nil {
+	if verifyErr := verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL, conf.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
 		return nil, errorcode.InvalidArgument.WithMessage(verifyErr.Error())
 	}
 
@@ -317,6 +317,11 @@ func (*UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Logi
 		go sendMail(model.Action_Active, curTime, &user)
 		return nil, model.UserErr_NoActive.WithMessage("账号未激活,请进入邮箱点击激活")
 	}
+
+	return u.login(ctx, &user)
+}
+
+func (*UserService) login(ctx context.Context, user *model.User) (*model.LoginRep, error) {
 	now := time.Now()
 	nowStamp := now.Unix()
 	userInfo := &model.UserMainInfo{
@@ -415,7 +420,7 @@ func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.Ge
 }
 
 func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (*response.TinyRep, error) {
-	if verifyErr := verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL, conf.Conf.Customize.LuosimaoAPIKey, req.Luosimao); verifyErr != nil {
+	if verifyErr := verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL, conf.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
 		return nil, errorcode.InvalidArgument.WithMessage(verifyErr.Error())
 	}
 

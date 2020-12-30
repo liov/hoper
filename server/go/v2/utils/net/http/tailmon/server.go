@@ -197,13 +197,11 @@ func (a *AccessLog) log() {
 	//获取请求头的报文信息
 	authHeader := a.r.Header.Get(a.authKey)
 
-	log.Default.With(
-		zap.String("interface", a.r.RequestURI),
+	log.Default.Logger.Info("",zap.String("interface", a.r.RequestURI),
 		zap.String("param", param),
 		zap.Duration("processTime", time.Now().Sub(a.start)),
 		zap.String("result", a.resp),
 		zap.String("other", authHeader),
 		zap.Int("status", a.status),
-		zap.String("source", initialize.InitConfig.Module),
-	).Info()
+		zap.String("source", initialize.InitConfig.Module))
 }
