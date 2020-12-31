@@ -1,0 +1,20 @@
+syntax = "proto3";
+package content;
+import "utils/proto/gogo/enum.proto";
+import "utils/proto/go/go.proto";
+
+
+option java_package = "xyz.hoper.protobuf.content";
+option go_package = "github.com/liov/hoper/go/v2/protobuf/content";
+option (gogo.enum_gqlgen_all) = true;
+
+// 可见范围
+enum ViewPermission{
+  option (go.enum) = {stringer_name: 'OrigString'};
+  All = 0 [(gogo.enumvalue_cn) = "无限制"];
+  Self = 1 [(gogo.enumvalue_cn) = "仅自己"];
+  HomePage = 2 [(gogo.enumvalue_cn) = "主页"];
+  Stranger = 3 [(gogo.enumvalue_cn) = "陌生人"];
+  Shield = 4 [(gogo.enumvalue_cn) = "屏蔽部分人"];
+  Open = 5 [(gogo.enumvalue_cn) = "开放部分人"];
+}
