@@ -1,0 +1,16 @@
+syntax = "proto3";
+package content;
+import "utils/proto/gogo/enum.proto";
+import "utils/proto/go/go.proto";
+
+option (gogo.enum_gqlgen_all) = true;
+
+// 评论类型
+enum CommentType{
+  option (go.enum) = {stringer_name: 'OrigString'};
+  Placeholder = 0 [(gogo.enumvalue_cn)= "占位"];
+  Moment = 1 [(gogo.enumvalue_cn)= "瞬间"];
+  Diary = 2 [(gogo.enumvalue_cn)= "日记"];
+  DiaryBook = 3 [(gogo.enumvalue_cn)= "日记本"];
+  Article = 4 [(gogo.enumvalue_cn)= "文章"];
+}
