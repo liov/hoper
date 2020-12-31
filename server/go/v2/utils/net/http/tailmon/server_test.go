@@ -6,6 +6,9 @@ import (
 	"reflect"
 	"testing"
 	"unsafe"
+
+	"github.com/gin-gonic/gin"
+	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 )
 
 type Foo struct {
@@ -31,5 +34,13 @@ func TestPtr(t *testing.T) {
 	//字节对齐了,recorder size 56 bool size 1
 	*(*bool)(unsafe.Pointer(uintptr(unsafe.Pointer(recorder)) + 48)) = false
 	recorder.WriteHeader(300)
+	log.Println(recorder.Code)
+}
+
+func TestGinCtxPtr(t *testing.T) {
+	recorder := httpi.NewRecorder()
+	ctx := new(gin.Context)
+	*(*httpi.ResponseRecorder)(unsafe.Pointer(uintptr(*(*int64)(unsafe.Pointer(ctx))))) = *recorder
+	log.Println(*(*int64)(unsafe.Pointer(ctx)))
 	log.Println(recorder.Code)
 }

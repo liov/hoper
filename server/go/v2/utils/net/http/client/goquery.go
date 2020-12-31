@@ -244,7 +244,7 @@ func (s *SuperAgent) SetLogger(logger Logger) *SuperAgent {
 	return s
 }
 
-// Clear SuperAgent data for another new request.
+// Reset SuperAgent data for another new request.
 func (s *SuperAgent) ClearSuperAgent() {
 	if s.DoNotClearSuperAgent {
 		return

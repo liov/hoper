@@ -19,7 +19,7 @@ func Gateway(gatewayHandle GatewayHandle) http.Handler {
 
 	gwmux := runtime.NewServeMux(
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, &jsonpb.JSONPb{API: json.Standard}),
-		//runtime.WithProtoErrorHandler(CustomHTTPError),
+
 		runtime.WithMetadata(func(ctx context.Context, request *http.Request) metadata.MD {
 			area, err := url.PathUnescape(request.Header.Get("AREA"))
 			if err != nil {
@@ -76,7 +76,8 @@ func Gateway(gatewayHandle GatewayHandle) http.Handler {
 
 	runtime.WithForwardResponseOption(CookieHook)(gwmux)
 	runtime.WithForwardResponseOption(ResponseHook)(gwmux)
-	//runtime.WithErrorHandler(CustomHTTPError)(gwmux)
+	runtime.WithRoutingErrorHandler(RoutingErrorHandler)(gwmux)
+	runtime.WithErrorHandler(CustomHTTPError)(gwmux)
 	if gatewayHandle != nil {
 		gatewayHandle(ctx, gwmux)
 	}

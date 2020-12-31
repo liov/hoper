@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/liov/hoper/go/v2/utils/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -25,10 +26,11 @@ func CookieHook(ctx context.Context, writer http.ResponseWriter, message proto.M
 }
 
 func GrpcSetCookie(ctx context.Context, cookie string) {
-	err := grpc.SendHeader(ctx, metadata.MD{"Set-Cookie": []string{cookie}})
+	md, _ := metadata.FromIncomingContext(ctx)
+	md.Set("Set-Cookie", cookie)
+	err := grpc.SendHeader(ctx, md)
 	if err != nil {
-		md, _ := metadata.FromIncomingContext(ctx)
-		md.Set("Set-Cookie", cookie)
+		log.Error(err)
 	}
 }
 

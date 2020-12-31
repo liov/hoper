@@ -5,7 +5,7 @@ import vue from "vue";
 //axios.defaults.baseURL = "https://" + window.location.host;
 //axios.defaults.baseURL = "https://hoper.xyz";
 const token = localStorage.getItem("token");
-axios.defaults.headers.common["Authorization"] = token
+axios.defaults.headers["Authorization"] = token
   ? token
   : store.state.token;
 
