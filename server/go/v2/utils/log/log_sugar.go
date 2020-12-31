@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/liov/hoper/go/v2/utils/log/output"
+	"github.com/liov/hoper/go/v2/utils/net"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -32,7 +33,8 @@ type Config struct {
 func (lf *Config) NewLogger() *Logger {
 	logger := lf.initLogger().
 		With(
-			zap.String("source", lf.ModuleName),
+			zap.String("module", lf.ModuleName),
+			zap.String("source", net.GetIP()),
 		)
 	return &Logger{logger.Sugar(), logger}
 }
@@ -52,7 +54,7 @@ func init() {
 }
 
 func (lf *Config) SetLogger() {
-	Default.SugaredLogger = lf.initLogger().Sugar()
+	Default = lf.NewLogger()
 }
 
 func (lf *Config) SetNoCall() {

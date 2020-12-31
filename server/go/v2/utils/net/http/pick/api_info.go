@@ -126,6 +126,10 @@ func getMethodInfo(method *reflect.Method, preUrl string) (info *apiInfo) {
 		err = errors.New("method返回值必须为两个")
 		return
 	}
+	// 屏蔽grpc service
+	if methodType.In(1).Implements(contextType) {
+		return nil
+	}
 	if !methodType.In(1).Implements(claimsType) {
 		err = errors.New("service第一个参数必须实现Claims接口")
 		return

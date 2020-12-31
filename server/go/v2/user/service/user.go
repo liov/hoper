@@ -292,6 +292,8 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 		sql = "mail = ?"
 	case verification.Phone:
 		sql = "phone = ?"
+	default:
+		sql = "account = ?"
 	}
 
 	var user model.User

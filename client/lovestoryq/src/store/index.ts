@@ -1,5 +1,7 @@
 import { createStore } from "vuex";
 import axios from "axios";
+import {Toast} from "vant"
+import router from "@/router/index"
 
 const state = {
   user: null,
@@ -28,8 +30,15 @@ const actions = {
   },
   async login({commit}, params) {
     try {
-      const {data} = await axios.post("/api/user/login", params);
-      commit("SET_USER", data);
+      const {data} = await axios.post("/api/v1/user/login", params);
+      if (data.code && data.code !== 0) Toast.fail(data.message)
+      else {
+        store.commit("SET_USER", data.details.user);
+        store.commit("SET_TOKEN", data.details.token);
+        localStorage.setItem("token", data.details.token);
+        axios.defaults.headers["Authorization"] = data.details.token;
+        await router.push("/");
+      }
     } catch (error) {
       if (error.response && error.response.status === 401) {
         throw new Error("Bad credentials");

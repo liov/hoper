@@ -42,9 +42,12 @@ func (s *Server) httpHandler() http.HandlerFunc {
 	var gatewayServer http.Handler
 	if s.GatewayRegistr != nil {
 		gatewayServer = gateway.Gateway(s.GatewayRegistr)
-		ginServer.NoRoute(func(ctx *gin.Context) {
-			gatewayServer.ServeHTTP(ctx.Writer, ctx.Request)
-		})
+	/*	ginServer.NoRoute(func(ctx *gin.Context) {
+			gatewayServer.ServeHTTP(
+				(*httpi.ResponseRecorder)(unsafe.Pointer(uintptr(*(*int64)(unsafe.Pointer(uintptr(unsafe.Pointer(ctx))+8))))),
+				ctx.Request)
+			ctx.Writer.WriteHeader(http.StatusOK)
+		})*/
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -52,10 +55,15 @@ func (s *Server) httpHandler() http.HandlerFunc {
 		/*		var result bytes.Buffer
 				rsp := io.MultiWriter(w, &result)*/
 		recorder := httpi.NewRecorder()
+
 		body, _ := ioutil.ReadAll(r.Body)
 		r.Body = ioutil.NopCloser(bytes.NewReader(body))
 
 		ginServer.ServeHTTP(recorder, r)
+		if recorder.Code == http.StatusNotFound && gatewayServer!=nil{
+			recorder.Reset()
+			gatewayServer.ServeHTTP(recorder,r)
+		}
 
 		// 从 recorder 中提取记录下来的 Response Header，设置为 ResponseWriter 的 Header
 		for key, value := range recorder.Header() {

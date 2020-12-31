@@ -11,6 +11,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/reconn"
+	stringsi "github.com/liov/hoper/go/v2/utils/strings"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/status"
 )
@@ -62,8 +63,8 @@ func CustomHTTPError(ctx context.Context, mux *runtime.ServeMux, marshaler runti
 		w.Header().Set("Transfer-Encoding", "chunked")
 	}
 
-	st := HTTPStatusFromCode(se.Code)
-	w.WriteHeader(st)
+/*	st := HTTPStatusFromCode(se.Code)
+	w.WriteHeader(st)*/
 	if _, err := w.Write(buf); err != nil {
 		grpclog.Infof("Failed to write response: %v", err)
 	}
@@ -144,4 +145,11 @@ func handleForwardResponseTrailer(w http.ResponseWriter, md runtime.ServerMetada
 			w.Header().Add(tKey, v)
 		}
 	}
+}
+
+
+func RoutingErrorHandler(ctx context.Context, mux *runtime.ServeMux, marshaler runtime.Marshaler, w http.ResponseWriter, r *http.Request, httpStatus int) {
+	w.WriteHeader(httpStatus)
+	w.Header().Set("Content-Type",  "text/xml; charset=utf-8")
+	w.Write(stringsi.ToBytes(http.StatusText(httpStatus)))
 }

@@ -88,7 +88,6 @@ func (rw *ResponseRecorder) writeHeader(b []byte, str string) {
 		m.Set("Content-Type", http.DetectContentType(b))
 	}
 
-	rw.WriteHeader(200)
 }
 
 // Write implements http.ResponseWriter. The data in buf is written to
@@ -215,8 +214,9 @@ func parseContentLength(cl string) int64 {
 	return int64(n)
 }
 
-func (rw *ResponseRecorder) Clear() {
+func (rw *ResponseRecorder) Reset() {
 	rw.wroteHeader = false
+	rw.Code = http.StatusOK
 	rw.Body.Reset()
 	delete(rw.HeaderMap,"Content-Type")
 }

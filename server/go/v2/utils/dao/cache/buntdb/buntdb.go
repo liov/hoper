@@ -1159,7 +1159,7 @@ func (tx *Tx) Commit() error {
 	}
 	// Unlock the database and allow for another writable transaction.
 	tx.unlock()
-	// Clear the db field to disable this transaction from future use.
+	// Reset the db field to disable this transaction from future use.
 	tx.db = nil
 	return err
 }
@@ -1181,7 +1181,7 @@ func (tx *Tx) Rollback() error {
 	}
 	// unlock the database for more transactions.
 	tx.unlock()
-	// Clear the db field to disable this transaction from future use.
+	// Reset the db field to disable this transaction from future use.
 	tx.db = nil
 	return nil
 }
