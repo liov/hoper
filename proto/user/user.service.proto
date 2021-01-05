@@ -80,7 +80,7 @@ service UserService {
   }
 
   //激活
-  rpc Active (ActiveReq) returns (response.TinyRep) {
+  rpc Active (ActiveReq) returns (LoginRep) {
     option (google.api.http) = {
       get: "/api/v1/user/active/{id}/{secret}"
     };
@@ -314,7 +314,7 @@ message EditReq {
     Gender gender = 8 [(go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
       type:INTEGER
     }];
-    string birthday = 9 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:\'0001-01-01 00:00:00\'"'}];
+    string birthday = 9 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00"'}];
     string address = 14 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
     string introduction = 10 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
     string signature = 11 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];

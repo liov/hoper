@@ -505,7 +505,7 @@ func (*UserService) GetTest(ctx context.Context, req *model.GetReq) (*model.GetR
 	return &model.GetRep{Code: uint32(req.Id), Message: "测试"}, nil
 }
 
-func (*UserService) Add(ctx *Claims, req *model.SignupReq) (*model.SignupRep, error) {
+func (*UserService) Add(ctx *Claims, req *model.SignupReq) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() interface{} {
 		return pick.Method(http.MethodPost).
@@ -515,5 +515,5 @@ func (*UserService) Add(ctx *Claims, req *model.SignupReq) (*model.SignupRep, er
 			ChangeLog("1.0.1", "jyb", "2019/12/16", "修改测试")
 	})
 
-	return &model.SignupRep{Message: "测试"}, nil
+	return &response.TinyRep{Message: "测试"}, nil
 }

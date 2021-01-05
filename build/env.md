@@ -113,3 +113,6 @@ openresty
 etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/peer.crt --key=/etc/kubernetes/pki/etcd/peer.key member list
 
 # apisix替代ingress controller
+
+# IDEA
+plugin 仓库地址 https://repo.idechajian.com
