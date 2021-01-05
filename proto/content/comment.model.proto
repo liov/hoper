@@ -24,7 +24,7 @@ message Comment{
   uint64 recvUserID = 10 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"接收人id"'}];
   repeated Comment subComments = 11 [(go.field) = {tags:'gorm:"foreignkey:root_id" annotation:"子评论"'}];
   uint32 sequence = 4 [(go.field) = {tags:'gorm:"default:0" annotation:"同级别的分类可根据sequence的值来排序，置顶"'}];
-  string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:CURRENT_TIMESTAMP()"'}];
+  string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
   uint32 status = 28 [(go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];

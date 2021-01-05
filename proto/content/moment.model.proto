@@ -28,7 +28,7 @@ message Moment {
   uint32 sequence = 12 [(go.field) = {tags:'gorm:"default:0" annotation:"同级别的分类可根据sequence的值来排序，置顶"'}];
   uint32 anonymous = 15 [(go.field) = {tags:'gorm:"default:0" annotation:"是否匿名,0-是,1否"'}];
   ViewPermission permission = 13 [(go.field) = {tags:'gorm:"size:1;default:0" annotation:"查看权限"'}];
-  string createdAt = 16 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:CURRENT_TIMESTAMP()"'}];
+  string createdAt = 16 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
   uint32 status = 18 [(go.field) = {tags:'gorm:"default:0"'},  (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];

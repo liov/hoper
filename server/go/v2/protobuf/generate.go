@@ -30,27 +30,34 @@ const gogoprotoOut = "gogo_out=plugins=grpc"
 const gqlNogogoOut = "gqlgen_out=gogoimport=false,paths=source_relative"
 const gqlOut = "graphql_out=paths=source_relative"
 
-var gengql = true
+var service = []string{goOut, grpcOut,
+	gatewayOut, openapiv2Out, govalidatorsOut,
+	//gqlNogogoOut, gqlOut,
+	//"gqlgencfg_out=paths=source_relative",
+}
+
+var model = []string{goOut, grpcOut}
+var enum = []string{enumOut, goOut, grpcOut}
+
+var gengql = false
 var files = map[string][]string{
-/*	"/utils/empty/*.proto":          {goOut, grpcOut},
-	"/utils/errorcode/errrep.proto": {goOut, grpcOut},
-	"/utils/errorcode/*enum.proto":  {enumOut, goOut, grpcOut},
-	"/utils/response/*.proto":       {goOut, grpcOut},
-	"/utils/oauth/*.proto":          {goOut, grpcOut},
-	"/utils/time/*.proto":          {goOut, grpcOut},
-	"/utils/any/*.proto":          {goOut, grpcOut},
+/*	"/utils/empty/*.proto":          model,
+	"/utils/errorcode/errrep.proto": model,
+	"/utils/errorcode/*enum.proto":  enum,
+	"/utils/response/*.proto":       model,
+	"/utils/oauth/*.proto":          model,
+	"/utils/time/*.proto":          model,
+	"/utils/any/*.proto":          model,
 	"/utils/proto/gogo/*.gen.proto": {gogoprotoOut},
 	"/utils/proto/go/*.proto":       {goOut},*/
-	"/user/*service.proto": {goOut, grpcOut,
-		gatewayOut, openapiv2Out, govalidatorsOut,
-		//gqlNogogoOut, gqlOut,
-		//"gqlgencfg_out=paths=source_relative",
-	},
-	"/user/*model.proto": {goOut, grpcOut},
-	"/user/*enum.proto":  {enumOut, goOut, grpcOut},
-	"/note/*service.proto": {goOut, grpcOut,
-		gatewayOut, openapiv2Out, govalidatorsOut},
-	"/note/*model.proto": {goOut, grpcOut},
+	"/user/*service.proto": service,
+	"/user/*model.proto": model,
+	"/user/*enum.proto":  enum,
+	"/note/*service.proto": service,
+	"/note/*model.proto": model,
+	"/content/*service.proto": service,
+	"/content/*model.proto": model,
+	"/content/*enum.proto":  enum,
 }
 
 var proto = flag.String("proto", "../../../proto", "proto路径")
@@ -138,16 +145,16 @@ const ymlTpl = `schema:
 # Where should the generated server code go?
 exec:
   filename: ../../{{.}}/generated.gql.go
-  package: user
+  package: {{.}}
 
 # Enable Apollo federation support
 federation:
   filename: ../../{{.}}/federation.gql.go
-  package: user
+  package: {{.}}
 
 model:
   filename: ../../{{.}}/models.gql.go
-  package: user
+  package: {{.}}
 
 autobind:
   - "github.com/liov/hoper/go/v2/protobuf/{{.}}"
