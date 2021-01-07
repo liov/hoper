@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	model "github.com/liov/hoper/go/v2/protobuf/note"
+	model "github.com/liov/hoper/go/v2/protobuf/content"
 	"github.com/liov/hoper/go/v2/protobuf/utils/response"
 )
 

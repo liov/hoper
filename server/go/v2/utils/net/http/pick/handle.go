@@ -7,10 +7,10 @@ import (
 	"reflect"
 
 	"github.com/liov/hoper/go/v2/utils/net/http"
-	"github.com/liov/hoper/go/v2/utils/net/http/param/schema"
+	"github.com/liov/hoper/go/v2/utils/net/http/request/schema"
 )
 
-func commonHandler(w http.ResponseWriter, req *http.Request, handle reflect.Value, ps *Params) {
+func commonHandler(w http.ResponseWriter, req *http.Request, handle *reflect.Value, ps *Params) {
 	handleTyp := handle.Type()
 	handleNumIn := handleTyp.NumIn()
 	if handleNumIn != 0 {

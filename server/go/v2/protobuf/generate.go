@@ -41,20 +41,18 @@ var enum = []string{enumOut, goOut, grpcOut}
 
 var gengql = false
 var files = map[string][]string{
-/*	"/utils/empty/*.proto":          model,
+/*
 	"/utils/errorcode/errrep.proto": model,
 	"/utils/errorcode/*enum.proto":  enum,
 	"/utils/response/*.proto":       model,
+	"/utils/request/*.proto":       model,
 	"/utils/oauth/*.proto":          model,
 	"/utils/time/*.proto":          model,
-	"/utils/any/*.proto":          model,
 	"/utils/proto/gogo/*.gen.proto": {gogoprotoOut},
 	"/utils/proto/go/*.proto":       {goOut},*/
 	"/user/*service.proto": service,
 	"/user/*model.proto": model,
 	"/user/*enum.proto":  enum,
-	"/note/*service.proto": service,
-	"/note/*model.proto": model,
 	"/content/*service.proto": service,
 	"/content/*model.proto": model,
 	"/content/*enum.proto":  enum,

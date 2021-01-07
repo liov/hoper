@@ -1,16 +1,16 @@
 syntax = "proto3";
-package note;
-import "note/note.model.proto";
+package content;
+import "content/note.model.proto";
 
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
-import "utils/empty/empty.proto";
+import "utils/request/empty.proto";
 import "utils/response/response.proto";
 import "utils/proto/go/policy.proto";
 import "utils/proto/go/go.proto";
 
-option go_package = "github.com/liov/hoper/go/v2/protobuf/note";
+option go_package = "github.com/liov/hoper/go/v2/protobuf/content";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
@@ -24,7 +24,7 @@ service NoteService {
 		description: "笔记相关接口"
     };
     //验证码
-    rpc Create (note.Note) returns (response.CommonRep) {
+    rpc Create (Note) returns (response.CommonRep) {
         option (google.api.http) = {
             post: "/api/v1/note"
             body: "*"

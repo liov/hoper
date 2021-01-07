@@ -2,6 +2,7 @@ package pick
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -94,7 +95,7 @@ func (api *apiInfo) getPrincipal() string {
 }
 
 //简直就是精髓所在，真的是脑洞大开才能想到
-func getMethodInfo(method *reflect.Method, preUrl string) (info *apiInfo) {
+func getMethodInfo(method *reflect.Method, preUrl string, claimsTyp reflect.Type) (info *apiInfo) {
 	defer func() {
 		if err := recover(); err != nil {
 			if v, ok := err.(*apiInfo); ok {
@@ -115,7 +116,7 @@ func getMethodInfo(method *reflect.Method, preUrl string) (info *apiInfo) {
 		}
 	}()
 	if numIn == 1 {
-		err = errors.New("method至少一个参数且参数必须实现Claims接口")
+		err = fmt.Errorf("method至少一个参数且参数必须实现%s接口", claimsTyp.Name())
 		return
 	}
 	if numIn > 3 {
@@ -126,12 +127,7 @@ func getMethodInfo(method *reflect.Method, preUrl string) (info *apiInfo) {
 		err = errors.New("method返回值必须为两个")
 		return
 	}
-	// 屏蔽grpc service
-	if methodType.In(1).Implements(contextType) {
-		return nil
-	}
-	if !methodType.In(1).Implements(claimsType) {
-		err = errors.New("service第一个参数必须实现Claims接口")
+	if !methodType.In(1).Implements(claimsTyp) {
 		return
 	}
 	if !methodType.Out(1).Implements(errorType) {

@@ -28,6 +28,7 @@ require (
 	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.2.0
+	github.com/gofiber/fiber/v2 v2.3.2
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e
 	github.com/golang/mock v1.4.4
@@ -63,8 +64,9 @@ require (
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.6.1
 	github.com/tealeg/xlsx/v3 v3.2.1
+	github.com/ugorji/go/codec v1.1.7
 	github.com/urfave/cli/v2 v2.2.0 // indirect
-	github.com/valyala/fasthttp v1.17.0 // indirect
+	github.com/valyala/fasthttp v1.18.0
 	github.com/vektah/gqlparser/v2 v2.0.1
 	go.uber.org/atomic v1.7.0
 	go.uber.org/zap v1.16.0
@@ -77,6 +79,7 @@ require (
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v0.0.0-20200626030347-424195440776
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/oauth2.v3 v3.12.0
+	gopkg.in/yaml.v2 v2.3.0
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
 	gorm.io/driver/mysql v1.0.3
 	gorm.io/driver/postgres v1.0.0

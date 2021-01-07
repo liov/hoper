@@ -50,7 +50,7 @@ func md(filePath, modName string) {
 		value := reflect.ValueOf(v)
 		for j := 0; j < value.NumMethod(); j++ {
 			method := value.Type().Method(j)
-			methodInfo := getMethodInfo(&method,preUrl)
+			methodInfo := getMethodInfo(&method,preUrl,claimsType)
 			if methodInfo == nil{
 				continue
 			}
@@ -166,7 +166,7 @@ func getParamTable(param reflect.Type, pre string) []*ParamTable {
 			p.annotation = p.json
 		}
 		p.typ = getJsType(field.Type)
-		if valid := validator.Trans(validator.Validate.StructPartial(newParam, field.Name)); valid != "" {
+		if valid := validator.Trans(validator.Validator.StructPartial(newParam, field.Name)); valid != "" {
 			p.validator = valid[len(p.annotation):]
 		}
 		if p.typ == "object" || p.typ == "[]object" {

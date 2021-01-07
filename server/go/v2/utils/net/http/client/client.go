@@ -167,7 +167,7 @@ func (req *RequestParams) HTTPRequest(response interface{}) error {
 				return err
 			}
 			body = bytes.NewReader(reqBytes)
-			reqBody = stringsi.ToSting(reqBytes)
+			reqBody = stringsi.ToString(reqBytes)
 		} else {
 			param := getParam(req.Param)
 			reqBody = param
@@ -202,7 +202,7 @@ func (req *RequestParams) HTTPRequest(response interface{}) error {
 	if err != nil {
 		return err
 	}
-	respBody = stringsi.ToSting(respBytes)
+	respBody = stringsi.ToString(respBytes)
 	statusCode = resp.StatusCode
 	if resp.StatusCode != 200 {
 		return errors.New("status:" + resp.Status)

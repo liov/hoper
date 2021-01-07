@@ -29,7 +29,7 @@ func (x ErrCode) GRPCStatus() *status.Status {
 	return status.New(codes.Code(x), x.String())
 }
 
-func (x ErrCode) WithMessage(msg string) error {
+func (x ErrCode) Message(msg string) error {
 	return &ErrRep{Code: x, Message: msg}
 }
 

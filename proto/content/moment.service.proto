@@ -1,9 +1,77 @@
 syntax = "proto3";
 package content;
 import "content/moment.enum.proto";
-import "utils/proto/go/go.proto";
+import "content/moment.model.proto";
+import "content/tag.model.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
+import "github.com/mwitkow/go-proto-validators/validator.proto";
+import "google/api/annotations.proto";
+import "utils/request/empty.proto";
+import "utils/response/response.proto";
+import "utils/proto/gogo/graphql.proto";
+import "utils/oauth/oauth.proto";
+import "utils/proto/go/go.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
 option go_package = "github.com/liov/hoper/go/v2/protobuf/content";
 option (go.file) = {non_omitempty:true};
+
+service MomentService {
+
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {
+    description: "瞬间相关接口"
+  };
+
+  // 详情
+  rpc Info (GetMomentReq) returns (response.TinyRep) {
+    option (google.api.http) = {
+      get: "/api/v1/moment"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["v1.0.0"]
+    };
+    option (gogo.graphql_operation) = Query;
+  }
+
+  // 新建
+  rpc Add (AddMomentReq) returns (response.TinyRep) {
+    option (google.api.http) = {
+      post: "/api/v1/moment"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["v1.0.0"]
+    };
+    option (gogo.graphql_operation) = Mutation;
+  }
+
+  // 修改
+  rpc Edit (AddMomentReq) returns (response.TinyRep) {
+    option (google.api.http) = {
+      put: "/api/v1/moment"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["v1.0.0"]
+    };
+    option (gogo.graphql_operation) = Mutation;
+  }
+}
+
+// 新增瞬间
+message AddMomentReq {
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
+  string content = 2 [(go.field) = {tags:'gorm:"size:255;not null" annotation:"内容"'}];
+  string imageUrl = 3 [(go.field) = {tags:'gorm:"size:255;not null" annotation:"图片"'}];
+  Mood mood = 4 [(go.field) = {tags:'gorm:"foreignkey:MoodName;association_foreignkey:Name" annotation:"心情"'}];
+  string moodName = 5 [(go.field) = {tags:'gorm:"size:10;not null" annotation:"心情"'}];
+  repeated string tagNames = 6 [(go.field) = {tags:'annotation:"标签名称"'}];
+  uint64 userId = 17 [(go.field) = {tags:'gorm:"not null;index" annotation:"用户id"'}];
+  uint32 sequence = 12 [(go.field) = {tags:'gorm:"default:0" annotation:"同级别的分类可根据sequence的值来排序，置顶"'}];
+  uint32 anonymous = 15 [(go.field) = {tags:'gorm:"default:0" annotation:"是否匿名,0-是,1否"'}];
+  ViewPermission permission = 13 [(go.field) = {tags:'gorm:"size:1;default:0" annotation:"查看权限"'}];
+}
+
+message GetMomentReq{
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
+}

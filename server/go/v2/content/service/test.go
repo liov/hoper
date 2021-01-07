@@ -9,7 +9,7 @@ import (
 	"github.com/liov/hoper/go/v2/initialize"
 	"github.com/liov/hoper/go/v2/note/dao"
 	model "github.com/liov/hoper/go/v2/protobuf/note"
-	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
+	"github.com/liov/hoper/go/v2/protobuf/utils/request"
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	"github.com/liov/hoper/go/v2/utils/net/http/tailmon"
 	"github.com/liov/hoper/go/v2/utils/net/http/websocket"
@@ -19,19 +19,19 @@ type TestService struct {
 	model.UnimplementedTestServiceServer
 }
 
-func (*TestService) GC(ctx context.Context, req *model.GCReq) (*empty.Empty, error) {
+func (*TestService) GC(ctx context.Context, req *model.GCReq) (*request.Empty, error) {
 	//address:= strconv.FormatUint()
 	init := (*initialize.Init)(unsafe.Pointer(uintptr(req.Address)))
 	fmt.Println(*init)
-	return &empty.Empty{}, nil
+	return &request.Empty{}, nil
 }
 
-func (*TestService) Restart(ctx context.Context, req *empty.Empty) (*empty.Empty, error) {
+func (*TestService) Restart(ctx context.Context, req *request.Empty) (*request.Empty, error) {
 	tailmon.ReStart()
-	return &empty.Empty{}, nil
+	return &request.Empty{}, nil
 }
 
-func (*TestService) GetChat(ctx context.Context, req *empty.Empty) ([]websocket.SendMessage, error) {
+func (*TestService) GetChat(ctx context.Context, req *request.Empty) ([]websocket.SendMessage, error) {
 	conn := dao.Dao.Redis.Get()
 	defer conn.Close()
 	data, err := redis.ByteSlices(conn.Do("LRANGE", "Chat", 0, -1))
