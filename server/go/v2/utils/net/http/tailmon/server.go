@@ -42,7 +42,7 @@ func (s *Server) httpHandler() http.HandlerFunc {
 	var gatewayServer http.Handler
 	if s.GatewayRegistr != nil {
 		gatewayServer = gateway.Gateway(s.GatewayRegistr)
-	/*	ginServer.NoRoute(func(ctx *gin.Context) {
+		/*	ginServer.NoRoute(func(ctx *gin.Context) {
 			gatewayServer.ServeHTTP(
 				(*httpi.ResponseRecorder)(unsafe.Pointer(uintptr(*(*int64)(unsafe.Pointer(uintptr(unsafe.Pointer(ctx))+8))))),
 				ctx.Request)
@@ -60,9 +60,9 @@ func (s *Server) httpHandler() http.HandlerFunc {
 		r.Body = ioutil.NopCloser(bytes.NewReader(body))
 
 		ginServer.ServeHTTP(recorder, r)
-		if recorder.Code == http.StatusNotFound && gatewayServer!=nil{
+		if recorder.Code == http.StatusNotFound && gatewayServer != nil {
 			recorder.Reset()
-			gatewayServer.ServeHTTP(recorder,r)
+			gatewayServer.ServeHTTP(recorder, r)
 		}
 
 		// 从 recorder 中提取记录下来的 Response Header，设置为 ResponseWriter 的 Header
@@ -82,7 +82,7 @@ func (s *Server) httpHandler() http.HandlerFunc {
 		(&AccessLog{
 			now, r,
 			recorder.Code, "Cookie",
-			stringsi.ToSting(body), stringsi.ToSting(recorder.Body.Bytes()),
+			stringsi.ToString(body), stringsi.ToString(recorder.Body.Bytes()),
 		}).log()
 	}
 }
@@ -95,7 +95,7 @@ func (s *Server) Serve() {
 	handle := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if r := recover(); r != nil {
-				log.CallTwo.With(zap.String("stack", stringsi.ToSting(debug.Stack()))).Error(" panic: ", r)
+				log.CallTwo.With(zap.String("stack", stringsi.ToString(debug.Stack()))).Error(" panic: ", r)
 				w.Write(errorcode.SysErr)
 			}
 		}()
@@ -130,14 +130,14 @@ func (s *Server) Serve() {
 	}
 	go func() {
 		<-close
-		log.Info("关闭服务")
+		log.Debug("关闭服务")
 		cs()
 		close <- syscall.SIGINT
 	}()
 
 	go func() {
 		<-stop
-		log.Info("重启服务")
+		log.Debug("重启服务")
 		cs()
 	}()
 	log.Debugf("listening%v", server.Addr)
@@ -205,7 +205,7 @@ func (a *AccessLog) log() {
 	//获取请求头的报文信息
 	authHeader := a.r.Header.Get(a.authKey)
 
-	log.Default.Logger.Info("",zap.String("interface", a.r.RequestURI),
+	log.Default.Logger.Info("", zap.String("interface", a.r.RequestURI),
 		zap.String("param", param),
 		zap.Duration("processTime", time.Now().Sub(a.start)),
 		zap.String("result", a.resp),

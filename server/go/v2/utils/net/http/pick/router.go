@@ -266,7 +266,7 @@ func (r *Router) Handle(method, path string, middleware []http.HandlerFunc, hand
 		r.trees = new(node)
 	}
 
-	r.trees.addRoute(path, &methodHandle{method, middleware, nil, handle})
+	r.trees.addRoute(path, &methodHandle{method, middleware, nil, &handle})
 
 	// Update maxParams
 	if paramsCount := countParams(path); paramsCount+varsCount > r.maxParams {
@@ -304,7 +304,7 @@ func (r *Router) Handler(method, path string, handle ...http.HandlerFunc) {
 		r.trees = new(node)
 	}
 
-	r.trees.addRoute(path, &methodHandle{method, handle[:len(handle)-1], handle[len(handle)-1], reflect.Value{}})
+	r.trees.addRoute(path, &methodHandle{method, handle[:len(handle)-1], handle[len(handle)-1], &reflect.Value{}})
 
 	// Update maxParams
 	if paramsCount := countParams(path); paramsCount+varsCount > r.maxParams {

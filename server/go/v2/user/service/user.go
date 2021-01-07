@@ -9,11 +9,12 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/gomodule/redigo/redis"
 	"github.com/google/uuid"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
-	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
+	"github.com/liov/hoper/go/v2/protobuf/utils/request"
 	"github.com/liov/hoper/go/v2/protobuf/utils/response"
 	"github.com/liov/hoper/go/v2/user/conf"
 	"github.com/liov/hoper/go/v2/user/dao"
@@ -28,7 +29,6 @@ import (
 	"github.com/liov/hoper/go/v2/utils/strings"
 	"github.com/liov/hoper/go/v2/utils/time"
 	"github.com/liov/hoper/go/v2/utils/verification"
-	"github.com/liov/hoper/go/v2/utils/verification/validator"
 	"gorm.io/gorm"
 )
 
@@ -40,6 +40,10 @@ func (*UserService) Service() (string, string, []http.HandlerFunc) {
 	return "用户相关", "/api/user", []http.HandlerFunc{middle.Log}
 }
 
+func (*UserService) FiberService() (string, string, []fiber.Handler) {
+	return "用户相关", "/api/user", []fiber.Handler{middle.FiberLog}
+}
+
 func GetUserService() *UserService {
 	if userSvc != nil {
 		return userSvc
@@ -48,7 +52,7 @@ func GetUserService() *UserService {
 	return userSvc
 }
 
-func (u *UserService) VerifyCode(ctx context.Context, req *empty.Empty) (*response.CommonRep, error) {
+func (u *UserService) VerifyCode(ctx context.Context, req *request.Empty) (*response.CommonRep, error) {
 	device := u.Device(ctx)
 	log.Debug(device)
 	var rep = &response.CommonRep{}
@@ -60,20 +64,18 @@ func (u *UserService) VerifyCode(ctx context.Context, req *empty.Empty) (*respon
 }
 
 func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*response.TinyRep, error) {
-	err := validator.Validate.Struct(req)
-	if err != nil {
-		return nil, errorcode.InvalidArgument.WithMessage(validator.Trans(err))
+	if err := Validate(req); err != nil {
+		return nil, err
 	}
-
 	if req.Mail == "" && req.Phone == "" {
-		return nil, errorcode.InvalidArgument.WithMessage("请填写邮箱或手机号")
+		return nil, errorcode.InvalidArgument.Message("请填写邮箱或手机号")
 	}
 
 	if exist, _ := userDao.ExitByEmailORPhone(nil, req.Mail, req.Phone); exist {
 		if req.Mail != "" {
-			return nil, errorcode.InvalidArgument.WithMessage("邮箱已被注册")
+			return nil, errorcode.InvalidArgument.Message("邮箱已被注册")
 		} else {
-			return nil, errorcode.InvalidArgument.WithMessage("手机号已被注册")
+			return nil, errorcode.InvalidArgument.Message("手机号已被注册")
 		}
 	}
 	vcode := verification.GenerateCode()
@@ -84,34 +86,27 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 
 	if _, err := RedisConn.Do("SET", key, vcode, "EX", modelconst.VerificationCodeDuration); err != nil {
 		log.Error("UserService.Verify,RedisConn.Do: ", err)
-		return nil, errorcode.RedisErr.WithMessage("新建出错")
+		return nil, errorcode.RedisErr.Message("新建出错")
 	}
-	var rep = &response.TinyRep{}
-
-	rep.Message = "验证码已发送"
-	return rep, err
+	return &response.TinyRep{Message: "验证码已发送"}, nil
 }
 
 func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*response.TinyRep, error) {
-
-	err := validator.Validate.Struct(req)
-	if err != nil {
-		return nil, errorcode.InvalidArgument.WithMessage(validator.Trans(err))
+	if err := Validate(req); err != nil {
+		return nil, err
 	}
-
 	if req.Mail == "" && req.Phone == "" {
-		return nil, errorcode.InvalidArgument.WithMessage("请填写邮箱或手机号")
+		return nil, errorcode.InvalidArgument.Message("请填写邮箱或手机号")
 	}
 
-	if err := verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL,
-		conf.Conf.Customize.LuosimaoAPIKey, req.VCode); err != nil {
-		return nil, errorcode.InvalidArgument.WithMessage(err.Error())
+	if err := LuosimaoVerify(req.VCode); err != nil {
+		return nil, err
 	}
 	if exist, _ := userDao.ExitByEmailORPhone(nil, req.Mail, req.Phone); exist {
 		if req.Mail != "" {
-			return nil, errorcode.InvalidArgument.WithMessage("邮箱已被注册")
+			return nil, errorcode.InvalidArgument.Message("邮箱已被注册")
 		} else {
-			return nil, errorcode.InvalidArgument.WithMessage("手机号已被注册")
+			return nil, errorcode.InvalidArgument.Message("手机号已被注册")
 		}
 	}
 	now := time.Now()
@@ -130,9 +125,9 @@ func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*response
 	}
 
 	user.Password = encryptPassword(req.Password)
-	if err = userDao.Creat(nil, user); err != nil {
+	if err := userDao.Creat(nil, user); err != nil {
 		log.Error(err)
-		return nil, errorcode.RedisErr.WithMessage("新建出错")
+		return nil, errorcode.RedisErr.Message("新建出错")
 	}
 	var rep = &response.TinyRep{Message: "新建成功,请前往邮箱激活"}
 
@@ -221,7 +216,7 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 	emailTime, err := redis.Int64(RedisConn.Do("GET", redisKey))
 	if err != nil {
 		log.Error("UserService.Active,redis.Int64", err)
-		return nil, errorcode.InvalidArgument.WithMessage("无效的链接")
+		return nil, errorcode.InvalidArgument.Message("无效的链接")
 	}
 
 	user, err := userDao.GetByPrimaryKey(nil, req.Id)
@@ -229,14 +224,14 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 		return nil, errorcode.DBError
 	}
 	if user.Status != 0 {
-		return nil, errorcode.AlreadyExists.WithMessage("已激活")
+		return nil, errorcode.AlreadyExists.Message("已激活")
 	}
 	secretStr := strconv.Itoa((int)(emailTime)) + user.Mail + user.Password
 
 	secretStr = fmt.Sprintf("%x", md5.Sum(stringsi.ToBytes(secretStr)))
 
 	if req.Secret != secretStr {
-		return nil, errorcode.InvalidArgument.WithMessage("无效的链接")
+		return nil, errorcode.InvalidArgument.Message("无效的链接")
 	}
 
 	dao.Dao.GORMDB.Model(user).Updates(map[string]interface{}{"activated_at": time.Now(), "status": 1})
@@ -254,7 +249,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.T
 
 	originalIds, err := userDao.ResumesIds(nil, user.Id)
 	if err != nil {
-		return nil, errorcode.DBError.WithMessage("更新失败")
+		return nil, errorcode.DBError.Message("更新失败")
 	}
 	var resumes []*model.Resume
 	resumes = append(req.Details.EduExps, req.Details.WorkExps...)
@@ -263,14 +258,14 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.T
 	err = userDao.SaveResumes(tx, req.Id, resumes, originalIds, device)
 	if err != nil {
 		tx.Rollback()
-		return nil, errorcode.DBError.WithMessage("更新失败")
+		return nil, errorcode.DBError.Message("更新失败")
 	}
 	var nUser model.User
 	tx.First(&nUser, user.Id)
 	err = tx.Model(&user).Updates(nUser).Error
 	if err != nil {
 		tx.Rollback()
-		return nil, errorcode.DBError.WithMessage("更新失败")
+		return nil, errorcode.DBError.Message("更新失败")
 	}
 	tx.Commit()
 	return &response.TinyRep{Message: "修改成功"}, nil
@@ -279,11 +274,11 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.T
 func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginRep, error) {
 
 	if verifyErr := verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL, conf.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
-		return nil, errorcode.InvalidArgument.WithMessage(verifyErr.Error())
+		return nil, errorcode.InvalidArgument.Message(verifyErr.Error())
 	}
 
 	if req.Input == "" {
-		return nil, errorcode.InvalidArgument.WithMessage("账号错误")
+		return nil, errorcode.InvalidArgument.Message("账号错误")
 	}
 	var sql string
 
@@ -298,11 +293,11 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 
 	var user model.User
 	if err := dao.Dao.GORMDB.Where(sql, req.Input).Find(&user).Error; err != nil {
-		return nil, errorcode.DBError.WithMessage("账号不存在")
+		return nil, errorcode.DBError.Message("账号不存在")
 	}
 
 	if !checkPassword(req.Password, &user) {
-		return nil, errorcode.InvalidArgument.WithMessage("密码错误")
+		return nil, errorcode.InvalidArgument.Message("密码错误")
 	}
 	if user.Status == model.UserStatus_InActive {
 		//没看懂
@@ -368,7 +363,7 @@ func (*UserService) login(ctx context.Context, user *model.User) (*model.LoginRe
 	return resp, nil
 }
 
-func (u *UserService) Logout(ctx context.Context, req *empty.Empty) (*model.LogoutRep, error) {
+func (u *UserService) Logout(ctx context.Context, req *request.Empty) (*model.LogoutRep, error) {
 	user, err := u.AuthMainInfo(ctx)
 	if err != nil {
 		return nil, err
@@ -396,7 +391,7 @@ func (u *UserService) Logout(ctx context.Context, req *empty.Empty) (*model.Logo
 	return &model.LogoutRep{Message: "已注销", Cookie: cookie}, nil
 }
 
-func (u *UserService) AuthInfo(ctx context.Context, req *empty.Empty) (*model.UserAuthInfo, error) {
+func (u *UserService) AuthInfo(ctx context.Context, req *request.Empty) (*model.UserAuthInfo, error) {
 	claims, err := u.AuthClaims(ctx)
 	if err != nil {
 		return nil, model.UserErr_InvalidToken
@@ -404,7 +399,7 @@ func (u *UserService) AuthInfo(ctx context.Context, req *empty.Empty) (*model.Us
 	id, _ := strconv.ParseUint(claims.Subject, 10, 64)
 	var user model.UserAuthInfo
 	if err := dao.Dao.GORMDB.Find(&user, id).Error; err != nil {
-		return nil, errorcode.DBError.WithMessage("账号不存在")
+		return nil, errorcode.DBError.Message("账号不存在")
 	}
 	return &user, nil
 }
@@ -416,26 +411,26 @@ func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.Ge
 		}*/
 	var user1 model.User
 	if err := dao.Dao.GORMDB.Find(&user1, req.Id).Error; err != nil {
-		return nil, errorcode.DBError.WithMessage("账号不存在")
+		return nil, errorcode.DBError.Message("账号不存在")
 	}
 	return &model.GetRep{Details: &user1}, nil
 }
 
 func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (*response.TinyRep, error) {
 	if verifyErr := verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL, conf.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
-		return nil, errorcode.InvalidArgument.WithMessage(verifyErr.Error())
+		return nil, errorcode.InvalidArgument.Message(verifyErr.Error())
 	}
 
 	if req.Input == "" {
-		return nil, errorcode.InvalidArgument.WithMessage("账号错误")
+		return nil, errorcode.InvalidArgument.Message("账号错误")
 	}
 	user, err := userDao.GetByEmailORPhone(nil, req.Input, req.Input, "id", "name", "password")
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			if verification.PhoneOrMail(req.Input) != verification.Phone {
-				return nil, errorcode.InvalidArgument.WithMessage("邮箱不存在")
+				return nil, errorcode.InvalidArgument.Message("邮箱不存在")
 			} else {
-				return nil, errorcode.InvalidArgument.WithMessage("手机号不存在")
+				return nil, errorcode.InvalidArgument.Message("手机号不存在")
 			}
 		}
 		log.Error(err)
@@ -464,7 +459,7 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 	emailTime, err := redis.Int64(RedisConn.Do("GET", redisKey))
 	if err != nil {
 		log.Error(model.UserserviceServicedesc.ServiceName, "ResetPassword,redis.Int64", err)
-		return nil, errorcode.InvalidArgument.WithMessage("无效的链接")
+		return nil, errorcode.InvalidArgument.Message("无效的链接")
 	}
 
 	user, err := userDao.GetByPrimaryKey(nil, req.Id)
@@ -472,14 +467,14 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 		return nil, errorcode.DBError
 	}
 	if user.Status != 1 {
-		return nil, errorcode.FailedPrecondition.WithMessage("无效账号")
+		return nil, errorcode.FailedPrecondition.Message("无效账号")
 	}
 	secretStr := strconv.Itoa((int)(emailTime)) + user.Mail + user.Password
 
 	secretStr = fmt.Sprintf("%x", md5.Sum(stringsi.ToBytes(secretStr)))
 
 	if req.Secret != secretStr {
-		return nil, errorcode.InvalidArgument.WithMessage("无效的链接")
+		return nil, errorcode.InvalidArgument.Message("无效的链接")
 	}
 
 	if err := dao.Dao.GORMDB.Model(user).Update("password", req.Password).Error; err != nil {
@@ -508,12 +503,25 @@ func (*UserService) GetTest(ctx context.Context, req *model.GetReq) (*model.GetR
 func (*UserService) Add(ctx *Claims, req *model.SignupReq) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() interface{} {
-		return pick.Method(http.MethodPost).
+		return pick.Method(http.MethodGet).
 			Title("用户注册").
 			Version(2).
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
 			ChangeLog("1.0.1", "jyb", "2019/12/16", "修改测试")
 	})
 
-	return &response.TinyRep{Message: "测试"}, nil
+	return &response.TinyRep{Message: req.Name}, nil
+}
+
+func (*UserService) AddV2(ctx *FasthttpClaims, req *response.TinyRep) (*response.TinyRep, error) {
+	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
+	pick.FiberApi(func() interface{} {
+		return pick.Method(http.MethodGet).
+			Title("用户注册").
+			Version(2).
+			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
+			ChangeLog("1.0.1", "jyb", "2019/12/16", "修改测试")
+	})
+
+	return req, nil
 }

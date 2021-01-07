@@ -2,7 +2,7 @@ syntax = "proto3";
 package response;
 
 import "google/protobuf/any.proto";
-import "utils/any/any.proto";
+import "utils/response/any.proto";
 import "utils/proto/go/go.proto";
 
 //因protoc生成会自动创建包目录，此文件仅供proto文件引用
@@ -21,7 +21,7 @@ message RawReply {
     uint32 code = 1 [(go.field) = {tags:'json:"code"'}];
     string message =2;
     //字节数组json
-    any.RawJson details =3 ;
+    RawJson details =3 ;
 }
 
 //返回数据为字符串，用于新建修改删除类的成功失败提示

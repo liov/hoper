@@ -1,11 +1,11 @@
 syntax = "proto3";
-package note;
+package content;
 
 import "utils/proto/go/go.proto";
 
 
 option java_package = "xyz.hoper.protobuf.user";
-option go_package = "github.com/liov/hoper/go/v2/protobuf/note";
+option go_package = "github.com/liov/hoper/go/v2/protobuf/content";
 option (go.file) = {non_omitempty:true};
 
 message Note {

@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/liov/hoper/go/v2/initialize"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
@@ -23,6 +24,10 @@ func main() {
 	//配置初始化应该在第一位
 	defer initialize.Start(conf.Conf, dao.Dao)()
 	pick.RegisterService(service.GetUserService())
+	pick.RegisterFiberService(service.GetUserService())
+	app:=fiber.New()
+	pick.Fiber(app,true,initialize.InitConfig.Module)
+	go app.Listen(":3000")
 	(&tailmon.Server{
 		//为了可以自定义中间件
 		GRPCServer: func() *grpc.Server {
@@ -44,6 +49,7 @@ func main() {
 			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
 			pick.Gin(app,true,initialize.InitConfig.Module)
 		},
+
 /*		GraphqlResolve: model.NewExecutableSchema(model.Config{
 			Resolvers: &model.GQLServer{
 				UserService:  service.GetUserService(),

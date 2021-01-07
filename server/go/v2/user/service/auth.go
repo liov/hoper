@@ -14,6 +14,8 @@ import (
 	"github.com/liov/hoper/go/v2/user/dao"
 	"github.com/liov/hoper/go/v2/utils/net/http/auth"
 	ijwt "github.com/liov/hoper/go/v2/utils/net/http/auth/jwt"
+	stringsi "github.com/liov/hoper/go/v2/utils/strings"
+	"github.com/valyala/fasthttp"
 	"google.golang.org/grpc/metadata"
 
 	"github.com/liov/hoper/go/v2/utils/log"
@@ -152,6 +154,54 @@ func (claims *Claims) ParseToken(req *http.Request) error {
 		return errors.New("未登录")
 	}
 	tokenClaims, _ := (&jwt.Parser{SkipClaimsValidation: true}).ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		return "secret", nil
+	})
+
+	if tokenClaims != nil {
+		if claims, ok := tokenClaims.Claims.(*Claims); ok && tokenClaims.Valid {
+			now := time.Now().Unix()
+			if claims.VerifyExpiresAt(now, false) == false {
+				return errors.New("登录超时")
+			}
+			return nil
+		}
+	}
+	return errors.New("未登录")
+}
+
+type FasthttpClaims struct {
+	User *model.UserMainInfo
+	jwt.StandardClaims
+}
+
+func (claims *FasthttpClaims) GenerateToken() (string, error) {
+	now := time.Now().Unix()
+	claims.StandardClaims = jwt.StandardClaims{
+		ExpiresAt: now + int64(24*time.Hour),
+		IssuedAt:  now,
+		Issuer:    "hoper",
+	}
+
+	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token, err := tokenClaims.SignedString("secret")
+
+	return token, err
+}
+
+func (claims *FasthttpClaims) ParseToken(req *fasthttp.Request) error {
+	var token string
+	cookie := stringsi.ToString(req.Header.Cookie("token"))
+	if len(cookie) > 0 {
+		token, _ = url.QueryUnescape(cookie)
+	}
+	if token == "" {
+		token = stringsi.ToString(req.Header.Peek("Authorization"))
+	}
+	if token == "" {
+		return errors.New("未登录")
+	}
+	tokenClaims, _ := (&jwt.Parser{SkipClaimsValidation: true}).
+		ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 		return "secret", nil
 	})
 

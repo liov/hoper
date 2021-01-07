@@ -13,8 +13,8 @@ import (
 )
 
 var (
-	Validate *validator.Validate
-	trans    ut.Translator
+	Validator *validator.Validate
+	trans     ut.Translator
 )
 
 func init() {
@@ -25,9 +25,9 @@ func init() {
 	// also see uni.FindTranslator(...)
 	trans, _ = uni.GetTranslator("zh")
 
-	Validate = validator.New()
-	zh_translations.RegisterDefaultTranslations(Validate, trans)
-	Validate.RegisterTagNameFunc(func(sf reflect.StructField) string {
+	Validator = validator.New()
+	zh_translations.RegisterDefaultTranslations(Validator, trans)
+	Validator.RegisterTagNameFunc(func(sf reflect.StructField) string {
 		if annotation := sf.Tag.Get("annotation"); annotation != "" {
 			return annotation
 		}
@@ -36,11 +36,11 @@ func init() {
 		}
 		return sf.Name
 	})
-	Validate.RegisterValidation("phone", func(fl validator.FieldLevel) bool {
+	Validator.RegisterValidation("phone", func(fl validator.FieldLevel) bool {
 		match, _ := regexp.MatchString(`^1[0-9]{10}$`, fl.Field().String())
 		return match
 	})
-	Validate.RegisterTranslation("phone", trans, func(ut ut.Translator) error {
+	Validator.RegisterTranslation("phone", trans, func(ut ut.Translator) error {
 		return ut.Add("phone", "{0}必须是一个有效的手机号!", true)
 	}, translateFunc)
 }

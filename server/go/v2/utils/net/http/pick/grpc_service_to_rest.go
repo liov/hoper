@@ -2,8 +2,6 @@ package pick
 
 import (
 	"context"
-	"encoding/json"
-	"io"
 	"net/http"
 	"path/filepath"
 	"reflect"
@@ -12,7 +10,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/liov/hoper/go/v2/utils/log"
-	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	"github.com/liov/hoper/go/v2/utils/net/http/gin/handler"
 )
@@ -79,23 +76,4 @@ func parseGrpcMethodName(name string, methods []string) (string, string, int) {
 		}
 	}
 	return http.MethodPost, name, version
-}
-
-func ginResHandler(ctx *gin.Context,result []reflect.Value)  {
-	if !result[1].IsNil() {
-		json.NewEncoder(ctx.Writer).Encode(result[1].Interface())
-		return
-	}
-	if info, ok := result[0].Interface().(*httpi.File); ok {
-		header := ctx.Writer.Header()
-		header.Set("Content-Type", "application/octet-stream")
-		header.Set("Content-Disposition", "attachment;filename="+info.Name)
-		io.Copy(ctx.Writer, info.File)
-		if flusher, canFlush := ctx.Writer.(http.Flusher); canFlush {
-			flusher.Flush()
-		}
-		info.File.Close()
-		return
-	}
-	ctx.JSON(200, result[0].Interface())
 }

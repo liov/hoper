@@ -24,7 +24,7 @@ func filter(
 ) (resp interface{}, err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			log.CallTwo.With(zap.String("stack",stringsi.ToSting(debug.Stack()))).Errorf("%v panic: %v", info, r)
+			log.CallTwo.With(zap.String("stack",stringsi.ToString(debug.Stack()))).Errorf("%v panic: %v", info, r)
 			err = errorcode.SysError.GRPCErr()
 		}
 		//不能添加错误处理，除非所有返回的结构相同

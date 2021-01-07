@@ -80,7 +80,7 @@ type methodHandle struct {
 	method      string
 	middleware  httpi.HandlerFuncs
 	httpHandler http.Handler
-	handle      reflect.Value
+	handle      *reflect.Value
 }
 
 func (mh *methodHandle) MarshalJSON() ([]byte, error) {
@@ -103,7 +103,7 @@ func getHandle(method string, mhs []*methodHandle) (mh *methodHandle) {
 	return &methodHandle{}
 }
 
-func handleValid(h1 http.Handler, h2 reflect.Value) bool {
+func handleValid(h1 http.Handler, h2 *reflect.Value) bool {
 	return h1 != nil || h2.IsValid()
 }
 
@@ -371,7 +371,7 @@ func (n *node) insertChild(path, fullPath string, handle *methodHandle) {
 }
 
 func (n *node) use(path string, middleware ...http.HandlerFunc) {
-	n.addRoute(path, &methodHandle{"", middleware, nil, reflect.Value{}})
+	n.addRoute(path, &methodHandle{"", middleware, nil, &reflect.Value{}})
 }
 
 //排序

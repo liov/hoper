@@ -1,4 +1,4 @@
-Module = "note"
+Module = "content"
 #dev | test | prod
 Env = "dev"
 
@@ -6,7 +6,7 @@ NoInit = ["Cache","Apollo","Consul"]
 
 NacosAddr = "192.168.1.212:9001"
 NacosGroup = "hoper"
-#NacosDataId = "note"
+#NacosDataId = "content"
 
 [gin]
 DisableStartupLog= false

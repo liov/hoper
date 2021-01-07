@@ -12,7 +12,7 @@ func FormatLen(s string, length int) string {
 	return s[:length]
 }
 
-func ToSting(b []byte) string {
+func ToString(b []byte) string {
 	return *(*string)(unsafe.Pointer(&b))
 }
 

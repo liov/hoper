@@ -3,17 +3,16 @@ package any
 import (
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
-	"github.com/liov/hoper/go/v2/utils/log"
 )
 
 type RawJson []byte
 
-func NewAny(v interface{}) RawJson {
+func NewAny(v interface{}) (RawJson, error) {
 	data, err := json.Standard.Marshal(v)
 	if err != nil {
-		log.Error(err)
+		return nil, err
 	}
-	return data
+	return data, nil
 }
 
 func BytesToJsonAny(b []byte) RawJson {
