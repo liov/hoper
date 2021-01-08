@@ -31,7 +31,7 @@ func (formBinding) Bind(req *http.Request, obj interface{}) error {
 			return err
 		}
 	}
-	if err := mapForm(obj, req.Form); err != nil {
+	if err := Decode(obj, req.Form); err != nil {
 		return err
 	}
 	return validate(obj)
@@ -46,24 +46,22 @@ func (formBinding) GinBind(ctx *gin.Context, obj interface{}) error {
 			return err
 		}
 	}
-	for i:=range ctx.Params{
-		ctx.Request.Form.Set(ctx.Params[i].Key,ctx.Params[i].Value)
-	}
-	if err := mapForm(obj, ctx.Request.Form); err != nil {
+	args := Args{formSource(ctx.Request.Form), paramSource(ctx.Params)}
+	if err := mapForm(obj, args); err != nil {
 		return err
 	}
 	return validate(obj)
 }
 
 func (formBinding) FasthttpBind(req *fasthttp.Request, obj interface{}) error {
-	if err := mapKV(obj, (*argsSource)(req.PostArgs())); err != nil {
+	if err := mapForm(obj, (*argsSource)(req.PostArgs())); err != nil {
 		return err
 	}
 	return validate(obj)
 }
 
 func (formBinding) FiberBind(ctx *fiber.Ctx, obj interface{}) error {
-	if err := mapKV(obj, (*argsSource)(ctx.Request().PostArgs())); err != nil {
+	if err := mapForm(obj, (*argsSource)(ctx.Request().PostArgs())); err != nil {
 		return err
 	}
 	return validate(obj)
@@ -77,34 +75,33 @@ func (formPostBinding) Bind(req *http.Request, obj interface{}) error {
 	if err := req.ParseForm(); err != nil {
 		return err
 	}
-	if err := mapForm(obj, req.PostForm); err != nil {
+	if err := Decode(obj, req.PostForm); err != nil {
 		return err
 	}
 	return validate(obj)
 }
 
-func (formPostBinding) GinBind(req *http.Request,params gin.Params, obj interface{}) error {
-	if err := req.ParseForm(); err != nil {
+func (formPostBinding) GinBind(ctx *gin.Context, obj interface{}) error {
+	if err := ctx.Request.ParseForm(); err != nil {
 		return err
 	}
-	for i:=range params{
-		req.PostForm.Set(params[i].Key,params[i].Value)
-	}
-	if err := mapForm(obj, req.PostForm); err != nil {
+
+	args := Args{formSource(ctx.Request.Form), paramSource(ctx.Params)}
+	if err := mapForm(obj,args); err != nil {
 		return err
 	}
 	return validate(obj)
 }
 
 func (formPostBinding) FasthttpBind(req *fasthttp.Request, obj interface{}) error {
-	if err := mapKV(obj, (*argsSource)(req.PostArgs())); err != nil {
+	if err := mapForm(obj, (*argsSource)(req.PostArgs())); err != nil {
 		return err
 	}
 	return validate(obj)
 }
 
 func (formPostBinding) FiberBind(ctx *fiber.Ctx, obj interface{}) error {
-	if err := mapKV(obj, (*argsSource)(ctx.Request().PostArgs())); err != nil {
+	if err := mapForm(obj, (*argsSource)(ctx.Request().PostArgs())); err != nil {
 		return err
 	}
 	return validate(obj)

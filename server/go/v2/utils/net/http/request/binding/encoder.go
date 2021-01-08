@@ -1,10 +1,12 @@
-package schema
+package binding
 
 import (
 	"errors"
 	"fmt"
 	"reflect"
 	"strconv"
+
+	errorsi "github.com/liov/hoper/go/v2/utils/errors"
 )
 
 type encoderFunc func(reflect.Value) string
@@ -77,7 +79,7 @@ func (e *Encoder) encode(v reflect.Value, dst map[string][]string) error {
 	}
 	t := v.Type()
 
-	errors := MultiError{}
+	errors := errorsi.MultiMapError{}
 
 	for i := 0; i < v.NumField(); i++ {
 		name, opts := fieldAlias(t.Field(i), e.cache.tag)

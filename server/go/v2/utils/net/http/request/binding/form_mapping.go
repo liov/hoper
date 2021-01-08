@@ -17,8 +17,8 @@ import (
 
 var errUnknownType = errors.New("unknown type")
 
-func mapForm(ptr interface{}, form map[string][]string) error {
-	return mapFormByTag(ptr, formSource(form), tag)
+func mapForm(ptr interface{}, set setter,) error {
+	return mapFormByTag(ptr, set, tag)
 }
 
 var emptyField = reflect.StructField{}

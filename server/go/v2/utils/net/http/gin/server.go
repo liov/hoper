@@ -4,11 +4,13 @@ import (
 	"github.com/gin-gonic/gin"
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/gin/handler"
+	"github.com/liov/hoper/go/v2/utils/verification/validator"
 )
 
 func Http(confPath,apiPath string,ginHandle func(engine *gin.Engine)) *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
-	gin.DisableBindValidation() // binding.Validator = nil // 自己做校验
+	gin.DisableBindValidation()
+	validator.DefaultValidator = nil // 自己做校验
 
 	//openapi
 	r := gin.New()

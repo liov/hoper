@@ -12,8 +12,8 @@ type GRPCErr interface {
 	GRPCErr() *ErrRep
 }
 
-func (m *ErrRep) Error() string {
-	return m.Message
+func (x *ErrRep) Error() string {
+	return x.Message
 }
 
 func (x *ErrRep) GRPCStatus() *status.Status {
