@@ -7,7 +7,7 @@ import (
 	"reflect"
 
 	"github.com/liov/hoper/go/v2/utils/net/http"
-	"github.com/liov/hoper/go/v2/utils/net/http/request/schema"
+	"github.com/liov/hoper/go/v2/utils/net/http/request/binding"
 )
 
 func commonHandler(w http.ResponseWriter, req *http.Request, handle *reflect.Value, ps *Params) {
@@ -31,7 +31,7 @@ func commonHandler(w http.ResponseWriter, req *http.Request, handle *reflect.Val
 							}
 						}
 					}
-					decoder.PickDecode(params[i], src)
+					binding.PickDecode(params[i], src)
 				}
 				if req.Method != http.MethodGet {
 					json.NewDecoder(req.Body).Decode(params[i].Interface())
@@ -62,11 +62,4 @@ func commonHandler(w http.ResponseWriter, req *http.Request, handle *reflect.Val
 			Details: result[0].Interface(),
 		})
 	}
-}
-
-var decoder *schema.Decoder
-
-func init() {
-	decoder = schema.NewDecoder()
-	decoder.SetAliasTag("json")
 }

@@ -40,7 +40,7 @@ func Gin(engine *gin.Engine, genApi bool,modName string) {
 				in1 := reflect.New(methodType.In(1).Elem())
 				in1.Interface().(Claims).ParseToken(ctx.Request)
 				in2 := reflect.New(in2Type.Elem())
-				ctx.Bind(in2.Interface())
+				gin_build.Bind(ctx,in2.Interface())
 				result := methodValue.Call([]reflect.Value{value, in1, in2})
 				ginResHandler(ctx,result)
 			})

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package schema
+package binding
 
 import (
 	"encoding/hex"
@@ -11,6 +11,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	errorsi "github.com/liov/hoper/go/v2/utils/errors"
 )
 
 type IntAlias int
@@ -656,7 +658,7 @@ func TestConversionError(t *testing.T) {
 	s := &S4{}
 	e := NewDecoder().Decode(s, data)
 
-	m := e.(MultiError)
+	m := e.(errorsi.MultiMapError)
 	if len(m) != 4 {
 		t.Errorf("Expected 3 errors, got %v", m)
 	}
@@ -1466,15 +1468,15 @@ func TestExpectedType(t *testing.T) {
 
 	err := NewDecoder().Decode(&a, data)
 
-	e := err.(MultiError)["bools"].(ConversionError)
+	e := err.(errorsi.MultiMapError)["bools"].(ConversionError)
 	if e.Type != reflect.TypeOf(false) && e.Index == 1 {
 		t.Errorf("Expected bool, index: 1 got %+v, index: %d", e.Type, e.Index)
 	}
-	e = err.(MultiError)["date"].(ConversionError)
+	e = err.(errorsi.MultiMapError)["date"].(ConversionError)
 	if e.Type != reflect.TypeOf(time.Time{}) {
 		t.Errorf("Expected time.Time got %+v", e.Type)
 	}
-	e = err.(MultiError)["Foo.Bar"].(ConversionError)
+	e = err.(errorsi.MultiMapError)["Foo.Bar"].(ConversionError)
 	if e.Type != reflect.TypeOf(0) {
 		t.Errorf("Expected int got %+v", e.Type)
 	}
@@ -1700,7 +1702,7 @@ func TestAmbiguousStructField(t *testing.T) {
 	dec := NewDecoder()
 	dec.IgnoreUnknownKeys(false)
 	err := dec.Decode(&dst, src)
-	e, ok := err.(MultiError)
+	e, ok := err.(errorsi.MultiMapError)
 	if !ok || len(e) != 2 {
 		t.Errorf("Expected 2 errors, got %#v", err)
 	}
@@ -1806,7 +1808,7 @@ func TestComprehensiveDecodingErrors(t *testing.T) {
 		dec := NewDecoder()
 		dec.IgnoreUnknownKeys(false)
 		err := dec.Decode(&dst, src)
-		e, ok := err.(MultiError)
+		e, ok := err.(errorsi.MultiMapError)
 		if !ok || len(e) != 6 {
 			t.Errorf("Expected 6 errors, got %#v", err)
 		}

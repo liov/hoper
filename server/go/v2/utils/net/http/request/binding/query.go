@@ -20,7 +20,7 @@ func (queryBinding) Name() string {
 
 func (queryBinding) Bind(req *http.Request, obj interface{}) error {
 	values := req.URL.Query()
-	if err := mapForm(obj, values); err != nil {
+	if err := mapForm(obj, formSource(values)); err != nil {
 		return err
 	}
 	return validate(obj)
@@ -28,10 +28,8 @@ func (queryBinding) Bind(req *http.Request, obj interface{}) error {
 
 func (queryBinding) GinBind(ctx *gin.Context, obj interface{}) error {
 	values := ctx.Request.URL.Query()
-	for i:=range ctx.Params{
-		values.Set(ctx.Params[i].Key,ctx.Params[i].Value)
-	}
-	if err := mapForm(obj, values); err != nil {
+	args := Args{formSource(ctx.Request.Form), formSource(values)}
+	if err := mapForm(obj, args); err != nil {
 		return err
 	}
 	return validate(obj)
@@ -39,7 +37,7 @@ func (queryBinding) GinBind(ctx *gin.Context, obj interface{}) error {
 
 func (queryBinding) FasthttpBind(req *fasthttp.Request, obj interface{}) error {
 	values:=req.URI().QueryArgs()
-	if err := mapKV(obj, (*argsSource)(values)); err != nil {
+	if err := mapForm(obj, (*argsSource)(values)); err != nil {
 		return err
 	}
 	return validate(obj)
@@ -47,7 +45,7 @@ func (queryBinding) FasthttpBind(req *fasthttp.Request, obj interface{}) error {
 
 func (queryBinding) FiberBind(ctx *fiber.Ctx, obj interface{}) error {
 	values:=ctx.Request().URI().QueryArgs()
-	if err := mapKV(obj, (*argsSource)(values)); err != nil {
+	if err := mapForm(obj, (*argsSource)(values)); err != nil {
 		return err
 	}
 	return validate(obj)

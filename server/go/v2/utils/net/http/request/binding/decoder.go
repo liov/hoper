@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package schema
+package binding
 
 import (
 	"encoding"
@@ -10,6 +10,9 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+
+	errorsi "github.com/liov/hoper/go/v2/utils/errors"
+	reflecti "github.com/liov/hoper/go/v2/utils/reflect"
 )
 
 // NewDecoder returns a new Decoder.
@@ -55,7 +58,7 @@ func (d *Decoder) IgnoreUnknownKeys(i bool) {
 }
 
 // RegisterConverter registers a converter function for a custom type.
-func (d *Decoder) RegisterConverter(value interface{}, converterFunc Converter) {
+func (d *Decoder) RegisterConverter(value interface{}, converterFunc reflecti.Converter) {
 	d.cache.registerConverter(value, converterFunc)
 }
 
@@ -74,7 +77,7 @@ func (d *Decoder) Decode(dst interface{}, src map[string][]string) error {
 	}
 	v = v.Elem()
 	t := v.Type()
-	errors := MultiError{}
+	errors := errorsi.MultiMapError{}
 	for path, values := range src {
 		if parts, err := d.cache.parsePath(path, t); err == nil {
 			if err = d.decode(v, path, parts, values); err != nil {
@@ -84,7 +87,7 @@ func (d *Decoder) Decode(dst interface{}, src map[string][]string) error {
 			errors[path] = UnknownKeyError{Key: path}
 		}
 	}
-	errors.merge(d.checkRequired(t, src))
+	errors.Merge(d.checkRequired(t, src))
 	if len(errors) > 0 {
 		return errors
 	}
@@ -97,7 +100,7 @@ func (d *Decoder) PickDecode(v reflect.Value, src map[string][]string) error {
 	}
 	v = v.Elem()
 	t := v.Type()
-	errors := MultiError{}
+	errors := errorsi.MultiMapError{}
 	for path, values := range src {
 		if parts, err := d.cache.parsePath(path, t); err == nil {
 			if err = d.decode(v, path, parts, values); err != nil {
@@ -107,7 +110,7 @@ func (d *Decoder) PickDecode(v reflect.Value, src map[string][]string) error {
 			errors[path] = UnknownKeyError{Key: path}
 		}
 	}
-	errors.merge(d.checkRequired(t, src))
+	errors.Merge(d.checkRequired(t, src))
 	if len(errors) > 0 {
 		return errors
 	}
@@ -119,7 +122,7 @@ func (d *Decoder) PickDecode(v reflect.Value, src map[string][]string) error {
 // check type t recursively if t has struct fields.
 //
 // src is the source map for decoding, we use it here to see if those required fields are included in src
-func (d *Decoder) checkRequired(t reflect.Type, src map[string][]string) MultiError {
+func (d *Decoder) checkRequired(t reflect.Type, src map[string][]string) errorsi.MultiMapError {
 	m, errs := d.findRequiredFields(t, "", "")
 	for key, fields := range m {
 		if isEmptyFields(fields, src) {
@@ -135,15 +138,15 @@ func (d *Decoder) checkRequired(t reflect.Type, src map[string][]string) MultiEr
 // for nested struct fields. canonicalPrefix is a complete path which never omits
 // any embedded struct fields. searchPrefix is a user-friendly path which may omit
 // some embedded struct fields to point promoted fields.
-func (d *Decoder) findRequiredFields(t reflect.Type, canonicalPrefix, searchPrefix string) (map[string][]fieldWithPrefix, MultiError) {
+func (d *Decoder) findRequiredFields(t reflect.Type, canonicalPrefix, searchPrefix string) (map[string][]fieldWithPrefix, errorsi.MultiMapError) {
 	struc := d.cache.get(t)
 	if struc == nil {
 		// unexpect, cache.get never return nil
-		return nil, MultiError{canonicalPrefix + "*": errors.New("cache fail")}
+		return nil, errorsi.MultiMapError{canonicalPrefix + "*": errors.New("cache fail")}
 	}
 
 	m := map[string][]fieldWithPrefix{}
-	errs := MultiError{}
+	errs := errorsi.MultiMapError{}
 	for _, f := range struc.fields {
 		if f.typ.Kind() == reflect.Struct {
 			fcprefix := canonicalPrefix + f.canonicalAlias + "."
@@ -152,7 +155,7 @@ func (d *Decoder) findRequiredFields(t reflect.Type, canonicalPrefix, searchPref
 				for key, fields := range fm {
 					m[key] = append(m[key], fields...)
 				}
-				errs.merge(ferrs)
+				errs.Merge(ferrs)
 			}
 		}
 		if f.isRequired {
@@ -189,7 +192,10 @@ func isEmpty(t reflect.Type, value []string) bool {
 		return true
 	}
 	switch t.Kind() {
-	case boolType, float32Type, float64Type, intType, int8Type, int32Type, int64Type, stringType, uint8Type, uint16Type, uint32Type, uint64Type:
+	case reflect.Bool, reflect.String,
+		reflect.Float32, reflect.Float64,
+		reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64 :
 		return len(value[0]) == 0
 	}
 	return false
@@ -250,7 +256,7 @@ func (d *Decoder) decode(v reflect.Value, path string, parts []pathPart, values 
 		// Try to get a converter for the element type.
 		conv := d.cache.converter(elemT)
 		if conv == nil {
-			conv = builtinConverters[elemT.Kind()]
+			conv = reflecti.Converters[elemT.Kind()]
 			if conv == nil {
 				// As we are not dealing with slice of structs here, we don't need to check if the type
 				// implements TextUnmarshaler interface
@@ -375,7 +381,7 @@ func (d *Decoder) decode(v reflect.Value, path string, parts []pathPart, values 
 			if d.zeroEmpty {
 				v.Set(reflect.Zero(t))
 			}
-		} else if conv := builtinConverters[t.Kind()]; conv != nil {
+		} else if conv := reflecti.Converters[t.Kind()]; conv != nil {
 			if value := conv(val); value.IsValid() {
 				v.Set(value.Convert(t))
 			} else {
@@ -494,34 +500,4 @@ type EmptyFieldError struct {
 
 func (e EmptyFieldError) Error() string {
 	return fmt.Sprintf("%v is empty", e.Key)
-}
-
-// MultiError stores multiple decoding errors.
-//
-// Borrowed from the App Engine SDK.
-type MultiError map[string]error
-
-func (e MultiError) Error() string {
-	s := ""
-	for _, err := range e {
-		s = err.Error()
-		break
-	}
-	switch len(e) {
-	case 0:
-		return "(0 errors)"
-	case 1:
-		return s
-	case 2:
-		return s + " (and 1 other error)"
-	}
-	return fmt.Sprintf("%s (and %d other errors)", s, len(e)-1)
-}
-
-func (e MultiError) merge(errors MultiError) {
-	for key, err := range errors {
-		if e[key] == nil {
-			e[key] = err
-		}
-	}
 }

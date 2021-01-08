@@ -24,14 +24,10 @@ func (args Args) Peek(key string) (v []string, ok bool) {
 	return
 }
 
-func mapKV(ptr interface{}, arg setter) error {
-	return mapKVByTag(ptr, arg, tag)
+func (args Args) TrySet(value reflect.Value, field reflect.StructField, key string, opt setOptions) (isSetted bool, err error){
+	return setByKV(value, field, args, key, opt)
 }
 
-
-func mapKVByTag(ptr interface{}, setter setter, tag string) error {
-	return mappingByPtr(ptr, setter, tag)
-}
 
 type argsSource fasthttp.Args
 

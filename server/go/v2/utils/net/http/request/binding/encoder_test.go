@@ -1,9 +1,11 @@
-package schema
+package binding
 
 import (
 	"fmt"
 	"reflect"
 	"testing"
+
+	errorsi "github.com/liov/hoper/go/v2/utils/errors"
 )
 
 type E1 struct {
@@ -53,7 +55,7 @@ func TestFilled(t *testing.T) {
 	valExists(t, "f09", "1.618000", vals)
 	valExists(t, "F12", "12", vals)
 
-	emptyErr := MultiError{}
+	emptyErr := errorsi.MultiMapError{}
 	if errs.Error() == emptyErr.Error() {
 		t.Errorf("Expected error got %v", errs)
 	}
@@ -66,17 +68,17 @@ type E3 struct {
 	F02 float32 `schema:"f02"`
 	F03 float64 `schema:"f03"`
 	F04 int     `schema:"f04"`
-	F05 int8    `schema:"f05"`
-	F06 int16   `schema:"f06"`
-	F07 int32   `schema:"f07"`
-	F08 int64   `schema:"f08"`
-	F09 string  `schema:"f09"`
-	F10 uint    `schema:"f10"`
-	F11 uint8   `schema:"f11"`
-	F12 uint16  `schema:"f12"`
-	F13 uint32  `schema:"f13"`
-	F14 uint64  `schema:"f14"`
-	F15 Aa      `schema:"f15"`
+	F05 int8   `schema:"f05"`
+	F06 int16  `schema:"f06"`
+	F07 int32  `schema:"f07"`
+	F08 int64  `schema:"f08"`
+	F09 string `schema:"f09"`
+	F10 uint   `schema:"f10"`
+	F11 uint8  `schema:"f11"`
+	F12 uint16 `schema:"f12"`
+	F13 uint32 `schema:"f13"`
+	F14 uint64 `schema:"f14"`
+	F15 Aa     `schema:"f15"`
 }
 
 // Test compatibility with default decoder types.

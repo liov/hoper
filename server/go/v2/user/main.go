@@ -23,7 +23,6 @@ import (
 func main() {
 	//配置初始化应该在第一位
 	defer initialize.Start(conf.Conf, dao.Dao)()
-	pick.RegisterService(service.GetUserService())
 	pick.RegisterFiberService(service.GetUserService())
 	app:=fiber.New()
 	pick.Fiber(app,true,initialize.InitConfig.Module)
@@ -47,6 +46,7 @@ func main() {
 		GinHandle: func(app *gin.Engine) {
 			oauth.RegisterOauthServiceHandlerServer(app, service.GetOauthService())
 			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
+			pick.RegisterService(service.GetUserService())
 			pick.Gin(app,true,initialize.InitConfig.Module)
 		},
 
