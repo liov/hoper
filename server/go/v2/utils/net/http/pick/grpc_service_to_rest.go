@@ -49,10 +49,10 @@ func GrpcServiceToRestfulApi(engine *gin.Engine, authCtx AuthCtx, genApi bool, m
 
 			in2Type := methodType.In(2)
 			group.Handle(methodInfo.method, methodInfo.path, func(ctx *gin.Context) {
-				in0 := reflect.ValueOf(authCtx(ctx.Request))
+				in1 := reflect.ValueOf(authCtx(ctx.Request))
 				in2 := reflect.New(in2Type.Elem())
 				ctx.Bind(in2.Interface())
-				result := methodValue.Call([]reflect.Value{value, in0, in2})
+				result := methodValue.Call([]reflect.Value{value, in1, in2})
 				ginResHandler(ctx,result)
 			})
 			methods[methodInfo.method] = struct{}{}

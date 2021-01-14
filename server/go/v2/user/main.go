@@ -25,7 +25,7 @@ func main() {
 	defer initialize.Start(conf.Conf, dao.Dao)()
 	pick.RegisterFiberService(service.GetUserService())
 	app:=fiber.New()
-	pick.Fiber(app,true,initialize.InitConfig.Module)
+	pick.FiberWithCtx(app,service.AuthContextF,true,initialize.InitConfig.Module)
 	go app.Listen(":3000")
 	(&tailmon.Server{
 		//为了可以自定义中间件
@@ -47,7 +47,7 @@ func main() {
 			oauth.RegisterOauthServiceHandlerServer(app, service.GetOauthService())
 			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
 			pick.RegisterService(service.GetUserService())
-			pick.Gin(app,true,initialize.InitConfig.Module)
+			pick.GinWithCtx(app,service.AuthContext,true,initialize.InitConfig.Module)
 		},
 
 /*		GraphqlResolve: model.NewExecutableSchema(model.Config{

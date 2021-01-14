@@ -8,7 +8,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	"github.com/liov/hoper/go/v2/utils/encoding/protobuf/jsonpb"
-	"github.com/liov/hoper/go/v2/utils/net/http/auth"
+	"github.com/liov/hoper/go/v2/utils/net/http"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -25,7 +25,7 @@ func Gateway(gatewayHandle GatewayHandle) http.Handler {
 			if err != nil {
 				area = ""
 			}
-			var token = auth.GetToken(request)
+			var token = httpi.GetToken(request)
 
 			return map[string][]string{
 				"device-info": {request.Header.Get("device-info")},

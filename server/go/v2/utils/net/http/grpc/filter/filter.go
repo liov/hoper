@@ -25,12 +25,12 @@ func filter(
 	defer func() {
 		if r := recover(); r != nil {
 			log.CallTwo.With(zap.String("stack",stringsi.ToString(debug.Stack()))).Errorf("%v panic: %v", info, r)
-			err = errorcode.SysError.GRPCErr()
+			err = errorcode.SysError.ErrRep()
 		}
 		//不能添加错误处理，除非所有返回的结构相同
 		if err != nil {
-			if errcode, ok := err.(errorcode.GRPCErr); ok {
-				err = errcode.GRPCErr()
+			if errcode, ok := err.(errorcode.DefaultErrRep); !ok {
+				err = errcode.ErrRep()
 			}
 		}
 	}()

@@ -13,22 +13,22 @@ type Claims interface {
 	ParseToken(*http.Request) error
 }
 
-var claimsType = reflect.TypeOf((*Claims)(nil)).Elem()
-var contextType = reflect.TypeOf((*context.Context)(nil)).Elem()
-var errorType = reflect.TypeOf((*error)(nil)).Elem()
+var (
+	svcs = make([]Service, 0)
+	isRegistered = false
+	claimsType = reflect.TypeOf((*Claims)(nil)).Elem()
+	contextType = reflect.TypeOf((*context.Context)(nil)).Elem()
+	errorType   = reflect.TypeOf((*error)(nil)).Elem()
+)
 
 type Service interface {
 	//返回描述，url的前缀，中间件
 	Service() (describe, prefix string, middleware []http.HandlerFunc)
 }
 
-var svcs = make([]Service, 0)
-
 func RegisterService(svc ...Service) {
 	svcs = append(svcs, svc...)
 }
-
-var isRegistered = false
 
 func registered() {
 	isRegistered = true
@@ -52,8 +52,8 @@ func register(router *Router, genApi bool, modName string) {
 
 		for j := 0; j < value.NumMethod(); j++ {
 			method := value.Type().Method(j)
-			methodInfo := getMethodInfo(&method, preUrl,claimsType)
-			if methodInfo == nil{
+			methodInfo := getMethodInfo(&method, preUrl, claimsType)
+			if methodInfo == nil {
 				continue
 			}
 			if methodInfo.path == "" || methodInfo.method == "" || methodInfo.title == "" || methodInfo.createlog.version == "" {

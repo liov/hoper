@@ -12,8 +12,8 @@ import (
 	"github.com/liov/hoper/go/v2/protobuf/utils/response"
 	"github.com/liov/hoper/go/v2/user/conf"
 	"github.com/liov/hoper/go/v2/user/dao"
-	ijwt "github.com/liov/hoper/go/v2/utils/net/http/auth/jwt"
-	"github.com/liov/hoper/go/v2/utils/net/http/auth/oauth"
+	jwti "github.com/liov/hoper/go/v2/utils/verification/auth/jwt"
+	"github.com/liov/hoper/go/v2/utils/verification/auth/oauth"
 	"google.golang.org/grpc/metadata"
 	"gopkg.in/oauth2.v3"
 	"gopkg.in/oauth2.v3/errors"
@@ -46,8 +46,8 @@ func GetOauthService() *OauthService {
 		if token == "" {
 			return "", errors.ErrInvalidAccessToken
 		}
-		claims, err := ijwt.ParseToken(token, conf.Conf.Customize.TokenSecret)
-		if err != nil {
+		claims:=new(jwti.Claims)
+		if err := jwti.ParseToken(claims,token, conf.Conf.Customize.TokenSecret);err != nil {
 			return "", err
 		}
 		return strconv.FormatUint(claims.UserId, 10), nil

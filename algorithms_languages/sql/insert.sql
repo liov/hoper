@@ -38,3 +38,8 @@ VALUES (5, '开放平台多品类集合', '21', '视频会员', 0),
        (5, '开放平台多品类集合', '26', '鲜花', 0),
        (5, '开放平台多品类集合', '27', '知识付费', 0)
 ;
+
+
+INSERT INTO `d_aura_jike`.`sp_field_mapper`(`category_id`,`supplier_id`,`product_type`,`field_type`,`field_id`) VALUES(@s_id,@c_id,8,13,7);
+SET @pid:=last_insert_id();
+INSERT INTO `d_aura_jike`.`sp_field_mapper_value`(`field_mapper_id`,`field_value`,`field_display_value`) VALUES(@pid,19,'');

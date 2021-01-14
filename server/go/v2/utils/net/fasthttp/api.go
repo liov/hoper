@@ -1,1 +1,1 @@
-package fasthttp
+package fasthttpi

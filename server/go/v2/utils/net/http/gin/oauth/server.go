@@ -5,13 +5,13 @@ import (
 	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/oauth"
 	"github.com/liov/hoper/go/v2/utils/encoding/schema"
-	"github.com/liov/hoper/go/v2/utils/net/http/auth"
+	"github.com/liov/hoper/go/v2/utils/net/http"
 	"google.golang.org/grpc/metadata"
 )
 
 func RegisterOauthServiceHandlerServer(r *gin.Engine, server user.OauthServiceServer) {
 	r.GET("/oauth/authorize", func(ctx *gin.Context) {
-		token := auth.GetToken(ctx.Request)
+		token := httpi.GetToken(ctx.Request)
 		var protoReq oauth.OauthReq
 		schema.DefaultDecoder.Decode(&protoReq, ctx.Request.URL.Query())
 		res, _ := server.OauthAuthorize(
