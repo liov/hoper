@@ -17,6 +17,7 @@ func (*MomentService) Info(context.Context, *model.GetMomentReq) (*response.Tiny
 	return nil, status.Errorf(codes.Unimplemented, "method Info not implemented")
 }
 func (*MomentService) Add(context.Context, *model.AddMomentReq) (*response.TinyRep, error) {
+
 	return nil, status.Errorf(codes.Unimplemented, "method Add not implemented")
 }
 func (*MomentService) Edit(context.Context, *model.AddMomentReq) (*response.TinyRep, error) {

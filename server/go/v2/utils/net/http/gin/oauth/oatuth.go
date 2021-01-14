@@ -8,7 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
-	"github.com/liov/hoper/go/v2/utils/net/http/auth/oauth/provider"
+	"github.com/liov/hoper/go/v2/utils/verification/auth/oauth/provider"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/amazon"
 	"github.com/markbates/goth/providers/auth0"

@@ -1,6 +1,7 @@
 package pick
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -71,7 +72,7 @@ func Fiber(engine *fiber.App, genApi bool, modName string) {
 				in1.Interface().(FasthttpClaims).ParseToken(ctx.Request())
 				in2 := reflect.New(in2Type.Elem())
 				if err := fiber_build.Bind(ctx, in2.Interface()); err != nil {
-					return ctx.Status(http.StatusBadRequest).JSON(errorcode.InvalidArgument.GRPCErr())
+					return ctx.Status(http.StatusBadRequest).JSON(errorcode.InvalidArgument.ErrRep())
 				}
 				result := methodValue.Call([]reflect.Value{value, in1, in2})
 				return fiberResHandler(ctx, result)
@@ -91,7 +92,7 @@ func Fiber(engine *fiber.App, genApi bool, modName string) {
 func fiberResHandler(ctx *fiber.Ctx, result []reflect.Value) error {
 	writer := ctx.Response().BodyWriter()
 	if !result[1].IsNil() {
-		return json.NewEncoder(writer).Encode(result[1].Interface())
+		return json.NewEncoder(writer).Encode(errorcode.ErrHandle(result[1].Interface()))
 	}
 	if info, ok := result[0].Interface().(*httpi.File); ok {
 		header := ctx.Response().Header
@@ -104,4 +105,48 @@ func fiberResHandler(ctx *fiber.Ctx, result []reflect.Value) error {
 		return info.File.Close()
 	}
 	return ctx.JSON(result[0].Interface())
+}
+
+type FasthttpAuthCtx func(r *fasthttp.Request) context.Context
+
+func FiberWithCtx(engine *fiber.App,authCtx FasthttpAuthCtx ,genApi bool, modName string) {
+
+	for _, v := range fiberSvcs {
+		_, preUrl, middleware := v.FiberService()
+		value := reflect.ValueOf(v)
+		if value.Kind() != reflect.Ptr {
+			log.Fatal("必须传入指针")
+		}
+		engine.Group(preUrl, middleware...)
+		for j := 0; j < value.NumMethod(); j++ {
+			method := value.Type().Method(j)
+			methodInfo := getMethodInfo(&method, preUrl,fasthttpClaimsType)
+			if methodInfo == nil {
+				continue
+			}
+			if methodInfo.path == "" || methodInfo.method == "" || methodInfo.title == "" || methodInfo.createlog.version == "" {
+				log.Fatal("接口路径,方法,描述,创建日志均为必填")
+			}
+			methodType := method.Type
+			methodValue := method.Func
+			in2Type := methodType.In(2)
+			engine.Add(methodInfo.method, methodInfo.path, func(ctx *fiber.Ctx) error {
+				in1 := reflect.ValueOf(authCtx(ctx.Request()))
+				in2 := reflect.New(in2Type.Elem())
+				if err := fiber_build.Bind(ctx, in2.Interface()); err != nil {
+					return ctx.Status(http.StatusBadRequest).JSON(errorcode.InvalidArgument.ErrRep())
+				}
+				result := methodValue.Call([]reflect.Value{value, in1, in2})
+				return fiberResHandler(ctx, result)
+			})
+		}
+
+	}
+	if genApi {
+		filePath := apidoc.FilePath
+		md(filePath, modName)
+		swagger(filePath, modName)
+		//gin_build.OpenApi(engine, filePath)
+	}
+	faberRegistered()
 }

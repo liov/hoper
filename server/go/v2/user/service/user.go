@@ -22,13 +22,13 @@ import (
 	modelconst "github.com/liov/hoper/go/v2/user/model"
 	templatei "github.com/liov/hoper/go/v2/utils/def/template"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/net/http/auth/jwt"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 	"github.com/liov/hoper/go/v2/utils/net/mail"
 	"github.com/liov/hoper/go/v2/utils/strings"
 	"github.com/liov/hoper/go/v2/utils/time"
 	"github.com/liov/hoper/go/v2/utils/verification"
+	"github.com/liov/hoper/go/v2/utils/verification/auth/jwt"
 	"gorm.io/gorm"
 )
 
@@ -312,7 +312,7 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 			return nil, errorcode.RedisErr
 		}
 		go sendMail(model.Action_Active, curTime, &user)
-		return nil, model.UserErr_NoActive.WithMessage("账号未激活,请进入邮箱点击激活")
+		return nil, model.UserErr_NoActive.Message("账号未激活,请进入邮箱点击激活")
 	}
 
 	return u.login(ctx, &user)
@@ -329,7 +329,12 @@ func (*UserService) login(ctx context.Context, user *model.User) (*model.LoginRe
 		Role:         user.Role,
 		LoginTime:    nowStamp,
 	}
-	tokenString, err := jwt.GenerateToken(userInfo.Id, nowStamp, conf.Conf.Customize.TokenMaxAge, conf.Conf.Customize.TokenSecret)
+	claims := &jwt.Claims{
+		UserId:         userInfo.Id,
+		StandardClaims: jwt.NewStandardClaims(conf.Conf.Customize.TokenMaxAge,"hoper"),
+	}
+
+	tokenString, err := jwt.GenerateToken(claims, stringsi.ToBytes(conf.Conf.Customize.TokenSecret))
 	if err != nil {
 		return nil, errorcode.Internal
 	}
@@ -418,7 +423,7 @@ func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.Ge
 
 func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (*response.TinyRep, error) {
 	if verifyErr := verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL, conf.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
-		return nil, errorcode.InvalidArgument.Message(verifyErr.Error())
+		return nil, errorcode.InvalidArgument.Warp(verifyErr)
 	}
 
 	if req.Input == "" {

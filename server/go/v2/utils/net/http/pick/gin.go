@@ -8,6 +8,7 @@ import (
 	"reflect"
 
 	"github.com/gin-gonic/gin"
+	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	gin_build "github.com/liov/hoper/go/v2/utils/net/http/gin"
@@ -58,7 +59,7 @@ func Gin(engine *gin.Engine, genApi bool,modName string) {
 
 func ginResHandler(ctx *gin.Context,result []reflect.Value)  {
 	if !result[1].IsNil() {
-		json.NewEncoder(ctx.Writer).Encode(result[1].Interface())
+		json.NewEncoder(ctx.Writer).Encode(errorcode.ErrHandle(result[1].Interface()))
 		return
 	}
 	if info, ok := result[0].Interface().(*httpi.File); ok {
@@ -73,4 +74,43 @@ func ginResHandler(ctx *gin.Context,result []reflect.Value)  {
 		return
 	}
 	ctx.JSON(200, result[0].Interface())
+}
+
+func GinWithCtx(engine *gin.Engine,authCtx AuthCtx, genApi bool,modName string) {
+	for _, v := range svcs {
+		_, preUrl, middleware := v.Service()
+		value := reflect.ValueOf(v)
+		if value.Kind() != reflect.Ptr {
+			log.Fatal("必须传入指针")
+		}
+		engine.Group(preUrl, handler.Converts(middleware)...)
+		for j := 0; j < value.NumMethod(); j++ {
+			method := value.Type().Method(j)
+			methodInfo := getMethodInfo(&method, preUrl,claimsType)
+			if methodInfo == nil{
+				continue
+			}
+			if methodInfo.path == "" || methodInfo.method == "" || methodInfo.title == "" || methodInfo.createlog.version == "" {
+				log.Fatal("接口路径,方法,描述,创建日志均为必填")
+			}
+			methodType := method.Type
+			methodValue := method.Func
+			in2Type := methodType.In(2)
+			engine.Handle(methodInfo.method, methodInfo.path, func(ctx *gin.Context) {
+				in1 := reflect.ValueOf(authCtx(ctx.Request))
+				in2 := reflect.New(in2Type.Elem())
+				gin_build.Bind(ctx,in2.Interface())
+				result := methodValue.Call([]reflect.Value{value, in1, in2})
+				ginResHandler(ctx,result)
+			})
+		}
+
+	}
+	if genApi {
+		filePath:=apidoc.FilePath
+		md(filePath, modName)
+		swagger(filePath, modName)
+		gin_build.OpenApi(engine, filePath)
+	}
+	registered()
 }

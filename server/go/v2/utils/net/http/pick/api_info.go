@@ -2,7 +2,6 @@ package pick
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -116,7 +115,6 @@ func getMethodInfo(method *reflect.Method, preUrl string, claimsTyp reflect.Type
 		}
 	}()
 	if numIn == 1 {
-		err = fmt.Errorf("method至少一个参数且参数必须实现%s接口", claimsTyp.Name())
 		return
 	}
 	if numIn > 3 {

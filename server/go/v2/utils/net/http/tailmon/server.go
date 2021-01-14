@@ -22,6 +22,7 @@ import (
 	gin_build "github.com/liov/hoper/go/v2/utils/net/http/gin"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"
 	"github.com/liov/hoper/go/v2/utils/strings"
+	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -52,6 +53,9 @@ func (s *Server) httpHandler() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		now := time.Now()
+		ctx, span := trace.StartSpan(r.Context(), initialize.InitConfig.Module)
+		defer span.End()
+		r = r.WithContext(ctx)
 		/*		var result bytes.Buffer
 				rsp := io.MultiWriter(w, &result)*/
 		recorder := httpi.NewRecorder()

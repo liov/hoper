@@ -66,4 +66,5 @@ func (c *config) Custom() {
 	}
 
 	c.Customize.UploadMaxSize = c.Customize.UploadMaxSize * 1024 * 1024
+	c.Customize.TokenMaxAge = c.Customize.TokenMaxAge * 7 * 24
 }

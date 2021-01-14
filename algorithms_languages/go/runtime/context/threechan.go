@@ -49,16 +49,16 @@ func C(ctx context.Context) int {
 
 func main() {
 	// 自动取消(定时取消)
-	{
-		timeout := 10 * time.Second
-		ctx, _ := context.WithTimeout(context.Background(), timeout)
 
-		fmt.Println("A 执行完成，返回：", A(ctx))
-		select {
-		case <-ctx.Done():
-			fmt.Println("context Done")
-			break
-		}
+	timeout := 10 * time.Second
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	fmt.Println("A 执行完成，返回：", A(ctx))
+	select {
+	case <-ctx.Done():
+		fmt.Println("context Done")
+		break
 	}
+
 	time.Sleep(20 * time.Second)
 }
