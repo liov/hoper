@@ -139,7 +139,7 @@ service UserService {
   }
 
   //鉴权
-  rpc AuthInfo (request.Empty) returns (UserAuthInfo) {
+  rpc AuthInfo (request.Empty) returns (UserOAuthInfo) {
     option (google.api.http) = {
       get: "/api/v1/auth"
     };
@@ -324,7 +324,7 @@ message EditReq {
     repeated Resume workExps = 16;
   }
 }
-
+// 登录请求
 message LoginReq {
   string input = 1;
   string password = 2 [(validator.field) = {
@@ -333,7 +333,7 @@ message LoginReq {
   }];
   string vCode = 3;
 }
-
+// 登录返回
 message LoginRep {
   uint32 code = 1 [(go.field) = {tags:'json:"code"'}];
   string message = 2;
@@ -345,13 +345,14 @@ message LoginRep {
   string cookie = 4 [(go.field) = {tags:'json:"-"'}];
 }
 
-//特殊，设置cookie用
+// 特殊，设置cookie用
+// 退出返回
 message LogoutRep {
   uint32 code = 1 [(go.field) = {tags:'json:"code"'}];
   string message = 2;
   string cookie = 3 [(go.field) = {tags:'json:"-"'}];
 }
-
+// 重置密码请求
 message ResetPasswordReq {
   uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"ID"

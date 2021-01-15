@@ -241,7 +241,7 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 
 func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.TinyRep, error) {
 	defer timei.TimeCost(time.Now())
-	user, err := u.AuthMainInfo(ctx)
+	user, err := u.GetAuthInfo(ctx)
 	if err != nil || user.Id != req.Id {
 		return nil, err
 	}
@@ -321,13 +321,12 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 func (*UserService) login(ctx context.Context, user *model.User) (*model.LoginRep, error) {
 	now := time.Now()
 	nowStamp := now.Unix()
-	userInfo := &model.UserMainInfo{
+	userInfo := &model.UserAuthInfo{
 		Id:           user.Id,
 		LastActiveAt: nowStamp,
-		Score:        user.Score,
 		Status:       user.Status,
 		Role:         user.Role,
-		LoginTime:    nowStamp,
+		LoginAt:    nowStamp,
 	}
 	claims := &jwt.Claims{
 		UserId:         userInfo.Id,
@@ -369,11 +368,11 @@ func (*UserService) login(ctx context.Context, user *model.User) (*model.LoginRe
 }
 
 func (u *UserService) Logout(ctx context.Context, req *request.Empty) (*model.LogoutRep, error) {
-	user, err := u.AuthMainInfo(ctx)
+	user, err := u.GetAuthInfo(ctx)
 	if err != nil {
 		return nil, err
 	}
-	dao.Dao.GORMDB.Model(&model.UserMainInfo{Id: user.Id}).UpdateColumn("last_activated_at", time.Now())
+	dao.Dao.GORMDB.Model(&model.UserAuthInfo{Id: user.Id}).UpdateColumn("last_activated_at", time.Now())
 
 	RedisConn := dao.Dao.Redis.Get()
 	defer RedisConn.Close()
@@ -397,20 +396,11 @@ func (u *UserService) Logout(ctx context.Context, req *request.Empty) (*model.Lo
 }
 
 func (u *UserService) AuthInfo(ctx context.Context, req *request.Empty) (*model.UserAuthInfo, error) {
-	claims, err := u.AuthClaims(ctx)
-	if err != nil {
-		return nil, model.UserErr_InvalidToken
-	}
-	id, _ := strconv.ParseUint(claims.Subject, 10, 64)
-	var user model.UserAuthInfo
-	if err := dao.Dao.GORMDB.Find(&user, id).Error; err != nil {
-		return nil, errorcode.DBError.Message("账号不存在")
-	}
-	return &user, nil
+	return u.GetAuthInfo(ctx)
 }
 
 func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.GetRep, error) {
-	/*	_, err := u.AuthMainInfo(ctx)
+	/*	_, err := u.GetAuthInfo(ctx)
 		if err != nil {
 			return &model.GetRep{Details: &model.User{Id: req.Id}}, nil
 		}*/

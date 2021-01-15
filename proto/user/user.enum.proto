@@ -42,6 +42,7 @@ enum UserStatus {
     InActive = 0 [(gogo.enumvalue_cn)= "未激活"];
     Activated = 1 [(gogo.enumvalue_cn)= "已激活"];
     Frozen = 2 [(gogo.enumvalue_cn)= "已冻结"];
+    Deleted = 3 [(gogo.enumvalue_cn)= "已注销"];
 }
 
 // 封禁类型
