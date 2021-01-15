@@ -27,7 +27,7 @@ func NewUserRedis() *UserRedis {
 }
 
 // UserToRedis 将用户信息存到redis
-func (conn *UserRedis) UserToRedis(user *model.UserMainInfo) error {
+func (conn *UserRedis) UserToRedis(user *model.UserAuthInfo) error {
 
 	UserString, err := json.Standard.MarshalToString(user)
 	if err != nil {
@@ -44,7 +44,7 @@ func (conn *UserRedis) UserToRedis(user *model.UserMainInfo) error {
 }
 
 // UserFromRedis 从redis中取出用户信息
-func (conn *UserRedis) UserFromRedis(userID uint64) (*model.UserMainInfo, error) {
+func (conn *UserRedis) UserFromRedis(userID uint64) (*model.UserAuthInfo, error) {
 
 	loginUser := modelconst.LoginUserKey + strconv.FormatUint(userID, 10)
 
@@ -53,7 +53,7 @@ func (conn *UserRedis) UserFromRedis(userID uint64) (*model.UserMainInfo, error)
 	if err != nil {
 		return nil, err
 	}
-	var user model.UserMainInfo
+	var user model.UserAuthInfo
 	err = json.Standard.UnmarshalFromString(userString, &user)
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (conn *UserRedis) UserFromRedis(userID uint64) (*model.UserMainInfo, error)
 	return &user, nil
 }
 
-func (conn *UserRedis) EditRedisUser(user *model.UserMainInfo) error {
+func (conn *UserRedis) EditRedisUser(user *model.UserAuthInfo) error {
 
 	UserString, err := json.Standard.MarshalToString(user)
 	if err != nil {
@@ -76,7 +76,7 @@ func (conn *UserRedis) EditRedisUser(user *model.UserMainInfo) error {
 }
 
 // UserToRedis 将用户信息存到redis
-func (conn *UserRedis) UserHashToRedis(user *model.UserMainInfo) error {
+func (conn *UserRedis) UserHashToRedis(user *model.UserAuthInfo) error {
 
 	var redisArgs []interface{}
 	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
@@ -92,7 +92,7 @@ func (conn *UserRedis) UserHashToRedis(user *model.UserMainInfo) error {
 }
 
 // UserFromRedis 从redis中取出用户信息
-func (conn *UserRedis) UserHashFromRedis(userID uint64) (*model.UserMainInfo, error) {
+func (conn *UserRedis) UserHashFromRedis(userID uint64) (*model.UserAuthInfo, error) {
 
 	loginUser := modelconst.LoginUserKey + strconv.FormatUint(userID, 10)
 
@@ -106,12 +106,12 @@ func (conn *UserRedis) UserHashFromRedis(userID uint64) (*model.UserMainInfo, er
 	if len(userArgs) == 0 {
 		return nil, model.UserErr_InvalidToken
 	}
-	var user model.UserMainInfo
+	var user model.UserAuthInfo
 	hash.UnMarshal(&user, userArgs)
 	return &user, nil
 }
 
-func (conn *UserRedis) EfficientUserHashToRedis(user *model.UserMainInfo) error {
+func (conn *UserRedis) EfficientUserHashToRedis(user *model.UserAuthInfo) error {
 
 	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
 
@@ -120,9 +120,8 @@ func (conn *UserRedis) EfficientUserHashToRedis(user *model.UserMainInfo) error 
 		"Id", user.Id,
 		"Role", uint32(user.Role),
 		"LastActiveAt", user.LastActiveAt,
-		"Score", user.Score,
 		"Status", uint8(user.Status),
-		"LoginTime", user.LoginTime)
+		"LoginTime", user.LoginAt)
 	if _, redisErr := conn.Do("EXPIRE", loginUserKey, conf.Conf.Customize.TokenMaxAge); redisErr != nil {
 		return redisErr
 	}
@@ -135,7 +134,7 @@ func (conn *UserRedis) EfficientUserHashToRedis(user *model.UserMainInfo) error 
 哈希表中某个键或某个值的长度大于 server.hash_max_ziplist_value （默认值为 64 ）。
 压缩列表中的节点数量大于 server.hash_max_ziplist_entries （默认值为 512 ）。
 */
-func (conn *UserRedis) EfficientUserHashFromRedis(userID uint64) (*model.UserMainInfo, error) {
+func (conn *UserRedis) EfficientUserHashFromRedis(userID uint64) (*model.UserAuthInfo, error) {
 	loginUser := modelconst.LoginUserKey + strconv.FormatUint(userID, 10)
 
 	conn.Send("SELECT", modelconst.UserIndex)
@@ -148,15 +147,14 @@ func (conn *UserRedis) EfficientUserHashFromRedis(userID uint64) (*model.UserMai
 	if len(userArgs) == 0 {
 		return nil, model.UserErr_InvalidToken
 	}
-	var user model.UserMainInfo
+	var user model.UserAuthInfo
 	user.Id, err = strconv.ParseUint(userArgs[1], 10, 64)
 	n, err := strconv.ParseUint(userArgs[3], 10, 32)
 	user.Role = model.Role(n)
 	user.LastActiveAt, err = strconv.ParseInt(userArgs[5], 10, 64)
-	user.Score, err = strconv.ParseUint(userArgs[7], 10, 64)
-	n, err = strconv.ParseUint(userArgs[9], 10, 8)
+	n, err = strconv.ParseUint(userArgs[7], 10, 8)
 	user.Status = model.UserStatus(n)
-	user.LoginTime, err = strconv.ParseInt(userArgs[11], 10, 64)
+	user.LoginAt, err = strconv.ParseInt(userArgs[9], 10, 64)
 	return &user, nil
 }
 

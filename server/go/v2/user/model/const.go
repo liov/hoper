@@ -32,4 +32,3 @@ const (
 	ResetDuration            = 24 * 60 * 60
 	VerificationCodeDuration = 5 * 60
 )
-

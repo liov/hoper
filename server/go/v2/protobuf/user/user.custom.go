@@ -1,5 +1,9 @@
 package user
 
+import (
+	"time"
+)
+
 //Cannot use 'resumes' (type []*model.Resume) as type []CmpKey
 //我认为这是一个bug
 //[]int可以是interface，却不可以是[]interface
@@ -33,13 +37,6 @@ func (x *User) TableName() string {
 	return "user_" + string(byte(x.Id/1_000_000+49))
 }
 
-func (x *UserMainInfo) TableName() string {
-	if x.Id < 1_000_000 {
-		return "user"
-	}
-	return "user_" + string(byte(x.Id/1_000_000+49))
-}
-
 func (x *UserBaseInfo) TableName() string {
 	if x.Id < 1_000_000 {
 		return "user"
@@ -56,4 +53,12 @@ func (x *UserAuthInfo) TableName() string {
 
 func (x *Resume) TableName() string {
 	return "resume"
+}
+
+func (x *UserAuthInfo) Valid() error {
+	now:=time.Now().Unix()
+	if x.ExpiredAt!=0 && now <= x.ExpiredAt {
+		return UserErr_LoginTimeout
+	}
+	return nil
 }

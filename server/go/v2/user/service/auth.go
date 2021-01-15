@@ -9,10 +9,12 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/user/conf"
 	"github.com/liov/hoper/go/v2/user/dao"
 	fasthttpi "github.com/liov/hoper/go/v2/utils/net/fasthttp"
 	"github.com/liov/hoper/go/v2/utils/net/http"
+	"github.com/liov/hoper/go/v2/utils/net/http/request"
 	jwti "github.com/liov/hoper/go/v2/utils/verification/auth/jwt"
 	"github.com/valyala/fasthttp"
 	"google.golang.org/grpc/metadata"
@@ -20,7 +22,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
-func Auth(token string) (*model.UserMainInfo, error) {
+func Auth(token string) (*model.UserAuthInfo, error) {
 	claims := new(jwti.Claims)
 	if err := jwti.ParseToken(claims, token, conf.Conf.Customize.TokenSecret); err != nil {
 		return nil, err
@@ -35,43 +37,22 @@ func Auth(token string) (*model.UserMainInfo, error) {
 	return user, nil
 }
 
-func (*UserService) AuthClaims(ctx context.Context) (*jwti.Claims, error) {
+
+func (u *UserService) GetAuthInfo(ctx context.Context) (*model.UserAuthInfo, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
-	tokens := md.Get("auth")
+	tokens := md.Get(request.Auth)
 	if len(tokens) == 0 || tokens[0] == "" {
 		return nil, model.UserErr_NoLogin
 	}
-	claims := new(jwti.Claims)
-	if err := jwti.ParseToken(claims, tokens[0], conf.Conf.Customize.TokenSecret); err != nil {
-		return nil, err
-	}
-	return claims, nil
-}
 
-func (u *UserService) AuthMainInfo(ctx context.Context) (*model.UserMainInfo, error) {
-	claims, err := u.AuthClaims(ctx)
-	if err != nil {
-		return nil, err
-	}
-	//redis
-	conn := dao.NewUserRedis()
-	defer conn.Close()
-	user, err := conn.EfficientUserHashFromRedis(claims.UserId)
-	if err != nil {
-		return nil, model.UserErr_InvalidToken
-	}
-
-	if user.LoginTime != claims.IssuedAt {
-		return nil, model.UserErr_InvalidToken
-	}
-	return user, nil
+	return Auth(tokens[0])
 }
 
 func (*UserService) Device(ctx context.Context) *model.UserDeviceInfo {
 	var info model.UserDeviceInfo
 	md, _ := metadata.FromIncomingContext(ctx)
 	//Device-Info:device-osInfo-appCode-appVersion
-	deviceInfo := md.Get("device-info")
+	deviceInfo := md.Get(request.DeviceInfo)
 	if len(deviceInfo) > 0 && deviceInfo[0] != "" {
 		infos := strings.Split(deviceInfo[0], "-")
 		if len(infos) == 4 {
@@ -83,7 +64,7 @@ func (*UserService) Device(ctx context.Context) *model.UserDeviceInfo {
 	}
 	// area:xxx
 	// location:1.23456,2.123456
-	location := md.Get("location")
+	location := md.Get(request.Location)
 	if len(location) > 0 && location[0] != "" {
 		info.Area, _ = url.PathUnescape(location[0])
 	}
@@ -96,11 +77,11 @@ func (*UserService) Device(ctx context.Context) *model.UserDeviceInfo {
 		}
 	}
 
-	userAgent := md.Get("user-agent")
+	userAgent := md.Get(request.UserAgent)
 	if len(userAgent) > 0 && userAgent[0] != "" {
 		info.UserAgent = userAgent[0]
 	}
-	ip := md.Get("x-forwarded-for")
+	ip := md.Get(request.XForwardedFor)
 	if len(ip) > 0 && ip[0] != "" {
 		info.IP = ip[0]
 	}
@@ -116,8 +97,8 @@ func AuthContext(r *http.Request) context.Context {
 }
 
 // FromContext returns the User value stored in ctx, if any.
-func FromContext(ctx context.Context) (*model.UserMainInfo, bool) {
-	user, ok := ctx.Value(authKey{}).(*model.UserMainInfo)
+func FromContext(ctx context.Context) (*model.UserAuthInfo, bool) {
+	user, ok := ctx.Value(authKey{}).(*model.UserAuthInfo)
 	return user, ok
 }
 
@@ -128,37 +109,37 @@ func AuthContextF(r *fasthttp.Request) context.Context {
 }
 
 // FromContext returns the User value stored in ctx, if any.
-func FromContextF(ctx context.Context) (*model.UserMainInfo, bool) {
-	user, ok := ctx.Value(authKey{}).(*model.UserMainInfo)
+func FromContextF(ctx context.Context) (*model.UserAuthInfo, bool) {
+	user, ok := ctx.Value(authKey{}).(*model.UserAuthInfo)
 	return user, ok
 }
 
 type Claims struct {
-	User *model.UserMainInfo
+	User *model.UserAuthInfo
 	*jwt.StandardClaims
 }
 
 func (claims *Claims) Valid() error {
 	if claims.VerifyExpiresAt(claims.IssuedAt, false) == false {
-		return errors.New("登录超时")
+		return errorcode.DeadlineExceeded
 	}
 	return nil
 }
 
 func (claims *Claims) GenerateToken() (string, error) {
-	claims.StandardClaims = jwti.NewStandardClaims(conf.Conf.Customize.TokenMaxAge,conf.Conf.Server.Domain)
+	claims.StandardClaims = jwti.NewStandardClaims(conf.Conf.Customize.TokenMaxAge, conf.Conf.Server.Domain)
 
 	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	token, err := tokenClaims.SignedString("secret")
+	token, err := tokenClaims.SignedString(conf.Conf.Customize.TokenSecret)
 	return token, err
 }
 
 func (claims *Claims) ParseToken(req *http.Request) error {
-	return jwti.ParseToken(claims, httpi.GetToken(req), "secret")
+	return jwti.ParseToken(claims, httpi.GetToken(req), conf.Conf.Customize.TokenSecret)
 }
 
 type FasthttpClaims struct {
-	User *model.UserMainInfo
+	User *model.UserAuthInfo
 	*jwt.StandardClaims
 }
 
@@ -169,15 +150,37 @@ func (claims *FasthttpClaims) Valid() error {
 	return nil
 }
 
-
 func (claims *FasthttpClaims) GenerateToken() (string, error) {
-	claims.StandardClaims = jwti.NewStandardClaims(conf.Conf.Customize.TokenMaxAge,conf.Conf.Server.Domain)
+	claims.StandardClaims = jwti.NewStandardClaims(conf.Conf.Customize.TokenMaxAge, conf.Conf.Server.Domain)
 	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	token, err := tokenClaims.SignedString("secret")
+	token, err := tokenClaims.SignedString(conf.Conf.Customize.TokenSecret)
 
 	return token, err
 }
 
 func (claims *FasthttpClaims) ParseToken(req *fasthttp.Request) error {
-	return jwti.ParseToken(claims, fasthttpi.GetToken(req), "secret")
+	return jwti.ParseToken(claims, fasthttpi.GetToken(req), conf.Conf.Customize.TokenSecret)
+}
+
+type Ctx struct {
+	context.Context `json:"-"`
+	TraceID         string `json:"-"`
+	*model.UserAuthInfo
+	ReqAt int64
+	parse bool
+}
+
+func (claims *Ctx) Valid() error {
+	if claims.ExpiredAt != 0 && claims.ReqAt <= claims.ExpiredAt {
+		return model.UserErr_LoginTimeout
+	}
+	return nil
+}
+
+func CtxFromRequest(ctx context.Context) *Ctx {
+	return &Ctx{
+		Context:      ctx,
+		TraceID:      "",
+		UserAuthInfo: nil,
+	}
 }
