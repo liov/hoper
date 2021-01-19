@@ -40,55 +40,6 @@ func FiberApi(f func() interface{}) {
 	}
 }
 
-type FasthttpClaims interface {
-	ParseToken(request *fasthttp.Request) error
-}
-
-var fasthttpClaimsType = reflect.TypeOf((*FasthttpClaims)(nil)).Elem()
-
-func Fiber(engine *fiber.App, genApi bool, modName string) {
-
-	for _, v := range fiberSvcs {
-		_, preUrl, middleware := v.FiberService()
-		value := reflect.ValueOf(v)
-		if value.Kind() != reflect.Ptr {
-			log.Fatal("必须传入指针")
-		}
-		engine.Group(preUrl, middleware...)
-		for j := 0; j < value.NumMethod(); j++ {
-			method := value.Type().Method(j)
-			methodInfo := getMethodInfo(&method, preUrl,fasthttpClaimsType)
-			if methodInfo == nil {
-				continue
-			}
-			if methodInfo.path == "" || methodInfo.method == "" || methodInfo.title == "" || methodInfo.createlog.version == "" {
-				log.Fatal("接口路径,方法,描述,创建日志均为必填")
-			}
-			methodType := method.Type
-			methodValue := method.Func
-			in2Type := methodType.In(2)
-			engine.Add(methodInfo.method, methodInfo.path, func(ctx *fiber.Ctx) error {
-				in1 := reflect.New(methodType.In(1).Elem())
-				in1.Interface().(FasthttpClaims).ParseToken(ctx.Request())
-				in2 := reflect.New(in2Type.Elem())
-				if err := fiber_build.Bind(ctx, in2.Interface()); err != nil {
-					return ctx.Status(http.StatusBadRequest).JSON(errorcode.InvalidArgument.ErrRep())
-				}
-				result := methodValue.Call([]reflect.Value{value, in1, in2})
-				return fiberResHandler(ctx, result)
-			})
-		}
-
-	}
-	if genApi {
-		filePath := apidoc.FilePath
-		md(filePath, modName)
-		swagger(filePath, modName)
-		//gin_build.OpenApi(engine, filePath)
-	}
-	faberRegistered()
-}
-
 func fiberResHandler(ctx *fiber.Ctx, result []reflect.Value) error {
 	writer := ctx.Response().BodyWriter()
 	if !result[1].IsNil() {
@@ -120,7 +71,7 @@ func FiberWithCtx(engine *fiber.App,authCtx FasthttpAuthCtx ,genApi bool, modNam
 		engine.Group(preUrl, middleware...)
 		for j := 0; j < value.NumMethod(); j++ {
 			method := value.Type().Method(j)
-			methodInfo := getMethodInfo(&method, preUrl,fasthttpClaimsType)
+			methodInfo := getMethodInfo(&method, preUrl,contextType)
 			if methodInfo == nil {
 				continue
 			}

@@ -129,11 +129,7 @@ func userFromReader(reader io.Reader, user *goth.User) error {
 
 	user.Name = u.Name
 	user.NickName = u.Name
-	user.Email = u.Mail
-	user.Description = u.Introduction
-	user.AvatarURL = u.AvatarURL
 	user.UserID = strconv.FormatUint(u.Id, 10)
-	user.Location = u.Location
 
 	return err
 }

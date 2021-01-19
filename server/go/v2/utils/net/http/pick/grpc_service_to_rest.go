@@ -16,10 +16,10 @@ import (
 
 type MapRouter map[string]methodHandle
 
-type AuthCtx func(r *http.Request) context.Context
+type CtxFromRequest func(r *http.Request) context.Context
 // Deprecated:这种方法不推荐使用了，目前就两种定义api的方式，一种grpc-gateway，一种pick自定义
 // 该方法适用于不使用grpc-gateway的情况，只用该方法定义api
-func GrpcServiceToRestfulApi(engine *gin.Engine, authCtx AuthCtx, genApi bool, modName string) {
+func GrpcServiceToRestfulApi(engine *gin.Engine, authCtx CtxFromRequest, genApi bool, modName string) {
 	httpMethods := []string{http.MethodGet, http.MethodOptions, http.MethodPut, http.MethodDelete,
 		http.MethodPatch, http.MethodConnect, http.MethodHead, http.MethodTrace}
 	doc := apidoc.GetDoc(filepath.Join(apidoc.FilePath+modName,modName+apidoc.GatewayEXT))

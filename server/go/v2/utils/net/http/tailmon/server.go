@@ -2,6 +2,7 @@ package tailmon
 
 import (
 	"bytes"
+	"context"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -14,18 +15,20 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/liov/hoper/go/v2/initialize"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/log"
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	gin_build "github.com/liov/hoper/go/v2/utils/net/http/gin"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"
+	"github.com/liov/hoper/go/v2/utils/net/http/request"
 	"github.com/liov/hoper/go/v2/utils/strings"
 	"go.opencensus.io/trace"
+	"go.opencensus.io/trace/propagation"
 	"go.uber.org/zap"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
+	gtrace "golang.org/x/net/trace"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -52,12 +55,13 @@ func (s *Server) httpHandler() http.HandlerFunc {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		if strings.HasPrefix(r.RequestURI, "/debug") {
+			ginServer.ServeHTTP(w, r)
+			return
+		}
+
 		now := time.Now()
-		ctx, span := trace.StartSpan(r.Context(), initialize.InitConfig.Module)
-		defer span.End()
-		r = r.WithContext(ctx)
-		/*		var result bytes.Buffer
-				rsp := io.MultiWriter(w, &result)*/
 		recorder := httpi.NewRecorder()
 
 		body, _ := ioutil.ReadAll(r.Body)
@@ -85,17 +89,24 @@ func (s *Server) httpHandler() http.HandlerFunc {
 
 		(&AccessLog{
 			now, r,
-			recorder.Code, "Cookie",
+			recorder.Code, request.Authorization,
 			stringsi.ToString(body), stringsi.ToString(recorder.Body.Bytes()),
 		}).log()
 	}
 }
 
-func (s *Server) Serve() {
+type CustomContext func(c context.Context, r *http.Request) context.Context
+
+func (s *Server) Serve(customContext CustomContext) {
+	//反射从配置中取port
+	serviceConfig := initialize.InitConfig.GetServiceConfig()
+
 	if s.GRPCServer != nil {
 		reflection.Register(s.GRPCServer)
 	}
 	httpHandler := s.httpHandler()
+	openTracing := serviceConfig.OpenTracing
+	systemTracing := serviceConfig.SystemTracing
 	handle := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if r := recover(); r != nil {
@@ -103,8 +114,36 @@ func (s *Server) Serve() {
 				w.Write(errorcode.SysErr)
 			}
 		}()
-		// 请求UUID，链路跟踪用
-		r.Header.Set("UUID", uuid.New().String())
+
+		// 请求TraceID，链路跟踪用
+		ctx := r.Context()
+		if systemTracing {
+			// 系统trace只能追踪单个请求，且只记录时间及是否完成
+			t := gtrace.New(initialize.InitConfig.Module, r.RequestURI)
+			defer t.Finish()
+			ctx = gtrace.NewContext(ctx, t)
+		}
+		if openTracing {
+			var span *trace.Span
+			// 直接从远程读取Trace信息，Trace是否为空交给propagation包判断
+			if parent, ok := propagation.FromBinary(stringsi.ToBytes(r.Header.Get(request.Trace))); ok {
+				ctx, span = trace.StartSpanWithRemoteParent(ctx, r.RequestURI,
+					parent,trace.WithSampler(trace.AlwaysSample()),
+					trace.WithSpanKind(trace.SpanKindServer))
+			} else {
+				ctx, span = trace.StartSpan(ctx, r.RequestURI,
+					trace.WithSampler(trace.AlwaysSample()),
+					trace.WithSpanKind(trace.SpanKindServer))
+			}
+			defer span.End()
+			r.Header.Set("TraceID",span.SpanContext().TraceID.String())
+		}
+
+		if customContext != nil {
+			r = r.WithContext(customContext(ctx, r))
+		} else {
+			r = r.WithContext(ctx)
+		}
 
 		if r.ProtoMajor == 2 && s.GRPCServer != nil && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
 			s.GRPCServer.ServeHTTP(w, r) // gRPC Server
@@ -112,9 +151,7 @@ func (s *Server) Serve() {
 			httpHandler(w, r)
 		}
 	})
-	h2Handler := h2c.NewHandler(handle, &http2.Server{})
-	//反射从配置中取port
-	serviceConfig := initialize.InitConfig.GetServiceConfig()
+	h2Handler := h2c.NewHandler(handle, new(http2.Server))
 	server := &http.Server{
 		Addr:         serviceConfig.Port,
 		Handler:      h2Handler,
@@ -160,7 +197,7 @@ type Server struct {
 var close = make(chan os.Signal, 1)
 var stop = make(chan struct{}, 1)
 
-func (s *Server) Start() {
+func (s *Server) Start(newContext CustomContext) {
 	if initialize.InitConfig.ConfigCenter == nil {
 		log.Fatal(`初始化配置失败:
 	main 函数的第一行应为
@@ -181,7 +218,7 @@ Loop:
 		case <-close:
 			break Loop
 		default:
-			s.Serve()
+			s.Serve(newContext)
 		}
 	}
 }

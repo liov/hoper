@@ -11,13 +11,12 @@ import (
 
 func RegisterOauthServiceHandlerServer(r *gin.Engine, server user.OauthServiceServer) {
 	r.GET("/oauth/authorize", func(ctx *gin.Context) {
-		token := httpi.GetToken(ctx.Request)
 		var protoReq oauth.OauthReq
 		schema.DefaultDecoder.Decode(&protoReq, ctx.Request.URL.Query())
 		res, _ := server.OauthAuthorize(
 			metadata.NewIncomingContext(
 				ctx.Request.Context(),
-				metadata.MD{"auth": {token}}),
+				metadata.MD{"auth": {httpi.GetToken(ctx.Request)}}),
 			&protoReq)
 
 		res.Response(ctx.Writer)

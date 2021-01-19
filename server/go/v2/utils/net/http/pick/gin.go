@@ -17,7 +17,7 @@ import (
 
 // 虽然我写的路由比httprouter更强大(没有map,lru cache)，但是还是选择用gin,理由是gin也用同样的方式改造了路由
 
-func Gin(engine *gin.Engine, genApi bool,modName string) {
+func Gin(engine *gin.Engine, genApi bool, modName string) {
 	for _, v := range svcs {
 		_, preUrl, middleware := v.Service()
 		value := reflect.ValueOf(v)
@@ -27,8 +27,8 @@ func Gin(engine *gin.Engine, genApi bool,modName string) {
 		engine.Group(preUrl, handler.Converts(middleware)...)
 		for j := 0; j < value.NumMethod(); j++ {
 			method := value.Type().Method(j)
-			methodInfo := getMethodInfo(&method, preUrl,claimsType)
-			if methodInfo == nil{
+			methodInfo := getMethodInfo(&method, preUrl, contextType)
+			if methodInfo == nil {
 				continue
 			}
 			if methodInfo.path == "" || methodInfo.method == "" || methodInfo.title == "" || methodInfo.createlog.version == "" {
@@ -38,18 +38,17 @@ func Gin(engine *gin.Engine, genApi bool,modName string) {
 			methodValue := method.Func
 			in2Type := methodType.In(2)
 			engine.Handle(methodInfo.method, methodInfo.path, func(ctx *gin.Context) {
-				in1 := reflect.New(methodType.In(1).Elem())
-				in1.Interface().(Claims).ParseToken(ctx.Request)
+				in1 := reflect.ValueOf(ctx.Request.Context())
 				in2 := reflect.New(in2Type.Elem())
-				gin_build.Bind(ctx,in2.Interface())
+				gin_build.Bind(ctx, in2.Interface())
 				result := methodValue.Call([]reflect.Value{value, in1, in2})
-				ginResHandler(ctx,result)
+				ginResHandler(ctx, result)
 			})
 		}
 
 	}
 	if genApi {
-		filePath:=apidoc.FilePath
+		filePath := apidoc.FilePath
 		md(filePath, modName)
 		swagger(filePath, modName)
 		gin_build.OpenApi(engine, filePath)
@@ -57,7 +56,7 @@ func Gin(engine *gin.Engine, genApi bool,modName string) {
 	registered()
 }
 
-func ginResHandler(ctx *gin.Context,result []reflect.Value)  {
+func ginResHandler(ctx *gin.Context, result []reflect.Value) {
 	if !result[1].IsNil() {
 		json.NewEncoder(ctx.Writer).Encode(errorcode.ErrHandle(result[1].Interface()))
 		return
@@ -76,7 +75,7 @@ func ginResHandler(ctx *gin.Context,result []reflect.Value)  {
 	ctx.JSON(200, result[0].Interface())
 }
 
-func GinWithCtx(engine *gin.Engine,authCtx AuthCtx, genApi bool,modName string) {
+func GinWithCtx(engine *gin.Engine, ctxFromRequest CtxFromRequest, genApi bool, modName string) {
 	for _, v := range svcs {
 		_, preUrl, middleware := v.Service()
 		value := reflect.ValueOf(v)
@@ -86,8 +85,8 @@ func GinWithCtx(engine *gin.Engine,authCtx AuthCtx, genApi bool,modName string) 
 		engine.Group(preUrl, handler.Converts(middleware)...)
 		for j := 0; j < value.NumMethod(); j++ {
 			method := value.Type().Method(j)
-			methodInfo := getMethodInfo(&method, preUrl,claimsType)
-			if methodInfo == nil{
+			methodInfo := getMethodInfo(&method, preUrl, contextType)
+			if methodInfo == nil {
 				continue
 			}
 			if methodInfo.path == "" || methodInfo.method == "" || methodInfo.title == "" || methodInfo.createlog.version == "" {
@@ -97,17 +96,17 @@ func GinWithCtx(engine *gin.Engine,authCtx AuthCtx, genApi bool,modName string) 
 			methodValue := method.Func
 			in2Type := methodType.In(2)
 			engine.Handle(methodInfo.method, methodInfo.path, func(ctx *gin.Context) {
-				in1 := reflect.ValueOf(authCtx(ctx.Request))
+				in1 := reflect.ValueOf(ctxFromRequest(ctx.Request))
 				in2 := reflect.New(in2Type.Elem())
-				gin_build.Bind(ctx,in2.Interface())
+				gin_build.Bind(ctx, in2.Interface())
 				result := methodValue.Call([]reflect.Value{value, in1, in2})
-				ginResHandler(ctx,result)
+				ginResHandler(ctx, result)
 			})
 		}
 
 	}
 	if genApi {
-		filePath:=apidoc.FilePath
+		filePath := apidoc.FilePath
 		md(filePath, modName)
 		swagger(filePath, modName)
 		gin_build.OpenApi(engine, filePath)

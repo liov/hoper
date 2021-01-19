@@ -19,7 +19,7 @@ func swagger(filePath, modName string) {
 
 		for j := 0; j < value.NumMethod(); j++ {
 			method := value.Type().Method(j)
-			methodInfo := getMethodInfo(&method, preUrl,claimsType)
+			methodInfo := getMethodInfo(&method, preUrl, contextType)
 			if methodInfo == nil {
 				continue
 			}

@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	Connes     clientConns
+	Connes     clientConnes
 	UserClient user_model.UserServiceClient
 )
 
@@ -16,9 +16,9 @@ func init() {
 	Connes = append(Connes, conn)
 }
 
-type clientConns []*grpc.ClientConn
+type clientConnes []*grpc.ClientConn
 
-func (cs clientConns) Close() {
+func (cs clientConnes) Close() {
 	for _, conn := range cs {
 		conn.Close()
 	}
