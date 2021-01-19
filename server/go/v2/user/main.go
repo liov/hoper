@@ -30,6 +30,7 @@ func main() {
 	(&tailmon.Server{
 		//为了可以自定义中间件
 		GRPCServer: func() *grpc.Server {
+			//grpc.OpenTracing = true
 			gs := igrpc.DefaultGRPCServer(nil,nil)
 			model.RegisterUserServiceServer(gs, service.GetUserService())
 			model.RegisterOauthServiceServer(gs,service.GetOauthService())
@@ -47,7 +48,7 @@ func main() {
 			oauth.RegisterOauthServiceHandlerServer(app, service.GetOauthService())
 			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
 			pick.RegisterService(service.GetUserService())
-			pick.GinWithCtx(app,service.AuthContext,true,initialize.InitConfig.Module)
+			pick.GinWithCtx(app,service.CtxFromRequest,true,initialize.InitConfig.Module)
 		},
 
 /*		GraphqlResolve: model.NewExecutableSchema(model.Config{
@@ -55,5 +56,5 @@ func main() {
 				UserService:  service.GetUserService(),
 				OauthService: service.GetOauthService(),
 			}}),*/
-	}).Start()
+	}).Start(service.CtxWithRequest)
 }

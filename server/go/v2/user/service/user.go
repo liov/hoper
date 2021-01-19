@@ -53,7 +53,7 @@ func GetUserService() *UserService {
 }
 
 func (u *UserService) VerifyCode(ctx context.Context, req *request.Empty) (*response.CommonRep, error) {
-	device := u.Device(ctx)
+	device := CtxFromContext(ctx).UserDeviceInfo
 	log.Debug(device)
 	var rep = &response.CommonRep{}
 	vcode := verification.GenerateCode()
@@ -241,11 +241,12 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 
 func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.TinyRep, error) {
 	defer timei.TimeCost(time.Now())
-	user, err := u.GetAuthInfo(ctx)
+	c := CtxFromContext(ctx)
+	user, err := c.GetAuthInfo()
 	if err != nil || user.Id != req.Id {
 		return nil, err
 	}
-	device := u.Device(ctx)
+	device := c.UserDeviceInfo
 
 	originalIds, err := userDao.ResumesIds(nil, user.Id)
 	if err != nil {
@@ -326,11 +327,11 @@ func (*UserService) login(ctx context.Context, user *model.User) (*model.LoginRe
 		LastActiveAt: nowStamp,
 		Status:       user.Status,
 		Role:         user.Role,
-		LoginAt:    nowStamp,
+		LoginAt:      nowStamp,
 	}
 	claims := &jwt.Claims{
 		UserId:         userInfo.Id,
-		StandardClaims: jwt.NewStandardClaims(conf.Conf.Customize.TokenMaxAge,"hoper"),
+		StandardClaims: jwt.NewStandardClaims(conf.Conf.Customize.TokenMaxAge, "hoper"),
 	}
 
 	tokenString, err := jwt.GenerateToken(claims, stringsi.ToBytes(conf.Conf.Customize.TokenSecret))
@@ -368,7 +369,8 @@ func (*UserService) login(ctx context.Context, user *model.User) (*model.LoginRe
 }
 
 func (u *UserService) Logout(ctx context.Context, req *request.Empty) (*model.LogoutRep, error) {
-	user, err := u.GetAuthInfo(ctx)
+	c := CtxFromContext(ctx)
+	user, err := c.GetAuthInfo()
 	if err != nil {
 		return nil, err
 	}
@@ -396,7 +398,7 @@ func (u *UserService) Logout(ctx context.Context, req *request.Empty) (*model.Lo
 }
 
 func (u *UserService) AuthInfo(ctx context.Context, req *request.Empty) (*model.UserAuthInfo, error) {
-	return u.GetAuthInfo(ctx)
+	return CtxFromContext(ctx).GetAuthInfo()
 }
 
 func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.GetRep, error) {
@@ -495,7 +497,7 @@ func (*UserService) GetTest(ctx context.Context, req *model.GetReq) (*model.GetR
 	return &model.GetRep{Code: uint32(req.Id), Message: "测试"}, nil
 }
 
-func (*UserService) Add(ctx *Claims, req *model.SignupReq) (*response.TinyRep, error) {
+func (*UserService) Add(ctx context.Context, req *model.SignupReq) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() interface{} {
 		return pick.Method(http.MethodGet).
@@ -508,7 +510,7 @@ func (*UserService) Add(ctx *Claims, req *model.SignupReq) (*response.TinyRep, e
 	return &response.TinyRep{Message: req.Name}, nil
 }
 
-func (*UserService) AddV2(ctx *FasthttpClaims, req *response.TinyRep) (*response.TinyRep, error) {
+func (*UserService) AddV2(ctx context.Context, req *response.TinyRep) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.FiberApi(func() interface{} {
 		return pick.Method(http.MethodGet).

@@ -16,11 +16,10 @@ func commonHandler(w http.ResponseWriter, req *http.Request, handle *reflect.Val
 	if handleNumIn != 0 {
 		params := make([]reflect.Value, handleNumIn)
 		for i := 0; i < handleNumIn; i++ {
-			params[i] = reflect.New(handleTyp.In(i).Elem())
-			if handleTyp.In(i).Implements(claimsType) {
-				sess := params[i].Interface().(Claims)
-				sess.ParseToken(req)
+			if handleTyp.In(i).Implements(contextType) {
+				params[i] = reflect.ValueOf(req.Context())
 			} else {
+				params[i] = reflect.New(handleTyp.In(i).Elem())
 				if ps != nil || req.URL.RawQuery != "" {
 					src := req.URL.Query()
 					if ps != nil {

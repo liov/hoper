@@ -139,7 +139,7 @@ service UserService {
   }
 
   //鉴权
-  rpc AuthInfo (request.Empty) returns (UserOAuthInfo) {
+  rpc AuthInfo (request.Empty) returns (UserAuthInfo) {
     option (google.api.http) = {
       get: "/api/v1/auth"
     };
