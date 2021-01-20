@@ -68,11 +68,12 @@ func (x *UserAuthInfo) Valid() error {
 	return nil
 }
 
-func Device(r http.Header) *UserDeviceInfo {
-	var info UserDeviceInfo
+func Device(r http.Header) *DeviceInfo {
+	unknow := true
+	var info DeviceInfo
 	//Device-Info:device-osInfo-appCode-appVersion
-	deviceInfo := r.Get(request.DeviceInfo)
-	if deviceInfo != "" {
+	if deviceInfo := r.Get(request.DeviceInfo); deviceInfo != "" {
+		unknow = false
 		infos := strings.Split(deviceInfo, "-")
 		if len(infos) == 4 {
 			info.Device = infos[0]
@@ -83,26 +84,78 @@ func Device(r http.Header) *UserDeviceInfo {
 	}
 	// area:xxx
 	// location:1.23456,2.123456
-	location := r.Values(request.Location)
-	if len(location) > 0 && location[0] != "" {
-		info.Area, _ = url.PathUnescape(location[0])
+	if area := r.Get(request.Area); area != "" {
+		unknow = false
+		info.Area, _ = url.PathUnescape(area)
 	}
-
-	if len(location) > 1 && location[1] != "" {
-		infos := strings.Split(location[1], ",")
+	if location := r.Get(request.Location); location != "" {
+		unknow = false
+		infos := strings.Split(location, ",")
 		if len(infos) == 2 {
 			info.Lng = infos[0]
 			info.Lat = infos[1]
 		}
 	}
 
-	userAgent := r.Get(request.UserAgent)
-	if userAgent != "" {
+	if userAgent := r.Get(request.UserAgent); userAgent != "" {
+		unknow = false
 		info.UserAgent = userAgent
 	}
-	ip := r.Get(request.XForwardedFor)
-	if ip != "" {
+	if ip := r.Get(request.XForwardedFor); ip != "" {
+		unknow = false
 		info.IP = ip
 	}
+	if unknow {
+		return nil
+	}
 	return &info
+}
+
+func (x *AuthInfo) UserAuthInfo() *UserAuthInfo {
+	return &UserAuthInfo{
+		Id:           x.Id,
+		Name:         x.Name,
+		Role:         x.Role,
+		Status:       x.Status,
+		LastActiveAt: x.LastActiveAt,
+		ExpiredAt:    x.ExpiredAt,
+		LoginAt:      x.LoginAt,
+	}
+}
+
+type AuthInfo struct {
+	Id           uint64     `json:"id"`
+	Name         string     `json:"name"`
+	Role         Role       `json:"role"`
+	Status       UserStatus `json:"status"`
+	LastActiveAt int64      `json:"lastActiveAt,omitempty"`
+	ExpiredAt    int64      `json:"expiredAt,omitempty"`
+	LoginAt      int64      `json:"loginAt,omitempty"`
+}
+
+type DeviceInfo struct {
+	//设备
+	Device     string `json:"device" gorm:"size:255"`
+	Os         string `json:"os" gorm:"size:255"`
+	AppCode    string `json:"appCode" gorm:"size:255"`
+	AppVersion string `json:"appVersion" gorm:"size:255"`
+	IP         string `json:"IP" gorm:"size:255"`
+	Lng        string `json:"lng" gorm:"type:numeric(10,6)"`
+	Lat        string `json:"lat" gorm:"type:numeric(10,6)"`
+	Area       string `json:"area" gorm:"size:255"`
+	UserAgent  string `json:"userAgent" gorm:"size:255"`
+}
+
+func (x *DeviceInfo) UserDeviceInfo() *UserDeviceInfo {
+	return &UserDeviceInfo{
+		Device:     x.Device,
+		Os:         x.Os,
+		AppCode:    x.AppCode,
+		AppVersion: x.AppVersion,
+		IP:         x.IP,
+		Lng:        x.Lng,
+		Lat:        x.Lat,
+		Area:       x.Area,
+		UserAgent:  x.UserAgent,
+	}
 }

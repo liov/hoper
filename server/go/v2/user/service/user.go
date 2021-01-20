@@ -36,14 +36,6 @@ type UserService struct {
 	model.UnimplementedUserServiceServer
 }
 
-func (*UserService) Service() (string, string, []http.HandlerFunc) {
-	return "用户相关", "/api/user", []http.HandlerFunc{middle.Log}
-}
-
-func (*UserService) FiberService() (string, string, []fiber.Handler) {
-	return "用户相关", "/api/user", []fiber.Handler{middle.FiberLog}
-}
-
 func GetUserService() *UserService {
 	if userSvc != nil {
 		return userSvc
@@ -53,7 +45,7 @@ func GetUserService() *UserService {
 }
 
 func (u *UserService) VerifyCode(ctx context.Context, req *request.Empty) (*response.CommonRep, error) {
-	device := CtxFromContext(ctx).UserDeviceInfo
+	device := CtxFromContext(ctx).DeviceInfo
 	log.Debug(device)
 	var rep = &response.CommonRep{}
 	vcode := verification.GenerateCode()
@@ -246,7 +238,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.T
 	if err != nil || user.Id != req.Id {
 		return nil, err
 	}
-	device := c.UserDeviceInfo
+	device := c.DeviceInfo
 
 	originalIds, err := userDao.ResumesIds(nil, user.Id)
 	if err != nil {
@@ -256,7 +248,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.T
 	resumes = append(req.Details.EduExps, req.Details.WorkExps...)
 
 	tx := dao.Dao.GORMDB.Begin()
-	err = userDao.SaveResumes(tx, req.Id, resumes, originalIds, device)
+	err = userDao.SaveResumes(tx, req.Id, resumes, originalIds, device.UserDeviceInfo())
 	if err != nil {
 		tx.Rollback()
 		return nil, errorcode.DBError.Message("更新失败")
@@ -398,7 +390,11 @@ func (u *UserService) Logout(ctx context.Context, req *request.Empty) (*model.Lo
 }
 
 func (u *UserService) AuthInfo(ctx context.Context, req *request.Empty) (*model.UserAuthInfo, error) {
-	return CtxFromContext(ctx).GetAuthInfo()
+	user, err := CtxFromContext(ctx).GetAuthInfo()
+	if err != nil {
+		return nil, err
+	}
+	return user.UserAuthInfo(), nil
 }
 
 func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.GetRep, error) {
@@ -497,10 +493,18 @@ func (*UserService) GetTest(ctx context.Context, req *model.GetReq) (*model.GetR
 	return &model.GetRep{Code: uint32(req.Id), Message: "测试"}, nil
 }
 
-func (*UserService) Add(ctx context.Context, req *model.SignupReq) (*response.TinyRep, error) {
+type GinUserService struct {}
+
+func (*GinUserService) Service() (string, string, []http.HandlerFunc) {
+	return "用户相关", "/api/user", []http.HandlerFunc{middle.Log}
+}
+
+
+func (*GinUserService) Add(ctx context.Context, req *model.SignupReq) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() interface{} {
-		return pick.Method(http.MethodGet).
+		return pick.Path("/add").
+			Method(http.MethodGet).
 			Title("用户注册").
 			Version(2).
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
@@ -510,10 +514,17 @@ func (*UserService) Add(ctx context.Context, req *model.SignupReq) (*response.Ti
 	return &response.TinyRep{Message: req.Name}, nil
 }
 
-func (*UserService) AddV2(ctx context.Context, req *response.TinyRep) (*response.TinyRep, error) {
+type FiberUserService struct {}
+
+func (*FiberUserService) FiberService() (string, string, []fiber.Handler) {
+	return "用户相关", "/api/user", []fiber.Handler{middle.FiberLog}
+}
+
+func (*FiberUserService) Add(ctx context.Context, req *response.TinyRep) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.FiberApi(func() interface{} {
-		return pick.Method(http.MethodGet).
+		return pick.Path("/add").
+			Method(http.MethodGet).
 			Title("用户注册").
 			Version(2).
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").

@@ -5,5 +5,5 @@ import (
 )
 
 func (init *Init) P3Cache() cache.Cache {
-	return cache.New(20).LRU().Build()
+	return cache.New(1000).LRU().Build()
 }

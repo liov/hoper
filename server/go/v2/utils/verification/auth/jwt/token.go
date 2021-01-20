@@ -9,6 +9,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/strings"
 )
 
+var Parser = &jwt.Parser{SkipClaimsValidation: true}
 //如果只存一个id，jwt的意义在哪呢，跟session_id有什么区别
 //jwt应该存放一些用户不能更改的信息，所以不能全存在jwt里
 //或者说用户每更改一次信息就刷新token（貌似可行）
@@ -56,8 +57,7 @@ func ParseToken(claims jwt.Claims, token, secret string) error {
 	if token == "" {
 		return model.UserErr_NoLogin
 	}
-	tokenClaims, _ := (&jwt.Parser{SkipClaimsValidation: true}).
-		ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+	tokenClaims, _ := Parser.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 			return stringsi.ToBytes(secret), nil
 		})
 
@@ -69,8 +69,7 @@ func ParseToken(claims jwt.Claims, token, secret string) error {
 }
 
 func ParseTokenWithKeyFunc(claims jwt.Claims, token string, f func(token *jwt.Token) (interface{}, error)) error {
-	tokenClaims, _ := (&jwt.Parser{SkipClaimsValidation: true}).
-		ParseWithClaims(token, claims, f)
+	tokenClaims, _ := Parser.ParseWithClaims(token, claims, f)
 
 	if tokenClaims != nil && tokenClaims.Valid {
 		return tokenClaims.Claims.Valid()

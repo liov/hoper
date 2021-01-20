@@ -134,7 +134,7 @@ func (conn *UserRedis) EfficientUserHashToRedis(user *model.UserAuthInfo) error 
 哈希表中某个键或某个值的长度大于 server.hash_max_ziplist_value （默认值为 64 ）。
 压缩列表中的节点数量大于 server.hash_max_ziplist_entries （默认值为 512 ）。
 */
-func (conn *UserRedis) EfficientUserHashFromRedis(userID uint64) (*model.UserAuthInfo, error) {
+func (conn *UserRedis) EfficientUserHashFromRedis(userID uint64) (*model.AuthInfo, error) {
 	loginUser := modelconst.LoginUserKey + strconv.FormatUint(userID, 10)
 
 	conn.Send("SELECT", modelconst.UserIndex)
@@ -147,7 +147,7 @@ func (conn *UserRedis) EfficientUserHashFromRedis(userID uint64) (*model.UserAut
 	if len(userArgs) == 0 {
 		return nil, model.UserErr_InvalidToken
 	}
-	var user model.UserAuthInfo
+	var user model.AuthInfo
 	user.Id, err = strconv.ParseUint(userArgs[1], 10, 64)
 	n, err := strconv.ParseUint(userArgs[3], 10, 32)
 	user.Role = model.Role(n)
