@@ -136,7 +136,6 @@ func (s *Server) Serve(customContext CustomContext) {
 					trace.WithSpanKind(trace.SpanKindServer))
 			}
 			defer span.End()
-			r.Header.Set("TraceID",span.SpanContext().TraceID.String())
 		}
 
 		if customContext != nil {

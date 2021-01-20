@@ -1,6 +1,7 @@
 package pick
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"reflect"
@@ -98,9 +99,11 @@ func getMethodInfo(method *reflect.Method, preUrl string, claimsTyp reflect.Type
 	defer func() {
 		if err := recover(); err != nil {
 			if v, ok := err.(*apiInfo); ok {
+				//_,_, info.version = parseMethodName(method.Name)
+				v.path = preUrl + "/v" + strconv.Itoa(v.version) + v.path
 				info = v
-				_, info.version = parseMethodName(method.Name)
-				info.path = preUrl + "/v" + strconv.Itoa(info.version) + info.path
+			} else {
+				log.Error(err)
 			}
 		}
 	}()
@@ -114,11 +117,9 @@ func getMethodInfo(method *reflect.Method, preUrl string, claimsTyp reflect.Type
 			log.Debugf("%s %s 未注册:%v", preUrl, method.Name, err)
 		}
 	}()
-	if numIn == 1 {
-		return
-	}
-	if numIn > 3 {
-		err = errors.New("method参数最多为两个")
+
+	if numIn != 3 {
+		err = errors.New("method参数必须为两个")
 		return
 	}
 	if numOut != 2 {
@@ -126,22 +127,27 @@ func getMethodInfo(method *reflect.Method, preUrl string, claimsTyp reflect.Type
 		return
 	}
 	if !methodType.In(1).Implements(claimsTyp) {
+		err = errors.New("service第一个参数必须为error类型")
 		return
 	}
 	if !methodType.Out(1).Implements(errorType) {
 		err = errors.New("service第二个返回值必须为error类型")
 		return
 	}
-	params := make([]reflect.Value, 0, numIn)
+	params := make([]reflect.Value, numIn, numIn)
 	for i := 0; i < numIn; i++ {
-		params = append(params, reflect.New(methodType.In(i).Elem()))
+		if i == 1 {
+			params[1] = reflect.ValueOf(context.Background())
+			continue
+		}
+		params[i] = reflect.New(methodType.In(i).Elem())
 	}
 	methodValue.Call(params)
 	return nil
 }
 
 // 从方法名称分析出接口名和版本号
-func parseMethodName(originName string) (name string, version int) {
+func parseMethodName(originName string,methods []string) (method,name string, version int) {
 	idx := strings.LastIndexByte(originName, 'V')
 	version = 1
 	if idx > 0 {
@@ -154,7 +160,12 @@ func parseMethodName(originName string) (name string, version int) {
 		idx = len(originName)
 	}
 	name = stringsi.LowerFirst(originName[:idx])
-	return
+	for _, method := range methods {
+		if strings.HasPrefix(name, method) {
+			return method, name[len(method):], version
+		}
+	}
+	return http.MethodPost, name, version
 }
 
 func (api *apiInfo) Swagger(doc *spec.Swagger, methodType reflect.Type, tag, dec string) {

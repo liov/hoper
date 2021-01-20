@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"reflect"
 	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/liov/hoper/go/v2/utils/log"
@@ -44,7 +43,7 @@ func GrpcServiceToRestfulApi(engine *gin.Engine, authCtx CtxFromRequest, genApi 
 			methodInfo:=new(apiInfo)
 			methodInfo.title = describe
 			methodInfo.middleware = middleware
-			methodInfo.method, methodInfo.path, methodInfo.version = parseGrpcMethodName(method.Name, httpMethods)
+			methodInfo.method, methodInfo.path, methodInfo.version = parseMethodName(method.Name, httpMethods)
 			methodInfo.path = "v" + strconv.Itoa(methodInfo.version) + "/" + methodInfo.path
 
 			in2Type := methodType.In(2)
@@ -66,14 +65,4 @@ func GrpcServiceToRestfulApi(engine *gin.Engine, authCtx CtxFromRequest, genApi 
 		apidoc.WriteToFile(apidoc.FilePath, modName)
 	}
 
-}
-
-func parseGrpcMethodName(name string, methods []string) (string, string, int) {
-	name, version := parseMethodName(name)
-	for _, method := range methods {
-		if strings.HasPrefix(name, method) {
-			return method, name[len(method):], version
-		}
-	}
-	return http.MethodPost, name, version
 }

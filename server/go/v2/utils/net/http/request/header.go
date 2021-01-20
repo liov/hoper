@@ -1,15 +1,18 @@
 package request
 
 const (
-	DeviceInfo = "Device-info"
-	Location   = "Location"
-	UserAgent  = "User-agent"
-	XForwardedFor  = "X-forwarded-for"
-	Auth = "Auth"
-	ContentType = "Content-Type"
-	Trace = "Trace"
+	DeviceInfo    = "Device-Info"
+	Location      = "Location"
+	Area          = "Area"
+	UserAgent     = "User-Agent"
+	XForwardedFor = "X-Forwarded-For"
+	Auth          = "Auth"
+	ContentType   = "Content-Type"
+	Trace         = "Trace"
+	TraceID       = "TraceID"
 	Authorization = "Authorization"
-	Cookie = "Cookie"
-	Token = "token"
+	Cookie        = "Cookie"
+	Token         = "token"
+	ContentDisposition = "Content-Disposition"
+	ContentEncoding = "Content-Encoding"
 )
-

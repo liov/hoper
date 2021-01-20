@@ -13,12 +13,13 @@ import (
 	"github.com/liov/hoper/go/v2/utils/net/http"
 	jwti "github.com/liov/hoper/go/v2/utils/verification/auth/jwt"
 	"github.com/valyala/fasthttp"
+	"go.opencensus.io/trace"
 	"google.golang.org/grpc/metadata"
 
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
-func Auth(token string) (*model.UserAuthInfo, error) {
+func Auth(token string) (*model.AuthInfo, error) {
 	claims := new(jwti.Claims)
 	if err := jwti.ParseToken(claims, token, conf.Conf.Customize.TokenSecret); err != nil {
 		return nil, err
@@ -33,30 +34,15 @@ func Auth(token string) (*model.UserAuthInfo, error) {
 	return user, nil
 }
 
-type authKey struct{}
-
-// AuthContext returns a new Context that carries value u.
-func AuthContextF(r *fasthttp.Request) context.Context {
-	user, _ := Auth(fasthttpi.GetToken(r))
-	return context.WithValue(context.Background(), authKey{}, user)
-}
-
-// FromContext returns the User value stored in ctx, if any.
-func FromContextF(ctx context.Context) (*model.UserAuthInfo, bool) {
-	user, ok := ctx.Value(authKey{}).(*model.UserAuthInfo)
-	return user, ok
-}
-
 type Ctx struct {
 	context.Context `json:"-"`
 	TraceID         string `json:"-"`
-	*model.UserAuthInfo
-	authorization         string
-	*model.UserDeviceInfo `json:"-"`
-	RequestAt             time.Time   `json:"-"`
-	RequestUnix           int64       `json:"iat,omitempty"`
-	MD                    metadata.MD `json:"-"`
-	parse                 bool
+	*model.AuthInfo
+	authorization     string
+	*model.DeviceInfo `json:"-"`
+	RequestAt         time.Time   `json:"-"`
+	RequestUnix       int64       `json:"iat,omitempty"`
+	MD                metadata.MD `json:"-"`
 }
 
 func (c *Ctx) Valid() error {
@@ -78,27 +64,18 @@ func (c *Ctx) ParseToken(req *http.Request) error {
 	return jwti.ParseToken(c, httpi.GetToken(req), conf.Conf.Customize.TokenSecret)
 }
 
-func CtxFromRequest(r *http.Request) context.Context {
-	return &Ctx{
-		Context:        r.Context(),
-		TraceID:        "",
-		UserAuthInfo:   nil,
-		UserDeviceInfo: model.Device(r.Header),
-	}
-}
-
 func CtxWithRequest(ctx context.Context, r *http.Request) context.Context {
+	span := trace.FromContext(ctx)
 	md, _ := metadata.FromIncomingContext(ctx)
-	user, _ := Auth(httpi.GetToken(r))
 	now := time.Now()
 	return &Ctx{
-		Context:        ctx,
-		TraceID:        "",
-		UserAuthInfo:   user,
-		UserDeviceInfo: model.Device(r.Header),
-		MD:             md,
-		RequestAt:      now,
-		RequestUnix:    now.Unix(),
+		Context:       ctx,
+		TraceID:       span.SpanContext().TraceID.String(),
+		authorization: httpi.GetToken(r),
+		DeviceInfo:    model.Device(r.Header),
+		MD:            md,
+		RequestAt:     now,
+		RequestUnix:   now.Unix(),
 	}
 }
 
@@ -107,17 +84,36 @@ func CtxFromContext(ctx context.Context) *Ctx {
 		return ctx
 	}
 	return &Ctx{
-		Context:      ctx,
-		TraceID:      "",
-		UserAuthInfo: nil,
+		Context:  ctx,
+		TraceID:  "",
+		AuthInfo: nil,
 	}
 }
 
-func (c *Ctx) GetAuthInfo() (*model.UserAuthInfo, error) {
+func (c *Ctx) GetAuthInfo() (*model.AuthInfo, error) {
+	if c.AuthInfo != nil {
+		return c.AuthInfo, nil
+	}
 	user, err := Auth(c.authorization)
 	if err != nil {
 		return nil, err
 	}
-	c.UserAuthInfo = user
+	c.AuthInfo = user
+	c.authorization = ""
 	return user, nil
+}
+
+
+type authKey struct{}
+
+// AuthContext returns a new Context that carries value u.
+func AuthContextF(r *fasthttp.Request) context.Context {
+	user, _ := Auth(fasthttpi.GetToken(r))
+	return context.WithValue(context.Background(), authKey{}, user)
+}
+
+// FromContext returns the User value stored in ctx, if any.
+func FromContextF(ctx context.Context) (*model.AuthInfo, bool) {
+	user, ok := ctx.Value(authKey{}).(*model.AuthInfo)
+	return user, ok
 }

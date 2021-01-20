@@ -16,8 +16,7 @@ func NewRealClock() Clock {
 }
 
 func (rc RealClock) Now() time.Time {
-	t := time.Now()
-	return t
+	return time.Now()
 }
 
 type FakeClock interface {
