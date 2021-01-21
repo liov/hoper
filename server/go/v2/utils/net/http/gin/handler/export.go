@@ -15,7 +15,7 @@ type ExportService struct{}
 
 func (*ExportService) request(ctx *gin.Context, api string, response interface{}) error {
 	/*	req,_:=http.NewRequest(ctx.Method(),api,ctx.Request().Body)
-		req.Header["Authorization"] = []string{ctx.GetHeader("Authorization")}
+		req.Header["HeaderAuthorization"] = []string{ctx.GetHeader("HeaderAuthorization")}
 		req.Header["Content-Type"] = []string{"application/json"}*/
 	req := ctx.Request //原请求头可能会干扰返回
 	req.URL, _ = url.Parse(api)

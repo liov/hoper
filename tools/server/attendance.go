@@ -54,7 +54,7 @@ func main() {
 	)
 	urlStr := `http://xx.xx.xx.xx:1234/grid/att/CheckInOutGrid/`
 	kqReq, _ = http.NewRequest("POST", urlStr, strings.NewReader("page=1&rp=10"))
-	kqReq.Header.Set("Cookie", "sessionidadms=xxx")
+	kqReq.Header.Set("HeaderCookie", "sessionidadms=xxx")
 	kqReq.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
 	Request()
 	c := cron.New()

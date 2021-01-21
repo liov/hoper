@@ -163,7 +163,7 @@ func (s *Server) redirect(req *oauth.OauthReq, data map[string]interface{}) *res
 	if req.LoginURI != "" {
 		w.Body = []byte("未登录")
 	}
-	w.Header["Location"] = uri
+	w.Header["HeaderLocation"] = uri
 	w.StatusCode = 302
 	return w
 }

@@ -63,11 +63,12 @@ type FasthttpAuthCtx func(r *fasthttp.Request) context.Context
 func FiberWithCtx(engine *fiber.App,authCtx FasthttpAuthCtx ,genApi bool, modName string) {
 
 	for _, v := range fiberSvcs {
-		_, preUrl, middleware := v.FiberService()
+		describe, preUrl, middleware := v.FiberService()
 		value := reflect.ValueOf(v)
 		if value.Kind() != reflect.Ptr {
 			log.Fatal("必须传入指针")
 		}
+		var infos []*apiDocInfo
 		engine.Group(preUrl, middleware...)
 		for j := 0; j < value.NumMethod(); j++ {
 			method := value.Type().Method(j)
@@ -90,8 +91,12 @@ func FiberWithCtx(engine *fiber.App,authCtx FasthttpAuthCtx ,genApi bool, modNam
 				result := methodValue.Call([]reflect.Value{value, in1, in2})
 				return fiberResHandler(ctx, result)
 			})
+			infos = append(infos, &apiDocInfo{methodInfo, method.Type})
 		}
-
+		groupApiInfos = append(groupApiInfos, &groupApiInfo{
+			describe: describe,
+			infos:    infos,
+		})
 	}
 	if genApi {
 		filePath := apidoc.FilePath

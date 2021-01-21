@@ -1,7 +1,6 @@
 package pick
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"reflect"
@@ -136,10 +135,6 @@ func getMethodInfo(method *reflect.Method, preUrl string, claimsTyp reflect.Type
 	}
 	params := make([]reflect.Value, numIn, numIn)
 	for i := 0; i < numIn; i++ {
-		if i == 1 {
-			params[1] = reflect.ValueOf(context.Background())
-			continue
-		}
 		params[i] = reflect.New(methodType.In(i).Elem())
 	}
 	methodValue.Call(params)

@@ -191,7 +191,7 @@ func Logout(ctx *gin.Context) {
 	}
 	session, _ := store.Get(ctx.Request, SessionName)
 	delete(session.Values, providerName)
-	ctx.Header("Location", "/")
+	ctx.Header("HeaderLocation", "/")
 	ctx.Status(http.StatusTemporaryRedirect)
 }
 
@@ -291,7 +291,7 @@ var userTemplate = `
 <p>Name: {{.Name}} [{{.LastName}}, {{.FirstName}}]</p>
 <p>Email: {{.Email}}</p>
 <p>NickName: {{.NickName}}</p>
-<p>Location: {{.Location}}</p>
+<p>HeaderLocation: {{.HeaderLocation}}</p>
 <p>AvatarURL: {{.AvatarURL}} <img src="{{.AvatarURL}}"></p>
 <p>Description: {{.Description}}</p>
 <p>UserID: {{.UserID}}</p>

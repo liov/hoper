@@ -1,12 +1,17 @@
 package user
 
 import (
+	"context"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 
-	"github.com/liov/hoper/go/v2/utils/net/http/request"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/liov/hoper/go/v2/utils/net/http"
+	jwti "github.com/liov/hoper/go/v2/utils/verification/auth/jwt"
+	"go.opencensus.io/trace"
+	"google.golang.org/grpc/metadata"
 )
 
 //Cannot use 'resumes' (type []*model.Resume) as type []CmpKey
@@ -60,19 +65,12 @@ func (x *Resume) TableName() string {
 	return "resume"
 }
 
-func (x *UserAuthInfo) Valid() error {
-	now := time.Now().Unix()
-	if x.ExpiredAt != 0 && now <= x.ExpiredAt {
-		return UserErr_LoginTimeout
-	}
-	return nil
-}
-
+/*----------------------------CTX上下文-------------------------------*/
 func Device(r http.Header) *DeviceInfo {
 	unknow := true
 	var info DeviceInfo
 	//Device-Info:device-osInfo-appCode-appVersion
-	if deviceInfo := r.Get(request.DeviceInfo); deviceInfo != "" {
+	if deviceInfo := r.Get(httpi.HeaderDeviceInfo); deviceInfo != "" {
 		unknow = false
 		infos := strings.Split(deviceInfo, "-")
 		if len(infos) == 4 {
@@ -84,11 +82,11 @@ func Device(r http.Header) *DeviceInfo {
 	}
 	// area:xxx
 	// location:1.23456,2.123456
-	if area := r.Get(request.Area); area != "" {
+	if area := r.Get(httpi.HeaderArea); area != "" {
 		unknow = false
 		info.Area, _ = url.PathUnescape(area)
 	}
-	if location := r.Get(request.Location); location != "" {
+	if location := r.Get(httpi.HeaderLocation); location != "" {
 		unknow = false
 		infos := strings.Split(location, ",")
 		if len(infos) == 2 {
@@ -97,11 +95,11 @@ func Device(r http.Header) *DeviceInfo {
 		}
 	}
 
-	if userAgent := r.Get(request.UserAgent); userAgent != "" {
+	if userAgent := r.Get(httpi.HeaderUserAgent); userAgent != "" {
 		unknow = false
 		info.UserAgent = userAgent
 	}
-	if ip := r.Get(request.XForwardedFor); ip != "" {
+	if ip := r.Get(httpi.HeaderXForwardedFor); ip != "" {
 		unknow = false
 		info.IP = ip
 	}
@@ -109,6 +107,16 @@ func Device(r http.Header) *DeviceInfo {
 		return nil
 	}
 	return &info
+}
+
+type AuthInfo struct {
+	Id           uint64     `json:"id"`
+	Name         string     `json:"name"`
+	Role         Role       `json:"role"`
+	Status       UserStatus `json:"status"`
+	LastActiveAt int64      `json:"lat,omitempty"`
+	ExpiredAt    int64      `json:"exp,omitempty"`
+	LoginAt      int64      `json:"iat,omitempty"`
 }
 
 func (x *AuthInfo) UserAuthInfo() *UserAuthInfo {
@@ -123,14 +131,21 @@ func (x *AuthInfo) UserAuthInfo() *UserAuthInfo {
 	}
 }
 
-type AuthInfo struct {
-	Id           uint64     `json:"id"`
-	Name         string     `json:"name"`
-	Role         Role       `json:"role"`
-	Status       UserStatus `json:"status"`
-	LastActiveAt int64      `json:"lastActiveAt,omitempty"`
-	ExpiredAt    int64      `json:"expiredAt,omitempty"`
-	LoginAt      int64      `json:"loginAt,omitempty"`
+func (x *AuthInfo) Valid() error {
+	if x.ExpiredAt != 0 && x.LastActiveAt > x.ExpiredAt {
+		return UserErr_LoginTimeout
+	}
+	return nil
+}
+
+func (x *AuthInfo) GenerateToken(secret []byte) (string, error) {
+	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, x)
+	token, err := tokenClaims.SignedString(secret)
+	return token, err
+}
+
+func (x *AuthInfo) ParseToken(req *http.Request, secret string) error {
+	return jwti.ParseToken(x, httpi.GetToken(req), secret)
 }
 
 type DeviceInfo struct {
@@ -158,4 +173,74 @@ func (x *DeviceInfo) UserDeviceInfo() *UserDeviceInfo {
 		Area:       x.Area,
 		UserAgent:  x.UserAgent,
 	}
+}
+
+type Ctx struct {
+	context.Context `json:"-"`
+	TraceID         string `json:"-"`
+	*AuthInfo
+	Authorization string `json:"-"`
+	*DeviceInfo   `json:"-"`
+	RequestAt     time.Time   `json:"-"`
+	RequestUnix   int64       `json:"iat,omitempty"`
+	MD            metadata.MD `json:"-"`
+}
+
+func (c *Ctx) StartSpan(name string, o ...trace.StartOption) (*Ctx, *trace.Span) {
+	ctx, span := trace.StartSpan(c.Context, name, o...)
+	c.Context = ctx
+	if c.TraceID == "" {
+		c.TraceID = span.SpanContext().TraceID.String()
+	}
+	return c, span
+}
+
+type ctxKey struct{}
+
+func CtxWithRequest(ctx context.Context, r *http.Request) context.Context {
+	span := trace.FromContext(ctx)
+	now := time.Now()
+	user := new(AuthInfo)
+	user.LastActiveAt = now.Unix()
+	return context.WithValue(context.Background(), ctxKey{},
+		&Ctx{
+			Context:       ctx,
+			TraceID:       span.SpanContext().TraceID.String(),
+			AuthInfo:      user,
+			Authorization: httpi.GetToken(r),
+			DeviceInfo:    Device(r.Header),
+			RequestAt:     now,
+			RequestUnix:   user.LastActiveAt,
+		})
+}
+
+func CtxFromContext(ctx context.Context) *Ctx {
+	md, _ := metadata.FromIncomingContext(ctx)
+	ctxi := ctx.Value(ctxKey{})
+	if ctx, ok := ctxi.(*Ctx); ok {
+		ctx.MD = md
+		return ctx
+	}
+	now := time.Now()
+	user := new(AuthInfo)
+	user.LastActiveAt = now.Unix()
+	return &Ctx{
+		Context:     ctx,
+		AuthInfo:    user,
+		RequestAt:   now,
+		RequestUnix: user.LastActiveAt,
+	}
+}
+
+func (c *Ctx) GetAuthInfo(auth func(*Ctx) (*AuthInfo, error)) (*AuthInfo, error) {
+	if c.AuthInfo == nil {
+		c.AuthInfo = new(AuthInfo)
+	}
+	user, err := auth(c)
+	if err != nil {
+		return nil, err
+	}
+	c.AuthInfo = user
+	c.Authorization = ""
+	return user, nil
 }

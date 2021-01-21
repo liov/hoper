@@ -10,15 +10,15 @@ import (
 )
 
 type Claims interface {
-	ParseToken(*http.Request) error
+	ParseToken(*http.Request,string) error
 }
 
 var (
-	svcs = make([]Service, 0)
+	svcs         = make([]Service, 0)
 	isRegistered = false
-	claimsType = reflect.TypeOf((*Claims)(nil)).Elem()
-	contextType = reflect.TypeOf((*context.Context)(nil)).Elem()
-	errorType   = reflect.TypeOf((*error)(nil)).Elem()
+	claimsType   = reflect.TypeOf((*Claims)(nil)).Elem()
+	contextType  = reflect.TypeOf((*context.Context)(nil)).Elem()
+	errorType    = reflect.TypeOf((*error)(nil)).Elem()
 )
 
 type Service interface {
@@ -33,6 +33,7 @@ func RegisterService(svc ...Service) {
 func registered() {
 	isRegistered = true
 	svcs = nil
+	groupApiInfos = nil
 }
 
 func Api(f func() interface{}) {
@@ -49,7 +50,7 @@ func register(router *Router, genApi bool, modName string) {
 		if value.Kind() != reflect.Ptr {
 			log.Fatal("必须传入指针")
 		}
-
+		var infos []*apiDocInfo
 		for j := 0; j < value.NumMethod(); j++ {
 			method := value.Type().Method(j)
 			methodInfo := getMethodInfo(&method, preUrl, claimsType)
@@ -63,7 +64,12 @@ func register(router *Router, genApi bool, modName string) {
 			router.Handle(methodInfo.method, methodInfo.path, methodInfo.middleware, value.Method(j))
 			methods[methodInfo.method] = struct{}{}
 			Log(methodInfo.method, methodInfo.path, describe+":"+methodInfo.title)
+			infos = append(infos, &apiDocInfo{methodInfo, method.Type})
 		}
+		groupApiInfos = append(groupApiInfos, &groupApiInfo{
+			describe: describe,
+			infos:    infos,
+		})
 		router.GroupUse(preUrl, middleware...)
 	}
 	if genApi {

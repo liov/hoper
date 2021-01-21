@@ -1,4 +1,4 @@
-package content_type
+package httpi
 
 const (
 	// ContentBinaryHeaderValue header value for binary data.
@@ -41,4 +41,24 @@ const (
 	ContentFormMultipartHeaderValue = "multipart/form-data"
 	// ContentGRPCHeaderValue Content-Type header value for gRPC.
 	ContentGRPCHeaderValue = "application/grpc"
+)
+
+const (
+	HeaderDeviceInfo         = "Device-Info"
+	HeaderLocation           = "Location"
+	HeaderArea               = "Area"
+	HeaderUserAgent          = "User-Agent"
+	HeaderXForwardedFor      = "X-Forwarded-For"
+	HeaderAuth               = "HeaderAuth"
+	HeaderContentType        = "Content-Type"
+	HeaderTrace              = "Trace"
+	HeaderTraceID            = "TraceID"
+	HeaderAuthorization      = "Authorization"
+	HeaderCookie             = "Cookie"
+	HeaderCookieToken        = "token"
+	HeaderContentDisposition = "Content-Disposition"
+	HeaderContentEncoding    = "Content-Encoding"
+	HeaderReferer            = "Referer"
+	HeaderCacheControl       = "Cache-Control"
+	HeaderSetCookie          = "Set-Cookie"
 )

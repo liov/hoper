@@ -39,7 +39,7 @@ func New() iris.Handler {
 
 				// when stack finishes
 				logMessage := fmt.Sprintf("Recovered from a route's Handler('%s')\n", ctx.HandlerName())
-				logMessage += fmt.Sprintf("Trace: %s\n", err)
+				logMessage += fmt.Sprintf("HeaderTrace: %s\n", err)
 				logMessage += fmt.Sprintf("\n%s", stacktrace)
 				ctx.Application().Logger().Warn(logMessage)
 

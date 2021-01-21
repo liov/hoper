@@ -15,7 +15,7 @@ func main() {
 	urlStr := `http://open.api.tianyancha.com/services/open/ic/baseinfo/2.0?` + url.Values{"name": []string{name}}.Encode()
 	newReq, _ := http.NewRequest("GET", urlStr, nil)
 
-	newReq.Header.Set("Authorization", "token")
+	newReq.Header.Set("HeaderAuthorization", "token")
 	resp, err := http.DefaultClient.Do(newReq)
 	if err != nil {
 		panic("panic")
