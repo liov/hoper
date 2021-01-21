@@ -37,9 +37,9 @@ type ResponseRecorder struct {
 }
 
 // NewRecorder returns an initialized ResponseRecorder.
-func NewRecorder() *ResponseRecorder {
+func NewRecorder(header http.Header) *ResponseRecorder {
 	return &ResponseRecorder{
-		HeaderMap: make(http.Header),
+		HeaderMap: header,
 		Body:      new(bytes.Buffer),
 		Code:      200,
 	}

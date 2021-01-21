@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/liov/hoper/go/v2/utils/net"
-	"github.com/liov/hoper/go/v2/utils/net/http/content_type"
+	"github.com/liov/hoper/go/v2/utils/net/http"
 )
 
 const (
@@ -49,7 +49,7 @@ func (c *Config) CreateService(svcName string, metadata *Metadata) error {
 		data, _ = json.Marshal(metadata)
 	}
 	param := fmt.Sprintf(CreateServiceParam, svcName, c.Group, c.Tenant, string(data))
-	resp, err := http.Post(urlStr, content_type.ContentFormHeaderValue, strings.NewReader(param))
+	resp, err := http.Post(urlStr, httpi.ContentFormHeaderValue, strings.NewReader(param))
 	if err != nil {
 		return err
 	}
@@ -84,7 +84,7 @@ func (c *Config) RegisterInstance(port, svcName string) error {
 	urlStr := fmt.Sprintf(RegisterInstanceUrl, c.Addr)
 	param := fmt.Sprintf(RegisterInstanceParam,
 		port[1:], net.GetIP(), svcName, c.Group, c.Tenant)
-	resp, err := http.Post(urlStr, content_type.ContentFormHeaderValue, strings.NewReader(param))
+	resp, err := http.Post(urlStr, httpi.ContentFormHeaderValue, strings.NewReader(param))
 	if err != nil {
 		return err
 	}
@@ -102,7 +102,7 @@ func (c *Config) DeleteInstance(port, svcName string) error {
 	if err != nil {
 		return err
 	}
-	req.Header.Set("Content-Type", content_type.ContentFormHeaderValue)
+	req.Header.Set("Content-Type", httpi.ContentFormHeaderValue)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return err
@@ -120,7 +120,7 @@ func (c *Config) InstanceBeat(svcName string) error {
 	if err != nil {
 		return err
 	}
-	req.Header.Set("Content-Type", content_type.ContentFormHeaderValue)
+	req.Header.Set("Content-Type", httpi.ContentFormHeaderValue)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return err

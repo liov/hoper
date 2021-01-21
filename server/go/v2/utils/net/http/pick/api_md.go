@@ -19,6 +19,18 @@ import (
 	"github.com/liov/hoper/go/v2/utils/verification/validator"
 )
 
+type apiDocInfo struct {
+	*apiInfo
+	method reflect.Type
+}
+
+type groupApiInfo struct {
+	describe string
+	infos []*apiDocInfo
+}
+
+var groupApiInfos  []*groupApiInfo
+
 func OpenApi(mux *Router, filePath, modName string) {
 	apidoc.FilePath = filePath
 	md(filePath, modName)
@@ -43,17 +55,10 @@ func md(filePath, modName string) {
 		fmt.Fprintf(buf, "# %s接口文档  \n", modName)
 		fmt.Fprintln(buf, "----------")
 	}
-	for _, v := range svcs {
-		describe, preUrl, _ := v.Service()
-		fmt.Fprintf(buf, "# %s  \n", describe)
+	for _, groupApiInfo := range groupApiInfos {
+		fmt.Fprintf(buf, "# %s  \n", groupApiInfo.describe)
 		fmt.Fprintln(buf, "----------")
-		value := reflect.ValueOf(v)
-		for j := 0; j < value.NumMethod(); j++ {
-			method := value.Type().Method(j)
-			methodInfo := getMethodInfo(&method,preUrl,contextType)
-			if methodInfo == nil{
-				continue
-			}
+		for  _, methodInfo := range groupApiInfo.infos {
 			//title
 			if methodInfo.deprecated != nil {
 				fmt.Fprintf(buf, "## ~~%s-v%d(废弃)(`%s`)~~  \n", methodInfo.title, methodInfo.version, methodInfo.path)
@@ -77,10 +82,10 @@ func md(filePath, modName string) {
 			}
 
 			fmt.Fprint(buf, "### 参数信息  \n")
-			if method.Type.NumIn() == 3 {
+			if methodInfo.method.NumIn() == 3 {
 				fmt.Fprint(buf, "|字段名称|字段类型|字段描述|校验要求|  \n")
 				fmt.Fprint(buf, "| :----  | :----: | :----: | :----: |  \n")
-				params := getParamTable(method.Type.In(2).Elem(), "")
+				params := getParamTable(methodInfo.method.In(2).Elem(), "")
 				for i := range params {
 					fmt.Fprintf(buf, "|%s|%s|%s|%s|  \n", params[i].json, params[i].typ, params[i].annotation, params[i].validator)
 				}
@@ -90,7 +95,7 @@ func md(filePath, modName string) {
 			}
 			fmt.Fprint(buf, "__请求示例__  \n")
 			fmt.Fprint(buf, "```json  \n")
-			newParam := reflect.New(method.Type.In(2).Elem()).Interface()
+			newParam := reflect.New(methodInfo.method.In(2).Elem()).Interface()
 			mock.Mock(newParam)
 			data, _ := json.MarshalIndent(newParam, "", "\t")
 			fmt.Fprint(buf, string(data), "  \n")
@@ -98,13 +103,13 @@ func md(filePath, modName string) {
 			fmt.Fprint(buf, "### 返回信息  \n")
 			fmt.Fprint(buf, "|字段名称|字段类型|字段描述|  \n")
 			fmt.Fprint(buf, "| :----  | :----: | :----: | \n")
-			params := getParamTable(method.Type.Out(0).Elem(), "")
+			params := getParamTable(methodInfo.method.Out(0).Elem(), "")
 			for i := range params {
 				fmt.Fprintf(buf, "|%s|%s|%s|  \n", params[i].json, params[i].typ, params[i].annotation)
 			}
 			fmt.Fprint(buf, "__返回示例__  \n")
 			fmt.Fprint(buf, "```json  \n")
-			newRes := reflect.New(method.Type.Out(0).Elem()).Interface()
+			newRes := reflect.New(methodInfo.method.Out(0).Elem()).Interface()
 			mock.Mock(newRes)
 			data, _ = json.MarshalIndent(newRes, "", "\t")
 			fmt.Fprint(buf, string(data), "  \n")

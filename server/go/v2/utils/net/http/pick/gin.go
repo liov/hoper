@@ -13,22 +13,22 @@ import (
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	gin_build "github.com/liov/hoper/go/v2/utils/net/http/gin"
 	"github.com/liov/hoper/go/v2/utils/net/http/gin/handler"
-	"github.com/liov/hoper/go/v2/utils/net/http/request"
 )
 
 // 虽然我写的路由比httprouter更强大(没有map,lru cache)，但是还是选择用gin,理由是gin也用同样的方式改造了路由
 
 func Gin(engine *gin.Engine, genApi bool, modName string) {
 	for _, v := range svcs {
-		_, preUrl, middleware := v.Service()
+		describe, preUrl, middleware := v.Service()
 		value := reflect.ValueOf(v)
 		if value.Kind() != reflect.Ptr {
 			log.Fatal("必须传入指针")
 		}
+		var infos []*apiDocInfo
 		engine.Group(preUrl, handler.Converts(middleware)...)
 		for j := 0; j < value.NumMethod(); j++ {
 			method := value.Type().Method(j)
-			methodInfo := getMethodInfo(&method, preUrl, contextType)
+			methodInfo := getMethodInfo(&method, preUrl, claimsType)
 			if methodInfo == nil {
 				continue
 			}
@@ -45,8 +45,12 @@ func Gin(engine *gin.Engine, genApi bool, modName string) {
 				result := methodValue.Call([]reflect.Value{value, in1, in2})
 				ginResHandler(ctx, result)
 			})
+			infos = append(infos, &apiDocInfo{methodInfo, method.Type})
 		}
-
+		groupApiInfos = append(groupApiInfos, &groupApiInfo{
+			describe: describe,
+			infos:    infos,
+		})
 	}
 	if genApi {
 		filePath := apidoc.FilePath
@@ -64,8 +68,8 @@ func ginResHandler(ctx *gin.Context, result []reflect.Value) {
 	}
 	if info, ok := result[0].Interface().(*httpi.File); ok {
 		header := ctx.Writer.Header()
-		header.Set(request.ContentType, "application/octet-stream")
-		header.Set(request.ContentDisposition, "attachment;filename="+info.Name)
+		header.Set(httpi.HeaderContentType, "application/octet-stream")
+		header.Set(httpi.HeaderContentDisposition, "attachment;filename="+info.Name)
 		io.Copy(ctx.Writer, info.File)
 		if flusher, canFlush := ctx.Writer.(http.Flusher); canFlush {
 			flusher.Flush()

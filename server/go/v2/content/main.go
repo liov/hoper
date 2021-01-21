@@ -9,6 +9,7 @@ import (
 	"github.com/liov/hoper/go/v2/content/dao"
 	"github.com/liov/hoper/go/v2/content/service"
 	model "github.com/liov/hoper/go/v2/protobuf/content"
+	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/utils/log"
 	igrpc "github.com/liov/hoper/go/v2/utils/net/http/grpc"
 	"github.com/liov/hoper/go/v2/utils/net/http/tailmon"
@@ -31,5 +32,5 @@ func main() {
 			}
 		},
 	}
-	s.Start()
+	s.Start(user.CtxWithRequest)
 }

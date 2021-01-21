@@ -21,7 +21,6 @@ import (
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	gin_build "github.com/liov/hoper/go/v2/utils/net/http/gin"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"
-	"github.com/liov/hoper/go/v2/utils/net/http/request"
 	"github.com/liov/hoper/go/v2/utils/strings"
 	"go.opencensus.io/trace"
 	"go.opencensus.io/trace/propagation"
@@ -53,16 +52,17 @@ func (s *Server) httpHandler() http.HandlerFunc {
 			ctx.Writer.WriteHeader(http.StatusOK)
 		})*/
 	}
-
+	var excludes = []string{"/debug", "/api-doc"}
 	return func(w http.ResponseWriter, r *http.Request) {
-
-		if strings.HasPrefix(r.RequestURI, "/debug") {
-			ginServer.ServeHTTP(w, r)
-			return
+		for _, exclude := range excludes {
+			if strings.HasPrefix(r.RequestURI, exclude) {
+				ginServer.ServeHTTP(w, r)
+				return
+			}
 		}
 
 		now := time.Now()
-		recorder := httpi.NewRecorder()
+		recorder := httpi.NewRecorder(w.Header())
 
 		body, _ := ioutil.ReadAll(r.Body)
 		r.Body = ioutil.NopCloser(bytes.NewReader(body))
@@ -73,13 +73,6 @@ func (s *Server) httpHandler() http.HandlerFunc {
 			gatewayServer.ServeHTTP(recorder, r)
 		}
 
-		// 从 recorder 中提取记录下来的 Response Header，设置为 ResponseWriter 的 Header
-		for key, value := range recorder.Header() {
-			for _, val := range value {
-				w.Header().Set(key, val)
-			}
-		}
-
 		// 提取 recorder 中记录的状态码，写入到 ResponseWriter 中
 		w.WriteHeader(recorder.Code)
 		if recorder.Body != nil {
@@ -87,11 +80,8 @@ func (s *Server) httpHandler() http.HandlerFunc {
 			w.Write(recorder.Body.Bytes())
 		}
 
-		(&AccessLog{
-			now, r,
-			recorder.Code, request.Authorization,
-			stringsi.ToString(body), stringsi.ToString(recorder.Body.Bytes()),
-		}).log()
+		accessLog(r.RequestURI, stringsi.ToString(body), stringsi.ToString(recorder.Body.Bytes()),
+			r.Header.Get(httpi.HeaderAuthorization), now, recorder.Code)
 	}
 }
 
@@ -126,9 +116,9 @@ func (s *Server) Serve(customContext CustomContext) {
 		if openTracing {
 			var span *trace.Span
 			// 直接从远程读取Trace信息，Trace是否为空交给propagation包判断
-			if parent, ok := propagation.FromBinary(stringsi.ToBytes(r.Header.Get(request.Trace))); ok {
+			if parent, ok := propagation.FromBinary(stringsi.ToBytes(r.Header.Get(httpi.HeaderTrace))); ok {
 				ctx, span = trace.StartSpanWithRemoteParent(ctx, r.RequestURI,
-					parent,trace.WithSampler(trace.AlwaysSample()),
+					parent, trace.WithSampler(trace.AlwaysSample()),
 					trace.WithSpanKind(trace.SpanKindServer))
 			} else {
 				ctx, span = trace.StartSpan(ctx, r.RequestURI,
@@ -226,30 +216,12 @@ func ReStart() {
 	stop <- struct{}{}
 }
 
-type AccessLog struct {
-	start               time.Time
-	r                   *http.Request
-	status              int
-	authKey, body, resp string
-}
-
-func (a *AccessLog) log() {
-	//参数处理
-	var param string
-	if a.r.Method == http.MethodGet {
-		param = a.r.URL.RawQuery
-	} else {
-		param = a.body
-	}
-	//头信息处理
-	//获取请求头的报文信息
-	authHeader := a.r.Header.Get(a.authKey)
-
-	log.Default.Logger.Info("", zap.String("interface", a.r.RequestURI),
-		zap.String("param", param),
-		zap.Duration("processTime", time.Now().Sub(a.start)),
-		zap.String("result", a.resp),
-		zap.String("other", authHeader),
-		zap.Int("status", a.status),
+func accessLog(iface, body, result, auth string, start time.Time, code int) {
+	log.Default.Logger.Info("", zap.String("interface", iface),
+		zap.String("body", body),
+		zap.Duration("processTime", time.Now().Sub(start)),
+		zap.String("result", result),
+		zap.String("auth", auth),
+		zap.Int("status", code),
 		zap.String("source", initialize.InitConfig.Module))
 }

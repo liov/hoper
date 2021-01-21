@@ -28,7 +28,6 @@ import (
 	"github.com/liov/hoper/go/v2/utils/strings"
 	"github.com/liov/hoper/go/v2/utils/time"
 	"github.com/liov/hoper/go/v2/utils/verification"
-	"github.com/liov/hoper/go/v2/utils/verification/auth/jwt"
 	"gorm.io/gorm"
 )
 
@@ -45,7 +44,7 @@ func GetUserService() *UserService {
 }
 
 func (u *UserService) VerifyCode(ctx context.Context, req *request.Empty) (*response.CommonRep, error) {
-	device := CtxFromContext(ctx).DeviceInfo
+	device := model.CtxFromContext(ctx).DeviceInfo
 	log.Debug(device)
 	var rep = &response.CommonRep{}
 	vcode := verification.GenerateCode()
@@ -84,6 +83,9 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 }
 
 func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*response.TinyRep, error) {
+	ctxi,span := model.CtxFromContext(ctx).StartSpan("Active")
+	defer span.End()
+
 	if err := Validate(req); err != nil {
 		return nil, err
 	}
@@ -101,8 +103,8 @@ func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*response
 			return nil, errorcode.InvalidArgument.Message("手机号已被注册")
 		}
 	}
-	now := time.Now()
-	formatNow := timei.Format(now)
+
+	formatNow := timei.Format(ctxi.RequestAt)
 	var user = &model.User{
 		Name:            req.Name,
 		Account:         uuid.New().String(),
@@ -201,6 +203,8 @@ func checkPassword(password string, user *model.User) bool {
 }
 
 func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.LoginRep, error) {
+	ctxi,span := model.CtxFromContext(ctx).StartSpan("Active")
+	defer span.End()
 	RedisConn := dao.Dao.Redis.Get()
 	defer RedisConn.Close()
 
@@ -228,17 +232,18 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 
 	dao.Dao.GORMDB.Model(user).Updates(map[string]interface{}{"activated_at": time.Now(), "status": 1})
 	RedisConn.Do("DEL", redisKey)
-	return u.login(ctx, user)
+	return u.login(ctxi, user)
 }
 
 func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.TinyRep, error) {
 	defer timei.TimeCost(time.Now())
-	c := CtxFromContext(ctx)
-	user, err := c.GetAuthInfo()
+	ctxi,span := model.CtxFromContext(ctx).StartSpan("Edit")
+	defer span.End()
+	user, err := ctxi.GetAuthInfo(Auth)
 	if err != nil || user.Id != req.Id {
 		return nil, err
 	}
-	device := c.DeviceInfo
+	device := ctxi.DeviceInfo
 
 	originalIds, err := userDao.ResumesIds(nil, user.Id)
 	if err != nil {
@@ -265,6 +270,8 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.T
 }
 
 func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginRep, error) {
+	ctxi,span := model.CtxFromContext(ctx).StartSpan("Login")
+	defer span.End()
 
 	if verifyErr := verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL, conf.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
 		return nil, errorcode.InvalidArgument.Message(verifyErr.Error())
@@ -308,33 +315,26 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 		return nil, model.UserErr_NoActive.Message("账号未激活,请进入邮箱点击激活")
 	}
 
-	return u.login(ctx, &user)
+	return u.login(ctxi, &user)
 }
 
-func (*UserService) login(ctx context.Context, user *model.User) (*model.LoginRep, error) {
-	now := time.Now()
-	nowStamp := now.Unix()
-	userInfo := &model.UserAuthInfo{
-		Id:           user.Id,
-		LastActiveAt: nowStamp,
-		Status:       user.Status,
-		Role:         user.Role,
-		LoginAt:      nowStamp,
-	}
-	claims := &jwt.Claims{
-		UserId:         userInfo.Id,
-		StandardClaims: jwt.NewStandardClaims(conf.Conf.Customize.TokenMaxAge, "hoper"),
-	}
+func (*UserService) login(ctxi *model.Ctx, user *model.User) (*model.LoginRep, error) {
+	ctxi.Id =  user.Id
+	ctxi.Name =  user.Name
+	ctxi.Status =  user.Status
+	ctxi.Role =  user.Role
+	ctxi.LoginAt =  ctxi.RequestUnix
+	ctxi.ExpiredAt = ctxi.RequestUnix + conf.Conf.Customize.TokenMaxAge
 
-	tokenString, err := jwt.GenerateToken(claims, stringsi.ToBytes(conf.Conf.Customize.TokenSecret))
+	tokenString, err := ctxi.GenerateToken(stringsi.ToBytes(conf.Conf.Customize.TokenSecret))
 	if err != nil {
 		return nil, errorcode.Internal
 	}
 
-	dao.Dao.GORMDB.Model(&user).UpdateColumn("last_activated_at", now)
+	dao.Dao.GORMDB.Model(&user).UpdateColumn("last_activated_at", ctxi.RequestAt)
 	conn := dao.NewUserRedis()
 	defer conn.Close()
-	if err := conn.EfficientUserHashToRedis(userInfo); err != nil {
+	if err := conn.EfficientUserHashToRedis(ctxi.AuthInfo); err != nil {
 		return nil, errorcode.RedisErr
 	}
 	resp := &model.LoginRep{}
@@ -355,14 +355,15 @@ func (*UserService) login(ctx context.Context, user *model.User) (*model.LoginRe
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
-	gateway.GrpcSetCookie(ctx, cookie)
+	gateway.GrpcSetCookie(ctxi, cookie)
 	resp.Cookie = cookie
 	return resp, nil
 }
 
 func (u *UserService) Logout(ctx context.Context, req *request.Empty) (*model.LogoutRep, error) {
-	c := CtxFromContext(ctx)
-	user, err := c.GetAuthInfo()
+	ctxi,span := model.CtxFromContext(ctx).StartSpan("Logout")
+	defer span.End()
+	user, err := ctxi.GetAuthInfo(Auth)
 	if err != nil {
 		return nil, err
 	}
@@ -385,12 +386,12 @@ func (u *UserService) Logout(ctx context.Context, req *request.Empty) (*model.Lo
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
-	gateway.GrpcSetCookie(ctx, cookie)
+	gateway.GrpcSetCookie(ctxi, cookie)
 	return &model.LogoutRep{Message: "已注销", Cookie: cookie}, nil
 }
 
 func (u *UserService) AuthInfo(ctx context.Context, req *request.Empty) (*model.UserAuthInfo, error) {
-	user, err := CtxFromContext(ctx).GetAuthInfo()
+	user, err := model.CtxFromContext(ctx).GetAuthInfo(Auth)
 	if err != nil {
 		return nil, err
 	}
@@ -493,14 +494,12 @@ func (*UserService) GetTest(ctx context.Context, req *model.GetReq) (*model.GetR
 	return &model.GetRep{Code: uint32(req.Id), Message: "测试"}, nil
 }
 
-type GinUserService struct {}
-
-func (*GinUserService) Service() (string, string, []http.HandlerFunc) {
+func (*UserService) Service() (string, string, []http.HandlerFunc) {
 	return "用户相关", "/api/user", []http.HandlerFunc{middle.Log}
 }
 
 
-func (*GinUserService) Add(ctx context.Context, req *model.SignupReq) (*response.TinyRep, error) {
+func (*UserService) Add(ctx *model.Ctx, req *model.SignupReq) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() interface{} {
 		return pick.Path("/add").
@@ -514,13 +513,11 @@ func (*GinUserService) Add(ctx context.Context, req *model.SignupReq) (*response
 	return &response.TinyRep{Message: req.Name}, nil
 }
 
-type FiberUserService struct {}
-
-func (*FiberUserService) FiberService() (string, string, []fiber.Handler) {
+func (*UserService) FiberService() (string, string, []fiber.Handler) {
 	return "用户相关", "/api/user", []fiber.Handler{middle.FiberLog}
 }
 
-func (*FiberUserService) Add(ctx context.Context, req *response.TinyRep) (*response.TinyRep, error) {
+func (*UserService) Addv(ctx context.Context, req *response.TinyRep) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.FiberApi(func() interface{} {
 		return pick.Path("/add").

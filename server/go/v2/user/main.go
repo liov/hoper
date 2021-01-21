@@ -23,7 +23,7 @@ import (
 func main() {
 	//配置初始化应该在第一位
 	defer initialize.Start(conf.Conf, dao.Dao)()
-	pick.RegisterFiberService(new(service.FiberUserService))
+	pick.RegisterFiberService(service.GetUserService())
 	app:=fiber.New()
 	pick.FiberWithCtx(app,service.AuthContextF,true,initialize.InitConfig.Module)
 	go app.Listen(":3000")
@@ -47,7 +47,7 @@ func main() {
 		GinHandle: func(app *gin.Engine) {
 			oauth.RegisterOauthServiceHandlerServer(app, service.GetOauthService())
 			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
-			pick.RegisterService(new(service.GinUserService))
+			pick.RegisterService(service.GetUserService())
 			pick.Gin(app,true,initialize.InitConfig.Module)
 		},
 
@@ -56,5 +56,5 @@ func main() {
 				UserService:  service.GetUserService(),
 				OauthService: service.GetOauthService(),
 			}}),*/
-	}).Start(service.CtxWithRequest)
+	}).Start(model.CtxWithRequest)
 }

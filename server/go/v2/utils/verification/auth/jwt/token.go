@@ -1,15 +1,19 @@
 package jwt
 
 import (
+	"errors"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/strings"
 )
 
-var Parser = &jwt.Parser{SkipClaimsValidation: true}
+var (
+	Parser = &jwt.Parser{SkipClaimsValidation: true}
+	err    = errors.New("无效的token")
+)
+
 //如果只存一个id，jwt的意义在哪呢，跟session_id有什么区别
 //jwt应该存放一些用户不能更改的信息，所以不能全存在jwt里
 //或者说用户每更改一次信息就刷新token（貌似可行）
@@ -38,7 +42,7 @@ func (claims *CustomClaims) Valid() error {
 	return nil
 }
 
-func NewStandardClaims(maxAge int64,sign string) *jwt.StandardClaims {
+func NewStandardClaims(maxAge int64, sign string) *jwt.StandardClaims {
 	now := time.Now().Unix()
 	return &jwt.StandardClaims{
 		ExpiresAt: now + maxAge,
@@ -55,17 +59,19 @@ func GenerateToken(claims jwt.Claims, secret interface{}) (string, error) {
 
 func ParseToken(claims jwt.Claims, token, secret string) error {
 	if token == "" {
-		return model.UserErr_NoLogin
+		return err
 	}
-	tokenClaims, _ := Parser.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
-			return stringsi.ToBytes(secret), nil
-		})
-
+	tokenClaims, err := Parser.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		return stringsi.ToBytes(secret), nil
+	})
+	if err != nil {
+		return err
+	}
 	if tokenClaims != nil && tokenClaims.Valid {
 		return tokenClaims.Claims.Valid()
 	}
 
-	return model.UserErr_LoginError
+	return err
 }
 
 func ParseTokenWithKeyFunc(claims jwt.Claims, token string, f func(token *jwt.Token) (interface{}, error)) error {
@@ -75,5 +81,5 @@ func ParseTokenWithKeyFunc(claims jwt.Claims, token string, f func(token *jwt.To
 		return tokenClaims.Claims.Valid()
 	}
 
-	return model.UserErr_LoginError
+	return err
 }

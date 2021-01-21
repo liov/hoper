@@ -40,7 +40,7 @@ func (claims *Claims) ParseToken(req *http.Request) error {
 		token, _ = url.QueryUnescape(cookie.Value)
 	}
 	if token == "" {
-		token = req.Header.Get("Authorization")
+		token = req.Header.Get("HeaderAuthorization")
 	}
 	if token == "" {
 		return errors.New("未登录")

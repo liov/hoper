@@ -90,7 +90,7 @@ func (p *Provider) FetchUser(session goth.Session) (goth.User, error) {
 	}
 
 	req, err := http.NewRequest("GET", p.profileURL, nil)
-	req.Header.Add("Authorization", sess.AccessToken)
+	req.Header.Add("HeaderAuthorization", sess.AccessToken)
 	response, err := p.Client().Do(req)
 	if err != nil {
 		return user, err

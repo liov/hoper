@@ -22,7 +22,7 @@ import (
 	"time"
 
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
-	"github.com/liov/hoper/go/v2/utils/net/http/content_type"
+	"github.com/liov/hoper/go/v2/utils/net/http"
 	"golang.org/x/net/publicsuffix"
 )
 
@@ -479,14 +479,14 @@ func (s *SuperAgent) Timeout(timeout time.Duration) *SuperAgent {
 }
 
 var Types = map[string]string{
-	TypeJSON:       content_type.ContentJSONHeaderValue,
-	TypeXML:        content_type.ContentXMLHeaderValue,
-	TypeForm:      content_type.ContentFormHeaderValue,
-	TypeFormData:   content_type.ContentFormHeaderValue,
-	TypeUrlencoded: content_type.ContentFormHeaderValue,
-	TypeHTML:       content_type.ContentHTMLHeaderValue,
-	TypeText:       content_type.ContentTextHeaderValue,
-	TypeMultipart:  content_type.ContentFormMultipartHeaderValue,
+	TypeJSON:       httpi.ContentJSONHeaderValue,
+	TypeXML:        httpi.ContentXMLHeaderValue,
+	TypeForm:       httpi.ContentFormHeaderValue,
+	TypeFormData:   httpi.ContentFormHeaderValue,
+	TypeUrlencoded: httpi.ContentFormHeaderValue,
+	TypeHTML:       httpi.ContentHTMLHeaderValue,
+	TypeText:       httpi.ContentTextHeaderValue,
+	TypeMultipart:  httpi.ContentFormMultipartHeaderValue,
 }
 
 // Type is a convenience function to specify the data type to send.
@@ -1319,7 +1319,7 @@ func (s *SuperAgent) MakeRequest() (*http.Request, error) {
 		}
 		if contentJson != nil {
 			contentReader = bytes.NewReader(contentJson)
-			contentType = content_type.ContentJSONHeaderValue
+			contentType = httpi.ContentJSONHeaderValue
 		}
 	case TypeForm, TypeFormData, TypeUrlencoded:
 		var contentForm []byte
@@ -1331,17 +1331,17 @@ func (s *SuperAgent) MakeRequest() (*http.Request, error) {
 		}
 		if len(contentForm) != 0 {
 			contentReader = bytes.NewReader(contentForm)
-			contentType = content_type.ContentFormHeaderValue
+			contentType = httpi.ContentFormHeaderValue
 		}
 	case TypeText:
 		if len(s.RawString) != 0 {
 			contentReader = strings.NewReader(s.RawString)
-			contentType = content_type.ContentXMLHeaderValue
+			contentType = httpi.ContentXMLHeaderValue
 		}
 	case TypeXML:
 		if len(s.RawString) != 0 {
 			contentReader = strings.NewReader(s.RawString)
-			contentType = content_type.ContentXMLUnreadableHeaderValue
+			contentType = httpi.ContentXMLUnreadableHeaderValue
 		}
 	case TypeMultipart:
 		var (
