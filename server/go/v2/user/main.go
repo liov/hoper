@@ -24,16 +24,16 @@ func main() {
 	//配置初始化应该在第一位
 	defer initialize.Start(conf.Conf, dao.Dao)()
 	pick.RegisterFiberService(service.GetUserService())
-	app:=fiber.New()
-	pick.FiberWithCtx(app,service.AuthContextF,true,initialize.InitConfig.Module)
+	app := fiber.New()
+	pick.FiberWithCtx(app, service.AuthContextF, true, initialize.InitConfig.Module)
 	go app.Listen(":3000")
 	(&tailmon.Server{
 		//为了可以自定义中间件
 		GRPCServer: func() *grpc.Server {
 			//grpc.OpenTracing = true
-			gs := igrpc.DefaultGRPCServer(nil,nil)
+			gs := igrpc.DefaultGRPCServer(nil, nil)
 			model.RegisterUserServiceServer(gs, service.GetUserService())
-			model.RegisterOauthServiceServer(gs,service.GetOauthService())
+			model.RegisterOauthServiceServer(gs, service.GetOauthService())
 			return gs
 		}(),
 		GatewayRegistr: func(ctx context.Context, mux *runtime.ServeMux) {
@@ -48,13 +48,15 @@ func main() {
 			oauth.RegisterOauthServiceHandlerServer(app, service.GetOauthService())
 			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
 			pick.RegisterService(service.GetUserService())
-			pick.Gin(app,true,initialize.InitConfig.Module)
+			pick.Gin(app, true, initialize.InitConfig.Module)
 		},
 
-/*		GraphqlResolve: model.NewExecutableSchema(model.Config{
-			Resolvers: &model.GQLServer{
-				UserService:  service.GetUserService(),
-				OauthService: service.GetOauthService(),
-			}}),*/
-	}).Start(model.CtxWithRequest)
+		/*		GraphqlResolve: model.NewExecutableSchema(model.Config{
+				Resolvers: &model.GQLServer{
+					UserService:  service.GetUserService(),
+					OauthService: service.GetOauthService(),
+				}}),*/
+		CustomContext: model.CtxWithRequest,
+		Authorization: model.Authorization,
+	}).Start()
 }

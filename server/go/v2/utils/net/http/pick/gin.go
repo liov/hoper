@@ -13,6 +13,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	gin_build "github.com/liov/hoper/go/v2/utils/net/http/gin"
 	"github.com/liov/hoper/go/v2/utils/net/http/gin/handler"
+	"google.golang.org/grpc/metadata"
 )
 
 // 虽然我写的路由比httprouter更强大(没有map,lru cache)，但是还是选择用gin,理由是gin也用同样的方式改造了路由
@@ -39,7 +40,7 @@ func Gin(engine *gin.Engine, genApi bool, modName string) {
 			methodValue := method.Func
 			in2Type := methodType.In(2)
 			engine.Handle(methodInfo.method, methodInfo.path, func(ctx *gin.Context) {
-				in1 := reflect.ValueOf(ctx.Request.Context())
+				in1 := reflect.ValueOf(metadata.NewIncomingContext(ctx.Request.Context(),metadata.MD(ctx.Request.Header)))
 				in2 := reflect.New(in2Type.Elem())
 				gin_build.Bind(ctx, in2.Interface())
 				result := methodValue.Call([]reflect.Value{value, in1, in2})

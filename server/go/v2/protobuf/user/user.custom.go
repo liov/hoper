@@ -7,8 +7,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go/v4"
+	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	"github.com/liov/hoper/go/v2/utils/net/http"
+	stringsi "github.com/liov/hoper/go/v2/utils/strings"
 	jwti "github.com/liov/hoper/go/v2/utils/verification/auth/jwt"
 	"go.opencensus.io/trace"
 	"google.golang.org/grpc/metadata"
@@ -40,29 +42,34 @@ func RegisterUserServiceHandlerFromModuleWithReConnect(ctx context.Context, mux 
 */
 
 /*----------------------------ORM-------------------------------*/
-func (x *User) TableName() string {
-	if x.Id < 1_000_000 {
+func userTableName(id uint64) string {
+	if id < 1_000_000 {
 		return "user"
 	}
-	return "user_" + string(byte(x.Id/1_000_000+49))
+	return "user_" + string(byte(id/1_000_000+49))
+}
+func (x *User) TableName() string {
+	return userTableName(x.Id)
 }
 
 func (x *UserBaseInfo) TableName() string {
-	if x.Id < 1_000_000 {
-		return "user"
-	}
-	return "user_" + string(byte(x.Id/1_000_000+49))
+	return userTableName(x.Id)
 }
 
 func (x *UserAuthInfo) TableName() string {
-	if x.Id < 1_000_000 {
-		return "user"
-	}
-	return "user_" + string(byte(x.Id/1_000_000+49))
+	return userTableName(x.Id)
 }
 
 func (x *Resume) TableName() string {
 	return "resume"
+}
+
+func (x *EditReq) TableName() string {
+	return userTableName(x.Id)
+}
+
+func (x *AuthInfo) TableName() string {
+	return userTableName(x.Id)
 }
 
 /*----------------------------CTX上下文-------------------------------*/
@@ -131,7 +138,7 @@ func (x *AuthInfo) UserAuthInfo() *UserAuthInfo {
 	}
 }
 
-func (x *AuthInfo) Valid() error {
+func (x *AuthInfo) Valid(helper *jwt.ValidationHelper) error {
 	if x.ExpiredAt != 0 && x.LastActiveAt > x.ExpiredAt {
 		return UserErr_LoginTimeout
 	}
@@ -184,6 +191,7 @@ type Ctx struct {
 	RequestAt     time.Time   `json:"-"`
 	RequestUnix   int64       `json:"iat,omitempty"`
 	MD            metadata.MD `json:"-"`
+	parsed        bool
 }
 
 func (c *Ctx) StartSpan(name string, o ...trace.StartOption) (*Ctx, *trace.Span) {
@@ -214,12 +222,19 @@ func CtxWithRequest(ctx context.Context, r *http.Request) context.Context {
 		})
 }
 
+func Authorization(c context.Context) string {
+	return CtxFromContext(c).Authorization
+}
+
 func CtxFromContext(ctx context.Context) *Ctx {
-	md, _ := metadata.FromIncomingContext(ctx)
 	ctxi := ctx.Value(ctxKey{})
-	if ctx, ok := ctxi.(*Ctx); ok {
-		ctx.MD = md
-		return ctx
+	if c, ok := ctxi.(*Ctx); ok {
+		if !c.parsed {
+			md, _ := metadata.FromIncomingContext(ctx)
+			c.MD = md
+			c.parsed = true
+		}
+		return c
 	}
 	now := time.Now()
 	user := new(AuthInfo)
@@ -241,6 +256,20 @@ func (c *Ctx) GetAuthInfo(auth func(*Ctx) (*AuthInfo, error)) (*AuthInfo, error)
 		return nil, err
 	}
 	c.AuthInfo = user
-	c.Authorization = ""
 	return user, nil
+}
+
+func JWTUnmarshaller(ctx jwt.CodingContext, data []byte, v interface{}) error {
+	if ctx.FieldDescriptor == jwt.HeaderFieldDescriptor {
+		return json.Unmarshal(data, v)
+	}
+	if ctx.FieldDescriptor == jwt.ClaimsFieldDescriptor {
+		if claims, ok := v.(*jwt.Claims); ok {
+		if c, ok := (*claims).(*Ctx); ok {
+			c.Authorization = stringsi.ToString(data)
+			return json.Unmarshal(data, c.AuthInfo)
+		}
+		}
+	}
+	return json.Unmarshal(data, v)
 }

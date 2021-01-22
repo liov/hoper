@@ -6,21 +6,22 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go/v4"
+	"github.com/go-oauth2/oauth2/v4"
+	"github.com/go-oauth2/oauth2/v4/errors"
+	"github.com/go-oauth2/oauth2/v4/generates"
+	"github.com/go-oauth2/oauth2/v4/manage"
+	"github.com/go-oauth2/oauth2/v4/server"
+	"github.com/go-oauth2/oauth2/v4/store"
 	"github.com/liov/hoper/go/v2/protobuf/user"
 	goauth "github.com/liov/hoper/go/v2/protobuf/utils/oauth"
 	"github.com/liov/hoper/go/v2/protobuf/utils/response"
 	"github.com/liov/hoper/go/v2/user/conf"
 	"github.com/liov/hoper/go/v2/user/dao"
+	stringsi "github.com/liov/hoper/go/v2/utils/strings"
 	jwti "github.com/liov/hoper/go/v2/utils/verification/auth/jwt"
 	"github.com/liov/hoper/go/v2/utils/verification/auth/oauth"
 	"google.golang.org/grpc/metadata"
-	"gopkg.in/oauth2.v3"
-	"gopkg.in/oauth2.v3/errors"
-	"gopkg.in/oauth2.v3/generates"
-	"gopkg.in/oauth2.v3/manage"
-	"gopkg.in/oauth2.v3/server"
-	"gopkg.in/oauth2.v3/store"
 )
 
 func GetOauthService() *OauthService {
@@ -34,7 +35,7 @@ func GetOauthService() *OauthService {
 	manager.MustTokenStorage(store.NewMemoryTokenStore())
 
 	// generate jwt access token
-	manager.MapAccessGenerate(generates.NewJWTAccessGenerate([]byte(conf.Conf.Customize.TokenSecret), jwt.SigningMethodHS512))
+	manager.MapAccessGenerate(generates.NewJWTAccessGenerate("",stringsi.ToBytes(conf.Conf.Customize.TokenSecret), jwt.SigningMethodHS512))
 
 	clientStore := oauth.NewClientStore(dao.Dao.GORMDB)
 
@@ -77,12 +78,12 @@ func (u *OauthService) OauthAuthorize(ctx context.Context, req *goauth.OauthReq)
 	tokens = append(tokens, "")
 	req.AccessTokenExp = int64(24 * time.Hour)
 	req.LoginURI = "/oauth/login"
-	res := u.Server.HandleAuthorizeRequest(req, tokens[0])
+	res := u.Server.HandleAuthorizeRequest(ctx,req, tokens[0])
 	return res, nil
 }
 
 func (u *OauthService) OauthToken(ctx context.Context, req *goauth.OauthReq) (*response.HttpResponse, error) {
 	req.GrantType = string(oauth2.AuthorizationCode)
-	res, _ := u.Server.HandleTokenRequest(req)
+	res, _ := u.Server.HandleTokenRequest(ctx,req)
 	return res, nil
 }

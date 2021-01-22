@@ -44,5 +44,5 @@ func main() {
 			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
 			pick.Gin(app,true,initialize.InitConfig.Module)
 		},
-	}).Start(service.CtxWithRequest)
+	}).Start(model.CtxWithRequest)
 }

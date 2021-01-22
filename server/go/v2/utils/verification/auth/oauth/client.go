@@ -1,8 +1,10 @@
 package oauth
 
 import (
-	"gopkg.in/oauth2.v3"
-	"gopkg.in/oauth2.v3/models"
+	"context"
+
+	"github.com/go-oauth2/oauth2/v4"
+	"github.com/go-oauth2/oauth2/v4/models"
 	"gorm.io/gorm"
 )
 
@@ -15,7 +17,7 @@ func NewClientStore(db *gorm.DB) *ClientStore {
 type ClientStore gorm.DB
 
 // GetByID according to the ID for the client information
-func (cs *ClientStore) GetByID(id string) (oauth2.ClientInfo, error) {
+func (cs *ClientStore) GetByID(ctx context.Context,id string) (oauth2.ClientInfo, error) {
 	db := (*gorm.DB)(cs)
 	var client models.Client
 	if err := db.Table("oauth_client").Find(&client, id).Error; err != nil {

@@ -13,7 +13,7 @@ require (
 	github.com/brahma-adshonor/gohook v0.0.0-20200311033618-28b944a6fdfa // indirect
 	github.com/cenk/backoff v2.2.1+incompatible // indirect
 	github.com/cockroachdb/pebble v0.0.0-20201215172116-745f6c801513
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/facebookgo/ensure v0.0.0-20200202191622-63f1cf65ac4c // indirect
@@ -21,6 +21,7 @@ require (
 	github.com/facebookgo/subset v0.0.0-20200203212716-c811ad88dec4 // indirect
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gin-gonic/gin v1.6.3
+	github.com/go-oauth2/oauth2/v4 v4.2.0
 	github.com/go-openapi/loads v0.19.5
 	github.com/go-openapi/runtime v0.19.23
 	github.com/go-openapi/spec v0.19.8
@@ -78,13 +79,12 @@ require (
 	google.golang.org/grpc v1.34.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.0.0
 	google.golang.org/protobuf v1.25.0
-	gopkg.in/oauth2.v3 v3.12.0
 	gopkg.in/yaml.v2 v2.3.0
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
 	gorm.io/driver/mysql v1.0.3
 	gorm.io/driver/postgres v1.0.0
 	gorm.io/driver/sqlite v1.1.3
-	gorm.io/gorm v1.20.7
+	gorm.io/gorm v1.20.11
 )
 
 replace (

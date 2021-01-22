@@ -1,6 +1,7 @@
 package oauth
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -9,9 +10,9 @@ import (
 
 	"github.com/liov/hoper/go/v2/protobuf/utils/oauth"
 	"github.com/liov/hoper/go/v2/protobuf/utils/response"
-	"gopkg.in/oauth2.v3"
-	"gopkg.in/oauth2.v3/errors"
-	"gopkg.in/oauth2.v3/server"
+	"github.com/go-oauth2/oauth2/v4"
+	"github.com/go-oauth2/oauth2/v4/errors"
+	"github.com/go-oauth2/oauth2/v4/server"
 )
 
 type Server struct {
@@ -103,7 +104,7 @@ func (s *Server) ValidationAuthorizeRequest(req *oauth.OauthReq) error {
 	return nil
 }
 
-func (s *Server) GetAuthorizeToken(req *oauth.OauthReq) (ti oauth2.TokenInfo, err error) {
+func (s *Server) GetAuthorizeToken(ctx context.Context,req *oauth.OauthReq) (ti oauth2.TokenInfo, err error) {
 	// check the client allows the grant type
 	if fn := s.ClientAuthorizedHandler; fn != nil {
 		gt := oauth2.AuthorizationCode
@@ -144,7 +145,7 @@ func (s *Server) GetAuthorizeToken(req *oauth.OauthReq) (ti oauth2.TokenInfo, er
 		Request:        nil,
 	}
 
-	ti, err = s.Manager.GenerateAuthToken(oauth2.ResponseType(req.ResponseType), tgr)
+	ti, err = s.Manager.GenerateAuthToken(ctx,oauth2.ResponseType(req.ResponseType), tgr)
 	return
 }
 
@@ -168,7 +169,7 @@ func (s *Server) redirect(req *oauth.OauthReq, data map[string]interface{}) *res
 	return w
 }
 
-func (s *Server) HandleAuthorizeRequest(req *oauth.OauthReq, token string) (w *response.HttpResponse) {
+func (s *Server) HandleAuthorizeRequest(ctx context.Context, req *oauth.OauthReq, token string) (w *response.HttpResponse) {
 	err := s.ValidationAuthorizeRequest(req)
 	if err != nil {
 		return s.redirectError(req, err)
@@ -183,7 +184,7 @@ func (s *Server) HandleAuthorizeRequest(req *oauth.OauthReq, token string) (w *r
 	req.LoginURI = ""
 	// specify the expiration time of access token
 
-	ti, verr := s.GetAuthorizeToken(req)
+	ti, verr := s.GetAuthorizeToken(ctx,req)
 	if verr != nil {
 		return s.redirectError(req, verr)
 	}
@@ -310,13 +311,13 @@ func (s *Server) ValidationTokenRequest(r *oauth.OauthReq) (*oauth2.TokenGenerat
 	return tgr, nil
 }
 
-func (s *Server) HandleTokenRequest(r *oauth.OauthReq) (*response.HttpResponse, error) {
+func (s *Server) HandleTokenRequest(ctx context.Context, r *oauth.OauthReq) (*response.HttpResponse, error) {
 	tgr, err := s.ValidationTokenRequest(r)
 	if err != nil {
 		return s.tokenError(err)
 	}
 
-	ti, err := s.GetAccessToken(oauth2.GrantType(r.GrantType), tgr)
+	ti, err := s.GetAccessToken(ctx, oauth2.GrantType(r.GrantType), tgr)
 	if err != nil {
 		return s.tokenError(err)
 	}
@@ -348,7 +349,7 @@ func (s *Server) token(data map[string]interface{}, header http.Header, statusCo
 	return res, nil
 }
 
-func (s *Server) GetAccessToken(gt oauth2.GrantType, tgr *oauth2.TokenGenerateRequest) (oauth2.TokenInfo, error) {
+func (s *Server) GetAccessToken(ctx context.Context, gt oauth2.GrantType, tgr *oauth2.TokenGenerateRequest) (oauth2.TokenInfo, error) {
 	if allowed := s.CheckGrantType(gt); !allowed {
 		return nil, errors.ErrUnauthorizedClient
 	}
@@ -364,7 +365,7 @@ func (s *Server) GetAccessToken(gt oauth2.GrantType, tgr *oauth2.TokenGenerateRe
 
 	switch gt {
 	case oauth2.AuthorizationCode:
-		ti, err := s.Manager.GenerateAccessToken(gt, tgr)
+		ti, err := s.Manager.GenerateAccessToken(ctx, gt, tgr)
 		if err != nil {
 			switch err {
 			case errors.ErrInvalidAuthorizeCode:
@@ -385,11 +386,11 @@ func (s *Server) GetAccessToken(gt oauth2.GrantType, tgr *oauth2.TokenGenerateRe
 				return nil, errors.ErrInvalidScope
 			}
 		}
-		return s.Manager.GenerateAccessToken(gt, tgr)
+		return s.Manager.GenerateAccessToken(ctx, gt, tgr)
 	case oauth2.Refreshing:
 		// check scope
 		if scope, scopeFn := tgr.Scope, s.RefreshingScopeHandler; scope != "" && scopeFn != nil {
-			rti, err := s.Manager.LoadRefreshToken(tgr.Refresh)
+			rti, err := s.Manager.LoadRefreshToken(ctx, tgr.Refresh)
 			if err != nil {
 				if err == errors.ErrInvalidRefreshToken || err == errors.ErrExpiredRefreshToken {
 					return nil, errors.ErrInvalidGrant
@@ -405,7 +406,7 @@ func (s *Server) GetAccessToken(gt oauth2.GrantType, tgr *oauth2.TokenGenerateRe
 			}
 		}
 
-		ti, err := s.Manager.RefreshAccessToken(tgr)
+		ti, err := s.Manager.RefreshAccessToken(ctx, tgr)
 		if err != nil {
 			if err == errors.ErrInvalidRefreshToken || err == errors.ErrExpiredRefreshToken {
 				return nil, errors.ErrInvalidGrant

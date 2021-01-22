@@ -236,7 +236,6 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 }
 
 func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.TinyRep, error) {
-	defer timei.TimeCost(time.Now())
 	ctxi,span := model.CtxFromContext(ctx).StartSpan("Edit")
 	defer span.End()
 	user, err := ctxi.GetAuthInfo(Auth)
@@ -258,9 +257,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.T
 		tx.Rollback()
 		return nil, errorcode.DBError.Message("更新失败")
 	}
-	var nUser model.User
-	tx.First(&nUser, user.Id)
-	err = tx.Model(&user).Updates(nUser).Error
+	err = tx.Model(req.Details).UpdateColumns(req.Details).Error
 	if err != nil {
 		tx.Rollback()
 		return nil, errorcode.DBError.Message("更新失败")

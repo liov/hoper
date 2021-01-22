@@ -72,7 +72,7 @@ func FiberWithCtx(engine *fiber.App,authCtx FasthttpAuthCtx ,genApi bool, modNam
 		engine.Group(preUrl, middleware...)
 		for j := 0; j < value.NumMethod(); j++ {
 			method := value.Type().Method(j)
-			methodInfo := getMethodInfo(&method, preUrl,contextType)
+			methodInfo := getMethodInfo(&method, preUrl,claimsType)
 			if methodInfo == nil {
 				continue
 			}
