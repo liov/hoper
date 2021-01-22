@@ -4,13 +4,12 @@ import (
 	"errors"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
-	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
+	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/liov/hoper/go/v2/utils/strings"
 )
 
 var (
-	Parser = &jwt.Parser{SkipClaimsValidation: true}
+	Parser = jwt.NewParser()
 	err    = errors.New("无效的token")
 )
 
@@ -23,11 +22,8 @@ type Claims struct {
 	*jwt.StandardClaims
 }
 
-func (claims *Claims) Valid() error {
-	if claims.VerifyExpiresAt(claims.IssuedAt, false) == false {
-		return errorcode.TimeTooMuch
-	}
-	return nil
+func (claims *Claims) Valid(helper *jwt.ValidationHelper) error {
+	return helper.ValidateExpiresAt(claims.ExpiresAt)
 }
 
 type CustomClaims struct {
@@ -35,18 +31,16 @@ type CustomClaims struct {
 	*jwt.StandardClaims
 }
 
-func (claims *CustomClaims) Valid() error {
-	if claims.VerifyExpiresAt(claims.IssuedAt, false) == false {
-		return errorcode.TimeTooMuch
-	}
-	return nil
+func (claims *CustomClaims) Valid(helper *jwt.ValidationHelper) error {
+	return helper.ValidateExpiresAt(claims.ExpiresAt)
 }
 
 func NewStandardClaims(maxAge int64, sign string) *jwt.StandardClaims {
-	now := time.Now().Unix()
+	now := time.Now()
+	exp:=now.Add(time.Duration(maxAge))
 	return &jwt.StandardClaims{
-		ExpiresAt: now + maxAge,
-		IssuedAt:  now,
+		ExpiresAt: &jwt.Time{Time: exp},
+		IssuedAt:  &jwt.Time{Time: now},
 		Issuer:    sign,
 	}
 }
@@ -68,7 +62,7 @@ func ParseToken(claims jwt.Claims, token, secret string) error {
 		return err
 	}
 	if tokenClaims != nil && tokenClaims.Valid {
-		return tokenClaims.Claims.Valid()
+		return tokenClaims.Claims.Valid(jwt.DefaultValidationHelper)
 	}
 
 	return err
@@ -78,7 +72,7 @@ func ParseTokenWithKeyFunc(claims jwt.Claims, token string, f func(token *jwt.To
 	tokenClaims, _ := Parser.ParseWithClaims(token, claims, f)
 
 	if tokenClaims != nil && tokenClaims.Valid {
-		return tokenClaims.Claims.Valid()
+		return tokenClaims.Claims.Valid(Parser.ValidationHelper)
 	}
 
 	return err

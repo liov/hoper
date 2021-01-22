@@ -13,6 +13,23 @@ import (
 	"github.com/liov/hoper/go/v2/utils/strings"
 )
 
+const Template= `
+func (*UserService) Add(ctx *model.Ctx, req *model.SignupReq) (*response.TinyRep, error) {
+	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
+	pick.Api(func() interface{} {
+		return pick.Path("/add").
+			Method(http.MethodGet).
+			Title("用户注册").
+			Version(2).
+			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
+			ChangeLog("1.0.1", "jyb", "2019/12/16", "修改测试")
+	})
+
+	return &response.TinyRep{Message: req.Name}, nil
+}
+`
+
+
 type apiInfo struct {
 	path, method, title string
 	version             int
@@ -126,7 +143,6 @@ func getMethodInfo(method *reflect.Method, preUrl string, claimsTyp reflect.Type
 		return
 	}
 	if !methodType.In(1).Implements(claimsTyp) {
-		err = errors.New("service第一个参数必须为error类型")
 		return
 	}
 	if !methodType.Out(1).Implements(errorType) {

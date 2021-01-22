@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 
+	"github.com/dgrijalva/jwt-go/v4"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/conf"
 	"github.com/liov/hoper/go/v2/user/dao"
@@ -11,8 +12,12 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
+func init() {
+	jwt.WithUnmarshaller(model.JWTUnmarshaller)(jwti.Parser)
+}
+
 func Auth(ctx *model.Ctx) (*model.AuthInfo, error) {
-	if err := jwti.ParseToken(ctx.AuthInfo, ctx.Authorization, conf.Conf.Customize.TokenSecret); err != nil {
+	if err := jwti.ParseToken(ctx, ctx.Authorization, conf.Conf.Customize.TokenSecret); err != nil {
 		return nil, err
 	}
 	conn := dao.NewUserRedis()

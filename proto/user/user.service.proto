@@ -248,14 +248,13 @@ service OauthService{
   }
 }
 
+// 注册验证请求
 message SingUpVerifyReq {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     json_schema: {
-      title: "注册验证请求"  //和message前注释一样的效果
+      title: "注册验证请求"  // 和message前注释一样的效果
     }
-    example: {
-      value: '{ "mail": "123@qq.com", "phone": "12345678901"}'
-    }
+    example: '{"mail": "123@qq.com", "phone": "12345678901"}'
   };
   // 邮箱
   string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" annotation:"邮箱"'}];
@@ -304,7 +303,7 @@ message EditReq {
   uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"ID"
     type: INTEGER}];
-  EditDetails details = 2;
+  EditDetails details = 2 [(go.field) = {tags:'gorm:"embedded"'}];
   message EditDetails {
     string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" validate:"required,gte=3,lte=10" annotation:"名字"'}];
     string password = 5 [(go.field) = {tags:'gorm:"size:32;not null" validate:"gte=8,lte=15" annotation:"密码"'}];
@@ -320,8 +319,8 @@ message EditReq {
     string signature = 11 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
     string avatarURL = 12 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
     string coverURL = 13 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
-    repeated Resume eduExps = 15;
-    repeated Resume workExps = 16;
+    repeated Resume eduExps = 15 [(go.field) = {tags:'gorm:"-"'}];
+    repeated Resume workExps = 16 [(go.field) = {tags:'gorm:"-"'}];
   }
 }
 // 登录请求

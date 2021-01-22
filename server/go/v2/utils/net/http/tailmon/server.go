@@ -54,11 +54,9 @@ func (s *Server) httpHandler() http.HandlerFunc {
 	}
 	var excludes = []string{"/debug", "/api-doc"}
 	return func(w http.ResponseWriter, r *http.Request) {
-		for _, exclude := range excludes {
-			if strings.HasPrefix(r.RequestURI, exclude) {
-				ginServer.ServeHTTP(w, r)
-				return
-			}
+		if stringsi.HasPrefixes(r.RequestURI, excludes) {
+			ginServer.ServeHTTP(w, r)
+			return
 		}
 
 		now := time.Now()
@@ -79,15 +77,16 @@ func (s *Server) httpHandler() http.HandlerFunc {
 			// 将 recorder 记录的 Response Body 写入到 ResponseWriter 中，客户端收到响应报文体
 			w.Write(recorder.Body.Bytes())
 		}
-
+		authorization:=s.Authorization(r.Context())
 		accessLog(r.RequestURI, stringsi.ToString(body), stringsi.ToString(recorder.Body.Bytes()),
-			r.Header.Get(httpi.HeaderAuthorization), now, recorder.Code)
+			authorization, now, recorder.Code)
 	}
 }
 
 type CustomContext func(c context.Context, r *http.Request) context.Context
+type Authorization func(c context.Context) string
 
-func (s *Server) Serve(customContext CustomContext) {
+func (s *Server) Serve() {
 	//反射从配置中取port
 	serviceConfig := initialize.InitConfig.GetServiceConfig()
 
@@ -101,6 +100,7 @@ func (s *Server) Serve(customContext CustomContext) {
 		defer func() {
 			if r := recover(); r != nil {
 				log.CallTwo.With(zap.String("stack", stringsi.ToString(debug.Stack()))).Error(" panic: ", r)
+				w.Header().Set(httpi.HeaderContentType, httpi.ContentJSONHeaderValue)
 				w.Write(errorcode.SysErr)
 			}
 		}()
@@ -128,8 +128,8 @@ func (s *Server) Serve(customContext CustomContext) {
 			defer span.End()
 		}
 
-		if customContext != nil {
-			r = r.WithContext(customContext(ctx, r))
+		if s.CustomContext != nil {
+			r = r.WithContext(s.CustomContext(ctx, r))
 		} else {
 			r = r.WithContext(ctx)
 		}
@@ -159,10 +159,10 @@ func (s *Server) Serve(customContext CustomContext) {
 		}
 	}
 	go func() {
-		<-close
+		<-signals
 		log.Debug("关闭服务")
 		cs()
-		close <- syscall.SIGINT
+		signals <- syscall.SIGINT
 	}()
 
 	go func() {
@@ -181,19 +181,21 @@ type Server struct {
 	GatewayRegistr gateway.GatewayHandle
 	GinHandle      func(engine *gin.Engine)
 	GraphqlResolve graphql.ExecutableSchema
+	CustomContext CustomContext
+	Authorization Authorization
 }
 
-var close = make(chan os.Signal, 1)
+var signals = make(chan os.Signal, 1)
 var stop = make(chan struct{}, 1)
 
-func (s *Server) Start(newContext CustomContext) {
+func (s *Server) Start() {
 	if initialize.InitConfig.ConfigCenter == nil {
 		log.Fatal(`初始化配置失败:
 	main 函数的第一行应为
 	defer v2.Start(config.Conf, dao.Dao)()
 `)
 	}
-	signal.Notify(close,
+	signal.Notify(signals,
 		// kill -SIGINT XXXX 或 Ctrl+c
 		syscall.SIGINT, // register that too, it should be ok
 		// os.Kill等同于syscall.Kill
@@ -204,10 +206,10 @@ func (s *Server) Start(newContext CustomContext) {
 Loop:
 	for {
 		select {
-		case <-close:
+		case <-signals:
 			break Loop
 		default:
-			s.Serve(newContext)
+			s.Serve()
 		}
 	}
 }
