@@ -1,9 +1,26 @@
-package redis
+package redisi
 
-import "github.com/gomodule/redigo/redis"
+import (
+	"context"
 
-func Do(pool *redis.Pool, commandName string, args ...interface{}) (interface{}, error) {
-	conn := pool.Get()
-	defer conn.Close()
-	return conn.Do(commandName, args...)
+	"github.com/go-redis/redis/v8"
+)
+
+func Do(ctx context.Context, conn *redis.Conn, args ...interface{}) (interface{}, error) {
+	cmd := redis.NewCmd(ctx, args...)
+	_ = conn.Process(ctx, cmd)
+	return cmd.Result()
 }
+
+type Cmds []redis.Cmder
+
+func (l Cmds) Last() redis.Cmder {
+	return l[len(l)-1]
+}
+
+const(
+	DEL = "DEL"
+	HGETALL = "HGETALL"
+	HMSET = "HMSET"
+	SET = "SET"
+)

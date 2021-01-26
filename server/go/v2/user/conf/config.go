@@ -2,6 +2,7 @@ package conf
 
 import (
 	"runtime"
+	"time"
 
 	"github.com/liov/hoper/go/v2/initialize"
 	"github.com/liov/hoper/go/v2/utils/fs"
@@ -10,8 +11,9 @@ import (
 type serverConfig struct {
 	Volume fs.Dir
 
-	PassSalt    string
-	TokenMaxAge int64
+	PassSalt string
+	// 天数
+	TokenMaxAge time.Duration
 	TokenSecret string
 	PageSize    int8
 
@@ -66,5 +68,5 @@ func (c *config) Custom() {
 	}
 
 	c.Customize.UploadMaxSize = c.Customize.UploadMaxSize * 1024 * 1024
-	c.Customize.TokenMaxAge = c.Customize.TokenMaxAge * 7 * 24
+	c.Customize.TokenMaxAge = time.Second * 60 * 24 * c.Customize.TokenMaxAge
 }

@@ -3,7 +3,7 @@ package initialize
 import (
 	"time"
 
-	"github.com/gomodule/redigo/redis"
+	"github.com/go-redis/redis/v8"
 	"github.com/liov/hoper/go/v2/utils/reflect"
 )
 
@@ -15,36 +15,19 @@ type RedisConfig struct {
 	IdleTimeout time.Duration
 }
 
-func (conf *RedisConfig) Generate() *redis.Pool {
+func (conf *RedisConfig) Generate() *redis.Client {
 	conf.IdleTimeout = conf.IdleTimeout * time.Second
-	pool := &redis.Pool{
-		MaxIdle:     conf.MaxIdle,
-		MaxActive:   conf.MaxActive,
+	client:=redis.NewClient(&redis.Options{
+		Addr: conf.Addr,
+		Password: conf.Password,
+		MinIdleConns: conf.MaxActive,
 		IdleTimeout: conf.IdleTimeout,
-		Wait:        true,
-		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", conf.Addr)
-			if err != nil {
-				return nil, err
-			}
-			if conf.Password != "" {
-				if _, err := c.Do("AUTH", conf.Password); err != nil {
-					c.Close()
-					return nil, err
-				}
-			}
-			return c, err
-		},
-		TestOnBorrow: func(c redis.Conn, t time.Time) error {
-			_, err := c.Do("PING")
-			return err
-		},
-	}
+	})
 	//closes = append(closes,pool.CloseDao)
-	return pool
+	return client
 }
 
-func (init *Init) P2Redis() *redis.Pool {
+func (init *Init) P2Redis() *redis.Client {
 	conf := &RedisConfig{}
 	if exist := reflecti.GetFieldValue(init.conf, conf); !exist {
 		return nil

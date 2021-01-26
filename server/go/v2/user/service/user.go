@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gomodule/redigo/redis"
 	"github.com/google/uuid"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
@@ -20,8 +20,10 @@ import (
 	"github.com/liov/hoper/go/v2/user/dao"
 	"github.com/liov/hoper/go/v2/user/middle"
 	modelconst "github.com/liov/hoper/go/v2/user/model"
+	redisi "github.com/liov/hoper/go/v2/utils/dao/redis"
 	templatei "github.com/liov/hoper/go/v2/utils/def/template"
 	"github.com/liov/hoper/go/v2/utils/log"
+	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 	"github.com/liov/hoper/go/v2/utils/net/mail"
@@ -72,10 +74,10 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 	vcode := verification.GenerateCode()
 	log.Debug(vcode)
 	key := modelconst.VerificationCodeKey + req.Mail + req.Phone
-	RedisConn := dao.Dao.Redis.Get()
+	RedisConn := dao.Dao.Redis.Conn(ctx)
 	defer RedisConn.Close()
 
-	if _, err := RedisConn.Do("SET", key, vcode, "EX", modelconst.VerificationCodeDuration); err != nil {
+	if err := RedisConn.SetEX(ctx, key, vcode, modelconst.VerificationCodeDuration).Err(); err != nil {
 		log.Error("UserService.Verify,RedisConn.Do: ", err)
 		return nil, errorcode.RedisErr.Message("新建出错")
 	}
@@ -83,7 +85,7 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 }
 
 func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*response.TinyRep, error) {
-	ctxi,span := model.CtxFromContext(ctx).StartSpan("Active")
+	ctxi, span := model.CtxFromContext(ctx).StartSpan("Active")
 	defer span.End()
 
 	if err := Validate(req); err != nil {
@@ -126,12 +128,12 @@ func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*response
 	var rep = &response.TinyRep{Message: "新建成功,请前往邮箱激活"}
 
 	activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
-	RedisConn := dao.Dao.Redis.Get()
+	RedisConn := dao.Dao.Redis.Conn(ctx)
 	defer RedisConn.Close()
 
 	curTime := time.Now().Unix()
 
-	if _, err := RedisConn.Do("SET", activeUser, curTime, "EX", modelconst.ActiveDuration); err != nil {
+	if err := RedisConn.SetEX(ctx, activeUser, curTime, modelconst.ActiveDuration).Err(); err != nil {
 		log.Error("UserService.Signup,RedisConn.Do: ", err)
 	}
 
@@ -203,13 +205,13 @@ func checkPassword(password string, user *model.User) bool {
 }
 
 func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.LoginRep, error) {
-	ctxi,span := model.CtxFromContext(ctx).StartSpan("Active")
+	ctxi, span := model.CtxFromContext(ctx).StartSpan("Active")
 	defer span.End()
-	RedisConn := dao.Dao.Redis.Get()
+	RedisConn := dao.Dao.Redis.Conn(ctx)
 	defer RedisConn.Close()
 
 	redisKey := modelconst.ActiveTimeKey + strconv.FormatUint(req.Id, 10)
-	emailTime, err := redis.Int64(RedisConn.Do("GET", redisKey))
+	emailTime, err := RedisConn.Get(ctx, redisKey).Int64()
 	if err != nil {
 		log.Error("UserService.Active,redis.Int64", err)
 		return nil, errorcode.InvalidArgument.Message("无效的链接")
@@ -231,12 +233,12 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 	}
 
 	dao.Dao.GORMDB.Model(user).Updates(map[string]interface{}{"activated_at": time.Now(), "status": 1})
-	RedisConn.Do("DEL", redisKey)
+	RedisConn.Del(ctx, redisKey)
 	return u.login(ctxi, user)
 }
 
 func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.TinyRep, error) {
-	ctxi,span := model.CtxFromContext(ctx).StartSpan("Edit")
+	ctxi, span := model.CtxFromContext(ctx).StartSpan("Edit")
 	defer span.End()
 	user, err := ctxi.GetAuthInfo(Auth)
 	if err != nil || user.Id != req.Id {
@@ -267,7 +269,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.T
 }
 
 func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginRep, error) {
-	ctxi,span := model.CtxFromContext(ctx).StartSpan("Login")
+	ctxi, span := model.CtxFromContext(ctx).StartSpan("Login")
 	defer span.End()
 
 	if verifyErr := verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL, conf.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
@@ -300,11 +302,11 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 		//没看懂
 		//encodedEmail := base64.StdEncoding.EncodeToString(stringsi.ToBytes(user.Mail))
 		activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
-		RedisConn := dao.Dao.Redis.Get()
+		RedisConn := dao.Dao.Redis.Conn(ctx)
 		defer RedisConn.Close()
 
 		curTime := time.Now().Unix()
-		if _, err := RedisConn.Do("SET", activeUser, curTime, "EX", modelconst.ActiveDuration); err != nil {
+		if err := RedisConn.SetEX(ctx, activeUser, curTime, modelconst.ActiveDuration).Err(); err != nil {
 			log.Error("UserService.Signup,RedisConn.Do: ", err)
 			return nil, errorcode.RedisErr
 		}
@@ -316,12 +318,12 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 }
 
 func (*UserService) login(ctxi *model.Ctx, user *model.User) (*model.LoginRep, error) {
-	ctxi.Id =  user.Id
-	ctxi.Name =  user.Name
-	ctxi.Status =  user.Status
-	ctxi.Role =  user.Role
-	ctxi.LoginAt =  ctxi.RequestUnix
-	ctxi.ExpiredAt = ctxi.RequestUnix + conf.Conf.Customize.TokenMaxAge
+	ctxi.Id = user.Id
+	ctxi.Name = user.Name
+	ctxi.Status = user.Status
+	ctxi.Role = user.Role
+	ctxi.LoginAt = ctxi.RequestUnix
+	ctxi.ExpiredAt = ctxi.RequestUnix + int64(conf.Conf.Customize.TokenMaxAge)
 
 	tokenString, err := ctxi.GenerateToken(stringsi.ToBytes(conf.Conf.Customize.TokenSecret))
 	if err != nil {
@@ -331,7 +333,7 @@ func (*UserService) login(ctxi *model.Ctx, user *model.User) (*model.LoginRep, e
 	dao.Dao.GORMDB.Model(&user).UpdateColumn("last_activated_at", ctxi.RequestAt)
 	conn := dao.NewUserRedis()
 	defer conn.Close()
-	if err := conn.EfficientUserHashToRedis(ctxi.AuthInfo); err != nil {
+	if err := conn.EfficientUserHashToRedis(ctxi); err != nil {
 		return nil, errorcode.RedisErr
 	}
 	resp := &model.LoginRep{}
@@ -347,8 +349,8 @@ func (*UserService) login(ctxi *model.Ctx, user *model.User) (*model.LoginRep, e
 		Value: tokenString,
 		Path:  "/",
 		//Domain:   "hoper.xyz",
-		Expires:  time.Now().Add(time.Duration(conf.Conf.Customize.TokenMaxAge) * time.Second),
-		MaxAge:   int(time.Duration(conf.Conf.Customize.TokenMaxAge) * time.Second),
+		Expires:  time.Now().Add(conf.Conf.Customize.TokenMaxAge * time.Second),
+		MaxAge:   int(conf.Conf.Customize.TokenMaxAge),
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
@@ -358,7 +360,7 @@ func (*UserService) login(ctxi *model.Ctx, user *model.User) (*model.LoginRep, e
 }
 
 func (u *UserService) Logout(ctx context.Context, req *request.Empty) (*model.LogoutRep, error) {
-	ctxi,span := model.CtxFromContext(ctx).StartSpan("Logout")
+	ctxi, span := model.CtxFromContext(ctx).StartSpan("Logout")
 	defer span.End()
 	user, err := ctxi.GetAuthInfo(Auth)
 	if err != nil {
@@ -366,16 +368,16 @@ func (u *UserService) Logout(ctx context.Context, req *request.Empty) (*model.Lo
 	}
 	dao.Dao.GORMDB.Model(&model.UserAuthInfo{Id: user.Id}).UpdateColumn("last_activated_at", time.Now())
 
-	RedisConn := dao.Dao.Redis.Get()
+	RedisConn := dao.Dao.Redis.Conn(ctx)
 	defer RedisConn.Close()
 
-	if _, err := RedisConn.Do("DEL", modelconst.LoginUserKey+strconv.FormatUint(user.Id, 10)); err != nil {
+	if _, err := redisi.Do(ctx, RedisConn, redisi.DEL, modelconst.LoginUserKey+strconv.FormatUint(user.Id, 10)); err != nil {
 		log.Error(err)
 		return nil, errorcode.RedisErr
 	}
 	cookie := (&http.Cookie{
-		Name:  "token",
-		Value: "del",
+		Name:  httpi.HeaderCookieToken,
+		Value: httpi.HeaderCookieDel,
 		Path:  "/",
 		//Domain:   "hoper.xyz",
 		Expires:  time.Now().Add(-1),
@@ -428,11 +430,11 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 		return nil, errorcode.DBError
 	}
 	restPassword := modelconst.ResetTimeKey + strconv.FormatUint(user.Id, 10)
-	RedisConn := dao.Dao.Redis.Get()
+	RedisConn := dao.Dao.Redis.Conn(ctx)
 	defer RedisConn.Close()
 
 	curTime := time.Now().Unix()
-	if _, err := RedisConn.Do("SET", restPassword, curTime, "EX", modelconst.ResetDuration); err != nil {
+	if err := RedisConn.SetEX(ctx, restPassword, curTime, modelconst.ResetDuration).Err(); err != nil {
 		log.Error("redis set failed:", err)
 		return nil, errorcode.RedisErr
 	}
@@ -443,11 +445,11 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 }
 
 func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswordReq) (*response.TinyRep, error) {
-	RedisConn := dao.Dao.Redis.Get()
+	RedisConn := dao.Dao.Redis.Conn(ctx)
 	defer RedisConn.Close()
 
 	redisKey := modelconst.ResetTimeKey + strconv.FormatUint(req.Id, 10)
-	emailTime, err := redis.Int64(RedisConn.Do("GET", redisKey))
+	emailTime, err := RedisConn.Get(ctx, redisKey).Int64()
 	if err != nil {
 		log.Error(model.UserserviceServicedesc.ServiceName, "ResetPassword,redis.Int64", err)
 		return nil, errorcode.InvalidArgument.Message("无效的链接")
@@ -460,7 +462,7 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 	if user.Status != 1 {
 		return nil, errorcode.FailedPrecondition.Message("无效账号")
 	}
-	secretStr := strconv.Itoa((int)(emailTime)) + user.Mail + user.Password
+	secretStr := strconv.Itoa(int(emailTime)) + user.Mail + user.Password
 
 	secretStr = fmt.Sprintf("%x", md5.Sum(stringsi.ToBytes(secretStr)))
 
@@ -472,7 +474,7 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 		log.Error("UserService.ResetPassword,DB.Update", err)
 		return nil, errorcode.DBError
 	}
-	RedisConn.Do("DEL", redisKey)
+	RedisConn.Del(ctx, redisKey)
 	return nil, nil
 }
 
@@ -495,7 +497,6 @@ func (*UserService) Service() (string, string, []http.HandlerFunc) {
 	return "用户相关", "/api/user", []http.HandlerFunc{middle.Log}
 }
 
-
 func (*UserService) Add(ctx *model.Ctx, req *model.SignupReq) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() interface{} {
@@ -506,6 +507,12 @@ func (*UserService) Add(ctx *model.Ctx, req *model.SignupReq) (*response.TinyRep
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
 			ChangeLog("1.0.1", "jyb", "2019/12/16", "修改测试")
 	})
+	client := redis.NewClient(&redis.Options{
+		Addr:     conf.Conf.Redis.Addr,
+		Password: conf.Conf.Redis.Password,
+	})
+	cmd, _ := client.Do(ctx, "HGETALL", modelconst.LoginUserKey+"1").Result()
+	log.Debug(cmd)
 
 	return &response.TinyRep{Message: req.Name}, nil
 }
@@ -524,6 +531,5 @@ func (*UserService) Addv(ctx context.Context, req *response.TinyRep) (*response.
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
 			ChangeLog("1.0.1", "jyb", "2019/12/16", "修改测试")
 	})
-
 	return req, nil
 }

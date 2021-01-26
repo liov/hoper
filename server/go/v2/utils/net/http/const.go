@@ -56,6 +56,7 @@ const (
 	HeaderAuthorization      = "Authorization"
 	HeaderCookie             = "Cookie"
 	HeaderCookieToken        = "token"
+	HeaderCookieDel        = "del"
 	HeaderContentDisposition = "Content-Disposition"
 	HeaderContentEncoding    = "Content-Encoding"
 	HeaderReferer            = "Referer"

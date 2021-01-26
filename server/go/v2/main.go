@@ -42,7 +42,7 @@ func main() {
 		GinHandle: func(app *gin.Engine) {
 			oauth.RegisterOauthServiceHandlerServer(app, service.GetOauthService())
 			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
-			pick.Gin(app,true,initialize.InitConfig.Module)
+			pick.Gin(app,model.ConvertContext,true,initialize.InitConfig.Module)
 		},
-	}).Start(model.CtxWithRequest)
+	}).Start()
 }

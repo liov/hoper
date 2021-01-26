@@ -47,8 +47,8 @@ func fiberResHandler(ctx *fiber.Ctx, result []reflect.Value) error {
 	}
 	if info, ok := result[0].Interface().(*httpi.File); ok {
 		header := ctx.Response().Header
-		header.Set("Content-Type", "application/octet-stream")
-		header.Set("Content-Disposition", "attachment;filename="+info.Name)
+		header.Set(httpi.HeaderContentType, httpi.ContentBinaryHeaderValue)
+		header.Set(httpi.HeaderContentDisposition, "attachment;filename="+info.Name)
 		io.Copy(writer, info.File)
 		if flusher, canFlush := writer.(http.Flusher); canFlush {
 			flusher.Flush()
@@ -93,10 +93,7 @@ func FiberWithCtx(engine *fiber.App,authCtx FasthttpAuthCtx ,genApi bool, modNam
 			})
 			infos = append(infos, &apiDocInfo{methodInfo, method.Type})
 		}
-		groupApiInfos = append(groupApiInfos, &groupApiInfo{
-			describe: describe,
-			infos:    infos,
-		})
+		groupApiInfos = append(groupApiInfos, &groupApiInfo{describe, infos})
 	}
 	if genApi {
 		filePath := apidoc.FilePath
