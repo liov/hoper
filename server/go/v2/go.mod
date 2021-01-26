@@ -29,12 +29,13 @@ require (
 	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.2.0
+	github.com/go-redis/redis/v8 v8.4.10
+	github.com/gobwas/pool v0.2.0
 	github.com/gofiber/fiber/v2 v2.3.2
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e
 	github.com/golang/mock v1.4.4
 	github.com/golang/protobuf v1.4.3
-	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/google/uuid v1.1.2
 	github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e // indirect
@@ -71,7 +72,8 @@ require (
 	go.opencensus.io v0.22.5
 	go.uber.org/atomic v1.7.0
 	go.uber.org/zap v1.16.0
-	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b
+	golang.org/x/exp v0.0.0-20201229011636-eab1b5eb1a03 // indirect
+	golang.org/x/net v0.0.0-20210119194325-5f4716e94777
 	golang.org/x/oauth2 v0.0.0-20201208152858-08078c50e5b5
 	golang.org/x/tools v0.0.0-20201201161351-ac6f37ff4c2a
 	google.golang.org/api v0.36.0 // indirect

@@ -10,6 +10,7 @@ import (
 	"text/template"
 
 	"github.com/liov/hoper/go/v2/utils/os"
+	execi "github.com/liov/hoper/go/v2/utils/os/exec"
 )
 
 /*
@@ -18,7 +19,11 @@ import (
 
 //go:generate mockgen -destination ../protobuf/user/user.mock.go -package user -source ../protobuf/user/user.service_grpc.pb.go UserServiceServer
 
-func main() { run() }
+func main() {
+	run(*proto)
+	//genutils(*proto)
+	//gengql()
+}
 
 const goOut = "go-patch_out=plugin=go,paths=source_relative"
 const grpcOut = "go-patch_out=plugin=go-grpc,paths=source_relative"
@@ -39,92 +44,123 @@ var service = []string{goOut, grpcOut,
 var model = []string{goOut, grpcOut}
 var enum = []string{enumOut, goOut, grpcOut}
 
-var gengql = false
+var gqlgen []string
 var files = map[string][]string{
-/*
-	"/utils/errorcode/errrep.proto": model,
-	"/utils/errorcode/*enum.proto":  enum,
-	"/utils/response/*.proto":       model,
-	"/utils/request/*.proto":       model,
-	"/utils/oauth/*.proto":          model,
-	"/utils/time/*.proto":          model,
-	"/utils/proto/gogo/*.gen.proto": {gogoprotoOut},
-	"/utils/proto/go/*.proto":       {goOut},*/
-	"/user/*service.proto": service,
-	"/user/*model.proto": model,
-	"/user/*enum.proto":  enum,
-	"/content/*service.proto": service,
-	"/content/*model.proto": model,
-	"/content/*enum.proto":  enum,
+	/*
+		"/utils/errorcode/errrep.proto": model,
+		"/utils/errorcode/*enum.proto":  enum,
+		"/utils/response/*.proto":       model,
+		"/utils/request/*.proto":       model,
+		"/utils/oauth/*.proto":          model,
+		"/utils/time/*.proto":          model,
+		"/utils/proto/gogo/*.gen.proto": {gogoprotoOut},
+		"/utils/proto/go/*.proto":       {goOut},*/
+	"/*service.proto": service,
+	"/*model.proto":   model,
+	"/*enum.proto":    enum,
 }
 
-var proto = flag.String("proto", "../../../proto", "proto路径")
+var (
+	proto                                         *string
+	pwd, goList, gateway, protobuf, path, include string
+)
 
-func run() {
-	pwd, _ := os.Getwd()
+func init() {
+	proto = flag.String("proto", "../../../proto", "proto路径")
+	pwd, _ = os.Getwd()
 	*proto = pwd + "/" + *proto
-	goList := `go list -m -f {{.Dir}} `
-	gateway, _ := osi.CMD(goList + "github.com/grpc-ecosystem/grpc-gateway/v2")
-	//protopatch, _ := os2.CMD(goList + "github.com/liov/protopatch2")
-	protobuf, _ := osi.CMD(goList + "google.golang.org/protobuf")
-	//gogoProtoOut, _ := cmd.CMD(goList + "github.com/gogo/protobuf")
-	path := os.Getenv("GOPATH")
-	include := "-I" + *proto + " -I" + gateway + " -I" + gateway + "/third_party/googleapis -I" + protobuf + " -I" + path + "/src"
+	goList = `go list -m -f {{.Dir}} `
+	gateway, _ = osi.CMD(
+		goList + "github.com/grpc-ecosystem/grpc-gateway/v2",
+	)
 
-	var gqlgen []string
-	for k, v := range files {
-		for _, plugin := range v {
-			arg := "protoc " + include + " " + *proto + k + " --" + plugin + ":" + pwd + "/protobuf"
-			if strings.HasPrefix(plugin, "openapiv2_out") {
-				arg = arg + "/api"
-			}
-			if strings.HasPrefix(plugin, "graphql_out") || strings.HasPrefix(plugin, "gqlcfg_out") {
-				arg = arg + "/gql"
-			}
-			//protoc-gen-gqlgen应该在最后生成，gqlgen会调用go编译器，protoc-gen-gqlgen会生成不存在的接口，编译不过去
-			if strings.HasPrefix(plugin, "gqlgen_out") {
-				gqlgen = append(gqlgen, arg)
+	//protopatch, _ := os2.CMD(goList + "github.com/liov/protopatch2")
+	protobuf, _ = osi.CMD(goList + "google.golang.org/protobuf")
+	//gogoProtoOut, _ := cmd.CMD(goList + "github.com/gogo/protobuf")
+	path = os.Getenv("GOPATH")
+	include = "-I" + *proto + " -I" + gateway + " -I" + gateway + "/third_party/googleapis -I" + protobuf + " -I" + path + "/src"
+}
+
+func run(dir string) {
+	fileInfos, err := ioutil.ReadDir(dir)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	for i := range fileInfos {
+		if fileInfos[i].IsDir() {
+			if fileInfos[i].Name() == "utils" {
 				continue
 			}
-			if strings.HasPrefix(k, "/utils/proto/gogo/") {
-				arg = "protoc -I" + *proto + " " + *proto + k + " --gogo_out=plugins=grpc,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor:" + pwd + "/protobuf"
-			}
-
-			words := osi.Split(arg)
-			cmd := exec.Command(words[0], words[1:]...)
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			cmd.Run()
-		}
-	}
-	if gengql {
-		gqldir := pwd + "/protobuf/gql"
-		fileInfos, err := ioutil.ReadDir(gqldir)
-		if err != nil {
-			log.Panicln(err)
-		}
-		for i := range fileInfos {
-			if fileInfos[i].IsDir() {
-				os.Chdir(gqldir + "/" + fileInfos[i].Name())
-				//这里用模板生成yml
-				t := template.Must(template.New("yml").Parse(ymlTpl))
-				config := fileInfos[i].Name() + `.service.gqlgen.yml`
-				_, err := os.Stat(config)
-				var file *os.File
-				file, err = os.Create(config)
-				if err != nil {
-					log.Panicln(err)
+			for k, v := range files {
+				k = dir + "/" + fileInfos[i].Name() + k
+				for _, plugin := range v {
+					arg := "protoc " + include + " " + k + " --" + plugin + ":" + pwd + "/protobuf"
+					if strings.HasPrefix(plugin, "openapiv2_out") {
+						arg = arg + "/api"
+					}
+					if strings.HasPrefix(plugin, "graphql_out") || strings.HasPrefix(plugin, "gqlcfg_out") {
+						arg = arg + "/gql"
+					}
+					//protoc-gen-gqlgen应该在最后生成，gqlgen会调用go编译器，protoc-gen-gqlgen会生成不存在的接口，编译不过去
+					if strings.HasPrefix(plugin, "gqlgen_out") {
+						gqlgen = append(gqlgen, arg)
+						continue
+					}
+					if strings.HasPrefix(k, "/utils/proto/gogo/") {
+						arg = "protoc -I" + *proto + " " + k + " --gogo_out=plugins=grpc,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor:" + pwd + "/protobuf"
+					}
+					execi.Run(arg)
 				}
-				t.Execute(file, fileInfos[i].Name())
-				file.Close()
-				words := osi.Split(`gqlgen --verbose --config ` + config)
-				cmd := exec.Command(words[0], words[1:]...)
-				cmd.Stdout = os.Stdout
-				cmd.Stderr = os.Stderr
-				cmd.Run()
 			}
+			run(dir + "/" + fileInfos[i].Name())
 		}
 	}
+}
+
+func genutils(dir string) {
+	fileInfos, err := ioutil.ReadDir(dir)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	for i := range fileInfos {
+		if fileInfos[i].IsDir() {
+			genutils(dir + "/" + fileInfos[i].Name())
+		}
+		if strings.HasSuffix(fileInfos[i].Name(), "enum.proto") {
+			arg := "protoc " + include + " " + dir + "/" + fileInfos[i].Name() + " --" + enumOut + ":" + pwd + "/protobuf"
+			execi.Run(arg)
+		}
+		for _, plugin := range model {
+			arg := "protoc " + include + " " + dir + "/*.proto" + " --" + plugin + ":" + pwd + "/protobuf"
+			execi.Run(arg)
+		}
+	}
+}
+
+func gengql() {
+	gqldir := pwd + "/protobuf/gql"
+	fileInfos, err := ioutil.ReadDir(gqldir)
+	if err != nil {
+		log.Panicln(err)
+	}
+	for i := range fileInfos {
+		if fileInfos[i].IsDir() {
+			os.Chdir(gqldir + "/" + fileInfos[i].Name())
+			//这里用模板生成yml
+			t := template.Must(template.New("yml").Parse(ymlTpl))
+			config := fileInfos[i].Name() + `.service.gqlgen.yml`
+			_, err := os.Stat(config)
+			var file *os.File
+			file, err = os.Create(config)
+			if err != nil {
+				log.Panicln(err)
+			}
+			t.Execute(file, fileInfos[i].Name())
+			file.Close()
+			execi.Run(`gqlgen --verbose --config ` + config)
+		}
+	}
+
 	os.Chdir(pwd)
 
 	for i := range gqlgen {

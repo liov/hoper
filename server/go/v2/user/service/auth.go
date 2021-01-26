@@ -22,7 +22,7 @@ func Auth(ctx *model.Ctx) (*model.AuthInfo, error) {
 	}
 	conn := dao.NewUserRedis()
 	defer conn.Close()
-	err := conn.EfficientUserHashFromRedis(ctx.AuthInfo)
+	err := conn.EfficientUserHashFromRedis(ctx,ctx.AuthInfo)
 	if err != nil {
 		log.Error(err)
 		return nil, model.UserErr_InvalidToken

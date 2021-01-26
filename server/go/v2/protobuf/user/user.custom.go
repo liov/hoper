@@ -10,6 +10,7 @@ import (
 	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	"github.com/liov/hoper/go/v2/utils/net/http"
+	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 	stringsi "github.com/liov/hoper/go/v2/utils/strings"
 	jwti "github.com/liov/hoper/go/v2/utils/verification/auth/jwt"
 	"go.opencensus.io/trace"
@@ -222,6 +223,18 @@ func CtxWithRequest(ctx context.Context, r *http.Request) context.Context {
 		})
 }
 
+func ConvertContext(r *http.Request) pick.Claims {
+	ctxi := r.Context().Value(ctxKey{})
+	if c, ok := ctxi.(*Ctx); ok {
+		if !c.parsed {
+			c.MD = metadata.MD(r.Header)
+			c.parsed = true
+		}
+		return c
+	}
+	return NewCtx(r.Context())
+}
+
 func Authorization(c context.Context) string {
 	return CtxFromContext(c).Authorization
 }
@@ -236,6 +249,10 @@ func CtxFromContext(ctx context.Context) *Ctx {
 		}
 		return c
 	}
+	return NewCtx(ctx)
+}
+
+func NewCtx(ctx context.Context) *Ctx {
 	now := time.Now()
 	user := new(AuthInfo)
 	user.LastActiveAt = now.Unix()
@@ -260,15 +277,10 @@ func (c *Ctx) GetAuthInfo(auth func(*Ctx) (*AuthInfo, error)) (*AuthInfo, error)
 }
 
 func JWTUnmarshaller(ctx jwt.CodingContext, data []byte, v interface{}) error {
-	if ctx.FieldDescriptor == jwt.HeaderFieldDescriptor {
-		return json.Unmarshal(data, v)
-	}
 	if ctx.FieldDescriptor == jwt.ClaimsFieldDescriptor {
-		if claims, ok := v.(*jwt.Claims); ok {
-		if c, ok := (*claims).(*Ctx); ok {
+		if c, ok := (*v.(*jwt.Claims)).(*Ctx); ok {
 			c.Authorization = stringsi.ToString(data)
 			return json.Unmarshal(data, c.AuthInfo)
-		}
 		}
 	}
 	return json.Unmarshal(data, v)

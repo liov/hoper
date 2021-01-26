@@ -77,7 +77,10 @@ func (s *Server) httpHandler() http.HandlerFunc {
 			// 将 recorder 记录的 Response Body 写入到 ResponseWriter 中，客户端收到响应报文体
 			w.Write(recorder.Body.Bytes())
 		}
-		authorization:=s.Authorization(r.Context())
+		var authorization string
+		if s.Authorization != nil {
+			authorization = s.Authorization(r.Context())
+		}
 		accessLog(r.RequestURI, stringsi.ToString(body), stringsi.ToString(recorder.Body.Bytes()),
 			authorization, now, recorder.Code)
 	}
@@ -129,12 +132,10 @@ func (s *Server) Serve() {
 		}
 
 		if s.CustomContext != nil {
-			r = r.WithContext(s.CustomContext(ctx, r))
-		} else {
-			r = r.WithContext(ctx)
+			ctx = s.CustomContext(ctx, r)
 		}
-
-		if r.ProtoMajor == 2 && s.GRPCServer != nil && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
+		r = r.WithContext(ctx)
+		if r.ProtoMajor == 2 && s.GRPCServer != nil && strings.Contains(r.Header.Get(httpi.HeaderContentType), httpi.ContentGRPCHeaderValue) {
 			s.GRPCServer.ServeHTTP(w, r) // gRPC Server
 		} else {
 			httpHandler(w, r)
@@ -181,8 +182,8 @@ type Server struct {
 	GatewayRegistr gateway.GatewayHandle
 	GinHandle      func(engine *gin.Engine)
 	GraphqlResolve graphql.ExecutableSchema
-	CustomContext CustomContext
-	Authorization Authorization
+	CustomContext  CustomContext
+	Authorization  Authorization
 }
 
 var signals = make(chan os.Signal, 1)
@@ -224,6 +225,5 @@ func accessLog(iface, body, result, auth string, start time.Time, code int) {
 		zap.Duration("processTime", time.Now().Sub(start)),
 		zap.String("result", result),
 		zap.String("auth", auth),
-		zap.Int("status", code),
-		zap.String("source", initialize.InitConfig.Module))
+		zap.Int("status", code))
 }

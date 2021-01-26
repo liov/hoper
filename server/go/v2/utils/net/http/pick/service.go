@@ -66,10 +66,7 @@ func register(router *Router, genApi bool, modName string) {
 			Log(methodInfo.method, methodInfo.path, describe+":"+methodInfo.title)
 			infos = append(infos, &apiDocInfo{methodInfo, method.Type})
 		}
-		groupApiInfos = append(groupApiInfos, &groupApiInfo{
-			describe: describe,
-			infos:    infos,
-		})
+		groupApiInfos = append(groupApiInfos, &groupApiInfo{describe, infos})
 		router.GroupUse(preUrl, middleware...)
 	}
 	if genApi {

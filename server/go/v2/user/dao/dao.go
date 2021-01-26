@@ -5,7 +5,7 @@ import (
 	"net/smtp"
 
 	"github.com/cockroachdb/pebble"
-	"github.com/gomodule/redigo/redis"
+	"github.com/go-redis/redis/v8"
 	"github.com/liov/hoper/go/v2/utils/dao/cache"
 	"gorm.io/gorm"
 )
@@ -17,11 +17,11 @@ var Dao *dao = &dao{}
 // dao dao.
 type dao struct {
 	// GORMDB 数据库连接
-	GORMDB *gorm.DB
-	StdDB  *sql.DB
-	PebbleDB   *pebble.DB
+	GORMDB   *gorm.DB
+	StdDB    *sql.DB
+	PebbleDB *pebble.DB
 	// RedisPool Redis连接池
-	Redis       *redis.Pool
+	Redis       *redis.Client
 	RedisExpire int32
 	Cache       cache.Cache
 	McExpire    int32

@@ -4,17 +4,18 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gomodule/redigo/redis"
+	"github.com/go-redis/redis/v8"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/conf"
 	modelconst "github.com/liov/hoper/go/v2/user/model"
-	"github.com/liov/hoper/go/v2/utils/dao/redis/hash"
+	redisi "github.com/liov/hoper/go/v2/utils/dao/redis"
+	"github.com/liov/hoper/go/v2/utils/encoding/hash"
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
 type UserRedis struct {
-	redis.Conn
+	*redis.Conn
 }
 
 func (conn *UserRedis) Close() {
@@ -22,12 +23,12 @@ func (conn *UserRedis) Close() {
 }
 
 func NewUserRedis() *UserRedis {
-	conn := Dao.Redis.Get()
+	conn := Dao.Redis.Conn(Dao.Redis.Context())
 	return &UserRedis{conn}
 }
 
 // UserToRedis 将用户信息存到redis
-func (conn *UserRedis) UserToRedis(user *model.UserAuthInfo) error {
+func (conn *UserRedis) UserToRedis(ctx *model.Ctx, user *model.UserAuthInfo) error {
 
 	UserString, err := json.Standard.MarshalToString(user)
 	if err != nil {
@@ -35,21 +36,29 @@ func (conn *UserRedis) UserToRedis(user *model.UserAuthInfo) error {
 	}
 
 	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
-
-	conn.Send("SELECT", modelconst.UserIndex)
-	if _, redisErr := conn.Do("SET", loginUserKey, UserString, "EX", conf.Conf.Customize.TokenMaxAge); redisErr != nil {
+	if _, redisErr := conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+		pipe.Select(ctx, modelconst.UserIndex)
+		pipe.SetEX(ctx, loginUserKey, UserString, conf.Conf.Customize.TokenMaxAge)
+		return nil
+	}); redisErr != nil {
 		return redisErr
 	}
 	return nil
 }
 
 // UserFromRedis 从redis中取出用户信息
-func (conn *UserRedis) UserFromRedis(userID uint64) (*model.AuthInfo, error) {
+func (conn *UserRedis) UserFromRedis(ctx *model.Ctx, userID uint64) (*model.AuthInfo, error) {
 
 	loginUser := modelconst.LoginUserKey + strconv.FormatUint(userID, 10)
-
-	conn.Send("SELECT", modelconst.UserIndex)
-	userString, err := redis.String(conn.Do("GET", loginUser))
+	var cmd *redis.StringCmd
+	if _, redisErr := conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+		pipe.Select(ctx, modelconst.UserIndex)
+		cmd = pipe.Get(ctx, loginUser)
+		return nil
+	}); redisErr != nil {
+		return nil, redisErr
+	}
+	userString, err := redisi.String(cmd.Result())
 	if err != nil {
 		return nil, err
 	}
@@ -61,43 +70,55 @@ func (conn *UserRedis) UserFromRedis(userID uint64) (*model.AuthInfo, error) {
 	return &user, nil
 }
 
-func (conn *UserRedis) EditRedisUser(user *model.AuthInfo) error {
+func (conn *UserRedis) EditRedisUser(ctx *model.Ctx, user *model.AuthInfo) error {
 
 	UserString, err := json.Standard.MarshalToString(user)
 	if err != nil {
 		return err
 	}
 	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
-	conn.Send("SELECT", modelconst.UserIndex)
-	if _, redisErr := conn.Do("SET", loginUserKey, UserString); redisErr != nil {
+	if _, redisErr := conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+		pipe.Select(ctx, modelconst.UserIndex)
+		pipe.Set(ctx, loginUserKey, UserString, 0)
+		return nil
+	}); redisErr != nil {
 		return redisErr
 	}
 	return nil
 }
 
 // UserToRedis 将用户信息存到redis
-func (conn *UserRedis) UserHashToRedis(user *model.AuthInfo) error {
+func (conn *UserRedis) UserHashToRedis(ctx *model.Ctx, user *model.AuthInfo) error {
 
 	var redisArgs []interface{}
 	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
-	redisArgs = append(redisArgs, loginUserKey)
+	redisArgs = append(redisArgs, redisi.HMSET, loginUserKey)
 	redisArgs = append(redisArgs, hash.Marshal(user)...)
-
-	conn.Send("SELECT", modelconst.UserIndex)
-	conn.Send("HMSET", redisArgs...)
-	if _, redisErr := conn.Do("EXPIRE", loginUserKey, conf.Conf.Customize.TokenMaxAge); redisErr != nil {
+	if _, redisErr := conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+		pipe.Select(ctx, modelconst.UserIndex)
+		pipe.Do(ctx, redisArgs...)
+		pipe.Expire(ctx, loginUserKey, conf.Conf.Customize.TokenMaxAge)
+		return nil
+	}); redisErr != nil {
 		return redisErr
 	}
 	return nil
 }
 
 // UserFromRedis 从redis中取出用户信息
-func (conn *UserRedis) UserHashFromRedis(user *model.AuthInfo) error {
+func (conn *UserRedis) UserHashFromRedis(ctx *model.Ctx, user *model.AuthInfo) error {
 
 	loginUser := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
+	var cmd *redis.Cmd
+	if _, redisErr := conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+		pipe.Select(ctx, modelconst.UserIndex)
+		cmd = pipe.Do(ctx, redisi.HGETALL, loginUser)
+		return nil
+	}); redisErr != nil {
+		return redisErr
+	}
 
-	conn.Send("SELECT", modelconst.UserIndex)
-	userArgs, err := redis.Strings(conn.Do("HGETALL", loginUser))
+	userArgs, err := redisi.Strings(cmd.Result())
 	log.Debug(userArgs)
 	if err != nil {
 		log.Error(err)
@@ -110,17 +131,18 @@ func (conn *UserRedis) UserHashFromRedis(user *model.AuthInfo) error {
 	return nil
 }
 
-func (conn *UserRedis) EfficientUserHashToRedis(user *model.AuthInfo) error {
-
+func (conn *UserRedis) EfficientUserHashToRedis(ctx *model.Ctx) error {
+	user := ctx.AuthInfo
 	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
-
-	conn.Send("SELECT", modelconst.UserIndex)
-	conn.Send("HMSET", loginUserKey,
-		"Name", user.Name,
-		"Role", uint32(user.Role),
-		"Status", uint8(user.Status),
-		"LastActiveAt", user.LastActiveAt)
-	if _, redisErr := conn.Do("EXPIRE", loginUserKey, conf.Conf.Customize.TokenMaxAge); redisErr != nil {
+	if _, redisErr := conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+		pipe.Select(ctx, modelconst.UserIndex)
+		pipe.HMSet(ctx, loginUserKey, "Name", user.Name,
+			"Role", uint32(user.Role),
+			"Status", uint8(user.Status),
+			"LastActiveAt", user.LastActiveAt)
+		pipe.Expire(ctx, loginUserKey, conf.Conf.Customize.TokenMaxAge)
+		return nil
+	}); redisErr != nil {
 		return redisErr
 	}
 	return nil
@@ -132,11 +154,17 @@ func (conn *UserRedis) EfficientUserHashToRedis(user *model.AuthInfo) error {
 哈希表中某个键或某个值的长度大于 server.hash_max_ziplist_value （默认值为 64 ）。
 压缩列表中的节点数量大于 server.hash_max_ziplist_entries （默认值为 512 ）。
 */
-func (conn *UserRedis) EfficientUserHashFromRedis(user *model.AuthInfo) error {
+func (conn *UserRedis) EfficientUserHashFromRedis(ctx *model.Ctx, user *model.AuthInfo) error {
 	loginUser := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
-
-	conn.Send("SELECT", modelconst.UserIndex)
-	userArgs, err := redis.Strings(conn.Do("HGETALL", loginUser))
+	var cmd *redis.Cmd
+	if _, redisErr := conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+		pipe.Select(ctx, modelconst.UserIndex)
+		cmd = pipe.Do(ctx, redisi.HGETALL, loginUser)
+		return nil
+	}); redisErr != nil {
+		return redisErr
+	}
+	userArgs, err := redisi.Strings(cmd.Result())
 	log.Debug(userArgs)
 	if err != nil {
 		log.Error(err)
@@ -153,34 +181,35 @@ func (conn *UserRedis) EfficientUserHashFromRedis(user *model.AuthInfo) error {
 	return nil
 }
 
-func (conn *UserRedis) UserLastActiveTime(userID uint64, now time.Time) error {
+func (conn *UserRedis) UserLastActiveTime(ctx *model.Ctx, userID uint64, now time.Time) error {
 
 	id := strconv.FormatUint(userID, 10)
 	loginUser := modelconst.LoginUserKey + id
-	err := conn.Send("SELECT", modelconst.CronIndex)
-	//有序集合存一份，遍历长时间未活跃用户用
-	_, err = conn.Do("ZADD", modelconst.LoginUserKey+"ActiveTime",
-		now.Unix(), id)
-	if err != nil {
-		return err
-	}
-	_, err = conn.Do("HSET", loginUser, "LastActiveAt",
-		now.Unix())
-	if err != nil {
-		return err
+	if _, redisErr := conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+		pipe.Select(ctx, modelconst.CronIndex)
+		//有序集合存一份，遍历长时间未活跃用户用
+		pipe.ZAdd(ctx, modelconst.LoginUserKey+"ActiveTime",
+			&redis.Z{Score: float64(now.Unix()), Member: id})
+		pipe.Select(ctx, modelconst.UserIndex)
+		pipe.HSet(ctx, loginUser, "LastActiveAt")
+		return nil
+	}); redisErr != nil {
+		return redisErr
 	}
 	return nil
 }
 
-func (conn *UserRedis) RedisUserInfoEdit(userID uint64, key string, value interface{}) error {
+func (conn *UserRedis) RedisUserInfoEdit(ctx *model.Ctx, userID uint64, key string, value interface{}) error {
 
 	id := strconv.FormatUint(userID, 10)
 	loginUser := modelconst.LoginUserKey + id
 
-	err := conn.Send("SELECT", modelconst.CronIndex)
-	_, err = conn.Do("HSET", loginUser, key, value)
-	if err != nil {
-		return err
+	if _, redisErr := conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+		pipe.Select(ctx, modelconst.UserIndex)
+		pipe.HSet(ctx, loginUser, key, value)
+		return nil
+	}); redisErr != nil {
+		return redisErr
 	}
 	return nil
 }
