@@ -1,3 +1,0 @@
-package pick
-
-const MethodAny = "*"

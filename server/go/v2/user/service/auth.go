@@ -17,12 +17,12 @@ func init() {
 }
 
 func Auth(ctx *model.Ctx) (*model.AuthInfo, error) {
-	if err := jwti.ParseToken(ctx, ctx.Authorization, conf.Conf.Customize.TokenSecret); err != nil {
+	if err := ctx.ParseToken(ctx.Authorization, conf.Conf.Customize.TokenSecret); err != nil {
 		return nil, err
 	}
 	conn := dao.NewUserRedis()
 	defer conn.Close()
-	err := conn.EfficientUserHashFromRedis(ctx,ctx.AuthInfo)
+	err := conn.EfficientUserHashFromRedis(ctx)
 	if err != nil {
 		log.Error(err)
 		return nil, model.UserErr_InvalidToken

@@ -1,15 +1,11 @@
 package pick
 
 import (
-	"encoding/json"
-	"io"
 	"log"
 	"net/http"
 	"reflect"
 
 	"github.com/gin-gonic/gin"
-	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
-	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	gin_build "github.com/liov/hoper/go/v2/utils/net/http/gin"
 	"github.com/liov/hoper/go/v2/utils/net/http/gin/handler"
@@ -17,7 +13,7 @@ import (
 
 // 虽然我写的路由比httprouter更强大(没有map,lru cache)，但是还是选择用gin,理由是gin也用同样的方式改造了路由
 
-func Gin(engine *gin.Engine,convert func(r *http.Request) Claims ,genApi bool, modName string) {
+func Gin(engine *gin.Engine,convert func(r *http.Request) Context,genApi bool, modName string) {
 	for _, v := range svcs {
 		describe, preUrl, middleware := v.Service()
 		value := reflect.ValueOf(v)
@@ -43,7 +39,7 @@ func Gin(engine *gin.Engine,convert func(r *http.Request) Claims ,genApi bool, m
 				in2 := reflect.New(in2Type.Elem())
 				gin_build.Bind(ctx, in2.Interface())
 				result := methodValue.Call([]reflect.Value{value, in1, in2})
-				ginResHandler(ctx, result)
+				resHandler(ctx.Writer,result)
 			})
 			infos = append(infos, &apiDocInfo{methodInfo, method.Type})
 		}
@@ -56,23 +52,4 @@ func Gin(engine *gin.Engine,convert func(r *http.Request) Claims ,genApi bool, m
 		gin_build.OpenApi(engine, filePath)
 	}
 	registered()
-}
-
-func ginResHandler(ctx *gin.Context, result []reflect.Value) {
-	if !result[1].IsNil() {
-		json.NewEncoder(ctx.Writer).Encode(errorcode.ErrHandle(result[1].Interface()))
-		return
-	}
-	if info, ok := result[0].Interface().(*httpi.File); ok {
-		header := ctx.Writer.Header()
-		header.Set(httpi.HeaderContentType, httpi.ContentBinaryHeaderValue)
-		header.Set(httpi.HeaderContentDisposition, "attachment;filename="+info.Name)
-		io.Copy(ctx.Writer, info.File)
-		if flusher, canFlush := ctx.Writer.(http.Flusher); canFlush {
-			flusher.Flush()
-		}
-		info.File.Close()
-		return
-	}
-	ctx.JSON(200, result[0].Interface())
 }

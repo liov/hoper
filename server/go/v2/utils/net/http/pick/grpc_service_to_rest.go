@@ -52,7 +52,7 @@ func GrpcServiceToRestfulApi(engine *gin.Engine, authCtx CtxFromRequest, genApi 
 				in2 := reflect.New(in2Type.Elem())
 				ctx.Bind(in2.Interface())
 				result := methodValue.Call([]reflect.Value{value, in1, in2})
-				ginResHandler(ctx,result)
+				resHandler(ctx.Writer,result)
 			})
 			methods[methodInfo.method] = struct{}{}
 			if genApi {
