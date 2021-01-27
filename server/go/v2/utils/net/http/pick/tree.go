@@ -15,6 +15,8 @@ import (
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 )
 
+const MethodAny = "*"
+
 func min(a, b int) int {
 	if a <= b {
 		return a

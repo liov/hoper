@@ -2,21 +2,28 @@ package pick
 
 import (
 	"context"
+	"encoding/json"
+	"io"
 	"net/http"
 	"reflect"
 
+	"github.com/dgrijalva/jwt-go/v4"
+	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/log"
+	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
+	"github.com/liov/hoper/go/v2/utils/net/http/request/binding"
 )
 
-type Claims interface {
-	ParseToken(*http.Request,string) error
+type Context interface {
+	context.Context
+	jwt.Claims
 }
 
 var (
 	svcs         = make([]Service, 0)
 	isRegistered = false
-	claimsType   = reflect.TypeOf((*Claims)(nil)).Elem()
+	claimsType   = reflect.TypeOf((*Context)(nil)).Elem()
 	contextType  = reflect.TypeOf((*context.Context)(nil)).Elem()
 	errorType    = reflect.TypeOf((*error)(nil)).Elem()
 )
@@ -79,4 +86,59 @@ func register(router *Router, genApi bool, modName string) {
 	router.globalAllowed = allowedMethod(allowed)
 
 	registered()
+}
+
+func commonHandler(w http.ResponseWriter, req *http.Request, handle *reflect.Value, ps *Params) {
+	handleTyp := handle.Type()
+	handleNumIn := handleTyp.NumIn()
+	if handleNumIn != 0 {
+		params := make([]reflect.Value, handleNumIn)
+		for i := 0; i < handleNumIn; i++ {
+			if handleTyp.In(i).Implements(claimsType) {
+				params[i] = reflect.ValueOf(req.Context())
+			} else {
+				params[i] = reflect.New(handleTyp.In(i).Elem())
+				if ps != nil || req.URL.RawQuery != "" {
+					src := req.URL.Query()
+					if ps != nil {
+						pathParam := *ps
+						if len(pathParam) > 0 {
+							for i := range pathParam {
+								src.Set(pathParam[i].Key, pathParam[i].Value)
+							}
+						}
+					}
+					binding.PickDecode(params[i], src)
+				}
+				if req.Method != http.MethodGet {
+					json.NewDecoder(req.Body).Decode(params[i].Interface())
+				}
+			}
+		}
+		result := handle.Call(params)
+		resHandler(w, result)
+	}
+}
+
+func resHandler(w http.ResponseWriter, result []reflect.Value) {
+	if !result[1].IsNil() {
+		json.NewEncoder(w).Encode(errorcode.ErrHandle(result[1].Interface()))
+		return
+	}
+	if info, ok := result[0].Interface().(*httpi.File); ok {
+		header := w.Header()
+		header.Set(httpi.HeaderContentType, httpi.ContentBinaryHeaderValue)
+		header.Set(httpi.HeaderContentDisposition, "attachment;filename="+info.Name)
+		io.Copy(w, info.File)
+		if flusher, canFlush := w.(http.Flusher); canFlush {
+			flusher.Flush()
+		}
+		info.File.Close()
+		return
+	}
+	json.NewEncoder(w).Encode(httpi.ResData{
+		Code:    0,
+		Message: "success",
+		Details: result[0].Interface(),
+	})
 }

@@ -55,7 +55,11 @@ func fiberResHandler(ctx *fiber.Ctx, result []reflect.Value) error {
 		}
 		return info.File.Close()
 	}
-	return ctx.JSON(result[0].Interface())
+	return ctx.JSON(httpi.ResData{
+		Code:    0,
+		Message: "success",
+		Details: result[0].Interface(),
+	})
 }
 
 type FasthttpAuthCtx func(r *fasthttp.Request) context.Context

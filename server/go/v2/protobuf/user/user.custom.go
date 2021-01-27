@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -119,6 +120,7 @@ func Device(r http.Header) *DeviceInfo {
 
 type AuthInfo struct {
 	Id           uint64     `json:"id"`
+	IdStr        string     `json:"-" gorm:"-"`
 	Name         string     `json:"name"`
 	Role         Role       `json:"role"`
 	Status       UserStatus `json:"status"`
@@ -152,8 +154,12 @@ func (x *AuthInfo) GenerateToken(secret []byte) (string, error) {
 	return token, err
 }
 
-func (x *AuthInfo) ParseToken(req *http.Request, secret string) error {
-	return jwti.ParseToken(x, httpi.GetToken(req), secret)
+func (x *AuthInfo) ParseToken(token, secret string) error {
+	if err := jwti.ParseToken(x, token, secret); err != nil {
+		return err
+	}
+	x.IdStr = strconv.FormatUint(x.Id, 10)
+	return nil
 }
 
 type DeviceInfo struct {
@@ -195,6 +201,8 @@ type Ctx struct {
 	parsed        bool
 }
 
+var _ = pick.Context(new(Ctx))
+
 func (c *Ctx) StartSpan(name string, o ...trace.StartOption) (*Ctx, *trace.Span) {
 	ctx, span := trace.StartSpan(c.Context, name, o...)
 	c.Context = ctx
@@ -223,16 +231,17 @@ func CtxWithRequest(ctx context.Context, r *http.Request) context.Context {
 		})
 }
 
-func ConvertContext(r *http.Request) pick.Claims {
+func ConvertContext(r *http.Request) pick.Context {
 	ctxi := r.Context().Value(ctxKey{})
-	if c, ok := ctxi.(*Ctx); ok {
-		if !c.parsed {
-			c.MD = metadata.MD(r.Header)
-			c.parsed = true
-		}
-		return c
+	c, ok := ctxi.(*Ctx)
+	if !ok {
+		c = NewCtx(r.Context())
 	}
-	return NewCtx(r.Context())
+	if !c.parsed {
+		c.MD = metadata.MD(r.Header)
+		c.parsed = true
+	}
+	return c
 }
 
 func Authorization(c context.Context) string {
