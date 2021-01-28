@@ -7,6 +7,7 @@ import (
 
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
+	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/strings"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
@@ -59,7 +60,7 @@ func ensureValidToken(ctx context.Context, req interface{}, info *grpc.UnaryServ
 	}
 	// The keys within metadata.MD are normalized to lowercase.
 	// See: https://godoc.org/google.golang.org/grpc/metadata#New
-	if !Valid(md["authorization"]) {
+	if !Valid(md[httpi.HeaderAuthorization]) {
 		return nil, status.Errorf(codes.Unauthenticated, "invalid token")
 	}
 	// Continue execution of handler after ensuring a valid token.

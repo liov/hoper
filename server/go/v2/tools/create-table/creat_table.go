@@ -1,19 +1,31 @@
 package main
 
 import (
-	model "github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/protobuf/content"
+	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/utils/dao/db/get"
 )
 
 var userMod = []interface{}{
-	&model.User{},
-	&model.UserExtend{},
-	&model.UserActionLog{},
-	&model.UserBannedLog{},
-	&model.UserFollow{},
-	&model.UserScoreLog{},
-	&model.UserFollowLog{},
-	&model.Resume{},
+	&user.User{},
+	&user.UserExtend{},
+	&user.UserActionLog{},
+	&user.UserBannedLog{},
+	&user.UserFollow{},
+	&user.UserScoreLog{},
+	&user.UserFollowLog{},
+	&user.Resume{},
+}
+
+var contentMod = []interface{}{
+	&content.Moment{},
+	&content.Category{},
+	&content.Tag{},
+	&content.Comment{},
+	&user.UserFollow{},
+	&user.UserScoreLog{},
+	&user.UserFollowLog{},
+	&user.Resume{},
 }
 
 func main() {

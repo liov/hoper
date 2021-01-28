@@ -37,12 +37,8 @@ type UserService struct {
 	model.UnimplementedUserServiceServer
 }
 
-func GetUserService() *UserService {
-	if userSvc != nil {
-		return userSvc
-	}
-	userSvc = new(UserService)
-	return userSvc
+func (m *UserService) name() string {
+	return "UserService."
 }
 
 func (u *UserService) VerifyCode(ctx context.Context, req *request.Empty) (*response.CommonRep, error) {
@@ -84,8 +80,8 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 	return &response.TinyRep{Message: "验证码已发送"}, nil
 }
 
-func (*UserService) Signup(ctx context.Context, req *model.SignupReq) (*response.TinyRep, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan("Active")
+func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*response.TinyRep, error) {
+	ctxi, span := model.CtxFromContext(ctx).StartSpan(u.name() + "Signup")
 	defer span.End()
 
 	if err := Validate(req); err != nil {
@@ -241,8 +237,11 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.T
 	ctxi, span := model.CtxFromContext(ctx).StartSpan("Edit")
 	defer span.End()
 	user, err := ctxi.GetAuthInfo(Auth)
-	if err != nil || user.Id != req.Id {
+	if err != nil {
 		return nil, err
+	}
+	if user.Id != req.Id {
+		return nil, errorcode.PermissionDenied
 	}
 	device := ctxi.DeviceInfo
 
@@ -521,13 +520,13 @@ func (*UserService) FiberService() (string, string, []fiber.Handler) {
 	return "用户相关", "/api/user", []fiber.Handler{middle.FiberLog}
 }
 
-func (*UserService) Addv(ctx context.Context, req *response.TinyRep) (*response.TinyRep, error) {
+func (*UserService) Addv(ctx *model.Ctx, req *response.TinyRep) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.FiberApi(func() interface{} {
 		return pick.Path("/add").
 			Method(http.MethodGet).
 			Title("用户注册").
-			Version(2).
+			Version(1).
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
 			ChangeLog("1.0.1", "jyb", "2019/12/16", "修改测试")
 	})

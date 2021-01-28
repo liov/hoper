@@ -17,48 +17,50 @@ message User {
   string mail = 6 [(go.field) = {tags:'gorm:"size:16;default:\'\'" validate:"email" annotation:"邮箱"'}];
   string phone = 7 [(go.field) = {tags:'gorm:"size:32;default:\'\'" validate:"phone" annotation:"手机号"'}];
   // 性别，0未填写，1男，2女
-  Gender gender = 8 [(go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  Gender gender = 8 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type:INTEGER
   }];
   string birthday = 9 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00"'}];
-  string location = 16[(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
   string address = 14 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
   string introduction = 10 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
   string signature = 11 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
   string avatarURL = 12 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
   string coverURL = 13 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
-  string lastActivatedAt = 23 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00"'}];
-  uint64 score = 15 [(go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-    title:"分数"
-    type: INTEGER}];
-  Role role = 24 [(go.field) = {tags:'gorm:"default:0"'}];
+  Role role = 24 [(go.field) = {tags:'gorm:"type:int2;default:0"'}];
   string realName = 19 [(go.field) = {tags:'gorm:"size:5;default:\'\'" annotation:"实名"'}];
   string IdNo = 18 [(go.field) = {tags:'gorm:"size:22;default:\'\'" annotation:"身份证号"'}];
-  string activatedAt = 3 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00"'}];
-  string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
-  UserStatus status = 28 [(go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  UserStatus status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
+  string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
+  string activatedAt = 3 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00"'}];
+  string deletedAt = 27 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:default:0001-01-01 00:00:00"'}];
   // uint32 isDeleted = 29 [(go.field) = {tags:'gorm:"default:0"'}];
 }
 
-message UserExtend {
+message UserExt {
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
-  uint64 followCount = 16 [(go.field) = {tags:'gorm:"default:0"'}];
-  uint64 followedCount = 17 [(go.field) = {tags:'gorm:"default:0"'}];
-  uint64 articleCount = 18 [(go.field) = {tags:'gorm:"default:0"'}];
-  uint64 momentCount = 19 [(go.field) = {tags:'gorm:"default:0"'}];
-  uint64 diaryBookCount = 20 [(go.field) = {tags:'gorm:"default:0"'}];
-  uint64 diaryCount = 21 [(go.field) = {tags:'gorm:"default:0"'}];
-  uint64 annotationCount = 22 [(go.field) = {tags:'gorm:"default:0"'}];
+  string lastActivatedAt = 23 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00" annotation:"上次操作时间"'}];
+  uint64 score = 15 [(go.field) = {tags:'gorm:"default:0" annotation:"分数"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    title:"分数"
+    type: INTEGER}];
+  uint64 followCount = 2 [(go.field) = {tags:'gorm:"default:0" annotation:"关注数"'}];
+  uint64 followedCount = 17 [(go.field) = {tags:'gorm:"default:0" annotation:"被关注数"'}];
+  uint64 articleCount = 18 [(go.field) = {tags:'gorm:"default:0" annotation:"文章数"'}];
+  uint64 momentCount = 19 [(go.field) = {tags:'gorm:"default:0" annotation:"瞬间数"'}];
+  uint64 diaryBookCount = 20 [(go.field) = {tags:'gorm:"default:0" annotation:"日记本数"'}];
+  uint64 diaryCount = 21 [(go.field) = {tags:'gorm:"default:0" annotation:"日记数"'}];
+  uint64 favoritesCount = 5 [(go.field) = {tags:'gorm:"default:0" annotation:"收藏夹数"'}];
+  uint64 collectCount = 3 [(go.field) = {tags:'gorm:"default:0" annotation:"收藏数"'}];
 }
 
 //关注表
 message UserFollow {
   uint64 userId = 1 [(go.field) = {tags:'gorm:"index"'}]; //一个关注另一个，ID小的做UserID
-  uint64 followId = 2 [(go.field) = {tags:'gorm:""'}];
-  string createdAt = 3 [(go.field) = {tags:'gorm:"default:0"'}]; //FollowUser关注User时间
-  uint32 status = 5 [(go.field) = {tags:'gorm:""'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  uint64 followId = 2 [(go.field) = {tags:'gorm:"default:0"'}];
+  string createdAt = 3 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}]; //FollowUser关注User时间
+  string deletedAt = 4 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00"'}]; //FollowUser关注User时间
+  uint32 status = 5 [(go.field) = {tags:'gorm:"type:int2;"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }]; //状态：0无效，1有效
 }
@@ -69,7 +71,7 @@ message UserFollowLog {
   uint32 action = 2 [(go.field) = {tags:'gorm:""'}]; //类型：0添加关注，1移除关注
   uint64 userId = 3 [(go.field) = {tags:'gorm:""'}];
   uint64 followId = 4 [(go.field) = {tags:'gorm:""'}];
-  string createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
+  string createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
 }
 
 //用户分数变化日志
@@ -78,7 +80,7 @@ message UserScoreLog {
   uint64 userId = 2 [(go.field) = {tags:'gorm:"index"'}];
   sint64 score = 3 [(go.field) = {tags: 'json:"score" gorm:""'}];
   string reason = 5 [(go.field) = {tags:'gorm:"size:255"'}];
-  string createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
+  string createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
   string remark = 7 [(go.field) = {tags:'gorm:"size:255"'}];
 }
 //用户封禁日志
@@ -88,7 +90,7 @@ message UserBannedLog {
   uint64 duration = 3 [(go.field) = {tags:'gorm:""'}];
   string reason = 4 [(go.field) = {tags:'gorm:"size:255"'}];
   BannedType type = 5 ;
-  string bannedAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00"'}];
+  string bannedAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
   string remark = 7 [(go.field) = {tags:'gorm:"size:255"'}];
 }
 
@@ -101,7 +103,7 @@ message UserActionLog {
   //相关id
   string relatedId = 4[(go.field) = {tags:'gorm:"size:255"'}];
   bytes lastValue = 5 [(go.field) = {tags:'gorm:"size:255"'}];
-  string createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
+  string createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
   string remark = 7 [(go.field) = {tags:'gorm:"size:255"'}];
   //设备
   UserDeviceInfo deviceInfo = 8 [(go.field) = {tags:'gorm:"embedded"'}];
@@ -127,8 +129,8 @@ message Resume {
   string endTime = 7 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
   string remark = 11 [(go.field) = {tags:'gorm:"size:255"'}];
   // 0-Education 教育经历,1- Work 职业生涯
-  uint32 type = 12 [(go.field) = {tags:'gorm:"default:0"'}];
-  uint32 status = 28 [(go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  uint32 type = 12 [(go.field) = {tags:'type:int2;gorm:"default:0"'}];
+  uint32 status = 28 [(go.field) = {tags:'type:int2;gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
 }
@@ -139,7 +141,7 @@ message UserBaseInfo {
   uint64 score = 3 [(go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"分数"
     type: INTEGER}];
-  Gender gender = 8 [(go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  Gender gender = 8 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type:INTEGER
   }];
   string avatarURL = 12 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
@@ -149,8 +151,8 @@ message UserBaseInfo {
 message UserAuthInfo {
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" annotation:\"名字\"'}];
-  Role role = 24 [(go.field) = {tags:'gorm:"default:0"'}];
-  UserStatus status = 28 [(go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  Role role = 24 [(go.field) = {tags:'gorm:"type:int2;default:0"'}];
+  UserStatus status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
   int64 lastActiveAt = 23;

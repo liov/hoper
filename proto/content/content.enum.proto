@@ -1,0 +1,23 @@
+syntax = "proto3";
+package content;
+import "utils/proto/gogo/enum.proto";
+import "utils/proto/go/go.proto";
+
+option java_package = "xyz.hoper.protobuf.content";
+option go_package = "github.com/liov/hoper/go/v2/protobuf/content";
+
+option (gogo.enum_gqlgen_all) = true;
+option (gogo.enum_prefix_all) = false;
+option (go.file) = {no_enum_prefix:true};
+
+enum ContentType{
+  option (go.enum) = {stringer_name: 'OrigString'};
+  PlaceholderContentType = 0 [(gogo.enumvalue_cn) = "占位"];
+  MomentContentType = 1 [(gogo.enumvalue_cn) = "瞬间"];
+  NoteContentType = 2 [(gogo.enumvalue_cn) = "笔记"];
+  DairyContentType = 3 [(gogo.enumvalue_cn) = "日记"];
+  DairyBookContentType = 4 [(gogo.enumvalue_cn) = "日记本"];
+  FavoritesContentType = 5 [(gogo.enumvalue_cn) = "收藏夹"];
+  CollectionContentType = 6 [(gogo.enumvalue_cn) = "收藏"];
+  CommentContentType = 7 [(gogo.enumvalue_cn) = "评论"];
+}

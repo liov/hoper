@@ -1,0 +1,44 @@
+syntax = "proto3";
+package content;
+import "utils/proto/gogo/enum.proto";
+import "utils/proto/go/go.proto";
+
+option java_package = "xyz.hoper.protobuf.content";
+option go_package = "github.com/liov/hoper/go/v2/protobuf/content";
+
+option (gogo.enum_gqlgen_all) = true;
+option (gogo.enum_prefix_all) = false;
+option (go.file) = {no_enum_prefix:true};
+
+// 操作类型
+enum ActionType{
+  option (go.enum) = {stringer_name: 'OrigString'};
+  PlaceholderAction = 0 [(gogo.enumvalue_cn) = "占位"];
+  BrowseAction = 1 [(gogo.enumvalue_cn) = "浏览"];
+  LikeAction = 2 [(gogo.enumvalue_cn) = "点赞"];
+  UnlikeAction = 3 [(gogo.enumvalue_cn) = "不喜欢"];
+  CommentAction = 4 [(gogo.enumvalue_cn) = "评论"];
+  CollectAction = 5 [(gogo.enumvalue_cn) = "收藏"];
+  ReportAction = 6 [(gogo.enumvalue_cn) = "举报"];
+  GiveAction = 7 [(gogo.enumvalue_cn) = "回馈"];
+  ApproveAction = 8 [(gogo.enumvalue_cn) = "赞同"];
+  DeleteAction = 9 [(gogo.enumvalue_cn) = "删除"];
+}
+// 删除原因
+enum DelReason{
+  option (go.enum) = {stringer_name: 'OrigString'};
+  PlaceholderDelReason = 0 [(gogo.enumvalue_cn) = "占位"];
+  ViolationOfLawsAndRegulationsDelReason = 1 [(gogo.enumvalue_cn) = "违法法律法规"];
+  EroticViolenceDelReason = 3 [(gogo.enumvalue_cn) = "色情暴力"];
+  Other = 255 [(gogo.enumvalue_cn) = "其他原因"];
+}
+
+// 评论类型
+enum CommentType{
+  option (go.enum) = {stringer_name: 'OrigString'};
+  PlaceholderComment = 0 [(gogo.enumvalue_cn)= "占位"];
+  MomentComment = 1 [(gogo.enumvalue_cn)= "瞬间"];
+  DiaryComment = 2 [(gogo.enumvalue_cn)= "日记"];
+  DiaryBookComment = 3 [(gogo.enumvalue_cn)= "日记本"];
+  ArticleComment = 4 [(gogo.enumvalue_cn)= "文章"];
+}

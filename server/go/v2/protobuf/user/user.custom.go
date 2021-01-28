@@ -228,6 +228,8 @@ func CtxWithRequest(ctx context.Context, r *http.Request) context.Context {
 			DeviceInfo:    Device(r.Header),
 			RequestAt:     now,
 			RequestUnix:   user.LastActiveAt,
+			MD:            metadata.MD(r.Header),
+			parsed:        true,
 		})
 }
 
