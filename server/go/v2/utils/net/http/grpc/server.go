@@ -1,4 +1,4 @@
-package grpc
+package grpci
 
 import (
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
@@ -6,10 +6,9 @@ import (
 	"google.golang.org/grpc"
 )
 
-
-func DefaultGRPCServer(usi []grpc.UnaryServerInterceptor,ssi []grpc.StreamServerInterceptor) *grpc.Server {
+func DefaultGRPCServer(usi []grpc.UnaryServerInterceptor, ssi []grpc.StreamServerInterceptor) *grpc.Server {
 	gs := grpc.NewServer(
-		//filter应该在最前
+		// filter应该在最前
 		grpc.UnaryInterceptor(
 			grpc_middleware.ChainUnaryServer(
 				filter.UnaryServerInterceptor(usi...)...,
@@ -22,3 +21,15 @@ func DefaultGRPCServer(usi []grpc.UnaryServerInterceptor,ssi []grpc.StreamServer
 	return gs
 }
 
+func DefaultUnaryInterceptor(usi ...grpc.UnaryServerInterceptor) grpc.ServerOption {
+	return grpc.ChainUnaryInterceptor(
+		filter.UnaryServerInterceptor(usi...)...,
+	)
+}
+
+func DefaultStreamInterceptor(ssi ...grpc.StreamServerInterceptor) grpc.ServerOption {
+	return grpc.ChainStreamInterceptor(
+		filter.StreamServerInterceptor(ssi...)...,
+	)
+
+}

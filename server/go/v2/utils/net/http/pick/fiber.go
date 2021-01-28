@@ -1,7 +1,6 @@
 package pick
 
 import (
-	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -62,9 +61,9 @@ func fiberResHandler(ctx *fiber.Ctx, result []reflect.Value) error {
 	})
 }
 
-type FasthttpAuthCtx func(r *fasthttp.Request) context.Context
+type FasthttpCtx func(r *fasthttp.Request) Context
 
-func FiberWithCtx(engine *fiber.App,authCtx FasthttpAuthCtx ,genApi bool, modName string) {
+func FiberWithCtx(engine *fiber.App, fasthttpCtx FasthttpCtx,genApi bool, modName string) {
 
 	for _, v := range fiberSvcs {
 		describe, preUrl, middleware := v.FiberService()
@@ -87,7 +86,7 @@ func FiberWithCtx(engine *fiber.App,authCtx FasthttpAuthCtx ,genApi bool, modNam
 			methodValue := method.Func
 			in2Type := methodType.In(2)
 			engine.Add(methodInfo.method, methodInfo.path, func(ctx *fiber.Ctx) error {
-				in1 := reflect.ValueOf(authCtx(ctx.Request()))
+				in1 := reflect.ValueOf(fasthttpCtx(ctx.Request()))
 				in2 := reflect.New(in2Type.Elem())
 				if err := fiber_build.Bind(ctx, in2.Interface()); err != nil {
 					return ctx.Status(http.StatusBadRequest).JSON(errorcode.InvalidArgument.ErrRep())

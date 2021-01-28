@@ -6,12 +6,12 @@ import (
 )
 
 type ServerConfig struct {
-	Protocol                  string
-	Domain                    string
-	Port                      string
-	ReadTimeout               time.Duration
-	WriteTimeout              time.Duration
-	OpenTracing,SystemTracing bool
+	Protocol                               string
+	Domain                                 string
+	Port                                   string
+	ReadTimeout                            time.Duration
+	WriteTimeout                           time.Duration
+	OpenTracing, SystemTracing, Prometheus bool
 }
 
 func (c *ServerConfig) Custom() {

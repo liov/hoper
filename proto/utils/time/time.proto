@@ -1,9 +1,18 @@
 syntax = "proto3";
 package time;
 
+import "utils/proto/go/go.proto";
+
 option go_package = "github.com/liov/hoper/go/v2/utils/time;timei";
 option java_package = "xyz.hoper.protobuf.utils.time";
+option (go.file) = {non_omitempty:true};
 
 message Time {
     int64 t = 1;
+}
+
+message Model{
+    string createdAt = 1 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
+    string updateAt = 2 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
+    string deletedAt = 3 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:default:0001-01-01 00:00:00"'}];
 }

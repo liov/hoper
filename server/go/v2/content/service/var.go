@@ -1,11 +1,18 @@
 package service
 
 import (
-	"github.com/liov/hoper/go/v2/note/internal/dao"
+
 )
 
 var (
-	NoteSvc = &NoteService{}
+	momentSvc = &MomentService{}
 
-	userDao = &dao.NoteDao{}
 )
+
+func GetMomentService() *MomentService {
+	if momentSvc != nil {
+		return momentSvc
+	}
+	momentSvc = new(MomentService)
+	return momentSvc
+}

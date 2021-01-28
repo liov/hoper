@@ -3,6 +3,7 @@ package tailmon
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -15,6 +16,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/gin-gonic/gin"
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/liov/hoper/go/v2/initialize"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/log"
@@ -52,7 +54,7 @@ func (s *Server) httpHandler() http.HandlerFunc {
 			ctx.Writer.WriteHeader(http.StatusOK)
 		})*/
 	}
-	var excludes = []string{"/debug", "/api-doc"}
+	var excludes = []string{"/debug", "/api-doc" ,"/metrics"}
 	return func(w http.ResponseWriter, r *http.Request) {
 		if stringsi.HasPrefixes(r.RequestURI, excludes) {
 			ginServer.ServeHTTP(w, r)
@@ -92,9 +94,19 @@ type Authorization func(c context.Context) string
 func (s *Server) Serve() {
 	//反射从配置中取port
 	serviceConfig := initialize.InitConfig.GetServiceConfig()
-
-	if s.GRPCServer != nil {
-		reflection.Register(s.GRPCServer)
+	var grpcServer *grpc.Server
+	if s.GRPCHandle != nil{
+		if serviceConfig.Prometheus{
+			s.GRPCOptions = append([]grpc.ServerOption{
+				grpc.ChainStreamInterceptor(grpc_prometheus.StreamServerInterceptor),
+				grpc.ChainUnaryInterceptor(grpc_prometheus.UnaryServerInterceptor),
+			},s.GRPCOptions...)
+		}
+		grpcServer = grpc.NewServer(s.GRPCOptions...)
+		if serviceConfig.Prometheus{
+			grpc_prometheus.Register(grpcServer)
+		}
+		reflection.Register(grpcServer)
 	}
 	httpHandler := s.httpHandler()
 	openTracing := serviceConfig.OpenTracing
@@ -135,8 +147,8 @@ func (s *Server) Serve() {
 			ctx = s.CustomContext(ctx, r)
 		}
 		r = r.WithContext(ctx)
-		if r.ProtoMajor == 2 && s.GRPCServer != nil && strings.Contains(r.Header.Get(httpi.HeaderContentType), httpi.ContentGRPCHeaderValue) {
-			s.GRPCServer.ServeHTTP(w, r) // gRPC Server
+		if r.ProtoMajor == 2 && grpcServer != nil && strings.Contains(r.Header.Get(httpi.HeaderContentType), httpi.ContentGRPCHeaderValue) {
+			grpcServer.ServeHTTP(w, r) // gRPC Server
 		} else {
 			httpHandler(w, r)
 		}
@@ -152,8 +164,8 @@ func (s *Server) Serve() {
 	initialize.InitConfig.Register()
 	//服务关闭
 	cs := func() {
-		if s.GRPCServer != nil {
-			s.GRPCServer.Stop()
+		if grpcServer!= nil {
+			grpcServer.Stop()
 		}
 		if err := server.Close(); err != nil {
 			log.Error(err)
@@ -171,14 +183,15 @@ func (s *Server) Serve() {
 		log.Debug("重启服务")
 		cs()
 	}()
-	log.Debugf("listening%v", server.Addr)
+	fmt.Printf("listening: http://%s\n", serviceConfig.Domain+serviceConfig.Port)
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("failed to serve: %v", err)
 	}
 }
 
 type Server struct {
-	GRPCServer     *grpc.Server
+	GRPCOptions    []grpc.ServerOption
+	GRPCHandle     func(*grpc.Server)
 	GatewayRegistr gateway.GatewayHandle
 	GinHandle      func(engine *gin.Engine)
 	GraphqlResolve graphql.ExecutableSchema

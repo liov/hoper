@@ -7,8 +7,8 @@ import (
 
 	"github.com/gomodule/redigo/redis"
 	"github.com/liov/hoper/go/v2/initialize"
-	"github.com/liov/hoper/go/v2/note/dao"
-	model "github.com/liov/hoper/go/v2/protobuf/note"
+	"github.com/liov/hoper/go/v2/content/dao"
+	model "github.com/liov/hoper/go/v2/protobuf/content"
 	"github.com/liov/hoper/go/v2/protobuf/utils/request"
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	"github.com/liov/hoper/go/v2/utils/net/http/tailmon"

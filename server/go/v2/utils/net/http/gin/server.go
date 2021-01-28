@@ -5,6 +5,7 @@ import (
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/gin/handler"
 	"github.com/liov/hoper/go/v2/utils/verification/validator"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func Http(confPath,apiPath string,ginHandle func(engine *gin.Engine)) *gin.Engine {
@@ -20,6 +21,8 @@ func Http(confPath,apiPath string,ginHandle func(engine *gin.Engine)) *gin.Engin
 	middleware.SetLog(r, logger, false)*/
 	r.Use(gin.Recovery())
 	r.Any("/debug/*path", handler.FromStd(httpi.Debug()))
+	// Register Prometheus metrics handler.
+	r.Any("/metrics", handler.FromStd(promhttp.Handler()))
 	if ginHandle != nil {
 		ginHandle(r)
 	}

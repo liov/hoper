@@ -7,7 +7,8 @@ import (
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/conf"
 	"github.com/liov/hoper/go/v2/user/dao"
-	"github.com/liov/hoper/go/v2/utils/log"
+	fasthttpi "github.com/liov/hoper/go/v2/utils/net/fasthttp"
+	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 	jwti "github.com/liov/hoper/go/v2/utils/verification/auth/jwt"
 	"github.com/valyala/fasthttp"
 )
@@ -24,22 +25,14 @@ func Auth(ctx *model.Ctx) (*model.AuthInfo, error) {
 	defer conn.Close()
 	err := conn.EfficientUserHashFromRedis(ctx)
 	if err != nil {
-		log.Error(err)
 		return nil, model.UserErr_InvalidToken
 	}
 	return ctx.AuthInfo, nil
 }
 
-
-type authKey struct{}
-
 // AuthContext returns a new Context that carries value u.
-func AuthContextF(r *fasthttp.Request) context.Context {
-	return model.CtxFromContext(context.Background())
-}
-
-// FromContext returns the User value stored in ctx, if any.
-func FromContextF(ctx context.Context) (*model.AuthInfo, bool) {
-	user, ok := ctx.Value(authKey{}).(*model.AuthInfo)
-	return user, ok
+func FasthttpCtx(r *fasthttp.Request) pick.Context {
+	ctx:=model.CtxFromContext(context.Background())
+	ctx.Authorization = fasthttpi.GetToken(r)
+	return ctx
 }

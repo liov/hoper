@@ -21,7 +21,7 @@ import (
 
 func main() {
 	run(*proto)
-	//genutils(*proto)
+	genutils(*proto)
 	//gengql()
 }
 
@@ -106,9 +106,6 @@ func run(dir string) {
 						gqlgen = append(gqlgen, arg)
 						continue
 					}
-					if strings.HasPrefix(k, "/utils/proto/gogo/") {
-						arg = "protoc -I" + *proto + " " + k + " --gogo_out=plugins=grpc,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor:" + pwd + "/protobuf"
-					}
 					execi.Run(arg)
 				}
 			}
@@ -129,6 +126,11 @@ func genutils(dir string) {
 		if strings.HasSuffix(fileInfos[i].Name(), "enum.proto") {
 			arg := "protoc " + include + " " + dir + "/" + fileInfos[i].Name() + " --" + enumOut + ":" + pwd + "/protobuf"
 			execi.Run(arg)
+		}
+		if strings.HasPrefix(dir, "/utils/proto/gogo/") {
+			arg := "protoc -I" + *proto + " " + dir + " --gogo_out=plugins=grpc,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor:" + pwd + "/protobuf"
+			execi.Run(arg)
+			continue
 		}
 		for _, plugin := range model {
 			arg := "protoc " + include + " " + dir + "/*.proto" + " --" + plugin + ":" + pwd + "/protobuf"
