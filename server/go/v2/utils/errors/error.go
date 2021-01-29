@@ -33,9 +33,9 @@ func (e MultiMapError) Merge(errors MultiMapError) {
 }
 
 
-type MultiSError []error
+type MultiSliceError []error
 
-func (e MultiSError) Error() string {
+func (e MultiSliceError) Error() string {
 	s := ""
 	for _, err := range e {
 		s = err.Error()

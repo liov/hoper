@@ -16,6 +16,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
+	"gorm.io/plugin/prometheus"
 )
 
 const (
@@ -32,6 +33,7 @@ type DatabaseConfig struct {
 	MaxIdleConns, MaxOpenConns int
 	Port                       int32
 	LogLevel                   logger.LogLevel
+	Prometheus                 bool
 }
 
 func (conf *DatabaseConfig) Generate() *gorm.DB {
@@ -65,7 +67,20 @@ func (conf *DatabaseConfig) Generate() *gorm.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	if conf.Prometheus {
+		if conf.Type == MYSQL {
+			db.Use(prometheus.New(prometheus.Config{
+				DBName:          conf.Database,               // 使用 `DBName` 作为指标 label
+				RefreshInterval: 15,                          // 指标刷新频率（默认为 15 秒）
+				PushAddr:        "prometheus pusher address", // 如果配置了 `PushAddr`，则推送指标
+				MetricsCollector: []prometheus.MetricsCollector{
+					&prometheus.MySQL{
+						VariableNames: []string{"Threads_running"},
+					},
+				}, // 用户自定义指标
+			}))
+		}
+	}
 	return db
 }
 

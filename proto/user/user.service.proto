@@ -305,20 +305,20 @@ message EditReq {
     type: INTEGER}];
   EditDetails details = 2 [(go.field) = {tags:'gorm:"embedded"'}];
   message EditDetails {
-    string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" validate:"required,gte=3,lte=10" annotation:"名字"'}];
-    string password = 5 [(go.field) = {tags:'gorm:"size:32;not null" validate:"gte=8,lte=15" annotation:"密码"'}];
-    string mail = 6 [(go.field) = {tags:'gorm:"size:16;default:\'\'" validate:"email" annotation:"邮箱"'}];
-    string phone = 7 [(go.field) = {tags:'gorm:"size:32;default:\'\'" validate:"phone" annotation:"手机号"'}];
+    string name = 2 [(go.field) = {tags:'validate:"required,gte=3,lte=10" annotation:"名字"'}];
+    string password = 5 [(go.field) = {tags:'validate:"gte=8,lte=15" annotation:"密码"'}];
+    string mail = 6 [(go.field) = {tags:'validate:"email" annotation:"邮箱"'}];
+    string phone = 7 [(go.field) = {tags:'validate:"phone" annotation:"手机号"'}];
     // 性别，0未填写，1男，2女
-    Gender gender = 8 [(go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    Gender gender = 8 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
       type:INTEGER
     }];
-    string birthday = 9 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00"'}];
-    string address = 14 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
-    string introduction = 10 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
-    string signature = 11 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
-    string avatarURL = 12 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
-    string coverURL = 13 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
+    string birthday = 9;
+    string address = 14;
+    string introduction = 10;
+    string signature = 11;
+    string avatarURL = 12;
+    string coverURL = 13;
     repeated Resume eduExps = 15 [(go.field) = {tags:'gorm:"-"'}];
     repeated Resume workExps = 16 [(go.field) = {tags:'gorm:"-"'}];
   }
@@ -378,5 +378,5 @@ message SendVerifyCodeReq{
   string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" annotation:"邮箱"'}];
   // 手机号
   string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" annotation:"手机号"'}];
-  Action type = 2 [(go.field) = {tags:'gorm:"default:0" annotation:"操作类型"'}];
+  Action type = 2 [(go.field) = {tags:'annotation:"操作类型"'}];
 }

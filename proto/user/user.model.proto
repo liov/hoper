@@ -34,7 +34,7 @@ message User {
   }];
   string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
   string activatedAt = 3 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00"'}];
-  string deletedAt = 27 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:default:0001-01-01 00:00:00"'}];
+  string deletedAt = 27 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00"'}];
   // uint32 isDeleted = 29 [(go.field) = {tags:'gorm:"default:0"'}];
 }
 
@@ -129,8 +129,8 @@ message Resume {
   string endTime = 7 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
   string remark = 11 [(go.field) = {tags:'gorm:"size:255"'}];
   // 0-Education 教育经历,1- Work 职业生涯
-  uint32 type = 12 [(go.field) = {tags:'type:int2;gorm:"default:0"'}];
-  uint32 status = 28 [(go.field) = {tags:'type:int2;gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  uint32 type = 12 [(go.field) = {tags:'gorm:"type:int2;default:0"'}];
+  uint32 status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
 }

@@ -20,8 +20,9 @@ import (
 //go:generate mockgen -destination ../protobuf/user/user.mock.go -package user -source ../protobuf/user/user.service_grpc.pb.go UserServiceServer
 
 func main() {
+	//single("/content/moment.model.proto")
 	run(*proto)
-	genutils(*proto)
+	//genutils(*proto+"/utils")
 	//gengql()
 }
 
@@ -111,6 +112,13 @@ func run(dir string) {
 			}
 			run(dir + "/" + fileInfos[i].Name())
 		}
+	}
+}
+
+func single(file string) {
+	for _, plugin := range model {
+		arg := "protoc " + include + " " + *proto + file + " --" + plugin + ":" + pwd + "/protobuf"
+		execi.Run(arg)
 	}
 }
 

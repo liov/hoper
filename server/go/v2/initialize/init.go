@@ -25,9 +25,10 @@ import (
 )
 
 //约定大于配置
-var InitConfig = &Init{}
-
-var once sync.Once
+var (
+	InitConfig = &Init{}
+	once sync.Once
+)
 
 func init() {
 	flag.StringVar(&InitConfig.Env, "env", DEVELOPMENT, "环境")
@@ -242,7 +243,6 @@ func Watcher() {
 	watcher.Add(InitConfig.ConfUrl, fsnotify.Write, func() {
 		InitConfig.CloseDao()
 		InitConfig.SetConfigAndDao()
-
 	})
 
 	watcher.Add(".watch", fsnotify.Write, func() {
