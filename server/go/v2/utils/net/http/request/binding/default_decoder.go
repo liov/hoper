@@ -8,6 +8,10 @@ import (
 
 var defaultDecoder = NewDecoder()
 
+func DefaultDecoder() *Decoder {
+	return defaultDecoder
+}
+
 func SetAliasTag(tag string) {
 	defaultDecoder.SetAliasTag(tag)
 }

@@ -36,14 +36,13 @@ require (
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e
 	github.com/golang/mock v1.4.4
 	github.com/golang/protobuf v1.4.3
-	github.com/gomodule/redigo v1.7.1-0.20190724094224-574c33c3df38
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/google/uuid v1.1.2
 	github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e // indirect
-	github.com/gorilla/schema v1.1.0
 	github.com/gorilla/sessions v1.2.1
 	github.com/gorilla/websocket v1.4.2
 	github.com/grpc-ecosystem/go-grpc-middleware v1.1.0
+	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.1.0
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/json-iterator/go v1.1.10
@@ -59,10 +58,9 @@ require (
 	github.com/olivere/elastic v6.2.23+incompatible
 	github.com/panjf2000/gnet v1.3.2 // indirect
 	github.com/pelletier/go-toml v1.8.1
-	github.com/prometheus/client_golang v1.5.1
+	github.com/prometheus/client_golang v1.9.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/russross/blackfriday v2.0.0+incompatible
-	github.com/satori/go.uuid v1.2.0
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.6.1
 	github.com/tealeg/xlsx/v3 v3.2.1
@@ -70,6 +68,7 @@ require (
 	github.com/urfave/cli/v2 v2.2.0 // indirect
 	github.com/valyala/fasthttp v1.18.0
 	github.com/vektah/gqlparser/v2 v2.0.1
+	github.com/vmihailenco/msgpack/v5 v5.1.4 // indirect
 	go.opencensus.io v0.22.5
 	go.uber.org/atomic v1.7.0
 	go.uber.org/zap v1.16.0
@@ -82,12 +81,13 @@ require (
 	google.golang.org/grpc v1.34.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.0.0
 	google.golang.org/protobuf v1.25.0
-	gopkg.in/yaml.v2 v2.3.0
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
 	gorm.io/driver/mysql v1.0.3
 	gorm.io/driver/postgres v1.0.0
 	gorm.io/driver/sqlite v1.1.3
-	gorm.io/gorm v1.20.11
+	gorm.io/gorm v1.20.12
+	gorm.io/plugin/dbresolver v1.1.0 // indirect
+	gorm.io/plugin/prometheus v0.0.0-20210112035011-ae3013937adc
 )
 
 replace (

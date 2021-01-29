@@ -162,6 +162,12 @@ func (x *AuthInfo) ParseToken(token, secret string) error {
 	return nil
 }
 
+type Cache struct {
+	*AuthInfo
+	Authorization string
+}
+
+
 type DeviceInfo struct {
 	//设备
 	Device     string `json:"device" gorm:"size:255"`

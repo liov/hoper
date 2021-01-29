@@ -11,7 +11,7 @@ import (
 )
 
 func Debug() http.Handler {
-	http.Handle("/debug/metrics", promhttp.Handler())
+	http.Handle("/metrics", promhttp.Handler())
 	http.Handle("/debug/pprof", pprof.Handler("debug"))
 	http.Handle("/debug/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write(debug.Stack())

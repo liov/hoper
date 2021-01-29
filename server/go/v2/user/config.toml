@@ -2,7 +2,7 @@ Module = "user"
 # dev | test | prod
 # Env = "dev"
 
-NoInit = ["Cache","Apollo","Etcd"]
+NoInit = ["Apollo","Etcd"]
 
 [nacos]
 Addr = "nacos.default"

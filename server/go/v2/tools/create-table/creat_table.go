@@ -8,7 +8,7 @@ import (
 
 var userMod = []interface{}{
 	&user.User{},
-	&user.UserExtend{},
+	&user.UserExt{},
 	&user.UserActionLog{},
 	&user.UserBannedLog{},
 	&user.UserFollow{},
@@ -22,15 +22,20 @@ var contentMod = []interface{}{
 	&content.Category{},
 	&content.Tag{},
 	&content.Comment{},
-	&user.UserFollow{},
-	&user.UserScoreLog{},
-	&user.UserFollowLog{},
-	&user.Resume{},
+	&content.Like{},
+	&content.ContentDel{},
+	&content.Favorites{},
+	&content.Collection{},
+	&content.CountStatistics{},
+	&content.Mood{},
+	&content.Report{},
+	&content.Collection{},
 }
 
 func main() {
 	//get.GetDB().Debug().Migrator().DropTable(userMod...)
-	get.GetDB().Debug().Migrator().CreateTable(userMod...)
+	//get.GetDB().Debug().Migrator().CreateTable(userMod...)
+	get.GetDB().Debug().Migrator().CreateTable(contentMod...)
 /*	get.GetDB().Exec(`CREATE OR REPLACE FUNCTION del_tabs(username IN VARCHAR) RETURNS void AS $$
 		DECLARE
 		statements CURSOR FOR

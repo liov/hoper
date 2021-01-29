@@ -14,8 +14,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/fs"
+	"github.com/liov/hoper/go/v2/utils/structure/uuid"
 	"github.com/liov/hoper/go/v2/utils/time"
-	"github.com/satori/go.uuid"
+
 )
 
 type UploadFile interface {

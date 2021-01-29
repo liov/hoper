@@ -19,7 +19,7 @@ message Like{
   user.UserBaseInfo user = 4 [(go.field) = {tags:'gorm:"-" annotation:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
   string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
-  string deletedAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:default:0001-01-01 00:00:00"'}];
+  string deletedAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00"'}];
 }
 
 // 举报
@@ -43,7 +43,7 @@ message Favorites{
   uint64 Count = 5 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"数量"'}];
   repeated Collection collections = 6 [(go.field) = {tags:'gorm:"-" annotation:"收藏"'}];
   string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
-  string deletedAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:default:0001-01-01 00:00:00"'}];
+  string deletedAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00"'}];
 }
 
 // 收藏
@@ -51,11 +51,11 @@ message Collection{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   ContentType type = 12 [(go.field) = {tags:'json:"-" gorm:"type:int2;not null" validate:"required" annotation:"相关类型"'}];
   uint64 refId = 6 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index" validate:"required" annotation:"相关id"'}];
-  user.UserBaseInfo user = 2 [(go.field) = {tags:'gorm:"" annotation:"用户"'}];
+  user.UserBaseInfo user = 2 [(go.field) = {tags:'gorm:"-" annotation:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
   uint64 favoritesId = 3 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
   string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
-  string deletedAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:default:0001-01-01 00:00:00"'}];
+  string deletedAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00"'}];
 }
 
 // 系统删除内容记录
@@ -78,10 +78,10 @@ message Comment{
   uint64 rootId = 8 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"评论根ID"'}];
   user.UserBaseInfo recvUser = 9 [(go.field) = {tags:'gorm:"-" annotation:"接收人"'}];
   uint64 recvUserId = 10 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"接收人id"'}];
-  repeated Comment subComments = 11 [(go.field) = {tags:'gorm:"foreignkey:root_id" annotation:"子评论"'}];
+  repeated Comment subComments = 11 [(go.field) = {tags:'gorm:"-" annotation:"子评论"'}];
   uint32 sequence = 4 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"同级别的分类可根据sequence的值来排序，置顶"'}];
   string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
-  string deletedAt = 27 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:default:0001-01-01 00:00:00"'}];
+  string deletedAt = 27 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00"'}];
   uint32 status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
@@ -96,15 +96,4 @@ message CountStatistics{
   uint64 reportCount = 6 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"举报数"'}];
   uint64 commentCount = 7 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"评论数"'}];
   uint64 collectCount = 8 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"收藏数"'}];
-}
-
-message Action{
-  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  ContentType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null" validate:"required" annotation:"相关类型"'}];
-  uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"相关id"'}];
-  ActionType action = 3 [(go.field) = {tags:'gorm:"type:int2;default:1" validate:"required" annotation:"动作"'}];
-  user.UserBaseInfo user = 4 [(go.field) = {tags:'gorm:"-" annotation:"用户"'}];
-  uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
-  string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
-  string deletedAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:default:0001-01-01 00:00:00"'}];
 }

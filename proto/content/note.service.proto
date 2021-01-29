@@ -39,8 +39,8 @@ service NoteService {
 }
 
 message CreateNoteReq {
-    string title = 2 [(go.field) = {tags:'gorm:"type:varchar(10)" validate:"gte=3,lte=10" comment:"标题"'}];
-    string content = 3 [(go.field)={tags:'gorm:"type:text"'}];
+    string title = 2 [(go.field) = {tags:'validate:"gte=3,lte=10" annotation:"标题"'}];
+    string content = 3 [(go.field)={tags:'annotation:"内容"'}];
     string public_name = 4 [(go.non_sensitive) = true];
 
 }

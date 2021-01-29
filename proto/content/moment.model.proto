@@ -13,23 +13,23 @@ option (go.file) = {non_omitempty:true};
 
 // 瞬间
 message Moment {
-  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   string content = 2 [(go.field) = {tags:'gorm:"size:255;not null" annotation:"内容"'}];
   string imageUrl = 3 [(go.field) = {tags:'gorm:"size:255;not null" annotation:"图片"'}];
   Mood mood = 4 [(go.field) = {tags:'gorm:"foreignkey:MoodName;association_foreignkey:Name" annotation:"心情"'}];
   string moodName = 5 [(go.field) = {tags:'gorm:"size:10;not null" annotation:"心情"'}];
-  repeated Tag tags = 6 [(go.field) = {tags:'gorm:"many2many:moment_tag;foreignkey:ID;association_foreignkey:Name" annotation:"标签"'}];
-  user.UserBaseInfo user = 8 [(go.field) = {tags:'gorm:"" annotation:"用户"'}];
-  uint64 userId = 17 [(go.field) = {tags:'gorm:"not null;index" annotation:"用户id"'}];
+  repeated Tag tags = 6 [(go.field) = {tags:'gorm:"many2many:moment_tag;foreignkey:Id;association_foreignkey:Name" annotation:"标签"'}];
+  user.UserBaseInfo user = 8 [(go.field) = {tags:'gorm:"-" annotation:"用户"'}];
+  uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" annotation:"用户id"'}];
   repeated user.UserBaseInfo approveUsers = 9 [(go.field) = {tags:'gorm:"many2many:moment_approve_user" annotation:"点赞用户"'}];
   repeated user.UserBaseInfo collectUsers = 10 [(go.field) = {tags:'gorm:"many2many:moment_collect" annotation:"收藏用户"'}];
   repeated user.UserBaseInfo likeUsers = 11 [(go.field) = {tags:'gorm:"many2many:moment_like" annotation:"喜欢用户"'}];
-  repeated Comment comments = 7;
-  uint32 sequence = 12 [(go.field) = {tags:'gorm:"default:0" annotation:"同级别的分类可根据sequence的值来排序，置顶"'}];
-  uint32 anonymous = 15 [(go.field) = {tags:'gorm:"default:0" annotation:"是否匿名,0-是,1否"'}];
+  repeated Comment comments = 7 [(go.field) = {tags:'gorm:"-" annotation:"评论"'}];
+  uint32 sequence = 12 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"同级别的分类可根据sequence的值来排序，置顶"'}];
+  uint32 anonymous = 15 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"是否匿名,0-是,1否"'}];
   ViewPermission permission = 13 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"查看权限"'}];
   string createdAt = 16 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
-  uint32 status = 18 [(go.field) = {tags:'type:int2;gorm:"default:0"'},  (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'},  (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
 }

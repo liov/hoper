@@ -19,7 +19,7 @@ func DBNotNil(db **gorm.DB) {
 	}
 }
 
-func (*UserDao) ExitByEmailORPhone(db *gorm.DB, mail, phone string) (bool, error) {
+func (*UserDao) ExitByEmailORPhone(ctx *model.Ctx,db *gorm.DB, mail, phone string) (bool, error) {
 	DBNotNil(&db)
 	var err error
 	var count int64
@@ -35,7 +35,7 @@ func (*UserDao) ExitByEmailORPhone(db *gorm.DB, mail, phone string) (bool, error
 	return count == 1, nil
 }
 
-func (d *UserDao) GetByEmailORPhone(db *gorm.DB, email, phone string, fields ...string) (*model.User, error) {
+func (d *UserDao) GetByEmailORPhone(ctx *model.Ctx,db *gorm.DB, email, phone string, fields ...string) (*model.User, error) {
 	DBNotNil(&db)
 	var user model.User
 	var err error
@@ -54,7 +54,7 @@ func (d *UserDao) GetByEmailORPhone(db *gorm.DB, email, phone string, fields ...
 	return &user, nil
 }
 
-func (*UserDao) Creat(db *gorm.DB, user *model.User) error {
+func (*UserDao) Creat(ctx *model.Ctx,db *gorm.DB, user *model.User) error {
 	DBNotNil(&db)
 	if err := db.Create(user).Error; err != nil {
 		log.Error("UserDao.Creat: ", err)
@@ -63,7 +63,7 @@ func (*UserDao) Creat(db *gorm.DB, user *model.User) error {
 	return nil
 }
 
-func (*UserDao) GetByPrimaryKey(db *gorm.DB, id uint64) (*model.User, error) {
+func (*UserDao) GetByPrimaryKey(ctx *model.Ctx,db *gorm.DB, id uint64) (*model.User, error) {
 	DBNotNil(&db)
 	var user model.User
 	if err := db.First(&user, id).Error; err != nil {
@@ -73,7 +73,7 @@ func (*UserDao) GetByPrimaryKey(db *gorm.DB, id uint64) (*model.User, error) {
 	return &user, nil
 }
 
-func (*UserDao) SaveResumes(db *gorm.DB, userId uint64, resumes []*model.Resume, originalIds []uint64, device *model.UserDeviceInfo) error {
+func (*UserDao) SaveResumes(ctx *model.Ctx,db *gorm.DB, userId uint64, resumes []*model.Resume, originalIds []uint64, device *model.UserDeviceInfo) error {
 	DBNotNil(&db)
 	if len(resumes) == 0 {
 		return nil
@@ -128,7 +128,7 @@ func (*UserDao) SaveResumes(db *gorm.DB, userId uint64, resumes []*model.Resume,
 	return nil
 }
 
-func (*UserDao) ActionLog(db *gorm.DB, log *model.UserActionLog) error {
+func (*UserDao) ActionLog(ctx *model.Ctx,db *gorm.DB, log *model.UserActionLog) error {
 	err := db.Create(&log).Error
 	if err != nil {
 		return err
@@ -136,7 +136,7 @@ func (*UserDao) ActionLog(db *gorm.DB, log *model.UserActionLog) error {
 	return nil
 }
 
-func (*UserDao) ResumesIds(db *gorm.DB, userId uint64) ([]uint64, error) {
+func (*UserDao) ResumesIds(ctx *model.Ctx,db *gorm.DB, userId uint64) ([]uint64, error) {
 	DBNotNil(&db)
 	var resumeIds []uint64
 	err := db.Model(new(model.Resume)).Where("user_id = ? AND status > 0", userId).Pluck("id", &resumeIds).Error

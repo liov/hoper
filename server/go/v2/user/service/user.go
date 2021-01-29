@@ -37,10 +37,6 @@ type UserService struct {
 	model.UnimplementedUserServiceServer
 }
 
-func (m *UserService) name() string {
-	return "UserService."
-}
-
 func (u *UserService) VerifyCode(ctx context.Context, req *request.Empty) (*response.CommonRep, error) {
 	device := model.CtxFromContext(ctx).DeviceInfo
 	log.Debug(device)
@@ -53,14 +49,14 @@ func (u *UserService) VerifyCode(ctx context.Context, req *request.Empty) (*resp
 }
 
 func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*response.TinyRep, error) {
-	if err := Validate(req); err != nil {
-		return nil, err
-	}
+	ctxi, span := model.CtxFromContext(ctx).StartSpan("Logout")
+	defer span.End()
+	ctx = ctxi.Context
 	if req.Mail == "" && req.Phone == "" {
 		return nil, errorcode.InvalidArgument.Message("请填写邮箱或手机号")
 	}
 
-	if exist, _ := userDao.ExitByEmailORPhone(nil, req.Mail, req.Phone); exist {
+	if exist, _ := userDao.ExitByEmailORPhone(ctxi, dao.Dao.GORMDB, req.Mail, req.Phone); exist {
 		if req.Mail != "" {
 			return nil, errorcode.InvalidArgument.Message("邮箱已被注册")
 		} else {
@@ -70,10 +66,7 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 	vcode := verification.GenerateCode()
 	log.Debug(vcode)
 	key := modelconst.VerificationCodeKey + req.Mail + req.Phone
-	RedisConn := dao.Dao.Redis.Conn(ctx)
-	defer RedisConn.Close()
-
-	if err := RedisConn.SetEX(ctx, key, vcode, modelconst.VerificationCodeDuration).Err(); err != nil {
+	if err := dao.Dao.Redis.SetEX(ctx, key, vcode, modelconst.VerificationCodeDuration).Err(); err != nil {
 		log.Error("UserService.Verify,RedisConn.Do: ", err)
 		return nil, errorcode.RedisErr.Message("新建出错")
 	}
@@ -81,9 +74,9 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 }
 
 func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*response.TinyRep, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan(u.name() + "Signup")
+	ctxi, span := model.CtxFromContext(ctx).StartSpan(model.UserserviceServicedesc.ServiceName + "Signup")
 	defer span.End()
-
+	ctx = ctxi.Context
 	if err := Validate(req); err != nil {
 		return nil, err
 	}
@@ -94,7 +87,7 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*respon
 	if err := LuosimaoVerify(req.VCode); err != nil {
 		return nil, err
 	}
-	if exist, _ := userDao.ExitByEmailORPhone(nil, req.Mail, req.Phone); exist {
+	if exist, _ := userDao.ExitByEmailORPhone(ctxi, dao.Dao.GORMDB, req.Mail, req.Phone); exist {
 		if req.Mail != "" {
 			return nil, errorcode.InvalidArgument.Message("邮箱已被注册")
 		} else {
@@ -104,32 +97,29 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*respon
 
 	formatNow := timei.Format(ctxi.RequestAt)
 	var user = &model.User{
-		Name:            req.Name,
-		Account:         uuid.New().String(),
-		Mail:            req.Mail,
-		Phone:           req.Phone,
-		Gender:          req.Gender,
-		AvatarURL:       modelconst.DefaultAvatar,
-		LastActivatedAt: formatNow,
-		Role:            model.Role_UserRoleNormal,
-		CreatedAt:       formatNow,
-		Status:          model.UserStatus_InActive,
+		Name:      req.Name,
+		Account:   uuid.New().String(),
+		Mail:      req.Mail,
+		Phone:     req.Phone,
+		Gender:    req.Gender,
+		AvatarURL: modelconst.DefaultAvatar,
+		Role:      model.Role_UserRoleNormal,
+		CreatedAt: formatNow,
+		Status:    model.UserStatus_InActive,
 	}
 
 	user.Password = encryptPassword(req.Password)
-	if err := userDao.Creat(nil, user); err != nil {
+	if err := userDao.Creat(ctxi, dao.Dao.GORMDB, user); err != nil {
 		log.Error(err)
 		return nil, errorcode.RedisErr.Message("新建出错")
 	}
 	var rep = &response.TinyRep{Message: "新建成功,请前往邮箱激活"}
 
 	activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
-	RedisConn := dao.Dao.Redis.Conn(ctx)
-	defer RedisConn.Close()
 
 	curTime := time.Now().Unix()
 
-	if err := RedisConn.SetEX(ctx, activeUser, curTime, modelconst.ActiveDuration).Err(); err != nil {
+	if err := dao.Dao.Redis.SetEX(ctx, activeUser, curTime, modelconst.ActiveDuration).Err(); err != nil {
 		log.Error("UserService.Signup,RedisConn.Do: ", err)
 	}
 
@@ -203,17 +193,15 @@ func checkPassword(password string, user *model.User) bool {
 func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.LoginRep, error) {
 	ctxi, span := model.CtxFromContext(ctx).StartSpan("Active")
 	defer span.End()
-	RedisConn := dao.Dao.Redis.Conn(ctx)
-	defer RedisConn.Close()
-
+	ctx = ctxi.Context
 	redisKey := modelconst.ActiveTimeKey + strconv.FormatUint(req.Id, 10)
-	emailTime, err := RedisConn.Get(ctx, redisKey).Int64()
+	emailTime, err := dao.Dao.Redis.Get(ctx, redisKey).Int64()
 	if err != nil {
 		log.Error("UserService.Active,redis.Int64", err)
 		return nil, errorcode.InvalidArgument.Message("无效的链接")
 	}
 
-	user, err := userDao.GetByPrimaryKey(nil, req.Id)
+	user, err := userDao.GetByPrimaryKey(ctxi, dao.Dao.GORMDB, req.Id)
 	if err != nil {
 		return nil, errorcode.DBError
 	}
@@ -229,13 +217,14 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 	}
 
 	dao.Dao.GORMDB.Model(user).Updates(map[string]interface{}{"activated_at": time.Now(), "status": 1})
-	RedisConn.Del(ctx, redisKey)
+	dao.Dao.Redis.Del(ctx, redisKey)
 	return u.login(ctxi, user)
 }
 
 func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.TinyRep, error) {
 	ctxi, span := model.CtxFromContext(ctx).StartSpan("Edit")
 	defer span.End()
+	ctx = ctxi.Context
 	user, err := ctxi.GetAuthInfo(Auth)
 	if err != nil {
 		return nil, err
@@ -245,7 +234,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.T
 	}
 	device := ctxi.DeviceInfo
 
-	originalIds, err := userDao.ResumesIds(nil, user.Id)
+	originalIds, err := userDao.ResumesIds(ctxi, nil, user.Id)
 	if err != nil {
 		return nil, errorcode.DBError.Message("更新失败")
 	}
@@ -253,7 +242,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.T
 	resumes = append(req.Details.EduExps, req.Details.WorkExps...)
 
 	tx := dao.Dao.GORMDB.Begin()
-	err = userDao.SaveResumes(tx, req.Id, resumes, originalIds, device.UserDeviceInfo())
+	err = userDao.SaveResumes(ctxi, tx, req.Id, resumes, originalIds, device.UserDeviceInfo())
 	if err != nil {
 		tx.Rollback()
 		return nil, errorcode.DBError.Message("更新失败")
@@ -270,7 +259,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.T
 func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginRep, error) {
 	ctxi, span := model.CtxFromContext(ctx).StartSpan("Login")
 	defer span.End()
-
+	ctx = ctxi.Context
 	if verifyErr := verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL, conf.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
 		return nil, errorcode.InvalidArgument.Message(verifyErr.Error())
 	}
@@ -301,11 +290,9 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 		//没看懂
 		//encodedEmail := base64.StdEncoding.EncodeToString(stringsi.ToBytes(user.Mail))
 		activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
-		RedisConn := dao.Dao.Redis.Conn(ctx)
-		defer RedisConn.Close()
 
 		curTime := time.Now().Unix()
-		if err := RedisConn.SetEX(ctx, activeUser, curTime, modelconst.ActiveDuration).Err(); err != nil {
+		if err := dao.Dao.Redis.SetEX(ctx, activeUser, curTime, modelconst.ActiveDuration).Err(); err != nil {
 			log.Error("UserService.Signup,RedisConn.Do: ", err)
 			return nil, errorcode.RedisErr
 		}
@@ -330,16 +317,16 @@ func (*UserService) login(ctxi *model.Ctx, user *model.User) (*model.LoginRep, e
 	}
 
 	dao.Dao.GORMDB.Model(&user).UpdateColumn("last_activated_at", ctxi.RequestAt)
-	conn := dao.NewUserRedis()
-	defer conn.Close()
-	if err := conn.EfficientUserHashToRedis(ctxi); err != nil {
+
+	if err := userRedis.EfficientUserHashToRedis(ctxi); err != nil {
 		return nil, errorcode.RedisErr
 	}
 	resp := &model.LoginRep{}
 	resp.Details = &model.LoginRep_LoginDetails{Token: tokenString, User: &model.UserBaseInfo{
-		Id:     user.Id,
-		Score:  user.Score,
-		Gender: user.Gender,
+		Id:        user.Id,
+		Name:      user.Name,
+		Gender:    user.Gender,
+		AvatarURL: user.AvatarURL,
 	}}
 	resp.Message = "登录成功"
 
@@ -361,16 +348,14 @@ func (*UserService) login(ctxi *model.Ctx, user *model.User) (*model.LoginRep, e
 func (u *UserService) Logout(ctx context.Context, req *request.Empty) (*model.LogoutRep, error) {
 	ctxi, span := model.CtxFromContext(ctx).StartSpan("Logout")
 	defer span.End()
+	ctx = ctxi.Context
 	user, err := ctxi.GetAuthInfo(Auth)
 	if err != nil {
 		return nil, err
 	}
 	dao.Dao.GORMDB.Model(&model.UserAuthInfo{Id: user.Id}).UpdateColumn("last_activated_at", time.Now())
 
-	RedisConn := dao.Dao.Redis.Conn(ctx)
-	defer RedisConn.Close()
-
-	if _, err := redisi.Do(ctx, RedisConn, redisi.DEL, modelconst.LoginUserKey+strconv.FormatUint(user.Id, 10)); err != nil {
+	if err := dao.Dao.Redis.Do(ctx, redisi.DEL, modelconst.LoginUserKey+strconv.FormatUint(user.Id, 10)).Err(); err != nil {
 		log.Error(err)
 		return nil, errorcode.RedisErr
 	}
@@ -409,6 +394,9 @@ func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.Ge
 }
 
 func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (*response.TinyRep, error) {
+	ctxi, span := model.CtxFromContext(ctx).StartSpan("Logout")
+	defer span.End()
+	ctx =ctxi.Context
 	if verifyErr := verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL, conf.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
 		return nil, errorcode.InvalidArgument.Warp(verifyErr)
 	}
@@ -416,7 +404,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 	if req.Input == "" {
 		return nil, errorcode.InvalidArgument.Message("账号错误")
 	}
-	user, err := userDao.GetByEmailORPhone(nil, req.Input, req.Input, "id", "name", "password")
+	user, err := userDao.GetByEmailORPhone(ctxi, dao.Dao.GORMDB, req.Input, req.Input, "id", "name", "password")
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			if verification.PhoneOrMail(req.Input) != verification.Phone {
@@ -429,11 +417,9 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 		return nil, errorcode.DBError
 	}
 	restPassword := modelconst.ResetTimeKey + strconv.FormatUint(user.Id, 10)
-	RedisConn := dao.Dao.Redis.Conn(ctx)
-	defer RedisConn.Close()
 
 	curTime := time.Now().Unix()
-	if err := RedisConn.SetEX(ctx, restPassword, curTime, modelconst.ResetDuration).Err(); err != nil {
+	if err := dao.Dao.Redis.SetEX(ctx, restPassword, curTime, modelconst.ResetDuration).Err(); err != nil {
 		log.Error("redis set failed:", err)
 		return nil, errorcode.RedisErr
 	}
@@ -444,17 +430,17 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 }
 
 func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswordReq) (*response.TinyRep, error) {
-	RedisConn := dao.Dao.Redis.Conn(ctx)
-	defer RedisConn.Close()
-
+	ctxi, span := model.CtxFromContext(ctx).StartSpan("Logout")
+	defer span.End()
+	ctx =ctxi.Context
 	redisKey := modelconst.ResetTimeKey + strconv.FormatUint(req.Id, 10)
-	emailTime, err := RedisConn.Get(ctx, redisKey).Int64()
+	emailTime, err := dao.Dao.Redis.Get(ctx, redisKey).Int64()
 	if err != nil {
 		log.Error(model.UserserviceServicedesc.ServiceName, "ResetPassword,redis.Int64", err)
 		return nil, errorcode.InvalidArgument.Message("无效的链接")
 	}
 
-	user, err := userDao.GetByPrimaryKey(nil, req.Id)
+	user, err := userDao.GetByPrimaryKey(ctxi, dao.Dao.GORMDB, req.Id)
 	if err != nil {
 		return nil, errorcode.DBError
 	}
@@ -473,7 +459,7 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 		log.Error("UserService.ResetPassword,DB.Update", err)
 		return nil, errorcode.DBError
 	}
-	RedisConn.Del(ctx, redisKey)
+	dao.Dao.Redis.Del(ctx, redisKey)
 	return nil, nil
 }
 

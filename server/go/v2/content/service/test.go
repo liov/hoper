@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"unsafe"
 
-	"github.com/gomodule/redigo/redis"
 	"github.com/liov/hoper/go/v2/initialize"
 	"github.com/liov/hoper/go/v2/content/dao"
 	model "github.com/liov/hoper/go/v2/protobuf/content"
 	"github.com/liov/hoper/go/v2/protobuf/utils/request"
+	redisi "github.com/liov/hoper/go/v2/utils/dao/redis"
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	"github.com/liov/hoper/go/v2/utils/net/http/tailmon"
 	"github.com/liov/hoper/go/v2/utils/net/http/websocket"
@@ -32,9 +32,9 @@ func (*TestService) Restart(ctx context.Context, req *request.Empty) (*request.E
 }
 
 func (*TestService) GetChat(ctx context.Context, req *request.Empty) ([]websocket.SendMessage, error) {
-	conn := dao.Dao.Redis.Get()
+	conn := dao.Dao.Redis.Conn(ctx)
 	defer conn.Close()
-	data, err := redis.ByteSlices(conn.Do("LRANGE", "Chat", 0, -1))
+	data, err := redisi.ByteSlices(dao.Dao.Redis.Do(ctx,"LRANGE", "Chat", 0, -1).Result())
 	if err != nil {
 		return nil, err
 	}

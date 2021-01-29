@@ -9,6 +9,7 @@ var (
 	oauthSvc *OauthService
 
 	userDao = &dao.UserDao{}
+	userRedis = &dao.UserRedis{}
 )
 
 func GetUserService() *UserService {

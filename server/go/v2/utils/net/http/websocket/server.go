@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	uuid "github.com/satori/go.uuid"
+	"github.com/liov/hoper/go/v2/utils/structure/uuid"
 
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
 )
