@@ -108,3 +108,9 @@ func Stream(w http.ResponseWriter) {
 		return true //继续写入数据
 	})
 }
+
+
+
+var ResponseSysErr = []byte(`{"code":10000,"message":"系统错误"}`)
+var ResponseOk = []byte(`{"code":0,"message":"OK"}`)
+var ResponseNull = []byte(`null`)

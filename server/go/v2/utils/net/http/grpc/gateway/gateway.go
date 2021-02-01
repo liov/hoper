@@ -14,7 +14,7 @@ import (
 
 type GatewayHandle func(context.Context, *runtime.ServeMux)
 
-func Gateway(gatewayHandle GatewayHandle) http.Handler {
+func Gateway(gatewayHandle GatewayHandle) *runtime.ServeMux {
 	ctx := context.Background()
 
 	gwmux := runtime.NewServeMux(

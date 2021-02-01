@@ -28,7 +28,7 @@ func (queryBinding) Bind(req *http.Request, obj interface{}) error {
 
 func (queryBinding) GinBind(ctx *gin.Context, obj interface{}) error {
 	values := ctx.Request.URL.Query()
-	args := Args{formSource(ctx.Request.Form), formSource(values)}
+	args := Args{formSource(ctx.Request.Form), formSource(values),paramSource(ctx.Params)}
 	if err := mapForm(obj, args); err != nil {
 		return err
 	}

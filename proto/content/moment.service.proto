@@ -2,7 +2,7 @@ syntax = "proto3";
 package content;
 import "content/moment.enum.proto";
 import "content/moment.model.proto";
-import "content/tag.model.proto";
+import "content/common.model.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
@@ -65,10 +65,10 @@ message AddMomentReq {
   string imageUrl = 3 [(go.field) = {tags:'annotation:"图片"'}];
   Mood mood = 4 [(go.field) = {tags:'gorm:"foreignkey:MoodName;association_foreignkey:Name" annotation:"心情"'}];
   string moodName = 5 [(go.field) = {tags:' annotation:"心情"'}];
-  repeated string tagNames = 6 [(go.field) = {tags:'annotation:"标签名称"'}];
+  repeated string tagNames = 6 [(go.field) = {tags:'gorm:"-" annotation:"标签名称"'}];
   uint64 userId = 17 [(go.field) = {tags:'annotation:"用户id"'}];
   uint32 sequence = 12 [(go.field) = {tags:'annotation:"同级别的分类可根据sequence的值来排序，置顶"'}];
-  uint32 anonymous = 15 [(go.field) = {tags:'annotation:"是否匿名,0-是,1否"'}];
+  uint32 anonymous = 15 [(go.field) = {tags:'annotation:"是否匿名,1-是,2否"'}];
   ViewPermission permission = 13 [(go.field) = {tags:'annotation:"查看权限"'}];
 }
 

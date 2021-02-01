@@ -27,8 +27,13 @@ func (init *Init) GetServiceConfig() *ServerConfig {
 	for i := 0; i < value.NumField(); i++ {
 		if conf, ok := value.Field(i).Interface().(ServerConfig); ok {
 			return &conf
-
 		}
 	}
-	return nil
+	return defaultServerConfig()
+}
+
+func defaultServerConfig() *ServerConfig {
+	return &ServerConfig{
+		Port: ":8080",
+	}
 }

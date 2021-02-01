@@ -5,8 +5,11 @@ import (
 	"github.com/liov/hoper/go/v2/user/service"
 )
 
-func Auth(ctx *model.Ctx) (*model.AuthInfo, error) {
+func Auth(ctx *model.Ctx) error {
 	return service.Auth(ctx)
 }
 
+func AuthWithUpdate(ctx *model.Ctx) error {
+	return service.AuthWithUpdate(ctx)
+}
 

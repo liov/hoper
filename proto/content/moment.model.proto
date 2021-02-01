@@ -1,7 +1,7 @@
 syntax = "proto3";
 package content;
 import "content/moment.enum.proto";
-import "content/tag.model.proto";
+import "content/common.model.proto";
 import "content/action.model.proto";
 import "user/user.model.proto";
 import "utils/proto/go/go.proto";

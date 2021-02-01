@@ -3,7 +3,6 @@ package httpi
 import (
 	_ "expvar"
 	"net/http"
-	"net/http/pprof"
 	_ "net/http/pprof"
 	"runtime/debug"
 
@@ -11,10 +10,13 @@ import (
 )
 
 func Debug() http.Handler {
-	http.Handle("/metrics", promhttp.Handler())
-	http.Handle("/debug/pprof", pprof.Handler("debug"))
 	http.Handle("/debug/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write(debug.Stack())
 	}))
+	return http.DefaultServeMux
+}
+
+func PromHandler() http.Handler {
+	http.Handle("/metrics", promhttp.Handler())
 	return http.DefaultServeMux
 }

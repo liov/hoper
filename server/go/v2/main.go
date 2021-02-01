@@ -6,12 +6,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	cconf "github.com/liov/hoper/go/v2/content/conf"
+	cdao "github.com/liov/hoper/go/v2/content/dao"
 	contentervice "github.com/liov/hoper/go/v2/content/service"
 	"github.com/liov/hoper/go/v2/initialize"
 	"github.com/liov/hoper/go/v2/protobuf/content"
 	"github.com/liov/hoper/go/v2/protobuf/user"
-	"github.com/liov/hoper/go/v2/user/conf"
-	"github.com/liov/hoper/go/v2/user/dao"
+	uconf "github.com/liov/hoper/go/v2/user/conf"
+	udao "github.com/liov/hoper/go/v2/user/dao"
 	userservice "github.com/liov/hoper/go/v2/user/service"
 	"github.com/liov/hoper/go/v2/utils/net/http/gin/oauth"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
@@ -21,7 +23,8 @@ import (
 
 func main() {
 	//配置初始化应该在第一位
-	defer initialize.Start(conf.Conf, dao.Dao)()
+	defer initialize.Start(uconf.Conf, udao.Dao)()
+	defer initialize.Start(cconf.Conf, cdao.Dao)()
 	pick.RegisterService(userservice.GetUserService(), contentervice.GetMomentService())
 	(&tailmon.Server{
 		//为了可以自定义中间件

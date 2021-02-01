@@ -18,7 +18,6 @@ import (
 	"github.com/gin-gonic/gin"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/liov/hoper/go/v2/initialize"
-	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/log"
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	gin_build "github.com/liov/hoper/go/v2/utils/net/http/gin"
@@ -35,8 +34,8 @@ import (
 )
 
 func (s *Server) httpHandler() http.HandlerFunc {
-	//默认使用gin
-	ginServer := gin_build.Http(initialize.InitConfig.ConfUrl, "../protobuf/api/", s.GinHandle)
+	// 默认使用gin
+	ginServer := gin_build.Http(initialize.InitConfig.ConfUrl, s.GinHandle)
 
 	if s.GraphqlResolve != nil {
 		graphqlServer := handler.NewDefaultServer(s.GraphqlResolve)
@@ -54,18 +53,26 @@ func (s *Server) httpHandler() http.HandlerFunc {
 			ctx.Writer.WriteHeader(http.StatusOK)
 		})*/
 	}
-	var excludes = []string{"/debug", "/api-doc" ,"/metrics"}
+
+	// http.Handle("/", ginServer)
+	var excludes = []string{"/debug", "/api-doc", "/metrics"}
 	return func(w http.ResponseWriter, r *http.Request) {
+		// 暂时解决方法，三个路由
+		if h, p := http.DefaultServeMux.Handler(r); p != "" {
+			h.ServeHTTP(w, r)
+		}
 		if stringsi.HasPrefixes(r.RequestURI, excludes) {
 			ginServer.ServeHTTP(w, r)
 			return
 		}
-
 		now := time.Now()
-		recorder := httpi.NewRecorder(w.Header())
 
-		body, _ := ioutil.ReadAll(r.Body)
-		r.Body = ioutil.NopCloser(bytes.NewReader(body))
+		var body []byte
+		if r.Method != http.MethodGet{
+			body, _ = ioutil.ReadAll(r.Body)
+			r.Body = ioutil.NopCloser(bytes.NewReader(body))
+		}
+		recorder := httpi.NewRecorder(w.Header())
 
 		ginServer.ServeHTTP(recorder, r)
 		if recorder.Code == http.StatusNotFound && gatewayServer != nil {
@@ -95,15 +102,15 @@ func (s *Server) Serve() {
 	//反射从配置中取port
 	serviceConfig := initialize.InitConfig.GetServiceConfig()
 	var grpcServer *grpc.Server
-	if s.GRPCHandle != nil{
-		if serviceConfig.Prometheus{
+	if s.GRPCHandle != nil {
+		if serviceConfig.Prometheus {
 			s.GRPCOptions = append([]grpc.ServerOption{
 				grpc.ChainStreamInterceptor(grpc_prometheus.StreamServerInterceptor),
 				grpc.ChainUnaryInterceptor(grpc_prometheus.UnaryServerInterceptor),
-			},s.GRPCOptions...)
+			}, s.GRPCOptions...)
 		}
 		grpcServer = grpc.NewServer(s.GRPCOptions...)
-		if serviceConfig.Prometheus{
+		if serviceConfig.Prometheus {
 			grpc_prometheus.Register(grpcServer)
 		}
 		reflection.Register(grpcServer)
@@ -114,9 +121,9 @@ func (s *Server) Serve() {
 	handle := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if r := recover(); r != nil {
-				log.CallTwo.With(zap.String("stack", stringsi.ToString(debug.Stack()))).Error(" panic: ", r)
+				log.CallTwo.With(zap.String(log.Stack, stringsi.ToString(debug.Stack()))).Error(" panic: ", r)
 				w.Header().Set(httpi.HeaderContentType, httpi.ContentJSONHeaderValue)
-				w.Write(errorcode.SysErr)
+				w.Write(httpi.ResponseSysErr)
 			}
 		}()
 
@@ -164,7 +171,7 @@ func (s *Server) Serve() {
 	initialize.InitConfig.Register()
 	//服务关闭
 	cs := func() {
-		if grpcServer!= nil {
+		if grpcServer != nil {
 			grpcServer.Stop()
 		}
 		if err := server.Close(); err != nil {

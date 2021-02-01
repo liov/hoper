@@ -68,7 +68,6 @@ require (
 	github.com/urfave/cli/v2 v2.2.0 // indirect
 	github.com/valyala/fasthttp v1.18.0
 	github.com/vektah/gqlparser/v2 v2.0.1
-	github.com/vmihailenco/msgpack/v5 v5.1.4 // indirect
 	go.opencensus.io v0.22.5
 	go.uber.org/atomic v1.7.0
 	go.uber.org/zap v1.16.0
