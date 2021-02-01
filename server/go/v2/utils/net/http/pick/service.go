@@ -138,7 +138,7 @@ func resHandler(w http.ResponseWriter, result []reflect.Value) {
 	}
 	json.NewEncoder(w).Encode(httpi.ResData{
 		Code:    0,
-		Message: "success",
+		Message: "OK",
 		Details: result[0].Interface(),
 	})
 }

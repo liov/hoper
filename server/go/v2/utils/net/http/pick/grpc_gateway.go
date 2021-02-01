@@ -1,7 +1,6 @@
 package pick
 
 import (
-	"context"
 	"net/http"
 	"path/filepath"
 	"reflect"
@@ -15,10 +14,9 @@ import (
 
 type MapRouter map[string]methodHandle
 
-type CtxFromRequest func(r *http.Request) context.Context
 // Deprecated:这种方法不推荐使用了，目前就两种定义api的方式，一种grpc-gateway，一种pick自定义
 // 该方法适用于不使用grpc-gateway的情况，只用该方法定义api
-func GrpcServiceToRestfulApi(engine *gin.Engine, authCtx CtxFromRequest, genApi bool, modName string) {
+func GrpcServiceToRestfulApi(engine *gin.Engine, genApi bool, modName string) {
 	httpMethods := []string{http.MethodGet, http.MethodOptions, http.MethodPut, http.MethodDelete,
 		http.MethodPatch, http.MethodConnect, http.MethodHead, http.MethodTrace}
 	doc := apidoc.GetDoc(filepath.Join(apidoc.FilePath+modName,modName+apidoc.GatewayEXT))
@@ -44,11 +42,11 @@ func GrpcServiceToRestfulApi(engine *gin.Engine, authCtx CtxFromRequest, genApi 
 			methodInfo.title = describe
 			methodInfo.middleware = middleware
 			methodInfo.method, methodInfo.path, methodInfo.version = parseMethodName(method.Name, httpMethods)
-			methodInfo.path = "v" + strconv.Itoa(methodInfo.version) + "/" + methodInfo.path
+			methodInfo.path = "/api/v" + strconv.Itoa(methodInfo.version) + "/" + methodInfo.path
 
 			in2Type := methodType.In(2)
 			group.Handle(methodInfo.method, methodInfo.path, func(ctx *gin.Context) {
-				in1 := reflect.ValueOf(authCtx(ctx.Request))
+				in1 := reflect.ValueOf(ctx.Request.Context())
 				in2 := reflect.New(in2Type.Elem())
 				ctx.Bind(in2.Interface())
 				result := methodValue.Call([]reflect.Value{value, in1, in2})

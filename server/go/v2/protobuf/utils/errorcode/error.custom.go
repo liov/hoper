@@ -47,8 +47,6 @@ func (x ErrCode) Error() string {
 	return x.String()
 }
 
-var SysErr = []byte(`{"code":10000,"message":"系统错误"}`)
-
 func ErrHandle(err interface{}) error {
 	if e, ok := err.(*ErrRep); ok {
 		return e

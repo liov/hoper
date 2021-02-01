@@ -225,7 +225,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.T
 	ctxi, span := model.CtxFromContext(ctx).StartSpan("Edit")
 	defer span.End()
 	ctx = ctxi.Context
-	user, err := ctxi.GetAuthInfo(Auth)
+	user, err := ctxi.GetAuthInfo(AuthWithUpdate)
 	if err != nil {
 		return nil, err
 	}
@@ -349,7 +349,7 @@ func (u *UserService) Logout(ctx context.Context, req *request.Empty) (*model.Lo
 	ctxi, span := model.CtxFromContext(ctx).StartSpan("Logout")
 	defer span.End()
 	ctx = ctxi.Context
-	user, err := ctxi.GetAuthInfo(Auth)
+	user, err := ctxi.GetAuthInfo(AuthWithUpdate)
 	if err != nil {
 		return nil, err
 	}
@@ -374,7 +374,7 @@ func (u *UserService) Logout(ctx context.Context, req *request.Empty) (*model.Lo
 }
 
 func (u *UserService) AuthInfo(ctx context.Context, req *request.Empty) (*model.UserAuthInfo, error) {
-	user, err := model.CtxFromContext(ctx).GetAuthInfo(Auth)
+	user, err := model.CtxFromContext(ctx).GetAuthInfo(AuthWithUpdate)
 	if err != nil {
 		return nil, err
 	}

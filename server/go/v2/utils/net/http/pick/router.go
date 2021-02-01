@@ -144,7 +144,7 @@ type Router struct {
 
 	//前后调用
 	middleware httpi.HandlerFuncs
-
+	CustomContext func(c context.Context, r *http.Request) context.Context
 	// If enabled, adds the matched route path onto the http.Request context
 	// before invoking the handler.
 	// The matched route path is only added to handlers of routes that were
@@ -424,6 +424,9 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			if mh.handle.IsValid() {
 				if r.SaveMatchedRoutePath {
 					*ps = append(*ps, Param{Key: MatchedRoutePathParam, Value: path})
+				}
+				if r.CustomContext!=nil{
+					req = req.WithContext(r.CustomContext(req.Context(),req))
 				}
 				commonHandler(w, req, mh.handle, ps)
 				return

@@ -281,16 +281,14 @@ func NewCtx(ctx context.Context) *Ctx {
 	}
 }
 
-func (c *Ctx) GetAuthInfo(auth func(*Ctx) (*AuthInfo, error)) (*AuthInfo, error) {
+func (c *Ctx) GetAuthInfo(auth func(*Ctx) error) (*AuthInfo, error) {
 	if c.AuthInfo == nil {
 		c.AuthInfo = new(AuthInfo)
 	}
-	user, err := auth(c)
-	if err != nil {
+	if err := auth(c);err != nil {
 		return nil, err
 	}
-	c.AuthInfo = user
-	return user, nil
+	return c.AuthInfo, nil
 }
 
 func JWTUnmarshaller(ctx jwt.CodingContext, data []byte, v interface{}) error {

@@ -3,7 +3,6 @@ package jsonpb
 import (
 	"io"
 
-	"github.com/golang/protobuf/jsonpb"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/liov/hoper/go/v2/protobuf/utils/response"
@@ -18,9 +17,6 @@ func (*JSONPb) ContentType(_ interface{}) string {
 }
 
 func (j *JSONPb) Marshal(v interface{}) ([]byte, error) {
-	if rb, ok := v.(jsonpb.JSONPBMarshaler); ok {
-		return rb.MarshalJSONPB(nil)
-	}
 	return j.API.Marshal(v)
 }
 

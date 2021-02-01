@@ -19,11 +19,10 @@ func init() {
 	jwt.WithUnmarshaller(model.JWTUnmarshaller)(jwti.Parser)
 }
 
-
-func Auth(ctx *model.Ctx) (*model.AuthInfo, error) {
+func auth(ctx *model.Ctx, update bool) error {
 	parts := strings.Split(ctx.Authorization, ".")
 	if len(parts) != 3 {
-		return nil, model.UserErr_InvalidToken
+		return model.UserErr_InvalidToken
 	}
 	signature := parts[2]
 	cacheTmp, err := dao.Dao.Cache.Get(signature)
@@ -32,20 +31,31 @@ func Auth(ctx *model.Ctx) (*model.AuthInfo, error) {
 			cache.LastActiveAt = ctx.RequestUnix
 			ctx.AuthInfo = cache.AuthInfo
 			ctx.Authorization = cache.Authorization
-			return cache.AuthInfo, nil
+			return nil
 		}
 	}
 	if err := ctx.ParseToken(ctx.Authorization, conf.Conf.Customize.TokenSecret); err != nil {
-		return nil, err
+		return err
 	}
-	err = userRedis.EfficientUserHashFromRedis(ctx)
-	if err != nil {
-		return nil, model.UserErr_InvalidToken
+	if update {
+		err = userRedis.EfficientUserHashFromRedis(ctx)
+		if err != nil {
+			return model.UserErr_InvalidToken
+		}
 	}
 	dao.Dao.Cache.SetWithExpire(signature,
 		&model.Cache{AuthInfo: ctx.AuthInfo, Authorization: ctx.Authorization},
 		5*time.Second)
-	return ctx.AuthInfo, nil
+
+	return nil
+}
+
+func Auth(ctx *model.Ctx) error {
+	return auth(ctx, false)
+}
+
+func AuthWithUpdate(ctx *model.Ctx) error {
+	return auth(ctx, true)
 }
 
 // AuthContext returns a new Context that carries value u.
