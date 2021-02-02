@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/grpc-ecosystem/grpc-gateway/v2/internal/casing"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/internal/httprule"
+	"github.com/liov/hoper/go/v2/tools/protoc-gen-grpc-gin/httprule"
+	stringsi "github.com/liov/hoper/go/v2/utils/strings"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/pluginpb"
 )
@@ -360,7 +360,7 @@ func (p FieldPath) AssignableExpr(msgExpr string) string {
 		if c.Target.OneofIndex != nil {
 			index := c.Target.OneofIndex
 			msg := c.Target.Message
-			oneOfName := casing.Camel(msg.GetOneofDecl()[*index].GetName())
+			oneOfName := stringsi.Camel(msg.GetOneofDecl()[*index].GetName())
 			oneofFieldName := msg.GetName() + "_" + c.AssignableExpr()
 
 			if c.Target.ForcePrefixedName {
@@ -400,15 +400,15 @@ type FieldPathComponent struct {
 
 // AssignableExpr returns an assignable expression in go for this field.
 func (c FieldPathComponent) AssignableExpr() string {
-	return casing.Camel(c.Name)
+	return stringsi.Camel(c.Name)
 }
 
 // ValueExpr returns an expression in go for this field.
 func (c FieldPathComponent) ValueExpr() string {
 	if c.Target.Message.File.proto2() {
-		return fmt.Sprintf("Get%s()", casing.Camel(c.Name))
+		return fmt.Sprintf("Get%s()", stringsi.Camel(c.Name))
 	}
-	return casing.Camel(c.Name)
+	return stringsi.Camel(c.Name)
 }
 
 var (

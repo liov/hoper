@@ -94,7 +94,7 @@ service UserService {
   //编辑
   rpc Edit (EditReq) returns (response.TinyRep) {
     option (google.api.http) = {
-      put: "/api/v1/user/{id}"
+      put: "/api/v1/user/id/{id}"
       body: "details"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -195,7 +195,7 @@ service UserService {
   //获取用户信息
   rpc GetUser (GetReq) returns (GetRep) {
     option (google.api.http) = {
-      get: "/api/v1/user/{id}"
+      get: "/api/v1/user/id/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]

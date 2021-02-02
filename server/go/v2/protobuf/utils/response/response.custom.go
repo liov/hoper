@@ -50,3 +50,6 @@ func (x *HttpResponse) Response(w http.ResponseWriter) {
 	w.WriteHeader(int(x.StatusCode))
 	w.Write(x.Body)
 }
+
+
+var ResponseOk = &TinyRep{Message: "OK"}

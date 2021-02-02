@@ -29,7 +29,7 @@ func main() {
 const goOut = "go-patch_out=plugin=go,paths=source_relative"
 const grpcOut = "go-patch_out=plugin=go-grpc,paths=source_relative"
 const enumOut = "enum_out=plugins=grpc,paths=source_relative"
-const gatewayOut = "grpc-gateway_out=logtostderr=true,paths=source_relative"
+const gatewayOut = "grpc-gin_out=logtostderr=true,paths=source_relative"
 const openapiv2Out = "openapiv2_out=logtostderr=true"
 const govalidatorsOut = "govalidators_out=gogoimport=true,paths=source_relative"
 const gogoprotoOut = "gogo_out=plugins=grpc"

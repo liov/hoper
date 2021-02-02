@@ -6,7 +6,10 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/liov/hoper/go/v2/protobuf/utils/response"
+	"github.com/liov/hoper/go/v2/utils/encoding/json"
 )
+
+var JsonPb = JSONPb{json.Standard}
 
 type JSONPb struct {
 	jsoniter.API

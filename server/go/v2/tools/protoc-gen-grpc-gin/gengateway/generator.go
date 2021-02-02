@@ -38,14 +38,18 @@ func New(reg *descriptor.Registry, useRequestContext bool, registerFuncSuffix st
 	for _, pkgpath := range []string{
 		"context",
 		"io",
-		"net/http",
-		"github.com/gin-gonic/gin",
+
 		"google.golang.org/protobuf/proto",
 		"google.golang.org/grpc",
 		"google.golang.org/grpc/codes",
 		"google.golang.org/grpc/grpclog",
 		"google.golang.org/grpc/metadata",
 		"google.golang.org/grpc/status",
+		"github.com/gin-gonic/gin",
+		"github.com/grpc-ecosystem/grpc-gateway/v2/runtime",
+		"github.com/grpc-ecosystem/grpc-gateway/v2/utilities",
+		"github.com/liov/hoper/go/v2/utils/net/http/gin",
+		"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway",
 	} {
 		pkg := descriptor.GoPackage{
 			Path: pkgpath,

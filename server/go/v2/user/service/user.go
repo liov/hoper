@@ -340,7 +340,7 @@ func (*UserService) login(ctxi *model.Ctx, user *model.User) (*model.LoginRep, e
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
-	gateway.GrpcSetCookie(ctxi, cookie)
+	//gateway.GrpcSetCookie(ctxi.Context, cookie)
 	resp.Cookie = cookie
 	return resp, nil
 }
@@ -369,7 +369,7 @@ func (u *UserService) Logout(ctx context.Context, req *request.Empty) (*model.Lo
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
-	gateway.GrpcSetCookie(ctxi, cookie)
+	gateway.GrpcSetCookie(ctxi.Context, cookie)
 	return &model.LogoutRep{Message: "已注销", Cookie: cookie}, nil
 }
 

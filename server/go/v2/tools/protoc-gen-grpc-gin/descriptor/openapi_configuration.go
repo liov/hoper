@@ -5,7 +5,8 @@ import (
 	"io/ioutil"
 
 	"github.com/ghodss/yaml"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/internal/descriptor/openapiconfig"
+	"github.com/liov/hoper/go/v2/tools/protoc-gen-grpc-gin/descriptor/openapiconfig"
+
 	"google.golang.org/protobuf/encoding/protojson"
 )
 

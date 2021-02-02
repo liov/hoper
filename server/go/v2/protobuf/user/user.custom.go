@@ -167,7 +167,6 @@ type Cache struct {
 	Authorization string
 }
 
-
 type DeviceInfo struct {
 	//设备
 	Device     string `json:"device" gorm:"size:255"`
@@ -203,7 +202,8 @@ type Ctx struct {
 	*DeviceInfo   `json:"-"`
 	RequestAt     time.Time   `json:"-"`
 	RequestUnix   int64       `json:"iat,omitempty"`
-	MD            metadata.MD `json:"-"`
+	Header        metadata.MD `json:"-"`
+	Trailer       metadata.MD `json:"-"`
 	parsed        bool
 }
 
@@ -216,6 +216,10 @@ func (c *Ctx) StartSpan(name string, o ...trace.StartOption) (*Ctx, *trace.Span)
 		c.TraceID = span.SpanContext().TraceID.String()
 	}
 	return c, span
+}
+
+func (c *Ctx) WithContext(ctx context.Context){
+	c.Context = ctx
 }
 
 type ctxKey struct{}
@@ -234,7 +238,7 @@ func CtxWithRequest(ctx context.Context, r *http.Request) context.Context {
 			DeviceInfo:    Device(r.Header),
 			RequestAt:     now,
 			RequestUnix:   user.LastActiveAt,
-			MD:            metadata.MD(r.Header),
+			Header:        metadata.MD(r.Header),
 			parsed:        true,
 		})
 }
@@ -246,7 +250,7 @@ func ConvertContext(r *http.Request) pick.Context {
 		c = NewCtx(r.Context())
 	}
 	if !c.parsed {
-		c.MD = metadata.MD(r.Header)
+		c.Header = metadata.MD(r.Header)
 		c.parsed = true
 	}
 	return c
@@ -261,7 +265,7 @@ func CtxFromContext(ctx context.Context) *Ctx {
 	if c, ok := ctxi.(*Ctx); ok {
 		if !c.parsed {
 			md, _ := metadata.FromIncomingContext(ctx)
-			c.MD = md
+			c.Header = md
 			c.parsed = true
 		}
 		return c
@@ -285,7 +289,7 @@ func (c *Ctx) GetAuthInfo(auth func(*Ctx) error) (*AuthInfo, error) {
 	if c.AuthInfo == nil {
 		c.AuthInfo = new(AuthInfo)
 	}
-	if err := auth(c);err != nil {
+	if err := auth(c); err != nil {
 		return nil, err
 	}
 	return c.AuthInfo, nil
