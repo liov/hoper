@@ -6,7 +6,8 @@ import (
 	"strings"
 
 	"github.com/ghodss/yaml"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/internal/descriptor/apiconfig"
+	"github.com/liov/hoper/go/v2/tools/protoc-gen-grpc-gin/descriptor/apiconfig"
+
 	"google.golang.org/protobuf/encoding/protojson"
 )
 

@@ -15,8 +15,8 @@ import (
 	"strings"
 
 	"github.com/golang/glog"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/internal/descriptor"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway/internal/gengateway"
+	"github.com/liov/hoper/go/v2/tools/protoc-gen-grpc-gin/descriptor"
+	"github.com/liov/hoper/go/v2/tools/protoc-gen-grpc-gin/gengateway"
 	"google.golang.org/protobuf/compiler/protogen"
 )
 

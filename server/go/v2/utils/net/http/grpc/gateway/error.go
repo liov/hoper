@@ -43,7 +43,7 @@ func CustomHTTPError(ctx context.Context, mux *runtime.ServeMux, marshaler runti
 		grpclog.Infof("Failed to extract ServerMetadata from context")
 	}
 
-	handleForwardResponseServerMetadata(w, mux, md)
+	handleForwardResponseServerMetadata(w, md)
 
 	buf, merr := marshaler.Marshal(se)
 	if merr != nil {
@@ -121,7 +121,7 @@ func outgoingHeaderMatcher(key string) (string, bool) {
 	return fmt.Sprintf("%s%s", runtime.MetadataHeaderPrefix, key), true
 }
 
-func handleForwardResponseServerMetadata(w http.ResponseWriter, mux *runtime.ServeMux, md runtime.ServerMetadata) {
+func handleForwardResponseServerMetadata(w http.ResponseWriter, md runtime.ServerMetadata) {
 	for k, vs := range md.HeaderMD {
 		if h, ok := outgoingHeaderMatcher(k); ok {
 			for _, v := range vs {

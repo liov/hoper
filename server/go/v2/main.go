@@ -1,11 +1,9 @@
 package main
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	cconf "github.com/liov/hoper/go/v2/content/conf"
 	cdao "github.com/liov/hoper/go/v2/content/dao"
 	contentervice "github.com/liov/hoper/go/v2/content/service"
@@ -15,7 +13,6 @@ import (
 	uconf "github.com/liov/hoper/go/v2/user/conf"
 	udao "github.com/liov/hoper/go/v2/user/dao"
 	userservice "github.com/liov/hoper/go/v2/user/service"
-	"github.com/liov/hoper/go/v2/utils/net/http/gin/oauth"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 	"github.com/liov/hoper/go/v2/utils/net/http/tailmon"
 	"google.golang.org/grpc"
@@ -33,14 +30,10 @@ func main() {
 			user.RegisterOauthServiceServer(gs, userservice.GetOauthService())
 			content.RegisterMomentServiceServer(gs, contentervice.GetMomentService())
 		},
-		GatewayRegistr: func(ctx context.Context, mux *runtime.ServeMux) {
-			_ = user.RegisterUserServiceHandlerServer(ctx, mux, userservice.GetUserService())
-			_ = user.RegisterOauthServiceHandlerServer(ctx, mux, userservice.GetOauthService())
-			_ = content.RegisterMomentServiceHandlerServer(ctx, mux, contentervice.GetMomentService())
-
-		},
 		GinHandle: func(app *gin.Engine) {
-			oauth.RegisterOauthServiceHandlerServer(app, userservice.GetOauthService())
+			_ = user.RegisterUserServiceHandlerServer(app, userservice.GetUserService())
+			_ = user.RegisterOauthServiceHandlerServer(app, userservice.GetOauthService())
+			_ = content.RegisterMomentServiceHandlerServer(app, contentervice.GetMomentService())
 			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
 			pick.Gin(app, user.ConvertContext, true, initialize.InitConfig.Module)
 		},

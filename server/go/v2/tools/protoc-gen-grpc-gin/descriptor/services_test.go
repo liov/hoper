@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/grpc-ecosystem/grpc-gateway/v2/internal/httprule"
+	"github.com/liov/hoper/go/v2/tools/protoc-gen-grpc-gin/httprule"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
