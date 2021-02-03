@@ -95,7 +95,7 @@ func (init *Init) LoadConfig() *Init {
 	if err != nil {
 		log.Fatalf("配置错误: %v", err)
 	}
-	fmt.Printf(`Load config from: %s\n`,InitConfig.ConfUrl)
+	fmt.Printf("Load config from: %s\n",InitConfig.ConfUrl)
 	init.AddConfig()
 	init.BasicConfig = onceConfig.BasicConfig
 	init.NoInit = onceConfig.NoInit
