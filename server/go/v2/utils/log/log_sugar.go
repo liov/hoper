@@ -34,7 +34,7 @@ func (lf *Config) NewLogger() *Logger {
 	logger := lf.initLogger().
 		With(
 			zap.String("module", lf.ModuleName),
-			zap.String("source", net.GetIP()),
+			zap.String("source", neti.GetIP()),
 		)
 	return &Logger{logger.Sugar(), logger}
 }

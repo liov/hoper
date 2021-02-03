@@ -1360,6 +1360,8 @@ func (g *Generator) generateImports() {
 		if EnabledEnumErrorCode(enum.EnumDescriptorProto) {
 			pkg = append(pkg, "github.com/liov/hoper/go/v2/protobuf/utils/errorcode")
 			pkg = append(pkg, "github.com/liov/hoper/go/v2/utils/log")
+			pkg = append(pkg, "google.golang.org/grpc/status")
+			pkg = append(pkg, "google.golang.org/grpc/codes")
 			break
 		}
 		if EnabledEnumGqlGen(enum.EnumDescriptorProto) || EnabledFileEnumGqlGen(g.file.FileDescriptorProto) {
@@ -1591,6 +1593,12 @@ func (g *Generator) generateEnum(enum *EnumDescriptor) {
 		g.In()
 		g.P(`log.Default.Error(err)`)
 		g.P(`return &errorcode.ErrRep{Code: errorcode.ErrCode(x), Message: x.String()}`)
+		g.Out()
+		g.P("}")
+		g.P()
+		g.P("func (x ", ccTypeName, ") GRPCStatus() *status.Status {")
+		g.In()
+		g.P(`return status.New(codes.Code(x), x.String())`)
 		g.Out()
 		g.P("}")
 		g.P()

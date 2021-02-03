@@ -1,18 +1,19 @@
-package user
+package auth
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/dgrijalva/jwt-go/v4"
+	jwt "github.com/dgrijalva/jwt-go/v4"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
-	"github.com/liov/hoper/go/v2/utils/net"
-	"github.com/liov/hoper/go/v2/utils/net/http"
+	neti "github.com/liov/hoper/go/v2/utils/net"
+	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 	stringsi "github.com/liov/hoper/go/v2/utils/strings"
 	jwti "github.com/liov/hoper/go/v2/utils/verification/auth/jwt"
@@ -23,63 +24,63 @@ import (
 	"google.golang.org/grpc/peer"
 )
 
-//Cannot use 'resumes' (type []*model.Resume) as type []CmpKey
-//我认为这是一个bug
-//[]int可以是interface，却不可以是[]interface
-//var test []array.CmpKey
-//test = append(test,resumes[0]) 可行
-//test = append(test,resumes...) 不可行，可笑
-func (x *Resume) CmpKey() uint64 {
-	return x.Id
+type Info interface {
+	jwt.Claims
+	GenerateToken(secret []byte) (string, error)
+	ParseToken(ctx *Ctx, secret string) error
 }
 
-var UserserviceServicedesc = &_UserService_serviceDesc
+type UserInfo struct {
+	Id           uint64     `json:"id"`
+	IdStr        string     `json:"-" gorm:"-"`
+	Name         string     `json:"name"`
+	Role         int8       `json:"role"`
+	Status       int8 `json:"status"`
+	LastActiveAt int64      `json:"lat,omitempty"`
+	ExpiredAt    int64      `json:"exp,omitempty"`
+	LoginAt      int64      `json:"iat,omitempty"`
+}
 
-/*
-func RegisterUserServiceHandlerFromModuleWithReConnect(ctx context.Context, mux *runtime.ServeMux, getEndPort func() string, opts []grpc.DialOption) (err error) {
-	endPort:=getEndPort()
-	conn, err := grpc.Dial(endPort, opts...)
-	if err != nil {
+
+func (x *UserInfo) Valid(helper *jwt.ValidationHelper) error {
+	if x.ExpiredAt != 0 && x.LastActiveAt > x.ExpiredAt {
+		return errors.New("登录超时")
+	}
+	return nil
+}
+
+func (x *UserInfo) GenerateToken(secret []byte) (string, error) {
+	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, x)
+	token, err := tokenClaims.SignedString(secret)
+	return token, err
+}
+
+func (x *UserInfo) ParseToken(token, secret string) error {
+	if err := jwti.ParseToken(x, token, secret); err != nil {
 		return err
 	}
-	client := NewUserServiceClient(conn)
-	reconn.ReConnectMap[endPort] = reconn.ReConnect(client, getEndPort, opts)
-	return RegisterUserServiceHandlerClient(ctx, mux, client)
-}
-*/
-
-/*----------------------------ORM-------------------------------*/
-func userTableName(id uint64) string {
-	if id < 1_000_000 {
-		return "user"
-	}
-	return "user_" + string(byte(id/1_000_000+49))
-}
-func (x *User) TableName() string {
-	return userTableName(x.Id)
+	x.IdStr = strconv.FormatUint(x.Id, 10)
+	return nil
 }
 
-func (x *UserBaseInfo) TableName() string {
-	return userTableName(x.Id)
+type Cache struct {
+	Info
+	Authorization string
 }
 
-func (x *UserAuthInfo) TableName() string {
-	return userTableName(x.Id)
+type DeviceInfo struct {
+	//设备
+	Device     string `json:"device" gorm:"size:255"`
+	Os         string `json:"os" gorm:"size:255"`
+	AppCode    string `json:"appCode" gorm:"size:255"`
+	AppVersion string `json:"appVersion" gorm:"size:255"`
+	IP         string `json:"IP" gorm:"size:255"`
+	Lng        string `json:"lng" gorm:"type:numeric(10,6)"`
+	Lat        string `json:"lat" gorm:"type:numeric(10,6)"`
+	Area       string `json:"area" gorm:"size:255"`
+	UserAgent  string `json:"userAgent" gorm:"size:255"`
 }
 
-func (x *Resume) TableName() string {
-	return "resume"
-}
-
-func (x *EditReq) TableName() string {
-	return userTableName(x.Id)
-}
-
-func (x *AuthInfo) TableName() string {
-	return userTableName(x.Id)
-}
-
-/*----------------------------CTX上下文-------------------------------*/
 func Device(r http.Header) *DeviceInfo {
 	unknow := true
 	var info DeviceInfo
@@ -123,86 +124,10 @@ func Device(r http.Header) *DeviceInfo {
 	return &info
 }
 
-type AuthInfo struct {
-	Id           uint64      `json:"id"`
-	IdStr        string      `json:"-" gorm:"-"`
-	Name         string      `json:"name"`
-	Role         Role        `json:"role"`
-	Status       UserStatus  `json:"status"`
-	LastActiveAt int64       `json:"lat,omitempty"`
-	ExpiredAt    int64       `json:"exp,omitempty"`
-	LoginAt      int64       `json:"iat,omitempty"`
-}
-
-func (x *AuthInfo) UserAuthInfo() *UserAuthInfo {
-	return &UserAuthInfo{
-		Id:           x.Id,
-		Name:         x.Name,
-		Role:         x.Role,
-		Status:       x.Status,
-		LastActiveAt: x.LastActiveAt,
-		ExpiredAt:    x.ExpiredAt,
-		LoginAt:      x.LoginAt,
-	}
-}
-
-func (x *AuthInfo) Valid(helper *jwt.ValidationHelper) error {
-	if x.ExpiredAt != 0 && x.LastActiveAt > x.ExpiredAt {
-		return UserErr_LoginTimeout
-	}
-	return nil
-}
-
-func (x *AuthInfo) GenerateToken(secret []byte) (string, error) {
-	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, x)
-	token, err := tokenClaims.SignedString(secret)
-	return token, err
-}
-
-func (x *AuthInfo) ParseToken(token, secret string) error {
-	if err := jwti.ParseToken(x, token, secret); err != nil {
-		return err
-	}
-	x.IdStr = strconv.FormatUint(x.Id, 10)
-	return nil
-}
-
-type Cache struct {
-	*AuthInfo
-	Authorization string
-}
-
-type DeviceInfo struct {
-	//设备
-	Device     string `json:"device" gorm:"size:255"`
-	Os         string `json:"os" gorm:"size:255"`
-	AppCode    string `json:"appCode" gorm:"size:255"`
-	AppVersion string `json:"appVersion" gorm:"size:255"`
-	IP         string `json:"IP" gorm:"size:255"`
-	Lng        string `json:"lng" gorm:"type:numeric(10,6)"`
-	Lat        string `json:"lat" gorm:"type:numeric(10,6)"`
-	Area       string `json:"area" gorm:"size:255"`
-	UserAgent  string `json:"userAgent" gorm:"size:255"`
-}
-
-func (x *DeviceInfo) UserDeviceInfo() *UserDeviceInfo {
-	return &UserDeviceInfo{
-		Device:     x.Device,
-		Os:         x.Os,
-		AppCode:    x.AppCode,
-		AppVersion: x.AppVersion,
-		IP:         x.IP,
-		Lng:        x.Lng,
-		Lat:        x.Lat,
-		Area:       x.Area,
-		UserAgent:  x.UserAgent,
-	}
-}
-
 type Ctx struct {
 	context.Context `json:"-"`
 	TraceID         string `json:"-"`
-	*AuthInfo
+	Info
 	Authorization              string `json:"-"`
 	*DeviceInfo                `json:"-"`
 	RequestAt                  time.Time   `json:"-"`
@@ -233,17 +158,14 @@ type ctxKey struct{}
 func CtxWithRequest(ctx context.Context, r *http.Request) context.Context {
 	span := trace.FromContext(ctx)
 	now := time.Now()
-	user := new(AuthInfo)
-	user.LastActiveAt = now.Unix()
 	return context.WithValue(context.Background(), ctxKey{},
 		&Ctx{
 			Context:       ctx,
 			TraceID:       span.SpanContext().TraceID.String(),
-			AuthInfo:      user,
 			Authorization: httpi.GetToken(r),
 			DeviceInfo:    Device(r.Header),
 			RequestAt:     now,
-			RequestUnix:   user.LastActiveAt,
+			RequestUnix:   now.Unix(),
 			Header:        metadata.MD(r.Header),
 		})
 }
@@ -304,35 +226,31 @@ func CtxFromContext(ctx context.Context) *Ctx {
 
 func newCtx(ctx context.Context) *Ctx {
 	now := time.Now()
-	user := new(AuthInfo)
-	user.LastActiveAt = now.Unix()
 
 	return &Ctx{
 		Context:     ctx,
-		AuthInfo:    user,
 		RequestAt:   now,
-		RequestUnix: user.LastActiveAt,
+		RequestUnix: now.Unix(),
 	}
 }
 
-func (c *Ctx) GetAuthInfo(auth func(*Ctx) error) (*AuthInfo, error) {
-	if c.AuthInfo == nil {
-		c.AuthInfo = new(AuthInfo)
-	}
-	if c.grpc {
-
-	}
+func (c *Ctx) GetAuthInfo(auth func(*Ctx) error) (Info, error) {
 	if err := auth(c); err != nil {
 		return nil, err
 	}
-	return c.AuthInfo, nil
+	return c.Info, nil
 }
+
+func init() {
+	jwt.WithUnmarshaller(JWTUnmarshaller)(jwti.Parser)
+}
+
 
 func JWTUnmarshaller(ctx jwt.CodingContext, data []byte, v interface{}) error {
 	if ctx.FieldDescriptor == jwt.ClaimsFieldDescriptor {
 		if c, ok := (*v.(*jwt.Claims)).(*Ctx); ok {
 			c.Authorization = stringsi.ToString(data)
-			return json.Unmarshal(data, c.AuthInfo)
+			return json.Unmarshal(data, c.Info)
 		}
 	}
 	return json.Unmarshal(data, v)

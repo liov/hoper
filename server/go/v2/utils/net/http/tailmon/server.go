@@ -113,6 +113,7 @@ func (s *Server) Serve() {
 		if serviceConfig.Prometheus {
 			grpc_prometheus.Register(grpcServer)
 		}
+		s.GRPCHandle(grpcServer)
 		reflection.Register(grpcServer)
 	}
 	httpHandler := s.httpHandler()

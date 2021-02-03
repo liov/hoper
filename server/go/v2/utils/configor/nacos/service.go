@@ -83,7 +83,7 @@ func (c *Config) GetServiceEndPort(svcName string) string {
 func (c *Config) RegisterInstance(port, svcName string) error {
 	urlStr := fmt.Sprintf(RegisterInstanceUrl, c.Addr)
 	param := fmt.Sprintf(RegisterInstanceParam,
-		port[1:], net.GetIP(), svcName, c.Group, c.Tenant)
+		port[1:], neti.GetIP(), svcName, c.Group, c.Tenant)
 	resp, err := http.Post(urlStr, httpi.ContentFormHeaderValue, strings.NewReader(param))
 	if err != nil {
 		return err
@@ -97,7 +97,7 @@ func (c *Config) RegisterInstance(port, svcName string) error {
 func (c *Config) DeleteInstance(port, svcName string) error {
 	urlStr := fmt.Sprintf(RegisterInstanceUrl, c.Addr)
 	param := fmt.Sprintf(RegisterInstanceParam,
-		port[1:], net.GetIP(), svcName, c.Group, c.Tenant)
+		port[1:], neti.GetIP(), svcName, c.Group, c.Tenant)
 	req, err := http.NewRequest(http.MethodDelete, urlStr, strings.NewReader(param))
 	if err != nil {
 		return err

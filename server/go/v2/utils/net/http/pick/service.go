@@ -13,11 +13,13 @@ import (
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	"github.com/liov/hoper/go/v2/utils/net/http/request/binding"
+	"google.golang.org/grpc"
 )
 
 type Context interface {
 	context.Context
 	jwt.Claims
+	grpc.ServerTransportStream
 }
 
 var (

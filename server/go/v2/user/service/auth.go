@@ -37,6 +37,7 @@ func auth(ctx *model.Ctx, update bool) error {
 	if err := ctx.ParseToken(ctx.Authorization, conf.Conf.Customize.TokenSecret); err != nil {
 		return err
 	}
+	ctx.LastActiveAt = ctx.RequestUnix
 	if update {
 		err = userRedis.EfficientUserHashFromRedis(ctx)
 		if err != nil {
