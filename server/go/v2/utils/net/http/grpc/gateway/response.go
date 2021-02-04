@@ -13,6 +13,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/encoding/protobuf/jsonpb"
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/reconn"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -100,8 +101,8 @@ func ForwardResponseMessage(ctx *gin.Context,md runtime.ServerMetadata ,message 
 		}
 		ctx.Status(int(res.StatusCode))
 	}
-	if v, ok := message.(SetCookie); ok {
-		ctx.Header(httpi.HeaderSetCookie, v.GetCookie())
+	if md.HeaderMD == nil {
+		md.HeaderMD = grpc.ServerTransportStreamFromContext(ctx.Request.Context()).(*runtime.ServerTransportStream).Header()
 	}
 
 	handleForwardResponseServerMetadata(ctx.Writer, md)

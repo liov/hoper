@@ -20,11 +20,7 @@ func init() {
 }
 
 func auth(ctx *model.Ctx, update bool) error {
-	parts := strings.Split(ctx.Authorization, ".")
-	if len(parts) != 3 {
-		return model.UserErr_InvalidToken
-	}
-	signature := parts[2]
+	signature := ctx.Authorization[strings.LastIndexByte(ctx.Authorization, '.')+1:]
 	cacheTmp, err := dao.Dao.Cache.Get(signature)
 	if err == nil {
 		if cache, ok := cacheTmp.(*model.Cache); ok {

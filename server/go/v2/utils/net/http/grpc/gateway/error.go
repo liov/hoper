@@ -10,6 +10,7 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
+	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/reconn"
 	stringsi "github.com/liov/hoper/go/v2/utils/strings"
 	"google.golang.org/grpc/grpclog"
@@ -30,9 +31,9 @@ func CustomHTTPError(ctx context.Context, mux *runtime.ServeMux, marshaler runti
 
 	const fallback = `{"code": 14, "message": "failed to marshal error message"}`
 
-	w.Header().Del("Trailer")
+	w.Header().Del(httpi.HeaderTrailer)
 	contentType := marshaler.ContentType(nil)
-	w.Header().Set("Content-Type", contentType)
+	w.Header().Set(httpi.HeaderContentType, contentType)
 	se, ok := err.(*errorcode.ErrRep)
 	if !ok {
 		se = &errorcode.ErrRep{Code: errorcode.Unknown, Message: err.Error()}
@@ -57,10 +58,10 @@ func CustomHTTPError(ctx context.Context, mux *runtime.ServeMux, marshaler runti
 
 	var wantsTrailers bool
 
-	if te := r.Header.Get("TE"); strings.Contains(strings.ToLower(te), "trailers") {
+	if te := r.Header.Get(httpi.HeaderTE); strings.Contains(strings.ToLower(te), "trailers") {
 		wantsTrailers = true
 		handleForwardResponseTrailerHeader(w, md)
-		w.Header().Set("Transfer-Encoding", "chunked")
+		w.Header().Set(httpi.HeaderTransferEncoding, "chunked")
 	}
 
 /*	st := HTTPStatusFromCode(se.Code)
@@ -118,7 +119,12 @@ func HTTPStatusFromCode(code errorcode.ErrCode) int {
 
 
 func outgoingHeaderMatcher(key string) (string, bool) {
-	return fmt.Sprintf("%s%s", runtime.MetadataHeaderPrefix, key), true
+	switch key {
+	case
+		"Set-Cookie":
+		return key, true
+	}
+	return "", false
 }
 
 func handleForwardResponseServerMetadata(w http.ResponseWriter, md runtime.ServerMetadata) {

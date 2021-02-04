@@ -105,6 +105,6 @@ func (init *Init) P2DB() *gorm.DB {
 		})
 	}
 	//i.closes = append(i.closes,db.CloseDao)
-	//closes = append(closes, func() {log.Info("数据库已关闭")})
+	//closes = append(closes, func() {log.AuthInfo("数据库已关闭")})
 	return db
 }

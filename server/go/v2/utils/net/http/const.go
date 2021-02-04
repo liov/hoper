@@ -44,7 +44,7 @@ const (
 )
 
 const (
-	HeaderDeviceInfo         = "Device-Info"
+	HeaderDeviceInfo         = "Device-AuthInfo"
 	HeaderLocation           = "Location"
 	HeaderArea               = "Area"
 	HeaderUserAgent          = "User-Agent"
@@ -64,4 +64,6 @@ const (
 	HeaderSetCookie          = "Set-Cookie"
 	HeaderTrailer            = "Trailer"
 	HeaderTransferEncoding   = "Transfer-Encoding"
+	HeaderInternal = "Internal"
+	HeaderTE = "TE"
 )
