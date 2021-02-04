@@ -124,14 +124,14 @@ func Device(r http.Header) *DeviceInfo {
 }
 
 type AuthInfo struct {
-	Id           uint64      `json:"id"`
-	IdStr        string      `json:"-" gorm:"-"`
-	Name         string      `json:"name"`
-	Role         Role        `json:"role"`
-	Status       UserStatus  `json:"status"`
-	LastActiveAt int64       `json:"lat,omitempty"`
-	ExpiredAt    int64       `json:"exp,omitempty"`
-	LoginAt      int64       `json:"iat,omitempty"`
+	Id           uint64     `json:"id"`
+	IdStr        string     `json:"-" gorm:"-"`
+	Name         string     `json:"name"`
+	Role         Role       `json:"role"`
+	Status       UserStatus `json:"status"`
+	LastActiveAt int64      `json:"lat,omitempty"`
+	ExpiredAt    int64      `json:"exp,omitempty"`
+	LoginAt      int64      `json:"iat,omitempty"`
 }
 
 func (x *AuthInfo) UserAuthInfo() *UserAuthInfo {
@@ -210,7 +210,7 @@ type Ctx struct {
 	Header                     metadata.MD `json:"-"`
 	Peer                       *peer.Peer  `json:"-"`
 	grpc.ServerTransportStream `json:"-"`
-	grpc                       bool
+	Internal                   string
 }
 
 var _ = pick.Context(new(Ctx))
@@ -228,23 +228,42 @@ func (c *Ctx) WithContext(ctx context.Context) {
 	c.Context = ctx
 }
 
+func (c *Ctx) SetCookie(cookie string)  error{
+	md:=metadata.MD{httpi.HeaderSetCookie:[]string{cookie}}
+	return c.SendHeader(md)
+}
+
 type ctxKey struct{}
 
 func CtxWithRequest(ctx context.Context, r *http.Request) context.Context {
 	span := trace.FromContext(ctx)
 	now := time.Now()
-	user := new(AuthInfo)
-	user.LastActiveAt = now.Unix()
+	isGrpc := r.ProtoMajor == 2 && strings.Contains(r.Header.Get(httpi.HeaderContentType), httpi.ContentGRPCHeaderValue)
+	var p *peer.Peer
+	if !isGrpc {
+		p = &peer.Peer{
+			Addr: neti.StrAddr(r.RemoteAddr),
+		}
+		if r.TLS != nil {
+			p.AuthInfo = credentials.TLSInfo{State: *r.TLS, CommonAuthInfo: credentials.CommonAuthInfo{SecurityLevel: credentials.PrivacyAndIntegrity}}
+		}
+	}
+	var stream grpc.ServerTransportStream
+	if !isGrpc {
+		stream = new(runtime.ServerTransportStream)
+		ctx = grpc.NewContextWithServerTransportStream(ctx,stream)
+	}
 	return context.WithValue(context.Background(), ctxKey{},
 		&Ctx{
 			Context:       ctx,
 			TraceID:       span.SpanContext().TraceID.String(),
-			AuthInfo:      user,
+			AuthInfo:      new(AuthInfo),
 			Authorization: httpi.GetToken(r),
 			DeviceInfo:    Device(r.Header),
 			RequestAt:     now,
-			RequestUnix:   user.LastActiveAt,
+			RequestUnix:   now.Unix(),
 			Header:        metadata.MD(r.Header),
+			Internal:      r.Header.Get(httpi.HeaderInternal),
 		})
 }
 
@@ -253,14 +272,15 @@ func ConvertContext(r *http.Request) pick.Context {
 	c, ok := ctxi.(*Ctx)
 	if !ok {
 		c = newCtx(r.Context())
-		if r.ProtoMajor == 2 && strings.Contains(r.Header.Get(httpi.HeaderContentType), httpi.ContentGRPCHeaderValue) {
-			c.grpc = true
-		}
 	}
 	if c.Header == nil {
 		c.Header = metadata.MD(r.Header)
 	}
-	if c.Peer == nil && !c.grpc {
+	if c.DeviceInfo == nil{
+		c.DeviceInfo = Device(r.Header)
+	}
+	isGrpc := r.ProtoMajor == 2 && strings.Contains(r.Header.Get(httpi.HeaderContentType), httpi.ContentGRPCHeaderValue)
+	if c.Peer == nil && !isGrpc {
 		p := &peer.Peer{
 			Addr: neti.StrAddr(r.RemoteAddr),
 		}
@@ -269,8 +289,9 @@ func ConvertContext(r *http.Request) pick.Context {
 		}
 		c.Peer = p
 	}
-	if c.ServerTransportStream == nil && !c.grpc {
+	if c.ServerTransportStream == nil && !isGrpc {
 		c.ServerTransportStream = new(runtime.ServerTransportStream)
+		c.WithContext(grpc.NewContextWithServerTransportStream(c.Context,c.ServerTransportStream))
 	}
 	return c
 }
@@ -298,29 +319,25 @@ func CtxFromContext(ctx context.Context) *Ctx {
 		if stream = grpc.ServerTransportStreamFromContext(ctx); stream == nil {
 			stream = new(runtime.ServerTransportStream)
 		}
+		c.WithContext(grpc.NewContextWithServerTransportStream(c.Context,stream))
+		c.ServerTransportStream = stream
 	}
 	return c
 }
 
 func newCtx(ctx context.Context) *Ctx {
 	now := time.Now()
-	user := new(AuthInfo)
-	user.LastActiveAt = now.Unix()
-
 	return &Ctx{
 		Context:     ctx,
-		AuthInfo:    user,
+		AuthInfo:    new(AuthInfo),
 		RequestAt:   now,
-		RequestUnix: user.LastActiveAt,
+		RequestUnix: now.Unix(),
 	}
 }
 
 func (c *Ctx) GetAuthInfo(auth func(*Ctx) error) (*AuthInfo, error) {
 	if c.AuthInfo == nil {
 		c.AuthInfo = new(AuthInfo)
-	}
-	if c.grpc {
-
 	}
 	if err := auth(c); err != nil {
 		return nil, err

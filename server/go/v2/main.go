@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	cconf "github.com/liov/hoper/go/v2/content/conf"
@@ -13,8 +14,12 @@ import (
 	uconf "github.com/liov/hoper/go/v2/user/conf"
 	udao "github.com/liov/hoper/go/v2/user/dao"
 	userservice "github.com/liov/hoper/go/v2/user/service"
+	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 	"github.com/liov/hoper/go/v2/utils/net/http/tailmon"
+	"go.opencensus.io/examples/exporter"
+	"go.opencensus.io/plugin/ocgrpc"
+	"go.opencensus.io/stats/view"
 	"google.golang.org/grpc"
 )
 
@@ -22,6 +27,12 @@ func main() {
 	//配置初始化应该在第一位
 	defer initialize.Start(uconf.Conf, udao.Dao)()
 	defer initialize.Start(cconf.Conf, cdao.Dao)()
+	view.RegisterExporter(&exporter.PrintExporter{})
+	view.SetReportingPeriod(time.Second)
+	// Register the view to collect gRPC client stats.
+	if err := view.Register(ocgrpc.DefaultClientViews...); err != nil {
+		log.Fatal(err)
+	}
 	pick.RegisterService(userservice.GetUserService(), contentervice.GetMomentService())
 	(&tailmon.Server{
 		//为了可以自定义中间件

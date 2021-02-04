@@ -27,7 +27,7 @@ func (m *MomentService) name() string {
 }
 
 func (*MomentService) Info(context.Context, *model.GetMomentReq) (*response.TinyRep, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Info not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method AuthInfo not implemented")
 }
 
 func (m *MomentService) Add(ctx context.Context, req *model.AddMomentReq) (*response.TinyRep, error) {

@@ -1,0 +1,5 @@
+package conf
+
+func Init() {
+
+}

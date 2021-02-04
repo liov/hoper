@@ -1,4 +1,4 @@
-package auth
+package koko
 
 import (
 	"context"
@@ -7,10 +7,12 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
-	jwt "github.com/dgrijalva/jwt-go/v4"
+	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/liov/hoper/go/v2/utils/dao/cache"
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	neti "github.com/liov/hoper/go/v2/utils/net"
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
@@ -24,23 +26,29 @@ import (
 	"google.golang.org/grpc/peer"
 )
 
-type Info interface {
+var (
+	ctxPool = sync.Pool{New: func() interface{} {
+		return new(Ctx)
+	}}
+	authDao *AuthInfoDao
+)
+
+type AuthInfo interface {
 	jwt.Claims
 	GenerateToken(secret []byte) (string, error)
-	ParseToken(ctx *Ctx, secret string) error
+	ParseToken(token, secret string) error
 }
 
 type UserInfo struct {
-	Id           uint64     `json:"id"`
-	IdStr        string     `json:"-" gorm:"-"`
-	Name         string     `json:"name"`
-	Role         int8       `json:"role"`
-	Status       int8 `json:"status"`
-	LastActiveAt int64      `json:"lat,omitempty"`
-	ExpiredAt    int64      `json:"exp,omitempty"`
-	LoginAt      int64      `json:"iat,omitempty"`
+	Id           uint64 `json:"id"`
+	IdStr        string `json:"-" gorm:"-"`
+	Name         string `json:"name"`
+	Role         int8   `json:"role"`
+	Status       int8   `json:"status"`
+	LastActiveAt int64  `json:"lat,omitempty"`
+	ExpiredAt    int64  `json:"exp,omitempty"`
+	LoginAt      int64  `json:"iat,omitempty"`
 }
-
 
 func (x *UserInfo) Valid(helper *jwt.ValidationHelper) error {
 	if x.ExpiredAt != 0 && x.LastActiveAt > x.ExpiredAt {
@@ -63,9 +71,9 @@ func (x *UserInfo) ParseToken(token, secret string) error {
 	return nil
 }
 
-type Cache struct {
-	Info
-	Authorization string
+type Authorization struct {
+	AuthInfo
+	Token string
 }
 
 type DeviceInfo struct {
@@ -84,7 +92,7 @@ type DeviceInfo struct {
 func Device(r http.Header) *DeviceInfo {
 	unknow := true
 	var info DeviceInfo
-	//Device-Info:device-osInfo-appCode-appVersion
+	//Device-AuthInfo:device-osInfo-appCode-appVersion
 	if deviceInfo := r.Get(httpi.HeaderDeviceInfo); deviceInfo != "" {
 		unknow = false
 		infos := strings.Split(deviceInfo, "-")
@@ -127,8 +135,7 @@ func Device(r http.Header) *DeviceInfo {
 type Ctx struct {
 	context.Context `json:"-"`
 	TraceID         string `json:"-"`
-	Info
-	Authorization              string `json:"-"`
+	*Authorization
 	*DeviceInfo                `json:"-"`
 	RequestAt                  time.Time   `json:"-"`
 	RequestUnix                int64       `json:"iat,omitempty"`
@@ -157,24 +164,22 @@ type ctxKey struct{}
 
 func CtxWithRequest(ctx context.Context, r *http.Request) context.Context {
 	span := trace.FromContext(ctx)
-	now := time.Now()
-	return context.WithValue(context.Background(), ctxKey{},
-		&Ctx{
-			Context:       ctx,
-			TraceID:       span.SpanContext().TraceID.String(),
-			Authorization: httpi.GetToken(r),
-			DeviceInfo:    Device(r.Header),
-			RequestAt:     now,
-			RequestUnix:   now.Unix(),
-			Header:        metadata.MD(r.Header),
-		})
+	ctxi := ctxPool.Get().(*Ctx).reset(ctx)
+	ctxi.Context = ctx
+	ctxi.TraceID = span.SpanContext().TraceID.String()
+	ctxi.Authorization = &Authorization{
+		Token: httpi.GetToken(r),
+	}
+	ctxi.DeviceInfo = Device(r.Header)
+	ctxi.Header = metadata.MD(r.Header)
+	return context.WithValue(context.Background(), ctxKey{}, ctxi)
 }
 
-func ConvertContext(r *http.Request) pick.Context {
+func ConvertContext(r *http.Request) *Ctx {
 	ctxi := r.Context().Value(ctxKey{})
 	c, ok := ctxi.(*Ctx)
 	if !ok {
-		c = newCtx(r.Context())
+		c = ctxPool.Get().(*Ctx).reset(r.Context())
 		if r.ProtoMajor == 2 && strings.Contains(r.Header.Get(httpi.HeaderContentType), httpi.ContentGRPCHeaderValue) {
 			c.grpc = true
 		}
@@ -197,15 +202,11 @@ func ConvertContext(r *http.Request) pick.Context {
 	return c
 }
 
-func Authorization(c context.Context) string {
-	return CtxFromContext(c).Authorization
-}
-
 func CtxFromContext(ctx context.Context) *Ctx {
 	ctxi := ctx.Value(ctxKey{})
 	c, ok := ctxi.(*Ctx)
 	if !ok {
-		c = newCtx(ctx)
+		c = ctxPool.Get().(*Ctx).reset(ctx)
 	}
 	if c.Header == nil {
 		md, _ := metadata.FromIncomingContext(ctx)
@@ -224,33 +225,60 @@ func CtxFromContext(ctx context.Context) *Ctx {
 	return c
 }
 
-func newCtx(ctx context.Context) *Ctx {
+func (c *Ctx) reset(ctx context.Context) *Ctx {
 	now := time.Now()
-
-	return &Ctx{
-		Context:     ctx,
-		RequestAt:   now,
-		RequestUnix: now.Unix(),
-	}
+	c.Context = ctx
+	c.RequestAt = now
+	c.RequestUnix = now.Unix()
+	return c
 }
 
-func (c *Ctx) GetAuthInfo(auth func(*Ctx) error) (Info, error) {
-	if err := auth(c); err != nil {
-		return nil, err
+type AuthInfoDao struct {
+	Secret    string
+	AuthCache cache.Cache
+	AuthPool  *sync.Pool
+	Update    func(*Ctx) error
+}
+
+func (c *Ctx) GetAuthInfo(update bool) error {
+	var signature string
+	if authDao.AuthCache != nil {
+		signature = c.Token[strings.LastIndexByte(c.Token, '.')+1:]
+		cacheTmp, err := authDao.AuthCache.Get(signature)
+		if err == nil {
+			if authorization, ok := cacheTmp.(*Authorization); ok {
+				c.Authorization = authorization
+				return nil
+			}
+		}
 	}
-	return c.Info, nil
+	if authDao.Secret != "" {
+		c.AuthInfo = authDao.AuthPool.Get().(AuthInfo)
+		if err := c.Authorization.ParseToken(c.Authorization.Token, authDao.Secret); err != nil {
+			return err
+		}
+	}
+	if update && authDao.Update != nil {
+		if err := authDao.Update(c); err != nil {
+			return err
+		}
+	}
+
+	if authDao.AuthCache != nil {
+		authDao.AuthCache.SetWithExpire(signature, c.Authorization, 5*time.Second)
+	}
+	return nil
 }
 
 func init() {
-	jwt.WithUnmarshaller(JWTUnmarshaller)(jwti.Parser)
+	jwt.WithUnmarshaller(jwtUnmarshaller)(jwti.Parser)
 }
 
-
-func JWTUnmarshaller(ctx jwt.CodingContext, data []byte, v interface{}) error {
+func jwtUnmarshaller(ctx jwt.CodingContext, data []byte, v interface{}) error {
 	if ctx.FieldDescriptor == jwt.ClaimsFieldDescriptor {
-		if c, ok := (*v.(*jwt.Claims)).(*Ctx); ok {
-			c.Authorization = stringsi.ToString(data)
-			return json.Unmarshal(data, c.Info)
+		if c, ok := (*v.(*jwt.Claims)).(*Authorization); ok {
+			c.Token = stringsi.ToString(data)
+			return json.Unmarshal(data, c.AuthInfo)
 		}
 	}
 	return json.Unmarshal(data, v)

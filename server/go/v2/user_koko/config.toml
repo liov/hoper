@@ -1,0 +1,26 @@
+Module = "user"
+# dev | test | prod
+# Env = "dev"
+
+NoInit = ["Apollo","Etcd"]
+
+[nacos]
+Addr = "nacos.default"
+Group = "hoper"
+# DataId = "user"
+Watch  = false
+
+[gin]
+RedirectTrailingSlash = false
+RedirectFixedPath = true
+HandleMethodNotAllowed = false
+MaxMultipartMemory = 20971520
+
+[dev]
+NacosTenant = "b5b476ab-774f-4637-a8bf-e915635b4b24"
+
+[test]
+NacosTenant = ""
+
+[prod]
+NacosTenant = ""

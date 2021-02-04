@@ -41,7 +41,7 @@ func Gateway(gatewayHandle GatewayHandle) *runtime.ServeMux {
 				"Accept-Charset",
 				"Accept-Language",
 				"Accept-Ranges",
-				//"Authorization",
+				//"Token",
 				"Cache-Control",
 				"Content-Type",
 				//"Cookie",
@@ -65,15 +65,7 @@ func Gateway(gatewayHandle GatewayHandle) *runtime.ServeMux {
 			}
 			return "", false
 		}),
-		runtime.WithOutgoingHeaderMatcher(
-			func(key string) (string, bool) {
-				switch key {
-				case
-					"Set-Cookie":
-					return key, true
-				}
-				return "", false
-			}))
+		runtime.WithOutgoingHeaderMatcher(outgoingHeaderMatcher))
 
 	runtime.WithForwardResponseOption(CookieHook)(gwmux)
 	runtime.WithForwardResponseOption(ResponseHook)(gwmux)

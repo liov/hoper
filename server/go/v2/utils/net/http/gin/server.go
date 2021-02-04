@@ -16,7 +16,7 @@ func Http(confPath string,ginHandle func(engine *gin.Engine)) *gin.Engine {
 	//r.Use(gin.Logger())
 	/*logger := (&log.Config{Development: initialize.InitConfig.Env == initialize.PRODUCT}).NewLogger()
 	middleware.SetLog(r, logger, false)*/
-	r.Use(gin.Recovery())
+	//r.Use(gin.Recovery())
 	Debug(r)
 	// r.Any("/*any", handler.FromStd(http.DefaultServeMux))
 	if ginHandle != nil {

@@ -24,11 +24,13 @@ import (
 	templatei "github.com/liov/hoper/go/v2/utils/def/template"
 	"github.com/liov/hoper/go/v2/utils/log"
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
+	"github.com/liov/hoper/go/v2/utils/net/http/koko"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 	"github.com/liov/hoper/go/v2/utils/net/mail"
 	"github.com/liov/hoper/go/v2/utils/strings"
 	"github.com/liov/hoper/go/v2/utils/time"
 	"github.com/liov/hoper/go/v2/utils/verification"
+	"google.golang.org/grpc/metadata"
 	"gorm.io/gorm"
 )
 
@@ -37,7 +39,7 @@ type UserService struct {
 }
 
 func (u *UserService) VerifyCode(ctx context.Context, req *request.Empty) (*response.CommonRep, error) {
-	device := model.CtxFromContext(ctx).DeviceInfo
+	device := koko.CtxFromContext(ctx).DeviceInfo
 	log.Debug(device)
 	var rep = &response.CommonRep{}
 	vcode := verification.GenerateCode()
@@ -48,7 +50,7 @@ func (u *UserService) VerifyCode(ctx context.Context, req *request.Empty) (*resp
 }
 
 func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*response.TinyRep, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan("Logout")
+	ctxi, span := koko.CtxFromContext(ctx).StartSpan("Logout")
 	defer span.End()
 	ctx = ctxi.Context
 	if req.Mail == "" && req.Phone == "" {
@@ -73,7 +75,7 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 }
 
 func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*response.TinyRep, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan(model.UserserviceServicedesc.ServiceName + "Signup")
+	ctxi, span := koko.CtxFromContext(ctx).StartSpan(model.UserserviceServicedesc.ServiceName + "Signup")
 	defer span.End()
 	ctx = ctxi.Context
 	if err := Validate(req); err != nil {
@@ -190,7 +192,7 @@ func checkPassword(password string, user *model.User) bool {
 }
 
 func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.LoginRep, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan("Active")
+	ctxi, span := koko.CtxFromContext(ctx).StartSpan("Active")
 	defer span.End()
 	ctx = ctxi.Context
 	redisKey := modelconst.ActiveTimeKey + strconv.FormatUint(req.Id, 10)
@@ -221,45 +223,44 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 }
 
 func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.TinyRep, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan("Edit")
+	ctxi, span := koko.CtxFromContext(ctx).StartSpan("Edit")
 	defer span.End()
 	ctx = ctxi.Context
-	user, err := ctxi.GetAuthInfo(AuthWithUpdate)
-	if err != nil {
+	if err := ctxi.GetAuthInfo(false); err != nil {
 		return nil, err
 	}
+	user := ctxi.AuthInfo.(*model.AuthInfo)
 	if user.Id != req.Id {
 		return nil, errorcode.PermissionDenied
 	}
 	device := ctxi.DeviceInfo
 
-	if req.Details != nil {
-		originalIds, err := userDao.ResumesIds(ctxi, nil, user.Id)
-		if err != nil {
-			return nil, errorcode.DBError.Message("更新失败")
-		}
-		var resumes []*model.Resume
-		resumes = append(req.Details.EduExps, req.Details.WorkExps...)
-		if len(resumes) >0 {
-			tx := dao.Dao.GORMDB.Begin()
-			err = userDao.SaveResumes(ctxi, tx, req.Id, resumes, originalIds, device.UserDeviceInfo())
-			if err != nil {
-				tx.Rollback()
-				return nil, errorcode.DBError.Message("更新失败")
-			}
-			err = tx.Model(req.Details).UpdateColumns(req.Details).Error
-			if err != nil {
-				tx.Rollback()
-				return nil, errorcode.DBError.Message("更新失败")
-			}
-			tx.Commit()
-		}
+	originalIds, err := userDao.ResumesIds(ctxi, nil, user.Id)
+	if err != nil {
+		return nil, errorcode.DBError.Message("更新失败")
 	}
+	var resumes []*model.Resume
+	resumes = append(req.Details.EduExps, req.Details.WorkExps...)
+
+	tx := dao.Dao.GORMDB.Begin()
+	err = userDao.SaveResumes(ctxi, tx, req.Id, resumes, originalIds, &model.UserDeviceInfo{
+		Device: device.Device,
+		})
+	if err != nil {
+		tx.Rollback()
+		return nil, errorcode.DBError.Message("更新失败")
+	}
+	err = tx.Model(req.Details).UpdateColumns(req.Details).Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errorcode.DBError.Message("更新失败")
+	}
+	tx.Commit()
 	return &response.TinyRep{Message: "修改成功"}, nil
 }
 
 func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginRep, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan("Login")
+	ctxi, span := koko.CtxFromContext(ctx).StartSpan("Login")
 	defer span.End()
 	ctx = ctxi.Context
 	if verifyErr := verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL, conf.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
@@ -305,14 +306,15 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 	return u.login(ctxi, &user)
 }
 
-func (*UserService) login(ctxi *model.Ctx, user *model.User) (*model.LoginRep, error) {
-	ctxi.Id = user.Id
-	ctxi.Name = user.Name
-	ctxi.Status = user.Status
-	ctxi.Role = user.Role
-	ctxi.LoginAt = ctxi.RequestUnix
-	ctxi.ExpiredAt = ctxi.RequestUnix + int64(conf.Conf.Customize.TokenMaxAge)
-
+func (*UserService) login(ctxi *koko.Ctx, user *model.User) (*model.LoginRep, error) {
+	auth := new(model.AuthInfo)
+	auth.Id = user.Id
+	auth.Name = user.Name
+	auth.Status = user.Status
+	auth.Role = user.Role
+	auth.LoginAt = ctxi.RequestUnix
+	auth.ExpiredAt = ctxi.RequestUnix + int64(conf.Conf.Customize.TokenMaxAge)
+	ctxi.AuthInfo = auth
 	tokenString, err := ctxi.GenerateToken(stringsi.ToBytes(conf.Conf.Customize.TokenSecret))
 	if err != nil {
 		return nil, errorcode.Internal
@@ -342,22 +344,19 @@ func (*UserService) login(ctxi *model.Ctx, user *model.User) (*model.LoginRep, e
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
-	err = ctxi.SetCookie(cookie)
-	if err != nil {
-		return nil, errorcode.Unavailable
-	}
+	//gateway.GrpcSetCookie(ctxi.Context, cookie)
 	resp.Cookie = cookie
 	return resp, nil
 }
 
 func (u *UserService) Logout(ctx context.Context, req *request.Empty) (*model.LogoutRep, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan("Logout")
+	ctxi, span := koko.CtxFromContext(ctx).StartSpan("Logout")
 	defer span.End()
 	ctx = ctxi.Context
-	user, err := ctxi.GetAuthInfo(AuthWithUpdate)
-	if err != nil {
+	if err := ctxi.GetAuthInfo(false); err != nil {
 		return nil, err
 	}
+	user := ctxi.AuthInfo.(*model.AuthInfo)
 	dao.Dao.GORMDB.Model(&model.UserAuthInfo{Id: user.Id}).UpdateColumn("last_activated_at", time.Now())
 
 	if err := dao.Dao.Redis.Do(ctx, redisi.DEL, modelconst.LoginUserKey+strconv.FormatUint(user.Id, 10)).Err(); err != nil {
@@ -374,15 +373,16 @@ func (u *UserService) Logout(ctx context.Context, req *request.Empty) (*model.Lo
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
-	ctxi.SetCookie(cookie)
+	ctxi.SendHeader(metadata.MD{httpi.HeaderSetCookie:[]string{cookie}})
 	return &model.LogoutRep{Message: "已注销", Cookie: cookie}, nil
 }
 
 func (u *UserService) AuthInfo(ctx context.Context, req *request.Empty) (*model.UserAuthInfo, error) {
-	user, err := model.CtxFromContext(ctx).GetAuthInfo(AuthWithUpdate)
-	if err != nil {
+	ctxi := koko.CtxFromContext(ctx)
+	if err := ctxi.GetAuthInfo(false); err != nil {
 		return nil, err
 	}
+	user := ctxi.AuthInfo.(*model.AuthInfo)
 	return user.UserAuthInfo(), nil
 }
 
@@ -399,7 +399,7 @@ func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.Ge
 }
 
 func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (*response.TinyRep, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan("Logout")
+	ctxi, span := koko.CtxFromContext(ctx).StartSpan("Logout")
 	defer span.End()
 	ctx = ctxi.Context
 	if verifyErr := verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL, conf.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
@@ -435,7 +435,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 }
 
 func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswordReq) (*response.TinyRep, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan("Logout")
+	ctxi, span := koko.CtxFromContext(ctx).StartSpan("Logout")
 	defer span.End()
 	ctx = ctxi.Context
 	redisKey := modelconst.ResetTimeKey + strconv.FormatUint(req.Id, 10)
@@ -487,7 +487,7 @@ func (*UserService) Service() (string, string, []http.HandlerFunc) {
 	return "用户相关", "/api/user", []http.HandlerFunc{middle.Log}
 }
 
-func (*UserService) Add(ctx *model.Ctx, req *model.SignupReq) (*response.TinyRep, error) {
+func (*UserService) Add(ctx *koko.Ctx, req *model.SignupReq) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() interface{} {
 		return pick.Path("/add").
@@ -511,7 +511,7 @@ func (*UserService) FiberService() (string, string, []fiber.Handler) {
 	return "用户相关", "/api/user", []fiber.Handler{middle.FiberLog}
 }
 
-func (*UserService) Addv(ctx *model.Ctx, req *response.TinyRep) (*response.TinyRep, error) {
+func (*UserService) Addv(ctx *koko.Ctx, req *response.TinyRep) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.FiberApi(func() interface{} {
 		return pick.Path("/add").
