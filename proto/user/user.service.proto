@@ -10,6 +10,7 @@ import "utils/response/response.proto";
 import "utils/proto/gogo/graphql.proto";
 import "utils/oauth/oauth.proto";
 import "utils/proto/go/go.proto";
+import "google/protobuf/wrappers.proto";
 
 option java_package = "xyz.hoper.protobuf.user";
 option go_package = "github.com/liov/hoper/go/v2/protobuf/user";
@@ -26,7 +27,7 @@ service UserService {
     description: "用户相关接口"
   };
   // 验证码
-  rpc VerifyCode (request.Empty) returns (response.CommonRep) {
+  rpc VerifyCode (request.Empty) returns (google.protobuf.StringValue) {
     option (google.api.http) = {
       get: "/api/v1/verifyCode"
     };
@@ -39,7 +40,7 @@ service UserService {
   }
 
   // 验证码
-  rpc SendVerifyCode (SendVerifyCodeReq) returns (response.CommonRep) {
+  rpc SendVerifyCode (SendVerifyCodeReq) returns (request.Empty) {
     option (google.api.http) = {
       get: "/api/v1/SendVerifyCode"
     };
@@ -52,7 +53,7 @@ service UserService {
   }
 
   //注册验证
-  rpc SignupVerify (SingUpVerifyReq) returns (response.TinyRep) {
+  rpc SignupVerify (SingUpVerifyReq) returns (request.Empty) {
     option (google.api.http) = {
       post: "/api/v1/user/signupVerify"
       body: "*"
@@ -66,7 +67,7 @@ service UserService {
   }
 
   //注册
-  rpc Signup (SignupReq) returns (response.TinyRep) {
+  rpc Signup (SignupReq) returns (request.Empty) {
     option (google.api.http) = {
       post: "/api/v1/user"
       body: "*"
@@ -92,7 +93,7 @@ service UserService {
     option (gogo.graphql_operation) = Mutation;
   }
   //编辑
-  rpc Edit (EditReq) returns (response.TinyRep) {
+  rpc Edit (EditReq) returns (request.Empty) {
     option (google.api.http) = {
       put: "/api/v1/user/id/{id}"
       body: "details"
@@ -126,7 +127,7 @@ service UserService {
     option (gogo.graphql_operation) = Query;
   }
   //退出
-  rpc Logout (request.Empty) returns (LogoutRep) {
+  rpc Logout (request.Empty) returns (request.Empty) {
     option (google.api.http) = {
       get: "/api/v1/user/logout"
     };
@@ -193,7 +194,7 @@ service UserService {
   }
 
   //获取用户信息
-  rpc GetUser (GetReq) returns (GetRep) {
+  rpc GetUser (GetReq) returns (User) {
     option (google.api.http) = {
       get: "/api/v1/user/id/{id}"
     };
@@ -293,12 +294,6 @@ message GetReq {
     type: INTEGER}];
 }
 
-message GetRep {
-  uint32 code = 1[(go.field) = {tags:'json:"code"'}];
-  string message = 2;
-  User details = 3;
-}
-
 message EditReq {
   uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"ID"
@@ -334,23 +329,11 @@ message LoginReq {
 }
 // 登录返回
 message LoginRep {
-  uint32 code = 1 [(go.field) = {tags:'json:"code"'}];
-  string message = 2;
-  LoginDetails details = 3;
-  message LoginDetails{
-    UserBaseInfo user = 1;
-    string token = 2;
-  }
-  string cookie = 4 [(go.field) = {tags:'json:"-"'}];
+  UserBaseInfo user = 1;
+  string token = 2;
 }
 
-// 特殊，设置cookie用
-// 退出返回
-message LogoutRep {
-  uint32 code = 1 [(go.field) = {tags:'json:"code"'}];
-  string message = 2;
-  string cookie = 3 [(go.field) = {tags:'json:"-"'}];
-}
+
 // 重置密码请求
 message ResetPasswordReq {
   uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
@@ -368,9 +351,8 @@ message ActionLogListReq {
 }
 
 message ActionLogListRep {
-  uint32 code = 1[(go.field) = {tags:'json:"code"'}];
-  string message = 2;
-  repeated UserActionLog details = 3;
+  uint32 count = 1;
+  repeated UserActionLog list = 2;
 }
 
 message SendVerifyCodeReq{

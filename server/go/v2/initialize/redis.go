@@ -13,15 +13,17 @@ type RedisConfig struct {
 	MaxIdle     int
 	MaxActive   int
 	IdleTimeout time.Duration
+	Index       int
 }
 
 func (conf *RedisConfig) Generate() *redis.Client {
 	conf.IdleTimeout = conf.IdleTimeout * time.Second
-	client:=redis.NewClient(&redis.Options{
-		Addr: conf.Addr,
-		Password: conf.Password,
+	client := redis.NewClient(&redis.Options{
+		Addr:         conf.Addr,
+		Password:     conf.Password,
 		MinIdleConns: conf.MaxActive,
-		IdleTimeout: conf.IdleTimeout,
+		IdleTimeout:  conf.IdleTimeout,
+		DB:           conf.Index,
 	})
 	//closes = append(closes,pool.CloseDao)
 	return client

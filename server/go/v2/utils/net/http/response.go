@@ -13,10 +13,10 @@ import (
 type H map[string]interface{}
 
 type ResData struct {
-	Code    uint32 `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Code    uint32 `json:"code"`
+	Message string `json:"message,omitempty"`
 	//验证码
-	Details interface{} `protobuf:"bytes,3,opt,name=details,proto3" json:"details,omitempty"`
+	Details interface{} `json:"details,omitempty"`
 }
 
 //先信息后数据最后状态码

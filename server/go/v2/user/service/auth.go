@@ -20,28 +20,28 @@ func init() {
 }
 
 func auth(ctx *model.Ctx, update bool) error {
-	signature := ctx.Authorization[strings.LastIndexByte(ctx.Authorization, '.')+1:]
+	signature := ctx.Token[strings.LastIndexByte(ctx.Token, '.')+1:]
 	cacheTmp, err := dao.Dao.Cache.Get(signature)
 	if err == nil {
-		if cache, ok := cacheTmp.(*model.Cache); ok {
+		if cache, ok := cacheTmp.(*model.Authorization); ok {
 			cache.LastActiveAt = ctx.RequestUnix
 			ctx.AuthInfo = cache.AuthInfo
-			ctx.Authorization = cache.Authorization
+			ctx.Token = cache.Token
 			return nil
 		}
 	}
-	if err := ctx.ParseToken(ctx.Authorization, conf.Conf.Customize.TokenSecret); err != nil {
+	if err := ctx.ParseToken(ctx.Token, conf.Conf.Customize.TokenSecret); err != nil {
 		return err
 	}
 	ctx.LastActiveAt = ctx.RequestUnix
 	if update {
 		err = userRedis.EfficientUserHashFromRedis(ctx)
 		if err != nil {
-			return model.UserErr_InvalidToken
+			return model.UserErrInvalidToken
 		}
 	}
 	dao.Dao.Cache.SetWithExpire(signature,
-		&model.Cache{AuthInfo: ctx.AuthInfo, Authorization: ctx.Authorization},
+		&model.Authorization{AuthInfo: ctx.AuthInfo, Token: ctx.Token},
 		5*time.Second)
 
 	return nil
@@ -58,6 +58,6 @@ func AuthWithUpdate(ctx *model.Ctx) error {
 // AuthContext returns a new Context that carries value u.
 func FasthttpCtx(r *fasthttp.Request) pick.Context {
 	ctx := model.CtxFromContext(context.Background())
-	ctx.Authorization = fasthttpi.GetToken(r)
+	ctx.Token = fasthttpi.GetToken(r)
 	return ctx
 }

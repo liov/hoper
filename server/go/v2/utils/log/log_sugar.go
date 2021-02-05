@@ -45,6 +45,12 @@ func (l *Logger) WithOptions(opts ...zap.Option) *Logger {
 	return l
 }
 
+func (l *Logger) With(fields ...zap.Field) *Logger {
+	l.Logger = l.Logger.With(fields...)
+	l.SugaredLogger = l.Logger.Sugar()
+	return l
+}
+
 var Default = (&Config{Development: true, Caller: true, Level: -1}).NewLogger()
 var NoCall = (&Config{Development: true}).NewLogger()
 var CallTwo = Default.WithOptions(zap.AddCallerSkip(2))

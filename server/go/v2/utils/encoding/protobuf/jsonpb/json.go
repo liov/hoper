@@ -7,6 +7,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"github.com/liov/hoper/go/v2/protobuf/utils/response"
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
+	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 )
 
 var JsonPb = JSONPb{json.Standard}
@@ -20,7 +21,11 @@ func (*JSONPb) ContentType(_ interface{}) string {
 }
 
 func (j *JSONPb) Marshal(v interface{}) ([]byte, error) {
-	return j.API.Marshal(v)
+	return j.API.Marshal(&httpi.ResData{
+		Code:    0,
+		Message: "OK",
+		Details: v,
+	})
 }
 
 func (j *JSONPb) Unmarshal(data []byte, v interface{}) error {

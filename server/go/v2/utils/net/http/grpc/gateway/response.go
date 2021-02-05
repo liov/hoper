@@ -13,8 +13,8 @@ import (
 	"github.com/liov/hoper/go/v2/utils/encoding/protobuf/jsonpb"
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/reconn"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
@@ -46,7 +46,7 @@ func HTTPError(ctx *gin.Context, err error) {
 
 	const fallback = `{"code": 14, "message": "failed to marshal error message"}`
 
-	delete(ctx.Request.Header,httpi.HeaderTrailer)
+	delete(ctx.Request.Header, httpi.HeaderTrailer)
 	contentType := jsonpb.JsonPb.ContentType(nil)
 	ctx.Header(httpi.HeaderContentType, contentType)
 	se, ok := err.(*errorcode.ErrRep)
@@ -93,8 +93,7 @@ type responseBody interface {
 	XXX_ResponseBody() interface{}
 }
 
-
-func ForwardResponseMessage(ctx *gin.Context,md runtime.ServerMetadata ,message proto.Message) {
+func ForwardResponseMessage(ctx *gin.Context, md runtime.ServerMetadata, message proto.Message) {
 	if res, ok := message.(*response.HttpResponse); ok {
 		for k, v := range res.Header {
 			ctx.Header(k, v)
@@ -102,7 +101,7 @@ func ForwardResponseMessage(ctx *gin.Context,md runtime.ServerMetadata ,message 
 		ctx.Status(int(res.StatusCode))
 	}
 	if md.HeaderMD == nil {
-		md.HeaderMD = grpc.ServerTransportStreamFromContext(ctx.Request.Context()).(*runtime.ServerTransportStream).Header()
+		md.HeaderMD = metadata.MD(ctx.Request.Header)
 	}
 
 	handleForwardResponseServerMetadata(ctx.Writer, md)
@@ -110,6 +109,11 @@ func ForwardResponseMessage(ctx *gin.Context,md runtime.ServerMetadata ,message 
 
 	contentType := jsonpb.JsonPb.ContentType(message)
 	ctx.Header(httpi.HeaderContentType, contentType)
+
+	if !message.ProtoReflect().IsValid() {
+		ctx.Writer.Write(httpi.ResponseOk)
+		return
+	}
 
 	var buf []byte
 	var err error

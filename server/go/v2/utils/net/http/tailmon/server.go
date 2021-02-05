@@ -68,7 +68,7 @@ func (s *Server) httpHandler() http.HandlerFunc {
 		now := time.Now()
 
 		var body []byte
-		if r.Method != http.MethodGet{
+		if r.Method != http.MethodGet {
 			body, _ = ioutil.ReadAll(r.Body)
 			r.Body = ioutil.NopCloser(bytes.NewReader(body))
 		}
@@ -87,8 +87,8 @@ func (s *Server) httpHandler() http.HandlerFunc {
 			w.Write(recorder.Body.Bytes())
 		}
 		var authorization string
-		if s.Authorization != nil {
-			authorization = s.Authorization(r.Context())
+		if s.AuthInfo != nil {
+			authorization = s.AuthInfo(r.Context())
 		}
 		accessLog(r.RequestURI, stringsi.ToString(body), stringsi.ToString(recorder.Body.Bytes()),
 			authorization, now, recorder.Code)
@@ -96,7 +96,7 @@ func (s *Server) httpHandler() http.HandlerFunc {
 }
 
 type CustomContext func(c context.Context, r *http.Request) context.Context
-type Authorization func(c context.Context) string
+type AuthInfo func(c context.Context) string
 
 func (s *Server) Serve() {
 	//反射从配置中取port
@@ -204,7 +204,7 @@ type Server struct {
 	GinHandle      func(engine *gin.Engine)
 	GraphqlResolve graphql.ExecutableSchema
 	CustomContext  CustomContext
-	Authorization  Authorization
+	AuthInfo       AuthInfo
 }
 
 var signals = make(chan os.Signal, 1)

@@ -64,8 +64,8 @@ func CustomHTTPError(ctx context.Context, mux *runtime.ServeMux, marshaler runti
 		w.Header().Set(httpi.HeaderTransferEncoding, "chunked")
 	}
 
-/*	st := HTTPStatusFromCode(se.Code)
-	w.WriteHeader(st)*/
+	/*	st := HTTPStatusFromCode(se.Code)
+		w.WriteHeader(st)*/
 	if _, err := w.Write(buf); err != nil {
 		grpclog.Infof("Failed to write response: %v", err)
 	}
@@ -117,21 +117,24 @@ func HTTPStatusFromCode(code errorcode.ErrCode) int {
 	return http.StatusInternalServerError
 }
 
-
 func outgoingHeaderMatcher(key string) (string, bool) {
 	switch key {
 	case
-		"Set-Cookie":
+		httpi.HeaderSetCookie:
 		return key, true
 	}
 	return "", false
 }
 
+func headerMatcher() []string {
+	return []string{httpi.HeaderSetCookie}
+}
+
 func handleForwardResponseServerMetadata(w http.ResponseWriter, md runtime.ServerMetadata) {
-	for k, vs := range md.HeaderMD {
-		if h, ok := outgoingHeaderMatcher(k); ok {
+	for _, k := range headerMatcher() {
+		if vs, ok := md.HeaderMD[k]; ok {
 			for _, v := range vs {
-				w.Header().Add(h, v)
+				w.Header().Add(k, v)
 			}
 		}
 	}
@@ -153,9 +156,8 @@ func handleForwardResponseTrailer(w http.ResponseWriter, md runtime.ServerMetada
 	}
 }
 
-
 func RoutingErrorHandler(ctx context.Context, mux *runtime.ServeMux, marshaler runtime.Marshaler, w http.ResponseWriter, r *http.Request, httpStatus int) {
 	w.WriteHeader(httpStatus)
-	w.Header().Set("Content-Type",  "text/xml; charset=utf-8")
+	w.Header().Set("Content-Type", "text/xml; charset=utf-8")
 	w.Write(stringsi.ToBytes(http.StatusText(httpStatus)))
 }

@@ -23,9 +23,9 @@ service MomentService {
   };
 
   // 详情
-  rpc Info (GetMomentReq) returns (response.TinyRep) {
+  rpc Info (GetMomentReq) returns (Moment) {
     option (google.api.http) = {
-      get: "/api/v1/moment"
+      get: "/api/v1/moment/id/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -34,7 +34,7 @@ service MomentService {
   }
 
   // 新建
-  rpc Add (AddMomentReq) returns (response.TinyRep) {
+  rpc Add (AddMomentReq) returns (request.Empty) {
     option (google.api.http) = {
       post: "/api/v1/moment"
       body: "*"
@@ -46,7 +46,7 @@ service MomentService {
   }
 
   // 修改
-  rpc Edit (AddMomentReq) returns (response.TinyRep) {
+  rpc Edit (AddMomentReq) returns (request.Empty) {
     option (google.api.http) = {
       put: "/api/v1/moment"
       body: "*"
@@ -55,6 +55,17 @@ service MomentService {
       tags:["v1.0.0"]
     };
     option (gogo.graphql_operation) = Mutation;
+  }
+
+  // 修改
+  rpc List (MomentListReq) returns (MomentListRep) {
+    option (google.api.http) = {
+      get: "/api/v1/moment"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["v1.0.0"]
+    };
+    option (gogo.graphql_operation) = Query;
   }
 }
 
@@ -74,4 +85,14 @@ message AddMomentReq {
 
 message GetMomentReq{
   uint64 id = 1;
+}
+
+message MomentListReq{
+  uint32 pageNo = 1;
+  uint32 pageSize = 2;
+}
+
+message MomentListRep{
+  uint32 count = 1;
+  repeated Moment list = 2;
 }

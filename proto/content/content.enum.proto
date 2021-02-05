@@ -12,12 +12,12 @@ option (go.file) = {no_enum_prefix:true};
 
 enum ContentType{
   option (go.enum) = {stringer_name: 'OrigString'};
-  PlaceholderContentType = 0 [(gogo.enumvalue_cn) = "占位"];
-  MomentContentType = 1 [(gogo.enumvalue_cn) = "瞬间"];
-  NoteContentType = 2 [(gogo.enumvalue_cn) = "笔记"];
-  DairyContentType = 3 [(gogo.enumvalue_cn) = "日记"];
-  DairyBookContentType = 4 [(gogo.enumvalue_cn) = "日记本"];
-  FavoritesContentType = 5 [(gogo.enumvalue_cn) = "收藏夹"];
-  CollectionContentType = 6 [(gogo.enumvalue_cn) = "收藏"];
-  CommentContentType = 7 [(gogo.enumvalue_cn) = "评论"];
+  ContentPlaceholder = 0 [(gogo.enumvalue_cn) = "占位"];
+  ContentMoment = 1 [(gogo.enumvalue_cn) = "瞬间"];
+  ContentNote = 2 [(gogo.enumvalue_cn) = "笔记"];
+  ContentDairy = 3 [(gogo.enumvalue_cn) = "日记"];
+  ContentDairyBook = 4 [(gogo.enumvalue_cn) = "日记本"];
+  ContentFavorites = 5 [(gogo.enumvalue_cn) = "收藏夹"];
+  ContentCollection = 6 [(gogo.enumvalue_cn) = "收藏"];
+  ContentComment = 7 [(gogo.enumvalue_cn) = "评论"];
 }
