@@ -83,7 +83,7 @@ func (*UserDao) SaveResumes(ctx *model.Ctx,db *gorm.DB, userId uint64, resumes [
 	actionLog.CreatedAt = time.Now().Format(time.RFC3339Nano)
 	actionLog.UserId = userId
 	actionLog.DeviceInfo = device
-	actionLog.Action = model.Action_EditResume
+	actionLog.Action = model.ActionEditResume
 	tableName := resumes[0].TableName() + "."
 
 	var editIds []uint64
@@ -93,12 +93,12 @@ func (*UserDao) SaveResumes(ctx *model.Ctx,db *gorm.DB, userId uint64, resumes [
 		resumes[i].Status = 1
 		if resumes[i].Id != 0 {
 			err = db.Save(resumes[i]).Error
-			actionLog.Action = model.Action_CreateResume
+			actionLog.Action = model.ActionCreateResume
 			actionLog.LastValue, _ = json.Marshal(resumes[i])
 			editIds = append(editIds, resumes[i].Id)
 		} else {
 			err = db.Create(resumes[i]).Error
-			actionLog.Action = model.Action_EditResume
+			actionLog.Action = model.ActionEditResume
 		}
 		if err != nil {
 			return err
@@ -119,7 +119,7 @@ func (*UserDao) SaveResumes(ctx *model.Ctx,db *gorm.DB, userId uint64, resumes [
 	db.Model(&model.Resume{}).Where("id in (?)", differenceIds).Update("status", 0)
 	for _, id := range differenceIds {
 		actionLog.Id = 0
-		actionLog.Action = model.Action_DELETEResume
+		actionLog.Action = model.ActionDELETEResume
 		actionLog.RelatedId = tableName + strconv.FormatUint(id, 10)
 		if err = db.Create(&actionLog).Error; err != nil {
 			log.Error(err)

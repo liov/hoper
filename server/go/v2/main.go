@@ -49,6 +49,6 @@ func main() {
 			pick.Gin(app, user.ConvertContext, true, initialize.InitConfig.Module)
 		},
 		CustomContext: user.CtxWithRequest,
-		Authorization: user.Authorization,
+		AuthInfo: user.GetAuthInfo,
 	}).Start()
 }

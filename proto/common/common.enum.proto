@@ -1,0 +1,22 @@
+syntax = "proto3";
+package common;
+import "utils/proto/gogo/enum.proto";
+import "utils/proto/go/go.proto";
+
+option java_package = "xyz.hoper.protobuf.common";
+option go_package = "github.com/liov/hoper/go/v2/protobuf/common";
+
+option (gogo.enum_gqlgen_all) = true;
+option (gogo.enum_prefix_all) = false;
+option (go.file) = {no_enum_prefix:true};
+
+// RedisIndex
+
+enum RedisIndex{
+  option (go.enum) = {stringer_name: 'OrigString'};
+  RedisIndexPlaceholder = 0 [(gogo.enumvalue_cn) = "占位"];
+  RedisIndexFlag = 13 [(gogo.enumvalue_cn) = "标志"];
+  RedisIndexSys = 14 [(gogo.enumvalue_cn) = "系统"];
+  RedisIndexCron = 15 [(gogo.enumvalue_cn) = "定时任务"];
+
+}

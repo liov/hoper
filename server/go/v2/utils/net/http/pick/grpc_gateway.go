@@ -19,7 +19,7 @@ type MapRouter map[string]methodHandle
 func GrpcServiceToRestfulApi(engine *gin.Engine, genApi bool, modName string) {
 	httpMethods := []string{http.MethodGet, http.MethodOptions, http.MethodPut, http.MethodDelete,
 		http.MethodPatch, http.MethodConnect, http.MethodHead, http.MethodTrace}
-	doc := apidoc.GetDoc(filepath.Join(apidoc.FilePath+modName,modName+apidoc.GatewayEXT))
+	doc := apidoc.GetDoc(filepath.Join(apidoc.FilePath+modName,modName+apidoc.EXT))
 	methods := make(map[string]struct{})
 	for _, v := range svcs {
 		describe, preUrl, middleware := v.Service()

@@ -11,6 +11,7 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/uuid"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
@@ -36,18 +37,17 @@ type UserService struct {
 	model.UnimplementedUserServiceServer
 }
 
-func (u *UserService) VerifyCode(ctx context.Context, req *request.Empty) (*response.CommonRep, error) {
+func (u *UserService) VerifyCode(ctx context.Context, req *request.Empty) (*wrappers.StringValue, error) {
 	device := model.CtxFromContext(ctx).DeviceInfo
 	log.Debug(device)
-	var rep = &response.CommonRep{}
+	var rep = &wrappers.StringValue{}
 	vcode := verification.GenerateCode()
 	log.Info(vcode)
-	rep.Details = vcode
-	rep.Message = "字符串有问题吗啊"
+	rep.Value = vcode
 	return rep, nil
 }
 
-func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*response.TinyRep, error) {
+func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*request.Empty, error) {
 	ctxi, span := model.CtxFromContext(ctx).StartSpan("Logout")
 	defer span.End()
 	ctx = ctxi.Context
@@ -69,10 +69,10 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 		log.Error("UserService.Verify,RedisConn.Do: ", err)
 		return nil, errorcode.RedisErr.Message("新建出错")
 	}
-	return &response.TinyRep{Message: "验证码已发送"}, nil
+	return new(request.Empty), nil
 }
 
-func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*response.TinyRep, error) {
+func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*request.Empty, error) {
 	ctxi, span := model.CtxFromContext(ctx).StartSpan(model.UserserviceServicedesc.ServiceName + "Signup")
 	defer span.End()
 	ctx = ctxi.Context
@@ -102,9 +102,9 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*respon
 		Phone:     req.Phone,
 		Gender:    req.Gender,
 		AvatarURL: modelconst.DefaultAvatar,
-		Role:      model.Role_UserRoleNormal,
+		Role:      model.RoleNormal,
 		CreatedAt: formatNow,
-		Status:    model.UserStatus_InActive,
+		Status:    model.UserStatusInActive,
 	}
 
 	user.Password = encryptPassword(req.Password)
@@ -112,7 +112,6 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*respon
 		log.Error(err)
 		return nil, errorcode.RedisErr.Message("新建出错")
 	}
-	var rep = &response.TinyRep{Message: "新建成功,请前往邮箱激活"}
 
 	activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
 
@@ -123,10 +122,10 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*respon
 	}
 
 	if req.Mail != "" {
-		go sendMail(model.Action_Active, curTime, user)
+		go sendMail(model.ActionActive, curTime, user)
 	}
 
-	return rep, nil
+	return nil, nil
 }
 
 // Salt 每个用户都有一个不同的盐
@@ -150,10 +149,10 @@ func sendMail(action model.Action, curTime int64, user *model.User) {
 	}{user.Name, "hoper", siteURL, "", secretStr}
 	var templ string
 	switch action {
-	case model.Action_Active:
+	case model.ActionActive:
 		ctiveOrRestPasswdValues.ActionURL = siteURL + "/user/active/" + strconv.FormatUint(user.Id, 10) + "/" + secretStr
 		templ = modelconst.ActionActiveContent
-	case model.Action_RestPassword:
+	case model.ActionRestPassword:
 		ctiveOrRestPasswdValues.ActionURL = siteURL + "/user/resetPassword/" + strconv.FormatUint(user.Id, 10) + "/" + secretStr
 		templ = modelconst.ActionRestPasswordContent
 	}
@@ -220,7 +219,7 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 	return u.login(ctxi, user)
 }
 
-func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.TinyRep, error) {
+func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*request.Empty, error) {
 	ctxi, span := model.CtxFromContext(ctx).StartSpan("Edit")
 	defer span.End()
 	ctx = ctxi.Context
@@ -240,7 +239,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.T
 		}
 		var resumes []*model.Resume
 		resumes = append(req.Details.EduExps, req.Details.WorkExps...)
-		if len(resumes) >0 {
+		if len(resumes) > 0 {
 			tx := dao.Dao.GORMDB.Begin()
 			err = userDao.SaveResumes(ctxi, tx, req.Id, resumes, originalIds, device.UserDeviceInfo())
 			if err != nil {
@@ -255,7 +254,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*response.T
 			tx.Commit()
 		}
 	}
-	return &response.TinyRep{Message: "修改成功"}, nil
+	return new(request.Empty), nil
 }
 
 func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginRep, error) {
@@ -288,18 +287,18 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 	if !checkPassword(req.Password, &user) {
 		return nil, errorcode.InvalidArgument.Message("密码错误")
 	}
-	if user.Status == model.UserStatus_InActive {
+	if user.Status == model.UserStatusInActive {
 		//没看懂
 		//encodedEmail := base64.StdEncoding.EncodeToString(stringsi.ToBytes(user.Mail))
 		activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
 
 		curTime := time.Now().Unix()
 		if err := dao.Dao.Redis.SetEX(ctx, activeUser, curTime, modelconst.ActiveDuration).Err(); err != nil {
-			log.Error("UserService.Signup,RedisConn.Do: ", err)
+			log.Error("UserService.Login,RedisConn.Do: ", err)
 			return nil, errorcode.RedisErr
 		}
-		go sendMail(model.Action_Active, curTime, &user)
-		return nil, model.UserErr_NoActive.Message("账号未激活,请进入邮箱点击激活")
+		go sendMail(model.ActionActive, curTime, &user)
+		return nil, model.UserErrNoActive.Message("账号未激活,请进入邮箱点击激活")
 	}
 
 	return u.login(ctxi, &user)
@@ -323,14 +322,14 @@ func (*UserService) login(ctxi *model.Ctx, user *model.User) (*model.LoginRep, e
 	if err := userRedis.EfficientUserHashToRedis(ctxi); err != nil {
 		return nil, errorcode.RedisErr
 	}
-	resp := &model.LoginRep{}
-	resp.Details = &model.LoginRep_LoginDetails{Token: tokenString, User: &model.UserBaseInfo{
-		Id:        user.Id,
-		Name:      user.Name,
-		Gender:    user.Gender,
-		AvatarURL: user.AvatarURL,
-	}}
-	resp.Message = "登录成功"
+	resp := &model.LoginRep{
+		Token: tokenString,
+		User: &model.UserBaseInfo{
+			Id:        user.Id,
+			Name:      user.Name,
+			Gender:    user.Gender,
+			AvatarURL: user.AvatarURL,
+		}}
 
 	cookie := (&http.Cookie{
 		Name:  "token",
@@ -346,11 +345,10 @@ func (*UserService) login(ctxi *model.Ctx, user *model.User) (*model.LoginRep, e
 	if err != nil {
 		return nil, errorcode.Unavailable
 	}
-	resp.Cookie = cookie
 	return resp, nil
 }
 
-func (u *UserService) Logout(ctx context.Context, req *request.Empty) (*model.LogoutRep, error) {
+func (u *UserService) Logout(ctx context.Context, req *request.Empty) (*request.Empty, error) {
 	ctxi, span := model.CtxFromContext(ctx).StartSpan("Logout")
 	defer span.End()
 	ctx = ctxi.Context
@@ -375,7 +373,7 @@ func (u *UserService) Logout(ctx context.Context, req *request.Empty) (*model.Lo
 		HttpOnly: true,
 	}).String()
 	ctxi.SetCookie(cookie)
-	return &model.LogoutRep{Message: "已注销", Cookie: cookie}, nil
+	return new(request.Empty), nil
 }
 
 func (u *UserService) AuthInfo(ctx context.Context, req *request.Empty) (*model.UserAuthInfo, error) {
@@ -386,7 +384,7 @@ func (u *UserService) AuthInfo(ctx context.Context, req *request.Empty) (*model.
 	return user.UserAuthInfo(), nil
 }
 
-func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.GetRep, error) {
+func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.User, error) {
 	/*	_, err := u.GetAuthInfo(ctx)
 		if err != nil {
 			return &model.GetRep{Details: &model.User{Id: req.Id}}, nil
@@ -395,7 +393,7 @@ func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.Ge
 	if err := dao.Dao.GORMDB.Find(&user1, req.Id).Error; err != nil {
 		return nil, errorcode.DBError.Message("账号不存在")
 	}
-	return &model.GetRep{Details: &user1}, nil
+	return &user1, nil
 }
 
 func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (*response.TinyRep, error) {
@@ -429,7 +427,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 		return nil, errorcode.RedisErr
 	}
 
-	go sendMail(model.Action_RestPassword, curTime, user)
+	go sendMail(model.ActionRestPassword, curTime, user)
 
 	return &response.TinyRep{}, nil
 }
@@ -475,12 +473,12 @@ func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListR
 	if err != nil {
 		return nil, errorcode.DBError.Log(err)
 	}
-	rep.Details = logs
+	rep.List = logs
 	return rep, nil
 }
 
-func (*UserService) GetTest(ctx context.Context, req *model.GetReq) (*model.GetRep, error) {
-	return &model.GetRep{Code: uint32(req.Id), Message: "测试"}, nil
+func (*UserService) GetTest(ctx context.Context, req *model.GetReq) (*model.User, error) {
+	return &model.User{Id: req.Id, Name: "测试"}, nil
 }
 
 func (*UserService) Service() (string, string, []http.HandlerFunc) {

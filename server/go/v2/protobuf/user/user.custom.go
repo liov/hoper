@@ -9,14 +9,17 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go/v4"
+	"github.com/google/uuid"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
+	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/net"
 	"github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 	stringsi "github.com/liov/hoper/go/v2/utils/strings"
 	jwti "github.com/liov/hoper/go/v2/utils/verification/auth/jwt"
 	"go.opencensus.io/trace"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
@@ -83,16 +86,14 @@ func (x *AuthInfo) TableName() string {
 func Device(r http.Header) *DeviceInfo {
 	unknow := true
 	var info DeviceInfo
-	//Device-Info:device-osInfo-appCode-appVersion
-	if deviceInfo := r.Get(httpi.HeaderDeviceInfo); deviceInfo != "" {
+	//Device-Info:device,osInfo,appCode,appVersion
+	if infos := r.Values(httpi.HeaderDeviceInfo); len(infos) == 4 {
 		unknow = false
-		infos := strings.Split(deviceInfo, "-")
-		if len(infos) == 4 {
-			info.Device = infos[0]
-			info.Os = infos[1]
-			info.AppCode = infos[2]
-			info.AppVersion = infos[3]
-		}
+		info.Device = infos[0]
+		info.Os = infos[1]
+		info.AppCode = infos[2]
+		info.AppVersion = infos[3]
+
 	}
 	// area:xxx
 	// location:1.23456,2.123456
@@ -100,13 +101,11 @@ func Device(r http.Header) *DeviceInfo {
 		unknow = false
 		info.Area, _ = url.PathUnescape(area)
 	}
-	if location := r.Get(httpi.HeaderLocation); location != "" {
+	if infos := r.Values(httpi.HeaderLocation); len(infos) == 2 {
 		unknow = false
-		infos := strings.Split(location, ",")
-		if len(infos) == 2 {
-			info.Lng = infos[0]
-			info.Lat = infos[1]
-		}
+		info.Lng = infos[0]
+		info.Lat = infos[1]
+
 	}
 
 	if userAgent := r.Get(httpi.HeaderUserAgent); userAgent != "" {
@@ -146,30 +145,30 @@ func (x *AuthInfo) UserAuthInfo() *UserAuthInfo {
 	}
 }
 
-func (x *AuthInfo) Valid(helper *jwt.ValidationHelper) error {
+type Authorization struct {
+	*AuthInfo
+	Token string `json:"-"`
+}
+
+func (x *Authorization) Valid(helper *jwt.ValidationHelper) error {
 	if x.ExpiredAt != 0 && x.LastActiveAt > x.ExpiredAt {
-		return UserErr_LoginTimeout
+		return UserErrLoginTimeout
 	}
 	return nil
 }
 
-func (x *AuthInfo) GenerateToken(secret []byte) (string, error) {
+func (x *Authorization) GenerateToken(secret []byte) (string, error) {
 	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, x)
 	token, err := tokenClaims.SignedString(secret)
 	return token, err
 }
 
-func (x *AuthInfo) ParseToken(token, secret string) error {
+func (x *Authorization) ParseToken(token, secret string) error {
 	if err := jwti.ParseToken(x, token, secret); err != nil {
 		return err
 	}
 	x.IdStr = strconv.FormatUint(x.Id, 10)
 	return nil
-}
-
-type Cache struct {
-	*AuthInfo
-	Authorization string
 }
 
 type DeviceInfo struct {
@@ -202,8 +201,7 @@ func (x *DeviceInfo) UserDeviceInfo() *UserDeviceInfo {
 type Ctx struct {
 	context.Context `json:"-"`
 	TraceID         string `json:"-"`
-	*AuthInfo
-	Authorization              string `json:"-"`
+	Authorization
 	*DeviceInfo                `json:"-"`
 	RequestAt                  time.Time   `json:"-"`
 	RequestUnix                int64       `json:"iat,omitempty"`
@@ -211,6 +209,7 @@ type Ctx struct {
 	Peer                       *peer.Peer  `json:"-"`
 	grpc.ServerTransportStream `json:"-"`
 	Internal                   string
+	*log.Logger
 }
 
 var _ = pick.Context(new(Ctx))
@@ -228,43 +227,82 @@ func (c *Ctx) WithContext(ctx context.Context) {
 	c.Context = ctx
 }
 
-func (c *Ctx) SetCookie(cookie string)  error{
-	md:=metadata.MD{httpi.HeaderSetCookie:[]string{cookie}}
-	return c.SendHeader(md)
+func (c *Ctx) SetHeader(md metadata.MD) error {
+	for k, v := range md {
+		c.Header[k] = v
+	}
+	if c.ServerTransportStream != nil {
+		err := c.ServerTransportStream.SetHeader(md)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *Ctx) SendHeader(md metadata.MD) error {
+	for k, v := range md {
+		c.Header[k] = v
+	}
+	if c.ServerTransportStream != nil {
+		err := c.ServerTransportStream.SendHeader(md)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *Ctx) WriteHeader(k, v string) error {
+	c.Header[k] = []string{v}
+
+	if c.ServerTransportStream != nil {
+		err := c.ServerTransportStream.SendHeader(metadata.MD{k: []string{v}})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *Ctx) SetCookie(v string) error {
+	c.Header[httpi.HeaderSetCookie] = []string{v}
+
+	if c.ServerTransportStream != nil {
+		err := c.ServerTransportStream.SendHeader(metadata.MD{httpi.HeaderSetCookie: []string{v}})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *Ctx) SetTrailer(md metadata.MD) error {
+	for k, v := range md {
+		c.Header[k] = v
+	}
+	if c.ServerTransportStream != nil {
+		err := c.ServerTransportStream.SetTrailer(md)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *Ctx) Method() string {
+	if c.ServerTransportStream != nil {
+		return c.ServerTransportStream.Method()
+	}
+	return ""
 }
 
 type ctxKey struct{}
 
 func CtxWithRequest(ctx context.Context, r *http.Request) context.Context {
-	span := trace.FromContext(ctx)
-	now := time.Now()
-	isGrpc := r.ProtoMajor == 2 && strings.Contains(r.Header.Get(httpi.HeaderContentType), httpi.ContentGRPCHeaderValue)
-	var p *peer.Peer
-	if !isGrpc {
-		p = &peer.Peer{
-			Addr: neti.StrAddr(r.RemoteAddr),
-		}
-		if r.TLS != nil {
-			p.AuthInfo = credentials.TLSInfo{State: *r.TLS, CommonAuthInfo: credentials.CommonAuthInfo{SecurityLevel: credentials.PrivacyAndIntegrity}}
-		}
-	}
-	var stream grpc.ServerTransportStream
-	if !isGrpc {
-		stream = new(runtime.ServerTransportStream)
-		ctx = grpc.NewContextWithServerTransportStream(ctx,stream)
-	}
-	return context.WithValue(context.Background(), ctxKey{},
-		&Ctx{
-			Context:       ctx,
-			TraceID:       span.SpanContext().TraceID.String(),
-			AuthInfo:      new(AuthInfo),
-			Authorization: httpi.GetToken(r),
-			DeviceInfo:    Device(r.Header),
-			RequestAt:     now,
-			RequestUnix:   now.Unix(),
-			Header:        metadata.MD(r.Header),
-			Internal:      r.Header.Get(httpi.HeaderInternal),
-		})
+	ctxi := newCtx(ctx)
+	ctxi.setWithReq(r)
+	return context.WithValue(context.Background(), ctxKey{}, ctxi)
 }
 
 func ConvertContext(r *http.Request) pick.Context {
@@ -272,32 +310,13 @@ func ConvertContext(r *http.Request) pick.Context {
 	c, ok := ctxi.(*Ctx)
 	if !ok {
 		c = newCtx(r.Context())
-	}
-	if c.Header == nil {
-		c.Header = metadata.MD(r.Header)
-	}
-	if c.DeviceInfo == nil{
-		c.DeviceInfo = Device(r.Header)
-	}
-	isGrpc := r.ProtoMajor == 2 && strings.Contains(r.Header.Get(httpi.HeaderContentType), httpi.ContentGRPCHeaderValue)
-	if c.Peer == nil && !isGrpc {
-		p := &peer.Peer{
-			Addr: neti.StrAddr(r.RemoteAddr),
-		}
-		if r.TLS != nil {
-			p.AuthInfo = credentials.TLSInfo{State: *r.TLS, CommonAuthInfo: credentials.CommonAuthInfo{SecurityLevel: credentials.PrivacyAndIntegrity}}
-		}
-		c.Peer = p
-	}
-	if c.ServerTransportStream == nil && !isGrpc {
-		c.ServerTransportStream = new(runtime.ServerTransportStream)
-		c.WithContext(grpc.NewContextWithServerTransportStream(c.Context,c.ServerTransportStream))
+		c.setWithReq(r)
 	}
 	return c
 }
 
-func Authorization(c context.Context) string {
-	return CtxFromContext(c).Authorization
+func GetAuthInfo(c context.Context) string {
+	return CtxFromContext(c).Token
 }
 
 func CtxFromContext(ctx context.Context) *Ctx {
@@ -319,20 +338,46 @@ func CtxFromContext(ctx context.Context) *Ctx {
 		if stream = grpc.ServerTransportStreamFromContext(ctx); stream == nil {
 			stream = new(runtime.ServerTransportStream)
 		}
-		c.WithContext(grpc.NewContextWithServerTransportStream(c.Context,stream))
+		c.WithContext(grpc.NewContextWithServerTransportStream(c.Context, stream))
 		c.ServerTransportStream = stream
 	}
 	return c
 }
 
 func newCtx(ctx context.Context) *Ctx {
+	span := trace.FromContext(ctx)
 	now := time.Now()
+	traceId := span.SpanContext().TraceID.String()
+	if traceId == "" {
+		traceId = uuid.New().String()
+	}
 	return &Ctx{
-		Context:     ctx,
-		AuthInfo:    new(AuthInfo),
+		Context: ctx,
+		TraceID: traceId,
+		Authorization: Authorization{
+			AuthInfo: new(AuthInfo),
+		},
 		RequestAt:   now,
 		RequestUnix: now.Unix(),
+		Logger:      log.Default.With(zap.String("TraceId", traceId)),
 	}
+}
+
+func (c *Ctx) setWithReq(r *http.Request) {
+	isGrpc := r.ProtoMajor == 2 && strings.Contains(r.Header.Get(httpi.HeaderContentType), httpi.ContentGRPCHeaderValue)
+	var p *peer.Peer
+	if !isGrpc {
+		p = &peer.Peer{
+			Addr: neti.StrAddr(r.RemoteAddr),
+		}
+		if r.TLS != nil {
+			p.AuthInfo = credentials.TLSInfo{State: *r.TLS, CommonAuthInfo: credentials.CommonAuthInfo{SecurityLevel: credentials.PrivacyAndIntegrity}}
+		}
+	}
+	c.Token = httpi.GetToken(r)
+	c.Header = metadata.MD(r.Header)
+	c.DeviceInfo = Device(r.Header)
+	c.Internal = r.Header.Get(httpi.HeaderInternal)
 }
 
 func (c *Ctx) GetAuthInfo(auth func(*Ctx) error) (*AuthInfo, error) {
@@ -347,8 +392,8 @@ func (c *Ctx) GetAuthInfo(auth func(*Ctx) error) (*AuthInfo, error) {
 
 func JWTUnmarshaller(ctx jwt.CodingContext, data []byte, v interface{}) error {
 	if ctx.FieldDescriptor == jwt.ClaimsFieldDescriptor {
-		if c, ok := (*v.(*jwt.Claims)).(*Ctx); ok {
-			c.Authorization = stringsi.ToString(data)
+		if c, ok := (*v.(*jwt.Claims)).(*Authorization); ok {
+			c.Token = stringsi.ToString(data)
 			return json.Unmarshal(data, c.AuthInfo)
 		}
 	}

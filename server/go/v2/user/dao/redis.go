@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/liov/hoper/go/v2/protobuf/common"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/conf"
 	modelconst "github.com/liov/hoper/go/v2/user/model"
@@ -25,11 +26,7 @@ func (*UserRedis) UserToRedis(ctxi *model.Ctx) error {
 	}
 
 	loginUserKey := modelconst.LoginUserKey + ctxi.AuthInfo.IdStr
-	if _, redisErr := Dao.Redis.Pipelined(ctx, func(pipe redis.Pipeliner) error {
-		pipe.Select(ctx, modelconst.UserIndex)
-		pipe.SetEX(ctx, loginUserKey, UserString, conf.Conf.Customize.TokenMaxAge)
-		return nil
-	}); redisErr != nil {
+	if redisErr := Dao.Redis.SetEX(ctx, loginUserKey, UserString, conf.Conf.Customize.TokenMaxAge).Err(); redisErr != nil {
 		return redisErr
 	}
 	return nil
@@ -39,15 +36,8 @@ func (*UserRedis) UserToRedis(ctxi *model.Ctx) error {
 func (*UserRedis) UserFromRedis(ctxi *model.Ctx) (*model.AuthInfo, error) {
 	ctx:=ctxi.Context
 	loginUser := modelconst.LoginUserKey + ctxi.AuthInfo.IdStr
-	var cmd *redis.StringCmd
-	if _, redisErr := Dao.Redis.Pipelined(ctx, func(pipe redis.Pipeliner) error {
-		pipe.Select(ctx, modelconst.UserIndex)
-		cmd = pipe.Get(ctx, loginUser)
-		return nil
-	}); redisErr != nil {
-		return nil, redisErr
-	}
-	userString, err := redisi.String(cmd.Result())
+
+	userString, err := redisi.String(Dao.Redis.Get(ctx, loginUser).Result())
 	if err != nil {
 		return nil, err
 	}
@@ -66,14 +56,7 @@ func (*UserRedis) EditRedisUser(ctxi *model.Ctx) error {
 		return err
 	}
 	loginUserKey := modelconst.LoginUserKey + ctxi.AuthInfo.IdStr
-	if _, redisErr := Dao.Redis.Pipelined(ctx, func(pipe redis.Pipeliner) error {
-		pipe.Select(ctx, modelconst.UserIndex)
-		pipe.Set(ctx, loginUserKey, UserString, 0)
-		return nil
-	}); redisErr != nil {
-		return redisErr
-	}
-	return nil
+	return Dao.Redis.Set(ctx, loginUserKey, UserString, 0).Err()
 }
 
 // UserToRedis 将用户信息存到redis
@@ -84,7 +67,6 @@ func (*UserRedis) UserHashToRedis(ctxi *model.Ctx) error {
 	redisArgs = append(redisArgs, redisi.HMSET, loginUserKey)
 	redisArgs = append(redisArgs, hash.Marshal(ctxi.AuthInfo)...)
 	if _, redisErr := Dao.Redis.Pipelined(ctx, func(pipe redis.Pipeliner) error {
-		pipe.Select(ctx, modelconst.UserIndex)
 		pipe.Do(ctx, redisArgs...)
 		pipe.Expire(ctx, loginUserKey, conf.Conf.Customize.TokenMaxAge)
 		return nil
@@ -98,23 +80,14 @@ func (*UserRedis) UserHashToRedis(ctxi *model.Ctx) error {
 func (*UserRedis) UserHashFromRedis(ctxi *model.Ctx) error {
 	ctx:=ctxi.Context
 	loginUser := modelconst.LoginUserKey + ctxi.AuthInfo.IdStr
-	var cmd *redis.Cmd
-	if _, redisErr := Dao.Redis.Pipelined(ctx, func(pipe redis.Pipeliner) error {
-		pipe.Select(ctx, modelconst.UserIndex)
-		cmd = pipe.Do(ctx, redisi.HGETALL, loginUser)
-		return nil
-	}); redisErr != nil {
-		return redisErr
-	}
 
-	userArgs, err := redisi.Strings(cmd.Result())
-	log.Debug(userArgs)
+	userArgs, err := redisi.Strings(Dao.Redis.Do(ctx, redisi.HGETALL, loginUser).Result())
 	if err != nil {
-		log.Error(err)
 		return err
 	}
+	log.Debug(userArgs)
 	if len(userArgs) == 0 {
-		return model.UserErr_InvalidToken
+		return model.UserErrInvalidToken
 	}
 	hash.UnMarshal(ctxi.AuthInfo, userArgs)
 	return nil
@@ -125,7 +98,6 @@ func (*UserRedis) EfficientUserHashToRedis(ctxi *model.Ctx) error {
 	user := ctxi.AuthInfo
 	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
 	if _, redisErr := Dao.Redis.Pipelined(ctx, func(pipe redis.Pipeliner) error {
-		pipe.Select(ctx, modelconst.UserIndex)
 		pipe.HMSet(ctx, loginUserKey, "Name", user.Name,
 			"Role", uint32(user.Role),
 			"Status", uint8(user.Status),
@@ -147,22 +119,15 @@ func (*UserRedis) EfficientUserHashToRedis(ctxi *model.Ctx) error {
 func (*UserRedis) EfficientUserHashFromRedis(ctxi *model.Ctx) error {
 	ctx:=ctxi.Context
 	loginUser := modelconst.LoginUserKey + ctxi.AuthInfo.IdStr
-	var cmd *redis.Cmd
-	if _, redisErr := Dao.Redis.Pipelined(ctx, func(pipe redis.Pipeliner) error {
-		pipe.Select(ctx, modelconst.UserIndex)
-		cmd = pipe.Do(ctx, redisi.HGETALL, loginUser)
-		return nil
-	}); redisErr != nil {
-		return redisErr
-	}
-	userArgs, err := redisi.Strings(cmd.Result())
+
+	userArgs, err := redisi.Strings(Dao.Redis.Do(ctx, redisi.HGETALL, loginUser).Result())
 	log.Debug(userArgs)
 	if err != nil {
 		log.Error(err)
 		return err
 	}
 	if len(userArgs) == 0 {
-		return model.UserErr_InvalidToken
+		return model.UserErrInvalidToken
 	}
 	ctxi.AuthInfo.Name = userArgs[1]
 	n, err := strconv.ParseUint(userArgs[3], 10, 32)
@@ -176,11 +141,11 @@ func (*UserRedis) UserLastActiveTime(ctxi *model.Ctx) error {
 	ctx:=ctxi.Context
 	loginUser := modelconst.LoginUserKey + ctxi.AuthInfo.IdStr
 	if _, redisErr := Dao.Redis.Pipelined(ctx, func(pipe redis.Pipeliner) error {
-		pipe.Select(ctx, modelconst.CronIndex)
+		pipe.Select(ctx, common.CronIndex)
 		//有序集合存一份，遍历长时间未活跃用户用
 		pipe.ZAdd(ctx, modelconst.LoginUserKey+"ActiveTime",
 			&redis.Z{Score: float64(ctxi.RequestUnix), Member: ctxi.AuthInfo.IdStr})
-		pipe.Select(ctx, modelconst.UserIndex)
+		pipe.Select(ctx, conf.Conf.Redis.Index)
 		pipe.HSet(ctx, loginUser, "LastActiveAt")
 		return nil
 	}); redisErr != nil {
@@ -193,12 +158,5 @@ func (*UserRedis) RedisUserInfoEdit(ctxi *model.Ctx, key string, value interface
 	ctx:=ctxi.Context
 	loginUser := modelconst.LoginUserKey + ctxi.AuthInfo.IdStr
 
-	if _, redisErr := Dao.Redis.Pipelined(ctx, func(pipe redis.Pipeliner) error {
-		pipe.Select(ctx, modelconst.UserIndex)
-		pipe.HSet(ctx, loginUser, key, value)
-		return nil
-	}); redisErr != nil {
-		return redisErr
-	}
-	return nil
+	return Dao.Redis.HSet(ctx, loginUser, key, value).Err()
 }

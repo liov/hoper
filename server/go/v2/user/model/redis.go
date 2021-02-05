@@ -1,13 +1,6 @@
 package modelconst
 
 const (
-	UserIndex = iota
-	FlagIndex = iota + 10
-	SysIndex
-	CronIndex
-)
-
-const (
 	// 生成激活账号的链接
 	ActiveTimeKey = "ActiveTime_"
 
