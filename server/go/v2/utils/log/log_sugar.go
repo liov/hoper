@@ -33,27 +33,27 @@ type Config struct {
 func (lf *Config) NewLogger() *Logger {
 	logger := lf.initLogger().
 		With(
-			zap.String("module", lf.ModuleName),
 			zap.String("source", neti.GetIP()),
 		)
 	return &Logger{logger.Sugar(), logger}
 }
 
 func (l *Logger) WithOptions(opts ...zap.Option) *Logger {
-	l.Logger = l.Logger.WithOptions(opts...)
-	l.SugaredLogger = l.Logger.Sugar()
-	return l
+	logger :=*l
+	logger.Logger = l.Logger.WithOptions(opts...)
+	logger.SugaredLogger = logger.Logger.Sugar()
+	return &logger
 }
 
-func (l *Logger) With(fields ...zap.Field) *Logger {
-	l.Logger = l.Logger.With(fields...)
-	l.SugaredLogger = l.Logger.Sugar()
-	return l
+func (l *Logger) WithFields(fields ...zap.Field) *Logger {
+	logger :=*l
+	logger.Logger = l.Logger.With(fields...)
+	logger.SugaredLogger = logger.Logger.Sugar()
+	return &logger
 }
 
 var Default = (&Config{Development: true, Caller: true, Level: -1}).NewLogger()
-var NoCall = (&Config{Development: true}).NewLogger()
-var CallTwo = Default.WithOptions(zap.AddCallerSkip(2))
+var CallOne = Default.WithOptions(zap.AddCallerSkip(1))
 
 func init() {
 	output.RegisterSink()
@@ -61,11 +61,7 @@ func init() {
 
 func (lf *Config) SetLogger() {
 	Default = lf.NewLogger()
-}
-
-func (lf *Config) SetNoCall() {
-	lf.Caller = false
-	NoCall.SugaredLogger = lf.initLogger().Sugar()
+	CallOne = Default.WithOptions(zap.AddCallerSkip(1))
 }
 
 //构建日志对象基本信息
@@ -74,7 +70,6 @@ func (lf *Config) initLogger() *zap.Logger {
 	encoderConfig := zapcore.EncoderConfig{
 		TimeKey:       "time",
 		LevelKey:      "level",
-		NameKey:       lf.ModuleName,
 		CallerKey:     "caller",
 		FunctionKey:   "func",
 		MessageKey:    "msg",
@@ -89,7 +84,9 @@ func (lf *Config) initLogger() *zap.Logger {
 			encoder.AppendString(runtime.FuncForPC(caller.PC).Name() + ` ` + caller.TrimmedPath())
 		},
 	}
-
+	if lf.ModuleName != "" {
+		encoderConfig.NameKey =  "module"
+	}
 	if lf.Development {
 		encoderConfig.EncodeCaller = zapcore.FullCallerEncoder
 	}
@@ -123,126 +120,125 @@ func (lf *Config) initLogger() *zap.Logger {
 	core := zapcore.NewTee(cores...)
 
 	logger := zap.New(core, lf.hook()...)
-
+	if lf.ModuleName != ""{
+		logger = logger.Named(lf.ModuleName)
+	}
 	return logger
 }
 
 func (lf *Config) hook() []zap.Option {
 	var hooks []zap.Option
-	//系统名称
-	if len(lf.OutputPaths["json"]) > 0 && lf.ModuleName != "" {
-		hooks = append(hooks, zap.Fields(zap.Any("module", lf.ModuleName)))
-	}
 
 	if lf.Development {
 		hooks = append(hooks, zap.Development(), zap.AddStacktrace(zapcore.DPanicLevel))
 	}
 	if lf.Caller {
-		hooks = append(hooks, zap.AddCaller(), zap.AddCallerSkip(1))
+		hooks = append(hooks, zap.AddCaller())
 	}
 	return hooks
 }
 
 func Sync() {
 	Default.Sync()
+	CallOne.Sync()
 }
 
 func Print(v ...interface{}) {
-	Default.Print(v...)
+	CallOne.Print(v...)
 }
 
 func Debug(v ...interface{}) {
-	Default.Debug(v...)
+	CallOne.Debug(v...)
 }
 
 func Info(v ...interface{}) {
-	Default.Info(v...)
+	CallOne.Info(v...)
 }
 
 func Warn(format string, v ...interface{}) {
-	Default.Warn(v...)
+	CallOne.Warn(v...)
 }
 
 func Error(v ...interface{}) {
-	Default.Error(v...)
+	CallOne.Error(v...)
 }
 
 func Panic(v ...interface{}) {
-	Default.Panic(v...)
+	CallOne.Panic(v...)
 }
 
 func Fatal(v ...interface{}) {
-	Default.Fatal(v...)
+	CallOne.Fatal(v...)
 }
 
 func Printf(format string, v ...interface{}) {
-	Default.Printf(format, v...)
+	CallOne.Printf(format, v...)
 }
 
 func Debugf(format string, v ...interface{}) {
-	Default.Debugf(format, v...)
+	CallOne.Debugf(format, v...)
 }
 
 func Infof(format string, v ...interface{}) {
-	Default.Infof(format, v...)
+	CallOne.Infof(format, v...)
 }
 
 func Warnf(format string, v ...interface{}) {
-	Default.Warnf(format, v...)
+	CallOne.Warnf(format, v...)
 }
 
 func Errorf(format string, v ...interface{}) {
-	Default.Errorf(format, v...)
+	CallOne.Errorf(format, v...)
 }
 
 func Panicf(format string, v ...interface{}) {
-	Default.Panicf(format, v...)
+	CallOne.Panicf(format, v...)
 }
 
 func Fatalf(format string, v ...interface{}) {
-	Default.Fatalf(format, v...)
+	CallOne.Fatalf(format, v...)
 }
 
 func Debugw(msg string, keysAndValues ...interface{}) {
 	if len(keysAndValues)|0 != 0 {
 		keysAndValues = append(keysAndValues, "")
 	}
-	Default.Debugw(msg, keysAndValues...)
+	CallOne.Debugw(msg, keysAndValues...)
 }
 
 func Infow(msg string, keysAndValues ...interface{}) {
 	if len(keysAndValues)|0 != 0 {
 		keysAndValues = append(keysAndValues, "")
 	}
-	Default.Infow(msg, keysAndValues...)
+	CallOne.Infow(msg, keysAndValues...)
 }
 
 func Warnw(msg string, keysAndValues ...interface{}) {
 	if len(keysAndValues)|0 != 0 {
 		keysAndValues = append(keysAndValues, "")
 	}
-	Default.Warnw(msg, keysAndValues...)
+	CallOne.Warnw(msg, keysAndValues...)
 }
 
 func Errorw(msg string, keysAndValues ...interface{}) {
 	if len(keysAndValues)|0 != 0 {
 		keysAndValues = append(keysAndValues, "")
 	}
-	Default.Errorw(msg, keysAndValues...)
+	CallOne.Errorw(msg, keysAndValues...)
 }
 
 func Panicw(msg string, keysAndValues ...interface{}) {
 	if len(keysAndValues)|0 != 0 {
 		keysAndValues = append(keysAndValues, "")
 	}
-	Default.Panicw(msg, keysAndValues...)
+	CallOne.Panicw(msg, keysAndValues...)
 }
 
 func Fatalw(msg string, keysAndValues ...interface{}) {
 	if len(keysAndValues)|0 != 0 {
 		keysAndValues = append(keysAndValues, "")
 	}
-	Default.Fatalw(msg, keysAndValues...)
+	CallOne.Fatalw(msg, keysAndValues...)
 }
 
 // 兼容gormv1

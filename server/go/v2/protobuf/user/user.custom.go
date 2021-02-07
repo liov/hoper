@@ -5,15 +5,12 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/google/uuid"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/net"
 	"github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 	stringsi "github.com/liov/hoper/go/v2/utils/strings"
@@ -21,9 +18,7 @@ import (
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/peer"
 )
 
 //Cannot use 'resumes' (type []*model.Resume) as type []CmpKey
@@ -124,7 +119,6 @@ func Device(r http.Header) *DeviceInfo {
 
 type AuthInfo struct {
 	Id           uint64     `json:"id"`
-	IdStr        string     `json:"-" gorm:"-"`
 	Name         string     `json:"name"`
 	Role         Role       `json:"role"`
 	Status       UserStatus `json:"status"`
@@ -147,6 +141,7 @@ func (x *AuthInfo) UserAuthInfo() *UserAuthInfo {
 
 type Authorization struct {
 	*AuthInfo
+	IdStr string `json:"-" gorm:"-"`
 	Token string `json:"-"`
 }
 
@@ -201,12 +196,11 @@ func (x *DeviceInfo) UserDeviceInfo() *UserDeviceInfo {
 type Ctx struct {
 	context.Context `json:"-"`
 	TraceID         string `json:"-"`
-	Authorization
+	*Authorization
 	*DeviceInfo                `json:"-"`
-	RequestAt                  time.Time   `json:"-"`
-	RequestUnix                int64       `json:"iat,omitempty"`
-	Header                     metadata.MD `json:"-"`
-	Peer                       *peer.Peer  `json:"-"`
+	RequestAt                  time.Time     `json:"-"`
+	RequestUnix                int64         `json:"iat,omitempty"`
+	Request                    *http.Request `json:"-"`
 	grpc.ServerTransportStream `json:"-"`
 	Internal                   string
 	*log.Logger
@@ -229,7 +223,7 @@ func (c *Ctx) WithContext(ctx context.Context) {
 
 func (c *Ctx) SetHeader(md metadata.MD) error {
 	for k, v := range md {
-		c.Header[k] = v
+		c.Request.Header[k] = v
 	}
 	if c.ServerTransportStream != nil {
 		err := c.ServerTransportStream.SetHeader(md)
@@ -242,7 +236,7 @@ func (c *Ctx) SetHeader(md metadata.MD) error {
 
 func (c *Ctx) SendHeader(md metadata.MD) error {
 	for k, v := range md {
-		c.Header[k] = v
+		c.Request.Header[k] = v
 	}
 	if c.ServerTransportStream != nil {
 		err := c.ServerTransportStream.SendHeader(md)
@@ -254,7 +248,7 @@ func (c *Ctx) SendHeader(md metadata.MD) error {
 }
 
 func (c *Ctx) WriteHeader(k, v string) error {
-	c.Header[k] = []string{v}
+	c.Request.Header[k] = []string{v}
 
 	if c.ServerTransportStream != nil {
 		err := c.ServerTransportStream.SendHeader(metadata.MD{k: []string{v}})
@@ -266,7 +260,7 @@ func (c *Ctx) WriteHeader(k, v string) error {
 }
 
 func (c *Ctx) SetCookie(v string) error {
-	c.Header[httpi.HeaderSetCookie] = []string{v}
+	c.Request.Header[httpi.HeaderSetCookie] = []string{v}
 
 	if c.ServerTransportStream != nil {
 		err := c.ServerTransportStream.SendHeader(metadata.MD{httpi.HeaderSetCookie: []string{v}})
@@ -279,7 +273,7 @@ func (c *Ctx) SetCookie(v string) error {
 
 func (c *Ctx) SetTrailer(md metadata.MD) error {
 	for k, v := range md {
-		c.Header[k] = v
+		c.Request.Header[k] = v
 	}
 	if c.ServerTransportStream != nil {
 		err := c.ServerTransportStream.SetTrailer(md)
@@ -295,6 +289,12 @@ func (c *Ctx) Method() string {
 		return c.ServerTransportStream.Method()
 	}
 	return ""
+}
+
+func (c *Ctx) HandleError(err error) {
+	if err != nil {
+		c.Error(err.Error())
+	}
 }
 
 type ctxKey struct{}
@@ -315,31 +315,14 @@ func ConvertContext(r *http.Request) pick.Context {
 	return c
 }
 
-func GetAuthInfo(c context.Context) string {
-	return CtxFromContext(c).Token
-}
-
 func CtxFromContext(ctx context.Context) *Ctx {
 	ctxi := ctx.Value(ctxKey{})
 	c, ok := ctxi.(*Ctx)
 	if !ok {
 		c = newCtx(ctx)
 	}
-	if c.Header == nil {
-		md, _ := metadata.FromIncomingContext(ctx)
-		c.Header = md
-	}
-	if c.Peer == nil {
-		p, _ := peer.FromContext(ctx)
-		c.Peer = p
-	}
 	if c.ServerTransportStream == nil {
-		var stream grpc.ServerTransportStream
-		if stream = grpc.ServerTransportStreamFromContext(ctx); stream == nil {
-			stream = new(runtime.ServerTransportStream)
-		}
-		c.WithContext(grpc.NewContextWithServerTransportStream(c.Context, stream))
-		c.ServerTransportStream = stream
+		c.ServerTransportStream = grpc.ServerTransportStreamFromContext(ctx)
 	}
 	return c
 }
@@ -354,28 +337,18 @@ func newCtx(ctx context.Context) *Ctx {
 	return &Ctx{
 		Context: ctx,
 		TraceID: traceId,
-		Authorization: Authorization{
+		Authorization: &Authorization{
 			AuthInfo: new(AuthInfo),
 		},
 		RequestAt:   now,
 		RequestUnix: now.Unix(),
-		Logger:      log.Default.With(zap.String("TraceId", traceId)),
+		Logger:      log.Default.WithFields(zap.String("traceId", traceId)),
 	}
 }
 
 func (c *Ctx) setWithReq(r *http.Request) {
-	isGrpc := r.ProtoMajor == 2 && strings.Contains(r.Header.Get(httpi.HeaderContentType), httpi.ContentGRPCHeaderValue)
-	var p *peer.Peer
-	if !isGrpc {
-		p = &peer.Peer{
-			Addr: neti.StrAddr(r.RemoteAddr),
-		}
-		if r.TLS != nil {
-			p.AuthInfo = credentials.TLSInfo{State: *r.TLS, CommonAuthInfo: credentials.CommonAuthInfo{SecurityLevel: credentials.PrivacyAndIntegrity}}
-		}
-	}
+	c.Request = r
 	c.Token = httpi.GetToken(r)
-	c.Header = metadata.MD(r.Header)
 	c.DeviceInfo = Device(r.Header)
 	c.Internal = r.Header.Get(httpi.HeaderInternal)
 }
@@ -388,6 +361,18 @@ func (c *Ctx) GetAuthInfo(auth func(*Ctx) error) (*AuthInfo, error) {
 		return nil, err
 	}
 	return c.AuthInfo, nil
+}
+
+func (c *Ctx) GeToken() string {
+	return c.Token
+}
+
+func (c *Ctx) GetReqTime() time.Time {
+	return c.RequestAt
+}
+
+func (c *Ctx) GetLogger() *log.Logger {
+	return c.Logger
 }
 
 func JWTUnmarshaller(ctx jwt.CodingContext, data []byte, v interface{}) error {

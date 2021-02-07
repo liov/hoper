@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"reflect"
+	"time"
 
 	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
@@ -20,6 +21,10 @@ type Context interface {
 	context.Context
 	jwt.Claims
 	grpc.ServerTransportStream
+	Error(args ...interface{})
+	GeToken() string
+	GetReqTime() time.Time
+	GetLogger() *log.Logger
 }
 
 var (
@@ -90,14 +95,17 @@ func register(router *Router, genApi bool, modName string) {
 	registered()
 }
 
-func commonHandler(w http.ResponseWriter, req *http.Request, handle *reflect.Value, ps *Params) {
+type convert func(r *http.Request) Context
+
+func commonHandler(w http.ResponseWriter, req *http.Request,convert convert, handle *reflect.Value, ps *Params) {
 	handleTyp := handle.Type()
 	handleNumIn := handleTyp.NumIn()
 	if handleNumIn != 0 {
 		params := make([]reflect.Value, handleNumIn)
+		ctxi:=convert(req)
 		for i := 0; i < handleNumIn; i++ {
 			if handleTyp.In(i).Implements(claimsType) {
-				params[i] = reflect.ValueOf(req.Context())
+				params[i] = reflect.ValueOf(ctxi)
 			} else {
 				params[i] = reflect.New(handleTyp.In(i).Elem())
 				if ps != nil || req.URL.RawQuery != "" {
@@ -118,13 +126,15 @@ func commonHandler(w http.ResponseWriter, req *http.Request, handle *reflect.Val
 			}
 		}
 		result := handle.Call(params)
-		resHandler(w, result)
+		resHandler(ctxi,w, result)
 	}
 }
 
-func resHandler(w http.ResponseWriter, result []reflect.Value) {
+func resHandler(c Context,w http.ResponseWriter, result []reflect.Value) {
 	if !result[1].IsNil() {
-		json.NewEncoder(w).Encode(errorcode.ErrHandle(result[1].Interface()))
+		err :=errorcode.ErrHandle(result[1].Interface())
+		c.Error(err.Error())
+		json.NewEncoder(w).Encode(err)
 		return
 	}
 	if info, ok := result[0].Interface().(*httpi.File); ok {

@@ -15,6 +15,7 @@ import (
 	udao "github.com/liov/hoper/go/v2/user/dao"
 	userservice "github.com/liov/hoper/go/v2/user/service"
 	"github.com/liov/hoper/go/v2/utils/log"
+	grpci "github.com/liov/hoper/go/v2/utils/net/http/grpc"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 	"github.com/liov/hoper/go/v2/utils/net/http/tailmon"
 	"go.opencensus.io/examples/exporter"
@@ -35,8 +36,9 @@ func main() {
 	}
 	pick.RegisterService(userservice.GetUserService(), contentervice.GetMomentService())
 	(&tailmon.Server{
+		GRPCOptions: []grpc.ServerOption{grpci.DefaultUnaryInterceptor()},
 		//为了可以自定义中间件
-		GRPCHandle: func(gs *grpc.Server)  {
+		GRPCHandle: func(gs *grpc.Server) {
 			user.RegisterUserServiceServer(gs, userservice.GetUserService())
 			user.RegisterOauthServiceServer(gs, userservice.GetOauthService())
 			content.RegisterMomentServiceServer(gs, contentervice.GetMomentService())
@@ -48,7 +50,7 @@ func main() {
 			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
 			pick.Gin(app, user.ConvertContext, true, initialize.InitConfig.Module)
 		},
-		CustomContext: user.CtxWithRequest,
-		AuthInfo: user.GetAuthInfo,
+		CustomContext:  user.CtxWithRequest,
+		ConvertContext: user.ConvertContext,
 	}).Start()
 }

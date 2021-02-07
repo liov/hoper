@@ -1,4 +1,4 @@
-package modelconst
+package model
 
 import (
 	templatei "github.com/liov/hoper/go/v2/utils/def/template"

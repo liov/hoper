@@ -2,7 +2,6 @@ package pick
 
 import (
 	"log"
-	"net/http"
 	"reflect"
 
 	"github.com/gin-gonic/gin"
@@ -11,9 +10,11 @@ import (
 	"github.com/liov/hoper/go/v2/utils/net/http/gin/handler"
 )
 
+
+
 // 虽然我写的路由比httprouter更强大(没有map,lru cache)，但是还是选择用gin,理由是gin也用同样的方式改造了路由
 
-func Gin(engine *gin.Engine,convert func(r *http.Request) Context,genApi bool, modName string) {
+func Gin(engine *gin.Engine,convert convert,genApi bool, modName string) {
 	for _, v := range svcs {
 		describe, preUrl, middleware := v.Service()
 		value := reflect.ValueOf(v)
@@ -35,11 +36,12 @@ func Gin(engine *gin.Engine,convert func(r *http.Request) Context,genApi bool, m
 			methodValue := method.Func
 			in2Type := methodType.In(2)
 			engine.Handle(methodInfo.method, methodInfo.path, func(ctx *gin.Context) {
-				in1 := reflect.ValueOf(convert(ctx.Request))
+				ctxi:=convert(ctx.Request)
+				in1 := reflect.ValueOf(ctxi)
 				in2 := reflect.New(in2Type.Elem())
 				gin_build.Bind(ctx, in2.Interface())
 				result := methodValue.Call([]reflect.Value{value, in1, in2})
-				resHandler(ctx.Writer,result)
+				resHandler(ctxi,ctx.Writer,result)
 			})
 			infos = append(infos, &apiDocInfo{methodInfo, method.Type})
 		}

@@ -1,49 +1,58 @@
 package service
 
 import (
-	"fmt"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/liov/hoper/go/v2/content/dao"
 	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	redisi "github.com/liov/hoper/go/v2/utils/dao/redis"
-	"github.com/liov/hoper/go/v2/utils/log"
 )
 
-func Limit(ctxi *user.Ctx, minuteLimit string, minuteLimitCount int64, dayLimit string, dayLimitCount int64, userID uint64) error {
+var limitErr = errorcode.TimeTooMuch.Message("您的操作过于频繁，请先休息一会儿。")
+
+func Limit(ctxi *user.Ctx, minuteLimit string, minuteLimitCount int64, dayLimit string, dayLimitCount int64) error {
 	ctx := ctxi.Context
 	conn := dao.Dao.Redis
-	minuteKey := fmt.Sprintf("%s%d", minuteLimit, userID)
-	minuteCount, minuteErr := redisi.Int64(conn.Get(ctx, minuteKey).Result())
-
-	if minuteErr == nil && minuteCount >= minuteLimitCount {
-		return errorcode.TimeTooMuch.Message("您的操作过于频繁，请先休息一会儿。")
-	}
-
-	minuteRemainingTime, _ := conn.TTL(ctx, minuteKey).Result()
-	if minuteRemainingTime < 0 || minuteRemainingTime > 60*time.Second {
-		minuteRemainingTime = 60 * time.Second
-	}
-
-	if err := conn.SetEX(ctx, minuteKey, minuteCount+1, minuteRemainingTime).Err(); err != nil {
+	minuteKey := minuteLimit + ctxi.IdStr
+	dayKey := dayLimit + ctxi.IdStr
+	var minuteIntCmd, dayIntCmd *redis.IntCmd
+	_, err := conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+		minuteIntCmd = pipe.Incr(ctx, minuteKey)
+		dayIntCmd = pipe.Incr(ctx, dayKey)
+		return nil
+	})
+	if err != nil {
+		ctxi.Error(err.Error())
 		return errorcode.SysError
 	}
 
-	dayKey := fmt.Sprintf("%s%d", dayLimit, userID)
-	dayCount, dayErr := redisi.Int64(conn.Get(ctx, dayKey).Result())
-	if dayErr == nil && dayCount >= dayLimitCount {
-		return errorcode.TimeTooMuch.Message("您今天的操作过于频繁，请先休息一会儿。")
+	if minuteIntCmd.Val() > minuteLimitCount || dayIntCmd.Val() > dayLimitCount {
+		return limitErr
+	}
+	var minuteDurationCmd, dayDurationCmd *redis.DurationCmd
+	_, err = conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+		minuteDurationCmd = pipe.PTTL(ctx, minuteKey)
+		dayDurationCmd = pipe.PTTL(ctx, dayKey)
+		return nil
+	})
+	if err != nil {
+		ctxi.Error(err.Error())
+		return errorcode.SysError
 	}
 
-	dayRemainingTime, _ := conn.TTL(ctx, dayKey).Result()
-	secondsOfDay := 24 * 60 * 60 * time.Second
-	if dayRemainingTime < 0 || dayRemainingTime > secondsOfDay {
-		dayRemainingTime = secondsOfDay
-	}
-
-	if err := conn.SetEX(ctx, dayKey, dayCount+1, dayRemainingTime).Err(); err != nil {
-		log.Error("redis set failed:", err)
+	_, err = conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+		if minuteDurationCmd.Val() < 0{
+			pipe.Expire(ctx, minuteKey,time.Minute)
+		}
+		if dayDurationCmd.Val() < 0{
+			pipe.Expire(ctx, dayKey,redisi.TimeDay)
+		}
+		return nil
+	})
+	if err != nil {
+		ctxi.Error(err.Error())
 		return errorcode.SysError
 	}
 	return nil

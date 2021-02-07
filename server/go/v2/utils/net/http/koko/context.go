@@ -5,7 +5,6 @@ import (
 	"errors"
 	"net/http"
 	"net/url"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -14,6 +13,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/liov/hoper/go/v2/utils/dao/cache"
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
+	"github.com/liov/hoper/go/v2/utils/log"
 	neti "github.com/liov/hoper/go/v2/utils/net"
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
@@ -35,8 +35,7 @@ var (
 
 type AuthInfo interface {
 	jwt.Claims
-	GenerateToken(secret []byte) (string, error)
-	ParseToken(token, secret string) error
+	IdStr() string
 }
 
 type UserInfo struct {
@@ -63,16 +62,10 @@ func (x *UserInfo) GenerateToken(secret []byte) (string, error) {
 	return token, err
 }
 
-func (x *UserInfo) ParseToken(token, secret string) error {
-	if err := jwti.ParseToken(x, token, secret); err != nil {
-		return err
-	}
-	x.IdStr = strconv.FormatUint(x.Id, 10)
-	return nil
-}
 
 type Authorization struct {
 	AuthInfo
+	IdStr string
 	Token string
 }
 
@@ -92,16 +85,14 @@ type DeviceInfo struct {
 func Device(r http.Header) *DeviceInfo {
 	unknow := true
 	var info DeviceInfo
-	//Device-AuthInfo:device-osInfo-appCode-appVersion
-	if deviceInfo := r.Get(httpi.HeaderDeviceInfo); deviceInfo != "" {
+	//Device-Info:device,osInfo,appCode,appVersion
+	if infos := r.Values(httpi.HeaderDeviceInfo); len(infos) == 4 {
 		unknow = false
-		infos := strings.Split(deviceInfo, "-")
-		if len(infos) == 4 {
-			info.Device = infos[0]
-			info.Os = infos[1]
-			info.AppCode = infos[2]
-			info.AppVersion = infos[3]
-		}
+		info.Device = infos[0]
+		info.Os = infos[1]
+		info.AppCode = infos[2]
+		info.AppVersion = infos[3]
+
 	}
 	// area:xxx
 	// location:1.23456,2.123456
@@ -109,13 +100,11 @@ func Device(r http.Header) *DeviceInfo {
 		unknow = false
 		info.Area, _ = url.PathUnescape(area)
 	}
-	if location := r.Get(httpi.HeaderLocation); location != "" {
+	if infos := r.Values(httpi.HeaderLocation); len(infos) == 2 {
 		unknow = false
-		infos := strings.Split(location, ",")
-		if len(infos) == 2 {
-			info.Lng = infos[0]
-			info.Lat = infos[1]
-		}
+		info.Lng = infos[0]
+		info.Lat = infos[1]
+
 	}
 
 	if userAgent := r.Get(httpi.HeaderUserAgent); userAgent != "" {
@@ -143,6 +132,7 @@ type Ctx struct {
 	Peer                       *peer.Peer  `json:"-"`
 	grpc.ServerTransportStream `json:"-"`
 	grpc                       bool
+	*log.Logger
 }
 
 var _ = pick.Context(new(Ctx))
@@ -254,7 +244,7 @@ func (c *Ctx) GetAuthInfo(update bool) error {
 	}
 	if authDao.Secret != "" {
 		c.AuthInfo = authDao.AuthPool.Get().(AuthInfo)
-		if err := c.Authorization.ParseToken(c.Authorization.Token, authDao.Secret); err != nil {
+		if err := jwti.ParseToken(c.Authorization, c.Token, authDao.Secret); err != nil {
 			return err
 		}
 	}
@@ -263,7 +253,7 @@ func (c *Ctx) GetAuthInfo(update bool) error {
 			return err
 		}
 	}
-
+	c.IdStr = c.AuthInfo.IdStr()
 	if authDao.AuthCache != nil {
 		authDao.AuthCache.SetWithExpire(signature, c.Authorization, 5*time.Second)
 	}
