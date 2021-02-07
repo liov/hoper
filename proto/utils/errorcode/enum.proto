@@ -29,9 +29,13 @@ enum ErrCode {
   Unavailable = 14 [(gogo.enumvalue_cn) = "服务不可用"];
   DataLoss = 15 [(gogo.enumvalue_cn) = "数据丢失"];
   Unauthenticated = 16 [(gogo.enumvalue_cn) = "身份未验证"];
-  SysError = 17 [(gogo.enumvalue_cn) = "系统错误"];
-  DBError = 18 [(gogo.enumvalue_cn) = "数据库错误"];
-  RedisErr = 19 [(gogo.enumvalue_cn) = "Redis错误"];
+
+
+  SysError = 10000 [(gogo.enumvalue_cn) = "系统错误"];
+
+
+  DBError = 21000 [(gogo.enumvalue_cn) = "数据库错误"];
+  RedisErr = 22000 [(gogo.enumvalue_cn) = "Redis错误"];
 
 
   UploadSaveImageFail = 30001 [(gogo.enumvalue_cn) = "保存图片失败"];
@@ -39,4 +43,5 @@ enum ErrCode {
   UploadCheckImageFormat = 30003 [(gogo.enumvalue_cn) = "校验图片错误，图片格式或大小有问题"];
 
   TimeTooMuch = 30004 [(gogo.enumvalue_cn) = "尝试次数过多"];
+  ParamInvalid = 30005 [(gogo.enumvalue_cn) = "参数错误"];
 }

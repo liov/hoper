@@ -25,8 +25,7 @@ func auth(ctx *model.Ctx, update bool) error {
 	if err == nil {
 		if cache, ok := cacheTmp.(*model.Authorization); ok {
 			cache.LastActiveAt = ctx.RequestUnix
-			ctx.AuthInfo = cache.AuthInfo
-			ctx.Token = cache.Token
+			ctx.Authorization = cache
 			return nil
 		}
 	}
@@ -40,10 +39,7 @@ func auth(ctx *model.Ctx, update bool) error {
 			return model.UserErrInvalidToken
 		}
 	}
-	dao.Dao.Cache.SetWithExpire(signature,
-		&model.Authorization{AuthInfo: ctx.AuthInfo, Token: ctx.Token},
-		5*time.Second)
-
+	dao.Dao.Cache.SetWithExpire(signature, ctx.Authorization, 5*time.Second)
 	return nil
 }
 

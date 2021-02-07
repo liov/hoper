@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"runtime/debug"
 	"strings"
 	"syscall"
 	"time"
@@ -22,6 +21,7 @@ import (
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	gin_build "github.com/liov/hoper/go/v2/utils/net/http/gin"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"
+	runtimei "github.com/liov/hoper/go/v2/utils/runtime"
 	"github.com/liov/hoper/go/v2/utils/strings"
 	"go.opencensus.io/trace"
 	"go.opencensus.io/trace/propagation"
@@ -117,7 +117,8 @@ func (s *Server) Serve() {
 	handle := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if r := recover(); r != nil {
-				log.CallTwo.With(zap.String(log.Stack, stringsi.ToString(debug.Stack()))).Error(" panic: ", r)
+				frame,_:=runtimei.GetCallerFrame(2)
+				log.Default.With(zap.String(log.Stack, fmt.Sprintf("%s:%d (%#x)\n\t%s\n", frame.File, frame.Line, frame.PC, frame.Function))).Error(" panic: ", r)
 				w.Header().Set(httpi.HeaderContentType, httpi.ContentJSONHeaderValue)
 				w.Write(httpi.ResponseSysErr)
 			}

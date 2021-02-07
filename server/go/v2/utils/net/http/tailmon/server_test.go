@@ -2,6 +2,7 @@ package tailmon
 
 import (
 	"log"
+	"net/http"
 	"net/http/httptest"
 	"reflect"
 	"testing"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
+	"go.uber.org/zap"
 )
 
 type Foo struct {
@@ -38,9 +40,14 @@ func TestPtr(t *testing.T) {
 }
 
 func TestGinCtxPtr(t *testing.T) {
-	recorder := httpi.NewRecorder()
+	recorder := httpi.NewRecorder(http.Header{})
 	ctx := new(gin.Context)
 	*(*httpi.ResponseRecorder)(unsafe.Pointer(uintptr(*(*int64)(unsafe.Pointer(ctx))))) = *recorder
 	log.Println(*(*int64)(unsafe.Pointer(ctx)))
 	log.Println(recorder.Code)
+}
+
+func TestSize(t *testing.T) {
+	t.Log(reflect.TypeOf(zap.Logger{}).Size())
+	t.Log(reflect.TypeOf(zap.Field{}).Size())
 }

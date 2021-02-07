@@ -1,4 +1,4 @@
-package modelconst
+package model
 
 import (
 	"fmt"

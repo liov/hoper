@@ -22,7 +22,7 @@ import (
 func main() {
 	//single("/content/moment.model.proto")
 	run(*proto)
-	//genutils(*proto+"/utils")
+	genutils(*proto+"/utils")
 	//gengql()
 }
 
@@ -131,14 +131,16 @@ func genutils(dir string) {
 		if fileInfos[i].IsDir() {
 			genutils(dir + "/" + fileInfos[i].Name())
 		}
+		if strings.Contains(dir, "utils/proto/gogo") {
+			if strings.HasSuffix(dir,".gen.proto") {
+				arg := "protoc -I" + *proto + " " + dir + " --gogo_out=plugins=grpc,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor:" + pwd + "/protobuf"
+				execi.Run(arg)
+			}
+			continue
+		}
 		if strings.HasSuffix(fileInfos[i].Name(), "enum.proto") {
 			arg := "protoc " + include + " " + dir + "/" + fileInfos[i].Name() + " --" + enumOut + ":" + pwd + "/protobuf"
 			execi.Run(arg)
-		}
-		if strings.HasPrefix(dir, "/utils/proto/gogo/") {
-			arg := "protoc -I" + *proto + " " + dir + " --gogo_out=plugins=grpc,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor:" + pwd + "/protobuf"
-			execi.Run(arg)
-			continue
 		}
 		for _, plugin := range model {
 			arg := "protoc " + include + " " + dir + "/*.proto" + " --" + plugin + ":" + pwd + "/protobuf"

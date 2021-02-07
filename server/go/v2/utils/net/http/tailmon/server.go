@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"runtime/debug"
 	"strings"
 	"syscall"
 	"time"
@@ -22,6 +21,8 @@ import (
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	gin_build "github.com/liov/hoper/go/v2/utils/net/http/gin"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"
+	"github.com/liov/hoper/go/v2/utils/net/http/pick"
+	runtimei "github.com/liov/hoper/go/v2/utils/runtime"
 	"github.com/liov/hoper/go/v2/utils/strings"
 	"go.opencensus.io/trace"
 	"go.opencensus.io/trace/propagation"
@@ -65,7 +66,6 @@ func (s *Server) httpHandler() http.HandlerFunc {
 			ginServer.ServeHTTP(w, r)
 			return
 		}
-		now := time.Now()
 
 		var body []byte
 		if r.Method != http.MethodGet {
@@ -86,17 +86,15 @@ func (s *Server) httpHandler() http.HandlerFunc {
 			// 将 recorder 记录的 Response Body 写入到 ResponseWriter 中，客户端收到响应报文体
 			w.Write(recorder.Body.Bytes())
 		}
-		var authorization string
-		if s.AuthInfo != nil {
-			authorization = s.AuthInfo(r.Context())
-		}
-		accessLog(r.RequestURI, stringsi.ToString(body), stringsi.ToString(recorder.Body.Bytes()),
-			authorization, now, recorder.Code)
+
+		accessLog(s.ConvertContext(r), r.RequestURI,
+			stringsi.ToString(body), stringsi.ToString(recorder.Body.Bytes()),
+			recorder.Code)
 	}
 }
 
 type CustomContext func(c context.Context, r *http.Request) context.Context
-type AuthInfo func(c context.Context) string
+type ConvertContext func(r *http.Request) pick.Context
 
 func (s *Server) Serve() {
 	//反射从配置中取port
@@ -122,7 +120,8 @@ func (s *Server) Serve() {
 	handle := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if r := recover(); r != nil {
-				log.CallTwo.With(zap.String(log.Stack, stringsi.ToString(debug.Stack()))).Error(" panic: ", r)
+				frame,_:=runtimei.GetCallerFrame(2)
+				log.Default.With(zap.String(log.Stack, fmt.Sprintf("%s:%d (%#x)\n\t%s\n", frame.File, frame.Line, frame.PC, frame.Function))).Error(" panic: ", r)
 				w.Header().Set(httpi.HeaderContentType, httpi.ContentJSONHeaderValue)
 				w.Write(httpi.ResponseSysErr)
 			}
@@ -204,7 +203,7 @@ type Server struct {
 	GinHandle      func(engine *gin.Engine)
 	GraphqlResolve graphql.ExecutableSchema
 	CustomContext  CustomContext
-	AuthInfo       AuthInfo
+	ConvertContext     ConvertContext
 }
 
 var signals = make(chan os.Signal, 1)
@@ -240,11 +239,12 @@ func ReStart() {
 	stop <- struct{}{}
 }
 
-func accessLog(iface, body, result, auth string, start time.Time, code int) {
-	log.Default.Logger.Info("", zap.String("interface", iface),
+func accessLog(ctxi pick.Context, iface, body, result string, code int) {
+	ctxi.GetLogger().Logger.Info("", zap.String("interface", iface),
 		zap.String("body", body),
-		zap.Duration("processTime", time.Now().Sub(start)),
+		zap.Duration("processTime", time.Now().Sub(ctxi.GetReqTime())),
 		zap.String("result", result),
-		zap.String("auth", auth),
+		zap.String("auth", ctxi.GeToken()),
 		zap.Int("status", code))
+	ctxi.GetLogger().Logger.Sync()
 }

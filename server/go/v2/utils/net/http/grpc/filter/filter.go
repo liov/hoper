@@ -2,13 +2,13 @@ package filter
 
 import (
 	"context"
-	"runtime/debug"
+	"fmt"
 	"strings"
 
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
-	"github.com/liov/hoper/go/v2/utils/strings"
+	runtimei "github.com/liov/hoper/go/v2/utils/runtime"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -25,13 +25,14 @@ func filter(
 ) (resp interface{}, err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			log.CallTwo.With(zap.String("stack",stringsi.ToString(debug.Stack()))).Errorf("%v panic: %v", info, r)
+			frame,_:=runtimei.GetCallerFrame(2)
+			log.Default.With(zap.String(log.Stack, fmt.Sprintf("%s:%d (%#x)\n\t%s\n", frame.File, frame.Line, frame.PC, frame.Function))).Error(" panic: ", r)
 			err = errorcode.SysError.ErrRep()
 		}
 		//不能添加错误处理，除非所有返回的结构相同
 		if err != nil {
-			if errcode, ok := err.(errorcode.DefaultErrRep); !ok {
-				err = errcode.ErrRep()
+			if _, ok := err.(interface{GRPCStatus() *status.Status}); !ok {
+				err = errorcode.Unknown.Message(err.Error())
 			}
 		}
 	}()

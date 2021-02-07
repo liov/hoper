@@ -21,6 +21,9 @@ func (*JSONPb) ContentType(_ interface{}) string {
 }
 
 func (j *JSONPb) Marshal(v interface{}) ([]byte, error) {
+	if _,ok:=v.(error);ok{
+		return j.API.Marshal(v)
+	}
 	return j.API.Marshal(&httpi.ResData{
 		Code:    0,
 		Message: "OK",

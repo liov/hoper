@@ -1,4 +1,4 @@
-package modelconst
+package model
 
 const (
 	// 生成激活账号的链接
