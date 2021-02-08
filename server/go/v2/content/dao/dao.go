@@ -6,7 +6,6 @@ import (
 
 	"github.com/cockroachdb/pebble"
 	"github.com/go-redis/redis/v8"
-	"github.com/liov/hoper/go/v2/utils/configor/apollo"
 	"github.com/liov/hoper/go/v2/utils/dao/cache"
 	"gorm.io/gorm"
 )
@@ -23,12 +22,9 @@ type dao struct {
 	PebbleDB *pebble.DB
 	// RedisPool Redis连接池
 	Redis       *redis.Client
-	RedisExpire int32
 	Cache       cache.Cache
-	McExpire    int32
 	//elastic
 	MailAuth smtp.Auth
-	Apollo   *apollo.Client
 }
 
 // CloseDao close the resource.
@@ -41,9 +37,6 @@ func (d *dao) Close() {
 	}
 	if d.StdDB != nil {
 		d.StdDB.Close()
-	}
-	if d.Apollo != nil {
-		d.Apollo.Close()
 	}
 }
 

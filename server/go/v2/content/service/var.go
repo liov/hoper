@@ -1,12 +1,7 @@
 package service
 
-import (
-
-)
-
 var (
 	momentSvc = &MomentService{}
-
 )
 
 func GetMomentService() *MomentService {

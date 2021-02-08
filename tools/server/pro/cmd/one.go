@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -27,7 +26,7 @@ func main() {
 }
 
 func test(id int) {
-	reader, err := pro.Request(http.DefaultClient, fmt.Sprintf(pro.CommonUrl, strconv.Itoa(id)))
+	reader, err := pro.Request(http.DefaultClient, pro.CommonUrl+strconv.Itoa(id))
 	if err != nil {
 		log.Fatal(err)
 	}

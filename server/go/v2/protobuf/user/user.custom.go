@@ -78,45 +78,6 @@ func (x *AuthInfo) TableName() string {
 }
 
 /*----------------------------CTX上下文-------------------------------*/
-func Device(r http.Header) *DeviceInfo {
-	unknow := true
-	var info DeviceInfo
-	//Device-Info:device,osInfo,appCode,appVersion
-	if infos := r.Values(httpi.HeaderDeviceInfo); len(infos) == 4 {
-		unknow = false
-		info.Device = infos[0]
-		info.Os = infos[1]
-		info.AppCode = infos[2]
-		info.AppVersion = infos[3]
-
-	}
-	// area:xxx
-	// location:1.23456,2.123456
-	if area := r.Get(httpi.HeaderArea); area != "" {
-		unknow = false
-		info.Area, _ = url.PathUnescape(area)
-	}
-	if infos := r.Values(httpi.HeaderLocation); len(infos) == 2 {
-		unknow = false
-		info.Lng = infos[0]
-		info.Lat = infos[1]
-
-	}
-
-	if userAgent := r.Get(httpi.HeaderUserAgent); userAgent != "" {
-		unknow = false
-		info.UserAgent = userAgent
-	}
-	if ip := r.Get(httpi.HeaderXForwardedFor); ip != "" {
-		unknow = false
-		info.IP = ip
-	}
-	if unknow {
-		return nil
-	}
-	return &info
-}
-
 type AuthInfo struct {
 	Id           uint64     `json:"id"`
 	Name         string     `json:"name"`
@@ -193,16 +154,56 @@ func (x *DeviceInfo) UserDeviceInfo() *UserDeviceInfo {
 	}
 }
 
+func Device(r http.Header) *DeviceInfo {
+	unknow := true
+	var info DeviceInfo
+	//Device-Info:device,osInfo,appCode,appVersion
+	if infos := r.Values(httpi.HeaderDeviceInfo); len(infos) == 4 {
+		unknow = false
+		info.Device = infos[0]
+		info.Os = infos[1]
+		info.AppCode = infos[2]
+		info.AppVersion = infos[3]
+
+	}
+	// area:xxx
+	// location:1.23456,2.123456
+	if area := r.Get(httpi.HeaderArea); area != "" {
+		unknow = false
+		info.Area, _ = url.PathUnescape(area)
+	}
+	if infos := r.Values(httpi.HeaderLocation); len(infos) == 2 {
+		unknow = false
+		info.Lng = infos[0]
+		info.Lat = infos[1]
+
+	}
+
+	if userAgent := r.Get(httpi.HeaderUserAgent); userAgent != "" {
+		unknow = false
+		info.UserAgent = userAgent
+	}
+	if ip := r.Get(httpi.HeaderXForwardedFor); ip != "" {
+		unknow = false
+		info.IP = ip
+	}
+	if unknow {
+		return nil
+	}
+	return &info
+}
+/*----------------------------IF COPY DON'T EDIT-------------------------------*/
+
 type Ctx struct {
-	context.Context `json:"-"`
-	TraceID         string `json:"-"`
+	context.Context
+	TraceID string
 	*Authorization
-	*DeviceInfo                `json:"-"`
-	RequestAt                  time.Time     `json:"-"`
-	RequestUnix                int64         `json:"iat,omitempty"`
-	Request                    *http.Request `json:"-"`
-	grpc.ServerTransportStream `json:"-"`
-	Internal                   string
+	*DeviceInfo
+	RequestAt   time.Time
+	RequestUnix int64
+	Request     *http.Request
+	grpc.ServerTransportStream
+	Internal string
 	*log.Logger
 }
 

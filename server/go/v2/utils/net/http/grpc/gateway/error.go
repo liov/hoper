@@ -14,6 +14,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/reconn"
 	stringsi "github.com/liov/hoper/go/v2/utils/strings"
 	"google.golang.org/grpc/grpclog"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -44,7 +45,7 @@ func CustomHTTPError(ctx context.Context, mux *runtime.ServeMux, marshaler runti
 		grpclog.Infof("Failed to extract ServerMetadata from context")
 	}
 
-	handleForwardResponseServerMetadata(w, md)
+	handleForwardResponseServerMetadata(w, md.HeaderMD)
 
 	buf, merr := marshaler.Marshal(se)
 	if merr != nil {
@@ -60,7 +61,7 @@ func CustomHTTPError(ctx context.Context, mux *runtime.ServeMux, marshaler runti
 
 	if te := r.Header.Get(httpi.HeaderTE); strings.Contains(strings.ToLower(te), "trailers") {
 		wantsTrailers = true
-		handleForwardResponseTrailerHeader(w, md)
+		handleForwardResponseTrailerHeader(w, md.TrailerMD)
 		w.Header().Set(httpi.HeaderTransferEncoding, "chunked")
 	}
 
@@ -70,7 +71,7 @@ func CustomHTTPError(ctx context.Context, mux *runtime.ServeMux, marshaler runti
 		grpclog.Infof("Failed to write response: %v", err)
 	}
 	if wantsTrailers {
-		handleForwardResponseTrailer(w, md)
+		handleForwardResponseTrailer(w, md.TrailerMD)
 	}
 }
 
@@ -130,9 +131,9 @@ func headerMatcher() []string {
 	return []string{httpi.HeaderSetCookie}
 }
 
-func handleForwardResponseServerMetadata(w http.ResponseWriter, md runtime.ServerMetadata) {
+func handleForwardResponseServerMetadata(w http.ResponseWriter, md metadata.MD) {
 	for _, k := range headerMatcher() {
-		if vs, ok := md.HeaderMD[k]; ok {
+		if vs, ok := md[k]; ok {
 			for _, v := range vs {
 				w.Header().Add(k, v)
 			}
@@ -140,15 +141,15 @@ func handleForwardResponseServerMetadata(w http.ResponseWriter, md runtime.Serve
 	}
 }
 
-func handleForwardResponseTrailerHeader(w http.ResponseWriter, md runtime.ServerMetadata) {
-	for k := range md.TrailerMD {
+func handleForwardResponseTrailerHeader(w http.ResponseWriter, md metadata.MD) {
+	for k := range md {
 		tKey := textproto.CanonicalMIMEHeaderKey(fmt.Sprintf("%s%s", runtime.MetadataTrailerPrefix, k))
 		w.Header().Add("Trailer", tKey)
 	}
 }
 
-func handleForwardResponseTrailer(w http.ResponseWriter, md runtime.ServerMetadata) {
-	for k, vs := range md.TrailerMD {
+func handleForwardResponseTrailer(w http.ResponseWriter, md metadata.MD) {
+	for k, vs := range md {
 		tKey := fmt.Sprintf("%s%s", runtime.MetadataTrailerPrefix, k)
 		for _, v := range vs {
 			w.Header().Add(tKey, v)

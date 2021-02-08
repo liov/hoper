@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/liov/hoper/go/v2/content/conf"
 	"github.com/liov/hoper/go/v2/content/dao"
-	"github.com/liov/hoper/go/v2/content/model"
 	"github.com/liov/hoper/go/v2/protobuf/content"
 	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
@@ -38,7 +38,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 	if err != nil {
 		return nil, err
 	}
-	err = Limit(ctxi, model.MomentMinuteLimitKey, model.MomentMinuteLimit, model.MomentDayLimitKey, model.MomentDayLimit)
+	err = dao.Dao.Limit(ctxi, &conf.Conf.Customize.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 	req.UserId = auth.Id
 	db := dao.Dao.GORMDB
 	var count int64
-	db.Table(`mood`).Where(`name = ?`,req.MoodName).Count(&count)
+	db.Table(`mood`).Where(`name = ?`, req.MoodName).Count(&count)
 	if count == 0 {
 		return nil, errorcode.ParamInvalid.Message("心情不存在")
 	}

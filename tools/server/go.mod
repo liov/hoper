@@ -11,8 +11,8 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/spf13/viper v1.7.1
 	github.com/tidwall/gjson v1.6.3
-	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b
-	gorm.io/gorm v1.20.7
+	golang.org/x/net v0.0.0-20210119194325-5f4716e94777
+	gorm.io/gorm v1.20.12
 )
 
 replace github.com/liov/hoper/go/v2 => ../../server/go/v2
