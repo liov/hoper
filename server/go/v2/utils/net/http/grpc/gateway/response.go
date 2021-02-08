@@ -54,13 +54,6 @@ func HTTPError(ctx *gin.Context, err error) {
 		se = &errorcode.ErrRep{Code: errorcode.Unknown, Message: err.Error()}
 	}
 
-	md, ok := runtime.ServerMetadataFromContext(ctx)
-	if !ok {
-		grpclog.Infof("Failed to extract ServerMetadata from context")
-	}
-
-	handleForwardResponseServerMetadata(ctx.Writer, md)
-
 	buf, merr := jsonpb.JsonPb.Marshal(se)
 	if merr != nil {
 		grpclog.Infof("Failed to marshal error message %q: %v", se, merr)
@@ -71,22 +64,10 @@ func HTTPError(ctx *gin.Context, err error) {
 		return
 	}
 
-	var wantsTrailers bool
-
-	if te := ctx.GetHeader("TE"); strings.Contains(strings.ToLower(te), "trailers") {
-		wantsTrailers = true
-		handleForwardResponseTrailerHeader(ctx.Writer, md)
-		ctx.Header(httpi.HeaderTransferEncoding, "chunked")
-	}
-
-	/*	st := HTTPStatusFromCode(se.Code)
-		w.WriteHeader(st)*/
 	if _, err := ctx.Writer.Write(buf); err != nil {
 		grpclog.Infof("Failed to write response: %v", err)
 	}
-	if wantsTrailers {
-		handleForwardResponseTrailer(ctx.Writer, md)
-	}
+
 }
 
 type responseBody interface {
@@ -104,8 +85,8 @@ func ForwardResponseMessage(ctx *gin.Context, md runtime.ServerMetadata, message
 		md.HeaderMD = metadata.MD(ctx.Request.Header)
 	}
 
-	handleForwardResponseServerMetadata(ctx.Writer, md)
-	handleForwardResponseTrailerHeader(ctx.Writer, md)
+	handleForwardResponseServerMetadata(ctx.Writer, md.HeaderMD)
+	handleForwardResponseTrailerHeader(ctx.Writer, md.TrailerMD)
 
 	contentType := jsonpb.JsonPb.ContentType(message)
 	ctx.Header(httpi.HeaderContentType, contentType)
@@ -132,5 +113,5 @@ func ForwardResponseMessage(ctx *gin.Context, md runtime.ServerMetadata, message
 		grpclog.Infof("Failed to write response: %v", err)
 	}
 
-	handleForwardResponseTrailer(ctx.Writer, md)
+	handleForwardResponseTrailer(ctx.Writer, md.TrailerMD)
 }

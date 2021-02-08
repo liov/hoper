@@ -155,8 +155,6 @@ func (s *Server) Serve() {
 		}
 		ctxi := CtxFromContext(r.Context())
 		ctxi.Context = nil
-		authDao.AuthPool.Put(ctxi.AuthInfo)
-		ctxi.AuthInfo = nil
 		ctxPool.Put(ctx)
 	})
 	h2Handler := h2c.NewHandler(handle, new(http2.Server))
@@ -206,17 +204,13 @@ type Server struct {
 var signals = make(chan os.Signal, 1)
 var stop = make(chan struct{}, 1)
 
-func (s *Server) Start(dao *AuthInfoDao) {
+func (s *Server) Start() {
 	if initialize.InitConfig.ConfigCenter == nil {
 		log.Fatal(`初始化配置失败:
 	main 函数的第一行应为
 	defer v2.Start(config.Conf, authDao.Dao)()
 `)
 	}
-	if dao == nil {
-		log.Fatal(`AuthInfoDao不允许为nil`)
-	}
-	authDao = dao
 	signal.Notify(signals,
 		// kill -SIGINT XXXX 或 Ctrl+c
 		syscall.SIGINT, // register that too, it should be ok

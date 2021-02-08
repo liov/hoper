@@ -22,9 +22,7 @@ type dao struct {
 	PebbleDB *pebble.DB
 	// RedisPool Redis连接池
 	Redis       *redis.Client
-	RedisExpire int32
 	Cache       cache.Cache
-	McExpire    int32
 	//elastic
 	MailAuth smtp.Auth
 }

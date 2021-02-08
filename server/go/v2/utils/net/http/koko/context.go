@@ -10,27 +10,23 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go/v4"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/google/uuid"
 	"github.com/liov/hoper/go/v2/utils/dao/cache"
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	"github.com/liov/hoper/go/v2/utils/log"
-	neti "github.com/liov/hoper/go/v2/utils/net"
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 	stringsi "github.com/liov/hoper/go/v2/utils/strings"
 	jwti "github.com/liov/hoper/go/v2/utils/verification/auth/jwt"
 	"go.opencensus.io/trace"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/peer"
 )
 
 var (
 	ctxPool = sync.Pool{New: func() interface{} {
 		return new(Ctx)
 	}}
-	authDao *AuthInfoDao
 )
 
 type AuthInfo interface {
@@ -61,7 +57,6 @@ func (x *UserInfo) GenerateToken(secret []byte) (string, error) {
 	token, err := tokenClaims.SignedString(secret)
 	return token, err
 }
-
 
 type Authorization struct {
 	AuthInfo
@@ -122,16 +117,15 @@ func Device(r http.Header) *DeviceInfo {
 }
 
 type Ctx struct {
-	context.Context `json:"-"`
-	TraceID         string `json:"-"`
+	context.Context
+	TraceID string
 	*Authorization
-	*DeviceInfo                `json:"-"`
-	RequestAt                  time.Time   `json:"-"`
-	RequestUnix                int64       `json:"iat,omitempty"`
-	Header                     metadata.MD `json:"-"`
-	Peer                       *peer.Peer  `json:"-"`
-	grpc.ServerTransportStream `json:"-"`
-	grpc                       bool
+	*DeviceInfo
+	RequestAt   time.Time
+	RequestUnix int64
+	Request     *http.Request
+	grpc.ServerTransportStream
+	Internal string
 	*log.Logger
 }
 
@@ -153,15 +147,8 @@ func (c *Ctx) WithContext(ctx context.Context) {
 type ctxKey struct{}
 
 func CtxWithRequest(ctx context.Context, r *http.Request) context.Context {
-	span := trace.FromContext(ctx)
-	ctxi := ctxPool.Get().(*Ctx).reset(ctx)
-	ctxi.Context = ctx
-	ctxi.TraceID = span.SpanContext().TraceID.String()
-	ctxi.Authorization = &Authorization{
-		Token: httpi.GetToken(r),
-	}
-	ctxi.DeviceInfo = Device(r.Header)
-	ctxi.Header = metadata.MD(r.Header)
+	ctxi := newCtx(ctx)
+	ctxi.setWithReq(r)
 	return context.WithValue(context.Background(), ctxKey{}, ctxi)
 }
 
@@ -169,25 +156,8 @@ func ConvertContext(r *http.Request) *Ctx {
 	ctxi := r.Context().Value(ctxKey{})
 	c, ok := ctxi.(*Ctx)
 	if !ok {
-		c = ctxPool.Get().(*Ctx).reset(r.Context())
-		if r.ProtoMajor == 2 && strings.Contains(r.Header.Get(httpi.HeaderContentType), httpi.ContentGRPCHeaderValue) {
-			c.grpc = true
-		}
-	}
-	if c.Header == nil {
-		c.Header = metadata.MD(r.Header)
-	}
-	if c.Peer == nil && !c.grpc {
-		p := &peer.Peer{
-			Addr: neti.StrAddr(r.RemoteAddr),
-		}
-		if r.TLS != nil {
-			p.AuthInfo = credentials.TLSInfo{State: *r.TLS, CommonAuthInfo: credentials.CommonAuthInfo{SecurityLevel: credentials.PrivacyAndIntegrity}}
-		}
-		c.Peer = p
-	}
-	if c.ServerTransportStream == nil && !c.grpc {
-		c.ServerTransportStream = new(runtime.ServerTransportStream)
+		c = newCtx(r.Context())
+		c.setWithReq(r)
 	}
 	return c
 }
@@ -196,30 +166,62 @@ func CtxFromContext(ctx context.Context) *Ctx {
 	ctxi := ctx.Value(ctxKey{})
 	c, ok := ctxi.(*Ctx)
 	if !ok {
-		c = ctxPool.Get().(*Ctx).reset(ctx)
-	}
-	if c.Header == nil {
-		md, _ := metadata.FromIncomingContext(ctx)
-		c.Header = md
-	}
-	if c.Peer == nil {
-		p, _ := peer.FromContext(ctx)
-		c.Peer = p
+		c = newCtx(ctx)
 	}
 	if c.ServerTransportStream == nil {
-		var stream grpc.ServerTransportStream
-		if stream = grpc.ServerTransportStreamFromContext(ctx); stream == nil {
-			stream = new(runtime.ServerTransportStream)
-		}
+		c.ServerTransportStream = grpc.ServerTransportStreamFromContext(ctx)
 	}
 	return c
 }
 
-func (c *Ctx) reset(ctx context.Context) *Ctx {
+func newCtx(ctx context.Context) *Ctx {
+	span := trace.FromContext(ctx)
 	now := time.Now()
+	traceId := span.SpanContext().TraceID.String()
+	if traceId == "" {
+		traceId = uuid.New().String()
+	}
+	return &Ctx{
+		Context: ctx,
+		TraceID: traceId,
+		Authorization: &Authorization{},
+		RequestAt:   now,
+		RequestUnix: now.Unix(),
+		Logger:      log.Default.WithFields(zap.String("traceId", traceId)),
+	}
+}
+
+func (c *Ctx) setWithReq(r *http.Request) {
+	c.Request = r
+	c.Token = httpi.GetToken(r)
+	c.DeviceInfo = Device(r.Header)
+	c.Internal = r.Header.Get(httpi.HeaderInternal)
+}
+
+
+func (c *Ctx) GeToken() string {
+	return c.Token
+}
+
+func (c *Ctx) GetReqTime() time.Time {
+	return c.RequestAt
+}
+
+func (c *Ctx) GetLogger() *log.Logger {
+	return c.Logger
+}
+
+func (c *Ctx) reset(ctx context.Context) *Ctx {
+	span := trace.FromContext(ctx)
+	now := time.Now()
+	traceId := span.SpanContext().TraceID.String()
+	if traceId == "" {
+		traceId = uuid.New().String()
+	}
 	c.Context = ctx
 	c.RequestAt = now
 	c.RequestUnix = now.Unix()
+	c.Logger = log.Default.WithFields(zap.String("traceId", traceId))
 	return c
 }
 
@@ -230,7 +232,7 @@ type AuthInfoDao struct {
 	Update    func(*Ctx) error
 }
 
-func (c *Ctx) GetAuthInfo(update bool) error {
+func (c *Ctx) GetAuthInfo(authDao AuthInfoDao,update bool) error {
 	var signature string
 	if authDao.AuthCache != nil {
 		signature = c.Token[strings.LastIndexByte(c.Token, '.')+1:]

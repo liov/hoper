@@ -27,9 +27,9 @@ import (
 	py "tools/pinyin"
 )
 
-const CommonUrl = "https://f1113.wonderfulday27.live/viewthread.php?tid=%s"
+const CommonUrl = "https://f1113.wonderfulday30.live/viewthread.php?tid="
 const Loop = 50
-const CommonDir = `F:\pic_1\`
+const CommonDir = `F:\pic\pic_4\`
 const Interval = 200 * time.Millisecond
 const Sep = string(os.PathSeparator)
 const Ext = `.txt`
@@ -112,7 +112,7 @@ func NewSpeed(cap int) *Speed {
 func Fetch(id int, sd *Speed) {
 	defer sd.WebDone()
 	tid := strconv.Itoa(id)
-	reader, err := Request(http.DefaultClient, fmt.Sprintf(CommonUrl, tid))
+	reader, err := Request(http.DefaultClient, CommonUrl+tid)
 	if err != nil {
 		log.Println(err, "id:", tid)
 		if !strings.HasPrefix(err.Error(), "返回错误") {
@@ -401,7 +401,7 @@ type Post struct {
 }
 
 func FixWeb(path string, sd *Speed, handle func(int, *Speed)) {
-	f, err := os.Open(CommonDir + path + Ext)
+	f, err := os.Open(CommonDir + path)
 	if err != nil {
 		log.Fatal(err)
 	}

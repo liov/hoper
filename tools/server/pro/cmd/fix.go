@@ -13,11 +13,12 @@ import (
 )
 
 func main() {
+	//pro.SetDB()
 	pro.Start(fixOne)
 }
 
 func fixOne(sd *pro.Speed) {
-	fixPic(`fail_pic_2020_12_15_11_51_20`, sd)
+	fixPic(`fail_pic_2021_02_08_14_19_24`, sd)
 }
 
 func fix(sd *pro.Speed) {
@@ -26,12 +27,18 @@ func fix(sd *pro.Speed) {
 		log.Println(err)
 	}
 	for i := range fileInfos {
-		if !fileInfos[i].IsDir() {
-			if strings.HasSuffix(fileInfos[i].Name(), "fail_pic") {
-				fixPic(fileInfos[i].Name(), sd)
-			} else {
-				pro.FixWeb(fileInfos[i].Name(), sd, pro.Fetch)
-			}
+		if !fileInfos[i].IsDir() && !strings.HasSuffix(fileInfos[i].Name(), "fail_pic") {
+			pro.FixWeb(fileInfos[i].Name(), sd, pro.Fetch)
+
+		}
+	}
+	fileInfos, err = ioutil.ReadDir(pro.CommonDir)
+	if err != nil {
+		log.Println(err)
+	}
+	for i := range fileInfos {
+		if !fileInfos[i].IsDir() && strings.HasSuffix(fileInfos[i].Name(), "fail_pic") {
+			fixPic(fileInfos[i].Name(), sd)
 		}
 	}
 }

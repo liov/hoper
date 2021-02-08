@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -17,12 +16,12 @@ import (
 
 func main() {
 	pro.SetDB()
-	pro.Start(historyOne)
+	pro.Start(history)
 }
 
 func history(sd *pro.Speed) {
-	start := 400460
-	end := 400643
+	start := 407889
+	end := 407912
 	for i := start; i < end; i++ {
 		sd.WebAdd(1)
 		go fetchHistory(i, sd)
@@ -70,7 +69,7 @@ func historyFormFile(path string, sd *pro.Speed) {
 func fetchHistory(id int, sd *pro.Speed) {
 	defer sd.WebDone()
 	tid := strconv.Itoa(id)
-	reader, err := pro.Request(http.DefaultClient, fmt.Sprintf(pro.CommonUrl, tid))
+	reader, err := pro.Request(http.DefaultClient, pro.CommonUrl+tid)
 	if err != nil {
 		//log.Println(err, "id:", tid)
 		if !strings.HasPrefix(err.Error(), "返回错误") {
@@ -93,7 +92,7 @@ func fetchHistory(id int, sd *pro.Speed) {
 	s := doc.Find(`img[src="images/common/none.gif"]`)
 	_, _, _, post := parseHtmlHistory(doc)
 	post.TId = id
-	post.PicNum = int8(s.Length())
+	post.PicNum = uint32(s.Length())
 	status := "0"
 	if post.PicNum == 0 {
 		status = "1"
@@ -102,25 +101,6 @@ func fetchHistory(id int, sd *pro.Speed) {
 	if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
 		sd.FailDB <- tid + " " + status
 	}
-	/*	dir := pro.CommonDir
-
-		if auth != "" {
-			dir += py.FistLetter(auth) + pro.Sep + auth + pro.Sep
-		}
-		if title != "" {
-			dir += title + `_` + tid + pro.Sep
-		}
-		dir = fs.PathClean(dir)
-		fileInfos, err := ioutil.ReadDir(dir)
-		if err != nil {
-			log.Println(err)
-		}
-
-		for i := range fileInfos {
-			strings.HasSuffix(fileInfos[i].Name(), pro.Ext)
-			os.Rename(dir+fileInfos[i].Name(), dir+post.CreatedAt+pro.Ext)
-			return
-		}*/
 }
 
 func parseHtmlHistory(doc *goquery.Document) (string, string, string, *pro.Post) {
