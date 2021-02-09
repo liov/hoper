@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/bluele/gcache"
+
+	"github.com/liov/hoper/go/v2/utils/dao/cache"
 )
 
 func main() {
-	gc := gcache.New(10).
+	gc := cache.New(10).
 		LFU().
 		LoaderFunc(func(key interface{}) (interface{}, error) {
 		return fmt.Sprintf("%v-value", key), nil

@@ -13,7 +13,7 @@ func main() {
 }
 
 func normal(sd *pro.Speed) {
-	start := 407400
+	start := 407989
 	end := 410000
 	for i := start; i < end; i++ {
 		sd.WebAdd(1)

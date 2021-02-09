@@ -1,4 +1,4 @@
-package cache
+package gcache
 
 func minInt(x, y int) int {
 	if x < y {

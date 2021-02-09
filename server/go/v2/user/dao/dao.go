@@ -5,8 +5,8 @@ import (
 	"net/smtp"
 
 	"github.com/cockroachdb/pebble"
+	"github.com/dgraph-io/ristretto"
 	"github.com/go-redis/redis/v8"
-	"github.com/liov/hoper/go/v2/utils/dao/cache"
 	"gorm.io/gorm"
 )
 
@@ -22,7 +22,7 @@ type dao struct {
 	PebbleDB *pebble.DB
 	// RedisPool Redis连接池
 	Redis       *redis.Client
-	Cache       cache.Cache
+	Cache       *ristretto.Cache
 	//elastic
 	MailAuth smtp.Auth
 }

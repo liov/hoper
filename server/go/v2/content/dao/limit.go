@@ -7,7 +7,6 @@ import (
 	"github.com/liov/hoper/go/v2/content/conf"
 	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
-	"github.com/liov/hoper/go/v2/utils/dao/cache"
 	redisi "github.com/liov/hoper/go/v2/utils/dao/redis"
 )
 
@@ -20,19 +19,8 @@ func (d *dao) Limit(ctxi *user.Ctx,l *conf.Limit) error {
 	minuteKey := l.MinuteLimit + ctxi.IdStr
 	dayKey := l.DayLimit + ctxi.IdStr
 
-	count, err := d.Cache.Get(l.SecondLimit)
-	if err != nil {
-		if err == cache.KeyNotFoundError {
-			d.Cache.SetWithExpire(l.SecondLimit, l.SecondLimitCount, time.Second)
-		}
-		ctxi.Error(err.Error())
-	}
-	if err == nil && count.(int64) > l.SecondLimitCount {
-			return limitErr
-	}
-
 	var minuteIntCmd, dayIntCmd *redis.IntCmd
-	_, err = conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+	_, err := conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
 		minuteIntCmd = pipe.Incr(ctx, minuteKey)
 		dayIntCmd = pipe.Incr(ctx, dayKey)
 		return nil
@@ -71,4 +59,7 @@ func (d *dao) Limit(ctxi *user.Ctx,l *conf.Limit) error {
 	}
 	return nil
 }
+
+
+
 

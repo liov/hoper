@@ -1,4 +1,4 @@
-package cache
+package gcache
 
 /*
 Copyright 2012 Google Inc.
