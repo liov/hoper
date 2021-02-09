@@ -8,11 +8,13 @@ require (
 	github.com/99designs/gqlgen v0.11.3
 	github.com/CloudyKit/jet/v3 v3.0.0 // indirect
 	github.com/Shopify/sarama v1.27.2
+	github.com/allegro/bigcache v1.2.1 // indirect
 	github.com/aws/aws-sdk-go v1.36.7
 	github.com/boombuler/barcode v1.0.0
 	github.com/brahma-adshonor/gohook v0.0.0-20200311033618-28b944a6fdfa // indirect
 	github.com/cenk/backoff v2.2.1+incompatible // indirect
 	github.com/cockroachdb/pebble v0.0.0-20201215172116-745f6c801513
+	github.com/dgraph-io/ristretto v0.0.3
 	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect

@@ -1,17 +1,19 @@
-package cache
+package gcache
 
 import (
+	"container/list"
 	"time"
 )
 
-// SimpleCache has no clear priority for evict cache. It depends on key-value map order.
-type SimpleCache struct {
+// Discards the least recently used items first.
+type LRUCache struct {
 	baseCache
-	items map[interface{}]*simpleItem
+	items     map[interface{}]*list.Element
+	evictList *list.List
 }
 
-func newSimpleCache(cb *CacheBuilder) *SimpleCache {
-	c := &SimpleCache{}
+func newLRUCache(cb *CacheBuilder) *LRUCache {
+	c := &LRUCache{}
 	buildCache(&c.baseCache, cb)
 
 	c.init()
@@ -19,37 +21,12 @@ func newSimpleCache(cb *CacheBuilder) *SimpleCache {
 	return c
 }
 
-func (c *SimpleCache) init() {
-	if c.size <= 0 {
-		c.items = make(map[interface{}]*simpleItem)
-	} else {
-		c.items = make(map[interface{}]*simpleItem, c.size)
-	}
+func (c *LRUCache) init() {
+	c.evictList = list.New()
+	c.items = make(map[interface{}]*list.Element, c.size+1)
 }
 
-// Set a new key-value pair
-func (c *SimpleCache) Set(key, value interface{}) error {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	_, err := c.set(key, value)
-	return err
-}
-
-// Set a new key-value pair with an expiration time
-func (c *SimpleCache) SetWithExpire(key, value interface{}, expiration time.Duration) error {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	item, err := c.set(key, value)
-	if err != nil {
-		return err
-	}
-
-	t := c.clock.Now().Add(expiration)
-	item.(*simpleItem).expiration = &t
-	return nil
-}
-
-func (c *SimpleCache) set(key, value interface{}) (interface{}, error) {
+func (c *LRUCache) set(key, value interface{}) (interface{}, error) {
 	var err error
 	if c.serializeFunc != nil {
 		value, err = c.serializeFunc(key, value)
@@ -59,19 +36,22 @@ func (c *SimpleCache) set(key, value interface{}) (interface{}, error) {
 	}
 
 	// Check for existing item
-	item, ok := c.items[key]
-	if ok {
+	var item *lruItem
+	if it, ok := c.items[key]; ok {
+		c.evictList.MoveToFront(it)
+		item = it.Value.(*lruItem)
 		item.value = value
 	} else {
 		// Verify size not exceeded
-		if (len(c.items) >= c.size) && c.size > 0 {
+		if c.evictList.Len() >= c.size {
 			c.evict(1)
 		}
-		item = &simpleItem{
+		item = &lruItem{
 			clock: c.clock,
+			key:   key,
 			value: value,
 		}
-		c.items[key] = item
+		c.items[key] = c.evictList.PushFront(item)
 	}
 
 	if c.expiration != nil {
@@ -86,10 +66,32 @@ func (c *SimpleCache) set(key, value interface{}) (interface{}, error) {
 	return item, nil
 }
 
+// set a new key-value pair
+func (c *LRUCache) Set(key, value interface{}) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	_, err := c.set(key, value)
+	return err
+}
+
+// Set a new key-value pair with an expiration time
+func (c *LRUCache) SetWithExpire(key, value interface{}, expiration time.Duration) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	item, err := c.set(key, value)
+	if err != nil {
+		return err
+	}
+
+	t := c.clock.Now().Add(expiration)
+	item.(*lruItem).expiration = &t
+	return nil
+}
+
 // Get a value from cache pool using key if it exists.
 // If it dose not exists key and has LoaderFunc,
 // generate a value using `LoaderFunc` method returns value.
-func (c *SimpleCache) Get(key interface{}) (interface{}, error) {
+func (c *LRUCache) Get(key interface{}) (interface{}, error) {
 	v, err := c.get(key, false)
 	if err == KeyNotFoundError {
 		return c.getWithLoader(key, true)
@@ -100,15 +102,15 @@ func (c *SimpleCache) Get(key interface{}) (interface{}, error) {
 // GetIFPresent gets a value from cache pool using key if it exists.
 // If it dose not exists key, returns KeyNotFoundError.
 // And send a request which refresh value for specified key if cache object has LoaderFunc.
-func (c *SimpleCache) GetIFPresent(key interface{}) (interface{}, error) {
+func (c *LRUCache) GetIFPresent(key interface{}) (interface{}, error) {
 	v, err := c.get(key, false)
 	if err == KeyNotFoundError {
 		return c.getWithLoader(key, false)
 	}
-	return v, nil
+	return v, err
 }
 
-func (c *SimpleCache) get(key interface{}, onLoad bool) (interface{}, error) {
+func (c *LRUCache) get(key interface{}, onLoad bool) (interface{}, error) {
 	v, err := c.getValue(key, onLoad)
 	if err != nil {
 		return nil, err
@@ -119,19 +121,21 @@ func (c *SimpleCache) get(key interface{}, onLoad bool) (interface{}, error) {
 	return v, nil
 }
 
-func (c *SimpleCache) getValue(key interface{}, onLoad bool) (interface{}, error) {
+func (c *LRUCache) getValue(key interface{}, onLoad bool) (interface{}, error) {
 	c.mu.Lock()
 	item, ok := c.items[key]
 	if ok {
-		if !item.IsExpired(nil) {
-			v := item.value
+		it := item.Value.(*lruItem)
+		if !it.IsExpired(nil) {
+			c.evictList.MoveToFront(item)
+			v := it.value
 			c.mu.Unlock()
 			if !onLoad {
 				c.stats.IncrHitCount()
 			}
 			return v, nil
 		}
-		c.remove(key)
+		c.removeElement(item)
 	}
 	c.mu.Unlock()
 	if !onLoad {
@@ -140,7 +144,7 @@ func (c *SimpleCache) getValue(key interface{}, onLoad bool) (interface{}, error
 	return nil, KeyNotFoundError
 }
 
-func (c *SimpleCache) getWithLoader(key interface{}, isWait bool) (interface{}, error) {
+func (c *LRUCache) getWithLoader(key interface{}, isWait bool) (interface{}, error) {
 	if c.loaderExpireFunc == nil {
 		return nil, KeyNotFoundError
 	}
@@ -156,7 +160,7 @@ func (c *SimpleCache) getWithLoader(key interface{}, isWait bool) (interface{}, 
 		}
 		if expiration != nil {
 			t := c.clock.Now().Add(*expiration)
-			item.(*simpleItem).expiration = &t
+			item.(*lruItem).expiration = &t
 		}
 		return v, nil
 	}, isWait)
@@ -166,58 +170,61 @@ func (c *SimpleCache) getWithLoader(key interface{}, isWait bool) (interface{}, 
 	return value, nil
 }
 
-func (c *SimpleCache) evict(count int) {
-	now := c.clock.Now()
-	current := 0
-	for key, item := range c.items {
-		if current >= count {
+// evict removes the oldest item from the cache.
+func (c *LRUCache) evict(count int) {
+	for i := 0; i < count; i++ {
+		ent := c.evictList.Back()
+		if ent == nil {
 			return
-		}
-		if item.expiration == nil || now.After(*item.expiration) {
-			defer c.remove(key)
-			current++
+		} else {
+			c.removeElement(ent)
 		}
 	}
 }
 
 // Has checks if key exists in cache
-func (c *SimpleCache) Has(key interface{}) bool {
+func (c *LRUCache) Has(key interface{}) bool {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	now := time.Now()
 	return c.has(key, &now)
 }
 
-func (c *SimpleCache) has(key interface{}, now *time.Time) bool {
+func (c *LRUCache) has(key interface{}, now *time.Time) bool {
 	item, ok := c.items[key]
 	if !ok {
 		return false
 	}
-	return !item.IsExpired(now)
+	return !item.Value.(*lruItem).IsExpired(now)
 }
 
 // Remove removes the provided key from the cache.
-func (c *SimpleCache) Remove(key interface{}) bool {
+func (c *LRUCache) Remove(key interface{}) bool {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
 	return c.remove(key)
 }
 
-func (c *SimpleCache) remove(key interface{}) bool {
-	item, ok := c.items[key]
-	if ok {
-		delete(c.items, key)
-		if c.evictedFunc != nil {
-			c.evictedFunc(key, item.value)
-		}
+func (c *LRUCache) remove(key interface{}) bool {
+	if ent, ok := c.items[key]; ok {
+		c.removeElement(ent)
 		return true
 	}
 	return false
 }
 
-// Returns a slice of the keys in the cache.
-func (c *SimpleCache) keys() []interface{} {
+func (c *LRUCache) removeElement(e *list.Element) {
+	c.evictList.Remove(e)
+	entry := e.Value.(*lruItem)
+	delete(c.items, entry.key)
+	if c.evictedFunc != nil {
+		entry := e.Value.(*lruItem)
+		c.evictedFunc(entry.key, entry.value)
+	}
+}
+
+func (c *LRUCache) keys() []interface{} {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	keys := make([]interface{}, len(c.items))
@@ -230,21 +237,21 @@ func (c *SimpleCache) keys() []interface{} {
 }
 
 // GetALL returns all key-value pairs in the cache.
-func (c *SimpleCache) GetALL(checkExpired bool) map[interface{}]interface{} {
+func (c *LRUCache) GetALL(checkExpired bool) map[interface{}]interface{} {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	items := make(map[interface{}]interface{}, len(c.items))
 	now := time.Now()
 	for k, item := range c.items {
 		if !checkExpired || c.has(k, &now) {
-			items[k] = item.value
+			items[k] = item.Value.(*lruItem).value
 		}
 	}
 	return items
 }
 
 // Keys returns a slice of the keys in the cache.
-func (c *SimpleCache) Keys(checkExpired bool) []interface{} {
+func (c *LRUCache) Keys(checkExpired bool) []interface{} {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	keys := make([]interface{}, 0, len(c.items))
@@ -258,7 +265,7 @@ func (c *SimpleCache) Keys(checkExpired bool) []interface{} {
 }
 
 // Len returns the number of items in the cache.
-func (c *SimpleCache) Len(checkExpired bool) int {
+func (c *LRUCache) Len(checkExpired bool) int {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	if !checkExpired {
@@ -275,33 +282,36 @@ func (c *SimpleCache) Len(checkExpired bool) int {
 }
 
 // Completely clear the cache
-func (c *SimpleCache) Purge() {
+func (c *LRUCache) Purge() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
 	if c.purgeVisitorFunc != nil {
 		for key, item := range c.items {
-			c.purgeVisitorFunc(key, item.value)
+			it := item.Value.(*lruItem)
+			v := it.value
+			c.purgeVisitorFunc(key, v)
 		}
 	}
 
 	c.init()
 }
 
-type simpleItem struct {
+type lruItem struct {
 	clock      Clock
+	key        interface{}
 	value      interface{}
 	expiration *time.Time
 }
 
 // IsExpired returns boolean value whether this item is expired or not.
-func (si *simpleItem) IsExpired(now *time.Time) bool {
-	if si.expiration == nil {
+func (it *lruItem) IsExpired(now *time.Time) bool {
+	if it.expiration == nil {
 		return false
 	}
 	if now == nil {
-		t := si.clock.Now()
+		t := it.clock.Now()
 		now = &t
 	}
-	return si.expiration.Before(*now)
+	return it.expiration.Before(*now)
 }

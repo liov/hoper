@@ -1,4 +1,4 @@
-package cache
+package gcache
 
 import (
 	"context"

@@ -21,25 +21,24 @@ func init() {
 
 func auth(ctx *model.Ctx, update bool) error {
 	signature := ctx.Token[strings.LastIndexByte(ctx.Token, '.')+1:]
-	cacheTmp, err := dao.Dao.Cache.Get(signature)
-	if err == nil {
-		if cache, ok := cacheTmp.(*model.Authorization); ok {
-			cache.LastActiveAt = ctx.RequestUnix
-			ctx.Authorization = cache
-			return nil
-		}
+	cacheTmp, ok := dao.Dao.Cache.Get(signature)
+	if ok {
+		cache := cacheTmp.(*model.Authorization)
+		cache.LastActiveAt = ctx.RequestUnix
+		ctx.Authorization = cache
+		return nil
 	}
 	if err := ctx.ParseToken(ctx.Token, conf.Conf.Customize.TokenSecret); err != nil {
 		return err
 	}
 	ctx.LastActiveAt = ctx.RequestUnix
 	if update {
-		err = userRedis.EfficientUserHashFromRedis(ctx)
+		err := userRedis.EfficientUserHashFromRedis(ctx)
 		if err != nil {
 			return model.UserErrInvalidToken
 		}
 	}
-	dao.Dao.Cache.SetWithExpire(signature, ctx.Authorization, 5*time.Second)
+	dao.Dao.Cache.SetWithTTL(signature, ctx.Authorization,0, 5*time.Second)
 	return nil
 }
 
