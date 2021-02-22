@@ -7,7 +7,7 @@ import (
 	"github.com/liov/hoper/go/v2/content/conf"
 	"github.com/liov/hoper/go/v2/content/dao"
 	"github.com/liov/hoper/go/v2/protobuf/content"
-	"github.com/liov/hoper/go/v2/protobuf/user"
+	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/protobuf/utils/request"
 	"github.com/liov/hoper/go/v2/utils/log"
@@ -23,18 +23,14 @@ func (m *MomentService) Service() (describe, prefix string, middleware []http.Ha
 	return "瞬间相关", "/api/moment", nil
 }
 
-func (m *MomentService) name() string {
-	return "MomentService."
-}
-
 func (*MomentService) Info(context.Context, *content.GetMomentReq) (*content.Moment, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthInfo not implemented")
 }
 
 func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*request.Empty, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan(m.name() + "Add")
+	ctxi, span := model.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := ctxi.GetAuthInfo(Auth)
+	user, err := ctxi.GetAuthInfo(AuthWithUpdate)
 	if err != nil {
 		return nil, err
 	}
@@ -42,8 +38,8 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 	if err != nil {
 		return nil, err
 	}
-	log.Info(auth)
-	req.UserId = auth.Id
+	log.Info(user)
+	req.UserId = user.Id
 	db := dao.Dao.GORMDB
 	var count int64
 	db.Table(`mood`).Where(`name = ?`, req.MoodName).Count(&count)

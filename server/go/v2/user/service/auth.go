@@ -38,7 +38,9 @@ func auth(ctx *model.Ctx, update bool) error {
 			return model.UserErrInvalidToken
 		}
 	}
-	dao.Dao.Cache.SetWithTTL(signature, ctx.Authorization,0, 5*time.Second)
+	if !ok{
+		dao.Dao.Cache.SetWithTTL(signature, ctx.Authorization,0, 5*time.Second)
+	}
 	return nil
 }
 

@@ -21,3 +21,11 @@ enum ContentType{
   ContentCollection = 6 [(gogo.enumvalue_cn) = "收藏"];
   ContentComment = 7 [(gogo.enumvalue_cn) = "评论"];
 }
+
+enum AttributesType{
+  option (go.enum) = {stringer_name: 'OrigString'};
+  AttributesPlaceholder = 0 [(gogo.enumvalue_cn) = "占位"];
+  AttributesTag = 1 [(gogo.enumvalue_cn) = "标签"];
+  AttributesMood = 2 [(gogo.enumvalue_cn) = "心情"];
+  AttributesCategory = 3 [(gogo.enumvalue_cn) = "分类"];
+}

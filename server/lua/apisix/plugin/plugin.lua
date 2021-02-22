@@ -4,6 +4,28 @@
 --- DateTime: 2021/2/8 11:46
 ---
 
+local metadata_schema = {
+    type = "object",
+    properties = {
+        ikey = {type = "number", minimum = 0},
+        skey = {type = "string"},
+    },
+    required = {"ikey", "skey"},
+    additionalProperties = false,
+}
+
+local schema = {
+    type = "object",
+    properties = {
+        i = {type = "number", minimum = 0},
+        s = {type = "string"},
+        t = {type = "array", minItems = 1},
+        ip = {type = "string"},
+        port = {type = "integer"},
+    },
+    required = {"i"},
+}
+
 local plugin_name = "example-plugin"
 
 local _M = {
@@ -13,3 +35,7 @@ local _M = {
     schema = schema,
     metadata_schema = metadata_schema,
 }
+
+function _M.check_schema(conf)
+    return core.schema.check(schema, conf)
+end

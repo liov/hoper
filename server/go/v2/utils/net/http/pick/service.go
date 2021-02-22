@@ -14,6 +14,7 @@ import (
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	"github.com/liov/hoper/go/v2/utils/net/http/request/binding"
+	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc"
 )
 
@@ -21,7 +22,7 @@ type Context interface {
 	context.Context
 	jwt.Claims
 	grpc.ServerTransportStream
-	Error(args ...interface{})
+	Error(string, ...zapcore.Field)
 	GeToken() string
 	GetReqTime() time.Time
 	GetLogger() *log.Logger
