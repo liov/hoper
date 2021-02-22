@@ -37,6 +37,7 @@ type UserService struct {
 	model.UnimplementedUserServiceServer
 }
 
+
 func (u *UserService) VerifyCode(ctx context.Context, req *request.Empty) (*wrappers.StringValue, error) {
 	device := model.CtxFromContext(ctx).DeviceInfo
 	log.Debug(device)
@@ -48,7 +49,7 @@ func (u *UserService) VerifyCode(ctx context.Context, req *request.Empty) (*wrap
 }
 
 func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*request.Empty, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan("Logout")
+	ctxi, span := model.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
 	if req.Mail == "" && req.Phone == "" {
@@ -73,7 +74,7 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 }
 
 func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*request.Empty, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan(model.UserserviceServicedesc.ServiceName + "Signup")
+	ctxi, span := model.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
 	if err := Validate(req); err != nil {
@@ -439,7 +440,7 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 	redisKey := modelconst.ResetTimeKey + strconv.FormatUint(req.Id, 10)
 	emailTime, err := dao.Dao.Redis.Get(ctx, redisKey).Int64()
 	if err != nil {
-		log.Error(model.UserserviceServicedesc.ServiceName, "ResetPassword,redis.Int64", err)
+		log.Error(model.UserserviceServicedesc.ServiceName, "ResetPassword,redis.Get", err)
 		return nil, errorcode.InvalidArgument.Message("无效的链接")
 	}
 
@@ -471,7 +472,7 @@ func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListR
 	var logs []*model.UserActionLog
 	err := dao.Dao.GORMDB.Offset(0).Limit(10).Find(&logs).Error
 	if err != nil {
-		return nil, errorcode.DBError.Log(err)
+		return nil, errorcode.DBError.Warp(err)
 	}
 	rep.List = logs
 	return rep, nil

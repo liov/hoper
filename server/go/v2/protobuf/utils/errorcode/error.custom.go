@@ -42,11 +42,6 @@ func (x ErrCode) Warp(err error) error {
 	return &ErrRep{Code: x, Message: err.Error()}
 }
 
-func (x ErrCode) Log(err error) error {
-	log.Default.Error(err)
-	return &ErrRep{Code: x, Message: x.String()}
-}
-
 func (x ErrCode) Error() string {
 	return x.String()
 }
@@ -84,6 +79,6 @@ func (x ErrCode) OriWarp(err error) error {
 }
 
 func (x ErrCode) OriLog(err error) error {
-	log.Default.Error(err)
+	log.Sugar.Error(err)
 	return &errorsi.ErrRep{Code: errorsi.ErrCode(x), Message: x.String()}
 }

@@ -192,6 +192,7 @@ func Device(r http.Header) *DeviceInfo {
 	}
 	return &info
 }
+
 /*----------------------------IF COPY DON'T EDIT-------------------------------*/
 
 type Ctx struct {
@@ -210,6 +211,9 @@ type Ctx struct {
 var _ = pick.Context(new(Ctx))
 
 func (c *Ctx) StartSpan(name string, o ...trace.StartOption) (*Ctx, *trace.Span) {
+	if name == "" {
+		name = "service"
+	}
 	ctx, span := trace.StartSpan(c.Context, name, o...)
 	c.Context = ctx
 	if c.TraceID == "" {

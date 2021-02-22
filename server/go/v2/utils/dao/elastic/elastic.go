@@ -30,7 +30,7 @@ type Employee struct {
 func init() {
 
 	var err error
-	client, err = elastic.NewClient(elastic.SetErrorLog(log.GetLogger()), elastic.SetURL(host))
+	client, err = elastic.NewClient(elastic.SetErrorLog(log.Default), elastic.SetURL(host))
 	if err != nil {
 		panic(err)
 	}

@@ -12,4 +12,3 @@ func Auth(ctx *model.Ctx) error {
 func AuthWithUpdate(ctx *model.Ctx) error {
 	return service.AuthWithUpdate(ctx)
 }
-
