@@ -74,6 +74,7 @@ require (
 	github.com/vektah/gqlparser/v2 v2.0.1
 	go.opencensus.io v0.22.5
 	go.uber.org/atomic v1.7.0
+	go.uber.org/multierr v1.6.0
 	go.uber.org/zap v1.16.0
 	golang.org/x/exp v0.0.0-20201229011636-eab1b5eb1a03 // indirect
 	golang.org/x/net v0.0.0-20210119194325-5f4716e94777

@@ -79,6 +79,6 @@ func (x ErrCode) OriWarp(err error) error {
 }
 
 func (x ErrCode) OriLog(err error) error {
-	log.Sugar.Error(err)
+	log.Error(err)
 	return &errorsi.ErrRep{Code: errorsi.ErrCode(x), Message: x.String()}
 }

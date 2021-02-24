@@ -347,7 +347,8 @@ func newCtx(ctx context.Context) *Ctx {
 		},
 		RequestAt:   now,
 		RequestUnix: now.Unix(),
-		Logger:      log.Default.WithFields(zap.String("traceId", traceId)),
+		// 每个请求对应一个实例，后续并发量大考虑移除直接使用log库实例
+		Logger: log.Default.With(zap.String("traceId", traceId)),
 	}
 }
 
@@ -366,6 +367,12 @@ func (c *Ctx) GetAuthInfo(auth func(*Ctx) error) (*AuthInfo, error) {
 		return nil, err
 	}
 	return c.AuthInfo, nil
+}
+
+func (c *Ctx) Log(err error,funcName,msg string) error{
+	// caller 用原始logger skip刚好
+	c.Logger.Logger.Error(msg, zap.String(log.Position, funcName))
+	return err
 }
 
 func (c *Ctx) GeToken() string {

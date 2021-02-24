@@ -12,7 +12,7 @@ func Format(t time.Time) string {
 }
 
 func TimeCost(start time.Time) {
-	log.Sugar.Info(time.Since(start))
+	log.Info(time.Since(start))
 }
 
 // 设置系统时间

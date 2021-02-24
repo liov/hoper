@@ -121,7 +121,7 @@ func (s *Server) Serve() {
 		defer func() {
 			if r := recover(); r != nil {
 				frame,_:=runtimei.GetCallerFrame(2)
-				log.Default.Error(fmt.Sprintf(" panic: %v",r), zap.String(log.Stack, fmt.Sprintf("%s:%d (%#x)\n\t%s\n", frame.File, frame.Line, frame.PC, frame.Function)))
+				log.Default.Errorw(fmt.Sprintf("panic: %v", r),zap.String(log.Stack, fmt.Sprintf("%s:%d (%#x)\n\t%s\n", frame.File, frame.Line, frame.PC, frame.Function)))
 				w.Header().Set(httpi.HeaderContentType, httpi.ContentJSONHeaderValue)
 				w.Write(httpi.ResponseSysErr)
 			}

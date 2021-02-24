@@ -187,7 +187,7 @@ func newCtx(ctx context.Context) *Ctx {
 		Authorization: &Authorization{},
 		RequestAt:   now,
 		RequestUnix: now.Unix(),
-		Logger:      log.Default.WithFields(zap.String("traceId", traceId)),
+		Logger:      log.Default.With(zap.String("traceId", traceId)),
 	}
 }
 
@@ -221,7 +221,7 @@ func (c *Ctx) reset(ctx context.Context) *Ctx {
 	c.Context = ctx
 	c.RequestAt = now
 	c.RequestUnix = now.Unix()
-	c.Logger = log.Default.WithFields(zap.String("traceId", traceId))
+	c.Logger = log.Default.With(zap.String("traceId", traceId))
 	return c
 }
 

@@ -1,8 +1,7 @@
 syntax = "proto3";
 package content;
-import "content/moment.enum.proto";
-import "content/moment.model.proto";
-import "content/common.model.proto";
+import "content/content.model.proto";
+import "content/content.enum.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
@@ -12,6 +11,7 @@ import "utils/response/response.proto";
 import "utils/proto/gogo/graphql.proto";
 import "utils/oauth/oauth.proto";
 import "utils/proto/go/go.proto";
+import "utils/proto/go/policy.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
 option go_package = "github.com/liov/hoper/go/v2/protobuf/content";
@@ -23,7 +23,7 @@ service ContentService {
   };
 
   // 详情
-  rpc Info (GetTagReq) returns (Tag) {
+  rpc TagInfo (GetTagReq) returns (Tag) {
     option (google.api.http) = {
       get: "/api/v1/tag/id/{id}"
     };
@@ -34,7 +34,7 @@ service ContentService {
   }
 
   // 新建
-  rpc Add (AddTagReq) returns (request.Empty) {
+  rpc AddTag (AddTagReq) returns (request.Empty) {
     option (google.api.http) = {
       post: "/api/v1/tag"
       body: "*"
@@ -46,7 +46,7 @@ service ContentService {
   }
 
   // 修改
-  rpc Edit (AddTagReq) returns (request.Empty) {
+  rpc EditTag (EditTagReq) returns (request.Empty) {
     option (google.api.http) = {
       put: "/api/v1/tag"
       body: "*"
@@ -58,7 +58,7 @@ service ContentService {
   }
 
   // 修改
-  rpc List (TagListReq) returns (TagListRep) {
+  rpc TagList (TagListReq) returns (TagListRep) {
     option (google.api.http) = {
       get: "/api/v1/tag"
     };
@@ -67,23 +67,108 @@ service ContentService {
     };
     option (gogo.graphql_operation) = Query;
   }
+
+  // 详情
+  rpc AttrInfo (GetAttrReq) returns (Attributes) {
+    option (google.api.http) = {
+      get: "/api/v1/attr/id/{id}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["v1.0.0"]
+    };
+    option (gogo.graphql_operation) = Query;
+  }
+
+  // 新建
+  rpc AddAttr (AddAttrReq) returns (request.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/attr"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["v1.0.0"]
+    };
+    option (gogo.graphql_operation) = Mutation;
+  }
+
+  // 修改
+  rpc EditAttr (EditAttrReq) returns (request.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/attr"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["v1.0.0"]
+    };
+    option (gogo.graphql_operation) = Mutation;
+  }
+
+  // 修改
+  rpc AttrList (AttrListReq) returns (AttrListRep) {
+    option (google.api.http) = {
+      get: "/api/v1/attr"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["v1.0.0"]
+    };
+    option (gogo.graphql_operation) = Query;
+  }
+
 }
 
 message GetTagReq {
-  string name = 1[(go.field) = {tags:'annotation:"名称"'}];
+  uint64 id = 1 [(go.field) = {tags:'validate:"required"'}];
 }
 
 message AddTagReq {
+  TagType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null" validate:"required" annotation:"标签类型"'}];
   string name = 1[(go.field) = {tags:'annotation:"名称"'}];
-  string description = 2 [(go.field) = {tags:'gorm:"size:100"  annotation:"描述"'}];
-  string expressionURL = 3 [(go.field) = {tags:'gorm:"size:255"  annotation:"表情url"'}];
+  string description = 3 [(go.field) = {tags:'gorm:"size:100"  annotation:"描述"'}];
+  string expressionURL = 4 [(go.field) = {tags:'gorm:"size:255"  annotation:"表情url"'}];
 }
 
+message EditTagReq {
+  uint64 id = 1 [(go.field) = {tags:'validate:"required"'}];
+  string name = 2[(go.field) = {tags:'annotation:"名称"'}];
+  string description = 3 [(go.field) = {tags:'gorm:"size:100"  annotation:"描述"'}];
+  string expressionURL = 4 [(go.field) = {tags:'gorm:"size:255"  annotation:"表情url"'}];
+}
+
+
 message TagListReq{
+  TagType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null" validate:"required" annotation:"标签类型"'}];
   string name = 1[(go.field) = {tags:'annotation:"名称"'}];
 }
 
 message TagListRep{
   uint32 count = 1;
   repeated Tag list = 2;
+}
+
+message GetAttrReq {
+  uint64 id = 1 [(go.field) = {tags:'validate:"required"'}];
+}
+
+message AddAttrReq {
+  AttrType type = 4 [(go.field) = {tags:'gorm:"type:int2;not null" validate:"required" annotation:"属性相关类型"'}];
+  string name = 1[(go.field) = {tags:'annotation:"名称"'}];
+  string description = 2 [(go.field) = {tags:'gorm:"size:100"  annotation:"描述"'}];
+  string expressionURL = 3 [(go.field) = {tags:'gorm:"size:255"  annotation:"表情url"'}];
+}
+
+message EditAttrReq {
+  uint64 id = 1 [(go.field) = {tags:'validate:"required"'}];
+  string name = 2[(go.field) = {tags:'annotation:"名称"'}];
+  string description = 3 [(go.field) = {tags:'gorm:"size:100"  annotation:"描述"'}];
+  string expressionURL = 4 [(go.field) = {tags:'gorm:"size:255"  annotation:"表情url"'}];
+}
+
+message AttrListReq{
+  AttrType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null" validate:"required" annotation:"属性相关类型"'}];
+  string name = 1[(go.field) = {tags:'annotation:"名称"'}];
+}
+
+message AttrListRep{
+  uint32 count = 1;
+  repeated Attributes list = 2;
 }

@@ -22,10 +22,49 @@ enum ContentType{
   ContentComment = 7 [(gogo.enumvalue_cn) = "评论"];
 }
 
-enum AttributesType{
+enum AttrType{
   option (go.enum) = {stringer_name: 'OrigString'};
-  AttributesPlaceholder = 0 [(gogo.enumvalue_cn) = "占位"];
-  AttributesTag = 1 [(gogo.enumvalue_cn) = "标签"];
-  AttributesMood = 2 [(gogo.enumvalue_cn) = "心情"];
-  AttributesCategory = 3 [(gogo.enumvalue_cn) = "分类"];
+  AttrPlaceholder = 0 [(gogo.enumvalue_cn) = "占位"];
+  AttrImage = 1 [(gogo.enumvalue_cn) = "图片"];
+  AttrVideo = 2 [(gogo.enumvalue_cn) = "视频"];
+  AttrAudio = 3 [(gogo.enumvalue_cn) = "音频"];
+  AttrCover = 4 [(gogo.enumvalue_cn) = "封面"];
+  AttrCategory = 5 [(gogo.enumvalue_cn) = "分类"];
+  AttrTitle = 6 [(gogo.enumvalue_cn) = "标题"];
+  AttrAbstract = 7 [(gogo.enumvalue_cn) = "摘要"];
+  AttrIntro = 8 [(gogo.enumvalue_cn) = "介绍"];
+  AttrContentType = 9 [(gogo.enumvalue_cn) = "文本类型"];
+  AttrModifyTimes = 10 [(gogo.enumvalue_cn) = "修改次数"];
+}
+
+enum TagType{
+  option (go.enum) = {stringer_name: 'OrigString'};
+  TagPlaceholder = 0 [(gogo.enumvalue_cn) = "占位"];
+  TagContent = 1[(gogo.enumvalue_cn) = "内容"];
+  TagMood = 2 [(gogo.enumvalue_cn) = "心情"];
+  TagWeather = 3 [(gogo.enumvalue_cn) = "天气"];
+  TagLocation = 4 [(gogo.enumvalue_cn) = "地点"];
+  TagCategory = 5 [(gogo.enumvalue_cn) = "分类"];
+  TagNotice = 6 [(gogo.enumvalue_cn) = "提示"];
+}
+
+// 可见范围
+enum ViewPermission{
+  option (go.enum) = {stringer_name: 'OrigString'};
+  ViewPermissionPlaceholder = 0 [(gogo.enumvalue_cn)= "占位"];
+  ViewPermissionAll = 1 [(gogo.enumvalue_cn) = "无限制"];
+  ViewPermissionSelf = 2 [(gogo.enumvalue_cn) = "仅自己"];
+  ViewPermissionHomePage = 3 [(gogo.enumvalue_cn) = "主页"];
+  ViewPermissionStranger = 4 [(gogo.enumvalue_cn) = "陌生人"];
+  ViewPermissionShield = 5 [(gogo.enumvalue_cn) = "屏蔽部分人"];
+  ViewPermissionOpen = 6 [(gogo.enumvalue_cn) = "开放部分人"];
+}
+
+// 可见范围
+enum MomentType{
+  option (go.enum) = {stringer_name: 'OrigString'};
+  MomentTypePlaceholder = 0 [(gogo.enumvalue_cn)= "占位"];
+  MomentTypeImage = 1 [(gogo.enumvalue_cn) = "图片"];
+  MomentTypeVideo = 2 [(gogo.enumvalue_cn) = "视频"];
+  MomentTypeAudio = 3 [(gogo.enumvalue_cn) = "音频"];
 }
