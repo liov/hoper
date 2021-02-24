@@ -38,7 +38,7 @@ func (x ErrCode) Warp(err error) error {
 }
 
 func (x ErrCode) Log(err error) error {
-	log.Sugar.Error(err)
+	log.Error(err)
 	return &ErrRep{Code: x, Message: x.String()}
 }
 

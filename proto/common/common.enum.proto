@@ -20,3 +20,9 @@ enum RedisIndex{
   RedisIndexCron = 15 [(gogo.enumvalue_cn) = "定时任务"];
 
 }
+
+enum ObjectType{
+  option (go.enum) = {stringer_name: 'OrigString'};
+  ObjectPlaceholder = 0 [(gogo.enumvalue_cn) = "占位"];
+  ObjectContent = 1 [(gogo.enumvalue_cn) = "内容"];
+}

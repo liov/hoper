@@ -26,7 +26,7 @@ func filter(
 	defer func() {
 		if r := recover(); r != nil {
 			frame,_:=runtimei.GetCallerFrame(2)
-			log.Default.With(zap.String(log.Stack, fmt.Sprintf("%s:%d (%#x)\n\t%s\n", frame.File, frame.Line, frame.PC, frame.Function))).Error(" panic: ", r)
+			log.Default.Errorw(fmt.Sprintf("panic: %v", r),zap.String(log.Stack, fmt.Sprintf("%s:%d (%#x)\n\t%s\n", frame.File, frame.Line, frame.PC, frame.Function)))
 			err = errorcode.SysError.ErrRep()
 		}
 		//不能添加错误处理，除非所有返回的结构相同

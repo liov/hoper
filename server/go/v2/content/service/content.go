@@ -16,10 +16,10 @@ type ContentService struct {
 	content.UnimplementedContentServiceServer
 }
 
-func (*ContentService) Info(context.Context, *content.GetTagReq) (*content.Tag, error) {
+func (*ContentService) TagInfo(context.Context, *content.GetTagReq) (*content.Tag, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Info not implemented")
 }
-func (*ContentService) Add(ctx context.Context, req *content.AddTagReq) (*request.Empty, error) {
+func (*ContentService) AddTag(ctx context.Context, req *content.AddTagReq) (*request.Empty, error) {
 	ctxi, span := model.CtxFromContext(ctx).StartSpan("Edit")
 	defer span.End()
 	ctx = ctxi.Context
@@ -28,15 +28,18 @@ func (*ContentService) Add(ctx context.Context, req *content.AddTagReq) (*reques
 		return nil, err
 	}
 	db := dao.Dao.GORMDB
-	db.Create(&content.Tag{
+	err = db.Create(&content.Tag{
 		Name:          req.Name,
 		Description:   req.Description,
 		ExpressionURL: req.ExpressionURL,
 		UserId:        user.Id,
-	})
+	}).Error
+	if err != nil {
+		return nil, ctxi.Log(errorcode.DBError, "db.Create", err.Error())
+	}
 	return nil, nil
 }
-func (*ContentService) Edit(ctx context.Context, req *content.AddTagReq) (*request.Empty, error) {
+func (*ContentService) EditTag(ctx context.Context, req *content.EditTagReq) (*request.Empty, error) {
 	ctxi, span := model.CtxFromContext(ctx).StartSpan("Edit")
 	defer span.End()
 	user, err := ctxi.GetAuthInfo(AuthWithUpdate)
@@ -48,20 +51,27 @@ func (*ContentService) Edit(ctx context.Context, req *content.AddTagReq) (*reque
 	err = db.Updates(&content.Tag{
 		Description:   req.Description,
 		ExpressionURL: req.ExpressionURL,
-	}).Where(`name = ? AND user_id = ? AND status = 0`, req.Name, user.Id).Error
+	}).Where(`id = ? AND user_id = ? AND status = 0`, req.Id, user.Id).Error
 	if err != nil {
-		return nil, errorcode.DBError.Warp(err)
+		return nil, ctxi.Log(errorcode.DBError, "db.Updates", err.Error())
 	}
 	return nil, nil
 }
-func (*ContentService) List(ctx context.Context, req *content.TagListReq) (*content.TagListRep, error) {
+func (*ContentService) TagList(ctx context.Context, req *content.TagListReq) (*content.TagListRep, error) {
+	ctxi := model.CtxFromContext(ctx)
 	var tags []*content.Tag
 	db := dao.Dao.GORMDB
 
 	if req.Name != "" {
 		db = db.Where(`name LIKE ?` + "%" + req.Name + "%")
 	}
+	if req.Type != content.TagPlaceholder {
+		db = db.Where(`type = ?`, req.Type)
+	}
 	var count int64
-	db.Table(`tag`).Find(&tags).Count(&count)
+	err := db.Table(`tag`).Find(&tags).Count(&count).Error
+	if err != nil {
+		return nil, ctxi.Log(errorcode.DBError, "db.Find", err.Error())
+	}
 	return &content.TagListRep{List: tags, Count: uint32(count)}, nil
 }

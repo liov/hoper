@@ -9,13 +9,13 @@ import (
 
 	"github.com/liov/hoper/go/v2/utils/log/output"
 	"github.com/liov/hoper/go/v2/utils/net"
+	"go.uber.org/multierr"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
 type Logger struct {
 	*zap.Logger
-	Level zapcore.Level
 }
 
 type Config struct {
@@ -32,33 +32,31 @@ func (lf *Config) NewLogger() *Logger {
 		With(
 			zap.String("source", neti.GetIP()),
 		)
-	return &Logger{logger, lf.Level}
+	return &Logger{logger}
 }
 
-func (l *Logger) Sugar() *SugaredLogger {
-	return &SugaredLogger{*l.Logger.Sugar(), l.Level}
+// Named adds a sub-scope to the logger's name. See Logger.Named for details.
+func (l *Logger) Named(name string) *Logger {
+	l.Logger = l.Logger.Named(name)
+	return l
 }
 
 func (l *Logger) WithOptions(opts ...zap.Option) *Logger {
-	return &Logger{l.Logger.WithOptions(opts...), l.Level}
+	l.Logger = l.Logger.WithOptions(opts...)
+	return l
 }
 
-func (l *Logger) WithFields(fields ...zap.Field) *Logger {
-	return &Logger{l.Logger.With(fields...), l.Level}
+func (l *Logger) With(fields ...zap.Field) *Logger {
+	l.Logger = l.Logger.With(fields...)
+	return l
 }
 
 var (
-	CallOne      *Logger
-	Default      *Logger
-	SugarCallOne *SugaredLogger
-	Sugar        *SugaredLogger
+	Default *Logger
 )
 
 func (lf *Config) SetLogger() {
-	Default = lf.NewLogger()
-	CallOne = Default.WithOptions(zap.AddCallerSkip(1))
-	Sugar = Default.Sugar()
-	SugarCallOne = Default.WithOptions(zap.AddCallerSkip(1)).Sugar()
+	Default = lf.NewLogger().WithOptions(zap.AddCallerSkip(1))
 }
 
 func init() {
@@ -75,7 +73,7 @@ func (lf *Config) initLogger() *zap.Logger {
 		CallerKey:     "caller",
 		FunctionKey:   "func",
 		MessageKey:    "msg",
-		StacktraceKey: "stacktrace",
+		StacktraceKey: "stack",
 		LineEnding:    zapcore.DefaultLineEnding,
 		EncodeLevel:   zapcore.CapitalColorLevelEncoder,
 		EncodeTime: func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
@@ -142,70 +140,406 @@ func (lf *Config) hook() []zap.Option {
 
 func Sync() {
 	Default.Sync()
-	CallOne.Sync()
 }
 
 func Print(args ...interface{}) {
-	CallOne.Print(args...)
+	if ce := Default.Check(zap.InfoLevel, fmt.Sprint(args...)); ce != nil {
+		ce.Write()
+	}
 }
 
 func Debug(args ...interface{}) {
-	CallOne.Debug(fmt.Sprint(args...))
+	if ce := Default.Check(zap.DebugLevel, fmt.Sprint(args...)); ce != nil {
+		ce.Write()
+	}
 }
 
 func Info(args ...interface{}) {
-	CallOne.Info(fmt.Sprint(args...))
+	if ce := Default.Check(zap.InfoLevel, fmt.Sprint(args...)); ce != nil {
+		ce.Write()
+	}
 }
 
 func Warn(args ...interface{}) {
-	CallOne.Warn(fmt.Sprint(args...))
+	if ce := Default.Check(zap.WarnLevel, fmt.Sprint(args...)); ce != nil {
+		ce.Write()
+	}
 }
 
 func Error(args ...interface{}) {
-	CallOne.Error(fmt.Sprint(args...))
+	if ce := Default.Check(zap.ErrorLevel, fmt.Sprint(args...)); ce != nil {
+		ce.Write()
+	}
 }
 
 func Panic(args ...interface{}) {
-	CallOne.Panic(fmt.Sprint(args...))
+	if ce := Default.Check(zap.PanicLevel, fmt.Sprint(args...)); ce != nil {
+		ce.Write()
+	}
 }
 
 func Fatal(args ...interface{}) {
-	CallOne.Fatal(fmt.Sprint(args...))
+	if ce := Default.Check(zap.FatalLevel, fmt.Sprint(args...)); ce != nil {
+		ce.Write()
+	}
 }
 
 func Printf(template string, args ...interface{}) {
-	CallOne.Print(fmt.Sprintf(template, args...))
+	if ce := Default.Check(zap.InfoLevel, fmt.Sprintf(template,args...)); ce != nil {
+		ce.Write()
+	}
 }
 
 func Debugf(template string, args ...interface{}) {
-	CallOne.Debug(fmt.Sprintf(template, args...))
+	if ce := Default.Check(zap.DebugLevel, fmt.Sprintf(template,args...)); ce != nil {
+		ce.Write()
+	}
 }
 
 func Infof(template string, args ...interface{}) {
-	CallOne.Info(fmt.Sprintf(template, args...))
+	if ce := Default.Check(zap.InfoLevel, fmt.Sprintf(template,args...)); ce != nil {
+		ce.Write()
+	}
 }
 
 func Warnf(template string, args ...interface{}) {
-	CallOne.Warn(fmt.Sprintf(template, args...))
+	if ce := Default.Check(zap.WarnLevel, fmt.Sprintf(template,args...)); ce != nil {
+		ce.Write()
+	}
 }
 
 func Errorf(template string, args ...interface{}) {
-	CallOne.Error(fmt.Sprintf(template, args...))
+	if ce := Default.Check(zap.ErrorLevel, fmt.Sprintf(template,args...)); ce != nil {
+		ce.Write()
+	}
 }
 
 func Panicf(template string, args ...interface{}) {
-	CallOne.Panic(fmt.Sprintf(template, args...))
+	if ce := Default.Check(zap.PanicLevel, fmt.Sprintf(template,args...)); ce != nil {
+		ce.Write()
+	}
 }
 
 func Fatalf(template string, args ...interface{}) {
-	CallOne.Fatal(fmt.Sprintf(template, args...))
+	if ce := Default.Check(zap.FatalLevel, fmt.Sprintf(template,args...)); ce != nil {
+		ce.Write()
+	}
+}
+
+
+func (l *Logger) Printf(template string, args ...interface{}) {
+	if ce := l.Check(zap.InfoLevel, fmt.Sprintf(template,args...)); ce != nil {
+		ce.Write()
+	}
 }
 
 // 兼容gormv1
-func (l *Logger) Printf(template string, args ...interface{}) {
-	l.Info(fmt.Sprintf(template, args...))
+func (l *Logger) Print(args ...interface{}) {
+	if ce := l.Check(zap.InfoLevel, fmt.Sprint(args...)); ce != nil {
+		ce.Write()
+	}
 }
 
-func (l *Logger) Print(args ...interface{}) {
-	l.Info(fmt.Sprint(args...))
+// Debug uses fmt.Sprint to construct and log a message.
+func (l *Logger) Debug(args ...interface{}) {
+	if ce := l.Check(zap.DebugLevel, fmt.Sprint(args...)); ce != nil {
+		ce.Write()
+	}
+}
+
+// Info uses fmt.Sprint to construct and log a message.
+func (l *Logger) Info(args ...interface{}) {
+	if ce := l.Check(zap.InfoLevel, fmt.Sprint(args...)); ce != nil {
+		ce.Write()
+	}
+}
+
+// Warn uses fmt.Sprint to construct and log a message.
+func (l *Logger) Warn(args ...interface{}) {
+	if ce := l.Check(zap.WarnLevel, fmt.Sprint(args...)); ce != nil {
+		ce.Write()
+	}
+}
+
+// Error uses fmt.Sprint to construct and log a message.
+func (l *Logger) Error(args ...interface{}) {
+	if ce := l.Check(zap.ErrorLevel, fmt.Sprint(args...)); ce != nil {
+		ce.Write()
+	}
+}
+
+// DPanic uses fmt.Sprint to construct and log a message. In development, the
+// logger then panics. (See DPanicLevel for details.)
+func (l *Logger) DPanic(args ...interface{}) {
+	if ce := l.Check(zap.DPanicLevel, fmt.Sprint(args...)); ce != nil {
+		ce.Write()
+	}
+}
+
+// Panic uses fmt.Sprint to construct and log a message, then panics.
+func (l *Logger) Panic(args ...interface{}) {
+	if ce := l.Check(zap.PanicLevel, fmt.Sprint(args...)); ce != nil {
+		ce.Write()
+	}
+}
+
+// Fatal uses fmt.Sprint to construct and log a message, then calls os.Exit.
+func (l *Logger) Fatal(args ...interface{}) {
+	if ce := l.Check(zap.FatalLevel, fmt.Sprint(args...)); ce != nil {
+		ce.Write()
+	}
+}
+
+// Debug logs a message at DebugLevel. The message includes any fields passed
+// at the log site, as well as any fields accumulated on the logger.
+func (l *Logger) Debugw(msg string, fields ...zap.Field) {
+	if ce := l.Check(zap.DebugLevel, msg); ce != nil {
+		ce.Write(fields...)
+	}
+}
+
+// Info logs a message at InfoLevel. The message includes any fields passed
+// at the log site, as well as any fields accumulated on the logger.
+func (l *Logger) Infow(msg string, fields ...zap.Field) {
+	if ce := l.Check(zap.InfoLevel, msg); ce != nil {
+		ce.Write(fields...)
+	}
+}
+
+// Warn logs a message at WarnLevel. The message includes any fields passed
+// at the log site, as well as any fields accumulated on the logger.
+func (l *Logger) Warnw(msg string, fields ...zap.Field) {
+	if ce := l.Check(zap.WarnLevel, msg); ce != nil {
+		ce.Write(fields...)
+	}
+}
+
+// Error logs a message at ErrorLevel. The message includes any fields passed
+// at the log site, as well as any fields accumulated on the logger.
+func (l *Logger) Errorw(msg string, fields ...zap.Field) {
+	if ce := l.Check(zap.ErrorLevel, msg); ce != nil {
+		ce.Write(fields...)
+	}
+}
+
+// DPanic logs a message at DPanicLevel. The message includes any fields
+// passed at the log site, as well as any fields accumulated on the logger.
+//
+// If the logger is in development mode, it then panics (DPanic means
+// "development panic"). This is useful for catching errors that are
+// recoverable, but shouldn't ever happen.
+func (l *Logger) DPanicw(msg string, fields ...zap.Field) {
+	if ce := l.Check(zap.DPanicLevel, msg); ce != nil {
+		ce.Write(fields...)
+	}
+}
+
+// Panic logs a message at PanicLevel. The message includes any fields passed
+// at the log site, as well as any fields accumulated on the logger.
+//
+// The logger then panics, even if logging at PanicLevel is disabled.
+func (l *Logger) Panicw(msg string, fields ...zap.Field) {
+	if ce := l.Check(zap.PanicLevel, msg); ce != nil {
+		ce.Write(fields...)
+	}
+}
+
+// Fatal logs a message at FatalLevel. The message includes any fields passed
+// at the log site, as well as any fields accumulated on the logger.
+//
+// The logger then calls os.Exit(1), even if logging at FatalLevel is
+// disabled.
+func (l *Logger) Fatalw(msg string, fields ...zap.Field) {
+	if ce := l.Check(zap.FatalLevel, msg); ce != nil {
+		ce.Write(fields...)
+	}
+}
+
+// Debugf uses fmt.Sprintf to log a templated message.
+func (l *Logger) Debugf(template string, args ...interface{}) {
+	if ce := l.Check(zap.DebugLevel, fmt.Sprintf(template,args...)); ce != nil {
+		ce.Write()
+	}
+}
+
+// Infof uses fmt.Sprintf to log a templated message.
+func (l *Logger) Infof(template string, args ...interface{}) {
+	if ce := l.Check(zap.InfoLevel, fmt.Sprintf(template,args...)); ce != nil {
+		ce.Write()
+	}
+}
+
+// Warnf uses fmt.Sprintf to log a templated message.
+func (l *Logger) Warnf(template string, args ...interface{}) {
+	if ce := l.Check(zap.WarnLevel, fmt.Sprintf(template,args...)); ce != nil {
+		ce.Write()
+	}
+}
+
+// Errorf uses fmt.Sprintf to log a templated message.
+func (l *Logger) Errorf(template string, args ...interface{}) {
+	if ce := l.Check(zap.ErrorLevel, fmt.Sprintf(template,args...)); ce != nil {
+		ce.Write()
+	}
+}
+
+// DPanicf uses fmt.Sprintf to log a templated message. In development, the
+// logger then panics. (See DPanicLevel for details.)
+func (l *Logger) DPanicf(template string, args ...interface{}) {
+	if ce := l.Check(zap.DPanicLevel, fmt.Sprintf(template,args...)); ce != nil {
+		ce.Write()
+	}
+}
+
+// Panicf uses fmt.Sprintf to log a templated message, then panics.
+func (l *Logger) Panicf(template string, args ...interface{}) {
+	if ce := l.Check(zap.PanicLevel, fmt.Sprintf(template,args...)); ce != nil {
+		ce.Write()
+	}
+}
+
+// Fatalf uses fmt.Sprintf to log a templated message, then calls os.Exit.
+func (l *Logger) Fatalf(template string, args ...interface{}) {
+	if ce := l.Check(zap.FatalLevel, fmt.Sprintf(template,args...)); ce != nil {
+		ce.Write()
+	}
+}
+
+
+// 兼容grpclog
+func (l *Logger) Infoln(args ...interface{}) {
+	if ce := l.Check(zap.InfoLevel, fmt.Sprint(args...)); ce != nil {
+		ce.Write()
+	}
+}
+
+func (l *Logger) Warning(args ...interface{}) {
+	if ce := l.Check(zap.WarnLevel, fmt.Sprint(args...)); ce != nil {
+		ce.Write()
+	}
+}
+
+func (l *Logger) Warningln(args ...interface{}) {
+	if ce := l.Check(zap.WarnLevel, fmt.Sprint(args...)); ce != nil {
+		ce.Write()
+	}
+}
+
+func (l *Logger) Warningf(template string, args ...interface{}) {
+	if ce := l.Check(zap.WarnLevel, fmt.Sprintf(template,args...)); ce != nil {
+		ce.Write()
+	}
+}
+
+func (l *Logger) Errorln(args ...interface{}) {
+	if ce := l.Check(zap.ErrorLevel, fmt.Sprint(args...)); ce != nil {
+		ce.Write()
+	}
+}
+
+func (l *Logger) Fatalln(args ...interface{}) {
+	if ce := l.Check(zap.FatalLevel, fmt.Sprint(args...)); ce != nil {
+		ce.Write()
+	}
+}
+
+func (l *Logger) V(level int) bool {
+	if level == 3 {
+		level = 5
+	}
+	return l.Logger.Core().Enabled(zapcore.Level(level))
+}
+
+// sugar
+const (
+	_oddNumberErrMsg    = "Ignored key without a value."
+	_nonStringKeyErrMsg = "Ignored key-value pairs with non-string keys."
+)
+
+func (l *Logger) log(lvl zapcore.Level, template string, fmtArgs []interface{}, context []interface{}) {
+	// If logging at this level is completely disabled, skip the overhead of
+	// string formatting.
+	if lvl < zap.DPanicLevel && !l.Core().Enabled(lvl) {
+		return
+	}
+
+	// Format with Sprint, Sprintf, or neither.
+	msg := template
+	if msg == "" && len(fmtArgs) > 0 {
+		msg = fmt.Sprint(fmtArgs...)
+	} else if msg != "" && len(fmtArgs) > 0 {
+		msg = fmt.Sprintf(template, fmtArgs...)
+	}
+
+	if ce := l.Check(lvl, msg); ce != nil {
+		ce.Write(l.sweetenFields(context)...)
+	}
+}
+
+func (l *Logger) sweetenFields(args []interface{}) []zap.Field {
+	if len(args) == 0 {
+		return nil
+	}
+
+	// Allocate enough space for the worst case; if users pass only structured
+	// fields, we shouldn't penalize them with extra allocations.
+	fields := make([]zap.Field, 0, len(args))
+	var invalid invalidPairs
+
+	for i := 0; i < len(args); {
+		// This is a strongly-typed field. Consume it and move on.
+		if f, ok := args[i].(zap.Field); ok {
+			fields = append(fields, f)
+			i++
+			continue
+		}
+
+		// Make sure this element isn't a dangling key.
+		if i == len(args)-1 {
+			l.DPanic(_oddNumberErrMsg, zap.Any("ignored", args[i]))
+			break
+		}
+
+		// Consume this value and the next, treating them as a key-value pair. If the
+		// key isn't a string, add this pair to the slice of invalid pairs.
+		key, val := args[i], args[i+1]
+		if keyStr, ok := key.(string); !ok {
+			// Subsequent errors are likely, so allocate once up front.
+			if cap(invalid) == 0 {
+				invalid = make(invalidPairs, 0, len(args)/2)
+			}
+			invalid = append(invalid, invalidPair{i, key, val})
+		} else {
+			fields = append(fields, zap.Any(keyStr, val))
+		}
+		i += 2
+	}
+
+	// If we encountered any invalid key-value pairs, log an error.
+	if len(invalid) > 0 {
+		l.DPanic(_nonStringKeyErrMsg, zap.Array("invalid", invalid))
+	}
+	return fields
+}
+
+type invalidPair struct {
+	position   int
+	key, value interface{}
+}
+
+func (p invalidPair) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt64("position", int64(p.position))
+	zap.Any("key", p.key).AddTo(enc)
+	zap.Any("value", p.value).AddTo(enc)
+	return nil
+}
+
+type invalidPairs []invalidPair
+
+func (ps invalidPairs) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	var err error
+	for i := range ps {
+		err = multierr.Append(err, enc.AppendObject(ps[i]))
+	}
+	return err
 }
