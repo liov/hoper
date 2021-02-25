@@ -28,19 +28,15 @@ func (*ContentService) AddTag(ctx context.Context, req *content.AddTagReq) (*req
 		return nil, err
 	}
 	db := dao.Dao.GORMDB
-	err = db.Create(&content.Tag{
-		Name:          req.Name,
-		Description:   req.Description,
-		ExpressionURL: req.ExpressionURL,
-		UserId:        user.Id,
-	}).Error
+	req.UserId = user.Id
+	err = db.Create(req).Error
 	if err != nil {
 		return nil, ctxi.Log(errorcode.DBError, "db.Create", err.Error())
 	}
 	return nil, nil
 }
 func (*ContentService) EditTag(ctx context.Context, req *content.EditTagReq) (*request.Empty, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan("Edit")
+	ctxi, span := model.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	user, err := ctxi.GetAuthInfo(AuthWithUpdate)
 	if err != nil {
@@ -60,6 +56,11 @@ func (*ContentService) EditTag(ctx context.Context, req *content.EditTagReq) (*r
 func (*ContentService) TagList(ctx context.Context, req *content.TagListReq) (*content.TagListRep, error) {
 	ctxi := model.CtxFromContext(ctx)
 	var tags []*content.Tag
+
+	user, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	if err != nil {
+		return nil, err
+	}
 	db := dao.Dao.GORMDB
 
 	if req.Name != "" {
@@ -69,9 +70,9 @@ func (*ContentService) TagList(ctx context.Context, req *content.TagListReq) (*c
 		db = db.Where(`type = ?`, req.Type)
 	}
 	var count int64
-	err := db.Table(`tag`).Find(&tags).Count(&count).Error
+	err = db.Table(`tag`).Where("user_id = ?",user.Id).Find(&tags).Count(&count).Error
 	if err != nil {
 		return nil, ctxi.Log(errorcode.DBError, "db.Find", err.Error())
 	}
-	return &content.TagListRep{List: tags, Count: uint32(count)}, nil
+	return &content.TagListRep{List: tags, Total: uint32(count)}, nil
 }

@@ -57,7 +57,7 @@ service ContentService {
     option (gogo.graphql_operation) = Mutation;
   }
 
-  // 修改
+  // 列表
   rpc TagList (TagListReq) returns (TagListRep) {
     option (google.api.http) = {
       get: "/api/v1/tag"
@@ -67,6 +67,18 @@ service ContentService {
     };
     option (gogo.graphql_operation) = Query;
   }
+
+  // 列表
+  rpc TagGroupList (TagGroupListReq) returns (TagGroupListRep) {
+    option (google.api.http) = {
+      get: "/api/v1/tag"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["v1.0.0"]
+    };
+    option (gogo.graphql_operation) = Query;
+  }
+
 
   // 详情
   rpc AttrInfo (GetAttrReq) returns (Attributes) {
@@ -103,7 +115,7 @@ service ContentService {
     option (gogo.graphql_operation) = Mutation;
   }
 
-  // 修改
+  // 列表
   rpc AttrList (AttrListReq) returns (AttrListRep) {
     option (google.api.http) = {
       get: "/api/v1/attr"
@@ -121,28 +133,43 @@ message GetTagReq {
 }
 
 message AddTagReq {
-  TagType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null" validate:"required" annotation:"标签类型"'}];
   string name = 1[(go.field) = {tags:'annotation:"名称"'}];
-  string description = 3 [(go.field) = {tags:'gorm:"size:100"  annotation:"描述"'}];
-  string expressionURL = 4 [(go.field) = {tags:'gorm:"size:255"  annotation:"表情url"'}];
+  string description = 3 [(go.field) = {tags:'gorm:"annotation:"描述"'}];
+  string expressionURL = 4 [(go.field) = {tags:'annotation:"表情url"'}];
+  uint64 userId = 5 [(go.field) = {tags:'annotation:"用户id"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    read_only: true}];
 }
 
 message EditTagReq {
   uint64 id = 1 [(go.field) = {tags:'validate:"required"'}];
   string name = 2[(go.field) = {tags:'annotation:"名称"'}];
-  string description = 3 [(go.field) = {tags:'gorm:"size:100"  annotation:"描述"'}];
-  string expressionURL = 4 [(go.field) = {tags:'gorm:"size:255"  annotation:"表情url"'}];
+  string description = 3 [(go.field) = {tags:'annotation:"描述"'}];
+  string expressionURL = 4 [(go.field) = {tags:'annotation:"表情url"'}];
 }
 
 
 message TagListReq{
-  TagType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null" validate:"required" annotation:"标签类型"'}];
   string name = 1[(go.field) = {tags:'annotation:"名称"'}];
+  TagType type = 2 [(go.field) = {tags:'validate:"required" annotation:"标签类型"'}];
+  uint32 pageNo = 3;
+  uint32 pageSize = 4;
 }
 
 message TagListRep{
-  uint32 count = 1;
+  uint32 total = 1;
   repeated Tag list = 2;
+}
+
+message TagGroupListReq{
+  TagType type = 2 [(go.field) = {tags:'validate:"required" annotation:"标签类型"'}];
+  string name = 1[(go.field) = {tags:'annotation:"名称"'}];
+  uint32 pageNo = 3;
+  uint32 pageSize = 4;
+}
+
+message TagGroupListRep{
+  uint32 total = 1;
+  map<int32,TagListRep> data = 2;
 }
 
 message GetAttrReq {
@@ -150,21 +177,21 @@ message GetAttrReq {
 }
 
 message AddAttrReq {
-  AttrType type = 4 [(go.field) = {tags:'gorm:"type:int2;not null" validate:"required" annotation:"属性相关类型"'}];
+  AttrType type = 4 [(go.field) = {tags:'annotation:"属性相关类型"'}];
   string name = 1[(go.field) = {tags:'annotation:"名称"'}];
-  string description = 2 [(go.field) = {tags:'gorm:"size:100"  annotation:"描述"'}];
-  string expressionURL = 3 [(go.field) = {tags:'gorm:"size:255"  annotation:"表情url"'}];
+  string description = 2 [(go.field) = {tags:'annotation:"描述"'}];
+  string expressionURL = 3 [(go.field) = {tags:'annotation:"表情url"'}];
 }
 
 message EditAttrReq {
   uint64 id = 1 [(go.field) = {tags:'validate:"required"'}];
   string name = 2[(go.field) = {tags:'annotation:"名称"'}];
-  string description = 3 [(go.field) = {tags:'gorm:"size:100"  annotation:"描述"'}];
-  string expressionURL = 4 [(go.field) = {tags:'gorm:"size:255"  annotation:"表情url"'}];
+  string description = 3 [(go.field) = {tags:'annotation:"描述"'}];
+  string expressionURL = 4 [(go.field) = {tags:'annotation:"表情url"'}];
 }
 
 message AttrListReq{
-  AttrType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null" validate:"required" annotation:"属性相关类型"'}];
+  AttrType type = 2 [(go.field) = {tags:'annotation:"属性相关类型"'}];
   string name = 1[(go.field) = {tags:'annotation:"名称"'}];
 }
 

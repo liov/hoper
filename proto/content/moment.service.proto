@@ -74,8 +74,9 @@ message AddMomentReq {
   uint64 id = 1 ;
   string content = 2 [(go.field) = {tags:'annotation:"内容"'}];
   string imageUrl = 3 [(go.field) = {tags:'annotation:"图片"'}];
-  string moodName = 5 [(go.field) = {tags:' annotation:"心情"'}];
-  repeated string tagNames = 6 [(go.field) = {tags:'gorm:"-" annotation:"标签名称"'}];
+  string mood = 5 [(go.field) = {tags:' annotation:"心情"'}];
+  string weather = 7 [(go.field) = {tags:' annotation:"心情"'}];
+  repeated string tags = 6 [(go.field) = {tags:'gorm:"-" annotation:"标签名称"'}];
   uint64 userId = 17 [(go.field) = {tags:'annotation:"用户id"'}];
   uint32 sequence = 12 [(go.field) = {tags:'annotation:"同级别的分类可根据sequence的值来排序，置顶"'}];
   uint32 anonymous = 15 [(go.field) = {tags:'annotation:"是否匿名,1-是,2否"'}];
