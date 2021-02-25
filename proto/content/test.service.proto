@@ -1,6 +1,6 @@
 syntax = "proto3";
 package content;
-import "content/note.model.proto";
+import "content/content.model.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";

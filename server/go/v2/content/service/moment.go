@@ -41,11 +41,15 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 	log.Info(user)
 	req.UserId = user.Id
 	db := dao.Dao.GORMDB
-	var count int64
-	db.Table(`mood`).Where(`name = ?`, req.MoodName).Count(&count)
-	if count == 0 {
-		return nil, errorcode.ParamInvalid.Message("心情不存在")
-	}
+	/*	var count int64
+		db.Table(`mood`).Where(`name = ?`, req.MoodName).Count(&count)
+		if count == 0 {
+			return nil, errorcode.ParamInvalid.Message("心情不存在")
+		}*/
+	var tags []*content.Tag
+	db.Table("tag").Select("id,name").
+		Where("name IN (?)", req.Tags).Find(&tags)
+
 	if err = db.Save(req).Error; err != nil {
 		return nil, errorcode.DBError
 	}

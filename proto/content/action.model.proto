@@ -2,7 +2,6 @@ syntax = "proto3";
 package content;
 import "content/action.enum.proto";
 import "content/content.enum.proto";
-import "content/content.model.proto";
 import "user/user.model.proto";
 import "utils/proto/go/go.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
