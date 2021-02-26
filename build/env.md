@@ -116,3 +116,6 @@ etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.
 
 # IDEA
 plugin 仓库地址 https://repo.idechajian.com
+
+# protoc卡住
+tags标签写错

@@ -177,7 +177,7 @@ message Article{
   area.Area area = 19 [(go.field) = {tags:'gorm:"-" annotation:"地区"'}];
   uint64 areaId = 20 [(go.field) = {tags:'gorm:"size:10;not null" annotation:"地区"'}];
   string location = 14 [(go.field) = {tags:'gorm:"size:20;not null" annotation:"位置"'}];
-  repeated Tag tags = 6 [(go.field) = {tags:'gorm:"many2many:moment_tag;foreignkey:Id;association_foreignkey:Name" annotation:"标签"'}];
+  repeated Tag tags = 6 [(go.field) = {tags:'gorm:"-" annotation:"标签"'}];
   user.UserBaseInfo user = 8 [(go.field) = {tags:'gorm:"-" annotation:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" annotation:"用户id"'}];
   repeated user.UserBaseInfo approveUsers = 9 [(go.field) = {tags:'gorm:"-" annotation:"点赞用户"'}];

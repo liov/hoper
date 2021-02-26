@@ -3,6 +3,8 @@ package stringsi
 import (
 	"strings"
 	"unsafe"
+
+	runei "github.com/liov/hoper/go/v2/utils/strings/rune"
 )
 
 func FormatLen(s string, length int) string {
@@ -138,7 +140,7 @@ func ReplaceRuneEmpty(s string, old []rune) string {
 	needCoby := false
 	last := false
 	for i, r := range s {
-		if in(r, old) {
+		if runei.In(r, old) {
 			if needCoby {
 				w += copy(t[w:], s[start:i])
 				needCoby = false
@@ -158,25 +160,6 @@ func ReplaceRuneEmpty(s string, old []rune) string {
 	return string(t[0:w])
 }
 
-func in(r rune, bytes []rune) bool {
-	for i := range bytes {
-		if bytes[i] == r {
-			return true
-		}
-	}
-	return false
-}
-
-// 有一个匹配成功就返回true
-func HasPrefixes(s string, prefixes []string) bool {
-	for _, prefix := range prefixes {
-		if len(s) >= len(prefix) && s[0:len(prefix)] == prefix {
-			return true
-		}
-	}
-	return false
-}
-
 func Camel(s string) string {
 	if s == "" {
 		return ""
@@ -194,21 +177,21 @@ func Camel(s string) string {
 	// upper case letter. Digits are treated as words.
 	for ; i < len(s); i++ {
 		c := s[i]
-		if c == '_' && i+1 < len(s) && isASCIILower(s[i+1]) {
+		if c == '_' && i+1 < len(s) && IsASCIILower(s[i+1]) {
 			continue // Skip the underscore in s.
 		}
-		if isASCIIDigit(c) {
+		if IsASCIIDigit(c) {
 			t = append(t, c)
 			continue
 		}
 		// Assume we have a letter now - if not, it's a bogus identifier.
 		// The next word is a sequence of characters that must start upper case.
-		if isASCIILower(c) {
+		if IsASCIILower(c) {
 			c ^= ' ' // Make it a capital letter.
 		}
 		t = append(t, c) // Guaranteed not lower case.
 		// Accept lower case sequence that follows.
-		for i+1 < len(s) && isASCIILower(s[i+1]) {
+		for i+1 < len(s) && IsASCIILower(s[i+1]) {
 			i++
 			t = append(t, s[i])
 		}
@@ -217,13 +200,3 @@ func Camel(s string) string {
 }
 
 // And now lots of helper functions.
-
-// Is c an ASCII lower-case letter?
-func isASCIILower(c byte) bool {
-	return 'a' <= c && c <= 'z'
-}
-
-// Is c an ASCII digit?
-func isASCIIDigit(c byte) bool {
-	return '0' <= c && c <= '9'
-}
