@@ -134,7 +134,7 @@ message GetTagReq {
 
 message AddTagReq {
   string name = 1[(go.field) = {tags:'annotation:"名称"'}];
-  string description = 3 [(go.field) = {tags:'gorm:"annotation:"描述"'}];
+  string description = 3 [(go.field) = {tags:'annotation:"描述"'}];
   string expressionURL = 4 [(go.field) = {tags:'annotation:"表情url"'}];
   uint64 userId = 5 [(go.field) = {tags:'annotation:"用户id"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];

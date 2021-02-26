@@ -6,13 +6,15 @@ import (
 
 	"github.com/liov/hoper/go/v2/content/conf"
 	"github.com/liov/hoper/go/v2/content/dao"
+	"github.com/liov/hoper/go/v2/content/model"
 	"github.com/liov/hoper/go/v2/protobuf/content"
-	model "github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/protobuf/utils/request"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"gorm.io/gorm"
 )
 
 type MomentService struct {
@@ -28,7 +30,7 @@ func (*MomentService) Info(context.Context, *content.GetMomentReq) (*content.Mom
 }
 
 func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*request.Empty, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	user, err := ctxi.GetAuthInfo(AuthWithUpdate)
 	if err != nil {
@@ -46,12 +48,50 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		if count == 0 {
 			return nil, errorcode.ParamInvalid.Message("心情不存在")
 		}*/
-	var tags []*content.Tag
+	var tags []model.TinyTag
 	db.Table("tag").Select("id,name").
 		Where("name IN (?)", req.Tags).Find(&tags)
 
-	if err = db.Save(req).Error; err != nil {
-		return nil, errorcode.DBError
+	req.UserId = user.Id
+	err = db.Transaction(func(tx *gorm.DB) error {
+		err = tx.Create(req).Error
+		if err != nil {
+			return ctxi.Log(err, "db.CreateReq", err.Error())
+		}
+		var contentTags []model.ContentTag
+		var noExist []content.Tag
+		for i := range req.Tags {
+			// 性能可以优化
+			for j := range tags {
+				if req.Tags[i] == tags[j].Name {
+					contentTags = append(contentTags, model.ContentTag{
+						Type:  content.ContentMoment,
+						RefId: req.Id,
+						TagId: tags[i].Id,
+					})
+					break
+				} else {
+					noExist = append(noExist, content.Tag{Name: req.Tags[i], UserId: user.Id})
+				}
+			}
+			if err = tx.Create(&noExist).Error; err != nil {
+				return ctxi.Log(err, "db.CreateNoExist", err.Error())
+			}
+			for i := range noExist {
+				contentTags = append(contentTags, model.ContentTag{
+					Type:  content.ContentMoment,
+					RefId: req.Id,
+					TagId: noExist[i].Id,
+				})
+			}
+			if err = tx.Create(&contentTags).Error; err != nil {
+				return ctxi.Log(err, "db.CreateContentTags", err.Error())
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, ctxi.Log(errorcode.DBError, "db.Transaction", err.Error())
 	}
 	return nil, nil
 }

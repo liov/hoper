@@ -1,6 +1,7 @@
 package execi
 
 import (
+	"log"
 	"os"
 	"os/exec"
 
@@ -12,5 +13,6 @@ func Run(arg string) {
 	cmd := exec.Command(words[0], words[1:]...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+	log.Println(cmd.String())
 	cmd.Run()
 }

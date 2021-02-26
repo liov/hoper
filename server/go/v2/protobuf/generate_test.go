@@ -9,8 +9,10 @@ import (
 
 type Foo struct {
 	state         protoimpl.MessageState
+	a int32
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
 }
 
 func TestSize(t *testing.T) {

@@ -37,26 +37,27 @@ func (lf *Config) NewLogger() *Logger {
 
 // Named adds a sub-scope to the logger's name. See Logger.Named for details.
 func (l *Logger) Named(name string) *Logger {
-	l.Logger = l.Logger.Named(name)
-	return l
+	return &Logger{l.Logger.Named(name)}
 }
 
 func (l *Logger) WithOptions(opts ...zap.Option) *Logger {
-	l.Logger = l.Logger.WithOptions(opts...)
-	return l
+	return  &Logger{l.Logger.WithOptions(opts...)}
 }
 
 func (l *Logger) With(fields ...zap.Field) *Logger {
-	l.Logger = l.Logger.With(fields...)
-	return l
+	return &Logger{l.Logger.With(fields...)}
 }
 
+func (l *Logger) Sugar() *zap.SugaredLogger {
+	l.Logger.WithOptions(zap.AddCallerSkip(-1))
+	return l.Logger.Sugar()
+}
 var (
 	Default *Logger
 )
 
 func (lf *Config) SetLogger() {
-	Default = lf.NewLogger().WithOptions(zap.AddCallerSkip(1))
+	Default = lf.NewLogger()
 }
 
 func init() {
@@ -132,6 +133,7 @@ func (lf *Config) hook() []zap.Option {
 	if lf.Development {
 		hooks = append(hooks, zap.Development(), zap.AddStacktrace(zapcore.DPanicLevel))
 	}
+	hooks = append(hooks, zap.AddCallerSkip(1))
 	if lf.Caller {
 		hooks = append(hooks, zap.AddCaller())
 	}

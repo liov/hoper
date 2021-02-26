@@ -2,6 +2,8 @@ package stringsi
 
 import (
 	"unicode"
+
+	runei "github.com/liov/hoper/go/v2/utils/strings/rune"
 )
 
 //[。；，：“”（）、？《》]
@@ -11,16 +13,7 @@ var HanPunctuation = []rune{
 
 func HasHan(s string) bool {
 	for _, r := range s {
-		if unicode.Is(unicode.Han, r) || Contain(HanPunctuation, r) {
-			return true
-		}
-	}
-	return false
-}
-
-func Contain(runes []rune, r rune) bool {
-	for _, rn := range runes {
-		if r == rn {
+		if unicode.Is(unicode.Han, r) || runei.In(r, HanPunctuation) {
 			return true
 		}
 	}
