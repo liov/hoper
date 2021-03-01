@@ -22,7 +22,7 @@ import (
 func main() {
 	//single("/content/moment.model.proto")
 	run(*proto)
-	genutils(*proto+"/utils")
+	//genutils(*proto+"/utils")
 	//gengql()
 }
 

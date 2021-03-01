@@ -34,7 +34,7 @@ var (
 	config       *logger.Config
 	Default      = New(log.New(os.Stdout, "\r\n", log.LstdFlags), &logger.Config{
 		SlowThreshold: 100 * time.Millisecond,
-		LogLevel:      logger.Warn,
+		LogLevel:      logger.Info,
 		Colorful:      true,
 	})
 )
@@ -46,7 +46,7 @@ type sqloger struct {
 
 func New(writer logger.Writer, config *logger.Config) logger.Interface {
 	if config == nil {
-		config = &logger.Config{}
+		config = &logger.Config{LogLevel: logger.Warn}
 	}
 	if config.Colorful {
 		infoStr = Green + "%s\n" + Reset + Green + "[info] " + Reset
@@ -88,7 +88,7 @@ func (l *sqloger) Error(ctx context.Context, msg string, data ...interface{}) {
 
 // Trace print sql message
 func (l *sqloger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
-	if l.LogLevel > 0 {
+	if l.LogLevel > logger.Silent {
 		elapsed := time.Since(begin)
 		switch {
 		case err != nil && l.LogLevel >= logger.Error:
