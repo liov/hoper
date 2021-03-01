@@ -18,7 +18,7 @@ var userMod = []interface{}{
 }
 
 var contentMod = []interface{}{
-	&content.Moment{},
+/*	&content.Moment{},
 	&content.Category{},
 	&content.Tag{},
 	&content.Comment{},
@@ -27,9 +27,9 @@ var contentMod = []interface{}{
 	&content.Favorites{},
 	&content.Collection{},
 	&content.CountStatistics{},
-	&content.Mood{},
 	&content.Report{},
-	&content.Collection{},
+	&content.Collection{},*/
+	&content.ContentTag{},
 }
 
 func main() {

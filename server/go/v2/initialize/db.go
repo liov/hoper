@@ -2,10 +2,7 @@ package initialize
 
 import (
 	"fmt"
-	stdlog "log"
-	"os"
 	"runtime"
-	"time"
 
 	v2 "github.com/liov/hoper/go/v2/utils/dao/db/gorm/v2"
 	"github.com/liov/hoper/go/v2/utils/log"
@@ -96,13 +93,9 @@ func (init *Init) P2DB() *gorm.DB {
 	rawDB.SetMaxIdleConns(conf.MaxIdleConns)
 	rawDB.SetMaxOpenConns(conf.MaxOpenConns)
 	if init.Env == PRODUCT {
-		db.Config.Logger = logger.Default.LogMode(logger.Error)
+		db.Config.Logger = v2.DefaultV2
 	} else {
-		db.Config.Logger = v2.New(stdlog.New(os.Stdout, "\r\n", stdlog.LstdFlags), &logger.Config{
-			LogLevel:      conf.LogLevel,
-			Colorful:      true,
-			SlowThreshold: 100 * time.Millisecond,
-		})
+		db.Config.Logger = v2.Default
 	}
 	//i.closes = append(i.closes,db.CloseDao)
 	//closes = append(closes, func() {log.AuthInfo("数据库已关闭")})

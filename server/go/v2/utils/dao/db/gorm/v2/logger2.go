@@ -4,29 +4,38 @@ import (
 	"context"
 	"fmt"
 	"time"
-
+	logi "github.com/liov/hoper/go/v2/utils/log"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/utils"
 )
 
+var (
+	DefaultV2 = New2(logi.Default.Logger, &logger.Config{
+		SlowThreshold: 100 * time.Millisecond,
+		LogLevel:      logger.Warn,
+		Colorful:      true,
+	})
+)
+
 type SQLLogger struct {
 	logger *zap.Logger
+	*logger.Config
 }
 
 func New2(loger *zap.Logger, conf *logger.Config) logger.Interface {
 	if conf == nil {
-		config = &logger.Config{LogLevel: logger.Silent}
+		conf = &logger.Config{LogLevel: logger.Silent}
 	}
-	config = conf
 	loger.Core().Enabled(zapcore.Level(4 - conf.LogLevel))
-	return &SQLLogger{logger: loger}
+	return &SQLLogger{logger: loger, Config: conf}
 }
 
 // LogMode log mode
 func (l *SQLLogger) LogMode(level logger.LogLevel) logger.Interface {
 	l.logger.Core().Enabled(zapcore.Level(4 - level))
+	l.LogLevel = level
 	return l
 }
 
@@ -53,28 +62,18 @@ func (l *SQLLogger) Trace(ctx context.Context, begin time.Time, fc func() (strin
 		sql, rows := fc()
 		sqlField := zap.String("sql", sql)
 		rowsField := zap.Int64("rows", rows)
+		fields := make([]zap.Field, 3, 4)
+		fields[0], fields[1], fields[2] = elapsedms, sqlField, rowsField
 		line := utils.FileWithLineNum()
 		switch {
-		case err != nil:
-			if rows == -1 {
-				l.logger.Error(line, zap.Error(err), elapsedms, sqlField)
-			} else {
-				l.logger.Error(line, zap.Error(err), elapsedms, rowsField, sqlField)
-			}
-		case elapsed > config.SlowThreshold && config.SlowThreshold != 0:
-
-			slowLog := zap.String("slowLog", fmt.Sprintf("SLOW SQL >= %v", config.SlowThreshold))
-			if rows == -1 {
-				l.logger.Warn(line, slowLog, elapsedms, sqlField)
-			} else {
-				l.logger.Warn(line, slowLog, elapsedms, rowsField, sqlField)
-			}
-		default:
-			if rows == -1 {
-				l.logger.Info(line, elapsedms, sqlField)
-			} else {
-				l.logger.Info(line, elapsedms, rowsField, sqlField)
-			}
+		case err != nil && l.LogLevel >= logger.Error:
+			fields = append(fields, zap.Error(err))
+			l.logger.Error(line, fields...)
+		case elapsed > config.SlowThreshold && config.SlowThreshold != 0 && l.LogLevel >= logger.Warn:
+			fields = append(fields, zap.String("slowLog", fmt.Sprintf("SLOW SQL >= %v", config.SlowThreshold)))
+			l.logger.Warn(line, fields...)
+		case l.LogLevel >= logger.Info:
+			l.logger.Info(line, fields...)
 		}
 	}
 }

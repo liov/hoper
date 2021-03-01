@@ -1,4 +1,4 @@
-package db
+package dbi
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ type Filter struct {
 	Value  string `json:"value"`
 }
 
-type Filters = []Filter
+type Filters []Filter
 
 func (f Filters) Build() string {
 	var conditions []string
