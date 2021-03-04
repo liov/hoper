@@ -6,13 +6,13 @@ import (
 	"io"
 	"net/http"
 	"reflect"
-	"time"
 
 	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/log"
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
+	"github.com/liov/hoper/go/v2/utils/net/http/request"
 	"github.com/liov/hoper/go/v2/utils/net/http/request/binding"
 	"google.golang.org/grpc"
 )
@@ -23,7 +23,7 @@ type Context interface {
 	grpc.ServerTransportStream
 	Error(...interface{})
 	GeToken() string
-	GetReqTime() time.Time
+	GetReqAt() *request.RequestAt
 	GetLogger() *log.Logger
 }
 

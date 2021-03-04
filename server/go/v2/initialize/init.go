@@ -9,7 +9,6 @@ import (
 	"os"
 	"reflect"
 	"strings"
-	"sync"
 	"testing"
 	"time"
 
@@ -27,13 +26,24 @@ import (
 //约定大于配置
 var (
 	InitConfig = &Init{}
-	once sync.Once
+	alreadyRun struct {
+		WatchConfig bool
+		InitFunc    bool
+	}
+
+)
+
+const (
+	LOCAL       = "local"
+	DEVELOPMENT = "dev"
+	TEST        = "test"
+	PRODUCT     = "prod"
+	InitKey     = "initialize"
 )
 
 func init() {
-	flag.StringVar(&InitConfig.Env, "env", DEVELOPMENT, "环境")
+	flag.StringVar(&InitConfig.Env, "env", LOCAL, "环境")
 	flag.StringVar(&InitConfig.ConfUrl, "conf", `./config.toml`, "配置文件路径")
-	flag.StringVar(&InitConfig.AddConfigPath, "add", "", "额外配置文件名")
 	agent := flag.Bool("agent", false, "是否启用代理")
 	testing.Init()
 	flag.Parse()
@@ -49,12 +59,20 @@ func init() {
 	}
 }
 
-const (
-	DEVELOPMENT = "dev"
-	TEST        = "test"
-	PRODUCT     = "prod"
-	InitKey     = "initialize"
-)
+//init函数命名规则，P+数字（优先级）+ 功能名
+func Start(conf Config, dao Dao) func() {
+	if !flag.Parsed() {
+		flag.Parse()
+	}
+
+	//逃逸到堆上了
+	InitConfig.SetInit(conf, dao)
+	InitConfig.LoadConfig()
+	return func() {
+		InitConfig.CloseDao()
+		log.Sync()
+	}
+}
 
 type EnvConfig struct {
 	NacosTenant string
@@ -63,6 +81,8 @@ type EnvConfig struct {
 type BasicConfig struct {
 	Module string
 	NoInit []string
+	//本地配置，特定文件名,启用文件搜寻查找
+	LocalConfigName string
 }
 
 type Init struct {
@@ -71,10 +91,8 @@ type Init struct {
 	ConfigCenter *nacos.Config
 	BasicConfig
 	Env, ConfUrl string
-	//附加配置，不对外公开的的配置,特定文件名,启用文件搜寻查找
-	AddConfigPath string
-	conf          NeedInit
-	dao           Dao
+	conf         NeedInit
+	dao          Dao
 	//closes     []interface{}
 }
 
@@ -95,8 +113,8 @@ func (init *Init) LoadConfig() *Init {
 	if err != nil {
 		log.Fatalf("配置错误: %v", err)
 	}
-	fmt.Printf("Load config from: %s\n",InitConfig.ConfUrl)
-	init.AddConfig()
+	fmt.Printf("Load config from: %s\n", InitConfig.ConfUrl)
+
 	init.BasicConfig = onceConfig.BasicConfig
 	init.NoInit = onceConfig.NoInit
 
@@ -114,16 +132,22 @@ func (init *Init) LoadConfig() *Init {
 			}*/
 			//会被回收,也可能是被移动了？
 			init.EnvConfig = &(*value.Field(i).Interface().(*EnvConfig))
+			if init.EnvConfig.NacosTenant != "" {
+				init.ConfigCenter = &nacos.Config{
+					Addr:   onceConfig.Nacos.Addr,
+					Tenant: init.EnvConfig.NacosTenant,
+					Group:  onceConfig.Nacos.Group,
+					DataId: onceConfig.Module,
+					Watch:  onceConfig.Nacos.Watch,
+				}
+				nacosClient := InitConfig.getConfigClient()
+				go nacosClient.Listener(InitConfig.UnmarshalAndSet)
+			}
 			break
 		}
 	}
-	init.ConfigCenter = &nacos.Config{
-		Addr:   onceConfig.Nacos.Addr,
-		Tenant: init.EnvConfig.NacosTenant,
-		Group:  onceConfig.Nacos.Group,
-		DataId: onceConfig.Module,
-		Watch:  onceConfig.Nacos.Watch,
-	}
+
+	init.LocalConfig()
 	log.Debugf("Configuration:\n  %#v\n", init)
 	return init
 }
@@ -146,31 +170,8 @@ type Dao interface {
 	NeedInit
 }
 
-var alreadyRun struct {
-	WatchConfig bool
-	InitFunc    bool
-}
-
-//init函数命名规则，P+数字（优先级）+ 功能名
-func Start(conf Config, dao Dao) func() {
-	if !flag.Parsed() {
-		flag.Parse()
-	}
-
-	//逃逸到堆上了
-	InitConfig.SetInit(conf, dao)
-	InitConfig.LoadConfig()
-	nacosClient := InitConfig.getConfig()
-	go nacosClient.Listener(InitConfig.UnmarshalAndSet)
-	log.Debug(conf)
-	return func() {
-		InitConfig.CloseDao()
-		log.Sync()
-	}
-}
-
 // 从nacos拉取配置并返回nacos client
-func (init *Init) getConfig() *nacos.Client {
+func (init *Init) getConfigClient() *nacos.Client {
 	nacosClient := init.ConfigCenter.NewClient()
 	err := nacosClient.GetConfigAllInfoHandle(init.UnmarshalAndSet)
 	if err != nil {
@@ -179,24 +180,43 @@ func (init *Init) getConfig() *nacos.Client {
 	return nacosClient
 }
 
-// 额外的配置文件
-func (init *Init) AddConfig() {
-	if init.AddConfigPath != "" {
-		adCongPath, err := fs.FindFile(init.AddConfigPath)
+// 本地配置文件
+func (init *Init) LocalConfig() {
+	if init.LocalConfigName != "" {
+		adCongPath, err := fs.FindFile(init.LocalConfigName)
+		init.LocalConfigName = adCongPath
 		if err == nil {
 			err := configor.New(&configor.Config{Debug: init.Env != PRODUCT}).
 				Load(init.conf, adCongPath)
 			if err != nil {
 				log.Fatalf("配置错误: %v", err)
 			}
+			init.refresh()
+			watcher()
 		} else {
 			log.Fatalf("找不到附加配置: %v", err)
 		}
 	}
 }
 
-//反射方法命名规范,P+优先级+方法名+(执行一次+Once)
-func (init *Init) SetConfigAndDao() {
+func watcher() {
+	watcher, err := watch.New(time.Second)
+	if err != nil {
+		log.Fatal(err)
+	}
+	watcher.Add(InitConfig.LocalConfigName, fsnotify.Write, func() {
+		InitConfig.CloseDao()
+		err := configor.New(&configor.Config{Debug: InitConfig.Env == LOCAL}).
+			Load(InitConfig.conf, InitConfig.LocalConfigName)
+		if err != nil {
+			log.Fatalf("配置错误: %v", err)
+		}
+		InitConfig.refresh()
+	})
+}
+
+// Custom
+func (init *Init) setConfig() {
 	confValue := reflect.ValueOf(init.conf).Elem()
 	for i := 0; i < confValue.NumField(); i++ {
 		if conf, ok := confValue.Field(i).Addr().Interface().(NeedInit); ok {
@@ -204,6 +224,9 @@ func (init *Init) SetConfigAndDao() {
 		}
 	}
 	init.conf.Custom()
+}
+//反射方法命名规范,P+优先级+方法名+(执行一次+Once)
+func (init *Init) setDao() {
 	if init.dao == nil {
 		return
 	}
@@ -230,29 +253,13 @@ func (init *Init) SetConfigAndDao() {
 		}
 	}
 	alreadyRun.InitFunc = true
-	if init.dao != nil {
-		init.dao.Custom()
-	}
+	init.dao.Custom()
 }
 
-func Watcher() {
-	watcher, err := watch.New(time.Second)
-	if err != nil {
-		log.Fatal(err)
-	}
-	watcher.Add(InitConfig.ConfUrl, fsnotify.Write, func() {
-		InitConfig.CloseDao()
-		InitConfig.SetConfigAndDao()
-	})
-
-	watcher.Add(".watch", fsnotify.Write, func() {
-		watcher.Close()
-	})
-}
-
-func (init *Init) Refresh() {
+func (init *Init) refresh() {
 	InitConfig.CloseDao()
-	InitConfig.SetConfigAndDao()
+	InitConfig.setConfig()
+	InitConfig.setDao()
 }
 
 func (init *Init) Unmarshal(bytes []byte) {
@@ -268,5 +275,5 @@ func (init *Init) CloseDao() {
 func (init *Init) UnmarshalAndSet(bytes []byte) {
 	log.Debug(string(bytes))
 	init.Unmarshal(bytes)
-	init.Refresh()
+	init.refresh()
 }

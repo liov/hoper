@@ -13,7 +13,9 @@ import (
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
+	"github.com/liov/hoper/go/v2/utils/net/http/request"
 	stringsi "github.com/liov/hoper/go/v2/utils/strings"
+	timei "github.com/liov/hoper/go/v2/utils/time"
 	jwti "github.com/liov/hoper/go/v2/utils/verification/auth/jwt"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
@@ -200,9 +202,8 @@ type Ctx struct {
 	TraceID string
 	*Authorization
 	*DeviceInfo
-	RequestAt   time.Time
-	RequestUnix int64
-	Request     *http.Request
+	*request.RequestAt
+	Request   *http.Request
 	grpc.ServerTransportStream
 	Internal string
 	*log.Logger
@@ -345,8 +346,11 @@ func newCtx(ctx context.Context) *Ctx {
 		Authorization: &Authorization{
 			AuthInfo: new(AuthInfo),
 		},
-		RequestAt:   now,
-		RequestUnix: now.Unix(),
+		RequestAt: &request.RequestAt{
+			Time:      now,
+			TimeStamp: now.Unix(),
+			TimeString:    now.Format(timei.FormatTime),
+		},
 		// 每个请求对应一个实例，后续并发量大考虑移除直接使用log库实例
 		Logger: log.Default.With(zap.String("traceId", traceId)),
 	}
@@ -369,7 +373,7 @@ func (c *Ctx) GetAuthInfo(auth func(*Ctx) error) (*AuthInfo, error) {
 	return c.AuthInfo, nil
 }
 
-func (c *Ctx) Log(err error,funcName,msg string) error{
+func (c *Ctx) Log(err error, funcName, msg string) error {
 	// caller 用原始logger skip刚好
 	c.Logger.Logger.Error(msg, zap.String(log.Position, funcName))
 	return err
@@ -379,7 +383,7 @@ func (c *Ctx) GeToken() string {
 	return c.Token
 }
 
-func (c *Ctx) GetReqTime() time.Time {
+func (c *Ctx) GetReqAt() *request.RequestAt {
 	return c.RequestAt
 }
 

@@ -317,3 +317,7 @@ Go tool argument -buildmode=exe
 tsconfig.json添加"noImplicitAny": false，
 
 或者 "strict": true,改为false
+
+# postgres默认时间
+时区调成上海后，设定默认时间'0001-01-01 00:00:00+08'总会自动变成'0001-01-01 00:00:00+08:05:43'::timestamp with time zone
+加的时间不正常，试了几次，分界时间是1900年，加时不对用时间过滤的时候会有问题，从01年以后都是正常加8

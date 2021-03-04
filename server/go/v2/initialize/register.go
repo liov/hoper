@@ -6,6 +6,9 @@ import (
 )
 
 func (init *Init) Register() {
+	if init.ConfigCenter == nil {
+		return
+	}
 	svcName := init.BasicConfig.Module
 	_, err := init.ConfigCenter.GetService(svcName)
 	serviceConfig := init.GetServiceConfig()

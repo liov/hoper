@@ -67,6 +67,17 @@ service MomentService {
     };
     option (gogo.graphql_operation) = Query;
   }
+
+  // 修改
+  rpc Delete (GetMomentReq) returns (request.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/moment"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["v1.0.0"]
+    };
+    option (gogo.graphql_operation) = Mutation;
+  }
 }
 
 // 新增瞬间

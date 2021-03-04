@@ -3,6 +3,7 @@ Module = "user"
 # Env = "dev"
 
 NoInit = ["Apollo","Etcd"]
+LocalConfigName = "local.toml"
 
 [nacos]
 Addr = "nacos.default"
@@ -17,10 +18,10 @@ HandleMethodNotAllowed = false
 MaxMultipartMemory = 20971520
 
 [dev]
-NacosTenant = "b5b476ab-774f-4637-a8bf-e915635b4b24"
+NacosTenant = ""
 
 [test]
-NacosTenant = ""
+NacosTenant = "b5b476ab-774f-4637-a8bf-e915635b4b24"
 
 [prod]
 NacosTenant = ""

@@ -10,7 +10,6 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
-	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -120,7 +119,7 @@ func (s *Server) Serve() {
 	handle := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if r := recover(); r != nil {
-				frame,_:=runtimei.GetCallerFrame(3)
+				frame,_:=runtimei.GetCallerFrame(4)
 				log.Default.Errorw(fmt.Sprintf("panic: %v", r),zap.String(log.Stack, fmt.Sprintf("%s:%d (%#x)\n\t%s\n", frame.File, frame.Line, frame.PC, frame.Function)))
 				w.Header().Set(httpi.HeaderContentType, httpi.ContentJSONHeaderValue)
 				w.Write(httpi.ResponseSysErr)
@@ -210,7 +209,7 @@ var signals = make(chan os.Signal, 1)
 var stop = make(chan struct{}, 1)
 
 func (s *Server) Start() {
-	if initialize.InitConfig.ConfigCenter == nil {
+	if initialize.InitConfig.ConfigCenter == nil && initialize.InitConfig.LocalConfigName == "" {
 		log.Fatal(`初始化配置失败:
 	main 函数的第一行应为
 	defer v2.Start(config.Conf, dao.Dao)()
@@ -240,11 +239,14 @@ func ReStart() {
 }
 
 func accessLog(ctxi pick.Context, iface, body, result string, code int) {
-	ctxi.GetLogger().Logger.Info("", zap.String("interface", iface),
-		zap.String("body", body),
-		zap.Duration("processTime", time.Now().Sub(ctxi.GetReqTime())),
-		zap.String("result", result),
-		zap.String("auth", ctxi.GeToken()),
-		zap.Int("status", code))
-	ctxi.GetLogger().Logger.Sync()
+	// log 里time now 浪费性能
+	if ce := ctxi.GetLogger().Logger.Check(zap.InfoLevel, "access"); ce != nil {
+		ce.Write(zap.String("interface", iface),
+			zap.String("body", body),
+			// 性能
+			zap.Duration("processTime", ce.Time.Sub(ctxi.GetReqAt().Time)),
+			zap.String("result", result),
+			zap.String("auth", ctxi.GeToken()),
+			zap.Int("status", code))
+	}
 }

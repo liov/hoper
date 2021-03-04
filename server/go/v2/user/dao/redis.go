@@ -144,7 +144,7 @@ func (*UserRedis) UserLastActiveTime(ctxi *model.Ctx) error {
 		pipe.Select(ctx, common.CronIndex)
 		//有序集合存一份，遍历长时间未活跃用户用
 		pipe.ZAdd(ctx, modelconst.LoginUserKey+"ActiveTime",
-			&redis.Z{Score: float64(ctxi.RequestUnix), Member: ctxi.IdStr})
+			&redis.Z{Score: float64(ctxi.TimeStamp), Member: ctxi.IdStr})
 		pipe.Select(ctx, conf.Conf.Redis.Index)
 		pipe.HSet(ctx, loginUser, "LastActiveAt")
 		return nil

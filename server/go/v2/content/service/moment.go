@@ -33,7 +33,7 @@ func (*MomentService) Info(context.Context, *content.GetMomentReq) (*content.Mom
 func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*request.Empty, error) {
 	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	user, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
 	if err != nil {
 		return nil, err
 	}
@@ -41,9 +41,9 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 	if err != nil {
 		return nil, err
 	}
-	log.Info(user)
-	req.UserId = user.Id
-	db := dao.Dao.GORMDB
+
+	req.UserId = auth.Id
+	db := dao.Dao.GetDB(ctxi.Logger)
 	/*	var count int64
 		db.Table(`mood`).Where(`name = ?`, req.MoodName).Count(&count)
 		if count == 0 {
@@ -53,7 +53,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 	db.Table("tag").Select("id,name").
 		Where("name IN (?)", req.Tags).Find(&tags)
 
-	req.UserId = user.Id
+	req.UserId = auth.Id
 	err = db.Transaction(func(tx *gorm.DB) error {
 		if req.Permission == 0 {
 			req.Permission = content.ViewPermissionAll
@@ -77,7 +77,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 					continue Loop
 				}
 			}
-			noExist = append(noExist, content.Tag{Name: req.Tags[i], UserId: user.Id})
+			noExist = append(noExist, content.Tag{Name: req.Tags[i], UserId: auth.Id})
 		}
 		if len(noExist) == 1 {
 			if err = tx.Create(&noExist[1]).Error; err != nil {
@@ -113,7 +113,7 @@ func (*MomentService) Edit(context.Context, *content.AddMomentReq) (*request.Emp
 func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*content.MomentListRep, error) {
 	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	user, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
 	if err != nil {
 		return nil, err
 	}
@@ -121,11 +121,11 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	if err != nil {
 		return nil, err
 	}
-	log.Info(user)
+	log.Info(auth)
 
-	db := dao.Dao.GORMDB
+	db := dao.Dao.GetDB(ctxi.Logger)
 	var moments []*content.Moment
-	err = db.Where(`deleted_at > ?`, dbi.PostgreZeroTime).
+	err = db.Where(`deleted_at = ?`, dbi.PostgreZeroTime).
 		Limit(int(req.PageSize)).Offset(int((req.PageNo - 1) * req.PageSize)).
 		Find(&moments).Error
 	if err != nil {
@@ -138,7 +138,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	var tags []model.TagContent
 	err = db.Select("b.ref_id,a.id,a.name").Table("tag a").
 		Joins(`LEFT JOIN content_tag b ON a.Id = b.tag_id`).
-		Where("b.type = 1 AND b.ref_id IN (?) AND deleted_at > ?", ids, dbi.PostgreZeroTime).Find(&tags).Error
+		Where("b.type = 1 AND b.ref_id IN (?) AND deleted_at = ?", ids, dbi.PostgreZeroTime).Find(&tags).Error
 	if err != nil {
 		return nil, ctxi.Log(errorcode.DBError, "db.FindMoment", err.Error())
 	}
@@ -153,4 +153,24 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 		Count: 0,
 		List:  moments,
 	}, nil
+}
+
+func (*MomentService) Delete(ctx context.Context, req *content.GetMomentReq) (*request.Empty, error) {
+	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	defer span.End()
+	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	if err != nil {
+		return nil, err
+	}
+	err = dao.Dao.Limit(ctxi, &conf.Conf.Customize.Limit)
+	if err != nil {
+		return nil, err
+	}
+	db := dao.Dao.GetDB(ctxi.Logger)
+	err = db.Table("moment").Where(`id = ? AND user_id = ? `, req.Id, auth.Id).
+		UpdateColumns(dbi.DeleteAt(ctxi.TimeString)).Error
+	if err != nil {
+		return nil, ctxi.Log(errorcode.DBError, "db.Delete", err.Error())
+	}
+	return nil, nil
 }

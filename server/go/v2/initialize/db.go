@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"runtime"
 
-	v2 "github.com/liov/hoper/go/v2/utils/dao/db/gorm/v2"
+	gormi "github.com/liov/hoper/go/v2/utils/dao/db/gorm"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/reflect"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 	"gorm.io/plugin/prometheus"
 )
@@ -26,10 +25,10 @@ type DatabaseConfig struct {
 	Type, Charset, Database    string
 	Host, User, Password       string
 	TimeFormat                 string
-	TablePrefix                string
 	MaxIdleConns, MaxOpenConns int
 	Port                       int32
-	LogLevel                   logger.LogLevel
+	//bug 字段gorm toml不生效
+	Gorm                 gormi.GORMConfig
 	Prometheus                 bool
 }
 
@@ -39,8 +38,8 @@ func (conf *DatabaseConfig) Generate() *gorm.DB {
 	var err error
 	dbConfig := &gorm.Config{
 		SkipDefaultTransaction: true,
+		PrepareStmt:            true,
 		NamingStrategy: schema.NamingStrategy{
-			TablePrefix:   conf.TablePrefix,
 			SingularTable: true,
 		},
 		DisableForeignKeyConstraintWhenMigrating: true,
@@ -64,6 +63,7 @@ func (conf *DatabaseConfig) Generate() *gorm.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	if conf.Prometheus {
 		if conf.Type == MYSQL {
 			db.Use(prometheus.New(prometheus.Config{
@@ -92,11 +92,7 @@ func (init *Init) P2DB() *gorm.DB {
 	rawDB, _ := db.DB()
 	rawDB.SetMaxIdleConns(conf.MaxIdleConns)
 	rawDB.SetMaxOpenConns(conf.MaxOpenConns)
-	if init.Env == PRODUCT {
-		db.Config.Logger = v2.DefaultV2
-	} else {
-		db.Config.Logger = v2.Default
-	}
+	db.Logger.LogMode(conf.Gorm.Logger.LogLevel)
 	//i.closes = append(i.closes,db.CloseDao)
 	//closes = append(closes, func() {log.AuthInfo("数据库已关闭")})
 	return db
