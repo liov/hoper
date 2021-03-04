@@ -1,30 +1,28 @@
 Module = "content"
-#dev | test | prod
-Env = "dev"
+# dev | test | prod
+# 命令行参数获取
+# Env = "dev"
+# 不需要初始化的函数
+NoInit = ["Cache","Apollo","Etcd"]
+# 本地开发配置文件
+LocalConfigName = "local.toml"
 
-NoInit = ["Cache","Apollo","Consul"]
-
-NacosAddr = "192.168.1.212:9001"
-NacosGroup = "hoper"
-#NacosDataId = "content"
+[nacos]
+Addr = "nacos.default"
+Group = "hoper"
+# DataId = "test"
+Watch  = false
 
 [gin]
-DisableStartupLog= false
-DisableInterruptHandler= false
-DisablePathCorrection= true
-EnablePathEscape= false
-FireMethodNotAllowed= false
-DisableBodyConsumptionOnUnmarshal= false
-DisableAutoFireStatusCode= false
-TimeFormat= "Mon, 01 Jan 2006 15=04=05 GMT"
+TimeFormat= "2006-01-02 15:04:05"
 Charset= "UTF-8"
 EnableOptimizations= true
 
 [dev]
-Tenant = "e0119132-f523-4a84-bd42-7830235eb9cf"
+NacosTenant = "b5b476ab-774f-4637-a8bf-e915635b4b24"
 
 [test]
-Tenant = ""
+NacosTenant = ""
 
 [prod]
-Tenant = ""
+NacosTenant = ""

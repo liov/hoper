@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"runtime"
+	"strconv"
 	"time"
 
 	"github.com/liov/hoper/go/v2/utils/log/output"
@@ -41,7 +41,7 @@ func (l *Logger) Named(name string) *Logger {
 }
 
 func (l *Logger) WithOptions(opts ...zap.Option) *Logger {
-	return  &Logger{l.Logger.WithOptions(opts...)}
+	return &Logger{l.Logger.WithOptions(opts...)}
 }
 
 func (l *Logger) With(fields ...zap.Field) *Logger {
@@ -52,6 +52,7 @@ func (l *Logger) Sugar() *zap.SugaredLogger {
 	l.Logger.WithOptions(zap.AddCallerSkip(-1))
 	return l.Logger.Sugar()
 }
+
 var (
 	Default *Logger
 )
@@ -80,9 +81,11 @@ func (lf *Config) initLogger() *zap.Logger {
 		EncodeTime: func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 			enc.AppendString(t.Format("2006/01/02 15:04:05.000"))
 		},
-		EncodeDuration: zapcore.SecondsDurationEncoder,
+		EncodeDuration: func(d time.Duration, enc zapcore.PrimitiveArrayEncoder) {
+			enc.AppendString(strconv.FormatInt(d.Nanoseconds()/1e6,10) + "ms")
+		},
 		EncodeCaller: func(caller zapcore.EntryCaller, encoder zapcore.PrimitiveArrayEncoder) {
-			encoder.AppendString(runtime.FuncForPC(caller.PC).Name() + ` ` + caller.TrimmedPath())
+			encoder.AppendString(caller.TrimmedPath())
 		},
 	}
 	if lf.ModuleName != "" {
@@ -187,50 +190,49 @@ func Fatal(args ...interface{}) {
 }
 
 func Printf(template string, args ...interface{}) {
-	if ce := Default.Check(zap.InfoLevel, fmt.Sprintf(template,args...)); ce != nil {
+	if ce := Default.Check(zap.InfoLevel, fmt.Sprintf(template, args...)); ce != nil {
 		ce.Write()
 	}
 }
 
 func Debugf(template string, args ...interface{}) {
-	if ce := Default.Check(zap.DebugLevel, fmt.Sprintf(template,args...)); ce != nil {
+	if ce := Default.Check(zap.DebugLevel, fmt.Sprintf(template, args...)); ce != nil {
 		ce.Write()
 	}
 }
 
 func Infof(template string, args ...interface{}) {
-	if ce := Default.Check(zap.InfoLevel, fmt.Sprintf(template,args...)); ce != nil {
+	if ce := Default.Check(zap.InfoLevel, fmt.Sprintf(template, args...)); ce != nil {
 		ce.Write()
 	}
 }
 
 func Warnf(template string, args ...interface{}) {
-	if ce := Default.Check(zap.WarnLevel, fmt.Sprintf(template,args...)); ce != nil {
+	if ce := Default.Check(zap.WarnLevel, fmt.Sprintf(template, args...)); ce != nil {
 		ce.Write()
 	}
 }
 
 func Errorf(template string, args ...interface{}) {
-	if ce := Default.Check(zap.ErrorLevel, fmt.Sprintf(template,args...)); ce != nil {
+	if ce := Default.Check(zap.ErrorLevel, fmt.Sprintf(template, args...)); ce != nil {
 		ce.Write()
 	}
 }
 
 func Panicf(template string, args ...interface{}) {
-	if ce := Default.Check(zap.PanicLevel, fmt.Sprintf(template,args...)); ce != nil {
+	if ce := Default.Check(zap.PanicLevel, fmt.Sprintf(template, args...)); ce != nil {
 		ce.Write()
 	}
 }
 
 func Fatalf(template string, args ...interface{}) {
-	if ce := Default.Check(zap.FatalLevel, fmt.Sprintf(template,args...)); ce != nil {
+	if ce := Default.Check(zap.FatalLevel, fmt.Sprintf(template, args...)); ce != nil {
 		ce.Write()
 	}
 }
 
-
 func (l *Logger) Printf(template string, args ...interface{}) {
-	if ce := l.Check(zap.InfoLevel, fmt.Sprintf(template,args...)); ce != nil {
+	if ce := l.Check(zap.InfoLevel, fmt.Sprintf(template, args...)); ce != nil {
 		ce.Write()
 	}
 }
@@ -359,28 +361,28 @@ func (l *Logger) Fatalw(msg string, fields ...zap.Field) {
 
 // Debugf uses fmt.Sprintf to log a templated message.
 func (l *Logger) Debugf(template string, args ...interface{}) {
-	if ce := l.Check(zap.DebugLevel, fmt.Sprintf(template,args...)); ce != nil {
+	if ce := l.Check(zap.DebugLevel, fmt.Sprintf(template, args...)); ce != nil {
 		ce.Write()
 	}
 }
 
 // Infof uses fmt.Sprintf to log a templated message.
 func (l *Logger) Infof(template string, args ...interface{}) {
-	if ce := l.Check(zap.InfoLevel, fmt.Sprintf(template,args...)); ce != nil {
+	if ce := l.Check(zap.InfoLevel, fmt.Sprintf(template, args...)); ce != nil {
 		ce.Write()
 	}
 }
 
 // Warnf uses fmt.Sprintf to log a templated message.
 func (l *Logger) Warnf(template string, args ...interface{}) {
-	if ce := l.Check(zap.WarnLevel, fmt.Sprintf(template,args...)); ce != nil {
+	if ce := l.Check(zap.WarnLevel, fmt.Sprintf(template, args...)); ce != nil {
 		ce.Write()
 	}
 }
 
 // Errorf uses fmt.Sprintf to log a templated message.
 func (l *Logger) Errorf(template string, args ...interface{}) {
-	if ce := l.Check(zap.ErrorLevel, fmt.Sprintf(template,args...)); ce != nil {
+	if ce := l.Check(zap.ErrorLevel, fmt.Sprintf(template, args...)); ce != nil {
 		ce.Write()
 	}
 }
@@ -388,25 +390,24 @@ func (l *Logger) Errorf(template string, args ...interface{}) {
 // DPanicf uses fmt.Sprintf to log a templated message. In development, the
 // logger then panics. (See DPanicLevel for details.)
 func (l *Logger) DPanicf(template string, args ...interface{}) {
-	if ce := l.Check(zap.DPanicLevel, fmt.Sprintf(template,args...)); ce != nil {
+	if ce := l.Check(zap.DPanicLevel, fmt.Sprintf(template, args...)); ce != nil {
 		ce.Write()
 	}
 }
 
 // Panicf uses fmt.Sprintf to log a templated message, then panics.
 func (l *Logger) Panicf(template string, args ...interface{}) {
-	if ce := l.Check(zap.PanicLevel, fmt.Sprintf(template,args...)); ce != nil {
+	if ce := l.Check(zap.PanicLevel, fmt.Sprintf(template, args...)); ce != nil {
 		ce.Write()
 	}
 }
 
 // Fatalf uses fmt.Sprintf to log a templated message, then calls os.Exit.
 func (l *Logger) Fatalf(template string, args ...interface{}) {
-	if ce := l.Check(zap.FatalLevel, fmt.Sprintf(template,args...)); ce != nil {
+	if ce := l.Check(zap.FatalLevel, fmt.Sprintf(template, args...)); ce != nil {
 		ce.Write()
 	}
 }
-
 
 // 兼容grpclog
 func (l *Logger) Infoln(args ...interface{}) {
@@ -428,7 +429,7 @@ func (l *Logger) Warningln(args ...interface{}) {
 }
 
 func (l *Logger) Warningf(template string, args ...interface{}) {
-	if ce := l.Check(zap.WarnLevel, fmt.Sprintf(template,args...)); ce != nil {
+	if ce := l.Check(zap.WarnLevel, fmt.Sprintf(template, args...)); ce != nil {
 		ce.Write()
 	}
 }

@@ -29,7 +29,7 @@ var contentMod = []interface{}{
 	&content.CountStatistics{},
 	&content.Report{},
 	&content.Collection{},*/
-	&content.ContentTag{},
+	&content.TagGroup{},
 }
 
 func main() {

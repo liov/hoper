@@ -24,14 +24,14 @@ func auth(ctx *model.Ctx, update bool) error {
 	cacheTmp, ok := dao.Dao.Cache.Get(signature)
 	if ok {
 		cache := cacheTmp.(*model.Authorization)
-		cache.LastActiveAt = ctx.RequestUnix
+		cache.LastActiveAt = ctx.TimeStamp
 		ctx.Authorization = cache
 		return nil
 	}
 	if err := ctx.ParseToken(ctx.Token, conf.Conf.Customize.TokenSecret); err != nil {
 		return err
 	}
-	ctx.LastActiveAt = ctx.RequestUnix
+	ctx.LastActiveAt = ctx.TimeStamp
 	if update {
 		err := userRedis.EfficientUserHashFromRedis(ctx)
 		if err != nil {

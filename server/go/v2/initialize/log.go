@@ -17,7 +17,7 @@ func (init *Init) P1Log() {
 		return
 	}
 	logConf := conf.Generate()
-	logConf.Development = init.Env == DEVELOPMENT
+	logConf.Development = init.Env != PRODUCT
 	logConf.ModuleName = init.Module
 	logConf.SetLogger()
 }

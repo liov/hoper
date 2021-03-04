@@ -30,6 +30,7 @@ message TagGroup{
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" validate:"required,gte=2,lte=10" annotation:"名称"'}];
   uint64 parentId = 3 [(go.field) = {tags:'gorm:"default:0;index" annotation:"直接父分类的ID"'}];
   string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
+  string deletedAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00"'}];
   uint32 status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];

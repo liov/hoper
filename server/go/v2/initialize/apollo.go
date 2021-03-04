@@ -40,7 +40,7 @@ func (init *Init) P0Apollo() *apollo.Client {
 
 	conf.InitConfig = apollo.SpecialConfig{NameSpace: InitKey, Callback: func(m map[string]string) {
 		apolloConfigEnable(init.conf, m)
-		init.Refresh()
+		init.refresh()
 	}}
 	return conf.Generate()
 }

@@ -4,6 +4,7 @@ import "time"
 
 const (
 	FormatTime = "2006-01-02 15:04:05.999999"
+	DisplayFormatTime = "2006-01-02 15:04:05"
 )
 
 func PgNow() string {

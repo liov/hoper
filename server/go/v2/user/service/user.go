@@ -28,7 +28,6 @@ import (
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 	"github.com/liov/hoper/go/v2/utils/net/mail"
 	"github.com/liov/hoper/go/v2/utils/strings"
-	"github.com/liov/hoper/go/v2/utils/time"
 	"github.com/liov/hoper/go/v2/utils/verification"
 	"gorm.io/gorm"
 )
@@ -36,7 +35,6 @@ import (
 type UserService struct {
 	model.UnimplementedUserServiceServer
 }
-
 
 func (u *UserService) VerifyCode(ctx context.Context, req *request.Empty) (*wrappers.StringValue, error) {
 	device := model.CtxFromContext(ctx).DeviceInfo
@@ -95,7 +93,7 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*reques
 		}
 	}
 
-	formatNow := timei.Format(ctxi.RequestAt)
+	formatNow := ctxi.TimeString
 	var user = &model.User{
 		Name:      req.Name,
 		Account:   uuid.New().String(),
@@ -310,8 +308,8 @@ func (*UserService) login(ctxi *model.Ctx, user *model.User) (*model.LoginRep, e
 	ctxi.Name = user.Name
 	ctxi.Status = user.Status
 	ctxi.Role = user.Role
-	ctxi.LoginAt = ctxi.RequestUnix
-	ctxi.ExpiredAt = ctxi.RequestUnix + int64(conf.Conf.Customize.TokenMaxAge)
+	ctxi.LoginAt = ctxi.TimeStamp
+	ctxi.ExpiredAt = ctxi.TimeStamp + int64(conf.Conf.Customize.TokenMaxAge)
 
 	tokenString, err := ctxi.GenerateToken(stringsi.ToBytes(conf.Conf.Customize.TokenSecret))
 	if err != nil {

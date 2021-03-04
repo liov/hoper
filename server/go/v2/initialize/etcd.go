@@ -49,7 +49,7 @@ func (init *Init) P0EtcdOnce() {
 			// unmarshal new Config into our runtime Config struct. you can also use channel
 			// to implement a signal to notify the system of the changes
 			runtime_viper.Unmarshal(cCopy)
-			Refresh(cCopy, dCopy)
+			refresh(cCopy, dCopy)
 			log.Debug(cCopy)
 		}
 	}()*/
