@@ -55,7 +55,7 @@ func (d *dao) Custom() {
 }
 
 func (d *dao) GetDB(log *log.Logger) *gorm.DB {
-	if initialize.InitConfig.Env == initialize.LOCAL{
+	if initialize.InitConfig.Env == initialize.DEVELOPMENT{
 		return d.GORMDB
 	}
 	return d.GORMDB.Session(&gorm.Session{
