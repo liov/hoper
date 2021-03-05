@@ -60,6 +60,6 @@ func (d *dao) GetDB(log *log.Logger) *gorm.DB {
 	}
 	return d.GORMDB.Session(&gorm.Session{
 		Logger: &v2.SQLLogger{Logger: log.Logger,
-			Config: conf.Conf.Database.Gorm.Logger,
+			Config: &conf.Conf.Database.Gorm.Logger,
 		}})
 }

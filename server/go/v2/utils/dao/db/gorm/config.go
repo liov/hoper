@@ -1,8 +1,11 @@
 package gormi
 
-import "gorm.io/gorm/logger"
+import (
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
+)
 
 type GORMConfig struct {
-	//*gorm.Config
-	Logger *logger.Config
+	Config gorm.Config
+	Logger logger.Config
 }

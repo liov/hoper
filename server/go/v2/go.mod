@@ -13,7 +13,8 @@ require (
 	github.com/boombuler/barcode v1.0.0
 	github.com/brahma-adshonor/gohook v0.0.0-20200311033618-28b944a6fdfa // indirect
 	github.com/cenk/backoff v2.2.1+incompatible // indirect
-	github.com/cockroachdb/pebble v0.0.0-20201215172116-745f6c801513
+	github.com/cockroachdb/errors v1.8.1 // indirect
+	github.com/cockroachdb/pebble v0.0.0-20201228155439-c3ef93f9a9ed
 	github.com/dgraph-io/ristretto v0.0.3
 	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
 	github.com/dustin/go-humanize v1.0.0 // indirect
@@ -50,7 +51,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.1.0
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/json-iterator/go v1.1.10
-	github.com/lni/dragonboat v2.1.7+incompatible
+	github.com/lni/dragonboat/v3 v3.3.1 // indirect
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/markbates/goth v1.63.0
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible // indirect
@@ -96,6 +97,5 @@ require (
 
 replace (
 	github.com/cenkalti/backoff v2.2.1+incompatible => github.com/cenkalti/backoff/v4 v4.1.0
-	github.com/lni/dragonboat v2.1.7+incompatible => github.com/lni/dragonboat/v3 v3.2.8
 	github.com/ugorji/go v1.1.4 => github.com/ugorji/go/codec v0.0.0-20190204201341-e444a5086c43
 )
