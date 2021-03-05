@@ -209,7 +209,7 @@ var signals = make(chan os.Signal, 1)
 var stop = make(chan struct{}, 1)
 
 func (s *Server) Start() {
-	if initialize.InitConfig.ConfigCenter == nil && initialize.InitConfig.LocalConfigName == "" {
+	if initialize.InitConfig.EnvConfig == nil {
 		log.Fatal(`初始化配置失败:
 	main 函数的第一行应为
 	defer v2.Start(config.Conf, dao.Dao)()

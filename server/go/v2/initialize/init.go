@@ -34,15 +34,38 @@ var (
 )
 
 const (
-	LOCAL       = "local"
 	DEVELOPMENT = "dev"
 	TEST        = "test"
 	PRODUCT     = "prod"
 	InitKey     = "initialize"
 )
 
+
+type EnvConfig struct {
+	NacosTenant string
+	//本地配置，特定文件名,启用文件搜寻查找
+	LocalConfigName string
+}
+
+type BasicConfig struct {
+	Module string
+	NoInit []string
+}
+
+type Init struct {
+	EnvConfig *EnvConfig
+	// TODO: 接口抽象，可切换的配置中心
+	ConfigCenter *nacos.Config
+	BasicConfig
+	Env, ConfUrl string
+	conf         NeedInit
+	dao          Dao
+	//closes     []interface{}
+}
+
+
 func init() {
-	flag.StringVar(&InitConfig.Env, "env", LOCAL, "环境")
+	flag.StringVar(&InitConfig.Env, "env", DEVELOPMENT, "环境")
 	flag.StringVar(&InitConfig.ConfUrl, "conf", `./config.toml`, "配置文件路径")
 	agent := flag.Bool("agent", false, "是否启用代理")
 	testing.Init()
@@ -72,28 +95,6 @@ func Start(conf Config, dao Dao) func() {
 		InitConfig.CloseDao()
 		log.Sync()
 	}
-}
-
-type EnvConfig struct {
-	NacosTenant string
-}
-
-type BasicConfig struct {
-	Module string
-	NoInit []string
-	//本地配置，特定文件名,启用文件搜寻查找
-	LocalConfigName string
-}
-
-type Init struct {
-	EnvConfig *EnvConfig
-	// TODO: 接口抽象，可切换的配置中心
-	ConfigCenter *nacos.Config
-	BasicConfig
-	Env, ConfUrl string
-	conf         NeedInit
-	dao          Dao
-	//closes     []interface{}
 }
 
 func (init *Init) LoadConfig() *Init {
@@ -142,12 +143,15 @@ func (init *Init) LoadConfig() *Init {
 				}
 				nacosClient := InitConfig.getConfigClient()
 				go nacosClient.Listener(InitConfig.UnmarshalAndSet)
+			}else if init.EnvConfig.LocalConfigName != ""{
+				init.LocalConfig()
+			}else {
+				log.Fatal("没有发现配置")
 			}
 			break
 		}
 	}
 
-	init.LocalConfig()
 	log.Debugf("Configuration:\n  %#v\n", init)
 	return init
 }
@@ -182,9 +186,9 @@ func (init *Init) getConfigClient() *nacos.Client {
 
 // 本地配置文件
 func (init *Init) LocalConfig() {
-	if init.LocalConfigName != "" {
-		adCongPath, err := fs.FindFile(init.LocalConfigName)
-		init.LocalConfigName = adCongPath
+	if init.EnvConfig.LocalConfigName != "" {
+		adCongPath, err := fs.FindFile(init.EnvConfig.LocalConfigName)
+		init.EnvConfig.LocalConfigName = adCongPath
 		if err == nil {
 			err := configor.New(&configor.Config{Debug: init.Env != PRODUCT}).
 				Load(init.conf, adCongPath)
@@ -204,10 +208,10 @@ func watcher() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	watcher.Add(InitConfig.LocalConfigName, fsnotify.Write, func() {
+	watcher.Add(InitConfig.EnvConfig.LocalConfigName, fsnotify.Write, func() {
 		InitConfig.CloseDao()
-		err := configor.New(&configor.Config{Debug: InitConfig.Env == LOCAL}).
-			Load(InitConfig.conf, InitConfig.LocalConfigName)
+		err := configor.New(&configor.Config{Debug: InitConfig.Env == DEVELOPMENT}).
+			Load(InitConfig.conf, InitConfig.EnvConfig.LocalConfigName)
 		if err != nil {
 			log.Fatalf("配置错误: %v", err)
 		}
