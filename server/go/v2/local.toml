@@ -49,14 +49,10 @@ Database = "hoper"
 MaxIdleConns = 5
 MaxOpenConns = 10
 
-[database.gorm]
+[database.gorm.config]
 SkipDefaultTransaction = true
 PrepareStmt = true
 DisableForeignKeyConstraintWhenMigrating = true
-
-[database.gorm.namingStrategy]
-TablePrefix = ""
-SingularTable = true
 
 [database.gorm.logger]
 SlowThreshold = 200

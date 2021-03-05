@@ -5,9 +5,9 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/lni/dragonboat"
-	"github.com/lni/dragonboat/config"
-	"github.com/lni/dragonboat/logger"
+	"github.com/lni/dragonboat/v3"
+	"github.com/lni/dragonboat/v3/config"
+	"github.com/lni/dragonboat/v3/logger"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -94,7 +94,7 @@ func Dragonboat() {
 	}
 	// create a NodeHost instance. it is a facade interface allowing access to
 	// all functionalities provided by dragonboat.
-	nh := dragonboat.NewNodeHost(nhc)
+	nh,_ := dragonboat.NewNodeHost(nhc)
 	defer nh.Stop()
 	// start the first cluster
 	// we use ExampleStateMachine as the IStateMachine for this cluster, its

@@ -28,21 +28,17 @@ type DatabaseConfig struct {
 	MaxIdleConns, MaxOpenConns int
 	Port                       int32
 	//bug 字段gorm toml不生效
-	Gorm                 gormi.GORMConfig
-	Prometheus                 bool
+	Gorm       gormi.GORMConfig
+	Prometheus bool
 }
 
 func (conf *DatabaseConfig) Generate() *gorm.DB {
 	var url string
 	var db *gorm.DB
 	var err error
-	dbConfig := &gorm.Config{
-		SkipDefaultTransaction: true,
-		PrepareStmt:            true,
-		NamingStrategy: schema.NamingStrategy{
-			SingularTable: true,
-		},
-		DisableForeignKeyConstraintWhenMigrating: true,
+	dbConfig := &conf.Gorm.Config
+	dbConfig.NamingStrategy = schema.NamingStrategy{
+		SingularTable: true,
 	}
 	if conf.Type == MYSQL {
 		url = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
