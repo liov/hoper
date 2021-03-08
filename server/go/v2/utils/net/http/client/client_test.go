@@ -35,8 +35,8 @@ func TestClient(t *testing.T){
 		PlatformType: 1,
 	}
 	res:=&OperatorPublicList{}
-	err := NewRequest(`http://operator-center.openmng/api/operator/allList/v1`,http.MethodPost,req).
-		SetHeader("Erp_User_Para","e30=").HTTPRequest(CommonResponse(res))
+	err := NewRequest(`http://hoper.xyz/api/list`,http.MethodPost,req).
+		SetHeader("Auth","e30=").HTTPRequest(CommonResponse(res))
 	if err!=nil{
 		t.Fatal(err)
 	}
