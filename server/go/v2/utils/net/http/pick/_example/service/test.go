@@ -1,9 +1,11 @@
 package service
 
 import (
+	"context"
 	"net/http"
 
 	model "github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/protobuf/utils/response"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 )
 
@@ -13,7 +15,7 @@ func (*TestService) Service() (string, string, []http.HandlerFunc) {
 	return "测试相关", "/api/test", nil
 }
 
-func (*TestService) Test(ctx *Claims, req *model.SignupReq) (*model.SignupRep, error) {
+func (*TestService) Test(ctx context.Context, req *model.SignupReq) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() interface{} {
 		return pick.Method(http.MethodPost).
@@ -21,10 +23,10 @@ func (*TestService) Test(ctx *Claims, req *model.SignupReq) (*model.SignupRep, e
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建")
 	})
 
-	return &model.SignupRep{Message: "测试"}, nil
+	return &response.TinyRep{Message: "测试"}, nil
 }
 
-func (*TestService) Test1(ctx *Claims, req *model.SignupReq) (*model.SignupRep, error) {
+func (*TestService) Test1(ctx context.Context, req *model.SignupReq) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() interface{} {
 		return pick.Path("/").
@@ -33,10 +35,10 @@ func (*TestService) Test1(ctx *Claims, req *model.SignupReq) (*model.SignupRep, 
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建")
 	})
 
-	return &model.SignupRep{Message: "测试"}, nil
+	return &response.TinyRep{Message: "测试"}, nil
 }
 
-func (*TestService) Test2(ctx *Claims, req *model.SignupReq) (*model.SignupRep, error) {
+func (*TestService) Test2(ctx context.Context, req *model.SignupReq) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() interface{} {
 		return pick.Path("/a/").
@@ -45,10 +47,10 @@ func (*TestService) Test2(ctx *Claims, req *model.SignupReq) (*model.SignupRep, 
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建")
 	})
 
-	return &model.SignupRep{Message: "测试"}, nil
+	return &response.TinyRep{Message: "测试"}, nil
 }
 
-func (*TestService) Test3(ctx *Claims, req *model.SignupReq) (*model.SignupRep, error) {
+func (*TestService) Test3(ctx context.Context, req *model.SignupReq) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() interface{} {
 		return pick.Path("/a/:b").
@@ -57,5 +59,5 @@ func (*TestService) Test3(ctx *Claims, req *model.SignupReq) (*model.SignupRep, 
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建")
 	})
 
-	return &model.SignupRep{Message: "测试"}, nil
+	return &response.TinyRep{Message: "测试"}, nil
 }

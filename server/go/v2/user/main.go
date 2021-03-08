@@ -19,8 +19,6 @@ import (
 )
 
 func main() {
-	//配置初始化应该在第一位
-	defer initialize.Start(conf.Conf, dao.Dao)()
 	pick.RegisterFiberService(service.GetUserService())
 	app := fiber.New()
 	pick.FiberWithCtx(app, service.FasthttpCtx, true, initialize.InitConfig.Module)
@@ -47,7 +45,7 @@ func main() {
 					UserService:  service.GetUserService(),
 					OauthService: service.GetOauthService(),
 				}}),*/
-		CustomContext: model.CtxWithRequest,
-		Authorization: model.Authorization,
+		CustomContext:  model.CtxWithRequest,
+		ConvertContext: model.ConvertContext,
 	}).Start()
 }

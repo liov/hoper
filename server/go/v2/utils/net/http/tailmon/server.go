@@ -212,7 +212,7 @@ func (s *Server) Start() {
 	if initialize.InitConfig.EnvConfig == nil {
 		log.Fatal(`初始化配置失败:
 	main 函数的第一行应为
-	defer v2.Start(config.Conf, dao.Dao)()
+	defer initialize.Start(config.Conf, dao.Dao)()
 `)
 	}
 	signal.Notify(signals,
@@ -223,6 +223,7 @@ func (s *Server) Start() {
 		// kill -SIGTERM XXXX
 		syscall.SIGTERM,
 	)
+	// 控制服务重启
 Loop:
 	for {
 		select {

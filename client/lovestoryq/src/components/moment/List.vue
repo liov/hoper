@@ -55,7 +55,7 @@ export default class MomentList extends Vue {
   async onLoad() {
     // 异步更新数据
     const res = await axios.get(
-      `/api/moment?pageNo=${this.pageNo}&pageSize=${this.pageSize}`
+      `/api/v1/moment?pageNo=${this.pageNo}&pageSize=${this.pageSize}`
     );
     if (this.pageNo == 0) {
       this.list = res.data.data;
