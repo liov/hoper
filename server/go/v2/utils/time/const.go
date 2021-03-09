@@ -1,4 +1,4 @@
-package redisi
+package timei
 
 import "time"
 
@@ -7,3 +7,4 @@ const (
 	SecondsOfMinute = 60
 	TimeDay = SecondsOfDay *time.Second
 )
+

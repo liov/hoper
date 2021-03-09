@@ -5,17 +5,16 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/liov/hoper/go/v2/content/conf"
-	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
-	redisi "github.com/liov/hoper/go/v2/utils/dao/redis"
+	timei "github.com/liov/hoper/go/v2/utils/time"
 )
 
 
 var limitErr = errorcode.TimeTooMuch.Message("您的操作过于频繁，请先休息一会儿。")
 
-func (d *dao) Limit(ctxi *user.Ctx,l *conf.Limit) error {
+func (d *contentDao) LimitRedis(conn redis.Cmdable,l *conf.Limit) error {
+	ctxi:=d.Ctx
 	ctx := ctxi.Context
-	conn := d.Redis
 	minuteKey := l.MinuteLimit + ctxi.IdStr
 	dayKey := l.DayLimit + ctxi.IdStr
 
@@ -26,8 +25,7 @@ func (d *dao) Limit(ctxi *user.Ctx,l *conf.Limit) error {
 		return nil
 	})
 	if err != nil {
-		ctxi.Error(err.Error())
-		return errorcode.SysError
+		return ctxi.Log(errorcode.RedisErr, "Incr", err.Error())
 	}
 
 	if minuteIntCmd.Val() > l.MinuteLimitCount || dayIntCmd.Val() > l.DayLimitCount {
@@ -40,8 +38,7 @@ func (d *dao) Limit(ctxi *user.Ctx,l *conf.Limit) error {
 		return nil
 	})
 	if err != nil {
-		ctxi.Error(err.Error())
-		return errorcode.SysError
+		return ctxi.Log(errorcode.RedisErr, "PTTL", err.Error())
 	}
 
 	_, err = conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
@@ -49,13 +46,12 @@ func (d *dao) Limit(ctxi *user.Ctx,l *conf.Limit) error {
 			pipe.Expire(ctx, minuteKey, time.Minute)
 		}
 		if dayDurationCmd.Val() < 0 {
-			pipe.Expire(ctx, dayKey, redisi.TimeDay)
+			pipe.Expire(ctx, dayKey, timei.TimeDay)
 		}
 		return nil
 	})
 	if err != nil {
-		ctxi.Error(err.Error())
-		return errorcode.SysError
+		return ctxi.Log(errorcode.RedisErr, "Expire", err.Error())
 	}
 	return nil
 }
