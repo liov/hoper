@@ -11,7 +11,6 @@ import (
 	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/protobuf/utils/request"
-	dbi "github.com/liov/hoper/go/v2/utils/dao/db"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -37,7 +36,8 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 	if err != nil {
 		return nil, err
 	}
-	err = dao.Dao.Limit(ctxi, &conf.Conf.Customize.Limit)
+	contentDao := dao.GetDao(ctxi)
+	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -49,10 +49,10 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		if count == 0 {
 			return nil, errorcode.ParamInvalid.Message("心情不存在")
 		}*/
-	var tags []model.TinyTag
-	db.Table("tag").Select("id,name").
-		Where("name IN (?)", req.Tags).Find(&tags)
-
+	tags, err := contentDao.GetTagsDB(db, req.Tags)
+	if err != nil {
+		return nil, ctxi.Log(errorcode.RedisErr, "GetTagsDB", err.Error())
+	}
 	req.UserId = auth.Id
 	err = db.Transaction(func(tx *gorm.DB) error {
 		if req.Permission == 0 {
@@ -117,30 +117,27 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	if err != nil {
 		return nil, err
 	}
-	err = dao.Dao.Limit(ctxi, &conf.Conf.Customize.Limit)
+	contentDao := dao.GetDao(ctxi)
+	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Limit)
 	if err != nil {
-		return nil, err
+		return nil, ctxi.Log(errorcode.RedisErr, "LimitRedis", err.Error())
 	}
 	log.Info(auth)
 
 	db := dao.Dao.GetDB(ctxi.Logger)
+
 	var moments []*content.Moment
-	err = db.Where(`deleted_at = ?`, dbi.PostgreZeroTime).
-		Limit(int(req.PageSize)).Offset(int((req.PageNo - 1) * req.PageSize)).
-		Find(&moments).Error
+	moments, err = contentDao.GetMomentListDB(db, req)
 	if err != nil {
-		return nil, ctxi.Log(errorcode.DBError, "db.FindMoment", err.Error())
+		return nil, ctxi.Log(errorcode.DBError, "dbDao.GetMomentList", err.Error())
 	}
 	var ids []uint64
 	for i := range moments {
 		ids = append(ids, moments[i].Id)
 	}
-	var tags []model.TagContent
-	err = db.Select("b.ref_id,a.id,a.name").Table("tag a").
-		Joins(`LEFT JOIN content_tag b ON a.Id = b.tag_id`).
-		Where("b.type = 1 AND b.ref_id IN (?) AND deleted_at = ?", ids, dbi.PostgreZeroTime).Find(&tags).Error
+	tags, err := contentDao.GetTagContentDB(db, content.ContentMoment, ids)
 	if err != nil {
-		return nil, ctxi.Log(errorcode.DBError, "db.FindMoment", err.Error())
+		return nil, ctxi.Log(errorcode.DBError, "dbDao.GetTagContent", err.Error())
 	}
 	var m = make(map[uint64][]*content.TinyTag)
 	for i := range tags {
@@ -162,15 +159,15 @@ func (*MomentService) Delete(ctx context.Context, req *content.GetMomentReq) (*r
 	if err != nil {
 		return nil, err
 	}
-	err = dao.Dao.Limit(ctxi, &conf.Conf.Customize.Limit)
+	contentDao := dao.GetDao(ctxi)
+	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Limit)
 	if err != nil {
-		return nil, err
+		return nil, ctxi.Log(errorcode.RedisErr, "LimitRedis", err.Error())
 	}
 	db := dao.Dao.GetDB(ctxi.Logger)
-	err = db.Table("moment").Where(`id = ? AND user_id = ? `, req.Id, auth.Id).
-		UpdateColumns(dbi.DeleteAt(ctxi.TimeString)).Error
+	err = contentDao.DeleteMomentDB(db, req.Id, auth.Id)
 	if err != nil {
-		return nil, ctxi.Log(errorcode.DBError, "db.Delete", err.Error())
+		return nil, ctxi.Log(errorcode.DBError, "DeleteMomentDB", err.Error())
 	}
 	return nil, nil
 }

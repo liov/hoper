@@ -42,6 +42,9 @@ func (d *dao) Close() {
 	if d.StdDB != nil {
 		d.StdDB.Close()
 	}
+	if d.Cache != nil {
+		d.Cache.Close()
+	}
 }
 
 func (d *dao) Custom() {

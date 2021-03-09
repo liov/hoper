@@ -316,7 +316,7 @@ func (*UserService) login(ctxi *model.Ctx, user *model.User) (*model.LoginRep, e
 		return nil, errorcode.Internal
 	}
 
-	dao.Dao.GORMDB.Model(&user).UpdateColumn("last_activated_at", ctxi.RequestAt)
+	dao.Dao.GORMDB.Table(`user_ext`).UpdateColumn("last_activated_at", ctxi.RequestAt)
 
 	if err := userRedis.EfficientUserHashToRedis(ctxi); err != nil {
 		return nil, errorcode.RedisErr
