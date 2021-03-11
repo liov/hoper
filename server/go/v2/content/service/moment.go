@@ -2,7 +2,9 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"unicode/utf8"
 
 	"github.com/liov/hoper/go/v2/content/conf"
 	"github.com/liov/hoper/go/v2/content/dao"
@@ -25,11 +27,40 @@ func (m *MomentService) Service() (describe, prefix string, middleware []http.Ha
 	return "瞬间相关", "/api/moment", nil
 }
 
-func (*MomentService) Info(context.Context, *content.GetMomentReq) (*content.Moment, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AuthInfo not implemented")
+func (m *MomentService) Info(ctx context.Context, req *content.GetMomentReq) (*content.Moment, error) {
+	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	defer span.End()
+	_, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	if err != nil {
+		return nil, err
+	}
+	contentDao := dao.GetDao(ctxi)
+	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
+	if err != nil {
+		return nil, err
+	}
+	db := dao.Dao.GetDB(ctxi.Logger)
+	var moment content.Moment
+	err = db.Table(model.MomentTableName).
+		Where(`id = ?`, req.Id).First(&moment).Error
+	if err != nil {
+		return nil, ctxi.Log(errorcode.DBError, "First", err.Error())
+	}
+	tags, err := contentDao.GetTagsByRefIdDB(db, content.ContentMoment, moment.Id)
+	if err != nil {
+		return nil, ctxi.Log(errorcode.DBError, "dbDao.GetTagContent", err.Error())
+	}
+	moment.Tags = tags
+
+	return &moment, nil
 }
 
 func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*request.Empty, error) {
+
+	if utf8.RuneCountInString(req.Content) < conf.Conf.Customize.Moment.MaxContentLen {
+		return nil, errorcode.ParamInvalid.Message(fmt.Sprintf("文章内容不能小于%d个字",conf.Conf.Customize.Moment.MaxContentLen))
+	}
+
 	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
@@ -37,7 +68,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		return nil, err
 	}
 	contentDao := dao.GetDao(ctxi)
-	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Limit)
+	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +149,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 		return nil, err
 	}
 	contentDao := dao.GetDao(ctxi)
-	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Limit)
+	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
 	if err != nil {
 		return nil, ctxi.Log(errorcode.RedisErr, "LimitRedis", err.Error())
 	}
@@ -160,7 +191,7 @@ func (*MomentService) Delete(ctx context.Context, req *content.GetMomentReq) (*r
 		return nil, err
 	}
 	contentDao := dao.GetDao(ctxi)
-	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Limit)
+	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
 	if err != nil {
 		return nil, ctxi.Log(errorcode.RedisErr, "LimitRedis", err.Error())
 	}

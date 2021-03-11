@@ -49,35 +49,7 @@ func RegisterUserServiceHandlerFromModuleWithReConnect(ctx context.Context, mux 
 */
 
 /*----------------------------ORM-------------------------------*/
-func userTableName(id uint64) string {
-	if id < 1_000_000 {
-		return "user"
-	}
-	return "user_" + string(byte(id/1_000_000+49))
-}
-func (x *User) TableName() string {
-	return userTableName(x.Id)
-}
 
-func (x *UserBaseInfo) TableName() string {
-	return userTableName(x.Id)
-}
-
-func (x *UserAuthInfo) TableName() string {
-	return userTableName(x.Id)
-}
-
-func (x *Resume) TableName() string {
-	return "resume"
-}
-
-func (x *EditReq) TableName() string {
-	return userTableName(x.Id)
-}
-
-func (x *AuthInfo) TableName() string {
-	return userTableName(x.Id)
-}
 
 /*----------------------------CTX上下文-------------------------------*/
 type AuthInfo struct {

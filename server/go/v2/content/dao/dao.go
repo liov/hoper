@@ -9,6 +9,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/liov/hoper/go/v2/content/conf"
 	"github.com/liov/hoper/go/v2/initialize"
+	"github.com/liov/hoper/go/v2/protobuf/user"
 	v2 "github.com/liov/hoper/go/v2/utils/dao/db/gorm/v2"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"gorm.io/gorm"
@@ -17,6 +18,17 @@ import (
 //原本是个单独模块，但是考虑到数据库必须初始化，所以合进来了
 //其实init主要就是配置文件数据库连接，可以理解为init放进dao
 var Dao *dao = &dao{}
+
+type contentDao struct {
+	*user.Ctx
+}
+
+func GetDao(ctx *user.Ctx) *contentDao {
+	if ctx == nil{
+		log.Fatal("ctx can't nil")
+	}
+	return &contentDao{ctx}
+}
 
 // dao dao.
 type dao struct {

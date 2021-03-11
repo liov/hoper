@@ -42,11 +42,15 @@ func main() {
 			user.RegisterUserServiceServer(gs, userservice.GetUserService())
 			user.RegisterOauthServiceServer(gs, userservice.GetOauthService())
 			content.RegisterMomentServiceServer(gs, contentervice.GetMomentService())
+			content.RegisterContentServiceServer(gs, contentervice.GetContentService())
+			content.RegisterActionServiceServer(gs, contentervice.GetActionService())
 		},
 		GinHandle: func(app *gin.Engine) {
 			_ = user.RegisterUserServiceHandlerServer(app, userservice.GetUserService())
 			_ = user.RegisterOauthServiceHandlerServer(app, userservice.GetOauthService())
 			_ = content.RegisterMomentServiceHandlerServer(app, contentervice.GetMomentService())
+			_ = content.RegisterContentServiceHandlerServer(app, contentervice.GetContentService())
+			_ = content.RegisterActionServiceHandlerServer(app, contentervice.GetActionService())
 			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
 			pick.Gin(app, user.ConvertContext, true, initialize.InitConfig.Module)
 		},

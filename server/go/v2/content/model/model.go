@@ -1,6 +1,8 @@
 package model
 
-import "github.com/liov/hoper/go/v2/protobuf/content"
+import (
+	"github.com/liov/hoper/go/v2/protobuf/content"
+)
 
 type TinyTag struct {
 	Id   uint64

@@ -9,7 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/log"
-	fiber_build "github.com/liov/hoper/go/v2/utils/net/fasthttp/fiber"
+	fiber_build "github.com/liov/hoper/go/v2/utils/net/http/fasthttp/fiber"
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
 	"github.com/valyala/fasthttp"

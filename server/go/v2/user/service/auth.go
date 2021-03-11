@@ -9,7 +9,7 @@ import (
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/conf"
 	"github.com/liov/hoper/go/v2/user/dao"
-	fasthttpi "github.com/liov/hoper/go/v2/utils/net/fasthttp"
+	fasthttpi "github.com/liov/hoper/go/v2/utils/net/http/fasthttp"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 	jwti "github.com/liov/hoper/go/v2/utils/verification/auth/jwt"
 	"github.com/valyala/fasthttp"

@@ -279,7 +279,8 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 	}
 
 	var user model.User
-	if err := dao.Dao.GORMDB.Where(sql, req.Input).Find(&user).Error; err != nil {
+	if err := dao.Dao.GORMDB.Table(modelconst.UserTableName).
+		Where(sql, req.Input).Find(&user).Error; err != nil {
 		return nil, errorcode.DBError.Message("账号不存在")
 	}
 
@@ -316,7 +317,8 @@ func (*UserService) login(ctxi *model.Ctx, user *model.User) (*model.LoginRep, e
 		return nil, errorcode.Internal
 	}
 
-	dao.Dao.GORMDB.Table(`user_ext`).UpdateColumn("last_activated_at", ctxi.RequestAt)
+	dao.Dao.GORMDB.Table(modelconst.UserExtTableName).
+		UpdateColumn("last_activated_at", ctxi.RequestAt)
 
 	if err := userRedis.EfficientUserHashToRedis(ctxi); err != nil {
 		return nil, errorcode.RedisErr
@@ -357,9 +359,8 @@ func (u *UserService) Logout(ctx context.Context, req *request.Empty) (*request.
 	}
 	dao.Dao.GORMDB.Model(&model.UserAuthInfo{Id: user.Id}).UpdateColumn("last_activated_at", time.Now())
 
-	if err := dao.Dao.Redis.Do(ctx, redisi.DEL, modelconst.LoginUserKey+strconv.FormatUint(user.Id, 10)).Err(); err != nil {
-		log.Error(err)
-		return nil, errorcode.RedisErr
+	if err := dao.Dao.Redis.Del(ctx, redisi.DEL, modelconst.LoginUserKey+strconv.FormatUint(user.Id, 10)).Err(); err != nil {
+		return nil, ctxi.Log(errorcode.RedisErr,"redisi.Del",err.Error())
 	}
 	cookie := (&http.Cookie{
 		Name:  httpi.HeaderCookieToken,
@@ -457,7 +458,8 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 		return nil, errorcode.InvalidArgument.Message("无效的链接")
 	}
 
-	if err := dao.Dao.GORMDB.Model(user).Update("password", req.Password).Error; err != nil {
+	if err := dao.Dao.GORMDB.Table(modelconst.UserTableName).
+		Where(`id = ?`,user.Id).Update("password", req.Password).Error; err != nil {
 		log.Error("UserService.ResetPassword,DB.Update", err)
 		return nil, errorcode.DBError
 	}
@@ -468,7 +470,8 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListReq) (*model.ActionLogListRep, error) {
 	rep := &model.ActionLogListRep{}
 	var logs []*model.UserActionLog
-	err := dao.Dao.GORMDB.Offset(0).Limit(10).Find(&logs).Error
+	err := dao.Dao.GORMDB.Table(modelconst.UserActionLogTableName).
+		Offset(0).Limit(10).Find(&logs).Error
 	if err != nil {
 		return nil, errorcode.DBError.Warp(err)
 	}

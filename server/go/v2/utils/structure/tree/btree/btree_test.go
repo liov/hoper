@@ -1106,14 +1106,14 @@ func (tr *BTree) sane() {
 // 	for i := 0; i < 10000; i += 10 {
 // 		tr.Set(i)
 // 	}
-// 	tr.ActionAscend(nil, func(item interface{}) (interface{}, Action) {
+// 	tr.ActionAscend(nil, func(item interface{}) (interface{}, ActionCount) {
 // 		if item.(int) > 3440 && item.(int) < 8710 {
 // 			return nil, ActionDelete
 // 		}
 // 		return nil, ActionSkip
 // 	})
 
-// 	tr.ActionAscend(nil, func(item interface{}) (interface{}, Action) {
+// 	tr.ActionAscend(nil, func(item interface{}) (interface{}, ActionCount) {
 
 // 		println(item.(int))
 // 		return nil, ActionSkip

@@ -25,7 +25,8 @@ type serverConfig struct {
 	FontSaveDir   fs.Dir //字体保存路径
 
 	CrawlerName string //爬虫
-	Limit Limit
+
+	Moment Moment
 }
 
 type Limit struct {
@@ -33,3 +34,7 @@ type Limit struct {
 	SecondLimitCount, MinuteLimitCount, DayLimitCount int64
 }
 
+type Moment struct {
+	MaxContentLen int
+	Limit Limit
+}

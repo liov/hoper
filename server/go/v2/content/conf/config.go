@@ -26,10 +26,12 @@ type config struct {
 
 var Conf = &config{
 	Customize: serverConfig{
-		Limit: Limit{
-			SecondLimit:      model.MomentSecondLimitKey,
-			MinuteLimit:      model.MomentMinuteLimitKey,
-			DayLimit:         model.MomentDayLimitKey,
+		Moment: Moment{
+			Limit:Limit{
+				SecondLimit:      model.MomentSecondLimitKey,
+				MinuteLimit:      model.MomentMinuteLimitKey,
+				DayLimit:         model.MomentDayLimitKey,
+			},
 		},
 	},
 }
