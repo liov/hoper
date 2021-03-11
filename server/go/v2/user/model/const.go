@@ -5,7 +5,10 @@ const (
 )
 
 const (
-
+	UserTableName = "user"
+	UserExtTableName = "user_ext"
+	ResumeTableName = "resume"
+	UserActionLogTableName = "user_action_log"
 )
 
 const (

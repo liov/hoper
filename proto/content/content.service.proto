@@ -71,7 +71,7 @@ service ContentService {
   // 列表
   rpc TagGroupList (TagGroupListReq) returns (TagGroupListRep) {
     option (google.api.http) = {
-      get: "/api/v1/tag"
+      get: "/api/v1/tagGroup"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]

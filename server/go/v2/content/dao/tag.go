@@ -29,3 +29,15 @@ func (d *contentDao) GetTagsDB(db *gorm.DB,names []string) ([]model.TinyTag,erro
 	}
 	return tags,nil
 }
+
+func (d *contentDao) GetTagsByRefIdDB(db *gorm.DB,typ content.ContentType,refId uint64) ([]*content.TinyTag,error) {
+	var tags []*content.TinyTag
+	err := db.Select("a.id,a.name").Table("tag a").
+		Joins(`LEFT JOIN content_tag b ON a.Id = b.tag_id`).
+		Where("b.type = ? AND b.ref_id = ? AND deleted_at = ?",
+			typ,refId, dbi.PostgreZeroTime).Scan(&tags).Error
+	if err != nil {
+		return nil, err
+	}
+	return tags,nil
+}
