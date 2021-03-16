@@ -5,7 +5,7 @@ import "content/content.model.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
-import "utils/request/empty.proto";
+import "utils/empty/empty.proto";
 import "utils/response/response.proto";
 import "utils/proto/go/policy.proto";
 import "utils/proto/go/go.proto";

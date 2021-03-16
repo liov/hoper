@@ -15,8 +15,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/liov/hoper/go/v2/initialize"
 	"github.com/liov/hoper/go/v2/utils/log"
+	neti "github.com/liov/hoper/go/v2/utils/net"
 	"github.com/liov/hoper/go/v2/utils/number"
 	"github.com/liov/hoper/go/v2/utils/strings"
 	"go.uber.org/zap"
@@ -71,7 +71,7 @@ func defaultLog(url, method, auth, reqBody, respBytes string, status int, proces
 		zap.String("result", respBytes),
 		zap.String("other", auth),
 		zap.Int("status", status),
-		zap.String("source", initialize.InitConfig.Module))
+		zap.String("source", neti.GetIP()))
 }
 
 type ContentType uint8

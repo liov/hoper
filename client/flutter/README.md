@@ -1,5 +1,9 @@
 # dart
 
+## 简介
+最初是个实验性的东西，搞得大而杂，有flutter，有原生，flutter里还有绑定lua和rust ffi，原生也有lua绑定，
+全面但牺牲了稳定性，有很多用不到的也上了，没必要
+
 A new Flutter project.
 
 ## Getting Started

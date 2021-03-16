@@ -35,6 +35,7 @@ enum ErrCode {
 
 
   DBError = 21000 [(gogo.enumvalue_cn) = "数据库错误"];
+  RowExists = 21001 [(gogo.enumvalue_cn) = "记录已存在"];
   RedisErr = 22000 [(gogo.enumvalue_cn) = "Redis错误"];
 
 

@@ -13,7 +13,7 @@ import (
 func TestGetUserClient(t *testing.T) {
 	md:=runtime.ServerMetadata{}
 	user,err:=UserClient.AuthInfo(metadata.NewOutgoingContext(context.Background(), metadata.MD{"key":[]string{"value"}}),
-		&request.Empty{},
+		&empty.Empty{},
 		grpc.Header(&md.HeaderMD),
 		grpc.Trailer(&md.TrailerMD),
 		)

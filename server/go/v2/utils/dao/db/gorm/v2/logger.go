@@ -17,12 +17,18 @@ var (
 		LogLevel:      logger.Warn,
 		Colorful:      true,
 	})
-	field = zap.String("db","gorm")
+	field = zap.String("db", "gorm")
 )
 
 type SQLLogger struct {
 	*zap.Logger
 	*logger.Config
+}
+
+type Config struct {
+	SlowThreshold time.Duration
+	Colorful      bool
+	LogLevel      zapcore.Level
 }
 
 func New2(loger *zap.Logger, conf *logger.Config) logger.Interface {
@@ -42,36 +48,49 @@ func (l *SQLLogger) LogMode(level logger.LogLevel) logger.Interface {
 
 // Info print info
 func (l *SQLLogger) Info(ctx context.Context, msg string, data ...interface{}) {
-	l.Logger.Info(fmt.Sprintf(msg, data...),field)
+	l.Logger.Info(fmt.Sprintf(msg, data...), field)
 }
 
 // Warn print warn messages
 func (l *SQLLogger) Warn(ctx context.Context, msg string, data ...interface{}) {
-	l.Logger.Warn(fmt.Sprintf(msg, data...),field)
+	l.Logger.Warn(fmt.Sprintf(msg, data...), field)
 }
 
 // Error print error messages
 func (l *SQLLogger) Error(ctx context.Context, msg string, data ...interface{}) {
-	l.Logger.Error(fmt.Sprintf(msg, data...),field)
+	l.Logger.Error(fmt.Sprintf(msg, data...), field)
 }
 
 // Trace print sql message 只有这里的context不是background,看了代码,也没用
 func (l *SQLLogger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
-	if l.LogLevel > logger.Silent {
-		elapsed := time.Since(begin)
-		elapsedms := zap.Float64("elapsedms", float64(elapsed.Nanoseconds())/1e6)
-		sql, rows := fc()
-		sqlField := zap.String("sql", sql)
-		rowsField := zap.Int64("rows", rows)
-		caller:=zap.String("caller",utils.FileWithLineNum())
-		fields := []zap.Field{elapsedms, sqlField, rowsField,caller}
-		switch {
-		case err != nil && l.LogLevel >= logger.Error:
-			l.Logger.Error(err.Error(), fields...)
-		case elapsed > l.SlowThreshold && l.SlowThreshold != 0 && l.LogLevel >= logger.Warn:
-			l.Logger.Warn(fmt.Sprintf("SLOW SQL >= %v", l.SlowThreshold), fields...)
-		case l.LogLevel >= logger.Info:
-			l.Logger.Info("", fields...)
-		}
+	if l.LogLevel == logger.Silent {
+		return
 	}
+	elapsed := time.Since(begin)
+	elapsedms := zap.Float64("elapsedms", float64(elapsed.Nanoseconds())/1e6)
+	level := logger.Info
+	var msg string
+	switch {
+	case err != nil:
+		level = logger.Error
+		msg = err.Error()
+	case elapsed > l.SlowThreshold && l.SlowThreshold != 0:
+		level = logger.Warn
+		msg = fmt.Sprintf("SLOW SQL >= %v", l.SlowThreshold)
+	}
+	if l.LogLevel < level {
+		return
+	}
+	switch level {
+	case logger.Error:
+		msg = err.Error()
+	case logger.Warn:
+		msg = fmt.Sprintf("SLOW SQL >= %v", l.SlowThreshold)
+	}
+	sql, rows := fc()
+	sqlField := zap.String("sql", sql)
+	rowsField := zap.Int64("rows", rows)
+	caller := zap.String("caller", utils.FileWithLineNum())
+	fields := []zap.Field{elapsedms, sqlField, rowsField, caller}
+	l.Logger.Check(zapcore.Level(4-level), msg).Write(fields...)
 }

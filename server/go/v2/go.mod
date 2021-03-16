@@ -13,9 +13,10 @@ require (
 	github.com/boombuler/barcode v1.0.0
 	github.com/brahma-adshonor/gohook v0.0.0-20200311033618-28b944a6fdfa // indirect
 	github.com/cenk/backoff v2.2.1+incompatible // indirect
+	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cockroachdb/errors v1.8.1 // indirect
 	github.com/cockroachdb/pebble v0.0.0-20201228155439-c3ef93f9a9ed
-	github.com/dgraph-io/ristretto v0.0.3
+	github.com/dgraph-io/ristretto v0.0.4-0.20210311064603-e4f298c8aa88
 	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
@@ -90,7 +91,7 @@ require (
 	gorm.io/driver/mysql v1.0.3
 	gorm.io/driver/postgres v1.0.0
 	gorm.io/driver/sqlite v1.1.3
-	gorm.io/gorm v1.20.12
+	gorm.io/gorm v1.21.3
 	gorm.io/plugin/dbresolver v1.1.0 // indirect
 	gorm.io/plugin/prometheus v0.0.0-20210112035011-ae3013937adc
 )

@@ -7,8 +7,8 @@ import (
 	"github.com/liov/hoper/go/v2/content/dao"
 	"github.com/liov/hoper/go/v2/protobuf/content"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
-	"github.com/liov/hoper/go/v2/protobuf/utils/request"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -25,7 +25,7 @@ func (m *ContentService) Service() (describe, prefix string, middleware []http.H
 func (*ContentService) TagInfo(context.Context, *content.GetTagReq) (*content.Tag, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Info not implemented")
 }
-func (*ContentService) AddTag(ctx context.Context, req *content.AddTagReq) (*request.Empty, error) {
+func (*ContentService) AddTag(ctx context.Context, req *content.AddTagReq) (*empty.Empty, error) {
 	ctxi, span := model.CtxFromContext(ctx).StartSpan("Edit")
 	defer span.End()
 	ctx = ctxi.Context
@@ -41,7 +41,7 @@ func (*ContentService) AddTag(ctx context.Context, req *content.AddTagReq) (*req
 	}
 	return nil, nil
 }
-func (*ContentService) EditTag(ctx context.Context, req *content.EditTagReq) (*request.Empty, error) {
+func (*ContentService) EditTag(ctx context.Context, req *content.EditTagReq) (*empty.Empty, error) {
 	ctxi, span := model.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	user, err := ctxi.GetAuthInfo(AuthWithUpdate)

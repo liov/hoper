@@ -2,11 +2,13 @@ package model
 
 const (
 	LikeTableName       = "like"
-	CommentTableName       = "comment"
-	CollectTableName       = "collect"
-	ReportTableName       = "report"
+	BrowserTableName    = "browser"
+	CommentTableName    = "comment"
+	CollectTableName    = "collect"
+	ReportTableName     = "report"
+	GiveTableName       = "give"
+	ApproveTableName    = "approve"
 	MomentTableName     = "moment"
 	TagTableName        = "tag"
 	ContentExtTableName = "content_ext"
 )
-

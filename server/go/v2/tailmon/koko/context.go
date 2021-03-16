@@ -9,9 +9,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/dgraph-io/ristretto"
 	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/google/uuid"
-	"github.com/liov/hoper/go/v2/utils/dao/cache"
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	"github.com/liov/hoper/go/v2/utils/log"
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
@@ -227,7 +227,7 @@ func (c *Ctx) reset(ctx context.Context) *Ctx {
 
 type AuthInfoDao struct {
 	Secret    string
-	AuthCache cache.Cache
+	AuthCache *ristretto.Cache
 	AuthPool  *sync.Pool
 	Update    func(*Ctx) error
 }
@@ -236,8 +236,8 @@ func (c *Ctx) GetAuthInfo(authDao AuthInfoDao,update bool) error {
 	var signature string
 	if authDao.AuthCache != nil {
 		signature = c.Token[strings.LastIndexByte(c.Token, '.')+1:]
-		cacheTmp, err := authDao.AuthCache.Get(signature)
-		if err == nil {
+		cacheTmp, ok := authDao.AuthCache.Get(signature)
+		if ok {
 			if authorization, ok := cacheTmp.(*Authorization); ok {
 				c.Authorization = authorization
 				return nil
@@ -257,7 +257,7 @@ func (c *Ctx) GetAuthInfo(authDao AuthInfoDao,update bool) error {
 	}
 	c.IdStr = c.AuthInfo.IdStr()
 	if authDao.AuthCache != nil {
-		authDao.AuthCache.SetWithExpire(signature, c.Authorization, 5*time.Second)
+		authDao.AuthCache.SetWithTTL(signature, c.Authorization,0, 5*time.Second)
 	}
 	return nil
 }

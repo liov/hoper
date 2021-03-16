@@ -8,3 +8,8 @@ message Page{
   uint32 pageNo = 1;
   uint32 pageSize = 2;
 }
+
+
+message Object{
+  uint64 id = 1;
+}

@@ -11,8 +11,8 @@ import (
 	"github.com/liov/hoper/go/v2/content/model"
 	"github.com/liov/hoper/go/v2/protobuf/content"
 	"github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
-	"github.com/liov/hoper/go/v2/protobuf/utils/request"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -55,7 +55,7 @@ func (m *MomentService) Info(ctx context.Context, req *content.GetMomentReq) (*c
 	return &moment, nil
 }
 
-func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*request.Empty, error) {
+func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*empty.Empty, error) {
 
 	if utf8.RuneCountInString(req.Content) < conf.Conf.Customize.Moment.MaxContentLen {
 		return nil, errorcode.ParamInvalid.Message(fmt.Sprintf("文章内容不能小于%d个字",conf.Conf.Customize.Moment.MaxContentLen))
@@ -137,7 +137,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 	}
 	return nil, nil
 }
-func (*MomentService) Edit(context.Context, *content.AddMomentReq) (*request.Empty, error) {
+func (*MomentService) Edit(context.Context, *content.AddMomentReq) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Edit not implemented")
 }
 
@@ -183,7 +183,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	}, nil
 }
 
-func (*MomentService) Delete(ctx context.Context, req *content.GetMomentReq) (*request.Empty, error) {
+func (*MomentService) Delete(ctx context.Context, req *content.GetMomentReq) (*empty.Empty, error) {
 	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)

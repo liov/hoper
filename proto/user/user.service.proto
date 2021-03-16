@@ -5,7 +5,7 @@ import "user/user.enum.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
-import "utils/request/empty.proto";
+import "utils/empty/empty.proto";
 import "utils/response/response.proto";
 import "utils/proto/gogo/graphql.proto";
 import "utils/oauth/oauth.proto";
@@ -27,7 +27,7 @@ service UserService {
     description: "用户相关接口"
   };
   // 验证码
-  rpc VerifyCode (request.Empty) returns (google.protobuf.StringValue) {
+  rpc VerifyCode (empty.Empty) returns (google.protobuf.StringValue) {
     option (google.api.http) = {
       get: "/api/v1/verifyCode"
     };
@@ -40,7 +40,7 @@ service UserService {
   }
 
   // 验证码
-  rpc SendVerifyCode (SendVerifyCodeReq) returns (request.Empty) {
+  rpc SendVerifyCode (SendVerifyCodeReq) returns (empty.Empty) {
     option (google.api.http) = {
       get: "/api/v1/SendVerifyCode"
     };
@@ -53,7 +53,7 @@ service UserService {
   }
 
   //注册验证
-  rpc SignupVerify (SingUpVerifyReq) returns (request.Empty) {
+  rpc SignupVerify (SingUpVerifyReq) returns (empty.Empty) {
     option (google.api.http) = {
       post: "/api/v1/user/signupVerify"
       body: "*"
@@ -67,7 +67,7 @@ service UserService {
   }
 
   //注册
-  rpc Signup (SignupReq) returns (request.Empty) {
+  rpc Signup (SignupReq) returns (empty.Empty) {
     option (google.api.http) = {
       post: "/api/v1/user"
       body: "*"
@@ -93,7 +93,7 @@ service UserService {
     option (gogo.graphql_operation) = Mutation;
   }
   //编辑
-  rpc Edit (EditReq) returns (request.Empty) {
+  rpc Edit (EditReq) returns (empty.Empty) {
     option (google.api.http) = {
       put: "/api/v1/user/id/{id}"
       body: "details"
@@ -127,7 +127,7 @@ service UserService {
     option (gogo.graphql_operation) = Query;
   }
   //退出
-  rpc Logout (request.Empty) returns (request.Empty) {
+  rpc Logout (empty.Empty) returns (empty.Empty) {
     option (google.api.http) = {
       get: "/api/v1/user/logout"
     };
@@ -140,7 +140,7 @@ service UserService {
   }
 
   //鉴权
-  rpc AuthInfo (request.Empty) returns (UserAuthInfo) {
+  rpc AuthInfo (empty.Empty) returns (UserAuthInfo) {
     option (google.api.http) = {
       get: "/api/v1/auth"
     };

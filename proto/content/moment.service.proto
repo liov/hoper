@@ -6,7 +6,7 @@ import "common/common.model.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
-import "utils/request/empty.proto";
+import "utils/empty/empty.proto";
 import "utils/response/response.proto";
 import "utils/proto/gogo/graphql.proto";
 import "utils/oauth/oauth.proto";
@@ -34,7 +34,7 @@ service MomentService {
   }
 
   // 新建
-  rpc Add (AddMomentReq) returns (request.Empty) {
+  rpc Add (AddMomentReq) returns (empty.Empty) {
     option (google.api.http) = {
       post: "/api/v1/moment"
       body: "*"
@@ -46,7 +46,7 @@ service MomentService {
   }
 
   // 修改
-  rpc Edit (AddMomentReq) returns (request.Empty) {
+  rpc Edit (AddMomentReq) returns (empty.Empty) {
     option (google.api.http) = {
       put: "/api/v1/moment"
       body: "*"
@@ -69,7 +69,7 @@ service MomentService {
   }
 
   // 修改
-  rpc Delete (GetMomentReq) returns (request.Empty) {
+  rpc Delete (GetMomentReq) returns (empty.Empty) {
     option (google.api.http) = {
       delete: "/api/v1/moment"
     };

@@ -12,8 +12,8 @@ option (go.file) = {non_omitempty:true};
 
 message Like{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  ContentType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null" validate:"required" annotation:"相关类型"'}];
-  uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"相关id"'}];
+  ContentType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null;index:idx_type_id" validate:"required" annotation:"相关类型"'}];
+  uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_type_id" validate:"required" annotation:"相关id"'}];
   ActionType action = 3 [(go.field) = {tags:'gorm:"type:int2;default:1" validate:"required" annotation:"动作"'}];
   user.UserBaseInfo user = 4 [(go.field) = {tags:'gorm:"-" annotation:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
@@ -24,8 +24,8 @@ message Like{
 // 举报
 message Report{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  ContentType type = 12 [(go.field) = {tags:'gorm:"type:int2;not null" validate:"required" annotation:"相关类型"'}];
-  uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"相关id"'}];
+  ContentType type = 12 [(go.field) = {tags:'gorm:"type:int2;not null;index:idx_type_id" validate:"required" annotation:"相关类型"'}];
+  uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_type_id" validate:"required" annotation:"相关id"'}];
   user.UserBaseInfo user = 2 [(go.field) = {tags:'gorm:"-" annotation:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
   DelReason delReason = 3[(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"举报原因"'}];
@@ -48,8 +48,8 @@ message Favorites{
 // 收藏
 message Collection{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  ContentType type = 12 [(go.field) = {tags:'json:"-" gorm:"type:int2;not null" validate:"required" annotation:"相关类型"'}];
-  uint64 refId = 6 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index" validate:"required" annotation:"相关id"'}];
+  ContentType type = 12 [(go.field) = {tags:'json:"-" gorm:"type:int2;not null;index:idx_type_id" validate:"required" annotation:"相关类型"'}];
+  uint64 refId = 6 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index:idx_type_id" validate:"required" annotation:"相关id"'}];
   user.UserBaseInfo user = 2 [(go.field) = {tags:'gorm:"-" annotation:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
   uint64 favoritesId = 3 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
@@ -59,8 +59,8 @@ message Collection{
 
 // 系统删除内容记录
 message ContentDel{
-  ContentType type = 1 [(go.field) = {tags:'json:"-" gorm:"type:int2;default:0" annotation:"类型"'}];
-  uint64 refId = 2 [(go.field) = {tags:'json:"-" gorm:"size:20;default:0" annotation:"相关id"'}];
+  ContentType type = 1 [(go.field) = {tags:'json:"-" gorm:"type:int2;default:0;index:idx_type_id" annotation:"类型"'}];
+  uint64 refId = 2 [(go.field) = {tags:'json:"-" gorm:"size:20;default:0;index:idx_type_id" annotation:"相关id"'}];
   DelReason delReason = 3[(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"删除原因"'}];
   string remark = 4[(go.field) = {tags:'gorm:"size:255;default:\'\'" annotation:"备注"'}];
   string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
@@ -68,8 +68,8 @@ message ContentDel{
 // 评论
 message Comment{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  ContentType type = 12 [(go.field) = {tags:'json:"-" gorm:"size:1;not null" validate:"required" annotation:"相关类型"'}];
-  uint64 refId = 6 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index" validate:"required" annotation:"相关id"'}];
+  ContentType type = 12 [(go.field) = {tags:'json:"-" gorm:"size:1;not null;index:idx_type_id" validate:"required" annotation:"相关类型"'}];
+  uint64 refId = 6 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index:idx_type_id" validate:"required" annotation:"相关id"'}];
   user.UserBaseInfo user = 2 [(go.field) = {tags:'gorm:"" annotation:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
   string content = 3 [(go.field) = {tags:'gorm:"size:255;not null" annotation:"内容"'}];
@@ -87,8 +87,8 @@ message Comment{
 }
 
 message ContentExt{
-  ContentType type = 2 [(go.field) = {tags:'json:"-" gorm:"type:int2;not null" validate:"required" annotation:"相关类型"'}];
-  uint64 refId = 1 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index" validate:"required" annotation:"相关id"'}];
+  ContentType type = 2 [(go.field) = {tags:'json:"-" gorm:"type:int2;not null;index:idx_type_id" validate:"required" annotation:"相关类型"'}];
+  uint64 refId = 1 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index:idx_type_id" validate:"required" annotation:"相关id"'}];
   uint64 likeCount = 3 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"点赞数"'}];
   uint64 browseCount = 4 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"浏览数"'}];
   uint64 unlikeCount = 5 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"不喜欢数"'}];

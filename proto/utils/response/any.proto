@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-package response;
-option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/response";
-option java_package = "xyz.hoper.protobuf.utils.response";
-
-message RawJson {
-    bytes b = 1;
-}
