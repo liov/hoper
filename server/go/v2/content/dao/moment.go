@@ -10,7 +10,7 @@ import (
 
 func (d *contentDao) GetMomentListDB(db *gorm.DB,req *content.MomentListReq) ([]*content.Moment,error) {
 	var moments []*content.Moment
-	err := db.Table(model.MomentTableName).Where(`deleted_at = ?`, dbi.PostgreZeroTime).
+	err := db.Table(model.MomentTableName).Where(`deleted_at = ?`, dbi.PostgreZeroTime1).
 		Limit(int(req.PageSize)).Offset(int((req.PageNo - 1) * req.PageSize)).
 		Find(&moments).Error
 	if err != nil {

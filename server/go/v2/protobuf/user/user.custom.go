@@ -75,7 +75,7 @@ func (x *AuthInfo) UserAuthInfo() *UserAuthInfo {
 }
 
 type Authorization struct {
-	*AuthInfo
+	AuthInfo
 	IdStr string `json:"-" gorm:"-"`
 	Token string `json:"-"`
 }
@@ -315,9 +315,7 @@ func newCtx(ctx context.Context) *Ctx {
 	return &Ctx{
 		Context: ctx,
 		TraceID: traceId,
-		Authorization: &Authorization{
-			AuthInfo: new(AuthInfo),
-		},
+		Authorization: &Authorization{},
 		RequestAt: &request.RequestAt{
 			Time:      now,
 			TimeStamp: now.Unix(),
@@ -336,13 +334,13 @@ func (c *Ctx) setWithReq(r *http.Request) {
 }
 
 func (c *Ctx) GetAuthInfo(auth func(*Ctx) error) (*AuthInfo, error) {
-	if c.AuthInfo == nil {
-		c.AuthInfo = new(AuthInfo)
+	if c.Authorization == nil {
+		c.Authorization = new(Authorization)
 	}
 	if err := auth(c); err != nil {
 		return nil, err
 	}
-	return c.AuthInfo, nil
+	return &c.AuthInfo, nil
 }
 
 func (c *Ctx) Log(err error, funcName, msg string) error {
@@ -367,7 +365,7 @@ func JWTUnmarshaller(ctx jwt.CodingContext, data []byte, v interface{}) error {
 	if ctx.FieldDescriptor == jwt.ClaimsFieldDescriptor {
 		if c, ok := (*v.(*jwt.Claims)).(*Authorization); ok {
 			c.Token = stringsi.ToString(data)
-			return json.Unmarshal(data, c.AuthInfo)
+			return json.Unmarshal(data, &c.AuthInfo)
 		}
 	}
 	return json.Unmarshal(data, v)

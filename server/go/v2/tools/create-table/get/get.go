@@ -1,7 +1,7 @@
 package get
 
 import (
-	"github.com/liov/hoper/go/v2/initialize"
+	"github.com/liov/hoper/go/v2/tailmon/initialize"
 	"gorm.io/gorm"
 )
 

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/liov/hoper/go/v2/content/model"
-	"github.com/liov/hoper/go/v2/initialize"
+	"github.com/liov/hoper/go/v2/tailmon/initialize"
 )
 
 /*var ServerSettings = &ServerConfig{}

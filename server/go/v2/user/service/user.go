@@ -14,8 +14,8 @@ import (
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/uuid"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
-	"github.com/liov/hoper/go/v2/protobuf/utils/request"
 	"github.com/liov/hoper/go/v2/protobuf/utils/response"
 	"github.com/liov/hoper/go/v2/user/conf"
 	"github.com/liov/hoper/go/v2/user/dao"
@@ -36,7 +36,7 @@ type UserService struct {
 	model.UnimplementedUserServiceServer
 }
 
-func (u *UserService) VerifyCode(ctx context.Context, req *request.Empty) (*wrappers.StringValue, error) {
+func (u *UserService) VerifyCode(ctx context.Context, req *empty.Empty) (*wrappers.StringValue, error) {
 	device := model.CtxFromContext(ctx).DeviceInfo
 	log.Debug(device)
 	var rep = &wrappers.StringValue{}
@@ -46,7 +46,7 @@ func (u *UserService) VerifyCode(ctx context.Context, req *request.Empty) (*wrap
 	return rep, nil
 }
 
-func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*request.Empty, error) {
+func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*empty.Empty, error) {
 	ctxi, span := model.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
@@ -68,10 +68,10 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 		log.Error("UserService.Verify,RedisConn.Do: ", err)
 		return nil, errorcode.RedisErr.Message("新建出错")
 	}
-	return new(request.Empty), nil
+	return new(empty.Empty), nil
 }
 
-func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*request.Empty, error) {
+func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*empty.Empty, error) {
 	ctxi, span := model.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
@@ -218,7 +218,7 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 	return u.login(ctxi, user)
 }
 
-func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*request.Empty, error) {
+func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*empty.Empty, error) {
 	ctxi, span := model.CtxFromContext(ctx).StartSpan("Edit")
 	defer span.End()
 	ctx = ctxi.Context
@@ -253,7 +253,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*request.Em
 			tx.Commit()
 		}
 	}
-	return new(request.Empty), nil
+	return new(empty.Empty), nil
 }
 
 func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginRep, error) {
@@ -317,7 +317,7 @@ func (*UserService) login(ctxi *model.Ctx, user *model.User) (*model.LoginRep, e
 		return nil, errorcode.Internal
 	}
 
-	dao.Dao.GORMDB.Table(modelconst.UserExtTableName).
+	dao.Dao.GORMDB.Table(modelconst.UserExtTableName).Where(`id = ?`,ctxi.Id).
 		UpdateColumn("last_activated_at", ctxi.RequestAt)
 
 	if err := userRedis.EfficientUserHashToRedis(ctxi); err != nil {
@@ -349,7 +349,7 @@ func (*UserService) login(ctxi *model.Ctx, user *model.User) (*model.LoginRep, e
 	return resp, nil
 }
 
-func (u *UserService) Logout(ctx context.Context, req *request.Empty) (*request.Empty, error) {
+func (u *UserService) Logout(ctx context.Context, req *empty.Empty) (*empty.Empty, error) {
 	ctxi, span := model.CtxFromContext(ctx).StartSpan("Logout")
 	defer span.End()
 	ctx = ctxi.Context
@@ -373,10 +373,10 @@ func (u *UserService) Logout(ctx context.Context, req *request.Empty) (*request.
 		HttpOnly: true,
 	}).String()
 	ctxi.SetCookie(cookie)
-	return new(request.Empty), nil
+	return new(empty.Empty), nil
 }
 
-func (u *UserService) AuthInfo(ctx context.Context, req *request.Empty) (*model.UserAuthInfo, error) {
+func (u *UserService) AuthInfo(ctx context.Context, req *empty.Empty) (*model.UserAuthInfo, error) {
 	user, err := model.CtxFromContext(ctx).GetAuthInfo(AuthWithUpdate)
 	if err != nil {
 		return nil, err

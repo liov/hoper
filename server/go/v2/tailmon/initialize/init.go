@@ -30,7 +30,6 @@ var (
 		WatchConfig bool
 		InitFunc    bool
 	}
-
 )
 
 const (
@@ -39,7 +38,6 @@ const (
 	PRODUCT     = "prod"
 	InitKey     = "initialize"
 )
-
 
 type EnvConfig struct {
 	NacosTenant string
@@ -62,7 +60,6 @@ type Init struct {
 	dao          Dao
 	//closes     []interface{}
 }
-
 
 func init() {
 	flag.StringVar(&InitConfig.Env, "env", DEVELOPMENT, "环境")
@@ -143,9 +140,9 @@ func (init *Init) LoadConfig() *Init {
 				}
 				nacosClient := InitConfig.getConfigClient()
 				go nacosClient.Listener(InitConfig.UnmarshalAndSet)
-			}else if init.EnvConfig.LocalConfigName != ""{
+			} else if init.EnvConfig.LocalConfigName != "" {
 				init.LocalConfig()
-			}else {
+			} else {
 				log.Fatal("没有发现配置")
 			}
 			break
@@ -221,14 +218,29 @@ func watcher() {
 
 // Custom
 func (init *Init) setConfig() {
-	confValue := reflect.ValueOf(init.conf).Elem()
-	for i := 0; i < confValue.NumField(); i++ {
-		if conf, ok := confValue.Field(i).Addr().Interface().(NeedInit); ok {
-			conf.Custom()
-		}
-	}
+	setConfig(reflect.ValueOf(init.conf).Elem())
 	init.conf.Custom()
 }
+
+func setConfig(v reflect.Value) {
+	if !v.IsValid() {
+		return
+	}
+	for i := 0; i < v.NumField(); i++ {
+		if v.Field(i).Addr().CanInterface() {
+			if conf, ok := v.Field(i).Addr().Interface().(NeedInit); ok {
+				conf.Custom()
+			}
+		}
+		switch v.Field(i).Kind() {
+		case reflect.Ptr:
+			setConfig(v.Field(i).Elem())
+		case reflect.Struct:
+			setConfig(v.Field(i))
+		}
+	}
+}
+
 //反射方法命名规范,P+优先级+方法名+(执行一次+Once)
 func (init *Init) setDao() {
 	if init.dao == nil {

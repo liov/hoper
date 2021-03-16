@@ -8,8 +8,8 @@ import (
 	"github.com/liov/hoper/go/v2/content/model"
 	"github.com/liov/hoper/go/v2/protobuf/content"
 	"github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
-	"github.com/liov/hoper/go/v2/protobuf/utils/request"
 	"gorm.io/gorm"
 )
 
@@ -17,7 +17,7 @@ type ActionService struct {
 	content.UnimplementedActionServiceServer
 }
 
-func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.Empty, error) {
+func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*empty.Empty, error) {
 	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
@@ -31,6 +31,14 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 	}
 	db := dao.Dao.GetDB(ctxi.Logger)
 	req.UserId = auth.Id
+
+	exists, err := contentDao.ActionExists(db, req.Type, req.Action, req.RefId, req.UserId)
+	if err != nil {
+		return nil, ctxi.Log(err, "EXISTS", err.Error())
+	}
+	if exists {
+		return nil, nil
+	}
 	err = db.Transaction(func(tx *gorm.DB) error {
 		err = db.Table(model.LikeTableName).Create(req).Error
 		if err != nil {
@@ -51,7 +59,8 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 	}
 	return nil, nil
 }
-func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*request.Empty, error) {
+
+func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*empty.Empty, error) {
 	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
@@ -81,7 +90,7 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*re
 	}
 	return nil, nil
 }
-func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*request.Empty, error) {
+func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*empty.Empty, error) {
 	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
@@ -111,7 +120,7 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*re
 	}
 	return nil, nil
 }
-func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*request.Empty, error) {
+func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*empty.Empty, error) {
 	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)

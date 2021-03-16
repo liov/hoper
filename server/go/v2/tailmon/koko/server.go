@@ -16,7 +16,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/gin-gonic/gin"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
-	"github.com/liov/hoper/go/v2/initialize"
+	"github.com/liov/hoper/go/v2/tailmon/initialize"
 	"github.com/liov/hoper/go/v2/utils/log"
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	gin_build "github.com/liov/hoper/go/v2/utils/net/http/gin"

@@ -8,7 +8,7 @@ import (
 	"github.com/dgraph-io/ristretto"
 	"github.com/go-redis/redis/v8"
 	"github.com/liov/hoper/go/v2/content/conf"
-	"github.com/liov/hoper/go/v2/initialize"
+	"github.com/liov/hoper/go/v2/tailmon/initialize"
 	"github.com/liov/hoper/go/v2/protobuf/user"
 	v2 "github.com/liov/hoper/go/v2/utils/dao/db/gorm/v2"
 	"github.com/liov/hoper/go/v2/utils/log"
@@ -53,9 +53,6 @@ func (d *dao) Close() {
 	}
 	if d.StdDB != nil {
 		d.StdDB.Close()
-	}
-	if d.Cache != nil {
-		d.Cache.Close()
 	}
 }
 

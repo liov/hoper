@@ -2,6 +2,8 @@ package initialize
 
 import (
 	"fmt"
+	stdlog "log"
+	"os"
 	"runtime"
 
 	gormi "github.com/liov/hoper/go/v2/utils/dao/db/gorm"
@@ -11,6 +13,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 	"gorm.io/plugin/prometheus"
 )
@@ -88,7 +91,8 @@ func (init *Init) P2DB() *gorm.DB {
 	rawDB, _ := db.DB()
 	rawDB.SetMaxIdleConns(conf.MaxIdleConns)
 	rawDB.SetMaxOpenConns(conf.MaxOpenConns)
-	db.Logger.LogMode(conf.Gorm.Logger.LogLevel)
+	//db.Logger = db.Logger.LogMode(conf.Gorm.Logger.LogLevel)
+	logger.Default = logger.New(stdlog.New(os.Stdout, "\r\n", stdlog.LstdFlags),conf.Gorm.Logger)
 	//i.closes = append(i.closes,db.CloseDao)
 	//closes = append(closes, func() {log.AuthInfo("数据库已关闭")})
 	return db

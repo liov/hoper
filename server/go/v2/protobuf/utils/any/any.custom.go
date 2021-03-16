@@ -1,4 +1,4 @@
-package response
+package any
 
 import (
 	"github.com/golang/protobuf/jsonpb"

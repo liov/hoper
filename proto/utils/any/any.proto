@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package any;
+option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/any";
+option java_package = "xyz.hoper.protobuf.utils.any";
+
+message RawJson {
+    bytes b = 1;
+}

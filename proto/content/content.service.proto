@@ -5,7 +5,7 @@ import "content/content.enum.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
-import "utils/request/empty.proto";
+import "utils/empty/empty.proto";
 import "utils/request/param.proto";
 import "utils/response/response.proto";
 import "utils/proto/gogo/graphql.proto";
@@ -34,7 +34,7 @@ service ContentService {
   }
 
   // 新建
-  rpc AddTag (AddTagReq) returns (request.Empty) {
+  rpc AddTag (AddTagReq) returns (empty.Empty) {
     option (google.api.http) = {
       post: "/api/v1/tag"
       body: "*"
@@ -46,7 +46,7 @@ service ContentService {
   }
 
   // 修改
-  rpc EditTag (EditTagReq) returns (request.Empty) {
+  rpc EditTag (EditTagReq) returns (empty.Empty) {
     option (google.api.http) = {
       put: "/api/v1/tag"
       body: "*"
@@ -92,7 +92,7 @@ service ContentService {
   }
 
   // 新建
-  rpc AddAttr (AddAttrReq) returns (request.Empty) {
+  rpc AddAttr (AddAttrReq) returns (empty.Empty) {
     option (google.api.http) = {
       post: "/api/v1/attr"
       body: "*"
@@ -104,7 +104,7 @@ service ContentService {
   }
 
   // 修改
-  rpc EditAttr (EditAttrReq) returns (request.Empty) {
+  rpc EditAttr (EditAttrReq) returns (empty.Empty) {
     option (google.api.http) = {
       put: "/api/v1/attr"
       body: "*"
