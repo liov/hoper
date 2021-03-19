@@ -1231,7 +1231,7 @@ func (s *SuperAgent) getResponseBytes() (*http.Response, []byte, []error) {
 		s.Client.Transport = s.Transport
 	}
 
-	// Log details of this request
+	// ErrorLog details of this request
 	if s.Debug {
 		dump, err := httputil.DumpRequest(req, true)
 		s.logger.SetPrefix("[http] ")
@@ -1261,7 +1261,7 @@ func (s *SuperAgent) getResponseBytes() (*http.Response, []byte, []error) {
 	}
 	defer resp.Body.Close()
 
-	// Log details of this response
+	// ErrorLog details of this response
 	if s.Debug {
 		dump, err := httputil.DumpResponse(resp, true)
 		if nil != err {

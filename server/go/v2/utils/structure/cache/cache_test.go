@@ -10,7 +10,7 @@ import (
 	"github.com/dgraph-io/ristretto"
 	"github.com/liov/hoper/go/v2/utils/structure/cache/freecache"
 	"github.com/liov/hoper/go/v2/utils/structure/cache/gcache"
-	cache1 "github.com/liov/hoper/go/v2/utils/structure/cache/go-cache"
+	gocache "github.com/liov/hoper/go/v2/utils/structure/cache/go-cache"
 )
 
 func BenchmarkFree(b *testing.B){
@@ -45,8 +45,8 @@ func BenchmarkGCache(b *testing.B){
 }
 
 func BenchmarkGoCache(b *testing.B){
-	c := cache1.New(5*time.Minute, 10*time.Minute)
-	c.Set("foo", "bar", cache1.DefaultExpiration)
+	c := gocache.New(5*time.Minute, 10*time.Minute)
+	c.Set("foo", "bar", gocache.DefaultExpiration)
 	for i := 0; i < b.N; i++ {
 
 		_, found := c.Get("foo")

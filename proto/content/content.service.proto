@@ -126,6 +126,26 @@ service ContentService {
     option (gogo.graphql_operation) = Query;
   }
 
+  // 创建收藏夹
+  rpc CreateFav (CreateFavReq) returns (empty.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/fav"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["v1.0.0"]
+    };
+    option (gogo.graphql_operation) = Mutation;
+  }
+  // 修改收藏夹
+  rpc EditFav (EditFavReq) returns (empty.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/fav"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["v1.0.0"]
+    };
+    option (gogo.graphql_operation) = Mutation;
+  }
 }
 
 message GetTagReq {
@@ -198,4 +218,15 @@ message AttrListReq{
 message AttrListRep{
   uint32 count = 1;
   repeated Attributes list = 2;
+}
+
+message CreateFavReq{
+  uint64 userId = 17 [(go.field) = {tags:'annotation:"用户id"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    read_only: true}];
+  string name = 3 [(go.field) = {tags:'annotation:"名字"'}];
+}
+
+message EditFavReq{
+  uint64 id = 1 [(go.field) = {tags:'validate:"required"'}];
+  string name = 3 [(go.field) = {tags:'annotation:"名字"'}];
 }

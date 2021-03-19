@@ -35,7 +35,7 @@ service ActionService {
     option (gogo.graphql_operation) = Mutation;
   }
   // 动作  Like Unlike
-  rpc delLike (LikeReq) returns (empty.Empty) {
+  rpc delLike (request.Object) returns (empty.Empty) {
     option (google.api.http) = {
       delete: "/api/v1/like"
     };
@@ -75,7 +75,7 @@ service ActionService {
     option (gogo.graphql_operation) = Mutation;
   }
   // 收藏
-  rpc delCollect (CollectReq) returns (empty.Empty) {
+  rpc delCollect (request.Object) returns (empty.Empty) {
     option (google.api.http) = {
       delete: "/api/v1/collect"
     };
@@ -113,10 +113,11 @@ message CommentReq{
   uint64 userId = 5 [(go.field) = {tags:'annotation:"用户id"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
   string content = 3 [(go.field) = {tags:'gorm:"size:255;not null" annotation:"内容"'}];
-  uint64 parentId = 7 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"直接父评论ID"'}];
-  uint64 rootId = 8 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"评论根ID"'}];
-  uint64 recvUserId = 10 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"接收人id"'}];
-  uint32 sequence = 4 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"同级别的分类可根据sequence的值来排序，置顶"'}];
+  uint64 replyId = 7 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"回复id"'}];
+  uint64 rootId = 8 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"评论根id"'}];
+  uint64 recvId = 10 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"接收人id"'}];
+  uint32 sequence = 4 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"同级别的分类可根据sequence的值来排序，置顶"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    read_only: true}];
 }
 
 
@@ -125,7 +126,7 @@ message CollectReq{
   uint64 refId = 6 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index" validate:"required" annotation:"相关id"'}];
   uint64 userId = 5 [(go.field) = {tags:'annotation:"用户id"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
-  uint64 favoritesId = 3 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
+  uint64 favId = 3 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
 }
 
 message ReportReq{

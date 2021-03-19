@@ -3,6 +3,7 @@ package dao
 import (
 	"github.com/liov/hoper/go/v2/content/model"
 	"github.com/liov/hoper/go/v2/protobuf/content"
+	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	dbi "github.com/liov/hoper/go/v2/utils/dao/db"
 	"gorm.io/gorm"
 )
@@ -12,9 +13,9 @@ func (d *contentDao) GetTagContentDB(db *gorm.DB,typ content.ContentType,refIds 
 	err := db.Select("b.ref_id,a.id,a.name").Table("tag a").
 		Joins(`LEFT JOIN content_tag b ON a.Id = b.tag_id`).
 		Where("b.type = ? AND b.ref_id IN (?) AND deleted_at = ?",
-		typ,refIds, dbi.PostgreZeroTime1).Find(&tags).Error
+		typ,refIds, dbi.PostgreZeroTime).Find(&tags).Error
 	if err != nil {
-		return nil, err
+		return nil, d.ErrorLog(errorcode.DBError,err,"GetTagContentDB")
 	}
 	return tags,nil
 }
@@ -22,10 +23,10 @@ func (d *contentDao) GetTagContentDB(db *gorm.DB,typ content.ContentType,refIds 
 func (d *contentDao) GetTagsDB(db *gorm.DB,names []string) ([]model.TinyTag,error) {
 	var tags []model.TinyTag
 	err:= db.Table("tag").Select("id,name").
-		Where("name IN (?) AND deleted_at = ?", names,dbi.PostgreZeroTime1).
+		Where("name IN (?) AND deleted_at = ?", names,dbi.PostgreZeroTime).
 		Find(&tags).Error
 	if err != nil {
-		return nil, err
+		return nil, d.ErrorLog(errorcode.DBError,err,"GetTagsDB")
 	}
 	return tags,nil
 }
@@ -35,9 +36,9 @@ func (d *contentDao) GetTagsByRefIdDB(db *gorm.DB,typ content.ContentType,refId 
 	err := db.Select("a.id,a.name").Table("tag a").
 		Joins(`LEFT JOIN content_tag b ON a.Id = b.tag_id`).
 		Where("b.type = ? AND b.ref_id = ? AND deleted_at = ?",
-			typ,refId, dbi.PostgreZeroTime1).Scan(&tags).Error
+			typ,refId, dbi.PostgreZeroTime).Scan(&tags).Error
 	if err != nil {
-		return nil, err
+		return nil, d.ErrorLog(errorcode.DBError,err,"GetTagsByRefIdDB")
 	}
 	return tags,nil
 }

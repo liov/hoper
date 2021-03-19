@@ -12,11 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fsnotify/fsnotify"
 	"github.com/liov/hoper/go/v2/utils/configor"
 	"github.com/liov/hoper/go/v2/utils/configor/nacos"
-	"github.com/liov/hoper/go/v2/utils/fs"
-	"github.com/liov/hoper/go/v2/utils/fs/watch"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/reflect"
 	"github.com/liov/hoper/go/v2/utils/slices"
@@ -36,7 +33,6 @@ const (
 	DEVELOPMENT = "dev"
 	TEST        = "test"
 	PRODUCT     = "prod"
-	InitKey     = "initialize"
 )
 
 type EnvConfig struct {
@@ -138,7 +134,7 @@ func (init *Init) LoadConfig() *Init {
 					DataId: onceConfig.Module,
 					Watch:  onceConfig.Nacos.Watch,
 				}
-				nacosClient := InitConfig.getConfigClient()
+				nacosClient := InitConfig.getNacosClient()
 				go nacosClient.Listener(InitConfig.UnmarshalAndSet)
 			} else if init.EnvConfig.LocalConfigName != "" {
 				init.LocalConfig()
@@ -171,50 +167,7 @@ type Dao interface {
 	NeedInit
 }
 
-// 从nacos拉取配置并返回nacos client
-func (init *Init) getConfigClient() *nacos.Client {
-	nacosClient := init.ConfigCenter.NewClient()
-	err := nacosClient.GetConfigAllInfoHandle(init.UnmarshalAndSet)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return nacosClient
-}
 
-// 本地配置文件
-func (init *Init) LocalConfig() {
-	if init.EnvConfig.LocalConfigName != "" {
-		adCongPath, err := fs.FindFile(init.EnvConfig.LocalConfigName)
-		init.EnvConfig.LocalConfigName = adCongPath
-		if err == nil {
-			err := configor.New(&configor.Config{Debug: init.Env != PRODUCT}).
-				Load(init.conf, adCongPath)
-			if err != nil {
-				log.Fatalf("配置错误: %v", err)
-			}
-			init.refresh()
-			watcher()
-		} else {
-			log.Fatalf("找不到附加配置: %v", err)
-		}
-	}
-}
-
-func watcher() {
-	watcher, err := watch.New(time.Second)
-	if err != nil {
-		log.Fatal(err)
-	}
-	watcher.Add(InitConfig.EnvConfig.LocalConfigName, fsnotify.Write, func() {
-		InitConfig.CloseDao()
-		err := configor.New(&configor.Config{Debug: InitConfig.Env == DEVELOPMENT}).
-			Load(InitConfig.conf, InitConfig.EnvConfig.LocalConfigName)
-		if err != nil {
-			log.Fatalf("配置错误: %v", err)
-		}
-		InitConfig.refresh()
-	})
-}
 
 // Custom
 func (init *Init) setConfig() {

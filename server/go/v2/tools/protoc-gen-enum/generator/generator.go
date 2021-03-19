@@ -1589,7 +1589,7 @@ func (g *Generator) generateEnum(enum *EnumDescriptor) {
 		g.Out()
 		g.P("}")
 		g.P()
-		g.P("func (x ", ccTypeName, ") Log(err error) error {")
+		g.P("func (x ", ccTypeName, ") ErrorLog(err error) error {")
 		g.In()
 		g.P(`log.Error(err)`)
 		g.P(`return &errorcode.ErrRep{Code: errorcode.ErrCode(x), Message: x.String()}`)

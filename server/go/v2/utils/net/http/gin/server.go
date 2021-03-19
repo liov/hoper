@@ -14,7 +14,7 @@ func Http(confPath string,ginHandle func(engine *gin.Engine)) *gin.Engine {
 	r := gin.New()
 	WithConfiguration(r, confPath)
 	//r.Use(gin.Logger())
-	/*logger := (&log.Config{Development: initialize.InitConfig.Env == initialize.PRODUCT}).NewLogger()
+	/*logger := (&log.Config{Development: initialize.SpecialConfig.Env == initialize.PRODUCT}).NewLogger()
 	middleware.SetLog(r, logger, false)*/
 	//r.Use(gin.Recovery())
 	Debug(r)

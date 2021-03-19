@@ -2,14 +2,13 @@ package main
 
 import (
 	"fmt"
-
 	"time"
 
-	"github.com/liov/hoper/go/v2/utils/dao/cache"
+	"github.com/liov/hoper/go/v2/utils/structure/cache/gcache"
 )
 
 func main() {
-	gc := cache.New(10).
+	gc := gcache.New(10).
 		LFU().
 		Build()
 

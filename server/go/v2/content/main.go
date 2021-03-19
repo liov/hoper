@@ -7,10 +7,10 @@ import (
 	"github.com/liov/hoper/go/v2/content/conf"
 	"github.com/liov/hoper/go/v2/content/dao"
 	"github.com/liov/hoper/go/v2/content/service"
+	"github.com/liov/hoper/go/v2/tailmon"
 	"github.com/liov/hoper/go/v2/tailmon/initialize"
 	model "github.com/liov/hoper/go/v2/protobuf/content"
 	"github.com/liov/hoper/go/v2/protobuf/user"
-	"github.com/liov/hoper/go/v2/utils/net/http/tailmon"
 	"google.golang.org/grpc"
 )
 
@@ -26,7 +26,7 @@ func main() {
 
 		},
 		CustomContext: user.CtxWithRequest,
-		Authorization: user.Authorization,
+		ConvertContext: user.Authorization,
 	}
 	s.Start()
 }

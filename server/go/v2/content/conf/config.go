@@ -6,6 +6,7 @@ import (
 
 	"github.com/liov/hoper/go/v2/content/model"
 	"github.com/liov/hoper/go/v2/tailmon/initialize"
+	"github.com/spf13/viper"
 )
 
 /*var ServerSettings = &ServerConfig{}
@@ -21,7 +22,7 @@ type config struct {
 	Database  initialize.DatabaseConfig
 	Redis     initialize.RedisConfig
 	Log       initialize.LogConfig
-	Consul    initialize.EtcdConfig
+	Viper     *viper.Viper
 }
 
 var Conf = &config{

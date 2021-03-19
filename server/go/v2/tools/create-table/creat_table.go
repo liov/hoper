@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/liov/hoper/go/v2/protobuf/content"
 	"github.com/liov/hoper/go/v2/protobuf/user"
-	"github.com/liov/hoper/go/v2/utils/dao/db/get"
+	"github.com/liov/hoper/go/v2/tools/create-table/get"
 )
 
 var userMod = []interface{}{
@@ -29,7 +29,7 @@ var contentMod = []interface{}{
 	&content.CountStatistics{},
 	&content.Report{},
 	&content.Collection{},*/
-	&content.TagGroup{},
+	&content.FavFollow{},
 }
 
 func main() {

@@ -1,4 +1,4 @@
-package cache1
+package gocache
 
 import (
 	"encoding/gob"

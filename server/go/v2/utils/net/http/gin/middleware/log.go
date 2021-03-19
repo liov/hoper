@@ -219,7 +219,7 @@ func LoggerWithConfig(conf LoggerConfig) gin.HandlerFunc {
 		// Process request
 		c.Next()
 
-		// Log only when path is not being skipped
+		// ErrorLog only when path is not being skipped
 		for _, ext := range notlogged {
 			if strings.HasSuffix(path, ext) {
 				return

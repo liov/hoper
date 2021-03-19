@@ -8,7 +8,7 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/liov/hoper/go/v2/utils/dao/db/get"
+	"github.com/liov/hoper/go/v2/tools/create-table/get"
 )
 
 func Test_Dec(t *testing.T) {

@@ -54,11 +54,11 @@ func (c *Config) GetInitConfig(namespace string) (map[string]string, error) {
 }
 
 type Client struct {
-	Addr       string
-	AppId      string `json:"appId"`
-	Cluster    string `json:"cluster"`
-	IP         string `json:"ip"`
-	InitConfig SpecialConfig
+	Addr          string
+	AppId         string `json:"appId"`
+	Cluster       string `json:"cluster"`
+	IP            string `json:"ip"`
+	SpecialConfig SpecialConfig
 	//一个应用的appId和集群应该是启动时确定的，但却可以有多个namespace
 	Configurations map[string]*Apollo
 	Notifications  NotificationMap
@@ -76,7 +76,7 @@ func New(addr, appId, cluster, ip string, namespaces []string, initConfig Specia
 		AppId:          appId,
 		Cluster:        cluster,
 		IP:             ip,
-		InitConfig:     initConfig,
+		SpecialConfig:  initConfig,
 		Configurations: map[string]*Apollo{},
 		Notifications:  map[string]int{},
 		close:          make(chan struct{}, 1),
@@ -162,8 +162,8 @@ func (c *Client) GetNoCacheConfig(namespace string) error {
 		return err
 	}
 	err = json.Unmarshal(body, c.Configurations[namespace])
-	if namespace == c.InitConfig.NameSpace {
-		c.InitConfig.Callback(c.Configurations[namespace].Configurations)
+	if namespace == c.SpecialConfig.NameSpace {
+		c.SpecialConfig.Callback(c.Configurations[namespace].Configurations)
 		c.Configurations[namespace].Configurations = nil
 	}
 	if err != nil {

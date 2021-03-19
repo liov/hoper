@@ -7,12 +7,28 @@ import (
 	"github.com/cockroachdb/pebble"
 	"github.com/dgraph-io/ristretto"
 	"github.com/go-redis/redis/v8"
+	"github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/tailmon/initialize"
+	"github.com/liov/hoper/go/v2/user/conf"
+	v2 "github.com/liov/hoper/go/v2/utils/dao/db/gorm/v2"
+	"github.com/liov/hoper/go/v2/utils/log"
 	"gorm.io/gorm"
 )
 
 //原本是个单独模块，但是考虑到数据库必须初始化，所以合进来了
 //其实init主要就是配置文件数据库连接，可以理解为init放进dao
 var Dao *dao = &dao{}
+
+type userDao struct {
+	*user.Ctx
+}
+
+func GetDao(ctx *user.Ctx) *userDao {
+	if ctx == nil{
+		log.Fatal("ctx can't nil")
+	}
+	return &userDao{ctx}
+}
 
 // dao dao.
 type dao struct {
@@ -49,4 +65,14 @@ func (d *dao) Custom() {
 	db.Callback().Update().Remove("gorm:save_after_associations")
 
 	d.StdDB, _ = db.DB()
+}
+
+func (d *dao) GetDB(log *log.Logger) *gorm.DB {
+	if initialize.InitConfig.Env == initialize.DEVELOPMENT{
+		return d.GORMDB
+	}
+	return d.GORMDB.Session(&gorm.Session{
+		Logger: &v2.SQLLogger{Logger: log.Logger,
+			Config: &conf.Conf.Database.Gorm.Logger,
+		}})
 }

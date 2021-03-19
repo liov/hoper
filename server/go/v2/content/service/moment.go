@@ -44,11 +44,11 @@ func (m *MomentService) Info(ctx context.Context, req *content.GetMomentReq) (*c
 	err = db.Table(model.MomentTableName).
 		Where(`id = ?`, req.Id).First(&moment).Error
 	if err != nil {
-		return nil, ctxi.Log(errorcode.DBError, "First", err.Error())
+		return nil, ctxi.ErrorLog(errorcode.DBError, err,"First")
 	}
 	tags, err := contentDao.GetTagsByRefIdDB(db, content.ContentMoment, moment.Id)
 	if err != nil {
-		return nil, ctxi.Log(errorcode.DBError, "dbDao.GetTagContent", err.Error())
+		return nil, ctxi.ErrorLog(errorcode.DBError, err,"dbDao.GetTagContent")
 	}
 	moment.Tags = tags
 
@@ -58,7 +58,7 @@ func (m *MomentService) Info(ctx context.Context, req *content.GetMomentReq) (*c
 func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*empty.Empty, error) {
 
 	if utf8.RuneCountInString(req.Content) < conf.Conf.Customize.Moment.MaxContentLen {
-		return nil, errorcode.ParamInvalid.Message(fmt.Sprintf("文章内容不能小于%d个字",conf.Conf.Customize.Moment.MaxContentLen))
+		return nil, errorcode.InvalidArgument.Message(fmt.Sprintf("文章内容不能小于%d个字",conf.Conf.Customize.Moment.MaxContentLen))
 	}
 
 	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
@@ -82,7 +82,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*em
 		}*/
 	tags, err := contentDao.GetTagsDB(db, req.Tags)
 	if err != nil {
-		return nil, ctxi.Log(errorcode.RedisErr, "GetTagsDB", err.Error())
+		return nil, err
 	}
 	req.UserId = auth.Id
 	err = db.Transaction(func(tx *gorm.DB) error {
@@ -91,7 +91,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*em
 		}
 		err = tx.Create(req).Error
 		if err != nil {
-			return ctxi.Log(err, "db.CreateReq", err.Error())
+			return ctxi.ErrorLog(err, err,"tx.CreateReq")
 		}
 		var contentTags []model.ContentTag
 		var noExist []content.Tag
@@ -112,12 +112,12 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*em
 		}
 		if len(noExist) == 1 {
 			if err = tx.Create(&noExist[1]).Error; err != nil {
-				return ctxi.Log(err, "db.CreateNoExist", err.Error())
+				return ctxi.ErrorLog(err, err,"db.CreateNoExist")
 			}
 		}
 		if len(noExist) > 1 {
 			if err = tx.Create(&noExist).Error; err != nil {
-				return ctxi.Log(err, "db.CreateNoExist", err.Error())
+				return ctxi.ErrorLog(err, err,"db.CreateNoExist")
 			}
 		}
 		for i := range noExist {
@@ -128,7 +128,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*em
 			})
 		}
 		if err = tx.Create(&contentTags).Error; err != nil {
-			return ctxi.Log(err, "db.CreateContentTags", err.Error())
+			return ctxi.ErrorLog(err, err,"db.CreateContentTags")
 		}
 		return nil
 	})
@@ -151,7 +151,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	contentDao := dao.GetDao(ctxi)
 	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
 	if err != nil {
-		return nil, ctxi.Log(errorcode.RedisErr, "LimitRedis", err.Error())
+		return nil, err
 	}
 	log.Info(auth)
 
@@ -160,7 +160,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	var moments []*content.Moment
 	moments, err = contentDao.GetMomentListDB(db, req)
 	if err != nil {
-		return nil, ctxi.Log(errorcode.DBError, "dbDao.GetMomentList", err.Error())
+		return nil, err
 	}
 	var ids []uint64
 	for i := range moments {
@@ -168,7 +168,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	}
 	tags, err := contentDao.GetTagContentDB(db, content.ContentMoment, ids)
 	if err != nil {
-		return nil, ctxi.Log(errorcode.DBError, "dbDao.GetTagContent", err.Error())
+		return nil, err
 	}
 	var m = make(map[uint64][]*content.TinyTag)
 	for i := range tags {
@@ -193,12 +193,12 @@ func (*MomentService) Delete(ctx context.Context, req *content.GetMomentReq) (*e
 	contentDao := dao.GetDao(ctxi)
 	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
 	if err != nil {
-		return nil, ctxi.Log(errorcode.RedisErr, "LimitRedis", err.Error())
+		return nil, err
 	}
 	db := dao.Dao.GetDB(ctxi.Logger)
 	err = contentDao.DeleteMomentDB(db, req.Id, auth.Id)
 	if err != nil {
-		return nil, ctxi.Log(errorcode.DBError, "DeleteMomentDB", err.Error())
+		return nil, err
 	}
 	return nil, nil
 }

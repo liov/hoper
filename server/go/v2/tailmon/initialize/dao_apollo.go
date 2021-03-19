@@ -6,18 +6,10 @@ import (
 
 	"github.com/liov/hoper/go/v2/utils/configor/apollo"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/reflect"
+	reflecti "github.com/liov/hoper/go/v2/utils/reflect"
 	"github.com/pelletier/go-toml"
 )
 
-type ApolloConfig struct {
-	Addr       string
-	AppId      string `json:"appId"`
-	Cluster    string `json:"cluster"`
-	IP         string `json:"ip"`
-	InitConfig apollo.SpecialConfig
-	NameSpace  []string
-}
 
 func (conf *ApolloConfig) Generate() *apollo.Client {
 	return apollo.New(conf.Addr, conf.AppId, conf.Cluster, conf.IP, conf.NameSpace, conf.InitConfig)
@@ -25,7 +17,7 @@ func (conf *ApolloConfig) Generate() *apollo.Client {
 
 func (init *Init) P0Apollo() *apollo.Client {
 	conf := &ApolloConfig{}
-	if exist := reflecti.GetFieldValue(init.conf, conf); !exist {
+	if exist := reflecti.GetFieldValue(init.conf,conf); !exist {
 		return nil
 	}
 	//初始化更新配置，这里不需要，开启实时更新时初始化会更新一次
@@ -36,12 +28,8 @@ func (init *Init) P0Apollo() *apollo.Client {
 		}
 		apolloConfigEnable(init.conf, aConf)*/
 	//监听指定namespace的更新
-	conf.NameSpace = append(conf.NameSpace, InitKey)
+	conf.NameSpace = append(conf.NameSpace, conf.InitNameSpace)
 
-	conf.InitConfig = apollo.SpecialConfig{NameSpace: InitKey, Callback: func(m map[string]string) {
-		apolloConfigEnable(init.conf, m)
-		init.refresh()
-	}}
 	return conf.Generate()
 }
 
