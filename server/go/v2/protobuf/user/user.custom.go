@@ -343,11 +343,12 @@ func (c *Ctx) GetAuthInfo(auth func(*Ctx) error) (*AuthInfo, error) {
 	return &c.AuthInfo, nil
 }
 
-func (c *Ctx) Log(err error, funcName, msg string) error {
+func (c *Ctx) ErrorLog(err,originErr error, funcName string) error {
 	// caller 用原始logger skip刚好
-	c.Logger.Logger.Error(msg, zap.String(log.Position, funcName))
+	c.Logger.Logger.Error(originErr.Error(), zap.String(log.Position, funcName))
 	return err
 }
+
 
 func (c *Ctx) GeToken() string {
 	return c.Token

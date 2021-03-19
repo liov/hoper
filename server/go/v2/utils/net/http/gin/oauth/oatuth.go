@@ -188,7 +188,7 @@ func CallBack(ctx *gin.Context) {
 }
 
 var indexTemplate = `{{range $key,$value:=.Providers}}
-    <p><a href="/auth/{{$value}}">Log in with {{index $.ProvidersMap $value}}</a></p>
+    <p><a href="/auth/{{$value}}">ErrorLog in with {{index $.ProvidersMap $value}}</a></p>
 {{end}}`
 
 var userTemplate = `

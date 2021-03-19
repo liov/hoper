@@ -39,12 +39,17 @@ message Favorites{
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
   string name = 3 [(go.field) = {tags:'gorm:"size:10;not null" annotation:"名字"'}];
   repeated  user.UserBaseInfo followUsers = 4 [(go.field) = {tags:'gorm:"-" annotation:"关注人"'}];
-  uint64 Count = 5 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"数量"'}];
   repeated Collection collections = 6 [(go.field) = {tags:'gorm:"-" annotation:"收藏"'}];
   string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
   string deletedAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00"'}];
 }
 
+message FavFollow{
+  uint64 favId = 1 [(go.field) = {tags:'gorm:"not null;index:idx_fav_user"'}];
+  uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_fav_user"  annotation:"用户id"'}];
+  string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
+  string deletedAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00"'}];
+}
 // 收藏
 message Collection{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
@@ -52,7 +57,7 @@ message Collection{
   uint64 refId = 6 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index:idx_type_id" validate:"required" annotation:"相关id"'}];
   user.UserBaseInfo user = 2 [(go.field) = {tags:'gorm:"-" annotation:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
-  uint64 favoritesId = 3 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
+  uint64 favId = 3 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
   string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
   string deletedAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00"'}];
 }
@@ -73,10 +78,10 @@ message Comment{
   user.UserBaseInfo user = 2 [(go.field) = {tags:'gorm:"" annotation:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
   string content = 3 [(go.field) = {tags:'gorm:"size:255;not null" annotation:"内容"'}];
-  uint64 parentId = 7 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"直接父评论ID"'}];
-  uint64 rootId = 8 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"评论根ID"'}];
+  uint64 replyId = 7 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"回复id"'}];
+  uint64 rootId = 8 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"评论根id"'}];
   user.UserBaseInfo recvUser = 9 [(go.field) = {tags:'gorm:"-" annotation:"接收人"'}];
-  uint64 recvUserId = 10 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"接收人id"'}];
+  uint64 recvId = 10 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"接收人id"'}];
   repeated Comment subComments = 11 [(go.field) = {tags:'gorm:"-" annotation:"子评论"'}];
   uint32 sequence = 4 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"同级别的分类可根据sequence的值来排序，置顶"'}];
   string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];

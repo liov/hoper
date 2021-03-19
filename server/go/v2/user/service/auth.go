@@ -33,7 +33,8 @@ func auth(ctx *model.Ctx, update bool) error {
 	}
 	ctx.LastActiveAt = ctx.TimeStamp
 	if update {
-		err := userRedis.EfficientUserHashFromRedis(ctx)
+		userDao :=dao.GetDao(ctx)
+		err := userDao.EfficientUserHashFromRedis()
 		if err != nil {
 			return model.UserErrInvalidToken
 		}

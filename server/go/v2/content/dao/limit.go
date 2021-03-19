@@ -25,7 +25,7 @@ func (d *contentDao) LimitRedis(conn redis.Cmdable,l *conf.Limit) error {
 		return nil
 	})
 	if err != nil {
-		return ctxi.Log(errorcode.RedisErr, "Incr", err.Error())
+		return ctxi.ErrorLog(errorcode.RedisErr, err,"Incr")
 	}
 
 	if minuteIntCmd.Val() > l.MinuteLimitCount || dayIntCmd.Val() > l.DayLimitCount {
@@ -38,7 +38,7 @@ func (d *contentDao) LimitRedis(conn redis.Cmdable,l *conf.Limit) error {
 		return nil
 	})
 	if err != nil {
-		return ctxi.Log(errorcode.RedisErr, "PTTL", err.Error())
+		return ctxi.ErrorLog(errorcode.RedisErr, err,"PTTL")
 	}
 
 	_, err = conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
@@ -51,7 +51,7 @@ func (d *contentDao) LimitRedis(conn redis.Cmdable,l *conf.Limit) error {
 		return nil
 	})
 	if err != nil {
-		return ctxi.Log(errorcode.RedisErr, "Expire", err.Error())
+		return ctxi.ErrorLog(errorcode.RedisErr, err,"Expire")
 	}
 	return nil
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	tailmon "github.com/liov/hoper/go/v2/tailmon"
 	"github.com/liov/hoper/go/v2/tailmon/initialize"
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/user/conf"
@@ -14,7 +15,7 @@ import (
 	"github.com/liov/hoper/go/v2/user/service"
 	"github.com/liov/hoper/go/v2/utils/net/http/gin/oauth"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
-	"github.com/liov/hoper/go/v2/utils/net/http/tailmon"
+
 	"google.golang.org/grpc"
 )
 

@@ -6,13 +6,13 @@ import (
 	"time"
 
 	"github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/user/model"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/slices"
 	"gorm.io/gorm"
 )
 
-type UserDao struct{}
 
 func DBNotNil(db **gorm.DB) {
 	if *db == nil {
@@ -20,7 +20,7 @@ func DBNotNil(db **gorm.DB) {
 	}
 }
 
-func (*UserDao) ExitByEmailORPhone(ctx *user.Ctx,db *gorm.DB, mail, phone string) (bool, error) {
+func (d *userDao) ExitByEmailORPhone(db *gorm.DB, mail, phone string) (bool, error) {
 	DBNotNil(&db)
 	var err error
 	var count int64
@@ -30,13 +30,12 @@ func (*UserDao) ExitByEmailORPhone(ctx *user.Ctx,db *gorm.DB, mail, phone string
 		err = db.Table(model.UserTableName).Where(`phone = ?`, phone).Count(&count).Error
 	}
 	if err != nil {
-		log.Error("UserDao.ExitByEmailORPhone: ", err)
-		return true, err
+		return true, d.ErrorLog(errorcode.DBError,err,"ExitByEmailORPhone")
 	}
 	return count == 1, nil
 }
 
-func (d *UserDao) GetByEmailORPhone(ctx *user.Ctx,db *gorm.DB, email, phone string, fields ...string) (*user.User, error) {
+func (d *userDao) GetByEmailORPhone(db *gorm.DB, email, phone string, fields ...string) (*user.User, error) {
 	DBNotNil(&db)
 	var user user.User
 	var err error
@@ -49,13 +48,12 @@ func (d *UserDao) GetByEmailORPhone(ctx *user.Ctx,db *gorm.DB, email, phone stri
 		err = db.Where("phone = ?", phone).Find(&user).Error
 	}
 	if err != nil {
-		log.Error("UserDao.GetByEmailORPhone: ", err)
-		return nil, err
+		return nil, d.ErrorLog(errorcode.DBError,err,"GetByEmailORPhone")
 	}
 	return &user, nil
 }
 
-func (*UserDao) Creat(ctx *user.Ctx,db *gorm.DB, user *user.User) error {
+func (*userDao) Creat(db *gorm.DB, user *user.User) error {
 	DBNotNil(&db)
 	if err := db.Table(model.UserTableName).Create(user).Error; err != nil {
 		log.Error("UserDao.Creat: ", err)
@@ -64,17 +62,16 @@ func (*UserDao) Creat(ctx *user.Ctx,db *gorm.DB, user *user.User) error {
 	return nil
 }
 
-func (*UserDao) GetByPrimaryKey(ctx *user.Ctx,db *gorm.DB, id uint64) (*user.User, error) {
+func (d *userDao) GetByPrimaryKey(db *gorm.DB, id uint64) (*user.User, error) {
 	DBNotNil(&db)
 	var user user.User
 	if err := db.Table(model.UserTableName).First(&user, id).Error; err != nil {
-		log.Error("UserDao.GetByPrimaryKey: ", err)
-		return nil, err
+		return nil, d.ErrorLog(errorcode.DBError,err,"GetByPrimaryKey")
 	}
 	return &user, nil
 }
 
-func (*UserDao) SaveResumes(ctx *user.Ctx,db *gorm.DB, userId uint64, resumes []*user.Resume, originalIds []uint64, device *user.UserDeviceInfo) error {
+func (d *userDao) SaveResumes(db *gorm.DB, userId uint64, resumes []*user.Resume, originalIds []uint64, device *user.UserDeviceInfo) error {
 	DBNotNil(&db)
 	if len(resumes) == 0 {
 		return nil
@@ -129,20 +126,20 @@ func (*UserDao) SaveResumes(ctx *user.Ctx,db *gorm.DB, userId uint64, resumes []
 	return nil
 }
 
-func (*UserDao) ActionLog(ctx *user.Ctx,db *gorm.DB, log *user.UserActionLog) error {
+func (d *userDao) ActionLog(db *gorm.DB, log *user.UserActionLog) error {
 	err := db.Table(model.UserActionLogTableName).Create(&log).Error
 	if err != nil {
-		return err
+		return d.ErrorLog(errorcode.DBError,err,"ActionLog")
 	}
 	return nil
 }
 
-func (*UserDao) ResumesIds(ctx *user.Ctx,db *gorm.DB, userId uint64) ([]uint64, error) {
+func (d *userDao) ResumesIds(db *gorm.DB, userId uint64) ([]uint64, error) {
 	DBNotNil(&db)
 	var resumeIds []uint64
 	err := db.Table(model.ResumeTableName).Where("user_id = ? AND status > 0", userId).Pluck("id", &resumeIds).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil, err
+		return nil, d.ErrorLog(errorcode.DBError,err,"ResumesIds")
 	}
 	return resumeIds, nil
 }
