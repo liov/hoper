@@ -115,7 +115,7 @@ etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.
 # apisix替代ingress controller
 
 # IDEA
-plugin 仓库地址 https://repo.idechajian.com
+plugin 仓库地址 https://repo.idechajian.com https://plugins.zhile.io
 
 # protoc卡住
 tags标签写错
