@@ -6,23 +6,25 @@ const (
 	LikeTableName       = "like"
 	BrowserTableName    = "browser"
 	CommentTableName    = "comment"
-	CollectTableName    = "collect"
+	CollectTableName    = "collection"
+	ContainerTableName  = "container"
 	ReportTableName     = "report"
 	GiveTableName       = "give"
 	ApproveTableName    = "approve"
 	MomentTableName     = "moment"
-	NoteTableName     = "note"
-	DiaryTableName = "diary"
-	DiaryBookTableName = "diary_book"
-	FavoritesTableName = "favorites"
+	NoteTableName       = "note"
+	DiaryTableName      = "diary"
+	ArticleTableName    = "article"
+	DiaryBookTableName  = "diary_book"
+	FavoritesTableName  = "favorites"
 	TagTableName        = "tag"
 	ContentExtTableName = "content_ext"
+	ContentTagTableName = "content_tag"
 )
 
 const (
 	HotSortSet = "Hot_Sort_Set"
 )
-
 
 func ActionTableName(action content.ActionType) string {
 	switch action {

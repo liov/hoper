@@ -19,10 +19,10 @@ Charset= "UTF-8"
 EnableOptimizations= true
 
 [dev]
-NacosTenant = "b5b476ab-774f-4637-a8bf-e915635b4b24"
+LocalConfigName = "local.toml"
 
 [test]
-NacosTenant = ""
+NacosTenant = "b5b476ab-774f-4637-a8bf-e915635b4b24"
 
 [prod]
 NacosTenant = ""

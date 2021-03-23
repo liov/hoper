@@ -125,9 +125,18 @@ service ContentService {
     };
     option (gogo.graphql_operation) = Query;
   }
-
+  //收藏夹列表
+  rpc FavList (FavListReq) returns (FavListRep) {
+    option (google.api.http) = {
+      get: "/api/v1/fav"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["v1.0.0"]
+    };
+    option (gogo.graphql_operation) = Query;
+  }
   // 创建收藏夹
-  rpc CreateFav (CreateFavReq) returns (empty.Empty) {
+  rpc AddFav (AddFavReq) returns (empty.Empty) {
     option (google.api.http) = {
       post: "/api/v1/fav"
     };
@@ -137,9 +146,29 @@ service ContentService {
     option (gogo.graphql_operation) = Mutation;
   }
   // 修改收藏夹
-  rpc EditFav (EditFavReq) returns (empty.Empty) {
+  rpc EditFav (AddFavReq) returns (empty.Empty) {
     option (google.api.http) = {
       put: "/api/v1/fav"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["v1.0.0"]
+    };
+    option (gogo.graphql_operation) = Mutation;
+  }
+  // 创建合集
+  rpc AddContainer (AddContainerReq) returns (empty.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/container"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["v1.0.0"]
+    };
+    option (gogo.graphql_operation) = Mutation;
+  }
+  // 修改合集
+  rpc EditDiaryContainer (AddContainerReq) returns (empty.Empty) {
+    option (google.api.http) = {
+      put: "/api/v1/container"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -156,7 +185,7 @@ message AddTagReq {
   string name = 1[(go.field) = {tags:'annotation:"名称"'}];
   string description = 3 [(go.field) = {tags:'annotation:"描述"'}];
   string expressionURL = 4 [(go.field) = {tags:'annotation:"表情url"'}];
-  uint64 userId = 5 [(go.field) = {tags:'annotation:"用户id"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  uint64 userId = 5 [(go.field) = {tags:'annotation:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
 }
 
@@ -188,8 +217,8 @@ message TagGroupListReq{
 }
 
 message TagGroupListRep{
-  uint32 total = 1;
-  map<int32,TagListRep> data = 2;
+  int64 total = 1;
+  map<int32, TagListRep> data = 2;
 }
 
 message GetAttrReq {
@@ -216,17 +245,38 @@ message AttrListReq{
 }
 
 message AttrListRep{
-  uint32 count = 1;
+  int64 total = 1;
   repeated Attributes list = 2;
 }
 
-message CreateFavReq{
-  uint64 userId = 17 [(go.field) = {tags:'annotation:"用户id"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+message AddFavReq{
+  uint64 id = 1 [(go.field) = {tags:'validate:"required"'}];
+  uint64 userId = 17 [(go.field) = {tags:'annotation:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
-  string name = 3 [(go.field) = {tags:'annotation:"名字"'}];
+  string title = 3 [(go.field) = {tags:'gorm:"size:10;not null" annotation:"标题"'}];
+  string description = 5 [(go.field) = {tags:'gorm:"type:text;not null" annotation:"描述"'}];
+  string cover = 4 [(go.field) = {tags:'gorm:"size:255;not null" annotation:"封面"'}];
+  uint32 sequence = 12 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"同级别的分类可根据sequence的值来排序，置顶"'}];
+  uint32 anonymous = 15 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"是否匿名,0-是,1否"'}];
 }
 
-message EditFavReq{
+message AddContainerReq{
   uint64 id = 1 [(go.field) = {tags:'validate:"required"'}];
-  string name = 3 [(go.field) = {tags:'annotation:"名字"'}];
+  uint64 userId = 17 [(go.field) = {tags:'annotation:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    read_only: true}];
+  ContainerType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null" annotation:"类型"'}];
+  string title = 3 [(go.field) = {tags:'gorm:"size:10;not null" annotation:"标题"'}];
+  string description = 5 [(go.field) = {tags:'gorm:"type:text;not null" annotation:"描述"'}];
+  string cover = 4 [(go.field) = {tags:'gorm:"size:255;not null" annotation:"封面"'}];
+  uint32 sequence = 12 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"同级别的分类可根据sequence的值来排序，置顶"'}];
+  uint32 anonymous = 15 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"是否匿名,0-是,1否"'}];
 }
+
+message FavListReq{
+}
+
+message FavListRep{
+  int64 total = 1;
+  repeated Favorites list = 2;
+}
+

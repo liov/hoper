@@ -15,7 +15,19 @@ type ContentTag struct {
 	TagId uint64              `json:"tagId" gorm:"size:20;not null;index:idx_content;index:idx_tag" validate:"required" annotation:"相关id"`
 }
 
-type TagContent struct {
+type ContentTagRel struct {
 	RefId uint64 `json:"refId" validate:"required" annotation:"相关id"`
 	content.TinyTag
+}
+
+type ContentExt struct {
+	Type  content.ContentType
+	RefId uint64
+}
+
+type ContentAction struct {
+	Id uint64
+	RefId uint64 `json:"refId" validate:"required" annotation:"相关id"`
+	LikeId uint64
+	Action content.ActionType
 }
