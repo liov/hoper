@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-
 	"github.com/liov/hoper/go/v2/content/conf"
 	"github.com/liov/hoper/go/v2/content/dao"
 	"github.com/liov/hoper/go/v2/content/model"
@@ -38,11 +37,11 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*empty.Em
 	db := dao.Dao.GetDB(ctxi.Logger)
 	req.UserId = auth.Id
 
-	exists, err := contentDao.ActionExists(db, req.Type, req.Action, req.RefId, req.UserId)
+	id, err := contentDao.LikeIdDB(db, req.Type, req.Action, req.RefId, req.UserId)
 	if err != nil {
 		return nil, err
 	}
-	if (exists && !req.Del) || (!exists && req.Del) {
+	if (id > 0 && !req.Del) || (id == 0 && req.Del) {
 		return nil, nil
 	}
 
@@ -74,7 +73,7 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*empty.Em
 	}
 
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.RedisErr, err,  "HotCountRedis")
+		return nil, ctxi.ErrorLog(errorcode.RedisErr, err, "HotCountRedis")
 	}
 	return nil, nil
 }
@@ -129,7 +128,7 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*em
 	}
 	err = contentDao.HotCountRedis(dao.Dao.Redis, req.Type, req.RefId, 1)
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.RedisErr,  err, "HotCountRedis")
+		return nil, err
 	}
 	return nil, nil
 }
@@ -150,14 +149,14 @@ func (*ActionService) DelComment(ctx context.Context, req *request.Object) (*emp
 	var comment content.Comment
 	err = db.Table(model.CommentTableName).First(&comment, "id = ?", req.Id).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError,  err, "Find")
+		return nil, ctxi.ErrorLog(errorcode.DBError, err, "Find")
 	}
 	if comment.UserId != auth.Id {
 		var userId uint64
 		err = db.Table(model.ContentTableName(comment.Type)).Select("user_id").
 			Where(`id = ?`, comment.RefId).Row().Scan(&userId)
 		if err != nil {
-			return nil, ctxi.ErrorLog(errorcode.DBError,  err, "SelectUserId")
+			return nil, ctxi.ErrorLog(errorcode.DBError, err, "SelectUserId")
 		}
 		if userId != auth.Id {
 			return nil, errorcode.PermissionDenied
@@ -166,11 +165,11 @@ func (*ActionService) DelComment(ctx context.Context, req *request.Object) (*emp
 
 	err = contentDao.DelDB(db, model.CommentTableName, req.Id)
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError,  err, "DelDB")
+		return nil, err
 	}
 	err = contentDao.HotCountRedis(dao.Dao.Redis, comment.Type, comment.RefId, -1)
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.RedisErr,  err, "HotCountRedis")
+		return nil, err
 	}
 	return nil, nil
 }
@@ -191,14 +190,21 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*em
 	req.UserId = auth.Id
 	exists, err := contentDao.ExistsByAuthDB(db, model.FavoritesTableName, req.FavId, auth.Id)
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err,  "ExistsByAuthDB")
+		return nil, err
 	}
 	if !exists {
 		return nil, errorcode.PermissionDenied.Message("无效的收藏夹")
 	}
+	id, err := contentDao.CollectIdDB(db, req.Type, req.RefId, auth.Id, req.FavId)
+	if err != nil {
+		return nil, ctxi.ErrorLog(errorcode.DBError, err, "CollectExists")
+	}
+	if id > 0 {
+		return nil, nil
+	}
 	err = db.Table(model.CollectTableName).Create(req).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError,  err, "Create")
+		return nil, ctxi.ErrorLog(errorcode.DBError, err, "Create")
 	}
 	err = contentDao.HotCountRedis(dao.Dao.Redis, req.Type, req.RefId, -1)
 	if err != nil {
@@ -241,7 +247,7 @@ func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*empt
 	err = db.Transaction(func(tx *gorm.DB) error {
 		err = db.Table(model.ReportTableName).Create(req).Error
 		if err != nil {
-			return ctxi.ErrorLog(errorcode.DBError,err, "Create")
+			return ctxi.ErrorLog(errorcode.DBError, err, "Create")
 		}
 		err = contentDao.ActionCountDB(tx, req.Type, content.ActionReport, req.RefId, 1)
 		if err != nil {

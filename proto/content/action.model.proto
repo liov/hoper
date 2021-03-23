@@ -33,23 +33,6 @@ message Report{
   string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
 }
 
-message Favorites{
-  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  user.UserBaseInfo user = 2 [(go.field) = {tags:'gorm:"-" annotation:"用户"'}];
-  uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
-  string name = 3 [(go.field) = {tags:'gorm:"size:10;not null" annotation:"名字"'}];
-  repeated  user.UserBaseInfo followUsers = 4 [(go.field) = {tags:'gorm:"-" annotation:"关注人"'}];
-  repeated Collection collections = 6 [(go.field) = {tags:'gorm:"-" annotation:"收藏"'}];
-  string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
-  string deletedAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00"'}];
-}
-
-message FavFollow{
-  uint64 favId = 1 [(go.field) = {tags:'gorm:"not null;index:idx_fav_user"'}];
-  uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_fav_user"  annotation:"用户id"'}];
-  string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
-  string deletedAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00"'}];
-}
 // 收藏
 message Collection{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];

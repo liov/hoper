@@ -122,8 +122,8 @@ message CommentReq{
 
 
 message CollectReq{
-  ContentType type = 12 [(go.field) = {tags:'json:"-" gorm:"type:int2;not null" validate:"required" annotation:"相关类型"'}];
-  uint64 refId = 6 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index" validate:"required" annotation:"相关id"'}];
+  ContentType type = 12 [(go.field) = {tags:'gorm:"type:int2;not null" validate:"required" annotation:"相关类型"'}];
+  uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"相关id"'}];
   uint64 userId = 5 [(go.field) = {tags:'annotation:"用户id"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
   uint64 favId = 3 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];

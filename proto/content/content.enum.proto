@@ -51,7 +51,7 @@ enum TagType{
 // 可见范围
 enum ViewPermission{
   option (go.enum) = {stringer_name: 'OrigString'};
-  ViewPermissionPlaceholder = 0 [(gogo.enumvalue_cn)= "占位"];
+  ViewPermissionPlaceholder = 0 [(gogo.enumvalue_cn) = "占位"];
   ViewPermissionAll = 1 [(gogo.enumvalue_cn) = "无限制"];
   ViewPermissionSelf = 2 [(gogo.enumvalue_cn) = "仅自己"];
   ViewPermissionHomePage = 3 [(gogo.enumvalue_cn) = "主页"];
@@ -63,8 +63,17 @@ enum ViewPermission{
 // 可见范围
 enum MomentType{
   option (go.enum) = {stringer_name: 'OrigString'};
-  MomentTypePlaceholder = 0 [(gogo.enumvalue_cn)= "占位"];
+  MomentTypePlaceholder = 0 [(gogo.enumvalue_cn) = "占位"];
   MomentTypeImage = 1 [(gogo.enumvalue_cn) = "图片"];
   MomentTypeVideo = 2 [(gogo.enumvalue_cn) = "视频"];
-  MomentTypeAudio = 3 [(gogo.enumvalue_cn) = "音频"];
+  MomentTypeAudio = 4 [(gogo.enumvalue_cn) = "音频"];
+}
+
+enum ContainerType{
+  option (go.enum) = {stringer_name: 'OrigString'};
+  ContainerTypePlaceholder = 0 [(gogo.enumvalue_cn) = "占位"];
+  ContainerTypeFavorites = 1[(gogo.enumvalue_cn) = "收藏夹"];
+  ContainerTypeDiaryBook = 2[(gogo.enumvalue_cn) = "日记本"];
+  ContainerTypeAlbum = 3[(gogo.enumvalue_cn) = "专辑"];
+  ContainerTypeCollection = 4[(gogo.enumvalue_cn) = "合集"];
 }

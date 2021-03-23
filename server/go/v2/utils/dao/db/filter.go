@@ -29,10 +29,15 @@ func (f Filters) Build() string {
 		switch filter.Method {
 		case ">", "<", "=", "!=", ">=", "<=":
 			conditions = append(conditions, fmt.Sprintf("%s %s '%s'", filter.Field, filter.Method, filter.Value))
-
-		case "in", "not in":
+		case "IN", "NOT IN":
 			valueSplit := strings.Split(filter.Value, ",")
 			conditions = append(conditions, fmt.Sprintf("%s %s ('%s')", filter.Field, filter.Method, strings.Join(valueSplit, "','")))
+		case "BETWEEN":
+			valueSplit := strings.Split(filter.Value, ",")
+			if len(valueSplit) < 2 {
+				continue
+			}
+			conditions = append(conditions, fmt.Sprintf("%s %s %s AND %s", filter.Field, filter.Method, valueSplit[0], valueSplit[1]))
 		}
 
 	}
@@ -40,7 +45,7 @@ func (f Filters) Build() string {
 	if len(conditions) == 0 {
 		return ""
 	}
-	return strings.Join(conditions, " and ")
+	return strings.Join(conditions, " AND ")
 }
 
 func (f Filters) BuildORM(odb *gorm.DB) *gorm.DB {

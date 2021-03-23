@@ -9,26 +9,18 @@ import (
 	"gorm.io/gorm"
 )
 
-func (d *contentDao) GetMomentListDB(db *gorm.DB,req *content.MomentListReq) ([]*content.Moment,error) {
+func (d *contentDao) GetMomentListDB(db *gorm.DB,req *content.MomentListReq) (int64,[]*content.Moment,error) {
 	var moments []*content.Moment
-	err := db.Table(model.MomentTableName).Where(`deleted_at = ?`, dbi.PostgreZeroTime).
-		Limit(int(req.PageSize)).Offset(int((req.PageNo - 1) * req.PageSize)).
+	db = db.Table(model.MomentTableName).Where( dbi.PostgreNotDeleted)
+	var count int64
+	db.Count(&count)
+	err:=db.Limit(int(req.PageSize)).Offset(int((req.PageNo - 1) * req.PageSize)).
 		Find(&moments).Error
 	if err != nil {
-		return nil, d.ErrorLog(errorcode.DBError, err,"GetMomentListDB")
+		return 0,nil, d.ErrorLog(errorcode.DBError, err,"GetMomentListDB")
 	}
-	return moments,nil
+	return count,moments,nil
 }
-
-func (d *contentDao) DeleteMomentDB(db *gorm.DB,id,userId uint64) error {
-	err:= db.Table(model.MomentTableName).Where(`id = ? AND user_id = ? `, id,userId).
-		UpdateColumns(dbi.DeleteAt(d.TimeString)).Error
-	if err != nil {
-		return d.ErrorLog(errorcode.DBError, err,"DeleteMomentDB")
-	}
-	return nil
-}
-
 
 func (d *contentDao) GetTopMomentsRedis(conn redis.Cmdable,key string, pageNo int, PageSize int) ([]content.Moment, error) {
 	var moments []content.Moment

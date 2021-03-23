@@ -8,37 +8,39 @@ import (
 	"gorm.io/gorm"
 )
 
-func (d *contentDao) GetTagContentDB(db *gorm.DB,typ content.ContentType,refIds []uint64) ([]model.TagContent,error) {
-	var tags []model.TagContent
-	err := db.Select("b.ref_id,a.id,a.name").Table("tag a").
-		Joins(`LEFT JOIN content_tag b ON a.Id = b.tag_id`).
-		Where("b.type = ? AND b.ref_id IN (?) AND deleted_at = ?",
-		typ,refIds, dbi.PostgreZeroTime).Find(&tags).Error
+const TagTableNameAlias = model.TagTableName + " a"
+
+func (d *contentDao) GetContentTagDB(db *gorm.DB, typ content.ContentType, refIds []uint64) ([]model.ContentTagRel, error) {
+	var tags []model.ContentTagRel
+	err := db.Select("b.ref_id,a.id,a.name").Table(TagTableNameAlias).
+		Joins(`LEFT JOIN `+model.ContentTagTableName+` b ON a.id = b.tag_id`).
+		Where("b.type = ? AND b.ref_id IN (?) AND "+dbi.PostgreNotDeleted,
+			typ, refIds).Find(&tags).Error
 	if err != nil {
-		return nil, d.ErrorLog(errorcode.DBError,err,"GetTagContentDB")
+		return nil, d.ErrorLog(errorcode.DBError, err, "GetContentTagDB")
 	}
-	return tags,nil
+	return tags, nil
 }
 
-func (d *contentDao) GetTagsDB(db *gorm.DB,names []string) ([]model.TinyTag,error) {
+func (d *contentDao) GetTagsDB(db *gorm.DB, names []string) ([]model.TinyTag, error) {
 	var tags []model.TinyTag
-	err:= db.Table("tag").Select("id,name").
-		Where("name IN (?) AND deleted_at = ?", names,dbi.PostgreZeroTime).
+	err := db.Table(model.TagTableName).Select("id,name").
+		Where("name IN (?) AND "+dbi.PostgreNotDeleted, names).
 		Find(&tags).Error
 	if err != nil {
-		return nil, d.ErrorLog(errorcode.DBError,err,"GetTagsDB")
+		return nil, d.ErrorLog(errorcode.DBError, err, "GetTagsDB")
 	}
-	return tags,nil
+	return tags, nil
 }
 
-func (d *contentDao) GetTagsByRefIdDB(db *gorm.DB,typ content.ContentType,refId uint64) ([]*content.TinyTag,error) {
+func (d *contentDao) GetTagsByRefIdDB(db *gorm.DB, typ content.ContentType, refId uint64) ([]*content.TinyTag, error) {
 	var tags []*content.TinyTag
-	err := db.Select("a.id,a.name").Table("tag a").
-		Joins(`LEFT JOIN content_tag b ON a.Id = b.tag_id`).
-		Where("b.type = ? AND b.ref_id = ? AND deleted_at = ?",
-			typ,refId, dbi.PostgreZeroTime).Scan(&tags).Error
+	err := db.Select("a.id,a.name").Table(TagTableNameAlias).
+		Joins(`LEFT JOIN `+model.ContentTagTableName+` b ON a.id = b.tag_id`).
+		Where("b.type = ? AND b.ref_id = ? AND "+dbi.PostgreNotDeleted,
+			typ, refId).Scan(&tags).Error
 	if err != nil {
-		return nil, d.ErrorLog(errorcode.DBError,err,"GetTagsByRefIdDB")
+		return nil, d.ErrorLog(errorcode.DBError, err, "GetTagsByRefIdDB")
 	}
-	return tags,nil
+	return tags, nil
 }
