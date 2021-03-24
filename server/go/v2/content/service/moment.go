@@ -236,19 +236,19 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 		for i := range likes {
 			if moment, ok := m[likes[i].RefId]; ok {
 				if likes[i].Action == content.ActionLike {
-					moment.LikeId = likes[i].LikeId
+					moment.LikeId = likes[i].Id
 				}
 				if likes[i].Action == content.ActionUnlike {
-					moment.UnlikeId = likes[i].LikeId
+					moment.UnlikeId = likes[i].Id
 				}
 			}
 		}
-		collects, err := contentDao.GetContentActionDB(db, content.ActionCollect, content.ContentMoment, ids, auth.Id)
+		collects, err := contentDao.GetCollectDB(db,content.ContentMoment, ids, auth.Id)
 		if err != nil {
 			return nil, err
 		}
 		for i := range collects {
-			if moment, ok := m[likes[i].RefId]; ok {
+			if moment, ok := m[collects[i].RefId]; ok {
 				moment.Collect = true
 			}
 		}
