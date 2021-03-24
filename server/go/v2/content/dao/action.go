@@ -147,7 +147,18 @@ WHERE id = ?  AND type = ? AND user_id = ? AND ` + dbi.PostgreNotDeleted + ` LIM
 
 func (d *contentDao) GetContentActionDB(db *gorm.DB, action content.ActionType, typ content.ContentType, refIds []uint64, userId uint64) ([]model.ContentAction, error) {
 	var actions []model.ContentAction
-	err := db.Select("ref_id,id AS like_id,action").Table(model.ActionTableName(action)).
+	err := db.Select("ref_id,id,action").Table(model.ActionTableName(action)).
+		Where("type = ? AND ref_id IN (?) AND user_id = ? AND "+dbi.PostgreNotDeleted,
+			typ, refIds, userId).Scan(&actions).Error
+	if err != nil {
+		return nil, d.ErrorLog(errorcode.DBError, err, "GetContentActionDB")
+	}
+	return actions, nil
+}
+
+func (d *contentDao) GetCollectDB(db *gorm.DB,  typ content.ContentType, refIds []uint64, userId uint64) ([]model.ContentAction, error) {
+	var actions []model.ContentAction
+	err := db.Select("ref_id,id").Table(model.CollectTableName).
 		Where("type = ? AND ref_id IN (?) AND user_id = ? AND "+dbi.PostgreNotDeleted,
 			typ, refIds, userId).Scan(&actions).Error
 	if err != nil {
