@@ -67,3 +67,8 @@ const (
 	HeaderInternal = "Internal"
 	HeaderTE = "TE"
 )
+
+const(
+	GrpcTraceBin              = "grpc-trace-bin"
+	GrpcInternal              = "grpc-internal"
+)

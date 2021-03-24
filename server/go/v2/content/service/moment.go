@@ -3,7 +3,13 @@ package service
 import (
 	"context"
 	"fmt"
+	"github.com/liov/hoper/go/v2/content/client"
 	"github.com/liov/hoper/go/v2/protobuf/utils/request"
+	httpi "github.com/liov/hoper/go/v2/utils/net/http"
+	stringsi "github.com/liov/hoper/go/v2/utils/strings"
+	"go.opencensus.io/trace"
+	"go.opencensus.io/trace/propagation"
+	"google.golang.org/grpc/metadata"
 	"net/http"
 	"unicode/utf8"
 
@@ -23,11 +29,11 @@ type MomentService struct {
 	content.UnimplementedMomentServiceServer
 }
 
-func (m *MomentService) Service() (describe, prefix string, middleware []http.HandlerFunc) {
+func (*MomentService) Service() (describe, prefix string, middleware []http.HandlerFunc) {
 	return "瞬间相关", "/api/moment", nil
 }
 
-func (m *MomentService) Info(ctx context.Context, req *request.Object) (*content.Moment, error) {
+func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.Moment, error) {
 	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	_, err := ctxi.GetAuthInfo(AuthWithUpdate)
@@ -46,12 +52,45 @@ func (m *MomentService) Info(ctx context.Context, req *request.Object) (*content
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "First")
 	}
-	tags, err := contentDao.GetTagsByRefIdDB(db, content.ContentMoment, moment.Id)
+	contentTags, err := contentDao.GetContentTagDB(db, content.ContentMoment, []uint64{moment.Id})
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "dbDao.GetTagContent")
+		return nil, err
+	}
+	var tags = make([]*content.TinyTag, len(contentTags))
+	for i := range contentTags {
+		tags[i] = &contentTags[i].TinyTag
 	}
 	moment.Tags = tags
 
+	_,comments,err:=contentDao.GetCommentsDB(db,content.ContentMoment,req.Id,0,0,0)
+	if err != nil{
+		return nil,err
+	}
+	moment.Comments = comments
+	var userIds []uint64
+
+	for i := range comments{
+		userIds = append(userIds,comments[i].UserId)
+		userIds = append(userIds,comments[i].RecvId)
+	}
+	userIds = append(userIds,moment.UserId)
+	_,span = trace.StartSpan(ctx,"UserClient.BaseList")
+	ctx = metadata.AppendToOutgoingContext(ctx,httpi.GrpcTraceBin,stringsi.ToString(propagation.Binary(span.SpanContext())),
+		httpi.GrpcInternal,httpi.GrpcInternal)
+	userList,err:=client.UserClient.BaseList(ctx,&user.BaseListReq{Ids:userIds})
+	if err != nil{
+		return nil,err
+	}
+	span.End()
+	var m = make(map[uint64]*user.UserBaseInfo)
+	for _,u:=range userList.List{
+		m[u.Id] = u
+	}
+	for i := range comments{
+		comments[i].RecvUser = m[comments[i].RecvId]
+		comments[i].User = m[comments[i].UserId]
+	}
+	moment.User = m[moment.UserId]
 	return &moment, nil
 }
 
@@ -196,10 +235,10 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 		}
 		for i := range likes {
 			if moment, ok := m[likes[i].RefId]; ok {
-				if likes[i].Action == content.ActionLike{
+				if likes[i].Action == content.ActionLike {
 					moment.LikeId = likes[i].LikeId
 				}
-				if likes[i].Action == content.ActionUnlike{
+				if likes[i].Action == content.ActionUnlike {
 					moment.UnlikeId = likes[i].LikeId
 				}
 			}
@@ -209,7 +248,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 			return nil, err
 		}
 		for i := range collects {
-			if moment, ok := m[likes[i].RefId]; ok  {
+			if moment, ok := m[likes[i].RefId]; ok {
 				moment.Collect = true
 			}
 		}

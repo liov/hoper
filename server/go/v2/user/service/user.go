@@ -66,7 +66,7 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 	log.Debug(vcode)
 	key := modelconst.VerificationCodeKey + req.Mail + req.Phone
 	if err := dao.Dao.Redis.SetEX(ctx, key, vcode, modelconst.VerificationCodeDuration).Err(); err != nil {
-		return nil, ctxi.ErrorLog(errorcode.RedisErr.Message("新建出错"),err,"SetEX")
+		return nil, ctxi.ErrorLog(errorcode.RedisErr.Message("新建出错"), err, "SetEX")
 	}
 	return new(empty.Empty), nil
 }
@@ -196,7 +196,7 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 	redisKey := modelconst.ActiveTimeKey + strconv.FormatUint(req.Id, 10)
 	emailTime, err := dao.Dao.Redis.Get(ctx, redisKey).Int64()
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.InvalidArgument.Message("无效的链接"),err,"Get")
+		return nil, ctxi.ErrorLog(errorcode.InvalidArgument.Message("无效的链接"), err, "Get")
 	}
 	userDao := dao.GetDao(ctxi)
 	db := dao.Dao.GetDB(ctxi.Logger)
@@ -285,7 +285,7 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 	var user model.User
 	if err := db.Table(modelconst.UserTableName).
 		Where(sql, req.Input).Find(&user).Error; err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError.Message("账号不存在"),err,"Find")
+		return nil, ctxi.ErrorLog(errorcode.DBError.Message("账号不存在"), err, "Find")
 	}
 
 	if !checkPassword(req.Password, &user) {
@@ -298,7 +298,7 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 
 		curTime := time.Now().Unix()
 		if err := dao.Dao.Redis.SetEX(ctx, activeUser, curTime, modelconst.ActiveDuration).Err(); err != nil {
-			return nil, ctxi.ErrorLog(errorcode.RedisErr,err,"SetEX")
+			return nil, ctxi.ErrorLog(errorcode.RedisErr, err, "SetEX")
 		}
 		go sendMail(model.ActionActive, curTime, &user)
 		return nil, model.UserErrNoActive.Message("账号未激活,请进入邮箱点击激活")
@@ -321,7 +321,7 @@ func (*UserService) login(ctxi *model.Ctx, user *model.User) (*model.LoginRep, e
 	}
 	db := dao.Dao.GetDB(ctxi.Logger)
 
-	db.Table(modelconst.UserExtTableName).Where(`id = ?`,ctxi.Id).
+	db.Table(modelconst.UserExtTableName).Where(`id = ?`, ctxi.Id).
 		UpdateColumn("last_activated_at", ctxi.RequestAt)
 	userDao := dao.GetDao(ctxi)
 	if err := userDao.EfficientUserHashToRedis(); err != nil {
@@ -364,7 +364,7 @@ func (u *UserService) Logout(ctx context.Context, req *empty.Empty) (*empty.Empt
 	dao.Dao.GORMDB.Model(&model.UserAuthInfo{Id: user.Id}).UpdateColumn("last_activated_at", time.Now())
 
 	if err := dao.Dao.Redis.Del(ctx, redisi.DEL, modelconst.LoginUserKey+strconv.FormatUint(user.Id, 10)).Err(); err != nil {
-		return nil, ctxi.ErrorLog(errorcode.RedisErr,err,"redisi.Del")
+		return nil, ctxi.ErrorLog(errorcode.RedisErr, err, "redisi.Del")
 	}
 	cookie := (&http.Cookie{
 		Name:  httpi.HeaderCookieToken,
@@ -411,7 +411,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 	if req.Input == "" {
 		return nil, errorcode.InvalidArgument.Message("账号错误")
 	}
-	db:=dao.Dao.GetDB(ctxi.Logger)
+	db := dao.Dao.GetDB(ctxi.Logger)
 	userDao := dao.GetDao(ctxi)
 	user, err := userDao.GetByEmailORPhone(db, req.Input, req.Input, "id", "name", "password")
 	if err != nil {
@@ -445,9 +445,9 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 	redisKey := modelconst.ResetTimeKey + strconv.FormatUint(req.Id, 10)
 	emailTime, err := dao.Dao.Redis.Get(ctx, redisKey).Int64()
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.InvalidArgument.Message("无效的链接"),err,"Redis.Get")
+		return nil, ctxi.ErrorLog(errorcode.InvalidArgument.Message("无效的链接"), err, "Redis.Get")
 	}
-	db:=dao.Dao.GetDB(ctxi.Logger)
+	db := dao.Dao.GetDB(ctxi.Logger)
 	userDao := dao.GetDao(ctxi)
 	user, err := userDao.GetByPrimaryKey(db, req.Id)
 	if err != nil {
@@ -465,7 +465,7 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 	}
 
 	if err := db.Table(modelconst.UserTableName).
-		Where(`id = ?`,user.Id).Update("password", req.Password).Error; err != nil {
+		Where(`id = ?`, user.Id).Update("password", req.Password).Error; err != nil {
 		log.Error("UserService.ResetPassword,DB.Update", err)
 		return nil, errorcode.DBError
 	}
@@ -483,6 +483,25 @@ func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListR
 	}
 	rep.List = logs
 	return rep, nil
+}
+
+func (*UserService) BaseList(ctx context.Context, req *model.BaseListReq) (*model.BaseListRep, error) {
+	ctxi, span := model.CtxFromContext(ctx).StartSpan("")
+	defer span.End()
+	if ctxi.Internal == "" {
+		return nil, errorcode.PermissionDenied
+	}
+	ctx = ctxi.Context
+	db := dao.Dao.GetDB(ctxi.Logger)
+	userDao := dao.GetDao(ctxi)
+	count, users, err := userDao.GetBaseListDB(db, req.Ids, int(req.PageNo), int(req.PageSize))
+	if err != nil {
+		return nil, err
+	}
+	return &model.BaseListRep{
+		Total: count,
+		List:  users,
+	}, nil
 }
 
 func (*UserService) GetTest(ctx context.Context, req *model.GetReq) (*model.User, error) {

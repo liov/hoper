@@ -35,7 +35,7 @@ var contentMod = []interface{}{
 func main() {
 	//get.GetDB().Debug().Migrator().DropTable(userMod...)
 	//get.GetDB().Debug().Migrator().CreateTable(userMod...)
-	get.GetDB().Debug().Migrator().CreateTable(contentMod...)
+	get.GetDB().Debug().Table("moment_comment").Migrator().CreateTable(&content.Comment{})
 /*	get.GetDB().Exec(`CREATE OR REPLACE FUNCTION del_tabs(username IN VARCHAR) RETURNS void AS $$
 		DECLARE
 		statements CURSOR FOR

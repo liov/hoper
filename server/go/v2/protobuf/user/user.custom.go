@@ -330,7 +330,7 @@ func (c *Ctx) setWithReq(r *http.Request) {
 	c.Request = r
 	c.Token = httpi.GetToken(r)
 	c.DeviceInfo = Device(r.Header)
-	c.Internal = r.Header.Get(httpi.HeaderInternal)
+	c.Internal = r.Header.Get(httpi.GrpcInternal)
 }
 
 func (c *Ctx) GetAuthInfo(auth func(*Ctx) error) (*AuthInfo, error) {
