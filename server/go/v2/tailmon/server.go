@@ -3,6 +3,7 @@ package tailmon
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -119,8 +120,8 @@ func (s *Server) Serve() {
 	handle := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if r := recover(); r != nil {
-				frame,_:=runtimei.GetCallerFrame(4)
-				log.Default.Errorw(fmt.Sprintf("panic: %v", r),zap.String(log.Stack, fmt.Sprintf("%s:%d (%#x)\n\t%s\n", frame.File, frame.Line, frame.PC, frame.Function)))
+				frame, _ := runtimei.GetCallerFrame(4)
+				log.Default.Errorw(fmt.Sprintf("panic: %v", r), zap.String(log.Stack, fmt.Sprintf("%s:%d (%#x)\n\t%s\n", frame.File, frame.Line, frame.PC, frame.Function)))
 				w.Header().Set(httpi.HeaderContentType, httpi.ContentJSONHeaderValue)
 				w.Write(httpi.ResponseSysErr)
 			}
@@ -137,7 +138,14 @@ func (s *Server) Serve() {
 		if openTracing {
 			var span *trace.Span
 			// 直接从远程读取Trace信息，Trace是否为空交给propagation包判断
-			if parent, ok := propagation.FromBinary(stringsi.ToBytes(r.Header.Get(httpi.HeaderTrace))); ok {
+			traceString := r.Header.Get(httpi.GrpcTraceBin)
+			var traceBin []byte
+			if len(traceString)%4 == 0 {
+				// Input was padded, or padding was not necessary.
+				traceBin, _ = base64.StdEncoding.DecodeString(traceString)
+			}
+			traceBin, _ = base64.RawStdEncoding.DecodeString(traceString)
+			if parent, ok := propagation.FromBinary(traceBin); ok {
 				ctx, span = trace.StartSpanWithRemoteParent(ctx, r.RequestURI,
 					parent, trace.WithSampler(trace.AlwaysSample()),
 					trace.WithSpanKind(trace.SpanKindServer))
@@ -202,7 +210,7 @@ type Server struct {
 	GinHandle      func(engine *gin.Engine)
 	GraphqlResolve graphql.ExecutableSchema
 	CustomContext  CustomContext
-	ConvertContext     ConvertContext
+	ConvertContext ConvertContext
 }
 
 var signals = make(chan os.Signal, 1)

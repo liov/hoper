@@ -145,13 +145,33 @@ WHERE id = ?  AND type = ? AND user_id = ? AND ` + dbi.PostgreNotDeleted + ` LIM
 	return exists, nil
 }
 
-func (d *contentDao) GetContentActionDB(db *gorm.DB,action content.ActionType,typ content.ContentType,refIds []uint64,userId uint64) ([]model.ContentAction,error) {
+func (d *contentDao) GetContentActionDB(db *gorm.DB, action content.ActionType, typ content.ContentType, refIds []uint64, userId uint64) ([]model.ContentAction, error) {
 	var actions []model.ContentAction
 	err := db.Select("ref_id,id AS like_id,action").Table(model.ActionTableName(action)).
 		Where("type = ? AND ref_id IN (?) AND user_id = ? AND "+dbi.PostgreNotDeleted,
-			typ,refIds,userId).Scan(&actions).Error
+			typ, refIds, userId).Scan(&actions).Error
 	if err != nil {
-		return nil, d.ErrorLog(errorcode.DBError,err,"GetContentActionDB")
+		return nil, d.ErrorLog(errorcode.DBError, err, "GetContentActionDB")
 	}
-	return actions,nil
+	return actions, nil
+}
+
+func (d *contentDao) GetCommentsDB(db *gorm.DB, typ content.ContentType, id, rootId uint64, pageNo, pageSize int) (int64, []*content.Comment, error) {
+
+	db = db.Table(model.CommentTableName).Where(`type = ? AND ref_id = ? AND root_id = ? AND `+dbi.PostgreNotDeleted, typ, id, rootId)
+	var count int64
+	err := db.Count(&count).Error
+	if err != nil {
+		return 0, nil, d.ErrorLog(errorcode.DBError, err, "Find")
+	}
+	var clauses []clause.Expression
+	if pageNo != 0 && pageSize != 0 {
+		clauses = append(clauses, clause.Limit{Offset: (pageNo - 1) * pageSize, Limit: pageSize})
+	}
+	var comments []*content.Comment
+	err = db.Clauses(clauses...).Find(&comments).Error
+	if err != nil {
+		return 0, nil, d.ErrorLog(errorcode.DBError, err, "Find")
+	}
+	return count, comments, nil
 }

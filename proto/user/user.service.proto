@@ -217,6 +217,19 @@ service UserService {
     };
     option (gogo.graphql_operation) = Query;
   }
+
+  //获取基础用户信息
+  rpc BaseList (BaseListReq) returns (BaseListRep) {
+    option (google.api.http) = {
+      get: "/api/v1/user/base"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["用户相关接口", "v1.0.0"]
+      summary : "获取用户信息"
+      description : "根据Id获取用户信息接口"
+    };
+    option (gogo.graphql_operation) = Query;
+  }
 }
 
 service OauthService{
@@ -361,4 +374,15 @@ message SendVerifyCodeReq{
   // 手机号
   string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" annotation:"手机号"'}];
   Action type = 2 [(go.field) = {tags:'annotation:"操作类型"'}];
+}
+
+message BaseListReq{
+  repeated uint64 ids = 1;
+  uint32  pageNo =2;
+  uint32 pageSize = 3;
+}
+
+message BaseListRep{
+  int64 total = 1;
+  repeated UserBaseInfo list = 2;
 }
