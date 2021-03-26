@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -49,7 +50,6 @@ func RegisterUserServiceHandlerFromModuleWithReConnect(ctx context.Context, mux 
 */
 
 /*----------------------------ORM-------------------------------*/
-
 
 /*----------------------------CTX上下文-------------------------------*/
 type AuthInfo struct {
@@ -175,7 +175,7 @@ type Ctx struct {
 	*Authorization
 	*DeviceInfo
 	*request.RequestAt
-	Request   *http.Request
+	Request *http.Request
 	grpc.ServerTransportStream
 	Internal string
 	*log.Logger
@@ -283,6 +283,7 @@ func CtxWithRequest(ctx context.Context, r *http.Request) context.Context {
 	return context.WithValue(context.Background(), ctxKey{}, ctxi)
 }
 
+// 内部用，不供使用者调用
 func ConvertContext(r *http.Request) pick.Context {
 	ctxi := r.Context().Value(ctxKey{})
 	c, ok := ctxi.(*Ctx)
@@ -313,13 +314,13 @@ func newCtx(ctx context.Context) *Ctx {
 		traceId = uuid.New().String()
 	}
 	return &Ctx{
-		Context: ctx,
-		TraceID: traceId,
+		Context:       ctx,
+		TraceID:       traceId,
 		Authorization: &Authorization{},
 		RequestAt: &request.RequestAt{
-			Time:      now,
-			TimeStamp: now.Unix(),
-			TimeString:    now.Format(timei.FormatTime),
+			Time:       now,
+			TimeStamp:  now.Unix(),
+			TimeString: now.Format(timei.FormatTime),
 		},
 		// 每个请求对应一个实例，后续并发量大考虑移除直接使用log库实例
 		Logger: log.Default.With(zap.String("traceId", traceId)),
@@ -343,12 +344,11 @@ func (c *Ctx) GetAuthInfo(auth func(*Ctx) error) (*AuthInfo, error) {
 	return &c.AuthInfo, nil
 }
 
-func (c *Ctx) ErrorLog(err,originErr error, funcName string) error {
+func (c *Ctx) ErrorLog(err, originErr error, funcName string) error {
 	// caller 用原始logger skip刚好
-	c.Logger.Logger.Error(originErr.Error(), zap.String(log.Position, funcName))
+	c.Logger.Logger.Error(originErr.Error(), zap.Int("type", errorcode.Code(err)), zap.String(log.Position, funcName))
 	return err
 }
-
 
 func (c *Ctx) GeToken() string {
 	return c.Token

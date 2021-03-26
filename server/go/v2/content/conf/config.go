@@ -42,7 +42,6 @@ func (c *config) Custom() {
 		c.Customize.LuosimaoAPIKey = ""
 	}
 
-	c.Customize.UploadMaxSize = c.Customize.UploadMaxSize * 1024 * 1024
 	c.Server.ReadTimeout = c.Server.ReadTimeout * time.Second
 	c.Server.WriteTimeout = c.Server.WriteTimeout * time.Second
 }

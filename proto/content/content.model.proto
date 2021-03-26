@@ -154,10 +154,12 @@ message Moment {
   repeated TinyTag tags = 13 [(go.field) = {tags:'gorm:"-" annotation:"标签"'}];
   user.UserBaseInfo user = 14 [(go.field) = {tags:'gorm:"-" annotation:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" annotation:"用户id"'}];
-  repeated user.UserBaseInfo approveUsers = 15 [(go.field) = {tags:'gorm:"-" annotation:"点赞用户"'}];
-  repeated user.UserBaseInfo collectUsers = 16 [(go.field) = {tags:'gorm:"-" annotation:"收藏用户"'}];
-  repeated user.UserBaseInfo likeUsers = 25 [(go.field) = {tags:'gorm:"-" annotation:"喜欢用户"'}];
+  repeated uint64 approveUsers = 15 [(go.field) = {tags:'gorm:"-" annotation:"点赞用户"'}];
+  repeated uint64 collectUsers = 16 [(go.field) = {tags:'gorm:"-" annotation:"收藏用户"'}];
+  repeated uint64 likeUsers = 25 [(go.field) = {tags:'gorm:"-" annotation:"喜欢用户"'}];
   repeated Comment comments = 18 [(go.field) = {tags:'gorm:"-" annotation:"评论"'}];
+  repeated user.UserBaseInfo users = 31 [(go.field) = {tags:'gorm:"-" annotation:"评论"'}];
+  ContentExt ext = 30[(go.field) = {tags:'gorm:"-" annotation:"统计数据"'}];
   uint64 likeId = 27 [(go.field) = {tags:'gorm:"-" annotation:"喜欢id,为0代表用户没有点喜欢"'}];
   uint64 unlikeId = 29 [(go.field) = {tags:'gorm:"-" annotation:"不喜欢id,为0代表用户没有点喜欢"'}];
   bool collect = 28 [(go.field) = {tags:'gorm:"-" annotation:"是否收藏"'}];
@@ -209,7 +211,7 @@ message Article{
 message Note {
   uint64 id = 1 [(go.field) = {tags:'json:"id" gorm:"primaryKey;"'}];
   string title = 2 [(go.field) = {tags:'gorm:"type:varchar(10)" json:"title" validate:"gte=3,lte=10" comment:"标题"'}];
-  string content = 3 [(go.field)={tags:'gorm:"type:text" json:"content"'}];
+  string content = 3 [(go.field) = {tags:'gorm:"type:text" json:"content"'}];
   string createdAt = 16 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
   string deletedAt = 28 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00"'}];
   uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {

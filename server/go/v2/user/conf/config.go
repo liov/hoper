@@ -30,6 +30,5 @@ func (c *config) Custom() {
 	if runtime.GOOS == "windows" {
 	}
 
-	c.Customize.UploadMaxSize = c.Customize.UploadMaxSize * 1024 * 1024
 	c.Customize.TokenMaxAge = time.Second * 60 * 60 * 24 * c.Customize.TokenMaxAge
 }

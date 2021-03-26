@@ -23,9 +23,6 @@ func (formBinding) Name() string {
 }
 
 func (formBinding) Bind(req *http.Request, obj interface{}) error {
-	if err := req.ParseForm(); err != nil {
-		return err
-	}
 	if err := req.ParseMultipartForm(defaultMemory); err != nil {
 		if err != http.ErrNotMultipart {
 			return err
@@ -38,9 +35,6 @@ func (formBinding) Bind(req *http.Request, obj interface{}) error {
 }
 
 func (formBinding) GinBind(ctx *gin.Context, obj interface{}) error {
-	if err := ctx.Request.ParseForm(); err != nil {
-		return err
-	}
 	if err := ctx.Request.ParseMultipartForm(defaultMemory); err != nil {
 		if err != http.ErrNotMultipart {
 			return err
