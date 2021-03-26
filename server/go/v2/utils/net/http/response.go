@@ -19,6 +19,10 @@ type ResData struct {
 	Details interface{} `json:"details,omitempty"`
 }
 
+func (res *ResData) Response(w http.ResponseWriter){
+	render.WriteJSON(w, res)
+}
+
 //先信息后数据最后状态码
 //入参1. data interface{},msg string,code int
 //2.msg,code |data默认nil

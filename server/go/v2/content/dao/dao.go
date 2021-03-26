@@ -10,7 +10,7 @@ import (
 	"github.com/liov/hoper/go/v2/content/conf"
 	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/tailmon/initialize"
-	v2 "github.com/liov/hoper/go/v2/utils/dao/db/gorm/v2"
+	"github.com/liov/hoper/go/v2/utils/dao/db/gorm"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"gorm.io/gorm"
 )
@@ -20,7 +20,7 @@ import (
 var Dao *dao = &dao{}
 
 type contentDao struct {
-	*user.Ctx
+	ctxi *user.Ctx
 }
 
 func GetDao(ctx *user.Ctx) *contentDao {
@@ -71,7 +71,7 @@ func (d *dao) GetDB(log *log.Logger) *gorm.DB {
 		return d.GORMDB
 	}
 	return d.GORMDB.Session(&gorm.Session{
-		Logger: &v2.SQLLogger{Logger: log.Logger,
+		Logger: &gormi.SQLLogger{Logger: log.Logger,
 			Config: &conf.Conf.Database.Gorm.Logger,
 		}})
 }

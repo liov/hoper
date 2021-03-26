@@ -1,4 +1,4 @@
-package koko
+package _koko
 
 import (
 	"bytes"

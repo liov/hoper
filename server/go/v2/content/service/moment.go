@@ -5,11 +5,6 @@ import (
 	"fmt"
 	"github.com/liov/hoper/go/v2/content/client"
 	"github.com/liov/hoper/go/v2/protobuf/utils/request"
-	httpi "github.com/liov/hoper/go/v2/utils/net/http"
-	stringsi "github.com/liov/hoper/go/v2/utils/strings"
-	"go.opencensus.io/trace"
-	"go.opencensus.io/trace/propagation"
-	"google.golang.org/grpc/metadata"
 	"net/http"
 	"unicode/utf8"
 
@@ -52,6 +47,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "First")
 	}
+	// tags
 	contentTags, err := contentDao.GetContentTagDB(db, content.ContentMoment, []uint64{moment.Id})
 	if err != nil {
 		return nil, err
@@ -61,6 +57,13 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 		tags[i] = &contentTags[i].TinyTag
 	}
 	moment.Tags = tags
+
+	// ext
+	exts, err := contentDao.GetContentExtDB(db, content.ContentMoment, []uint64{moment.Id})
+	if err != nil {
+		return nil, err
+	}
+	moment.Ext = exts[0]
 
 	_,comments,err:=contentDao.GetCommentsDB(db,content.ContentMoment,req.Id,0,0,0)
 	if err != nil{
@@ -73,24 +76,31 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 		userIds = append(userIds,comments[i].UserId)
 		userIds = append(userIds,comments[i].RecvId)
 	}
-	userIds = append(userIds,moment.UserId)
-	_,span = trace.StartSpan(ctx,"UserClient.BaseList")
-	ctx = metadata.AppendToOutgoingContext(ctx,httpi.GrpcTraceBin,stringsi.ToString(propagation.Binary(span.SpanContext())),
-		httpi.GrpcInternal,httpi.GrpcInternal)
-	userList,err:=client.UserClient.BaseList(ctx,&user.BaseListReq{Ids:userIds})
-	if err != nil{
-		return nil,err
+	// 匿名
+	if moment.Anonymous == 1{
+		moment.UserId = 0
+	}else{
+		userIds = append(userIds,moment.UserId)
 	}
-	span.End()
-	var m = make(map[uint64]*user.UserBaseInfo)
-	for _,u:=range userList.List{
-		m[u.Id] = u
+	if len(userIds) >0{
+		userList,err:=client.UserClient.BaseList(ctx,&user.BaseListReq{Ids:userIds})
+		if err != nil{
+			return nil,err
+		}
+		/*	var m = make(map[uint64]*user.UserBaseInfo)
+			for _,u:=range userList.List{
+				m[u.Id] = u
+			}
+			// 这个可以放到前端做，减少数据返回
+			for i := range comments{
+				comments[i].RecvUser = m[comments[i].RecvId]
+				comments[i].User = m[comments[i].UserId]
+			}
+			moment.User = m[moment.UserId]*/
+		// 客户端组装
+		moment.Users = userList.List
 	}
-	for i := range comments{
-		comments[i].RecvUser = m[comments[i].RecvId]
-		comments[i].User = m[comments[i].UserId]
-	}
-	moment.User = m[moment.UserId]
+
 	return &moment, nil
 }
 
@@ -130,14 +140,14 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*em
 		}
 		err = tx.Table(model.MomentTableName).Create(req).Error
 		if err != nil {
-			return ctxi.ErrorLog(err, err, "tx.CreateReq")
+			return ctxi.ErrorLog(errorcode.DBError, err, "tx.CreateReq")
 		}
 		err = tx.Table(model.ContentExtTableName).Create(&model.ContentExt{
 			Type:  content.ContentMoment,
 			RefId: req.Id,
 		}).Error
 		if err != nil {
-			return ctxi.ErrorLog(err, err, "tx.CreateReq")
+			return ctxi.ErrorLog(errorcode.DBError, err, "tx.CreateReq")
 		}
 		var contentTags []model.ContentTag
 		var noExist []content.Tag
@@ -158,12 +168,12 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*em
 		}
 		if len(noExist) == 1 {
 			if err = tx.Create(&noExist[1]).Error; err != nil {
-				return ctxi.ErrorLog(err, err, "db.CreateNoExist")
+				return ctxi.ErrorLog(errorcode.DBError, err, "db.CreateNoExist")
 			}
 		}
 		if len(noExist) > 1 {
 			if err = tx.Create(&noExist).Error; err != nil {
-				return ctxi.ErrorLog(err, err, "db.CreateNoExist")
+				return ctxi.ErrorLog(errorcode.DBError, err, "db.CreateNoExist")
 			}
 		}
 		for i := range noExist {
@@ -174,7 +184,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*em
 			})
 		}
 		if err = tx.Create(&contentTags).Error; err != nil {
-			return ctxi.ErrorLog(err, err, "db.CreateContentTags")
+			return ctxi.ErrorLog(errorcode.DBError, err, "db.CreateContentTags")
 		}
 		return nil
 	})
@@ -226,7 +236,16 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 			moment.Tags = append(moment.Tags, &tags[i].TinyTag)
 		}
 	}
-
+	// ext
+	exts, err := contentDao.GetContentExtDB(db, content.ContentMoment, ids)
+	if err != nil {
+		return nil, err
+	}
+	for i := range exts {
+		if moment, ok := m[exts[i].RefId]; ok {
+			moment.Ext = exts[i]
+		}
+	}
 	//like
 	if auth.Id != 0 {
 		likes, err := contentDao.GetContentActionDB(db, content.ActionLike, content.ContentMoment, ids, auth.Id)

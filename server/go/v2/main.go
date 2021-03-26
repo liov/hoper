@@ -8,16 +8,16 @@ import (
 	cconf "github.com/liov/hoper/go/v2/content/conf"
 	cdao "github.com/liov/hoper/go/v2/content/dao"
 	contentervice "github.com/liov/hoper/go/v2/content/service"
-	"github.com/liov/hoper/go/v2/tailmon/initialize"
 	"github.com/liov/hoper/go/v2/protobuf/content"
 	"github.com/liov/hoper/go/v2/protobuf/user"
+	"github.com/liov/hoper/go/v2/tailmon"
+	"github.com/liov/hoper/go/v2/tailmon/initialize"
 	uconf "github.com/liov/hoper/go/v2/user/conf"
 	udao "github.com/liov/hoper/go/v2/user/dao"
 	userservice "github.com/liov/hoper/go/v2/user/service"
 	"github.com/liov/hoper/go/v2/utils/log"
 	grpci "github.com/liov/hoper/go/v2/utils/net/http/grpc"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
-	"github.com/liov/hoper/go/v2/tailmon"
 	"go.opencensus.io/examples/exporter"
 	"go.opencensus.io/plugin/ocgrpc"
 	"go.opencensus.io/stats/view"
@@ -36,7 +36,9 @@ func main() {
 	}
 	pick.RegisterService(userservice.GetUserService(), contentervice.GetMomentService())
 	(&tailmon.Server{
-		GRPCOptions: []grpc.ServerOption{grpci.DefaultUnaryInterceptor()},
+		GRPCOptions: []grpc.ServerOption{grpci.DefaultUnaryInterceptor(),
+			//grpc.StatsHandler(&ocgrpc.ServerHandler{})
+		},
 		//为了可以自定义中间件
 		GRPCHandle: func(gs *grpc.Server) {
 			user.RegisterUserServiceServer(gs, userservice.GetUserService())

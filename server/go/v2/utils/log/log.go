@@ -446,10 +446,9 @@ func (l *Logger) Fatalln(args ...interface{}) {
 	}
 }
 
+// grpclog
 func (l *Logger) V(level int) bool {
-	if level == 3 {
-		level = 5
-	}
+	level-=2
 	return l.Logger.Core().Enabled(zapcore.Level(level))
 }
 

@@ -15,15 +15,6 @@ type serverConfig struct {
 	TokenSecret string
 	PageSize    int8
 
-	UploadDir      fs.Dir
-	UploadMaxSize  int64
-	UploadAllowExt []string
-
-	LogSaveDir  fs.Dir
-	LogSaveName string
-	LogFileExt  string
-	TimeFormat  string
-
 	LuosimaoVerifyURL string
 	LuosimaoAPIKey    string
 
