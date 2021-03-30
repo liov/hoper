@@ -6,7 +6,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/tailmon/initialize"
-	"github.com/liov/hoper/go/v2/upload/config"
+	"github.com/liov/hoper/go/v2/upload/conf"
 	gormi "github.com/liov/hoper/go/v2/utils/dao/db/gorm"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"gorm.io/gorm"
@@ -66,7 +66,7 @@ func (d *dao) GetDB(log *log.Logger) *gorm.DB {
 	}
 	return d.GORMDB.Session(&gorm.Session{
 		Logger: &gormi.SQLLogger{Logger: log.Logger,
-			Config: &config.Conf.Database.Gorm.Logger,
+			Config: &conf.Conf.Database.Gorm.Logger,
 		}})
 }
 

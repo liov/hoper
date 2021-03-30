@@ -38,10 +38,10 @@ enum ErrCode {
   RowExists = 21001 [(gogo.enumvalue_cn) = "记录已存在"];
   RedisErr = 22000 [(gogo.enumvalue_cn) = "Redis错误"];
 
-
-  UploadSaveImageFail = 30001 [(gogo.enumvalue_cn) = "保存图片失败"];
-  UploadCheckImageFail = 30002 [(gogo.enumvalue_cn) = "检查图片失败"];
-  UploadCheckImageFormat = 30003 [(gogo.enumvalue_cn) = "校验图片错误，图片格式或大小有问题"];
+  IOError = 30000 [(gogo.enumvalue_cn) = "io错误"];
+  UploadFail = 30001 [(gogo.enumvalue_cn) = "上传失败"];
+  UploadCheckFail = 30002 [(gogo.enumvalue_cn) = "检查文件失败"];
+  UploadCheckFormat = 30003 [(gogo.enumvalue_cn) = "文件格式或大小有问题"];
 
   TimeTooMuch = 30004 [(gogo.enumvalue_cn) = "尝试次数过多"];
   ParamInvalid = 30005 [(gogo.enumvalue_cn) = "参数错误"];

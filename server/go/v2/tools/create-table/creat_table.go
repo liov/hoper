@@ -4,6 +4,7 @@ import (
 	"github.com/liov/hoper/go/v2/protobuf/content"
 	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/tools/create-table/get"
+	"github.com/liov/hoper/go/v2/upload/model"
 )
 
 var userMod = []interface{}{
@@ -35,7 +36,8 @@ var contentMod = []interface{}{
 func main() {
 	//get.GetDB().Debug().Migrator().DropTable(userMod...)
 	//get.GetDB().Debug().Migrator().CreateTable(userMod...)
-	get.GetDB().Debug().Table("moment_comment").Migrator().CreateTable(&content.Comment{})
+	//get.GetDB().Debug().Table("moment_comment").Migrator().CreateTable(&content.Comment{})
+	get.GetDB().Debug().Migrator().CreateTable(&model.UploadExt{})
 /*	get.GetDB().Exec(`CREATE OR REPLACE FUNCTION del_tabs(username IN VARCHAR) RETURNS void AS $$
 		DECLARE
 		statements CURSOR FOR

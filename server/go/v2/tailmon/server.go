@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"runtime/debug"
 	"strings"
 	"syscall"
 
@@ -22,7 +23,6 @@ import (
 	gin_build "github.com/liov/hoper/go/v2/utils/net/http/gin"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
-	runtimei "github.com/liov/hoper/go/v2/utils/runtime"
 	"github.com/liov/hoper/go/v2/utils/strings"
 	"go.opencensus.io/trace"
 	"go.opencensus.io/trace/propagation"
@@ -56,13 +56,14 @@ func (s *Server) httpHandler() http.HandlerFunc {
 	}
 
 	// http.Handle("/", ginServer)
-	var excludes = []string{"/debug", "/api-doc", "/metrics"}
+	var excludes = []string{"/api/v1/upload","/api/v1/multiUpload"}
+	var includes = []string{"/api"}
 	return func(w http.ResponseWriter, r *http.Request) {
 		// 暂时解决方法，三个路由
 		if h, p := http.DefaultServeMux.Handler(r); p != "" {
 			h.ServeHTTP(w, r)
 		}
-		if stringsi.HasPrefixes(r.RequestURI, excludes) {
+		if !stringsi.HasPrefixes(r.RequestURI, includes) || stringsi.HasPrefixes(r.RequestURI, excludes) {
 			ginServer.ServeHTTP(w, r)
 			return
 		}
@@ -120,8 +121,7 @@ func (s *Server) Serve() {
 	handle := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if r := recover(); r != nil {
-				frame, _ := runtimei.GetCallerFrame(3)
-				log.Default.Errorw(fmt.Sprintf("panic: %v", r), zap.String(log.Stack, fmt.Sprintf("%s:%d (%#x)\n\t%s\n", frame.File, frame.Line, frame.PC, frame.Function)))
+				log.Default.Errorw(fmt.Sprintf("panic: %v", r), zap.String(log.Stack, stringsi.ToString(debug.Stack())))
 				w.Header().Set(httpi.HeaderContentType, httpi.ContentJSONHeaderValue)
 				w.Write(httpi.ResponseSysErr)
 			}

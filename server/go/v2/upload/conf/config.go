@@ -1,4 +1,4 @@
-package config
+package conf
 
 import (
 	"github.com/liov/hoper/go/v2/tailmon/initialize"
@@ -27,7 +27,7 @@ func (c *config) Custom() {
 type serverConfig struct {
 	Volume fs.Dir
 
-
+	UploadUrlPrefix     string
 	UploadDir      fs.Dir
 	UploadMaxSize  int64
 	UploadAllowExt []string
@@ -36,6 +36,5 @@ type serverConfig struct {
 	LuosimaoAPIKey    string
 
 	QrCodeSaveDir fs.Dir //二维码保存路径
-	PrefixUrl     string
 	FontSaveDir   fs.Dir //字体保存路径
 }

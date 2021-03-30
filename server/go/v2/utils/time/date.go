@@ -2,7 +2,6 @@ package timei
 
 import (
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -28,83 +27,59 @@ func StrToIntMonth(month string) int {
 }
 
 // GetTodayYMD 得到以sep为分隔符的年、月、日字符串(今天)
-func GetTodayYMD(sep string) string {
-	now := time.Now()
-	year := now.Year()
-	month := StrToIntMonth(now.Month().String())
-	date := now.Day()
+func GetYMD(time time.Time,sep string) string {
+	year, month, day := time.Date()
 
 	var monthStr string
 	var dateStr string
-	if month < 9 {
-		monthStr = "0" + strconv.Itoa(month+1)
+	if month < 10 {
+		monthStr = "0" + strconv.Itoa(int(month+1))
 	} else {
-		monthStr = strconv.Itoa(month + 1)
+		monthStr = strconv.Itoa(int(month + 1))
 	}
 
-	if date < 10 {
-		dateStr = "0" + strconv.Itoa(date)
+	if day < 10 {
+		dateStr = "0" + strconv.Itoa(day)
 	} else {
-		dateStr = strconv.Itoa(date)
+		dateStr = strconv.Itoa(day)
 	}
-	return strconv.Itoa(year) + sep + monthStr + sep + dateStr + sep
+	return strconv.Itoa(year) + sep + monthStr + sep + dateStr
 }
 
-// GetTodayYM 得到以sep为分隔符的年、月字符串(今天所属于的月份)
-func GetTodayYM(sep string) string {
-	now := time.Now()
-	year := now.Year()
-	month := StrToIntMonth(now.Month().String())
+// GetYM 得到以sep为分隔符的年、月字符串(今天所属于的月份)
+func GetYM(time time.Time,sep string) string {
+	year, month, _ := time.Date()
 
 	var monthStr string
-	if month < 9 {
-		monthStr = "0" + strconv.Itoa(month+1)
+	if month < 10 {
+		monthStr = "0" + strconv.Itoa(int(month+1))
 	} else {
-		monthStr = strconv.Itoa(month + 1)
+		monthStr = strconv.Itoa(int(month + 1))
 	}
-	return strconv.Itoa(year) + sep + monthStr + sep
+	return strconv.Itoa(year) + sep + monthStr
 }
 
 // GetYesterdayYMD 得到以sep为分隔符的年、月、日字符串(昨天)
 func GetYesterdayYMD(sep string) string {
-	now := time.Now()
-	year, month, day := now.Date()
-	today := time.Date(year, month, day, 0, 0, 0, 0, time.Local)
-	todaySec := today.Unix()            //秒
-	yesterdaySec := todaySec - 24*60*60 //秒
-	yesterdayTime := time.Unix(yesterdaySec, 0)
-	yesterdayYMD := yesterdayTime.Format("2006-01-02")
-	return strings.Replace(yesterdayYMD, "-", sep, -1)
+	return GetYM(time.Now().AddDate(0,0,-1),sep)
 }
 
 // GetTomorrowYMD 得到以sep为分隔符的年、月、日字符串(明天)
 func GetTomorrowYMD(sep string) string {
-	now := time.Now()
-	year, month, day := now.Date()
-	today := time.Date(year, month, day, 0, 0, 0, 0, time.Local)
-	todaySec := today.Unix()           //秒
-	tomorrowSec := todaySec + 24*60*60 //秒
-	tomorrowTime := time.Unix(tomorrowSec, 0)
-	tomorrowYMD := tomorrowTime.Format("2006-01-02")
-	return strings.Replace(tomorrowYMD, "-", sep, -1)
+	return GetYM(time.Now().AddDate(0,0,1),sep)
 }
 
-// GetTodayTime 返回今天零点的time
-func GetTodayTime() time.Time {
-	now := time.Now()
-	year, month, day := now.Date()
+// GetTodayZeroTime 返回今天零点的time
+func GetTodayZeroTime() time.Time {
+	year, month, day := time.Now().Date()
 	// now.Year(), now.Month(), now.Day() 是以本地时区为参照的年、月、日
 	today := time.Date(year, month, day, 0, 0, 0, 0, time.Local)
 	return today
 }
 
-// GetYesterdayTime 返回昨天零点的time
-func GetYesterdayTime() time.Time {
-	now := time.Now()
-	// now.Year(), now.Month(), now.Day() 是以本地时区为参照的年、月、日
-	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
-	yesterdaySec := today.Unix() - 24*60*60
-	return time.Unix(yesterdaySec, 0)
+// GetYesterdayZeroTime 返回昨天零点的time
+func GetYesterdayZeroTime() time.Time {
+	return GetTodayZeroTime().AddDate(0,0,-1)
 }
 
 type DateFilter struct {
