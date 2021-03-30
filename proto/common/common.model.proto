@@ -14,7 +14,7 @@ message Attr {
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" validate:"required,gte=2,lte=10" annotation:"名称"'}];
   string description = 3 [(go.field) = {tags:'gorm:"size:100"  annotation:"描述"'}];
   string expressionURL = 17 [(go.field) = {tags:'gorm:"size:255"  annotation:"表情url"'}];
-  string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now()"'}];
+  string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
   uint32 status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];

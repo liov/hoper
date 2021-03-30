@@ -65,27 +65,27 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 	}
 	moment.Ext = exts[0]
 
-	_,comments,err:=contentDao.GetCommentsDB(db,content.ContentMoment,req.Id,0,0,0)
-	if err != nil{
-		return nil,err
+	_, comments, err := contentDao.GetCommentsDB(db, content.ContentMoment, req.Id, 0, 0, 0)
+	if err != nil {
+		return nil, err
 	}
 	moment.Comments = comments
 	var userIds []uint64
 
-	for i := range comments{
-		userIds = append(userIds,comments[i].UserId)
-		userIds = append(userIds,comments[i].RecvId)
+	for i := range comments {
+		userIds = append(userIds, comments[i].UserId)
+		userIds = append(userIds, comments[i].RecvId)
 	}
 	// 匿名
-	if moment.Anonymous == 1{
+	if moment.Anonymous == 1 {
 		moment.UserId = 0
-	}else{
-		userIds = append(userIds,moment.UserId)
+	} else {
+		userIds = append(userIds, moment.UserId)
 	}
-	if len(userIds) >0{
-		userList,err:=client.UserClient.BaseList(ctx,&user.BaseListReq{Ids:userIds})
-		if err != nil{
-			return nil,err
+	if len(userIds) > 0 {
+		userList, err := client.UserClient.BaseList(ctx, &user.BaseListReq{Ids: userIds})
+		if err != nil {
+			return nil, err
 		}
 		/*	var m = make(map[uint64]*user.UserBaseInfo)
 			for _,u:=range userList.List{
@@ -221,9 +221,11 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	}
 	var m = make(map[uint64]*content.Moment)
 	var ids []uint64
+	var userIds []uint64
 	for i := range moments {
 		ids = append(ids, moments[i].Id)
 		m[moments[i].Id] = moments[i]
+		userIds = append(userIds, moments[i].UserId)
 	}
 	// tag
 	tags, err := contentDao.GetContentTagDB(db, content.ContentMoment, ids)
@@ -262,7 +264,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 				}
 			}
 		}
-		collects, err := contentDao.GetCollectDB(db,content.ContentMoment, ids, auth.Id)
+		collects, err := contentDao.GetCollectDB(db, content.ContentMoment, ids, auth.Id)
 		if err != nil {
 			return nil, err
 		}
@@ -272,10 +274,18 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 			}
 		}
 	}
-
+	var users []*user.UserBaseInfo
+	if len(userIds) > 0 {
+		userList, err := client.UserClient.BaseList(ctx, &user.BaseListReq{Ids: userIds})
+		if err != nil {
+			return nil, err
+		}
+		users = userList.List
+	}
 	return &content.MomentListRep{
 		Total: total,
 		List:  moments,
+		Users: users,
 	}, nil
 }
 
