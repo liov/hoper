@@ -29,3 +29,19 @@ func GetExt(file *multipart.FileHeader) (string, error) {
 	}
 	return ext, nil
 }
+
+type FileType int
+
+const (
+	Unknown FileType = iota
+	Txt
+	Doc
+	Docx
+	Xls
+	Xlsx
+)
+
+var FileTypeMap = map[string]FileType{
+	".txt": Txt,
+	".doc": Doc,
+}

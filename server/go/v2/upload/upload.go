@@ -3,12 +3,9 @@ package upload
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"github.com/google/uuid"
-	"github.com/kataras/iris/v12"
 	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
-	"github.com/liov/hoper/go/v2/tailmon/initialize"
-	"github.com/liov/hoper/go/v2/upload/config"
+	"github.com/liov/hoper/go/v2/upload/conf"
 	"github.com/liov/hoper/go/v2/upload/dao"
 	"github.com/liov/hoper/go/v2/upload/model"
 	"github.com/liov/hoper/go/v2/utils/fs"
@@ -17,82 +14,55 @@ import (
 	"io"
 	"mime"
 	"mime/multipart"
+	"net/http"
 	"os"
 	"strconv"
 	"strings"
-
-	"net/http"
 )
 
+const errRep = "上传失败"
+const sep = "/"
+
 // Upload 文件上传
-func Upload(w http.ResponseWriter, req *http.Request) {
-	err := req.ParseMultipartForm(config.Conf.Customize.UploadMaxSize)
-	md5Var := req.FormValue("md5")
-	file, info, err := req.FormFile("file")
+func Upload(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseMultipartForm(conf.Conf.Customize.UploadMaxSize)
 	if err != nil {
-		errorcode.ParamInvalid.Origin().Response(w)
+		errorcode.ParamInvalid.OriMessage(errRep).Response(w)
 		return
 	}
-	defer file.Close()
-	ctxi := user.CtxFromContext(req.Context())
-	auth, err := ctxi.GetAuthInfo(Auth)
-	uploadDao := dao.GetDao(ctxi)
-	db := dao.Dao.GetDB(ctxi.Logger)
-	upload, err := uploadDao.UploadDB(db, md5Var, strconv.FormatInt(info.Size, 10))
-	if err != nil {
-		errorcode.DBError.Origin().Response(w)
+
+	if r.MultipartForm == nil || (r.MultipartForm.Value == nil && r.MultipartForm.File == nil) {
+		errorcode.ParamInvalid.OriMessage(errRep).Response(w)
 		return
 	}
-	if upload != nil {
-		upload.Id = 0
-		upload.UserId = auth.Id
-		upload.UUID = uuid.New().String()
-		upload.CreatedAt = ctxi.RequestAt.Time
-		if err := db.Create(&upload).Error; err != nil {
-			ctxi.ErrorLog(errorcode.DBError, err, "Create")
-		}
+	md5Str := r.FormValue("md5")
+
+	var info *multipart.FileHeader
+	if fhs := r.MultipartForm.File["file"]; len(fhs) > 0 {
+		info = fhs[0]
+	}
+
+	ctxi := user.CtxFromContext(r.Context())
+	_, err = ctxi.GetAuthInfo(Auth)
+	if err != nil {
 		(&httpi.ResData{
-			Code:    0,
-			Message: "",
-			Details: upload.URL,
+			Code:    uint32(user.UserErrLogin),
+			Message: errRep,
 		}).Response(w)
 		return
 	}
-
-	upload = &model.FileUploadInfo{UserId: auth.Id}
-
-	hash := md5.New()
-	io.Copy(hash, file)
-	md5Str := hex.EncodeToString(hash.Sum(nil))
-	upload.MD5 = md5Str
-
-	ext, err := fs.GetExt(info)
-	if ext == "" || err != nil {
-		errorcode.ParamInvalid.Origin().Message("无效的图片类型").Response(w)
+	upload, err := save(ctxi, info, md5Str)
+	if err != nil {
+		errorcode.UploadFail.OriErrRep().Response(w)
 		return
 	}
+	(&httpi.ResData{
+		Details: conf.Conf.Customize.UploadUrlPrefix + upload.Path,
+	}).Response(w)
 
-	dir, url, err := GetDirAndUrl(classify, info)
-
-	upInfo, err := SaveUploadedFile(info, dir, url)
-	if err != nil {
-		common.Response(ctx, nil, err.Error(), e.ERROR)
-		return nil
-	}
-
-	upInfo.File.Size = uint64(info.Size)
-	upInfo.UploadUserID = userID
-	upInfo.Status = 1
-	upInfo.MD5 = md5
-	if err := initialize.DB.Create(upInfo).Error; err != nil {
-		common.Response(ctx, nil, err.Error(), e.ERROR)
-		return nil
-	}
-	common.Response(ctx, upInfo, "", e.SUCCESS)
-	return upInfo
 }
 
-func MD5(w http.ResponseWriter, req *http.Request) {
+func Exists(w http.ResponseWriter, req *http.Request) {
 	md5 := req.URL.Query().Get("md5")
 	size := req.URL.Query().Get("size")
 	ctxi := user.CtxFromContext(req.Context())
@@ -101,125 +71,160 @@ func MD5(w http.ResponseWriter, req *http.Request) {
 	db := dao.Dao.GetDB(ctxi.Logger)
 	upload, err := uploadDao.UploadDB(db, md5, size)
 	if err != nil {
-		errorcode.DBError.Origin().Response(w)
+		errorcode.DBError.OriErrRep().Response(w)
 		return
 	}
 	if upload != nil {
-		upload.Id = 0
-		upload.UserId = auth.Id
-		upload.UUID = uuid.New().String()
-		upload.CreatedAt = ctxi.RequestAt.Time
-		if err := db.Create(&upload).Error; err != nil {
+		uploadExt := model.UploadExt{
+			UserId:    auth.Id,
+			CreatedAt: ctxi.RequestAt.Time,
+			UploadId:  upload.Id,
+		}
+		if err := db.Table(model.UploadExtTableName).Create(&uploadExt).Error; err != nil {
 			ctxi.ErrorLog(errorcode.DBError, err, "Create")
 		}
 		(&httpi.ResData{
 			Code:    0,
 			Message: "",
-			Details: upload.URL,
+			Details: conf.Conf.Customize.UploadUrlPrefix + upload.Path,
 		}).Response(w)
 		return
 	}
 }
 
-func GetDirAndUrl(classify string, info *multipart.FileHeader) (string, string, error) {
-	//sep := string(os.PathSeparator)
-	sep := "/"
-	var uploadDir, prefixUrl string
-	ymdStr := timei.GetTodayYMD(sep)
-	ext, err := fs.GetExt(info)
-	if err != nil {
-		return "", "", err
-	}
+func save(ctx *user.Ctx, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
+	uploadDao := dao.GetDao(ctx)
+	db := dao.Dao.GetDB(ctx.Logger)
 
-	if ext == "" {
-		uploadDir = strings.Join([]string{string(config.Conf.Customize.UploadDir),
-			"others",
-			classify,
-			ymdStr},
-			"/")
-		prefixUrl = strings.Join([]string{
-			config.Conf.Customize.UploadPath,
-			"others",
-			classify,
-			ymdStr,
-		}, "/")
-		return uploadDir, prefixUrl, nil
-	}
-
-	var mimeType = mime.TypeByExtension(ext)
-	if mimeType == "" && ext == ".jpeg" {
-		mimeType = "image/jpeg"
-	}
-
-	dirType := strings.Split(mimeType, "/")
-
-	uploadDir = strings.Join([]string{initialize.Config.Server.UploadDir,
-		dirType[0] + "s",
-		classify,
-		ymdStr},
-		"/")
-
-	/*	length := utf8.RuneCountInString(uploadDir)
-		lastChar := uploadDir[length-1:]
-
-		if lastChar != sep {
-			uploadDir = uploadDir + sep + ymdStr
-		} else {
-			uploadDir = uploadDir + ymdStr
+	if md5Str != "" {
+		upload, err = uploadDao.UploadDB(db, md5Str, strconv.FormatInt(info.Size, 10))
+		if err != nil {
+			return nil, err
 		}
-	*/
-
-	prefixUrl = strings.Join([]string{
-		initialize.Config.Server.UploadPath,
-		dirType[0] + "s",
-		classify,
-		ymdStr,
-	}, "/")
-
-	if err := os.MkdirAll(uploadDir, 0777); err != nil {
-		return uploadDir, prefixUrl, err
 	}
-	return uploadDir, prefixUrl, nil
-}
 
-
-func UploadMultiple(w http.ResponseWriter, req *http.Request) {
-	userID := ctx.Values().Get("userID").(uint64)
-	classify := ctx.Params().GetString("classify")
-	//获取通过iris.WithPostMaxMemory获取的最大上传值大小。
-	maxSize := ctx.Application().ConfigurationReadOnly().GetPostMaxMemory()
-	err := ctx.Request().ParseMultipartForm(maxSize)
-	if err != nil {
-		ctx.StatusCode(iris.StatusInternalServerError)
-		ctx.WriteString(err.Error())
+	var file multipart.File
+	if upload == nil {
+		if info == nil {
+			return nil, errorcode.ParamInvalid
+		}
+		file, err = info.Open()
+		if err != nil {
+			return nil, ctx.ErrorLog(errorcode.IOError, err, "Open")
+		}
+		defer file.Close()
+		hash := md5.New()
+		_, err = io.Copy(hash, file)
+		if err != nil {
+			return nil, ctx.ErrorLog(errorcode.IOError, err, "Create")
+		}
+		md5Str = hex.EncodeToString(hash.Sum(nil))
+		upload, err = uploadDao.UploadDB(db, md5Str, strconv.FormatInt(info.Size, 10))
+		if err != nil {
+			return nil, err
+		}
+	}
+	if upload != nil {
+		uploadExt := model.UploadExt{
+			UserId:    ctx.Id,
+			CreatedAt: ctx.RequestAt.Time,
+			UploadId:  upload.Id,
+		}
+		if err = db.Table(model.UploadExtTableName).Create(&uploadExt).Error; err != nil {
+			return nil, ctx.ErrorLog(errorcode.DBError, err, "Create")
+		}
 		return
 	}
 
-	var dir, url string
-	form := ctx.Request().MultipartForm
-	failures := 0
-	var urls []string
-	for _, file := range form.File {
-		if dir == "" {
-			dir, url, err = GetDirAndUrl(classify, file[0])
-		}
+	ymdStr := timei.GetYMD(ctx.RequestAt.Time, sep)
 
-		upInfo, err := SaveUploadedFile(file[0], dir, url)
-		if err != nil {
-			failures++
-			common.Response(ctx, nil, file[0].Filename+"上传失败", e.ERROR)
-		} else {
-			upInfo.File.Size = uint64(file[0].Size)
-			upInfo.UploadUserID = userID
-			if err := initialize.DB.Create(&upInfo).Error; err != nil {
-				common.Response(ctx, nil, err.Error(), e.ERROR)
-			}
-			urls = append(urls, upInfo.URL)
-		}
+	ext, err := fs.GetExt(info)
+	if err != nil {
+		return nil, err
 	}
 
-	common.Res(ctx, iris.Map{
-		"errno": 0,
-		"data":  urls,
-	})
+	mimeType := mime.TypeByExtension(ext)
+	dirType := strings.Split(mimeType, "/")[0]
+	if ext == "" {
+		dirType = "other"
+	}
+
+	uploadDir := dirType + sep + ymdStr + sep
+	dir := string(conf.Conf.Customize.UploadDir) + uploadDir
+	if err := os.MkdirAll(dir, 0777); err != nil {
+		return nil, err
+	}
+
+	fileName := md5Str + "_" + strconv.FormatInt(info.Size, 32) + ext
+	out, err := os.Create(dir + fileName)
+	if err != nil {
+		return nil, err
+	}
+	defer out.Close()
+	file.Seek(0, io.SeekStart)
+	_, err = io.Copy(out, file)
+	if err != nil {
+		return nil, err
+	}
+	fileUpload := model.UploadInfo{
+		File: model.File{
+			Name: info.Filename,
+			MD5:  md5Str,
+			Ext:  ext,
+			Size: info.Size,
+		},
+		UserId:    ctx.Id,
+		Path:      uploadDir + fileName,
+		CreatedAt: ctx.RequestAt.Time,
+	}
+
+	err = db.Table(model.UploadTableName).Create(&fileUpload).Error
+	if err != nil {
+		return nil, ctx.ErrorLog(errorcode.DBError, err, "Create")
+	}
+	return &fileUpload, nil
+}
+
+func MultiUpload(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseMultipartForm(conf.Conf.Customize.UploadMaxSize)
+	if err != nil {
+		errorcode.ParamInvalid.OriMessage(errRep).Response(w)
+		return
+	}
+	ctxi := user.CtxFromContext(r.Context())
+	_, err = ctxi.GetAuthInfo(Auth)
+	if err != nil {
+		(&httpi.ResData{
+			Code:    uint32(user.UserErrLogin),
+			Message: errRep,
+		}).Response(w)
+		return
+	}
+	if r.MultipartForm == nil || (r.MultipartForm.Value == nil && r.MultipartForm.File == nil) {
+		errorcode.ParamInvalid.OriMessage(errRep).Response(w)
+		return
+	}
+	md5s := r.MultipartForm.Value["md5[]"]
+	files := r.MultipartForm.File["file[]"]
+	// 如果有md5
+	if len(md5s) != 0 && len(md5s) != len(files) {
+		errorcode.ParamInvalid.OriMessage(errRep).Response(w)
+		return
+	}
+	var urls = make([]model.MultiRep, len(files))
+	var failures = make([]string, 0)
+	for i, file := range files {
+		upload, err := save(ctxi, file, md5s[i])
+		if err != nil {
+			failures = append(failures, file.Filename)
+			errorcode.UploadFail.OriErrRep().Response(w)
+			return
+		}
+		urls[i].URL = conf.Conf.Customize.UploadUrlPrefix + upload.Path
+		urls[i].Success = true
+	}
+	(&httpi.ResData{
+		Message: strings.Join(failures, ",") + errRep,
+		Details: urls,
+	}).Response(w)
 }

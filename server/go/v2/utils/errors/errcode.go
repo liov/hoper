@@ -51,11 +51,11 @@ func (x ErrCode) Error() string {
 }
 
 func (x *ErrRep) MarshalJSON() ([]byte,error){
-	return stringsi.ToBytes(`{"code":`+strconv.Itoa(int(x.Code))+`,"message":`+x.Message+`}`),nil
+	return stringsi.ToBytes(`{"code":`+strconv.Itoa(int(x.Code))+`,"message":"`+x.Message+`"}`),nil
 }
 
 func (x ErrCode) MarshalJSON() ([]byte,error){
-	return stringsi.ToBytes(`{"code":`+strconv.Itoa(int(x))+`,"message":`+x.String()+`}`),nil
+	return stringsi.ToBytes(`{"code":`+strconv.Itoa(int(x))+`,"message":"`+x.String()+`"}`),nil
 }
 
 
