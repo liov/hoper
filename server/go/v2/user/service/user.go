@@ -333,7 +333,7 @@ func (*UserService) login(ctxi *model.Ctx, user *model.User) (*model.LoginRep, e
 			Id:        user.Id,
 			Name:      user.Name,
 			Gender:    user.Gender,
-			AvatarURL: user.AvatarURL,
+			AvatarUrl: user.AvatarURL,
 		}}
 
 	cookie := (&http.Cookie{

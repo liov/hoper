@@ -23,7 +23,7 @@ const actions = {
     const token = localStorage.getItem("token");
     if (token) {
       commit("SET_TOKEN", token);
-      const res = await axios.get(`/api/user/get`);
+      const res = await axios.get(`/api/v1/auth`);
       // 跟后端的初始化配合
       if (res.data.code === 200) commit("SET_USER", res.data.data);
     }

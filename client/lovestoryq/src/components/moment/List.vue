@@ -10,10 +10,10 @@
         <template #default>
           <van-skeleton title avatar :row="3" :loading="loading">
             <div class="moment" v-if="show">
-              <img :src="item.user.avatar_url" />
+              <img :src="this.userM.get(item.userId).avatarUrl" />
               <div class="content">
-                <span>{{ item.user.name }}</span>
-                <span>{{ $date2s(item.created_at) }}</span>
+                <span>{{ this.userM.get(item.userId).name }}</span>
+                <span>{{ $date2s(this.userM.get(item.userId).created_at) }}</span>
                 <div class="van-multi-ellipsis--l3">
                   {{ item.content }}
                 </div>
@@ -29,6 +29,7 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import axios from "axios";
+import {UserBaseInfo,appendUserMap} from "@/plugin/utils/user";
 
 @Options({
   components: {}
@@ -39,8 +40,9 @@ export default class MomentList extends Vue {
   loading = false;
   finished = false;
   show = false;
-  pageNo = 0;
+  pageNo = 1;
   pageSize = 10;
+  userM = new Map<number,UserBaseInfo>();
 
   mounted() {
     if (this.list.length == 0) {
@@ -57,15 +59,18 @@ export default class MomentList extends Vue {
     const res = await axios.get(
       `/api/v1/moment?pageNo=${this.pageNo}&pageSize=${this.pageSize}`
     );
-    if (this.pageNo == 0) {
-      this.list = res.data.data;
-    } else this.list = this.list.concat(res.data.data);
+    const data = res.data.details;
+    if (this.pageNo == 1) {
+      this.list = data.list;
+      appendUserMap(this.userM,data.users)
+    } else {
+      this.list = this.list.concat(data.list);
+      appendUserMap(this.userM,data.users)
+    }
     this.loading = false;
     this.show = true;
     this.pageNo++;
-    if (res.data.data.length < this.pageSize) {
-      this.finished = true;
-    }
+    if (data.list.length < this.pageSize) this.finished = true;
   }
 }
 </script>
