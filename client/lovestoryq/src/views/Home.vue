@@ -17,7 +17,7 @@ import { Options, Vue } from "vue-class-component";
 export default class Home extends Vue {}
 </script>
 
-<style scoped lang="scss">
+<style scoped lang="less">
 i {
   margin: 0.7rem;
 }

@@ -8,12 +8,12 @@
     >
       <van-cell v-for="(item, index) in list" :key="index">
         <template #default>
-          <van-skeleton title avatar :row="3" :loading="loading">
+          <van-skeleton title avatar round :row="3" :loading="loading">
             <div class="moment" v-if="show">
-              <img :src="this.userM.get(item.userId).avatarUrl" />
+              <img :src="userM.get(item.userId).avatarUrl" />
               <div class="content">
-                <span>{{ this.userM.get(item.userId).name }}</span>
-                <span>{{ $date2s(this.userM.get(item.userId).created_at) }}</span>
+                <span class="name">{{ userM.get(item.userId).name }}</span>
+                <span class="time">{{ $date2s(item.createdAt) }}</span>
                 <div class="van-multi-ellipsis--l3">
                   {{ item.content }}
                 </div>
@@ -29,30 +29,24 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import axios from "axios";
-import {UserBaseInfo,appendUserMap} from "@/plugin/utils/user";
+import { ObjMap } from "@/plugin/utils/user";
 
 @Options({
-  components: {}
+  components: {},
 })
 export default class MomentList extends Vue {
   active = 0;
-  list: any[] = [];
   loading = false;
   finished = false;
   show = false;
   pageNo = 1;
   pageSize = 10;
-  userM = new Map<number,UserBaseInfo>();
+  userM = new ObjMap();
+  list = Array.from(new Array(this.pageSize), (v, i) => {
+    return { id: i };
+  });
 
-  mounted() {
-    if (this.list.length == 0) {
-      const list: any[] = [];
-      for (let i = 0; i < 5; i++) {
-        list.push({ id: i });
-      }
-      this.list = list;
-    }
-  }
+  //mounted() {}
 
   async onLoad() {
     // 异步更新数据
@@ -62,10 +56,10 @@ export default class MomentList extends Vue {
     const data = res.data.details;
     if (this.pageNo == 1) {
       this.list = data.list;
-      appendUserMap(this.userM,data.users)
+      this.userM.appendMap(data.users);
     } else {
       this.list = this.list.concat(data.list);
-      appendUserMap(this.userM,data.users)
+      this.userM.appendMap(data.users);
     }
     this.loading = false;
     this.show = true;
@@ -75,11 +69,18 @@ export default class MomentList extends Vue {
 }
 </script>
 
-<style scoped lang="scss">
+<style scoped lang="less">
 .moment {
   display: flex;
   padding: 0 16px;
 
+  .name {
+    left: 0;
+  }
+  .time {
+    position: absolute;
+    right: 0;
+  }
   .content {
     padding-top: 6px;
 
