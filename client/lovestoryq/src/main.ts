@@ -5,7 +5,7 @@ import router from "./router";
 import store from "./store";
 import "@/plugin/axios";
 /// <reference path = "./plugin/plugin.d.ts" />;
-import HoperPlugin from "@/plugin/plugin"
+import HoperPlugin from "@/plugin/plugin";
 import {
   Col,
   Row,
@@ -28,7 +28,7 @@ import {
   Picker,
   Popup,
   RadioGroup,
-  Radio
+  Radio,
 } from "vant";
 
 createApp(App)
