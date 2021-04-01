@@ -1,6 +1,5 @@
-
-export const upload: (classify:string, $file:File) => any;
+export const upload: ($file: File) => any;
 
 export class Upload {
-    static upload: (classify:string, $file:File) => any;
+  static upload: ($file: File) => any;
 }

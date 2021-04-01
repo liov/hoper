@@ -60,8 +60,9 @@ func main() {
 			_ = content.RegisterActionServiceHandlerServer(app, contentervice.GetActionService())
 			app.Static("/static","F:/upload")
 			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
-			app.POST("/api/v1/exists",handler.Convert(upload.Exists))
-			app.POST("/api/v1/upload",handler.Convert(upload.Upload))
+			app.GET("/api/v1/exists",handler.Convert(upload.Exists))
+			app.GET("/api/v1/exists/:md5/:size",upload.ExistsGin)
+			app.POST("/api/v1/upload/:md5",handler.Convert(upload.Upload))
 			app.POST("/api/v1/multiUpload",handler.Convert(upload.MultiUpload))
 			pick.Gin(app, user.ConvertContext, true, initialize.InitConfig.Module)
 		},

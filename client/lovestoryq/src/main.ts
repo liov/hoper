@@ -29,6 +29,8 @@ import {
   Popup,
   RadioGroup,
   Radio,
+  Lazyload,
+  Image,
 } from "vant";
 
 createApp(App)
@@ -57,4 +59,8 @@ createApp(App)
   .use(HoperPlugin)
   .use(RadioGroup)
   .use(Radio)
+  .use(Lazyload, {
+    lazyComponent: true,
+  })
+  .use(Image)
   .mount("#app");

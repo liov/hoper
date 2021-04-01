@@ -129,10 +129,14 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*em
 		if count == 0 {
 			return nil, errorcode.ParamInvalid.Message("心情不存在")
 		}*/
-	tags, err := contentDao.GetTagsDB(db, req.Tags)
-	if err != nil {
-		return nil, err
+	var tags []model.TinyTag
+	if len(req.Tags) > 0 {
+		tags, err = contentDao.GetTagsDB(db, req.Tags)
+		if err != nil {
+			return nil, err
+		}
 	}
+
 	req.UserId = auth.Id
 	err = db.Transaction(func(tx *gorm.DB) error {
 		if req.Permission == 0 {
@@ -183,8 +187,10 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*em
 				TagId: noExist[i].Id,
 			})
 		}
-		if err = tx.Create(&contentTags).Error; err != nil {
-			return ctxi.ErrorLog(errorcode.DBError, err, "db.CreateContentTags")
+		if len(contentTags) > 0 {
+			if err = tx.Create(&contentTags).Error; err != nil {
+				return ctxi.ErrorLog(errorcode.DBError, err, "db.CreateContentTags")
+			}
 		}
 		return nil
 	})

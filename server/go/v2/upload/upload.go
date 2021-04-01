@@ -1,6 +1,7 @@
 package upload
 
 import (
+	"context"
 	"crypto/md5"
 	"encoding/hex"
 	"github.com/liov/hoper/go/v2/protobuf/user"
@@ -23,6 +24,11 @@ import (
 const errRep = "上传失败"
 const sep = "/"
 
+const (
+	ApiExists = "/api/v1/exists"
+	ApiUpload = "/api/v1/upload"
+)
+
 // Upload 文件上传
 func Upload(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(conf.Conf.Customize.UploadMaxSize)
@@ -35,7 +41,10 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		errorcode.ParamInvalid.OriMessage(errRep).Response(w)
 		return
 	}
-	md5Str := r.FormValue("md5")
+	md5Str:= r.RequestURI[len(ApiUpload):]
+	if md5Str == ""{
+		md5Str = r.FormValue("md5")
+	}
 
 	var info *multipart.FileHeader
 	if fhs := r.MultipartForm.File["file"]; len(fhs) > 0 {
@@ -65,7 +74,11 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 func Exists(w http.ResponseWriter, req *http.Request) {
 	md5 := req.URL.Query().Get("md5")
 	size := req.URL.Query().Get("size")
-	ctxi := user.CtxFromContext(req.Context())
+	exists(req.Context(), w, md5, size)
+}
+
+func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
+	ctxi := user.CtxFromContext(ctx)
 	auth, err := ctxi.GetAuthInfo(Auth)
 	uploadDao := dao.GetDao(ctxi)
 	db := dao.Dao.GetDB(ctxi.Logger)
