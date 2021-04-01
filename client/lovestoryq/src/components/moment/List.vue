@@ -6,18 +6,40 @@
       finished-text="没有更多了"
       @load="onLoad"
     >
-      <van-cell v-for="(item, index) in list" :key="index">
+      <van-cell v-for="item in list">
         <template #default>
           <van-skeleton title avatar round :row="3" :loading="loading">
             <div class="moment" v-if="show">
-              <img :src="userM.get(item.userId).avatarUrl" />
-              <div class="content">
+              <div class="auth">
+                <img class="avatar" :src="userM.get(item.userId).avatarUrl" />
                 <span class="name">{{ userM.get(item.userId).name }}</span>
                 <span class="time">{{ $date2s(item.createdAt) }}</span>
-                <div class="van-multi-ellipsis--l3">
-                  {{ item.content }}
-                </div>
               </div>
+              <div class="content">
+                <van-field
+                  v-model="item.content"
+                  rows="1"
+                  :autosize="{ maxHeight: 200 }"
+                  readonly
+                  type="textarea"
+                >
+                  <template #extra>
+                    <div class="arrow">
+                      <van-icon name="arrow-down" />
+                    </div>
+                  </template>
+                </van-field>
+              </div>
+              <lazy-component class="imgs" v-if:="item.images">
+                <van-image
+                  width="100"
+                  height="100"
+                  v-for="img in item.images.split(',')"
+                  :src="img"
+                  lazy-load
+                  class="img"
+                />
+              </lazy-component>
             </div>
           </van-skeleton>
         </template>
@@ -71,23 +93,29 @@ export default class MomentList extends Vue {
 
 <style scoped lang="less">
 .moment {
-  display: flex;
-  padding: 0 16px;
-
+  @20px: 20px;
+  @avatar: 30px;
   .name {
-    left: 0;
+    left: 60px;
+    position: absolute;
   }
+
   .time {
     position: absolute;
-    right: 0;
+    right: @20px;
   }
   .content {
-    padding-top: 6px;
-
+    width: 100%;
     h3 {
       margin: 0;
       font-size: 18px;
       line-height: 20px;
+    }
+
+    .arrow {
+      position: absolute;
+      bottom: 16px;
+      right: 0;
     }
 
     .van-multi-ellipsis--l3 {
@@ -97,11 +125,19 @@ export default class MomentList extends Vue {
     }
   }
 
-  img {
+  .avatar {
     flex-shrink: 0;
-    width: 32px;
-    height: 32px;
-    margin-right: 16px;
+    width: @avatar;
+    height: @avatar;
+    border-radius: 40px;
+    position: relative;
+    margin: 0 16px;
+  }
+  .imgs {
+    padding: 0 11px;
+  }
+  .img {
+    margin: 5px 5px;
   }
 }
 </style>

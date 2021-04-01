@@ -36,7 +36,7 @@
         @confirm="onConfirm"
       />
     </van-popup>
-    <div style="margin: 16px;">
+    <div style="margin: 16px">
       <van-button
         round
         block
@@ -53,7 +53,7 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import axios from "axios";
-import {upload} from '@/plugin/utils/upload'
+import { upload } from "@/plugin/utils/upload";
 
 @Options({})
 export default class MomentAdd extends Vue {
@@ -61,27 +61,32 @@ export default class MomentAdd extends Vue {
   permission = "";
   columns = ["全部", "自己可见", "陌生人可见"];
   showPicker = false;
-  uploader = [{ url: "https://img.yzcdn.cn/vant/leaf.jpg" }];
+  uploader: any[] = [];
 
   onOversize(file: File) {
-    console.log(file);
     this.$toast("文件大小不能超过 500kb");
   }
-  afterRead(file: any) {
-    upload('moment',file.file)
-    // 此时可以自行将文件上传至服务器
-    console.log(file);
+  async afterRead(file: any) {
+    const url = await upload(file.file);
+    file.url = url;
+    console.log("abc", this.uploader);
   }
   async submit() {
-    const res = await axios.post(`/api/moment`, {
-      image_url: "",
-      mood_name: "",
+    let images = "";
+    for (const up of this.uploader) {
+      images += up.url + ",";
+    }
+    if (images !== "") images = images.slice(0, images.length - 1);
+    const res = await axios.post(`/api/v1/moment`, {
+      mood: "",
       tags: [],
       permission: 0,
-      content: this.message
+      anonymous: 2,
+      content: this.message,
+      images: images,
     });
-    if (res.data.code === 200) {
-      await this.$router.push({ path: "/moment" });
+    if (res.data.code === 0) {
+      await this.$router.push({ path: "/" });
     }
   }
   onConfirm(value: string) {

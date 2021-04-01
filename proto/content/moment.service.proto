@@ -94,6 +94,7 @@ message AddMomentReq {
   uint32 areaVisibility = 11 [(go.field) = {tags:'annotation:"地区可见性，1-可见"'}];
   string location = 12 [(go.field) = {tags:'annotation:"位置"'}];
   repeated string tags = 13 [(go.field) = {tags:'gorm:"-" annotation:"标签"'}];
+  string images = 14 [(go.field) = {tags:'annotation:"图片"'}];
   uint64 userId = 17 [(go.field) = {tags:'annotation:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
   uint32 sequence = 19 [(go.field) = {tags:'annotation:"同级别的分类可根据sequence的值来排序，置顶"'}];
