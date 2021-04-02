@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/md5"
 	"fmt"
+	"github.com/liov/hoper/go/v2/protobuf/utils/request"
 	"net/http"
 	"strconv"
 	"time"
@@ -377,7 +378,7 @@ func (u *UserService) Logout(ctx context.Context, req *empty.Empty) (*empty.Empt
 		HttpOnly: true,
 	}).String()
 	ctxi.SetCookie(cookie)
-	return new(empty.Empty), nil
+	return nil, nil
 }
 
 func (u *UserService) AuthInfo(ctx context.Context, req *empty.Empty) (*model.UserAuthInfo, error) {
@@ -388,20 +389,29 @@ func (u *UserService) AuthInfo(ctx context.Context, req *empty.Empty) (*model.Us
 	return user.UserAuthInfo(), nil
 }
 
-func (u *UserService) GetUser(ctx context.Context, req *model.GetReq) (*model.User, error) {
-	/*	_, err := u.GetAuthInfo(ctx)
-		if err != nil {
-			return &model.GetRep{Details: &model.User{Id: req.Id}}, nil
-		}*/
+func (u *UserService) Info(ctx context.Context, req *request.Object) (*model.UserRep, error) {
+	ctxi, span := model.CtxFromContext(ctx).StartSpan("")
+	defer span.End()
+	ctx = ctxi.Context
+	_, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	if err != nil {
+		return nil, err
+	}
+	db := dao.Dao.GetDB(ctxi.Logger)
+	userDao := dao.GetDao(ctxi)
 	var user1 model.User
-	if err := dao.Dao.GORMDB.Find(&user1, req.Id).Error; err != nil {
+	if err = db.Find(&user1, req.Id).Error; err != nil {
 		return nil, errorcode.DBError.Message("账号不存在")
 	}
-	return &user1, nil
+	userExt,err:=userDao.GetUserExtRedis()
+	if err != nil {
+		return nil,err
+	}
+	return &model.UserRep{User:&user1,UerExt: userExt}, nil
 }
 
 func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (*response.TinyRep, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan("Logout")
+	ctxi, span := model.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
 	if verifyErr := verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL, conf.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
@@ -504,7 +514,7 @@ func (*UserService) BaseList(ctx context.Context, req *model.BaseListReq) (*mode
 	}, nil
 }
 
-func (*UserService) GetTest(ctx context.Context, req *model.GetReq) (*model.User, error) {
+func (*UserService) GetTest(ctx context.Context, req *request.Object) (*model.User, error) {
 	return &model.User{Id: req.Id, Name: "测试"}, nil
 }
 

@@ -101,7 +101,15 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 		moment.Users = userList.List
 	}
 
+	maskField(&moment)
 	return &moment, nil
+}
+// 屏蔽字段
+func maskField(moment *content.Moment){
+	moment.AreaVisibility = 0
+	moment.DeletedAt = ""
+	moment.CreatedAt = moment.CreatedAt[:19]
+	moment.Anonymous = 0
 }
 
 func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*empty.Empty, error) {
@@ -232,6 +240,8 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 		ids = append(ids, moments[i].Id)
 		m[moments[i].Id] = moments[i]
 		userIds = append(userIds, moments[i].UserId)
+		// 屏蔽字段
+		maskField(moments[i])
 	}
 	// tag
 	tags, err := contentDao.GetContentTagDB(db, content.ContentMoment, ids)

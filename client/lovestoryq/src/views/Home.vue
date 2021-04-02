@@ -3,6 +3,10 @@
     <van-row>
       <van-col span="8">span: 8</van-col>
       <van-col span="8">span: 8</van-col>
+    </van-row>
+    <van-row>
+      <van-col span="8">span: 8</van-col>
+      <van-col span="8">span: 8</van-col>
       <van-col span="8">span: 8</van-col>
     </van-row>
   </div>
@@ -12,7 +16,7 @@
 import { Options, Vue } from "vue-class-component";
 
 @Options({
-  components: {}
+  components: {},
 })
 export default class Home extends Vue {}
 </script>

@@ -2,6 +2,7 @@ syntax = "proto3";
 package content;
 import "content/content.model.proto";
 import "content/content.enum.proto";
+import "user/user.model.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
@@ -23,9 +24,9 @@ service ContentService {
   };
 
   // 详情
-  rpc TagInfo (GetTagReq) returns (Tag) {
+  rpc TagInfo (request.Object) returns (Tag) {
     option (google.api.http) = {
-      get: "/api/v1/tag/id/{id}"
+      get: "/api/v1/content/tag/id/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -36,7 +37,7 @@ service ContentService {
   // 新建
   rpc AddTag (AddTagReq) returns (empty.Empty) {
     option (google.api.http) = {
-      post: "/api/v1/tag"
+      post: "/api/v1/content/tag"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -48,7 +49,7 @@ service ContentService {
   // 修改
   rpc EditTag (EditTagReq) returns (empty.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/tag"
+      put: "/api/v1/content/tag"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -60,7 +61,7 @@ service ContentService {
   // 列表
   rpc TagList (TagListReq) returns (TagListRep) {
     option (google.api.http) = {
-      get: "/api/v1/tag"
+      get: "/api/v1/content/tag"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -71,7 +72,7 @@ service ContentService {
   // 列表
   rpc TagGroupList (TagGroupListReq) returns (TagGroupListRep) {
     option (google.api.http) = {
-      get: "/api/v1/tagGroup"
+      get: "/api/v1/content/tagGroup"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -83,7 +84,7 @@ service ContentService {
   // 详情
   rpc AttrInfo (GetAttrReq) returns (Attributes) {
     option (google.api.http) = {
-      get: "/api/v1/attr/id/{id}"
+      get: "/api/v1/content/attr/id/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -94,7 +95,7 @@ service ContentService {
   // 新建
   rpc AddAttr (AddAttrReq) returns (empty.Empty) {
     option (google.api.http) = {
-      post: "/api/v1/attr"
+      post: "/api/v1/content/attr"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -106,7 +107,7 @@ service ContentService {
   // 修改
   rpc EditAttr (EditAttrReq) returns (empty.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/attr"
+      put: "/api/v1/content/attr"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -118,7 +119,7 @@ service ContentService {
   // 列表
   rpc AttrList (AttrListReq) returns (AttrListRep) {
     option (google.api.http) = {
-      get: "/api/v1/attr"
+      get: "/api/v1/content/attr"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -128,7 +129,7 @@ service ContentService {
   //收藏夹列表
   rpc FavList (FavListReq) returns (FavListRep) {
     option (google.api.http) = {
-      get: "/api/v1/fav"
+      get: "/api/v1/content/fav"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -138,7 +139,7 @@ service ContentService {
   // 创建收藏夹
   rpc AddFav (AddFavReq) returns (empty.Empty) {
     option (google.api.http) = {
-      post: "/api/v1/fav"
+      post: "/api/v1/content/fav"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -148,7 +149,7 @@ service ContentService {
   // 修改收藏夹
   rpc EditFav (AddFavReq) returns (empty.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/fav"
+      put: "/api/v1/content/fav"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -158,7 +159,7 @@ service ContentService {
   // 创建合集
   rpc AddContainer (AddContainerReq) returns (empty.Empty) {
     option (google.api.http) = {
-      post: "/api/v1/container"
+      post: "/api/v1/content/container"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -168,18 +169,25 @@ service ContentService {
   // 修改合集
   rpc EditDiaryContainer (AddContainerReq) returns (empty.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/container"
+      put: "/api/v1/content/container"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
     option (gogo.graphql_operation) = Mutation;
   }
+  // 用户内容数量
+  rpc UserContentCount (request.Object) returns (user.UserContent) {
+    option (google.api.http) = {
+      get: "/api/v1/content/count"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["v1.0.0"]
+    };
+    option (gogo.graphql_operation) = Query;
+  }
 }
 
-message GetTagReq {
-  uint64 id = 1 [(go.field) = {tags:'validate:"required"'}];
-}
 
 message AddTagReq {
   string name = 1[(go.field) = {tags:'annotation:"名称"'}];
@@ -279,4 +287,3 @@ message FavListRep{
   int64 total = 1;
   repeated Favorites list = 2;
 }
-

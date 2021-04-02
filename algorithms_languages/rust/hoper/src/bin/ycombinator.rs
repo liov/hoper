@@ -97,7 +97,7 @@ fn main() {
     }
 
     // f: Lazy<u64 -> u64> -> u64 -> u64
-    fn f(fac: Lazy<'static, Box<FnOnce(u64) -> u64>>) -> Box<FnOnce(u64) -> u64> {
+    fn f(fac: Lazy<'static, Box<FnOnce(u64) -> u64>>) -> Box<dyn FnOnce(u64) -> u64> {
         Box::new(move |n| {
             if n == 0 {
                 1
@@ -121,7 +121,7 @@ pub fn y2<T, U>(f: impl Fn(Rec<T, U>, T) -> U) -> impl Fn(T) -> U {
     move |x| f(Rec(&f), x)
 }
 
-type Lazy<'a, T> = Box<FnOnce() -> T + 'a>;
+type Lazy<'a, T> = Box<dyn FnOnce() -> T + 'a>;
 
 // fix: (Lazy<T> -> T) -> T
 fn y3<'a, T, F>(f: F) -> T

@@ -35,8 +35,8 @@ CrawlerName =""
 
 [customize.moment.limit]
 SecondLimitCount = 1
-MinuteLimitCount = 5
-DayLimitCount = 100
+MinuteLimitCount = 20
+DayLimitCount = 10000
 
 [database]
 Type = "postgres"

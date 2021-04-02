@@ -56,22 +56,13 @@ message UserExt {
 
 //关注表
 message UserFollow {
-  uint64 userId = 1 [(go.field) = {tags:'gorm:"index"'}]; //一个关注另一个，ID小的做UserID
+  uint64 userId = 1 [(go.field) = {tags:'gorm:"index"'}];
   uint64 followId = 2 [(go.field) = {tags:'gorm:"default:0"'}];
-  string createdAt = 3 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}]; //FollowUser关注User时间
-  string deletedAt = 4 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00;index"'}]; //FollowUser关注User时间
+  string createdAt = 3 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  string deletedAt = 4 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00;index"'}];
   uint32 status = 5 [(go.field) = {tags:'gorm:"type:int2;"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }]; //状态：0无效，1有效
-}
-
-//关注日志
-message UserFollowLog {
-  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  uint32 action = 2 [(go.field) = {tags:'gorm:""'}]; //类型：0添加关注，1移除关注
-  uint64 userId = 3 [(go.field) = {tags:'gorm:""'}];
-  uint64 followId = 4 [(go.field) = {tags:'gorm:""'}];
-  string createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
 }
 
 //用户分数变化日志
@@ -187,4 +178,11 @@ message Response{
     uint32 code = 1;
     string msg = 2;
   }
+}
+
+message UserContent{
+  uint64 momentCount = 1;
+  uint64 diaryCount = 2;
+  uint64 articleCount = 3;
+  uint64 favCount = 4;
 }

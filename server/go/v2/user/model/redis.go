@@ -29,4 +29,6 @@ const (
 	CommentDayLimitKey = "CommentDayLimit_"
 
 	VerificationCodeKey = "VerificationCode_"
+
+	UserExtKey = "User_Ext_"
 )
