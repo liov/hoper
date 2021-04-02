@@ -2,6 +2,7 @@ package dao
 
 import (
 	"encoding/json"
+	dbi "github.com/liov/hoper/go/v2/utils/dao/db"
 	"gorm.io/gorm/clause"
 	"strconv"
 	"time"
@@ -168,4 +169,16 @@ func (d *userDao) GetBaseListDB(db *gorm.DB, ids []uint64, pageNo, pageSize int)
 		return 0, nil, ctxi.ErrorLog(errorcode.DBError, err, "Scan")
 	}
 	return count, users, nil
+}
+
+func (d *userDao) FollowExistsDB(db *gorm.DB, id, followId uint64) (bool, error) {
+	ctxi:=d.ctxi
+	sql := `SELECT EXISTS(SELECT * FROM "` + model.FollowTableName + `" 
+WHERE user_id = ?  AND follow_id = ? AND ` + dbi.PostgreNotDeleted + ` LIMIT 1)`
+	var exists bool
+	err := db.Raw(sql, id, followId).Row().Scan(&exists)
+	if err != nil {
+		return false, ctxi.ErrorLog(errorcode.DBError, err, "ExistsByAuthDB")
+	}
+	return exists, nil
 }

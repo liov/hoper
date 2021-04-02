@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"github.com/liov/hoper/go/v2/protobuf/utils/request"
 	"net/http"
 
 	"github.com/liov/hoper/go/v2/content/conf"
@@ -23,7 +24,7 @@ func (m *ContentService) Service() (describe, prefix string, middleware []http.H
 	return "内容相关", "/api/content", nil
 }
 
-func (*ContentService) TagInfo(context.Context, *content.GetTagReq) (*content.Tag, error) {
+func (*ContentService) TagInfo(context.Context, *request.Object) (*content.Tag, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Info not implemented")
 }
 func (*ContentService) AddTag(ctx context.Context, req *content.AddTagReq) (*empty.Empty, error) {

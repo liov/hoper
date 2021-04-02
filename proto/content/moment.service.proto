@@ -3,11 +3,13 @@ package content;
 import "content/content.enum.proto";
 import "content/content.model.proto";
 import "common/common.model.proto";
+import "content/action.model.proto";
 import "user/user.model.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
 import "utils/empty/empty.proto";
+import "utils/area/area.proto";;
 import "utils/response/response.proto";
 import "utils/request/param.proto";
 import "utils/proto/gogo/graphql.proto";
@@ -111,4 +113,41 @@ message MomentListRep{
   int64 total = 1;
   repeated Moment list = 2;
   repeated user.UserBaseInfo users = 3;
+}
+// 瞬间
+message MomentRep {
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
+  string content = 2 [(go.field) = {tags:'gorm:"type:text;not null" annotation:"内容"'}];
+  string images = 32 [(go.field) = {tags:'gorm:"type:text;default:\'\'" annotation:"图片"'}];
+  // 还是决定瞬间和日记形态合为一种
+  uint64 bookId = 4 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"日记本Id"'}];
+  DiaryBook book = 26 [(go.field) = {tags:'gorm:"-" annotation:"日记本"'}];
+  // 单个视频或音频或多个图片
+  MomentType type = 3[(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"瞬间类型"'}];
+  TinyTag mood = 5 [(go.field) = {tags:'gorm:"-" annotation:"心情"'}];
+  TinyTag weather = 7 [(go.field) = {tags:'gorm:"-" annotation:"天气"'}];
+  area.Area area = 9 [(go.field) = {tags:'gorm:"-" annotation:"地区"'}];
+  uint64 areaId = 10 [(go.field) = {tags:'gorm:"size:10;default:0" annotation:"地区"'}];
+  uint32 areaVisibility = 11 [(go.field) = {tags:'gorm:"type:int2;default:2" annotation:"地区可见性，1-可见"'}];
+  string location = 12 [(go.field) = {tags:'gorm:"size:20;default:\'\'" annotation:"位置"'}];
+  repeated TinyTag tags = 13 [(go.field) = {tags:'gorm:"-" annotation:"标签"'}];
+  user.UserBaseInfo user = 14 [(go.field) = {tags:'gorm:"-" annotation:"用户"'}];
+  uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" annotation:"用户id"'}];
+  repeated uint64 approveUsers = 15 [(go.field) = {tags:'gorm:"-" annotation:"点赞用户"'}];
+  repeated uint64 collectUsers = 16 [(go.field) = {tags:'gorm:"-" annotation:"收藏用户"'}];
+  repeated uint64 likeUsers = 25 [(go.field) = {tags:'gorm:"-" annotation:"喜欢用户"'}];
+  repeated Comment comments = 18 [(go.field) = {tags:'gorm:"-" annotation:"评论"'}];
+  repeated user.UserBaseInfo users = 31 [(go.field) = {tags:'gorm:"-" annotation:"评论"'}];
+  ContentExt ext = 30[(go.field) = {tags:'gorm:"-" annotation:"统计数据"'}];
+  uint64 likeId = 27 [(go.field) = {tags:'gorm:"-" annotation:"喜欢id,为0代表用户没有点喜欢"'}];
+  uint64 unlikeId = 29 [(go.field) = {tags:'gorm:"-" annotation:"不喜欢id,为0代表用户没有点喜欢"'}];
+  bool collect = 28 [(go.field) = {tags:'gorm:"-" annotation:"是否收藏"'}];
+  uint32 sequence = 19 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"同级别的分类可根据sequence的值来排序，置顶"'}];
+  uint32 anonymous = 20 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"是否匿名,0-是,1否"'}];
+  ViewPermission permission = 21 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"查看权限"'}];
+  string createdAt = 22 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  string deletedAt = 23 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00;index"'}];
+  uint32 status = 24 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    read_only:true
+  }];
 }

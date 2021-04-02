@@ -7,6 +7,7 @@ import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
 import "utils/empty/empty.proto";
 import "utils/response/response.proto";
+import "utils/request/param.proto";
 import "utils/proto/gogo/graphql.proto";
 import "utils/oauth/oauth.proto";
 import "utils/proto/go/go.proto";
@@ -194,7 +195,7 @@ service UserService {
   }
 
   //获取用户信息
-  rpc GetUser (GetReq) returns (User) {
+  rpc Info (request.Object) returns (UserRep) {
     option (google.api.http) = {
       get: "/api/v1/user/id/{id}"
     };
@@ -208,7 +209,7 @@ service UserService {
 
   rpc ActionLogList (ActionLogListReq) returns (ActionLogListRep) {
     option (google.api.http) = {
-      get: "/api/v1/userActionLog"
+      get: "/api/v1/user/actionLog"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]
@@ -229,6 +230,29 @@ service UserService {
       description : "根据Id获取用户信息接口"
     };
     option (gogo.graphql_operation) = Query;
+  }
+
+  // 关注
+  rpc Follow (FollowReq) returns (empty.Empty) {
+    option (google.api.http) = {
+      get: "/api/v1/user/follow"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["用户相关接口", "v1.0.0"]
+      summary : "关注"
+    };
+    option (gogo.graphql_operation) = Mutation;
+  }
+  // 取消关注
+  rpc delFollow (FollowReq) returns (BaseListRep) {
+    option (google.api.http) = {
+      delete: "/api/v1/user/follow"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["用户相关接口", "v1.0.0"]
+      summary : "取消关注"
+    };
+    option (gogo.graphql_operation) = Mutation;
   }
 }
 
@@ -301,11 +325,6 @@ message ActiveReq {
     title:"密钥"}];
 }
 
-message GetReq {
-  uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-    title:"ID"
-    type: INTEGER}];
-}
 
 message EditReq {
   uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
@@ -378,11 +397,20 @@ message SendVerifyCodeReq{
 
 message BaseListReq{
   repeated uint64 ids = 1;
-  uint32  pageNo =2;
+  uint32  pageNo = 2;
   uint32 pageSize = 3;
 }
 
 message BaseListRep{
   int64 total = 1;
   repeated UserBaseInfo list = 2;
+}
+
+message UserRep{
+  User user = 1;
+  UserExt uerExt = 2;
+}
+
+message FollowReq{
+  uint64 id = 1;
 }

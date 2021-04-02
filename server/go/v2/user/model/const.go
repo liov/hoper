@@ -9,6 +9,7 @@ const (
 	UserExtTableName = "user_ext"
 	ResumeTableName = "resume"
 	UserActionLogTableName = "user_action_log"
+	FollowTableName = "user_follow"
 )
 
 const (

@@ -152,7 +152,6 @@ func (d *userDao) UserLastActiveTime() error {
 		//有序集合存一份，遍历长时间未活跃用户用
 		pipe.ZAdd(ctx, modelconst.LoginUserKey+"ActiveTime",
 			&redis.Z{Score: float64(ctxi.TimeStamp), Member: ctxi.IdStr})
-		pipe.Select(ctx, conf.Conf.Redis.Index)
 		pipe.HSet(ctx, loginUser, "LastActiveAt")
 		return nil
 	}); err != nil {
@@ -161,14 +160,31 @@ func (d *userDao) UserLastActiveTime() error {
 	return nil
 }
 
-func (d *userDao) RedisUserInfoEdit(key string, value interface{}) error {
+func (d *userDao) RedisUserInfoEdit(field string, value interface{}) error {
 	ctxi :=d.ctxi
 	ctx:=ctxi.Context
-	loginUser := modelconst.LoginUserKey + ctxi.IdStr
+	key := modelconst.LoginUserKey + ctxi.IdStr
 
-	err:= Dao.Redis.HSet(ctx, loginUser, key, value).Err()
+	err:= Dao.Redis.HSet(ctx, key, field, value).Err()
 	if err!=nil{
 		return ctxi.ErrorLog(errorcode.RedisErr,err,"RedisUserInfoEdit")
 	}
 	return nil
+}
+
+func (d *userDao) GetUserExtRedis() (*model.UserExt,error) {
+	ctxi :=d.ctxi
+	ctx:=ctxi.Context
+	key := modelconst.UserExtKey + ctxi.IdStr
+
+	userExt, err := redisi.Strings(Dao.Redis.HGetAll(ctx,key).Result())
+	if err!=nil{
+		return nil,ctxi.ErrorLog(errorcode.RedisErr,err,"GetUserExtRedis")
+	}
+	followCount,_ :=strconv.ParseUint(userExt[0],10,64)
+	followedCount,_ :=strconv.ParseUint(userExt[0],10,64)
+	return &model.UserExt{
+		FollowCount:    followCount,
+		FollowedCount:   followedCount,
+	},nil
 }

@@ -1,12 +1,12 @@
 import { createStore } from "vuex";
 import axios from "axios";
-import {Toast} from "vant"
-import router from "@/router/index"
+import { Toast } from "vant";
+import router from "@/router/index";
 
 const state = {
   user: null,
-  token: ""
-}
+  token: "",
+};
 
 const mutations = {
   SET_USER: function (state, user) {
@@ -14,24 +14,24 @@ const mutations = {
   },
   SET_TOKEN: function (state, token) {
     state.token = token;
-  }
-}
+  },
+};
 
 const actions = {
-  async getUser({state, commit}, params) {
+  async getUser({ state, commit }, params) {
     if (state.user) return;
     const token = localStorage.getItem("token");
     if (token) {
       commit("SET_TOKEN", token);
       const res = await axios.get(`/api/v1/auth`);
       // 跟后端的初始化配合
-      if (res.data.code === 200) commit("SET_USER", res.data.data);
+      if (res.data.code === 0) commit("SET_USER", res.data.details);
     }
   },
-  async login({commit}, params) {
+  async login({ commit }, params) {
     try {
-      const {data} = await axios.post("/api/v1/user/login", params);
-      if (data.code && data.code !== 0) Toast.fail(data.message)
+      const { data } = await axios.post("/api/v1/user/login", params);
+      if (data.code && data.code !== 0) Toast.fail(data.message);
       else {
         store.commit("SET_USER", data.details.user);
         store.commit("SET_TOKEN", data.details.token);
@@ -45,20 +45,20 @@ const actions = {
       }
       throw error;
     }
-  }
-}
+  },
+};
 
 const getters = {
   getUser(state) {
-    return state.user
-  }
-}
+    return state.user;
+  },
+};
 
 const store = createStore({
   state,
   mutations,
   actions,
-  getters
-})
+  getters,
+});
 
-export default store
+export default store;
