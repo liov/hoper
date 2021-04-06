@@ -30,7 +30,7 @@ func (*DiaryService) DiaryBook(ctx context.Context, req *content.DiaryBookReq) (
 func (*DiaryService) DiaryBookList(context.Context, *content.DiaryBookListReq) (*content.DiaryBookListRep, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DiaryBookList not implemented")
 }
-func (*DiaryService) AddDiaryBook(ctx context.Context, req *content.AddDiaryBookReq) (*empty.Empty, error) {
+func (*DiaryService) AddDiaryBook(ctx context.Context, req *content.AddDiaryBookReq) (*request.Object, error) {
 	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
@@ -48,7 +48,7 @@ func (*DiaryService) AddDiaryBook(ctx context.Context, req *content.AddDiaryBook
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "Create")
 	}
-	return nil, nil
+	return &request.Object{Id:req.Id}, nil
 }
 func (*DiaryService) EditDiaryBook(ctx context.Context, req *content.AddDiaryBookReq) (*empty.Empty, error) {
 	ctxi, span := user.CtxFromContext(ctx).StartSpan("")

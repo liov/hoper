@@ -44,7 +44,7 @@ service DiaryService {
     option (gogo.graphql_operation) = Query;
   }
   // 创建日记本
-  rpc AddDiaryBook (AddDiaryBookReq) returns (empty.Empty) {
+  rpc AddDiaryBook (AddDiaryBookReq) returns (request.Object) {
     option (google.api.http) = {
       post: "/api/v1/diaryBook"
     };
@@ -76,7 +76,7 @@ service DiaryService {
   }
 
   // 新建
-  rpc Add (AddDiaryReq) returns (empty.Empty) {
+  rpc Add (AddDiaryReq) returns (request.Object) {
     option (google.api.http) = {
       post: "/api/v1/diary"
       body: "*"

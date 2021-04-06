@@ -38,7 +38,7 @@ service MomentService {
   }
 
   // 新建
-  rpc Add (AddMomentReq) returns (empty.Empty) {
+  rpc Add (AddMomentReq) returns (request.Object) {
     option (google.api.http) = {
       post: "/api/v1/moment"
       body: "*"

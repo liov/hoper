@@ -2,7 +2,7 @@ import axios from "axios";
 import SparkMD5 from "spark-md5";
 
 const exist = async function(md5) {
-  const res = await axios.post("/api/upload/exist/" + md5);
+  const res = await axios.get("/api/v1/upload/exist/" + md5);
   if (res.data.code === 200) {
     return res.data.data;
   } else {

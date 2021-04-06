@@ -112,7 +112,7 @@ func maskField(moment *content.Moment){
 	moment.Anonymous = 0
 }
 
-func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*empty.Empty, error) {
+func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*request.Object, error) {
 
 	if utf8.RuneCountInString(req.Content) < conf.Conf.Customize.Moment.MaxContentLen {
 		return nil, errorcode.InvalidArgument.Message(fmt.Sprintf("文章内容不能小于%d个字", conf.Conf.Customize.Moment.MaxContentLen))
@@ -208,7 +208,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*em
 		}
 		return nil, errorcode.DBError
 	}
-	return nil, nil
+	return &request.Object{Id:req.Id}, nil
 }
 func (*MomentService) Edit(context.Context, *content.AddMomentReq) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Edit not implemented")

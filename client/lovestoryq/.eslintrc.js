@@ -22,6 +22,7 @@ module.exports = {
     "vue/require-v-for-key": "off",
     "vue/valid-v-for": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-this-alias": "off",
   },
   overrides: [
     {

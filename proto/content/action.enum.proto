@@ -28,7 +28,7 @@ enum ActionType{
 enum DelReason{
   option (go.enum) = {stringer_name: 'OrigString'};
   DelReasonPlaceholder = 0 [(gogo.enumvalue_cn) = "占位"];
-  DelReasonViolationOfLawsAndRegulations = 1 [(gogo.enumvalue_cn) = "违法法律法规"];
+  DelReasonViolationOfLawsAndRegulations = 1 [(gogo.enumvalue_cn) = "违返法律法规"];
   DelReasonEroticViolence = 3 [(gogo.enumvalue_cn) = "色情暴力"];
   DelReasonOther = 255 [(gogo.enumvalue_cn) = "其他原因"];
 }

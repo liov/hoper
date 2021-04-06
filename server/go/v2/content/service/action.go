@@ -19,7 +19,7 @@ type ActionService struct {
 	content.UnimplementedActionServiceServer
 }
 
-func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*empty.Empty, error) {
+func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.Object, error) {
 	if req.Action != content.ActionLike && req.Action != content.ActionUnlike && req.Action != content.ActionBrowse {
 		return nil, nil
 	}
@@ -39,7 +39,7 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*empty.Em
 
 	id, err := contentDao.LikeIdDB(db, req.Type, req.Action, req.RefId, req.UserId)
 	if err != nil {
-		return nil, err
+		return &request.Object{Id: id}, err
 	}
 	if (id > 0 && !req.Del) || (id == 0 && req.Del) {
 		return nil, nil
@@ -75,7 +75,7 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*empty.Em
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.RedisErr, err, "HotCountRedis")
 	}
-	return nil, nil
+	return &request.Object{Id: req.Id}, nil
 }
 
 func (*ActionService) DelLike(ctx context.Context, req *request.Object) (*empty.Empty, error) {
@@ -95,7 +95,7 @@ func (*ActionService) DelLike(ctx context.Context, req *request.Object) (*empty.
 	return nil, err
 }
 
-func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*empty.Empty, error) {
+func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*request.Object, error) {
 	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
@@ -130,7 +130,7 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*em
 	if err != nil {
 		return nil, err
 	}
-	return nil, nil
+	return &request.Object{Id:req.Id}, nil
 }
 
 func (*ActionService) DelComment(ctx context.Context, req *request.Object) (*empty.Empty, error) {
@@ -174,7 +174,7 @@ func (*ActionService) DelComment(ctx context.Context, req *request.Object) (*emp
 	return nil, nil
 }
 
-func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*empty.Empty, error) {
+func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*request.Object, error) {
 	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
@@ -210,7 +210,7 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*em
 	if err != nil {
 		return nil, err
 	}
-	return nil, nil
+	return &request.Object{Id:req.Id}, nil
 }
 
 func (*ActionService) DelCollect(ctx context.Context, req *request.Object) (*empty.Empty, error) {
