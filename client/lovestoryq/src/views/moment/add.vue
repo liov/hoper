@@ -61,15 +61,13 @@ export default class MomentAdd extends Vue {
   permission = "";
   columns = ["全部", "自己可见", "陌生人可见"];
   showPicker = false;
-  uploader: any[] = [];
+  uploader: any = [];
 
   onOversize(file: File) {
-    this.$toast("文件大小不能超过 500kb");
+    if (file.size > 5 * 1e6) this.$toast("文件大小不能超过 500kB");
   }
   async afterRead(file: any) {
-    const url = await upload(file.file);
-    file.url = url;
-    console.log("abc", this.uploader);
+    file.url = await upload(file.file);
   }
   async submit() {
     let images = "";
@@ -90,7 +88,6 @@ export default class MomentAdd extends Vue {
     }
   }
   onConfirm(value: string) {
-    console.log(value);
     this.permission = value;
     this.showPicker = false;
   }

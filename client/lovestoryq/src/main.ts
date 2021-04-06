@@ -6,61 +6,40 @@ import store from "./store";
 import "@/plugin/axios";
 /// <reference path = "./plugin/plugin.d.ts" />;
 import HoperPlugin from "@/plugin/plugin";
-import {
-  Col,
-  Row,
-  NavBar,
-  Tabbar,
-  TabbarItem,
-  Tab,
-  Tabs,
-  Icon,
-  List,
-  Skeleton,
-  Cell,
-  CellGroup,
-  Toast,
-  Notify,
-  Form,
-  Field,
-  Button,
-  Uploader,
-  Picker,
-  Popup,
-  RadioGroup,
-  Radio,
-  Lazyload,
-  Image,
-} from "vant";
+import * as Vant from "vant";
 
 createApp(App)
   .use(store)
   .use(router)
-  .use(Col)
-  .use(Row)
-  .use(NavBar)
-  .use(Tabbar)
-  .use(TabbarItem)
-  .use(Tab)
-  .use(Tabs)
-  .use(Icon)
-  .use(List)
-  .use(Skeleton)
-  .use(Cell)
-  .use(CellGroup)
-  .use(Toast)
-  .use(Notify)
-  .use(Form)
-  .use(Field)
-  .use(Button)
-  .use(Uploader)
-  .use(Picker)
-  .use(Popup)
+  .use(Vant.Col)
+  .use(Vant.Row)
+  .use(Vant.NavBar)
+  .use(Vant.Tabbar)
+  .use(Vant.TabbarItem)
+  .use(Vant.Tab)
+  .use(Vant.Tabs)
+  .use(Vant.Icon)
+  .use(Vant.List)
+  .use(Vant.Skeleton)
+  .use(Vant.Cell)
+  .use(Vant.CellGroup)
+  .use(Vant.Toast)
+  .use(Vant.Notify)
+  .use(Vant.Form)
+  .use(Vant.Field)
+  .use(Vant.Button)
+  .use(Vant.Uploader)
+  .use(Vant.Picker)
+  .use(Vant.Popup)
   .use(HoperPlugin)
-  .use(RadioGroup)
-  .use(Radio)
-  .use(Lazyload, {
+  .use(Vant.RadioGroup)
+  .use(Vant.Radio)
+  .use(Vant.Lazyload, {
     lazyComponent: true,
   })
-  .use(Image)
+  .use(Vant.Image)
+  .use(Vant.PullRefresh)
+  .use(Vant.ShareSheet)
+  .use(Vant.Dialog)
+  .use(Vant.ActionSheet)
   .mount("#app");
