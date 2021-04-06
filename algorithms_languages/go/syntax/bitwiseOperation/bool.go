@@ -2,18 +2,18 @@ package main
 
 import (
 	"fmt"
-	"test/utils"
+	"github.com/liov/hoper/go/v2/utils/number"
 )
 
 const (
-	ONE   uint8 = 1
-	TWO   uint8 = 2
-	THREE uint8 = 4
-	FOUR  uint8 = 8
-	FIVE  uint8 = 16
-	SIX   uint8 = 32
-	SEVEN uint8 = 64
-	EIGHT uint8 = 128
+	ONE uint8 = 1 << iota
+	TWO
+	THREE
+	FOUR
+	FIVE
+	SIX
+	SEVEN
+	EIGHT
 )
 
 func main() {
@@ -23,7 +23,7 @@ func main() {
 	fmt.Printf("%08b,%d\n", ^i1, ^i1)
 	var i2 int8 = 0
 	fmt.Printf("%08b,%d\n", ^i2, ^i2) //补码，第一位符号位，所有位取反加1
-	utils.ViewBin(-2)
+	number.ViewBin(-2)
 	/*	var b uint8
 		reader := bufio.NewReader(os.Stdin)
 		for {
@@ -45,8 +45,8 @@ func main() {
 				break
 			}
 		}*/
-	utils.ViewBin(^int8(-1))
-	utils.ViewBin(^uint8(1))
+	number.ViewBin(^int8(-1))
+	number.ViewBin(^uint8(1))
 }
 
 //go中三种返回ok值的操作,均是取值操作

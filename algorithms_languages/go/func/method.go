@@ -63,3 +63,19 @@ func main() {
 	ii.print()
 	i.changes()
 }
+
+type Debug interface {
+	Debug() string
+}
+
+type DbgFunc func(debug Debug) Debug
+
+func (d DbgFunc) Debug() string {
+	return "d()"
+}
+
+func ImpDbg() Debug {
+	return DbgFunc(func(d Debug) Debug {
+		return d
+	})
+}

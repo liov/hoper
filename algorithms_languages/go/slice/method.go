@@ -10,6 +10,9 @@ func (i *Ints) Add(new int) {
 
 func main() {
 	i := Ints{}
-	i.Add(1)
+	for j := 0; j < 10; j++ {
+		i.Add(j)
+	}
+
 	log.Println(i)
 }
