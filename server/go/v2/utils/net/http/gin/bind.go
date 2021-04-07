@@ -1,4 +1,4 @@
-package gin_build
+package gini
 
 import (
 	"io/ioutil"

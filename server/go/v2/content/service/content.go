@@ -3,13 +3,13 @@ package service
 import (
 	"context"
 	"github.com/liov/hoper/go/v2/protobuf/utils/request"
+	contexti "github.com/liov/hoper/go/v2/tailmon/context"
 	"net/http"
 
 	"github.com/liov/hoper/go/v2/content/conf"
 	"github.com/liov/hoper/go/v2/content/dao"
 	"github.com/liov/hoper/go/v2/content/model"
 	"github.com/liov/hoper/go/v2/protobuf/content"
-	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"google.golang.org/grpc/codes"
@@ -28,10 +28,10 @@ func (*ContentService) TagInfo(context.Context, *request.Object) (*content.Tag, 
 	return nil, status.Errorf(codes.Unimplemented, "method Info not implemented")
 }
 func (*ContentService) AddTag(ctx context.Context, req *content.AddTagReq) (*empty.Empty, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("Edit")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("Edit")
 	defer span.End()
 	ctx = ctxi.Context
-	user, err := ctxi.GetAuthInfo(Auth)
+	user, err := auth(ctxi,false)
 	if err != nil {
 		return nil, err
 	}
@@ -44,9 +44,9 @@ func (*ContentService) AddTag(ctx context.Context, req *content.AddTagReq) (*emp
 	return nil, nil
 }
 func (*ContentService) EditTag(ctx context.Context, req *content.EditTagReq) (*empty.Empty, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}
@@ -62,10 +62,10 @@ func (*ContentService) EditTag(ctx context.Context, req *content.EditTagReq) (*e
 	return nil, nil
 }
 func (*ContentService) TagList(ctx context.Context, req *content.TagListReq) (*content.TagListRep, error) {
-	ctxi := user.CtxFromContext(ctx)
+	ctxi := contexti.CtxFromContext(ctx)
 	var tags []*content.Tag
 
-	user, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	user, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}
@@ -86,9 +86,9 @@ func (*ContentService) TagList(ctx context.Context, req *content.TagListReq) (*c
 }
 
 func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*empty.Empty, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}
@@ -106,9 +106,9 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*emp
 	return nil, nil
 }
 func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*empty.Empty, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}
@@ -128,9 +128,9 @@ func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*em
 
 // 创建合集
 func (*ContentService) AddContainer(ctx context.Context,req *content.AddContainerReq) (*empty.Empty, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}
@@ -150,9 +150,9 @@ func (*ContentService) AddContainer(ctx context.Context,req *content.AddContaine
 
 // 修改日记本
 func (*ContentService) EditDiaryContainer(ctx context.Context,req *content.AddContainerReq) (*empty.Empty, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}

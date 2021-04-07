@@ -6,6 +6,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"github.com/liov/hoper/go/v2/protobuf/utils/request"
+	contexti "github.com/liov/hoper/go/v2/tailmon/context"
 	"net/http"
 	"strconv"
 	"time"
@@ -38,7 +39,7 @@ type UserService struct {
 }
 
 func (u *UserService) VerifyCode(ctx context.Context, req *empty.Empty) (*wrappers.StringValue, error) {
-	device := model.CtxFromContext(ctx).DeviceInfo
+	device := contexti.CtxFromContext(ctx).DeviceInfo
 	log.Debug(device)
 	var rep = &wrappers.StringValue{}
 	vcode := verification.GenerateCode()
@@ -48,7 +49,7 @@ func (u *UserService) VerifyCode(ctx context.Context, req *empty.Empty) (*wrappe
 }
 
 func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*empty.Empty, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
 	if req.Mail == "" && req.Phone == "" {
@@ -73,7 +74,7 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 }
 
 func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*empty.Empty, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
 	if err := Validate(req); err != nil {
@@ -191,7 +192,7 @@ func checkPassword(password string, user *model.User) bool {
 }
 
 func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.LoginRep, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan("Active")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("Active")
 	defer span.End()
 	ctx = ctxi.Context
 	redisKey := modelconst.ActiveTimeKey + strconv.FormatUint(req.Id, 10)
@@ -222,10 +223,10 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 }
 
 func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*empty.Empty, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan("Edit")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("Edit")
 	defer span.End()
 	ctx = ctxi.Context
-	user, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	user, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -245,7 +246,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*empty.Empt
 		resumes = append(req.Details.EduExps, req.Details.WorkExps...)
 		if len(resumes) > 0 {
 			tx := dao.Dao.GORMDB.Begin()
-			err = userDao.SaveResumes(tx, req.Id, resumes, originalIds, device.UserDeviceInfo())
+			err = userDao.SaveResumes(tx, req.Id, resumes, originalIds, model.ConvDeviceInfo(device))
 			if err != nil {
 				tx.Rollback()
 				return nil, errorcode.DBError.Message("更新失败")
@@ -262,7 +263,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*empty.Empt
 }
 
 func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginRep, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan("Login")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("Login")
 	defer span.End()
 	ctx = ctxi.Context
 	if verifyErr := verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL, conf.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
@@ -308,11 +309,15 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 	return u.login(ctxi, &user)
 }
 
-func (*UserService) login(ctxi *model.Ctx, user *model.User) (*model.LoginRep, error) {
-	ctxi.Id = user.Id
-	ctxi.Name = user.Name
-	ctxi.Status = user.Status
-	ctxi.Role = user.Role
+func (*UserService) login(ctxi *contexti.Ctx, user *model.User) (*model.LoginRep, error) {
+	auth := &model.AuthInfo{
+		Id:     user.Id,
+		Name:   user.Name,
+		Role:   user.Role,
+		Status: user.Status,
+	}
+
+	ctxi.AuthInfo = auth
 	ctxi.LoginAt = ctxi.TimeStamp
 	ctxi.ExpiredAt = ctxi.TimeStamp + int64(conf.Conf.Customize.TokenMaxAge)
 
@@ -322,7 +327,7 @@ func (*UserService) login(ctxi *model.Ctx, user *model.User) (*model.LoginRep, e
 	}
 	db := dao.Dao.GetDB(ctxi.Logger)
 
-	db.Table(modelconst.UserExtTableName).Where(`id = ?`, ctxi.Id).
+	db.Table(modelconst.UserExtTableName).Where(`id = ?`, user.Id).
 		UpdateColumn("last_activated_at", ctxi.RequestAt)
 	userDao := dao.GetDao(ctxi)
 	if err := userDao.EfficientUserHashToRedis(); err != nil {
@@ -355,10 +360,10 @@ func (*UserService) login(ctxi *model.Ctx, user *model.User) (*model.LoginRep, e
 }
 
 func (u *UserService) Logout(ctx context.Context, req *empty.Empty) (*empty.Empty, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan("Logout")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("Logout")
 	defer span.End()
 	ctx = ctxi.Context
-	user, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	user, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -382,7 +387,8 @@ func (u *UserService) Logout(ctx context.Context, req *empty.Empty) (*empty.Empt
 }
 
 func (u *UserService) AuthInfo(ctx context.Context, req *empty.Empty) (*model.UserAuthInfo, error) {
-	user, err := model.CtxFromContext(ctx).GetAuthInfo(AuthWithUpdate)
+	ctxi := contexti.CtxFromContext(ctx)
+	user, err := auth(ctxi, false)
 	if err != nil {
 		return nil, err
 	}
@@ -390,10 +396,10 @@ func (u *UserService) AuthInfo(ctx context.Context, req *empty.Empty) (*model.Us
 }
 
 func (u *UserService) Info(ctx context.Context, req *request.Object) (*model.UserRep, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
-	_, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	_, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -403,15 +409,15 @@ func (u *UserService) Info(ctx context.Context, req *request.Object) (*model.Use
 	if err = db.Find(&user1, req.Id).Error; err != nil {
 		return nil, errorcode.DBError.Message("账号不存在")
 	}
-	userExt,err:=userDao.GetUserExtRedis()
+	userExt, err := userDao.GetUserExtRedis()
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
-	return &model.UserRep{User:&user1,UerExt: userExt}, nil
+	return &model.UserRep{User: &user1, UerExt: userExt}, nil
 }
 
 func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (*response.TinyRep, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
 	if verifyErr := verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL, conf.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
@@ -449,7 +455,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 }
 
 func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswordReq) (*response.TinyRep, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan("Logout")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("Logout")
 	defer span.End()
 	ctx = ctxi.Context
 	redisKey := modelconst.ResetTimeKey + strconv.FormatUint(req.Id, 10)
@@ -496,7 +502,7 @@ func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListR
 }
 
 func (*UserService) BaseList(ctx context.Context, req *model.BaseListReq) (*model.BaseListRep, error) {
-	ctxi, span := model.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	if ctxi.Internal == "" {
 		return nil, errorcode.PermissionDenied
@@ -522,7 +528,7 @@ func (*UserService) Service() (string, string, []http.HandlerFunc) {
 	return "用户相关", "/api/user", []http.HandlerFunc{middle.Log}
 }
 
-func (*UserService) Add(ctx *model.Ctx, req *model.SignupReq) (*response.TinyRep, error) {
+func (*UserService) Add(ctx *contexti.Ctx, req *model.SignupReq) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() interface{} {
 		return pick.Path("/add").
@@ -546,7 +552,7 @@ func (*UserService) FiberService() (string, string, []fiber.Handler) {
 	return "用户相关", "/api/user", []fiber.Handler{middle.FiberLog}
 }
 
-func (*UserService) Addv(ctx *model.Ctx, req *response.TinyRep) (*response.TinyRep, error) {
+func (*UserService) Addv(ctx *contexti.Ctx, req *response.TinyRep) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.FiberApi(func() interface{} {
 		return pick.Path("/add").

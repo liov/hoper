@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/liov/hoper/go/v2/content/client"
 	"github.com/liov/hoper/go/v2/protobuf/utils/request"
+	contexti "github.com/liov/hoper/go/v2/tailmon/context"
 	"net/http"
 	"unicode/utf8"
 
@@ -29,9 +30,9 @@ func (*MomentService) Service() (describe, prefix string, middleware []http.Hand
 }
 
 func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.Moment, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	_, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	_, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +84,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 		userIds = append(userIds, moment.UserId)
 	}
 	if len(userIds) > 0 {
-		userList, err := client.UserClient.BaseList(ctx, &user.BaseListReq{Ids: userIds})
+		userList, err := client.UserClient.BaseList(ctxi, &user.BaseListReq{Ids: userIds})
 		if err != nil {
 			return nil, err
 		}
@@ -118,9 +119,9 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		return nil, errorcode.InvalidArgument.Message(fmt.Sprintf("文章内容不能小于%d个字", conf.Conf.Customize.Moment.MaxContentLen))
 	}
 
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}
@@ -215,9 +216,9 @@ func (*MomentService) Edit(context.Context, *content.AddMomentReq) (*empty.Empty
 }
 
 func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*content.MomentListRep, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}
@@ -292,7 +293,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	}
 	var users []*user.UserBaseInfo
 	if len(userIds) > 0 {
-		userList, err := client.UserClient.BaseList(ctx, &user.BaseListReq{Ids: userIds})
+		userList, err := client.UserClient.BaseList(ctxi, &user.BaseListReq{Ids: userIds})
 		if err != nil {
 			return nil, err
 		}
@@ -306,9 +307,9 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 }
 
 func (*MomentService) Delete(ctx context.Context, req *request.Object) (*empty.Empty, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}

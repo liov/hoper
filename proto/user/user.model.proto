@@ -146,9 +146,6 @@ message UserAuthInfo {
   UserStatus status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
-  int64 lastActiveAt = 23;
-  int64 expiredAt = 22;
-  int64 loginAt = 16;
 }
 
 message UserOAuthInfo {

@@ -5,6 +5,7 @@ import (
 	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
+	contexti "github.com/liov/hoper/go/v2/tailmon/context"
 	"github.com/liov/hoper/go/v2/user/dao"
 	"github.com/liov/hoper/go/v2/user/model"
 	dbi "github.com/liov/hoper/go/v2/utils/dao/db"
@@ -12,10 +13,10 @@ import (
 
 // 关注
 func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*empty.Empty, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
-	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}
@@ -40,10 +41,10 @@ func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*empty.E
 
 // 取消关注
 func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user.BaseListRep, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
-	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}

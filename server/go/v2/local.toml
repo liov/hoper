@@ -6,6 +6,13 @@ ReadTimeout = 60
 WriteTimeout = 60
 OpenTracing = true
 
+
+[server.gin]
+RedirectTrailingSlash = false
+RedirectFixedPath = true
+HandleMethodNotAllowed = false
+MaxMultipartMemory = 20971520
+
 [customize]
 GrpcService = {user = "localhost:8080", note = "localhost:8090"}
 Volume = "../data"

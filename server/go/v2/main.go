@@ -1,6 +1,7 @@
 package main
 
 import (
+	contexti "github.com/liov/hoper/go/v2/tailmon/context"
 	"github.com/liov/hoper/go/v2/upload"
 	"github.com/liov/hoper/go/v2/utils/net/http/gin/handler"
 	"net/http"
@@ -20,7 +21,6 @@ import (
 	udao "github.com/liov/hoper/go/v2/user/dao"
 	userservice "github.com/liov/hoper/go/v2/user/service"
 	"github.com/liov/hoper/go/v2/utils/log"
-	grpci "github.com/liov/hoper/go/v2/utils/net/http/grpc"
 	"github.com/liov/hoper/go/v2/utils/net/http/pick"
 	"go.opencensus.io/examples/exporter"
 	"go.opencensus.io/plugin/ocgrpc"
@@ -41,7 +41,9 @@ func main() {
 	}
 	pick.RegisterService(userservice.GetUserService(), contentervice.GetMomentService())
 	(&tailmon.Server{
-		GRPCOptions: []grpc.ServerOption{grpci.DefaultUnaryInterceptor(),
+		GRPCOptions: []grpc.ServerOption{
+			grpc.ChainUnaryInterceptor(),
+			grpc.ChainStreamInterceptor(),
 			//grpc.StatsHandler(&ocgrpc.ServerHandler{})
 		},
 		//为了可以自定义中间件
@@ -66,7 +68,7 @@ func main() {
 			app.POST("/api/v1/multiUpload",handler.Convert(upload.MultiUpload))
 			pick.Gin(app, user.ConvertContext, true, initialize.InitConfig.Module)
 		},
-		CustomContext:  user.CtxWithRequest,
-		ConvertContext: user.ConvertContext,
+		CustomContext:  contexti.CtxWithRequest,
+		ConvertContext: contexti.ConvertContext,
 	}).Start()
 }

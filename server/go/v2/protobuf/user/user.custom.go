@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
+	contexti "github.com/liov/hoper/go/v2/tailmon/context"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -53,31 +54,32 @@ func RegisterUserServiceHandlerFromModuleWithReConnect(ctx context.Context, mux 
 
 /*----------------------------CTX上下文-------------------------------*/
 type AuthInfo struct {
-	Id           uint64     `json:"id"`
-	Name         string     `json:"name"`
-	Role         Role       `json:"role"`
-	Status       UserStatus `json:"status"`
-	LastActiveAt int64      `json:"lat,omitempty"`
-	ExpiredAt    int64      `json:"exp,omitempty"`
-	LoginAt      int64      `json:"iat,omitempty"`
+	Id     uint64     `json:"id"`
+	Name   string     `json:"name"`
+	Role   Role       `json:"role"`
+	Status UserStatus `json:"status"`
+}
+
+func (x *AuthInfo) IdStr() string {
+	return strconv.FormatUint(x.Id, 10)
 }
 
 func (x *AuthInfo) UserAuthInfo() *UserAuthInfo {
 	return &UserAuthInfo{
-		Id:           x.Id,
-		Name:         x.Name,
-		Role:         x.Role,
-		Status:       x.Status,
-		LastActiveAt: x.LastActiveAt,
-		ExpiredAt:    x.ExpiredAt,
-		LoginAt:      x.LoginAt,
+		Id:     x.Id,
+		Name:   x.Name,
+		Role:   x.Role,
+		Status: x.Status,
 	}
 }
 
 type Authorization struct {
 	AuthInfo
-	IdStr string `json:"-" gorm:"-"`
-	Token string `json:"-"`
+	LastActiveAt int64  `json:"lat,omitempty"`
+	ExpiredAt    int64  `json:"exp,omitempty"`
+	LoginAt      int64  `json:"iat,omitempty"`
+	IdStr        string `json:"-" gorm:"-"`
+	Token        string `json:"-"`
 }
 
 func (x *Authorization) Valid(helper *jwt.ValidationHelper) error {
@@ -115,6 +117,19 @@ type DeviceInfo struct {
 }
 
 func (x *DeviceInfo) UserDeviceInfo() *UserDeviceInfo {
+	return &UserDeviceInfo{
+		Device:     x.Device,
+		Os:         x.Os,
+		AppCode:    x.AppCode,
+		AppVersion: x.AppVersion,
+		IP:         x.IP,
+		Lng:        x.Lng,
+		Lat:        x.Lat,
+		Area:       x.Area,
+		UserAgent:  x.UserAgent,
+	}
+}
+func ConvDeviceInfo(x *contexti.DeviceInfo) *UserDeviceInfo {
 	return &UserDeviceInfo{
 		Device:     x.Device,
 		Os:         x.Os,

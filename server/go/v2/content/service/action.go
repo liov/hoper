@@ -6,10 +6,10 @@ import (
 	"github.com/liov/hoper/go/v2/content/dao"
 	"github.com/liov/hoper/go/v2/content/model"
 	"github.com/liov/hoper/go/v2/protobuf/content"
-	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/protobuf/utils/request"
+	contexti "github.com/liov/hoper/go/v2/tailmon/context"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -23,9 +23,9 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 	if req.Action != content.ActionLike && req.Action != content.ActionUnlike && req.Action != content.ActionBrowse {
 		return nil, nil
 	}
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}
@@ -79,9 +79,9 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 }
 
 func (*ActionService) DelLike(ctx context.Context, req *request.Object) (*empty.Empty, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}
@@ -96,9 +96,9 @@ func (*ActionService) DelLike(ctx context.Context, req *request.Object) (*empty.
 }
 
 func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*request.Object, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}
@@ -134,9 +134,9 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*re
 }
 
 func (*ActionService) DelComment(ctx context.Context, req *request.Object) (*empty.Empty, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}
@@ -175,9 +175,9 @@ func (*ActionService) DelComment(ctx context.Context, req *request.Object) (*emp
 }
 
 func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*request.Object, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}
@@ -214,9 +214,9 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*re
 }
 
 func (*ActionService) DelCollect(ctx context.Context, req *request.Object) (*empty.Empty, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}
@@ -231,9 +231,9 @@ func (*ActionService) DelCollect(ctx context.Context, req *request.Object) (*emp
 }
 
 func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*empty.Empty, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}

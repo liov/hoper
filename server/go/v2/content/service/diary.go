@@ -6,10 +6,10 @@ import (
 	"github.com/liov/hoper/go/v2/content/dao"
 	"github.com/liov/hoper/go/v2/content/model"
 	"github.com/liov/hoper/go/v2/protobuf/content"
-	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/protobuf/utils/request"
+	contexti "github.com/liov/hoper/go/v2/tailmon/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"net/http"
@@ -31,9 +31,9 @@ func (*DiaryService) DiaryBookList(context.Context, *content.DiaryBookListReq) (
 	return nil, status.Errorf(codes.Unimplemented, "method DiaryBookList not implemented")
 }
 func (*DiaryService) AddDiaryBook(ctx context.Context, req *content.AddDiaryBookReq) (*request.Object, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}
@@ -51,9 +51,9 @@ func (*DiaryService) AddDiaryBook(ctx context.Context, req *content.AddDiaryBook
 	return &request.Object{Id:req.Id}, nil
 }
 func (*DiaryService) EditDiaryBook(ctx context.Context, req *content.AddDiaryBookReq) (*empty.Empty, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}
@@ -72,9 +72,9 @@ func (*DiaryService) EditDiaryBook(ctx context.Context, req *content.AddDiaryBoo
 	return nil, nil
 }
 func (*DiaryService) Info(ctx context.Context,req *request.Object) (*content.Diary, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}
@@ -92,9 +92,9 @@ func (*DiaryService) Info(ctx context.Context,req *request.Object) (*content.Dia
 	return nil, nil
 }
 func (*DiaryService) Add(ctx context.Context,req *content.AddDiaryReq) (*empty.Empty, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}
@@ -118,9 +118,9 @@ func (*DiaryService) List(context.Context, *content.DiaryListReq) (*content.Diar
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
 func (*DiaryService) Delete(ctx context.Context,req *request.Object) (*empty.Empty, error) {
-	ctxi, span := user.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := ctxi.GetAuthInfo(AuthWithUpdate)
+	auth, err := auth(ctxi,true)
 	if err != nil {
 		return nil, err
 	}

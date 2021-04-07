@@ -1,6 +1,7 @@
 package initialize
 
 import (
+	gini "github.com/liov/hoper/go/v2/utils/net/http/gin"
 	"reflect"
 	"time"
 )
@@ -12,6 +13,7 @@ type ServerConfig struct {
 	ReadTimeout                            time.Duration
 	WriteTimeout                           time.Duration
 	OpenTracing, SystemTracing, Prometheus bool
+	Gin                                    *gini.Config
 }
 
 func (c *ServerConfig) Custom() {
