@@ -2,56 +2,17 @@ package filter
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
-	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
-	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
-	runtimei "github.com/liov/hoper/go/v2/utils/runtime"
-	"go.uber.org/zap"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
-	"github.com/liov/hoper/go/v2/utils/log"
 	"google.golang.org/grpc"
 )
 
-func filter(
-	ctx context.Context, req interface{},
-	info *grpc.UnaryServerInfo,
-	handler grpc.UnaryHandler,
-) (resp interface{}, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			frame,_:=runtimei.GetCallerFrame(2)
-			log.Default.Errorw(fmt.Sprintf("panic: %v", r),zap.String(log.Stack, fmt.Sprintf("%s:%d (%#x)\n\t%s\n", frame.File, frame.Line, frame.PC, frame.Function)))
-			err = errorcode.SysError.ErrRep()
-		}
-		//不能添加错误处理，除非所有返回的结构相同
-		if err != nil {
-			if _, ok := err.(interface{GRPCStatus() *status.Status}); !ok {
-				err = errorcode.Unknown.Message(err.Error())
-			}
-		}
-	}()
-
-	return handler(ctx, req)
-}
-
-func UnaryServerInterceptor(i ...grpc.UnaryServerInterceptor) []grpc.UnaryServerInterceptor {
-	return append([]grpc.UnaryServerInterceptor{
-		//filter应该在最前
-		filter, grpc_validator.UnaryServerInterceptor(),
-	}, i...)
-}
-
-func StreamServerInterceptor(i ...grpc.StreamServerInterceptor) []grpc.StreamServerInterceptor {
-	return append([]grpc.StreamServerInterceptor{
-		grpc_validator.StreamServerInterceptor(),
-	}, i...)
-}
 
 //鉴权过程大体和自定义的一致，就不用中间件的形式了
 func ensureValidToken(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {

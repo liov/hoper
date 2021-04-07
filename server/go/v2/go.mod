@@ -68,7 +68,7 @@ require (
 	go.opencensus.io v0.22.5
 	go.uber.org/atomic v1.7.0
 	go.uber.org/multierr v1.6.0
-	go.uber.org/zap v1.16.0
+	go.uber.org/zap v1.16.1-0.20210329175301-c23abee72d19
 	golang.org/x/exp v0.0.0-20201229011636-eab1b5eb1a03 // indirect
 	golang.org/x/net v0.0.0-20210119194325-5f4716e94777
 	golang.org/x/oauth2 v0.0.0-20201208152858-08078c50e5b5
@@ -87,7 +87,7 @@ require (
 )
 
 replace (
-	github.com/cenkalti/backoff  => github.com/cenkalti/backoff/v4 v4.1.0
+	github.com/cenkalti/backoff => github.com/cenkalti/backoff/v4 v4.1.0
 	github.com/coreos/etcd/client => go.etcd.io/etcd/client/v3 v3.5.0-alpha.0
 	github.com/ugorji/go v1.1.4 => github.com/ugorji/go/codec v0.0.0-20190204201341-e444a5086c43
 //google.golang.org/grpc => google.golang.org/grpc v1.29.0

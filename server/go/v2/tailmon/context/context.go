@@ -1,11 +1,14 @@
-package _koko
+package contexti
 
 import (
 	"context"
 	"errors"
+	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
+	"github.com/liov/hoper/go/v2/utils/net/http/request"
+	timei "github.com/liov/hoper/go/v2/utils/time"
+	"google.golang.org/grpc/metadata"
 	"net/http"
 	"net/url"
-	"strings"
 	"sync"
 	"time"
 
@@ -30,39 +33,40 @@ var (
 )
 
 type AuthInfo interface {
-	jwt.Claims
 	IdStr() string
 }
 
-type UserInfo struct {
-	Id           uint64 `json:"id"`
+
+type Authorization struct {
+	AuthInfo
 	IdStr        string `json:"-" gorm:"-"`
-	Name         string `json:"name"`
-	Role         int8   `json:"role"`
-	Status       int8   `json:"status"`
 	LastActiveAt int64  `json:"lat,omitempty"`
 	ExpiredAt    int64  `json:"exp,omitempty"`
 	LoginAt      int64  `json:"iat,omitempty"`
+	Token        string `json:"-"`
 }
 
-func (x *UserInfo) Valid(helper *jwt.ValidationHelper) error {
+func (x *Authorization) Valid(helper *jwt.ValidationHelper) error {
 	if x.ExpiredAt != 0 && x.LastActiveAt > x.ExpiredAt {
-		return errors.New("登录超时")
+		return errors.New("登录过期")
 	}
 	return nil
 }
 
-func (x *UserInfo) GenerateToken(secret []byte) (string, error) {
+func (x *Authorization) GenerateToken(secret []byte) (string, error) {
 	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, x)
 	token, err := tokenClaims.SignedString(secret)
 	return token, err
 }
 
-type Authorization struct {
-	AuthInfo
-	IdStr string
-	Token string
+func (x *Authorization) ParseToken(token, secret string) error {
+	if err := jwti.ParseToken(x, token, secret); err != nil {
+		return err
+	}
+	x.IdStr = x.AuthInfo.IdStr()
+	return nil
 }
+
 
 type DeviceInfo struct {
 	//设备
@@ -70,7 +74,7 @@ type DeviceInfo struct {
 	Os         string `json:"os" gorm:"size:255"`
 	AppCode    string `json:"appCode" gorm:"size:255"`
 	AppVersion string `json:"appVersion" gorm:"size:255"`
-	IP         string `json:"IP" gorm:"size:255"`
+	IP         string `json:"ip" gorm:"size:255"`
 	Lng        string `json:"lng" gorm:"type:numeric(10,6)"`
 	Lat        string `json:"lat" gorm:"type:numeric(10,6)"`
 	Area       string `json:"area" gorm:"size:255"`
@@ -121,9 +125,8 @@ type Ctx struct {
 	TraceID string
 	*Authorization
 	*DeviceInfo
-	RequestAt   time.Time
-	RequestUnix int64
-	Request     *http.Request
+	request.RequestAt
+	Request *http.Request
 	grpc.ServerTransportStream
 	Internal string
 	*log.Logger
@@ -182,12 +185,16 @@ func newCtx(ctx context.Context) *Ctx {
 		traceId = uuid.New().String()
 	}
 	return &Ctx{
-		Context: ctx,
-		TraceID: traceId,
+		Context:       ctx,
+		TraceID:       traceId,
 		Authorization: &Authorization{},
-		RequestAt:   now,
-		RequestUnix: now.Unix(),
-		Logger:      log.Default.With(zap.String("traceId", traceId)),
+		RequestAt: request.RequestAt{
+			Time:       now,
+			TimeStamp:  now.Unix(),
+			TimeString: now.Format(timei.FormatTime),
+		},
+		// 每个请求对应一个实例，后续并发量大考虑移除直接使用log库实例
+		Logger: log.Default.With(zap.String("traceId", traceId)),
 	}
 }
 
@@ -198,19 +205,6 @@ func (c *Ctx) setWithReq(r *http.Request) {
 	c.Internal = r.Header.Get(httpi.GrpcInternal)
 }
 
-
-func (c *Ctx) GeToken() string {
-	return c.Token
-}
-
-func (c *Ctx) GetReqTime() time.Time {
-	return c.RequestAt
-}
-
-func (c *Ctx) GetLogger() *log.Logger {
-	return c.Logger
-}
-
 func (c *Ctx) reset(ctx context.Context) *Ctx {
 	span := trace.FromContext(ctx)
 	now := time.Now()
@@ -219,10 +213,104 @@ func (c *Ctx) reset(ctx context.Context) *Ctx {
 		traceId = uuid.New().String()
 	}
 	c.Context = ctx
-	c.RequestAt = now
-	c.RequestUnix = now.Unix()
+	c.RequestAt.Time = now
+	c.RequestAt.TimeString = now.Format(timei.FormatTime)
+	c.RequestAt.TimeStamp = now.Unix()
 	c.Logger = log.Default.With(zap.String("traceId", traceId))
 	return c
+}
+
+func (c *Ctx) GetAuthInfo(auth func(*Ctx) error) (AuthInfo, error) {
+	if c.Authorization == nil {
+		c.Authorization = new(Authorization)
+	}
+	if err := auth(c); err != nil {
+		return nil, err
+	}
+	return c.AuthInfo, nil
+}
+
+func (c *Ctx) SetHeader(md metadata.MD) error {
+	for k, v := range md {
+		c.Request.Header[k] = v
+	}
+	if c.ServerTransportStream != nil {
+		err := c.ServerTransportStream.SetHeader(md)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *Ctx) SendHeader(md metadata.MD) error {
+	for k, v := range md {
+		c.Request.Header[k] = v
+	}
+	if c.ServerTransportStream != nil {
+		err := c.ServerTransportStream.SendHeader(md)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *Ctx) WriteHeader(k, v string) error {
+	c.Request.Header[k] = []string{v}
+
+	if c.ServerTransportStream != nil {
+		err := c.ServerTransportStream.SendHeader(metadata.MD{k: []string{v}})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *Ctx) SetCookie(v string) error {
+	c.Request.Header[httpi.HeaderSetCookie] = []string{v}
+
+	if c.ServerTransportStream != nil {
+		err := c.ServerTransportStream.SendHeader(metadata.MD{httpi.HeaderSetCookie: []string{v}})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *Ctx) SetTrailer(md metadata.MD) error {
+	for k, v := range md {
+		c.Request.Header[k] = v
+	}
+	if c.ServerTransportStream != nil {
+		err := c.ServerTransportStream.SetTrailer(md)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *Ctx) Method() string {
+	if c.ServerTransportStream != nil {
+		return c.ServerTransportStream.Method()
+	}
+	return ""
+}
+
+func (c *Ctx) HandleError(err error) {
+	if err != nil {
+		c.Error(err.Error())
+	}
+}
+
+
+func (c *Ctx) ErrorLog(err, originErr error, funcName string) error {
+	// caller 用原始logger skip刚好
+	c.Logger.Logger.Error(originErr.Error(), zap.Int("type", errorcode.Code(err)), zap.String(log.Position, funcName))
+	return err
 }
 
 type AuthInfoDao struct {
@@ -230,36 +318,6 @@ type AuthInfoDao struct {
 	AuthCache *ristretto.Cache
 	AuthPool  *sync.Pool
 	Update    func(*Ctx) error
-}
-
-func (c *Ctx) GetAuthInfo(authDao AuthInfoDao,update bool) error {
-	var signature string
-	if authDao.AuthCache != nil {
-		signature = c.Token[strings.LastIndexByte(c.Token, '.')+1:]
-		cacheTmp, ok := authDao.AuthCache.Get(signature)
-		if ok {
-			if authorization, ok := cacheTmp.(*Authorization); ok {
-				c.Authorization = authorization
-				return nil
-			}
-		}
-	}
-	if authDao.Secret != "" {
-		c.AuthInfo = authDao.AuthPool.Get().(AuthInfo)
-		if err := jwti.ParseToken(c.Authorization, c.Token, authDao.Secret); err != nil {
-			return err
-		}
-	}
-	if update && authDao.Update != nil {
-		if err := authDao.Update(c); err != nil {
-			return err
-		}
-	}
-	c.IdStr = c.AuthInfo.IdStr()
-	if authDao.AuthCache != nil {
-		authDao.AuthCache.SetWithTTL(signature, c.Authorization,0, 5*time.Second)
-	}
-	return nil
 }
 
 func init() {
@@ -274,4 +332,16 @@ func jwtUnmarshaller(ctx jwt.CodingContext, data []byte, v interface{}) error {
 		}
 	}
 	return json.Unmarshal(data, v)
+}
+
+func (c *Ctx) GeToken() string {
+	return c.Token
+}
+
+func (c *Ctx) GetReqAt() *request.RequestAt {
+	return &c.RequestAt
+}
+
+func (c *Ctx) GetLogger() *log.Logger {
+	return c.Logger
 }

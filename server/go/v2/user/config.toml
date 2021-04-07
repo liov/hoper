@@ -11,12 +11,6 @@ Group = "hoper"
 # DataId = "user"
 Watch  = false
 
-[gin]
-RedirectTrailingSlash = false
-RedirectFixedPath = true
-HandleMethodNotAllowed = false
-MaxMultipartMemory = 20971520
-
 [dev]
 LocalConfigName = "local.toml"
 

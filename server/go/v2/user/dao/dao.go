@@ -2,12 +2,12 @@ package dao
 
 import (
 	"database/sql"
+	contexti "github.com/liov/hoper/go/v2/tailmon/context"
 	"net/smtp"
 
 	"github.com/cockroachdb/pebble"
 	"github.com/dgraph-io/ristretto"
 	"github.com/go-redis/redis/v8"
-	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/tailmon/initialize"
 	"github.com/liov/hoper/go/v2/user/conf"
 	"github.com/liov/hoper/go/v2/utils/dao/db/gorm"
@@ -20,10 +20,10 @@ import (
 var Dao *dao = &dao{}
 
 type userDao struct {
-	ctxi *user.Ctx
+	ctxi *contexti.Ctx
 }
 
-func GetDao(ctx *user.Ctx) *userDao {
+func GetDao(ctx *contexti.Ctx) *userDao {
 	if ctx == nil{
 		log.Fatal("ctx can't nil")
 	}

@@ -22,7 +22,7 @@ func (k *Kibana) MarshalLogObject(e zapcore.ObjectEncoder) error {
 		e.AddDuration("processTime", k.ProcessTime)
 	}
 	if k.Param != "" {
-		e.AddString("param", k.Param)
+		e.AddString("body", k.Param)
 	}
 	if k.Result != "" {
 		e.AddString("result", k.Result)

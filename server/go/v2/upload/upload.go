@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
+	contexti "github.com/liov/hoper/go/v2/tailmon/context"
 	"github.com/liov/hoper/go/v2/upload/conf"
 	"github.com/liov/hoper/go/v2/upload/dao"
 	"github.com/liov/hoper/go/v2/upload/model"
@@ -51,8 +52,8 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		info = fhs[0]
 	}
 
-	ctxi := user.CtxFromContext(r.Context())
-	_, err = ctxi.GetAuthInfo(Auth)
+	ctxi := contexti.CtxFromContext(r.Context())
+	_, err = auth(ctxi,false)
 	if err != nil {
 		(&httpi.ResData{
 			Code:    uint32(user.UserErrLogin),
@@ -78,8 +79,8 @@ func Exists(w http.ResponseWriter, req *http.Request) {
 }
 
 func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
-	ctxi := user.CtxFromContext(ctx)
-	auth, err := ctxi.GetAuthInfo(Auth)
+	ctxi := contexti.CtxFromContext(ctx)
+	auth, err := auth(ctxi,false)
 	uploadDao := dao.GetDao(ctxi)
 	db := dao.Dao.GetDB(ctxi.Logger)
 	upload, err := uploadDao.UploadDB(db, md5, size)
@@ -105,10 +106,10 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 	}
 }
 
-func save(ctx *user.Ctx, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
+func save(ctx *contexti.Ctx, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
 	uploadDao := dao.GetDao(ctx)
 	db := dao.Dao.GetDB(ctx.Logger)
-
+	auth:=ctx.AuthInfo.(*user.AuthInfo)
 	if md5Str != "" {
 		upload, err = uploadDao.UploadDB(db, md5Str, strconv.FormatInt(info.Size, 10))
 		if err != nil {
@@ -139,7 +140,7 @@ func save(ctx *user.Ctx, info *multipart.FileHeader, md5Str string) (upload *mod
 	}
 	if upload != nil {
 		uploadExt := model.UploadExt{
-			UserId:    ctx.Id,
+			UserId:    auth.Id,
 			CreatedAt: ctx.RequestAt.Time,
 			UploadId:  upload.Id,
 		}
@@ -186,7 +187,7 @@ func save(ctx *user.Ctx, info *multipart.FileHeader, md5Str string) (upload *mod
 			Ext:  ext,
 			Size: info.Size,
 		},
-		UserId:    ctx.Id,
+		UserId:    auth.Id,
 		Path:      uploadDir + fileName,
 		CreatedAt: ctx.RequestAt.Time,
 	}
@@ -204,8 +205,8 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 		errorcode.ParamInvalid.OriMessage(errRep).Response(w)
 		return
 	}
-	ctxi := user.CtxFromContext(r.Context())
-	_, err = ctxi.GetAuthInfo(Auth)
+	ctxi := contexti.CtxFromContext(r.Context())
+	_, err = auth(ctxi,false)
 	if err != nil {
 		(&httpi.ResData{
 			Code:    uint32(user.UserErrLogin),

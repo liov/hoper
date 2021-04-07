@@ -4,7 +4,7 @@ import (
 	"github.com/cockroachdb/pebble"
 	"github.com/dgraph-io/ristretto"
 	"github.com/go-redis/redis/v8"
-	"github.com/liov/hoper/go/v2/protobuf/user"
+	contexti "github.com/liov/hoper/go/v2/tailmon/context"
 	"github.com/liov/hoper/go/v2/tailmon/initialize"
 	"github.com/liov/hoper/go/v2/upload/conf"
 	gormi "github.com/liov/hoper/go/v2/utils/dao/db/gorm"
@@ -15,10 +15,10 @@ import (
 var Dao *dao = &dao{}
 
 type uploadDao struct {
-	ctxi *user.Ctx
+	ctxi *contexti.Ctx
 }
 
-func GetDao(ctx *user.Ctx) *uploadDao {
+func GetDao(ctx *contexti.Ctx) *uploadDao {
 	if ctx == nil{
 		log.Fatal("ctx can't nil")
 	}
