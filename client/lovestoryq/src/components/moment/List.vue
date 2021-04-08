@@ -41,8 +41,8 @@
       />
     </van-dialog>
     <van-pull-refresh
-      v-model="state.loading"
-      :success-text="successText"
+      v-model="pullDown.refreshing"
+      :success-text="pullDown.successText"
       @refresh="onRefresh"
     >
       <van-list
@@ -135,12 +135,13 @@ export default class MomentList extends Vue {
   pageNo = 1;
   pageSize = 10;
   userM = new ObjMap();
-  list = Array.from(new Array(this.pageSize), (v, i) => {
-    return { id: i };
+  list = Array.from(new Array(this.pageSize), () => {
+    return {};
   });
-  successText = "刷新成功";
-  state = reactive({
-    loading: false,
+
+  pullDown = reactive({
+    refreshing: false,
+    successText: "刷新成功",
   });
   show = reactive({
     listShow: ref(false),
@@ -180,11 +181,10 @@ export default class MomentList extends Vue {
     const data = res.data.details;
     if (this.pageNo == 1) {
       this.list = data.list;
-      this.userM.appendMap(data.users);
     } else {
       this.list = this.list.concat(data.list);
-      this.userM.appendMap(data.users);
     }
+    this.userM.appendMap(data.users);
     this.loading = false;
     this.show.listShow = true;
     this.pageNo++;
@@ -198,11 +198,12 @@ export default class MomentList extends Vue {
     });
   }
   onRefresh = () => {
+    this.pullDown.refreshing = true;
     this.pageNo = 1;
     this.onLoad().catch(() => {
-      this.successText = "刷新失败";
+      this.pullDown.successText = "刷新失败";
     });
-    this.state.loading = false;
+    this.pullDown.refreshing = false;
   };
   remark(name: string) {
     console.log(name);
@@ -211,7 +212,6 @@ export default class MomentList extends Vue {
     }
   }
   async like(idx: number) {
-    console.log(this.list[idx]);
     const api = `/api/v1/action/like`;
     const id = this.list[idx].id;
     const likeId = this.list[idx].likeId;
@@ -219,11 +219,12 @@ export default class MomentList extends Vue {
       await axios.delete(api, { data: { id: likeId } });
       this.list[idx].likeId = 0;
     } else {
-      this.list[idx].likeId = await axios.post(api, {
+      const res = await axios.post(api, {
         refId: id,
         type: 1,
         action: 2,
       });
+      this.list[idx].likeId = res.data.details.id;
     }
   }
 }
