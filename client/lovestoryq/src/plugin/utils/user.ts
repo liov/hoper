@@ -26,11 +26,11 @@ export function appendUserMap(
   return map;
 }
 
-interface Obj {
-  id: number;
+interface Obj<T> {
+  id: T;
 }
 
-export function appendObjMap<T extends Obj>(
+export function appendObjMap<T extends Obj<any>>(
   map: Map<number, T>,
   objs: T[]
 ): Map<number, T> {
@@ -40,15 +40,18 @@ export function appendObjMap<T extends Obj>(
   return map;
 }
 
-export class ObjMap<T extends Obj> {
-  _map = new Map<number, T>();
+export class ObjMap<K, V extends Obj<any>> {
+  _map = new Map<K, V>();
 
-  appendMap(objs: T[]) {
+  appendMap(objs: V[]) {
     for (const obj of objs) {
       this._map.set(obj.id, obj);
     }
   }
-  get(id: number): Obj {
+  get(id: K): Obj<any> {
     return this._map.get(id)!;
+  }
+  set(id: K, v: V) {
+    this._map.set(id, v);
   }
 }
