@@ -1,10 +1,9 @@
 package rect
 
 import (
+	"github.com/liov/hoper/go/v2/utils/encoding/json/gjson"
 	"strconv"
 	"strings"
-
-	"github.com/tidwall/gjson"
 )
 
 type Rect struct {

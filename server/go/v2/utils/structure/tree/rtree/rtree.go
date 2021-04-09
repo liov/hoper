@@ -1,10 +1,9 @@
 package rtree
 
 import (
+	"github.com/liov/hoper/go/v2/utils/structure/tree/rtree/base"
 	"math"
 	"sync"
-
-	"github.com/tidwall/rtree/base"
 )
 
 type Iterator func(item Item) bool

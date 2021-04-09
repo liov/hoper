@@ -22,7 +22,7 @@ import (
 func main() {
 	//single("/content/moment.model.proto")
 	run(*proto)
-	genutils(*proto+"/utils")
+	genutils(*proto + "/utils")
 	//gengql()
 }
 
@@ -75,11 +75,13 @@ func init() {
 		goList + "github.com/grpc-ecosystem/grpc-gateway/v2",
 	)
 
-	//protopatch, _ := os2.CMD(goList + "github.com/liov/protopatch2")
+	protopatch, _ := osi.CMD(goList + "github.com/alta/protopatch")
 	protobuf, _ = osi.CMD(goList + "google.golang.org/protobuf")
 	//gogoProtoOut, _ := cmd.CMD(goList + "github.com/gogo/protobuf")
 	path = os.Getenv("GOPATH")
-	include = "-I" + *proto + " -I" + gateway + " -I" + gateway + "/third_party/googleapis -I" + protobuf + " -I" + path + "/src"
+	include = "-I" + *proto + " -I" + gateway +
+		" -I" + gateway + "/third_party/googleapis -I" +
+		protobuf + " -I" + protopatch + " -I" + path + "/src"
 }
 
 func run(dir string) {
@@ -132,7 +134,7 @@ func genutils(dir string) {
 			genutils(dir + "/" + fileInfos[i].Name())
 		}
 		if strings.Contains(dir, "utils/proto/gogo") {
-			if strings.HasSuffix(dir,".gen.proto") {
+			if strings.HasSuffix(dir, ".gen.proto") {
 				arg := "protoc -I" + *proto + " " + dir + " --gogo_out=plugins=grpc,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor:" + pwd + "/protobuf"
 				execi.Run(arg)
 			}

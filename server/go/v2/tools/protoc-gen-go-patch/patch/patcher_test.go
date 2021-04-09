@@ -50,7 +50,7 @@ func TestMergeTags(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			if got := mergeTags("`"+test.oldTag+"`", "`"+test.newTag+"`"); got != "`"+test.want+"`" {
+			if got := mergeTags("`"+test.oldTag+"`", "`"+test.newTag+"`", true); got != "`"+test.want+"`" {
 				t.Fatalf(" got: %s\nwant: %s\n", got, test.want)
 			}
 		})

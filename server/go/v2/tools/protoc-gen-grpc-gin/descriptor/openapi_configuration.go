@@ -2,10 +2,9 @@ package descriptor
 
 import (
 	"fmt"
+	"github.com/liov/hoper/go/v2/protobuf/utils/proto/go/openapiconfig"
+	"github.com/liov/hoper/go/v2/utils/encoding/yaml"
 	"io/ioutil"
-
-	"github.com/ghodss/yaml"
-	"github.com/liov/hoper/go/v2/tools/protoc-gen-grpc-gin/descriptor/openapiconfig"
 
 	"google.golang.org/protobuf/encoding/protojson"
 )

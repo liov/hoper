@@ -617,3 +617,10 @@ const like = async (idx: number) => {
 }
 </style>
 ```
+# The import path must contain at least one forward slash ('/') character.
+See https://developers.google.com/protocol-buffers/docs/reference/go-generated#package for more information.
+--go_out: protoc-gen-go: Plugin failed with status code 1.
+Before
+option go_package = ".;openapiconfig";
+After
+option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/proto/go/openapiconfig";

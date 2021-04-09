@@ -82,7 +82,7 @@ service ContentService {
 
 
   // 详情
-  rpc AttrInfo (GetAttrReq) returns (Attributes) {
+  rpc AttrInfo (request.Object) returns (Attributes) {
     option (google.api.http) = {
       get: "/api/v1/content/attr/id/{id}"
     };
@@ -227,10 +227,6 @@ message TagGroupListReq{
 message TagGroupListRep{
   int64 total = 1;
   map<int32, TagListRep> data = 2;
-}
-
-message GetAttrReq {
-  uint64 id = 1 [(go.field) = {tags:'validate:"required"'}];
 }
 
 message AddAttrReq {
