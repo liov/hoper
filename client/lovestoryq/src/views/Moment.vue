@@ -45,7 +45,7 @@ class Props {
     MomentList,
   },
 })
-export default class Moment extends Vue {
+export default class Moment extends Vue.with(Props) {
   active = 0;
 
   onChange(index: number) {

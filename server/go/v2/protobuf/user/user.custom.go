@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go/v4"
-	"github.com/google/uuid"
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	"github.com/liov/hoper/go/v2/utils/log"
 	"github.com/liov/hoper/go/v2/utils/net/http"
@@ -325,9 +324,6 @@ func newCtx(ctx context.Context) *Ctx {
 	span := trace.FromContext(ctx)
 	now := time.Now()
 	traceId := span.SpanContext().TraceID.String()
-	if traceId == "" {
-		traceId = uuid.New().String()
-	}
 	return &Ctx{
 		Context:       ctx,
 		TraceID:       traceId,
