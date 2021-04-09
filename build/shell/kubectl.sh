@@ -1,6 +1,6 @@
 # 扩容
 kubectl  scale deployment nginx-deployment --replicas=4
-
+# 重启
 kubectl get pod pod名称 -n 命名空间名称 -o yaml | kubectl replace --force -f -.
 
 kubectl create configmap my-config-2 --from-file=/etc/resolv.conf

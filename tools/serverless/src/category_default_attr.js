@@ -4,7 +4,7 @@ const axios = require('axios');
 const cardCategory = new Map()
 
 async function init() {
-    const res = await axios.get('/api/sc-attr/value/list?attrId=7')
+    const res = await axios.get('/api1')
     if (res.status !== 200 || res.data.status !== 0) {
         throw new Error("获取卡主品类出错")
     }
@@ -54,7 +54,7 @@ async function set() {
         param.shieldRecommend = row.getCell("R").value === "不推荐" ? "0" : "1"
         param.deliveryScopeId =[310000,530000,110000,220000,510000,120000,340000,370000,140000,440000,450000,320000,360000,130000,410000,330000,460000,420000,430000,350000,520000,210000,500000,610000,230000].map(v=>v.toString())
         console.log(param)
-        const res = await axios.post('/api/erp/category/setDefaultAttr',param).catch(e=>console.log(e))
+        const res = await axios.post('/api2',param).catch(e=>console.log(e))
 
         console.log(res.data)
         await sleep(200)
@@ -74,7 +74,7 @@ let sleep = function (delay) {
     })
 }
 
-axios.defaults.baseURL = 'http://dev-scm.sdyxmall.com/scm-api';
-axios.defaults.headers.common["X-Mng-Token"] = '94bcaaf9-d082-48e2-94ca-207d618f6bd0';
+axios.defaults.baseURL = 'http://';
+axios.defaults.headers.common["Token"] = '';
 init().then()
 set().then()

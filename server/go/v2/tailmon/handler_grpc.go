@@ -5,8 +5,8 @@ import (
 	"fmt"
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
-	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
+	contexti "github.com/liov/hoper/go/v2/tailmon/context"
 	"github.com/liov/hoper/go/v2/tailmon/initialize"
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	"github.com/liov/hoper/go/v2/utils/log"
@@ -68,7 +68,7 @@ func UnaryAccess(
 	}
 	body, err := json.Marshal(req)
 	result, err := json.Marshal(resp)
-	ctxi := user.CtxFromContext(ctx)
+	ctxi := contexti.CtxFromContext(ctx)
 	accessLog(ctxi, info.FullMethod, "grpc",
 		stringsi.ToString(body), stringsi.ToString(result),
 		code)
