@@ -3,7 +3,7 @@ package tdragonboat
 import (
 	"encoding/binary"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/lni/dragonboat/statemachine"
+	"github.com/lni/dragonboat/v3/statemachine"
 	"io"
 	"io/ioutil"
 )

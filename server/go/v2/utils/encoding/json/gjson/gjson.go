@@ -3,6 +3,8 @@ package gjson
 
 import (
 	"encoding/json"
+	"github.com/liov/hoper/go/v2/utils/encoding/json/pretty"
+	"github.com/liov/hoper/go/v2/utils/strings/match"
 	"reflect"
 	"strconv"
 	"strings"
@@ -10,9 +12,6 @@ import (
 	"unicode/utf16"
 	"unicode/utf8"
 	"unsafe"
-
-	"github.com/tidwall/match"
-	"github.com/tidwall/pretty"
 )
 
 // Type is Result type

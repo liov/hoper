@@ -1,7 +1,7 @@
 package base
 
 import (
-	"github.com/tidwall/tinyqueue"
+	"github.com/liov/hoper/go/v2/utils/structure/queue"
 )
 
 type queueItem struct {
@@ -10,7 +10,7 @@ type queueItem struct {
 	dist   float64
 }
 
-func (item *queueItem) Less(b tinyqueue.Item) bool {
+func (item *queueItem) Less(b queue.Item) bool {
 	return item.dist < b.(*queueItem).dist
 }
 
@@ -28,7 +28,7 @@ func (tr *RTree) KNN(min, max []float64, center bool, iter func(item interface{}
 		}
 	}
 	node := tr.data
-	queue := tinyqueue.New(nil)
+	queue := queue.New(nil)
 	for node != nil {
 		for i := 0; i < node.count; i++ {
 			child := node.children[i]
