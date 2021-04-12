@@ -177,14 +177,17 @@ func (d *userDao) GetUserExtRedis() (*model.UserExt, error) {
 	ctx := ctxi.Context
 	key := modelconst.UserExtKey + ctxi.IdStr
 
-	userExt, err := redisi.Strings(Dao.Redis.HGetAll(ctx, key).Result())
+	userExt, err := redisi.Strings(Dao.Redis.Do(ctx, redisi.HGETALL, key).Result())
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.RedisErr, err, "GetUserExtRedis")
 	}
-	followCount, _ := strconv.ParseUint(userExt[0], 10, 64)
-	followedCount, _ := strconv.ParseUint(userExt[0], 10, 64)
-	return &model.UserExt{
-		FollowCount:   followCount,
-		FollowedCount: followedCount,
-	}, nil
+	if len(userExt) > 3 {
+		followCount, _ := strconv.ParseUint(userExt[1], 10, 64)
+		followedCount, _ := strconv.ParseUint(userExt[3], 10, 64)
+		return &model.UserExt{
+			FollowCount:   followCount,
+			FollowedCount: followedCount,
+		}, nil
+	}
+	return nil, nil
 }

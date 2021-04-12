@@ -11,26 +11,31 @@
         finished-text="没有更多了"
         @load="onLoad"
       >
-        <van-cell v-for="item in list">
+        <van-cell v-for="item in list" :key="item.id">
           <template #default>
             <van-skeleton title avatar round :row="3" :loading="loading">
-              <Moment v-if="show" :moment="item" :users="userM"></Moment>
+              <Moment
+                v-if="show"
+                :moment="item"
+                :user="user(item.userId)"
+              ></Moment>
             </van-skeleton>
           </template>
         </van-cell>
       </van-list>
     </van-pull-refresh>
+    <More></More>
   </div>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import axios from "axios";
-import { ObjMap } from "@/plugin/utils/user";
 import { reactive, ref } from "vue";
 import Moment from "@/components/moment/Moment.vue";
+import More from "@/components/action/More.vue";
 @Options({
-  components: { Moment },
+  components: { Moment, More },
 })
 export default class MomentList extends Vue {
   active = 0;
@@ -38,7 +43,6 @@ export default class MomentList extends Vue {
   finished = false;
   pageNo = 1;
   pageSize = 10;
-  userM = new ObjMap();
   list = Array.from(new Array(this.pageSize), () => {
     return {};
   });
@@ -50,6 +54,9 @@ export default class MomentList extends Vue {
   show = ref(false);
 
   //mounted() {}
+  user(id: number) {
+    return this.$store.getters.getUser(id);
+  }
 
   async onLoad() {
     this.finished = false;
@@ -67,7 +74,7 @@ export default class MomentList extends Vue {
     } else {
       this.list = this.list.concat(data.list);
     }
-    this.userM.appendMap(data.users);
+    this.$store.dispatch("appendUsers", data.users);
     this.loading = false;
     this.show = true;
     this.pageNo++;

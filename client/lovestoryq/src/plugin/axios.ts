@@ -1,5 +1,6 @@
 import axios from "axios";
 import store from "../store/index";
+import { Toast } from "vant";
 import vue from "vue";
 
 //axios.defaults.baseURL = "https://" + window.location.host;
@@ -23,10 +24,14 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   function (response) {
     // 对响应数据做点什么
+    if (response.status != 200 || response.data.code != 0) {
+      Toast.fail(response.data.message);
+    }
     return response;
   },
   function (error) {
     // 对响应错误做点什么
+    Toast.fail(error);
     return Promise.reject(error);
   }
 );

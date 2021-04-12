@@ -13,6 +13,7 @@
     "axios": "^0.21.1",
     "core-js": "^3.10.0",
     "dayjs": "^1.10.4",
+    "mitt": "^2.1.0",
     "register-service-worker": "^1.7.2",
     "spark-md5": "^3.0.1",
     "vant": "^3.0.11",

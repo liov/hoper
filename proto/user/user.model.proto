@@ -24,8 +24,8 @@ message User {
   string address = 14 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
   string introduction = 10 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
   string signature = 11 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
-  string avatarURL = 12 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
-  string coverURL = 13 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
+  string avatarUrl = 12 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
+  string coverUrl = 13 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
   Role role = 24 [(go.field) = {tags:'gorm:"type:int2;default:0"'}];
   string realName = 19 [(go.field) = {tags:'gorm:"size:5;default:\'\'" annotation:"实名"'}];
   string IdNo = 18 [(go.field) = {tags:'gorm:"size:22;default:\'\'" annotation:"身份证号"'}];

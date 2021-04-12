@@ -102,7 +102,6 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import axios from "axios";
-import store from "@/store/index";
 import Luosimao from "@/components/Luosimao.vue";
 import Validator from "@/plugin/utils/validator";
 
@@ -154,7 +153,7 @@ export default class Login extends Vue {
 
   async onSubmit(values: any) {
     if (this.type == 0)
-      await store.dispatch("login", this.getFormValues(values));
+      await this.$store.dispatch("login", this.getFormValues(values));
     else await this.signup(values);
   }
 
