@@ -43,7 +43,7 @@ export function appendObjMap<T extends Obj<any>>(
 export class ObjMap<K, V extends Obj<any>> {
   _map = new Map<K, V>();
 
-  appendMap(objs: V[]) {
+  append(objs: V[]) {
     for (const obj of objs) {
       this._map.set(obj.id, obj);
     }

@@ -1,18 +1,10 @@
 <template>
   <router-view />
   <van-tabbar route>
-    <van-tabbar-item replace to="/" icon="notes-o">
-      瞬间
-    </van-tabbar-item>
-    <van-tabbar-item replace to="/dairy" icon="search">
-      日记
-    </van-tabbar-item>
-    <van-tabbar-item replace to="/about" icon="chat-o">
-      聊天
-    </van-tabbar-item>
-    <van-tabbar-item replace to="/me" icon="search">
-      我的
-    </van-tabbar-item>
+    <van-tabbar-item replace to="/" icon="notes-o"> 瞬间 </van-tabbar-item>
+    <van-tabbar-item replace to="/dairy" icon="search"> 日记 </van-tabbar-item>
+    <van-tabbar-item replace to="/about" icon="chat-o"> 聊天 </van-tabbar-item>
+    <van-tabbar-item replace to="/me" icon="search"> 我的 </van-tabbar-item>
   </van-tabbar>
 </template>
 
@@ -23,8 +15,8 @@ import store from "@/store/index";
 @Options({})
 export default class App extends Vue {
   created() {
-    if (store.state.user == null) {
-      store.dispatch("getUser");
+    if (store.state.auth == null) {
+      store.dispatch("getAuth");
     }
   }
 }

@@ -42,4 +42,5 @@ createApp(App)
   .use(Vant.ShareSheet)
   .use(Vant.Dialog)
   .use(Vant.ActionSheet)
+  .use(Vant.ShareSheet)
   .mount("#app");

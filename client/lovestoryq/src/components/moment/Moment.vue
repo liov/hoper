@@ -1,8 +1,8 @@
 <template>
   <div class="moment">
     <div class="auth">
-      <img class="avatar" :src="users.get(moment.userId).avatarUrl" />
-      <span class="name">{{ users.get(moment.userId).name }}</span>
+      <img class="avatar" :src="user.avatarUrl" />
+      <span class="name">{{ user.name }}</span>
       <span class="time">{{ $date2s(moment.createdAt) }}</span>
     </div>
     <div class="content">
@@ -31,18 +31,17 @@
         @click="preview(idx)"
       />
     </lazy-component>
-    <Action :content="moment" type="1"> </Action>
+    <Action :content="moment" :type="1"> </Action>
   </div>
 </template>
 
 <script lang="ts">
 import { Options, Vue, prop } from "vue-class-component";
-import { ObjMap } from "@/plugin/utils/user";
 import { ImagePreview } from "vant";
-import Action from "@/components/Action.vue";
+import Action from "@/components/action/Action.vue";
 class Props {
   moment = prop<any>({ default: {} });
-  users = prop<ObjMap>();
+  user = prop<any>();
 }
 @Options({ components: { Action } })
 export default class Moment extends Vue.with(Props) {
