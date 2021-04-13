@@ -342,10 +342,10 @@ message EditReq {
     }];
     string birthday = 9;
     string address = 14;
-    string introduction = 10;
+    string intro = 10;
     string signature = 11;
-    string avatarURL = 12;
-    string coverURL = 13;
+    string avatarUrl = 12;
+    string coverUrl = 13;
     repeated Resume eduExps = 15 [(go.field) = {tags:'gorm:"-"'}];
     repeated Resume workExps = 16 [(go.field) = {tags:'gorm:"-"'}];
   }

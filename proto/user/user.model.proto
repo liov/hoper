@@ -22,7 +22,7 @@ message User {
   }];
   string birthday = 9 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00;index"'}];
   string address = 14 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
-  string introduction = 10 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
+  string intro = 10 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
   string signature = 11 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
   string avatarUrl = 12 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
   string coverUrl = 13 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];

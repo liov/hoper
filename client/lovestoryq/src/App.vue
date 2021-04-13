@@ -10,16 +10,9 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import store from "@/store/index";
 
 @Options({})
-export default class App extends Vue {
-  created() {
-    if (store.state.auth == null) {
-      store.dispatch("getAuth");
-    }
-  }
-}
+export default class App extends Vue {}
 </script>
 
 <style lang="less">

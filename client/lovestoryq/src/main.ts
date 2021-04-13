@@ -43,4 +43,6 @@ createApp(App)
   .use(Vant.Dialog)
   .use(Vant.ActionSheet)
   .use(Vant.ShareSheet)
+  .use(Vant.Overlay)
+  .use(Vant.Loading)
   .mount("#app");

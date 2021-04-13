@@ -36,9 +36,8 @@ type AuthInfo interface {
 	IdStr() string
 }
 
-
 type Authorization struct {
-	AuthInfo
+	AuthInfo     `json:"auth"`
 	IdStr        string `json:"-" gorm:"-"`
 	LastActiveAt int64  `json:"lat,omitempty"`
 	ExpiredAt    int64  `json:"exp,omitempty"`
@@ -66,7 +65,6 @@ func (x *Authorization) ParseToken(token, secret string) error {
 	x.IdStr = x.AuthInfo.IdStr()
 	return nil
 }
-
 
 type DeviceInfo struct {
 	//设备
@@ -306,7 +304,6 @@ func (c *Ctx) HandleError(err error) {
 	}
 }
 
-
 func (c *Ctx) ErrorLog(err, originErr error, funcName string) error {
 	// caller 用原始logger skip刚好
 	c.Logger.Logger.Error(originErr.Error(), zap.Int("type", errorcode.Code(err)), zap.String(log.Position, funcName))
@@ -328,7 +325,7 @@ func jwtUnmarshaller(ctx jwt.CodingContext, data []byte, v interface{}) error {
 	if ctx.FieldDescriptor == jwt.ClaimsFieldDescriptor {
 		if c, ok := (*v.(*jwt.Claims)).(*Authorization); ok {
 			c.Token = stringsi.ToString(data)
-			return json.Unmarshal(data, c.AuthInfo)
+			return json.Unmarshal(data, c)
 		}
 	}
 	return json.Unmarshal(data, v)

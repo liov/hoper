@@ -8,9 +8,8 @@ import store from "@/store/index";
 
 //鉴权
 const authenticated: NavigationGuard = (_to, _from, next) => {
-  console.log(store.state.auth);
-  if (store.state.auth != null) next();
-  else next({ name: "Login" });
+  if (store.state.auth) next();
+  else next({ name: "Login", query: { back: _to.path } });
 };
 
 const routes: Array<RouteRecordRaw> = [

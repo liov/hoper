@@ -104,7 +104,7 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*empty.
 		Mail:      req.Mail,
 		Phone:     req.Phone,
 		Gender:    req.Gender,
-		AvatarURL: modelconst.DefaultAvatar,
+		AvatarUrl: modelconst.DefaultAvatar,
 		Role:      model.RoleNormal,
 		CreatedAt: formatNow,
 		Status:    model.UserStatusInActive,
@@ -328,7 +328,7 @@ func (*UserService) login(ctxi *contexti.Ctx, user *model.User) (*model.LoginRep
 	db := dao.Dao.GetDB(ctxi.Logger)
 
 	db.Table(modelconst.UserExtTableName).Where(`id = ?`, user.Id).
-		UpdateColumn("last_activated_at", ctxi.RequestAt)
+		UpdateColumn("last_activated_at", ctxi.RequestAt.TimeString)
 	userDao := dao.GetDao(ctxi)
 	if err := userDao.EfficientUserHashToRedis(); err != nil {
 		return nil, errorcode.RedisErr
@@ -339,7 +339,7 @@ func (*UserService) login(ctxi *contexti.Ctx, user *model.User) (*model.LoginRep
 			Id:        user.Id,
 			Name:      user.Name,
 			Gender:    user.Gender,
-			AvatarUrl: user.AvatarURL,
+			AvatarUrl: user.AvatarUrl,
 		}}
 
 	cookie := (&http.Cookie{
@@ -388,7 +388,7 @@ func (u *UserService) Logout(ctx context.Context, req *empty.Empty) (*empty.Empt
 
 func (u *UserService) AuthInfo(ctx context.Context, req *empty.Empty) (*model.UserAuthInfo, error) {
 	ctxi := contexti.CtxFromContext(ctx)
-	user, err := auth(ctxi, false)
+	user, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
