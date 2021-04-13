@@ -37,7 +37,7 @@ func auth(ctx *contexti.Ctx, update bool) (*user.AuthInfo, error) {
 		userDao := dao.GetDao(ctx)
 		err := userDao.EfficientUserHashFromRedis()
 		if err != nil {
-			return nil, user.UserErrInvalidToken
+			return nil, err
 		}
 	}
 	if !ok {

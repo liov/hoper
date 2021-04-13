@@ -132,7 +132,7 @@ func (d *userDao) EfficientUserHashFromRedis() error {
 		return ctxi.ErrorLog(errorcode.RedisErr, err, "EfficientUserHashFromRedis")
 	}
 	if len(userArgs) == 0 {
-		return model.UserErrInvalidToken
+		return model.UserErrLoginTimeout
 	}
 	user := ctxi.AuthInfo.(*model.AuthInfo)
 	user.Name = userArgs[1]

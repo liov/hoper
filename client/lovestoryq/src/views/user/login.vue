@@ -118,8 +118,13 @@ export default class Login extends Vue {
   mail = "";
   phone = "";
   Validator = Validator;
-  mounted() {
-    //if (this.$route.query.email !== null) {}
+  async created() {
+    if (this.$route.query.back) {
+      if (!this.$store.state.auth) await this.$store.dispatch("getAuth");
+
+      if (this.$store.state.auth)
+        await this.$router.replace(`${this.$route.query.back}`);
+    }
   }
 
   getFormValues(values: any): any {
