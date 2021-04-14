@@ -64,7 +64,9 @@
       ></van-col>
     </van-row>
     <van-row>
-      <van-col span="8">span: 8</van-col>
+      <van-col span="8"
+        ><router-link :to="'/user/edit'">编辑资料</router-link></van-col
+      >
       <van-col span="8">span: 8</van-col>
       <van-col span="8">span: 8</van-col>
     </van-row>
@@ -82,13 +84,9 @@ export default class Home extends Vue {
   user = {};
 
   async created() {
-    const res = await axios.get(`/api/v1/user/id/${this.$store.state.auth.id}`);
-    this.user = res.data.details.user;
-    console.log(res.data.details);
-    this.$store.commit("SET_AUTH", this.user);
+    this.user = this.$store.state.auth;
     if (!this.user.introduction) this.user.introduction = "我不想介绍自己";
     if (!this.user.signature) this.user.signature = "太个性签名签不下";
-    console.log(this.user);
   }
 }
 </script>

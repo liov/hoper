@@ -21,26 +21,27 @@
   </div>
 </template>
 
-<script>
-import {Options, prop, Vue} from "vue-class-component";
+<script lang="ts">
+import { Options, prop, Vue } from "vue-class-component";
 import axios from "axios";
 import { upload } from "@/plugin/utils/upload";
-
-class Props {
-  user = prop<any>();
-}
-
 
 @Options({
   components: {},
 })
-export default class Edit extends Vue.with(Props) {
+export default class Edit extends Vue {
+  user = null;
   url = "";
   loading = false;
-  created() {
+
+  async created() {
+    this.user = this.$store.state.auth;
+
+    if (!this.user.introduction) this.user.introduction = "我不想介绍自己";
+    if (!this.user.signature) this.user.signature = "太个性签名签不下";
+
     this.url = this.user.avatarUrl;
   }
-
   avatar() {
     this.show = true;
     this.url = this.user.avatarUrl;
@@ -53,9 +54,9 @@ export default class Edit extends Vue.with(Props) {
   async confirm() {
     await axios.post(`/api/v1/user`, {
       id: this.user.id,
-      details:{
+      details: {
         avatarUrl: this.url,
-      }
+      },
     });
   }
 }

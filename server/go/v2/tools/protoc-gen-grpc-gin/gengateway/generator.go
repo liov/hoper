@@ -3,11 +3,12 @@ package gengateway
 import (
 	"errors"
 	"fmt"
+	"github.com/liov/hoper/go/v2/tools/protoc-gen-grpc-gin/descriptor"
 	"go/format"
 	"path"
 
 	"github.com/golang/glog"
-	"github.com/liov/hoper/go/v2/tools/protoc-gen-grpc-gin/descriptor"
+
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/pluginpb"
 )
@@ -20,7 +21,6 @@ type Generator interface {
 	// Generate generates output files from input .proto files.
 	Generate(targets []*descriptor.File) ([]*descriptor.ResponseFile, error)
 }
-
 
 type generator struct {
 	reg                *descriptor.Registry
@@ -50,6 +50,7 @@ func New(reg *descriptor.Registry, useRequestContext bool, registerFuncSuffix st
 		"github.com/grpc-ecosystem/grpc-gateway/v2/utilities",
 		"github.com/liov/hoper/go/v2/utils/net/http/gin",
 		"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway",
+		"github.com/liov/hoper/go/v2/utils/net/http/request",
 	} {
 		pkg := descriptor.GoPackage{
 			Path: pkgpath,

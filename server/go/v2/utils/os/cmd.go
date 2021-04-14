@@ -12,7 +12,7 @@ import (
 func CMD(s string) (string, error) {
 	words := Split(s)
 	cmd := exec.Command(words[0], words[1:]...)
-	buf, err := cmd.Output()
+	buf, err := cmd.CombinedOutput()
 	if err != nil {
 		return "", err
 	}

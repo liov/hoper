@@ -261,6 +261,7 @@ func (r *Registry) newParam(meth *Method, path string) (Parameter, error) {
 
 func (r *Registry) newBody(meth *Method, path string) (*Body, error) {
 	msg := meth.RequestType
+
 	switch path {
 	case "":
 		return nil, nil
