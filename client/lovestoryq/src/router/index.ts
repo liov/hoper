@@ -5,11 +5,21 @@ import {
   RouteRecordRaw,
 } from "vue-router";
 import store from "@/store/index";
+import axios from "axios";
 
 //鉴权
 const authenticated: NavigationGuard = (_to, _from, next) => {
   if (store.state.auth) next();
   else next({ name: "Login", query: { back: _to.path } });
+};
+
+const completedAuthenticated: NavigationGuard = async (_to, _from, next) => {
+  if (store.state.auth && (store.state.auth as any).avatarUrl) next();
+  else {
+    const res = await axios.get(`/api/v1/user/id/0`);
+    store.commit("SET_AUTH", res.data.details.user);
+    next({ name: "Login", query: { back: _to.path } });
+  }
 };
 
 const routes: Array<RouteRecordRaw> = [
@@ -25,8 +35,14 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/me",
     name: "Home",
-    beforeEnter: authenticated,
+    beforeEnter: completedAuthenticated,
     component: () => import("../views/user/Home.vue"),
+  },
+  {
+    path: "/user/edit",
+    name: "Edit",
+    beforeEnter: completedAuthenticated,
+    component: () => import("../views/user/Edit.vue"),
   },
   {
     path: "/user/login",

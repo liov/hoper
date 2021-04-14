@@ -400,9 +400,12 @@ func (u *UserService) Info(ctx context.Context, req *request.Object) (*model.Use
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
-	_, err := auth(ctxi, true)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
+	}
+	if req.Id == 0 {
+		req.Id = auth.Id
 	}
 	db := dao.Dao.GetDB(ctxi.Logger)
 	userDao := dao.GetDao(ctxi)

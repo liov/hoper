@@ -1,6 +1,8 @@
 package gini
 
 import (
+	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
+	"github.com/liov/hoper/go/v2/utils/net/http/request"
 	"io/ioutil"
 	"net/http"
 
@@ -34,13 +36,12 @@ func BindYAML(c *gin.Context, obj interface{}) error {
 	return MustBindWith(c, obj, binding.YAML)
 }
 
-
 // MustBindWith binds the passed struct pointer using the specified binding engine.
 // It will abort the request with HTTP 400 if any error occurs.
 // See the binding package.
 func MustBindWith(c *gin.Context, obj interface{}, b binding.Binding) error {
-	if err := ShouldBindWith(c,obj, b); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err).SetType(gin.ErrorTypeBind) // nolint: errcheck
+	if err := ShouldBindWith(c, obj, b); err != nil {
+		c.JSON(http.StatusBadRequest, errorcode.InvalidArgument.Message(request.Error(err)))
 		return err
 	}
 	return nil
