@@ -2,12 +2,13 @@ package service
 
 import (
 	"context"
+	"github.com/liov/hoper/go/v2/protobuf/utils/request"
+	"github.com/liov/hoper/go/v2/tailmon/pick"
+	"github.com/liov/hoper/go/v2/tailmon/pick/_example/middle"
 	"net/http"
 
 	model "github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/response"
-	"github.com/liov/hoper/go/v2/utils/net/http/pick"
-	"github.com/liov/hoper/go/v2/utils/net/http/pick/_example/middle"
 )
 
 type UserService struct{}
@@ -41,7 +42,7 @@ func (*UserService) Edit(ctx context.Context, req *model.EditReq) (*model.EditRe
 	return nil, nil
 }
 
-func (*UserService) Get(ctx context.Context, req *model.GetReq) (*response.TinyRep, error) {
+func (*UserService) Get(ctx context.Context, req *request.Object) (*response.TinyRep, error) {
 	pick.Api(func() interface{} {
 		return pick.Path("/:id").
 			Method(http.MethodGet).

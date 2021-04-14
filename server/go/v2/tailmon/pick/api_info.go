@@ -13,7 +13,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/strings"
 )
 
-const Template= `
+const Template = `
 func (*UserService) Add(ctx *model.Ctx, req *model.SignupReq) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() interface{} {
@@ -28,7 +28,6 @@ func (*UserService) Add(ctx *model.Ctx, req *model.SignupReq) (*response.TinyRep
 	return &response.TinyRep{Message: req.Name}, nil
 }
 `
-
 
 type apiInfo struct {
 	path, method, title string
@@ -158,7 +157,7 @@ func getMethodInfo(method *reflect.Method, preUrl string, claimsTyp reflect.Type
 }
 
 // 从方法名称分析出接口名和版本号
-func parseMethodName(originName string,methods []string) (method,name string, version int) {
+func parseMethodName(originName string, methods []string) (method, name string, version int) {
 	idx := strings.LastIndexByte(originName, 'V')
 	version = 1
 	if idx > 0 {

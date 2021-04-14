@@ -26,20 +26,20 @@ type apiDocInfo struct {
 
 type groupApiInfo struct {
 	describe string
-	infos []*apiDocInfo
+	infos    []*apiDocInfo
 }
 
-var groupApiInfos  []*groupApiInfo
+var groupApiInfos []*groupApiInfo
 
 func OpenApi(mux *Router, filePath, modName string) {
 	apidoc.FilePath = filePath
 	md(filePath, modName)
 	_ = mime.AddExtensionType(".svg", "image/svg+xml")
-	mux.Handler(http.MethodGet,  apidoc.PrefixUri+"md/*file", func(w http.ResponseWriter, req *http.Request) {
+	mux.Handler(http.MethodGet, apidoc.PrefixUri+"md/*file", func(w http.ResponseWriter, req *http.Request) {
 		http.ServeFile(w, req, filePath+"apidoc.md")
 	})
 	swagger(filePath, modName)
-	mux.Handler(http.MethodGet,apidoc.PrefixUri[:len(apidoc.PrefixUri)-1], apidoc.ApiMod)
+	mux.Handler(http.MethodGet, apidoc.PrefixUri[:len(apidoc.PrefixUri)-1], apidoc.ApiMod)
 	mux.Handler(http.MethodGet, apidoc.PrefixUri+"swagger/*file", apidoc.HttpHandle)
 }
 
@@ -58,7 +58,7 @@ func md(filePath, modName string) {
 	for _, groupApiInfo := range groupApiInfos {
 		fmt.Fprintf(buf, "# %s  \n", groupApiInfo.describe)
 		fmt.Fprintln(buf, "----------")
-		for  _, methodInfo := range groupApiInfo.infos {
+		for _, methodInfo := range groupApiInfo.infos {
 			//title
 			if methodInfo.deprecated != nil {
 				fmt.Fprintf(buf, "## ~~%s-v%d(废弃)(`%s`)~~  \n", methodInfo.title, methodInfo.version, methodInfo.path)

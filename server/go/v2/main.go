@@ -1,7 +1,7 @@
 package main
 
 import (
-	contexti "github.com/liov/hoper/go/v2/tailmon/context"
+	"github.com/liov/hoper/go/v2/tailmon/pick"
 	"github.com/liov/hoper/go/v2/upload"
 	"github.com/liov/hoper/go/v2/utils/net/http/gin/handler"
 	"net/http"
@@ -21,7 +21,7 @@ import (
 	udao "github.com/liov/hoper/go/v2/user/dao"
 	userservice "github.com/liov/hoper/go/v2/user/service"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/net/http/pick"
+
 	"go.opencensus.io/examples/exporter"
 	"go.opencensus.io/plugin/ocgrpc"
 	"go.opencensus.io/stats/view"
@@ -60,15 +60,13 @@ func main() {
 			_ = content.RegisterMomentServiceHandlerServer(app, contentervice.GetMomentService())
 			_ = content.RegisterContentServiceHandlerServer(app, contentervice.GetContentService())
 			_ = content.RegisterActionServiceHandlerServer(app, contentervice.GetActionService())
-			app.Static("/static","F:/upload")
+			app.Static("/static", "F:/upload")
 			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
-			app.GET("/api/v1/exists",handler.Convert(upload.Exists))
-			app.GET("/api/v1/exists/:md5/:size",upload.ExistsGin)
-			app.POST("/api/v1/upload/:md5",handler.Convert(upload.Upload))
-			app.POST("/api/v1/multiUpload",handler.Convert(upload.MultiUpload))
-			pick.Gin(app, user.ConvertContext, true, initialize.InitConfig.Module)
+			app.GET("/api/v1/exists", handler.Convert(upload.Exists))
+			app.GET("/api/v1/exists/:md5/:size", upload.ExistsGin)
+			app.POST("/api/v1/upload/:md5", handler.Convert(upload.Upload))
+			app.POST("/api/v1/multiUpload", handler.Convert(upload.MultiUpload))
+			pick.Gin(app, true, initialize.InitConfig.Module)
 		},
-		CustomContext:  contexti.CtxWithRequest,
-		ConvertContext: contexti.ConvertContext,
 	}).Start()
 }
