@@ -4,8 +4,10 @@ import (
 	"context"
 	"errors"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
+	fasthttpi "github.com/liov/hoper/go/v2/utils/net/http/fasthttp"
 	"github.com/liov/hoper/go/v2/utils/net/http/request"
 	timei "github.com/liov/hoper/go/v2/utils/time"
+	"github.com/valyala/fasthttp"
 	"google.golang.org/grpc/metadata"
 	"net/http"
 	"net/url"
@@ -18,7 +20,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/encoding/json"
 	"github.com/liov/hoper/go/v2/utils/log"
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
-	"github.com/liov/hoper/go/v2/utils/net/http/pick"
+
 	stringsi "github.com/liov/hoper/go/v2/utils/strings"
 	jwti "github.com/liov/hoper/go/v2/utils/verification/auth/jwt"
 	"go.opencensus.io/trace"
@@ -130,8 +132,6 @@ type Ctx struct {
 	*log.Logger
 }
 
-var _ = pick.Context(new(Ctx))
-
 func (c *Ctx) StartSpan(name string, o ...trace.StartOption) (*Ctx, *trace.Span) {
 	ctx, span := trace.StartSpan(c.Context, name, o...)
 	c.Context = ctx
@@ -147,20 +147,20 @@ func (c *Ctx) WithContext(ctx context.Context) {
 
 type ctxKey struct{}
 
-func CtxWithRequest(ctx context.Context, r *http.Request) context.Context {
-	ctxi := newCtx(ctx)
-	ctxi.setWithReq(r)
+func (ctxi *Ctx) ContextWrapper() context.Context {
 	return context.WithValue(context.Background(), ctxKey{}, ctxi)
 }
 
-func ConvertContext(r *http.Request) *Ctx {
-	ctxi := r.Context().Value(ctxKey{})
-	c, ok := ctxi.(*Ctx)
-	if !ok {
-		c = newCtx(r.Context())
-		c.setWithReq(r)
-	}
-	return c
+func CtxWithRequest(ctx context.Context, r *http.Request) *Ctx {
+	ctxi := newCtx(ctx)
+	ctxi.setWithReq(r)
+	return ctxi
+}
+
+func CtxWithFasthttpRequest(ctx context.Context, r *fasthttp.Request) *Ctx {
+	ctxi := newCtx(ctx)
+	ctxi.Token = fasthttpi.GetToken(r)
+	return ctxi
 }
 
 func CtxFromContext(ctx context.Context) *Ctx {

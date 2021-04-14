@@ -3,6 +3,7 @@ package pick
 import (
 	"context"
 	"encoding/json"
+	contexti "github.com/liov/hoper/go/v2/tailmon/context"
 	"io"
 	"net/http"
 	"reflect"
@@ -97,12 +98,12 @@ func register(router *Router, genApi bool, modName string) {
 
 type convert func(r *http.Request) Context
 
-func commonHandler(w http.ResponseWriter, req *http.Request,convert convert, handle *reflect.Value, ps *Params) {
+func commonHandler(w http.ResponseWriter, req *http.Request, handle *reflect.Value, ps *Params) {
 	handleTyp := handle.Type()
 	handleNumIn := handleTyp.NumIn()
 	if handleNumIn != 0 {
 		params := make([]reflect.Value, handleNumIn)
-		ctxi:=convert(req)
+		ctxi := contexti.CtxWithRequest(req.Context(), req)
 		for i := 0; i < handleNumIn; i++ {
 			if handleTyp.In(i).Implements(claimsType) {
 				params[i] = reflect.ValueOf(ctxi)
@@ -126,13 +127,13 @@ func commonHandler(w http.ResponseWriter, req *http.Request,convert convert, han
 			}
 		}
 		result := handle.Call(params)
-		resHandler(ctxi,w, result)
+		resHandler(ctxi, w, result)
 	}
 }
 
-func resHandler(c Context,w http.ResponseWriter, result []reflect.Value) {
+func resHandler(c *contexti.Ctx, w http.ResponseWriter, result []reflect.Value) {
 	if !result[1].IsNil() {
-		err :=errorcode.ErrHandle(result[1].Interface())
+		err := errorcode.ErrHandle(result[1].Interface())
 		c.Error(err.Error())
 		json.NewEncoder(w).Encode(err)
 		return

@@ -1,12 +1,12 @@
 package main
 
 import (
+	"github.com/liov/hoper/go/v2/tailmon/pick"
 	"log"
 	"net/http"
 
-	"github.com/liov/hoper/go/v2/utils/net/http/pick"
-	"github.com/liov/hoper/go/v2/utils/net/http/pick/_example/service"
-	_ "github.com/liov/hoper/go/v2/utils/net/http/pick/_example/service"
+	"github.com/liov/hoper/go/v2/tailmon/pick/_example/service"
+	_ "github.com/liov/hoper/go/v2/tailmon/pick/_example/service"
 )
 
 func main() {

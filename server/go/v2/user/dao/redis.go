@@ -16,7 +16,8 @@ import (
 )
 
 // UserToRedis 将用户信息存到redis
-func (d *userDao) UserToRedis(ctxi *model.Ctx) error {
+func (d *userDao) UserToRedis() error {
+	ctxi := d.ctxi
 	ctx := ctxi.Context
 	UserString, err := json.Standard.MarshalToString(ctxi.AuthInfo)
 	if err != nil {
@@ -31,7 +32,8 @@ func (d *userDao) UserToRedis(ctxi *model.Ctx) error {
 }
 
 // UserFromRedis 从redis中取出用户信息
-func (d *userDao) UserFromRedis(ctxi *model.Ctx) (*model.AuthInfo, error) {
+func (d *userDao) UserFromRedis() (*model.AuthInfo, error) {
+	ctxi := d.ctxi
 	ctx := ctxi.Context
 	loginUser := modelconst.LoginUserKey + ctxi.IdStr
 

@@ -4,11 +4,13 @@ import (
 	"bytes"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/gin-gonic/gin"
+	contexti "github.com/liov/hoper/go/v2/tailmon/context"
 	"github.com/liov/hoper/go/v2/tailmon/initialize"
+
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	gin_build "github.com/liov/hoper/go/v2/utils/net/http/gin"
 	"github.com/liov/hoper/go/v2/utils/net/http/grpc/gateway"
-	"github.com/liov/hoper/go/v2/utils/net/http/pick"
+
 	stringsi "github.com/liov/hoper/go/v2/utils/strings"
 	"go.uber.org/zap"
 	"io/ioutil"
@@ -69,13 +71,13 @@ func (s *Server) httpHandler(conf *initialize.ServerConfig) http.HandlerFunc {
 			w.Write(recorder.Body.Bytes())
 		}
 
-		accessLog(s.ConvertContext(r), r.RequestURI, r.Method,
+		accessLog(contexti.CtxFromContext(r.Context()), r.RequestURI, r.Method,
 			stringsi.ToString(body), stringsi.ToString(recorder.Body.Bytes()),
 			recorder.Code)
 	}
 }
 
-func accessLog(ctxi pick.Context, iface, method, body, result string, code int) {
+func accessLog(ctxi *contexti.Ctx, iface, method, body, result string, code int) {
 	// log 里time now 浪费性能
 	if ce := ctxi.GetLogger().Logger.Check(zap.InfoLevel, "access"); ce != nil {
 		ce.Write(zap.String("interface", iface),

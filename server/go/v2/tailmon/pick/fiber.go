@@ -1,7 +1,9 @@
 package pick
 
 import (
+	"context"
 	"encoding/json"
+	contexti "github.com/liov/hoper/go/v2/tailmon/context"
 	"io"
 	"net/http"
 	"reflect"
@@ -9,10 +11,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/log"
-	fiber_build "github.com/liov/hoper/go/v2/utils/net/http/fasthttp/fiber"
 	httpi "github.com/liov/hoper/go/v2/utils/net/http"
 	"github.com/liov/hoper/go/v2/utils/net/http/api/apidoc"
-	"github.com/valyala/fasthttp"
+	fiber_build "github.com/liov/hoper/go/v2/utils/net/http/fasthttp/fiber"
 )
 
 type FiberService interface {
@@ -61,9 +62,7 @@ func fiberResHandler(ctx *fiber.Ctx, result []reflect.Value) error {
 	})
 }
 
-type FasthttpCtx func(r *fasthttp.Request) Context
-
-func FiberWithCtx(engine *fiber.App, fasthttpCtx FasthttpCtx,genApi bool, modName string) {
+func FiberWithCtx(engine *fiber.App, genApi bool, modName string) {
 
 	for _, v := range fiberSvcs {
 		describe, preUrl, middleware := v.FiberService()
@@ -75,7 +74,7 @@ func FiberWithCtx(engine *fiber.App, fasthttpCtx FasthttpCtx,genApi bool, modNam
 		engine.Group(preUrl, middleware...)
 		for j := 0; j < value.NumMethod(); j++ {
 			method := value.Type().Method(j)
-			methodInfo := getMethodInfo(&method, preUrl,claimsType)
+			methodInfo := getMethodInfo(&method, preUrl, claimsType)
 			if methodInfo == nil {
 				continue
 			}
@@ -86,7 +85,7 @@ func FiberWithCtx(engine *fiber.App, fasthttpCtx FasthttpCtx,genApi bool, modNam
 			methodValue := method.Func
 			in2Type := methodType.In(2)
 			engine.Add(methodInfo.method, methodInfo.path, func(ctx *fiber.Ctx) error {
-				in1 := reflect.ValueOf(fasthttpCtx(ctx.Request()))
+				in1 := reflect.ValueOf(contexti.CtxWithFasthttpRequest(context.Background(), ctx.Request()))
 				in2 := reflect.New(in2Type.Elem())
 				if err := fiber_build.Bind(ctx, in2.Interface()); err != nil {
 					return ctx.Status(http.StatusBadRequest).JSON(errorcode.InvalidArgument.ErrRep())

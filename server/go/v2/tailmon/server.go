@@ -28,15 +28,13 @@ import (
 	"google.golang.org/grpc"
 )
 
-
-
 type CustomContext func(c context.Context, r *http.Request) context.Context
 type ConvertContext func(r *http.Request) *contexti.Ctx
 
 func (s *Server) Serve() {
 	//反射从配置中取port
 	serviceConfig := initialize.InitConfig.GetServiceConfig()
-	grpcServer:=s.grpcHandler(serviceConfig)
+	grpcServer := s.grpcHandler(serviceConfig)
 	httpHandler := s.httpHandler(serviceConfig)
 	openTracing := serviceConfig.OpenTracing
 	systemTracing := serviceConfig.SystemTracing
@@ -79,9 +77,8 @@ func (s *Server) Serve() {
 			defer span.End()
 		}
 
-		if s.CustomContext != nil {
-			ctx = s.CustomContext(ctx, r)
-		}
+		ctx = contexti.CtxWithRequest(ctx, r).ContextWrapper()
+
 		r = r.WithContext(ctx)
 		if r.ProtoMajor == 2 && grpcServer != nil && strings.Contains(r.Header.Get(httpi.HeaderContentType), httpi.ContentGRPCHeaderValue) {
 			grpcServer.ServeHTTP(w, r) // gRPC Server
@@ -131,8 +128,6 @@ type Server struct {
 	GatewayRegistr gateway.GatewayHandle
 	GinHandle      func(engine *gin.Engine)
 	GraphqlResolve graphql.ExecutableSchema
-	CustomContext  CustomContext
-	ConvertContext ConvertContext
 }
 
 var signals = make(chan os.Signal, 1)
@@ -168,4 +163,3 @@ Loop:
 func ReStart() {
 	stop <- struct{}{}
 }
-

@@ -1,7 +1,6 @@
 package service
 
 import (
-	"context"
 	"github.com/liov/hoper/go/v2/protobuf/user"
 	contexti "github.com/liov/hoper/go/v2/tailmon/context"
 	"strings"
@@ -9,10 +8,6 @@ import (
 
 	"github.com/liov/hoper/go/v2/user/conf"
 	"github.com/liov/hoper/go/v2/user/dao"
-	fasthttpi "github.com/liov/hoper/go/v2/utils/net/http/fasthttp"
-	"github.com/liov/hoper/go/v2/utils/net/http/pick"
-
-	"github.com/valyala/fasthttp"
 )
 
 var ExportAuth = auth
@@ -44,11 +39,4 @@ func auth(ctx *contexti.Ctx, update bool) (*user.AuthInfo, error) {
 		dao.Dao.Cache.SetWithTTL(signature, ctx.Authorization, 0, 5*time.Second)
 	}
 	return auth, nil
-}
-
-// AuthContext returns a new Context that carries value u.
-func FasthttpCtx(r *fasthttp.Request) pick.Context {
-	ctx := contexti.CtxFromContext(context.Background())
-	ctx.Token = fasthttpi.GetToken(r)
-	return ctx
 }
