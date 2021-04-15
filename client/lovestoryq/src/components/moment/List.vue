@@ -24,7 +24,7 @@
         </van-cell>
       </van-list>
     </van-pull-refresh>
-    <More></More>
+    <ActionMore></ActionMore>
   </div>
 </template>
 
@@ -33,9 +33,9 @@ import { Options, Vue } from "vue-class-component";
 import axios from "axios";
 import { reactive, ref } from "vue";
 import Moment from "@/components/moment/Moment.vue";
-import More from "@/components/action/More.vue";
+import ActionMore from "@/components/action/More.vue";
 @Options({
-  components: { Moment, More },
+  components: { Moment, ActionMore },
 })
 export default class MomentList extends Vue {
   active = 0;
@@ -64,10 +64,7 @@ export default class MomentList extends Vue {
     const res = await axios.get(
       `/api/v1/moment?pageNo=${this.pageNo}&pageSize=${this.pageSize}`
     );
-    if (res.data.code !== 0) {
-      this.$toast.fail(res.data.message);
-      this.finished = true;
-    }
+    this.finished = true;
     const data = res.data.details;
     if (this.pageNo == 1) {
       this.list = data.list;

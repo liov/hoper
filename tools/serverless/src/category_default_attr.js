@@ -1,5 +1,6 @@
 const Excel = require('exceljs');
 const axios = require('axios');
+const sleep = require("./utils/sleep");
 
 const cardCategory = new Map()
 
@@ -18,7 +19,7 @@ async function init() {
 async function set() {
     // 从文件读取
     const workbook = new Excel.Workbook();
-    await workbook.xlsx.readFile('F:/类目新增默认属性配置4.2.xlsx');
+    await workbook.xlsx.readFile('F:/abc.xlsx');
 
     const sheet = workbook.worksheets[0]
     const rows = sheet.findRows(2,sheet.rowCount)
@@ -62,17 +63,6 @@ async function set() {
 
 }
 
-let sleep = function (delay) {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            try {
-                resolve(1)
-            } catch (e) {
-                reject(0)
-            }
-        }, delay);
-    })
-}
 
 axios.defaults.baseURL = 'http://';
 axios.defaults.headers.common["Token"] = '';

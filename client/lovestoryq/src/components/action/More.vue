@@ -58,7 +58,7 @@ import { reactive } from "vue";
 import emitter from "@/plugin/emitter";
 
 @Options({})
-export default class More extends Vue {
+export default class ActionMore extends Vue {
   type = 0;
   refId = 0;
   show = reactive({

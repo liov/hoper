@@ -41,7 +41,7 @@ import { ImagePreview } from "vant";
 import Action from "@/components/action/Action.vue";
 class Props {
   moment = prop<any>({ default: {} });
-  user = prop<any>();
+  user = prop<any>({});
 }
 @Options({ components: { Action } })
 export default class Moment extends Vue.with(Props) {
