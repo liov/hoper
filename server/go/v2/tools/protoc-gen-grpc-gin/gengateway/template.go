@@ -36,7 +36,7 @@ func (b binding) GetBodyFieldPath() string {
 	return "*"
 }
 
-// GetBodyFieldPath returns the binding body's struct field name.
+// GetBodyFieldStructName returns the binding body's struct field name.
 func (b binding) GetBodyFieldStructName() (string, error) {
 	if b.Body != nil && len(b.Body.FieldPath) != 0 {
 		return stringsi.Camel(b.Body.FieldPath.String()), nil
@@ -237,6 +237,7 @@ var _ status.Status
 var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = metadata.Join
+var _ = request.Error
 `))
 
 	handlerTemplate = template.Must(template.New("handler").Parse(`
@@ -273,7 +274,7 @@ func request_{{.Method.Service.GetName}}_{{.Method.GetName}}_{{.Index}}(ctx *gin
 		}
 		if err != nil {
 			grpclog.Infof("Failed to decode request: %v", err)
-			return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+			return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", request.Error(err))
 		}
 		if err = stream.Send(&protoReq); err != nil {
 			if err == io.EOF {
@@ -309,7 +310,9 @@ func request_{{.Method.Service.GetName}}_{{.Method.GetName}}_{{.Index}}(ctx *gin
 {{template "request-func-signature" .}} {
 	var protoReq {{.Method.RequestType.GoType .Method.Service.File.GoPkg.Path}}
 	var metadata runtime.ServerMetadata
+{{if or .Body (and (ne .HTTPMethod "GET") (ne .HTTPMethod "DELETE"))}}
 	gin_0.Bind(ctx, &protoReq)
+{{end}}
 {{if .PathParams}}
 	var (
 		err error
@@ -329,23 +332,23 @@ func request_{{.Method.Service.GetName}}_{{.Method.GetName}}_{{.Index}}(ctx *gin
 {{if $param.IsNestedProto3}}
 	err = runtime.PopulateFieldFromPath(&protoReq, {{$param | printf "%q"}}, ctx.Param({{$param | printf "%q"}}))
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", {{$param | printf "%q"}}, err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", {{$param | printf "%q"}}, request.Error(err))
 	}
 	{{if $enum}}
 		e{{if $param.IsRepeated}}s{{end}}, err = {{$param.ConvertFuncExpr}}(ctx.Param({{$param | printf "%q"}}){{if $param.IsRepeated}}, {{$binding.Registry.GetRepeatedPathParamSeparator | printf "%c" | printf "%q"}}{{end}}, {{$enum.GoType $param.Method.Service.File.GoPkg.Path}}_value)
 		if err != nil {
-			return nil, metadata, status.Errorf(codes.InvalidArgument, "could not parse path as enum value, parameter: %s, error: %v", {{$param | printf "%q"}}, err)
+			return nil, metadata, status.Errorf(codes.InvalidArgument, "could not parse path as enum value, parameter: %s, error: %v", {{$param | printf "%q"}}, request.Error(err))
 		}
 	{{end}}
 {{else if $enum}}
 	e{{if $param.IsRepeated}}s{{end}}, err = {{$param.ConvertFuncExpr}}(ctx.Param({{$param | printf "%q"}}){{if $param.IsRepeated}}, {{$binding.Registry.GetRepeatedPathParamSeparator | printf "%c" | printf "%q"}}{{end}}, {{$enum.GoType $param.Method.Service.File.GoPkg.Path}}_value)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", {{$param | printf "%q"}}, err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", {{$param | printf "%q"}}, request.Error(err))
 	}
 {{else}}
 	{{$param.AssignableExpr "protoReq"}}, err = {{$param.ConvertFuncExpr}}(ctx.Param({{$param | printf "%q"}}){{if $param.IsRepeated}}, {{$binding.Registry.GetRepeatedPathParamSeparator | printf "%c" | printf "%q"}}{{end}})
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", {{$param | printf "%q"}}, err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", {{$param | printf "%q"}}, request.Error(err))
 	}
 {{end}}
 {{if and $enum $param.IsRepeated}}
@@ -450,8 +453,9 @@ func local_request_{{.Method.Service.GetName}}_{{.Method.GetName}}_{{.Index}}(se
 {{$AllowPatchFeature := .AllowPatchFeature}}
 {{template "local-request-func-signature" .}} {
 	var protoReq {{.Method.RequestType.GoType .Method.Service.File.GoPkg.Path}}
+{{if or .Body (and (ne .HTTPMethod "GET") (ne .HTTPMethod "DELETE"))}}
 	gin_0.Bind(ctx, &protoReq)
-
+{{end}}
 {{if .PathParams}}
 	var (
 		err error
@@ -472,23 +476,23 @@ func local_request_{{.Method.Service.GetName}}_{{.Method.GetName}}_{{.Index}}(se
 {{if $param.IsNestedProto3}}
 	err = runtime.PopulateFieldFromPath(&protoReq, {{$param | printf "%q"}}, ctx.Param({{$param | printf "%q"}}))
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", {{$param | printf "%q"}}, err)
+		return nil, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", {{$param | printf "%q"}}, request.Error(err))
 	}
 	{{if $enum}}
 		e{{if $param.IsRepeated}}s{{end}}, err = {{$param.ConvertFuncExpr}}(ctx.Param({{$param | printf "%q"}}){{if $param.IsRepeated}}, {{$binding.Registry.GetRepeatedPathParamSeparator | printf "%c" | printf "%q"}}{{end}}, {{$enum.GoType $param.Method.Service.File.GoPkg.Path}}_value)
 		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "could not parse path as enum value, parameter: %s, error: %v", {{$param | printf "%q"}}, err)
+			return nil, status.Errorf(codes.InvalidArgument, "could not parse path as enum value, parameter: %s, error: %v", {{$param | printf "%q"}}, request.Error(err))
 		}
 	{{end}}
 {{else if $enum}}
 	e{{if $param.IsRepeated}}s{{end}}, err = {{$param.ConvertFuncExpr}}(ctx.Param({{$param | printf "%q"}}){{if $param.IsRepeated}}, {{$binding.Registry.GetRepeatedPathParamSeparator | printf "%c" | printf "%q"}}{{end}}, {{$enum.GoType $param.Method.Service.File.GoPkg.Path}}_value)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", {{$param | printf "%q"}}, err)
+		return nil, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", {{$param | printf "%q"}}, request.Error(err))
 	}
 {{else}}
 	{{$param.AssignableExpr "protoReq"}}, err = {{$param.ConvertFuncExpr}}(ctx.Param({{$param | printf "%q"}}){{if $param.IsRepeated}}, {{$binding.Registry.GetRepeatedPathParamSeparator | printf "%c" | printf "%q"}}{{end}})
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", {{$param | printf "%q"}}, err)
+		return nil, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", {{$param | printf "%q"}}, request.Error(err))
 	}
 {{end}}
 {{if and $enum $param.IsRepeated}}

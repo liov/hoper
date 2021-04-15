@@ -245,20 +245,20 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*empty.Empt
 		}
 		var resumes []*model.Resume
 		resumes = append(req.Details.EduExps, req.Details.WorkExps...)
+		tx := dao.Dao.GORMDB.Begin()
 		if len(resumes) > 0 {
-			tx := dao.Dao.GORMDB.Begin()
 			err = userDao.SaveResumes(tx, req.Id, resumes, originalIds, model.ConvDeviceInfo(device))
 			if err != nil {
 				tx.Rollback()
 				return nil, errorcode.DBError.Message("更新失败")
 			}
-			err = tx.Model(req.Details).UpdateColumns(req.Details).Error
-			if err != nil {
-				tx.Rollback()
-				return nil, errorcode.DBError.Message("更新失败")
-			}
-			tx.Commit()
 		}
+		err = tx.Table(modelconst.UserTableName).Where(`id = ?`, req.Id).UpdateColumns(req.Details).Error
+		if err != nil {
+			tx.Rollback()
+			return nil, errorcode.DBError.Message("更新失败")
+		}
+		tx.Commit()
 	}
 	return new(empty.Empty), nil
 }

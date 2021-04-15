@@ -96,7 +96,7 @@ service UserService {
   //编辑
   rpc Edit (EditReq) returns (empty.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/user/id/{id}"
+      put: "/api/v1/user/{id}"
       body: "details"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -197,7 +197,7 @@ service UserService {
   //获取用户信息
   rpc Info (request.Object) returns (UserRep) {
     option (google.api.http) = {
-      get: "/api/v1/user/id/{id}"
+      get: "/api/v1/user/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]
@@ -222,7 +222,7 @@ service UserService {
   //获取基础用户信息
   rpc BaseList (BaseListReq) returns (BaseListRep) {
     option (google.api.http) = {
-      get: "/api/v1/user/base"
+      get: "/api/v1/baseUserList"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]
@@ -332,10 +332,7 @@ message EditReq {
     type: INTEGER}];
   EditDetails details = 2 [(go.field) = {tags:'gorm:"embedded"'}];
   message EditDetails {
-    string name = 2 [(go.field) = {tags:'validate:"required,gte=3,lte=10" annotation:"名字"'}];
-    string password = 5 [(go.field) = {tags:'validate:"gte=8,lte=15" annotation:"密码"'}];
-    string mail = 6 [(go.field) = {tags:'validate:"email" annotation:"邮箱"'}];
-    string phone = 7 [(go.field) = {tags:'validate:"phone" annotation:"手机号"'}];
+    string name = 2 [(go.field) = {tags:'validate:"gte=3,lte=10" annotation:"名字"'}];
     // 性别，0未填写，1男，2女
     Gender gender = 8 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
       type:INTEGER

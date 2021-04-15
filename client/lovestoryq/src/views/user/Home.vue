@@ -59,7 +59,7 @@
         <van-row justify="center">
           {{ user.signature }}
         </van-row>
-        <van-row justify="center">{{ user.introduction }}</van-row>
+        <van-row justify="center">{{ user.intro }}</van-row>
         <van-row> </van-row
       ></van-col>
     </van-row>
@@ -85,7 +85,7 @@ export default class Home extends Vue {
 
   async created() {
     this.user = this.$store.state.auth;
-    if (!this.user.introduction) this.user.introduction = "我不想介绍自己";
+    if (!this.user.intro) this.user.intro = "我不想介绍自己";
     if (!this.user.signature) this.user.signature = "太个性签名签不下";
   }
 }
@@ -98,18 +98,5 @@ export default class Home extends Vue {
 }
 i {
   margin: 0.7rem;
-}
-.wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  flex-flow: column;
-}
-p {
-  color: #42b983;
-}
-.button {
-  margin: 0rem 1rem;
 }
 </style>

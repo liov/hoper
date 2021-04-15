@@ -18,7 +18,7 @@ require (
 	github.com/dgraph-io/ristretto v0.0.4-0.20210311064603-e4f298c8aa88
 	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
 	github.com/fsnotify/fsnotify v1.4.9
-	github.com/gin-gonic/gin v1.6.3
+	github.com/gin-gonic/gin v1.7.1
 	github.com/go-oauth2/oauth2/v4 v4.2.0
 	github.com/go-openapi/loads v0.19.5
 	github.com/go-openapi/runtime v0.19.23
@@ -26,7 +26,7 @@ require (
 	github.com/go-openapi/swag v0.19.9
 	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0
-	github.com/go-playground/validator/v10 v10.2.0
+	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-redis/redis/v8 v8.4.10
 	github.com/gofiber/fiber/v2 v2.3.2
 	github.com/gogo/protobuf v1.3.2

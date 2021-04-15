@@ -26,7 +26,7 @@ service DiaryService {
   // 日记本
   rpc DiaryBook (DiaryBookReq) returns (DiaryBookRep) {
     option (google.api.http) = {
-      get: "/api/v1/diaryBook/id/{id}"
+      get: "/api/v1/diaryBook/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -56,7 +56,7 @@ service DiaryService {
   // 修改日记本
   rpc EditDiaryBook (AddDiaryBookReq) returns (empty.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/diaryBook"
+      put: "/api/v1/diaryBook/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -67,7 +67,7 @@ service DiaryService {
   // 详情
   rpc Info (request.Object) returns (Diary) {
     option (google.api.http) = {
-      get: "/api/v1/diary/id/{id}"
+      get: "/api/v1/diary/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -90,7 +90,7 @@ service DiaryService {
   // 修改
   rpc Edit (AddDiaryReq) returns (empty.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/diary"
+      put: "/api/v1/diary/{id}"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -99,7 +99,7 @@ service DiaryService {
     option (gogo.graphql_operation) = Mutation;
   }
 
-  // 修改
+  // 列表
   rpc List (DiaryListReq) returns (DiaryListRep) {
     option (google.api.http) = {
       get: "/api/v1/diary"
@@ -110,10 +110,10 @@ service DiaryService {
     option (gogo.graphql_operation) = Query;
   }
 
-  // 修改
+  // 删除
   rpc Delete (request.Object) returns (empty.Empty) {
     option (google.api.http) = {
-      delete: "/api/v1/diary"
+      delete: "/api/v1/diary/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
