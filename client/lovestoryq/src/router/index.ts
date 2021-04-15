@@ -16,7 +16,7 @@ const authenticated: NavigationGuard = (_to, _from, next) => {
 const completedAuthenticated: NavigationGuard = async (_to, _from, next) => {
   if (store.state.auth && (store.state.auth as any).avatarUrl) next();
   else {
-    const res = await axios.get(`/api/v1/user/id/0`);
+    const res = await axios.get(`/api/v1/user/0`);
     store.commit("SET_AUTH", res.data.details.user);
     next({ name: "Login", query: { back: _to.path } });
   }

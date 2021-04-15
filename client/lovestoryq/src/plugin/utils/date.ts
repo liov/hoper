@@ -1,35 +1,23 @@
-const dayjs = require("dayjs");
+import dayjs from "dayjs";
 
 const dateTool = {
   parse(dateStr: string) {
-    let formatStr = "YYYY-MM-DDTHH:mm:ssZ";
+    let formatStr = "YYYY-MM-DD HH:mm:ssZ";
     if (dateStr.indexOf(".") >= 0) {
-      formatStr = "YYYY-MM-DDTHH:mm:ss.SSSSSSSSSZ";
+      formatStr = "YYYY-MM-DD HH:mm:ss.SSSSSSSSSZ";
     }
     return dayjs(dateStr, formatStr);
   },
-  format(dateStr: string) {
-    return dayjs(dateStr, "YYYY-MM-DDTHH:mm:ssZ");
-  },
-  formatYMD(dateStr: string) {
-    const time = dateTool.parse(dateStr);
-    return dayjs(time).format("YYYY-MM-DD");
-  },
-  formatYMDHM(dateStr: string) {
-    const time = dateTool.parse(dateStr);
-    return dayjs(time).format("YYYY-MM-DD HH:mm");
-  },
-  formatYMDHM2(dateStr: string) {
-    const time = dateTool.parse(dateStr);
-    console.log(time.year(), time.month(), time.date(), time.second());
-    return dayjs(time).format("YYYY年MM月DD日 HH点mm分ss秒");
-  },
-  formatYMDHMS(dateStr: string) {
-    const time = dateTool.parse(dateStr);
-    return dayjs(time).format("YYYY-MM-DD HH:mm:ss");
-  },
+
+  zeroTime: "0001-01-01T08:00:00+08:00",
+  format: "YYYY-MM-DD HH:mm:ss",
+  formatYMD: "YYYY-MM-DD",
+  formatYMD2: "YYYY年MM月DD日",
+  formatYMDHM: "YYYY-MM-DD HH:mm",
+  formatYMDHM2: "YYYY年MM月DD日 HH点mm分ss秒",
+
   getReplyTime(date: string) {
-    const time = dateTool.parse(date).valueOf();
+    const time = this.parse(date).valueOf();
     const currentT = new Date().getTime();
     const diff = (currentT - time) / 1000;
     if (diff < 60) {
@@ -41,10 +29,10 @@ const dateTool = {
     } else if (diff < 7 * 24 * 60 * 60) {
       return `${Math.round(diff / 24 / 60 / 60)}天前`;
     } else {
-      return dayjs(time).format("YYYY-MM-DD");
+      return dayjs(time, this.formatYMD);
       // return `${parseInt(diff / 365 / 24 / 60 / 60)}年前`
     }
-  }
+  },
 };
 
 export default dateTool;

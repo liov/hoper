@@ -37,7 +37,7 @@ service ActionService {
   // 动作  Like Unlike
   rpc delLike (request.Object) returns (empty.Empty) {
     option (google.api.http) = {
-      delete: "/api/v1/action/like"
+      delete: "/api/v1/action/like/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -57,7 +57,7 @@ service ActionService {
   // 评论
   rpc delComment (request.Object) returns (empty.Empty) {
     option (google.api.http) = {
-      delete: "/api/v1/action/comment"
+      delete: "/api/v1/action/comment/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -77,7 +77,7 @@ service ActionService {
   // 收藏
   rpc delCollect (request.Object) returns (empty.Empty) {
     option (google.api.http) = {
-      delete: "/api/v1/action/collect"
+      delete: "/api/v1/action/collect/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]

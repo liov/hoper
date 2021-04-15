@@ -26,7 +26,7 @@ service ContentService {
   // 详情
   rpc TagInfo (request.Object) returns (Tag) {
     option (google.api.http) = {
-      get: "/api/v1/content/tag/id/{id}"
+      get: "/api/v1/content/tag/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -49,7 +49,7 @@ service ContentService {
   // 修改
   rpc EditTag (EditTagReq) returns (empty.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/content/tag"
+      put: "/api/v1/content/tag/{id}"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -84,7 +84,7 @@ service ContentService {
   // 详情
   rpc AttrInfo (request.Object) returns (Attributes) {
     option (google.api.http) = {
-      get: "/api/v1/content/attr/id/{id}"
+      get: "/api/v1/content/attr/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -107,7 +107,7 @@ service ContentService {
   // 修改
   rpc EditAttr (EditAttrReq) returns (empty.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/content/attr"
+      put: "/api/v1/content/attr/{id}"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -149,7 +149,7 @@ service ContentService {
   // 修改收藏夹
   rpc EditFav (AddFavReq) returns (empty.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/content/fav"
+      put: "/api/v1/content/fav/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -169,7 +169,7 @@ service ContentService {
   // 修改合集
   rpc EditDiaryContainer (AddContainerReq) returns (empty.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/content/container"
+      put: "/api/v1/content/container/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -179,7 +179,7 @@ service ContentService {
   // 用户内容数量
   rpc UserContentCount (request.Object) returns (user.UserContent) {
     option (google.api.http) = {
-      get: "/api/v1/content/count"
+      get: "/api/v1/content/count/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]

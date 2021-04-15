@@ -45,4 +45,6 @@ createApp(App)
   .use(Vant.ShareSheet)
   .use(Vant.Overlay)
   .use(Vant.Loading)
+  .use(Vant.Calendar)
+  .use(Vant.DatetimePicker)
   .mount("#app");

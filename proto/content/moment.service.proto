@@ -29,7 +29,7 @@ service MomentService {
   // 详情
   rpc Info (request.Object) returns (Moment) {
     option (google.api.http) = {
-      get: "/api/v1/moment/id/{id}"
+      get: "/api/v1/moment/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -52,7 +52,7 @@ service MomentService {
   // 修改
   rpc Edit (AddMomentReq) returns (empty.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/moment"
+      put: "/api/v1/moment/{id}"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -75,7 +75,7 @@ service MomentService {
   // 删除
   rpc Delete (request.Object) returns (empty.Empty) {
     option (google.api.http) = {
-      delete: "/api/v1/moment"
+      delete: "/api/v1/moment/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
