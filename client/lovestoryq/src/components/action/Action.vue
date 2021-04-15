@@ -13,7 +13,7 @@
       ><van-icon
         :name="content.likeId > 0 ? 'like' : 'like-o'"
         :color="content.likeId > 0 ? '#D91E46' : ''"
-        @click="like(index)"
+        @click="like"
     /></van-col>
   </van-row>
 </template>

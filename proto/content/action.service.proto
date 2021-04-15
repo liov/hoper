@@ -54,6 +54,16 @@ service ActionService {
     };
     option (gogo.graphql_operation) = Mutation;
   }
+  // 评论列表
+  rpc CommentList (CommentListReq) returns (CommentListRep) {
+    option (google.api.http) = {
+      get: "/api/v1/action/comment"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["v1.0.0"]
+    };
+    option (gogo.graphql_operation) = Mutation;
+  }
   // 评论
   rpc delComment (request.Object) returns (empty.Empty) {
     option (google.api.http) = {
@@ -124,6 +134,18 @@ message CommentReq{
     read_only: true}];
 }
 
+message CommentListReq{
+  ContentType type = 1 [(go.field) = {tags:'annotation:"内容类型"'}];
+  uint64 refId = 2 [(go.field) = {tags:'annotation:"相关id"'}];
+  uint64 rootId = 3 [(go.field) = {tags:'annotation:"评论根节点"'}];
+  uint32 pageNo = 4;
+  uint32 pageSize = 5;
+}
+
+message CommentListRep{
+ int64 total = 1;
+  repeated Comment list = 2;
+}
 
 message CollectReq{
   uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
