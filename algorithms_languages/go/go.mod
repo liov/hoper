@@ -13,7 +13,7 @@ require (
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gogo/protobuf v1.3.2
-	github.com/google/flatbuffers v1.12.0
+	github.com/google/flatbuffers v1.12.1-0.20210406112345-261cf3b20473
 	github.com/jinzhu/configor v1.1.1
 	github.com/jinzhu/gorm v1.9.11
 	github.com/liov/hoper/go/v2 v2.0.0

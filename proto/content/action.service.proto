@@ -13,11 +13,10 @@ import "utils/request/param.proto";
 import "utils/response/response.proto";
 import "utils/proto/gogo/graphql.proto";
 import "utils/oauth/oauth.proto";
-import "utils/proto/go/go.proto";
+import "patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
 option go_package = "github.com/liov/hoper/go/v2/protobuf/content";
-option (go.file) = {non_omitempty:true};
 
 service ActionService {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {

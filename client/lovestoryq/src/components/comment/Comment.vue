@@ -43,6 +43,7 @@ import { Options, Vue, prop } from "vue-class-component";
 import { ImagePreview } from "vant";
 import Action from "@/components/action/Action.vue";
 import axios from "axios";
+import emitter from "@/plugin/emitter";
 class Props {
   comment = prop<any>({ default: {} });
   user = prop<any>({});
@@ -52,6 +53,14 @@ export default class Comment extends Vue.with(Props) {
   images = [];
   created() {
     this.images = this.comment.images?.split(",");
+    emitter.on("comment-show", (param) => {
+      this.type = param.type;
+      this.refId = param.refId;
+      this.show.favShow = !this.show.favShow;
+    });
+  }
+  unmounted() {
+    emitter.all.delete("comment-show");
   }
   preview(idx: number) {
     ImagePreview({

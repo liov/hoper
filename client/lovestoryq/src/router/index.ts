@@ -47,17 +47,17 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/user/login",
     name: "Login",
-    component: () => import("../views/user/login.vue"),
+    component: () => import("../views/user/Login.vue"),
   },
   {
     path: "/user/active/:id/:secret",
     name: "Active",
-    component: () => import("../views/user/active.vue"),
+    component: () => import("../views/user/Active.vue"),
   },
   {
     path: "/moment/add",
     //beforeEnter: authenticated,
-    component: () => import("../views/moment/add.vue"),
+    component: () => import("../views/moment/Add.vue"),
   },
 ];
 

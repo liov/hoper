@@ -8,7 +8,9 @@
         :name="content.collect ? 'star' : 'star-o'"
         :color="content.collect ? '#F6DF02' : ''"
     /></van-col>
-    <van-col span="6" class="action"><van-icon name="comment-o" /></van-col>
+    <van-col span="6" class="action"
+      ><van-icon name="comment-o" @click="commentShow"
+    /></van-col>
     <van-col span="6" class="action"
       ><van-icon
         :name="content.likeId > 0 ? 'like' : 'like-o'"
@@ -33,6 +35,15 @@ export default class Action extends Vue.with(Props) {
   }
   favShow() {
     emitter.emit("fav-show", { type: this.type, refId: this.content.id });
+  }
+  commentShow() {
+    emitter.emit("comment-show", {
+      type: this.type,
+      refId: this.type == 7 ? this.content.refId : this.content.id,
+      replyId: this.type == 7 ? this.content.id : 0,
+      rootId: this.type == 7 ? this.content.rootId : 0,
+      recvId: this.content.userId,
+    });
   }
   async like() {
     const api = `/api/v1/action/like`;

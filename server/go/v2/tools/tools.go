@@ -27,4 +27,4 @@ import (
 //go:generate go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
 //go:generate go get -u github.com/mwitkow/go-proto-validators
 //go:generate go install github.com/mwitkow/go-proto-validators/protoc-gen-govalidators
-//go:generate go install ./protoc-gen-go-patch
+//go:generate go install ./protoc-gen-enum-patch
