@@ -10,7 +10,7 @@ import "utils/response/response.proto";
 import "utils/request/param.proto";
 import "utils/proto/gogo/graphql.proto";
 import "utils/oauth/oauth.proto";
-import "utils/proto/go/go.proto";
+import "patch/go.proto";
 import "google/protobuf/wrappers.proto";
 
 option java_package = "xyz.hoper.protobuf.user";

@@ -1,7 +1,7 @@
 syntax = "proto3";
 package user;
 import "utils/proto/gogo/enum.proto";
-import "utils/proto/go/go.proto";
+import "utils/proto/go/patch/go.proto";
 
 option (gogo.enum_gqlgen_all) = true;
 // 写在这里必然要暴露出去
@@ -9,11 +9,11 @@ option java_package = "xyz.hoper.protobuf.user";
 option go_package = "github.com/liov/hoper/go/v2/protobuf/user";
 
 option (gogo.enum_prefix_all) = false;
-option (go.file) = {no_enum_prefix:true};
+option (patch.file) = {no_enum_prefix:true};
 
 // 用户操作
 enum Action {
-    option (go.enum) = {stringer_name: 'OrigString'};
+    option (patch.enum) = {stringer_name: 'OrigString'};
     ActionPlaceholder = 0 [(gogo.enumvalue_cn)= "占位"];
     ActionSignup = 1 [(gogo.enumvalue_cn)= "注册"];
     ActionActive = 2 [(gogo.enumvalue_cn)= "激活"];
@@ -25,7 +25,7 @@ enum Action {
 }
 // 用户角色
 enum Role {
-    option (go.enum) = {stringer_name: 'OrigString'};
+    option (patch.enum) = {stringer_name: 'OrigString'};
     PlaceholderRole = 0 [(gogo.enumvalue_cn)= "占位"];
     RoleNormal = 1 [(gogo.enumvalue_cn)= "普通用户"];
     RoleAdmin = 2 [(gogo.enumvalue_cn)= "管理员"];
@@ -34,7 +34,7 @@ enum Role {
 
 // 用户性别
 enum Gender{
-    option (go.enum) = {stringer_name: 'OrigString'};
+    option (patch.enum) = {stringer_name: 'OrigString'};
     GenderPlaceholder = 0 [(gogo.enumvalue_cn)= "占位"];
     GenderUnfilled = 1 [(gogo.enumvalue_cn)= "未填"];
     GenderMale = 2 [(gogo.enumvalue_cn)= "男"];
@@ -43,7 +43,7 @@ enum Gender{
 
 // 用户角色
 enum UserStatus {
-    option (go.enum) = {stringer_name: 'OrigString'};
+    option (patch.enum) = {stringer_name: 'OrigString'};
     option (gogo.enum_jsonmarshal) = false;
     UserStatusPlaceholder = 0 [(gogo.enumvalue_cn)= "占位"];
     UserStatusInActive = 1 [(gogo.enumvalue_cn)= "未激活"];
@@ -54,7 +54,7 @@ enum UserStatus {
 
 // 封禁类型
 enum BannedType{
-    option (go.enum) = {stringer_name: 'OrigString'};
+    option (patch.enum) = {stringer_name: 'OrigString'};
     option (gogo.enum_jsonmarshal) = false;
     BannedTypePlaceholder = 0 [(gogo.enumvalue_cn)= "占位"];
     BannedTypePost = 1 [(gogo.enumvalue_cn)= "禁言"];
@@ -62,7 +62,7 @@ enum BannedType{
 }
 
 enum UserErr {
-    option (go.enum) = {stringer_name: 'OrigString'};
+    option (patch.enum) = {stringer_name: 'OrigString'};
     option (gogo.enum_errorcode) = true;
     option (gogo.enum_jsonmarshal) = false;
     UserErrPlaceholder = 0 [(gogo.enumvalue_cn)= "占位"];

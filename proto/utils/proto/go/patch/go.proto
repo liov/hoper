@@ -1,10 +1,10 @@
 syntax = "proto2";
 
-package go;
+package patch;
 
 import "google/protobuf/descriptor.proto";
 
-option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/proto/go";
+option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/proto/go/patch";
 
 // Options represent Go-specific options for Protobuf messages, fields, oneofs, enums, or enum values.
 message Options {

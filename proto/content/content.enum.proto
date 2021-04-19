@@ -1,17 +1,17 @@
 syntax = "proto3";
 package content;
 import "utils/proto/gogo/enum.proto";
-import "utils/proto/go/go.proto";
+import "utils/proto/go/patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
 option go_package = "github.com/liov/hoper/go/v2/protobuf/content";
 
 option (gogo.enum_gqlgen_all) = true;
 option (gogo.enum_prefix_all) = false;
-option (go.file) = {no_enum_prefix:true};
+option (patch.file) = {no_enum_prefix:true};
 
 enum ContentType{
-  option (go.enum) = {stringer_name: 'OrigString'};
+  option (patch.enum) = {stringer_name: 'OrigString'};
   ContentPlaceholder = 0 [(gogo.enumvalue_cn) = "占位"];
   ContentMoment = 1 [(gogo.enumvalue_cn) = "瞬间"];
   ContentNote = 2 [(gogo.enumvalue_cn) = "笔记"];
@@ -23,7 +23,7 @@ enum ContentType{
 }
 
 enum AttrType{
-  option (go.enum) = {stringer_name: 'OrigString'};
+  option (patch.enum) = {stringer_name: 'OrigString'};
   AttrPlaceholder = 0 [(gogo.enumvalue_cn) = "占位"];
   AttrImage = 1 [(gogo.enumvalue_cn) = "图片"];
   AttrVideo = 2 [(gogo.enumvalue_cn) = "视频"];
@@ -38,7 +38,7 @@ enum AttrType{
 }
 
 enum TagType{
-  option (go.enum) = {stringer_name: 'OrigString'};
+  option (patch.enum) = {stringer_name: 'OrigString'};
   TagPlaceholder = 0 [(gogo.enumvalue_cn) = "占位"];
   TagContent = 1[(gogo.enumvalue_cn) = "内容"];
   TagMood = 2 [(gogo.enumvalue_cn) = "心情"];
@@ -50,7 +50,7 @@ enum TagType{
 
 // 可见范围
 enum ViewPermission{
-  option (go.enum) = {stringer_name: 'OrigString'};
+  option (patch.enum) = {stringer_name: 'OrigString'};
   ViewPermissionPlaceholder = 0 [(gogo.enumvalue_cn) = "占位"];
   ViewPermissionAll = 1 [(gogo.enumvalue_cn) = "无限制"];
   ViewPermissionSelf = 2 [(gogo.enumvalue_cn) = "仅自己"];
@@ -62,7 +62,7 @@ enum ViewPermission{
 
 // 可见范围
 enum MomentType{
-  option (go.enum) = {stringer_name: 'OrigString'};
+  option (patch.enum) = {stringer_name: 'OrigString'};
   MomentTypePlaceholder = 0 [(gogo.enumvalue_cn) = "占位"];
   MomentTypeImage = 1 [(gogo.enumvalue_cn) = "图片"];
   MomentTypeVideo = 2 [(gogo.enumvalue_cn) = "视频"];
@@ -70,7 +70,7 @@ enum MomentType{
 }
 
 enum ContainerType{
-  option (go.enum) = {stringer_name: 'OrigString'};
+  option (patch.enum) = {stringer_name: 'OrigString'};
   ContainerTypePlaceholder = 0 [(gogo.enumvalue_cn) = "占位"];
   ContainerTypeFavorites = 1[(gogo.enumvalue_cn) = "收藏夹"];
   ContainerTypeDiaryBook = 2[(gogo.enumvalue_cn) = "日记本"];

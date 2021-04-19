@@ -29,6 +29,7 @@ func main() {
 const goOut = "go-patch_out=plugin=go,paths=source_relative"
 const grpcOut = "go-patch_out=plugin=go-grpc,paths=source_relative"
 const enumOut = "enum_out=plugins=grpc,paths=source_relative"
+const enumPatchOut = "enum-patch_out=plugin=go,paths=source_relative"
 const gatewayOut = "grpc-gin_out=logtostderr=true,paths=source_relative"
 const openapiv2Out = "openapiv2_out=logtostderr=true"
 const govalidatorsOut = "govalidators_out=gogoimport=true,paths=source_relative"
@@ -43,7 +44,7 @@ var service = []string{goOut, grpcOut,
 }
 
 var model = []string{goOut, grpcOut}
-var enum = []string{enumOut, goOut, grpcOut}
+var enum = []string{enumOut, enumPatchOut}
 
 var gqlgen []string
 var files = map[string][]string{
@@ -129,6 +130,7 @@ func genutils(dir string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	var enums []string
 	for i := range fileInfos {
 		if fileInfos[i].IsDir() {
 			genutils(dir + "/" + fileInfos[i].Name())
@@ -141,13 +143,19 @@ func genutils(dir string) {
 			continue
 		}
 		if strings.HasSuffix(fileInfos[i].Name(), "enum.proto") {
-			arg := "protoc " + include + " " + dir + "/" + fileInfos[i].Name() + " --" + enumOut + ":" + pwd + "/protobuf"
-			execi.Run(arg)
+			enums = append(enums, dir+"/"+fileInfos[i].Name())
 		}
 		for _, plugin := range model {
 			arg := "protoc " + include + " " + dir + "/*.proto" + " --" + plugin + ":" + pwd + "/protobuf"
 			execi.Run(arg)
 		}
+	}
+	// 最后执行
+	for _, enum := range enums {
+		arg := "protoc " + include + " " + enum + " --" + enumOut + ":" + pwd + "/protobuf"
+		execi.Run(arg)
+		arg = "protoc " + include + " " + enum + " --" + enumPatchOut + ":" + pwd + "/protobuf"
+		execi.Run(arg)
 	}
 }
 

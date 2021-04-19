@@ -2,10 +2,10 @@ syntax = "proto3";
 package errorcode;
 
 import "utils/errorcode/enum.proto";
-import "utils/proto/go/go.proto";
+import "patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.errorcode";
-option go_package = "github.com/liov/hoper/go/v2/utils/errorcode";
+option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/errorcode";
 
 
 

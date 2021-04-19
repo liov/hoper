@@ -49,6 +49,7 @@
     :options="share.options"
     teleport="#app"
   />
+  <CommentAdd ref="commentAdd"></CommentAdd>
 </template>
 
 <script lang="ts">
@@ -56,14 +57,15 @@ import { Options, Vue } from "vue-class-component";
 import axios from "axios";
 import { reactive } from "vue";
 import emitter from "@/plugin/emitter";
-
-@Options({})
+import CommentAdd from "@/components/comment/Add.vue";
+@Options({ components: { CommentAdd } })
 export default class ActionMore extends Vue {
   type = 0;
   refId = 0;
   show = reactive({
     moreShow: false,
     favShow: false,
+    commentShow: false,
   });
 
   actions = [
@@ -102,6 +104,10 @@ export default class ActionMore extends Vue {
       ],
     ],
   });
+  comment = reactive({
+    show: false,
+    replyId: 0,
+  });
   created() {
     emitter.on("more-show", (param) => {
       this.type = param.type;
@@ -113,10 +119,15 @@ export default class ActionMore extends Vue {
       this.refId = param.refId;
       this.show.favShow = !this.show.favShow;
     });
+    emitter.on("comment-show", (param) => {
+      this.$refs.commentAdd.setComment(param);
+      this.$refs.commentAdd.show = true;
+    });
   }
   unmounted() {
     emitter.all.delete("more-show");
     emitter.all.delete("fav-show");
+    emitter.all.delete("comment-show");
   }
   remark(name: string) {
     if (name === "255") this.report.field = true;

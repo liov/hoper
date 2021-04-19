@@ -17,6 +17,7 @@ require (
 	github.com/dgraph-io/badger/v3 v3.0.0-20210309075542-2245c18dfd1f // indirect
 	github.com/dgraph-io/ristretto v0.0.4-0.20210311064603-e4f298c8aa88
 	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
+	github.com/envoyproxy/protoc-gen-validate v0.5.1 // indirect
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gin-gonic/gin v1.7.1
 	github.com/go-oauth2/oauth2/v4 v4.2.0
@@ -77,7 +78,7 @@ require (
 	gorm.io/driver/mysql v1.0.3
 	gorm.io/driver/postgres v1.0.0
 	gorm.io/driver/sqlite v1.1.3
-	gorm.io/gorm v1.21.3
+	gorm.io/gorm v1.21.8
 	gorm.io/plugin/prometheus v0.0.0-20210112035011-ae3013937adc
 )
 
