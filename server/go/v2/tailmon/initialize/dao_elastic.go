@@ -2,7 +2,6 @@ package initialize
 
 import (
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/reflect"
 	"github.com/olivere/elastic"
 )
 
@@ -11,7 +10,7 @@ type ElasticConfig struct {
 	Port int32
 }
 
-func (conf *ElasticConfig) Generate() *elastic.Client {
+func (conf *ElasticConfig) generate() *elastic.Client {
 	client, err := elastic.NewClient()
 	if err != nil {
 		log.Error(err)
@@ -20,10 +19,6 @@ func (conf *ElasticConfig) Generate() *elastic.Client {
 	return client
 }
 
-func (init *Init) P2Elastic() *elastic.Client {
-	conf := &ElasticConfig{}
-	if exist := reflecti.GetFieldValue(init.conf, conf); !exist {
-		return nil
-	}
-	return conf.Generate()
+func (conf *ElasticConfig) Generate() interface{} {
+	return conf.generate()
 }

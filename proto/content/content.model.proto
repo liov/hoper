@@ -163,7 +163,7 @@ message Moment {
   ContentExt ext = 30[(go.field) = {tags:'gorm:"-" annotation:"统计数据"'}];
   uint64 likeId = 27 [(go.field) = {tags:'gorm:"-" annotation:"喜欢id,为0代表用户没有点喜欢"'}];
   uint64 unlikeId = 29 [(go.field) = {tags:'gorm:"-" annotation:"不喜欢id,为0代表用户没有点喜欢"'}];
-  bool collect = 28 [(go.field) = {tags:'gorm:"-" annotation:"是否收藏"'}];
+  repeated uint64 collects = 28 [(go.field) = {tags:'gorm:"-" annotation:"是否收藏"'}];
   uint32 sequence = 19 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"同级别的分类可根据sequence的值来排序，置顶"'}];
   uint32 anonymous = 20 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"是否匿名,0-是,1否"'}];
   ViewPermission permission = 21 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"查看权限"'}];

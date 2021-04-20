@@ -1,10 +1,10 @@
 <template>
   <van-action-sheet
-    :show="show.moreShow"
+    :show="show"
     :actions="actions"
     cancel-text="取消"
     close-on-click-action
-    @click="show.moreShow = !show.moreShow"
+    @click="show = !show"
     teleport="#app"
   >
   </van-action-sheet>
@@ -49,7 +49,8 @@
     :options="share.options"
     teleport="#app"
   />
-  <CommentAdd ref="commentAdd"></CommentAdd>
+  <AddComment ref="addComment"></AddComment>
+  <AddCollect ref="addCollect"></AddCollect>
 </template>
 
 <script lang="ts">
@@ -57,16 +58,13 @@ import { Options, Vue } from "vue-class-component";
 import axios from "axios";
 import { reactive } from "vue";
 import emitter from "@/plugin/emitter";
-import CommentAdd from "@/components/comment/Add.vue";
-@Options({ components: { CommentAdd } })
+import AddComment from "@/components/comment/Add.vue";
+import AddCollect from "@/components/action/Collect.vue";
+@Options({ components: { AddComment, AddCollect } })
 export default class ActionMore extends Vue {
   type = 0;
   refId = 0;
-  show = reactive({
-    moreShow: false,
-    favShow: false,
-    commentShow: false,
-  });
+  show = false;
 
   actions = [
     { name: "分享", callback: () => (this.share.show = !this.share.show) },
@@ -112,16 +110,16 @@ export default class ActionMore extends Vue {
     emitter.on("more-show", (param) => {
       this.type = param.type;
       this.refId = param.refId;
-      this.show.moreShow = !this.show.moreShow; //箭头函数内部不会产生新的this，这边如果不用=>,this指代Event
+      this.show = !this.show; //箭头函数内部不会产生新的this，这边如果不用=>,this指代Event
     });
     emitter.on("fav-show", (param) => {
-      this.type = param.type;
-      this.refId = param.refId;
-      this.show.favShow = !this.show.favShow;
+      this.$refs.addCollect.setCollect(param);
+      this.$refs.addCollect.show = true;
     });
     emitter.on("comment-show", (param) => {
-      this.$refs.commentAdd.setComment(param);
-      this.$refs.commentAdd.show = true;
+      console.log(this.$refs.addComment);
+      this.$refs.addComment.setComment(param);
+      this.$refs.addComment.show = true;
     });
   }
   unmounted() {

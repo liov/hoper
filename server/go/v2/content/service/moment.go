@@ -32,7 +32,7 @@ func (*MomentService) Service() (describe, prefix string, middleware []http.Hand
 func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.Moment, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	_, err := auth(ctxi,true)
+	_, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -105,8 +105,9 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 	maskField(&moment)
 	return &moment, nil
 }
+
 // 屏蔽字段
-func maskField(moment *content.Moment){
+func maskField(moment *content.Moment) {
 	moment.AreaVisibility = 0
 	moment.DeletedAt = ""
 	moment.CreatedAt = moment.CreatedAt[:19]
@@ -121,7 +122,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := auth(ctxi,true)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -209,7 +210,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		}
 		return nil, errorcode.DBError
 	}
-	return &request.Object{Id:req.Id}, nil
+	return &request.Object{Id: req.Id}, nil
 }
 func (*MomentService) Edit(context.Context, *content.AddMomentReq) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Edit not implemented")
@@ -218,7 +219,7 @@ func (*MomentService) Edit(context.Context, *content.AddMomentReq) (*empty.Empty
 func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*content.MomentListRep, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := auth(ctxi,true)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -281,13 +282,13 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 				}
 			}
 		}
-		collects, err := contentDao.GetCollectDB(db, content.ContentMoment, ids, auth.Id)
+		collects, err := contentDao.GetCollectsDB(db, content.ContentMoment, ids, auth.Id)
 		if err != nil {
 			return nil, err
 		}
 		for i := range collects {
 			if moment, ok := m[collects[i].RefId]; ok {
-				moment.Collect = true
+				moment.Collects = append(moment.Collects, collects[i].FavId)
 			}
 		}
 	}
@@ -309,7 +310,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 func (*MomentService) Delete(ctx context.Context, req *request.Object) (*empty.Empty, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := auth(ctxi,true)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}

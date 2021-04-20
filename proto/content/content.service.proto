@@ -128,7 +128,17 @@ service ContentService {
   //收藏夹列表
   rpc FavList (FavListReq) returns (FavListRep) {
     option (google.api.http) = {
-      get: "/api/v1/content/fav"
+      get: "/api/v1/content/fav/{userId}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["v1.0.0"]
+    };
+    option (gogo.graphql_operation) = Query;
+  }
+  //收藏夹列表
+  rpc TinyFavList (FavListReq) returns (TinyFavListRep) {
+    option (google.api.http) = {
+      get: "/api/v1/content/tinyFav/{userId}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -276,9 +286,20 @@ message AddContainerReq{
 }
 
 message FavListReq{
+  uint32 userId  = 1 [(go.field) = {tags:'annotation:"权限,0-自己可写的，1-可读写"'}];
 }
 
 message FavListRep{
   int64 total = 1;
   repeated Favorites list = 2;
+}
+
+message TinyFavListRep{
+  int64 total = 1;
+  repeated TinyFavorites list = 2;
+}
+
+message TinyFavorites{
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
+  string title = 3 [(go.field) = {tags:'gorm:"size:10;not null" annotation:"标题"'}];
 }

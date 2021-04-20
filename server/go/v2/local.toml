@@ -45,7 +45,7 @@ SecondLimitCount = 1
 MinuteLimitCount = 20
 DayLimitCount = 10000
 
-[database]
+[GORMDB]
 Type = "postgres"
 User = "postgres"
 Password = "123456"
@@ -56,12 +56,12 @@ Database = "hoper"
 MaxIdleConns = 5
 MaxOpenConns = 10
 
-[database.gorm.config]
+[GORMDB.gorm.config]
 SkipDefaultTransaction = true
 PrepareStmt = true
 DisableForeignKeyConstraintWhenMigrating = true
 
-[database.gorm.logger]
+[GORMDB.gorm.logger]
 SlowThreshold = 200
 Colorful = true
 LogLevel = 4
@@ -72,6 +72,12 @@ Password ="123456"
 MaxIdle = 30
 MaxActive = 30
 IdleTimeout = 200
+
+[cache]
+NumCounters = 100
+MaxCost = 10
+Metrics = true
+IgnoreInternalCost = true
 
 #日志
 [log]

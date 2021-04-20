@@ -31,7 +31,7 @@ func (*ContentService) AddTag(ctx context.Context, req *content.AddTagReq) (*emp
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("Edit")
 	defer span.End()
 	ctx = ctxi.Context
-	user, err := auth(ctxi,false)
+	user, err := auth(ctxi, false)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (*ContentService) AddTag(ctx context.Context, req *content.AddTagReq) (*emp
 func (*ContentService) EditTag(ctx context.Context, req *content.EditTagReq) (*empty.Empty, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := auth(ctxi,true)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (*ContentService) TagList(ctx context.Context, req *content.TagListReq) (*c
 	ctxi := contexti.CtxFromContext(ctx)
 	var tags []*content.Tag
 
-	user, err := auth(ctxi,true)
+	user, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func (*ContentService) TagList(ctx context.Context, req *content.TagListReq) (*c
 func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*empty.Empty, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := auth(ctxi,true)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +108,7 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*emp
 func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*empty.Empty, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := auth(ctxi,true)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -126,11 +126,35 @@ func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*em
 	return nil, nil
 }
 
-// 创建合集
-func (*ContentService) AddContainer(ctx context.Context,req *content.AddContainerReq) (*empty.Empty, error) {
+//收藏夹列表
+func (*ContentService) FavList(ctx context.Context, req *content.FavListReq) (*content.FavListRep, error) {
+	return nil, nil
+}
+
+//收藏夹列表
+func (*ContentService) TinyFavList(ctx context.Context, req *content.FavListReq) (*content.TinyFavListRep, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := auth(ctxi,true)
+	auth, err := auth(ctxi, true)
+	if err != nil {
+		return nil, err
+	}
+	db := dao.Dao.GetDB(ctxi.Logger)
+	var favs []*content.TinyFavorites
+	if req.UserId == 0 {
+		err = db.Table(model.FavoritesTableName).Select("id,title").Where(`user_id = ?`, auth.Id).Find(&favs).Error
+	}
+	if err != nil {
+		return nil, ctxi.ErrorLog(errorcode.DBError, err, "CreateFav")
+	}
+	return &content.TinyFavListRep{List: favs}, nil
+}
+
+// 创建合集
+func (*ContentService) AddContainer(ctx context.Context, req *content.AddContainerReq) (*empty.Empty, error) {
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
+	defer span.End()
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -145,14 +169,14 @@ func (*ContentService) AddContainer(ctx context.Context,req *content.AddContaine
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "CreateFav")
 	}
-	return nil,nil
+	return nil, nil
 }
 
 // 修改日记本
-func (*ContentService) EditDiaryContainer(ctx context.Context,req *content.AddContainerReq) (*empty.Empty, error) {
+func (*ContentService) EditDiaryContainer(ctx context.Context, req *content.AddContainerReq) (*empty.Empty, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := auth(ctxi,true)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -167,5 +191,5 @@ func (*ContentService) EditDiaryContainer(ctx context.Context,req *content.AddCo
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "CreateFav")
 	}
-	return nil,nil
+	return nil, nil
 }

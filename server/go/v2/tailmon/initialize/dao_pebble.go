@@ -5,10 +5,18 @@ import (
 	"github.com/liov/hoper/go/v2/utils/log"
 )
 
-func P3Pebble() *pebble.DB{
-	db,err:=pebble.Open("./pebble",nil)
+type PebbleDBConfig struct {
+	DirName string
+}
+
+func (conf *PebbleDBConfig) generate() *pebble.DB {
+	db, err := pebble.Open(conf.DirName, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 	return db
+}
+
+func (conf *PebbleDBConfig) Generate() interface{} {
+	return conf.generate()
 }

@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/liov/hoper/go/v2/utils/reflect"
 )
 
 type RedisConfig struct {
@@ -16,7 +15,7 @@ type RedisConfig struct {
 	Index       int
 }
 
-func (conf *RedisConfig) Generate() *redis.Client {
+func (conf *RedisConfig) generate() *redis.Client {
 	conf.IdleTimeout = conf.IdleTimeout * time.Second
 	client := redis.NewClient(&redis.Options{
 		Addr:         conf.Addr,
@@ -29,11 +28,6 @@ func (conf *RedisConfig) Generate() *redis.Client {
 	return client
 }
 
-func (init *Init) P2Redis() *redis.Client {
-	conf := &RedisConfig{}
-	if exist := reflecti.GetFieldValue(init.conf, conf); !exist {
-		return nil
-	}
-
-	return conf.Generate()
+func (conf *RedisConfig) Generate() interface{} {
+	return conf.generate()
 }

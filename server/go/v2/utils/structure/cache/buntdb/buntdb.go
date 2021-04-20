@@ -17,9 +17,9 @@ import (
 
 	"github.com/liov/hoper/go/v2/utils/encoding/json/gjson"
 	match "github.com/liov/hoper/go/v2/utils/strings"
+	grect "github.com/liov/hoper/go/v2/utils/structure/rect"
 	"github.com/liov/hoper/go/v2/utils/structure/tree/btree"
 	"github.com/liov/hoper/go/v2/utils/structure/tree/rtree"
-	grect "github.com/liov/hoper/go/v2/utils/structure/rect"
 )
 
 var (
@@ -196,7 +196,7 @@ func (db *DB) Close() error {
 
 // Save writes a snapshot of the database to a writer. This operation blocks all
 // writes, but not reads. This can be used for snapshots and backups for pure
-// in-memory databases using the ":memory:". Database that persist to disk
+// in-memory databases using the ":memory:". GORMDB that persist to disk
 // can be snapshotted by simply copying the database file.
 func (db *DB) Save(wr io.Writer) error {
 	var err error
