@@ -15,18 +15,12 @@ import (
 	"github.com/liov/hoper/go/v2/utils/configor"
 	"github.com/liov/hoper/go/v2/utils/configor/nacos"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/reflect"
-	"github.com/liov/hoper/go/v2/utils/slices"
 	"github.com/pelletier/go-toml"
 )
 
 //约定大于配置
 var (
 	InitConfig = &Init{}
-	alreadyRun struct {
-		WatchConfig bool
-		InitFunc    bool
-	}
 )
 
 const (
@@ -167,68 +161,74 @@ type Dao interface {
 	NeedInit
 }
 
-
+type Generate interface {
+	Generate() interface{}
+}
 
 // Custom
-func (init *Init) setConfig() {
-	setConfig(reflect.ValueOf(init.conf).Elem())
+func (init *Init) inject() {
+	var fieldNameDaoMap = make(map[string]interface{})
+	setConfig(reflect.ValueOf(init.conf).Elem(), fieldNameDaoMap)
 	init.conf.Custom()
-}
-
-func setConfig(v reflect.Value) {
-	if !v.IsValid() {
-		return
-	}
-	for i := 0; i < v.NumField(); i++ {
-		if v.Field(i).Addr().CanInterface() {
-			if conf, ok := v.Field(i).Addr().Interface().(NeedInit); ok {
-				conf.Custom()
-			}
-		}
-		switch v.Field(i).Kind() {
-		case reflect.Ptr:
-			setConfig(v.Field(i).Elem())
-		case reflect.Struct:
-			setConfig(v.Field(i))
-		}
-	}
-}
-
-//反射方法命名规范,P+优先级+方法名+(执行一次+Once)
-func (init *Init) setDao() {
 	if init.dao == nil {
 		return
 	}
-	value := reflect.ValueOf(init)
-	typeOf := value.Type()
-	for i := 0; i < value.NumMethod(); i++ {
-		methodName := typeOf.Method(i).Name
-		if strings.Contains(methodName, "Once") {
-			if alreadyRun.InitFunc || slices.StringContains(init.NoInit, methodName[2:len(methodName)-4]) {
-				continue
-			}
-		}
-		if !strings.HasPrefix(methodName, "P") || slices.StringContains(init.NoInit, methodName[2:]) {
-			continue
-		}
-
-		if res := value.Method(i).Call(nil); len(res) > 0 {
-			daoValue := reflect.ValueOf(init.dao).Elem()
-			for j := range res {
-				if res[j].IsValid() {
-					reflecti.SetFieldValue(daoValue, res[j])
-				}
-			}
-		}
-	}
-	alreadyRun.InitFunc = true
+	setDao(reflect.ValueOf(init.dao).Elem(), fieldNameDaoMap)
 	init.dao.Custom()
 }
 
+func setConfig(v reflect.Value, fieldNameDaoMap map[string]interface{}) {
+
+	if !v.IsValid() {
+		return
+	}
+	typ := v.Type()
+	for i := 0; i < v.NumField(); i++ {
+		switch v.Field(i).Kind() {
+		case reflect.Ptr:
+			setConfig(v.Field(i).Elem(), fieldNameDaoMap)
+		case reflect.Struct:
+			setConfig(v.Field(i), fieldNameDaoMap)
+		}
+		if v.Field(i).Addr().CanInterface() {
+			inter := v.Field(i).Addr().Interface()
+			if conf, ok := inter.(NeedInit); ok {
+				conf.Custom()
+			}
+			if conf, ok := inter.(Generate); ok {
+				ret := conf.Generate()
+				fieldNameDaoMap[typ.Field(i).Name] = ret
+			}
+		}
+	}
+}
+
+func setDao(v reflect.Value, fieldNameDaoMap map[string]interface{}) {
+
+	if !v.IsValid() {
+		return
+	}
+	typ := v.Type()
+	for i := 0; i < v.NumField(); i++ {
+		log.Debug(typ.Field(i).Name)
+		if dao, ok := fieldNameDaoMap[typ.Field(i).Name]; ok {
+			daoValue := reflect.ValueOf(dao)
+			if daoValue.Type() == v.Field(i).Type() {
+				v.Field(i).Set(daoValue)
+			}
+			continue
+		}
+		switch v.Field(i).Kind() {
+		case reflect.Ptr:
+			setDao(v.Field(i).Elem(), fieldNameDaoMap)
+		case reflect.Struct:
+			setDao(v.Field(i), fieldNameDaoMap)
+		}
+	}
+}
 func (init *Init) refresh() {
 	InitConfig.CloseDao()
-	InitConfig.setConfig()
-	InitConfig.setDao()
+	InitConfig.inject()
 }
 
 func (init *Init) Unmarshal(bytes []byte) {

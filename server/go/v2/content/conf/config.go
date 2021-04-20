@@ -19,8 +19,9 @@ type config struct {
 	Customize serverConfig
 	Server    initialize.ServerConfig
 	Mail      initialize.MailConfig
-	Database  initialize.DatabaseConfig
+	GORMDB    initialize.DatabaseConfig
 	Redis     initialize.RedisConfig
+	Cache     initialize.CacheConfig
 	Log       initialize.LogConfig
 	Viper     *viper.Viper
 }
@@ -28,10 +29,10 @@ type config struct {
 var Conf = &config{
 	Customize: serverConfig{
 		Moment: Moment{
-			Limit:Limit{
-				SecondLimit:      model.MomentSecondLimitKey,
-				MinuteLimit:      model.MomentMinuteLimitKey,
-				DayLimit:         model.MomentDayLimitKey,
+			Limit: Limit{
+				SecondLimit: model.MomentSecondLimitKey,
+				MinuteLimit: model.MomentMinuteLimitKey,
+				DayLimit:    model.MomentDayLimitKey,
 			},
 		},
 	},

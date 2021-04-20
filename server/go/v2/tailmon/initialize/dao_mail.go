@@ -2,8 +2,6 @@ package initialize
 
 import (
 	"net/smtp"
-
-	"github.com/liov/hoper/go/v2/utils/reflect"
 )
 
 type MailConfig struct {
@@ -13,14 +11,10 @@ type MailConfig struct {
 	Password string
 }
 
-func (conf *MailConfig) Generate() smtp.Auth {
+func (conf *MailConfig) generate() smtp.Auth {
 	return smtp.PlainAuth("", conf.From, conf.Password, conf.Host)
 }
 
-func (init *Init) P3Mail() smtp.Auth {
-	conf := &MailConfig{}
-	if exist := reflecti.GetFieldValue(init.conf, conf); !exist {
-		return nil
-	}
-	return conf.Generate()
+func (conf *MailConfig) Generate() interface{} {
+	return conf.generate()
 }

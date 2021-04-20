@@ -19,7 +19,7 @@ type uploadDao struct {
 }
 
 func GetDao(ctx *contexti.Ctx) *uploadDao {
-	if ctx == nil{
+	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}
 	return &uploadDao{ctx}
@@ -31,9 +31,8 @@ type dao struct {
 	GORMDB   *gorm.DB
 	PebbleDB *pebble.DB
 	// RedisPool Redis连接池
-	Redis       *redis.Client
-	Cache       *ristretto.Cache
-
+	Redis *redis.Client
+	Cache *ristretto.Cache
 }
 
 // CloseDao close the resource.
@@ -57,16 +56,14 @@ func (d *dao) Custom() {
 	db.Callback().Update().Remove("gorm:save_before_associations")
 	db.Callback().Update().Remove("gorm:save_after_associations")
 
-
 }
 
 func (d *dao) GetDB(log *log.Logger) *gorm.DB {
-	if initialize.InitConfig.Env == initialize.DEVELOPMENT{
+	if initialize.InitConfig.Env == initialize.DEVELOPMENT {
 		return d.GORMDB
 	}
 	return d.GORMDB.Session(&gorm.Session{
 		Logger: &gormi.SQLLogger{Logger: log.Logger,
-			Config: &conf.Conf.Database.Gorm.Logger,
+			Config: &conf.Conf.GORMDB.Gorm.Logger,
 		}})
 }
-

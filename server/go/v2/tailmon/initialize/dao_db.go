@@ -2,13 +2,8 @@ package initialize
 
 import (
 	"fmt"
-	stdlog "log"
-	"os"
-	"runtime"
-
 	gormi "github.com/liov/hoper/go/v2/utils/dao/db/gorm"
 	"github.com/liov/hoper/go/v2/utils/log"
-	"github.com/liov/hoper/go/v2/utils/reflect"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
@@ -16,6 +11,9 @@ import (
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 	"gorm.io/plugin/prometheus"
+	stdlog "log"
+	"os"
+	"runtime"
 )
 
 const (
@@ -35,7 +33,7 @@ type DatabaseConfig struct {
 	Prometheus bool
 }
 
-func (conf *DatabaseConfig) Generate() *gorm.DB {
+func (conf *DatabaseConfig) generate() *gorm.DB {
 	var url string
 	var db *gorm.DB
 	var err error
@@ -77,23 +75,15 @@ func (conf *DatabaseConfig) Generate() *gorm.DB {
 			}))
 		}
 	}
-	return db
-}
-
-func (init *Init) P2DB() *gorm.DB {
-	conf := &DatabaseConfig{}
-	if exist := reflecti.GetFieldValue(init.conf, conf); !exist {
-		return nil
-	}
-
-	db := conf.Generate()
 
 	rawDB, _ := db.DB()
 	rawDB.SetMaxIdleConns(conf.MaxIdleConns)
 	rawDB.SetMaxOpenConns(conf.MaxOpenConns)
 	//db.Logger = db.Logger.LogMode(conf.Gorm.Logger.LogLevel)
-	logger.Default = logger.New(stdlog.New(os.Stdout, "\r\n", stdlog.LstdFlags),conf.Gorm.Logger)
-	//i.closes = append(i.closes,db.CloseDao)
-	//closes = append(closes, func() {log.AuthInfo("数据库已关闭")})
+	logger.Default = logger.New(stdlog.New(os.Stdout, "\r\n", stdlog.LstdFlags), conf.Gorm.Logger)
 	return db
+}
+
+func (conf *DatabaseConfig) Generate() interface{} {
+	return conf.generate()
 }

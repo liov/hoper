@@ -5,18 +5,23 @@
     /></van-col>
     <van-col span="6" class="action"
       ><van-icon
-        :name="content.collect ? 'star' : 'star-o'"
-        :color="content.collect ? '#F6DF02' : ''"
-    /></van-col>
+        :name="content.collects ? 'star' : 'star-o'"
+        :color="content.collects ? '#F6DF02' : ''"
+        @click="favShow"
+      /><span>{{ content.ext.collectCount }}</span></van-col
+    >
     <van-col span="6" class="action"
-      ><van-icon name="comment-o" @click="commentShow"
-    /></van-col>
+      ><van-icon name="comment-o" @click="commentShow" /><span>{{
+        content.ext.commentCount
+      }}</span></van-col
+    >
     <van-col span="6" class="action"
       ><van-icon
         :name="content.likeId > 0 ? 'like' : 'like-o'"
         :color="content.likeId > 0 ? '#D91E46' : ''"
         @click="like"
-    /></van-col>
+      /><span>{{ content.ext.likeCount }}</span></van-col
+    >
   </van-row>
 </template>
 
@@ -34,7 +39,12 @@ export default class Action extends Vue.with(Props) {
     emitter.emit("more-show", { type: this.type, refId: this.content.id });
   }
   favShow() {
-    emitter.emit("fav-show", { type: this.type, refId: this.content.id });
+    console.log(this.content.collect);
+    emitter.emit("fav-show", {
+      type: this.type,
+      refId: this.content.id,
+      collects: this.content.collects,
+    });
   }
   commentShow() {
     emitter.emit("comment-show", {

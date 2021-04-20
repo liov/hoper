@@ -47,4 +47,6 @@ createApp(App)
   .use(Vant.Loading)
   .use(Vant.Calendar)
   .use(Vant.DatetimePicker)
+  .use(Vant.Checkbox)
+  .use(Vant.CheckboxGroup)
   .mount("#app");

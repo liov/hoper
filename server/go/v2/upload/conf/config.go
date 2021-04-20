@@ -11,10 +11,11 @@ var Conf = &config{}
 type config struct {
 	//自定义的配置
 	Customize serverConfig
-	Server   initialize.ServerConfig
-	Database initialize.DatabaseConfig
-	Redis    initialize.RedisConfig
-	Log      initialize.LogConfig
+	Server    initialize.ServerConfig
+	GORMDB    initialize.DatabaseConfig
+	Redis     initialize.RedisConfig
+	Cache     initialize.CacheConfig
+	Log       initialize.LogConfig
 }
 
 func (c *config) Custom() {
@@ -27,10 +28,10 @@ func (c *config) Custom() {
 type serverConfig struct {
 	Volume fs.Dir
 
-	UploadUrlPrefix     string
-	UploadDir      fs.Dir
-	UploadMaxSize  int64
-	UploadAllowExt []string
+	UploadUrlPrefix string
+	UploadDir       fs.Dir
+	UploadMaxSize   int64
+	UploadAllowExt  []string
 
 	LuosimaoVerifyURL string
 	LuosimaoAPIKey    string

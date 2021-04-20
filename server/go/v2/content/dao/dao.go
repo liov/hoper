@@ -24,7 +24,7 @@ type contentDao struct {
 }
 
 func GetDao(ctx *contexti.Ctx) *contentDao {
-	if ctx == nil{
+	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}
 	return &contentDao{ctx}
@@ -67,11 +67,11 @@ func (d *dao) Custom() {
 }
 
 func (d *dao) GetDB(log *log.Logger) *gorm.DB {
-	if initialize.InitConfig.Env == initialize.DEVELOPMENT{
+	if initialize.InitConfig.Env == initialize.DEVELOPMENT {
 		return d.GORMDB
 	}
 	return d.GORMDB.Session(&gorm.Session{
 		Logger: &gormi.SQLLogger{Logger: log.Logger,
-			Config: &conf.Conf.Database.Gorm.Logger,
+			Config: &conf.Conf.GORMDB.Gorm.Logger,
 		}})
 }

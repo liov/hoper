@@ -11,6 +11,7 @@ import (
 	"github.com/liov/hoper/go/v2/protobuf/utils/request"
 	contexti "github.com/liov/hoper/go/v2/tailmon/context"
 	"github.com/liov/hoper/go/v2/utils/log"
+	"github.com/liov/hoper/go/v2/utils/slices"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -25,7 +26,7 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 	}
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := auth(ctxi,true)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +82,7 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 func (*ActionService) DelLike(ctx context.Context, req *request.Object) (*empty.Empty, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := auth(ctxi,true)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +99,7 @@ func (*ActionService) DelLike(ctx context.Context, req *request.Object) (*empty.
 func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*request.Object, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := auth(ctxi,true)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -130,13 +131,13 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*re
 	if err != nil {
 		return nil, err
 	}
-	return &request.Object{Id:req.Id}, nil
+	return &request.Object{Id: req.Id}, nil
 }
 
 func (*ActionService) DelComment(ctx context.Context, req *request.Object) (*empty.Empty, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := auth(ctxi,true)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -174,10 +175,10 @@ func (*ActionService) DelComment(ctx context.Context, req *request.Object) (*emp
 	return nil, nil
 }
 
-func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*request.Object, error) {
+func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*empty.Empty, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := auth(ctxi,true)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -188,52 +189,60 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*re
 	}
 	db := dao.Dao.GetDB(ctxi.Logger)
 	req.UserId = auth.Id
-	exists, err := contentDao.ExistsByAuthDB(db, model.FavoritesTableName, req.FavId, auth.Id)
+	collects, err := contentDao.GetCollectsDB(db, req.Type, req.FavIds, auth.Id)
 	if err != nil {
 		return nil, err
 	}
-	if !exists {
-		return nil, errorcode.PermissionDenied.Message("无效的收藏夹")
+	var origin []uint64
+	for _, collect := range collects {
+		origin = append(origin, collect.FavId)
 	}
-	id, err := contentDao.CollectIdDB(db, req.Type, req.RefId, auth.Id, req.FavId)
+	diff := slices.DiffUint64(origin, req.FavIds)
+	collect := model.Collect{
+		Type:   req.Type,
+		RefId:  req.RefId,
+		UserId: auth.Id,
+		FavId:  0,
+	}
+	for _, id := range diff {
+		collect.FavId = id
+		err = db.Table(model.CollectTableName).Create(&collect).Error
+		if err != nil {
+			return nil, ctxi.ErrorLog(errorcode.DBError, err, "Create")
+		}
+	}
+	if len(origin) == 0 && len(req.FavIds) > 0 {
+		err = contentDao.ActionCountDB(db, req.Type, content.ActionCollect, req.RefId, 1)
+		if err != nil {
+			return nil, ctxi.ErrorLog(errorcode.DBError, err, "ActionCountDB")
+		}
+	}
+	err = db.Table(model.CollectTableName).Where(`type = ? AND ref_id = ? AND fav_id NOT IN (?)`, req.Type, req.RefId, req.FavIds).
+		Update(`deleted_at`, ctxi.RequestAt.TimeString).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "CollectExists")
+		return nil, ctxi.ErrorLog(errorcode.DBError, err, "DELETE")
 	}
-	if id > 0 {
-		return nil, nil
+	var hotCount float64
+	if len(origin) == 0 && len(req.FavIds) > 0 {
+		hotCount = 1
 	}
-	err = db.Table(model.CollectTableName).Create(req).Error
-	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "Create")
+	if len(origin) > 0 && len(req.FavIds) == 0 {
+		hotCount = -1
 	}
-	err = contentDao.HotCountRedis(dao.Dao.Redis, req.Type, req.RefId, -1)
-	if err != nil {
-		return nil, err
+	if hotCount != 0 {
+		err = contentDao.HotCountRedis(dao.Dao.Redis, req.Type, req.RefId, hotCount)
+		if err != nil {
+			return nil, err
+		}
 	}
-	return &request.Object{Id:req.Id}, nil
-}
 
-func (*ActionService) DelCollect(ctx context.Context, req *request.Object) (*empty.Empty, error) {
-	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
-	defer span.End()
-	auth, err := auth(ctxi,true)
-	if err != nil {
-		return nil, err
-	}
-	contentDao := dao.GetDao(ctxi)
-	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
-	if err != nil {
-		return nil, err
-	}
-	db := dao.Dao.GetDB(ctxi.Logger)
-	err = contentDao.DelByAuthDB(db, model.CollectTableName, req.Id, auth.Id)
-	return nil, err
+	return nil, nil
 }
 
 func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*empty.Empty, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := auth(ctxi,true)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}

@@ -24,7 +24,7 @@ type userDao struct {
 }
 
 func GetDao(ctx *contexti.Ctx) *userDao {
-	if ctx == nil{
+	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}
 	return &userDao{ctx}
@@ -37,8 +37,8 @@ type dao struct {
 	StdDB    *sql.DB
 	PebbleDB *pebble.DB
 	// RedisPool Redis连接池
-	Redis       *redis.Client
-	Cache       *ristretto.Cache
+	Redis *redis.Client
+	Cache *ristretto.Cache
 	//elastic
 	MailAuth smtp.Auth
 }
@@ -68,11 +68,11 @@ func (d *dao) Custom() {
 }
 
 func (d *dao) GetDB(log *log.Logger) *gorm.DB {
-	if initialize.InitConfig.Env == initialize.DEVELOPMENT{
+	if initialize.InitConfig.Env == initialize.DEVELOPMENT {
 		return d.GORMDB
 	}
 	return d.GORMDB.Session(&gorm.Session{
 		Logger: &gormi.SQLLogger{Logger: log.Logger,
-			Config: &conf.Conf.Database.Gorm.Logger,
+			Config: &conf.Conf.GORMDB.Gorm.Logger,
 		}})
 }

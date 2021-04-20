@@ -16,11 +16,12 @@ var MongoSettings = &MongoConfig{}*/
 type config struct {
 	//自定义的配置
 	Customize serverConfig
-	Server   initialize.ServerConfig
-	Mail     initialize.MailConfig
-	Database initialize.DatabaseConfig
-	Redis    initialize.RedisConfig
-	Log      initialize.LogConfig
+	Server    initialize.ServerConfig
+	Mail      initialize.MailConfig
+	GORMDB    initialize.DatabaseConfig
+	Redis     initialize.RedisConfig
+	Cache     initialize.CacheConfig
+	Log       initialize.LogConfig
 	Viper     *viper.Viper
 }
 

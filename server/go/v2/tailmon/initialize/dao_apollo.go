@@ -10,14 +10,17 @@ import (
 	"github.com/pelletier/go-toml"
 )
 
-
-func (conf *ApolloConfig) Generate() *apollo.Client {
+func (conf *ApolloConfig) generate() *apollo.Client {
 	return apollo.New(conf.Addr, conf.AppId, conf.Cluster, conf.IP, conf.NameSpace, conf.InitConfig)
+}
+
+func (conf *ApolloConfig) Generate() interface{} {
+	return conf.generate()
 }
 
 func (init *Init) P0Apollo() *apollo.Client {
 	conf := &ApolloConfig{}
-	if exist := reflecti.GetFieldValue(init.conf,conf); !exist {
+	if exist := reflecti.GetFieldValue(init.conf, conf); !exist {
 		return nil
 	}
 	//初始化更新配置，这里不需要，开启实时更新时初始化会更新一次
@@ -30,7 +33,7 @@ func (init *Init) P0Apollo() *apollo.Client {
 	//监听指定namespace的更新
 	conf.NameSpace = append(conf.NameSpace, conf.InitNameSpace)
 
-	return conf.Generate()
+	return conf.generate()
 }
 
 func apolloConfigEnable(conf interface{}, aConf map[string]string) {
