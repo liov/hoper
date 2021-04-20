@@ -11,14 +11,14 @@ import (
 	_ "google.golang.org/protobuf/cmd/protoc-gen-go"
 )
 
-//go:generate go mod download
+////go:generate go mod download
 //go:generate go install google.golang.org/protobuf/cmd/protoc-gen-go
-//go:generate protoc -I../../../../proto/utils/proto/go --go_out=paths=source_relative:../protobuf/utils/proto/go ../../../../proto/utils/proto/go/*.proto
-//go:generate protoc -I../../../../proto/utils/proto/go --go_out=paths=source_relative:../protobuf/utils/proto/go ../../../../proto/utils/proto/go/apiconfig/*.proto
-//go:generate protoc -I../../../../proto/utils/proto/go --go_out=paths=source_relative:../protobuf/utils/proto/go ../../../../proto/utils/proto/go/openapiconfig/*.proto
+//go:generate protoc -I../../../../proto/utils/proto --go_out=paths=source_relative:../protobuf/utils/proto ../../../../proto/utils/proto/patch/*.proto
+//go:generate protoc -I../../../../proto/utils/proto --go_out=paths=source_relative:../protobuf/utils/proto ../../../../proto/utils/proto/apiconfig/*.proto
+//go:generate protoc -I../../../../proto/utils/proto --go_out=paths=source_relative:../protobuf/utils/proto ../../../../proto/utils/proto/openapiconfig/*.proto
 //go:generate go get -u github.com/gogo/protobuf
 //go:generate go install github.com/gogo/protobuf/protoc-gen-gogo
-//go:generate protoc -I../../../../proto/utils/proto/go -I../../../../proto/utils/proto/gogo --gogo_out=Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor,paths=source_relative:../protobuf/utils/proto/gogo ../../../../proto/utils/proto/gogo/*.gen.proto
+//go:generate protoc -I../../../../proto/utils/proto -I../../../../proto/utils/proto/gogo --gogo_out=Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor,paths=source_relative:../protobuf/utils/proto/gogo ../../../../proto/utils/proto/gogo/*.gen.proto
 //go:generate go install ./protoc-gen-enum
 //go:generate go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
 //go:generate go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
@@ -27,4 +27,4 @@ import (
 //go:generate go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
 //go:generate go get -u github.com/mwitkow/go-proto-validators
 //go:generate go install github.com/mwitkow/go-proto-validators/protoc-gen-govalidators
-//go:generate go install ./protoc-gen-enum-patch
+//go:generate go install ./protoc-gen-go-patch
