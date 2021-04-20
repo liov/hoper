@@ -15,7 +15,7 @@ func (x *Resume) CmpKey() uint64 {
 	return x.Id
 }
 
-var UserserviceServicedesc = &_UserService_serviceDesc
+var UserserviceServicedesc = &UserService_ServiceDesc
 
 /*
 func RegisterUserServiceHandlerFromModuleWithReConnect(ctx context.Context, mux *runtime.ServeMux, getEndPort func() string, opts []grpc.DialOption) (err error) {

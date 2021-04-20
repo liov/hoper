@@ -1,18 +1,18 @@
 syntax = "proto3";
 package content;
 import "utils/proto/gogo/enum.proto";
-import "utils/proto/go/patch/go.proto";
+import "patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
 option go_package = "github.com/liov/hoper/go/v2/protobuf/content";
 
 option (gogo.enum_gqlgen_all) = true;
 option (gogo.enum_prefix_all) = false;
-option (patch.file) = {no_enum_prefix:true};
+option (go.file) = {no_enum_prefix:true};
 
 // 操作类型
 enum ActionType{
-  option (patch.enum) = {stringer_name: 'OrigString'};
+  option (go.enum) = {stringer_name: 'OrigString'};
   ActionPlaceholder = 0 [(gogo.enumvalue_cn) = "占位"];
   ActionBrowse = 1 [(gogo.enumvalue_cn) = "浏览"];
   ActionLike = 2 [(gogo.enumvalue_cn) = "点赞"];
@@ -26,7 +26,7 @@ enum ActionType{
 }
 // 删除原因
 enum DelReason{
-  option (patch.enum) = {stringer_name: 'OrigString'};
+  option (go.enum) = {stringer_name: 'OrigString'};
   DelReasonPlaceholder = 0 [(gogo.enumvalue_cn) = "占位"];
   DelReasonViolationOfLawsAndRegulations = 1 [(gogo.enumvalue_cn) = "违返法律法规"];
   DelReasonEroticViolence = 3 [(gogo.enumvalue_cn) = "色情暴力"];
@@ -35,7 +35,7 @@ enum DelReason{
 
 // 评论类型
 enum CommentType{
-  option (patch.enum) = {stringer_name: 'OrigString'};
+  option (go.enum) = {stringer_name: 'OrigString'};
   CommentPlaceholder = 0 [(gogo.enumvalue_cn)= "占位"];
   CommentMoment = 1 [(gogo.enumvalue_cn)= "瞬间"];
   CommentDiary = 2 [(gogo.enumvalue_cn)= "日记"];

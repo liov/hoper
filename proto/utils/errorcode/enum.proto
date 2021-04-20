@@ -1,15 +1,15 @@
 syntax = "proto3";
 package errorcode;
 import "utils/proto/gogo/enum.proto";
-import "utils/proto/go/patch/go.proto";
+import "patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.errorcode";
 option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/errorcode";
 option (gogo.enum_prefix_all) = false;
-option (patch.file) = {no_enum_prefix:true};
+option (go.file) = {no_enum_prefix:true};
 
 enum ErrCode {
-  option (patch.enum) = {stringer_name: 'OrigString'};
+  option (go.enum) = {stringer_name: 'OrigString'};
   option (gogo.enum_jsonmarshal) = false;
 
   SUCCESS = 0 [(gogo.enumvalue_cn) = "成功"];

@@ -1,10 +1,10 @@
 syntax = "proto2";
 
-package patch;
+package go;
 
 import "google/protobuf/descriptor.proto";
 
-option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/proto/go/patch";
+option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/proto/patch";
 
 // Options represent Go-specific options for Protobuf messages, fields, oneofs, enums, or enum values.
 message Options {
@@ -32,11 +32,11 @@ message Options {
 }
 
 extend google.protobuf.MessageOptions {
-	optional Options message = 7001;
+	optional Options message = 7002;
 }
 
 extend google.protobuf.FieldOptions {
-	optional Options field = 7001;
+	optional Options field = 7002;
 }
 
 extend google.protobuf.OneofOptions {
@@ -44,12 +44,12 @@ extend google.protobuf.OneofOptions {
 }
 
 extend google.protobuf.EnumOptions {
-	optional Options enum = 7001;
-	optional string cn = 7002;
+	optional Options enum = 7002;
+	optional string cn = 7003;
 }
 
 extend google.protobuf.EnumValueOptions {
-	optional Options value = 7001;
+	optional Options value = 7002;
 }
 
 message FileOptions{
@@ -58,5 +58,5 @@ message FileOptions{
 }
 
 extend google.protobuf.FileOptions {
-	optional FileOptions file = 7001;
+	optional FileOptions file = 7002;
 }

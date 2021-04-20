@@ -44,7 +44,7 @@ var service = []string{goOut, grpcOut,
 }
 
 var model = []string{goOut, grpcOut}
-var enum = []string{enumOut, enumPatchOut}
+var enum = []string{enumOut, goOut}
 
 var gqlgen []string
 var files = map[string][]string{
@@ -69,6 +69,7 @@ var (
 
 func init() {
 	proto = flag.String("proto", "../../../proto", "proto路径")
+	stdPatch := flag.Bool("patch", false, "是否使用原生protopatch")
 	pwd, _ = os.Getwd()
 	*proto = pwd + "/" + *proto
 	goList = `go list -m -f {{.Dir}} `
@@ -76,7 +77,10 @@ func init() {
 		goList + "github.com/grpc-ecosystem/grpc-gateway/v2",
 	)
 
-	protopatch, _ := osi.CMD(goList + "github.com/alta/protopatch")
+	protopatch := *proto + "/utils/proto"
+	if *stdPatch {
+		protopatch, _ = osi.CMD(goList + "github.com/alta/protopatch")
+	}
 	protobuf, _ = osi.CMD(goList + "google.golang.org/protobuf")
 	//gogoProtoOut, _ := cmd.CMD(goList + "github.com/gogo/protobuf")
 	path = os.Getenv("GOPATH")
@@ -130,7 +134,7 @@ func genutils(dir string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	var enums []string
+
 	for i := range fileInfos {
 		if fileInfos[i].IsDir() {
 			genutils(dir + "/" + fileInfos[i].Name())
@@ -143,19 +147,13 @@ func genutils(dir string) {
 			continue
 		}
 		if strings.HasSuffix(fileInfos[i].Name(), "enum.proto") {
-			enums = append(enums, dir+"/"+fileInfos[i].Name())
+			arg := "protoc " + include + " " + dir + "/" + fileInfos[i].Name() + " --" + enumOut + ":" + pwd + "/protobuf"
+			execi.Run(arg)
 		}
 		for _, plugin := range model {
 			arg := "protoc " + include + " " + dir + "/*.proto" + " --" + plugin + ":" + pwd + "/protobuf"
 			execi.Run(arg)
 		}
-	}
-	// 最后执行
-	for _, enum := range enums {
-		arg := "protoc " + include + " " + enum + " --" + enumOut + ":" + pwd + "/protobuf"
-		execi.Run(arg)
-		arg = "protoc " + include + " " + enum + " --" + enumPatchOut + ":" + pwd + "/protobuf"
-		execi.Run(arg)
 	}
 }
 

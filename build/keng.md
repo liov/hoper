@@ -623,4 +623,4 @@ See https://developers.google.com/protocol-buffers/docs/reference/go-generated#p
 Before
 option go_package = ".;openapiconfig";
 After
-option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/proto/go/openapiconfig";
+option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/proto/openapiconfig";
