@@ -84,7 +84,7 @@ export default class Home extends Vue {
   user = {};
 
   async created() {
-    this.user = this.$store.state.auth;
+    this.user = this.$store.state.user.auth;
     if (!this.user.intro) this.user.intro = "我不想介绍自己";
     if (!this.user.signature) this.user.signature = "太个性签名签不下";
   }

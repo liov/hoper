@@ -3,7 +3,7 @@
     <div class="auth">
       <img class="avatar" :src="user.avatarUrl" />
       <span class="name">{{ user.name }}</span>
-      <span class="time">{{ $date2s(moment.createdAt) }}</span>
+      <span class="time">{{ $date2s(comment.createdAt) }}</span>
     </div>
     <div class="content">
       <van-field
@@ -51,17 +51,7 @@ class Props {
 @Options({ components: { Action } })
 export default class Comment extends Vue.with(Props) {
   images = [];
-  created() {
-    this.images = this.comment.images?.split(",");
-    emitter.on("comment-show", (param) => {
-      this.type = param.type;
-      this.refId = param.refId;
-      this.show.favShow = !this.show.favShow;
-    });
-  }
-  unmounted() {
-    emitter.all.delete("comment-show");
-  }
+
   preview(idx: number) {
     ImagePreview({
       images: this.images,

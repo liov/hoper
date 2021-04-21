@@ -18,6 +18,7 @@
                 v-if="show"
                 :moment="item"
                 :user="user(item.userId)"
+                @click="$router.push(`/moment/${item.id}`)"
               ></Moment>
             </van-skeleton>
           </template>
@@ -34,6 +35,7 @@ import axios from "axios";
 import { reactive, ref } from "vue";
 import Moment from "@/components/moment/Moment.vue";
 import ActionMore from "@/components/action/More.vue";
+
 @Options({
   components: { Moment, ActionMore },
 })
@@ -51,7 +53,7 @@ export default class MomentList extends Vue {
     refreshing: false,
     successText: "刷新成功",
   });
-  show = ref(false);
+  show = false;
 
   //mounted() {}
   user(id: number) {

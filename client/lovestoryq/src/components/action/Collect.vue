@@ -21,16 +21,15 @@
 import { Options, Vue, prop } from "vue-class-component";
 import Action from "@/components/action/Action.vue";
 import axios from "axios";
-class Props {
-  refId = prop<number>({});
-  type = prop<number>({});
-  collects = prop<[]>({});
-}
+
 @Options({ components: { Action } })
-export default class AddCollect extends Vue.with(Props) {
+export default class AddCollect extends Vue {
   show = false;
   message = "";
   favs = [];
+  refId = 0;
+  type = 0;
+  collects = [];
   setCollect(param) {
     console.log(param);
     this.type = param.type;
@@ -45,7 +44,7 @@ export default class AddCollect extends Vue.with(Props) {
     await axios.post("/api/v1/action/collect", {
       type: this.type,
       refId: this.refId,
-      favId: this.collects,
+      favIds: this.collects,
     });
     this.$toast.success("收藏成功");
     this.show = false;

@@ -210,7 +210,6 @@ func setDao(v reflect.Value, fieldNameDaoMap map[string]interface{}) {
 	}
 	typ := v.Type()
 	for i := 0; i < v.NumField(); i++ {
-		log.Debug(typ.Field(i).Name)
 		if dao, ok := fieldNameDaoMap[typ.Field(i).Name]; ok {
 			daoValue := reflect.ValueOf(dao)
 			if daoValue.Type() == v.Field(i).Type() {
