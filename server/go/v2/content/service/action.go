@@ -189,7 +189,7 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*em
 	}
 	db := dao.Dao.GetDB(ctxi.Logger)
 	req.UserId = auth.Id
-	collects, err := contentDao.GetCollectsDB(db, req.Type, req.FavIds, auth.Id)
+	collects, err := contentDao.GetCollectsDB(db, req.Type, []uint64{req.RefId}, auth.Id)
 	if err != nil {
 		return nil, err
 	}

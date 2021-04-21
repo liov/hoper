@@ -8,10 +8,10 @@
         :name="content.collects ? 'star' : 'star-o'"
         :color="content.collects ? '#F6DF02' : ''"
         @click="favShow"
-      /><span>{{ content.ext.collectCount }}</span></van-col
+      /><span class="count">{{ content.ext.collectCount }}</span></van-col
     >
     <van-col span="6" class="action"
-      ><van-icon name="comment-o" @click="commentShow" /><span>{{
+      ><van-icon name="comment-o" @click="commentShow" /><span class="count">{{
         content.ext.commentCount
       }}</span></van-col
     >
@@ -20,7 +20,7 @@
         :name="content.likeId > 0 ? 'like' : 'like-o'"
         :color="content.likeId > 0 ? '#D91E46' : ''"
         @click="like"
-      /><span>{{ content.ext.likeCount }}</span></van-col
+      /><span class="count">{{ content.ext.likeCount }}</span></van-col
     >
   </van-row>
 </template>
@@ -60,7 +60,7 @@ export default class Action extends Vue.with(Props) {
     const id = this.content.id;
     const likeId = this.content.likeId;
     if (likeId > 0) {
-      await axios.delete(api, { data: { id: likeId } });
+      await axios.delete(api + "/" + this.content.likeId);
       this.content.likeId = 0;
     } else {
       const res = await axios.post(api, {
@@ -74,8 +74,11 @@ export default class Action extends Vue.with(Props) {
 }
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .action {
   text-align: center;
+  .count {
+    margin: 0 2px;
+  }
 }
 </style>

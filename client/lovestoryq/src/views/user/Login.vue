@@ -120,9 +120,9 @@ export default class Login extends Vue {
   Validator = Validator;
   async created() {
     if (this.$route.query.back) {
-      if (!this.$store.state.auth) await this.$store.dispatch("getAuth");
+      if (!this.$store.state.user.auth) await this.$store.dispatch("getAuth");
 
-      if (this.$store.state.auth)
+      if (this.$store.state.user.auth)
         await this.$router.replace(`${this.$route.query.back}`);
     }
   }

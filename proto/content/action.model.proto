@@ -61,6 +61,7 @@ message Comment{
   user.UserBaseInfo user = 2 [(go.field) = {tags:'gorm:"" annotation:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
   string content = 3 [(go.field) = {tags:'gorm:"size:255;not null" annotation:"内容"'}];
+  string image = 13 [(go.field) = {tags:'gorm:"size:255;not null" annotation:"图片"'}];
   uint64 replyId = 7 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"回复id"'}];
   uint64 rootId = 8 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"评论根id"'}];
   user.UserBaseInfo recvUser = 9 [(go.field) = {tags:'gorm:"-" annotation:"接收人"'}];
