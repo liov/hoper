@@ -11,7 +11,7 @@
           <van-skeleton title avatar round :row="3" :loading="loading">
             <Comment
               v-if="show"
-              :moment="item"
+              :comment="item"
               :user="user(item.userId)"
             ></Comment>
           </van-skeleton>
@@ -32,7 +32,7 @@ import ActionMore from "@/components/action/More.vue";
 class Props {
   type = prop<number>({});
   refId = prop<number>({});
-  rootId = prop<number>({});
+  rootId = prop<number>({ default: 0 });
 }
 @Options({
   components: { Comment, ActionMore },
@@ -71,7 +71,7 @@ export default class CommentList extends Vue.with(Props) {
     } else {
       this.list = this.list.concat(data.list);
     }
-    this.$store.dispatch("appendUsers", data.users);
+    this.$store.commit("appendUsers", data.users);
     this.loading = false;
     this.show = true;
     this.pageNo++;

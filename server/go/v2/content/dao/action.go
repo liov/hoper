@@ -163,9 +163,9 @@ func (d *contentDao) GetCollectsDB(db *gorm.DB, typ content.ContentType, refIds 
 	return collects, nil
 }
 
-func (d *contentDao) GetCommentsDB(db *gorm.DB, typ content.ContentType, id, rootId uint64, pageNo, pageSize int) (int64, []*content.Comment, error) {
+func (d *contentDao) GetCommentsDB(db *gorm.DB, typ content.ContentType, refId, rootId uint64, pageNo, pageSize int) (int64, []*content.Comment, error) {
 	ctxi := d.ctxi
-	db = db.Table(model.CommentTableName).Where(`type = ? AND ref_id = ? AND root_id = ? AND `+dbi.PostgreNotDeleted, typ, id, rootId)
+	db = db.Table(model.CommentTableName).Where(`type = ? AND ref_id = ? AND root_id = ? AND `+dbi.PostgreNotDeleted, typ, refId, rootId)
 	var count int64
 	err := db.Count(&count).Error
 	if err != nil {

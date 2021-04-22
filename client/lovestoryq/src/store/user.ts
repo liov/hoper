@@ -18,13 +18,13 @@ const state: UserState = {
 };
 
 const mutations = {
-  SET_AUTH: function (state, user) {
+  setAuth: function (state, user) {
     state.auth = user;
   },
-  SET_TOKEN: function (state, token) {
+  setToken: function (state, token) {
     state.token = token;
   },
-  APPEND_USERS: function (state, users) {
+  appendUsers: function (state, users) {
     state.userCache.append(users);
   },
 };
@@ -34,10 +34,10 @@ const actions = {
     if (state.auth) return;
     const token = localStorage.getItem("token");
     if (token) {
-      commit("SET_TOKEN", token);
+      commit("setToken", token);
       const res = await axios.get(`/api/v1/auth`);
       // 跟后端的初始化配合
-      if (res.data.code === 0) commit("SET_AUTH", res.data.details);
+      if (res.data.code === 0) commit("setAuth", res.data.details);
     }
   },
   async login({ state, commit, rootState }, params) {
@@ -45,8 +45,8 @@ const actions = {
       const { data } = await axios.post("/api/v1/user/login", params);
       if (data.code && data.code !== 0) Toast.fail(data.message);
       else {
-        commit("SET_AUTH", data.details.user);
-        commit("SET_TOKEN", data.details.token);
+        commit("setAuth", data.details.user);
+        commit("setToken", data.details.token);
         localStorage.setItem("token", data.details.token);
         axios.defaults.headers["Authorization"] = data.details.token;
         await router.push("/");
@@ -57,9 +57,6 @@ const actions = {
       }
       throw error;
     }
-  },
-  appendUsers({ state, commit, rootState }, users) {
-    commit("APPEND_USERS", users);
   },
 };
 

@@ -2,10 +2,12 @@ package service
 
 import (
 	"context"
+	"github.com/liov/hoper/go/v2/content/client"
 	"github.com/liov/hoper/go/v2/content/conf"
 	"github.com/liov/hoper/go/v2/content/dao"
 	"github.com/liov/hoper/go/v2/content/model"
 	"github.com/liov/hoper/go/v2/protobuf/content"
+	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/protobuf/utils/request"
@@ -271,4 +273,37 @@ func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*empt
 		return nil, errorcode.DBError
 	}
 	return nil, nil
+}
+
+func (*ActionService) CommentList(ctx context.Context, req *content.CommentListReq) (*content.CommentListRep, error) {
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
+	defer span.End()
+	_, err := auth(ctxi, true)
+	if err != nil {
+		return nil, err
+	}
+	contentDao := dao.GetDao(ctxi)
+	db := dao.Dao.GetDB(ctxi.Logger)
+	total, comments, err := contentDao.GetCommentsDB(db, content.ContentMoment, req.RefId, req.RootId, int(req.PageNo), int(req.PageSize))
+	if err != nil {
+		return nil, err
+	}
+	var userIds []uint64
+	for i := range comments {
+		userIds = append(userIds, comments[i].UserId)
+		userIds = append(userIds, comments[i].RecvId)
+	}
+	var users []*user.UserBaseInfo
+	if len(userIds) > 0 {
+		userList, err := client.UserClient.BaseList(ctxi, &user.BaseListReq{Ids: userIds})
+		if err != nil {
+			return nil, err
+		}
+		users = userList.List
+	}
+	return &content.CommentListRep{
+		Total: total,
+		List:  comments,
+		Users: users,
+	}, nil
 }

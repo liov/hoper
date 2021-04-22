@@ -34,7 +34,7 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import MomentList from "@/components/moment/List.vue"; // @ is an alias to /src
+import MomentList from "@/views/moment/List.vue"; // @ is an alias to /src
 
 @Options({
   components: {

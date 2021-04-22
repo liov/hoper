@@ -62,7 +62,7 @@ PrepareStmt = true
 DisableForeignKeyConstraintWhenMigrating = true
 
 [GORMDB.gorm.logger]
-SlowThreshold = 200
+SlowThreshold = 100
 Colorful = true
 LogLevel = 4
 

@@ -18,7 +18,7 @@
                 v-if="show"
                 :moment="item"
                 :user="user(item.userId)"
-                @click="$router.push(`/moment/${item.id}`)"
+                @click="detail(item)"
               ></Moment>
             </van-skeleton>
           </template>
@@ -73,7 +73,7 @@ export default class MomentList extends Vue {
     } else {
       this.list = this.list.concat(data.list);
     }
-    this.$store.dispatch("appendUsers", data.users);
+    this.$store.commit("appendUsers", data.users);
     this.loading = false;
     this.show = true;
     this.pageNo++;
@@ -87,6 +87,10 @@ export default class MomentList extends Vue {
     });
     this.pullDown.refreshing = false;
   };
+  detail(item) {
+    this.$store.commit("setMoment", item);
+    this.$router.push(`/moment/${item.id}`);
+  }
 }
 </script>
 
