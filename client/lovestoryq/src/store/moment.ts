@@ -3,7 +3,7 @@ const state = {
 };
 
 const mutations = {
-  SET_MOMENT: function (state, moment) {
+  setMoment: function (state, moment) {
     state.moment = moment;
   },
 };

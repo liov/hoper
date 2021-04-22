@@ -37,6 +37,8 @@ func (conf *DatabaseConfig) generate() *gorm.DB {
 	var url string
 	var db *gorm.DB
 	var err error
+	//db.Logger = db.Logger.LogMode(conf.Gorm.Logger.LogLevel)
+	logger.Default = logger.New(stdlog.New(os.Stdout, "\r\n", stdlog.LstdFlags), conf.Gorm.Logger)
 	dbConfig := &conf.Gorm.Config
 	dbConfig.NamingStrategy = schema.NamingStrategy{
 		SingularTable: true,
@@ -79,8 +81,6 @@ func (conf *DatabaseConfig) generate() *gorm.DB {
 	rawDB, _ := db.DB()
 	rawDB.SetMaxIdleConns(conf.MaxIdleConns)
 	rawDB.SetMaxOpenConns(conf.MaxOpenConns)
-	//db.Logger = db.Logger.LogMode(conf.Gorm.Logger.LogLevel)
-	logger.Default = logger.New(stdlog.New(os.Stdout, "\r\n", stdlog.LstdFlags), conf.Gorm.Logger)
 	return db
 }
 

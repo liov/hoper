@@ -310,7 +310,7 @@ func request_{{.Method.Service.GetName}}_{{.Method.GetName}}_{{.Index}}(ctx *gin
 {{template "request-func-signature" .}} {
 	var protoReq {{.Method.RequestType.GoType .Method.Service.File.GoPkg.Path}}
 	var metadata runtime.ServerMetadata
-{{if or .Body (and (ne .HTTPMethod "GET") (ne .HTTPMethod "DELETE"))}}
+{{if or (or .Body .HasQueryParam) (and (ne .HTTPMethod "GET") (ne .HTTPMethod "DELETE"))}}
 	gin_0.Bind(ctx, &protoReq)
 {{end}}
 {{if .PathParams}}
@@ -453,7 +453,7 @@ func local_request_{{.Method.Service.GetName}}_{{.Method.GetName}}_{{.Index}}(se
 {{$AllowPatchFeature := .AllowPatchFeature}}
 {{template "local-request-func-signature" .}} {
 	var protoReq {{.Method.RequestType.GoType .Method.Service.File.GoPkg.Path}}
-{{if or .Body (and (ne .HTTPMethod "GET") (ne .HTTPMethod "DELETE"))}}
+{{if or (or .Body .HasQueryParam) (and (ne .HTTPMethod "GET") (ne .HTTPMethod "DELETE"))}}
 	gin_0.Bind(ctx, &protoReq)
 {{end}}
 {{if .PathParams}}

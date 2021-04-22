@@ -32,7 +32,7 @@ func (*MomentService) Service() (describe, prefix string, middleware []http.Hand
 func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.Moment, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	_, err := auth(ctxi, true)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -59,6 +59,29 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 	}
 	moment.Tags = tags
 
+	//like
+	if auth.Id != 0 {
+		likes, err := contentDao.GetContentActionDB(db, content.ActionLike, content.ContentMoment, []uint64{req.Id}, auth.Id)
+		if err != nil {
+			return nil, err
+		}
+
+		for i := range likes {
+			if likes[i].Action == content.ActionLike {
+				moment.LikeId = likes[i].Id
+			}
+			if likes[i].Action == content.ActionUnlike {
+				moment.UnlikeId = likes[i].Id
+			}
+		}
+		collects, err := contentDao.GetCollectsDB(db, content.ContentMoment, []uint64{req.Id}, auth.Id)
+		if err != nil {
+			return nil, err
+		}
+		for i := range collects {
+			moment.Collects = append(moment.Collects, collects[i].FavId)
+		}
+	}
 	// ext
 	exts, err := contentDao.GetContentExtDB(db, content.ContentMoment, []uint64{moment.Id})
 	if err != nil {
@@ -66,17 +89,8 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 	}
 	moment.Ext = exts[0]
 
-	_, comments, err := contentDao.GetCommentsDB(db, content.ContentMoment, req.Id, 0, 0, 0)
-	if err != nil {
-		return nil, err
-	}
-	moment.Comments = comments
 	var userIds []uint64
 
-	for i := range comments {
-		userIds = append(userIds, comments[i].UserId)
-		userIds = append(userIds, comments[i].RecvId)
-	}
 	// 匿名
 	if moment.Anonymous == 1 {
 		moment.UserId = 0

@@ -92,7 +92,7 @@ export default class Edit extends Vue {
   minDate = new Date(1900, 0, 1);
   maxDate = new Date();
   async created() {
-    this.user = this.$store.state.auth;
+    this.user = this.$store.state.user.auth;
     if (!this.user.intro) this.user.intro = "我不想介绍自己";
     if (!this.user.signature) this.user.signature = "太个性签名签不下";
     this.user.birthday = dayjs(this.user.birthday).format(dataTool.formatYMD);
@@ -106,6 +106,7 @@ export default class Edit extends Vue {
     this.loading = false;
   }
   async confirm() {
+    this.user.birthday = this.birthday.format(dataTool.formatYMD);
     const res = await axios.put(`/api/v1/user/${this.user.id}`, {
       id: this.user.id,
       details: {
@@ -114,10 +115,10 @@ export default class Edit extends Vue {
         avatarUrl: this.user.avatarUrl,
         signature: this.user.signature,
         intro: this.user.intro,
+        birthday: this.user.birthday,
       },
     });
-    if (res.data.code == 0)
-      this.$store.commit("SET_AUTH", res.data.details.user);
+    if (res.data.code == 0) this.$store.commit("SET_AUTH", this.user);
   }
   onConfirm(value) {
     this.show = false;

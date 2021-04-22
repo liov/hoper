@@ -11,10 +11,10 @@ const mutations = {
   ADD_NUMBER(state, payload) {
     state.numbers.push(payload)
   },
-  SET_AUTH: function (state, user) {
+  setAuth: function (state, user) {
     state.auth = user;
   },
-  SET_TOKEN: function (state, token) {
+  setToken: function (state, token) {
     state.token = token;
   }
 }
@@ -27,16 +27,16 @@ const actions = {
     if (state.auth) return;
     const token = localStorage.getItem("token");
     if (token) {
-      commit("SET_TOKEN", token);
+      commit("setToken", token);
       const res = await axios.get(`/api/user/get`);
       // 跟后端的初始化配合
-      if (res.data.code === 200) commit("SET_AUTH", res.data.data);
+      if (res.data.code === 200) commit("setAuth", res.data.data);
     }
   },
   async login({commit}, params) {
     try {
       const {data} = await axios.post("/api/user/login", params);
-      commit("SET_AUTH", data);
+      commit("setAuth", data);
     } catch (error) {
       if (error.response && error.response.status === 401) {
         throw new Error("Bad credentials");
