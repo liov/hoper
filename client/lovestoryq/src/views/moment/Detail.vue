@@ -1,9 +1,14 @@
 <template>
   <div class="moment">
     <Moment v-if="show" :moment="moment" :user="user"></Moment>
-    <ActionMore></ActionMore>
   </div>
   <CommentList :type="1" :refId="$route.params.id"></CommentList>
+  <AddComment
+    v-if="show"
+    ref="addComment"
+    :comment="{ type: 1, refId: moment.id, recvId: user.id }"
+  ></AddComment>
+  <div class="placeholder"></div>
 </template>
 
 <script lang="ts">
@@ -11,12 +16,14 @@ import { Options, Vue } from "vue-class-component";
 import Moment from "@/components/moment/Moment.vue";
 import ActionMore from "@/components/action/More.vue";
 import CommentList from "@/components/comment/List.vue";
+import AddComment from "@/components/comment/Add.vue";
 import axios from "axios";
 @Options({
   components: {
     Moment,
     ActionMore,
     CommentList,
+    AddComment,
   },
 })
 export default class MomentDetail extends Vue {
@@ -26,7 +33,7 @@ export default class MomentDetail extends Vue {
   show = false;
   async created() {
     this.show = false;
-    this.moment = this.$store.state.moment.moment;
+    this.moment = this.$store.state.content.moment;
     if (!this.moment) {
       const res = await axios.get(`/api/v1/moment/${this.$route.params.id}`);
       this.moment = res.data.details;
@@ -45,5 +52,8 @@ export default class MomentDetail extends Vue {
 <style scoped lang="less">
 .moment {
   text-align: left;
+}
+.placeholder {
+  height: 100px;
 }
 </style>

@@ -6,7 +6,7 @@ import {
 } from "vuex";
 import { AllState, RootState } from "./index.d";
 import { user } from "./user";
-import { moment } from "./moment";
+import { content } from "./content";
 import { InjectionKey } from "vue";
 
 const state: any = {
@@ -21,7 +21,7 @@ const getters = {};
 
 const modules = {
   user,
-  moment,
+  content,
 };
 
 const plugins = [createLogger()];

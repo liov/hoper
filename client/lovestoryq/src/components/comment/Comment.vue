@@ -4,6 +4,15 @@
       <img class="avatar" :src="user.avatarUrl" />
       <span class="name">{{ user.name }}</span>
       <span class="time">{{ $date2s(comment.createdAt) }}</span>
+      <div class="like">
+        <van-icon
+          :name="comment.likeId > 0 ? 'like' : 'like-o'"
+          :color="comment.likeId > 0 ? '#D91E46' : ''"
+          @click="like"
+        /><span class="count" v-if="comment.ext">{{
+          comment.ext.likeCount
+        }}</span>
+      </div>
     </div>
     <div class="content">
       <van-field
@@ -12,27 +21,19 @@
         :autosize="{ maxHeight: 200 }"
         readonly
         type="textarea"
+        @touchstart="onTouchStart"
+        @touchend="onTouchEnd"
       >
-        <template #extra>
-          <div class="like">
-            <van-icon
-              :name="comment.likeId > 0 ? 'like' : 'like-o'"
-              :color="comment.likeId > 0 ? '#D91E46' : ''"
-              @click="like"
-            />
-          </div>
-        </template>
       </van-field>
     </div>
-    <lazy-component class="imgs" v-if:="comment.images">
+    <lazy-component class="imgs" v-if:="comment.image">
       <van-image
         width="100"
         height="100"
-        v-for="(img, idx) in images"
-        :src="img"
+        :src="comment.image"
         lazy-load
         class="img"
-        @click="preview(idx)"
+        @click="preview"
       />
     </lazy-component>
   </div>
@@ -51,11 +52,11 @@ class Props {
 @Options({ components: { Action } })
 export default class Comment extends Vue.with(Props) {
   images = [];
-
-  preview(idx: number) {
+  timeOutEvent = 0;
+  preview() {
     ImagePreview({
-      images: this.images,
-      startPosition: idx,
+      images: [this.comment.image],
+      startPosition: 0,
       closeable: true,
     });
   }
@@ -75,6 +76,28 @@ export default class Comment extends Vue.with(Props) {
       this.comment.likeId = res.data.details.id;
     }
   }
+  onComment() {
+    emitter.emit("onComment", {
+      replyId: this.comment.id,
+      rootId: this.comment.rootId,
+      recvId: this.comment.userId,
+    });
+  }
+  onTouchStart() {
+    this.timeOutEvent = setTimeout(this.longPress, 500);
+  }
+  onTouchEnd(e: Event) {
+    clearTimeout(this.timeOutEvent);
+    if (this.timeOutEvent != 0) {
+      this.onComment();
+      e.preventDefault();
+    }
+    return false;
+  }
+  longPress() {
+    this.timeOutEvent = 0;
+    emitter.emit("more-show", { type: 7, refId: this.comment.id });
+  }
 }
 </script>
 
@@ -89,7 +112,12 @@ export default class Comment extends Vue.with(Props) {
 
   .time {
     position: absolute;
-    right: @20px;
+    right: 80px;
+  }
+  .like {
+    position: absolute;
+    right: 20px;
+    top: 0;
   }
   .content {
     width: 100%;

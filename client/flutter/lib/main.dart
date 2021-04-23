@@ -3,7 +3,7 @@ import 'package:app/page/index/fourth.dart';
 import 'package:app/page/index/index.dart';
 import 'package:app/page/loginView.dart';
 import 'package:app/page/lua/lua.dart';
-import 'package:app/page/moment/momentListView.dart';
+import 'package:app/page/content/momentListView.dart';
 
 import 'package:app/page/webview/webview.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
       ),
       home: MyHomePage(),
       routes: {
-        '/moment': (context) => MomentListView(),
+        '/content': (context) => MomentListView(),
         '/login': (context) => LoginView(),
       },
     );

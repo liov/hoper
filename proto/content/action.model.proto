@@ -66,6 +66,7 @@ message Comment{
   uint64 rootId = 8 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"评论根id"'}];
   user.UserBaseInfo recvUser = 9 [(go.field) = {tags:'gorm:"-" annotation:"接收人"'}];
   uint64 recvId = 10 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"接收人id"'}];
+  ContentExt ext = 30[(go.field) = {tags:'gorm:"-" annotation:"统计数据"'}];
   repeated Comment subComments = 11 [(go.field) = {tags:'gorm:"-" annotation:"子评论"'}];
   uint32 sequence = 4 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"同级别的分类可根据sequence的值来排序，置顶"'}];
   string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];

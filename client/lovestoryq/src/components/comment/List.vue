@@ -51,7 +51,7 @@ export default class CommentList extends Vue.with(Props) {
     refreshing: false,
     successText: "刷新成功",
   });
-  show = ref(false);
+  show = false;
 
   //mounted() {}
   user(id: number) {
@@ -64,16 +64,19 @@ export default class CommentList extends Vue.with(Props) {
     const res = await axios.get(
       `/api/v1/action/comment?type=${this.type}&refId=${this.refId}&rootId=${this.rootId}&pageNo=${this.pageNo}&pageSize=${this.pageSize}`
     );
-    this.finished = true;
+    this.loading = false;
     const data = res.data.details;
+    if (!data || !data.list) {
+      this.finished = true;
+      return;
+    }
     if (this.pageNo == 1) {
       this.list = data.list;
     } else {
       this.list = this.list.concat(data.list);
     }
-    this.$store.commit("appendUsers", data.users);
-    this.loading = false;
     this.show = true;
+    this.$store.commit("appendUsers", data.users);
     this.pageNo++;
     if (data.list.length < this.pageSize) this.finished = true;
   }

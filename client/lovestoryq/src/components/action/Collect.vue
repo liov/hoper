@@ -5,6 +5,7 @@
     teleport="#app"
     :overlay="false"
   >
+    <van-icon name="add-o" size="16">新建收藏夹</van-icon>
     <van-checkbox-group v-model="collects">
       <van-checkbox v-for="item in favs" :name="item.id">{{
         item.title

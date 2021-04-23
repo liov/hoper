@@ -13,7 +13,7 @@
       </template>
       <template #nav-right>
         <div style="width: 30%">
-          <router-link to="/moment/add">
+          <router-link to="/content/add">
             <van-icon name="add-o" color="#1989fa" size="1.5rem" />
           </router-link>
         </div>

@@ -5,11 +5,11 @@
       <span class="name">{{ user.name }}</span>
       <span class="time">{{ $date2s(moment.createdAt) }}</span>
     </div>
-    <div class="content">
+    <div class="content" @click="detail">
       <van-field
         v-model="moment.content"
         rows="1"
-        :autosize="{ maxHeight: 200 }"
+        :autosize="maxHeight ? { maxHeight } : true"
         readonly
         type="textarea"
       >
@@ -39,9 +39,11 @@
 import { Options, Vue, prop } from "vue-class-component";
 import { ImagePreview } from "vant";
 import Action from "@/components/action/Action.vue";
+import { jump } from "@/router/utils";
 class Props {
   moment = prop<any>({ default: {} });
   user = prop<any>({});
+  maxHeight = prop<number>({});
 }
 @Options({ components: { Action } })
 export default class Moment extends Vue.with(Props) {
@@ -55,6 +57,9 @@ export default class Moment extends Vue.with(Props) {
       startPosition: idx,
       closeable: true,
     });
+  }
+  detail() {
+    jump(this.$route.path, 1, this.moment);
   }
 }
 </script>

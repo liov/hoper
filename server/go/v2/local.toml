@@ -40,7 +40,7 @@ FontSaveDir ="/font"
 
 CrawlerName =""
 
-[customize.moment.limit]
+[customize.content.limit]
 SecondLimitCount = 1
 MinuteLimitCount = 20
 DayLimitCount = 10000

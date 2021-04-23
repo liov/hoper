@@ -29,6 +29,8 @@
 import { Options, Vue, prop } from "vue-class-component";
 import axios from "axios";
 import emitter from "@/plugin/emitter";
+import { jump } from "@/router/utils";
+
 class Props {
   content = prop<any>({ default: {} });
   readonly type = prop<number>({});
@@ -47,13 +49,7 @@ export default class Action extends Vue.with(Props) {
     });
   }
   commentShow() {
-    emitter.emit("comment-show", {
-      type: this.type,
-      refId: this.type == 7 ? this.content.refId : this.content.id,
-      replyId: this.type == 7 ? this.content.id : 0,
-      rootId: this.type == 7 ? this.content.rootId : 0,
-      recvId: this.content.userId,
-    });
+    jump(this.$route.path, this.type, this.content);
   }
   async like() {
     const api = `/api/v1/action/like`;

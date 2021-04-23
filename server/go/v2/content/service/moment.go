@@ -37,10 +37,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 		return nil, err
 	}
 	contentDao := dao.GetDao(ctxi)
-	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
-	if err != nil {
-		return nil, err
-	}
+
 	db := dao.Dao.GetDB(ctxi.Logger)
 	var moment content.Moment
 	err = db.Table(model.MomentTableName).
@@ -116,12 +113,12 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 		moment.Users = userList.List
 	}
 
-	maskField(&moment)
+	momentMaskField(&moment)
 	return &moment, nil
 }
 
 // 屏蔽字段
-func maskField(moment *content.Moment) {
+func momentMaskField(moment *content.Moment) {
 	moment.AreaVisibility = 0
 	moment.DeletedAt = ""
 	moment.CreatedAt = moment.CreatedAt[:19]
@@ -238,10 +235,6 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 		return nil, err
 	}
 	contentDao := dao.GetDao(ctxi)
-	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
-	if err != nil {
-		return nil, err
-	}
 
 	db := dao.Dao.GetDB(ctxi.Logger)
 
@@ -257,7 +250,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 		m[moments[i].Id] = moments[i]
 		userIds = append(userIds, moments[i].UserId)
 		// 屏蔽字段
-		maskField(moments[i])
+		momentMaskField(moments[i])
 	}
 	// tag
 	tags, err := contentDao.GetContentTagDB(db, content.ContentMoment, ids)
