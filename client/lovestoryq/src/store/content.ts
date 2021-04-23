@@ -16,7 +16,7 @@ const getters = {
   },
 };
 
-export const moment = {
+export const content = {
   state,
   mutations,
   actions,

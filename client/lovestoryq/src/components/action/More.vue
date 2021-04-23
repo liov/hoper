@@ -49,7 +49,6 @@
     :options="share.options"
     teleport="#app"
   />
-  <AddComment ref="addComment"></AddComment>
   <AddCollect ref="addCollect"></AddCollect>
 </template>
 
@@ -58,9 +57,8 @@ import { Options, Vue } from "vue-class-component";
 import axios from "axios";
 import { reactive } from "vue";
 import emitter from "@/plugin/emitter";
-import AddComment from "@/components/comment/Add.vue";
 import AddCollect from "@/components/action/Collect.vue";
-@Options({ components: { AddComment, AddCollect } })
+@Options({ components: { AddCollect } })
 export default class ActionMore extends Vue {
   type = 0;
   refId = 0;
@@ -108,24 +106,20 @@ export default class ActionMore extends Vue {
   });
   created() {
     emitter.on("more-show", (param) => {
+      console.log(param);
       this.type = param.type;
       this.refId = param.refId;
       this.show = !this.show; //箭头函数内部不会产生新的this，这边如果不用=>,this指代Event
     });
     emitter.on("fav-show", (param) => {
+      console.log(param);
       this.$refs.addCollect.setCollect(param);
       this.$refs.addCollect.show = true;
-    });
-    emitter.on("comment-show", (param) => {
-      console.log(this.$refs.addComment);
-      this.$refs.addComment.setComment(param);
-      this.$refs.addComment.show = true;
     });
   }
   unmounted() {
     emitter.all.delete("more-show");
     emitter.all.delete("fav-show");
-    emitter.all.delete("comment-show");
   }
   remark(name: string) {
     if (name === "255") this.report.field = true;

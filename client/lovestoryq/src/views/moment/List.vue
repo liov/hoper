@@ -18,7 +18,7 @@
                 v-if="show"
                 :moment="item"
                 :user="user(item.userId)"
-                @click="detail(item)"
+                :maxHeight="200"
               ></Moment>
             </van-skeleton>
           </template>
@@ -66,15 +66,18 @@ export default class MomentList extends Vue {
     const res = await axios.get(
       `/api/v1/moment?pageNo=${this.pageNo}&pageSize=${this.pageSize}`
     );
-    this.finished = true;
+    this.loading = false;
     const data = res.data.details;
+    if (!data || !data.list) {
+      this.finished = true;
+      return;
+    }
     if (this.pageNo == 1) {
       this.list = data.list;
     } else {
       this.list = this.list.concat(data.list);
     }
     this.$store.commit("appendUsers", data.users);
-    this.loading = false;
     this.show = true;
     this.pageNo++;
     if (data.list.length < this.pageSize) this.finished = true;
@@ -87,10 +90,6 @@ export default class MomentList extends Vue {
     });
     this.pullDown.refreshing = false;
   };
-  detail(item) {
-    this.$store.commit("setMoment", item);
-    this.$router.push(`/moment/${item.id}`);
-  }
 }
 </script>
 

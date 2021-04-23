@@ -1,4 +1,4 @@
-import 'package:app/page/moment/momentListView.dart';
+import 'package:app/page/content/momentListView.dart';
 import 'package:flutter/material.dart';
 
 class FourthPage extends StatefulWidget {

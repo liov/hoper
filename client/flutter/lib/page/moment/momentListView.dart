@@ -1,5 +1,5 @@
-import 'package:app/model/moment.dart';
-import 'package:app/service/moment.dart';
+import 'package:app/model/content.dart';
+import 'package:app/service/content.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_markdown/flutter_markdown.dart';

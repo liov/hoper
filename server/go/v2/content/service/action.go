@@ -33,10 +33,7 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 		return nil, err
 	}
 	contentDao := dao.GetDao(ctxi)
-	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
-	if err != nil {
-		return nil, err
-	}
+
 	db := dao.Dao.GetDB(ctxi.Logger)
 	req.UserId = auth.Id
 
@@ -288,11 +285,27 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 	if err != nil {
 		return nil, err
 	}
-	var userIds []uint64
+	var ids, userIds []uint64
+	var m = make(map[uint64]*content.Comment)
 	for i := range comments {
+		ids = append(ids, comments[i].Id)
+		m[comments[i].Id] = comments[i]
 		userIds = append(userIds, comments[i].UserId)
 		userIds = append(userIds, comments[i].RecvId)
+		// 屏蔽字段
+		commentMaskField(comments[i])
 	}
+	// ext
+	exts, err := contentDao.GetContentExtDB(db, content.ContentMoment, ids)
+	if err != nil {
+		return nil, err
+	}
+	for i := range exts {
+		if moment, ok := m[exts[i].RefId]; ok {
+			moment.Ext = exts[i]
+		}
+	}
+
 	var users []*user.UserBaseInfo
 	if len(userIds) > 0 {
 		userList, err := client.UserClient.BaseList(ctxi, &user.BaseListReq{Ids: userIds})
@@ -306,4 +319,10 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 		List:  comments,
 		Users: users,
 	}, nil
+}
+
+// 屏蔽字段
+func commentMaskField(comment *content.Comment) {
+	comment.DeletedAt = ""
+	comment.CreatedAt = comment.CreatedAt[:19]
 }

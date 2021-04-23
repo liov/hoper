@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:app/model/moment.dart';
+import 'package:app/model/content.dart';
 import 'package:app/util/dio.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'moment.g.dart';
+part 'content.g.dart';
 
 @JsonSerializable(nullable: false)
 class MomentListResponse {
@@ -20,7 +20,7 @@ class MomentListResponse {
 }
 
 Future<MomentListResponse> getMomentList(int pageNo,pageSize) async{
-  var api = '/moment?page=$pageNo&pageSize=$pageSize';
+  var api = '/content?page=$pageNo&pageSize=$pageSize';
 
   try {
     var response = await httpClient().get(api);

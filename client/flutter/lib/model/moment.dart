@@ -2,7 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 import 'user.dart';
 
-part 'moment.g.dart';
+part 'content.g.dart';
 
 @JsonSerializable(nullable: true)
 class Moment {
