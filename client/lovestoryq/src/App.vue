@@ -12,7 +12,13 @@
 import { Options, Vue } from "vue-class-component";
 
 @Options({})
-export default class App extends Vue {}
+export default class App extends Vue {
+  created() {
+    if (!this.$store.state.user.auth) {
+      this.$store.dispatch("getAuth");
+    }
+  }
+}
 </script>
 
 <style lang="less">

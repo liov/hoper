@@ -624,3 +624,26 @@ Before
 option go_package = ".;openapiconfig";
 After
 option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/proto/openapiconfig";
+
+# node_modules\deasync: Command failed
+Exit code: 1
+Command: node ./build.js
+Arguments:
+Directory: .\node_modules\deasync
+Output:
+node:events:346
+      throw er; // Unhandled 'error' event
+      ^
+Error: spawn node-gyp.cmd ENOENT
+    at Process.ChildProcess._handle.onexit (node:internal/child_process:282:19)
+    at onErrorNT (node:internal/child_process:480:16)
+    at processTicksAndRejections (node:internal/process/task_queues:81:21)
+Emitted 'error' event on ChildProcess instance at:
+    at Process.ChildProcess._handle.onexit (node:internal/child_process:288:12)
+    at onErrorNT (node:internal/child_process:480:16)
+    at processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'spawn node-gyp.cmd',
+
+npm install -g node-gyp

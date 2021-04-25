@@ -1,15 +1,6 @@
 <template>
   <div>
-    <van-field
-      v-model="message"
-      rows="3"
-      autosize
-      label-width="0"
-      type="textarea"
-      maxlength="567"
-      size="large"
-      show-word-limit
-    />
+    <Tinymce></Tinymce>
     <van-field name="uploader" label-width="0">
       <template #input>
         <van-uploader
@@ -54,8 +45,10 @@
 import { Options, Vue } from "vue-class-component";
 import axios from "axios";
 import { upload } from "@/plugin/utils/upload";
+import Tinymce from "@/components/tinymce";
+import tinymce from "tinymce";
 
-@Options({})
+@Options({ components: { Tinymce } })
 export default class MomentAdd extends Vue {
   message = "";
   permission = "";
@@ -70,6 +63,9 @@ export default class MomentAdd extends Vue {
     file.url = await upload(file.file);
   }
   async submit() {
+    this.message = tinymce.activeEditor.getContent({
+      format: "text",
+    });
     let images = "";
     for (const up of this.uploader) {
       images += up.url + ",";

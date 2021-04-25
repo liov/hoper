@@ -58,7 +58,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 
 	//like
 	if auth.Id != 0 {
-		likes, err := contentDao.GetContentActionDB(db, content.ActionLike, content.ContentMoment, []uint64{req.Id}, auth.Id)
+		likes, err := contentDao.GetContentActionsDB(db, content.ActionLike, content.ContentMoment, []uint64{req.Id}, auth.Id)
 		if err != nil {
 			return nil, err
 		}
@@ -275,7 +275,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	}
 	//like
 	if auth.Id != 0 {
-		likes, err := contentDao.GetContentActionDB(db, content.ActionLike, content.ContentMoment, ids, auth.Id)
+		likes, err := contentDao.GetContentActionsDB(db, content.ActionLike, content.ContentMoment, ids, auth.Id)
 		if err != nil {
 			return nil, err
 		}

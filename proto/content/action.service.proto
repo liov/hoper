@@ -104,7 +104,6 @@ message LikeReq{
   ActionType action = 3 [(go.field) = {tags:'annotation:"动作类型"'}];
   uint64 userId = 5 [(go.field) = {tags:'annotation:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
-  bool del = 6 [(go.field) = {tags:'gorm:"-" annotation:"是否删除,true-取消"'}];
 }
 
 message CommentReq{

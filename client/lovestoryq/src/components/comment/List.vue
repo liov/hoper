@@ -75,6 +75,7 @@ export default class CommentList extends Vue.with(Props) {
     } else {
       this.list = this.list.concat(data.list);
     }
+    this.$store.state.content.commentCache.set(this.rootId, this.list);
     this.show = true;
     this.$store.commit("appendUsers", data.users);
     this.pageNo++;

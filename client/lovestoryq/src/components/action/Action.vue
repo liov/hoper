@@ -41,7 +41,6 @@ export default class Action extends Vue.with(Props) {
     emitter.emit("more-show", { type: this.type, refId: this.content.id });
   }
   favShow() {
-    console.log(this.content.collect);
     emitter.emit("fav-show", {
       type: this.type,
       refId: this.content.id,
@@ -59,12 +58,12 @@ export default class Action extends Vue.with(Props) {
       await axios.delete(api + "/" + this.content.likeId);
       this.content.likeId = 0;
     } else {
-      const res = await axios.post(api, {
+      const { data } = await axios.post(api, {
         refId: id,
         type: this.type,
         action: 2,
       });
-      this.content.likeId = res.data.details.id;
+      this.content.likeId = data.details.id;
     }
   }
 }

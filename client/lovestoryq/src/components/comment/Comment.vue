@@ -65,7 +65,7 @@ export default class Comment extends Vue.with(Props) {
     const id = this.comment.id;
     const likeId = this.comment.likeId;
     if (likeId > 0) {
-      await axios.delete(api, { data: { id: likeId } });
+      await axios.delete(`${api}/${likeId}`);
       this.comment.likeId = 0;
     } else {
       const res = await axios.post(api, {

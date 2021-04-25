@@ -41,22 +41,17 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 	if err != nil {
 		return &request.Object{Id: id}, err
 	}
-	if (id > 0 && !req.Del) || (id == 0 && req.Del) {
-		return nil, nil
+	if id > 0 {
+		return &request.Object{Id: id}, nil
 	}
 
 	err = db.Transaction(func(tx *gorm.DB) error {
-		if req.Del {
-			err = contentDao.DelActionDB(tx, req.Type, req.Action, req.RefId, auth.Id)
-			if err != nil {
-				return err
-			}
-		} else {
-			err = db.Table(model.LikeTableName).Create(req).Error
-			if err != nil {
-				return err
-			}
+
+		err = db.Table(model.LikeTableName).Create(req).Error
+		if err != nil {
+			return err
 		}
+
 		err = contentDao.ActionCountDB(tx, req.Type, req.Action, req.RefId, 1)
 		if err != nil {
 			return err
@@ -66,11 +61,8 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 	if err != nil {
 		return nil, errorcode.DBError
 	}
-	if req.Del {
-		err = contentDao.HotCountRedis(dao.Dao.Redis, req.Type, req.RefId, -1)
-	} else {
-		err = contentDao.HotCountRedis(dao.Dao.Redis, req.Type, req.RefId, 1)
-	}
+
+	err = contentDao.HotCountRedis(dao.Dao.Redis, req.Type, req.RefId, 1)
 
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.RedisErr, err, "HotCountRedis")
@@ -86,12 +78,29 @@ func (*ActionService) DelLike(ctx context.Context, req *request.Object) (*empty.
 		return nil, err
 	}
 	contentDao := dao.GetDao(ctxi)
-	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
+	db := dao.Dao.GetDB(ctxi.Logger)
+	like, err := contentDao.GetLikeDB(db, req.Id, auth.Id)
 	if err != nil {
 		return nil, err
 	}
-	db := dao.Dao.GetDB(ctxi.Logger)
+	if like.Id == 0 {
+		return nil, errorcode.ParamInvalid
+	}
 	err = contentDao.DelByAuthDB(db, model.LikeTableName, req.Id, auth.Id)
+	if err != nil {
+		return nil, err
+	}
+	err = contentDao.ActionCountDB(db, like.Type, like.Action, like.RefId, -1)
+	if err != nil {
+		return nil, err
+	}
+	err = contentDao.HotCountRedis(dao.Dao.Redis, like.Type, like.RefId, -1)
+	if err != nil {
+		return nil, err
+	}
+	if err != nil {
+		return nil, err
+	}
 	return nil, err
 }
 
@@ -103,10 +112,7 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*re
 		return nil, err
 	}
 	contentDao := dao.GetDao(ctxi)
-	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
-	if err != nil {
-		return nil, err
-	}
+
 	db := dao.Dao.GetDB(ctxi.Logger)
 	req.UserId = auth.Id
 	err = db.Transaction(func(tx *gorm.DB) error {
@@ -125,6 +131,10 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*re
 			ctxi.Error(err.Error(), zap.String(log.Position, "Transaction"))
 		}
 		return nil, errorcode.DBError
+	}
+	err = contentDao.ActionCountDB(db, req.Type, content.ActionComment, req.RefId, 1)
+	if err != nil {
+		return nil, err
 	}
 	err = contentDao.HotCountRedis(dao.Dao.Redis, req.Type, req.RefId, 1)
 	if err != nil {
@@ -164,6 +174,10 @@ func (*ActionService) DelComment(ctx context.Context, req *request.Object) (*emp
 	}
 
 	err = contentDao.DelDB(db, model.CommentTableName, req.Id)
+	if err != nil {
+		return nil, err
+	}
+	err = contentDao.ActionCountDB(db, comment.Type, content.ActionComment, comment.RefId, -1)
 	if err != nil {
 		return nil, err
 	}
@@ -275,7 +289,7 @@ func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*empt
 func (*ActionService) CommentList(ctx context.Context, req *content.CommentListReq) (*content.CommentListRep, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	_, err := auth(ctxi, true)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -306,6 +320,32 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 		}
 	}
 
+	//like
+	if auth.Id != 0 {
+		likes, err := contentDao.GetContentActionsDB(db, content.ActionLike, content.ContentComment, ids, auth.Id)
+		if err != nil {
+			return nil, err
+		}
+		for i := range likes {
+			if moment, ok := m[likes[i].RefId]; ok {
+				if likes[i].Action == content.ActionLike {
+					moment.LikeId = likes[i].Id
+				}
+				if likes[i].Action == content.ActionUnlike {
+					moment.UnlikeId = likes[i].Id
+				}
+			}
+		}
+		collects, err := contentDao.GetCollectsDB(db, content.ContentComment, ids, auth.Id)
+		if err != nil {
+			return nil, err
+		}
+		for i := range collects {
+			if moment, ok := m[collects[i].RefId]; ok {
+				moment.Collects = append(moment.Collects, collects[i].FavId)
+			}
+		}
+	}
 	var users []*user.UserBaseInfo
 	if len(userIds) > 0 {
 		userList, err := client.UserClient.BaseList(ctxi, &user.BaseListReq{Ids: userIds})

@@ -27,14 +27,16 @@ type ContentExt struct {
 
 type ContentAction struct {
 	Id     uint64
+	Type   content.ContentType
 	RefId  uint64 `json:"refId" validate:"required" annotation:"相关id"`
 	Action content.ActionType
 }
 
 type ContentCollect struct {
 	Id    uint64
+	Type  content.ContentType
 	RefId uint64 `json:"refId" validate:"required" annotation:"相关id"`
-	FavId uint64 `json:"favId" validate:"required" annotation:"相关id"`
+	FavId uint64 `json:"favId" validate:"required" annotation:"收藏夹id"`
 }
 type Collect struct {
 	Id     uint64
