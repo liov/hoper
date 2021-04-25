@@ -8,7 +8,7 @@
       type="textarea"
       placeholder="请输入评论"
       :rules="[{ required: true, message: '输入内容为空' }]"
-      @focus="focus = true"
+      @focus="onFocus"
       @blur="focus = false"
       ref="commentRef"
     >
@@ -36,6 +36,8 @@ import Action from "@/components/action/Action.vue";
 import axios from "axios";
 import { upload } from "@/plugin/utils/upload";
 import emitter from "@/plugin/emitter";
+import dateTool from "@/plugin/utils/date";
+import store from "@/store/index";
 class Props {
   comment = prop<any>({ default: {} });
 }
@@ -64,15 +66,21 @@ export default class AddComment extends Vue.with(Props) {
       this.$toast.fail("内容为空");
       return;
     }
-    await axios.post("/api/v1/action/comment", {
+    const comment = {
       type: this.comment.type,
       refId: this.comment.refId,
       content: this.message,
       image: this.uploader.length > 0 ? this.uploader[0].url : "",
       replyId: this.comment.replyId,
-      rootId: this.comment.rootId,
+      rootId: this.comment.rootId ? this.comment.rootId : 0,
       recvId: this.comment.recvId,
-    });
+    };
+    const res = await axios.post("/api/v1/action/comment", comment);
+    comment.id = res.data.details.id;
+    comment.userId = this.$store.state.user.auth.id;
+    comment.created_at = new Date().format(dateTool.format);
+    const comments = this.$store.state.content.commentCache.get(comment.rootId);
+    comments.push(comment);
     this.$toast.success("评论成功");
   }
   async afterRead(file: any) {
@@ -82,6 +90,17 @@ export default class AddComment extends Vue.with(Props) {
   }
   user(id: number) {
     return this.$store.getters.getUser(id);
+  }
+  async onFocus() {
+    if (!store.state.user.auth) {
+      await this.$store.dispatch("getAuth");
+    }
+    if (store.state.user.auth) this.focus = true;
+    else
+      await this.$router.push({
+        name: "Login",
+        query: { back: this.$route.path },
+      });
   }
 }
 </script>

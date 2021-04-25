@@ -54,4 +54,7 @@ export class ObjMap<K, V extends Obj<any>> {
   set(id: K, v: V) {
     this._map.set(id, v);
   }
+  has(key: K): boolean{
+    return this._map.has(key)
+  }
 }

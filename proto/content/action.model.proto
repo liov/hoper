@@ -12,11 +12,11 @@ option go_package = "github.com/liov/hoper/go/v2/protobuf/content";
 
 message Like{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  ContentType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null;index:idx_type_id" validate:"required" annotation:"相关类型"'}];
   uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_type_id" validate:"required" annotation:"相关id"'}];
+  uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
+  ContentType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null;index:idx_type_id" validate:"required" annotation:"相关类型"'}];
   ActionType action = 3 [(go.field) = {tags:'gorm:"type:int2;default:1" validate:"required" annotation:"动作"'}];
   user.UserBaseInfo user = 4 [(go.field) = {tags:'gorm:"-" annotation:"用户"'}];
-  uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
   string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
   string deletedAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00;index"'}];
 }
@@ -24,10 +24,10 @@ message Like{
 // 举报
 message Report{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  ContentType type = 12 [(go.field) = {tags:'gorm:"type:int2;not null;index:idx_type_id" validate:"required" annotation:"相关类型"'}];
   uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_type_id" validate:"required" annotation:"相关id"'}];
-  user.UserBaseInfo user = 2 [(go.field) = {tags:'gorm:"-" annotation:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
+  ContentType type = 12 [(go.field) = {tags:'gorm:"type:int2;not null;index:idx_type_id" validate:"required" annotation:"相关类型"'}];
+  user.UserBaseInfo user = 2 [(go.field) = {tags:'gorm:"-" annotation:"用户"'}];
   DelReason delReason = 3[(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"举报原因"'}];
   string remark = 4[(go.field) = {tags:'gorm:"size:255;default:\'\'" annotation:"备注"'}];
   string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
@@ -36,10 +36,10 @@ message Report{
 // 收藏
 message Collection{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  ContentType type = 12 [(go.field) = {tags:'json:"-" gorm:"type:int2;not null;index:idx_type_id" validate:"required" annotation:"相关类型"'}];
   uint64 refId = 6 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index:idx_type_id" validate:"required" annotation:"相关id"'}];
-  user.UserBaseInfo user = 2 [(go.field) = {tags:'gorm:"-" annotation:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
+  ContentType type = 12 [(go.field) = {tags:'json:"-" gorm:"type:int2;not null;index:idx_type_id" validate:"required" annotation:"相关类型"'}];
+  user.UserBaseInfo user = 2 [(go.field) = {tags:'gorm:"-" annotation:"用户"'}];
   uint64 favId = 3 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
   string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
   string deletedAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00;index"'}];
@@ -47,8 +47,8 @@ message Collection{
 
 // 系统删除内容记录
 message ContentDel{
-  ContentType type = 1 [(go.field) = {tags:'json:"-" gorm:"type:int2;default:0;index:idx_type_id" annotation:"类型"'}];
-  uint64 refId = 2 [(go.field) = {tags:'json:"-" gorm:"size:20;default:0;index:idx_type_id" annotation:"相关id"'}];
+  uint64 refId = 2 [(go.field) = {tags:'json:"-" gorm:"size:20;default:0;primaryKey;autoIncrement:false" annotation:"相关id"'}];
+  ContentType type = 1 [(go.field) = {tags:'json:"-" gorm:"type:int2;default:0;primaryKey;autoIncrement:false" annotation:"类型"'}];
   DelReason delReason = 3[(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"删除原因"'}];
   string remark = 4[(go.field) = {tags:'gorm:"size:255;default:\'\'" annotation:"备注"'}];
   string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
@@ -56,10 +56,10 @@ message ContentDel{
 // 评论
 message Comment{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  ContentType type = 12 [(go.field) = {tags:'json:"-" gorm:"size:1;not null;index:idx_type_id" validate:"required" annotation:"相关类型"'}];
   uint64 refId = 6 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index:idx_type_id" validate:"required" annotation:"相关id"'}];
-  user.UserBaseInfo user = 2 [(go.field) = {tags:'gorm:"" annotation:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
+  ContentType type = 12 [(go.field) = {tags:'json:"-" gorm:"size:1;not null;index:idx_type_id" validate:"required" annotation:"相关类型"'}];
+  user.UserBaseInfo user = 2 [(go.field) = {tags:'gorm:"" annotation:"用户"'}];
   string content = 3 [(go.field) = {tags:'gorm:"size:255;not null" annotation:"内容"'}];
   string image = 13 [(go.field) = {tags:'gorm:"size:255;not null" annotation:"图片"'}];
   uint64 replyId = 7 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"回复id"'}];
@@ -67,6 +67,9 @@ message Comment{
   user.UserBaseInfo recvUser = 9 [(go.field) = {tags:'gorm:"-" annotation:"接收人"'}];
   uint64 recvId = 10 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"接收人id"'}];
   ContentExt ext = 30[(go.field) = {tags:'gorm:"-" annotation:"统计数据"'}];
+  uint64 likeId = 32 [(go.field) = {tags:'gorm:"-" annotation:"喜欢id,为0代表用户没有点喜欢"'}];
+  uint64 unlikeId = 29 [(go.field) = {tags:'gorm:"-" annotation:"不喜欢id,为0代表用户没有点喜欢"'}];
+  repeated uint64 collects = 31 [(go.field) = {tags:'gorm:"-" annotation:"是否收藏"'}];
   repeated Comment subComments = 11 [(go.field) = {tags:'gorm:"-" annotation:"子评论"'}];
   uint32 sequence = 4 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"同级别的分类可根据sequence的值来排序，置顶"'}];
   string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];

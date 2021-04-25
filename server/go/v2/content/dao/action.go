@@ -139,16 +139,28 @@ WHERE id = ?  AND type = ? AND user_id = ? AND ` + dbi.PostgreNotDeleted + ` LIM
 	return exists, nil
 }
 
-func (d *contentDao) GetContentActionDB(db *gorm.DB, action content.ActionType, typ content.ContentType, refIds []uint64, userId uint64) ([]model.ContentAction, error) {
+func (d *contentDao) GetContentActionsDB(db *gorm.DB, action content.ActionType, typ content.ContentType, refIds []uint64, userId uint64) ([]model.ContentAction, error) {
 	ctxi := d.ctxi
 	var actions []model.ContentAction
 	err := db.Select("id,ref_id,action").Table(model.ActionTableName(action)).
 		Where("type = ? AND ref_id IN (?) AND user_id = ? AND "+dbi.PostgreNotDeleted,
 			typ, refIds, userId).Scan(&actions).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "GetContentActionDB")
+		return nil, ctxi.ErrorLog(errorcode.DBError, err, "GetContentActionsDB")
 	}
 	return actions, nil
+}
+
+func (d *contentDao) GetLikeDB(db *gorm.DB, likeId, userId uint64) (*model.ContentAction, error) {
+	ctxi := d.ctxi
+	var action model.ContentAction
+	err := db.Select("id,ref_id,action").Table(model.LikeTableName).
+		Where("id = ? AND user_id = ? AND "+dbi.PostgreNotDeleted,
+			likeId, userId).Scan(&action).Error
+	if err != nil {
+		return nil, ctxi.ErrorLog(errorcode.DBError, err, "GetContentActionsDB")
+	}
+	return &action, nil
 }
 
 func (d *contentDao) GetCollectsDB(db *gorm.DB, typ content.ContentType, refIds []uint64, userId uint64) ([]model.ContentCollect, error) {
@@ -158,7 +170,7 @@ func (d *contentDao) GetCollectsDB(db *gorm.DB, typ content.ContentType, refIds 
 		Where("type = ? AND ref_id IN (?) AND user_id = ? AND "+dbi.PostgreNotDeleted,
 			typ, refIds, userId).Scan(&collects).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "GetContentActionDB")
+		return nil, ctxi.ErrorLog(errorcode.DBError, err, "GetContentActionsDB")
 	}
 	return collects, nil
 }

@@ -222,7 +222,8 @@ service UserService {
   //获取基础用户信息
   rpc BaseList (BaseListReq) returns (BaseListRep) {
     option (google.api.http) = {
-      get: "/api/v1/baseUserList"
+      post: "/api/v1/baseUserList"
+      body : "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]

@@ -4,17 +4,18 @@ import router from "@/router/index";
 import { ObjMap } from "@/plugin/utils/user";
 import { Module } from "vuex";
 import { RootState } from "./index.d";
+import store from ".";
 
 export interface UserState {
   auth: any;
   token: string;
-  userCache: ObjMap<number, any>;
+  userCache: Map<number, any>;
 }
 
 const state: UserState = {
   auth: null,
   token: "",
-  userCache: new ObjMap(),
+  userCache: new Map<number, any>(),
 };
 
 const mutations = {
@@ -25,7 +26,9 @@ const mutations = {
     state.token = token;
   },
   appendUsers: function (state, users) {
-    state.userCache.append(users);
+    for (const user of users) {
+      state.userCache.set(user.id, user);
+    }
   },
 };
 
@@ -56,6 +59,19 @@ const actions = {
         throw new Error("Bad credentials");
       }
       throw error;
+    }
+  },
+  async appendUsers({ state, commit, rootState }, ids: number[]) {
+    const noExistsId: number[] = [];
+    ids.forEach((value) => {
+      if (!state.userCache.has(value)) noExistsId.push(value);
+    });
+    if (noExistsId.length > 0) {
+      const { data } = await axios.post(`/api/v1/user/baseUserList`, {
+        ids: noExistsId,
+      });
+      if (data.code && data.code !== 0) Toast.fail(data.message);
+      else commit("appendUsers", data.details.list);
     }
   },
 };
