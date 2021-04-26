@@ -39,7 +39,7 @@ func (s *Server) httpHandler(conf *initialize.ServerConfig) http.HandlerFunc {
 	}
 
 	// http.Handle("/", ginServer)
-	var excludes = []string{"/api/v1/upload", "/api/v1/multiUpload"}
+	var excludes = []string{"/api/v1/upload", "/api/v1/multiUpload", "/api/ws/chat"}
 	var includes = []string{"/api"}
 	return func(w http.ResponseWriter, r *http.Request) {
 		// 暂时解决方法，三个路由

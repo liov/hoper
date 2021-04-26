@@ -33,32 +33,23 @@ func (*DiaryService) DiaryBookList(context.Context, *content.DiaryBookListReq) (
 func (*DiaryService) AddDiaryBook(ctx context.Context, req *content.AddDiaryBookReq) (*request.Object, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := auth(ctxi,true)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
-	contentDao := dao.GetDao(ctxi)
-	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
-	if err != nil {
-		return nil, err
-	}
+
 	db := dao.Dao.GetDB(ctxi.Logger)
 	req.UserId = auth.Id
 	err = db.Table(model.DiaryBookTableName).Create(req).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "Create")
 	}
-	return &request.Object{Id:req.Id}, nil
+	return &request.Object{Id: req.Id}, nil
 }
 func (*DiaryService) EditDiaryBook(ctx context.Context, req *content.AddDiaryBookReq) (*empty.Empty, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := auth(ctxi,true)
-	if err != nil {
-		return nil, err
-	}
-	contentDao := dao.GetDao(ctxi)
-	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -71,10 +62,10 @@ func (*DiaryService) EditDiaryBook(ctx context.Context, req *content.AddDiaryBoo
 	}
 	return nil, nil
 }
-func (*DiaryService) Info(ctx context.Context,req *request.Object) (*content.Diary, error) {
+func (*DiaryService) Info(ctx context.Context, req *request.Object) (*content.Diary, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := auth(ctxi,true)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -85,21 +76,16 @@ func (*DiaryService) Info(ctx context.Context,req *request.Object) (*content.Dia
 	}
 	db := dao.Dao.GetDB(ctxi.Logger)
 	var diary content.Diary
-	err = db.Where(`id = ? AND user_id = ?`,req.Id,auth.Id).First(&diary).Error
+	err = db.Where(`id = ? AND user_id = ?`, req.Id, auth.Id).First(&diary).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "First")
 	}
 	return nil, nil
 }
-func (*DiaryService) Add(ctx context.Context,req *content.AddDiaryReq) (*empty.Empty, error) {
+func (*DiaryService) Add(ctx context.Context, req *content.AddDiaryReq) (*empty.Empty, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := auth(ctxi,true)
-	if err != nil {
-		return nil, err
-	}
-	contentDao := dao.GetDao(ctxi)
-	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -117,20 +103,16 @@ func (*DiaryService) Edit(context.Context, *content.AddDiaryReq) (*empty.Empty, 
 func (*DiaryService) List(context.Context, *content.DiaryListReq) (*content.DiaryListRep, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
-func (*DiaryService) Delete(ctx context.Context,req *request.Object) (*empty.Empty, error) {
+func (*DiaryService) Delete(ctx context.Context, req *request.Object) (*empty.Empty, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := auth(ctxi,true)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
 	contentDao := dao.GetDao(ctxi)
-	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
-	if err != nil {
-		return nil, err
-	}
 	db := dao.Dao.GetDB(ctxi.Logger)
-	err = contentDao.DelByAuthDB(db,model.DiaryTableName,req.Id,auth.Id)
+	err = contentDao.DelByAuthDB(db, model.DiaryTableName, req.Id, auth.Id)
 	if err != nil {
 		return nil, err
 	}

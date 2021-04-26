@@ -49,4 +49,5 @@ createApp(App)
   .use(Vant.DatetimePicker)
   .use(Vant.Checkbox)
   .use(Vant.CheckboxGroup)
+  .use(Vant.Popover)
   .mount("#app");

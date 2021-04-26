@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/liov/hoper/go/v2/protobuf/utils/request"
 	contexti "github.com/liov/hoper/go/v2/tailmon/context"
+	"gorm.io/gorm"
 	"net/http"
 
 	"github.com/liov/hoper/go/v2/content/conf"
@@ -99,9 +100,19 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*emp
 	}
 	db := dao.Dao.GetDB(ctxi.Logger)
 	req.UserId = auth.Id
-	err = db.Table(model.FavoritesTableName).Create(req).Error
+	err = contentDao.Transaction(db, func(tx *gorm.DB) error {
+		err = db.Table(model.FavoritesTableName).Create(req).Error
+		if err != nil {
+			return ctxi.ErrorLog(errorcode.DBError, err, "CreateFav")
+		}
+		err = contentDao.CreateContextExt(db, content.ContentFavorites, req.Id)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "CreateFav")
+		return nil, err
 	}
 	return nil, nil
 }

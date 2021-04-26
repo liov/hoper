@@ -1,6 +1,15 @@
 <template>
   <div>
-    <Tinymce></Tinymce>
+      <van-field
+      v-model="message"
+      rows="3"
+      autosize
+      label-width="0"
+      type="textarea"
+      maxlength="567"
+      size="large"
+      show-word-limit
+    />
     <van-field name="uploader" label-width="0">
       <template #input>
         <van-uploader
