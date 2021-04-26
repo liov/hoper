@@ -16,7 +16,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/about",
-    component: () => import("../views/About.vue"),
+    component: () => import("../views/chat/index.vue"),
   },
   {
     path: "/me",

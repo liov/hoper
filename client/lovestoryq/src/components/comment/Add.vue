@@ -8,8 +8,8 @@
       type="textarea"
       placeholder="请输入评论"
       :rules="[{ required: true, message: '输入内容为空' }]"
-      @focus="onFocus"
-      @blur="focus = false"
+      @click-input="onFocus"
+      @blur="onBlur"
       ref="commentRef"
     >
       <template #button>
@@ -55,6 +55,7 @@ export default class AddComment extends Vue.with(Props) {
         this.comment.recvId = param.recvId;
       }
       this.$refs.commentRef.focus();
+      this.onFocus();
     });
   }
   unmounted() {
@@ -78,10 +79,11 @@ export default class AddComment extends Vue.with(Props) {
     const res = await axios.post("/api/v1/action/comment", comment);
     comment.id = res.data.details.id;
     comment.userId = this.$store.state.user.auth.id;
-    comment.created_at = new Date().format(dateTool.format);
     const comments = this.$store.state.content.commentCache.get(comment.rootId);
     comments.push(comment);
+    console.log(this.$store.state.content.commentCache);
     this.$toast.success("评论成功");
+    this.message = "";
   }
   async afterRead(file: any) {
     this.loading = true;
@@ -101,6 +103,9 @@ export default class AddComment extends Vue.with(Props) {
         name: "Login",
         query: { back: this.$route.path },
       });
+  }
+  onBlur(e: FocusEvent) {
+    if (!e.relatedTarget) this.focus = false;
   }
 }
 </script>

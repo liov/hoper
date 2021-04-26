@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/liov/hoper/go/v2/chat"
 	"github.com/liov/hoper/go/v2/tailmon/pick"
 	"github.com/liov/hoper/go/v2/upload"
 	"github.com/liov/hoper/go/v2/utils/net/http/gin/handler"
@@ -66,6 +67,7 @@ func main() {
 			app.GET("/api/v1/exists/:md5/:size", upload.ExistsGin)
 			app.POST("/api/v1/upload/:md5", handler.Convert(upload.Upload))
 			app.POST("/api/v1/multiUpload", handler.Convert(upload.MultiUpload))
+			app.GET("/api/ws/chat", handler.Convert(chat.Chat))
 			pick.Gin(app, true, initialize.InitConfig.Module)
 		},
 	}).Start()

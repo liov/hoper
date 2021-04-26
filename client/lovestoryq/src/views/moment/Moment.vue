@@ -19,10 +19,9 @@
         </div>
       </template>
       <van-tab title="关注">
-        <MomentList />
       </van-tab>
       <van-tab title="推荐"> 内容2 </van-tab>
-      <van-tab title="最新"> 内容3 </van-tab>
+      <van-tab title="最新"> <MomentList /> </van-tab>
     </van-tabs>
     <van-row type="flex">
       <van-col span="6"> span: 6 </van-col>
@@ -42,7 +41,7 @@ import MomentList from "@/views/moment/List.vue"; // @ is an alias to /src
   },
 })
 export default class Moment extends Vue {
-  active = 0;
+  active = 2;
 
   onChange(index: number) {
     this.$toast({ message: index });

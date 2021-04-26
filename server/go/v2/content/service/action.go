@@ -45,11 +45,11 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 		return &request.Object{Id: id}, nil
 	}
 
-	err = db.Transaction(func(tx *gorm.DB) error {
+	err = contentDao.Transaction(db, func(tx *gorm.DB) error {
 
 		err = db.Table(model.LikeTableName).Create(req).Error
 		if err != nil {
-			return err
+			return ctxi.ErrorLog(errorcode.DBError, err, "Create")
 		}
 
 		err = contentDao.ActionCountDB(tx, req.Type, req.Action, req.RefId, 1)
@@ -59,7 +59,7 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 		return nil
 	})
 	if err != nil {
-		return nil, errorcode.DBError
+		return nil, err
 	}
 
 	err = contentDao.HotCountRedis(dao.Dao.Redis, req.Type, req.RefId, 1)
@@ -120,6 +120,10 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*re
 		if err != nil {
 			return ctxi.ErrorLog(errorcode.DBError, err, "Create")
 		}
+		err = contentDao.CreateContextExt(tx, content.ContentComment, req.Id)
+		if err != nil {
+			return err
+		}
 		err = contentDao.ActionCountDB(tx, req.Type, content.ActionComment, req.RefId, 1)
 		if err != nil {
 			return err
@@ -130,10 +134,6 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*re
 		if err != errorcode.DBError {
 			ctxi.Error(err.Error(), zap.String(log.Position, "Transaction"))
 		}
-		return nil, errorcode.DBError
-	}
-	err = contentDao.ActionCountDB(db, req.Type, content.ActionComment, req.RefId, 1)
-	if err != nil {
 		return nil, err
 	}
 	err = contentDao.HotCountRedis(dao.Dao.Redis, req.Type, req.RefId, 1)
@@ -151,10 +151,7 @@ func (*ActionService) DelComment(ctx context.Context, req *request.Object) (*emp
 		return nil, err
 	}
 	contentDao := dao.GetDao(ctxi)
-	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
-	if err != nil {
-		return nil, err
-	}
+
 	db := dao.Dao.GetDB(ctxi.Logger)
 	var comment content.Comment
 	err = db.Table(model.CommentTableName).First(&comment, "id = ?", req.Id).Error

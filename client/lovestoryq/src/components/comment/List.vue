@@ -1,16 +1,16 @@
 <template>
   <div>
     <van-list
+      v-if="list.length > 0 "
       v-model:loading="loading"
       :finished="finished"
       finished-text="没有更多了"
       @load="onLoad"
     >
-      <van-cell v-for="item in list" :key="item.id">
+      <van-cell  v-for="item in list" :key="item.id">
         <template #default>
           <van-skeleton title avatar round :row="3" :loading="loading">
             <Comment
-              v-if="show"
               :comment="item"
               :user="user(item.userId)"
             ></Comment>
@@ -43,19 +43,20 @@ export default class CommentList extends Vue.with(Props) {
   finished = false;
   pageNo = 1;
   pageSize = 10;
-  list = Array.from(new Array(this.pageSize), () => {
-    return {};
-  });
+  list = [];
 
   pullDown = reactive({
     refreshing: false,
     successText: "刷新成功",
   });
-  show = false;
 
   //mounted() {}
   user(id: number) {
     return this.$store.getters.getUser(id);
+  }
+
+  created() {
+    this.onLoad();
   }
 
   async onLoad() {
@@ -67,6 +68,7 @@ export default class CommentList extends Vue.with(Props) {
     this.loading = false;
     const data = res.data.details;
     if (!data || !data.list) {
+      this.$store.state.content.commentCache.set(this.rootId, this.list);
       this.finished = true;
       return;
     }
@@ -76,7 +78,7 @@ export default class CommentList extends Vue.with(Props) {
       this.list = this.list.concat(data.list);
     }
     this.$store.state.content.commentCache.set(this.rootId, this.list);
-    this.show = true;
+
     this.$store.commit("appendUsers", data.users);
     this.pageNo++;
     if (data.list.length < this.pageSize) this.finished = true;

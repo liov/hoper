@@ -138,10 +138,6 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		return nil, err
 	}
 	contentDao := dao.GetDao(ctxi)
-	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
-	if err != nil {
-		return nil, err
-	}
 
 	req.UserId = auth.Id
 	db := dao.Dao.GetDB(ctxi.Logger)
@@ -159,7 +155,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 	}
 
 	req.UserId = auth.Id
-	err = db.Transaction(func(tx *gorm.DB) error {
+	err = contentDao.Transaction(db, func(tx *gorm.DB) error {
 		if req.Permission == 0 {
 			req.Permission = content.ViewPermissionAll
 		}
@@ -167,12 +163,9 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		if err != nil {
 			return ctxi.ErrorLog(errorcode.DBError, err, "tx.CreateReq")
 		}
-		err = tx.Table(model.ContentExtTableName).Create(&model.ContentExt{
-			Type:  content.ContentMoment,
-			RefId: req.Id,
-		}).Error
+		err = contentDao.CreateContextExt(tx, content.ContentMoment, req.Id)
 		if err != nil {
-			return ctxi.ErrorLog(errorcode.DBError, err, "tx.CreateReq")
+			return err
 		}
 		var contentTags []model.ContentTag
 		var noExist []content.Tag
@@ -216,10 +209,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		return nil
 	})
 	if err != nil {
-		if err != errorcode.DBError {
-			return nil, ctxi.ErrorLog(errorcode.DBError, err, "Transaction")
-		}
-		return nil, errorcode.DBError
+		return nil, err
 	}
 	return &request.Object{Id: req.Id}, nil
 }
@@ -322,10 +312,7 @@ func (*MomentService) Delete(ctx context.Context, req *request.Object) (*empty.E
 		return nil, err
 	}
 	contentDao := dao.GetDao(ctxi)
-	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
-	if err != nil {
-		return nil, err
-	}
+
 	db := dao.Dao.GetDB(ctxi.Logger)
 	err = contentDao.DelByAuthDB(db, model.MomentTableName, req.Id, auth.Id)
 	if err != nil {

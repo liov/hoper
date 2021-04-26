@@ -1,9 +1,16 @@
-<template></template>
+<template>
+<div v-if="msgs.length > 0">
+<van-popover v-for="(item,idx) in msgs" :key="idx" :show="true" :placement="item.sendUserId==user.Id?'left':'right'" >
+  <span>{{item.msg}}</span>
+  <template #reference>
+    <img class="avatar" :src="user.avatarUrl" />
+  </template>
+</van-popover>
+</div>
+</template>
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-import axios from "axios";
-import { reactive, ref } from "vue";
 import Moment from "@/components/moment/Moment.vue";
 import ActionMore from "@/components/action/More.vue";
 
@@ -20,18 +27,18 @@ export default class Chat extends Vue {
   msgs = [];
 
   created() {
-    // 运行在服务端
     this.user = this.$store.state.user.auth;
+    this.newWs();
   }
   beforeDestroy() {
     this.ws.close();
   }
   newWs() {
     this.ws = new WebSocket(
-      +document.location.protocol.replace("http", "w") +
-        "://" +
+      document.location.protocol.replace("http", "ws") +
+        "//" +
         window.location.host +
-        "/ws/chat"
+        ":8090/api/ws/chat"
     );
     this.ws.onopen = () => {
       // console.log('建立websocket连接')
