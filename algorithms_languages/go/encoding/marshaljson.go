@@ -25,5 +25,5 @@ func main() {
 }
 
 func (foo *Foo) MarshalJSON() ([]byte, error) {
-	return []byte("{\"a\":2,\"b\":\"自定义的序列化\"}"), nil
+	return []byte(`{"a":2,"b":"自定义的序列化"}`), nil
 }

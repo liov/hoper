@@ -9,8 +9,11 @@ import (
 	"net/http"
 )
 
-const errRep = "上传失败"
-const sep = "/"
+const errRep = "未登录"
+
+func init() {
+	go manager.start()
+}
 
 func Chat(w http.ResponseWriter, r *http.Request) {
 	conn, error := (&websocket.Upgrader{

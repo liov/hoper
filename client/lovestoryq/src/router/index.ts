@@ -15,7 +15,8 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/moment/Moment.vue"),
   },
   {
-    path: "/about",
+    path: "/chat",
+    beforeEnter: completedAuthenticated,
     component: () => import("../views/chat/index.vue"),
   },
   {

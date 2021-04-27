@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// "io/ioutil" 1.16弃用
 func main() {
 	fileObj, err := os.Open("./text.txt")
 	defer fileObj.Close()

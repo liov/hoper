@@ -1,12 +1,43 @@
 <template>
-<div v-if="msgs.length > 0">
-<van-popover v-for="(item,idx) in msgs" :key="idx" :show="true" :placement="item.sendUserId==user.Id?'left':'right'" >
-  <span>{{item.msg}}</span>
-  <template #reference>
-    <img class="avatar" :src="user.avatarUrl" />
-  </template>
-</van-popover>
-</div>
+  <div v-if="msgs.length > 0">
+    <div v-for="(item, idx) in msgs" :key="idx">
+      <div :class="item.sendUserId == user.id ? 'right' : 'left'">
+        <van-popover
+          :show="true"
+          :placement="item.sendUserId == user.id ? 'left' : 'right'"
+        >
+          <template #default>
+            <span>{{ item.content }}</span>
+          </template>
+          <template #reference>
+            <img class="avatar" :src="user.avatarUrl" />
+          </template>
+        </van-popover>
+      </div>
+    </div>
+    <div class="placeholder"></div>
+  </div>
+  <div class="input">
+    <van-field
+      v-model="message"
+      rows="1"
+      autosize
+      type="textarea"
+      placeholder="回复内容"
+      :rules="[{ required: true, message: '输入内容为空' }]"
+      @click-input="onFocus"
+      @blur="onBlur"
+      ref="commentRef"
+    >
+      <template #button>
+        <div class="button">
+          <van-button size="small" type="primary" @click="handleSubmit"
+            >发送</van-button
+          >
+        </div>
+      </template>
+    </van-field>
+  </div>
 </template>
 
 <script lang="ts">
@@ -18,13 +49,13 @@ import ActionMore from "@/components/action/More.vue";
   components: { Moment, ActionMore },
 })
 export default class Chat extends Vue {
-  submitting = false;
-  value = "";
+  message = "";
   user = null;
-  ws:WebSocket = null; // Our websocket
+  ws: WebSocket = null; // Our websocket
   newMsg = ""; // Holds new messages to be sent to the server
-  recipient = 0; // Email address used for grabbing an avatar
+  recv = 0; // Email address used for grabbing an avatar
   msgs = [];
+  focus = false;
 
   created() {
     this.user = this.$store.state.user.auth;
@@ -42,16 +73,16 @@ export default class Chat extends Vue {
     );
     this.ws.onopen = () => {
       // console.log('建立websocket连接')
-      if (this.value !== "") {
+      if (this.message !== "") {
         this.handleSubmit();
       }
     };
     this.ws.onmessage = (evt) => {
-      this.submitting = false;
-      this.msgs = [...this.msgs, JSON.parse(evt.data)];
-      this.value = "";
+      this.msgs = this.msgs.concat(JSON.parse(evt.data));
+      console.log(this.msgs);
+      this.message = "";
       this.$nextTick(function () {
-        document.querySelector("#bottom").scrollIntoView();
+        document.querySelector(".placeholder").scrollIntoView();
       });
     };
 
@@ -59,11 +90,11 @@ export default class Chat extends Vue {
       this.newWs();
     };
     this.ws.onclose = () => {
-      // console.log('websocket连接关闭')
+      console.log("websocket连接关闭");
     };
   }
   handleSubmit() {
-    if (!this.value) {
+    if (this.message == "") {
       return;
     }
 
@@ -71,24 +102,57 @@ export default class Chat extends Vue {
       this.newWs();
       return;
     }
-    this.submitting = true;
 
     this.ws.send(
       JSON.stringify({
-        recipient_user_id: this.recipient,
-        sender_user_id:
-          this.user !== null
-            ? this.user.id
-            : parseInt(localStorage.getItem("user")),
-        content: this.value, // Strip out html
+        recvUserId: this.recv,
+        sendUserId: this.user.id,
+        content: this.message, // Strip out html
       })
     );
   }
-  handleChange(e) {
-    this.value = e.target.value;
+  async onFocus() {
+    if (!this.$store.state.user.auth) {
+      await this.$store.dispatch("getAuth");
+    }
+    if (this.$store.state.user.auth) this.focus = true;
+    else
+      await this.$router.push({
+        name: "Login",
+        query: { back: this.$route.path },
+      });
+  }
+  onBlur(e: FocusEvent) {
+    if (!e.relatedTarget) this.focus = false;
   }
 }
 </script>
 
 <style scoped lang="less">
+.left {
+  text-align: left;
+}
+.right {
+  text-align: right;
+}
+.input {
+  position: fixed;
+  bottom: 47px;
+  width: 100%;
+}
+.button {
+  display: grid;
+}
+.placeholder {
+  height: 100px;
+}
+@avatar: 30px;
+.avatar {
+  flex-shrink: 0;
+  width: @avatar;
+  height: @avatar;
+  border-radius: 40px;
+  position: relative;
+  margin: 0 16px;
+}
 </style>

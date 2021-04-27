@@ -3,17 +3,17 @@ package main
 import (
 	"encoding/binary"
 	"fmt"
+	"github.com/liov/hoper/go/v2/utils/number"
 	"strconv"
-	"test/utils"
 )
 
 //int类型之间强转，短位转高位负数前面补1正数前面补0，高位转短位截取
 func main() {
 	var i int32 = 255
-	utils.ViewBin(i)
-	utils.ViewBin(uint64(i))
-	utils.ViewBin(int64(i))
-	utils.ViewBin(int8(i)) //-1
+	number.ViewBin(i)
+	number.ViewBin(uint64(i))
+	number.ViewBin(int64(i))
+	number.ViewBin(int8(i)) //-1
 	fmt.Println(byte(i))
 	fmt.Println(string(i))
 	var ii int64 = 255
