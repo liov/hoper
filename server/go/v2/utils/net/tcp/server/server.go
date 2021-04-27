@@ -8,11 +8,11 @@ import (
 	"time"
 )
 
-func main() {
+func Server(addr string) {
 
 	var tcpAddr *net.TCPAddr
 
-	tcpAddr, _ = net.ResolveTCPAddr("tcp", "127.0.0.1:999")
+	tcpAddr, _ = net.ResolveTCPAddr("tcp", addr)
 
 	tcpListener, _ := net.ListenTCP("tcp", tcpAddr)
 

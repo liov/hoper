@@ -37,7 +37,7 @@ import axios from "axios";
 import { upload } from "@/plugin/utils/upload";
 import emitter from "@/plugin/emitter";
 import dateTool from "@/plugin/utils/date";
-import store from "@/store/index";
+
 class Props {
   comment = prop<any>({ default: {} });
 }
@@ -94,10 +94,10 @@ export default class AddComment extends Vue.with(Props) {
     return this.$store.getters.getUser(id);
   }
   async onFocus() {
-    if (!store.state.user.auth) {
+    if (!this.$store.state.user.auth) {
       await this.$store.dispatch("getAuth");
     }
-    if (store.state.user.auth) this.focus = true;
+    if (this.$store.state.user.auth) this.focus = true;
     else
       await this.$router.push({
         name: "Login",

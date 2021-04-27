@@ -8,9 +8,9 @@ import (
 	"time"
 )
 
-func main() {
+func Client(addr string) {
 	var tcpAddr *net.TCPAddr
-	tcpAddr, _ = net.ResolveTCPAddr("tcp", "127.0.0.1:999")
+	tcpAddr, _ = net.ResolveTCPAddr("tcp", addr)
 
 	conn, err := net.DialTCP("tcp", nil, tcpAddr)
 	if err != nil {
@@ -22,10 +22,10 @@ func main() {
 
 	fmt.Println(conn.LocalAddr().String() + " : Client connected!")
 
-	onMessageRecived(conn)
+	onMessageReceived(conn)
 }
 
-func onMessageRecived(conn *net.TCPConn) {
+func onMessageReceived(conn *net.TCPConn) {
 	reader := bufio.NewReader(conn)
 	b := []byte(conn.LocalAddr().String() + " Say hello to Server... \n")
 	conn.Write(b)
