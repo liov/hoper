@@ -1,15 +1,14 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.springframework.boot.gradle.tasks.bundling.BootJar
-
 plugins {
-    kotlin("jvm")
+    application
     id("org.springframework.boot")
-    kotlin("plugin.jpa")
     kotlin("plugin.spring")
+    id("com.github.johnrengelman.shadow") version "5.1.0"
+    kotlin("kapt")
 }
 
-tasks.getByName<BootJar>("bootJar") {
-    mainClassName = "xyz.hoper.user.UserApplicationKt"
+
+application {
+    mainClassName = "xyz.hoper.user.UserApplication"
 }
 
 sourceSets {
@@ -21,20 +20,53 @@ sourceSets {
 }
 
 dependencies {
-    api("io.github.lognet:grpc-spring-boot-starter:3.5.2")
     implementation(project(":protobuf"))
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("org.springframework.boot:spring-boot-starter-websocket")
-    implementation("com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config")
-    implementation("com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("org.springframework.kafka:spring-kafka")
+    implementation("io.vertx:vertx-web-client:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-auth-jwt:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-web:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-grpc:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-service-proxy:${rootProject.ext["vertxVersion"]}:processor")
+    implementation("io.vertx:vertx-mysql-client:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-web-api-contract:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-auth-oauth2:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-redis-client:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-reactive-streams:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-web-graphql:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-rx-java2:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-junit5:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-service-factory:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-pg-client:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-lang-kotlin-coroutines:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-rabbitmq-client:${rootProject.ext["vertxVersion"]}")
+    implementation("io.vertx:vertx-lang-kotlin:${rootProject.ext["vertxVersion"]}")
+    implementation("org.reflections:reflections:0.9.12")
+    implementation("org.springframework.boot:spring-boot-starter")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    runtimeOnly("mysql:mysql-connector-java")
-    runtimeOnly("org.postgresql:postgresql")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
+    compileOnly("io.vertx:vertx-service-proxy:${rootProject.ext["vertxVersion"]}")
+    compileOnly("io.vertx:vertx-codegen:${rootProject.ext["vertxVersion"]}")
+    annotationProcessor("io.vertx:vertx-service-proxy:${rootProject.ext["vertxVersion"]}")
+    kapt("io.vertx:vertx-codegen:${rootProject.ext["vertxVersion"]}:processor")
+    testImplementation("io.vertx:vertx-junit5:${rootProject.ext["vertxVersion"]}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${rootProject.ext["junitJupiterEngineVersion"]}")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${rootProject.ext["junitJupiterEngineVersion"]}")
+}
+
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("PASSED", "FAILED", "SKIPPED")
+    }
+}
+
+tasks.withType<JavaCompile> {
+    options.annotationProcessorGeneratedSourcesDirectory = file("$projectDir/build/generated")
+    options.compilerArgs = listOf(
+            "-Acodegen.output=src/main"
+    )
 }

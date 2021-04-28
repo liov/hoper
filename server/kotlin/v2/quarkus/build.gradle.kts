@@ -23,8 +23,13 @@ sourceSets {
 
 
 dependencies {
-    implementation("io.quarkus:quarkus-resteasy-jackson")
-    implementation("io.quarkus:quarkus-spring-di")
+    implementation("io.quarkus:quarkus-kubernetes")
+    implementation("io.quarkus:quarkus-smallrye-context-propagation")
+    implementation("io.quarkus:quarkus-resteasy-reactive-jsonb")
+    implementation("io.quarkus:quarkus-smallrye-opentracing")
+    implementation("io.quarkus:quarkus-micrometer-registry-prometheus")
+    implementation("io.quarkus:quarkus-opentelemetry-exporter-jaeger")
+    implementation("io.quarkus:quarkus-mailer")
     implementation("io.quarkus:quarkus-kotlin")
     implementation("io.quarkus:quarkus-vertx-web")
     implementation("io.quarkus:quarkus-smallrye-openapi")
@@ -35,7 +40,11 @@ dependencies {
     implementation("io.quarkus:quarkus-smallrye-context-propagation")
     implementation("io.quarkus:quarkus-smallrye-graphql")
     implementation("io.quarkus:quarkus-logging-json")
-    implementation("io.quarkus:quarkus-smallrye-jwt")
+    implementation("io.quarkus:quarkus-redis-client")
+    implementation("io.quarkus:quarkus-reactive-pg-client")
+    implementation("io.quarkus:quarkus-smallrye-jwt-build")
+    implementation("io.quarkus:quarkus-reactive-messaging-http")
+    implementation("io.quarkus:quarkus-arc")
     implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
     implementation("io.quarkus:quarkus-resteasy")
 

@@ -1,4 +1,4 @@
-package xyz.hoper.web.service.impl
+package xyz.hoper.user.service.impl
 
 import io.vertx.core.AsyncResult
 import io.vertx.core.Future
