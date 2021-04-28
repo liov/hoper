@@ -1,4 +1,4 @@
-package xyz.hoper.web.api
+package xyz.hoper.user.api
 
 import io.vertx.core.Handler
 import io.vertx.core.file.FileSystem

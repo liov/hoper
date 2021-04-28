@@ -1,4 +1,4 @@
-package xyz.hoper.web.service
+package xyz.hoper.user.service
 
 import io.vertx.codegen.annotations.ProxyGen
 import io.vertx.core.AsyncResult

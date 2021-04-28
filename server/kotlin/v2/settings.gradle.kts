@@ -6,6 +6,8 @@ include("web")
 include("quarkus")
 
 pluginManagement {
+    val quarkusPluginVersion: String by settings
+    val quarkusPluginId: String by settings
     repositories {
         mavenLocal()
         gradlePluginPortal()
@@ -13,8 +15,7 @@ pluginManagement {
         mavenCentral()
     }
     plugins {
-        val quarkusPluginVersion: String by settings
-        id("io.quarkus") version quarkusPluginVersion
+        id(quarkusPluginId) version quarkusPluginVersion
     }
     resolutionStrategy {
         eachPlugin {

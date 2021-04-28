@@ -2,17 +2,17 @@ package main
 
 import (
 	"fmt"
-	"test/utils"
+	"github.com/liov/hoper/go/v2/utils/number"
 	"unsafe"
 )
 
 func main() {
 	var a int64 = 32
 	fmt.Println(transform(a))
-	utils.ViewBin(transform(1.6e-322))
+	number.ViewBin(transform(1.6e-322))
 	var b int32 = 32
 	fmt.Println(transform(b))
-	utils.ViewBin(transform(float32(4.5e-44)))
+	number.ViewBin(transform(float32(4.5e-44)))
 	fmt.Println(transform(int64(b)))
 }
 

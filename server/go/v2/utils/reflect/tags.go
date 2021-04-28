@@ -33,7 +33,7 @@ type Tag struct {
 	// i.e: `json:"foo,omitempty". Here name is: "foo"
 	Name string
 
-	// Options is a part of the value. It contains a slice of tag options i.e:
+	// Options is a part of the value. It contains a Slice of tag options i.e:
 	// `json:"foo,omitempty". Here options is: ["omitempty"]
 	Options []string
 }
@@ -227,13 +227,13 @@ func (t *Tags) Delete(keys ...string) {
 	t.tags = updated
 }
 
-// Tags returns a slice of tags. The order is the original tag order unless it
+// Tags returns a Slice of tags. The order is the original tag order unless it
 // was changed.
 func (t *Tags) Tags() []*Tag {
 	return t.tags
 }
 
-// Tags returns a slice of tags. The order is the original tag order unless it
+// Tags returns a Slice of tags. The order is the original tag order unless it
 // was changed.
 func (t *Tags) Keys() []string {
 	var keys []string
