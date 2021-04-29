@@ -24,9 +24,9 @@ message Like{
 // 举报
 message Report{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_type_id" validate:"required" annotation:"相关id"'}];
+  uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_report_type_id" validate:"required" annotation:"相关id"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
-  ContentType type = 12 [(go.field) = {tags:'gorm:"type:int2;not null;index:idx_type_id" validate:"required" annotation:"相关类型"'}];
+  ContentType type = 12 [(go.field) = {tags:'gorm:"type:int2;not null;index:idx_report_type_id" validate:"required" annotation:"相关类型"'}];
   user.UserBaseInfo user = 2 [(go.field) = {tags:'gorm:"-" annotation:"用户"'}];
   DelReason delReason = 3[(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"举报原因"'}];
   string remark = 4[(go.field) = {tags:'gorm:"size:255;default:\'\'" annotation:"备注"'}];

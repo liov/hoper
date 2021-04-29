@@ -30,9 +30,9 @@ var Conf = &config{
 	Customize: serverConfig{
 		Moment: Moment{
 			Limit: Limit{
-				SecondLimit: model.MomentSecondLimitKey,
-				MinuteLimit: model.MomentMinuteLimitKey,
-				DayLimit:    model.MomentDayLimitKey,
+				SecondLimitKey: model.MomentSecondLimitKey,
+				MinuteLimitKey: model.MomentMinuteLimitKey,
+				DayLimitKey:    model.MomentDayLimitKey,
 			},
 		},
 	},

@@ -32,15 +32,12 @@ func (*MomentService) Service() (describe, prefix string, middleware []http.Hand
 func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.Moment, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := auth(ctxi, true)
-	if err != nil {
-		return nil, err
-	}
+	auth, _ := auth(ctxi, true)
 	contentDao := dao.GetDao(ctxi)
 
 	db := dao.Dao.GetDB(ctxi.Logger)
 	var moment content.Moment
-	err = db.Table(model.MomentTableName).
+	err := db.Table(model.MomentTableName).
 		Where(`id = ?`, req.Id).First(&moment).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "First")
@@ -57,7 +54,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 	moment.Tags = tags
 
 	//like
-	if auth.Id != 0 {
+	if auth != nil {
 		likes, err := contentDao.GetContentActionsDB(db, content.ActionLike, content.ContentMoment, []uint64{req.Id}, auth.Id)
 		if err != nil {
 			return nil, err
@@ -220,10 +217,7 @@ func (*MomentService) Edit(context.Context, *content.AddMomentReq) (*empty.Empty
 func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*content.MomentListRep, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
-	auth, err := auth(ctxi, true)
-	if err != nil {
-		return nil, err
-	}
+	auth, _ := auth(ctxi, true)
 	contentDao := dao.GetDao(ctxi)
 
 	db := dao.Dao.GetDB(ctxi.Logger)
@@ -264,7 +258,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 		}
 	}
 	//like
-	if auth.Id != 0 {
+	if auth != nil {
 		likes, err := contentDao.GetContentActionsDB(db, content.ActionLike, content.ContentMoment, ids, auth.Id)
 		if err != nil {
 			return nil, err

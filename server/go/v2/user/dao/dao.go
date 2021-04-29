@@ -33,7 +33,7 @@ func GetDao(ctx *contexti.Ctx) *userDao {
 // dao dao.
 type dao struct {
 	// GORMDB 数据库连接
-	GORMDB   *gorm.DB
+	GORMDB   *gorm.DB `config:"database"`
 	StdDB    *sql.DB
 	PebbleDB *pebble.DB
 	// RedisPool Redis连接池

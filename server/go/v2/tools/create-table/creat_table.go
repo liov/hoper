@@ -14,31 +14,37 @@ var userMod = []interface{}{
 	&user.UserBannedLog{},
 	&user.UserFollow{},
 	&user.UserScoreLog{},
-	&user.UserFollowLog{},
+	&user.UserDeviceInfo{},
 	&user.Resume{},
 }
 
 var contentMod = []interface{}{
-/*	&content.Moment{},
-	&content.Category{},
-	&content.Tag{},
-	&content.Comment{},
-	&content.Like{},
-	&content.ContentDel{},
+	/*	&content.Moment{},
+		&content.Category{},
+		&content.Tag{},
+		&content.Comment{},
+		&content.Like{},
+		&content.ContentDel{},
+
+		&content.Collection{},
+		&content.ContentExt{},
+		&content.Report{},*/
 	&content.Favorites{},
-	&content.Collection{},
-	&content.CountStatistics{},
-	&content.Report{},
-	&content.Collection{},*/
-	&content.Moment{},
+}
+
+var uploadMod = []interface{}{
+	&model.UploadExt{},
+	&model.UploadInfo{},
 }
 
 func main() {
 	//get.GetDB().Debug().Migrator().DropTable(userMod...)
 	//get.GetDB().Debug().Migrator().CreateTable(userMod...)
+	get.GetDB().Debug().Migrator().CreateTable(contentMod...)
+	//get.GetDB().Debug().Migrator().CreateTable(uploadMod...)
 	//get.GetDB().Debug().Table("moment_comment").Migrator().CreateTable(&content.Comment{})
-	get.GetDB().Debug().Migrator().CreateTable(&model.UploadExt{})
-/*	get.GetDB().Exec(`CREATE OR REPLACE FUNCTION del_tabs(username IN VARCHAR) RETURNS void AS $$
+	//get.GetDB().Debug().Migrator().CreateTable(&model.UploadExt{})
+	/*	get.GetDB().Exec(`CREATE OR REPLACE FUNCTION del_tabs(username IN VARCHAR) RETURNS void AS $$
 		DECLARE
 		statements CURSOR FOR
 		SELECT tablename FROM pg_tables

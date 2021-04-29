@@ -92,7 +92,7 @@ service ContentService {
   }
 
   // 新建
-  rpc AddAttr (AddAttrReq) returns (empty.Empty) {
+  rpc AddAttr (AddAttrReq) returns (request.Object) {
     option (google.api.http) = {
       post: "/api/v1/content/attr"
       body: "*"
@@ -146,7 +146,7 @@ service ContentService {
     option (gogo.graphql_operation) = Query;
   }
   // 创建收藏夹
-  rpc AddFav (AddFavReq) returns (empty.Empty) {
+  rpc AddFav (AddFavReq) returns (request.Object) {
     option (google.api.http) = {
       post: "/api/v1/content/fav"
     };

@@ -1,24 +1,21 @@
 <template>
   <div>
     <van-list
-      v-if="list.length > 0 "
+      v-if="list.length > 0"
       v-model:loading="loading"
       :finished="finished"
       finished-text="没有更多了"
       @load="onLoad"
     >
-      <van-cell  v-for="item in list" :key="item.id">
+      <van-cell v-for="item in list" :key="item.id">
         <template #default>
           <van-skeleton title avatar round :row="3" :loading="loading">
-            <Comment
-              :comment="item"
-              :user="user(item.userId)"
-            ></Comment>
+            <Comment :comment="item" :user="user(item.userId)"></Comment>
           </van-skeleton>
         </template>
       </van-cell>
     </van-list>
-    <ActionMore></ActionMore>
+    <ActionMore key="comment-list"></ActionMore>
   </div>
 </template>
 

@@ -25,7 +25,7 @@
         </van-cell>
       </van-list>
     </van-pull-refresh>
-    <ActionMore></ActionMore>
+    <ActionMore key="moment-list"></ActionMore>
   </div>
 </template>
 

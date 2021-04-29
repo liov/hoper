@@ -86,7 +86,7 @@ func (*ContentService) TagList(ctx context.Context, req *content.TagListReq) (*c
 	return &content.TagListRep{List: tags, Total: uint32(count)}, nil
 }
 
-func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*empty.Empty, error) {
+func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*request.Object, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
@@ -94,12 +94,16 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*emp
 		return nil, err
 	}
 	contentDao := dao.GetDao(ctxi)
-	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
+	db := dao.Dao.GetDB(ctxi.Logger)
+	req.UserId = auth.Id
+	id, err := contentDao.FavExists(db, req.Title)
 	if err != nil {
 		return nil, err
 	}
-	db := dao.Dao.GetDB(ctxi.Logger)
-	req.UserId = auth.Id
+	if id != 0 {
+		return &request.Object{Id: id}, nil
+	}
+
 	err = contentDao.Transaction(db, func(tx *gorm.DB) error {
 		err = db.Table(model.FavoritesTableName).Create(req).Error
 		if err != nil {
@@ -114,7 +118,7 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*emp
 	if err != nil {
 		return nil, err
 	}
-	return nil, nil
+	return &request.Object{Id: req.Id}, nil
 }
 func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*empty.Empty, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
