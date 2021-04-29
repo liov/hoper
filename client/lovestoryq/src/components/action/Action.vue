@@ -5,8 +5,12 @@
     /></van-col>
     <van-col span="6" class="action"
       ><van-icon
-        :name="content.collects ? 'star' : 'star-o'"
-        :color="content.collects ? '#F6DF02' : ''"
+        :name="
+          content.collects && content.collects.length > 0 ? 'star' : 'star-o'
+        "
+        :color="
+          content.collects && content.collects.length > 0 ? '#F6DF02' : ''
+        "
         @click="favShow"
       /><span class="count">{{ content.ext.collectCount }}</span></van-col
     >
@@ -41,11 +45,15 @@ export default class Action extends Vue.with(Props) {
     emitter.emit("more-show", { type: this.type, refId: this.content.id });
   }
   favShow() {
+    if (!this.content.collects) {
+      this.content.collects = [];
+    }
     emitter.emit("fav-show", {
       type: this.type,
       refId: this.content.id,
       collects: this.content.collects,
     });
+    console.log(this.content.collects);
   }
   commentShow() {
     jump(this.$route.path, this.type, this.content);

@@ -647,3 +647,7 @@ Emitted 'error' event on ChildProcess instance at:
   syscall: 'spawn node-gyp.cmd',
 
 npm install -g node-gyp
+
+# emmit事件注册无效
+
+vue下一次渲染的created函数先于上一个组件的unmounted执行，应该在mounted中注册事件

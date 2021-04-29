@@ -1,6 +1,6 @@
 <template>
   <div>
-      <van-field
+    <van-field
       v-model="message"
       rows="3"
       autosize
@@ -25,7 +25,7 @@
       readonly
       clickable
       label="权限"
-      :value="permission"
+      v-model="permissionVal"
       placeholder="选择权限"
       @click="showPicker = true"
     />
@@ -54,13 +54,12 @@
 import { Options, Vue } from "vue-class-component";
 import axios from "axios";
 import { upload } from "@/plugin/utils/upload";
-import Tinymce from "@/components/tinymce";
-import tinymce from "tinymce";
 
-@Options({ components: { Tinymce } })
+@Options({ components: {} })
 export default class MomentAdd extends Vue {
   message = "";
-  permission = "";
+  permission = 0;
+  permissionVal = "全部";
   columns = ["全部", "自己可见", "陌生人可见"];
   showPicker = false;
   uploader: any = [];
@@ -72,9 +71,6 @@ export default class MomentAdd extends Vue {
     file.url = await upload(file.file);
   }
   async submit() {
-    this.message = tinymce.activeEditor.getContent({
-      format: "text",
-    });
     let images = "";
     for (const up of this.uploader) {
       images += up.url + ",";
@@ -83,7 +79,7 @@ export default class MomentAdd extends Vue {
     const res = await axios.post(`/api/v1/moment`, {
       mood: "",
       tags: [],
-      permission: 0,
+      permission: this.permission,
       anonymous: 2,
       content: this.message,
       images: images,
@@ -92,8 +88,9 @@ export default class MomentAdd extends Vue {
       await this.$router.push({ path: "/" });
     }
   }
-  onConfirm(value: string) {
-    this.permission = value;
+  onConfirm(value: string, index: number) {
+    this.permission = index;
+    this.permissionVal = value;
     this.showPicker = false;
   }
 }

@@ -104,18 +104,17 @@ export default class ActionMore extends Vue {
     show: false,
     replyId: 0,
   });
-  created() {
+  mounted() {
     emitter.on("more-show", (param) => {
-      console.log(param);
       this.type = param.type;
       this.refId = param.refId;
       this.show = !this.show; //箭头函数内部不会产生新的this，这边如果不用=>,this指代Event
     });
     emitter.on("fav-show", (param) => {
-      console.log(param);
       this.$refs.addCollect.setCollect(param);
       this.$refs.addCollect.show = true;
     });
+    console.log(emitter.all);
   }
   unmounted() {
     emitter.all.delete("more-show");

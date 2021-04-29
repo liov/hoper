@@ -3,6 +3,7 @@ package initialize
 import (
 	"flag"
 	"fmt"
+	"github.com/liov/hoper/go/v2/utils/slices"
 	"net"
 	"net/http"
 	"net/url"
@@ -27,6 +28,11 @@ const (
 	DEVELOPMENT = "dev"
 	TEST        = "test"
 	PRODUCT     = "prod"
+)
+
+const (
+	exprTag   = "expr"
+	configTag = "config"
 )
 
 type EnvConfig struct {
@@ -103,6 +109,9 @@ func (init *Init) LoadConfig() *Init {
 	}
 	fmt.Printf("Load config from: %s\n", InitConfig.ConfUrl)
 
+	for i := range onceConfig.NoInit {
+		onceConfig.NoInit[i] = strings.ToLower(onceConfig.NoInit[i])
+	}
 	init.BasicConfig = onceConfig.BasicConfig
 	init.NoInit = onceConfig.NoInit
 
@@ -178,7 +187,6 @@ func (init *Init) inject() {
 }
 
 func setConfig(v reflect.Value, fieldNameDaoMap map[string]interface{}) {
-
 	if !v.IsValid() {
 		return
 	}
@@ -195,9 +203,12 @@ func setConfig(v reflect.Value, fieldNameDaoMap map[string]interface{}) {
 			if conf, ok := inter.(NeedInit); ok {
 				conf.Custom()
 			}
+			if slices.StringContains(InitConfig.NoInit, strings.ToLower(typ.Field(i).Name)) {
+				continue
+			}
 			if conf, ok := inter.(Generate); ok {
 				ret := conf.Generate()
-				fieldNameDaoMap[typ.Field(i).Name] = ret
+				fieldNameDaoMap[strings.ToLower(typ.Field(i).Name)] = ret
 			}
 		}
 	}
@@ -209,8 +220,17 @@ func setDao(v reflect.Value, fieldNameDaoMap map[string]interface{}) {
 		return
 	}
 	typ := v.Type()
+
 	for i := 0; i < v.NumField(); i++ {
-		if dao, ok := fieldNameDaoMap[typ.Field(i).Name]; ok {
+		var dao interface{}
+		var ok bool
+		if confName, cok := typ.Field(i).Tag.Lookup("config"); cok {
+			dao, ok = fieldNameDaoMap[strings.ToLower(confName)]
+		}
+		if !ok {
+			dao, ok = fieldNameDaoMap[strings.ToLower(typ.Field(i).Name)]
+		}
+		if ok {
 			daoValue := reflect.ValueOf(dao)
 			if daoValue.Type() == v.Field(i).Type() {
 				v.Field(i).Set(daoValue)
@@ -230,10 +250,6 @@ func (init *Init) refresh() {
 	InitConfig.inject()
 }
 
-func (init *Init) Unmarshal(bytes []byte) {
-	toml.Unmarshal(bytes, init.conf)
-}
-
 func (init *Init) CloseDao() {
 	if init.dao != nil {
 		init.dao.Close()
@@ -241,7 +257,6 @@ func (init *Init) CloseDao() {
 }
 
 func (init *Init) UnmarshalAndSet(bytes []byte) {
-	log.Debug(string(bytes))
-	init.Unmarshal(bytes)
+	toml.Unmarshal(bytes, init.conf)
 	init.refresh()
 }

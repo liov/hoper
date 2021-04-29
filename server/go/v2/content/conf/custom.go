@@ -21,11 +21,11 @@ type serverConfig struct {
 }
 
 type Limit struct {
-	SecondLimit, MinuteLimit, DayLimit                string
+	SecondLimitKey, MinuteLimitKey, DayLimitKey       string
 	SecondLimitCount, MinuteLimitCount, DayLimitCount int64
 }
 
 type Moment struct {
 	MaxContentLen int
-	Limit Limit
+	Limit         Limit
 }

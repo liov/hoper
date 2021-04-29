@@ -47,7 +47,7 @@ export default class AddComment extends Vue.with(Props) {
   loading = false;
   uploader = [];
   focus = false;
-  created() {
+  mounted() {
     emitter.on("onComment", (param) => {
       if (param) {
         this.comment.replyId = param.replyId;

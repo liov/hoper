@@ -6,7 +6,7 @@ import (
 )
 
 type Dao struct {
-	GORMDB *gorm.DB
+	GORMDB *gorm.DB `config:"database"`
 }
 
 type Config struct {

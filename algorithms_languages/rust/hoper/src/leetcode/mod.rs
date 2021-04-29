@@ -235,7 +235,7 @@ pub fn rotate_right(head: Option<Box<ListNode>>, k: i32) -> Option<Box<ListNode>
     let mut l = head.unwrap();
 
     fn get(list: &mut Box<ListNode>, len: i32, k: i32) -> (Option<*mut Box<ListNode>>, Option<*mut Box<ListNode>>, i32) {
-        if let Some(ref mut next) = list.next {
+        return if let Some(ref mut next) = list.next {
             let (p2, p3, size) = get(next, len + 1, k);
             if len == size - k + 1 {
                 return (Some(list), p3, size);
@@ -244,9 +244,9 @@ pub fn rotate_right(head: Option<Box<ListNode>>, k: i32) -> Option<Box<ListNode>
                 t.next.take();
                 mem::replace(list, t);
             }
-            return (p2, p3, size);
+            (p2, p3, size)
         } else {
-            return (None, Some(list), len);
+            (None, Some(list), len)
         }
 
         panic!("错误")

@@ -10,8 +10,8 @@ type ServerConfig struct {
 	Protocol                               string
 	Domain                                 string
 	Port                                   string
-	ReadTimeout                            time.Duration
-	WriteTimeout                           time.Duration
+	ReadTimeout                            time.Duration `expr:"$+5"`
+	WriteTimeout                           time.Duration `expr:"$+5"`
 	OpenTracing, SystemTracing, Prometheus bool
 	Gin                                    *gini.Config
 }
