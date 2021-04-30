@@ -10,7 +10,7 @@ type Dao struct {
 }
 
 type Config struct {
-	Database initialize.DatabaseConfig
+	GORMDB initialize.DatabaseConfig
 }
 
 func (*Config) Custom() {}

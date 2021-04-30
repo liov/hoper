@@ -25,11 +25,12 @@ var contentMod = []interface{}{
 		&content.Comment{},
 		&content.Like{},
 		&content.ContentDel{},
-
-		&content.Collection{},
+		&content.Favorites{},
 		&content.ContentExt{},
+
 		&content.Report{},*/
-	&content.Favorites{},
+
+	&content.Collection{},
 }
 
 var uploadMod = []interface{}{

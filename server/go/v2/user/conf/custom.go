@@ -22,7 +22,6 @@ type serverConfig struct {
 	PrefixUrl     string
 	FontSaveDir   fs.Dir //字体保存路径
 
-	CrawlerName string //爬虫
 	Limit Limit
 }
 
@@ -48,4 +47,3 @@ type Limit struct {
 	//个人简介的最大长度
 	MaxIntroduceLen uint8
 }
-
