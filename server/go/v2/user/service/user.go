@@ -58,10 +58,13 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 	}
 	userDao := dao.GetDao(ctxi)
 	db := dao.Dao.GetDB(ctxi.Logger)
-	if exist, _ := userDao.ExitByEmailORPhone(db, req.Mail, req.Phone); exist {
-		if req.Mail != "" {
+	if req.Mail != "" {
+		if exist, _ := userDao.ExitsCheck(db, "mail", req.Phone); exist {
 			return nil, errorcode.InvalidArgument.Message("邮箱已被注册")
-		} else {
+		}
+	}
+	if req.Phone != "" {
+		if exist, _ := userDao.ExitsCheck(db, "phone", req.Phone); exist {
 			return nil, errorcode.InvalidArgument.Message("手机号已被注册")
 		}
 	}
@@ -78,9 +81,7 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*empty.
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
-	if err := Validate(req); err != nil {
-		return nil, err
-	}
+
 	if req.Mail == "" && req.Phone == "" {
 		return nil, errorcode.InvalidArgument.Message("请填写邮箱或手机号")
 	}
@@ -90,14 +91,19 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*empty.
 	}
 	userDao := dao.GetDao(ctxi)
 	db := dao.Dao.GetDB(ctxi.Logger)
-	if exist, _ := userDao.ExitByEmailORPhone(db, req.Mail, req.Phone); exist {
-		if req.Mail != "" {
+	if exist, _ := userDao.ExitsCheck(db, "name", req.Name); exist {
+		return nil, errorcode.InvalidArgument.Message("用户名已被注册")
+	}
+	if req.Mail != "" {
+		if exist, _ := userDao.ExitsCheck(db, "mail", req.Phone); exist {
 			return nil, errorcode.InvalidArgument.Message("邮箱已被注册")
-		} else {
+		}
+	}
+	if req.Phone != "" {
+		if exist, _ := userDao.ExitsCheck(db, "phone", req.Phone); exist {
 			return nil, errorcode.InvalidArgument.Message("手机号已被注册")
 		}
 	}
-
 	formatNow := ctxi.TimeString
 	var user = &model.User{
 		Name:      req.Name,
@@ -113,16 +119,15 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*empty.
 
 	user.Password = encryptPassword(req.Password)
 	if err := userDao.Creat(db, user); err != nil {
-		log.Error(err)
-		return nil, errorcode.RedisErr.Message("新建出错")
+		return nil, ctxi.ErrorLog(errorcode.DBError.Message("新建出错"), err, "UserService.Creat")
 	}
 
 	activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
 
-	curTime := time.Now().Unix()
+	curTime := ctxi.RequestAt.TimeStamp
 
 	if err := dao.Dao.Redis.SetEX(ctx, activeUser, curTime, modelconst.ActiveDuration).Err(); err != nil {
-		log.Error("UserService.Signup,RedisConn.Do: ", err)
+		return nil, ctxi.ErrorLog(errorcode.RedisErr, err, "UserService.Signup,SetEX")
 	}
 
 	if req.Mail != "" {
@@ -267,9 +272,10 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("Login")
 	defer span.End()
 	ctx = ctxi.Context
-	if verifyErr := verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL, conf.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
+
+	/*if verifyErr := verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL, conf.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
 		return nil, errorcode.InvalidArgument.Message(verifyErr.Error())
-	}
+	}*/
 
 	if req.Input == "" {
 		return nil, errorcode.InvalidArgument.Message("账号错误")
@@ -391,7 +397,7 @@ func (u *UserService) AuthInfo(ctx context.Context, req *empty.Empty) (*model.Us
 	ctxi := contexti.CtxFromContext(ctx)
 	user, err := auth(ctxi, true)
 	if err != nil {
-		return nil, err
+		return nil, nil
 	}
 	return user.UserAuthInfo(), nil
 }
@@ -567,4 +573,49 @@ func (*UserService) Addv(ctx *contexti.Ctx, req *response.TinyRep) (*response.Ti
 			ChangeLog("1.0.1", "jyb", "2019/12/16", "修改测试")
 	})
 	return req, nil
+}
+
+func (u *UserService) EasySignup(ctx context.Context, req *model.SignupReq) (*model.LoginRep, error) {
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
+	defer span.End()
+	ctx = ctxi.Context
+
+	if req.Mail == "" && req.Phone == "" {
+		return nil, errorcode.InvalidArgument.Message("请填写邮箱或手机号")
+	}
+
+	userDao := dao.GetDao(ctxi)
+	db := dao.Dao.GetDB(ctxi.Logger)
+	if exist, _ := userDao.ExitsCheck(db, "name", req.Name); exist {
+		return nil, errorcode.InvalidArgument.Message("用户名已被注册")
+	}
+	if req.Mail != "" {
+		if exist, _ := userDao.ExitsCheck(db, "mail", req.Phone); exist {
+			return nil, errorcode.InvalidArgument.Message("邮箱已被注册")
+		}
+	}
+	if req.Phone != "" {
+		if exist, _ := userDao.ExitsCheck(db, "phone", req.Phone); exist {
+			return nil, errorcode.InvalidArgument.Message("手机号已被注册")
+		}
+	}
+	formatNow := ctxi.TimeString
+	var user = &model.User{
+		Name:        req.Name,
+		Account:     uuid.New().String(),
+		Mail:        req.Mail,
+		Phone:       req.Phone,
+		Gender:      req.Gender,
+		AvatarUrl:   modelconst.DefaultAvatar,
+		Role:        model.RoleNormal,
+		CreatedAt:   formatNow,
+		ActivatedAt: ctxi.RequestAt.TimeString,
+		Status:      model.UserStatusActivated,
+	}
+
+	user.Password = encryptPassword(req.Password)
+	if err := userDao.Creat(db, user); err != nil {
+		return nil, ctxi.ErrorLog(errorcode.DBError.Message("新建出错"), err, "UserService.Creat")
+	}
+	return u.login(ctxi, user)
 }

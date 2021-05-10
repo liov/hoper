@@ -91,7 +91,7 @@ OutputPaths = {console = ["stderr"],json = []}
 Host = "smtp.qq.com"
 Port = ":465"
 From =  "lby.i@qq.com"
-Password = "xxx"
+Password = "ixzmeyriaxuwbggc"
 
 [apollo]
 Addr = "192.168.1.212:8080"

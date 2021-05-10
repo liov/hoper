@@ -11,9 +11,14 @@ import { InjectionKey } from "vue";
 
 const state: any = {
   loading: false,
+  LUOCAPTCHA: null,
 };
 
-const mutations = {};
+const mutations = {
+  setCaptcha:function (state, captcha){
+    state.LUOCAPTCHA = captcha;
+  }
+};
 
 const actions = {};
 

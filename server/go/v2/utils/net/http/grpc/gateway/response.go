@@ -49,10 +49,8 @@ func HTTPError(ctx *gin.Context, err error) {
 	delete(ctx.Request.Header, httpi.HeaderTrailer)
 	contentType := jsonpb.JsonPb.ContentType(nil)
 	ctx.Header(httpi.HeaderContentType, contentType)
-	se, ok := err.(*errorcode.ErrRep)
-	if !ok {
-		se = &errorcode.ErrRep{Code: errorcode.Unknown, Message: err.Error()}
-	}
+
+	se := &errorcode.ErrRep{Code: errorcode.ErrCode(s.Code()), Message: s.Message()}
 
 	buf, merr := jsonpb.JsonPb.Marshal(se)
 	if merr != nil {

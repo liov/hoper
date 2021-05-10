@@ -1,4 +1,4 @@
-const sleep = function (delay:number) {
+export const sleep = function (delay:number) {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             try {
@@ -9,5 +9,3 @@ const sleep = function (delay:number) {
         }, delay);
     })
 }
-
-export default sleep;

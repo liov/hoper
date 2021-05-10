@@ -25,7 +25,7 @@
         </van-cell>
       </van-list>
     </van-pull-refresh>
-    <ActionMore key="moment-list"></ActionMore>
+    <ActionMore v-if="$store.state.auth" key="moment-list"></ActionMore>
   </div>
 </template>
 

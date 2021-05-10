@@ -1,5 +1,5 @@
-const schedule = require('node-schedule');
-const axios = require('axios').default;
+import schedule from 'node-schedule';
+import axios from 'axios';
 
 const scheduleCron = () => {
     //每分钟的第30秒定时执行一次:

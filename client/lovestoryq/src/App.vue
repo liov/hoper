@@ -4,7 +4,7 @@
     <van-tabbar-item replace to="/" icon="notes-o"> 瞬间 </van-tabbar-item>
     <van-tabbar-item replace to="/dairy" icon="search"> 日记 </van-tabbar-item>
     <van-tabbar-item replace to="/chat" icon="chat-o"> 聊天 </van-tabbar-item>
-    <van-tabbar-item replace to="/me" icon="search"> 我的 </van-tabbar-item>
+    <van-tabbar-item replace to="/me" icon="user-circle-o"> 我的 </van-tabbar-item>
   </van-tabbar>
 </template>
 

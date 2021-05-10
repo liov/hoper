@@ -2,6 +2,7 @@ import axios from "axios";
 import store from "../store/index";
 import { Toast } from "vant";
 import vue from "vue";
+import router from "../router";
 
 //axios.defaults.baseURL = "https://" + window.location.host;
 //axios.defaults.baseURL = "https://hoper.xyz";
@@ -26,10 +27,18 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   function (response) {
     // 对响应数据做点什么
-    if (response.status != 200 || response.data.code != 0) {
-      Toast.fail(response.data.message);
+    if (response.status == 200) {
+      if (response.data.code >= 1003 && response.data.code <= 1005) {
+  
+        console.log(router.currentRoute);
+        Toast("请登录");
+        router.push({
+          name: "Login",
+          query: { back: router.currentRoute.value.path },
+        });
+      } else if (response.data.code !== 0) Toast.fail(response.data.message);
     }
-    return response;
+    return Promise.resolve(response);
   },
   function (error) {
     // 对响应错误做点什么

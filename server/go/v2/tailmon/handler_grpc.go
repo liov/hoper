@@ -12,6 +12,7 @@ import (
 	"github.com/liov/hoper/go/v2/utils/log"
 	runtimei "github.com/liov/hoper/go/v2/utils/runtime"
 	stringsi "github.com/liov/hoper/go/v2/utils/strings"
+	"github.com/liov/hoper/go/v2/utils/verification/validator"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -21,7 +22,7 @@ import (
 func (s *Server) grpcHandler(conf *initialize.ServerConfig) *grpc.Server {
 	if s.GRPCHandle != nil {
 		var stream = []grpc.StreamServerInterceptor{StreamAccess}
-		var unary = []grpc.UnaryServerInterceptor{UnaryAccess}
+		var unary = []grpc.UnaryServerInterceptor{UnaryAccess, Validator}
 		if conf.Prometheus {
 			stream = append(stream, grpc_prometheus.StreamServerInterceptor)
 			unary = append(unary, grpc_prometheus.UnaryServerInterceptor)
@@ -55,6 +56,7 @@ func UnaryAccess(
 			err = errorcode.SysError.ErrRep()
 		}
 	}()
+
 	resp, err = handler(ctx, req)
 	var code int
 	//不能添加错误处理，除非所有返回的结构相同
@@ -106,4 +108,15 @@ func (s *recvWrapper) RecvMsg(m interface{}) error {
 		return err
 	}
 	return nil
+}
+
+func Validator(
+	ctx context.Context, req interface{},
+	info *grpc.UnaryServerInfo,
+	handler grpc.UnaryHandler,
+) (resp interface{}, err error) {
+	if err = validator.Validator.Struct(req); err != nil {
+		return nil, errorcode.InvalidArgument.Message(validator.Trans(err))
+	}
+	return handler(ctx, req)
 }

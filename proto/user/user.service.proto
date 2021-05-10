@@ -81,6 +81,19 @@ service UserService {
     option (gogo.graphql_operation) = Mutation;
   }
 
+  //注册
+  rpc EasySignup (SignupReq) returns (LoginRep) {
+    option (google.api.http) = {
+      post: "/api/v2/user"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["用户相关接口", "v1.0.0"]
+      summary : "简单注册"
+    };
+    option (gogo.graphql_operation) = Mutation;
+  }
+
   //激活
   rpc Active (ActiveReq) returns (LoginRep) {
     option (google.api.http) = {
@@ -351,7 +364,7 @@ message EditReq {
 // 登录请求
 message LoginReq {
   string input = 1;
-  string password = 2 [(validator.field) = {
+  string password = 2 [(go.field) = {tags:'validate:"required,gte=6,lte=15" annotation:"密码"'},(validator.field) = {
     length_gt: 6
     human_error: "密码错误"
   }];

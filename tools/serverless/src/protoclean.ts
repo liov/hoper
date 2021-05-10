@@ -1,7 +1,5 @@
-import {Stats} from "fs";
-
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
 
 function main() {
     let inputpath = '../../../proto'
@@ -18,7 +16,7 @@ function clean(inputpath: string, outputpath: string) {
     const files = fs.readdirSync(inputpath)
     for (let file of files) {
         const newPath = path.join(inputpath, file)
-        fs.stat(newPath, function (err: NodeJS.ErrnoException | null, stats: Stats) {
+        fs.stat(newPath, function (err: NodeJS.ErrnoException | null, stats: fs.Stats) {
             if (stats.isFile()) replace(newPath, path.join(outputpath, file))
             else if (newPath.endsWith(`utils/proto`)) return
             else clean(newPath, path.join(outputpath, file))

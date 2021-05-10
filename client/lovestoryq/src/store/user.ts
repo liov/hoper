@@ -61,6 +61,24 @@ const actions = {
       throw error;
     }
   },
+  async signup({ state, commit, rootState }, params) {
+    try {
+      const { data } = await axios.post("/api/v2/user", params);
+      if (data.code && data.code !== 0) Toast.fail(data.message);
+      else {
+        commit("setAuth", data.details.user);
+        commit("setToken", data.details.token);
+        localStorage.setItem("token", data.details.token);
+        axios.defaults.headers["Authorization"] = data.details.token;
+        await router.push("/");
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        throw new Error("Bad credentials");
+      }
+      throw error;
+    }
+  },
   async appendUsers({ state, commit, rootState }, ids: number[]) {
     const noExistsId: number[] = [];
     ids.forEach((value) => {

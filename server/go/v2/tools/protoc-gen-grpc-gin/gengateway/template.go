@@ -311,7 +311,9 @@ func request_{{.Method.Service.GetName}}_{{.Method.GetName}}_{{.Index}}(ctx *gin
 	var protoReq {{.Method.RequestType.GoType .Method.Service.File.GoPkg.Path}}
 	var metadata runtime.ServerMetadata
 {{if or (or .Body .HasQueryParam) (and (ne .HTTPMethod "GET") (ne .HTTPMethod "DELETE"))}}
-	gin_0.Bind(ctx, &protoReq)
+	if err := gin_0.Bind(ctx, &protoReq); err != nil {
+		return nil, metadata, err
+	}
 {{end}}
 {{if .PathParams}}
 	var (
@@ -454,7 +456,9 @@ func local_request_{{.Method.Service.GetName}}_{{.Method.GetName}}_{{.Index}}(se
 {{template "local-request-func-signature" .}} {
 	var protoReq {{.Method.RequestType.GoType .Method.Service.File.GoPkg.Path}}
 {{if or (or .Body .HasQueryParam) (and (ne .HTTPMethod "GET") (ne .HTTPMethod "DELETE"))}}
-	gin_0.Bind(ctx, &protoReq)
+	if err := gin_0.Bind(ctx, &protoReq); err != nil {
+		return nil, err
+	}
 {{end}}
 {{if .PathParams}}
 	var (
@@ -510,8 +514,7 @@ func local_request_{{.Method.Service.GetName}}_{{.Method.GetName}}_{{.Index}}(se
 {{if .Method.GetServerStreaming}}
 	// TODO
 {{else}}
-	msg, err := server.{{.Method.GetName}}(ctx.Request.Context(), &protoReq)
-	return msg, err
+	return server.{{.Method.GetName}}(ctx.Request.Context(), &protoReq)
 {{end}}
 }`))
 

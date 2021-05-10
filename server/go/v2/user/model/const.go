@@ -5,11 +5,11 @@ const (
 )
 
 const (
-	UserTableName = "user"
-	UserExtTableName = "user_ext"
-	ResumeTableName = "resume"
+	UserTableName          = `user`
+	UserExtTableName       = "user_ext"
+	ResumeTableName        = "resume"
 	UserActionLogTableName = "user_action_log"
-	FollowTableName = "user_follow"
+	FollowTableName        = "user_follow"
 )
 
 const (

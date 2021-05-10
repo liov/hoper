@@ -25,7 +25,7 @@ func auth(ctx *contexti.Ctx, update bool) (*user.AuthInfo, error) {
 	auth := &user.AuthInfo{}
 	ctx.AuthInfo = auth
 	if err := ctx.ParseToken(ctx.Token, conf.Conf.Customize.TokenSecret); err != nil {
-		return nil, err
+		return nil, user.UserErrLoginTimeout
 	}
 	ctx.LastActiveAt = ctx.TimeStamp
 	if update {

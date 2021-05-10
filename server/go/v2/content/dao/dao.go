@@ -40,7 +40,7 @@ type dao struct {
 	Redis *redis.Client
 	Cache *ristretto.Cache
 	//elastic
-	MailAuth smtp.Auth
+	MailAuth smtp.Auth `config:"mail"`
 }
 
 // CloseDao close the resource.

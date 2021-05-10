@@ -27,15 +27,15 @@ func StrToIntMonth(month string) int {
 }
 
 // GetTodayYMD 得到以sep为分隔符的年、月、日字符串(今天)
-func GetYMD(time time.Time,sep string) string {
+func GetYMD(time time.Time, sep string) string {
 	year, month, day := time.Date()
 
 	var monthStr string
 	var dateStr string
 	if month < 10 {
-		monthStr = "0" + strconv.Itoa(int(month+1))
+		monthStr = "0" + strconv.Itoa(int(month))
 	} else {
-		monthStr = strconv.Itoa(int(month + 1))
+		monthStr = strconv.Itoa(int(month))
 	}
 
 	if day < 10 {
@@ -47,26 +47,26 @@ func GetYMD(time time.Time,sep string) string {
 }
 
 // GetYM 得到以sep为分隔符的年、月字符串(今天所属于的月份)
-func GetYM(time time.Time,sep string) string {
+func GetYM(time time.Time, sep string) string {
 	year, month, _ := time.Date()
 
 	var monthStr string
 	if month < 10 {
-		monthStr = "0" + strconv.Itoa(int(month+1))
+		monthStr = "0" + strconv.Itoa(int(month))
 	} else {
-		monthStr = strconv.Itoa(int(month + 1))
+		monthStr = strconv.Itoa(int(month))
 	}
 	return strconv.Itoa(year) + sep + monthStr
 }
 
 // GetYesterdayYMD 得到以sep为分隔符的年、月、日字符串(昨天)
 func GetYesterdayYMD(sep string) string {
-	return GetYM(time.Now().AddDate(0,0,-1),sep)
+	return GetYM(time.Now().AddDate(0, 0, -1), sep)
 }
 
 // GetTomorrowYMD 得到以sep为分隔符的年、月、日字符串(明天)
 func GetTomorrowYMD(sep string) string {
-	return GetYM(time.Now().AddDate(0,0,1),sep)
+	return GetYM(time.Now().AddDate(0, 0, 1), sep)
 }
 
 // GetTodayZeroTime 返回今天零点的time
@@ -79,7 +79,7 @@ func GetTodayZeroTime() time.Time {
 
 // GetYesterdayZeroTime 返回昨天零点的time
 func GetYesterdayZeroTime() time.Time {
-	return GetTodayZeroTime().AddDate(0,0,-1)
+	return GetTodayZeroTime().AddDate(0, 0, -1)
 }
 
 type DateFilter struct {
