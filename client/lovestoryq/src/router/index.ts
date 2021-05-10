@@ -8,6 +8,12 @@ import { completedAuthenticated } from "@/router/middle";
 import { userRoute } from "@/router/user";
 import { momentRoute } from "@/router/moment";
 
+declare module 'vue-router' {
+  interface RouteMeta {
+    requiresAuth?: boolean
+  }
+}
+
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",

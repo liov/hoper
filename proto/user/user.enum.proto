@@ -67,12 +67,9 @@ enum UserErr {
     option (gogo.enum_jsonmarshal) = false;
     UserErrPlaceholder = 0 [(gogo.enumvalue_cn)= "占位"];
     UserErrLogin = 1000 [(gogo.enumvalue_cn)= "用户名或密码错误"];
-    UserErrLoginTimeout = 1001 [(gogo.enumvalue_cn)= "登录超时"];
-    UserErrNoActive = 1002 [(gogo.enumvalue_cn)= "未激活账号"];
-    UserErrNoAuthority = 1003 [(gogo.enumvalue_cn)= "无权限"];
-    UserErrInvalidToken = 10004 [(gogo.enumvalue_cn)= "Token错误"];
-    UserErrNoLogin = 10005 [(gogo.enumvalue_cn)= "未登录"];
-
-    UserErrTokenTimeout = 10002 [(gogo.enumvalue_cn)= "Token已超时"];
-    UserErrGenerateTokenFail = 10003 [(gogo.enumvalue_cn)= "Token生成失败"];
+    UserErrNoActive = 1001 [(gogo.enumvalue_cn)= "未激活账号"];
+    UserErrNoAuthority = 1002 [(gogo.enumvalue_cn)= "无权限"];
+    UserErrLoginTimeout = 1003 [(gogo.enumvalue_cn)= "登录超时"];
+    UserErrInvalidToken = 1004 [(gogo.enumvalue_cn)= "Token错误"];
+    UserErrNoLogin = 1005 [(gogo.enumvalue_cn)= "未登录"];
 }

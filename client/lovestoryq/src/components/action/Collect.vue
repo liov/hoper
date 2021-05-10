@@ -68,6 +68,7 @@ export default class AddCollect extends Vue {
   }
   async created() {
     const res = await axios.get("/api/v1/content/tinyFav/0");
+    console.log(res);
     this.favs = res.data.details.list;
   }
   async onCollect() {

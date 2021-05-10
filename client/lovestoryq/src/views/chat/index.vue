@@ -69,7 +69,7 @@ export default class Chat extends Vue {
       document.location.protocol.replace("http", "ws") +
         "//" +
         window.location.host +
-        ":8090/api/ws/chat"
+        "/api/ws/chat"
     );
     this.ws.onopen = () => {
       // console.log('建立websocket连接')

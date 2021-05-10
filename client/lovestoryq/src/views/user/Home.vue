@@ -68,7 +68,7 @@
         ><router-link :to="'/user/edit'">编辑资料</router-link></van-col
       >
       <van-col span="8">span: 8</van-col>
-      <van-col span="8">span: 8</van-col>
+      <van-col span="8" @click="logout">退出登录</van-col>
     </van-row>
   </div>
 </template>
@@ -76,6 +76,7 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import axios from "axios";
+import { Toast } from "vant";
 
 @Options({
   components: {},
@@ -87,6 +88,11 @@ export default class Home extends Vue {
     this.user = this.$store.state.user.auth;
     if (!this.user.intro) this.user.intro = "我不想介绍自己";
     if (!this.user.signature) this.user.signature = "太个性签名签不下";
+  }
+  async logout() {
+    const res = await axios.get("/api/v1/user/logout");
+    this.$toast(res.data.message);
+    this.$store.commit("setAuth", null);
   }
 }
 </script>

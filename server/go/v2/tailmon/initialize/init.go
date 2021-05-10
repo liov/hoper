@@ -232,7 +232,7 @@ func setDao(v reflect.Value, fieldNameDaoMap map[string]interface{}) {
 		}
 		if ok {
 			daoValue := reflect.ValueOf(dao)
-			if daoValue.Type() == v.Field(i).Type() {
+			if daoValue.Type().AssignableTo(v.Field(i).Type()) || daoValue.Type().Implements(v.Field(i).Type()) {
 				v.Field(i).Set(daoValue)
 			}
 			continue

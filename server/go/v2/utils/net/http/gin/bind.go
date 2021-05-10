@@ -3,6 +3,7 @@ package gini
 import (
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
 	"github.com/liov/hoper/go/v2/utils/net/http/request"
+	"github.com/liov/hoper/go/v2/utils/verification/validator"
 	"io/ioutil"
 	"net/http"
 
@@ -43,6 +44,9 @@ func MustBindWith(c *gin.Context, obj interface{}, b binding.Binding) error {
 	if err := ShouldBindWith(c, obj, b); err != nil {
 		c.JSON(http.StatusBadRequest, errorcode.InvalidArgument.Message(request.Error(err)))
 		return err
+	}
+	if err := validator.Validator.Struct(obj); err != nil {
+		return errorcode.InvalidArgument.Message(validator.Trans(err))
 	}
 	return nil
 }

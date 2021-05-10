@@ -87,7 +87,7 @@
               },
             ]"
           />
-          <Luosimao class="captcha"></Luosimao>
+          <Luosimao class="captcha" ref="luosimao"></Luosimao>
           <div style="margin: 16px">
             <van-button round block type="primary" native-type="submit">
               提交
@@ -131,7 +131,7 @@ export default class Login extends Vue {
     const res = {
       ...values,
       password: values.password,
-      vCode: this.captcha(),
+      vCode: this.$refs.luosimao.value,
     };
     if (this.type) {
       res.gender = parseInt(this.gender);
@@ -145,36 +145,32 @@ export default class Login extends Vue {
     return res;
   }
 
-  captcha = () =>
-    (document.getElementById("lc-captcha-response") as HTMLInputElement).value;
 
   async signup(values: any) {
     const res = await axios.post("/api/v1/user", this.getFormValues(values));
     if (res.data.code == 0) {
-      if (res.data.message != "") this.$toast.success(res.data.message);
-      await this.$router.push("/");
+      this.$toast.success("请前往邮箱查收激活邮件");
     }
   }
 
   async onSubmit(values: any) {
     if (this.type == 0)
       await this.$store.dispatch("login", this.getFormValues(values));
-    else await this.signup(values);
+    else await this.$store.dispatch("signup", this.getFormValues(values));//await this.signup(values);
+    const LUOCAPTCHA = (window as any).LUOCAPTCHA
+    LUOCAPTCHA && LUOCAPTCHA.reset();
+    
   }
 
   onClick(name, title) {
     this.type = name;
-  }
-
-  captchaClick() {
-    (window as any).LUOCAPTCHA.reset();
   }
 }
 </script>
 
 <style scoped>
 .login {
-  margin-top: 13rem;
+  margin-top: 3rem;
 }
 
 .captcha {
