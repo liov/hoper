@@ -42,12 +42,12 @@ func main() {
 	}
 	pick.RegisterService(userservice.GetUserService(), contentervice.GetMomentService())
 	(&tailmon.Server{
+		//为了可以自定义中间件
 		GRPCOptions: []grpc.ServerOption{
 			grpc.ChainUnaryInterceptor(),
 			grpc.ChainStreamInterceptor(),
 			//grpc.StatsHandler(&ocgrpc.ServerHandler{})
 		},
-		//为了可以自定义中间件
 		GRPCHandle: func(gs *grpc.Server) {
 			user.RegisterUserServiceServer(gs, userservice.GetUserService())
 			user.RegisterOauthServiceServer(gs, userservice.GetOauthService())
