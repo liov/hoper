@@ -25,6 +25,31 @@ message User {
   }];
 }
 ```
+user.enum.proto
+```protobuf
+syntax = "proto3";
+package user;
+import "utils/proto/gogo/enum.proto";
+import "patch/go.proto";
+
+option (gogo.enum_gqlgen_all) = true;
+
+option java_package = "xyz.hoper.protobuf.user";
+option go_package = "github.com/liov/hoper/go/v2/protobuf/user";
+
+option (gogo.enum_prefix_all) = false;
+option (go.file) = {no_enum_prefix:true};
+// 用户性别
+enum Gender{
+    option (go.enum) = {stringer_name: 'OrigString'};
+    GenderPlaceholder = 0 [(gogo.enumvalue_cn)= "占位"];
+    GenderUnfilled = 1 [(gogo.enumvalue_cn)= "未填"];
+    GenderMale = 2 [(gogo.enumvalue_cn)= "男"];
+    GenderFemale = 3 [(gogo.enumvalue_cn)= "女"];
+}
+
+```
+
 user.service.proto
 ```protobuf
 syntax = "proto3";
@@ -103,11 +128,6 @@ type serverConfig struct {
 
 	LuosimaoVerifyURL string
 	LuosimaoAPIKey    string
-
-	QrCodeSaveDir fs.Dir //二维码保存路径
-	PrefixUrl     string
-	FontSaveDir   fs.Dir //字体保存路径
-
 }
 
 // dao dao.
@@ -183,12 +203,12 @@ func main() {
 	}
 	pick.RegisterService(userservice.GetUserService())
 	(&tailmon.Server{
+		//为了可以自定义中间件
 		GRPCOptions: []grpc.ServerOption{
 			grpc.ChainUnaryInterceptor(),
 			grpc.ChainStreamInterceptor(),
 			//grpc.StatsHandler(&ocgrpc.ServerHandler{})
 		},
-		//为了可以自定义中间件
 		GRPCHandle: func(gs *grpc.Server) {
 			user.RegisterUserServiceServer(gs, userservice.GetUserService())
 		},
@@ -198,30 +218,6 @@ func main() {
 			pick.Gin(app, true, initialize.InitConfig.Module)
 		},
 	}).Start()
-}
-
-```
-user.enum.proto
-```protobuf
-syntax = "proto3";
-package user;
-import "utils/proto/gogo/enum.proto";
-import "patch/go.proto";
-
-option (gogo.enum_gqlgen_all) = true;
-
-option java_package = "xyz.hoper.protobuf.user";
-option go_package = "github.com/liov/hoper/go/v2/protobuf/user";
-
-option (gogo.enum_prefix_all) = false;
-option (go.file) = {no_enum_prefix:true};
-// 用户性别
-enum Gender{
-    option (go.enum) = {stringer_name: 'OrigString'};
-    GenderPlaceholder = 0 [(gogo.enumvalue_cn)= "占位"];
-    GenderUnfilled = 1 [(gogo.enumvalue_cn)= "未填"];
-    GenderMale = 2 [(gogo.enumvalue_cn)= "男"];
-    GenderFemale = 3 [(gogo.enumvalue_cn)= "女"];
 }
 
 ```

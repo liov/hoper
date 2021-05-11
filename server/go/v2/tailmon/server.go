@@ -116,7 +116,7 @@ func (s *Server) Serve() {
 		log.Debug("重启服务")
 		cs()
 	}()
-	fmt.Printf("listening: http://%s\n", serviceConfig.Domain+serviceConfig.Port)
+	fmt.Println("listening: " + serviceConfig.Domain + serviceConfig.Port)
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("failed to serve: %v", err)
 	}

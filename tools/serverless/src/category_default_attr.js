@@ -1,6 +1,6 @@
-const Excel = require('exceljs');
-const axios = require('axios');
-const sleep = require("./utils/sleep");
+import Excel from 'exceljs';
+import axios from 'axios';
+import sleep from "./utils/sleep";
 
 const cardCategory = new Map()
 
