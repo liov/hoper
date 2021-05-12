@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/liov/hoper/go/v2/chat"
-	"github.com/liov/hoper/go/v2/tailmon/pick"
+	"github.com/liov/hoper/go/v2/tiga/pick"
 	"github.com/liov/hoper/go/v2/upload"
 	"github.com/liov/hoper/go/v2/utils/net/http/gin/handler"
 	"net/http"
@@ -14,8 +14,8 @@ import (
 	contentervice "github.com/liov/hoper/go/v2/content/service"
 	"github.com/liov/hoper/go/v2/protobuf/content"
 	"github.com/liov/hoper/go/v2/protobuf/user"
-	"github.com/liov/hoper/go/v2/tailmon"
-	"github.com/liov/hoper/go/v2/tailmon/initialize"
+	"github.com/liov/hoper/go/v2/tiga"
+	"github.com/liov/hoper/go/v2/tiga/initialize"
 	upconf "github.com/liov/hoper/go/v2/upload/conf"
 	updao "github.com/liov/hoper/go/v2/upload/dao"
 	uconf "github.com/liov/hoper/go/v2/user/conf"
@@ -41,7 +41,7 @@ func main() {
 		log.Fatal(err)
 	}
 	pick.RegisterService(userservice.GetUserService(), contentervice.GetMomentService())
-	(&tailmon.Server{
+	(&tiga.Server{
 		//为了可以自定义中间件
 		GRPCOptions: []grpc.ServerOption{
 			grpc.ChainUnaryInterceptor(),

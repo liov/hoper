@@ -5,7 +5,7 @@ import (
 	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
-	contexti "github.com/liov/hoper/go/v2/tailmon/context"
+	contexti "github.com/liov/hoper/go/v2/tiga/context"
 	"github.com/liov/hoper/go/v2/user/dao"
 	"github.com/liov/hoper/go/v2/user/model"
 	dbi "github.com/liov/hoper/go/v2/utils/dao/db"
@@ -16,7 +16,7 @@ func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*empty.E
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
-	auth, err := auth(ctxi,true)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
-	auth, err := auth(ctxi,true)
+	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}

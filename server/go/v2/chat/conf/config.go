@@ -1,7 +1,8 @@
 package conf
 
 import (
-	"github.com/liov/hoper/go/v2/tailmon/initialize"
+	"github.com/liov/hoper/go/v2/tiga/initialize"
+	"github.com/liov/hoper/go/v2/tiga/initialize/inject_dao"
 	"runtime"
 )
 
@@ -11,13 +12,13 @@ type config struct {
 	//自定义的配置
 	Customize serverConfig
 	Server    initialize.ServerConfig
-	GORMDB    initialize.DatabaseConfig
-	Redis     initialize.RedisConfig
-	Cache     initialize.CacheConfig
+	GORMDB    inject_dao.DatabaseConfig
+	Redis     inject_dao.RedisConfig
+	Cache     inject_dao.CacheConfig
 	Log       initialize.LogConfig
 }
 
-func (c *config) Custom() {
+func (c *config) Init() {
 	if runtime.GOOS == "windows" {
 	}
 

@@ -10,7 +10,7 @@ func UGCPolicy() {
 
 	p.AllowAttrs("type").OnElements("style")
 
-	// Custom attributes on elements
+	// Customize attributes on elements
 	p.AllowAttrs("type", "media").OnElements("style")
 	p.AllowAttrs("face", "size").OnElements("font")
 	p.AllowAttrs("name", "content", "http-equiv").OnElements("meta")

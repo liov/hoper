@@ -12,7 +12,7 @@ type GORMConfig struct {
 	Logger logger.Config
 }
 
-func (c *GORMConfig) Custom() {
+func (c *GORMConfig) Init() {
 	if c.Logger.SlowThreshold < 10*time.Millisecond {
 		c.Logger.SlowThreshold *= time.Millisecond
 	}

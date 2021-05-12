@@ -1,7 +1,8 @@
 package get
 
 import (
-	"github.com/liov/hoper/go/v2/tailmon/initialize"
+	"github.com/liov/hoper/go/v2/tiga/initialize"
+	"github.com/liov/hoper/go/v2/tiga/initialize/inject_dao"
 	"gorm.io/gorm"
 )
 
@@ -10,12 +11,12 @@ type Dao struct {
 }
 
 type Config struct {
-	GORMDB initialize.DatabaseConfig
+	GORMDB inject_dao.DatabaseConfig
 }
 
-func (*Config) Custom() {}
-func (*Dao) Custom()    {}
-func (*Dao) Close()     {}
+func (*Config) Init() {}
+func (*Dao) Init()    {}
+func (*Dao) Close()   {}
 
 var config = Config{}
 var dao = Dao{}
