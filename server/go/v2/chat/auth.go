@@ -2,7 +2,7 @@ package chat
 
 import (
 	"github.com/liov/hoper/go/v2/protobuf/user"
-	contexti "github.com/liov/hoper/go/v2/tailmon/context"
+	contexti "github.com/liov/hoper/go/v2/tiga/context"
 	"github.com/liov/hoper/go/v2/user/service"
 )
 

@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 	"github.com/liov/hoper/go/v2/protobuf/user"
 	"github.com/liov/hoper/go/v2/protobuf/utils/errorcode"
-	contexti "github.com/liov/hoper/go/v2/tailmon/context"
+	contexti "github.com/liov/hoper/go/v2/tiga/context"
 	"github.com/liov/hoper/go/v2/upload/conf"
 	"github.com/liov/hoper/go/v2/upload/dao"
 	"github.com/liov/hoper/go/v2/upload/model"
@@ -42,8 +42,8 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		errorcode.ParamInvalid.OriMessage(errRep).Response(w)
 		return
 	}
-	md5Str:= r.RequestURI[len(ApiUpload):]
-	if md5Str == ""{
+	md5Str := r.RequestURI[len(ApiUpload):]
+	if md5Str == "" {
 		md5Str = r.FormValue("md5")
 	}
 
@@ -53,7 +53,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctxi := contexti.CtxFromContext(r.Context())
-	_, err = auth(ctxi,false)
+	_, err = auth(ctxi, false)
 	if err != nil {
 		(&httpi.ResData{
 			Code:    uint32(user.UserErrLogin),
@@ -80,7 +80,7 @@ func Exists(w http.ResponseWriter, req *http.Request) {
 
 func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 	ctxi := contexti.CtxFromContext(ctx)
-	auth, err := auth(ctxi,false)
+	auth, err := auth(ctxi, false)
 	uploadDao := dao.GetDao(ctxi)
 	db := dao.Dao.GetDB(ctxi.Logger)
 	upload, err := uploadDao.UploadDB(db, md5, size)
@@ -109,7 +109,7 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 func save(ctx *contexti.Ctx, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
 	uploadDao := dao.GetDao(ctx)
 	db := dao.Dao.GetDB(ctx.Logger)
-	auth:=ctx.AuthInfo.(*user.AuthInfo)
+	auth := ctx.AuthInfo.(*user.AuthInfo)
 	if md5Str != "" {
 		upload, err = uploadDao.UploadDB(db, md5Str, strconv.FormatInt(info.Size, 10))
 		if err != nil {
@@ -206,7 +206,7 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	ctxi := contexti.CtxFromContext(r.Context())
-	_, err = auth(ctxi,false)
+	_, err = auth(ctxi, false)
 	if err != nil {
 		(&httpi.ResData{
 			Code:    uint32(user.UserErrLogin),

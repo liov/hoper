@@ -38,6 +38,10 @@ func (c *Config) NewClient() *Client {
 	}
 }
 
+func (c *Config) Generate() interface{} {
+	return c.NewClient()
+}
+
 type ConfigInfo struct {
 	ID         int64  `json:"id"`
 	AppName    string `json:"appName"`

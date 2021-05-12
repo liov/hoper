@@ -2,13 +2,13 @@ package dao
 
 import (
 	"database/sql"
-	contexti "github.com/liov/hoper/go/v2/tailmon/context"
+	contexti "github.com/liov/hoper/go/v2/tiga/context"
 	"net/smtp"
 
 	"github.com/cockroachdb/pebble"
 	"github.com/dgraph-io/ristretto"
 	"github.com/go-redis/redis/v8"
-	"github.com/liov/hoper/go/v2/tailmon/initialize"
+	"github.com/liov/hoper/go/v2/tiga/initialize"
 	"github.com/liov/hoper/go/v2/user/conf"
 	"github.com/liov/hoper/go/v2/utils/dao/db/gorm"
 	"github.com/liov/hoper/go/v2/utils/log"
@@ -57,7 +57,7 @@ func (d *dao) Close() {
 	}
 }
 
-func (d *dao) Custom() {
+func (d *dao) Init() {
 	db := d.GORMDB
 	db.Callback().Create().Remove("gorm:save_before_associations")
 	db.Callback().Create().Remove("gorm:save_after_associations")

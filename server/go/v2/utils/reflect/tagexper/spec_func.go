@@ -21,7 +21,7 @@ import (
 	"strings"
 )
 
-// --------------------------- Custom function ---------------------------
+// --------------------------- Customize function ---------------------------
 
 var funcList = map[string]func(p *Expr, expr *string) ExprNode{}
 
