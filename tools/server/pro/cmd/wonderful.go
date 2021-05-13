@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/liov/hoper/go/v2/utils/fs"
+	"github.com/liov/hoper/v2/utils/fs"
 	py "tools/pinyin"
 	"tools/pro"
 )

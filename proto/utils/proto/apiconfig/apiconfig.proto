@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package apiconfig;
 
-option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/proto/go/apiconfig";
+option go_package = "github.com/liov/hoper/v2/protobuf/utils/proto/go/apiconfig";
 
 import "google/api/http.proto";
 

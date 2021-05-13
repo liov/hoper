@@ -13,7 +13,7 @@ require (
 	github.com/google/flatbuffers v1.12.1-0.20210406112345-261cf3b20473
 	github.com/jinzhu/configor v1.1.1
 	github.com/jinzhu/gorm v1.9.11
-	github.com/liov/hoper/go/v2 v2.0.0
+	github.com/liov/hoper/v2 v2.0.0
 	github.com/lucasb-eyer/go-colorful v1.0.2
 	github.com/mattetti/filebuffer v1.0.0 // indirect
 	github.com/mattn/go-runewidth v0.0.7 // indirect
@@ -25,4 +25,4 @@ require (
 	gopkg.in/cheggaaa/pb.v1 v1.0.28 // indirect
 )
 
-replace github.com/liov/hoper/go/v2 => ../../server/go/v2
+replace github.com/liov/hoper/v2 => ../../server/go

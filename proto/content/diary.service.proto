@@ -14,7 +14,7 @@ import "utils/oauth/oauth.proto";
 import "patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
-option go_package = "github.com/liov/hoper/go/v2/protobuf/content";
+option go_package = "github.com/liov/hoper/v2/protobuf/content";
 
 service DiaryService {
 

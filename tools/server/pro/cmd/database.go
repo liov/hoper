@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/liov/hoper/go/v2/tools/create-table/get"
+	"github.com/liov/hoper/v2/tools/create-table/get"
 
 	"tools/pro"
 )

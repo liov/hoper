@@ -3,7 +3,7 @@ package gogo;
 
 import "google/protobuf/descriptor.proto";
 
-option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/proto/gogo";
+option go_package = "github.com/liov/hoper/v2/protobuf/utils/proto/gogo";
 option java_package = "xyz.hoper.protobuf";
 option java_outer_classname = "GraphqlProtos";
 
