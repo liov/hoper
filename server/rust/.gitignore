@@ -8,5 +8,5 @@
 out
 gen
 protobuf
-!/v2/**/mod.rs
+!/**/mod.rs
 *.lock

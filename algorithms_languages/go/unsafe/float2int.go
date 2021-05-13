@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/liov/hoper/go/v2/utils/number"
+	"github.com/liov/hoper/v2/utils/number"
 	"unsafe"
 )
 
