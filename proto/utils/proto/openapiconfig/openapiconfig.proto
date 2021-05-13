@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package openapiconfig;
 
-option go_package = "github.com/liov/hoper/go/v2/protobuf/utils/proto/openapiconfig";
+option go_package = "github.com/liov/hoper/v2/protobuf/utils/proto/openapiconfig";
 
 import "protoc-gen-openapiv2/options/openapiv2.proto";
 

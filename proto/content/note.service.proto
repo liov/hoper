@@ -10,7 +10,7 @@ import "utils/response/response.proto";
 import "policy.proto";
 import "patch/go.proto";
 
-option go_package = "github.com/liov/hoper/go/v2/protobuf/content";
+option go_package = "github.com/liov/hoper/v2/protobuf/content";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {

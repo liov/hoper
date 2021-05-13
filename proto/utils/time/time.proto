@@ -3,7 +3,7 @@ package time;
 
 import "patch/go.proto";
 
-option go_package = "github.com/liov/hoper/go/v2/utils/time;timei";
+option go_package = "github.com/liov/hoper/v2/utils/time;timei";
 option java_package = "xyz.hoper.protobuf.utils.time";
 
 

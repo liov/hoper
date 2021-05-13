@@ -19,9 +19,9 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/liov/hoper/go/v2/tools/create-table/get"
-	"github.com/liov/hoper/go/v2/utils/fs"
-	"github.com/liov/hoper/go/v2/utils/strings"
+	"github.com/liov/hoper/v2/tools/create-table/get"
+	"github.com/liov/hoper/v2/utils/fs"
+	"github.com/liov/hoper/v2/utils/strings"
 	"golang.org/x/net/html"
 	"gorm.io/gorm"
 	py "tools/pinyin"
