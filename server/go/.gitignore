@@ -11,3 +11,4 @@
 /protobuf/ent/
 !/protobuf/ent/generate.go
 !/protobuf/ent/schema/
+/protobuf/api
