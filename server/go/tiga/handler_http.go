@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	contexti "github.com/liov/hoper/v2/tiga/context"
 	"github.com/liov/hoper/v2/tiga/initialize"
+	"github.com/liov/hoper/v2/utils/log"
 	httpi "github.com/liov/hoper/v2/utils/net/http"
 	gin_build "github.com/liov/hoper/v2/utils/net/http/gin"
 	"github.com/liov/hoper/v2/utils/net/http/grpc/gateway"
@@ -78,10 +79,11 @@ func (s *Server) httpHandler(conf *initialize.ServerConfig) http.HandlerFunc {
 
 func accessLog(ctxi *contexti.Ctx, iface, method, body, result string, code int) {
 	// log 里time now 浪费性能
-	if ce := ctxi.GetLogger().Logger.Check(zap.InfoLevel, "access"); ce != nil {
+	if ce := log.Default.Logger.Check(zap.InfoLevel, "access"); ce != nil {
 		ce.Write(zap.String("interface", iface),
 			zap.String("method", method),
 			zap.String("body", body),
+			zap.String("traceId", ctxi.TraceID),
 			// 性能
 			zap.Duration("processTime", ce.Time.Sub(ctxi.GetReqAt().Time)),
 			zap.String("result", result),

@@ -111,7 +111,7 @@ type config struct {
 
 var Conf = &config{}
 
-func (c *config) Custom() {
+func (c *config) Init() {
 	if runtime.GOOS == "windows" {
 	}
 
@@ -157,7 +157,7 @@ func (d *dao) Close() {
 	}
 }
 
-func (d *dao) Custom() {
+func (d *dao) Init() {
 	db := d.GORMDB
 	db.Callback().Create().Remove("gorm:save_before_associations")
 	db.Callback().Create().Remove("gorm:save_after_associations")
