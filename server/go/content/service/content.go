@@ -94,7 +94,7 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*req
 		return nil, err
 	}
 	contentDao := dao.GetDao(ctxi)
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	req.UserId = auth.Id
 	id, err := contentDao.FavExists(db, req.Title)
 	if err != nil {
@@ -132,7 +132,7 @@ func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*em
 	if err != nil {
 		return nil, err
 	}
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	err = db.Table(model.FavoritesTableName).Where(`id =? AND user_id =?`, req.Id, auth.Id).
 		Updates(req).Error
 	if err != nil {
@@ -154,7 +154,7 @@ func (*ContentService) TinyFavList(ctx context.Context, req *content.FavListReq)
 	if err != nil {
 		return nil, err
 	}
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	var favs []*content.TinyFavorites
 	if req.UserId == 0 {
 		err = db.Table(model.FavoritesTableName).Select("id,title").Where(`user_id = ?`, auth.Id).Find(&favs).Error
@@ -178,7 +178,7 @@ func (*ContentService) AddContainer(ctx context.Context, req *content.AddContain
 	if err != nil {
 		return nil, err
 	}
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	req.UserId = auth.Id
 	err = db.Table(model.ContainerTableName).Create(req).Error
 	if err != nil {
@@ -200,7 +200,7 @@ func (*ContentService) EditDiaryContainer(ctx context.Context, req *content.AddC
 	if err != nil {
 		return nil, err
 	}
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	err = db.Table(model.FavoritesTableName).Where(`id =? AND user_id =?`, req.Id, auth.Id).
 		Updates(req).Error
 	if err != nil {

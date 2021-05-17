@@ -57,7 +57,7 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 		return nil, errorcode.InvalidArgument.Message("请填写邮箱或手机号")
 	}
 	userDao := dao.GetDao(ctxi)
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	if req.Mail != "" {
 		if exist, _ := userDao.ExitsCheck(db, "mail", req.Phone); exist {
 			return nil, errorcode.InvalidArgument.Message("邮箱已被注册")
@@ -90,7 +90,7 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*empty.
 		return nil, err
 	}
 	userDao := dao.GetDao(ctxi)
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	if exist, _ := userDao.ExitsCheck(db, "name", req.Name); exist {
 		return nil, errorcode.InvalidArgument.Message("用户名已被注册")
 	}
@@ -207,7 +207,7 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 		return nil, ctxi.ErrorLog(errorcode.InvalidArgument.Message("无效的链接"), err, "Get")
 	}
 	userDao := dao.GetDao(ctxi)
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	user, err := userDao.GetByPrimaryKey(db, req.Id)
 	if err != nil {
 		return nil, errorcode.DBError
@@ -243,7 +243,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*empty.Empt
 
 	if req.Details != nil {
 		userDao := dao.GetDao(ctxi)
-		db := dao.Dao.GetDB(ctxi.Logger)
+		db := ctxi.NewDB(dao.Dao.GORMDB)
 		originalIds, err := userDao.ResumesIds(db, user.Id)
 		if err != nil {
 			return nil, errorcode.DBError.Message("更新失败")
@@ -290,7 +290,7 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 	default:
 		sql = "account = ?"
 	}
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	var user model.User
 	if err := db.Table(modelconst.UserTableName).
 		Where(sql, req.Input).Find(&user).Error; err != nil {
@@ -332,7 +332,7 @@ func (*UserService) login(ctxi *contexti.Ctx, user *model.User) (*model.LoginRep
 	if err != nil {
 		return nil, errorcode.Internal
 	}
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 
 	db.Table(modelconst.UserExtTableName).Where(`id = ?`, user.Id).
 		UpdateColumn("last_activated_at", ctxi.RequestAt.TimeString)
@@ -413,7 +413,7 @@ func (u *UserService) Info(ctx context.Context, req *request.Object) (*model.Use
 	if req.Id == 0 {
 		req.Id = auth.Id
 	}
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	userDao := dao.GetDao(ctxi)
 	var user1 model.User
 	if err = db.Find(&user1, req.Id).Error; err != nil {
@@ -437,7 +437,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 	if req.Input == "" {
 		return nil, errorcode.InvalidArgument.Message("账号错误")
 	}
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	userDao := dao.GetDao(ctxi)
 	user, err := userDao.GetByEmailORPhone(db, req.Input, req.Input, "id", "name", "password")
 	if err != nil {
@@ -473,7 +473,7 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.InvalidArgument.Message("无效的链接"), err, "Redis.Get")
 	}
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	userDao := dao.GetDao(ctxi)
 	user, err := userDao.GetByPrimaryKey(db, req.Id)
 	if err != nil {
@@ -518,7 +518,7 @@ func (*UserService) BaseList(ctx context.Context, req *model.BaseListReq) (*mode
 		return nil, errorcode.PermissionDenied
 	}
 	ctx = ctxi.Context
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	userDao := dao.GetDao(ctxi)
 	count, users, err := userDao.GetBaseListDB(db, req.Ids, int(req.PageNo), int(req.PageSize))
 	if err != nil {
@@ -583,7 +583,7 @@ func (u *UserService) EasySignup(ctx context.Context, req *model.SignupReq) (*mo
 	}
 
 	userDao := dao.GetDao(ctxi)
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	if exist, _ := userDao.ExitsCheck(db, "name", req.Name); exist {
 		return nil, errorcode.InvalidArgument.Message("用户名已被注册")
 	}

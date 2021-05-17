@@ -82,7 +82,7 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 	ctxi := contexti.CtxFromContext(ctx)
 	auth, err := auth(ctxi, false)
 	uploadDao := dao.GetDao(ctxi)
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	upload, err := uploadDao.UploadDB(db, md5, size)
 	if err != nil {
 		errorcode.DBError.OriErrRep().Response(w)
@@ -108,7 +108,7 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 
 func save(ctx *contexti.Ctx, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
 	uploadDao := dao.GetDao(ctx)
-	db := dao.Dao.GetDB(ctx.Logger)
+	db := ctx.NewDB(dao.Dao.GORMDB)
 	auth := ctx.AuthInfo.(*user.AuthInfo)
 	if md5Str != "" {
 		upload, err = uploadDao.UploadDB(db, md5Str, strconv.FormatInt(info.Size, 10))

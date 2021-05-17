@@ -13,7 +13,6 @@ import (
 	"github.com/liov/hoper/v2/utils/log"
 	httpi "github.com/liov/hoper/v2/utils/net/http"
 	"github.com/liov/hoper/v2/utils/net/http/api/apidoc"
-	"github.com/liov/hoper/v2/utils/net/http/request"
 	"github.com/liov/hoper/v2/utils/net/http/request/binding"
 	"google.golang.org/grpc"
 )
@@ -22,10 +21,6 @@ type Context interface {
 	context.Context
 	jwt.Claims
 	grpc.ServerTransportStream
-	Error(...interface{})
-	GeToken() string
-	GetReqAt() *request.RequestAt
-	GetLogger() *log.Logger
 }
 
 var (
@@ -96,8 +91,6 @@ func register(router *Router, genApi bool, modName string) {
 	registered()
 }
 
-type convert func(r *http.Request) Context
-
 func commonHandler(w http.ResponseWriter, req *http.Request, handle *reflect.Value, ps *Params) {
 	handleTyp := handle.Type()
 	handleNumIn := handleTyp.NumIn()
@@ -134,7 +127,7 @@ func commonHandler(w http.ResponseWriter, req *http.Request, handle *reflect.Val
 func resHandler(c *contexti.Ctx, w http.ResponseWriter, result []reflect.Value) {
 	if !result[1].IsNil() {
 		err := errorcode.ErrHandle(result[1].Interface())
-		c.Error(err.Error())
+		c.HandleError(err)
 		json.NewEncoder(w).Encode(err)
 		return
 	}
@@ -150,7 +143,6 @@ func resHandler(c *contexti.Ctx, w http.ResponseWriter, result []reflect.Value) 
 		return
 	}
 	json.NewEncoder(w).Encode(httpi.ResData{
-		Code:    0,
 		Message: "OK",
 		Details: result[0].Interface(),
 	})
