@@ -35,7 +35,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 	auth, _ := auth(ctxi, true)
 	contentDao := dao.GetDao(ctxi)
 
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	var moment content.Moment
 	err := db.Table(model.MomentTableName).
 		Where(`id = ?`, req.Id).First(&moment).Error
@@ -137,7 +137,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 	contentDao := dao.GetDao(ctxi)
 
 	req.UserId = auth.Id
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	/*	var count int64
 		db.Table(`mood`).Where(`name = ?`, req.MoodName).Count(&count)
 		if count == 0 {
@@ -220,7 +220,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	auth, _ := auth(ctxi, true)
 	contentDao := dao.GetDao(ctxi)
 
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 
 	total, moments, err := contentDao.GetMomentListDB(db, req)
 	if err != nil {
@@ -307,7 +307,7 @@ func (*MomentService) Delete(ctx context.Context, req *request.Object) (*empty.E
 	}
 	contentDao := dao.GetDao(ctxi)
 
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	err = contentDao.DelByAuthDB(db, model.MomentTableName, req.Id, auth.Id)
 	if err != nil {
 		return nil, err

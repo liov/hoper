@@ -5,9 +5,6 @@ import (
 	"github.com/dgraph-io/ristretto"
 	"github.com/go-redis/redis/v8"
 	contexti "github.com/liov/hoper/v2/tiga/context"
-	"github.com/liov/hoper/v2/tiga/initialize"
-	"github.com/liov/hoper/v2/upload/conf"
-	gormi "github.com/liov/hoper/v2/utils/dao/db/gorm"
 	"github.com/liov/hoper/v2/utils/log"
 	"gorm.io/gorm"
 )
@@ -56,14 +53,4 @@ func (d *dao) Init() {
 	db.Callback().Update().Remove("gorm:save_before_associations")
 	db.Callback().Update().Remove("gorm:save_after_associations")
 
-}
-
-func (d *dao) GetDB(log *log.Logger) *gorm.DB {
-	if initialize.InitConfig.Env == initialize.DEVELOPMENT {
-		return d.GORMDB
-	}
-	return d.GORMDB.Session(&gorm.Session{
-		Logger: &gormi.SQLLogger{Logger: log.Logger,
-			Config: &conf.Conf.GORMDB.Gorm.Logger,
-		}})
 }

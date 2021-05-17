@@ -34,7 +34,7 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 	}
 	contentDao := dao.GetDao(ctxi)
 
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	req.UserId = auth.Id
 
 	id, err := contentDao.LikeIdDB(db, req.Type, req.Action, req.RefId, req.UserId)
@@ -78,7 +78,7 @@ func (*ActionService) DelLike(ctx context.Context, req *request.Object) (*empty.
 		return nil, err
 	}
 	contentDao := dao.GetDao(ctxi)
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	like, err := contentDao.GetLikeDB(db, req.Id, auth.Id)
 	if err != nil {
 		return nil, err
@@ -113,7 +113,7 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*re
 	}
 	contentDao := dao.GetDao(ctxi)
 
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	req.UserId = auth.Id
 	err = db.Transaction(func(tx *gorm.DB) error {
 		err = db.Table(model.CommentTableName).Create(req).Error
@@ -152,7 +152,7 @@ func (*ActionService) DelComment(ctx context.Context, req *request.Object) (*emp
 	}
 	contentDao := dao.GetDao(ctxi)
 
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	var comment content.Comment
 	err = db.Table(model.CommentTableName).First(&comment, "id = ?", req.Id).Error
 	if err != nil {
@@ -194,7 +194,7 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*em
 	}
 	contentDao := dao.GetDao(ctxi)
 
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	req.UserId = auth.Id
 	collects, err := contentDao.GetCollectsDB(db, req.Type, []uint64{req.RefId}, auth.Id)
 	if err != nil {
@@ -258,7 +258,7 @@ func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*empt
 	if err != nil {
 		return nil, err
 	}
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	req.UserId = auth.Id
 	err = db.Transaction(func(tx *gorm.DB) error {
 		err = db.Table(model.ReportTableName).Create(req).Error
@@ -288,7 +288,7 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 		return nil, err
 	}
 	contentDao := dao.GetDao(ctxi)
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	total, comments, err := contentDao.GetCommentsDB(db, content.ContentMoment, req.RefId, req.RootId, int(req.PageNo), int(req.PageSize))
 	if err != nil {
 		return nil, err

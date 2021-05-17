@@ -3,28 +3,23 @@ package contexti
 import (
 	"context"
 	"errors"
-	"github.com/liov/hoper/v2/protobuf/utils/errorcode"
 	fasthttpi "github.com/liov/hoper/v2/utils/net/http/fasthttp"
 	"github.com/liov/hoper/v2/utils/net/http/request"
 	timei "github.com/liov/hoper/v2/utils/time"
 	"github.com/valyala/fasthttp"
-	"google.golang.org/grpc/metadata"
 	"net/http"
 	"net/url"
 	"sync"
 	"time"
 
-	"github.com/dgraph-io/ristretto"
 	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/google/uuid"
 	"github.com/liov/hoper/v2/utils/encoding/json"
-	"github.com/liov/hoper/v2/utils/log"
 	httpi "github.com/liov/hoper/v2/utils/net/http"
 
 	stringsi "github.com/liov/hoper/v2/utils/strings"
 	jwti "github.com/liov/hoper/v2/utils/verification/auth/jwt"
 	"go.opencensus.io/trace"
-	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
 
@@ -129,7 +124,6 @@ type Ctx struct {
 	Request *http.Request
 	grpc.ServerTransportStream
 	Internal string
-	*log.Logger
 }
 
 func (c *Ctx) StartSpan(name string, o ...trace.StartOption) (*Ctx, *trace.Span) {
@@ -191,8 +185,6 @@ func newCtx(ctx context.Context) *Ctx {
 			TimeStamp:  now.Unix(),
 			TimeString: now.Format(timei.FormatTime),
 		},
-		// 每个请求对应一个实例，后续并发量大考虑移除直接使用log库实例
-		Logger: log.Default.With(zap.String("traceId", traceId)),
 	}
 }
 
@@ -214,7 +206,6 @@ func (c *Ctx) reset(ctx context.Context) *Ctx {
 	c.RequestAt.Time = now
 	c.RequestAt.TimeString = now.Format(timei.FormatTime)
 	c.RequestAt.TimeStamp = now.Unix()
-	c.Logger = log.Default.With(zap.String("traceId", traceId))
 	return c
 }
 
@@ -226,95 +217,6 @@ func (c *Ctx) GetAuthInfo(auth func(*Ctx) error) (AuthInfo, error) {
 		return nil, err
 	}
 	return c.AuthInfo, nil
-}
-
-func (c *Ctx) SetHeader(md metadata.MD) error {
-	for k, v := range md {
-		c.Request.Header[k] = v
-	}
-	if c.ServerTransportStream != nil {
-		err := c.ServerTransportStream.SetHeader(md)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (c *Ctx) SendHeader(md metadata.MD) error {
-	for k, v := range md {
-		c.Request.Header[k] = v
-	}
-	if c.ServerTransportStream != nil {
-		err := c.ServerTransportStream.SendHeader(md)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (c *Ctx) WriteHeader(k, v string) error {
-	c.Request.Header[k] = []string{v}
-
-	if c.ServerTransportStream != nil {
-		err := c.ServerTransportStream.SendHeader(metadata.MD{k: []string{v}})
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (c *Ctx) SetCookie(v string) error {
-	c.Request.Header[httpi.HeaderSetCookie] = []string{v}
-
-	if c.ServerTransportStream != nil {
-		err := c.ServerTransportStream.SendHeader(metadata.MD{httpi.HeaderSetCookie: []string{v}})
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (c *Ctx) SetTrailer(md metadata.MD) error {
-	for k, v := range md {
-		c.Request.Header[k] = v
-	}
-	if c.ServerTransportStream != nil {
-		err := c.ServerTransportStream.SetTrailer(md)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (c *Ctx) Method() string {
-	if c.ServerTransportStream != nil {
-		return c.ServerTransportStream.Method()
-	}
-	return ""
-}
-
-func (c *Ctx) HandleError(err error) {
-	if err != nil {
-		c.Error(err.Error())
-	}
-}
-
-func (c *Ctx) ErrorLog(err, originErr error, funcName string) error {
-	// caller 用原始logger skip刚好
-	c.Logger.Logger.Error(originErr.Error(), zap.Int("type", errorcode.Code(err)), zap.String(log.Position, funcName))
-	return err
-}
-
-type AuthInfoDao struct {
-	Secret    string
-	AuthCache *ristretto.Cache
-	AuthPool  *sync.Pool
-	Update    func(*Ctx) error
 }
 
 func init() {
@@ -329,16 +231,4 @@ func jwtUnmarshaller(ctx jwt.CodingContext, data []byte, v interface{}) error {
 		}
 	}
 	return json.Unmarshal(data, v)
-}
-
-func (c *Ctx) GeToken() string {
-	return c.Token
-}
-
-func (c *Ctx) GetReqAt() *request.RequestAt {
-	return &c.RequestAt
-}
-
-func (c *Ctx) GetLogger() *log.Logger {
-	return c.Logger
 }

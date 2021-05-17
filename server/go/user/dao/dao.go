@@ -8,9 +8,6 @@ import (
 	"github.com/cockroachdb/pebble"
 	"github.com/dgraph-io/ristretto"
 	"github.com/go-redis/redis/v8"
-	"github.com/liov/hoper/v2/tiga/initialize"
-	"github.com/liov/hoper/v2/user/conf"
-	"github.com/liov/hoper/v2/utils/dao/db/gorm"
 	"github.com/liov/hoper/v2/utils/log"
 	"gorm.io/gorm"
 )
@@ -65,14 +62,4 @@ func (d *dao) Init() {
 	db.Callback().Update().Remove("gorm:save_after_associations")
 
 	d.StdDB, _ = db.DB()
-}
-
-func (d *dao) GetDB(log *log.Logger) *gorm.DB {
-	if initialize.InitConfig.Env == initialize.DEVELOPMENT {
-		return d.GORMDB
-	}
-	return d.GORMDB.Session(&gorm.Session{
-		Logger: &gormi.SQLLogger{Logger: log.Logger,
-			Config: &conf.Conf.GORMDB.Gorm.Logger,
-		}})
 }
