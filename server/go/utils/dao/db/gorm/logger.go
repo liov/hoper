@@ -48,17 +48,17 @@ func (l *SQLLogger) LogMode(level logger.LogLevel) logger.Interface {
 
 // Info print info
 func (l *SQLLogger) Info(ctx context.Context, msg string, data ...interface{}) {
-	l.Logger.Info(fmt.Sprintf(msg, data...), field)
+	l.Logger.Info(fmt.Sprintf(msg, data...), traceId(ctx), field)
 }
 
 // Warn print warn messages
 func (l *SQLLogger) Warn(ctx context.Context, msg string, data ...interface{}) {
-	l.Logger.Warn(fmt.Sprintf(msg, data...), field)
+	l.Logger.Warn(fmt.Sprintf(msg, data...), traceId(ctx), field)
 }
 
 // Error print error messages
 func (l *SQLLogger) Error(ctx context.Context, msg string, data ...interface{}) {
-	l.Logger.Error(fmt.Sprintf(msg, data...), field)
+	l.Logger.Error(fmt.Sprintf(msg, data...), traceId(ctx), field)
 }
 
 // Trace print sql message 只有这里的context不是background,看了代码,也没用
@@ -91,6 +91,20 @@ func (l *SQLLogger) Trace(ctx context.Context, begin time.Time, fc func() (strin
 	sqlField := zap.String("sql", sql)
 	rowsField := zap.Int64("rows", rows)
 	caller := zap.String("caller", utils.FileWithLineNum())
-	fields := []zap.Field{elapsedms, sqlField, rowsField, caller}
-	l.Logger.Check(zapcore.Level(4-level), msg).Write(fields...)
+	fields := []zap.Field{elapsedms, sqlField, rowsField, caller, traceId(ctx), field}
+	l.Check(zapcore.Level(4-level), msg).Write(fields...)
+}
+
+func traceId(ctx context.Context) zap.Field {
+	/*	var traceId string
+		if ctxi, ok := ctx.(*contexti.Ctx); ok {
+			traceId = ctxi.TraceID
+		}*/
+	return zap.String(logi.TraceId, ctx.Value(traceIdKey{}).(string))
+}
+
+type traceIdKey struct{}
+
+func SetTranceId(traceId string) context.Context {
+	return context.WithValue(context.Background(), traceIdKey{}, traceId)
 }

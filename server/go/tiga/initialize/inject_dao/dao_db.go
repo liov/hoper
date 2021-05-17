@@ -2,6 +2,7 @@ package inject_dao
 
 import (
 	"fmt"
+	"github.com/liov/hoper/v2/tiga/initialize"
 	gormi "github.com/liov/hoper/v2/utils/dao/db/gorm"
 	"github.com/liov/hoper/v2/utils/log"
 	"gorm.io/driver/mysql"
@@ -37,7 +38,8 @@ func (conf *DatabaseConfig) generate() *gorm.DB {
 	var url string
 	var db *gorm.DB
 	var err error
-	//db.Logger = db.Logger.LogMode(conf.Gorm.Logger.LogLevel)
+
+	// 默认日志
 	logger.Default = logger.New(stdlog.New(os.Stdout, "\r\n", stdlog.LstdFlags), conf.Gorm.Logger)
 	dbConfig := &conf.Gorm.Config
 	dbConfig.NamingStrategy = schema.NamingStrategy{
@@ -61,6 +63,12 @@ func (conf *DatabaseConfig) generate() *gorm.DB {
 	}
 	if err != nil {
 		log.Fatal(err)
+	}
+	// 日志
+	if initialize.InitConfig.Env != initialize.DEVELOPMENT {
+		db.Statement.Logger = &gormi.SQLLogger{Logger: log.Default.Logger,
+			Config: &conf.Gorm.Logger,
+		}
 	}
 
 	if conf.Prometheus {

@@ -8,4 +8,7 @@ const (
 	Param     = "param"
 	Func      = "func"
 	Position  = "position"
+	TraceId   = "traceId"
+	SpanId    = "spanId"
+	Type      = "type"
 )

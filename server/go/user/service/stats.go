@@ -20,7 +20,7 @@ func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*empty.E
 	if err != nil {
 		return nil, err
 	}
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	userDao := dao.GetDao(ctxi)
 	exists, err := userDao.FollowExistsDB(db, req.Id, auth.Id)
 	if err != nil {
@@ -48,7 +48,7 @@ func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user
 	if err != nil {
 		return nil, err
 	}
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	userDao := dao.GetDao(ctxi)
 	exists, err := userDao.FollowExistsDB(db, req.Id, auth.Id)
 	if err != nil {

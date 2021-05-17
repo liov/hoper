@@ -38,7 +38,7 @@ func (*DiaryService) AddDiaryBook(ctx context.Context, req *content.AddDiaryBook
 		return nil, err
 	}
 
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	req.UserId = auth.Id
 	err = db.Table(model.DiaryBookTableName).Create(req).Error
 	if err != nil {
@@ -53,7 +53,7 @@ func (*DiaryService) EditDiaryBook(ctx context.Context, req *content.AddDiaryBoo
 	if err != nil {
 		return nil, err
 	}
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	req.UserId = auth.Id
 	err = db.Table(model.DiaryBookTableName).Where(`id =? AND user_id =?`, req.Id, auth.Id).
 		Updates(req).Error
@@ -74,7 +74,7 @@ func (*DiaryService) Info(ctx context.Context, req *request.Object) (*content.Di
 	if err != nil {
 		return nil, err
 	}
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	var diary content.Diary
 	err = db.Where(`id = ? AND user_id = ?`, req.Id, auth.Id).First(&diary).Error
 	if err != nil {
@@ -89,7 +89,7 @@ func (*DiaryService) Add(ctx context.Context, req *content.AddDiaryReq) (*empty.
 	if err != nil {
 		return nil, err
 	}
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	req.UserId = auth.Id
 	err = db.Table(model.DiaryTableName).Create(req).Error
 	if err != nil {
@@ -111,7 +111,7 @@ func (*DiaryService) Delete(ctx context.Context, req *request.Object) (*empty.Em
 		return nil, err
 	}
 	contentDao := dao.GetDao(ctxi)
-	db := dao.Dao.GetDB(ctxi.Logger)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
 	err = contentDao.DelByAuthDB(db, model.DiaryTableName, req.Id, auth.Id)
 	if err != nil {
 		return nil, err
