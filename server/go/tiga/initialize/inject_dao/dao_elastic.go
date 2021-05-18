@@ -2,7 +2,7 @@ package inject_dao
 
 import (
 	"github.com/liov/hoper/v2/utils/log"
-	"github.com/olivere/elastic"
+	"github.com/olivere/elastic/v7"
 )
 
 type ElasticConfig struct {
