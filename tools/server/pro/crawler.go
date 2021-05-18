@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	py2 "github.com/liov/hoper/v2/utils/strings/pinyin"
 	"io"
 	"log"
 	"math/rand"
@@ -24,7 +25,6 @@ import (
 	"github.com/liov/hoper/v2/utils/strings"
 	"golang.org/x/net/html"
 	"gorm.io/gorm"
-	py "tools/pinyin"
 )
 
 const CommonUrl = "https://f1113.wonderfulday30.live/viewthread.php?tid="
@@ -146,7 +146,7 @@ func Fetch(id int, sd *Speed) {
 	dir := CommonDir
 
 	if auth != "" {
-		dir += py.FistLetter(auth) + Sep + auth + Sep
+		dir += py2.FistLetter(auth) + Sep + auth + Sep
 	}
 	if title != "" {
 		dir += title + `_` + tid + Sep

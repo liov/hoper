@@ -8,10 +8,10 @@ import (
 	"encoding"
 	"errors"
 	"fmt"
+	"go.uber.org/multierr"
 	"reflect"
 	"strings"
 
-	errorsi "github.com/liov/hoper/v2/utils/errors"
 	reflecti "github.com/liov/hoper/v2/utils/reflect"
 )
 
@@ -77,21 +77,19 @@ func (d *Decoder) Decode(dst interface{}, src map[string][]string) error {
 	}
 	v = v.Elem()
 	t := v.Type()
-	errors := errorsi.MultiMapError{}
+	var errs error
 	for path, values := range src {
 		if parts, err := d.cache.parsePath(path, t); err == nil {
 			if err = d.decode(v, path, parts, values); err != nil {
-				errors[path] = err
+				multierr.Append(errs, err)
 			}
 		} else if !d.ignoreUnknownKeys {
-			errors[path] = UnknownKeyError{Key: path}
+			multierr.Append(errs, UnknownKeyError{Key: path})
 		}
 	}
-	errors.Merge(d.checkRequired(t, src))
-	if len(errors) > 0 {
-		return errors
-	}
-	return nil
+	multierr.Append(errs, d.checkRequired(t, src))
+
+	return errs
 }
 
 func (d *Decoder) PickDecode(v reflect.Value, src map[string][]string) error {
@@ -100,21 +98,18 @@ func (d *Decoder) PickDecode(v reflect.Value, src map[string][]string) error {
 	}
 	v = v.Elem()
 	t := v.Type()
-	errors := errorsi.MultiMapError{}
+	var errs error
 	for path, values := range src {
 		if parts, err := d.cache.parsePath(path, t); err == nil {
 			if err = d.decode(v, path, parts, values); err != nil {
-				errors[path] = err
+				multierr.Append(errs, err)
 			}
 		} else if !d.ignoreUnknownKeys {
-			errors[path] = UnknownKeyError{Key: path}
+			multierr.Append(errs, UnknownKeyError{Key: path})
 		}
 	}
-	errors.Merge(d.checkRequired(t, src))
-	if len(errors) > 0 {
-		return errors
-	}
-	return nil
+	multierr.Append(errs, d.checkRequired(t, src))
+	return errs
 }
 
 // checkRequired checks whether required fields are empty
@@ -122,11 +117,11 @@ func (d *Decoder) PickDecode(v reflect.Value, src map[string][]string) error {
 // check type t recursively if t has struct fields.
 //
 // src is the source map for decoding, we use it here to see if those required fields are included in src
-func (d *Decoder) checkRequired(t reflect.Type, src map[string][]string) errorsi.MultiMapError {
+func (d *Decoder) checkRequired(t reflect.Type, src map[string][]string) error {
 	m, errs := d.findRequiredFields(t, "", "")
 	for key, fields := range m {
 		if isEmptyFields(fields, src) {
-			errs[key] = EmptyFieldError{Key: key}
+			multierr.Append(errs, EmptyFieldError{Key: key})
 		}
 	}
 	return errs
@@ -138,15 +133,15 @@ func (d *Decoder) checkRequired(t reflect.Type, src map[string][]string) errorsi
 // for nested struct fields. canonicalPrefix is a complete path which never omits
 // any embedded struct fields. searchPrefix is a user-friendly path which may omit
 // some embedded struct fields to point promoted fields.
-func (d *Decoder) findRequiredFields(t reflect.Type, canonicalPrefix, searchPrefix string) (map[string][]fieldWithPrefix, errorsi.MultiMapError) {
+func (d *Decoder) findRequiredFields(t reflect.Type, canonicalPrefix, searchPrefix string) (map[string][]fieldWithPrefix, error) {
 	struc := d.cache.get(t)
 	if struc == nil {
 		// unexpect, cache.get never return nil
-		return nil, errorsi.MultiMapError{canonicalPrefix + "*": errors.New("cache fail")}
+		return nil, errors.New("cache fail")
 	}
 
 	m := map[string][]fieldWithPrefix{}
-	errs := errorsi.MultiMapError{}
+	var errs error
 	for _, f := range struc.fields {
 		if f.typ.Kind() == reflect.Struct {
 			fcprefix := canonicalPrefix + f.canonicalAlias + "."
@@ -155,7 +150,7 @@ func (d *Decoder) findRequiredFields(t reflect.Type, canonicalPrefix, searchPref
 				for key, fields := range fm {
 					m[key] = append(m[key], fields...)
 				}
-				errs.Merge(ferrs)
+				multierr.Append(errs, ferrs)
 			}
 		}
 		if f.isRequired {

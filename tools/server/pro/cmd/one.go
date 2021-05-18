@@ -15,7 +15,7 @@ func main() {
 	sd := pro.NewSpeed(pro.Loop)
 
 	s := []int{
-		296314,
+		408479,
 	}
 	for i := 0; i < len(s); i++ {
 		sd.WebAdd(1)
