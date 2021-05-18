@@ -10,7 +10,7 @@ require (
 	github.com/Shopify/sarama v1.27.2
 	github.com/alta/protopatch v0.3.3 // indirect
 	github.com/armon/go-metrics v0.3.8 // indirect
-	github.com/aws/aws-sdk-go v1.36.7
+	github.com/aws/aws-sdk-go v1.38.3
 	github.com/boombuler/barcode v1.0.0
 	github.com/cespare/xxhash v1.1.0
 	github.com/cockroachdb/errors v1.8.1 // indirect
@@ -18,7 +18,6 @@ require (
 	github.com/dgraph-io/badger/v3 v3.0.0-20210309075542-2245c18dfd1f // indirect
 	github.com/dgraph-io/ristretto v0.0.4-0.20210311064603-e4f298c8aa88
 	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
-	github.com/envoyproxy/protoc-gen-validate v0.5.1 // indirect
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gin-gonic/gin v1.7.1
 	github.com/go-oauth2/oauth2/v4 v4.2.0
@@ -37,7 +36,6 @@ require (
 	github.com/golang/protobuf v1.5.1
 	github.com/google/flatbuffers v1.12.1-0.20210406112345-261cf3b20473 // indirect
 	github.com/google/uuid v1.1.2
-	github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e // indirect
 	github.com/gorilla/sessions v1.2.1
 	github.com/gorilla/websocket v1.4.2
 	github.com/grpc-ecosystem/go-grpc-middleware v1.1.0
@@ -52,6 +50,7 @@ require (
 	github.com/mwitkow/go-proto-validators v0.3.2
 	github.com/nsqio/go-nsq v1.0.7
 	github.com/olivere/elastic v6.2.23+incompatible
+	github.com/olivere/elastic/v7 v7.0.24 // indirect
 	github.com/pelletier/go-toml v1.8.1
 	github.com/prometheus/client_golang v1.9.0
 	github.com/robfig/cron/v3 v3.0.1
@@ -62,7 +61,7 @@ require (
 	github.com/tealeg/xlsx/v3 v3.2.1
 	github.com/ugorji/go/codec v1.1.7
 	github.com/valyala/fasthttp v1.18.0
-	go.opencensus.io v0.22.5
+	go.opencensus.io v0.23.0
 	go.uber.org/atomic v1.7.0
 	go.uber.org/multierr v1.6.0
 	go.uber.org/zap v1.16.1-0.20210329175301-c23abee72d19

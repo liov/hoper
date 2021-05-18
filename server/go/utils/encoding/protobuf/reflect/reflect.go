@@ -1,7 +1,7 @@
 package reflect
 
 import (
-	cuzproto "github.com/liov/hoper/v2/protobuf/utils/proto/go"
+	cuzproto "github.com/liov/hoper/v2/protobuf/utils/proto"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
