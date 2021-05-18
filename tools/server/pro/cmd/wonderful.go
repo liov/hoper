@@ -1,13 +1,13 @@
 package main
 
 import (
+	py2 "github.com/liov/hoper/v2/utils/strings/pinyin"
 	"log"
 	"os"
 	"strconv"
 	"sync"
 
 	"github.com/liov/hoper/v2/utils/fs"
-	py "tools/pinyin"
 	"tools/pro"
 )
 
@@ -79,6 +79,6 @@ func fixPath(result *Result) string {
 	default:
 		num = "2"
 	}
-	dir := `F:\pic_` + num + pro.Sep + py.FistLetter(auth) + pro.Sep + auth + pro.Sep + title + `_` + strconv.Itoa(result.TId) + pro.Sep
+	dir := `F:\pic_` + num + pro.Sep + py2.FistLetter(auth) + pro.Sep + auth + pro.Sep + title + `_` + strconv.Itoa(result.TId) + pro.Sep
 	return fs.PathClean(dir)
 }

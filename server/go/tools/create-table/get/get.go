@@ -7,11 +7,11 @@ import (
 )
 
 type Dao struct {
-	GORMDB *gorm.DB `config:"database"`
+	Hoper *gorm.DB `config:"database"`
 }
 
 type Config struct {
-	GORMDB inject_dao.DatabaseConfig
+	Hoper inject_dao.DatabaseConfig
 }
 
 func (*Config) Init() {}
@@ -22,9 +22,9 @@ var config = Config{}
 var dao = Dao{}
 
 func GetDB() *gorm.DB {
-	if dao.GORMDB != nil {
-		return dao.GORMDB
+	if dao.Hoper != nil {
+		return dao.Hoper
 	}
 	initialize.Start(&config, &dao)
-	return dao.GORMDB
+	return dao.Hoper
 }

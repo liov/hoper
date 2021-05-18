@@ -2,8 +2,6 @@ package py
 
 import (
 	"testing"
-
-	"github.com/mozillazg/go-pinyin"
 )
 
 func TestPinyin(t *testing.T) {
