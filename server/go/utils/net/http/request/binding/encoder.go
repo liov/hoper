@@ -3,10 +3,9 @@ package binding
 import (
 	"errors"
 	"fmt"
+	"go.uber.org/multierr"
 	"reflect"
 	"strconv"
-
-	errorsi "github.com/liov/hoper/v2/utils/errors"
 )
 
 type encoderFunc func(reflect.Value) string
@@ -86,7 +85,7 @@ func (e *Encoder) encode(v reflect.Value, dst map[string][]string) error {
 	}
 	t := v.Type()
 
-	errors := errorsi.MultiMapError{}
+	var errs error
 
 	for i := 0; i < v.NumField(); i++ {
 		name, opts := fieldAlias(t.Field(i), e.cache.tag)
@@ -123,7 +122,7 @@ func (e *Encoder) encode(v reflect.Value, dst map[string][]string) error {
 		}
 
 		if encFunc == nil {
-			errors[v.Field(i).Type().String()] = fmt.Errorf("schema: encoder not found for %v", v.Field(i))
+			multierr.Append(errs, fmt.Errorf("schema: encoder not found for %v", v.Field(i)))
 			continue
 		}
 
@@ -138,10 +137,7 @@ func (e *Encoder) encode(v reflect.Value, dst map[string][]string) error {
 		}
 	}
 
-	if len(errors) > 0 {
-		return errors
-	}
-	return nil
+	return errs
 }
 
 func typeEncoder(t reflect.Type, reg map[reflect.Type]encoderFunc) encoderFunc {
