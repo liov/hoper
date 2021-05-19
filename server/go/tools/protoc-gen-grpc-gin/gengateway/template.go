@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/liov/hoper/v2/utils/log"
 	"strings"
 	"text/template"
 
-	"github.com/golang/glog"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/utilities"
 	"github.com/liov/hoper/v2/tools/protoc-gen-grpc-gin/descriptor"
 	"github.com/liov/hoper/v2/utils/strings"
@@ -166,7 +166,7 @@ func applyTemplate(p param, reg *descriptor.Registry) (string, error) {
 		svc.Name = &svcName
 
 		for _, meth := range svc.Methods {
-			glog.V(2).Infof("Processing %s.%s", svc.GetName(), meth.GetName())
+			log.Infof("Processing %s.%s", svc.GetName(), meth.GetName())
 			methName := stringsi.Camel(*meth.Name)
 			meth.Name = &methName
 			for _, b := range meth.Bindings {

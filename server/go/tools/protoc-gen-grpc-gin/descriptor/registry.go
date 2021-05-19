@@ -3,9 +3,8 @@ package descriptor
 import (
 	"fmt"
 	"github.com/liov/hoper/v2/protobuf/utils/proto/openapiconfig"
+	"github.com/liov/hoper/v2/utils/log"
 	"strings"
-
-	"github.com/golang/glog"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	"google.golang.org/genproto/googleapis/api/annotations"
@@ -218,7 +217,7 @@ func (r *Registry) registerMsg(file *File, outerPath []string, msgs []*descripto
 		}
 		file.Messages = append(file.Messages, m)
 		r.msgs[m.FQMN()] = m
-		glog.V(1).Infof("register name: %s", m.FQMN())
+		log.Infof("register name: %s", m.FQMN())
 
 		var outers []string
 		outers = append(outers, outerPath...)
@@ -239,14 +238,14 @@ func (r *Registry) registerEnum(file *File, outerPath []string, enums []*descrip
 		}
 		file.Enums = append(file.Enums, e)
 		r.enums[e.FQEN()] = e
-		glog.V(1).Infof("register enum name: %s", e.FQEN())
+		log.Infof("register enum name: %s", e.FQEN())
 	}
 }
 
 // LookupMsg looks up a message type by "name".
 // It tries to resolve "name" from "location" if "name" is a relative message name.
 func (r *Registry) LookupMsg(location, name string) (*Message, error) {
-	glog.V(1).Infof("lookup %s from %s", name, location)
+	log.Infof("lookup %s from %s", name, location)
 	if strings.HasPrefix(name, ".") {
 		m, ok := r.msgs[name]
 		if !ok {
@@ -272,7 +271,7 @@ func (r *Registry) LookupMsg(location, name string) (*Message, error) {
 // LookupEnum looks up a enum type by "name".
 // It tries to resolve "name" from "location" if "name" is a relative enum name.
 func (r *Registry) LookupEnum(location, name string) (*Enum, error) {
-	glog.V(1).Infof("lookup enum %s from %s", name, location)
+	log.Infof("lookup enum %s from %s", name, location)
 	if strings.HasPrefix(name, ".") {
 		e, ok := r.enums[name]
 		if !ok {
