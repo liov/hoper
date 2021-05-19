@@ -1,0 +1,1 @@
+SELECT path from post WHERE status = 0 ORDER BY pic_num LIMIT 100;
