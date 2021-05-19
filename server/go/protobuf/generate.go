@@ -30,7 +30,7 @@ const goOut = "go-patch_out=plugin=go,paths=source_relative"
 const grpcOut = "go-patch_out=plugin=go-grpc,paths=source_relative"
 const enumOut = "enum_out=plugins=grpc,paths=source_relative"
 const enumPatchOut = "enum-patch_out=plugin=go,paths=source_relative"
-const gatewayOut = "grpc-gin_out=logtostderr=true,paths=source_relative"
+const gatewayOut = "grpc-gin_out=paths=source_relative"
 const openapiv2Out = "openapiv2_out=logtostderr=true"
 const govalidatorsOut = "govalidators_out=gogoimport=true,paths=source_relative"
 const gogoprotoOut = "gogo_out=plugins=grpc"
@@ -68,7 +68,7 @@ var (
 )
 
 func init() {
-	proto = flag.String("proto", "../../../proto", "proto路径")
+	proto = flag.String("proto", "../../proto", "proto路径")
 	stdPatch := flag.Bool("patch", false, "是否使用原生protopatch")
 	pwd, _ = os.Getwd()
 	*proto = pwd + "/" + *proto

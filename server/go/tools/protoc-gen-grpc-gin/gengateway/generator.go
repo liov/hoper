@@ -4,10 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/liov/hoper/v2/tools/protoc-gen-grpc-gin/descriptor"
+	"github.com/liov/hoper/v2/utils/log"
 	"go/format"
 	"path"
-
-	"github.com/golang/glog"
 
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/pluginpb"
@@ -82,11 +81,11 @@ func New(reg *descriptor.Registry, useRequestContext bool, registerFuncSuffix st
 func (g *generator) Generate(targets []*descriptor.File) ([]*descriptor.ResponseFile, error) {
 	var files []*descriptor.ResponseFile
 	for _, file := range targets {
-		glog.V(1).Infof("Processing %s", file.GetName())
+		log.Infof("Processing %s", file.GetName())
 
 		code, err := g.generate(file)
 		if err == errNoTargetService {
-			glog.V(1).Infof("%s: %v", file.GetName(), err)
+			log.Infof("%s: %v", file.GetName(), err)
 			continue
 		}
 		if err != nil {
@@ -94,7 +93,7 @@ func (g *generator) Generate(targets []*descriptor.File) ([]*descriptor.Response
 		}
 		formatted, err := format.Source([]byte(code))
 		if err != nil {
-			glog.Errorf("%v: %s", err, code)
+			log.Errorf("%v: %s", err, code)
 			return nil, err
 		}
 		files = append(files, &descriptor.ResponseFile{
