@@ -11,10 +11,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/liov/hoper/v2/utils/log"
 	"os"
 	"strings"
 
-	"github.com/golang/glog"
 	"github.com/liov/hoper/v2/tools/protoc-gen-grpc-gin/descriptor"
 	"github.com/liov/hoper/v2/tools/protoc-gen-grpc-gin/gengateway"
 	"google.golang.org/protobuf/compiler/protogen"
@@ -44,7 +44,7 @@ var (
 
 func main() {
 	flag.Parse()
-	defer glog.Flush()
+	defer log.Sync()
 
 	if *versionFlag {
 		fmt.Printf("Version %v, commit %v, built at %v\n", version, commit, date)
@@ -63,7 +63,7 @@ func main() {
 
 		generator := gengateway.New(reg, *useRequestContext, *registerFuncSuffix, *allowPatchFeature, *standalone)
 
-		glog.V(1).Infof("Parsing code generator request")
+		log.Infof("Parsing code generator request")
 
 		if err := reg.LoadFromPlugin(gen); err != nil {
 			return err
@@ -85,14 +85,14 @@ func main() {
 
 		files, err := generator.Generate(targets)
 		for _, f := range files {
-			glog.V(1).Infof("NewGeneratedFile %q in %s", f.GetName(), f.GoPkg)
+			log.Infof("NewGeneratedFile %q in %s", f.GetName(), f.GoPkg)
 			genFile := gen.NewGeneratedFile(f.GetName(), protogen.GoImportPath(f.GoPkg.Path))
 			if _, err := genFile.Write([]byte(f.GetContent())); err != nil {
 				return err
 			}
 		}
 
-		glog.V(1).Info("Processed code generator request")
+		log.Info("Processed code generator request")
 
 		return err
 	})
@@ -107,7 +107,7 @@ func parseFlags(reg *descriptor.Registry, parameter string) {
 		spec := strings.SplitN(p, "=", 2)
 		if len(spec) == 1 {
 			if err := flag.CommandLine.Set(spec[0], ""); err != nil {
-				glog.Fatalf("Cannot set flag %s", p)
+				log.Fatalf("Cannot set flag %s", p)
 			}
 			continue
 		}
@@ -119,7 +119,7 @@ func parseFlags(reg *descriptor.Registry, parameter string) {
 			continue
 		}
 		if err := flag.CommandLine.Set(name, value); err != nil {
-			glog.Fatalf("Cannot set flag %s", p)
+			log.Fatalf("Cannot set flag %s", p)
 		}
 	}
 }
@@ -131,7 +131,7 @@ func applyFlags(reg *descriptor.Registry) error {
 		}
 	}
 	if *warnOnUnboundMethods && *generateUnboundMethods {
-		glog.Warningf("Option warn_on_unbound_methods has no effect when generate_unbound_methods is used.")
+		log.Warnf("Option warn_on_unbound_methods has no effect when generate_unbound_methods is used.")
 	}
 	reg.SetStandalone(*standalone)
 	reg.SetAllowDeleteBody(*allowDeleteBody)

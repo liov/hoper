@@ -15,7 +15,6 @@ import (
 
 const Template = `
 func (*UserService) Add(ctx *model.Ctx, req *model.SignupReq) (*response.TinyRep, error) {
-	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() interface{} {
 		return pick.Post("/add").
 			Title("用户注册").

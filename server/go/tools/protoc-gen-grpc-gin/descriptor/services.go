@@ -2,9 +2,9 @@ package descriptor
 
 import (
 	"fmt"
+	"github.com/liov/hoper/v2/utils/log"
 	"strings"
 
-	"github.com/golang/glog"
 	"github.com/liov/hoper/v2/tools/protoc-gen-grpc-gin/httprule"
 
 	options "google.golang.org/genproto/googleapis/api/annotations"
@@ -16,20 +16,20 @@ import (
 // It must be called after loadFile is called for all files so that loadServices
 // can resolve names of message types and their fields.
 func (r *Registry) loadServices(file *File) error {
-	glog.V(1).Infof("Loading services from %s", file.GetName())
+	log.Infof("Loading services from %s", file.GetName())
 	var svcs []*Service
 	for _, sd := range file.GetService() {
-		glog.V(2).Infof("Registering %s", sd.GetName())
+		log.Infof("Registering %s", sd.GetName())
 		svc := &Service{
 			File:                   file,
 			ServiceDescriptorProto: sd,
 			ForcePrefixedName:      r.standalone,
 		}
 		for _, md := range sd.GetMethod() {
-			glog.V(2).Infof("Processing %s.%s", sd.GetName(), md.GetName())
+			log.Infof("Processing %s.%s", sd.GetName(), md.GetName())
 			opts, err := extractAPIOptions(md)
 			if err != nil {
-				glog.Errorf("Failed to extract HttpRule from %s.%s: %v", svc.GetName(), md.GetName(), err)
+				log.Errorf("Failed to extract HttpRule from %s.%s: %v", svc.GetName(), md.GetName(), err)
 				return err
 			}
 			optsList := r.LookupExternalHTTPRules((&Method{Service: svc, MethodDescriptorProto: md}).FQMN())
@@ -40,14 +40,14 @@ func (r *Registry) loadServices(file *File) error {
 				if r.generateUnboundMethods {
 					defaultOpts, err := defaultAPIOptions(svc, md)
 					if err != nil {
-						glog.Errorf("Failed to generate default HttpRule from %s.%s: %v", svc.GetName(), md.GetName(), err)
+						log.Errorf("Failed to generate default HttpRule from %s.%s: %v", svc.GetName(), md.GetName(), err)
 						return err
 					}
 					optsList = append(optsList, defaultOpts)
 				} else {
-					logFn := glog.V(1).Infof
+					logFn := log.Infof
 					if r.warnOnUnboundMethods {
-						logFn = glog.Warningf
+						logFn = log.Warnf
 					}
 					logFn("No HttpRule found for method: %s.%s", svc.GetName(), md.GetName())
 				}
@@ -61,7 +61,7 @@ func (r *Registry) loadServices(file *File) error {
 		if len(svc.Methods) == 0 {
 			continue
 		}
-		glog.V(2).Infof("Registered %s with %d method(s)", svc.GetName(), len(svc.Methods))
+		log.Infof("Registered %s with %d method(s)", svc.GetName(), len(svc.Methods))
 		svcs = append(svcs, svc)
 	}
 	file.Services = svcs
@@ -122,7 +122,7 @@ func (r *Registry) newMethod(svc *Service, md *descriptorpb.MethodDescriptorProt
 			pathTemplate = custom.Path
 
 		default:
-			glog.V(1).Infof("No pattern specified in google.api.HttpRule: %s", md.GetName())
+			log.Infof("No pattern specified in google.api.HttpRule: %s", md.GetName())
 			return nil, nil
 		}
 
@@ -245,9 +245,9 @@ func (r *Registry) newParam(meth *Method, path string) (Parameter, error) {
 	target := fields[l-1].Target
 	switch target.GetType() {
 	case descriptorpb.FieldDescriptorProto_TYPE_MESSAGE, descriptorpb.FieldDescriptorProto_TYPE_GROUP:
-		glog.V(2).Infoln("found aggregate type:", target, target.TypeName)
+		log.Info("found aggregate type:", target, target.TypeName)
 		if IsWellKnownType(*target.TypeName) {
-			glog.V(2).Infoln("found well known aggregate type:", target)
+			log.Info("found well known aggregate type:", target)
 		} else {
 			return Parameter{}, fmt.Errorf("aggregate type %s in parameter of %s.%s: %s", target.Type, meth.Service.GetName(), meth.GetName(), path)
 		}
@@ -322,7 +322,7 @@ func (r *Registry) resolveFieldPath(msg *Message, path string, isPathParam bool)
 			}
 		}
 
-		glog.V(2).Infof("Lookup %s in %s", c, msg.FQMN())
+		log.Infof("Lookup %s in %s", c, msg.FQMN())
 		f := lookupField(msg, c)
 		if f == nil {
 			return nil, fmt.Errorf("no field %q found in %s", path, root.GetName())

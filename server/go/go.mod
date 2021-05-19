@@ -31,7 +31,6 @@ require (
 	github.com/go-redis/redis/v8 v8.4.10
 	github.com/gofiber/fiber/v2 v2.3.2
 	github.com/gogo/protobuf v1.3.2
-	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e
 	github.com/golang/protobuf v1.5.1
 	github.com/google/flatbuffers v1.12.1-0.20210406112345-261cf3b20473 // indirect
