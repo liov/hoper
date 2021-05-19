@@ -139,10 +139,7 @@ func Fetch(id int, sd *Speed) {
 	if post.PicNum == 0 {
 		status = "1"
 	}
-	err = DB.Save(post).Error
-	if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
-		sd.FailDB <- tid + " " + status
-	}
+
 	dir := CommonDir
 
 	if auth != "" {
@@ -152,6 +149,13 @@ func Fetch(id int, sd *Speed) {
 		dir += title + `_` + tid + Sep
 	}
 	dir = fs.PathClean(dir)
+
+	post.Path = dir[2:]
+	err = DB.Save(post).Error
+	if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
+		sd.FailDB <- tid + " " + status
+	}
+
 	_, err = os.Stat(dir)
 	if os.IsNotExist(err) {
 		err = os.MkdirAll(dir, 0666)
@@ -398,6 +402,7 @@ type Post struct {
 	PicNum    uint32 `gorm:"default:0"`
 	Score     uint8  `gorm:"default:0"`
 	Status    uint8  `gorm:"default:0"`
+	Path      string `gorm:"size:255;default:''"`
 }
 
 func FixWeb(path string, sd *Speed, handle func(int, *Speed)) {
