@@ -3,10 +3,8 @@ package contexti
 import (
 	"context"
 	"errors"
-	fasthttpi "github.com/liov/hoper/v2/utils/net/http/fasthttp"
 	"github.com/liov/hoper/v2/utils/net/http/request"
 	timei "github.com/liov/hoper/v2/utils/time"
-	"github.com/valyala/fasthttp"
 	"net/http"
 	"net/url"
 	"sync"
@@ -77,35 +75,63 @@ type DeviceInfo struct {
 }
 
 func Device(r http.Header) *DeviceInfo {
+	return device(r.Get(httpi.HeaderDeviceInfo),
+		r.Get(httpi.HeaderArea), r.Get(httpi.HeaderLocation),
+		r.Get(httpi.HeaderUserAgent), r.Get(httpi.HeaderXForwardedFor))
+}
+func device(infoHeader, area, localHeader, userAgent, ip string) *DeviceInfo {
 	unknow := true
 	var info DeviceInfo
 	//Device-Info:device,osInfo,appCode,appVersion
-	if infos := r.Values(httpi.HeaderDeviceInfo); len(infos) == 4 {
+	if infoHeader != "" {
 		unknow = false
-		info.Device = infos[0]
-		info.Os = infos[1]
-		info.AppCode = infos[2]
-		info.AppVersion = infos[3]
-
+		var n, m int
+		for i, c := range infoHeader {
+			if c == '-' {
+				switch n {
+				case 0:
+					info.Device = infoHeader[m:i]
+				case 1:
+					info.Os = infoHeader[m:i]
+				case 2:
+					info.AppCode = infoHeader[m:i]
+				case 3:
+					info.AppVersion = infoHeader[m:i]
+				}
+				m = i + 1
+				n++
+			}
+		}
 	}
 	// area:xxx
 	// location:1.23456,2.123456
-	if area := r.Get(httpi.HeaderArea); area != "" {
+	if area != "" {
 		unknow = false
 		info.Area, _ = url.PathUnescape(area)
 	}
-	if infos := r.Values(httpi.HeaderLocation); len(infos) == 2 {
+	if localHeader != "" {
 		unknow = false
-		info.Lng = infos[0]
-		info.Lat = infos[1]
+		var n, m int
+		for i, c := range localHeader {
+			if c == '-' {
+				switch n {
+				case 0:
+					info.Lng = localHeader[m:i]
+				case 1:
+					info.Lat = localHeader[m:i]
+				}
+				m = i + 1
+				n++
+			}
+		}
 
 	}
 
-	if userAgent := r.Get(httpi.HeaderUserAgent); userAgent != "" {
+	if userAgent != "" {
 		unknow = false
 		info.UserAgent = userAgent
 	}
-	if ip := r.Get(httpi.HeaderXForwardedFor); ip != "" {
+	if ip != "" {
 		unknow = false
 		info.IP = ip
 	}
@@ -151,9 +177,9 @@ func CtxWithRequest(ctx context.Context, r *http.Request) *Ctx {
 	return ctxi
 }
 
-func CtxWithFasthttpRequest(ctx context.Context, r *fasthttp.Request) *Ctx {
-	ctxi := newCtx(ctx)
-	ctxi.Token = fasthttpi.GetToken(r)
+func CtxFromRequest(r *http.Request) *Ctx {
+	ctxi := newCtx(r.Context())
+	ctxi.setWithReq(r)
 	return ctxi
 }
 
