@@ -1,8 +1,8 @@
 package service
 
 import (
-	"context"
 	"github.com/liov/hoper/v2/protobuf/utils/request"
+	contexti "github.com/liov/hoper/v2/tiga/context"
 	"github.com/liov/hoper/v2/tiga/pick"
 	"github.com/liov/hoper/v2/tiga/pick/_example/middle"
 	"net/http"
@@ -17,7 +17,7 @@ func (*UserService) Service() (string, string, []http.HandlerFunc) {
 	return "用户相关", "/api/user", []http.HandlerFunc{middle.Log}
 }
 
-func (*UserService) Add(ctx context.Context, req *model.SignupReq) (*response.TinyRep, error) {
+func (*UserService) Add(ctx *contexti.Ctx, req *model.SignupReq) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() interface{} {
 		return pick.Post("").
@@ -30,7 +30,7 @@ func (*UserService) Add(ctx context.Context, req *model.SignupReq) (*response.Ti
 	return &response.TinyRep{Message: "测试"}, nil
 }
 
-func (*UserService) Edit(ctx context.Context, req *model.EditReq) (*model.EditReq_EditDetails, error) {
+func (*UserService) Edit(ctx *contexti.Ctx, req *model.EditReq) (*model.EditReq_EditDetails, error) {
 	pick.Api(func() interface{} {
 		return pick.Put("/:id").
 			Title("用户编辑").
@@ -41,7 +41,7 @@ func (*UserService) Edit(ctx context.Context, req *model.EditReq) (*model.EditRe
 	return nil, nil
 }
 
-func (*UserService) Get(ctx context.Context, req *request.Object) (*response.TinyRep, error) {
+func (*UserService) Get(ctx *contexti.Ctx, req *request.Object) (*response.TinyRep, error) {
 	pick.Api(func() interface{} {
 		return pick.Get("/:id").
 			Title("用户注册").
@@ -57,7 +57,7 @@ func (*StaticService) Service() (string, string, []http.HandlerFunc) {
 	return "静态资源", "/api/static", nil
 }
 
-func (*StaticService) Get2(ctx context.Context, req *model.SignupReq) (*response.TinyRep, error) {
+func (*StaticService) Get2(ctx *contexti.Ctx, req *model.SignupReq) (*response.TinyRep, error) {
 	pick.Api(func() interface{} {
 		return pick.Get("/*mail").
 			Title("用户注册").
