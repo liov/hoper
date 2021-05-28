@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/liov/hoper/v2/utils/net/http/request"
 	timei "github.com/liov/hoper/v2/utils/time"
+	"github.com/valyala/fasthttp"
 	"net/http"
 	"net/url"
 	"sync"
@@ -147,7 +148,8 @@ type Ctx struct {
 	*Authorization
 	*DeviceInfo
 	request.RequestAt
-	Request *http.Request
+	Request     *http.Request
+	FastRequest *fasthttp.Request
 	grpc.ServerTransportStream
 	Internal string
 }

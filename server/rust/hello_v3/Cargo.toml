@@ -11,11 +11,10 @@ doctest = false
 test = false
 
 [dependencies]
-tonic = "0.2.0"
-bytes = "0.4"
+tonic = "0.4.3"
 prost = "0.5"
 prost-derive = "0.5"
-tokio = "0.2.0-alpha.6"
+tokio = { version = "1.5.0", features = ["full"] }
 futures-preview = { version = "=0.3.0-alpha.19", default-features = false, features = ["alloc"]}
 async-stream = "0.1.2"
 bytes = { version = "0.4.11", optional = true }
