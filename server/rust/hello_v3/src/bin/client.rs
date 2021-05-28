@@ -1,8 +1,8 @@
-pub mod hello_world {
-    tonic::include_proto!("helloworld");
+pub mod user {
+    tonic::include_proto!("user");
 }
 
-use hello_world::{client::GreeterClient, HelloRequest};
+use user::{user_service_client::UserServiceClient, HelloRequest};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
