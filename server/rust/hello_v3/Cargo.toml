@@ -12,15 +12,16 @@ test = false
 
 [dependencies]
 tonic = "0.4.3"
-prost = "0.5"
-prost-derive = "0.5"
+prost = "0.7.0"
+prost-types = "0.7.0"
 tokio = { version = "1.5.0", features = ["full"] }
+tokio-stream = { version =  "0.1", features = ["net"] }
+async-stream = "0.3"
+futures = { version = "0.3", default-features = false, features = ["alloc"] }
 futures-preview = { version = "=0.3.0-alpha.19", default-features = false, features = ["alloc"]}
-async-stream = "0.1.2"
-bytes = { version = "0.4.11", optional = true }
+bytes = { version = "1.0.1", optional = true }
 log = "0.4.7"
 libc = "0.2.62"
-futures = "^0.1.29"
 rand = "0.7.2"
 slog = "2.5.2"
 slog-async = "2.3.0"
@@ -32,11 +33,12 @@ slog-term = "2.4.1"
 serde_json = "1.0.40"
 serde = "1.0.101"
 serde_derive = "1.0.101"
+prost-derive = "0.7.0"
 
 
 
 [build-dependencies]
-tonic-build = "0.1.0-alpha.2"
+tonic-build = "0.4.2"
 
 [[bin]]
 name = "server"
