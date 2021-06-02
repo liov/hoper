@@ -12,39 +12,39 @@ func TestMergeTags(t *testing.T) {
 	}{
 		{
 			name:   "NotOverrideTag",
-			oldTag: `json:"code;omitempty"`,
+			oldTag: `json:"code,omitempty"`,
 			newTag: `test:"test"`,
-			want:   `json:"code;omitempty" test:"test"`,
+			want:   `json:"code,omitempty" test:"test"`,
 		},
 		{
 			name:   "OverrideSingleTag",
-			oldTag: `json:"code;omitempty"`,
+			oldTag: `json:"code,omitempty"`,
 			newTag: `json:"-" test:"test"`,
 			want:   `json:"-" test:"test"`,
 		},
 		{
 			name:   "OverrideMultiTag",
-			oldTag: `json:"code;omitempty" test1:"test"`,
+			oldTag: `json:"code,omitempty" test1:"test"`,
 			newTag: `test1:"test1" test2:"test2"`,
-			want:   `json:"code;omitempty" test1:"test1" test2:"test2"`,
+			want:   `json:"code,omitempty" test1:"test1" test2:"test2"`,
 		},
 		{
 			name:   "EmptyValueTag",
-			oldTag: `json:"code;omitempty" test1 test2:"test2"`,
+			oldTag: `json:"code,omitempty" test1 test2:"test2"`,
 			newTag: `test2`,
-			want:   `json:"code;omitempty" test2:"test2"`,
+			want:   `json:"code,omitempty" test2:"test2"`,
 		},
 		{
 			name:   "WithColonTag",
-			oldTag: `json:"code;omitempty"`,
+			oldTag: `json:"code,omitempty"`,
 			newTag: `test1:"a:b" test2:"test2"`,
-			want:   `json:"code;omitempty" test1:"a:b" test2:"test2"`,
+			want:   `json:"code,omitempty" test1:"a:b" test2:"test2"`,
 		},
 		{
 			name:   "WithSpacesTag",
-			oldTag: `json:"code;omitempty"`,
+			oldTag: `json:"code,omitempty"`,
 			newTag: `test1:"a b" test2:"test2"`,
-			want:   `json:"code;omitempty" test1:"a b" test2:"test2"`,
+			want:   `json:"code,omitempty" test1:"a b" test2:"test2"`,
 		},
 	}
 
