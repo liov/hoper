@@ -9,7 +9,6 @@ import io.flutter.embedding.android.FlutterActivity
 object PageRouter {
     const val FLUTTER_PAGE_URL = "flutterPage"
     const val Native_PAGE_URL = "nativePage"
-    const val Lua_PAGE_URL = "luaPage"
 
     @JvmOverloads
     @JvmStatic
@@ -23,10 +22,7 @@ object PageRouter {
                             .build(context))
                     return true
                 }
-                url.startsWith(Lua_PAGE_URL) -> {
-                    context.startActivity(Intent(context, LuaActivity::class.java))
-                    return true
-                }
+
                 else -> context.startActivity(Intent(context, NativeActivity::class.java))
             }
             return true

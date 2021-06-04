@@ -33,7 +33,6 @@
 #Fragment不需要在AndroidManifest.xml中注册，需要额外保护下
 -keep public class * extends androidx.fragment.app.Fragment
 -keep class org.chromium.base.**{*;}
--keep class com.common.luakit.**{*;}
 -keep class com.facebook.yoga.**{*;}
 
 # 保留所有的本地native方法不被混淆
@@ -51,22 +50,7 @@
 # 注解和被注解类不混淆
 -keepattributes *Annotation*
 -keepattributes Exceptions
--keep class com.immomo.mls.annotation.* { *; }
 
--keep @com.immomo.mls.annotation.LuaClass class * {
-    @com.immomo.mls.annotation.LuaBridge <methods>;
-}
--keep @com.immomo.mls.wrapper.ConstantClass class * {
-    @com.immomo.mls.wrapper.Constant <fields>;
-}
--keep,allowobfuscation @interface org.luaj.vm2.utils.LuaApiUsed
--keep @com.immomo.mls.annotation.CreatedByApt class * { *; }
--keep @org.luaj.vm2.utils.LuaApiUsed class *
--keep @org.luaj.vm2.utils.LuaApiUsed class * {
-    native <methods>;
-    @org.luaj.vm2.utils.LuaApiUsed <methods>;
-    @org.luaj.vm2.utils.LuaApiUsed <fields>;
-}
 
 -keepattributes *Annotation*, InnerClasses
 -dontnote kotlinx.serialization.SerializationKt

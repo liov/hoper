@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class LoginView extends StatelessWidget {
-  const LoginView({Key key}) : super(key: key);
+  const LoginView({Key? key}) : super(key: key);
 
   User login(String account,password){
     final api = "/user/login";
@@ -19,7 +19,7 @@ class LoginView extends StatelessWidget {
     var _password = '';
     final _formKey = GlobalKey<FormState>();
     return Scaffold(
-        resizeToAvoidBottomPadding: false,
+        resizeToAvoidBottomInset: false,
         body: Center(
           child: Container(
             padding: EdgeInsets.all(60.0),
@@ -37,7 +37,7 @@ class LoginView extends StatelessWidget {
                       hintText: '邮箱/手机',
                     ),
                     onSaved: (value) {
-                      _account = value;
+                      _account = value!;
                     },
                   ),
                   TextFormField(
@@ -45,7 +45,7 @@ class LoginView extends StatelessWidget {
                       hintText: '密码',
                     ),
                     onSaved: (value) {
-                      _password = value;
+                      _password = value!;
                     },
                     obscureText: true,
                   ),
@@ -57,7 +57,7 @@ class LoginView extends StatelessWidget {
                     child: Text('登录'),
                     onPressed: () {
                       var _state = _formKey.currentState;
-                      _state.save();
+                      _state!.save();
                       print(_account);
                       final user =  login(_account, _password);
                       final userState = context.read<UserInfo>();

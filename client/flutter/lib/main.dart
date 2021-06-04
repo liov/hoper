@@ -2,8 +2,7 @@ import 'package:app/page/ffi/ffi.dart';
 import 'package:app/page/index/fourth.dart';
 import 'package:app/page/index/index.dart';
 import 'package:app/page/loginView.dart';
-import 'package:app/page/lua/lua.dart';
-import 'package:app/page/content/momentListView.dart';
+import 'package:app/page/moment/momentListView.dart';
 
 import 'package:app/page/webview/webview.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +55,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key}) : super(key: key);
+  MyHomePage({Key? key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -106,10 +105,6 @@ class _MyHomePageState extends State<MyHomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
             title: Text('rustffi'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble_outline),
-            title: Text('lua业务逻辑'),
           ),
         ],
         currentIndex: _selectedIndex,

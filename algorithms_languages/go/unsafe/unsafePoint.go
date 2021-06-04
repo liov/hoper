@@ -2,16 +2,16 @@ package main
 
 import (
 	"fmt"
+	reflecti "github.com/liov/hoper/v2/utils/reflect"
 	"reflect"
 	"unsafe"
 
-	_type "test/unsafe/type"
 )
 
 func main() {
 	var f interface{}
 	f = 1
-	b := (*_type.EmptyInterface)(unsafe.Pointer(&f))
+	b := (*reflecti.EmptyInterface)(unsafe.Pointer(&f))
 	fmt.Println(b.Typ)
 	fmt.Printf("%d\n", &b.Typ)
 	fmt.Printf("%d\n", b.Word)
@@ -21,7 +21,7 @@ func main() {
 	fmt.Println(array)
 	p := unsafe.Pointer(&f)
 	fmt.Printf("%d\n", p)
-	b1 := (*_type.Value)(unsafe.Pointer(&v))
+	b1 := (*reflecti.Value)(unsafe.Pointer(&v))
 	fmt.Printf("%d\n", b1.Ptr)
 	fmt.Println(*(*[2]uintptr)(b1.Ptr))
 }

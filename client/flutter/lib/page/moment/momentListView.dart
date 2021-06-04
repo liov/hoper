@@ -1,12 +1,12 @@
-import 'package:app/model/content.dart';
-import 'package:app/service/content.dart';
+import 'package:app/model/moment.dart';
+import 'package:app/service/moment.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 class MomentListView extends StatefulWidget {
-  List<Moment> list;
-  ScrollController _controller;
+  List<Moment>? list;
+  ScrollController? _controller;
   MomentListStage createState() => MomentListStage();
 }
 
@@ -25,7 +25,7 @@ class MomentListStage extends State<MomentListView> with AutomaticKeepAliveClien
     if (widget.list == null)
       widget.list = response.data;
     else
-      widget.list.addAll(response.data);
+      widget.list!.addAll(response.data);
     if (!mounted) return;//这是什么大坑啊，切换组件后，这个组件销毁，切换回来重建但是没有mounted
     //不能setState，但是可以更新Widget里的
     //https://github.com/flutter/flutter/issues/27680
@@ -38,7 +38,7 @@ class MomentListStage extends State<MomentListView> with AutomaticKeepAliveClien
     if (widget._controller == null) {
       widget._controller = ScrollController()
         ..addListener(() {
-          if(widget._controller.position.atEdge){
+          if(widget._controller!.position.atEdge){
             _getList();
           }
         });
@@ -71,7 +71,7 @@ class MomentListStage extends State<MomentListView> with AutomaticKeepAliveClien
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(children: [
-                  Text('${list[index].user.name}  ${list[index].createdAt}'),
+                  Text('${list![index].user.name}  ${list![index].createdAt}'),
                 ]),
                 MarkdownBody(data: '${list[index].content}'),
                 Row(children: [

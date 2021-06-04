@@ -18,7 +18,7 @@ pub use hello_v3::{empty,response,request,any,oauth};
 
 #[derive(Default)]
 pub struct MyUserService {
-    data: String,
+    data: u64,
 }
 
 #[tonic::async_trait]
@@ -29,9 +29,12 @@ impl UserService for MyUserService {
     ) -> Result<Response<String>, Status> {
         println!("Got a request: {:?}", request);
 
-        let string = &self.data;
+        unsafe{
+            let ptr = &self.data as *const u64 as *mut u64;
+            *ptr = self.data+1
+        }
 
-        println!("My data: {:?}", string);
+        println!("My data: {:?}", self.data);
 
         Ok(Response::new( "Zomg, it works!".into()))
     }

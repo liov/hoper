@@ -1,12 +1,12 @@
 import 'dart:io';
 
-import 'package:app/model/content.dart';
+import 'package:app/model/moment.dart';
 import 'package:app/util/dio.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'content.g.dart';
+part 'moment.g.dart';
 
-@JsonSerializable(nullable: false)
+@JsonSerializable()
 class MomentListResponse {
   MomentListResponse();
   int code;

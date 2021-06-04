@@ -22,6 +22,6 @@ nativeAddLib
 
 String greeting(){
   final String myString = "😎👿💬";
-  final Pointer<Utf8> charPointer = Utf8.toUtf8(myString);
-  return Utf8.fromUtf8(nativeGreeting(charPointer));
+  final Pointer<Utf8> charPointer = myString.toNativeUtf8();
+  return charPointer.toDartString();
 }
