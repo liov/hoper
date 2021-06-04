@@ -16,4 +16,3 @@ targets:
           field_rename: snake
           ignore_unannotated: false
           include_if_null: true
-          nullable: true

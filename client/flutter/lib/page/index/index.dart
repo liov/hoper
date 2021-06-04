@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class IndexPage extends StatefulWidget {
-  IndexPage({Key key, this.title}) : super(key: key);
+  IndexPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 

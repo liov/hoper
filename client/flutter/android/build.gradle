@@ -1,6 +1,5 @@
 buildscript {
     ext.kotlin_version = '1.4.10'
-    ext.mln_version = '1.2.0'
     repositories {
         maven { url 'https://maven.aliyun.com/repository/public' }
         maven { url 'https://maven.aliyun.com/repository/google'}
@@ -8,7 +7,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.0-rc01'
+        classpath 'com.android.tools.build:gradle:4.1.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }

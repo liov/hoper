@@ -2,7 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'user.g.dart';
 
-@JsonSerializable(nullable: false)
+@JsonSerializable()
 class User {
   User();
   int id;

@@ -6,5 +6,9 @@ opt-level = 3
 
 [workspace]
 members = [
-    "hello_v3"
+    "hello_v3",
+    "hoper",
+    "p_macro",
+    "ffi",
+    "async_test"
 ]

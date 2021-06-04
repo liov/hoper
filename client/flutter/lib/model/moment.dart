@@ -2,11 +2,13 @@ import 'package:json_annotation/json_annotation.dart';
 
 import 'user.dart';
 
-part 'content.g.dart';
+part 'moment.g.dart';
 
-@JsonSerializable(nullable: true)
+@JsonSerializable()
 class Moment {
-  Moment();
+  Moment({required this.id, required this.createdAt,
+    required this.content,required this.imageUrl,
+  required this.mood,required this.tags,required this.user});
   int id;
   DateTime createdAt;
   String content;
@@ -21,7 +23,7 @@ class Moment {
   Map<String, dynamic> toJson() => _$MomentToJson(this);
 }
 
-@JsonSerializable(nullable: false)
+@JsonSerializable()
 class Mood {
   Mood();
   String name;
@@ -34,7 +36,7 @@ class Mood {
   Map<String, dynamic> toJson() => _$MoodToJson(this);
 }
 
-@JsonSerializable(nullable: false)
+@JsonSerializable()
 class Tag {
   Tag();
   String name;
@@ -46,7 +48,7 @@ class Tag {
   Map<String, dynamic> toJson() => _$TagToJson(this);
 }
 
-@JsonSerializable(nullable: false)
+@JsonSerializable()
 class Category {
   Category();
   int id;
@@ -60,7 +62,7 @@ class Category {
   Map<String, dynamic> toJson() => _$CategoryToJson(this);
 }
 
-@JsonSerializable(nullable: false)
+@JsonSerializable()
 class MomentComment {
   MomentComment();
   int id;
