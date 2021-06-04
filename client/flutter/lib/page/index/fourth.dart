@@ -1,10 +1,9 @@
-import 'package:app/page/content/momentListView.dart';
+import 'package:app/page/moment/momentListView.dart';
 import 'package:flutter/material.dart';
 
 class FourthPage extends StatefulWidget {
-  FourthPage({Key key, this.title}) : super(key: key);
+  FourthPage({Key? key, String? title}) : super(key: key);
 
-  final String title;
 
   @override
   FourthPageState createState() => FourthPageState();
@@ -17,7 +16,7 @@ class FourthPageState extends State<FourthPage> {
     '刚刚',
   ];
 
-  TabController _controller;
+  late TabController _controller;
 
   @override
   void initState() {

@@ -16,8 +16,6 @@ class NativeActivity: AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         sRef = WeakReference(this)
         setContentView(R.layout.native_page)
-        mOpenLuaPage = findViewById(R.id.open_lua_page)
-        mOpenLuaPage.setOnClickListener(this)
         mOpenFlutter = findViewById(R.id.open_flutter)
         mOpenFlutter.setOnClickListener(this)
     }
@@ -34,9 +32,7 @@ class NativeActivity: AppCompatActivity(), View.OnClickListener {
         //Add some params if needed.
        if (v === mOpenFlutter) {
             PageRouter.openPageByUrl(this, PageRouter.FLUTTER_PAGE_URL, params)
-        }else if (v === mOpenLuaPage){
-           PageRouter.openPageByUrl(this, PageRouter.Lua_PAGE_URL, params)
-       }
+        }
     }
 
 

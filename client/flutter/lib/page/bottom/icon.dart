@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class HIcon extends StatefulWidget {
-  HIcon({key,@required this.icon,@required this.label, this.color = Colors.black}):super(key:key);
+  HIcon({key,required this.icon, required this.label, this.color = Colors.black}):super(key:key);
   final IconData icon;
   final String label;
   final Color color;

@@ -23,9 +23,9 @@ class SignatureState extends State<Signature> {
     return new GestureDetector(
       onPanUpdate: (DragUpdateDetails details) {
         setState(() {
-          RenderBox referenceBox = context.findRenderObject();
+          RenderObject? referenceBox = context.findRenderObject();
           Offset localPosition =
-          referenceBox.globalToLocal(details.globalPosition);
+          referenceBox!.globalToLocal(details.globalPosition);
           _points = new List.from(_points)..add(localPosition);
         });
       },

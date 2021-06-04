@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/liov/hoper/v2/utils/number"
+	reflecti "github.com/liov/hoper/v2/utils/reflect"
 	"unsafe"
 )
 
@@ -16,13 +17,9 @@ func main() {
 	fmt.Println(transform(int64(b)))
 }
 
-type emptyInterface struct {
-	typ  *struct{}
-	word unsafe.Pointer
-}
 
 func transform(f interface{}) interface{} {
-	p := (*emptyInterface)(unsafe.Pointer(&f)).word
+	p := (*reflecti.EmptyInterface)(unsafe.Pointer(&f)).Word
 	switch f.(type) {
 	case float32:
 		return *(*int32)(p)
