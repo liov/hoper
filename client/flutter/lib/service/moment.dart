@@ -1,6 +1,7 @@
-import 'dart:io';
 
 import 'package:app/model/moment.dart';
+import 'package:app/model/user.dart';
+import 'package:app/service/response.dart';
 import 'package:app/util/dio.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -9,26 +10,25 @@ part 'moment.g.dart';
 @JsonSerializable()
 class MomentListResponse {
   MomentListResponse();
-  int code;
-  int count;
-  List<Moment> data;
-  String msg;
 
-  factory MomentListResponse.fromJson(Map<String, dynamic> json) => _$MomentListResponseFromJson(json);
+  late List<User> users;
+  late List<Moment> list;
+  late int total;
+
+  factory MomentListResponse.fromJson(Map<String, dynamic> json) =>
+      _$MomentListResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$MomentListResponseToJson(this);
 }
 
-Future<MomentListResponse> getMomentList(int pageNo,pageSize) async{
-  var api = '/content?page=$pageNo&pageSize=$pageSize';
+Future<MomentListResponse?> getMomentList(int pageNo, pageSize) async {
+  var api = '/v1/moment?page=$pageNo&pageSize=$pageSize';
 
   try {
-    var response = await httpClient().get(api);
-    if (response.statusCode == HttpStatus.ok) {
-      return MomentListResponse.fromJson(response.data);
-    }
+    var response = await httpClient.get(api);
+    return MomentListResponse.fromJson(response.getData());
   } catch (exception) {
-
+    print(exception);
   }
   return null;
 }

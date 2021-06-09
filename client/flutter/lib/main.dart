@@ -6,26 +6,26 @@ import 'package:app/page/moment/momentListView.dart';
 
 import 'package:app/page/webview/webview.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:get/get.dart';
+
 
 import 'model/state/global.dart';
 import 'model/state/user.dart';
 
 void main() async {
   runApp(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (context) => UserInfo()),
-          Provider(create: (context) => GlobalState()),
-        ],
-        child:MyApp(),
-      ));
+      GetMaterialApp(
+          home: MyApp())
+  );
 }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    // 使用Get.put()实例化你的类，使其对当下的所有子路由可用。
+    Get.put(UserInfo());
+    Get.put(GlobalState());
     return MaterialApp(
       title: 'hoper',
       theme: ThemeData(
@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
   void _onItemTapped(int index) {
     setState(() {
@@ -76,14 +76,14 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     List<Widget> _widgetOptions = <Widget>[
-      IndexPage(title:'🍀'),
+      IndexPage(title: '🍀'),
       WebViewExample(),
       Container(
-      alignment:Alignment.center,
-        child:Text(
-          greeting(),
-          style: optionStyle,
-        )
+          alignment: Alignment.center,
+          child: Text(
+            greeting(),
+            style: optionStyle,
+          )
       ),
       FourthPage(),
     ];
@@ -92,23 +92,32 @@ class _MyHomePageState extends State<MyHomePage> {
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Theme.of(context).primaryColor.withAlpha(127),
+        backgroundColor: Theme
+            .of(context)
+            .primaryColor
+            .withAlpha(127),
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.movie),
-            title: Text('flutter'),
+            label: 'flutter',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.language),
-            title: Text('webview'),
+            label: 'webview',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
-            title: Text('rustffi'),
+            label: 'rustffi',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.twenty_one_mp_rounded),
+            label: 'hoper',
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Theme.of(context).canvasColor,
+        selectedItemColor: Theme
+            .of(context)
+            .canvasColor,
         onTap: _onItemTapped,
       ),
     );

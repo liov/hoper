@@ -10,7 +10,6 @@ import java.lang.ref.WeakReference
 
 class NativeActivity: AppCompatActivity(), View.OnClickListener {
 
-    private lateinit var mOpenLuaPage: TextView
     private lateinit var mOpenFlutter: TextView
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

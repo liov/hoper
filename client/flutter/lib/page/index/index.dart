@@ -1,7 +1,7 @@
 import 'package:app/model/state/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
+import 'package:get/get.dart';
 
 class IndexPage extends StatefulWidget {
   IndexPage({Key? key, required this.title}) : super(key: key);
@@ -70,7 +70,7 @@ class _IndexPageState extends State<IndexPage> {
       floatingActionButton: FloatingActionButton(
         heroTag: 'login',
         onPressed: (){
-          final user =Provider.of<UserInfo>(context, listen: false).user;
+          final user = Get.find<UserInfo>().user;
           if ( user!= null) {
               showDialog(
                   context: context,
@@ -79,13 +79,13 @@ class _IndexPageState extends State<IndexPage> {
                       title: Text('提示',textAlign:TextAlign.center),
                       content: Text('确认退出吗？',textAlign:TextAlign.center),
                       actions: <Widget>[
-                        FlatButton(
+                        TextButton(
                           child: Text('取消'),
                           onPressed: () {
                             Navigator.of(context).pop('cancel');
                           },
                         ),
-                        FlatButton(
+                        TextButton(
                           child: Text('确认'),
                           onPressed: () {
                             Navigator.of(context).pop('ok');

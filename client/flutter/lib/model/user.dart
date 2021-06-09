@@ -5,9 +5,10 @@ part 'user.g.dart';
 @JsonSerializable()
 class User {
   User();
-  int id;
-  String name;
-  String avatarUrl;
+  late int id;
+  late String name;
+  late int gender;
+  late String avatarUrl;
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 
