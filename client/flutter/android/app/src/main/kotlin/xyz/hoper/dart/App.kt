@@ -1,19 +1,6 @@
 package xyz.hoper.dart
 
-
-import android.content.Context
-import android.content.Intent
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.os.Build
-import android.os.Environment
-import android.util.Log
-import com.journeyapps.barcodescanner.CaptureActivity
-import hoper.xyz.dart.bridge.LuaEnum
-import hoper.xyz.dart.bridge.SILuaBridge
-import hoper.xyz.dart.bridge.StaticBridge
 import io.flutter.app.FlutterApplication
-import kotlinx.coroutines.*
 
 class App : FlutterApplication() {
 
@@ -40,7 +27,7 @@ class App : FlutterApplication() {
         }
 
         lateinit var SD_CARD_PATH: String
-        const val TAG: String = "App"
+        const val TAG: String = "hoper"
 
         @JvmStatic
         fun getPackageNameImpl(): String? {

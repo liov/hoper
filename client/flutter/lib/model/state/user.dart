@@ -1,10 +1,10 @@
-import 'package:app/util/dio.dart';
-import 'package:flutter/cupertino.dart';
+
+import 'package:get/get.dart';
 
 import '../user.dart';
 
-class UserInfo extends ChangeNotifier {
-  User user;
-  String cookie;
-  bool isActive;
+class UserInfo extends GetxController {
+  User? user;
+  late String cookie;
+  bool isActive =false;
 }
