@@ -2,7 +2,7 @@ import 'package:app/model/state/user.dart';
 import 'package:app/model/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:get/get.dart';
 
 class LoginView extends StatelessWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -52,15 +52,17 @@ class LoginView extends StatelessWidget {
                   SizedBox(
                     height: 24,
                   ),
-                  RaisedButton(
-                    color: Colors.yellow,
+                  ElevatedButton(
+                    style: ButtonStyle(
+                        foregroundColor:ButtonStyleButton.allOrNull<Color>(Colors.yellow)
+                    ),
                     child: Text('登录'),
                     onPressed: () {
                       var _state = _formKey.currentState;
                       _state!.save();
                       print(_account);
                       final user =  login(_account, _password);
-                      final userState = context.read<UserInfo>();
+                      final UserInfo userState =  Get.find();
                       userState.user = user;
                       Navigator.pop(context);
                     },

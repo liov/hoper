@@ -37,7 +37,7 @@ dependencies:
   flutter_markdown: ^0.6.2
   sqflite: ^2.0.0+3
   get: ^4.1.4
-  flutter_local_notifications: ^6.0.0
+  flutter_local_notifications: ^7.0.0-dev.1
   rxdart: ^0.27.1
   path_provider: ^2.0.2
   shared_preferences: ^2.0.6
@@ -47,7 +47,7 @@ dependencies:
   equatable: ^2.0.2
   sqfentity: ^2.0.0
   sqfentity_gen: ^2.0.0
-  provider: ^5.0.0
+# provider: ^5.0.0
 
 dev_dependencies:
   flutter_test:

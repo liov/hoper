@@ -13,6 +13,6 @@ targets:
           create_to_json: true
           disallow_unrecognized_keys: false
           explicit_to_json: false
-          field_rename: snake
+          field_rename: none
           ignore_unannotated: false
           include_if_null: true

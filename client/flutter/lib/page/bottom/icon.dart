@@ -4,14 +4,14 @@ class HIcon extends StatefulWidget {
   HIcon({key,required this.icon, required this.label, this.color = Colors.black}):super(key:key);
   final IconData icon;
   final String label;
-  final Color color;
+  final Color? color;
   HIconState createState() => HIconState();
 }
 
 class HIconState extends State<HIcon> {
   @override
   Widget build(BuildContext context) {
-    Color color = widget.color != null? widget.color:Theme.of(context).primaryColor;
+    Color color = widget.color != null? widget.color!:Theme.of(context).primaryColor;
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,

@@ -3,18 +3,42 @@ package xyz.hoper.dart
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.sip.SipErrorCode
+import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.util.AttributeSet
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageView
+import io.flutter.embedding.android.SplashScreen
 import java.io.*
 import java.lang.ref.WeakReference
 import java.net.HttpURLConnection
 import java.net.URL
 import kotlin.math.roundToInt
+
+class SplashScreenWithTransition : SplashScreen {
+    private lateinit var view: SplashView
+
+    override fun createSplashView(
+        context: Context,
+        savedInstanceState: Bundle?
+    ): View? {
+        // A reference to the MySplashView is retained so that it can be told
+        // to transition away at the appropriate time.
+        view =  SplashView(context)
+        Log.i("SplashScreen","SplashScreenWithTransition")
+        return view
+    }
+
+    override fun transitionToFlutter(onTransitionComplete: Runnable) {
+        // Instruct MySplashView to animate away in whatever manner it wants.
+        // The onTransitionComplete Runnable is passed to the MySplashView to be
+        // invoked when the transition animation is complete.
+        view.animateAway(onTransitionComplete)
+    }
+}
 
 
 class SplashView: AppCompatImageView {
@@ -23,7 +47,7 @@ class SplashView: AppCompatImageView {
         const val GET_DATA_SUCCESS = 1
         const val NETWORK_ERROR = 2
         const val SERVER_ERROR = 3
-        const val ImagePath = "https://hoper.xyz/static/images/6cbeb5c8-7160-4b6f-a342-d96d3c00367a.jpg"
+        const val ImagePath = "http://liov.xyz/static/images/6cbeb5c8-7160-4b6f-a342-d96d3c00367a.jpg"
     }
 
     constructor(context: Context):super(context){
@@ -34,7 +58,7 @@ class SplashView: AppCompatImageView {
 
     //子线程不能操作UI，通过Handler设置图片
     class ViewHandler(view:SplashView):Handler(){
-        private val viewRef = WeakReference<SplashView>(view)
+        private val viewRef = WeakReference(view)
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
             val view = viewRef.get()!!
@@ -217,9 +241,9 @@ class SplashView: AppCompatImageView {
         val realWith: Int = realImageViewWith()
         val realHeight: Int = realImageViewHeight()
         val outWidth = options.outWidth
-        Log.e("网络图片实际的宽度", outWidth.toString())
+        Log.i("网络图片实际的宽度", outWidth.toString())
         val outHeight = options.outHeight
-        Log.e("网络图片实际的高度", outHeight.toString())
+        Log.i("网络图片实际的高度", outHeight.toString())
 
         //获取比率最大的那个
         if (outWidth > realWith || outHeight > realHeight) {
@@ -227,7 +251,7 @@ class SplashView: AppCompatImageView {
             val heightRadio = (outHeight / realHeight.toFloat()).roundToInt()
             inSampleSize = if (withRadio > heightRadio) withRadio else heightRadio
         }
-        Log.e("压缩比率", inSampleSize.toString())
+        Log.i("压缩比率", inSampleSize.toString())
         return inSampleSize
     }
 
@@ -240,19 +264,14 @@ class SplashView: AppCompatImageView {
 
         //如果ImageView设置了宽度就可以获取实在宽带
         var width = width
-        if (width <= 0) {
-            //如果ImageView没有设置宽度，就获取父级容器的宽度
-            width = layoutParams.width
-        }
-        if (width <= 0) {
-            //获取ImageView宽度的最大值
-            width = maxWidth
-        }
-        if (width <= 0) {
-            //获取屏幕的宽度
-            width = context.resources.displayMetrics.widthPixels
-        }
-        Log.e("ImageView实际的宽度", width.toString())
+        if (width <= 0)  width = layoutParams.width //如果ImageView没有设置宽度，就获取父级容器的宽度
+
+        if (width <= 0) width = maxWidth //获取ImageView宽度的最大值
+
+        if (width <= 0) width = context.resources.displayMetrics.widthPixels //获取屏幕的宽度
+
+
+        Log.i("ImageView实际的宽度", width.toString())
         return width
     }
 
@@ -265,19 +284,16 @@ class SplashView: AppCompatImageView {
 
         //如果ImageView设置了高度就可以获取实在宽度
         var height = height
-        if (height <= 0) {
-            //如果ImageView没有设置高度，就获取父级容器的高度
-            height = layoutParams.height
-        }
-        if (height <= 0) {
-            //获取ImageView高度的最大值
-            height = maxHeight
-        }
-        if (height <= 0) {
-            //获取ImageView高度的最大值
-            height = context.resources.displayMetrics.heightPixels
-        }
-        Log.e("ImageView实际的高度", height.toString())
+        if (height <= 0) height = layoutParams.height //如果ImageView没有设置高度，就获取父级容器的高度
+
+
+        if (height <= 0) height = maxHeight //获取ImageView高度的最大值
+
+
+        if (height <= 0) height = context.resources.displayMetrics.heightPixels //获取ImageView高度的最大值
+
+
+        Log.i("ImageView实际的高度", height.toString())
         return height
     }
 
