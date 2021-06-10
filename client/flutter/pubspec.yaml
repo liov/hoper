@@ -45,8 +45,7 @@ dependencies:
   geolocator: ^7.0.3
   share: ^2.0.4
   equatable: ^2.0.2
-  sqfentity: ^2.0.0
-  sqfentity_gen: ^2.0.0
+
 # provider: ^5.0.0
 
 dev_dependencies:
