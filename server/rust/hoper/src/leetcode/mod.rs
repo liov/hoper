@@ -67,7 +67,7 @@ pub fn add_two_numbers(l1: Option<Box<ListNode>>, l2: Option<Box<ListNode>>) -> 
     let mut result = Box::new(ListNode::new(0));
     let mut first = true;
     let mut carry = 0;
-    let mut sum = 0;
+    let mut sum;
     loop {
         let lx = next1.unwrap_or(Box::new(ListNode::new(0)));
         let ly = next2.unwrap_or(Box::new(ListNode::new(0)));
@@ -111,7 +111,7 @@ pub fn multiply(num1: String, num2: String) -> String {
     let mut result = Vec::with_capacity(cap);
     unsafe { result.set_len(cap); }
     let con = 48;
-    let mut product = 0; //乘积
+    let mut product; //乘积
     let mut decade = 0; //十位
 
     if (num_vec1.len() == 1 && num_vec1[0] == con) || (num_vec2.len() == 1 && num_vec2[0] == con) {
@@ -248,8 +248,6 @@ pub fn rotate_right(head: Option<Box<ListNode>>, k: i32) -> Option<Box<ListNode>
         } else {
             (None, Some(list), len)
         }
-
-        panic!("错误")
     }
 
     let (p2, p3, len) = get(&mut l, 1, k);
@@ -291,13 +289,12 @@ pub fn rotate_right2(head: Option<Box<ListNode>>, k: i32) -> Option<Box<ListNode
             return (Some(list), p3);
         }
 
-        if let Some(ref mut next) = list.next {
-            return get(next, len + 1, k);
+        return if let Some(ref mut next) = list.next {
+            get(next, len + 1, k)
         } else {
-            return (None, Some(list));
+            (None, Some(list))
         }
 
-        panic!("错误")
     }
 
 
@@ -369,7 +366,7 @@ pub fn rotate(nums: &mut Vec<i32>, k: i32) {
         }
     };
 
-    let mut idx = 0;
+    let mut idx;
     let mut tmp = nums[k2];
 
     //求最大公因数
@@ -448,8 +445,6 @@ pub fn trap(height: Vec<i32>) -> i32 {
         }
         if add { i = i + 1; } else { i = i - 1; }
     }
-
-    result
 }
 
 ///接雨水 II
@@ -509,7 +504,7 @@ pub fn trap_rain_water(height_map: Vec<Vec<i32>>) -> i32 {
 
 
 //用Vec插入排开销太大，放弃
-use std::fmt::{Display, Debug};
+use std::fmt::{Debug};
 
 
 #[derive(PartialEq, Eq, PartialOrd, Ord, Debug, Hash, Clone, Copy)]
