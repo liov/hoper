@@ -6,17 +6,6 @@ cpp!{{
     #include <iostream>
 }}
 
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct NumPair {
-    pub first: u64,
-    pub second: usize,
-}
-
-#[no_mangle]
-pub extern "C" fn process_pair(pair: NumPair) -> f64 {
-    (pair.first as f64 * pair.second as f64) + 4.2
-}
 
 pub fn add(a: i32, b: i32) -> i32 {
     cpp!(unsafe [a as "int32_t", b as "int32_t"] -> i32 as "int32_t" {
@@ -38,3 +27,7 @@ void call_rust() {
     });
 }
 }}
+
+
+
+pub mod export;

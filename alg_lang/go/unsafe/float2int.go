@@ -17,7 +17,6 @@ func main() {
 	fmt.Println(transform(int64(b)))
 }
 
-
 func transform(f interface{}) interface{} {
 	p := (*reflecti.EmptyInterface)(unsafe.Pointer(&f)).Word
 	switch f.(type) {
