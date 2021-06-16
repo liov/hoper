@@ -147,9 +147,9 @@ impl<T: PartialOrd + Debug + Display> TreeT<T> for Option<Box<TNode<T>>> {
         match self {
             Some(ref mut node) =>
                 if node.elem > data {
-                    node.left.insert(data)
+                    TreeT::insert(&mut node.left, data)
                 } else {
-                    node.right.insert(data)
+                    TreeT::insert(&mut node.right, data)
                 },
             None => *self = Some(Box::new(TNode::new(data))),
         }

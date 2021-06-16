@@ -45,4 +45,3 @@ func (receiver Queue) Point() {
 type List struct {
 	list.List
 }
-
