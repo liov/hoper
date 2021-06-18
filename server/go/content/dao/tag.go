@@ -11,7 +11,7 @@ import (
 const TagTableNameAlias = model.TagTableName + " a"
 
 func (d *contentDao) GetContentTagDB(db *gorm.DB, typ content.ContentType, refIds []uint64) ([]model.ContentTagRel, error) {
-	ctxi := d.ctxi
+	ctxi := d
 	var tags []model.ContentTagRel
 	err := db.Select("b.ref_id,a.id,a.name").Table(TagTableNameAlias).
 		Joins(`LEFT JOIN `+model.ContentTagTableName+` b ON a.id = b.tag_id`).
@@ -24,7 +24,7 @@ func (d *contentDao) GetContentTagDB(db *gorm.DB, typ content.ContentType, refId
 }
 
 func (d *contentDao) GetTagsDB(db *gorm.DB, names []string) ([]model.TinyTag, error) {
-	ctxi := d.ctxi
+	ctxi := d
 	var tags []model.TinyTag
 	err := db.Table(model.TagTableName).Select("id,name").
 		Where("name IN (?) AND "+dbi.PostgreNotDeleted, names).
@@ -36,7 +36,7 @@ func (d *contentDao) GetTagsDB(db *gorm.DB, names []string) ([]model.TinyTag, er
 }
 
 func (d *contentDao) GetTagsByRefIdDB(db *gorm.DB, typ content.ContentType, refId uint64) ([]*content.TinyTag, error) {
-	ctxi := d.ctxi
+	ctxi := d
 	var tags []*content.TinyTag
 	err := db.Select("a.id,a.name").Table(TagTableNameAlias).
 		Joins(`LEFT JOIN `+model.ContentTagTableName+` b ON a.id = b.tag_id`).
@@ -49,7 +49,7 @@ func (d *contentDao) GetTagsByRefIdDB(db *gorm.DB, typ content.ContentType, refI
 }
 
 func (d *contentDao) GetContentExtDB(db *gorm.DB, typ content.ContentType, refIds []uint64) ([]*content.ContentExt, error) {
-	ctxi := d.ctxi
+	ctxi := d
 	var exts []*content.ContentExt
 	err := db.Table(model.ContentExtTableName).
 		Where("type = ? AND ref_id IN (?)", typ, refIds).Find(&exts).Error

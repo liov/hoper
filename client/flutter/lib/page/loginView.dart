@@ -62,8 +62,8 @@ class LoginView extends StatelessWidget {
                       _state!.save();
                       print(_account);
                       final user =  login(_account, _password);
-                      final UserInfo userState =  Get.find();
-                      userState.user = user;
+                      final AuthState userState =  Get.find();
+                      userState.user.value = user;
                       Navigator.pop(context);
                     },
                   ),

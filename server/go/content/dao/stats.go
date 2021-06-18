@@ -6,7 +6,7 @@ import (
 )
 
 func (d *contentDao) UserContentEditRedis(field string, value interface{}) error {
-	ctxi := d.ctxi
+	ctxi := d
 	ctx := ctxi.Context
 	key := model.UserContentCountKey + ctxi.IdStr
 

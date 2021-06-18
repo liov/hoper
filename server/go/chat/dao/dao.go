@@ -12,7 +12,7 @@ import (
 var Dao *dao = &dao{}
 
 type uploadDao struct {
-	ctxi *contexti.Ctx
+	*contexti.Ctx
 }
 
 func GetDao(ctx *contexti.Ctx) *uploadDao {

@@ -22,13 +22,13 @@ class MomentListResponse {
 }
 
 Future<MomentListResponse?> getMomentList(int pageNo, pageSize) async {
-  var api = '/v1/moment?page=$pageNo&pageSize=$pageSize';
+  print(pageNo);
+  var api = '/v1/moment?pageNo=$pageNo&pageSize=$pageSize';
 
   try {
     var response = await httpClient.get(api);
     return MomentListResponse.fromJson(response.getData());
   } catch (exception) {
-    print(exception);
+    return null;
   }
-  return null;
 }

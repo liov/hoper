@@ -3,8 +3,8 @@ import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
   java
-  kotlin("jvm") version "1.4.10"
-  kotlin("plugin.serialization") version "1.4.10"
+  kotlin("jvm") version "1.5.10"
+  kotlin("plugin.serialization") version "1.5.10"
 }
 
 group = "xyz.hoper"
