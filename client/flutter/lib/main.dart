@@ -4,7 +4,6 @@ import 'package:app/page/index/index.dart';
 import 'package:app/page/loginView.dart';
 import 'package:app/page/moment/momentListView.dart';
 
-import 'package:app/page/webview/webview.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -15,82 +14,59 @@ import 'model/state/user.dart';
 void main() async {
   runApp(
       GetMaterialApp(
-          home: MyApp())
+          title: 'hoper',
+          theme: ThemeData(
+            // This is the theme of your application.
+            //
+            // Try running your application with "flutter run". You'll see the
+            // application has a blue toolbar. Then, without quitting the app, try
+            // changing the primarySwatch below to Colors.green and then invoke
+            // "hot reload" (press "r" in the console where you ran "flutter run",
+            // or simply save your changes to "hot reload" in a Flutter IDE).
+            // Notice that the counter didn't reset back to zero; the application
+            // is not restarted.
+            primarySwatch: Colors.blue,
+            primaryColor: Colors.blueAccent[700],
+            // This makes the visual density adapt to the platform that you run
+            // the app on. For desktop platforms, the controls will be smaller and
+            // closer together (more dense) than on mobile platforms.
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+          ),
+          home: MyHomePage(),
+        routes: {
+          '/content': (context) => MomentListView(),
+          '/login': (context) => LoginView(),
+        },)
   );
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    // 使用Get.put()实例化你的类，使其对当下的所有子路由可用。
-    Get.put(UserInfo());
-    Get.put(GlobalState());
-    return MaterialApp(
-      title: 'hoper',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-        primaryColor: Colors.blueAccent[700],
-        // This makes the visual density adapt to the platform that you run
-        // the app on. For desktop platforms, the controls will be smaller and
-        // closer together (more dense) than on mobile platforms.
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MyHomePage(),
-      routes: {
-        '/content': (context) => MomentListView(),
-        '/login': (context) => LoginView(),
-      },
-    );
-  }
-}
+class MyHomePage extends StatelessWidget {
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key}) : super(key: key);
+  // 使用Get.put()实例化你的类，使其对当下的所有子路由可用。
+  final AuthState userInfo = Get.put(AuthState());
+  final GlobalState globalState = Get.put(GlobalState());
 
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-
-  int _selectedIndex = 0;
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+  final List<Widget> _widgetOptions = <Widget>[
+    IndexPage(title: '🍀'),
+    Container(
+        alignment: Alignment.center,
+        child: Text(
+          greeting(),
+          style: optionStyle,
+        )
+    ),
+    FourthPage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> _widgetOptions = <Widget>[
-      IndexPage(title: '🍀'),
-      WebViewExample(),
-      Container(
-          alignment: Alignment.center,
-          child: Text(
-            greeting(),
-            style: optionStyle,
-          )
-      ),
-      FourthPage(),
-    ];
+
 
     return Scaffold(
-      body: _widgetOptions.elementAt(_selectedIndex),
-      bottomNavigationBar: BottomNavigationBar(
+      body: Obx(()=>_widgetOptions.elementAt(globalState.selectedIndex.value)),
+      bottomNavigationBar: Obx(()=>BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         backgroundColor: Theme
             .of(context)
@@ -102,10 +78,6 @@ class _MyHomePageState extends State<MyHomePage> {
             label: 'flutter',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.language),
-            label: 'webview',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.search),
             label: 'rustffi',
           ),
@@ -114,12 +86,12 @@ class _MyHomePageState extends State<MyHomePage> {
             label: 'hoper',
           ),
         ],
-        currentIndex: _selectedIndex,
+        currentIndex: globalState.selectedIndex.value,
         selectedItemColor: Theme
             .of(context)
             .canvasColor,
-        onTap: _onItemTapped,
+        onTap: globalState.onItemTapped,
       ),
-    );
+    ));
   }
 }

@@ -1,20 +1,23 @@
 import 'package:app/page/moment/momentListView.dart';
+import 'package:app/page/webview/webview.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class FourthPage extends StatefulWidget {
   FourthPage({Key? key, this.title}) : super(key: key);
 
   final String? title;
-  @override
-  FourthPageState createState() => FourthPageState();
-}
-
-class FourthPageState extends State<FourthPage>  with SingleTickerProviderStateMixin{
   final List<String> _tabValues = [
     '关注',
     '推荐',
     '刚刚',
   ];
+
+  @override
+  FourthPageState createState() => FourthPageState();
+}
+
+class FourthPageState extends State<FourthPage>  with SingleTickerProviderStateMixin{
 
   late TabController _controller;
 
@@ -22,7 +25,7 @@ class FourthPageState extends State<FourthPage>  with SingleTickerProviderStateM
   void initState() {
     super.initState();
     _controller = TabController(
-      length: _tabValues.length,
+      length: widget._tabValues.length,
       initialIndex: 1,
       vsync: this,
     );
@@ -35,7 +38,7 @@ class FourthPageState extends State<FourthPage>  with SingleTickerProviderStateM
         centerTitle: true,
         title: TabBar(
           isScrollable: true,
-          tabs: _tabValues.map((choice) {
+          tabs: widget._tabValues.map((choice) {
             return Tab(
               text: choice,
             );
@@ -45,12 +48,19 @@ class FourthPageState extends State<FourthPage>  with SingleTickerProviderStateM
       ),
       body: TabBarView(
         controller: _controller,
-        children: _tabValues.map((f) {
+        children: widget._tabValues.map((f) {
           if (f == "推荐") return MomentListView();
           return Center(
             child: Text(f),
           );
         }).toList(),
+      ),
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'login',
+        onPressed: ()=>Get.to(WebViewExample()),
+
+        tooltip: 'ToBrowser',
+        child: Icon(Icons.send),
       ),
     );
   }

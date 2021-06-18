@@ -57,7 +57,7 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 		return nil, errorcode.InvalidArgument.Message("请填写邮箱或手机号")
 	}
 	userDao := dao.GetDao(ctxi)
-	db := ctxi.NewDB(dao.Dao.GORMDB)
+	db := userDao.NewDB(dao.Dao.GORMDB)
 	if req.Mail != "" {
 		if exist, _ := userDao.ExitsCheck(db, "mail", req.Phone); exist {
 			return nil, errorcode.InvalidArgument.Message("邮箱已被注册")

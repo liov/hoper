@@ -23,7 +23,7 @@ func DBNotNil(db **gorm.DB) {
 
 func (d *userDao) ExitsCheck(db *gorm.DB, field, value string) (bool, error) {
 	DBNotNil(&db)
-	ctxi := d.ctxi
+	ctxi := d
 	sql := `SELECT EXISTS(SELECT id FROM "` + model.UserTableName + `" WHERE `
 	var exists bool
 	err := db.Raw(sql+field+` = ? AND status != ?  LIMIT 1)`, value, user.UserStatusDeleted).Row().Scan(&exists)
@@ -36,7 +36,7 @@ func (d *userDao) ExitsCheck(db *gorm.DB, field, value string) (bool, error) {
 
 func (d *userDao) GetByEmailORPhone(db *gorm.DB, email, phone string, fields ...string) (*user.User, error) {
 	DBNotNil(&db)
-	ctxi := d.ctxi
+	ctxi := d
 	var user user.User
 	var err error
 	if len(fields) > 0 {
@@ -64,7 +64,7 @@ func (*userDao) Creat(db *gorm.DB, user *user.User) error {
 
 func (d *userDao) GetByPrimaryKey(db *gorm.DB, id uint64) (*user.User, error) {
 	DBNotNil(&db)
-	ctxi := d.ctxi
+	ctxi := d
 	var user user.User
 	if err := db.Table(model.UserTableName).First(&user, id).Error; err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "GetByPrimaryKey")
@@ -74,7 +74,7 @@ func (d *userDao) GetByPrimaryKey(db *gorm.DB, id uint64) (*user.User, error) {
 
 func (d *userDao) SaveResumes(db *gorm.DB, userId uint64, resumes []*user.Resume, originalIds []uint64, device *user.UserDeviceInfo) error {
 	DBNotNil(&db)
-	ctxi := d.ctxi
+	ctxi := d
 	if len(resumes) == 0 {
 		return nil
 	}
@@ -129,7 +129,7 @@ func (d *userDao) SaveResumes(db *gorm.DB, userId uint64, resumes []*user.Resume
 }
 
 func (d *userDao) ActionLog(db *gorm.DB, log *user.UserActionLog) error {
-	ctxi := d.ctxi
+	ctxi := d
 	err := db.Table(model.UserActionLogTableName).Create(&log).Error
 	if err != nil {
 		return ctxi.ErrorLog(errorcode.DBError, err, "ActionLog")
@@ -139,7 +139,7 @@ func (d *userDao) ActionLog(db *gorm.DB, log *user.UserActionLog) error {
 
 func (d *userDao) ResumesIds(db *gorm.DB, userId uint64) ([]uint64, error) {
 	DBNotNil(&db)
-	ctxi := d.ctxi
+	ctxi := d
 	var resumeIds []uint64
 	err := db.Table(model.ResumeTableName).Where("user_id = ? AND status > 0", userId).Pluck("id", &resumeIds).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -149,7 +149,7 @@ func (d *userDao) ResumesIds(db *gorm.DB, userId uint64) ([]uint64, error) {
 }
 
 func (d *userDao) GetBaseListDB(db *gorm.DB, ids []uint64, pageNo, pageSize int) (int64, []*user.UserBaseInfo, error) {
-	ctxi := d.ctxi
+	ctxi := d
 	var count int64
 	db = db.Table(model.UserTableName).Where("id IN (?)", ids)
 	err := db.Count(&count).Error
@@ -169,7 +169,7 @@ func (d *userDao) GetBaseListDB(db *gorm.DB, ids []uint64, pageNo, pageSize int)
 }
 
 func (d *userDao) FollowExistsDB(db *gorm.DB, id, followId uint64) (bool, error) {
-	ctxi := d.ctxi
+	ctxi := d
 	sql := `SELECT EXISTS(SELECT * FROM "` + model.FollowTableName + `" 
 WHERE user_id = ?  AND follow_id = ? AND ` + dbi.PostgreNotDeleted + ` LIMIT 1)`
 	var exists bool

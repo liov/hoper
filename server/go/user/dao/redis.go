@@ -17,56 +17,56 @@ import (
 
 // UserToRedis 将用户信息存到redis
 func (d *userDao) UserToRedis() error {
-	ctxi := d.ctxi
+	ctxi := d
 	ctx := ctxi.Context
 	UserString, err := json.Standard.MarshalToString(ctxi.AuthInfo)
 	if err != nil {
-		return d.ctxi.ErrorLog(errorcode.RedisErr, err, "UserToRedis.MarshalToString")
+		return d.ErrorLog(errorcode.RedisErr, err, "UserToRedis.MarshalToString")
 	}
 
 	loginUserKey := modelconst.LoginUserKey + ctxi.IdStr
 	if redisErr := Dao.Redis.SetEX(ctx, loginUserKey, UserString, conf.Conf.Customize.TokenMaxAge).Err(); redisErr != nil {
-		return d.ctxi.ErrorLog(errorcode.RedisErr, err, "UserToRedis.SetEX")
+		return d.ErrorLog(errorcode.RedisErr, err, "UserToRedis.SetEX")
 	}
 	return nil
 }
 
 // UserFromRedis 从redis中取出用户信息
 func (d *userDao) UserFromRedis() (*model.AuthInfo, error) {
-	ctxi := d.ctxi
+	ctxi := d
 	ctx := ctxi.Context
 	loginUser := modelconst.LoginUserKey + ctxi.IdStr
 
 	userString, err := redisi.String(Dao.Redis.Get(ctx, loginUser).Result())
 	if err != nil {
-		return nil, d.ctxi.ErrorLog(errorcode.RedisErr, err, "UserFromRedis.Get")
+		return nil, d.ErrorLog(errorcode.RedisErr, err, "UserFromRedis.Get")
 	}
 	var user model.AuthInfo
 	err = json.Standard.UnmarshalFromString(userString, &user)
 	if err != nil {
-		return nil, d.ctxi.ErrorLog(errorcode.RedisErr, err, "UserFromRedis.UnmarshalFromString")
+		return nil, d.ErrorLog(errorcode.RedisErr, err, "UserFromRedis.UnmarshalFromString")
 	}
 	return &user, nil
 }
 
 func (d *userDao) EditRedisUser() error {
-	ctx := d.ctxi.Context
-	UserString, err := json.Standard.MarshalToString(d.ctxi.AuthInfo)
+	ctx := d.Context
+	UserString, err := json.Standard.MarshalToString(d.AuthInfo)
 	if err != nil {
-		return d.ctxi.ErrorLog(errorcode.RedisErr, err, "EditRedisUser.MarshalToString")
+		return d.ErrorLog(errorcode.RedisErr, err, "EditRedisUser.MarshalToString")
 	}
-	loginUserKey := modelconst.LoginUserKey + d.ctxi.IdStr
+	loginUserKey := modelconst.LoginUserKey + d.IdStr
 	err = Dao.Redis.Set(ctx, loginUserKey, UserString, 0).Err()
 	if err != nil {
-		return d.ctxi.ErrorLog(errorcode.RedisErr, err, "EditRedisUser.MarshalToString")
+		return d.ErrorLog(errorcode.RedisErr, err, "EditRedisUser.MarshalToString")
 	}
 	return nil
 }
 
 // UserToRedis 将用户信息存到redis
 func (d *userDao) UserHashToRedis() error {
-	ctxi := d.ctxi
-	ctx := d.ctxi.Context
+	ctxi := d
+	ctx := d.Context
 	var redisArgs []interface{}
 	loginUserKey := modelconst.LoginUserKey + ctxi.IdStr
 	redisArgs = append(redisArgs, redisi.HMSET, loginUserKey)
@@ -83,7 +83,7 @@ func (d *userDao) UserHashToRedis() error {
 
 // UserFromRedis 从redis中取出用户信息
 func (d *userDao) UserHashFromRedis() error {
-	ctxi := d.ctxi
+	ctxi := d
 	ctx := ctxi.Context
 	loginUser := modelconst.LoginUserKey + ctxi.IdStr
 
@@ -100,7 +100,7 @@ func (d *userDao) UserHashFromRedis() error {
 }
 
 func (d *userDao) EfficientUserHashToRedis() error {
-	ctxi := d.ctxi
+	ctxi := d
 	ctx := ctxi.Context
 	user := ctxi.AuthInfo.(*model.AuthInfo)
 	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
@@ -124,7 +124,7 @@ func (d *userDao) EfficientUserHashToRedis() error {
 压缩列表中的节点数量大于 server.hash_max_ziplist_entries （默认值为 512 ）。
 */
 func (d *userDao) EfficientUserHashFromRedis() error {
-	ctxi := d.ctxi
+	ctxi := d
 	ctx := ctxi.Context
 	loginUser := modelconst.LoginUserKey + ctxi.IdStr
 
@@ -146,7 +146,7 @@ func (d *userDao) EfficientUserHashFromRedis() error {
 }
 
 func (d *userDao) UserLastActiveTime() error {
-	ctxi := d.ctxi
+	ctxi := d
 	ctx := ctxi.Context
 	loginUser := modelconst.LoginUserKey + ctxi.IdStr
 	if _, err := Dao.Redis.Pipelined(ctx, func(pipe redis.Pipeliner) error {
@@ -163,7 +163,7 @@ func (d *userDao) UserLastActiveTime() error {
 }
 
 func (d *userDao) RedisUserInfoEdit(field string, value interface{}) error {
-	ctxi := d.ctxi
+	ctxi := d
 	ctx := ctxi.Context
 	key := modelconst.LoginUserKey + ctxi.IdStr
 
@@ -175,7 +175,7 @@ func (d *userDao) RedisUserInfoEdit(field string, value interface{}) error {
 }
 
 func (d *userDao) GetUserExtRedis() (*model.UserExt, error) {
-	ctxi := d.ctxi
+	ctxi := d
 	ctx := ctxi.Context
 	key := modelconst.UserExtKey + ctxi.IdStr
 

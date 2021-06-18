@@ -3,8 +3,12 @@ import 'package:get/get.dart';
 
 import '../user.dart';
 
-class UserInfo extends GetxController {
-  User? user;
-  late String cookie;
-  bool isActive =false;
+class AuthState extends GetxController {
+  Rxn<User?> user = Rxn<User?>();
+  late RxString cookie;
+  var isActive =false.obs;
+}
+
+class UserState extends GetxController {
+  var users = Map<int, User>().obs;
 }
