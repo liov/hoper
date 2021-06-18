@@ -12,7 +12,7 @@ import (
 var limitErr = errorcode.TimeTooMuch.Message("您的操作过于频繁，请先休息一会儿。")
 
 func (d *contentDao) LimitRedis(conn redis.Cmdable, l *conf.Limit) error {
-	ctxi := d.ctxi
+	ctxi := d
 	ctx := ctxi.Context
 	minuteKey := l.MinuteLimitKey + ctxi.IdStr
 	dayKey := l.DayLimitKey + ctxi.IdStr

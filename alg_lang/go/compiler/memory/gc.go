@@ -5,16 +5,18 @@ import (
 	"runtime"
 )
 
-type A int
-
 func main() {
-	var a A
-	runtime.SetFinalizer(&a, func(x *A) {
-		fmt.Println(1)
-	})
-	runtime.GC()
+	foo()
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
 	fmt.Printf("%d Kb\n", m.Alloc/1024)
 
+}
+
+func foo() {
+	var a = &runtime.MemStats{}
+	runtime.SetFinalizer(a, func(m *runtime.MemStats) {
+		fmt.Println(1)
+	})
+	runtime.GC()
 }

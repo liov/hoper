@@ -17,7 +17,7 @@ import (
 var Dao *dao = &dao{}
 
 type contentDao struct {
-	ctxi *contexti.Ctx
+	*contexti.Ctx
 }
 
 func GetDao(ctx *contexti.Ctx) *contentDao {

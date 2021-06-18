@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import '../loginView.dart';
+
 class IndexPage extends StatefulWidget {
   IndexPage({Key? key, required this.title}) : super(key: key);
 
@@ -70,7 +72,8 @@ class _IndexPageState extends State<IndexPage> {
       floatingActionButton: FloatingActionButton(
         heroTag: 'login',
         onPressed: (){
-          final user = Get.find<UserInfo>().user;
+          _methodChannel.invokeMethod("toNative",{"route":"/"}).then((value) => null);
+          final user = Get.find<AuthState>().user;
           if ( user!= null) {
               showDialog(
                   context: context,
@@ -95,9 +98,9 @@ class _IndexPageState extends State<IndexPage> {
                     );
                   });
             }
-          else {Navigator.pushNamed(context, '/login');}
+          else {Get.to(LoginView());}
         },
-        //_methodChannel.invokeMethod("toNative",{"route":"/"}).then((value) => null),
+
         tooltip: 'ToBrowser',
         child: Icon(Icons.send),
       ),

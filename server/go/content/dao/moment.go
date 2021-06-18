@@ -12,7 +12,7 @@ import (
 )
 
 func (d *contentDao) GetMomentListDB(db *gorm.DB, req *content.MomentListReq) (int64, []*content.Moment, error) {
-	ctxi := d.ctxi
+	ctxi := d
 	var moments []*content.Moment
 	db = db.Table(model.MomentTableName).Where(dbi.PostgreNotDeleted)
 	var count int64
@@ -30,7 +30,7 @@ func (d *contentDao) GetMomentListDB(db *gorm.DB, req *content.MomentListReq) (i
 }
 
 func (d *contentDao) GetTopMomentsRedis(conn redis.Cmdable, key string, pageNo int, PageSize int) ([]content.Moment, error) {
-	ctxi := d.ctxi
+	ctxi := d
 	var moments []content.Moment
 	exist, err := conn.Exists(ctxi.Context, key).Result()
 	if err != nil {
