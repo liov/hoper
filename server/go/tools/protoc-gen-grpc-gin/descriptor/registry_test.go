@@ -1,9 +1,9 @@
 package descriptor
 
 import (
+	"github.com/liov/hoper/v2/protobuf/utils/proto/openapiconfig"
 	"testing"
 
-	"github.com/liov/hoper/v2/tools/protoc-gen-grpc-gin/descriptor/openapiconfig"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"

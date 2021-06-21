@@ -343,3 +343,44 @@ func (configor *Configor) load(config interface{}, watchMode bool, files ...stri
 
 	return err, true
 }
+
+func (configor *Configor) handle(handle func([]byte), watchMode bool, files ...string) (err error, changed bool) {
+	defer func() {
+		if configor.Config.Debug || configor.Config.Verbose {
+			if err != nil {
+				fmt.Printf("Failed to load configuration from %v, got %v\n", files, err)
+			}
+		}
+	}()
+
+	configFiles, configModTimeMap := configor.getConfigurationFiles(watchMode, files...)
+
+	if watchMode {
+		if len(configModTimeMap) == len(configor.configModTimes) {
+			var changed bool
+			for f, t := range configModTimeMap {
+				if v, ok := configor.configModTimes[f]; !ok || t.After(v) {
+					changed = true
+				}
+			}
+
+			if !changed {
+				return nil, false
+			}
+		}
+	}
+
+	for _, file := range configFiles {
+		if configor.Config.Debug || configor.Config.Verbose {
+			fmt.Printf("Loading configurations from file '%v'...\n", file)
+		}
+		data, err := ioutil.ReadFile(file)
+		if err != nil {
+			return err, true
+		}
+		handle(data)
+	}
+	configor.configModTimes = configModTimeMap
+
+	return err, true
+}

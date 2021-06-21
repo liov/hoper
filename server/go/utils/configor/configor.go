@@ -112,3 +112,24 @@ func ENV() string {
 func Load(config interface{}, files ...string) error {
 	return New(nil).Load(config, files...)
 }
+
+// Load will unmarshal configurations to struct from files that you provide
+func (configor *Configor) Handle(handle func([]byte), files ...string) (err error) {
+
+	err, _ = configor.handle(handle, false, files...)
+
+	if configor.Config.AutoReload {
+		go func() {
+			timer := time.NewTimer(configor.Config.AutoReloadInterval)
+			for range timer.C {
+				var changed bool
+				if err, changed = configor.handle(handle, true, files...); err == nil && changed {
+				} else if err != nil {
+					fmt.Printf("Failed to reload configuration from %v, got error %v\n", files, err)
+				}
+				timer.Reset(configor.Config.AutoReloadInterval)
+			}
+		}()
+	}
+	return
+}

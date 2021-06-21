@@ -12,7 +12,7 @@ CREATE TABLE table_name
     city varchar(255),
 	PRIMARY KEY (`id`)
 )ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
-
+## check
 CREATE TABLE Persons
 (
     P_Id int NOT NULL,
@@ -28,3 +28,11 @@ ALTER TABLE Persons
 
 ALTER TABLE Persons
     DROP CONSTRAINT chk_Person;
+
+## 创建索引
+
+CREATE INDEX index_name
+ON table_name (column_name);
+
+CREATE UNIQUE INDEX index_name
+ON table_name (column_name);

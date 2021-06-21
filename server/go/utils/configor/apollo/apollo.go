@@ -3,9 +3,12 @@ package apollo
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/pelletier/go-toml"
 	"io/ioutil"
 	"net/http"
 	url2 "net/url"
+	"reflect"
+	"strings"
 
 	"github.com/liov/hoper/v2/utils/log"
 )
@@ -291,4 +294,20 @@ func (c *Client) GetDefault(key string) string {
 func (c *Client) Close() error {
 	c.close <- struct{}{}
 	return nil
+}
+
+func apolloConfigEnable(conf interface{}, aConf map[string]string) {
+	confValue := reflect.ValueOf(conf).Elem()
+	for k, v := range aConf {
+		field := confValue.FieldByNameFunc(func(s string) bool {
+			return strings.ToUpper(s) == strings.ToUpper(k)
+		})
+		subConf := field.Addr().Interface()
+		err := toml.Unmarshal([]byte(v), subConf)
+		//err := json.Unmarshal([]byte(v),subConf)
+		if err != nil {
+			log.Error(err)
+		}
+	}
+	log.Debug(conf)
 }
