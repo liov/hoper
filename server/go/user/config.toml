@@ -9,7 +9,7 @@ NoInit = ["Apollo","Etcd"]
 Addr = "nacos.default"
 Group = "hoper"
 # DataId = "user"
-Watch  = false
+Watch  = true
 
 [dev]
 LocalConfigName = "local.toml"

@@ -85,7 +85,7 @@ func FiberWithCtx(engine *fiber.App, genApi bool, modName string) {
 			methodValue := method.Func
 			in2Type := methodType.In(2)
 			engine.Add(methodInfo.method, methodInfo.path, func(ctx *fiber.Ctx) error {
-				in1 := reflect.ValueOf(contexti.CtxWithFasthttpRequest(context.Background(), ctx.Request()))
+				in1 := reflect.ValueOf(contexti.CtxWithFastRequest(context.Background(), ctx.Request()))
 				in2 := reflect.New(in2Type.Elem())
 				if err := fiber_build.Bind(ctx, in2.Interface()); err != nil {
 					return ctx.Status(http.StatusBadRequest).JSON(errorcode.InvalidArgument.ErrRep())

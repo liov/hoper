@@ -7,26 +7,36 @@ import (
 	_ "github.com/spf13/viper/remote"
 )
 
-type EtcdConfig struct {
-	Addr string
+type ViperConfig struct {
+	Remote   bool
+	Provider string
+	Endpoint string
+	Path     string
 }
 
-func (init *Init) P0EtcdOnce() {
-	conf := &EtcdConfig{}
+func (init *Init) getViper() *viper.Viper {
+
+	conf := &ViperConfig{}
 	if exist := reflecti.GetFieldValue(init.conf, conf); !exist {
-		return
+		return nil
 	}
-	var runtimeViper = viper.New()
+	var runtimeViper = viper.GetViper()
 
-	runtimeViper.AddRemoteProvider("etcd", conf.Addr, InitKey)
 	runtimeViper.SetConfigType("toml") // because there is no file extension in a stream of bytes, supported extensions are "json", "toml", "yaml", "yml", "properties", "props", "prop", "Env", "dotenv"
-
-	// read from remote Config the first time.
-	err := runtimeViper.ReadRemoteConfig()
-	if err != nil {
-		log.Error(err)
-
+	if conf.Remote {
+		runtimeViper.AddRemoteProvider(conf.Provider, conf.Endpoint, InitKey)
+		// read from remote Config the first time.
+		err := runtimeViper.ReadRemoteConfig()
+		if err != nil {
+			log.Error(err)
+		}
+		runtimeViper.WatchRemoteConfig()
+	} else {
+		runtimeViper.AddConfigPath(conf.Path)
+		runtimeViper.ReadInConfig()
+		runtimeViper.WatchConfig()
 	}
+
 	// unmarshal Config
 	cCopy := init.conf
 	//dCopy := init.dao
@@ -53,4 +63,5 @@ func (init *Init) P0EtcdOnce() {
 			log.Debug(cCopy)
 		}
 	}()*/
+	return runtimeViper
 }
