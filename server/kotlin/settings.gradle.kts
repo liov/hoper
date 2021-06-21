@@ -2,7 +2,6 @@ rootProject.name = "kotlin"
 
 include("user")
 include("protobuf")
-include("web")
 include("quarkus")
 
 pluginManagement {

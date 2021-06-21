@@ -3,6 +3,7 @@ package initialize
 import (
 	"flag"
 	"fmt"
+	"github.com/liov/hoper/v2/tiga/initialize/conf_center"
 	"github.com/liov/hoper/v2/utils/slices"
 	"net"
 	"net/http"
@@ -28,6 +29,7 @@ const (
 	DEVELOPMENT = "dev"
 	TEST        = "test"
 	PRODUCT     = "prod"
+	InitKey     = "initialize"
 )
 
 const (
@@ -136,10 +138,15 @@ func (init *Init) LoadConfig() *Init {
 					DataId: onceConfig.Module,
 					Watch:  onceConfig.Nacos.Watch,
 				}
-				nacosClient := InitConfig.getNacosClient()
-				go nacosClient.Listener(InitConfig.UnmarshalAndSet)
+				(*conf_center.Nacos)(init.ConfigCenter).SetConfig(init.UnmarshalAndSet)
 			} else if init.EnvConfig.LocalConfigName != "" {
-				init.LocalConfig()
+				(&conf_center.Local{
+					Config: &configor.Config{
+						Debug:      init.Env != PRODUCT,
+						AutoReload: onceConfig.Nacos.Watch,
+					},
+					LocalConfigName: init.EnvConfig.LocalConfigName,
+				}).SetConfig(init.UnmarshalAndSet)
 			} else {
 				log.Fatal("没有发现配置")
 			}
