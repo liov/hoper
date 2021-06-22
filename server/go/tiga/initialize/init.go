@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/liov/hoper/v2/utils/configor"
-	"github.com/liov/hoper/v2/utils/configor/nacos"
 	"github.com/liov/hoper/v2/utils/log"
 	"github.com/pelletier/go-toml"
 )
@@ -24,6 +23,8 @@ import (
 var (
 	InitConfig = &Init{}
 )
+
+type Env string
 
 const (
 	DEVELOPMENT = "dev"
@@ -38,20 +39,16 @@ const (
 )
 
 type EnvConfig struct {
-	NacosTenant string
-	//本地配置，特定文件名,启用文件搜寻查找
-	LocalConfigName string
+	conf_center.ConfigCenterEnvConfig
 }
 
 type BasicConfig struct {
-	Module string
-	NoInit []string
+	Module   string
+	NoInject []string
 }
 
 type Init struct {
 	EnvConfig *EnvConfig
-	// TODO: 接口抽象，可切换的配置中心
-	ConfigCenter *nacos.Config
 	BasicConfig
 	Env, ConfUrl string
 	conf         NeedInit
@@ -94,11 +91,7 @@ func Start(conf Config, dao Dao) func() {
 func (init *Init) LoadConfig() *Init {
 	onceConfig := struct {
 		Dev, Test, Prod *EnvConfig
-		Nacos           struct {
-			Addr  string
-			Group string
-			Watch bool
-		}
+		ConfigCenter    conf_center.ConfigCenterConfig
 		BasicConfig
 	}{}
 	if _, err := os.Stat(InitConfig.ConfUrl); os.IsNotExist(err) {
@@ -110,11 +103,11 @@ func (init *Init) LoadConfig() *Init {
 	}
 	fmt.Printf("Load config from: %s\n", InitConfig.ConfUrl)
 
-	for i := range onceConfig.NoInit {
-		onceConfig.NoInit[i] = strings.ToLower(onceConfig.NoInit[i])
+	for i := range onceConfig.NoInject {
+		onceConfig.NoInject[i] = strings.ToLower(onceConfig.NoInject[i])
 	}
 	init.BasicConfig = onceConfig.BasicConfig
-	init.NoInit = onceConfig.NoInit
+	init.NoInject = onceConfig.NoInject
 
 	value := reflect.ValueOf(&onceConfig).Elem()
 	typ := reflect.TypeOf(&onceConfig).Elem()
@@ -130,26 +123,7 @@ func (init *Init) LoadConfig() *Init {
 			}*/
 			//会被回收,也可能是被移动了？
 			init.EnvConfig = &(*value.Field(i).Interface().(*EnvConfig))
-			if init.EnvConfig.NacosTenant != "" {
-				init.ConfigCenter = &nacos.Config{
-					Addr:   onceConfig.Nacos.Addr,
-					Tenant: init.EnvConfig.NacosTenant,
-					Group:  onceConfig.Nacos.Group,
-					DataId: onceConfig.Module,
-					Watch:  onceConfig.Nacos.Watch,
-				}
-				(*conf_center.Nacos)(init.ConfigCenter).SetConfig(init.UnmarshalAndSet)
-			} else if init.EnvConfig.LocalConfigName != "" {
-				(&conf_center.Local{
-					Config: &configor.Config{
-						Debug:      init.Env != PRODUCT,
-						AutoReload: onceConfig.Nacos.Watch,
-					},
-					LocalConfigName: init.EnvConfig.LocalConfigName,
-				}).SetConfig(init.UnmarshalAndSet)
-			} else {
-				log.Fatal("没有发现配置")
-			}
+			onceConfig.ConfigCenter.ConfigCenter(init.EnvConfig.ConfigCenterEnvConfig, init.Env, init.Module).HandleConfig(init.UnmarshalAndSet)
 			break
 		}
 	}
@@ -209,7 +183,7 @@ func setConfig(v reflect.Value, fieldNameDaoMap map[string]interface{}) {
 			if conf, ok := inter.(NeedInit); ok {
 				conf.Init()
 			}
-			if slices.StringContains(InitConfig.NoInit, strings.ToLower(typ.Field(i).Name)) {
+			if slices.StringContains(InitConfig.NoInject, strings.ToLower(typ.Field(i).Name)) {
 				continue
 			}
 			if conf, ok := inter.(Generate); ok {
