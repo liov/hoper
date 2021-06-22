@@ -7,18 +7,18 @@ import (
 )
 
 type Local struct {
-	*configor.Config
+	configor.Config
 	LocalConfigName string
 }
 
 // 本地配置
-func (cc *Local) SetConfig(handle func([]byte)) error {
+func (cc *Local) HandleConfig(handle func([]byte)) error {
 	localConfigName := cc.LocalConfigName
 	if localConfigName != "" {
 		adCongPath, err := fs.FindFile(localConfigName)
 		localConfigName = adCongPath
 		if err == nil {
-			err := configor.New(cc.Config).
+			err := configor.New(&cc.Config).
 				Handle(handle, adCongPath)
 			if err != nil {
 				return fmt.Errorf("配置错误: %v", err)

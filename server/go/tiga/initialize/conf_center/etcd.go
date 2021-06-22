@@ -6,13 +6,14 @@ import (
 )
 
 type Etcd struct {
-	*clientv3.Config
-	Key string
+	clientv3.Config
+	Watch bool
+	Key   string
 }
 
 // etcd
-func (e *Etcd) SetConfig(handle func([]byte)) error {
-	client, err := clientv3.New(*e.Config)
+func (e *Etcd) HandleConfig(handle func([]byte)) error {
+	client, err := clientv3.New(e.Config)
 	if err != nil {
 		return err
 	}

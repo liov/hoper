@@ -33,6 +33,7 @@ require (
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da
 	github.com/golang/protobuf v1.5.2
+	github.com/google/btree v1.0.1 // indirect
 	github.com/google/flatbuffers v1.12.1-0.20210406112345-261cf3b20473 // indirect
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/sessions v1.2.1
@@ -61,13 +62,12 @@ require (
 	github.com/tidwall/pretty v1.0.1
 	github.com/ugorji/go/codec v1.1.7
 	github.com/valyala/fasthttp v1.18.0
-	go.etcd.io/etcd/client/v3 v3.5.0 // indirect
-	go.etcd.io/etcd/v3 v3.5.0 // indirect
+	go.etcd.io/etcd/client/v3 v3.5.0
 	go.opencensus.io v0.23.0
-	go.opentelemetry.io/otel v0.20.0 // indirect
 	go.uber.org/atomic v1.7.0
 	go.uber.org/multierr v1.7.0
 	go.uber.org/zap v1.17.0
+	golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0 // indirect
 	golang.org/x/exp v0.0.0-20201229011636-eab1b5eb1a03 // indirect
 	golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4
 	golang.org/x/oauth2 v0.0.0-20210402161424-2e8d93401602

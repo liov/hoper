@@ -3,13 +3,13 @@ Module = "test"
 # 命令行参数获取
 # Env = "dev"
 # 不需要注入的dao
-NoInit = ["Cache","Apollo","Etcd"]
+NoInject = ["Cache","Apollo","Etcd"]
 
-
-[nacos]
+[configCenter]
+Watch  = false
+[configCenter.nacos]
 Addr = "nacos.default"
 Group = "hoper"
-Watch  = false
 
 
 [dev]
