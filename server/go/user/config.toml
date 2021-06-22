@@ -2,14 +2,14 @@ Module = "user"
 # dev | test | prod
 # Env = "dev"
 
-NoInit = ["Apollo","Etcd"]
+NoInject = ["Apollo","Etcd"]
 
 
-[nacos]
+[ConfigCenter]
+Watch  = false
+[configCenter.nacos]
 Addr = "nacos.default"
 Group = "hoper"
-# DataId = "user"
-Watch  = true
 
 [dev]
 LocalConfigName = "local.toml"
