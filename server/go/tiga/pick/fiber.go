@@ -34,9 +34,9 @@ func faberRegistered() {
 	fiberSvcs = nil
 }
 
-func FiberApi(f func() interface{}) {
+func FiberApi(f func()) {
 	if !faberIsRegistered {
-		panic(f())
+		f()
 	}
 }
 

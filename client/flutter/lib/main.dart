@@ -2,7 +2,7 @@ import 'package:app/page/ffi/ffi.dart';
 import 'package:app/page/index/fourth.dart';
 import 'package:app/page/index/index.dart';
 import 'package:app/page/loginView.dart';
-import 'package:app/page/moment/momentListView.dart';
+import 'package:app/page/moment/moment_list.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

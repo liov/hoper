@@ -7,3 +7,5 @@ SET status     = 1,
     stage      = 2
 WHERE id >= (SELECT id FROM (SELECT id FROM `customer_info` WHERE customer_num = '2020') temp);
 
+# upsert
+INSERT INTO user_role(id, role_id) VALUES (1, 1) ON DUPLICATE KEY UPDATE role_id = 1
