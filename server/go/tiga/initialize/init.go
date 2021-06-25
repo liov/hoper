@@ -123,7 +123,7 @@ func (init *Init) LoadConfig() *Init {
 			}*/
 			//会被回收,也可能是被移动了？
 			init.EnvConfig = &(*value.Field(i).Interface().(*EnvConfig))
-			onceConfig.ConfigCenter.ConfigCenter(init.EnvConfig.ConfigCenterEnvConfig, init.Env, init.Module).HandleConfig(init.UnmarshalAndSet)
+			onceConfig.ConfigCenter.ConfigCenter(init.EnvConfig.ConfigCenterEnvConfig, init.Module, init.Env != PRODUCT).HandleConfig(init.UnmarshalAndSet)
 			break
 		}
 	}

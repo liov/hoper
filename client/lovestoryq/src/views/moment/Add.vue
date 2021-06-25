@@ -64,8 +64,8 @@ export default class MomentAdd extends Vue {
   showPicker = false;
   uploader: any = [];
 
-  onOversize(file: File) {
-    if (file.size > 5 * 1e6) this.$toast("文件大小不能超过 500kB");
+  onOversize(file: any) {
+    if (file.file.size > 5 * 1e5) this.$toast("文件大小不能超过 500kB");
   }
   async afterRead(file: any) {
     file.url = await upload(file.file);

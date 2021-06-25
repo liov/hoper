@@ -1,4 +1,4 @@
-import 'package:app/page/moment/momentListView.dart';
+import 'package:app/page/moment/moment_list.dart';
 import 'package:app/page/webview/webview.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

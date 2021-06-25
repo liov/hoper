@@ -22,7 +22,7 @@ type ConfigCenterEnvConfig struct {
 	EtcdKey         string
 }
 
-func (c *ConfigCenterConfig) ConfigCenter(ccec ConfigCenterEnvConfig, env, model string) ConfigCenter {
+func (c *ConfigCenterConfig) ConfigCenter(ccec ConfigCenterEnvConfig, model string, debug bool) ConfigCenter {
 	if c.Nacos != nil && ccec.NacosTenant != "" {
 		c.Nacos.DataId = model
 		c.Nacos.Tenant = ccec.NacosTenant
@@ -40,7 +40,7 @@ func (c *ConfigCenterConfig) ConfigCenter(ccec ConfigCenterEnvConfig, env, model
 			return c.Local
 		} else {
 			return &Local{Config: configor.Config{
-				Debug:      env != "prod", // TODO：避免包互引用临时方案
+				Debug:      debug,
 				AutoReload: c.Watch,
 			}, LocalConfigName: ccec.LocalConfigName}
 		}
