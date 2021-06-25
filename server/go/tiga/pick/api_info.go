@@ -15,12 +15,12 @@ import (
 
 const Template = `
 func (*UserService) Add(ctx *model.Ctx, req *model.SignupReq) (*response.TinyRep, error) {
-	pick.Api(func() interface{} {
-		return pick.Post("/add").
+	pick.Api(func() {
+		pick.Post("/add").
 			Title("用户注册").
 			Version(2).
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
-			ChangeLog("1.0.1", "jyb", "2019/12/16", "修改测试")
+			ChangeLog("1.0.1", "jyb", "2019/12/16", "修改测试").End()
 	})
 
 	return &response.TinyRep{Message: req.Name}, nil
@@ -111,6 +111,10 @@ func (api *apiInfo) Middleware(m ...http.HandlerFunc) *apiInfo {
 	return api
 }
 
+func (api *apiInfo) End() {
+	panic(api)
+}
+
 //获取负责人
 func (api *apiInfo) getPrincipal() string {
 	if len(api.changelog) == 0 {
@@ -128,6 +132,9 @@ func getMethodInfo(method *reflect.Method, preUrl string, claimsTyp reflect.Type
 		if err := recover(); err != nil {
 			if v, ok := err.(*apiInfo); ok {
 				//_,_, info.version = parseMethodName(method.Name)
+				if v.version == 0 {
+					v.version = 1
+				}
 				v.path = preUrl + "/v" + strconv.Itoa(v.version) + v.path
 				info = v
 			} else {

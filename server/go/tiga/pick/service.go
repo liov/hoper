@@ -46,9 +46,9 @@ func registered() {
 	groupApiInfos = nil
 }
 
-func Api(f func() interface{}) {
+func Api(f func()) {
 	if !isRegistered {
-		panic(f())
+		f()
 	}
 }
 

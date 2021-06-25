@@ -16,39 +16,43 @@ func (*TestService) Service() (string, string, []http.HandlerFunc) {
 }
 
 func (*TestService) Test(ctx *contexti.Ctx, req *model.SignupReq) (*response.TinyRep, error) {
-	pick.Api(func() interface{} {
-		return pick.Post("").
+	pick.Api(func() {
+		pick.Post("").
 			Title("用户注册").
-			CreateLog("1.0.0", "jyb", "2019/12/16", "创建")
+			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").End()
 	})
 
 	return &response.TinyRep{Message: "测试"}, nil
 }
 
 func (*TestService) Test1(ctx *contexti.Ctx, req *model.SignupReq) (*response.TinyRep, error) {
-	pick.Api(func() interface{} {
-		return pick.Post("/").
+	pick.Api(func() {
+		pick.Post("/").
 			Title("用户注册").
-			CreateLog("1.0.0", "jyb", "2019/12/16", "创建")
+			Version(1).
+			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
+			End()
 	})
 
 	return &response.TinyRep{Message: "测试"}, nil
 }
 
 func (*TestService) Test2(ctx *contexti.Ctx, req *model.SignupReq) (*response.TinyRep, error) {
-	pick.Api(func() interface{} {
-		return pick.Post("/a/").
+	pick.Api(func() {
+		pick.Post("/a/").
 			Title("用户注册").
-			CreateLog("1.0.0", "jyb", "2019/12/16", "创建")
+			Version(2).
+			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").End()
 	})
 
 	return &response.TinyRep{Message: "测试"}, nil
 }
 
 func (*TestService) Test3(ctx *contexti.Ctx, req *model.SignupReq) (*response.TinyRep, error) {
-	pick.Api(func() interface{} {
-		return pick.Post("/a/:b").
+	pick.Api(func() {
+		pick.Post("/a/:b").
 			Title("用户注册").
+			Version(3).
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建")
 	})
 

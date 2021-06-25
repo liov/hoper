@@ -540,12 +540,12 @@ func (*UserService) Service() (string, string, []http.HandlerFunc) {
 
 func (*UserService) Add(ctx *contexti.Ctx, req *model.SignupReq) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
-	pick.Api(func() interface{} {
-		return pick.Get("/add").
+	pick.Api(func() {
+		pick.Get("/add").
 			Title("用户注册").
 			Version(2).
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
-			ChangeLog("1.0.1", "jyb", "2019/12/16", "修改测试")
+			ChangeLog("1.0.1", "jyb", "2019/12/16", "修改测试").End()
 	})
 	client := redis.NewClient(&redis.Options{
 		Addr:     conf.Conf.Redis.Addr,
@@ -563,12 +563,12 @@ func (*UserService) FiberService() (string, string, []fiber.Handler) {
 
 func (*UserService) Addv(ctx *contexti.Ctx, req *response.TinyRep) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
-	pick.FiberApi(func() interface{} {
-		return pick.Post("/add").
+	pick.FiberApi(func() {
+		pick.Post("/add").
 			Title("用户注册").
 			Version(1).
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
-			ChangeLog("1.0.1", "jyb", "2019/12/16", "修改测试")
+			ChangeLog("1.0.1", "jyb", "2019/12/16", "修改测试").End()
 	})
 	return req, nil
 }

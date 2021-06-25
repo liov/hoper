@@ -11,7 +11,7 @@ type Foo struct {
 	Field3 chan int `json:"-"`
 }
 
-//func ，chan不支持序列化，支持反序列化，但是加上忽略标签支持
+//func ，chan不支持序列化，但是加上忽略标签支持, 支持反序列化
 func main() {
 	var foo = Foo{
 		Field1: 10,
