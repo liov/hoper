@@ -5,13 +5,13 @@ import 'package:json_annotation/json_annotation.dart';
 part 'response.g.dart';
 
 @JsonSerializable()
-class ResponseData {
-  ResponseData();
+class ResponseData$ {
+  ResponseData$();
   late int code;
   late Map<String, dynamic> details;
   late String message;
 
-  factory ResponseData.fromJson(Map<String, dynamic> json) => _$ResponseDataFromJson(json);
+  factory ResponseData$.fromJson(Map<String, dynamic> json) => _$ResponseDataFromJson(json);
 
   Map<String, dynamic> toJson() => _$ResponseDataToJson(this);
 }
@@ -19,7 +19,7 @@ class ResponseData {
 extension StringExtension on Response {
   Map<String, dynamic> getData() {
     if (this.statusCode == HttpStatus.ok) {
-      final data = ResponseData.fromJson(this.data);
+      final data = ResponseData$.fromJson(this.data);
       return data.details;
     }
     return Map() ;

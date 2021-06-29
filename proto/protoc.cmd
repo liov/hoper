@@ -1,0 +1,3 @@
+E:\protoc\bin\protoc.exe -ID:\hoper\server\go/../../proto -IE:\gopath\pkg\mod\github.com\grpc-ecosystem\grpc-gateway\v2@v2.1.0 -IE:\gopath\pkg\mod\github.com\grpc-ecosystem\grpc-gateway\v2@v2.1.0/third_party/googleapis -IE:\gopath\pkg\mod\google.golang.org\protobuf@v1.26.0  -ID:\hoper\server\go/../../proto/utils/proto -IE:\gopath/src D:\hoper\server\go/../../proto/user/*model.proto --dart_out=grpc:D:\hoper\client\flutter\lib\generated\protobuf
+
+E:\protoc\bin\protoc.exe -ID:\hoper\server\go/../../proto/utils/proto/ D:\hoper\server\go/../../proto/utils/proto/google/protobuf/wrappers.proto --dart_out=grpc:D:\hoper\client\flutter\lib\generated\protobuf

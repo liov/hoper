@@ -13,3 +13,11 @@ https://github.com/grpc-ecosystem/grpc-gateway/issues/229
 
 这么做的原因是包名定义github.com/xxx,然而项目又不在github.com目录下，
 在指定pb.go的生成目录(非github.com/xxx)，这样就会造成生成目录下自动创建github.com/xxx，造成错位
+
+E:\protoc\bin\protoc.exe -ID:\hoper\server\go/../../proto
+-IE:\gopath\pkg\mod\github.com\grpc-ecosystem\grpc-gateway\v2@v2.1.0
+-IE:\gopath\pkg\mod\github.com\grpc-ecosystem\grpc-gateway\v2@v2.1.0/third_party/googleapis
+-IE:\gopath\pkg\mod\google.golang.org\protobuf@v1.26.0  
+-ID:\hoper\server\go/../../proto/utils/proto
+-IE:\gopath/src D:\hoper\server\go/../../proto/user/*model.proto
+--dart_out=plugin=go,paths=source_relative:D:\hoper\client\flutter\generated\protobuf
