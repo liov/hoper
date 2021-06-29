@@ -1,4 +1,4 @@
-import 'package:app/model/state/user.dart';
+import 'package:app/model/state/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -73,7 +73,7 @@ class _IndexPageState extends State<IndexPage> {
         heroTag: 'login',
         onPressed: (){
           _methodChannel.invokeMethod("toNative",{"route":"/"}).then((value) => null);
-          final user = Get.find<AuthState>().user;
+          final user = Get.find<AuthState>().user.value;
           if ( user!= null) {
               showDialog(
                   context: context,

@@ -1,19 +1,20 @@
-import 'package:app/model/moment.dart';
+import 'package:app/generated/protobuf/content/content.model.pb.dart';
+import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/model/state/user.dart';
-import 'package:app/model/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:get/get.dart';
+import 'package:fixnum/fixnum.dart';
 
 class MomentItem extends StatelessWidget {
   MomentItem({Key? key, required this.moment}) : super(key: key) {
-    if (this.moment.images != null)
-      this.images = this.moment.images!.split(",");
+    if (this.moment.images != "")
+      this.images = this.moment.images.split(",");
     else this.images = null;
   }
 
   final Moment moment;
-  final RxMap<int, User> users = Get.find<UserState>().users;
+  final RxMap<Int64, UserBaseInfo> users = Get.find<UserState>().users;
   late final List<String>? images;
 
   @override
