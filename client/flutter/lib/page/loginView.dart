@@ -1,4 +1,4 @@
-import 'package:app/model/state/user.dart';
+import 'package:app/model/state/auth.dart';
 import 'package:app/model/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -62,8 +62,8 @@ class LoginView extends StatelessWidget {
                       _state!.save();
                       print(_account);
                       final user =  login(_account, _password);
-                      final AuthState userState =  Get.find();
-                      userState.user.value = user;
+                      final AuthState authState =  Get.find();
+                      authState.user.value = user;
                       Navigator.pop(context);
                     },
                   ),

@@ -1,14 +1,11 @@
 
+import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:get/get.dart';
+import 'package:fixnum/fixnum.dart';
 
-import '../user.dart';
-
-class AuthState extends GetxController {
-  Rxn<User?> user = Rxn<User?>();
-  late RxString cookie;
-  var isActive =false.obs;
-}
+import '../user.dart' as $self;
 
 class UserState extends GetxController {
-  var users = Map<int, User>().obs;
+  var usersS = Map<int, $self.User>().obs;
+  var users = Map<Int64, UserBaseInfo>().obs;
 }

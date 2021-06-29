@@ -5,8 +5,8 @@ import 'content.dart';
 part 'moment.g.dart';
 
 @JsonSerializable()
-class Moment {
-  Moment();
+class Moment$ {
+  Moment$();
   late int id;
   late DateTime createdAt;
   late String content;
@@ -23,7 +23,7 @@ class Moment {
   late int anonymous;
   late int permission;
 
-  factory Moment.fromJson(Map<String, dynamic> json) => _$MomentFromJson(json);
+  factory Moment$.fromJson(Map<String, dynamic> json) => _$MomentFromJson(json);
 
   Map<String, dynamic> toJson() => _$MomentToJson(this);
 }
