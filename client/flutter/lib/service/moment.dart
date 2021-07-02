@@ -1,22 +1,16 @@
-
 import 'package:app/generated/protobuf/content/moment.service.pbgrpc.dart';
-import 'package:app/model/moment.dart';
-import 'package:app/model/user.dart';
-import 'package:app/service/response.dart';
+import 'package:app/model/moment/moment.service.dart';
+
+
 import 'package:app/util/dio.dart';
 import 'package:get/get.dart';
 import 'package:grpc/grpc.dart';
-import 'package:json_annotation/json_annotation.dart';
-
-
-part 'moment.g.dart';
-
+import 'package:app/model/response.dart';
 
 class MomentClient extends GetxService {
+  late final MomentServiceClient stub;
 
-  late final MomentServiceClient stub ;
-
-  MomentClient():super(){
+  MomentClient() : super() {
     final channel = ClientChannel(
       'hoper.xyz',
       port: 8090,
@@ -36,18 +30,4 @@ class MomentClient extends GetxService {
       return null;
     }
   }
-}
-
-@JsonSerializable()
-class MomentListResponse$ {
-  MomentListResponse$();
-
-  late List<User> users;
-  late List<Moment$> list;
-  late int total;
-
-  factory MomentListResponse$.fromJson(Map<String, dynamic> json) =>
-      _$MomentListResponseFromJson(json);
-
-  Map<String, dynamic> toJson() => _$MomentListResponseToJson(this);
 }

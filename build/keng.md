@@ -677,3 +677,31 @@ IPv4 的环回地址是保留地址之一 127.0.0.1。尽管只使用 127.0.0.1 
 么我们无论是通过IP192.168.1.2还是10.1.1.12都是可以访问该服务的。在路由中，0.0.0.0表示的是默认路由，即当路由表中
 
 没有找到完全匹配的路由的时候所对应的路由。
+
+# Error: unknown file extension .ts
+移除"type": "module" in package.json 会导致import报错 正确做法，  
+1.移除"type": "module" in package.json  
+2.tsconfig "module": "commonjs"
+
+# typescript
+
+## Locally in your project.
+npm install -D typescript
+npm install -D ts-node
+
+## Or globally with TypeScript.
+npm install -g typescript
+npm install -g ts-node
+
+## Depending on configuration, you may also need these
+npm install -D tslib @types/node
+
+# TS1378: Top-level 'await' expressions are only allowed when the 'module' option is set to 'esnext' or 'system', and the 'target' option is set to 'es2017' or higher.
+"type": "module" in package.json
+yarn add --dev ts-node yarn add --dev
+typescript yarn add --dev @types/node
+node --loader=ts-node/esm
+
+# Error: ERR_MODULE_NOT_FOUND D:\hoper\tools\serverless\src\utils\random D:\hoper\tools\serverless\src\ts\db_mock.ts module
+- import {randomNum, lottery} from '../utils/random';
++ import {randomNum, lottery} from '../utils/random.js';
