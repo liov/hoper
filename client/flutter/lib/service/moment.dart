@@ -2,7 +2,7 @@ import 'package:app/generated/protobuf/content/moment.service.pbgrpc.dart';
 import 'package:app/model/moment/moment.service.dart';
 
 
-import 'package:app/util/dio.dart';
+import 'package:app/utils/dio.dart';
 import 'package:get/get.dart';
 import 'package:grpc/grpc.dart';
 import 'package:app/model/response.dart';
