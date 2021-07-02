@@ -1,5 +1,5 @@
 
-import 'package:app/route/route.dart';
+import 'package:app/routes/route.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
