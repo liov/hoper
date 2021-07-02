@@ -1,15 +1,12 @@
-import 'package:app/page/ffi/ffi.dart';
-import 'package:app/page/index/fourth.dart';
-import 'package:app/page/index/index.dart';
-import 'package:app/page/loginView.dart';
-import 'package:app/page/moment/moment_list.dart';
+
+import 'package:app/route/route.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'model/state/auth.dart';
 import 'model/state/global.dart';
-import 'model/state/user.dart';
+
 
 void main() async {
   runApp(GetMaterialApp(
@@ -31,70 +28,12 @@ void main() async {
       // closer together (more dense) than on mobile platforms.
       visualDensity: VisualDensity.adaptivePlatformDensity,
     ),
-    home: MyHomePage(),
+    //home: HomeView(),
+    initialRoute: Routes.HOME,
     initialBinding: BindingsBuilder(() {
       Get.put(AuthState());
       Get.put(GlobalState());
     }),
-    getPages: [
-      GetPage(
-        name: '/content',
-        page: () => MomentListView(),
-      ),
-      GetPage(
-        name: '/login',
-        page: () => LoginView(),
-      ),
-    ],
+    getPages: AppPages.routes,
   ));
-}
-
-class MyHomePage extends StatelessWidget {
-
-
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  final List<Widget> _widgetOptions = <Widget>[
-    IndexPage(title: '🍀'),
-    Container(
-        alignment: Alignment.center,
-        child: Text(
-          greeting(),
-          style: optionStyle,
-        )),
-    FourthPage(),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    // 使用Get.put()实例化你的类，使其对当下的所有子路由可用。
-    final AuthState authState = Get.find();
-    final GlobalState globalState = Get.find();
-    return Scaffold(
-        body: Obx(
-            () => _widgetOptions.elementAt(globalState.selectedIndex.value)),
-        bottomNavigationBar: Obx(
-          () => BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            backgroundColor: Theme.of(context).primaryColor.withAlpha(127),
-            items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: Icon(Icons.movie),
-                label: 'flutter',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.search),
-                label: 'rustffi',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.twenty_one_mp_rounded),
-                label: 'hoper',
-              ),
-            ],
-            currentIndex: globalState.selectedIndex.value,
-            selectedItemColor: Theme.of(context).canvasColor,
-            onTap: globalState.onItemTapped,
-          ),
-        ));
-  }
 }

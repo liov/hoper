@@ -6,6 +6,6 @@ import 'package:fixnum/fixnum.dart';
 import '../user.dart' as $self;
 
 class UserState extends GetxController {
-  var usersS = Map<int, $self.User>().obs;
+  var users$ = Map<int, $self.User>().obs;
   var users = Map<Int64, UserBaseInfo>().obs;
 }

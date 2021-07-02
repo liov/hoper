@@ -13,3 +13,8 @@ tar -Jxvf
 
 wget https://nodejs.org/dist/v16.0.0/node-v16.0.0-linux-x64.tar.xz
 export PATH=/home/node-v16.0.0-linux-x64/bin:$PATH
+
+# nvm
+
+nvm install 16.4.0 64
+nvm use 16.4.0

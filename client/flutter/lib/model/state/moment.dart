@@ -1,7 +1,7 @@
 import 'package:app/generated/protobuf/content/content.model.pb.dart';
 import 'package:get/get.dart';
 
-import '../moment.dart';
+import '../moment/moment.dart';
 
 class MomentState extends GetxController {
   var pageNo = 1.obs;
