@@ -1,11 +1,8 @@
 import 'package:app/generated/protobuf/content/moment.service.pb.dart';
-import 'package:app/model/moment.dart';
 import 'package:app/model/state/moment.dart';
 import 'package:app/model/state/user.dart';
-import 'package:app/model/user.dart';
 import 'package:app/service/moment.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:get/get.dart';
 
 import 'moment_item.dart';
@@ -22,7 +19,7 @@ class MomentListView extends StatelessWidget {
     // If the widget was removed from the tree while the message was in flight,
     // we want to discard the reply rather than calling setState to update our
     // non-existent appearance.
-    response.users.forEach((e) => userState.usersS[e.id] = e);
+    response.users.forEach((e) => userState.users$[e.id] = e);
     momentState.list$.addAll(response.list);
     momentState.timesIncrement();
     momentState.pageNoIncrement();

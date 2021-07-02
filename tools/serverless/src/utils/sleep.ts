@@ -1,4 +1,4 @@
-export const sleep = function (delay:number) {
+export function sleep(delay:number) {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             try {

@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import 'content.dart';
+import '../content.dart';
 
 part 'moment.g.dart';
 
