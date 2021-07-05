@@ -1,10 +1,12 @@
 import 'package:get/get.dart';
 
-import 'global.dart';
+import 'global_controller.dart';
+
+
 
 class GlobalBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut(() => GlobalState());
+    Get.lazyPut(() => GlobalController());
   }
 }

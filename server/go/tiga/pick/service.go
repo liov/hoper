@@ -23,12 +23,22 @@ type Context interface {
 	grpc.ServerTransportStream
 }
 
+type ParseFromHttpRequest interface {
+	Parse(req *http.Request) error
+}
+
+var parseType = reflect.TypeOf((ParseFromHttpRequest)(nil)).Elem()
+
+type ParseToHttpResponse interface {
+	Parse() ([]byte, error)
+}
+
 var (
 	svcs         = make([]Service, 0)
 	isRegistered = false
-	claimsType   = reflect.TypeOf((*Context)(nil)).Elem()
-	contextType  = reflect.TypeOf((*context.Context)(nil)).Elem()
-	errorType    = reflect.TypeOf((*error)(nil)).Elem()
+	claimsType   = reflect.TypeOf((Context)(nil))
+	contextType  = reflect.TypeOf((context.Context)(nil))
+	errorType    = reflect.TypeOf((error)(nil)).Elem()
 )
 
 type Service interface {

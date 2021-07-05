@@ -1,11 +1,12 @@
-import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 
 import 'moment_state.dart';
 
 class MomentController extends GetxController with SingleGetTickerProviderMixin{
   final state = MomentState();
+
   late TabController ac;
 
   @override
