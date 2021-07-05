@@ -1,6 +1,6 @@
 import 'package:app/generated/protobuf/content/content.model.pb.dart';
 import 'package:app/generated/protobuf/user/user.model.pb.dart';
-import 'package:app/model/state/user.dart';
+import 'package:app/model/global_state/global_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:get/get.dart';
@@ -14,16 +14,17 @@ class MomentItem extends StatelessWidget {
   }
 
   final Moment moment;
-  final RxMap<Int64, UserBaseInfo> users = Get.find<UserState>().users;
+  final GlobalController globalController = Get.find<GlobalController>();
   late final List<String>? images;
 
   @override
   Widget build(BuildContext context) {
+    final user = globalController.userState.value.getUser(moment.userId);
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(children: [
         Expanded(
           flex: 1,
-          child: Text('${users[moment.userId]!.name}'),
+          child: Text('${user!.name}'),
         ),
         Expanded(
           flex: 1,

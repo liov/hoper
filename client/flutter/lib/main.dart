@@ -4,8 +4,8 @@ import 'package:app/routes/route.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'model/state/auth.dart';
-import 'model/state/global.dart';
+import 'model/global_state/global_binding.dart';
+
 
 
 void main() async {
@@ -30,10 +30,7 @@ void main() async {
     ),
     //home: HomeView(),
     initialRoute: Routes.HOME,
-    initialBinding: BindingsBuilder(() {
-      Get.put(AuthState());
-      Get.put(GlobalState());
-    }),
+    initialBinding: GlobalBinding(),
     getPages: AppPages.routes,
   ));
 }
