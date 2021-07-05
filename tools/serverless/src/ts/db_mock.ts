@@ -4,7 +4,7 @@ import {randomNum, lottery} from '../utils/random.js';
 
 
 const connection = await mysql.createConnection({
-    host: 'xxx',
+    host: 'rm-bp1y6kuovzmbz1757.mysql.rds.aliyuncs.com',
     user: 'web',
     password: '123456',
     Promise: bluebird

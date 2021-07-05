@@ -1,9 +1,9 @@
-import 'package:app/page/webview/webview.dart';
+import 'package:app/pages/webview/webview.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'moment_controller.dart';
-import 'moment_list.dart';
+import 'list/moment_list_view.dart';
 import 'moment_state.dart';
 
 class MomentView extends GetView<MomentController> {
