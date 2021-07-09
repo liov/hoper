@@ -64,7 +64,7 @@ class LoginView extends StatelessWidget {
                       print(_account);
                       final user =  login(_account, _password);
                       final GlobalController globalController =  Get.find();
-                      globalController.authState.value.user = user;
+                      globalController.authState.user = user;
                       Navigator.pop(context);
                     },
                   ),

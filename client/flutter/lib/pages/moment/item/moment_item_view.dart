@@ -19,7 +19,7 @@ class MomentItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = globalController.userState.value.getUser(moment.userId);
+    final user = globalController.userState.getUser(moment.userId);
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(children: [
         Expanded(

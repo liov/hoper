@@ -1,15 +1,30 @@
 import 'dart:async';
 
-import 'package:flutter/animation.dart';
+import 'package:app/components/bottom/bottom.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'home_state.dart';
-
 class HomeController extends GetxController {
-  final state = HomeState().obs;
+  var selectedIndex = 0.obs;
+  var now = DateTime.now().obs;
 
-  onItemTapped(int index) {
-    state.update((state)=>state!.selectedIndex = index);
+  final pageController = PageController();
+  var bottomNavigationBarList = [
+    Bottom(Icons.home, "home"),
+    Bottom(Icons.account_box_rounded, "Profile"),
+    Bottom(Icons.account_box_rounded, "Moments"),
+    Bottom(Icons.account_balance_sharp, "Weather"),
+  ];
+
+  HomeController get to => Get.find<HomeController>();
+
+  void onPageChanged(int index) {
+    selectedIndex.value = index;
+  }
+
+  void onItemTapped(int index) {
+    pageController.jumpToPage(index);
+    selectedIndex.value = index;
   }
 
   @override
@@ -18,7 +33,7 @@ class HomeController extends GetxController {
     super.onReady();
     Timer.periodic(
       Duration(seconds: 1),
-          (timer) { state.update((state)=>state!.now = DateTime.now());},
+          (timer) { now.value = DateTime.now();},
     );
   }
 

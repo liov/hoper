@@ -1,69 +1,60 @@
-import 'package:app/generated/protobuf/content/moment.service.pb.dart';
-import 'package:app/model/global_state/global_controller.dart';
 
-import 'package:app/service/moment.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'moment_item_view.dart';
+import '../item/moment_item_view.dart';
 import 'moment_list_controller.dart';
-
-
+// TabBarView 无法保持状态
 class MomentListView extends StatelessWidget {
-  final MomentListController controller = Get.put(MomentListController());
-  final GlobalController globalController = Get.find();
-  final MomentClient momentClient = Get.put(MomentClient());
+  MomentListView({this.tag = "default"}) : super();
 
-  _getList() async {
-    var response = await momentClient.getMomentList(
-        controller.pageNo, controller.pageSize);
-    if (response == null) return;
-    // If the widget was removed from the tree while the message was in flight,
-    // we want to discard the reply rather than calling setState to update our
-    // non-existent appearance.
-    response.users.forEach((e) => globalController.userState.value.users$[e.id] = e);
-    controller.list$.addAll(response.list);
-    controller.timesIncrement();
-    controller.pageNoIncrement();
-  }
+  final MomentListController controller = Get.find();
 
-  _grpcGetList() async {
-    print(controller.pageNo);
-    var response = await momentClient.stub.list(MomentListReq(pageNo:controller.pageNo, pageSize:controller.pageSize));
-    if (response.list.isEmpty) return;
-    // If the widget was removed from the tree while the message was in flight,
-    // we want to discard the reply rather than calling setState to update our
-    // non-existent appearance.
-    response.users.forEach((e) => globalController.userState.value.users[e.id] = e);
-    controller.list.addAll(response.list);
-    controller.timesIncrement();
-    controller.pageNoIncrement();
-  }
+  final String tag;
 
   late final ScrollController _controller = ScrollController()
     ..addListener(() {
-      if (this._controller.position.atEdge) {
-        _grpcGetList();
+      if (_controller.position.atEdge) {
+        controller.pullList(tag);
       }
-      }
+    }
     );
-
   @override
   Widget build(BuildContext context) {
-    _grpcGetList();
-    return Obx(() => RefreshIndicator(
-        onRefresh: () {
-          controller.resetList();
-          return _grpcGetList();
-          },
-        child:ListView.separated(
-        controller: this._controller,
-        itemCount: controller.list.length,
-        separatorBuilder: (BuildContext context, int index) {
-          return Divider();
-        },
-        itemBuilder: (context, index) {
-          return MomentItem(moment:controller.list[index]);
-        })));
+    print(controller.entityMap[tag]?.list.length);
+    Get.log('重建');
+    final _future = controller.newList(tag);
+    return FutureBuilder<void>(
+        future: _future,
+        builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+              return Text('还没有开始网络请求');
+            case ConnectionState.active:
+              return Text('ConnectionState.active');
+            case ConnectionState.waiting:
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            case ConnectionState.done:
+              return GetBuilder<MomentListController>(
+                  id: tag,
+                  builder: (_) => RefreshIndicator(
+                      onRefresh: () {
+                        return controller.resetList(tag);
+                      },
+                      child: ListView.separated(
+                          physics: BouncingScrollPhysics(),
+                          controller: _controller,
+                          itemCount: controller.entityMap[tag]!.list.length,
+                          separatorBuilder: (BuildContext context, int index) {
+                            return Divider();
+                          },
+                          itemBuilder: (context, index) {
+                            return MomentItem(
+                                moment: controller.entityMap[tag]!.list[index]);
+                          })));
+          }
+        });
   }
 }

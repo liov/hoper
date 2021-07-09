@@ -16,7 +16,7 @@ class DashboardView extends GetView<HomeController> {
               'DashboardView is working',
               style: TextStyle(fontSize: 20),
             ),
-            Obx(() => Text('Time: ${controller.state().now.toString()}',style: TextStyle(fontSize: 20),)),
+            Obx(() => Text('Time: ${controller.now.toString()}',style: TextStyle(fontSize: 20),)),
           ],
         ),
       ),
