@@ -1,4 +1,4 @@
-import 'package:app/pages/ffi/ffi.dart';
+import 'package:app/ffi/ffi.dart';
 import 'package:app/pages/index/index.dart';
 import 'package:app/pages/moment/moment_view.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +20,7 @@ class HomeView extends GetView<HomeController> {
           style: optionStyle,
         )),
     MomentView(),
+    DashboardView(),
   ];
 
 
@@ -27,16 +28,15 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Obx(() {
-          try {
-            return _widgetOptions.elementAt(controller.state.value.selectedIndex);
-          } catch (e) {
-            return DashboardView();
-          }
-        }),
+        body:PageView(
+          controller: controller.pageController,
+          onPageChanged: controller.onPageChanged,
+          children: _widgetOptions,
+          physics: ClampingScrollPhysics(),
+        ),
         bottomNavigationBar: Obx(() =>
             BottomNavigationBar(
-              currentIndex: controller.state.value.selectedIndex,
+              currentIndex: controller.selectedIndex.value,
               onTap: controller.onItemTapped,
               selectedItemColor: Theme
                   .of(context)
@@ -46,7 +46,7 @@ class HomeView extends GetView<HomeController> {
                   .of(context)
                   .primaryColor
                   .withAlpha(127),
-              items: controller.state.value.bottomNavigationBarList.map((item)=> item.bottomNavigationBarItem()).toList(),
+              items: controller.bottomNavigationBarList.map((item)=> item.bottomNavigationBarItem()).toList(),
             ))
     );
   }

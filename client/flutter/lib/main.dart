@@ -4,7 +4,7 @@ import 'package:app/routes/route.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'model/global_state/global_binding.dart';
+import 'model/global_state/global_controller.dart';
 
 
 
@@ -30,7 +30,7 @@ void main() async {
     ),
     //home: HomeView(),
     initialRoute: Routes.HOME,
-    initialBinding: GlobalBinding(),
+    initialBinding: BindingsBuilder.put(() =>GlobalController()),
     getPages: AppPages.routes,
   ));
 }

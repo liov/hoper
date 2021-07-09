@@ -14,7 +14,7 @@ class IndexPage extends StatefulWidget {
   _IndexPageState createState() => _IndexPageState();
 }
 
-class _IndexPageState extends State<IndexPage> {
+class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixin {
   final MethodChannel _methodChannel = MethodChannel('xyz.hoper.native/view');
   int _counter = 0;
 
@@ -32,6 +32,7 @@ class _IndexPageState extends State<IndexPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -73,7 +74,7 @@ class _IndexPageState extends State<IndexPage> {
         heroTag: 'login',
         onPressed: (){
           _methodChannel.invokeMethod("toNative",{"route":"/"}).then((value) => null);
-          final user = Get.find<GlobalController>().authState.value.user;
+          final user = Get.find<GlobalController>().authState.user;
           if ( user!= null) {
               showDialog(
                   context: context,
@@ -108,4 +109,7 @@ class _IndexPageState extends State<IndexPage> {
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

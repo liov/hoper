@@ -6,7 +6,7 @@ import 'package:fixnum/fixnum.dart';
 import 'auth.dart';
 
 class GlobalController extends GetxController {
-  var authState = AuthState().obs;
-  var userState = UserState().obs;
+  var authState = AuthState();
+  var userState = UserState();
 
 }

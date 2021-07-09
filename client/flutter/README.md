@@ -75,8 +75,4 @@ flutter pub run build_runner build
 Rust FFI
 Webview
 
-放弃flutter_boost整合原生+MLN为app提供热更新的能力，MLN小众，坑看起来也不少，lua bind 原生看起来也有学习成本,动态部分用webview替代实现
-RustFFI调试是个问题
-
-不是专业的别折腾，且使用体验并不好,走主流方案
-不过LN是个不错的东西
+Get太灵活了，写法太多反而不好
