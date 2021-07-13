@@ -55,6 +55,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 
 	//like
 	if auth != nil {
+		action := &content.UserAction{}
 		likes, err := contentDao.GetContentActionsDB(db, content.ActionLike, content.ContentMoment, []uint64{req.Id}, auth.Id)
 		if err != nil {
 			return nil, err
@@ -62,10 +63,10 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 
 		for i := range likes {
 			if likes[i].Action == content.ActionLike {
-				moment.LikeId = likes[i].Id
+				action.LikeId = likes[i].Id
 			}
 			if likes[i].Action == content.ActionUnlike {
-				moment.UnlikeId = likes[i].Id
+				action.UnlikeId = likes[i].Id
 			}
 		}
 		collects, err := contentDao.GetCollectsDB(db, content.ContentMoment, []uint64{req.Id}, auth.Id)
@@ -73,7 +74,10 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 			return nil, err
 		}
 		for i := range collects {
-			moment.Collects = append(moment.Collects, collects[i].FavId)
+			action.Collects = append(action.Collects, collects[i].FavId)
+		}
+		if len(likes) != 0 && len(collects) != 0 {
+			moment.Action = action
 		}
 	}
 	// ext
@@ -265,11 +269,14 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 		}
 		for i := range likes {
 			if moment, ok := m[likes[i].RefId]; ok {
+				if moment.Action == nil {
+					moment.Action = &content.UserAction{}
+				}
 				if likes[i].Action == content.ActionLike {
-					moment.LikeId = likes[i].Id
+					moment.Action.LikeId = likes[i].Id
 				}
 				if likes[i].Action == content.ActionUnlike {
-					moment.UnlikeId = likes[i].Id
+					moment.Action.UnlikeId = likes[i].Id
 				}
 			}
 		}
@@ -279,7 +286,10 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 		}
 		for i := range collects {
 			if moment, ok := m[collects[i].RefId]; ok {
-				moment.Collects = append(moment.Collects, collects[i].FavId)
+				if moment.Action == nil {
+					moment.Action = &content.UserAction{}
+				}
+				moment.Action.Collects = append(moment.Action.Collects, collects[i].FavId)
 			}
 		}
 	}

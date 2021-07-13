@@ -1,6 +1,7 @@
 import 'package:app/pages/home/home_binding.dart';
 import 'package:app/pages/home/home_view.dart';
 import 'package:app/pages/loginView.dart';
+import 'package:app/pages/moment/detail/moment_detail_view.dart';
 import 'package:app/pages/moment/list/moment_list_view.dart';
 import 'package:app/pages/moment/moment_binding.dart';
 import 'package:get/get.dart';
@@ -16,6 +17,8 @@ class AppPages {
       name: Routes.MOMENT,
       page: () => MomentListView(),
       binding: MomentBinding(),
+      children:[
+      ]
     ),
     GetPage(
       name: Routes.LOGIN,

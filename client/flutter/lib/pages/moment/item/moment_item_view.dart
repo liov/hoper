@@ -41,24 +41,7 @@ class MomentItem extends StatelessWidget {
           shrinkWrap: true,
           children: images!.map((e) => Image(image: NetworkImage(e))).toList(),
         ),
-      Row(children: [
-        Expanded(
-          flex: 1,
-          child:  Icon(Icons.more, color: Colors.yellowAccent[700],),
-        ),
-        Expanded(
-          flex: 1,
-          child:  Icon(Icons.favorite, color: Colors.red,),
-        ),
-        Expanded(
-          flex: 1,
-          child:  Icon(Icons.star, color: Colors.blueAccent[200],),
-        ),
-        Expanded(
-          flex: 1,
-          child:  Icon(Icons.share, color: Colors.green,),
-        ),
-      ])
+
     ]);
   }
 }

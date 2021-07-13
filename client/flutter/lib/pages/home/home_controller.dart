@@ -27,6 +27,17 @@ class HomeController extends GetxController {
     selectedIndex.value = index;
   }
 
+  // PageView + TabView 连续滑动
+  var  scrollNum = 0;
+  void continueScroll() {
+    final index = selectedIndex.value + (scrollNum<0 ? -1 : 1);
+    scrollNum = 0;
+    pageController.animateToPage(
+        index, duration: kTabScrollDuration,
+        curve: Curves.ease);
+
+  }
+
   @override
   void onReady() {
     // TODO: implement onReady
