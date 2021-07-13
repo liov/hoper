@@ -6,7 +6,7 @@ import 'package:app/service/moment.dart';
 import 'package:app/utils/multi_entity.dart';
 import 'package:get/get.dart';
 
-// 相当于多个controller
+// 相当于多个controller,实验性，不要这么用
 class MomentListController extends GetxController with MultiEntity<ListState>{
   final MomentClient momentClient = Get.put(MomentClient());
   final GlobalController globalController = Get.find();
@@ -50,7 +50,6 @@ class ListState {
   late final MomentListReq req;
   var times = 0;
   var list = List<Moment>.empty(growable: true);
-  var list$ = List<Moment$>.empty(growable: true);
 
 
   resetList(){

@@ -705,3 +705,23 @@ node --loader=ts-node/esm
 # Error: ERR_MODULE_NOT_FOUND D:\hoper\tools\serverless\src\utils\random D:\hoper\tools\serverless\src\ts\db_mock.ts module
 - import {randomNum, lottery} from '../utils/random';
 + import {randomNum, lottery} from '../utils/random.js';
+
+# flutter PageView + TabView 不能连续滑动
+TabView是在PageView的基础上封装的
+其实可以通过自定义PageViewTabClampingScrollPhysics,根据边界，滑动量偏移量来判断滑动，根据PageView的Controller.animateToPage跳转到
+相应页面，处理得当体验是相当好的，但是有个小bug，PageView滑动太快会直接跳过TabView，还有性能差
+Listener({
+  Key key,
+  this.onPointerDown, //手指按下回调
+  this.onPointerMove, //手指移动回调
+  this.onPointerUp,//手指抬起回调
+  this.onPointerCancel,//触摸事件取消回调
+  this.behavior = HitTestBehavior.deferToChild, //在命中测试期间如何表现
+  Widget child
+})或者GestureDetector似乎也能实现
+所以就只能牺牲体验，把PageView设置为不可滑动，由底部导航栏导航
+
+# flutter 切换选项卡会rebuild
+StatelessWidget 目前无解
+StatefulWidget AutomaticKeepAliveClientMixin
+所以Get做全局的状态管理就好了,局部的并不需要
