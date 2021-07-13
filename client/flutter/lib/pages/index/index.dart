@@ -32,6 +32,7 @@ class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixi
 
   @override
   Widget build(BuildContext context) {
+    Get.log("IndexPage重绘");
     super.build(context);
     return Scaffold(
       appBar: AppBar(

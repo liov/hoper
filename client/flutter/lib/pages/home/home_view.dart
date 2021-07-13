@@ -27,12 +27,13 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
+    Get.log("HomeView重绘");
     return Scaffold(
         body:PageView(
           controller: controller.pageController,
-          onPageChanged: controller.onPageChanged,
+          //onPageChanged: controller.onPageChanged,
           children: _widgetOptions,
-          physics: ClampingScrollPhysics(),
+          physics: NeverScrollableScrollPhysics(),
         ),
         bottomNavigationBar: Obx(() =>
             BottomNavigationBar(

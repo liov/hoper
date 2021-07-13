@@ -34,17 +34,18 @@ class PageViewTabClampingScrollPhysics extends ScrollPhysics {
       }
       return true;
     }());
+    print(controller.scrollNum);
     if (value < position.pixels && position.pixels <= position.minScrollExtent) { // underscroll
-      if (value < - 20) {
-        controller.pageController.animateToPage(
-            controller.selectedIndex.value - 1, duration: kTabScrollDuration,
-            curve: Curves.ease);
+      controller.scrollNum--;
+      if (controller.scrollNum < - 7) {
+        controller.continueScroll();
         return 0.0;
       } else return value - position.pixels;
     }
     if (position.maxScrollExtent <= position.pixels && position.pixels < value) { // overscroll
-      if (value > 200) {
-        controller.pageController.animateToPage(controller.selectedIndex.value+1,duration: kTabScrollDuration, curve: Curves.ease);
+      controller.scrollNum++;
+      if (controller.scrollNum > 7) {
+        controller.continueScroll();
         return 0.0;
       }else return  value - position.pixels;
     }

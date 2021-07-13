@@ -7,6 +7,7 @@ import 'home_controller.dart';
 class DashboardView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
+    Get.log('DashboardView重绘');
     return Scaffold(
       body: Center(
         child: Column(

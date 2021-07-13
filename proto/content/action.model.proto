@@ -67,9 +67,7 @@ message Comment{
   user.UserBaseInfo recvUser = 9 [(go.field) = {tags:'gorm:"-" annotation:"接收人"'}];
   uint64 recvId = 10 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"接收人id"'}];
   ContentExt ext = 30[(go.field) = {tags:'gorm:"-" annotation:"统计数据"'}];
-  uint64 likeId = 32 [(go.field) = {tags:'gorm:"-" annotation:"喜欢id,为0代表用户没有点喜欢"'}];
-  uint64 unlikeId = 29 [(go.field) = {tags:'gorm:"-" annotation:"不喜欢id,为0代表用户没有点喜欢"'}];
-  repeated uint64 collects = 31 [(go.field) = {tags:'gorm:"-" annotation:"是否收藏"'}];
+  UserAction action = 26[(go.field) = {tags:'gorm:"-" annotation:"用户动作"'}];
   repeated Comment subComments = 11 [(go.field) = {tags:'gorm:"-" annotation:"子评论"'}];
   uint32 sequence = 4 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"同级别的分类可根据sequence的值来排序，置顶"'}];
   string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
@@ -88,4 +86,10 @@ message ContentExt{
   uint64 reportCount = 6 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"举报数"'}];
   uint64 commentCount = 7 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"评论数"'}];
   uint64 collectCount = 8 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"收藏数"'}];
+}
+
+message UserAction{
+  uint64 likeId = 32 [(go.field) = {tags:'gorm:"-" annotation:"喜欢id,为0代表用户没有点喜欢"'}];
+  uint64 unlikeId = 29 [(go.field) = {tags:'gorm:"-" annotation:"不喜欢id,为0代表用户没有点喜欢"'}];
+  repeated uint64 collects = 28 [(go.field) = {tags:'gorm:"-" annotation:"是否收藏"'}];
 }
