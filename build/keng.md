@@ -725,3 +725,28 @@ Listener({
 StatelessWidget 目前无解
 StatefulWidget AutomaticKeepAliveClientMixin
 所以Get做全局的状态管理就好了,局部的并不需要
+
+# 没有root账号但有root权限的机器上Minikube
+sudo minikube
+sudo kubectl
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo add apisix https://charts.apiseven.com
+helm repo update
+helm pull apisix/apisix
+sudo helm install apisix ./apisix-0.3.5.tgz \
+  --set admin.allow.ipList="{0.0.0.0/0}" \
+  --namespace ingress-apisix
+sudo helm install apisix-ingress-controller ./apisix-ingress-controller \
+  --set image.tag=dev \
+  --set config.apisix.baseURL=http://apisix-admin:9180/apisix/admin \
+  --set config.apisix.adminKey=edd1c9f034335f136f87ad84b625c8f1 \
+  --namespace ingress-apisix
+
+# spec.ports[0].nodePort: Invalid value: 80: provided port is not in the valid range. The range of valid ports is 30000-32767
+minikube native
+# 无效
+minikube start --extra-config=apiserver.GenericServerRunOptions.ServiceNodePortRange=1-10000
+# 有效
+sudo vim /etc/kubernetes/manifests/kube-apiserver.yaml
+command 下添加 --service-node-port-range=1-65535 参数
+kill 掉 kube-apiserver

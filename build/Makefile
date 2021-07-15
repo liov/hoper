@@ -1,6 +1,6 @@
 
 # 常量定义 每个项目处理
-SERVICE_NAME= business-sp-mng
+SERVICE_NAME= hoper
 NAME_SPACE= hoper
 
 
@@ -11,11 +11,8 @@ DEPLOY_ENV_DEV = dev
 DEPLOY_ENV_PROD = prod
 DEPLOY_ENV_STAGE = stage
 
-CONFIG_PATH =
-CONFIG_LOCAL = "./conf/local.json"
-CONFIG_DEV   = "./conf/dev.json"
-CONFIG_PROD  = "./conf/prod.json"
-CONFIG_STAGE  = "./conf/stage.json"
+CONFIG_PATH = "./config.toml"
+
 
 DEPLOY_TMP_DIR = tmp
 CONFIG_VALUE = ""
@@ -44,28 +41,12 @@ K8S_NAMESPACE = hoper
 VERSION=`git describe --tags 2>/dev/null || git rev-parse --abbrev-ref HEAD 2>/dev/null || echo v1.0.0`
 
 
-ifeq (prod, ${env})
-	DOCKER_REG = $(PROD_DOCKER_PREFIX)
-	CONFIG_PATH = $(CONFIG_PROD)
-	DOCKER_ENV = $(DOCKER_ENV_PROD)
-	K8S_CONTEXT = $(K8S_CONTEXT_PROD)
-	DEPLOY_ENV = $(DEPLOY_ENV_PROD)
-	CONFIG_VALUE = $(shell cat conf/prod.json)
-else ifeq (stage, ${env})
-    DOCKER_REG = $(PROD_DOCKER_PREFIX)
-    CONFIG_PATH = $(CONFIG_STAGE)
-    DOCKER_ENV = $(DOCKER_ENV_STAGE)
-    K8S_CONTEXT = $(K8S_CONTEXT_STAGE)
-    DEPLOY_ENV = $(DEPLOY_ENV_STAGE)
-    CONFIG_VALUE = $(shell cat conf/stage.json)
-else
-	DOCKER_REG = $(DEV_DOCKER_PREFIX)
-	CONFIG_PATH = $(CONFIG_DEV)
-	DOCKER_ENV = $(DOCKER_ENV_DEV)
-	K8S_CONTEXT = $(K8S_CONTEXT_DEV)
-	DEPLOY_ENV = $(DEPLOY_ENV_DEV)
-	CONFIG_VALUE = $(shell cat conf/dev.json)
-endif
+DOCKER_REG = $(PROD_DOCKER_PREFIX)
+CONFIG_PATH = $(CONFIG_PROD)
+DOCKER_ENV = $(DOCKER_ENV_PROD)
+K8S_CONTEXT = $(K8S_CONTEXT_PROD)
+DEPLOY_ENV = $(DEPLOY_ENV_PROD)
+CONFIG_VALUE = $(shell cat ./config.toml)
 
 
 DOCKER_TAG=${tag}-dev

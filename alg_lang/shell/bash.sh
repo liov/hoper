@@ -1,9 +1,17 @@
 #!/usr/bin/env bash
 
+your_name="runoob.com"
+#注意，变量名和等号之间不能有空格，这可能和你熟悉的所有编程语言都不一样。同时，变量名的命名须遵循如下规则：
+#
+#命名只能使用英文字母，数字和下划线，首个字符不能以数字开头。
+#中间不能有空格，可以使用下划线（_）。
+#不能使用标点符号。
+#不能使用bash里的关键字（可用help命令查看保留关键字）。
+
 for file in $(ls /etc);do
   echo "$file"
 done
-readonly variable_name = "st"
+readonly variable_name="st"
 unset variable_name
 
 #单引号里的任何字符都会原样输出，单引号字符串中的变量是无效的；
