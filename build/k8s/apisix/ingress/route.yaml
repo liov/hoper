@@ -1,0 +1,19 @@
+apiVersion: apisix.apache.org/v2alpha1
+kind: ApisixRoute
+metadata:
+  name: apisix-dashboard
+  namespace: ingress-apisix
+spec:
+  http:
+    - name: apisix-dashboard
+      match:
+        hosts:
+          - dashboard.apisix.org
+        paths:
+          - /*
+      backends:
+        - serviceName: apisix-dashboard
+          servicePort: 80
+      plugins:
+        - name: cors
+          enable: true
