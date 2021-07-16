@@ -1,0 +1,1 @@
+UPDATE sku_competition_report SET gross_margin = (CAST(price as decimal(65,6))  - CAST(cost_price as decimal(65,6)) )/ (CAST(price as decimal(65,6)));

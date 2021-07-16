@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # 具名参数
-show_usage="args:[-v, -d] [--version=, --dir=]"
+show_usage="args:[-v, -f] [--version=, --file=]"
 
 # 版本
 _version=1
 # 目录
-_dir=""
+_file=""
 
-GETOPT_ARGS=`getopt -o l:r: -al version:,dir: -- "$@"`
+GETOPT_ARGS=`getopt -o l:r: -al version:,file: -- "$@"`
 eval set -- "$GETOPT_ARGS"
 
 #获取参数
@@ -16,26 +16,19 @@ while [ -n "$1" ]
     do
         case "$1" in
             -v|--version) _version=$2; shift 2;;
-            -d|--dir) _dir=$2; shift 2;;
+            -f|--file) _file=$2; shift 2;;
             --) break ;;
             *) echo $1,$2,$show_usage; break ;;
         esac
 done
 
 #对必填项做输入检查，此处假设都为必填项
-if [[ -z _version || -z _dir ]]; then
+if [[ -z _version || -z _file ]]; then
     echo $show_usage
-    echo "version: $_version, dir: $_dir"
+    echo "version: $_version, file: $_file"
     exit 0
 fi
-current_dir=${PWD}
 
-cd ${_dir}
-
-project=${PWD##*/}
-
-
-GOOS=linux GOARCH=amd64 go build -o ${project}
 
 cat > Dockerfile <<- EOF
 FROM frolvlad/alpine-glibc:latest
@@ -48,29 +41,29 @@ tzdata && ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 WORKDIR /hoper
 
-ADD ./${project} /hoper/${project}
+ADD ./${_file} /hoper/${_file}
 ADD ./config.toml /hoper/config.toml
 
-CMD ["./${project}","-env","test"]
+CMD ["./${_file}","-env","test"]
 EOF
 
 docker_reg="reg.hoper.xyz"
 
-tag=${docker_reg}/liov/${project}:v${_version}-$(date "+%Y%m%d%H%M%S")
+tag=${docker_reg}/liov/${_file}:v${_version}-$(date "+%Y%m%d%H%M%S")
 
 docker build -t ${tag} .
 
-cat > ${project}.yaml <<- EOF
+cat > ${_file}.yaml <<- EOF
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ${project}
-  namespace: ${project}
+  name: ${_file}
+  namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ${project}
+      app: ${_file}
   minReadySeconds: 5
   strategy:
     type: RollingUpdate
@@ -79,14 +72,14 @@ spec:
       maxUnavailable: 1
   template:
     metadata:
-      namespace: deafult
+      namespace: default
       labels:
-        app: ${project}
+        app: ${_file}
     spec:
       containers:
-        - name: data-center
+        - name: ${_file}
           image: ${tag}
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           resources:
             # keep request = limit to keep this container in guaranteed class
             limits:
@@ -108,18 +101,18 @@ spec:
           configMap:
             items:
               - key: config
-                path: /home/crm/dev/config.toml
+                path: config.toml
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: ${project}
+  name: ${_file}
   labels:
-    app: ${project}
+    app: ${_file}
 spec:
   selector:
-    app: ${project}
+    app: ${_file}
   ports:
     - name: http
       protocol: TCP
@@ -129,25 +122,23 @@ spec:
 apiVersion: apisix.apache.org/v2alpha1
 kind: ApisixRoute
 metadata:
-  name: ${project}
+  name: ${_file}
   namespace: default
 spec:
   http:
-    - name: ${project}
+    - name: ${_file}
       match:
         hosts:
-          - ${project}.local.org
+          - ${_file}.local.org
         paths:
           - /*
       backends:
-        - serviceName: ${project}
+        - serviceName: ${_file}
           servicePort: 80
       plugins:
         - name: cors
           enable: true
 EOF
 
-echo "123456" | sudo -S kubectl apply -f ${project}.yaml
+echo "123456" | sudo -S kubectl apply -f ${_file}.yaml
 sudo kubectl get pod
-
-cd ${current_dir}

@@ -3,6 +3,7 @@ package gormi
 import (
 	"context"
 	"fmt"
+	contexti "github.com/liov/hoper/v2/utils/context"
 	logi "github.com/liov/hoper/v2/utils/log"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -48,17 +49,17 @@ func (l *SQLLogger) LogMode(level logger.LogLevel) logger.Interface {
 
 // Info print info
 func (l *SQLLogger) Info(ctx context.Context, msg string, data ...interface{}) {
-	l.Logger.Info(fmt.Sprintf(msg, data...), traceId(ctx), field)
+	l.Logger.Info(fmt.Sprintf(msg, data...), field)
 }
 
 // Warn print warn messages
 func (l *SQLLogger) Warn(ctx context.Context, msg string, data ...interface{}) {
-	l.Logger.Warn(fmt.Sprintf(msg, data...), traceId(ctx), field)
+	l.Logger.Warn(fmt.Sprintf(msg, data...), field)
 }
 
 // Error print error messages
 func (l *SQLLogger) Error(ctx context.Context, msg string, data ...interface{}) {
-	l.Logger.Error(fmt.Sprintf(msg, data...), traceId(ctx), field)
+	l.Logger.Error(fmt.Sprintf(msg, data...), field)
 }
 
 // Trace print sql message 只有这里的context不是background,看了代码,也没用
@@ -91,20 +92,6 @@ func (l *SQLLogger) Trace(ctx context.Context, begin time.Time, fc func() (strin
 	sqlField := zap.String("sql", sql)
 	rowsField := zap.Int64("rows", rows)
 	caller := zap.String("caller", utils.FileWithLineNum())
-	fields := []zap.Field{elapsedms, sqlField, rowsField, caller, traceId(ctx), field}
+	fields := []zap.Field{elapsedms, sqlField, rowsField, caller, contexti.TraceId(ctx), field}
 	l.Check(zapcore.Level(4-level), msg).Write(fields...)
-}
-
-func traceId(ctx context.Context) zap.Field {
-	/*	var traceId string
-		if ctxi, ok := ctx.(*contexti.Ctx); ok {
-			traceId = ctxi.TraceID
-		}*/
-	return zap.String(logi.TraceId, ctx.Value(traceIdKey{}).(string))
-}
-
-type traceIdKey struct{}
-
-func SetTranceId(traceId string) context.Context {
-	return context.WithValue(context.Background(), traceIdKey{}, traceId)
 }

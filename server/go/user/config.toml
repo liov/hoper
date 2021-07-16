@@ -5,11 +5,13 @@ Module = "user"
 NoInject = ["Apollo","Etcd"]
 
 
-[ConfigCenter]
-Watch  = false
+[configCenter]
+Watch  = true
+
 [configCenter.nacos]
-Addr = "nacos.default"
+Addr = "nacos.local.org"
 Group = "hoper"
+
 
 [dev]
 LocalConfigName = "local.toml"
