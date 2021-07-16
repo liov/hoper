@@ -6,9 +6,10 @@ Module = "test"
 NoInject = ["Cache","Apollo","Etcd"]
 
 [configCenter]
-Watch  = false
+Watch  = true
+
 [configCenter.nacos]
-Addr = "nacos.default"
+Addr = "nacos.local.org"
 Group = "hoper"
 
 

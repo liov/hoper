@@ -22,6 +22,9 @@ type Config struct {
 }
 
 func (c *Config) SetConfig(engine *gin.Engine) {
+	if c == nil {
+		return
+	}
 	engine.RedirectTrailingSlash = c.RedirectTrailingSlash
 	engine.RedirectFixedPath = c.RedirectFixedPath
 	engine.HandleMethodNotAllowed = c.HandleMethodNotAllowed
