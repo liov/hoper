@@ -304,13 +304,13 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 		commentMaskField(comments[i])
 	}
 	// ext
-	exts, err := contentDao.GetContentExtDB(db, content.ContentMoment, ids)
+	exts, err := contentDao.GetContentExtDB(db, content.ContentComment, ids)
 	if err != nil {
 		return nil, err
 	}
 	for i := range exts {
-		if moment, ok := m[exts[i].RefId]; ok {
-			moment.Ext = exts[i]
+		if comment, ok := m[exts[i].RefId]; ok {
+			comment.Ext = exts[i]
 		}
 	}
 
@@ -321,12 +321,15 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 			return nil, err
 		}
 		for i := range likes {
-			if moment, ok := m[likes[i].RefId]; ok {
+			if comment, ok := m[likes[i].RefId]; ok {
+				if comment.Action == nil {
+					comment.Action = &content.UserAction{}
+				}
 				if likes[i].Action == content.ActionLike {
-					moment.LikeId = likes[i].Id
+					comment.Action.LikeId = likes[i].Id
 				}
 				if likes[i].Action == content.ActionUnlike {
-					moment.UnlikeId = likes[i].Id
+					comment.Action.UnlikeId = likes[i].Id
 				}
 			}
 		}
@@ -335,8 +338,11 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 			return nil, err
 		}
 		for i := range collects {
-			if moment, ok := m[collects[i].RefId]; ok {
-				moment.Collects = append(moment.Collects, collects[i].FavId)
+			if comment, ok := m[collects[i].RefId]; ok {
+				if comment.Action == nil {
+					comment.Action = &content.UserAction{}
+				}
+				comment.Action.Collects = append(comment.Action.Collects, collects[i].FavId)
 			}
 		}
 	}

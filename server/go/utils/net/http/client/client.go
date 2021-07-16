@@ -22,7 +22,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var client = http.DefaultClient
+var client = &http.Client{}
 
 const timeout = 3 * time.Second
 

@@ -1,6 +1,5 @@
 package conf_center
 
-import "C"
 import "github.com/liov/hoper/v2/utils/configor"
 
 type ConfigCenter interface {

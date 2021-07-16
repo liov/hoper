@@ -80,7 +80,7 @@ require (
 	gorm.io/driver/mysql v1.0.3
 	gorm.io/driver/postgres v1.0.0
 	gorm.io/driver/sqlite v1.1.3
-	gorm.io/gorm v1.21.8
+	gorm.io/gorm v1.21.12
 	gorm.io/plugin/prometheus v0.0.0-20210112035011-ae3013937adc
 )
 

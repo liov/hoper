@@ -10,6 +10,8 @@ import (
 	"github.com/liov/hoper/v2/utils/log"
 )
 
+var client = &http.Client{}
+
 const (
 	GetConfigUrl        = "http://%s/nacos/v1/cs/configs?tenant=%s&group=%s&dataId=%s"
 	GetConfigAllInfoUrl = "http://%s/nacos/v1/cs/configs?show=all&tenant=%s&group=%s&dataId=%s"
@@ -115,9 +117,10 @@ Loop:
 			listeningConfigs = fmt.Sprintf(InitParam, c.DataId, c.Group, c.MD5, c.Tenant)
 			req.Body = ioutil.NopCloser(strings.NewReader(listeningConfigs))
 			log.Debug("发送请求:", req.URL)
-			resp, err := http.DefaultClient.Do(req)
+			resp, err := client.Do(req)
 			if err != nil {
 				log.Error(err)
+				continue
 			}
 
 			body, err := ioutil.ReadAll(resp.Body)
@@ -138,7 +141,7 @@ Loop:
 			ch <- struct{}{}
 		case <-c.close:
 			req.Header["Connection"] = []string{"Closed"}
-			http.DefaultClient.Do(req)
+			client.Do(req)
 			break Loop
 		}
 	}

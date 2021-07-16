@@ -1,7 +1,12 @@
 
+import 'package:app/generated/protobuf/content/action.model.pb.dart';
 import 'package:flutter/material.dart';
 
 class ActionBar extends StatelessWidget{
+  ActionBar({this.action}):super();
+
+  final UserAction? action;
+
   @override
   Widget build(BuildContext context) {
     return Row(children: [
