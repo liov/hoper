@@ -66,9 +66,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		errorcode.UploadFail.OriErrRep().Response(w)
 		return
 	}
-	(&httpi.ResData{
-		Details: conf.Conf.Customize.UploadUrlPrefix + upload.Path,
-	}).Response(w)
+	(&httpi.ResData{Details: upload.Path}).Response(w)
 
 }
 
@@ -100,7 +98,7 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 		(&httpi.ResData{
 			Code:    0,
 			Message: "",
-			Details: conf.Conf.Customize.UploadUrlPrefix + upload.Path,
+			Details: upload.Path,
 		}).Response(w)
 		return
 	}
@@ -234,7 +232,7 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 			errorcode.UploadFail.OriErrRep().Response(w)
 			return
 		}
-		urls[i].URL = conf.Conf.Customize.UploadUrlPrefix + upload.Path
+		urls[i].URL = upload.Path
 		urls[i].Success = true
 	}
 	(&httpi.ResData{

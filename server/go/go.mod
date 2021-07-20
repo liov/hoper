@@ -34,7 +34,7 @@ require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da
 	github.com/golang/protobuf v1.5.2
 	github.com/google/btree v1.0.1 // indirect
-	github.com/google/flatbuffers v1.12.1-0.20210406112345-261cf3b20473 // indirect
+	github.com/google/flatbuffers v2.0.0+incompatible // indirect
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/sessions v1.2.1
 	github.com/gorilla/websocket v1.4.2
