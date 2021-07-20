@@ -80,10 +80,10 @@ func Start(conf Config, dao Dao) func() {
 	}
 
 	//逃逸到堆上了
-	InitConfig.SetInit(conf, dao)
-	InitConfig.LoadConfig()
+	init := NewInit(conf, dao)
+	init.LoadConfig()
 	return func() {
-		InitConfig.CloseDao()
+		init.CloseDao()
 		log.Sync()
 	}
 }
@@ -94,14 +94,14 @@ func (init *Init) LoadConfig() *Init {
 		ConfigCenter    conf_center.ConfigCenterConfig
 		BasicConfig
 	}{}
-	if _, err := os.Stat(InitConfig.ConfUrl); os.IsNotExist(err) {
+	if _, err := os.Stat(init.ConfUrl); os.IsNotExist(err) {
 		log.Fatalf("配置错误: 请确保可执行文件和配置目录在同一目录下")
 	}
-	err := configor.Load(&onceConfig, InitConfig.ConfUrl)
+	err := configor.Load(&onceConfig, init.ConfUrl)
 	if err != nil {
 		log.Fatalf("配置错误: %v", err)
 	}
-	fmt.Printf("Load config from: %s\n", InitConfig.ConfUrl)
+	fmt.Printf("Load config from: %s\n", init.ConfUrl)
 
 	for i := range onceConfig.NoInject {
 		onceConfig.NoInject[i] = strings.ToLower(onceConfig.NoInject[i])
@@ -129,6 +129,14 @@ func (init *Init) LoadConfig() *Init {
 	}
 
 	log.Debugf("Configuration:\n  %#v\n", init)
+	return init
+}
+
+func NewInit(conf Config, dao Dao) *Init {
+	init := &Init{
+		Env: InitConfig.Env, ConfUrl: InitConfig.ConfUrl,
+		conf: conf, dao: dao}
+	InitConfig = init
 	return init
 }
 
@@ -226,8 +234,8 @@ func setDao(v reflect.Value, fieldNameDaoMap map[string]interface{}) {
 	}
 }
 func (init *Init) refresh() {
-	InitConfig.CloseDao()
-	InitConfig.inject()
+	init.CloseDao()
+	init.inject()
 }
 
 func (init *Init) CloseDao() {

@@ -28,3 +28,48 @@ env=stage && git pull && make config && make deploy env=$env tag=v$(date "+%y%m%
 
 # proxy
 kubectl proxy --address='0.0.0.0'  --accept-hosts='^*$'
+# logs
+Examples:
+  # Return snapshot logs from pod nginx with only one container
+  kubectl logs nginx
+
+  # Return snapshot logs from pod nginx with multi containers
+  kubectl logs nginx --all-containers=true
+
+  # Return snapshot logs from all containers in pods defined by label app=nginx
+  kubectl logs -lapp=nginx --all-containers=true
+
+  # Return snapshot of previous terminated ruby container logs from pod web-1
+  kubectl logs -p -c ruby web-1
+
+  # Begin streaming the logs of the ruby container in pod web-1
+  kubectl logs -f -c ruby web-1
+
+  # Begin streaming the logs from all containers in pods defined by label app=nginx
+  kubectl logs -f -lapp=nginx --all-containers=true
+
+  # Display only the most recent 20 lines of output in pod nginx
+  kubectl logs --tail=20 nginx
+
+  # Show all logs from pod nginx written in the last hour
+  kubectl logs --since=1h nginx
+
+  # Return snapshot logs from first container of a job named hello
+  kubectl logs job/hello
+
+  # Return snapshot logs from container nginx-1 of a deployment named nginx
+  kubectl logs deployment/nginx -c nginx-1
+
+Options:
+      --all-containers=false: Get all containers' logs in the pod(s).
+  -c, --container='': Print the logs of this container
+  -f, --follow=false: Specify if the logs should be streamed.
+      --ignore-errors=false: If watching / following pod logs, allow for any errors that occur to be non-fatal
+      --limit-bytes=0: Maximum bytes of logs to return. Defaults to no limit.
+      --max-log-requests=5: Specify maximum number of concurrent logs to follow when using by a selector. Defaults to 5.
+      --pod-running-timeout=20s: The length of time (like 5s, 2m, or 3h, higher than zero) to wait until at least one pod is running
+  -p, --previous=false: If true, print the logs for the previous instance of the container in a pod if it exists.
+  -l, --selector='': Selector (label query) to filter on.
+      --since=0s: Only return logs newer than a relative duration like 5s, 2m, or 3h. Defaults to all logs. Only one of since-time / since may be used.
+      --since-time='': Only return logs after a specific date (RFC3339). Defaults to all logs. Only one of since-time / since may be used.
+      --tail=-1: Lines of recent log file to display. Defaults to -1 with no selector, showing all log lines otherwise 10, if a selector is provided.

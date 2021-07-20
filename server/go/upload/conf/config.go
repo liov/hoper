@@ -29,10 +29,9 @@ func (c *config) Init() {
 type serverConfig struct {
 	Volume fs.Dir
 
-	UploadUrlPrefix string
-	UploadDir       fs.Dir
-	UploadMaxSize   int64
-	UploadAllowExt  []string
+	UploadDir      fs.Dir
+	UploadMaxSize  int64
+	UploadAllowExt []string
 
 	LuosimaoVerifyURL string
 	LuosimaoAPIKey    string

@@ -23,7 +23,7 @@ TokenMaxAge = 7
 PageSize = 10
 JwtSecret = "233"
 
-UploadUrlPrefix = "http://localhost:8090/static/"
+UploadUrlPrefix = "/static/"
 #文件
 UploadDir = "F:/upload/"
 

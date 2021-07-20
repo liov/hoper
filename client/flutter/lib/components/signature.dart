@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 class SignaturePainter extends CustomPainter {
   SignaturePainter(this.points);
   final List<Offset?> points;

@@ -70,6 +70,7 @@ rustup target add x86_64-linux-android armv7-linux-androideabi aarch64-linux-and
 cargo build --release --target=armv7-linux-androideabi
 flutter build apk --release --target-platform android-arm64
 flutter pub run build_runner build
+flutter pub run flutter_native_splash:create
 #todo
 集成[MLN](https://github.com/momotech/MLN) Demo都跑不起来，没必要为了一个热更新在客户端上浪费太多时间
 Rust FFI
@@ -77,7 +78,7 @@ Webview
 
 Get太灵活了，写法太多反而不好
 
-E:\protoc\bin\protoc.exe -ID:\hoper\server\go/../../proto -IE:\gopath\pkg\mod\github.com\grpc-ecosystem\grpc-gateway\v2@v2.1.0 -IE:\gopath\pkg\mod\github.com\grpc-ecosystem\grpc-gateway\v2@v2.1.0/third_party/googleapis -IE:\gopath\pkg\mod\google.golang.org\protobuf@v1.26.0  -ID:\hoper\server\go/../../proto/utils/proto -IE:\gopath/src D:\hoper\server\go/../../proto/user/*.proto --dart_out=grpc:D:\hoper\client\flutter\lib\generated\protobuf
+E:\protoc\bin\protoc.exe -ID:\hoper\server\go/../../proto -IE:\gopath\pkg\mod\github.com\grpc-ecosystem\grpc-gateway\v2@v2.1.0 -IE:\gopath\pkg\mod\github.com\grpc-ecosystem\grpc-gateway\v2@v2.1.0/third_party/googleapis -IE:\gopath\pkg\mod\google.golang.org\protobuf@v1.26.0  -ID:\hoper\server\go/../../proto/utils/proto -IE:\gopath/src-IE:\gopath\pkg\mod\github.com\grpc-ecosystem\grpc-gateway\v2@v2.1.0 -IE:\gopath\pkg\mod\github.com\grpc-ecosystem\grpc-gateway\v2@v2.1.0/third_party/googleapis -IE:\gopath\pkg\mod\google.golang.org\protobuf@v1.26.0  -ID:\hoper\server\go/../../proto/utils/proto -IE:\gopath/src D:\hoper\server\go/../../proto/user/*.proto --dart_out=grpc:D:\hoper\client\flutter\lib\generated\protobuf
 
 
 E:\protoc\bin\protoc.exe -ID:\hoper\server\go/../../proto/utils/proto/ D:\hoper\server\go/../../proto/utils/proto/google/protobuf/wrappers.proto --dart_out=grpc:D:\hoper\client\flutter\lib\generated\protobuf

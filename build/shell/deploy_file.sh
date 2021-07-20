@@ -91,12 +91,17 @@ spec:
           volumeMounts:
             - name: logs
               mountPath: /hoper/logs
+            - name: static
+              mountPath: /hoper/static
             - name: config
               mountPath: /hoper
       volumes:
         - name: logs
           hostPath:
             path: /home/crm/dev/logs
+         - name: static
+          hostPath:
+            path: /home/crm/dev/static
         - name: config
           configMap:
             items:
