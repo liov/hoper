@@ -31,6 +31,7 @@ import (
 
 func main() {
 	//配置初始化应该在第一位
+	// initialize.Start是提供给单服务的，这样写有问题，其他模块的配置不会更新
 	defer initialize.Start(uconf.Conf, udao.Dao)()
 	defer initialize.Start(cconf.Conf, cdao.Dao)()
 	defer initialize.Start(upconf.Conf, updao.Dao)()
