@@ -1,7 +1,7 @@
 package model
 
 const (
-	DefaultAvatar = "/static/images/6cbeb5c8-7160-4b6f-a342-d96d3c00367a.jpg"
+	DefaultAvatar = "/static/image/6cbeb5c8-7160-4b6f-a342-d96d3c00367a.jpg"
 )
 
 const (

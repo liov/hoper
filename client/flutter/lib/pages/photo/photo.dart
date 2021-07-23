@@ -1,12 +1,12 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class PhotoView extends StatelessWidget {
   PhotoView(this.urls,this.initialPage) :super();
   final List<String> urls;
   final int initialPage;
-  final GlobalKey<ExtendedImageGestureState> gestureKey =
-  GlobalKey<ExtendedImageGestureState>();
+
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class PhotoView extends StatelessWidget {
           url,
           fit: BoxFit.contain,
           mode: ExtendedImageMode.gesture,
-          extendedImageGestureKey: gestureKey,
+          extendedImageGestureKey: Key(url),
           initGestureConfigHandler: (state) {
             return GestureConfig(
                 minScale: 0.9,

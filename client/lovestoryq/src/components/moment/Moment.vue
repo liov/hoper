@@ -26,7 +26,7 @@
         height="100"
         v-for="(img, idx) in images"
         :key="idx"
-        :src="img"
+        :src="'/static/' + img"
         lazy-load
         class="img"
         @click="preview(idx)"
