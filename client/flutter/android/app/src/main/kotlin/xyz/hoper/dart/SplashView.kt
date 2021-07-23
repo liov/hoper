@@ -47,7 +47,7 @@ class SplashView: AppCompatImageView {
         const val GET_DATA_SUCCESS = 1
         const val NETWORK_ERROR = 2
         const val SERVER_ERROR = 3
-        const val ImagePath = "http://liov.xyz/static/images/6cbeb5c8-7160-4b6f-a342-d96d3c00367a.jpg"
+        const val ImagePath = "https://hoper.xyz/static/image/6cbeb5c8-7160-4b6f-a342-d96d3c00367a.jpg"
     }
 
     constructor(context: Context):super(context){
