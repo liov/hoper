@@ -7,7 +7,7 @@ require (
 	github.com/360EntSecGroup-Skylar/excelize/v2 v2.1.0
 	github.com/bcongdon/corral v0.0.0-20190319213343-1f4ad49dee34
 	github.com/brahma-adshonor/gohook v1.1.9
-	github.com/google/flatbuffers v1.12.1-0.20210406112345-261cf3b20473
+	github.com/google/flatbuffers v2.0.0+incompatible
 	github.com/liov/hoper/v2 v2.0.0
 	github.com/lucasb-eyer/go-colorful v1.0.2
 	github.com/mattetti/filebuffer v1.0.0 // indirect

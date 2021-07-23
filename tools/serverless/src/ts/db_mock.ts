@@ -4,14 +4,14 @@ import {randomNum, lottery} from '../utils/random.js';
 
 
 const connection = await mysql.createConnection({
-    host: 'rm-bp1y6kuovzmbz1757.mysql.rds.aliyuncs.com',
+    host: 'dbhost',
     user: 'web',
     password: '123456',
     Promise: bluebird
 });
 
-const DB1 = `d_aura_jike.`
-const DB2 = `d_scm_product_3rd.`
+const DB1 = `db1.`
+const DB2 = `db2.`
 
 await connection.connect().catch(err => console.error('error connecting: ' + err.stack));
 console.log('connected as id ' + connection.threadId);
