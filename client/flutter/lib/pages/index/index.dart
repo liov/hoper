@@ -1,7 +1,10 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:app/model/global_state/global_controller.dart';
+import 'package:app/pages/home/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../loginView.dart';
 
@@ -44,61 +47,61 @@ class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixi
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Text(
-            '点击下方加号:',
-          ),
+        Shimmer.fromColors(
+          loop:1,
+          baseColor: Colors.white,
+          highlightColor: Colors.blue,
+          child:Text('点击下方加号:',)
+      ),
           Text(
             '$_counter',
-            style: Theme.of(context).textTheme.headline4,
+            style: Get.theme.textTheme.headline4,
           ),
           Row(
               mainAxisAlignment: MainAxisAlignment.center,
               verticalDirection: VerticalDirection.up,
               children: [
-                FloatingActionButton(
+                FadeInLeft(child:FloatingActionButton(
                   heroTag: 'Increment',
                   onPressed: _incrementCounter,
                   tooltip: 'Increment',
                   child: Icon(Icons.add),
-                ),
+                )),
                 SizedBox(width: 20),
-                FloatingActionButton(
+                FadeInRight(child:FloatingActionButton(
                   heroTag: 'Reduce',
                   onPressed: _reduceCounter,
                   tooltip: 'Reduce',
                   child: Icon(Icons.remove),
-                )
+                ))
               ]),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'login',
         onPressed: (){
-          _methodChannel.invokeMethod("toNative",{"route":"/"}).then((value) => null);
+          //_methodChannel.invokeMethod("toNative",{"route":"/"}).then((value) => null);
           final user = Get.find<GlobalController>().authState.user;
           if ( user!= null) {
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
+              Get.dialog(
+                 AlertDialog(
                       title: Text('提示',textAlign:TextAlign.center),
                       content: Text('确认退出吗？',textAlign:TextAlign.center),
                       actions: <Widget>[
                         TextButton(
                           child: Text('取消'),
                           onPressed: () {
-                            Navigator.of(context).pop('cancel');
+                            navigator!.pop('cancel');
                           },
                         ),
                         TextButton(
                           child: Text('确认'),
                           onPressed: () {
-                            Navigator.of(context).pop('ok');
+                            navigator!.pop('ok');
                           },
                         ),
                       ],
-                    );
-                  });
+                  ));
             }
           else {Get.to(LoginView());}
         },
