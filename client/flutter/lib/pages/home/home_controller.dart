@@ -1,22 +1,31 @@
 import 'dart:async';
 
 import 'package:app/components/bottom/bottom.dart';
+import 'package:app/pages/home/splash.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
   var selectedIndex = 0.obs;
   var now = DateTime.now().obs;
+  var stackIndex = 1.obs;
 
   final pageController = PageController();
   var bottomNavigationBarList = [
-    Bottom(Icons.home, "home"),
-    Bottom(Icons.account_box_rounded, "Profile"),
-    Bottom(Icons.account_box_rounded, "Moments"),
-    Bottom(Icons.account_balance_sharp, "Weather"),
+    Bottom.icon(Icons.home, "home"),
+    Bottom(FaIcon(FontAwesomeIcons.gamepad), "Profile"),
+    Bottom.icon(Icons.account_box_rounded, "Moments"),
+    Bottom.icon(Icons.account_balance_sharp, "Weather"),
   ];
 
   HomeController get to => Get.find<HomeController>();
+
+  void advertising(){
+    Get.dialog(splash);
+    //Get.to(()=>splash);
+    Future.delayed(Duration(seconds:1),(){navigator!.pop('ok');});
+  }
 
   void onPageChanged(int index) {
     selectedIndex.value = index;

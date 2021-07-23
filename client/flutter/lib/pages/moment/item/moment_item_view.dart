@@ -1,10 +1,14 @@
 import 'package:app/generated/protobuf/content/content.model.pb.dart';
 import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/model/global_state/global_controller.dart';
+import 'package:app/pages/photo/photo.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:get/get.dart';
 import 'package:fixnum/fixnum.dart';
+
+import 'action_bar.dart';
 
 class MomentItem extends StatelessWidget {
   MomentItem({Key? key, required this.moment}) : super(key: key) {
@@ -39,9 +43,19 @@ class MomentItem extends StatelessWidget {
               childAspectRatio: 1.0 //宽高比为1时，子widget
               ),
           shrinkWrap: true,
-          children: images!.map((e) => Image(image: NetworkImage(e))).toList(),
+          children: images!.asMap().entries.map((entry) =>
+              InkWell(
+                  child:ExtendedImage.network(
+                          entry.value,
+                          alignment: Alignment.centerLeft,
+                          fit: BoxFit.fill,
+                          cache: true,
+                          //cancelToken: cancellationToken,
+          ), onTap:(){
+                   Get.to(()=>PhotoView(images!,entry.key));
+              })).toList(),
         ),
-
+      ActionBar(),
     ]);
   }
 }

@@ -2,7 +2,6 @@ import 'package:app/components/async/async.dart';
 import 'package:app/generated/protobuf/content/content.model.pb.dart' as $moment;
 import 'package:app/generated/protobuf/content/moment.service.pb.dart';
 import 'package:app/model/global_state/global_controller.dart';
-import 'package:app/model/moment/moment.dart';
 import 'package:app/pages/moment/item/moment_item_view.dart';
 import 'package:app/pages/moment/detail/moment_detail_view.dart';
 import 'package:app/service/moment.dart';
@@ -37,12 +36,13 @@ class _MomentListV2ViewState extends State<MomentListV2View> with AutomaticKeepA
     }
     );
 
-  resetList() => setState(() {
+  Future<void> resetList() {
     list.removeRange(0, list.length);
     req.pageNo = 1;
-  });
+    return grpcGetList();
+  }
 
-  grpcGetList() async {
+  Future<void> grpcGetList() async {
     var response = await momentClient.stub.list(req);
     if (response.list.isEmpty) return;
     // If the widget was removed from the tree while the message was in flight,

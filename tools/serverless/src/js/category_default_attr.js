@@ -1,6 +1,6 @@
 import Excel from 'exceljs';
 import axios from 'axios';
-import sleep from "./utils/sleep";
+import {sleep} from "../utils/sleep";
 
 const cardCategory = new Map()
 
