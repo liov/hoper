@@ -77,7 +77,7 @@ async function f4() {
     const phones = (rows as RowDataPacket[]).map((row)=>row.phone);
 
     const [rows1,] = await crm.query(`SELECT a.owner_id,a.applicant_id,a.name,a.customer_num,a.address,a.telephone,a.stage,a.req_product_type,b.name AS cname,b.gender,b.position,b.mobile,b.mail 
-FROM customer_info a LEFT JOIN customer_contacts b ON a.id = b.customer_id AND b.is_deleted = 0 WHERE a.status != 2  AND (a.name LIKE '%？%' OR a.name LIKE '%！%' OR a.name LIKE '%，%' OR a.name LIKE '%,%'OR a.name LIKE '%￥%' OR a.name LIKE '%$%' OR a.name LIKE '%#%' OR a.name LIKE '%&%' OR a.name LIKE '%?%' OR a.name LIKE '%.%')`);
+FROM customer_info a LEFT JOIN customer_contacts b ON a.id = b.customer_id AND b.is_deleted = 0 WHERE a.status != 2  AND a.name REGEXP '？|！|#|&|。|!|。|@|、|【|】|\\\\.'  `);
 
     await gen(rows1 as RowDataPacket[],'./客户名称带符号.xlsx')
 }
