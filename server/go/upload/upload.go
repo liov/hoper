@@ -66,7 +66,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		errorcode.UploadFail.OriErrRep().Response(w)
 		return
 	}
-	(&httpi.ResData{Details: upload.Path}).Response(w)
+	(&httpi.ResData{Details: model.Rep{Id: upload.Id, URL: upload.Path}}).Response(w)
 
 }
 

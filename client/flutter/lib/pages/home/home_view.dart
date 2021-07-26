@@ -1,12 +1,12 @@
 import 'package:app/ffi/ffi.dart';
-import 'package:app/pages/home/splash.dart';
+import 'package:app/pages/home/global/splash.dart';
 import 'package:app/pages/index/index.dart';
 import 'package:app/pages/moment/moment_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dashboard_view.dart';
 import 'home_controller.dart';
-import 'initialize.dart';
+import 'global/initialize.dart';
 
 
 
@@ -24,7 +24,7 @@ class HomeView extends StatelessWidget{
     Get.log("HomeView重绘");
     return FutureBuilder(
       // Replace the 3 second delay with your initialization code:
-      future: initialize(),
+      future: init,
       builder: (context, AsyncSnapshot snapshot) {
         // Show splash screen while waiting for app resources to load:
         if (snapshot.connectionState == ConnectionState.waiting) {

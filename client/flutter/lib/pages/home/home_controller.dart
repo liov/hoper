@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:app/components/bottom/bottom.dart';
-import 'package:app/pages/home/splash.dart';
+import 'package:app/pages/home/global/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
