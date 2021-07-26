@@ -1,6 +1,7 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:app/model/global_state/global_controller.dart';
-import 'package:app/pages/home/splash.dart';
+import 'package:app/pages/home/global/global_state/global_controller.dart';
+
+import 'package:app/pages/home/global/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';

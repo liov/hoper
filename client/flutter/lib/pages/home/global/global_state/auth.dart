@@ -1,9 +1,6 @@
 
 
-import 'package:get/get.dart';
-
-import '../user.dart';
-
+import 'package:app/model/user.dart';
 
 class AuthState {
   User? user = null;

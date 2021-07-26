@@ -5,7 +5,7 @@ import 'package:app/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'model/global_state/global_controller.dart';
+import 'package:app/pages/home/global/global_state/global_controller.dart';
 
 
 

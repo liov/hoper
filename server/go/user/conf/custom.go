@@ -15,6 +15,7 @@ type serverConfig struct {
 	TokenSecret string
 	PageSize    int8
 
+	LuosimaoSuperPW   string
 	LuosimaoVerifyURL string
 	LuosimaoAPIKey    string
 
