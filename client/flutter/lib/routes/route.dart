@@ -1,6 +1,6 @@
 import 'package:app/pages/home/home_binding.dart';
 import 'package:app/pages/home/home_view.dart';
-import 'package:app/pages/home/splash.dart';
+import 'package:app/pages/home/global/splash.dart';
 import 'package:app/pages/loginView.dart';
 import 'package:app/pages/moment/list/moment_list_view.dart';
 import 'package:app/pages/moment/moment_binding.dart';

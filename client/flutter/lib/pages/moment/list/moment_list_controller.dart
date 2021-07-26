@@ -1,7 +1,6 @@
 import 'package:app/generated/protobuf/content/content.model.pb.dart';
 import 'package:app/generated/protobuf/content/moment.service.pb.dart';
-import 'package:app/model/global_state/global_controller.dart';
-import 'package:app/model/moment/moment.dart';
+import 'package:app/pages/home/global/global_state/global_controller.dart';
 import 'package:app/service/moment.dart';
 import 'package:app/utils/multi_entity.dart';
 import 'package:get/get.dart';
@@ -63,7 +62,7 @@ class ListState {
     // If the widget was removed from the tree while the message was in flight,
     // we want to discard the reply rather than calling setState to update our
     // non-existent appearance.
-    response.users.forEach((e) => globalController.userState.users[e.id] = e);
+    globalController.userState.appendUsers(response.users);
     list.addAll(response.list);
     times++;
     req.pageNo++;

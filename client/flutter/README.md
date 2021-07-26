@@ -65,16 +65,14 @@ protoc --dart_out=grpc:lib/generated --proto_path=../../proto_std  -Iprotos ../.
 这有个[支持lua5.4的的clua](https://github.com/tgarm/flutter-luavm)
 
 
-flutter pub run pigeon --input pigeons/route.dart
+flutter pub run pigeon --input lib/pigeons/route.dart
 rustup target add x86_64-linux-android armv7-linux-androideabi aarch64-linux-android
 cargo build --release --target=armv7-linux-androideabi
 flutter build apk --release --target-platform android-arm64
 flutter pub run build_runner build
 flutter pub run flutter_native_splash:create
-#todo
-集成[MLN](https://github.com/momotech/MLN) Demo都跑不起来，没必要为了一个热更新在客户端上浪费太多时间
-Rust FFI
-Webview
+flutter pub run flutter_launcher_icons:main
+
 
 Get太灵活了，写法太多反而不好
 

@@ -1,10 +1,13 @@
 import 'package:app/pages/dynamic/dynamic.dart';
+import 'package:app/pages/home/global/global_state/global_controller.dart';
 import 'package:app/pages/moment/list/moment_list_view.dart';
 import 'package:app/pages/moment/physics.dart';
 import 'package:app/pages/webview/webview.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../loginView.dart';
+import 'add/moment_add_view.dart';
 import 'list_v2/moment_list_v2_view.dart';
 import 'moment_controller.dart';
 
@@ -18,6 +21,7 @@ class MomentView extends StatefulWidget{
 
 class _MomentState extends State<MomentView> with AutomaticKeepAliveClientMixin {
   final MomentController controller = Get.find();
+  final GlobalController globalController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +37,12 @@ class _MomentState extends State<MomentView> with AutomaticKeepAliveClientMixin 
           }).toList(),
           controller: controller.tabController,
         ),
+        actions: [
+          IconButton(icon: Icon(Icons.add),onPressed: (){
+            if (globalController.authState.user!=null) Get.to(()=>MomentAddView());
+            else Get.to(()=>LoginView());
+          },)
+        ],
       ),
       body: TabBarView(
         //physics:PageViewTabClampingScrollPhysics(controller:controller.homeController.to),

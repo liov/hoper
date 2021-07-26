@@ -18,3 +18,23 @@ hashbrown = " 0.7.2"
 serde = "*"
 serde_json="*"
 log = { git = "https://github.com/rust-lang/log"}
+warp = "0.3"
+tokio = { version = "1.6.1", features = ["full"]}
+async-std = { version = "1.9.0", features = ["unstable","attributes"]}
+futures = "0.3.15"
+thiserror = "1.0.25"
+futures-timer = "3.0.2"
+mio = "0.7.11"
+
+
+[[bin]]
+name = "async"
+path = "src/bin/async/async.rs"
+
+[[bin]]
+name = "feature_recursive"
+path = "src/bin/async/feature_recursive.rs"
+
+[[bin]]
+name = "feature_select"
+path = "src/bin/async/feature_select.rs"

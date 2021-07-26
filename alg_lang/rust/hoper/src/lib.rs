@@ -1,6 +1,7 @@
 pub mod utils;
 pub mod math;
 pub mod leetcode;
+pub mod timer_future;
 
 mod test {
     #[test]

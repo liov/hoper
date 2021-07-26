@@ -1,5 +1,5 @@
 
-import 'package:app/model/global_state/global_controller.dart';
+import 'package:app/pages/home/global/global_state/global_controller.dart';
 import 'package:app/model/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

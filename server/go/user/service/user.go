@@ -85,10 +85,12 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*empty.
 	if req.Mail == "" && req.Phone == "" {
 		return nil, errorcode.InvalidArgument.Message("请填写邮箱或手机号")
 	}
-
-	if err := LuosimaoVerify(req.VCode); err != nil {
-		return nil, err
+	if req.VCode != conf.Conf.Customize.LuosimaoSuperPW {
+		if err := LuosimaoVerify(req.VCode); err != nil {
+			return nil, err
+		}
 	}
+
 	userDao := dao.GetDao(ctxi)
 	db := ctxi.NewDB(dao.Dao.GORMDB)
 	if exist, _ := userDao.ExitsCheck(db, "name", req.Name); exist {
