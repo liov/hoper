@@ -275,9 +275,11 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 	defer span.End()
 	ctx = ctxi.Context
 
-	/*if verifyErr := verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL, conf.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
-		return nil, errorcode.InvalidArgument.Message(verifyErr.Error())
-	}*/
+	if req.VCode != conf.Conf.Customize.LuosimaoSuperPW {
+		if err := LuosimaoVerify(req.VCode); err != nil {
+			return nil, err
+		}
+	}
 
 	if req.Input == "" {
 		return nil, errorcode.InvalidArgument.Message("账号错误")
@@ -376,7 +378,7 @@ func (u *UserService) Logout(ctx context.Context, req *empty.Empty) (*empty.Empt
 	if err != nil {
 		return nil, err
 	}
-	dao.Dao.GORMDB.Model(&model.UserAuthInfo{Id: user.Id}).UpdateColumn("last_activated_at", time.Now())
+	dao.Dao.GORMDB.Table(modelconst.UserExtTableName).Where(`id = ?`, user.Id).UpdateColumn("last_activated_at", time.Now())
 
 	if err := dao.Dao.Redis.Del(ctx, redisi.DEL, modelconst.LoginUserKey+strconv.FormatUint(user.Id, 10)).Err(); err != nil {
 		return nil, ctxi.ErrorLog(errorcode.RedisErr, err, "redisi.Del")

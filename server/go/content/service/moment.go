@@ -230,9 +230,18 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	if err != nil {
 		return nil, err
 	}
+
+	if len(moments) == 0 {
+		return &content.MomentListRep{
+			Total: total,
+			List:  nil,
+			Users: nil,
+		}, nil
+	}
+
 	var m = make(map[uint64]*content.Moment)
-	var ids []uint64
-	var userIds []uint64
+	var ids, userIds []uint64
+
 	for i := range moments {
 		ids = append(ids, moments[i].Id)
 		m[moments[i].Id] = moments[i]
@@ -240,6 +249,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 		// 屏蔽字段
 		momentMaskField(moments[i])
 	}
+
 	// tag
 	tags, err := contentDao.GetContentTagDB(db, content.ContentMoment, ids)
 	if err != nil {

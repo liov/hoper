@@ -68,8 +68,8 @@ func UnaryAccess(
 			code = int(v.GRPCStatus().Code())
 		}
 	}
-	body, err := json.Marshal(req)
-	result, err := json.Marshal(resp)
+	body, _ := json.Marshal(req)
+	result, _ := json.Marshal(resp)
 	ctxi := contexti.CtxFromContext(ctx)
 	accessLog(ctxi, info.FullMethod, "grpc",
 		stringsi.ToString(body), stringsi.ToString(result),
