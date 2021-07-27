@@ -2,6 +2,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:app/pages/home/global/global_state/global_controller.dart';
 
 import 'package:app/pages/home/global/splash.dart';
+import 'package:app/routes/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -20,6 +21,7 @@ class IndexPage extends StatefulWidget {
 
 class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixin {
   final MethodChannel _methodChannel = MethodChannel('xyz.hoper.native/view');
+  final GlobalController globalController = Get.find();
   int _counter = 0;
 
   void _incrementCounter() {
@@ -98,13 +100,14 @@ class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixi
                         TextButton(
                           child: Text('确认'),
                           onPressed: () {
+                            globalController.authState.user = null;
                             navigator!.pop('ok');
                           },
                         ),
                       ],
                   ));
             }
-          else {Get.to(LoginView());}
+          else {Get.toNamed(Routes.LOGIN);}
         },
 
         tooltip: 'ToBrowser',

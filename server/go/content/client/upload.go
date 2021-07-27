@@ -1,13 +1,13 @@
 package client
 
 import (
-	"github.com/liov/hoper/v2/protobuf/user"
+	"github.com/liov/hoper/v2/protobuf/upload"
 	"github.com/liov/hoper/v2/utils/log"
 	"github.com/liov/hoper/v2/utils/net/http/grpc/stats"
 	"google.golang.org/grpc"
 )
 
-func GetUserClient() user.UserServiceClient {
+func GetUploadClient() upload.UploadServiceClient {
 	// Set up a connection to the server.
 	conn, err := grpc.Dial("localhost:8090", grpc.WithInsecure(),
 		grpc.WithStatsHandler(&stats.ClientHandler{}))
@@ -15,5 +15,5 @@ func GetUserClient() user.UserServiceClient {
 		log.Fatalf("did not connect: %v", err)
 	}
 	Connes = append(Connes, conn)
-	return user.NewUserServiceClient(conn)
+	return upload.NewUploadServiceClient(conn)
 }

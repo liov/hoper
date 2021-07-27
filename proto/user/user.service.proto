@@ -364,8 +364,8 @@ message EditReq {
 // 登录请求
 message LoginReq {
   string input = 1;
-  string password = 2 [(go.field) = {tags:'validate:"required,gte=6,lte=15" annotation:"密码"'},(validator.field) = {
-    length_gt: 6
+  string password = 2 [(go.field) = {tags:'validate:"required,gt=5,lt=15" annotation:"密码"'},(validator.field) = {
+    length_gt: 5
     human_error: "密码错误"
   }];
   string vCode = 3;
