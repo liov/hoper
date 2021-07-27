@@ -1,4 +1,5 @@
 
+import 'package:app/pages/home/global/initialize.dart';
 import 'package:app/routes/route.dart';
 import 'package:app/theme.dart';
 
@@ -9,7 +10,7 @@ import 'package:app/pages/home/global/global_state/global_controller.dart';
 
 
 
-void main() async {
+Future<void> main() async {
   runApp(GetMaterialApp(
     title: 'hoper',
     theme: appThemeData,

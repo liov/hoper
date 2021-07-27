@@ -1,9 +1,11 @@
 
 
-import 'package:app/model/user.dart';
+import 'package:app/generated/protobuf/user/user.model.pb.dart';
 
 class AuthState {
-  User? user = null;
-  late String cookie;
+  UserBaseInfo? user = null;
+  String? key = null;
   var isActive = false;
 }
+
+const AuthKey = "Authorization";
