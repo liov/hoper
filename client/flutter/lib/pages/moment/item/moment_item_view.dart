@@ -1,7 +1,7 @@
 import 'package:app/generated/protobuf/content/content.model.pb.dart';
 import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/model/const/const.dart';
-import 'package:app/pages/home/global/global_state/global_controller.dart';
+import 'package:app/pages/home/global/global_controller.dart';
 
 import 'package:app/pages/photo/photo.dart';
 import 'package:app/pages/photo/slide_photo.dart';
@@ -16,12 +16,12 @@ import 'action_bar.dart';
 class MomentItem extends StatelessWidget {
   MomentItem({Key? key, required this.moment}) : super(key: key) {
     if (this.moment.images != "")
-      this.images = this.moment.images.split(",").map((url) => baseHost+"/static/"+url).toList();
+      this.images = this.moment.images.split(",").map((url) => BASE_HOST+"/static/"+url).toList();
     else this.images = null;
   }
 
   final Moment moment;
-  final GlobalController globalController = Get.find<GlobalController>();
+
   late final List<String>? images;
 
   @override

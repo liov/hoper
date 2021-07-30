@@ -3,12 +3,15 @@ import bluebird from 'bluebird';
 import {connect} from '../utils/mysql.js';
 import Excel from 'exceljs';
 
-const REQ_PRODUCT_TYPE = [''];
+const key = "hyx"
+const REQ_PRODUCT_TYPE_ENCRYPT = 'WyIiLCLnlLXlvbEiLCLom4vns5UiLCLnpLzljIUv54G16YCa5Yi4Iiwi5Zu+5LmmIiwi5L2T5qOAIiwi5Zui5bu6Iiwi56aP5Yip5Yi477yI5ZWG5Z+O6YCa77yJIiwi6LaF57qn5Y2hIiwi6ZSm56aP5YipIiwi5a6a5Yi25Yi4Il0=';
+const REQ_PRODUCT_TYPE = JSON.parse(Buffer.from(REQ_PRODUCT_TYPE_ENCRYPT,'base64').toString()) as string[];
+
 const STAGE = ['目标客户','开发中客户','意向客户','成交客户','忠实客户','流失客户'];
 const crm = await mysql.createConnection({
     host: 'crm_host',
     user: 'crm',
-    password: '123456',
+    password: 'crm',
     database: 'crm',
     Promise: bluebird
 });
@@ -16,7 +19,7 @@ const crm = await mysql.createConnection({
 const erp = await mysql.createConnection({
     host: 'erp_host',
     user: 'erp',
-    password: '123456',
+    password: 'erp',
     database: 'erp',
     Promise: bluebird
 });
@@ -47,41 +50,40 @@ async  function gen(rows: RowDataPacket[],path: string) {
 }
 async function f1() {
     const [rows,] = await crm.query(`SELECT a.owner_id,a.applicant_id,a.name,a.customer_num,a.address,a.telephone,a.stage,a.req_product_type,b.name AS cname,b.gender,b.position,b.mobile,b.mail
-FROM customer_info a LEFT JOIN customer_contacts b ON a.id = b.customer_id AND b.is_deleted = 0 WHERE a.status != 2  
-AND b.mobile IN (SELECT b.mobile FROM customer_info a LEFT JOIN customer_contacts b ON a.id = b.customer_id AND b.is_deleted = 0 WHERE a.status != 2 AND b.mobile !=''  AND LENGTH(b.mobile) = 11 GROUP BY b.mobile HAVING COUNT(*) > 2)`);
+FROM customer_info a LEFT JOIN customer_contacts b ON a.id = b.customer_id AND b.is_deleted = 0 WHERE a.status != 2 AND a.succeeded = 1
+AND b.mobile IN (SELECT b.mobile FROM customer_info a LEFT JOIN customer_contacts b ON a.id = b.customer_id AND b.is_deleted = 0 WHERE a.status != 2 AND a.succeeded = 1 AND b.mobile !=''  AND LENGTH(b.mobile) = 11 GROUP BY b.mobile HAVING COUNT(*) > 2) ORDER BY b.mobile`);
     await gen(rows as RowDataPacket[],'./手机号码重复应用于多个客户的客户详情.xlsx')
 }
 
 async function f2() {
     const [rows,] = await erp.query(`SELECT phone FROM o_employee_info WHERE phone !='' `);
-    const phones = (rows as RowDataPacket[]).map((row)=>row.phone);
+    const phones = (rows as RowDataPacket[]).map((row)=>`'${row.phone}'`);
 
     const [rows1,] = await crm.query(`SELECT a.owner_id,a.applicant_id,a.name,a.customer_num,a.address,a.telephone,a.stage,a.req_product_type,b.name AS cname,b.gender,b.position,b.mobile,b.mail 
-FROM customer_info a LEFT JOIN customer_contacts b ON a.id = b.customer_id AND b.is_deleted = 0 WHERE a.status != 2  
+FROM customer_info a LEFT JOIN customer_contacts b ON a.id = b.customer_id AND b.is_deleted = 0 WHERE a.status != 2 AND a.succeeded = 1
 AND b.mobile IN (${phones.join(',')})`);
 
     await gen(rows1 as RowDataPacket[],'./联系人手机号为公司员工客户的客户详情.xlsx')
 }
 
 async function f3() {
-    const [rows,] = await erp.query(`SELECT phone FROM o_employee_info `);
-    const phones = (rows as RowDataPacket[]).map((row)=>row.phone);
-
     const [rows1,] = await crm.query(`SELECT a.owner_id,a.applicant_id,a.name,a.customer_num,a.address,a.telephone,a.stage,a.req_product_type,b.name AS cname,b.gender,b.position,b.mobile,b.mail 
-FROM customer_info a LEFT JOIN customer_contacts b ON a.id = b.customer_id AND b.is_deleted = 0 WHERE a.status != 2  AND  LENGTH(b.mobile) != 11`);
+FROM customer_info a LEFT JOIN customer_contacts b ON a.id = b.customer_id AND b.is_deleted = 0 WHERE a.status != 2 AND a.succeeded = 1 AND  LENGTH(b.mobile) != 11`);
 
     await gen(rows1 as RowDataPacket[],'./联系人手机号缺位的.xlsx')
 }
 async function f4() {
-    const [rows,] = await erp.query(`SELECT phone FROM o_employee_info `);
-    const phones = (rows as RowDataPacket[]).map((row)=>row.phone);
-
     const [rows1,] = await crm.query(`SELECT a.owner_id,a.applicant_id,a.name,a.customer_num,a.address,a.telephone,a.stage,a.req_product_type,b.name AS cname,b.gender,b.position,b.mobile,b.mail 
-FROM customer_info a LEFT JOIN customer_contacts b ON a.id = b.customer_id AND b.is_deleted = 0 WHERE a.status != 2  AND a.name REGEXP '？|！|#|&|。|!|。|@|、|【|】|\\\\.'  `);
+FROM customer_info a LEFT JOIN customer_contacts b ON a.id = b.customer_id AND b.is_deleted = 0 WHERE a.status != 2 AND a.succeeded = 1 AND a.name REGEXP '？|！|#|&|。|!|。|@|、|【|】|\\\\.'  `);
 
     await gen(rows1 as RowDataPacket[],'./客户名称带符号.xlsx')
 }
+
+await f1()
+await f2()
+await f3()
 await f4()
+
 
 
 crm.end()
