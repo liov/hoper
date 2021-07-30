@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:app/components/bottom/bottom.dart';
-import 'package:app/pages/home/global/splash.dart';
+import 'package:app/pages/home/global/splash_view.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -22,10 +22,15 @@ class HomeController extends GetxController {
   HomeController get to => Get.find<HomeController>();
 
   void advertising(){
+    if(pausedTime ==null) return;
+    final current = DateTime.now();
+    if (current.difference(pausedTime!)  < Duration(minutes:1)) return;
     Get.dialog(splash);
     //Get.to(()=>splash);
     Future.delayed(Duration(seconds:1),(){navigator!.pop('ok');});
   }
+
+  DateTime? pausedTime;
 
   void onPageChanged(int index) {
     selectedIndex.value = index;

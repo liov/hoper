@@ -1,14 +1,14 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:app/pages/home/global/global_state/global_controller.dart';
+import 'package:app/pages/home/global/global_controller.dart';
 
-import 'package:app/pages/home/global/splash.dart';
+import 'package:app/pages/home/global/splash_view.dart';
 import 'package:app/routes/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../loginView.dart';
+import '../login_view.dart';
 
 class IndexPage extends StatefulWidget {
   IndexPage({Key? key, required this.title}) : super(key: key);
@@ -21,7 +21,7 @@ class IndexPage extends StatefulWidget {
 
 class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixin {
   final MethodChannel _methodChannel = MethodChannel('xyz.hoper.native/view');
-  final GlobalController globalController = Get.find();
+
   int _counter = 0;
 
   void _incrementCounter() {

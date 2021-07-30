@@ -1,7 +1,9 @@
+import 'package:app/pages/home/global/global_controller.dart';
 import 'package:app/pages/home/home_binding.dart';
 import 'package:app/pages/home/home_view.dart';
-import 'package:app/pages/home/global/splash.dart';
-import 'package:app/pages/loginView.dart';
+import 'package:app/pages/home/global/splash_view.dart';
+import 'package:app/pages/login_view.dart';
+import 'package:app/pages/moment/add/moment_add_view.dart';
 import 'package:app/pages/moment/list/moment_list_view.dart';
 import 'package:app/pages/moment/moment_binding.dart';
 import 'package:get/get.dart';
@@ -18,6 +20,10 @@ class AppPages {
       page: () => MomentListView(),
       binding: MomentBinding(),
       children:[
+        GetPage(
+          name: Routes.ADD,
+          page: () =>  globalController.authCheck() ?? MomentAddView(),
+        ),
       ]
     ),
     GetPage(
@@ -41,6 +47,8 @@ abstract class Routes {
   static const HOME = '/home';
   static const CONTENT = '/content';
   static const MOMENT = '/moment';
+  static const ADD = '/add';
+  static const MOMENT_ADD = MOMENT + ADD;
   static const LOGIN = '/login';
   static const SETTINGS = '/settings';
   static const SPLASH = '/splash';

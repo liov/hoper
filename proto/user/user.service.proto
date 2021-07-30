@@ -372,7 +372,7 @@ message LoginReq {
 }
 // 登录返回
 message LoginRep {
-  UserBaseInfo user = 1;
+  User user = 1;
   string token = 2;
 }
 

@@ -63,7 +63,7 @@ dependencies:
   extended_text_library: ^7.0.0
   flutter_cache_manager: ^3.1.2
   syncfusion_flutter_charts: ^19.2.48
-  camera: ^0.8.1+5
+  camera: ^0.8.1+7
   qr_flutter: ^4.0.0
   video_player: ^2.1.10
   animations: ^2.0.1

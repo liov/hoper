@@ -1,2 +1,4 @@
-const baseHost = "https://hoper.xyz";
-const baseApiUrl = baseHost+"/api";
+const BASE_HOST = "https://hoper.xyz";
+const BASE_API_URL = BASE_HOST+"/api";
+
+const Authorization = "Authorization";

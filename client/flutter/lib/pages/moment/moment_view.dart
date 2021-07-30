@@ -1,12 +1,13 @@
 import 'package:app/pages/dynamic/dynamic.dart';
-import 'package:app/pages/home/global/global_state/global_controller.dart';
+import 'package:app/pages/home/global/global_controller.dart';
 import 'package:app/pages/moment/list/moment_list_view.dart';
 import 'package:app/pages/moment/physics.dart';
 import 'package:app/pages/webview/webview.dart';
+import 'package:app/routes/route.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../loginView.dart';
+import '../login_view.dart';
 import 'add/moment_add_view.dart';
 import 'list_v2/moment_list_v2_view.dart';
 import 'moment_controller.dart';
@@ -39,7 +40,7 @@ class _MomentState extends State<MomentView> with AutomaticKeepAliveClientMixin 
         ),
         actions: [
           IconButton(icon: Icon(Icons.add),onPressed: (){
-            if (globalController.authState.user!=null) Get.to(()=>MomentAddView());
+            if (globalController.authState.user!=null) Get.toNamed(Routes.MOMENT_ADD);
             else Get.to(()=>LoginView());
           },)
         ],

@@ -1,29 +1,36 @@
 
+import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/generated/protobuf/user/user.service.pb.dart';
-import 'package:app/pages/home/global/global_state/auth.dart';
-import 'package:app/pages/home/global/global_state/global_controller.dart';
-import 'package:app/model/user.dart';
+import 'package:app/pages/home/global/auth.dart';
+import 'package:app/pages/home/global/global_controller.dart';
+import 'package:grpc/grpc.dart';
 import 'package:app/service/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'home/global/dao.dart';
+import '../service/dao.dart';
 
 class LoginView extends StatelessWidget {
 
-  final GlobalController globalController =  Get.find();
   final UserClient userClient =  Get.find();
   final Dao dao =  Get.find();
   final _formKey = GlobalKey<FormState>();
 
   login(String account,password) async{
+    try{
       final rep = await userClient.stub.login(LoginReq(input: account, password: password));
-      print(rep.user);
-      globalController.authState.user = rep.user;
-      globalController.authState.key = rep.token;
-      dao.box.put(AuthKey, rep.token);
+      final user = rep.user;
+      globalController.authState.user = UserAuthInfo(id:user.id,name:user.name,role:user.role,status:user.status);
+      dao.box.put(AuthState.StringAuthKey, rep.token);
+      dao.box.put(AuthState.StringAccountKey, account);
       navigator!.pop();
+    } on GrpcError catch (e) {
+      Get.snackbar("出错", e.message!);
+    }catch (e) {
+      // No specified type, handles all
+      print('Something really unknown: $e');
+    }
   }
 
   @override
@@ -49,6 +56,7 @@ class LoginView extends StatelessWidget {
                     decoration: InputDecoration(
                       hintText: '邮箱/手机',
                     ),
+                    initialValue: dao.box.get(AuthState.StringAccountKey),
                     onSaved: (value) {
                       _account = value!;
                     },
