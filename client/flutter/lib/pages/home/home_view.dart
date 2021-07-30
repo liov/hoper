@@ -1,12 +1,12 @@
 import 'package:app/ffi/ffi.dart';
-import 'package:app/pages/home/global/splash.dart';
+import 'package:app/pages/home/global/splash_view.dart';
 import 'package:app/pages/index/index.dart';
 import 'package:app/pages/moment/moment_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dashboard_view.dart';
+import 'global/global_controller.dart';
 import 'home_controller.dart';
-import 'global/initialize.dart';
 
 
 
@@ -24,7 +24,7 @@ class HomeView extends StatelessWidget{
     Get.log("HomeView重绘");
     return FutureBuilder(
       // Replace the 3 second delay with your initialization code:
-      future: init,
+      future: globalController.init(),
       builder: (context, AsyncSnapshot snapshot) {
         // Show splash screen while waiting for app resources to load:
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -67,6 +67,7 @@ class App extends StatelessWidget with WidgetsBindingObserver{
         controller.advertising();
         break;
       case AppLifecycleState.paused: // 应用程序不可见，后台
+        controller.pausedTime = DateTime.now();
         break;
       case AppLifecycleState.detached: // 申请将暂时暂停
         break;
@@ -87,7 +88,7 @@ class App extends StatelessWidget with WidgetsBindingObserver{
               onTap: controller.onItemTapped,
               selectedItemColor: Theme.of(context).canvasColor,
               type: BottomNavigationBarType.fixed,
-              backgroundColor: Theme.of(context).primaryColor.withAlpha(127),
+              backgroundColor: Theme.of(context).primaryColor,
               items: controller.bottomNavigationBarList
                   .map((item) => item.bottomNavigationBarItem())
                   .toList(),

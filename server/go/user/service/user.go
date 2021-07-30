@@ -346,12 +346,8 @@ func (*UserService) login(ctxi *contexti.Ctx, user *model.User) (*model.LoginRep
 	}
 	resp := &model.LoginRep{
 		Token: tokenString,
-		User: &model.UserBaseInfo{
-			Id:        user.Id,
-			Name:      user.Name,
-			Gender:    user.Gender,
-			AvatarUrl: user.AvatarUrl,
-		}}
+		User:  user,
+	}
 
 	cookie := (&http.Cookie{
 		Name:  "token",

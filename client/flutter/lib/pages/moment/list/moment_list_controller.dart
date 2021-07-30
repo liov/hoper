@@ -1,6 +1,6 @@
 import 'package:app/generated/protobuf/content/content.model.pb.dart';
 import 'package:app/generated/protobuf/content/moment.service.pb.dart';
-import 'package:app/pages/home/global/global_state/global_controller.dart';
+import 'package:app/pages/home/global/global_controller.dart';
 import 'package:app/service/moment.dart';
 import 'package:app/utils/multi_entity.dart';
 import 'package:get/get.dart';
@@ -8,7 +8,6 @@ import 'package:get/get.dart';
 // 相当于多个controller,实验性，不要这么用
 class MomentListController extends GetxController with MultiEntity<ListState>{
   final MomentClient momentClient = Get.put(MomentClient());
-  final GlobalController globalController = Get.find();
 
   newList(String tag) async{
     if (getEntity(tag)!=null) return;

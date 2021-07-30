@@ -1,7 +1,7 @@
 import 'package:app/components/async/async.dart';
 import 'package:app/generated/protobuf/content/content.model.pb.dart' as $moment;
 import 'package:app/generated/protobuf/content/moment.service.pb.dart';
-import 'package:app/pages/home/global/global_state/global_controller.dart';
+import 'package:app/pages/home/global/global_controller.dart';
 
 import 'package:app/pages/moment/item/moment_item_view.dart';
 import 'package:app/pages/moment/detail/moment_detail_view.dart';
@@ -22,7 +22,6 @@ class MomentListV2View extends StatefulWidget {
 class _MomentListV2ViewState extends State<MomentListV2View> with AutomaticKeepAliveClientMixin {
 
   final MomentClient momentClient = Get.find();
-  final GlobalController globalController = Get.find();
 
   late final req = MomentListReq(pageNo:1,pageSize:10);
   var times = 0;
