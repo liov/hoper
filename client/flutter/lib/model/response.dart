@@ -11,9 +11,9 @@ class ResponseData$ {
   late Map<String, dynamic> details;
   late String message;
 
-  factory ResponseData$.fromJson(Map<String, dynamic> json) => _$ResponseDataFromJson(json);
+  factory ResponseData$.fromJson(Map<String, dynamic> json) => _$ResponseData$FromJson(json);
 
-  Map<String, dynamic> toJson() => _$ResponseDataToJson(this);
+  Map<String, dynamic> toJson() => _$ResponseData$ToJson(this);
 }
 
 extension StringExtension on Response {
