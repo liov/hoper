@@ -6,7 +6,7 @@ part of 'moment.service.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-MomentListResponse$ _$MomentListResponseFromJson(Map<String, dynamic> json) {
+MomentListResponse$ _$MomentListResponse$FromJson(Map<String, dynamic> json) {
   return MomentListResponse$()
     ..users = (json['users'] as List<dynamic>)
         .map((e) => User.fromJson(e as Map<String, dynamic>))
@@ -17,7 +17,7 @@ MomentListResponse$ _$MomentListResponseFromJson(Map<String, dynamic> json) {
     ..total = json['total'] as int;
 }
 
-Map<String, dynamic> _$MomentListResponseToJson(MomentListResponse$ instance) =>
+Map<String, dynamic> _$MomentListResponse$ToJson(MomentListResponse$ instance) =>
     <String, dynamic>{
       'users': instance.users,
       'list': instance.list,

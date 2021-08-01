@@ -23,7 +23,7 @@ class Moment$ {
   late int anonymous;
   late int permission;
 
-  factory Moment$.fromJson(Map<String, dynamic> json) => _$MomentFromJson(json);
+  factory Moment$.fromJson(Map<String, dynamic> json) => _$Moment$FromJson(json);
 
-  Map<String, dynamic> toJson() => _$MomentToJson(this);
+  Map<String, dynamic> toJson() => _$Moment$ToJson(this);
 }
