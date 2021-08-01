@@ -14,7 +14,7 @@ class MomentListResponse$ {
   late int total;
 
   factory MomentListResponse$.fromJson(Map<String, dynamic> json) =>
-      _$MomentListResponseFromJson(json);
+      _$MomentListResponse$FromJson(json);
 
-  Map<String, dynamic> toJson() => _$MomentListResponseToJson(this);
+  Map<String, dynamic> toJson() => _$MomentListResponse$ToJson(this);
 }
