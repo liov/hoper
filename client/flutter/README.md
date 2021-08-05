@@ -69,7 +69,7 @@ flutter pub run pigeon --input lib/pigeons/route.dart
 rustup target add x86_64-linux-android armv7-linux-androideabi aarch64-linux-android
 cargo build --release --target=armv7-linux-androideabi
 flutter build apk --release --target-platform android-arm64
-flutter pub run build_runner build
+flutter pub run build_runner build --delete-conflicting-outputs
 flutter pub run flutter_native_splash:create
 flutter pub run flutter_launcher_icons:main
 

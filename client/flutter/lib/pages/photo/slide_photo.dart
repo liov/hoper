@@ -8,26 +8,29 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 class SlidePhotoView extends StatelessWidget {
   SlidePhotoView(this.url) :super();
   final String url;
-  final GlobalKey<ExtendedImageSlidePageState> key  = GlobalKey();
+  final _slidePageKey  = GlobalKey<ExtendedImageSlidePageState>();
 
   @override
   Widget build(BuildContext context) {
     return Material(
       type: MaterialType.transparency,
       child: ExtendedImageSlidePage(
-        key: Key(url),
+        key: _slidePageKey,
         child: GestureDetector(
           child:  HeroWidget(
-            child: ExtendedImage.network(
+            child: url.startsWith("http")?ExtendedImage.network(
               url,
+              enableSlideOutPage: true,
+            ):ExtendedImage.file(
+              File(url),
               enableSlideOutPage: true,
             ),
             tag: url,
             slideType: SlideType.onlyImage,
-            slidePageKey: key,
+            slidePageKey: _slidePageKey,
           ),
           onTap: () {
-            key.currentState!.popPage();
+            _slidePageKey.currentState!.popPage();
             Navigator.pop(context);
           },
         ),

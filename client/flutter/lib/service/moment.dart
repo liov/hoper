@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:grpc/grpc.dart';
 import 'package:app/model/response.dart';
 
+
 class MomentClient extends GetxService {
   late final MomentServiceClient stub;
 
@@ -16,7 +17,7 @@ class MomentClient extends GetxService {
       port: 8090,
       options: const ChannelOptions(credentials: ChannelCredentials.insecure()),
     );
-    this.stub = MomentServiceClient(channel);
+    this.stub = MomentServiceClient(channel,);
   }
 
   Future<MomentListResponse$?> getMomentList(int pageNo, pageSize) async {

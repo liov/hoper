@@ -1,6 +1,6 @@
 import 'package:app/generated/protobuf/content/content.model.pb.dart';
 import 'package:app/generated/protobuf/content/moment.service.pb.dart';
-import 'package:app/pages/home/global/global_controller.dart';
+import 'package:app/global/global_controller.dart';
 import 'package:app/service/moment.dart';
 import 'package:app/utils/multi_entity.dart';
 import 'package:get/get.dart';

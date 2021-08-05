@@ -1,8 +1,9 @@
-import 'package:app/pages/home/global/global_controller.dart';
+import 'package:app/global/global_controller.dart';
 import 'package:app/pages/home/home_binding.dart';
 import 'package:app/pages/home/home_view.dart';
-import 'package:app/pages/home/global/splash_view.dart';
+import 'package:app/pages/home/splash_view.dart';
 import 'package:app/pages/login_view.dart';
+import 'package:app/pages/moment/add/moment_add_controller.dart';
 import 'package:app/pages/moment/add/moment_add_view.dart';
 import 'package:app/pages/moment/list/moment_list_view.dart';
 import 'package:app/pages/moment/moment_binding.dart';
@@ -23,6 +24,7 @@ class AppPages {
         GetPage(
           name: Routes.ADD,
           page: () =>  globalController.authCheck() ?? MomentAddView(),
+          binding: BindingsBuilder.put(() => MomentAddController())
         ),
       ]
     ),

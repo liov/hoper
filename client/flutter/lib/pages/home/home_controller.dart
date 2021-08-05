@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:app/components/bottom/bottom.dart';
-import 'package:app/pages/home/global/splash_view.dart';
+import 'package:app/pages/home/splash_view.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -10,6 +10,7 @@ class HomeController extends GetxController {
   var selectedIndex = 0.obs;
   var now = DateTime.now().obs;
   var stackIndex = 1.obs;
+  late Completer<Null> adCompleter;
 
   final pageController = PageController();
   var bottomNavigationBarList = [
@@ -24,10 +25,15 @@ class HomeController extends GetxController {
   void advertising(){
     if(pausedTime ==null) return;
     final current = DateTime.now();
-    if (current.difference(pausedTime!)  < Duration(minutes:1)) return;
-    Get.dialog(splash);
-    //Get.to(()=>splash);
-    Future.delayed(Duration(seconds:1),(){navigator!.pop('ok');});
+    if (current.difference(pausedTime!)  < Duration(seconds:1)) return;
+    print('advertising');
+    Get.showOverlay(loadingWidget:splash, asyncFunction: () {
+      adCompleter = Completer();
+      Timer(Duration(seconds:3), () {
+        if (!adCompleter.isCompleted)adCompleter.complete();
+        });
+      return adCompleter.future;
+    });
   }
 
   DateTime? pausedTime;
