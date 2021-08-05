@@ -1,8 +1,8 @@
 
 import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/generated/protobuf/user/user.service.pb.dart';
-import 'package:app/pages/home/global/auth.dart';
-import 'package:app/pages/home/global/global_controller.dart';
+import 'package:app/global/auth.dart';
+import 'package:app/global/global_controller.dart';
 import 'package:grpc/grpc.dart';
 import 'package:app/service/user.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,7 +14,7 @@ import '../service/dao.dart';
 class LoginView extends StatelessWidget {
 
   final UserClient userClient =  Get.find();
-  final Dao dao =  Get.find();
+
   final _formKey = GlobalKey<FormState>();
 
   login(String account,password) async{
@@ -22,8 +22,9 @@ class LoginView extends StatelessWidget {
       final rep = await userClient.stub.login(LoginReq(input: account, password: password));
       final user = rep.user;
       globalController.authState.user = UserAuthInfo(id:user.id,name:user.name,role:user.role,status:user.status);
-      dao.box.put(AuthState.StringAuthKey, rep.token);
-      dao.box.put(AuthState.StringAccountKey, account);
+      globalController.setAuth(rep.token);
+      globalController.box.put(AuthState.StringAuthKey, rep.token);
+      globalController.box.put(AuthState.StringAccountKey, account);
       navigator!.pop();
     } on GrpcError catch (e) {
       Get.snackbar("出错", e.message!);
@@ -56,7 +57,7 @@ class LoginView extends StatelessWidget {
                     decoration: InputDecoration(
                       hintText: '邮箱/手机',
                     ),
-                    initialValue: dao.box.get(AuthState.StringAccountKey),
+                    initialValue: globalController.box.get(AuthState.StringAccountKey),
                     onSaved: (value) {
                       _account = value!;
                     },
@@ -73,15 +74,34 @@ class LoginView extends StatelessWidget {
                   SizedBox(
                     height: 24,
                   ),
-                  ElevatedButton(
-                    style: ButtonStyle(
-                        foregroundColor:ButtonStyleButton.allOrNull<Color>(Colors.yellow)
-                    ),
-                    child: Text('登录'),
-                    onPressed: () {
-                      _formKey.currentState!.save();
-                      login(_account, _password);
-                    },
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                              foregroundColor:ButtonStyleButton.allOrNull<Color>(Colors.yellow)
+                          ),
+                          child: Text('注册'),
+                          onPressed: () {
+                            _formKey.currentState!.save();
+                            login(_account, _password);
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                              foregroundColor:ButtonStyleButton.allOrNull<Color>(Colors.yellow)
+                          ),
+                          child: Text('登录'),
+                          onPressed: () {
+                            _formKey.currentState!.save();
+                            login(_account, _password);
+                          },
+                        )
+                      )],
                   ),
                 ],
               ),

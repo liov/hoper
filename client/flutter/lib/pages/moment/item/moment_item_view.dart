@@ -1,7 +1,7 @@
 import 'package:app/generated/protobuf/content/content.model.pb.dart';
 import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/model/const/const.dart';
-import 'package:app/pages/home/global/global_controller.dart';
+import 'package:app/global/global_controller.dart';
 
 import 'package:app/pages/photo/photo.dart';
 import 'package:app/pages/photo/slide_photo.dart';

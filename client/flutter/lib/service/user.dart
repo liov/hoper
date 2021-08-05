@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:grpc/grpc.dart';
 import 'package:app/model/response.dart';
 
+
 class UserClient extends GetxService {
   late final UserServiceClient stub;
 
