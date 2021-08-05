@@ -1,11 +1,11 @@
 import 'package:app/ffi/ffi.dart';
-import 'package:app/pages/home/global/splash_view.dart';
+import 'package:app/pages/home/splash_view.dart';
 import 'package:app/pages/index/index.dart';
 import 'package:app/pages/moment/moment_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dashboard_view.dart';
-import 'global/global_controller.dart';
+import 'package:app/global/global_controller.dart';
 import 'home_controller.dart';
 
 

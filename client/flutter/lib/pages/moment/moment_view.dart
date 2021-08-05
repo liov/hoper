@@ -1,5 +1,5 @@
 import 'package:app/pages/dynamic/dynamic.dart';
-import 'package:app/pages/home/global/global_controller.dart';
+import 'package:app/global/global_controller.dart';
 import 'package:app/pages/moment/list/moment_list_view.dart';
 import 'package:app/pages/moment/physics.dart';
 import 'package:app/pages/webview/webview.dart';

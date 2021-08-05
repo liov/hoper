@@ -1,5 +1,10 @@
 import 'dart:io';
 
+import 'package:app/components/camrea/camera_view.dart';
+import 'package:app/generated/protobuf/content/content.enum.pb.dart';
+import 'package:app/generated/protobuf/content/moment.service.pb.dart';
+import 'package:app/global/global_controller.dart';
+import 'package:app/service/moment.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -10,39 +15,48 @@ import 'package:video_player/video_player.dart';
 
 class MomentAddController extends GetxController {
 
-  List<XFile>? imageFileList;
-
-  set imageFile(XFile? value) {
-    imageFileList = value == null ? null : [value];
-  }
+  List<XFile> imageFiles = List<XFile>.empty(growable: true);
+  List<String> imageUrls = List.empty(growable: true);
+  String content = '';
+  final MomentClient momentClient = Get.find();
 
   dynamic pickImageError;
 
-  VideoPlayerController? controller;
-  VideoPlayerController? toBeDisposed;
+  VideoPlayerController? videoController;
+
   String? retrieveDataError;
 
   final ImagePicker picker = ImagePicker();
 
   void onImageButtonPressed(ImageSource source,
-      {BuildContext? context, bool isMultiImage = false,bool isVideo = false}) async {
-    if (controller != null) {
-      await controller!.setVolume(0.0);
+      {BuildContext? context, bool isMultiImage = false,bool isCamera = false}) async {
+    if (videoController != null) {
+      await videoController!.setVolume(0.0);
     }
-    if (isVideo) {
-      final XFile? file = await picker.pickVideo(
-          source: source, maxDuration: const Duration(seconds: 10));
-      await playVideo(file);
+    if (isCamera) {
+      final XFile? file = await getPhoto();
+      if(file==null){
+        return;
+      }
+      final url = await globalController.uploadClient.upload(File(file.path));
+      imageUrls.add(url);
+      imageFiles.add(file);
     } else  {
-            try {
+      final XFile? file = await getPhoto2();
+      if(file==null){
+        return;
+      }
+      final url = await globalController.uploadClient.upload(File(file.path));
+      imageUrls.add(url);
+      imageFiles.add(file);
+/*            try {
               final pickedFileList = await picker.pickMultiImage();
                 imageFileList = pickedFileList;
-
             } catch (e) {
                 pickImageError = e;
-            }
-
+            }*/
     }
+    update();
   }
 
   Future<void> playVideo(XFile? file) async {
@@ -54,7 +68,7 @@ class MomentAddController extends GetxController {
       } else {
         controller = VideoPlayerController.file(File(file.path));
       }
-      controller = controller;
+      videoController = controller;
       // In web, most browsers won't honor a programmatic call to .play
       // if the video has a sound track (and is not muted).
       // Mute the video so it auto-plays in web!
@@ -69,11 +83,23 @@ class MomentAddController extends GetxController {
   }
 
   Future<void> disposeVideoController() async {
-    if (toBeDisposed != null) {
-      await toBeDisposed!.dispose();
+    if (videoController != null) {
+      await videoController!.dispose();
     }
-    toBeDisposed = controller;
-    controller = null;
+    videoController = null;
+  }
+
+  Future<void> save() async {
+    try {
+      await momentClient.stub.add(AddMomentReq(
+        type: MomentType.MomentTypeImage,
+        content: content,
+        images: imageUrls.join(','),
+      ), options: globalController.options);
+      navigator!.pop();
+    }catch (e) {
+      print(e);
+    }
   }
 
   @override

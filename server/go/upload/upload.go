@@ -27,7 +27,7 @@ const sep = "/"
 
 const (
 	ApiExists = "/api/v1/exists"
-	ApiUpload = "/api/v1/upload"
+	ApiUpload = "/api/v1/upload/"
 )
 
 // Upload 文件上传
@@ -98,7 +98,7 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 		(&httpi.ResData{
 			Code:    0,
 			Message: "",
-			Details: upload.Path,
+			Details: model.Rep{Id: upload.Id, URL: upload.Path},
 		}).Response(w)
 		return
 	}
