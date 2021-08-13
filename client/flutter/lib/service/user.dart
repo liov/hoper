@@ -7,17 +7,33 @@ import 'package:get/get.dart';
 import 'package:grpc/grpc.dart';
 import 'package:app/model/response.dart';
 
+import '../utils/observer.dart';
 
-class UserClient extends GetxService {
-  late final UserServiceClient stub;
 
-  UserClient() : super() {
-    final channel = ClientChannel(
-      'hoper.xyz',
-      port: 8090,
-      options: const ChannelOptions(credentials: ChannelCredentials.insecure()),
-    );
-    this.stub = UserServiceClient(channel);
+class UserClient extends Observer<CallOptions> {
+
+
+  final channel = ClientChannel(
+    'hoper.xyz',
+    port: 8090,
+    options: const ChannelOptions(credentials: ChannelCredentials.insecure()),
+  );
+
+
+  late  UserServiceClient stub ;
+
+  UserClient(Subject<CallOptions> subject){
+    setOptions(subject.options);
+  }
+
+  setOptions(CallOptions? options){
+    stub =  UserServiceClient(channel,options:options);
+  }
+
+
+  @override
+  update(CallOptions? options){
+    if(options!=null) setOptions(options);
   }
 
   Future<User?> Login(String account, password) async {
@@ -30,4 +46,5 @@ class UserClient extends GetxService {
       return null;
     }
   }
+
 }

@@ -1,0 +1,53 @@
+{
+  "name": "h5",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "test:unit": "vue-cli-service test:unit",
+    "test:e2e": "vue-cli-service test:e2e",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "core-js": "^3.10.0",
+    "dayjs": "^1.10.4",
+    "mitt": "^2.1.0",
+    "register-service-worker": "^1.7.2",
+    "spark-md5": "^3.0.1",
+    "tinymce": "^5.7.1",
+    "vant": "^3.0.11",
+    "vue": "^3.0.10",
+    "vue-class-component": "^8.0.0-0",
+    "vue-router": "^4.0.0-0",
+    "vuex": "^4.0.0-0"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.22",
+    "@typescript-eslint/eslint-plugin": "^4.20.0",
+    "@typescript-eslint/parser": "^4.20.0",
+    "@vue/cli-plugin-babel": "~4.5.12",
+    "@vue/cli-plugin-e2e-cypress": "~4.5.12",
+    "@vue/cli-plugin-eslint": "~4.5.12",
+    "@vue/cli-plugin-pwa": "~4.5.12",
+    "@vue/cli-plugin-router": "~4.5.12",
+    "@vue/cli-plugin-typescript": "4.5.0",
+    "@vue/cli-plugin-unit-jest": "~4.5.12",
+    "@vue/cli-plugin-vuex": "~4.5.12",
+    "@vue/cli-service": "~4.5.12",
+    "@vue/compiler-sfc": "^3.0.10",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "@vue/eslint-config-typescript": "^7.0.0",
+    "@vue/test-utils": "^2.0.0-0",
+    "babel-plugin-import": "^1.13.3",
+    "eslint": "^7.23.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-vue": "^7.8.0",
+    "less": "^4.1.1",
+    "less-loader": "^7.3.0",
+    "prettier": "^2.2.1",
+    "vue-jest": "^5.0.0-0",
+    "vue-property-decorator": "^9.1.2"
+  }
+}

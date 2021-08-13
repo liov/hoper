@@ -21,7 +21,7 @@
 
     <application
             android:name=".App"
-            android:icon="@mipmap/ic_launcher"
+            android:icon="@mipmap/launcher_icon"
             android:label="四七"
             android:usesCleartextTraffic="true"
             tools:replace="android:label">

@@ -24,7 +24,7 @@ func DBNotNil(db **gorm.DB) {
 func (d *userDao) ExitsCheck(db *gorm.DB, field, value string) (bool, error) {
 	DBNotNil(&db)
 	ctxi := d
-	sql := `SELECT EXISTS(SELECT id FROM "` + model.UserTableName + `" WHERE `
+	sql := `SELECT EXISTS(SELECT id FROM "` + model.UserTableName + `" WHERE ` + dbi.PostgreNotDeleted + ` AND `
 	var exists bool
 	err := db.Raw(sql+field+` = ? AND status != ?  LIMIT 1)`, value, user.UserStatusDeleted).Row().Scan(&exists)
 
@@ -37,20 +37,20 @@ func (d *userDao) ExitsCheck(db *gorm.DB, field, value string) (bool, error) {
 func (d *userDao) GetByEmailORPhone(db *gorm.DB, email, phone string, fields ...string) (*user.User, error) {
 	DBNotNil(&db)
 	ctxi := d
-	var user user.User
+	var u user.User
 	var err error
 	if len(fields) > 0 {
 		db = db.Table(model.UserTableName).Select(fields)
 	}
 	if email != "" {
-		err = db.Where("email = ?", email).Find(&user).Error
+		err = db.Where("email = ? AND status != ? AND "+dbi.PostgreNotDeleted, email, user.UserStatusDeleted).Find(&u).Error
 	} else {
-		err = db.Where("phone = ?", phone).Find(&user).Error
+		err = db.Where("phone = ? AND status != ? AND "+dbi.PostgreNotDeleted, phone, user.UserStatusDeleted).Find(&u).Error
 	}
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "GetByEmailORPhone")
 	}
-	return &user, nil
+	return &u, nil
 }
 
 func (*userDao) Creat(db *gorm.DB, user *user.User) error {
