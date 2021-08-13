@@ -1,19 +1,18 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:app/global/global_controller.dart';
+import 'package:app/global/controller.dart';
 
 import 'package:app/pages/home/splash_view.dart';
 import 'package:app/routes/route.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../login_view.dart';
+import '../user/login_view.dart';
 
 class IndexPage extends StatefulWidget {
-  IndexPage({Key? key, required this.title}) : super(key: key);
 
-  final String title;
 
   @override
   _IndexPageState createState() => _IndexPageState();
@@ -45,7 +44,7 @@ class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixi
         centerTitle: true,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text('🍀'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -78,13 +77,18 @@ class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixi
                   child: Icon(Icons.remove),
                 ))
               ]),
+            CupertinoSwitch(
+            value: Get.isDarkMode,
+            onChanged: (value){
+              Get.changeTheme(Get.isDarkMode? ThemeData.light(): ThemeData.dark());
+            }),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'login',
         onPressed: (){
           //_methodChannel.invokeMethod("toNative",{"route":"/"}).then((value) => null);
-          final user = Get.find<GlobalController>().authState.user;
+          final user = globalState.authState.userAuth;
           if ( user!= null) {
               Get.dialog(
                  AlertDialog(
@@ -100,7 +104,7 @@ class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixi
                         TextButton(
                           child: Text('确认'),
                           onPressed: () {
-                            globalController.authState.user = null;
+                            globalState.authState.userAuth = null;
                             navigator!.pop('ok');
                           },
                         ),

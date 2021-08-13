@@ -1,12 +1,13 @@
-import 'package:app/global/global_controller.dart';
+import 'package:app/global/controller.dart';
 import 'package:app/pages/home/home_binding.dart';
 import 'package:app/pages/home/home_view.dart';
 import 'package:app/pages/home/splash_view.dart';
-import 'package:app/pages/login_view.dart';
+import 'package:app/pages/user/login_view.dart';
 import 'package:app/pages/moment/add/moment_add_controller.dart';
 import 'package:app/pages/moment/add/moment_add_view.dart';
 import 'package:app/pages/moment/list/moment_list_view.dart';
 import 'package:app/pages/moment/moment_binding.dart';
+import 'package:app/pages/webview/webview.dart';
 import 'package:get/get.dart';
 
 class AppPages {
@@ -23,7 +24,7 @@ class AppPages {
       children:[
         GetPage(
           name: Routes.ADD,
-          page: () =>  globalController.authCheck() ?? MomentAddView(),
+          page: () =>  globalState.authCheck() ?? MomentAddView(),
           binding: BindingsBuilder.put(() => MomentAddController())
         ),
       ]
@@ -33,12 +34,12 @@ class AppPages {
       page: () => LoginView(),
     ),
     GetPage(
-      name: Routes.LOGIN,
-      page: () => LoginView(),
-    ),
-    GetPage(
       name: Routes.SPLASH,
       page: () => Splash(),
+    ),
+    GetPage(
+      name: Routes.WEBVIEW,
+      page: () => WebViewExample(),
     ),
   ];
 }
@@ -56,6 +57,7 @@ abstract class Routes {
   static const SPLASH = '/splash';
   static const PRODUCTS = HOME + '/products';
   static const PRODUCT_DETAILS = '/:productId';
+  static const WEBVIEW = '/webview';
 
   static String productDetails(String productId) => '$PRODUCTS/$productId';
 }

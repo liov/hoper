@@ -1,23 +1,23 @@
 import 'package:app/generated/protobuf/content/content.model.pb.dart';
 import 'package:app/generated/protobuf/content/moment.service.pb.dart';
-import 'package:app/global/global_controller.dart';
+import 'package:app/global/controller.dart';
 import 'package:app/service/moment.dart';
 import 'package:app/utils/multi_entity.dart';
 import 'package:get/get.dart';
 
 // 相当于多个controller,实验性，不要这么用
 class MomentListController extends GetxController with MultiEntity<ListState>{
-  final MomentClient momentClient = Get.put(MomentClient());
+  final MomentClient momentClient = Get.find();
 
   newList(String tag) async{
     if (getEntity(tag)!=null) return;
     final list = ListState(tag);
-    await list.grpcGetList(momentClient, globalController);
+    await list.grpcGetList(momentClient);
     entityMap[tag] = list;
   }
 
   pullList(String tag) async{
-    await entityMap[tag]?.grpcGetList(momentClient, globalController);
+    await entityMap[tag]?.grpcGetList(momentClient);
     update([tag]);
   }
 
@@ -55,13 +55,13 @@ class ListState {
     req.pageNo = 1;
   }
 
-  grpcGetList(MomentClient momentClient,GlobalController globalController) async {
+  grpcGetList(MomentClient momentClient) async {
     var response = await momentClient.stub.list(req);
     if (response.list.isEmpty) return;
     // If the widget was removed from the tree while the message was in flight,
     // we want to discard the reply rather than calling setState to update our
     // non-existent appearance.
-    globalController.userState.appendUsers(response.users);
+    globalState.userState.appendUsers(response.users);
     list.addAll(response.list);
     times++;
     req.pageNo++;

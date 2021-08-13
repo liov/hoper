@@ -14,10 +14,10 @@ class HomeController extends GetxController {
 
   final pageController = PageController();
   var bottomNavigationBarList = [
-    Bottom.icon(Icons.home, "home"),
-    Bottom(FaIcon(FontAwesomeIcons.gamepad), "Profile"),
+    Bottom.icon(Icons.home, "瞬间"),
+    Bottom.icon(Icons.gamepad, "Profile"),
     Bottom.icon(Icons.account_box_rounded, "Moments"),
-    Bottom.icon(Icons.account_balance_sharp, "Weather"),
+    Bottom.icon(FontAwesomeIcons.user, "我的"),
   ];
 
   HomeController get to => Get.find<HomeController>();

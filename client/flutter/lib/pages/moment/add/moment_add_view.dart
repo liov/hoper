@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:app/pages/photo/slide_photo.dart';
-import 'package:app/service/dao.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

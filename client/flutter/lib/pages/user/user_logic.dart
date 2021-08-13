@@ -1,9 +1,7 @@
 import 'package:get/get.dart';
 
-import 'user_state.dart';
+class UserController extends GetxController {
 
-class userLogic extends GetxController {
-  final state = userState();
 
   @override
   void onReady() {

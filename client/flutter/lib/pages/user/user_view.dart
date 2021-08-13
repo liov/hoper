@@ -1,26 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:getwidget/components/list_tile/gf_list_tile.dart';
 
-import 'user_logic.dart';
-import 'user_state.dart';
 
-class userPage extends StatefulWidget {
-  @override
-  _userPageState createState() => _userPageState();
-}
+class UserView extends StatelessWidget {
 
-class _userPageState extends State<userPage> {
-  final logic = Get.find<userLogic>();
-  final userState state = Get.find<userLogic>().state;
 
   @override
-    Widget build(BuildContext context) {
-      return Container();
-    }
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Container(
+        child: Column(
+          children: [
+            _buildHeader(),
+          ],
+        ),
+      ),
+    );
+  }
 
-  @override
-  void dispose() {
-    Get.delete<userLogic>();
-    super.dispose();
+
+  Widget _buildHeader(){
+    return GFListTile(
+        titleText:'Title',
+        subTitleText:'Lorem ipsum dolor sit amet, consectetur adipiscing',
+        icon: Icon(Icons.favorite)
+    );
   }
 }

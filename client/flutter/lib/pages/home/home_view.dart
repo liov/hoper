@@ -1,11 +1,13 @@
+import 'package:app/components/bottom/bottom.dart';
 import 'package:app/ffi/ffi.dart';
 import 'package:app/pages/home/splash_view.dart';
 import 'package:app/pages/index/index.dart';
 import 'package:app/pages/moment/moment_view.dart';
+import 'package:app/pages/user/user_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dashboard_view.dart';
-import 'package:app/global/global_controller.dart';
+import 'package:app/global/controller.dart';
 import 'home_controller.dart';
 
 
@@ -24,7 +26,7 @@ class HomeView extends StatelessWidget{
     Get.log("HomeView重绘");
     return FutureBuilder(
       // Replace the 3 second delay with your initialization code:
-      future: globalController.init(),
+      future: globalState.init(),
       builder: (context, AsyncSnapshot snapshot) {
         // Show splash screen while waiting for app resources to load:
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -45,16 +47,17 @@ class App extends StatelessWidget with WidgetsBindingObserver{
   final HomeController controller = Get.find();
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
   final List<Widget> _widgetOptions = <Widget>[
-    IndexPage(title: '🍀'),
+    MomentView(),
+    IndexPage(),
     Container(
         alignment: Alignment.center,
         child: Text(
           greeting(),
           style: optionStyle,
         )),
-    MomentView(),
-    DashboardView(),
+    UserView(),
   ];
 
   @override
@@ -76,6 +79,7 @@ class App extends StatelessWidget with WidgetsBindingObserver{
 
   @override
   Widget build(BuildContext context) {
+    print('重建了');
     return Scaffold(
         body: PageView(
           controller: controller.pageController,

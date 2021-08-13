@@ -7,17 +7,27 @@ import 'package:get/get.dart';
 import 'package:grpc/grpc.dart';
 import 'package:app/model/response.dart';
 
+import '../utils/observer.dart';
 
-class MomentClient extends GetxService {
-  late final MomentServiceClient stub;
 
-  MomentClient() : super() {
-    final channel = ClientChannel(
-      'hoper.xyz',
-      port: 8090,
-      options: const ChannelOptions(credentials: ChannelCredentials.insecure()),
-    );
-    this.stub = MomentServiceClient(channel,);
+class MomentClient extends Observer<CallOptions> {
+
+
+  final channel = ClientChannel(
+    'hoper.xyz',
+    port: 8090,
+    options: const ChannelOptions(credentials: ChannelCredentials.insecure()),
+  );
+
+  late MomentServiceClient stub;
+
+  MomentClient(Subject<CallOptions> subject){
+    setOptions(subject.options);
+    subject.attach(this);
+  }
+
+  setOptions(CallOptions? options){
+    stub =  MomentServiceClient(channel,options:options);
   }
 
   Future<MomentListResponse$?> getMomentList(int pageNo, pageSize) async {
@@ -30,5 +40,10 @@ class MomentClient extends GetxService {
     } catch (exception) {
       return null;
     }
+  }
+
+  @override
+  void update(CallOptions? options) {
+    if(options!=null) setOptions(options);
   }
 }
