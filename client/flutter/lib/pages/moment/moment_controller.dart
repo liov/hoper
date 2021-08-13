@@ -16,7 +16,7 @@ class MomentController extends GetxController with SingleGetTickerProviderMixin{
   ];
   late final TabController tabController = TabController(
     length: tabValues.length,
-    initialIndex: 1,
+    initialIndex: 2,
     vsync: this,
   );
 

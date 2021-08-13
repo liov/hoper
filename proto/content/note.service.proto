@@ -5,6 +5,7 @@ import "content/content.model.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
+import "google/protobuf/wrappers.proto";
 import "utils/empty/empty.proto";
 import "utils/response/response.proto";
 import "policy.proto";
@@ -24,7 +25,7 @@ service NoteService {
 		description: "笔记相关接口"
     };
     //验证码
-    rpc Create (Note) returns (response.CommonRep) {
+    rpc Create (Note) returns (google.protobuf.StringValue) {
         option (google.api.http) = {
             post: "/api/v1/note"
             body: "*"

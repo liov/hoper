@@ -1,7 +1,7 @@
 import 'package:app/components/async/async.dart';
 import 'package:app/generated/protobuf/content/content.model.pb.dart' as $moment;
 import 'package:app/generated/protobuf/content/moment.service.pb.dart';
-import 'package:app/global/global_controller.dart';
+import 'package:app/global/controller.dart';
 
 import 'package:app/pages/moment/item/moment_item_view.dart';
 import 'package:app/pages/moment/detail/moment_detail_view.dart';
@@ -48,7 +48,7 @@ class _MomentListV2ViewState extends State<MomentListV2View> with AutomaticKeepA
     // If the widget was removed from the tree while the message was in flight,
     // we want to discard the reply rather than calling setState to update our
     // non-existent appearance.
-    globalController.userState.appendUsers(response.users);
+    globalState.userState.appendUsers(response.users);
     list.addAll(response.list);
     times++;
     req.pageNo++;

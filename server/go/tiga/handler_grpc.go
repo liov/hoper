@@ -5,6 +5,7 @@ import (
 	"fmt"
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+	"github.com/liov/hoper/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/v2/protobuf/utils/errorcode"
 	contexti "github.com/liov/hoper/v2/tiga/context"
 	"github.com/liov/hoper/v2/tiga/initialize"
@@ -17,6 +18,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
+	"runtime/debug"
 )
 
 func (s *Server) grpcHandler(conf *initialize.ServerConfig) *grpc.Server {
@@ -51,8 +53,8 @@ func UnaryAccess(
 ) (resp interface{}, err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			frame, _ := runtimei.GetCallerFrame(2)
-			log.Default.Errorw(fmt.Sprintf("panic: %v", r), zap.String(log.Stack, fmt.Sprintf("%s:%d (%#x)\n\t%s\n", frame.File, frame.Line, frame.PC, frame.Function)))
+			frame := debug.Stack()
+			log.Default.Errorw(fmt.Sprintf("panic: %v", r), zap.ByteString(log.Stack, frame))
 			err = errorcode.SysError.ErrRep()
 		}
 	}()
@@ -67,6 +69,9 @@ func UnaryAccess(
 		} else {
 			code = int(v.GRPCStatus().Code())
 		}
+	}
+	if err == nil && resp == nil {
+		resp = new(empty.Empty)
 	}
 	body, _ := json.Marshal(req)
 	result, _ := json.Marshal(resp)

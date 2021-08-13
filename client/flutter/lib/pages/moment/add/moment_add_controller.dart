@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:app/components/camrea/camera_view.dart';
 import 'package:app/generated/protobuf/content/content.enum.pb.dart';
 import 'package:app/generated/protobuf/content/moment.service.pb.dart';
-import 'package:app/global/global_controller.dart';
+import 'package:app/global/controller.dart';
 import 'package:app/service/moment.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
@@ -38,7 +38,7 @@ class MomentAddController extends GetxController {
       if(file==null){
         return;
       }
-      final url = await globalController.uploadClient.upload(File(file.path));
+      final url = await globalService.uploadClient.upload(File(file.path));
       imageUrls.add(url);
       imageFiles.add(file);
     } else  {
@@ -46,7 +46,7 @@ class MomentAddController extends GetxController {
       if(file==null){
         return;
       }
-      final url = await globalController.uploadClient.upload(File(file.path));
+      final url = await globalService.uploadClient.upload(File(file.path));
       imageUrls.add(url);
       imageFiles.add(file);
 /*            try {
@@ -95,7 +95,7 @@ class MomentAddController extends GetxController {
         type: MomentType.MomentTypeImage,
         content: content,
         images: imageUrls.join(','),
-      ), options: globalController.options);
+      ));
       navigator!.pop();
     }catch (e) {
       print(e);

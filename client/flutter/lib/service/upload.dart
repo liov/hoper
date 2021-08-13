@@ -1,15 +1,24 @@
 
 import 'dart:io';
 import 'package:crypto/crypto.dart';
-import 'package:convert/convert.dart';
+
 
 import 'package:app/model/upload.dart';
 import 'package:app/model/response.dart';
 import 'package:app/utils/dio.dart';
 import 'package:dio/dio.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_disposable.dart';
 
-class UploadClient extends GetxService {
+import 'package:grpc/src/client/call.dart';
+
+import '../utils/observer.dart';
+
+class UploadClient extends Observer<CallOptions> {
+
+  UploadClient(Subject<CallOptions> subject){
+    update(subject.options);
+    subject.attach(this);
+  }
+
 
   Future<String> getMD5(File file) async {
     final mdFive = await md5.bind(file.openRead()).first;
@@ -57,5 +66,10 @@ class UploadClient extends GetxService {
     } catch (exception) {
       return '';
     }
+  }
+
+  @override
+  void update(CallOptions? options) {
+    // TODO: implement update
   }
 }

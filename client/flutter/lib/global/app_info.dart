@@ -1,7 +1,12 @@
 
-import 'package:hive/hive.dart';
+import 'package:app/global/service.dart';
 
-class AppInfo {
+
+class AppInfo{
+
+  AppInfo():assert(isDebug = true);
+
+  static bool isDebug = false;
 
   static const _PRE = "AppInfo";
   // 版本
@@ -9,8 +14,9 @@ class AppInfo {
   // 打开次数
   static const IntOpenTimesKey = _PRE+"OpenTimesKey";
 
-  init(Box box){
-    final openTimes = box.get(IntOpenTimesKey,defaultValue:0);
-    box.put(IntOpenTimesKey, openTimes+1);
+  init(){
+    final openTimes = globalService.box.get(IntOpenTimesKey,defaultValue:0);
+    globalService.box.put(IntOpenTimesKey, openTimes+1);
   }
+
 }

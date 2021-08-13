@@ -19,7 +19,7 @@ interface ErpUserPara {
 }
 
 interface Session {
-    userID: number
+    userId: number
     userName: string
     uerRealName: string
     clientIp: string

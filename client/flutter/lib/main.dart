@@ -1,24 +1,53 @@
 
 import 'package:app/routes/route.dart';
 import 'package:app/theme.dart';
+import 'package:app/translations/zh_CN/local.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:app/global/global_controller.dart';
+import 'package:app/global/controller.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'global/app_info.dart';
 
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  ErrorWidget.builder = (FlutterErrorDetails flutterErrorDetails){
+    print(flutterErrorDetails.toString());
+    return Center(
+      child: Text("找不到页面"),
+    );
+  };
+  assert(AppInfo.isDebug = true);
+  print(AppInfo.isDebug);
   runApp(GetMaterialApp(
     title: 'hoper',
+    themeMode: AppInfo.isDebug?ThemeMode.dark:ThemeMode.system,
     theme: appThemeData,
     darkTheme:darkThemeData,
     //home: HomeView(),
     initialRoute: Routes.HOME,
-    initialBinding: BindingsBuilder.put(() =>globalController),
+    initialBinding: BindingsBuilder.put(() =>globalState),
     getPages: AppPages.routes,
+    localeListResolutionCallback:
+        (List<Locale>? locales, Iterable<Locale> supportedLocales) {
+      return Locale('zh');
+    },
+    localeResolutionCallback:
+        (Locale? locale, Iterable<Locale> supportedLocales) {
+      return Locale('zh');
+    },
+    localizationsDelegates: [
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: [
+      const Locale('zh', 'CN'),
+      const Locale('en', 'US'),
+    ],
   ));
 }
 

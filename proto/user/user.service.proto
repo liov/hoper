@@ -54,7 +54,7 @@ service UserService {
   }
 
   //注册验证
-  rpc SignupVerify (SingUpVerifyReq) returns (empty.Empty) {
+  rpc SignupVerify (SingUpVerifyReq) returns (google.protobuf.StringValue) {
     option (google.api.http) = {
       post: "/api/v1/user/signupVerify"
       body: "*"
@@ -68,7 +68,7 @@ service UserService {
   }
 
   //注册
-  rpc Signup (SignupReq) returns (empty.Empty) {
+  rpc Signup (SignupReq) returns (google.protobuf.StringValue) {
     option (google.api.http) = {
       post: "/api/v1/user"
       body: "*"
@@ -182,7 +182,7 @@ service UserService {
   }
 
   //重置密码
-  rpc ForgetPassword (LoginReq) returns (response.TinyRep) {
+  rpc ForgetPassword (LoginReq) returns (google.protobuf.StringValue) {
     option (google.api.http) = {
       get: "/api/v1/user/forgetPassword"
     };
@@ -194,7 +194,7 @@ service UserService {
     option (gogo.graphql_operation) = Mutation;
   }
 
-  rpc ResetPassword (ResetPasswordReq) returns (response.TinyRep) {
+  rpc ResetPassword (ResetPasswordReq) returns (google.protobuf.StringValue) {
     option (google.api.http) = {
       patch: "/api/v1/user/resetPassword/{id}/{secret}"
       body: "password"

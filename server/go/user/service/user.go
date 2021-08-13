@@ -49,7 +49,7 @@ func (u *UserService) VerifyCode(ctx context.Context, req *empty.Empty) (*wrappe
 	return rep, nil
 }
 
-func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*empty.Empty, error) {
+func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*wrappers.StringValue, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
@@ -74,10 +74,10 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 	if err := dao.Dao.Redis.SetEX(ctx, key, vcode, modelconst.VerificationCodeDuration).Err(); err != nil {
 		return nil, ctxi.ErrorLog(errorcode.RedisErr.Message("新建出错"), err, "SetEX")
 	}
-	return new(empty.Empty), nil
+	return new(wrappers.StringValue), nil
 }
 
-func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*empty.Empty, error) {
+func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*wrappers.StringValue, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
@@ -97,7 +97,7 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*empty.
 		return nil, errorcode.InvalidArgument.Message("用户名已被注册")
 	}
 	if req.Mail != "" {
-		if exist, _ := userDao.ExitsCheck(db, "mail", req.Phone); exist {
+		if exist, _ := userDao.ExitsCheck(db, "mail", req.Mail); exist {
 			return nil, errorcode.InvalidArgument.Message("邮箱已被注册")
 		}
 	}
@@ -133,10 +133,10 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*empty.
 	}
 
 	if req.Mail != "" {
-		go sendMail(model.ActionActive, curTime, user)
+		go sendMail(ctxi, model.ActionActive, curTime, user)
 	}
 
-	return nil, nil
+	return &wrappers.StringValue{Value: "注册成功，注意查收邮件"}, nil
 }
 
 // Salt 每个用户都有一个不同的盐
@@ -150,7 +150,7 @@ func encryptPassword(password string) string {
 	return fmt.Sprintf("%x", md5.Sum(stringsi.ToBytes(hash)))
 }
 
-func sendMail(action model.Action, curTime int64, user *model.User) {
+func sendMail(ctxi *contexti.Ctx, action model.Action, curTime int64, user *model.User) {
 	siteURL := "https://" + conf.Conf.Server.Domain
 	title := action.String()
 	secretStr := strconv.FormatInt(curTime, 10) + user.Mail + user.Password
@@ -161,10 +161,10 @@ func sendMail(action model.Action, curTime int64, user *model.User) {
 	var templ string
 	switch action {
 	case model.ActionActive:
-		ctiveOrRestPasswdValues.ActionURL = siteURL + "/user/active/" + strconv.FormatUint(user.Id, 10) + "/" + secretStr
+		ctiveOrRestPasswdValues.ActionURL = siteURL + "/#/user/active/" + strconv.FormatUint(user.Id, 10) + "/" + secretStr
 		templ = modelconst.ActionActiveContent
 	case model.ActionRestPassword:
-		ctiveOrRestPasswdValues.ActionURL = siteURL + "/user/resetPassword/" + strconv.FormatUint(user.Id, 10) + "/" + secretStr
+		ctiveOrRestPasswdValues.ActionURL = siteURL + "/#/user/resetPassword/" + strconv.FormatUint(user.Id, 10) + "/" + secretStr
 		templ = modelconst.ActionRestPasswordContent
 	}
 	log.Debug(ctiveOrRestPasswdValues.ActionURL)
@@ -206,7 +206,14 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 	redisKey := modelconst.ActiveTimeKey + strconv.FormatUint(req.Id, 10)
 	emailTime, err := dao.Dao.Redis.Get(ctx, redisKey).Int64()
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.InvalidArgument.Message("无效的链接"), err, "Get")
+		userDao := dao.GetDao(ctxi)
+		db := ctxi.NewDB(dao.Dao.GORMDB)
+		user, err := userDao.GetByPrimaryKey(db, req.Id)
+		if err != nil {
+			return nil, errorcode.DBError
+		}
+		go sendMail(ctxi, model.ActionActive, ctxi.RequestAt.TimeStamp, user)
+		return nil, ctxi.ErrorLog(errorcode.InvalidArgument.Message("已过激活期限"), err, "Get")
 	}
 	userDao := dao.GetDao(ctxi)
 	db := ctxi.NewDB(dao.Dao.GORMDB)
@@ -214,7 +221,7 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 	if err != nil {
 		return nil, errorcode.DBError
 	}
-	if user.Status != 0 {
+	if user.Status != model.UserStatusInActive {
 		return nil, errorcode.AlreadyExists.Message("已激活")
 	}
 	secretStr := strconv.Itoa((int)(emailTime)) + user.Mail + user.Password
@@ -225,7 +232,7 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 		return nil, errorcode.InvalidArgument.Message("无效的链接")
 	}
 
-	db.Model(user).Updates(map[string]interface{}{"activated_at": time.Now(), "status": 1})
+	db.Model(user).Updates(map[string]interface{}{"activated_at": time.Now(), "status": model.UserStatusActivated})
 	dao.Dao.Redis.Del(ctx, redisKey)
 	return u.login(ctxi, user)
 }
@@ -313,7 +320,7 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 		if err := dao.Dao.Redis.SetEX(ctx, activeUser, curTime, modelconst.ActiveDuration).Err(); err != nil {
 			return nil, ctxi.ErrorLog(errorcode.RedisErr, err, "SetEX")
 		}
-		go sendMail(model.ActionActive, curTime, &user)
+		go sendMail(ctxi, model.ActionActive, curTime, &user)
 		return nil, model.UserErrNoActive.Message("账号未激活,请进入邮箱点击激活")
 	}
 
@@ -426,7 +433,7 @@ func (u *UserService) Info(ctx context.Context, req *request.Object) (*model.Use
 	return &model.UserRep{User: &user1, UerExt: userExt}, nil
 }
 
-func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (*response.TinyRep, error) {
+func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (*wrappers.StringValue, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
@@ -459,12 +466,12 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 		return nil, errorcode.RedisErr
 	}
 
-	go sendMail(model.ActionRestPassword, curTime, user)
+	go sendMail(ctxi, model.ActionRestPassword, curTime, user)
 
-	return &response.TinyRep{}, nil
+	return &wrappers.StringValue{Value: "注意查收邮件"}, nil
 }
 
-func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswordReq) (*response.TinyRep, error) {
+func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswordReq) (*wrappers.StringValue, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("Logout")
 	defer span.End()
 	ctx = ctxi.Context
@@ -496,7 +503,7 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 		return nil, errorcode.DBError
 	}
 	dao.Dao.Redis.Del(ctx, redisKey)
-	return nil, nil
+	return &wrappers.StringValue{Value: "重置成功，请重新登录"}, nil
 }
 
 func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListReq) (*model.ActionLogListRep, error) {
@@ -538,7 +545,7 @@ func (*UserService) Service() (string, string, []http.HandlerFunc) {
 	return "用户相关", "/api/user", []http.HandlerFunc{middle.Log}
 }
 
-func (*UserService) Add(ctx *contexti.Ctx, req *model.SignupReq) (*response.TinyRep, error) {
+func (*UserService) Add(ctx *contexti.Ctx, req *model.SignupReq) (*wrappers.StringValue, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() {
 		pick.Get("/add").
@@ -554,7 +561,7 @@ func (*UserService) Add(ctx *contexti.Ctx, req *model.SignupReq) (*response.Tiny
 	cmd, _ := client.Do(ctx, "HGETALL", modelconst.LoginUserKey+"1").Result()
 	log.Debug(cmd)
 
-	return &response.TinyRep{Message: req.Name}, nil
+	return &wrappers.StringValue{Value: req.Name}, nil
 }
 
 func (*UserService) FiberService() (string, string, []fiber.Handler) {
