@@ -11,13 +11,19 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:get/get.dart';
 import 'package:fixnum/fixnum.dart';
 
-import 'action_bar.dart';
+import '../../action_bar/action_bar.dart';
 
 class MomentItem extends StatelessWidget {
   MomentItem({Key? key, required this.moment}) : super(key: key) {
     if (this.moment.images != "")
-      this.images = this.moment.images.split(",").map((url) => BASE_HOST+"/static/"+url).toList();
-    else this.images = null;
+      this.images = this
+          .moment
+          .images
+          .split(",")
+          .map((url) => BASE_STATIC_URL + url)
+          .toList();
+    else
+      this.images = null;
   }
 
   final Moment moment;
@@ -30,36 +36,74 @@ class MomentItem extends StatelessWidget {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(children: [
         Expanded(
-          flex: 1,
-          child: Text('${user!.name}'),
-        ),
+            flex: 1,
+            child: Row(children: [
+              Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: GestureDetector(
+                    child: CircleAvatar(
+                      child: ExtendedImage.network(
+                        BASE_STATIC_URL + user!.avatarUrl,
+                        alignment: Alignment.centerLeft,
+                        fit: BoxFit.fill,
+                        shape: BoxShape.circle,
+                        cache: true,
+                      ),
+                      /* backgroundImage: ExtendedNetworkImageProvider(
+                BASE_STATIC_URL+user!.avatarUrl,
+                cache: true,
+              ),*/
+                    ),
+                    onTap: () =>
+                        slidePhotoRoute(BASE_STATIC_URL + user.avatarUrl),
+                  )),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [Text('${user.name}'), Text('${moment.createdAt}')],
+              ),
+            ])),
         Expanded(
-          flex: 1,
-          child: Text('${moment.createdAt}'),
-        ),
+            flex: 1,
+            child: Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                          fixedSize:MaterialStateProperty.all(Size.fromHeight(5.0)),
+                          backgroundColor:MaterialStateProperty.all(Colors.transparent),
+                          shape: MaterialStateProperty.all(StadiumBorder(
+                              side: BorderSide(color: Colors.blue)))),
+                      child: Text('+关注'),
+                      onPressed: () {},
+                    )))),
       ]),
-      MarkdownBody(data: '${moment.content}'),
+      Padding(
+          padding: const EdgeInsets.symmetric(vertical:5.0,horizontal:10),
+          child: MarkdownBody(data: '${moment.content}')),
       if (images != null)
         GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3, //横轴三个子widget
-              childAspectRatio: 1.0 //宽高比为1时，子widget
-              ),
-          shrinkWrap: true,
-          itemCount:images!.length,
-          itemBuilder: (BuildContext context, int index) {
-            return  GestureDetector(
-                  child:ExtendedImage.network(
-                          images![index],
-                          alignment: Alignment.centerLeft,
-                          fit: BoxFit.fill,
-                          cache: true,
-                          //cancelToken: cancellationToken,
-                  ),
-                onTap:()=>slidePhotoRoute(images![index]),
-        );}),
-      ActionBar(),
+              childAspectRatio: 1.0, //宽高比为1时，子widget
+            ),
+            shrinkWrap: true,
+            itemCount: images!.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: GestureDetector(
+                    child: ExtendedImage.network(
+                      images![index],
+                      alignment: Alignment.centerLeft,
+                      fit: BoxFit.fill,
+                      cache: true,
+                      //cancelToken: cancellationToken,
+                    ),
+                    onTap: () => slidePhotoRoute(images![index]),
+                  ));
+            }),
+      ActionBar(moment.ext,userAction:moment.action),
     ]);
   }
 }
-

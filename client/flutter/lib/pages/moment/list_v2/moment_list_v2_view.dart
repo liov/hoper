@@ -76,7 +76,7 @@ class _MomentListV2ViewState extends State<MomentListV2View> with AutomaticKeepA
                             itemBuilder: (context, index) {
                               return InkWell(
                                 onTap: (){
-                                  Get.to(()=>MomentDetailView(moment:list[index],id:list[index].id));
+                                  Get.to(()=>MomentDetailView(),arguments: list[index]);
                                 },
                                 child: MomentItem(
                                     moment: list[index]),

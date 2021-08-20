@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:app/components/bottom/bottom.dart';
 import 'package:app/ffi/ffi.dart';
+import 'package:app/pages/home/splash_conroller.dart';
 import 'package:app/pages/home/splash_view.dart';
 import 'package:app/pages/index/index.dart';
 import 'package:app/pages/moment/moment_view.dart';
@@ -20,13 +23,15 @@ class HomeView extends StatefulWidget {
 */
 
 class HomeView extends StatelessWidget{
+  final SplashController controller = Get.find();
 
   @override
   Widget build(BuildContext context) {
     Get.log("HomeView重绘");
+    controller.startAd();
     return FutureBuilder(
       // Replace the 3 second delay with your initialization code:
-      future: globalState.init(),
+      future: controller.adCompleter.future,
       builder: (context, AsyncSnapshot snapshot) {
         // Show splash screen while waiting for app resources to load:
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -45,6 +50,8 @@ class HomeView extends StatelessWidget{
 
 class App extends StatelessWidget with WidgetsBindingObserver{
   final HomeController controller = Get.find();
+  final SplashController splashController = Get.find();
+
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
@@ -67,10 +74,10 @@ class App extends StatelessWidget with WidgetsBindingObserver{
       case AppLifecycleState.inactive: // 处于这种状态的应用程序应该假设它们可能在任何时候暂停。
         break;
       case AppLifecycleState.resumed: // 应用程序可见，前台
-        controller.advertising();
+        splashController.advertising(splash);
         break;
       case AppLifecycleState.paused: // 应用程序不可见，后台
-        controller.pausedTime = DateTime.now();
+        splashController.pausedTime = DateTime.now();
         break;
       case AppLifecycleState.detached: // 申请将暂时暂停
         break;

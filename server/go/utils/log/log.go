@@ -2,17 +2,30 @@ package log
 
 import (
 	"fmt"
+	"github.com/liov/hoper/v2/utils/log/output"
 	"log"
 	"os"
 	"strconv"
 	"time"
 
-	"github.com/liov/hoper/v2/utils/log/output"
 	"github.com/liov/hoper/v2/utils/net"
 	"go.uber.org/multierr"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
+
+func init() {
+	output.RegisterSink()
+	SetDefaultLogger(&Config{Development: true, Caller: true, Level: zapcore.DebugLevel})
+}
+
+var (
+	Default *Logger
+)
+
+func SetDefaultLogger(lf *Config) {
+	Default = lf.NewLogger()
+}
 
 type Logger struct {
 	*zap.Logger
@@ -51,19 +64,6 @@ func (l *Logger) With(fields ...zap.Field) *Logger {
 func (l *Logger) Sugar() *zap.SugaredLogger {
 	l.Logger.WithOptions(zap.AddCallerSkip(-1))
 	return l.Logger.Sugar()
-}
-
-var (
-	Default *Logger
-)
-
-func (lf *Config) SetLogger() {
-	Default = lf.NewLogger()
-}
-
-func init() {
-	output.RegisterSink()
-	(&Config{Development: true, Caller: true, Level: -1}).SetLogger()
 }
 
 //构建日志对象基本信息

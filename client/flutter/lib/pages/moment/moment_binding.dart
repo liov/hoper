@@ -1,4 +1,6 @@
 import 'package:app/global/service.dart';
+import 'package:app/service/action.dart';
+import 'package:app/service/content.dart';
 import 'package:app/service/moment.dart';
 import 'package:get/get.dart';
 
@@ -12,5 +14,7 @@ class MomentBinding extends Bindings {
 
     Get.lazyPut(() => MomentListController());
     Get.lazyPut(() => MomentClient(globalService.subject));
+    Get.lazyPut(() => ContentClient(globalService.subject));
+    Get.lazyPut(() => ActionClient(globalService.subject));
   }
 }

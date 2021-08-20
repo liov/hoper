@@ -35,7 +35,7 @@ class MainActivity: FlutterActivity() {
         }
     }
 
-    override fun provideSplashScreen(): SplashScreen {
+/*    override fun provideSplashScreen(): SplashScreen {
         return SplashScreenWithTransition()
-    }
+    }*/
 }

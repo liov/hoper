@@ -38,7 +38,7 @@ func ActionTableName(action content.ActionType) string {
 		return CollectTableName
 	case content.ActionReport:
 		return ReportTableName
-	case content.ActionGiveAction:
+	case content.ActionGive:
 		return GiveTableName
 	case content.ActionApprove:
 		return ApproveTableName
