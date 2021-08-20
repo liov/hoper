@@ -98,10 +98,7 @@ func (*ActionService) DelLike(ctx context.Context, req *request.Object) (*empty.
 	if err != nil {
 		return nil, err
 	}
-	if err != nil {
-		return nil, err
-	}
-	return nil, err
+	return new(empty.Empty), err
 }
 
 func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*request.Object, error) {
@@ -182,7 +179,7 @@ func (*ActionService) DelComment(ctx context.Context, req *request.Object) (*emp
 	if err != nil {
 		return nil, err
 	}
-	return nil, nil
+	return new(empty.Empty), nil
 }
 
 func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*empty.Empty, error) {
@@ -243,7 +240,7 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*em
 		}
 	}
 
-	return nil, nil
+	return new(empty.Empty), nil
 }
 
 func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*empty.Empty, error) {
@@ -277,7 +274,7 @@ func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*empt
 		}
 		return nil, errorcode.DBError
 	}
-	return nil, nil
+	return new(empty.Empty), nil
 }
 
 func (*ActionService) CommentList(ctx context.Context, req *content.CommentListReq) (*content.CommentListRep, error) {
@@ -365,4 +362,37 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 func commentMaskField(comment *content.Comment) {
 	comment.DeletedAt = ""
 	comment.CreatedAt = comment.CreatedAt[:19]
+}
+
+func (*ActionService) GetUserAction(ctx context.Context, req *content.ContentReq) (*content.UserAction, error) {
+	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
+	defer span.End()
+	auth, err := auth(ctxi, true)
+	if err != nil {
+		return nil, err
+	}
+	contentDao := dao.GetDao(ctxi)
+	db := ctxi.NewDB(dao.Dao.GORMDB)
+	action := &content.UserAction{}
+	likes, err := contentDao.GetContentActionsDB(db, content.ActionLike, content.ContentMoment, []uint64{req.RefId}, auth.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range likes {
+		if likes[i].Action == content.ActionLike {
+			action.LikeId = likes[i].Id
+		}
+		if likes[i].Action == content.ActionUnlike {
+			action.UnlikeId = likes[i].Id
+		}
+	}
+	collects, err := contentDao.GetCollectsDB(db, content.ContentMoment, []uint64{req.RefId}, auth.Id)
+	if err != nil {
+		return nil, err
+	}
+	for i := range collects {
+		action.Collects = append(action.Collects, collects[i].FavId)
+	}
+	return action, nil
 }

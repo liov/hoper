@@ -25,8 +25,8 @@ Future<void> main() async {
   runApp(GetMaterialApp(
     title: 'hoper',
     themeMode: AppInfo.isDebug?ThemeMode.dark:ThemeMode.system,
-    theme: appThemeData,
-    darkTheme:darkThemeData,
+    theme: ThemeData.light(),
+    darkTheme:ThemeData.dark(),
     //home: HomeView(),
     initialRoute: Routes.HOME,
     initialBinding: BindingsBuilder.put(() =>globalState),

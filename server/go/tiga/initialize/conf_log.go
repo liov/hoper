@@ -10,5 +10,5 @@ func (conf *LogConfig) Init() {
 	logConf := (*log.Config)(conf)
 	logConf.Development = InitConfig.Env != PRODUCT
 	logConf.ModuleName = InitConfig.Module
-	logConf.SetLogger()
+	log.SetDefaultLogger(logConf)
 }

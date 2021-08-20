@@ -80,7 +80,8 @@ class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixi
             CupertinoSwitch(
             value: Get.isDarkMode,
             onChanged: (value){
-              Get.changeTheme(Get.isDarkMode? ThemeData.light(): ThemeData.dark());
+              print(Get.isDarkMode);
+              Get.changeThemeMode(Get.isDarkMode? ThemeMode.system: ThemeMode.dark);
             }),
         ],
       ),

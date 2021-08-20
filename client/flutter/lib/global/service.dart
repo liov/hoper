@@ -21,6 +21,8 @@ class GlobalService{
   static GlobalService get instance => _instance ??= GlobalService._();
 
   Subject<CallOptions> subject = Subject();
+  set callOptions(CallOptions callOptions)=> subject.setState(callOptions);
+
   late final UserClient userClient = Get.put(UserClient(subject));
   late final UploadClient uploadClient = Get.put(UploadClient(subject));
   late final Dio httpClient = $dio.httpClient;

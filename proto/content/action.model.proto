@@ -45,6 +45,18 @@ message Collection{
   string deletedAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00;index"'}];
 }
 
+// 分享
+message Share{
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
+  uint64 refId = 6 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index:idx_share_type_id" validate:"required" annotation:"相关id"'}];
+  uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
+  ContentType type = 12 [(go.field) = {tags:'json:"-" gorm:"type:int2;not null;index:idx_share_type_id" validate:"required" annotation:"相关类型"'}];
+  user.UserBaseInfo user = 2 [(go.field) = {tags:'gorm:"-" annotation:"用户"'}];
+  Platform platform = 3 [(go.field) = {tags:'gorm:"size:20;not null" validate:"required" annotation:"用户id"'}];
+  string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  string deletedAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00;index"'}];
+}
+
 // 系统删除内容记录
 message ContentDel{
   uint64 refId = 2 [(go.field) = {tags:'json:"-" gorm:"size:20;default:0;primaryKey;autoIncrement:false" annotation:"相关id"'}];
@@ -86,6 +98,7 @@ message ContentExt{
   uint64 reportCount = 6 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"举报数"'}];
   uint64 commentCount = 7 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"评论数"'}];
   uint64 collectCount = 8 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"收藏数"'}];
+  uint64 shareCount = 9 [(go.field) = {tags:'gorm:"size:20;default:0" annotation:"分享数"'}];
 }
 
 message UserAction{

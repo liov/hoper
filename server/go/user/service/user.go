@@ -49,6 +49,11 @@ func (u *UserService) VerifyCode(ctx context.Context, req *empty.Empty) (*wrappe
 	return rep, nil
 }
 
+// 验证码
+func (u *UserService) SendVerifyCode(ctx context.Context, req *model.SendVerifyCodeReq) (*empty.Empty, error) {
+	return nil, nil
+}
+
 func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*wrappers.StringValue, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
@@ -397,7 +402,7 @@ func (u *UserService) Logout(ctx context.Context, req *empty.Empty) (*empty.Empt
 		HttpOnly: true,
 	}).String()
 	ctxi.SetCookie(cookie)
-	return nil, nil
+	return new(empty.Empty), nil
 }
 
 func (u *UserService) AuthInfo(ctx context.Context, req *empty.Empty) (*model.UserAuthInfo, error) {

@@ -33,8 +33,8 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, _ := auth(ctxi, true)
-	contentDao := dao.GetDao(ctxi)
 
+	contentDao := dao.GetDao(ctxi)
 	db := ctxi.NewDB(dao.Dao.GORMDB)
 	var moment content.Moment
 	err := db.Table(model.MomentTableName).

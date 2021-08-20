@@ -19,10 +19,11 @@ enum ActionType{
   ActionUnlike = 3 [(gogo.enumvalue_cn) = "不喜欢"];
   ActionComment = 4 [(gogo.enumvalue_cn) = "评论"];
   ActionCollect = 5 [(gogo.enumvalue_cn) = "收藏"];
-  ActionReport = 6 [(gogo.enumvalue_cn) = "举报"];
-  ActionGiveAction = 7 [(gogo.enumvalue_cn) = "回馈"];
-  ActionApprove = 8 [(gogo.enumvalue_cn) = "赞同"];
-  ActionDelete = 9 [(gogo.enumvalue_cn) = "删除"];
+  ActionShare = 6 [(gogo.enumvalue_cn) = "收藏"];
+  ActionReport = 7 [(gogo.enumvalue_cn) = "举报"];
+  ActionGive = 8 [(gogo.enumvalue_cn) = "回馈"];
+  ActionApprove = 9 [(gogo.enumvalue_cn) = "赞同"];
+  ActionDelete = 10 [(gogo.enumvalue_cn) = "删除"];
 }
 // 删除原因
 enum DelReason{
@@ -41,4 +42,11 @@ enum CommentType{
   CommentDiary = 2 [(gogo.enumvalue_cn)= "日记"];
   CommentDiaryBook = 3 [(gogo.enumvalue_cn)= "日记本"];
   CommentArticle = 4 [(gogo.enumvalue_cn)= "文章"];
+}
+
+enum Platform{
+  option (go.enum) = {stringer_name: 'OrigString'};
+  PlatformPlaceholder = 0 [(gogo.enumvalue_cn)= "占位"];
+  PlatformWechat = 1 [(gogo.enumvalue_cn)= "微信"];
+  PlatformQQ = 2 [(gogo.enumvalue_cn)= "QQ"];
 }

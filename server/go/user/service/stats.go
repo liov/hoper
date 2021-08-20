@@ -36,7 +36,7 @@ func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*empty.E
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "Create")
 	}
-	return nil, nil
+	return new(empty.Empty), nil
 }
 
 // 取消关注

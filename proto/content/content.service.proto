@@ -2,6 +2,7 @@ syntax = "proto3";
 package content;
 import "content/content.model.proto";
 import "content/content.enum.proto";
+import "content/action.model.proto";
 import "user/user.model.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
@@ -195,6 +196,7 @@ service ContentService {
     };
     option (gogo.graphql_operation) = Query;
   }
+
 }
 
 
@@ -302,4 +304,9 @@ message TinyFavListRep{
 message TinyFavorites{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   string title = 3 [(go.field) = {tags:'gorm:"size:10;not null" annotation:"标题"'}];
+}
+
+message ContentReq{
+  ContentType type = 12 [(go.field) = {tags:'gorm:"type:int2;not null" validate:"required" annotation:"相关类型"'}];
+  uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"相关id"'}];
 }
