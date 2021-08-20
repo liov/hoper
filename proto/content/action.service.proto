@@ -3,6 +3,7 @@ package content;
 import "content/content.enum.proto";
 import "content/action.enum.proto";
 import "content/content.model.proto";
+import "content/content.service.proto";
 import "content/action.model.proto";
 import "user/user.model.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
@@ -92,6 +93,16 @@ service ActionService {
       tags:["v1.0.0"]
     };
     option (gogo.graphql_operation) = Mutation;
+  }
+  // 用户的操作
+  rpc GetUserAction (ContentReq) returns (UserAction) {
+    option (google.api.http) = {
+      get: "/api/v1/userAction/{type}/{refId}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["v1.0.0"]
+    };
+    option (gogo.graphql_operation) = Query;
   }
 }
 

@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:app/global/service.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -26,14 +28,15 @@ class GlobalState {
   var authState = AuthState();
   var userState = UserState();
 
-  var _initialized = false;
+  var initialized = false;
 
-  init() async {
-    if (_initialized) return;
-    _initialized = true;
+  Future<void> init() async {
+    if (initialized) return;
+    initialized = true;
     await globalService.init();
     authState.getAuth();
   }
 
   Widget? authCheck() => authState.userAuth == null ? LoginView():null;
+
 }

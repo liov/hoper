@@ -29,7 +29,7 @@ func (d *contentDao) ActionCountDB(db *gorm.DB, typ content.ContentType, action 
 		column = "comment_count"
 	case content.ActionCollect:
 		column = "collect_count"
-	case content.ActionGiveAction:
+	case content.ActionGive:
 		column = "give_count"
 	case content.ActionReport:
 		column = "report_count"
@@ -154,7 +154,7 @@ func (d *contentDao) GetContentActionsDB(db *gorm.DB, action content.ActionType,
 func (d *contentDao) GetLikeDB(db *gorm.DB, likeId, userId uint64) (*model.ContentAction, error) {
 	ctxi := d
 	var action model.ContentAction
-	err := db.Select("id,ref_id,action").Table(model.LikeTableName).
+	err := db.Select("id,ref_id,action,type").Table(model.LikeTableName).
 		Where("id = ? AND user_id = ? AND "+dbi.PostgreNotDeleted,
 			likeId, userId).Scan(&action).Error
 	if err != nil {

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
-	"github.com/liov/hoper/v2/protobuf/utils/empty"
 	"github.com/liov/hoper/v2/protobuf/utils/errorcode"
 	contexti "github.com/liov/hoper/v2/tiga/context"
 	"github.com/liov/hoper/v2/tiga/initialize"
@@ -14,10 +13,12 @@ import (
 	runtimei "github.com/liov/hoper/v2/utils/runtime"
 	stringsi "github.com/liov/hoper/v2/utils/strings"
 	"github.com/liov/hoper/v2/utils/verification/validator"
+	"github.com/modern-go/reflect2"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
+	"reflect"
 	"runtime/debug"
 )
 
@@ -70,9 +71,10 @@ func UnaryAccess(
 			code = int(v.GRPCStatus().Code())
 		}
 	}
-	if err == nil && resp == nil {
-		resp = new(empty.Empty)
+	if err == nil && reflect2.IsNil(resp) {
+		resp = reflect.New(reflect.TypeOf(resp).Elem()).Interface()
 	}
+
 	body, _ := json.Marshal(req)
 	result, _ := json.Marshal(resp)
 	ctxi := contexti.CtxFromContext(ctx)

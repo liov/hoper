@@ -3,7 +3,7 @@ package model
 import "time"
 
 const (
-	DefaultAvatar = "/static/image/6cbeb5c8-7160-4b6f-a342-d96d3c00367a.jpg"
+	DefaultAvatar = "image/6cbeb5c8-7160-4b6f-a342-d96d3c00367a.jpg"
 )
 
 const (

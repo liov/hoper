@@ -1,6 +1,8 @@
 
+import 'package:app/pages/home/splash_conroller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:get/get_state_manager/src/simple/get_state.dart';
 
 final splash = Splash();
 
@@ -17,7 +19,16 @@ class Splash extends StatelessWidget {
           );
         },
       ),
-      floatingActionButton: Text("跳过"),
+      floatingActionButton: GetBuilder<SplashController>(
+        builder:(controller){
+          return GestureDetector(
+            onTap: (){
+              if (! controller.adCompleter.isCompleted)  controller.adCompleter.complete();
+            },
+            child: Text('${controller.countdown}秒跳过广告'),
+          );
+        }
+      ),
     );
   }
 }

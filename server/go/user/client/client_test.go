@@ -1,6 +1,7 @@
 package client
 
 import (
+	"github.com/liov/hoper/v2/protobuf/user"
 	"github.com/liov/hoper/v2/protobuf/utils/empty"
 	"testing"
 
@@ -11,9 +12,9 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-func TestGetUserClient(t *testing.T) {
+func TestVerifyCode(t *testing.T) {
 	md := runtime.ServerMetadata{}
-	user, err := UserClient.VerifyCode(metadata.NewOutgoingContext(context.Background(),
+	u, err := UserClient.VerifyCode(metadata.NewOutgoingContext(context.Background(),
 		metadata.MD{"key": []string{"value"}}),
 		&empty.Empty{},
 		grpc.Header(&md.HeaderMD),
@@ -22,5 +23,18 @@ func TestGetUserClient(t *testing.T) {
 	if err != nil {
 		t.Log(err)
 	}
-	t.Log(user)
+	t.Log(u)
+}
+
+func TestSendVerifyCode(t *testing.T) {
+	md := runtime.ServerMetadata{}
+	_, err := UserClient.SendVerifyCode(metadata.NewOutgoingContext(context.Background(),
+		metadata.MD{"key": []string{"value"}}),
+		&user.SendVerifyCodeReq{},
+		grpc.Header(&md.HeaderMD),
+		grpc.Trailer(&md.TrailerMD),
+	)
+	if err != nil {
+		t.Log(err)
+	}
 }

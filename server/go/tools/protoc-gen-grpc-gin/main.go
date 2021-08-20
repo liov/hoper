@@ -12,6 +12,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/liov/hoper/v2/utils/log"
+	"go.uber.org/zap/zapcore"
 	"os"
 	"strings"
 
@@ -33,6 +34,7 @@ var (
 	versionFlag                = flag.Bool("version", false, "print the current version")
 	warnOnUnboundMethods       = flag.Bool("warn_on_unbound_methods", false, "emit a warning message if an RPC method has no HttpRule annotation")
 	generateUnboundMethods     = flag.Bool("generate_unbound_methods", false, "generate proxy methods even for RPC methods that have no HttpRule annotation")
+	logLevel                   = flag.Int("log_level", 2, "log_level")
 )
 
 // Variables set by goreleaser at build time
@@ -44,6 +46,7 @@ var (
 
 func main() {
 	flag.Parse()
+	log.SetDefaultLogger(&log.Config{Development: true, Caller: true, Level: zapcore.Level(*logLevel)})
 	defer log.Sync()
 
 	if *versionFlag {
