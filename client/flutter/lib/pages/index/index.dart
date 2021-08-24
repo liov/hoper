@@ -105,7 +105,7 @@ class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixi
                         TextButton(
                           child: Text('确认'),
                           onPressed: () {
-                            globalState.authState.userAuth = null;
+                            globalState.authState.logout();
                             navigator!.pop('ok');
                           },
                         ),

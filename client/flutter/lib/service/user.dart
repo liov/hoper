@@ -24,6 +24,7 @@ class UserClient extends Observer<CallOptions> {
 
   UserClient(Subject<CallOptions> subject){
     setOptions(subject.options);
+    subject.attach(this);
   }
 
   setOptions(CallOptions? options){

@@ -34,7 +34,7 @@ class GlobalState {
     if (initialized) return;
     initialized = true;
     await globalService.init();
-    authState.getAuth();
+    await authState.getAuth();
   }
 
   Widget? authCheck() => authState.userAuth == null ? LoginView():null;

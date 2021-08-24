@@ -31,6 +31,7 @@ class AuthState {
     if (authKey != null) {
       try {
         final user = await globalService.userClient.stub.authInfo(Empty(),options:CallOptions(metadata: {Authorization: authKey}));
+        if (user.id == 0) return;
         this.userAuth = user;
         setAuth(authKey);
         return null;
@@ -55,6 +56,7 @@ class AuthState {
       setAuth(rep.token);
       this.account = account;
       navigator!.pop();
+      Get.appUpdate();
     } on GrpcError catch (e) {
       dialog(e.message!);
     }catch (e) {
@@ -64,14 +66,18 @@ class AuthState {
   }
 
   Future<void> logout() async{
+    globalService.httpClient.options.headers.remove(Authorization);
+    globalService.box.delete(AuthState.StringAuthKey);
     try{
       await globalService.userClient.stub.logout(Empty());
+      globalService.subject.setState(CallOptions());
     } on GrpcError catch (e) {
       dialog(e.message!);
     }catch (e) {
       // No specified type, handles all
       print('Something really unknown: $e');
     }
+    Get.appUpdate();
   }
 }
 
