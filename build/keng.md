@@ -287,7 +287,7 @@ command 下添加 --service-node-port-range=1-65535 参数
 main里下划线导入不报找不到包(https://juejin.im/post/5d776830f265da03e05b3c45),内部包找不到了
 cgo的锅
 set CGO_ENABLED=1
-测试不是github.com/360EntSecGroup-Skylar/excelize/v2的锅
+测试不是github.com/xuri/excelize/v2的锅
 
 应该是cgo的原因，但是那个项目里的包都是常见的包啊，难以定位哪里用了带cgo的包
 
