@@ -8,6 +8,7 @@ import (
 	"github.com/liov/hoper/v2/protobuf/utils/request"
 	contexti "github.com/liov/hoper/v2/tiga/context"
 	"github.com/liov/hoper/v2/tiga/pick"
+	dbi "github.com/liov/hoper/v2/utils/dao/db"
 	"net/http"
 	"strconv"
 	"time"
@@ -309,7 +310,7 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 	db := ctxi.NewDB(dao.Dao.GORMDB)
 	var user model.User
 	if err := db.Table(modelconst.UserTableName).
-		Where(sql, req.Input).Find(&user).Error; err != nil {
+		Where(sql+` ADN status != ? AND `+dbi.PostgreNotDeleted, req.Input, model.UserStatusDeleted).Find(&user).Error; err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError.Message("账号不存在"), err, "Find")
 	}
 

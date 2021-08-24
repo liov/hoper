@@ -50,6 +50,7 @@ class _MomentState extends State<MomentView> with AutomaticKeepAliveClientMixin 
         //physics:PageViewTabClampingScrollPhysics(controller:controller.homeController.to),
         controller: controller.tabController,
         children: controller.tabValues.map((f) {
+          print(f);
           if (f == "推荐") return TODOView();
           if (f == "刚刚") return MomentListV2View(tag:'newest');
           if (f == "关注") return TODOView();
