@@ -16,7 +16,7 @@ class SplashController extends GetxController {
     update();
     Timer.periodic(Duration(seconds: 1), (timer) {
       countdown--;
-      if(countdown == 0){
+      if(countdown <= 0){
         timer.cancel();
         if (!adCompleter.isCompleted) adCompleter.complete();
       }
