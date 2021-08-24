@@ -4,7 +4,7 @@ go 1.14
 
 require (
 	bou.ke/monkey v1.0.2
-	github.com/360EntSecGroup-Skylar/excelize/v2 v2.1.0
+	github.com/xuri/excelize/v2 v2.4.1
 	github.com/bcongdon/corral v0.0.0-20190319213343-1f4ad49dee34
 	github.com/brahma-adshonor/gohook v1.1.9
 	github.com/google/flatbuffers v2.0.0+incompatible
