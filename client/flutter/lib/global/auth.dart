@@ -66,6 +66,7 @@ class AuthState {
   }
 
   Future<void> logout() async{
+    userAuth = null;
     globalService.httpClient.options.headers.remove(Authorization);
     globalService.box.delete(AuthState.StringAuthKey);
     try{
