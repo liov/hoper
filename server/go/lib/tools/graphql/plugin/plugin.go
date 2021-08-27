@@ -17,7 +17,7 @@ import (
 	"github.com/gogo/protobuf/types"
 	golangproto "github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/any"
-	cuzproto "github.com/liov/hoper/server/go/lib/protobuf/proto/gogo"
+	cuzproto "github.com/liov/hoper/server/go/lib/protobuf/utils/gogo"
 )
 
 const (

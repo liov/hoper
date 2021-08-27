@@ -1,0 +1,15 @@
+syntax = "proto3";
+package request;
+
+option go_package = "github.com/liov/hoper/server/go/lib/protobuf/request";
+option java_package = "xyz.hoper.protobuf.utils.request";
+
+message Page{
+  uint32 pageNo = 1;
+  uint32 pageSize = 2;
+}
+
+
+message Object{
+  uint64 id = 1;
+}

@@ -6,12 +6,12 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/wrappers.proto";
-import "utils/empty/empty.proto";
-import "utils/response/response.proto";
-import "policy.proto";
+import "empty/empty.proto";
+import "response/response.proto";
+import "utils/policy/policy.proto";
 import "patch/go.proto";
 
-option go_package = "github.com/liov/hoper/v2/protobuf/content";
+option go_package = "github.com/liov/hoper/server/go/mod/protobuf/content";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
@@ -42,5 +42,5 @@ service NoteService {
 message CreateNoteReq {
     string title = 2 [(go.field) = {tags:'validate:"gte=3,lte=10" annotation:"标题"'}];
     string content = 3 [(go.field)={tags:'annotation:"内容"'}];
-    string public_name = 4 [(go.non_sensitive) = true];
+    string public_name = 4 [(policy.non_sensitive) = true];
 }

@@ -74,11 +74,8 @@ func (p *plugin) Generate(file *generator.FileDescriptor) {
 				Federation:     packageConfig{Filename: "federation.gql.go"},
 				Model:          packageConfig{Filename: "models.gql.go"},
 				Resolver:       packageConfig{Filename: "resolver.go"},
-				AutoBind: []string{
-					"github.com/liov/hoper/server/go/lib/protobuf/user",
-					"github.com/liov/hoper/server/go/lib/protobuf/response",
-				},
-				Models: make(map[string]typeMapEntry),
+				AutoBind:       []string{},
+				Models:         make(map[string]typeMapEntry),
 			}
 
 			for typ, key := range p.GqlModelNames() {
