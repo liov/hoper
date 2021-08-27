@@ -1,0 +1,79 @@
+module github.com/liov/hoper/server/go/lib
+
+go 1.16
+
+require (
+	bou.ke/monkey v1.0.2
+	github.com/99designs/gqlgen v0.13.0
+	github.com/Shopify/sarama v1.29.1
+	github.com/alta/protopatch v0.3.4
+	github.com/armon/go-metrics v0.3.9
+	github.com/aws/aws-sdk-go v1.40.28
+	github.com/boombuler/barcode v1.0.1
+	github.com/bytedance/go-tagexpr/v2 v2.8.1
+	github.com/cespare/xxhash v1.1.0
+	github.com/cockroachdb/pebble v0.0.0-20210823170338-2aba043dd4a2
+	github.com/dgraph-io/badger/v3 v3.2103.1
+	github.com/dgraph-io/ristretto v0.1.0
+	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
+	github.com/fsnotify/fsnotify v1.5.0
+	github.com/gin-gonic/gin v1.7.4
+	github.com/go-oauth2/oauth2/v4 v4.4.1
+	github.com/go-openapi/loads v0.20.2
+	github.com/go-openapi/runtime v0.19.30
+	github.com/go-openapi/spec v0.20.3
+	github.com/go-openapi/swag v0.19.15
+	github.com/go-playground/locales v0.14.0
+	github.com/go-playground/universal-translator v0.18.0
+	github.com/go-playground/validator/v10 v10.9.0
+	github.com/go-redis/redis/v8 v8.11.3
+	github.com/gofiber/fiber/v2 v2.17.0
+	github.com/gogo/protobuf v1.3.2
+	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da
+	github.com/golang/protobuf v1.5.2
+	github.com/google/uuid v1.3.0
+	github.com/googleapis/googleapis v0.0.0-20210826012417-4006aa5cbd12 // indirect
+	github.com/gorilla/sessions v1.2.1
+	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
+	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.5.0
+	github.com/json-iterator/go v1.1.11
+	github.com/lni/dragonboat/v3 v3.3.4
+	github.com/markbates/goth v1.68.0
+	github.com/microcosm-cc/bluemonday v1.0.15
+	github.com/modern-go/reflect2 v1.0.1
+	github.com/mozillazg/go-pinyin v0.18.0
+	github.com/mwitkow/go-proto-validators v0.3.2
+	github.com/nsqio/go-nsq v1.0.8
+	github.com/olivere/elastic v6.2.37+incompatible
+	github.com/olivere/elastic/v7 v7.0.27
+	github.com/pelletier/go-toml v1.9.3
+	github.com/prometheus/client_golang v1.11.0
+	github.com/robfig/cron/v3 v3.0.1
+	github.com/russross/blackfriday v1.6.0
+	github.com/spf13/viper v1.8.1
+	github.com/stretchr/testify v1.7.0
+	github.com/tealeg/xlsx/v3 v3.2.3
+	github.com/tidwall/pretty v1.2.0
+	github.com/ugorji/go/codec v1.2.6
+	github.com/valyala/fasthttp v1.29.0
+	github.com/xuri/excelize/v2 v2.4.1
+	go.etcd.io/etcd/client/v3 v3.5.0
+	go.opencensus.io v0.23.0
+	go.uber.org/atomic v1.9.0
+	go.uber.org/multierr v1.7.0
+	go.uber.org/zap v1.19.0
+	golang.org/x/net v0.0.0-20210813160813-60bc85c4be6d
+	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f
+	golang.org/x/tools v0.1.5
+	google.golang.org/genproto v0.0.0-20210821163610-241b8fcbd6c8
+	google.golang.org/grpc v1.40.0
+	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0
+	google.golang.org/protobuf v1.27.1
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
+	gorm.io/driver/mysql v1.1.2
+	gorm.io/driver/postgres v1.1.0
+	gorm.io/driver/sqlite v1.1.4
+	gorm.io/gorm v1.21.13
+	gorm.io/plugin/prometheus v0.0.0-20210820101226-2a49866f83ee
+)

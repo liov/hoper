@@ -13,7 +13,7 @@ import (
 	"regexp"
 	"strings"
 
-	gopb "github.com/liov/hoper/server/go/lib/protobuf/proto/patch"
+	gopb "github.com/liov/hoper/server/go/lib/protobuf/patch"
 	"github.com/liov/hoper/server/go/lib/tools/protoc-gen-go-patch/patch/ident"
 	"golang.org/x/tools/go/ast/astutil"
 

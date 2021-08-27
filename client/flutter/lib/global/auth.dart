@@ -2,7 +2,7 @@
 
 import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/generated/protobuf/user/user.service.pb.dart';
-import 'package:app/generated/protobuf/utils/empty/empty.pb.dart';
+import 'package:app/generated/protobuf/empty/empty.pb.dart';
 import 'package:app/global/service.dart';
 import 'package:app/model/const/const.dart';
 import 'package:app/pages/user/login_view.dart';

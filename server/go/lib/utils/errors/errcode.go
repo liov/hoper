@@ -10,6 +10,14 @@ import (
 	"strconv"
 )
 
+type DefaultErrRep interface {
+	ErrRep() *ErrRep
+}
+
+type GRPCStatus interface {
+	GRPCStatus() *status.Status
+}
+
 type ErrCode uint32
 
 func (x ErrCode) String() string {

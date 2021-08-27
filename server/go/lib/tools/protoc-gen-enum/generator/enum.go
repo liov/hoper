@@ -4,7 +4,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	"github.com/gogo/protobuf/vanity"
-	cuzproto "github.com/liov/hoper/server/go/lib/protobuf/proto/gogo"
+	cuzproto "github.com/liov/hoper/server/go/lib/protobuf/utils/gogo"
 )
 
 func IsEnumValueCN(field *descriptor.EnumValueDescriptorProto) bool {

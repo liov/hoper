@@ -5,16 +5,16 @@ import "user/user.enum.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
-import "utils/empty/empty.proto";
-import "utils/response/response.proto";
-import "utils/request/param.proto";
-import "utils/proto/gogo/graphql.proto";
-import "utils/oauth/oauth.proto";
+import "empty/empty.proto";
+import "response/response.proto";
+import "request/param.proto";
+import "utils/gogo/graphql.proto";
+import "oauth/oauth.proto";
 import "patch/go.proto";
 import "google/protobuf/wrappers.proto";
 
 option java_package = "xyz.hoper.protobuf.user";
-option go_package = "github.com/liov/hoper/v2/protobuf/user";
+option go_package = "github.com/liov/hoper/server/go/mod/protobuf/user";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
