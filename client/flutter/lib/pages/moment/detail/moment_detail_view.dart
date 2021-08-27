@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:app/generated/protobuf/content/content.model.pb.dart' as $pb;
 import 'moment_detail_controller.dart';
 import 'package:fixnum/fixnum.dart';
-import 'package:app/generated/protobuf/utils/request/param.pb.dart' as $1;
+import 'package:app/generated/protobuf/request/param.pb.dart' as $1;
 
 class MomentDetailView extends StatelessWidget {
   MomentDetailView() : super() {

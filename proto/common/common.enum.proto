@@ -1,10 +1,10 @@
 syntax = "proto3";
 package common;
-import "utils/proto/gogo/enum.proto";
+import "utils/gogo/enum.proto";
 import "patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.common";
-option go_package = "github.com/liov/hoper/v2/protobuf/common";
+option go_package = "github.com/liov/hoper/server/go/mod/protobuf/common";
 
 option (gogo.enum_gqlgen_all) = true;
 option (gogo.enum_prefix_all) = false;

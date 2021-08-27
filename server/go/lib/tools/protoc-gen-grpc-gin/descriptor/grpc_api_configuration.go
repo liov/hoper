@@ -2,7 +2,8 @@ package descriptor
 
 import (
 	"fmt"
-	"github.com/liov/hoper/server/go/lib/protobuf/proto/apiconfig"
+	"github.com/liov/hoper/server/go/lib/protobuf/utils/apiconfig"
+
 	"github.com/liov/hoper/server/go/lib/utils/encoding/yaml"
 	"io/ioutil"
 	"strings"

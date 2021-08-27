@@ -13,12 +13,12 @@ import (
 
 ////go:generate go mod download
 //go:generate go install google.golang.org/protobuf/cmd/protoc-gen-go
-//go:generate protoc -I../../../proto/utils/proto --go_out=paths=source_relative:../utils/protobuf/proto ../../../proto/utils/proto/patch/*.proto
-//go:generate protoc -I../../../proto/utils/proto --go_out=paths=source_relative:../utils/protobuf/proto ../../../proto/utils/proto/apiconfig/*.proto
-//go:generate protoc -I../../../proto/utils/proto --go_out=paths=source_relative:../utils/protobuf/proto ../../../proto/utils/proto/openapiconfig/*.proto
+//go:generate protoc -I../protobuf --go_out=paths=source_relative:../protobuf ../protobuf/patch/*.proto
+//go:generate protoc -I../protobuf -I../protobuf/third --go_out=paths=source_relative:../protobuf ../protobuf/utils/apiconfig/*.proto
+//go:generate protoc -I../protobuf -I../protobuf/third --go_out=paths=source_relative:../protobuf ../protobuf/utils/openapiconfig/*.proto
 //go:generate go get -u github.com/gogo/protobuf
 //go:generate go install github.com/gogo/protobuf/protoc-gen-gogo
-//go:generate protoc -I../../../proto/utils/proto -I../../../proto/utils/proto/gogo --gogo_out=Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor,paths=source_relative:../utils/protobuf/proto/gogo ../../../proto/utils/proto/gogo/*.gen.proto
+//go:generate protoc -I../protobuf -I../protobuf/utils/gogo --gogo_out=Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor,paths=source_relative:../protobuf ../protobuf/utils/gogo/*.gen.proto
 //go:generate go install ./protoc-gen-enum
 //go:generate go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
 //go:generate go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2

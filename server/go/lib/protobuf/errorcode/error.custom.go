@@ -10,16 +10,6 @@ import (
 	"strconv"
 )
 
-type statusError ErrRep
-
-type DefaultErrRep interface {
-	ErrRep() *ErrRep
-}
-
-type GRPCStatus interface {
-	GRPCStatus() *status.Status
-}
-
 func (x *ErrRep) Error() string {
 	return x.Message
 }

@@ -29,7 +29,6 @@ func main() {
 const goOut = "go-patch_out=plugin=go,paths=source_relative"
 const grpcOut = "go-patch_out=plugin=go-grpc,paths=source_relative"
 const enumOut = "enum_out=plugins=grpc,paths=source_relative"
-const enumPatchOut = "enum-patch_out=plugin=go,paths=source_relative"
 const gatewayOut = "grpc-gin_out=paths=source_relative"
 const openapiv2Out = "openapiv2_out=logtostderr=true"
 const govalidatorsOut = "govalidators_out=gogoimport=true,paths=source_relative"
@@ -68,7 +67,7 @@ var (
 )
 
 func init() {
-	proto = flag.String("proto", "../../proto", "proto路径")
+	proto = flag.String("proto", "../../../proto", "proto路径")
 	stdPatch := flag.Bool("patch", false, "是否使用原生protopatch")
 	pwd, _ = os.Getwd()
 	*proto = pwd + "/" + *proto
@@ -76,17 +75,20 @@ func init() {
 	gateway, _ = osi.CMD(
 		goList + "github.com/grpc-ecosystem/grpc-gateway/v2",
 	)
-
-	protopatch := *proto + "/utils/proto"
+	google, _ := osi.CMD(
+		goList + "github.com/googleapis/googleapis",
+	)
+	hoperProtocol, _ := osi.CMD(goList + "github.com/liov/hoper/server/go/lib")
+	protopatch := hoperProtocol + "/protobuf"
 	if *stdPatch {
 		protopatch, _ = osi.CMD(goList + "github.com/alta/protopatch")
 	}
 	protobuf, _ = osi.CMD(goList + "google.golang.org/protobuf")
 	//gogoProtoOut, _ := cmd.CMD(goList + "github.com/gogo/protobuf")
 	path = os.Getenv("GOPATH")
-	include = "-I" + *proto + " -I" + gateway +
-		" -I" + gateway + "/third_party/googleapis -I" +
-		protobuf + " -I" + protopatch + " -I" + path + "/src"
+	include = "-I" + gateway +
+		" -I" + google + " -I" + hoperProtocol + "/protobuf -I" +
+		protobuf + " -I" + protopatch + " -I" + path + "/src" + " -I" + *proto
 }
 
 func run(dir string) {
@@ -139,21 +141,16 @@ func genutils(dir string) {
 		if fileInfos[i].IsDir() {
 			genutils(dir + "/" + fileInfos[i].Name())
 		}
-		if strings.Contains(dir, "utils/proto/gogo") {
-			if strings.HasSuffix(dir, ".gen.proto") {
-				arg := "protoc -I" + *proto + " " + dir + " --gogo_out=plugins=grpc,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor:" + pwd + "/protobuf"
-				execi.Run(arg)
-			}
-			continue
-		}
 		if strings.HasSuffix(fileInfos[i].Name(), "enum.proto") {
-			arg := "protoc " + include + " " + dir + "/" + fileInfos[i].Name() + " --" + enumOut + ":" + pwd + "/protobuf"
+			arg := "protoc " + include + " " + dir + "/*enum.proto" + " --" + enumOut + ":" + pwd + "/protobuf"
 			execi.Run(arg)
+			break
 		}
-		for _, plugin := range model {
-			arg := "protoc " + include + " " + dir + "/*.proto" + " --" + plugin + ":" + pwd + "/protobuf"
-			execi.Run(arg)
-		}
+	}
+
+	for _, plugin := range model {
+		arg := "protoc " + include + " " + dir + "/*.proto" + " --" + plugin + ":" + pwd + "/protobuf"
+		execi.Run(arg)
 	}
 }
 

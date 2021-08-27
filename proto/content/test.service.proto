@@ -4,11 +4,11 @@ import "content/content.model.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
-import "utils/empty/empty.proto";
-import "utils/response/response.proto";
+import "empty/empty.proto";
+import "response/response.proto";
 import "patch/go.proto";
 
-option go_package = "github.com/liov/hoper/v2/protobuf/content";
+option go_package = "github.com/liov/hoper/server/go/mod/protobuf/content";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {

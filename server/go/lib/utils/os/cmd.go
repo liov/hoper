@@ -16,6 +16,9 @@ func CMD(s string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if len(buf) == 0 {
+		return "", nil
+	}
 	return string(buf[:len(buf)-1]), nil
 }
 
