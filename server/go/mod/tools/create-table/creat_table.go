@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/liov/hoper/server/go/lib/tools/get_db"
 	"github.com/liov/hoper/server/go/mod/protobuf/content"
 	"github.com/liov/hoper/server/go/mod/protobuf/user"
-	"github.com/liov/hoper/server/go/mod/tools/create-table/get"
 	"github.com/liov/hoper/server/go/mod/upload/model"
 )
 
@@ -41,7 +41,7 @@ var uploadMod = []interface{}{
 func main() {
 	//get.GetDB().Debug().Migrator().DropTable(userMod...)
 	//get.GetDB().Debug().Migrator().CreateTable(userMod...)
-	get.GetDB().Debug().Migrator().CreateTable(contentMod...)
+	get_db.GetDB().Debug().Migrator().CreateTable(contentMod...)
 	//get.GetDB().Debug().Migrator().CreateTable(uploadMod...)
 	//get.GetDB().Debug().Table("moment_comment").Migrator().CreateTable(&content.Comment{})
 	//get.GetDB().Debug().Migrator().CreateTable(&model.UploadExt{})

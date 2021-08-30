@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	reflecti "github.com/liov/hoper/v2/utils/reflect"
+	reflecti "github.com/liov/hoper/server/go/lib/utils/reflect"
 	"reflect"
 	"unsafe"
 )

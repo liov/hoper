@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/liov/hoper/v2/utils/number"
+	"github.com/liov/hoper/server/go/lib/utils/number"
 )
 
 const (

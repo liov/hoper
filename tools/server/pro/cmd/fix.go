@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/liov/hoper/v2/utils/fs"
+	"github.com/liov/hoper/server/go/lib/utils/fs"
 	"tools/pro"
 )
 
