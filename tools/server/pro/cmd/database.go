@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/liov/hoper/v2/tools/create-table/get"
+	"github.com/liov/hoper/server/go/lib/tools/get_db"
 
 	"tools/pro"
 )
@@ -31,7 +31,7 @@ func history(sd *pro.Speed) {
 }
 
 func database() {
-	get.GetDB().Migrator().CreateTable(&pro.Post{})
+	get_db.GetDB().Migrator().CreateTable(&pro.Post{})
 }
 
 func historyOne(sd *pro.Speed) {

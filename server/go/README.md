@@ -14,7 +14,7 @@ import "patch/go.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 option java_package = "xyz.hoper.protobuf.user";
-option go_package = "github.com/liov/hoper/v2/protobuf/user";
+option go_package = "github.com/liov/hoper/server/go/lib/protobuf/user";
 // 用户
 message User {
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
@@ -35,7 +35,7 @@ import "patch/go.proto";
 option (gogo.enum_gqlgen_all) = true;
 
 option java_package = "xyz.hoper.protobuf.user";
-option go_package = "github.com/liov/hoper/v2/protobuf/user";
+option go_package = "github.com/liov/hoper/server/go/lib/protobuf/user";
 
 option (gogo.enum_prefix_all) = false;
 option (go.file) = {no_enum_prefix:true};
@@ -172,19 +172,19 @@ main.go
 package main
 
 import (
-	"github.com/liov/hoper/v2/tailmon/pick"
-	"github.com/liov/hoper/v2/utils/net/http/gin/handler"
+	"github.com/liov/hoper/server/go/lib/tailmon/pick"
+	"github.com/liov/hoper/server/go/lib/utils/net/http/gin/handler"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/liov/hoper/v2/protobuf/user"
-	"github.com/liov/hoper/v2/tailmon"
-	"github.com/liov/hoper/v2/tailmon/initialize"
-	uconf "github.com/liov/hoper/v2/user/conf"
-	udao "github.com/liov/hoper/v2/user/dao"
-	userservice "github.com/liov/hoper/v2/user/service"
-	"github.com/liov/hoper/v2/utils/log"
+	"github.com/liov/hoper/server/go/lib/protobuf/user"
+	"github.com/liov/hoper/server/go/lib/tailmon"
+	"github.com/liov/hoper/server/go/lib/tailmon/initialize"
+	uconf "github.com/liov/hoper/server/go/lib/user/conf"
+	udao "github.com/liov/hoper/server/go/lib/user/dao"
+	userservice "github.com/liov/hoper/server/go/lib/user/service"
+	"github.com/liov/hoper/server/go/lib/utils/log"
 
 	"go.opencensus.io/examples/exporter"
 	"go.opencensus.io/plugin/ocgrpc"
