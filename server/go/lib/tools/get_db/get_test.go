@@ -1,4 +1,4 @@
-package get
+package get_db
 
 import (
 	"testing"

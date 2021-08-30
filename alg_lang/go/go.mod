@@ -8,7 +8,7 @@ require (
 	github.com/bcongdon/corral v0.0.0-20190319213343-1f4ad49dee34
 	github.com/brahma-adshonor/gohook v1.1.9
 	github.com/google/flatbuffers v2.0.0+incompatible
-	github.com/liov/hoper/v2 v2.0.0
+	github.com/liov/hoper/server/go/lib v1.0.0
 	github.com/lucasb-eyer/go-colorful v1.0.2
 	github.com/mattetti/filebuffer v1.0.0 // indirect
 	github.com/modern-go/reflect2 v1.0.1
@@ -18,4 +18,4 @@ require (
 	golang.org/x/sys v0.0.0-20210603081109-ebe580a85c40
 )
 
-replace github.com/liov/hoper/v2 => ../../server/go
+replace github.com/liov/hoper/server/go/lib => ../../server/go/lib

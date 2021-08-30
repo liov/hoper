@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	py2 "github.com/liov/hoper/v2/utils/strings/pinyin"
+	py2 "github.com/liov/hoper/server/go/lib/utils/strings/pinyin"
 	"io"
 	"log"
 	"math/rand"
@@ -20,9 +20,9 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/liov/hoper/v2/tools/create-table/get"
-	"github.com/liov/hoper/v2/utils/fs"
-	"github.com/liov/hoper/v2/utils/strings"
+	"github.com/liov/hoper/server/go/lib/tools/get_db"
+	"github.com/liov/hoper/server/go/lib/utils/fs"
+	"github.com/liov/hoper/server/go/lib/utils/strings"
 	"golang.org/x/net/html"
 	"gorm.io/gorm"
 )
@@ -389,7 +389,7 @@ func Start(job func(sd *Speed)) {
 var DB *gorm.DB
 
 func SetDB() {
-	DB = get.GetDB()
+	DB = get_db.GetDB()
 }
 
 type Post struct {
