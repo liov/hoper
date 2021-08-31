@@ -4,7 +4,6 @@ package tools
 
 import (
 	_ "github.com/alta/protopatch/cmd/protoc-gen-go-patch"
-	_ "github.com/googleapis/googleapis"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2"
 	_ "github.com/mwitkow/go-proto-validators/protoc-gen-govalidators"

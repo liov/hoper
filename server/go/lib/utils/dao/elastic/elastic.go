@@ -7,7 +7,7 @@ import (
 
 	"github.com/liov/hoper/server/go/lib/utils/encoding/json"
 	"github.com/liov/hoper/server/go/lib/utils/log"
-	"github.com/olivere/elastic"
+	"github.com/olivere/elastic/v7"
 )
 
 /**
@@ -150,13 +150,13 @@ func query() {
 	}
 	printEmployee(res, err)
 
-	if res.Hits.TotalHits > 0 {
+	if res.Hits.TotalHits.Value > 0 {
 		fmt.Printf("Found a total of %d Employee \n", res.Hits.TotalHits)
 
 		for _, hit := range res.Hits.Hits {
 
 			var t Employee
-			err := json.Standard.Unmarshal(*hit.Source, &t) //另外一种取数据的方法
+			err := json.Standard.Unmarshal(hit.Source, &t) //另外一种取数据的方法
 			if err != nil {
 				fmt.Println("Deserialization failed")
 			}
