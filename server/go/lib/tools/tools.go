@@ -1,9 +1,10 @@
-//+build tools
+//go:build tools
 
 package tools
 
 import (
 	_ "github.com/alta/protopatch/cmd/protoc-gen-go-patch"
+	_ "github.com/googleapis/googleapis"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2"
 	_ "github.com/mwitkow/go-proto-validators/protoc-gen-govalidators"
@@ -16,7 +17,6 @@ import (
 //go:generate protoc -I../protobuf --go_out=paths=source_relative:../protobuf ../protobuf/patch/*.proto
 //go:generate protoc -I../protobuf -I../protobuf/third --go_out=paths=source_relative:../protobuf ../protobuf/utils/apiconfig/*.proto
 //go:generate protoc -I../protobuf -I../protobuf/third --go_out=paths=source_relative:../protobuf ../protobuf/utils/openapiconfig/*.proto
-//go:generate go get -u github.com/gogo/protobuf
 //go:generate go install github.com/gogo/protobuf/protoc-gen-gogo
 //go:generate protoc -I../protobuf -I../protobuf/utils/gogo --gogo_out=Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor,paths=source_relative:../protobuf ../protobuf/utils/gogo/*.gen.proto
 //go:generate go install ./protoc-gen-enum

@@ -79,7 +79,7 @@ type Imethod struct {
 type Tflag uint8
 type NameOff int32 // offset to a name
 type TypeOff int32 // offset to an *Rtype
-type textOff int32 // offset from top of text section
+type TextOff int32 // offset from top of text section
 
 // Rtype must be kept in sync with ../runtime/type.go:/^type._type.
 type Rtype struct {

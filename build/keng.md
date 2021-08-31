@@ -750,3 +750,26 @@ minikube start --extra-config=apiserver.GenericServerRunOptions.ServiceNodePortR
 sudo vim /etc/kubernetes/manifests/kube-apiserver.yaml
 command 下添加 --service-node-port-range=1-65535 参数
 kill 掉 kube-apiserver
+
+# 编译在docker alpine linux中可用的go程序
+CGO_ENABLED=0 go build
+----------------------
+go build -tags netgo
+-------------------
+```Dockerfile
+FROM docker.io/golang:alpine
+
+RUN echo "https://mirror.tuna.tsinghua.edu.cn/alpine/v3.14/main" > /etc/apk/repositories
+
+RUN apk add --no-cache gcc musl-dev
+
+```
+docker build -t go-build:1.0 .
+docker run -e "GOPROXY=https://goproxy.io" -it --rm -v `pwd`:/root/src -w /root/src  go-build:1.0  go build github.com/Kong/go-pluginserver
+
+/usr/local/go/pkg/tool/linux_amd64/link: running gcc failed: exec: "gcc": executable file not found in $PATH
+------------------------------------------------------------------------------------------------------------------------------------------------------
+mkdir /lib64
+ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2 \
+&& ln -s /usr/lib/libGraphicsMagickWand.so.2.9.4 /lib/libGraphicsMagickWand-Q16.so.2 \
+&& ln -s /usr/lib/libGraphicsMagick.so.3.21.0 /lib/libGraphicsMagick-Q16.so.3

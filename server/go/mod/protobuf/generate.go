@@ -67,28 +67,29 @@ var (
 )
 
 func init() {
+	pwd, _ = os.Getwd()
 	proto = flag.String("proto", "../../../proto", "proto路径")
 	stdPatch := flag.Bool("patch", false, "是否使用原生protopatch")
-	pwd, _ = os.Getwd()
-	*proto = pwd + "/" + *proto
 	goList = `go list -m -f {{.Dir}} `
+	libDir, _ := osi.CMD(goList + "github.com/liov/hoper/server/go/lib")
+	os.Chdir(libDir)
+
 	gateway, _ = osi.CMD(
 		goList + "github.com/grpc-ecosystem/grpc-gateway/v2",
 	)
 	google, _ := osi.CMD(
 		goList + "github.com/googleapis/googleapis",
 	)
-	hoperProtocol, _ := osi.CMD(goList + "github.com/liov/hoper/server/go/lib")
-	protopatch := hoperProtocol + "/protobuf"
+	protopatch := libDir + "/protobuf"
 	if *stdPatch {
 		protopatch, _ = osi.CMD(goList + "github.com/alta/protopatch")
 	}
 	protobuf, _ = osi.CMD(goList + "google.golang.org/protobuf")
 	//gogoProtoOut, _ := cmd.CMD(goList + "github.com/gogo/protobuf")
-	path = os.Getenv("GOPATH")
-	include = "-I" + gateway +
-		" -I" + google + " -I" + hoperProtocol + "/protobuf -I" +
-		protobuf + " -I" + protopatch + " -I" + path + "/src" + " -I" + *proto
+	include = "-I" + gateway + " -I" + protopatch +
+		" -I" + google + " -I" + libDir + "/protobuf -I" +
+		protobuf + " -I" + libDir + "/protobuf/third" + " -I" + *proto
+	os.Chdir(pwd)
 }
 
 func run(dir string) {
