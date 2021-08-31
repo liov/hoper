@@ -63,7 +63,8 @@ func FindFuncWithName(name string) (uintptr, error) {
 // Everything below is taken from the runtime package, and must stay in sync
 // with it.
 
-//go:linkname Firstmoduledata runtime.firstmoduledata
+//go 1.17不支持链接未导出变量
+////go:linkname Firstmoduledata runtime.firstmoduledata
 var Firstmoduledata moduledata
 
 type moduledata struct {
