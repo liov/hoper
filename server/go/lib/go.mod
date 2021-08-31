@@ -1,6 +1,6 @@
 module github.com/liov/hoper/server/go/lib
 
-go 1.16
+go 1.17
 
 require (
 	bou.ke/monkey v1.0.2
@@ -31,6 +31,7 @@ require (
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da
 	github.com/golang/protobuf v1.5.2
+	github.com/google/flatbuffers v2.0.0+incompatible // indirect
 	github.com/google/uuid v1.3.0
 	github.com/googleapis/googleapis v0.0.0-20210826012417-4006aa5cbd12 // indirect
 	github.com/gorilla/sessions v1.2.1
