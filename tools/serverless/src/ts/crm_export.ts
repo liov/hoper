@@ -7,7 +7,7 @@ const key = "hyx"
 const REQ_PRODUCT_TYPE_ENCRYPT = 'WyIiLCLnlLXlvbEiLCLom4vns5UiLCLnpLzljIUv54G16YCa5Yi4Iiwi5Zu+5LmmIiwi5L2T5qOAIiwi5Zui5bu6Iiwi56aP5Yip5Yi477yI5ZWG5Z+O6YCa77yJIiwi6LaF57qn5Y2hIiwi6ZSm56aP5YipIiwi5a6a5Yi25Yi4Il0=';
 const REQ_PRODUCT_TYPE = JSON.parse(Buffer.from(REQ_PRODUCT_TYPE_ENCRYPT,'base64').toString()) as string[];
 
-const STAGE = ['目标客户','开发中客户','意向客户','成交客户','忠实客户','流失客户'];
+const STAGE = [''];
 const crm = await mysql.createConnection({
     host: 'crm_host',
     user: 'crm',
@@ -35,8 +35,8 @@ async  function gen(rows: RowDataPacket[],path: string) {
     const userMap = await getUserInfoMap((rows as RowDataPacket[]).map((row)=>row.owner_id > 0 ? row.owner_id:row.applicant_id));
     const workbook = new Excel.Workbook();
     const sheet = workbook.addWorksheet('Sheet1');
-    sheet.addRow(['战区','分部','销售人员','客户名称','客户编号','地址','单位电话','客户阶段','需求产品类型','联系人姓名','性别','职位','联系方式','电子邮箱',"是否在资源池"]);
-    (rows as RowDataPacket[]).forEach((row)=>{
+    sheet.addRow(['']);
+    rows.forEach((row)=>{
         const erpId = (row.owner_id > 0 ? row.owner_id:row.applicant_id) as number;
         const isRespool = row.owner_id > 0 ? "否":"是";
         const erpInfo = userMap.get(erpId) ? (userMap.get(erpId) as RowDataPacket) : { id: 0, name: '', area_name: '', dname: '' }
