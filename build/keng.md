@@ -773,3 +773,10 @@ mkdir /lib64
 ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2 \
 && ln -s /usr/lib/libGraphicsMagickWand.so.2.9.4 /lib/libGraphicsMagickWand-Q16.so.2 \
 && ln -s /usr/lib/libGraphicsMagick.so.3.21.0 /lib/libGraphicsMagick-Q16.so.3
+
+# go.info.runtime.firstmoduledata: relocation target go.info.github.com/liov/hoper/server/go/lib/utils/reflect.moduledata not defined
+https://github.com/golang/go/issues/46777
+这是个从不被有意支持的功能，不建议使用
+//go 1.17报错，要带完整包名让编译器找的到
+////go:linkname Firstmoduledata runtime.firstmoduledata
+//go:linkname reflecti.Firstmoduledata runtime.firstmoduledata

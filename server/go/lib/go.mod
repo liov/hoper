@@ -33,6 +33,7 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/google/flatbuffers v2.0.0+incompatible // indirect
 	github.com/google/uuid v1.3.0
+	github.com/googleapis/googleapis v0.0.0-20210826012417-4006aa5cbd12 // indirect
 	github.com/gorilla/sessions v1.2.1
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0

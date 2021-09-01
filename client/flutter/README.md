@@ -54,10 +54,10 @@ https://storage.flutter-io.cn/download.flutter.io
 
 keytool -genkey -v -keystore D:/key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias key
 
-pub global activate protoc_plugin
+dart pub global activate protoc_plugin
 
 export PATH="$PATH:$HOME/.pub-cache/bin" //$HOME\AppData\Local\Pub\Cache\bin
-
+export PATH="$PATH:$flutterSDK/bin/cache\dart-sdk\bin"
 protoc --dart_out=grpc:lib/generated --proto_path=../../proto_std  -Iprotos ../../proto_std/user/user.enum.proto
 
 怪不得[flutter_lua](https://github.com/drydart/flutter_lua)插件有libgojni.so 且只支持lua5.2,

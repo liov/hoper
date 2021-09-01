@@ -43,6 +43,7 @@ func init() {
 	gateway, _ = osi.CMD(
 		goList + "github.com/grpc-ecosystem/grpc-gateway/v2",
 	)
+	osi.CMD("go mod download github.com/googleapis/googleapis")
 	google, _ := osi.CMD(
 		goList + "github.com/googleapis/googleapis",
 	)

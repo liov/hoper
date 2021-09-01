@@ -72,14 +72,16 @@ func init() {
 	stdPatch := flag.Bool("patch", false, "是否使用原生protopatch")
 	goList = `go list -m -f {{.Dir}} `
 	libDir, _ := osi.CMD(goList + "github.com/liov/hoper/server/go/lib")
+	osi.CMD("go mod download github.com/googleapis/googleapis")
+	google, _ := osi.CMD(
+		goList + "github.com/googleapis/googleapis",
+	)
 	os.Chdir(libDir)
 
 	gateway, _ = osi.CMD(
 		goList + "github.com/grpc-ecosystem/grpc-gateway/v2",
 	)
-	google, _ := osi.CMD(
-		goList + "github.com/googleapis/googleapis",
-	)
+
 	protopatch := libDir + "/protobuf"
 	if *stdPatch {
 		protopatch, _ = osi.CMD(goList + "github.com/alta/protopatch")
