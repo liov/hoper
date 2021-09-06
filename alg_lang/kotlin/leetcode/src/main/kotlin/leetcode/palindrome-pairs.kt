@@ -4,7 +4,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 /**
-给定一组唯一的单词， 找出所有不同 的索引对(i, j)，使得列表中的两个单词， words[i] + words[j] ，可拼接成回文串。
+给定一组唯一的单词， 找出所有不同的索引对(i, j)，使得列表中的两个单词，words[i] + words[j]，可拼接成回文串。
 
 示例 1:
 
