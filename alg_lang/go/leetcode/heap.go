@@ -1,10 +1,23 @@
-package heap
+package leetcode
 
-import "math"
+import (
+	"math"
+)
+
+func swap(heap []int, i, j int) {
+	heap[i], heap[j] = heap[j], heap[i]
+}
+
+func parent(i int) int {
+	return (i - 1) / 2
+}
+func leftChild(i int) int {
+	return i*2 + 1
+}
 
 type MaxHeap []int
 
-func New(l int) MaxHeap {
+func NewMaxHeap(l int) MaxHeap {
 	maxHeap := make(MaxHeap, l)
 	for i := range maxHeap {
 		maxHeap[i] = math.MaxInt
@@ -17,7 +30,7 @@ func NewMaxHeapFromArr(arr []int) MaxHeap {
 	for i := 1; i < len(arr); i++ {
 		heap.adjustUp(i)
 	}
-	return arr
+	return heap
 }
 
 func (heap MaxHeap) Put(val int) {
@@ -26,17 +39,6 @@ func (heap MaxHeap) Put(val int) {
 	}
 	heap[0] = val
 	heap.adjustDown(0)
-}
-
-func swap(heap []int, i, j int) {
-	heap[i], heap[j] = heap[j], heap[i]
-}
-
-func parent(i int) int {
-	return (i - 1) / 2
-}
-func leftChild(i int) int {
-	return i*2 + 1
 }
 
 func (heap MaxHeap) adjustUp(i int) {
