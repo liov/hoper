@@ -33,3 +33,22 @@ func TestMyAtoi(t *testing.T) {
 func TestSearch2(t *testing.T) {
 	fmt.Println(search2([]int{8, 1, 2, 3, 4, 5, 6, 7}, 6))
 }
+
+func TestFindMaximizedCapital(t *testing.T) {
+	fmt.Println(findMaximizedCapital(10, 0, []int{1, 2, 3}, []int{0, 1, 2}))
+}
+
+func TestFullJustify(t *testing.T) {
+	fmt.Println(fullJustify([]string{"Science", "is", "what", "we", "understand", "well", "enough", "to", "explain", "to", "a", "computer.", "Art", "is", "everything", "else", "we", "do"}, 20))
+}
+
+func TestSwapPairs(t *testing.T) {
+	list := NewList([]int{1, 2, 3})
+	fmt.Println(swapPairs(list))
+}
+
+func TestNextPermutation(t *testing.T) {
+	nums := []int{1, 2, 3}
+	nextPermutation(nums)
+	fmt.Println(nums)
+}

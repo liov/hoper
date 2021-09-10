@@ -55,22 +55,23 @@ func search2(nums []int, target int) int {
 		if nums[left] == target {
 			return left
 		}
+
 		if nums[right] > target {
 			if nums[i] > nums[right] || nums[i] < target {
 				left = i + 1
-				right = right - 1
+				right--
 			} else {
-				left = left + 1
+				left++
 				right = i - 1
 			}
 
 		} else {
 			if nums[i] < nums[right] || nums[i] > target {
-				left = left + 1
+				left++
 				right = i - 1
 			} else {
 				left = i + 1
-				right = right - 1
+				right--
 			}
 
 		}
