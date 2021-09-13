@@ -2,10 +2,14 @@ package contexti
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
+	"github.com/liov/hoper/server/go/lib/tiga/initialize"
 	"github.com/liov/hoper/server/go/lib/utils/net/http/request"
 	timei "github.com/liov/hoper/server/go/lib/utils/time"
 	"github.com/valyala/fasthttp"
+	"go.opencensus.io/trace/propagation"
+	gtrace "golang.org/x/net/trace"
 	"net/http"
 	"net/url"
 	"sync"
@@ -174,6 +178,30 @@ func (ctxi *Ctx) ContextWrapper() context.Context {
 }
 
 func CtxWithRequest(ctx context.Context, r *http.Request) *Ctx {
+	// 系统trace只能追踪单个请求，且只记录时间及是否完成
+	t := gtrace.New(initialize.InitConfig.Module, r.RequestURI)
+	defer t.Finish()
+	ctx = gtrace.NewContext(ctx, t)
+
+	traceString := r.Header.Get(httpi.GrpcTraceBin)
+	var traceBin []byte
+	if len(traceString)%4 == 0 {
+		// Input was padded, or padding was not necessary.
+		traceBin, _ = base64.StdEncoding.DecodeString(traceString)
+	}
+	traceBin, _ = base64.RawStdEncoding.DecodeString(traceString)
+
+	var span *trace.Span
+	if parent, ok := propagation.FromBinary(traceBin); ok {
+		ctx, span = trace.StartSpanWithRemoteParent(ctx, r.RequestURI,
+			parent, trace.WithSampler(trace.AlwaysSample()),
+			trace.WithSpanKind(trace.SpanKindServer))
+	} else {
+		ctx, span = trace.StartSpan(ctx, r.RequestURI,
+			trace.WithSampler(trace.AlwaysSample()),
+			trace.WithSpanKind(trace.SpanKindServer))
+	}
+
 	ctxi := newCtx(ctx)
 	ctxi.setWithReq(r)
 	return ctxi
