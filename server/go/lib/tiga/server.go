@@ -55,16 +55,16 @@ func (s *Server) Serve() {
 			defer t.Finish()
 			ctx = gtrace.NewContext(ctx, t)
 		}
+		// 直接从远程读取Trace信息，Trace是否为空交给propagation包判断
+		traceString := r.Header.Get(httpi.GrpcTraceBin)
+		var traceBin []byte
+		if len(traceString)%4 == 0 {
+			// Input was padded, or padding was not necessary.
+			traceBin, _ = base64.StdEncoding.DecodeString(traceString)
+		}
+		traceBin, _ = base64.RawStdEncoding.DecodeString(traceString)
 		if openTracing {
 			var span *trace.Span
-			// 直接从远程读取Trace信息，Trace是否为空交给propagation包判断
-			traceString := r.Header.Get(httpi.GrpcTraceBin)
-			var traceBin []byte
-			if len(traceString)%4 == 0 {
-				// Input was padded, or padding was not necessary.
-				traceBin, _ = base64.StdEncoding.DecodeString(traceString)
-			}
-			traceBin, _ = base64.RawStdEncoding.DecodeString(traceString)
 			if parent, ok := propagation.FromBinary(traceBin); ok {
 				ctx, span = trace.StartSpanWithRemoteParent(ctx, r.RequestURI,
 					parent, trace.WithSampler(trace.AlwaysSample()),
