@@ -9,4 +9,5 @@ members = [
     "hoper",
     "p_macro",
     "ffi",
+    "leetcode"
 ]

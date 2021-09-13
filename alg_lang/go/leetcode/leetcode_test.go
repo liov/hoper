@@ -52,3 +52,7 @@ func TestNextPermutation(t *testing.T) {
 	nextPermutation(nums)
 	fmt.Println(nums)
 }
+
+func TestNumberOfBoomerangs(t *testing.T) {
+	fmt.Println(numberOfBoomerangs([][]int{{0, 0}, {1, 0}, {2, 0}}))
+}
