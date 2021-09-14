@@ -6,7 +6,7 @@ function add(x, y) {
 // Currying后
 function curryingAdd(x) {
     return function (y) {
-        return x + y
+        return add(x, y)
     }
 }
 
