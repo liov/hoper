@@ -2,7 +2,7 @@ local mobdebug = require("mobdebug.mobdebug");
 mobdebug.start();
 local _M={_VERSION = 0.1}
 
-function _M.handle()
+function _M.handler()
     if ngx.var.arg_method then
         local fun =_M[ngx.var.arg_method];
         if fun then

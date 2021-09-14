@@ -655,7 +655,7 @@ LEFT JOIN A表为驱动表，INNER JOIN MySQL会自动找出那个数据少的�
 
 1）MySQL中没有full join，可以用以下方式来解决：
 
-select * from A left join B on B.name = A.namewhere B.name is nullunion allselect * from B;
+select * from A left join B on B.name = A.name where B.name is null union all select * from B;
 
 2）尽量使用inner join，避免left join：
 
