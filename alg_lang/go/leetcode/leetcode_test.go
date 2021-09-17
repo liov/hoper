@@ -56,3 +56,11 @@ func TestNextPermutation(t *testing.T) {
 func TestNumberOfBoomerangs(t *testing.T) {
 	fmt.Println(numberOfBoomerangs([][]int{{0, 0}, {1, 0}, {2, 0}}))
 }
+
+func TestFirstMissingPositive(t *testing.T) {
+	fmt.Println(firstMissingPositive([]int{3, 4, -1, 1}))
+}
+
+func TestIsBipartite(t *testing.T) {
+	fmt.Println(isBipartite2([][]int{{1, 3}, {0, 2}, {1, 3}, {0, 2}}))
+}
