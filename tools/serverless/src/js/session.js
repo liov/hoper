@@ -2,7 +2,7 @@ const skipValidation = "e30=";
 
 function erp() {
     const sess = {
-        employeeId: 1,
+        employeeId: 7,
         type: 1,
         platformType: 101,
         thirdCompId: 0,
