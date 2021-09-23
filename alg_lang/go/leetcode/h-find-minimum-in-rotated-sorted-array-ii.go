@@ -34,13 +34,6 @@ nums 原来是一个升序排序的数组，并进行了 1 至 n 次旋转
 这道题是 寻找旋转排序数组中的最小值 的延伸题目。
 允许重复会影响算法的时间复杂度吗？会如何影响，为什么？
 */
-func min(a, b int) int {
-	if a < b {
-		return a
-	} else {
-		return b
-	}
-}
 
 func findMin(numbers []int) int {
 	n := len(numbers)

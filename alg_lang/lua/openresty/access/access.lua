@@ -1,18 +1,8 @@
 
 
 local redis = require "redis"
+
 local red = redis.new()
-
---imoprt_path = dofile("./init.lua")
---imoprt_path()
-
-red:set_timeout(1000)
-
-local ok, err = red:connect("127.0.0.1", 6379)
-if not ok then
-    ngx.say("failed to connect: ", err,"<br>")
-    return
-end
 
 local IP_List = "IP_List"
 
@@ -27,4 +17,7 @@ else
 end
 
 
-close_redis(red)
+redis.close_redis(red)
+
+ngx.log(ngx.ERR,ngx.var.lua_path)
+dofile(work_dir.."access/load_module.lua")

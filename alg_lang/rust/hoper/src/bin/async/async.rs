@@ -5,6 +5,7 @@ use async_std::{
     io,
     net::TcpStream,
 };
+use futures::{AsyncWriteExt, AsyncReadExt};
 
 async fn get() -> io::Result<Vec<u8>> {
     let mut stream = TcpStream::connect("hoper.xyz:80").await?;

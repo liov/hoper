@@ -65,7 +65,12 @@ protoc --dart_out=grpc:lib/generated --proto_path=../../proto_std  -Iprotos ../.
 这有个[支持lua5.4的的clua](https://github.com/tgarm/flutter-luavm)
 
 
-flutter pub run pigeon --input lib/pigeons/route.dart
+flutter pub run pigeon --input lib/pigeons/route.dart \
+  --dart_out lib/pigeon.dart \
+  --objc_header_out ios/Runner/route.h \
+  --objc_source_out ios/Runner/route.m \
+  --java_out android/app/src/main/java/io/flutter/plugins/Route.java \
+  --java_package "io.flutter.plugins"
 rustup target add x86_64-linux-android armv7-linux-androideabi aarch64-linux-android
 cargo build --release --target=armv7-linux-androideabi
 flutter build apk --release --target-platform android-arm64
