@@ -1,5 +1,4 @@
-local mobdebug = require("mobdebug.mobdebug");
-mobdebug.start();
+
 local _M={_VERSION = 0.1}
 
 function _M.handler()

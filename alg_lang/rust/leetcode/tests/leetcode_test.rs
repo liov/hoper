@@ -1,4 +1,10 @@
-use leetcode::*;
+use leetcode::two_sum::*;
+use leetcode::add_two_numbers::add_two_numbers;
+use leetcode::multiply::multiply;
+use leetcode::list::ListNode;
+use leetcode::letter_combinations::letter_combinations;
+use leetcode::rotate_right::rotate_right3;
+use leetcode::trap_rain_water_ii::{trap_rain_water2, insert_sort};
 
 #[test]
 fn two_sum_test(){
@@ -94,7 +100,7 @@ fn trap_rain_water_test(){
 
 #[test]
 fn insert_sort_test(){
-    let mut t1=vec![2,6,4];
+    let t1=vec![2,6,4];
     let mut t2 = vec![5,4,3,2,1];
     let t3= vec![6,6,5,4,3,2,2,1];
     insert_sort(&mut t2,t1);
