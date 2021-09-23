@@ -62,5 +62,9 @@ func TestFirstMissingPositive(t *testing.T) {
 }
 
 func TestIsBipartite(t *testing.T) {
-	fmt.Println(isBipartite2([][]int{{1, 3}, {0, 2}, {1, 3}, {0, 2}}))
+	fmt.Println(isBipartite([][]int{{1, 3}, {0, 2}, {1, 3}, {0, 2}}))
+}
+
+func TestMaxArea(t *testing.T) {
+	fmt.Println(maxArea([]int{2, 3, 4, 5, 18, 17, 6}))
 }

@@ -58,7 +58,7 @@ gcc -shared -o libvis.so -fvisibility=hidden vis.c
 
  二、动态库函数隐藏技巧
  
- 　　向客户提供动态链接库(.so)时，有些关键的函数名不希望暴露出去，此时便可以通过gcc的-fvisibility=hidden选项对编译生成的so进行函数符号隐藏，如：LOCAL_CPPFLAGS +=-fvisibility=hidden，执行编译后，使用nm -D xxx.so命令或者readelf --symbols xxx.so查看函数名的确被隐藏，但此时是将所有函数名都隐藏了，那么客户加载so时需要调用的接口函数名(xxx)也会找不到定义，导致编译报undefined reference to xxx错误，所以需要暴露（导出）的函数前应该增加属性__attribute__ ((visibility("default")))设置成可见。
+ 　　向客户提供动态链接库(.so)时，有些关键的函数名不希望暴露出去，此时便可以通过gcc的-fvisibility=hidden选项对编译生成的so进 的行函数符号隐藏，如：LOCAL_CPPFLAGS +=-fvisibility=hidden，执行编译后，使用nm -D xxx.so命令或者readelf --symbols xxx.so查看函数名的确被隐藏，但此时是将所有函数名都隐藏了，那么客户加载so时需要调用的接口函数名(xxx)也会找不到定义，导致编译报undefined reference to xxx错误，所以需要暴露（导出）的函数前应该增加属性__attribute__ ((visibility("default")))设置成可见。
  
  例如：
 ```c
