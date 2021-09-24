@@ -23,33 +23,31 @@ sourceSets {
 
 
 dependencies {
-    implementation("io.quarkus:quarkus-kubernetes")
-    implementation("io.quarkus:quarkus-smallrye-context-propagation")
-    implementation("io.quarkus:quarkus-resteasy-reactive-jsonb")
-    implementation("io.quarkus:quarkus-smallrye-opentracing")
-    implementation("io.quarkus:quarkus-micrometer-registry-prometheus")
-    implementation("io.quarkus:quarkus-opentelemetry-exporter-jaeger")
-    implementation("io.quarkus:quarkus-mailer")
-    implementation("io.quarkus:quarkus-kotlin")
-    implementation("io.quarkus:quarkus-vertx-web")
-    implementation("io.quarkus:quarkus-smallrye-openapi")
-    implementation("io.quarkus:quarkus-vertx")
-    implementation("io.quarkus:quarkus-grpc")
-    implementation("io.quarkus:quarkus-smallrye-reactive-streams-operators")
-    implementation("io.quarkus:quarkus-smallrye-metrics")
-    implementation("io.quarkus:quarkus-smallrye-context-propagation")
-    implementation("io.quarkus:quarkus-smallrye-graphql")
+    implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
+    implementation("io.quarkus:quarkus-resteasy-reactive-jackson")
+    implementation("io.quarkus:quarkus-mutiny")
+    implementation("io.quarkus:quarkus-hibernate-reactive")
+    implementation("io.quarkus:quarkus-hibernate-reactive-panache")
+    implementation("io.quarkus:quarkus-resteasy-reactive")
+    implementation("io.quarkus:quarkus-config-yaml")
     implementation("io.quarkus:quarkus-logging-json")
+    implementation("io.quarkus:quarkus-smallrye-context-propagation")
+    implementation("io.quarkus:quarkus-rest-client-mutiny")
+    implementation("io.quarkus:quarkus-spring-boot-properties")
+    implementation("io.quarkus:quarkus-grpc")
+    implementation("io.quarkus:quarkus-vertx")
+    implementation("io.quarkus:quarkus-reactive-mysql-client")
+    implementation("io.quarkus:quarkus-smallrye-reactive-messaging-kafka")
+    implementation("io.quarkus:quarkus-vertx-web")
+    implementation("io.quarkus:quarkus-kotlin")
+    implementation("io.quarkus:quarkus-spring-di")
     implementation("io.quarkus:quarkus-redis-client")
     implementation("io.quarkus:quarkus-reactive-pg-client")
-    implementation("io.quarkus:quarkus-smallrye-jwt-build")
     implementation("io.quarkus:quarkus-reactive-messaging-http")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("io.quarkus:quarkus-arc")
-    implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
-    implementation("io.quarkus:quarkus-resteasy")
-
     testImplementation("io.quarkus:quarkus-junit5")
-    testImplementation("io.rest-assured:kotlin-extensions")
+    testImplementation("io.rest-assured:rest-assured")
 }
 
 quarkus {
@@ -63,7 +61,7 @@ allOpen {
     annotation("io.quarkus.test.junit.QuarkusTest")
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-    systemProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager")
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
+    kotlinOptions.javaParameters = true
 }

@@ -9,7 +9,7 @@ import com.google.protobuf.gradle.protoc
 
 plugins {
     //id("com.squareup.wire") version "3.1.0"
-    id("com.google.protobuf") version "0.8.12"
+    id("com.google.protobuf") version "0.8.17"
     id("idea")
 }
 
@@ -31,7 +31,7 @@ sourceSets{
             srcDirs("src/main/java")
         }
         proto {
-            srcDir("${rootDir}/../../../proto_std")
+            srcDir("${rootDir}/../../proto")
             println(srcDirs)
         }
     }
