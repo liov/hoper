@@ -1,20 +1,22 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "2.3.2.RELEASE" apply false
-    kotlin("plugin.spring") version "1.4.10" apply false
-    id("io.spring.dependency-management") version "1.0.9.RELEASE"
-    kotlin("jvm") version "1.4.10"
-    kotlin("plugin.jpa") version "1.4.10" apply false
-    kotlin("plugin.serialization") version "1.4.10"
+    id("org.springframework.boot") version "2.5.5" apply false
+    kotlin("plugin.spring") version "1.5.31" apply false
+    id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    kotlin("jvm") version "1.5.31"
+    kotlin("plugin.allopen") version "1.5.31"
+    id("io.quarkus")
+    kotlin("plugin.jpa") version "1.5.31" apply false
+    kotlin("plugin.serialization") version "1.5.31"
 }
 
 ext {
     set("vertxVersion", "3.9.1")
     set("junitJupiterEngineVersion", "5.4.0")
     set("grpc_kotlin_version", "0.1.1")
-    set("protobuf_version", "3.11.1")
-    set("grpc_version", "1.30.2")
+    set("protobuf_version", "3.15.8")
+    set("grpc_version", "1.41.0")
     set("springCloudAlibabaVersion", "2.2.0.RELEASE")
     set("wire_version", "3.2.2")
 }
@@ -26,7 +28,7 @@ allprojects {
     java.sourceCompatibility = JavaVersion.VERSION_11
 
     repositories {
-        maven("https://maven.aliyun.com/repository/public")
+        //maven("https://maven.aliyun.com/repository/public")
         mavenCentral()
         gradlePluginPortal()
         google()
@@ -51,10 +53,10 @@ subprojects {
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.1")
         implementation(kotlin("reflect"))
         implementation(kotlin("stdlib"))
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.3.8")
-        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0-RC2")
-        implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.1.0-RC1")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.5.2")
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0-RC")
+        implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.1.3")
         testImplementation("io.projectreactor:reactor-test:3.3.5.RELEASE")
     }
 

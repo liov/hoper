@@ -68,3 +68,27 @@ func TestIsBipartite(t *testing.T) {
 func TestMaxArea(t *testing.T) {
 	fmt.Println(maxArea([]int{2, 3, 4, 5, 18, 17, 6}))
 }
+
+func TestFlatten(t *testing.T) {
+	nodes := make([]*Node, 12)
+	for i := 0; i < len(nodes); i++ {
+		nodes[i] = &Node{Val: i + 1}
+	}
+	link(nodes, 0, 1)
+	link(nodes, 1, 2)
+	link(nodes, 2, 3)
+	link(nodes, 3, 4)
+	link(nodes, 4, 5)
+	nodes[2].Child = nodes[6]
+	link(nodes, 6, 7)
+	link(nodes, 7, 8)
+	link(nodes, 8, 9)
+	nodes[7].Child = nodes[10]
+	link(nodes, 10, 11)
+	fmt.Println(flatten(nodes[0]))
+}
+
+func link(nodes []*Node, i, j int) {
+	nodes[i].Next = nodes[j]
+	nodes[j].Prev = nodes[i]
+}
