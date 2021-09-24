@@ -6,9 +6,9 @@ import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType
 
 @Path("/hello")
-class ExampleResource {
+class ReactiveGreetingResource {
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    fun hello() = "hello"
+    @Produces(MediaType.TEXT_PLAIN)
+    fun hello() = "Hello RESTEasy Reactive"
 }

@@ -26,3 +26,15 @@ func (list *ListNode) String() string {
 	}
 	return s
 }
+
+// Node Val > 0
+type Node struct {
+	Val   int
+	Prev  *Node
+	Next  *Node
+	Child *Node
+}
+
+func NewNode(arr []int) *Node {
+	return nil
+}

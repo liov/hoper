@@ -21,7 +21,7 @@ class LoggingJsonResource {
     fun faster(): String {
         val s = speed.addAndGet(random.nextInt(200))
         if (s > SPEED_OF_SOUND_IN_METER_PER_SECOND) {
-            throw ServerErrorException("💥 SONIC BOOOOOM!!!", Response.Status.SERVICE_UNAVAILABLE)
+            return "$s 💥 SONIC BOOOOOM!!!"
         }
         val message = "Your jet aircraft speed is $s m/s."
         LOG.info(message)
