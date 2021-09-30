@@ -46,6 +46,7 @@ fn main(){
     }*/
     c_fib();
     rust_fib();
+    call_dynamic();
 }
 
 
@@ -68,4 +69,14 @@ fn rust_fib(){
 fn rust_fibonacci(n:usize) -> u64{
     if n<2{return 1};
     rust_fibonacci(n-1)+rust_fibonacci(n-2)
+}
+
+fn call_dynamic() {
+    let now = SystemTime::now();
+    unsafe {
+        let lib = libloading::Library::new("./ffi/c/ffi.o").unwrap();
+        let func: libloading::Symbol<unsafe extern fn(u32) -> u64> = lib.get(b"fibonacci").unwrap();
+        let value = func(43);
+        println!("C_fib:{:?},{:?}", SystemTime::now().duration_since(now).unwrap().as_millis(),value);
+    }
 }

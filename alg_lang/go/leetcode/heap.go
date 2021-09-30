@@ -15,6 +15,10 @@ func leftChild(i int) int {
 	return i*2 + 1
 }
 
+func rightChild(i int) int {
+	return i*2 + 2
+}
+
 type MaxHeap []int
 
 func NewMaxHeap(l int) MaxHeap {

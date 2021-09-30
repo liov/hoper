@@ -7,13 +7,12 @@ import 'package:app/pages/home/splash_view.dart';
 import 'package:app/pages/index/index.dart';
 import 'package:app/pages/moment/moment_view.dart';
 import 'package:app/pages/user/user_view.dart';
+import 'package:app/pages/webview/webview.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dashboard_view.dart';
 import 'package:app/global/controller.dart';
 import 'home_controller.dart';
-
-
 
 /*
 class HomeView extends StatefulWidget {
@@ -22,7 +21,7 @@ class HomeView extends StatefulWidget {
 }
 */
 
-class HomeView extends StatelessWidget{
+class HomeView extends StatelessWidget {
   final SplashController controller = Get.find();
 
   @override
@@ -45,10 +44,9 @@ class HomeView extends StatelessWidget{
       },
     );
   }
-
 }
 
-class App extends StatelessWidget with WidgetsBindingObserver{
+class App extends StatelessWidget with WidgetsBindingObserver {
   final HomeController controller = Get.find();
   final SplashController splashController = Get.find();
 
@@ -58,11 +56,18 @@ class App extends StatelessWidget with WidgetsBindingObserver{
   final List<Widget> _widgetOptions = <Widget>[
     MomentView(),
     IndexPage(),
-    Container(
+ Container(
         alignment: Alignment.center,
-        child: Text(
-          greeting(),
-          style: optionStyle,
+        child:  Column(
+          mainAxisAlignment:MainAxisAlignment.center,
+          children: [
+            Text(
+              greeting(),
+              style: optionStyle,
+            ),
+            GestureDetector(
+                onTap: () => Get.to(WebViewExample()), child: Text('网页版'))
+          ],
         )),
     UserView(),
   ];

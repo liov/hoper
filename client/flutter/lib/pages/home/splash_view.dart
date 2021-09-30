@@ -21,11 +21,14 @@ class Splash extends StatelessWidget {
       ),
       floatingActionButton: GetBuilder<SplashController>(
         builder:(controller){
+          if (controller.countdown == 0) {
+            return Text('初始化');
+          }
           return GestureDetector(
             onTap: (){
               if (! controller.adCompleter.isCompleted)  controller.adCompleter.complete();
             },
-            child: Text('${controller.countdown}秒跳过广告'),
+            child: Text('${controller.countdown}秒'),
           );
         }
       ),
