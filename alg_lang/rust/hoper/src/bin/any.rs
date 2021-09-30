@@ -1,25 +1,6 @@
 use std::any::{Any, TypeId};
 use std::fmt::Debug;
 
-//error[E0225]: only auto traits can be used as additional traits in a trait object
-//fn load_config(value:&(dyn Any+Debug)) -> Vec<String>{
-fn load_config(value:&(dyn Any + 'static)) -> Vec<String>{
-    let mut cfgs: Vec<String>= vec![];
-    match value.downcast_ref::<String>() {
-        Some(cfp) => cfgs.push(cfp.clone()),
-        None => (),
-    };
-
-    match value.downcast_ref::<Vec<String>>() {
-        Some(v) => cfgs.extend_from_slice(&v),
-        None =>(),
-    }
-
-    if cfgs.len() == 0 {
-        panic!("No Config File");
-    }
-    cfgs
-}
 
 //Trait/ &Trait是用更一致的Struct/ &Struct不是impl Trait/ &dyn Trait
 //目前只找到dyn和impl的用法，至于为何这么用原因不清楚
@@ -33,12 +14,20 @@ fn load_config_impl(value:&(impl Any + Debug)) -> Vec<String>{
     cfgs
 }
 //dyn是为了区分struct和Trait
-fn load_config_stc(value: &dyn Any) -> Vec<String>{
+fn load_config_dyn(value: &dyn Any) -> Vec<String>{
     let mut cfgs: Vec<String>= vec![];
     match value.downcast_ref::<String>() {
         Some(cfp) => cfgs.push(cfp.clone()),
         None => (),
     };
+    match value.downcast_ref::<Vec<String>>() {
+        Some(v) => cfgs.extend_from_slice(&v),
+        None =>(),
+    }
+
+    if cfgs.len() == 0 {
+        panic!("No Config File");
+    }
     cfgs
 }
 
@@ -56,12 +45,11 @@ static PST:&Bar = &Bar{i: 0, s: String::new()};//calls in statics are limited to
 
 fn main() {
     let cfp = "/etc/wayslog.conf".to_string();
-    println!("{:?}",load_config(&cfp));
+    println!("{:?}", load_config_dyn(&cfp));
     println!("{:?}",load_config_impl(&cfp));
-    println!("{:?}",load_config_stc(&cfp));
     let cfps = vec!["/etc/wayslog.conf".to_string(),
                     "/etc/wayslog_sec.conf".to_string()];
-    println!("{:?}",load_config(&cfps));
+    println!("{:?}", load_config_dyn(&cfps));
     let mut foo = 1;
     test(&foo);
     let ptr = &mut foo;

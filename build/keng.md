@@ -780,3 +780,12 @@ https://github.com/golang/go/issues/46777
 //go 1.17报错，要带完整包名让编译器找的到
 ////go:linkname Firstmoduledata runtime.firstmoduledata
 //go:linkname reflecti.Firstmoduledata runtime.firstmoduledata
+
+# win11 emulator 打不开
+HAXM 和Hyper-v冲突  
+无法卸载HAXM,windows可选功能关闭Hyper-v无效
+管理员身份
+bcdedit /set hypervisorlaunchtype off 重启
+bcdedit /set hypervisorlaunchtype auto
+
+没试过android-sdk卸载HAXM打开Hyper-v是否可行
