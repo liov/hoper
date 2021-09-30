@@ -1,17 +1,18 @@
 {
   "compilerOptions": {
     "outDir": "./dist/",
+    "target": "esnext",
     "module": "commonjs",
     "noImplicitAny": true,
     "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": false,
-    "target": "esnext",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
   "include": [
-    "./ts/**/*"
+    "./lang/**/*",
+    "./leetcode/**/*"
   ],
   "exclude": [
     "node_modules",

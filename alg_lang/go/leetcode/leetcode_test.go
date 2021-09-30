@@ -92,3 +92,24 @@ func link(nodes []*Node, i, j int) {
 	nodes[i].Next = nodes[j]
 	nodes[j].Prev = nodes[i]
 }
+
+func TestGetSum(t *testing.T) {
+	fmt.Println(getSum(-2, -3))
+}
+
+func TestNumDecodings(t *testing.T) {
+	fmt.Println(numDecodings("7*9*3*6*3*0*5*4*9*7*3*7*1*8*3*2*0*0*6*"))
+}
+
+func TestPathSum(t *testing.T) {
+	tree := NewTree([]int{10, 5, -3, 3, 2, 0, 11, 3, -2, 0, 1})
+	fmt.Println(pathSum(tree, 8))
+}
+
+func TestFindMinMoves(t *testing.T) {
+	fmt.Println(findMinMoves2([]int{0, 3, 0}))
+}
+
+func TestComputeArea(t *testing.T) {
+	fmt.Println(computeArea(-2, -2, 2, 2, -2, -2, 2, 2))
+}

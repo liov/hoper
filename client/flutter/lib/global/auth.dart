@@ -3,6 +3,7 @@
 import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/generated/protobuf/user/user.service.pb.dart';
 import 'package:app/generated/protobuf/empty/empty.pb.dart';
+import 'package:app/generated/protobuf/request/param.pb.dart' as request;
 import 'package:app/global/service.dart';
 import 'package:app/model/const/const.dart';
 import 'package:app/pages/user/login_view.dart';
@@ -34,6 +35,7 @@ class AuthState {
         if (user.id == 0) return;
         this.userAuth = user;
         setAuth(authKey);
+        getSelf();
         return null;
       } catch (err) {
         print(err);
@@ -41,9 +43,24 @@ class AuthState {
     }
   }
 
+  Future<void> getSelf() async {
+    if (self != null) return;
+    if (userAuth == null) {
+     await getAuth();
+    }
+    try {
+      final user = await globalService.userClient.stub.info(request.Object());
+      if (user.user.id == 0) return;
+      this.self = user.user;
+      return null;
+    } catch (err) {
+      print(err);
+    }
+  }
+
   void setAuth(String authKey) {
     globalService.httpClient.options.headers[Authorization] = authKey;
-    globalService.subject.setState(CallOptions(metadata: {Authorization: authKey}));
+    globalService.subject.setState(CallOptions(metadata: {Authorization: authKey},timeout: Duration(seconds: 5)));
     globalService.box.put(AuthState.StringAuthKey, authKey);
   }
 
@@ -71,7 +88,7 @@ class AuthState {
     globalService.box.delete(AuthState.StringAuthKey);
     try{
       await globalService.userClient.stub.logout(Empty());
-      globalService.subject.setState(CallOptions());
+      globalService.subject.setState(CallOptions(timeout: Duration(seconds: 5)));
     } on GrpcError catch (e) {
       dialog(e.message!);
     }catch (e) {

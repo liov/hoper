@@ -1,7 +1,7 @@
 
 
 class Subject<T> {
-
+  Subject(this.options);
   List<Observer<T>> observers = List.empty(growable: true);
   T? options;
 
