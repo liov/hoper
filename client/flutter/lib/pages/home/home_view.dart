@@ -56,19 +56,7 @@ class App extends StatelessWidget with WidgetsBindingObserver {
   final List<Widget> _widgetOptions = <Widget>[
     MomentView(),
     IndexPage(),
- Container(
-        alignment: Alignment.center,
-        child:  Column(
-          mainAxisAlignment:MainAxisAlignment.center,
-          children: [
-            Text(
-              greeting(),
-              style: optionStyle,
-            ),
-            GestureDetector(
-                onTap: () => Get.to(WebViewExample()), child: Text('网页版'))
-          ],
-        )),
+    MyApp(),
     UserView(),
   ];
 

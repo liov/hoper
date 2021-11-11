@@ -1,5 +1,5 @@
 ///接雨水 II
-use std::collections::{HashSet, BTreeMap};
+use std::collections::{HashSet, BTreeMap, BinaryHeap};
 
 #[derive(PartialEq, Eq, PartialOrd, Ord, Debug, Hash, Clone, Copy)]
 struct Point(i32, usize, usize);
@@ -10,13 +10,16 @@ pub fn trap_rain_water(height_map: Vec<Vec<i32>>) -> i32 {
     let m = height_map.len();
     let n = height_map[0].len();
     let mut result = 0;
-    let mut side = BTreeMap::new();
-    let mut drop = HashSet::new();
+    let mut side = BinaryHeap::new();
+    let mut drop:Vec<Vec<bool>> = Vec::with_capacity(m);
+    for i in 0..m {
+        drop.push(vec![false;n])
+    }
     for x in 0..m {
         for y in 0..n {
             if x == 0 || x == m - 1 || y == 0 || y == n - 1 {
                 side.insert(Point(height_map[x][y], x, y), false);
-                drop.insert((x, y));
+                drop[x][y] = true;
             }
         }
     }
@@ -32,13 +35,13 @@ pub fn trap_rain_water(height_map: Vec<Vec<i32>>) -> i32 {
         for j in round.iter() {
             x = (point.1 as i32 + j[0]) as usize;
             y = (point.2 as i32 + j[1]) as usize;
-            if x >= m - 1 || y >= n - 1 {
+            if x<=0 || x >= m-1 || y<=0 || y >= n-1 {
                 continue;
             }
-            if drop.get(&(x, y)) != None {
+            if drop[x][y] {
                 continue;
             }
-            drop.insert((x, y));
+            drop[x][y] = true;
             if height_map[x][y] <= point.0 {
                 result = result + (point.0 - height_map[x][y]);
                 side.insert(Point(point.0, x, y), false);

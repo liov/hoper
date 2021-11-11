@@ -13,7 +13,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
 
-class MomentAddController extends GetxController {
+class MediaAddController extends GetxController {
 
   List<XFile> imageFiles = List<XFile>.empty(growable: true);
   List<String> imageUrls = List.empty(growable: true);

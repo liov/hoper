@@ -12,7 +12,7 @@
             <van-image
               width="100"
               height="100"
-              :src="user.avatarUrl"
+              :src="staticDir + user.avatarUrl"
               fit="cover"
             />
           </template>
@@ -80,6 +80,7 @@ import { upload } from "@/plugin/utils/upload";
 import dataTool from "@/plugin/utils/date";
 import dayjs from "dayjs";
 import store from "@/store";
+import { STATIC_DIR } from "@/plugin/static";
 
 @Options({
   components: {},
@@ -91,6 +92,7 @@ export default class Edit extends Vue {
   birthday = new Date(2000, 0, 1);
   minDate = new Date(1900, 0, 1);
   maxDate = new Date();
+  staticDir = STATIC_DIR;
   async created() {
     this.user = this.$store.state.user.auth;
     if (!this.user.intro) this.user.intro = "我不想介绍自己";

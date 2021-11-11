@@ -6,11 +6,13 @@ import 'package:app/generated/protobuf/empty/empty.pb.dart';
 import 'package:app/generated/protobuf/request/param.pb.dart' as request;
 import 'package:app/global/service.dart';
 import 'package:app/model/const/const.dart';
+import 'package:app/pages/home/home_controller.dart';
 import 'package:app/pages/user/login_view.dart';
 import 'package:app/utils/dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:grpc/grpc.dart';
 
@@ -73,7 +75,8 @@ class AuthState {
       setAuth(rep.token);
       this.account = account;
       navigator!.pop();
-      Get.appUpdate();
+      //Get.forceAppUpdate();
+      Get.rootController.restartApp();
     } on GrpcError catch (e) {
       dialog(e.message!);
     }catch (e) {
@@ -82,10 +85,11 @@ class AuthState {
     }
   }
 
-  Future<void> logout() async{
+   Future<void> logout() async{
     userAuth = null;
     globalService.httpClient.options.headers.remove(Authorization);
     globalService.box.delete(AuthState.StringAuthKey);
+    self = null;
     try{
       await globalService.userClient.stub.logout(Empty());
       globalService.subject.setState(CallOptions(timeout: Duration(seconds: 5)));
@@ -95,7 +99,8 @@ class AuthState {
       // No specified type, handles all
       print('Something really unknown: $e');
     }
-    Get.appUpdate();
+    //Get.forceAppUpdate();
+    Get.rootController.restartApp();
   }
 }
 

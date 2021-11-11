@@ -101,12 +101,15 @@ func register(router *Router, genApi bool, modName string) {
 	registered()
 }
 
-func commonHandler(w http.ResponseWriter, req *http.Request, handle *reflect.Value, ps *Params) {
+func commonHandler(w http.ResponseWriter, req *http.Request, handle *reflect.Value, ps *Params, tracing bool) {
 	handleTyp := handle.Type()
 	handleNumIn := handleTyp.NumIn()
 	if handleNumIn != 0 {
 		params := make([]reflect.Value, handleNumIn)
-		ctxi := contexti.CtxWithRequest(req.Context(), req)
+		ctxi, s := contexti.CtxFromRequest(req, tracing)
+		if s != nil {
+			defer s.End()
+		}
 		for i := 0; i < handleNumIn; i++ {
 			if handleTyp.In(i).Implements(claimsType) {
 				params[i] = reflect.ValueOf(ctxi)
