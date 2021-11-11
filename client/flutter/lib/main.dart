@@ -1,9 +1,12 @@
 
+import 'dart:io';
+
 import 'package:app/routes/route.dart';
 import 'package:app/theme.dart';
 import 'package:app/translations/zh_CN/local.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
 
 import 'package:app/global/controller.dart';
@@ -14,6 +17,9 @@ import 'global/app_info.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (Platform.isAndroid) {
+    await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
+  }
   ErrorWidget.builder = (FlutterErrorDetails flutterErrorDetails){
     print(flutterErrorDetails.toString());
     return Center(
@@ -33,11 +39,11 @@ Future<void> main() async {
     getPages: AppPages.routes,
     localeListResolutionCallback:
         (List<Locale>? locales, Iterable<Locale> supportedLocales) {
-      return Locale('zh');
+      return const Locale('zh');
     },
     localeResolutionCallback:
         (Locale? locale, Iterable<Locale> supportedLocales) {
-      return Locale('zh');
+      return const Locale('zh');
     },
     localizationsDelegates: [
       GlobalMaterialLocalizations.delegate,

@@ -38,7 +38,7 @@ func main() {
 			oauth.RegisterOauthServiceHandlerServer(app, service.GetOauthService())
 			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
 			pick.RegisterService(service.GetUserService())
-			pick.Gin(app, true, initialize.InitConfig.Module)
+			pick.Gin(app, true, initialize.InitConfig.Module, conf.Conf.Server.OpenTracing)
 		},
 
 		/*		GraphqlResolve: model.NewExecutableSchema(model.Config{

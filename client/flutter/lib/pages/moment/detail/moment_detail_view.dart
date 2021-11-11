@@ -1,14 +1,18 @@
 import 'package:app/components/async/async.dart';
+import 'package:app/pages/comment/comment_add_view.dart';
+import 'package:app/pages/comment/comment_list_view.dart';
+import 'package:app/pages/moment/add/moment_add_view.dart';
+import 'package:app/pages/moment/item/moment_item_view.dart';
 import 'package:app/routes/route.dart';
 import 'package:app/service/moment.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:app/generated/protobuf/content/content.model.pb.dart' as $pb;
-import 'moment_detail_controller.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:app/generated/protobuf/request/param.pb.dart' as $1;
 
 class MomentDetailView extends StatelessWidget {
+
   MomentDetailView() : super() {
     if (Get.arguments != null) {
       moment = Get.arguments;
@@ -54,9 +58,17 @@ class MomentDetailView extends StatelessWidget {
           if (noReady != null) return Scaffold(body: noReady);
           final moment = snapshot.data!;
           return Scaffold(
+              appBar: AppBar(centerTitle: true, title: Text('瞬间'),),
               body: Center(
-            child: Text(moment.content),
-          ));
+              child: Column(
+                children: [
+                  MomentItem(moment: moment),
+                  CommentListView(moment.ext),
+                ],
+              ),
+          ),
+            bottomSheet: CommentAdd(),
+          );
         });
   }
 }

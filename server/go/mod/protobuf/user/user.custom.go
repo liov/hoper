@@ -1,7 +1,7 @@
 package user
 
 import (
-	contexti "github.com/liov/hoper/server/go/lib/tiga/context"
+	contexti "github.com/liov/hoper/server/go/lib/utils/context"
 	"strconv"
 )
 

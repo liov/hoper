@@ -36,7 +36,10 @@ axios.interceptors.response.use(
           name: "Login",
           query: { back: router.currentRoute.value.path },
         });
-      } else if (response.data.code !== 0) Toast.fail(response.data.message);
+      } else if (response.data.code !== 0) {
+          Toast.fail(response.data.message);
+          return Promise.reject({response:response});
+      }
     }
     return Promise.resolve(response);
   },

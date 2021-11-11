@@ -2,6 +2,7 @@ package contexti
 
 import (
 	"context"
+	contexti "github.com/liov/hoper/server/go/lib/utils/context"
 	httpi "github.com/liov/hoper/server/go/lib/utils/net/http"
 	fasthttpi "github.com/liov/hoper/server/go/lib/utils/net/http/fasthttp"
 	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
@@ -9,15 +10,10 @@ import (
 )
 
 func CtxWithFastRequest(ctx context.Context, r *fasthttp.Request) *Ctx {
-	ctxi := newCtx(ctx)
-	ctxi.setWithFastReq(r)
-	return ctxi
-}
-
-func CtxFromFastRequest(r *fasthttp.Request) *Ctx {
-	ctxi := newCtx(context.Background())
-	ctxi.setWithFastReq(r)
-	return ctxi
+	ctxi := contexti.NewCtx(ctx)
+	c := &Ctx{RequestContext: ctxi}
+	c.setWithFastReq(r)
+	return c
 }
 
 func (c *Ctx) setWithFastReq(r *fasthttp.Request) {
@@ -27,8 +23,8 @@ func (c *Ctx) setWithFastReq(r *fasthttp.Request) {
 	c.Internal = stringsi.ToString(r.Header.Peek(httpi.GrpcInternal))
 }
 
-func DeviceFast(r *fasthttp.RequestHeader) *DeviceInfo {
-	return device(stringsi.ToString(r.Peek(httpi.HeaderDeviceInfo)),
+func DeviceFast(r *fasthttp.RequestHeader) *contexti.DeviceInfo {
+	return contexti.Device(stringsi.ToString(r.Peek(httpi.HeaderDeviceInfo)),
 		stringsi.ToString(r.Peek(httpi.HeaderArea)),
 		stringsi.ToString(r.Peek(httpi.HeaderLocation)),
 		stringsi.ToString(r.Peek(httpi.HeaderUserAgent)),

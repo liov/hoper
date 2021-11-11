@@ -50,7 +50,7 @@ class PhotoView extends StatelessWidget {
       itemCount: urls.length,
       onPageChanged: (int index) {
       },
-      controller: PageController(
+      controller: ExtendedPageController(
         initialPage: initialPage,
       ),
       scrollDirection: Axis.horizontal,

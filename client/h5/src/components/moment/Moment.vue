@@ -1,7 +1,7 @@
 <template>
   <div class="moment">
     <div class="auth">
-      <img class="avatar" :src="user.avatarUrl" />
+      <img class="avatar" :src="staticDir + user.avatarUrl" />
       <span class="name">{{ user.name }}</span>
       <span class="time">{{ $date2s(moment.createdAt) }}</span>
     </div>
@@ -26,7 +26,7 @@
         height="100"
         v-for="(img, idx) in images"
         :key="idx"
-        :src="'/static/' + img"
+        :src="img"
         lazy-load
         class="img"
         @click="preview(idx)"
@@ -41,6 +41,7 @@ import { Options, Vue, prop } from "vue-class-component";
 import { ImagePreview } from "vant";
 import Action from "@/components/action/Action.vue";
 import { jump } from "@/router/utils";
+import { STATIC_DIR } from "@/plugin/static";
 class Props {
   moment = prop<any>({ default: {} });
   user = prop<any>({});
@@ -49,22 +50,23 @@ class Props {
 @Options({ components: { Action } })
 export default class Moment extends Vue.with(Props) {
   images = [];
+  staticDir = STATIC_DIR;
   created() {
     this.images = this.moment.images
       ?.split(",")
-      .map((image) => "static" + image);
-  }
+      .map((image) => STATIC_DIR + image);
+  };
   preview(idx: number) {
     ImagePreview({
       images: this.images,
       startPosition: idx,
       closeable: true,
     });
-  }
+  };
   detail() {
     jump(this.$route.path, 1, this.moment);
-  }
-}
+  };
+};
 </script>
 
 <style scoped lang="less">

@@ -27,7 +27,7 @@ env=stage && git pull && make config && make deploy env=$env tag=v$(date "+%y%m%
 
 
 # proxy
-kubectl proxy --address='0.0.0.0'  --accept-hosts='^*$'
+kubectl proxy --address='0.0.0.0'  --accept-hosts='^.*$'
 # logs
 Examples:
   # Return snapshot logs from pod nginx with only one container

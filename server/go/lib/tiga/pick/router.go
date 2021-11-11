@@ -207,6 +207,8 @@ type Router struct {
 	// The handler can be used to keep your server from crashing because of
 	// unrecovered panics.
 	PanicHandler func(http.ResponseWriter, *http.Request, interface{})
+
+	Tracing bool
 }
 
 // Make sure the Router conforms with the http.Handler interface
@@ -425,7 +427,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 				if r.SaveMatchedRoutePath {
 					*ps = append(*ps, Param{Key: MatchedRoutePathParam, Value: path})
 				}
-				commonHandler(w, req, mh.handle, ps)
+				commonHandler(w, req, mh.handle, ps, r.Tracing)
 				return
 			}
 			if allow := r.allowed(path, req.Method, handles); allow != "" {

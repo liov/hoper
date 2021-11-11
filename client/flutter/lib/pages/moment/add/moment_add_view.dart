@@ -12,7 +12,7 @@ import 'package:video_player/video_player.dart';
 import 'moment_add_controller.dart';
 
 class MomentAddView extends StatelessWidget {
-  final MomentAddController controller = Get.find();
+  final MediaAddController controller = Get.find();
   final _formKey = GlobalKey<FormState>();
 
 
@@ -22,7 +22,7 @@ class MomentAddView extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
             actions: [
-              IconButton(icon: Text('保存'),onPressed: (){
+              IconButton(icon: const Text('保存'),onPressed: (){
                 _formKey.currentState!.save();
                 controller.save();
               },)
@@ -38,7 +38,7 @@ class MomentAddView extends StatelessWidget {
                       TextFormField(
                           minLines: 5,
                           maxLines: 10,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             hintText: '记录这一刻,晒给懂你的人',
                           ),
                         onSaved: (value){
@@ -46,7 +46,7 @@ class MomentAddView extends StatelessWidget {
                         },
                       ),
                     ]))),
-            GetBuilder<MomentAddController>(builder: (_) {
+            GetBuilder<MediaAddController>(builder: (_) {
               if(controller.imageFiles.isEmpty){
                 return Container();
               }
@@ -71,17 +71,18 @@ class MomentAddView extends StatelessWidget {
             },),
           ],
         ),
-      bottomSheet: MomentAddBottomSheet(),
+      bottomSheet: const MomentAddBottomSheet(),
     );
   }
 }
 
 
 class MomentAddBottomSheet extends StatelessWidget{
-  final MomentAddController controller = Get.find();
+  const MomentAddBottomSheet({Key? key}):super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final MediaAddController controller = Get.find();
    return Row(
      textBaseline: TextBaseline.alphabetic,
      children: [

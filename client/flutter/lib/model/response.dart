@@ -27,4 +27,21 @@ extension StringExtension on $dio.Response {
     Get.rawSnackbar(message:'请求出错');
     return Map() ;
   }
+
+  Map<String, dynamic> getData2() {
+    if (this.statusCode == HttpStatus.ok) {
+      final data = _$ResponseDataFromJson2(this.data);
+      if (data.code!=200) Get.rawSnackbar(message:data.message!);
+      return data.details ?? Map();
+    }
+    Get.rawSnackbar(message:'请求出错');
+    return Map() ;
+  }
+}
+
+ResponseData _$ResponseDataFromJson2(Map<String, dynamic> json) {
+  return ResponseData()
+    ..code = json['code'] as int
+    ..details = json['data'] as Map<String, dynamic>?
+    ..message = json['msg'] as String;
 }

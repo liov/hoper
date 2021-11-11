@@ -18,6 +18,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import kotlin.math.roundToInt
 
+// 不用了，为保持多端一致，用flutter的启动页
 class SplashScreenWithTransition : SplashScreen {
     private lateinit var view: SplashView
 

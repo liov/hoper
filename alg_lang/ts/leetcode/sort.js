@@ -1,4 +1,4 @@
-var arr = [3, 44, 38, 5, 47, 15, 36, 26, 27, 2, 46, 4, 19, 50, 49,91,60,96,13,35,65,46,65,10,30,20,31,77,81,22];
+const arr = [3, 44, 38, 5, 47, 15, 36, 26, 27, 2, 46, 4, 19, 50, 49, 91, 60, 96, 13, 35, 65, 46, 65, 10, 30, 20, 31, 77, 81, 22];
 
 /*1.冒泡排序（Bubble Sort）
 好的，开始总结第一个排序算法，冒泡排序。我想对于它每个学过C语言的都会了解的吧，这可能是很多人接触的第一个排序算法。
@@ -26,11 +26,11 @@ JavaScript代码实现：*/
 
 function bubbleSort(array) {
     console.time('冒泡排序耗时');
-    var len = array.length;
-    for (var i = 0; i < len; i++) {
-        for (var j = 0; j < len - 1 - i; j++) {
+    const len = array.length;
+    for (let i = 0; i < len; i++) {
+        for (let j = 0; j < len - 1 - i; j++) {
             if (array[j] > array[j + 1]) {        //相邻元素两两对比
-                var temp = array[j + 1];        //元素交换
+                const temp = array[j + 1];        //元素交换
                 array[j + 1] = array[j];
                 array[j] = temp;
             }
@@ -68,25 +68,25 @@ function bubbleSort2(array) {
 
 function bubbleSort3(array) {
     var low = 0;
-    var high= array.length-1; //设置变量的初始值
-    var tmp,j;
+    var high = array.length - 1; //设置变量的初始值
+    var tmp, j;
     console.time('改进后冒泡排序耗时2');
     while (low < high) {
-        for (j= low; j< high; ++j) //正向冒泡,找到最大者
-            if (array[j]> array[j+1]) {
+        for (j = low; j < high; ++j) //正向冒泡,找到最大者
+            if (array[j] > array[j + 1]) {
                 tmp = array[j];
-                array[j]=array[j+1];
-                array[j+1]=tmp;
+                array[j] = array[j + 1];
+                array[j + 1] = tmp;
             }
         --high;                 //修改high值, 前移一位
-        for (j=high; j>low; --j) //反向冒泡,找到最小者
-            if (array[j] < array[j-1]){
+        for (j = high; j > low; --j) //反向冒泡,找到最小者
+            if (array[j] < array[j - 1]) {
                 tmp = array[j];
-                array[j]=array[j-1];
-                array[j-1]=tmp;
+                array[j] = array[j - 1];
+                array[j - 1] = tmp;
             }
         ++low;
-        }
+    }
     console.timeEnd('改进后冒泡排序耗时2');
     return array;
 }
@@ -95,21 +95,21 @@ function bubbleSort3(array) {
 
 function bubbleSort4(array) {
     var low = 0;
-    var high= array.length-1; //设置变量的初始值
-    var tmp,j;
+    var high = array.length - 1; //设置变量的初始值
+    var tmp, j;
     console.time('改进后冒泡排序耗时3');
     while (low < high) {
-        for (j= low; j< high; ++j) {
+        for (j = low; j < high; ++j) {
             //正向冒泡,找到最大者
-            if (array[j]> array[j+1]) {
+            if (array[j] > array[j + 1]) {
                 tmp = array[j];
-                array[j]=array[j+1];
-                array[j+1]=tmp;
+                array[j] = array[j + 1];
+                array[j + 1] = tmp;
             }
-            if (array[low]>array[j]){
+            if (array[low] > array[j]) {
                 tmp = array[low];
-                array[low]=array[j];
-                array[j]=tmp;
+                array[low] = array[j];
+                array[j] = tmp;
             }
         }
         --high;
@@ -182,7 +182,7 @@ function selectionSort(array) {
 Javascript代码实现:*/
 
 function insertionSort(array) {
-    if (Object.prototype.toString.call(array).slice(8, -1) === 'Array') {
+    if (Array.isArray(array)) {
         console.time('插入排序耗时：');
         for (var i = 1; i < array.length; i++) {
             var key = array[i];
@@ -211,7 +211,7 @@ function binaryInsertionSort(array) {
         for (var i = 1; i < array.length; i++) {
             var key = array[i], left = 0, right = i - 1;
             while (left <= right) {
-                var middle =  Math.floor((left + right) / 2);
+                var middle = Math.floor((left + right) / 2);
                 if (key < array[middle]) {
                     right = middle - 1;
                 } else {
@@ -231,7 +231,7 @@ function binaryInsertionSort(array) {
     }
 }
 
-console.log(binaryInsertionSort(arr));
+console.log(binaryInsertionSort(Array.from(arr)));
 
 /*4.希尔排序（Shell Sort）
 1959年Shell发明； 第一个突破O(n^2)的排序算法；是简单插入排序的改进版；它与插入排序的不同之处在于，它会优先比较距离较远的元素。希尔排序又叫缩小增量排序
@@ -272,7 +272,7 @@ function shellSort(array) {
     return array;
 }
 
-console.log(shellSort(arr));
+console.log(shellSort(Array.from(arr)));
 
 /*5.归并排序（Merge Sort）
 和选择排序一样，归并排序的性能不受输入数据的影响，但表现比选择排序好的多，因为始终都是O(n log n）的时间复杂度。代价是需要额外的内存空间。
@@ -325,7 +325,7 @@ function merge(left, right) {
 }
 
 console.time('归并排序耗时');
-var result = mergeSort(arr)
+let result = mergeSort(Array.from(arr));
 console.timeEnd('归并排序耗时');
 console.log(result);
 
@@ -349,6 +349,7 @@ Javascript代码实现：*/
 
 /*方法说明：快速排序
 @param  array 待排序数组*/
+
 //方法一
 function quickSort(array, left, right) {
     if (Object.prototype.toString.call(array).slice(8, -1) === 'Array' && typeof left === 'number' && typeof right === 'number') {
@@ -368,7 +369,7 @@ function quickSort(array, left, right) {
         return array;
     } else {
         return 'array is not an Array or left or right is not a number!';
-}
+    }
 }
 
 //方法二
@@ -393,11 +394,11 @@ const quickSort2 = function (array) {
 };
 
 console.time('1.快速排序耗时');
-result = quickSort(arr,0,arr.length-1)
+result = quickSort(Array.from(arr), 0, arr.length - 1)
 console.timeEnd('1.快速排序耗时');
 console.log(result);//[2, 3, 4, 5, 15, 19, 26, 27, 36, 38, 44, 46, 47, 48, 50]
 console.time('2.快速排序耗时');
-result =quickSort2(arr);
+result = quickSort2(Array.from(arr));
 console.timeEnd('2.快速排序耗时');
 console.log(result);//[2, 3, 4, 5, 15, 19, 26, 27, 36, 38, 44, 46, 47, 48, 50]
 
@@ -422,7 +423,7 @@ Javascript代码实现：*/
 /*方法说明：堆排序
 @param  array 待排序数组*/
 function heapSort(array) {
-console.time('堆排序耗时');
+    console.time('堆排序耗时');
     if (Object.prototype.toString.call(array).slice(8, -1) === 'Array') {
         //建堆
         let heapSize = array.length, temp;
@@ -435,39 +436,37 @@ console.time('堆排序耗时');
             temp = array[0];
             array[0] = array[j];
             array[j] = temp;
-            heapify(array, 0, --heapSize);
+            heapify(array, 0, j);
         }
         console.timeEnd('堆排序耗时');
         return array;
     } else {
         return 'array is not an Array!';
+    }
 }
-}
+
 /*方法说明：维护堆的性质
 @param  array 数组
 @param  x   数组下标
 @param  len 堆大小*/
 function heapify(array, x, len) {
-if (Object.prototype.toString.call(array).slice(8, -1) === 'Array' && typeof x === 'number') {
-    let l = 2 * x + 1, r = 2 * x + 2, largest = x, temp;
-    if (l < len && array[l] > array[largest]) {
-            largest = l;
-        }
-        if (r < len && array[r] > array[largest]) {
-            largest = r;
-        }
-        if (largest !== x) {
+    if (Object.prototype.toString.call(array).slice(8, -1) === 'Array' && typeof x === 'number') {
+        let child = 2 * x + 1,temp;
+        while (child < len) {
+            if (child+1 < len && array[child + 1] > array[child]) child++;
+            if (child < len && array[x] > array[child]) return;
             temp = array[x];
-            array[x] = array[largest];
-            array[largest] = temp;
-            heapify(array, largest, len);
+            array[x] = array[child];
+            array[child] = temp;
+            x = child;
+            child = 2*child+1;
         }
     } else {
         return 'array is not an Array or x is not a number!';
-}
+    }
 }
 
-console.log(heapSort(arr));
+console.log(heapSort(Array.from(arr)));
 
 /*8.计数排序（Counting Sort）
 计数排序的核心在于将输入的数据值转化为键存储在额外开辟的数组空间中。 作为一种线性时间复杂度的排序，计数排序要求输入的数据必须是有确定范围的整数。
@@ -513,7 +512,7 @@ function countingSort(array) {
     return B;
 }
 
-console.log(countingSort(arr));
+console.log(countingSort(Array.from(arr)));
 
 /*9.桶排序（Bucket Sort）
 桶排序是计数排序的升级版。它利用了函数的映射关系，高效与否的关键就在于这个映射函数的确定。
@@ -536,42 +535,42 @@ console.log(countingSort(arr));
 平均情况：T(n) = O(n2)
 Javascript代码实现:*/
 
-    /*方法说明：桶排序
-    @param  array 数组
-    @param  num   桶的数量*/
-    function bucketSort(array, num) {
-        if (array.length <= 1) return array
-        let len = array.length, buckets = [], result = [], min = max = array[0], regex = '/^[1-9]+[0-9]*$/', space, n = 0;
-        num = num || ((num > 1 && regex.test(num)) ? num : 10);
-        console.time('桶排序耗时');
-        for (let i = 1; i < len; i++) {
-            min = min <= array[i] ? min : array[i];
-            max = max >= array[i] ? max : array[i];
-        }
-        space = (max - min + 1) / num;
-        for (let j = 0; j < len; j++) {
-            let index = Math.floor((array[j] - min) / space);
-            if (buckets[index]) {   //  非空桶，插入排序
-                let k = buckets[index].length - 1;
-                while (k >= 0 && buckets[index][k] > array[j]) {
-                    buckets[index][k + 1] = buckets[index][k];
-                    k--;
-                }
-                buckets[index][k + 1] = array[j];
-            } else {    //空桶，初始化
-                buckets[index] = [];
-                buckets[index].push(array[j]);
-            }
-        }
-        while (n < num) {
-            result = result.concat(buckets[n]);
-            n++;
-        }
-        console.timeEnd('桶排序耗时');
-        return result;
+/*方法说明：桶排序
+@param  array 数组
+@param  num   桶的数量*/
+function bucketSort(array, num) {
+    if (array.length <= 1) return array
+    let len = array.length, buckets = [], result = [], min = max = array[0], regex = '/^[1-9]+[0-9]*$/', space, n = 0;
+    num = num || ((num > 1 && regex.test(num)) ? num : 10);
+    console.time('桶排序耗时');
+    for (let i = 1; i < len; i++) {
+        min = min <= array[i] ? min : array[i];
+        max = max >= array[i] ? max : array[i];
     }
+    space = (max - min + 1) / num;
+    for (let j = 0; j < len; j++) {
+        let index = Math.floor((array[j] - min) / space);
+        if (buckets[index]) {   //  非空桶，插入排序
+            let k = buckets[index].length - 1;
+            while (k >= 0 && buckets[index][k] > array[j]) {
+                buckets[index][k + 1] = buckets[index][k];
+                k--;
+            }
+            buckets[index][k + 1] = array[j];
+        } else {    //空桶，初始化
+            buckets[index] = [];
+            buckets[index].push(array[j]);
+        }
+    }
+    while (n < num) {
+        result = result.concat(buckets[n]);
+        n++;
+    }
+    console.timeEnd('桶排序耗时');
+    return result;
+}
 
-console.log(bucketSort(arr,4));//[2, 3, 4, 5, 15, 19, 26, 27, 36, 38, 44, 46, 47, 48, 50]
+console.log(bucketSort(Array.from(arr), 4));//[2, 3, 4, 5, 15, 19, 26, 27, 36, 38, 44, 46, 47, 48, 50]
 
 /*10.基数排序（Radix Sort）
 基数排序也是非比较的排序算法，对每一位进行排序，从最低位开始排序，复杂度为O(kn),为数组长度，k为数组中的数的最大的位数；
@@ -605,27 +604,27 @@ function radixSort(array, maxDigit) {
     let mod = 10;
     let dev = 1;
     let counter = [];
-console.time('基数排序耗时');
+    console.time('基数排序耗时');
     for (let i = 0; i < maxDigit; i++, dev *= 10, mod *= 10) {
-        for(let j = 0; j < array.length; j++) {
+        for (let j = 0; j < array.length; j++) {
             let bucket = Math.floor((array[j] % mod) / dev);
-            if(counter[bucket]== null) {
+            if (counter[bucket] == null) {
                 counter[bucket] = [];
             }
             counter[bucket].push(array[j]);
         }
         let pos = 0;
-        for(let j = 0; j < counter.length; j++) {
+        for (let j = 0; j < counter.length; j++) {
             let value = null;
-            if(counter[j]!=null) {
+            if (counter[j] != null) {
                 while ((value = counter[j].shift()) != null) {
-                      array[pos++] = value;
+                    array[pos++] = value;
                 }
-          }
+            }
         }
     }
     console.timeEnd('基数排序耗时');
     return array;
 }
 
-console.log(radixSort(arr,2));
+console.log(radixSort(Array.from(arr), 2));

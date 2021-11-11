@@ -2,9 +2,11 @@ package tiga
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
 	contexti "github.com/liov/hoper/server/go/lib/tiga/context"
+	"go.opencensus.io/examples/exporter"
+	"go.opencensus.io/trace"
+	"go.opencensus.io/zpages"
 	"net/http"
 	"os"
 	"os/signal"
@@ -19,12 +21,9 @@ import (
 	httpi "github.com/liov/hoper/server/go/lib/utils/net/http"
 	"github.com/liov/hoper/server/go/lib/utils/net/http/grpc/gateway"
 	"github.com/liov/hoper/server/go/lib/utils/strings"
-	"go.opencensus.io/trace"
-	"go.opencensus.io/trace/propagation"
 	"go.uber.org/zap"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
-	gtrace "golang.org/x/net/trace"
 	"google.golang.org/grpc"
 )
 
@@ -37,7 +36,17 @@ func (s *Server) Serve() {
 	grpcServer := s.grpcHandler(serviceConfig)
 	httpHandler := s.httpHandler(serviceConfig)
 	openTracing := serviceConfig.OpenTracing
-	systemTracing := serviceConfig.SystemTracing
+	//systemTracing := serviceConfig.SystemTracing
+	if openTracing {
+		grpc.EnableTracing = true
+		/*opentracing.SetGlobalTracer(
+		// tracing impl specific:
+		basictracer.New(dapperish.NewTrivialRecorder(initialize.InitConfig.Module)),
+		)*/
+		//trace.ApplyConfig(trace.Config{DefaultSampler: trace.AlwaysSample()})
+		trace.RegisterExporter(&exporter.PrintExporter{})
+		zpages.Handle(http.DefaultServeMux, "/debug")
+	}
 	handle := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if r := recover(); r != nil {
@@ -47,39 +56,11 @@ func (s *Server) Serve() {
 			}
 		}()
 
-		// 请求TraceID，链路跟踪用
-		ctx := r.Context()
-		if systemTracing {
-			// 系统trace只能追踪单个请求，且只记录时间及是否完成
-			t := gtrace.New(initialize.InitConfig.Module, r.RequestURI)
-			defer t.Finish()
-			ctx = gtrace.NewContext(ctx, t)
-		}
-		// 直接从远程读取Trace信息，Trace是否为空交给propagation包判断
-		traceString := r.Header.Get(httpi.GrpcTraceBin)
-		var traceBin []byte
-		if len(traceString)%4 == 0 {
-			// Input was padded, or padding was not necessary.
-			traceBin, _ = base64.StdEncoding.DecodeString(traceString)
-		}
-		traceBin, _ = base64.RawStdEncoding.DecodeString(traceString)
-		if openTracing {
-			var span *trace.Span
-			if parent, ok := propagation.FromBinary(traceBin); ok {
-				ctx, span = trace.StartSpanWithRemoteParent(ctx, r.RequestURI,
-					parent, trace.WithSampler(trace.AlwaysSample()),
-					trace.WithSpanKind(trace.SpanKindServer))
-			} else {
-				ctx, span = trace.StartSpan(ctx, r.RequestURI,
-					trace.WithSampler(trace.AlwaysSample()),
-					trace.WithSpanKind(trace.SpanKindServer))
-			}
+		ctx, span := contexti.CtxFromRequest(r, openTracing)
+		if span != nil {
 			defer span.End()
 		}
-
-		ctx = contexti.CtxWithRequest(ctx, r).ContextWrapper()
-
-		r = r.WithContext(ctx)
+		r = r.WithContext(ctx.ContextWrapper())
 		if r.ProtoMajor == 2 && grpcServer != nil && strings.Contains(r.Header.Get(httpi.HeaderContentType), httpi.ContentGRPCHeaderValue) {
 			grpcServer.ServeHTTP(w, r) // gRPC Server
 		} else {

@@ -7,4 +7,4 @@ pub mod letter_combinations;
 pub mod rotate_right;
 pub mod rotate;
 pub mod trap_rain_water;
-pub mod trap_rain_water_ii;
+pub mod h_trap_rain_water_ii;

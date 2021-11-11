@@ -14,7 +14,6 @@ import (
 type OauthServiceServer interface {
 	OauthAuthorize(context.Context, *oauth.OauthReq) (*response.HttpResponse, error)
 	OauthToken(context.Context, *oauth.OauthReq) (*response.HttpResponse, error)
-	mustEmbedUnimplementedOauthServiceServer()
 }
 
 func RegisterOauthServiceHandlerServer(r *gin.Engine, server OauthServiceServer) {

@@ -37,6 +37,14 @@ func NewMaxHeapFromArr(arr []int) MaxHeap {
 	return heap
 }
 
+func NewMaxHeapFromArr2(arr []int) MaxHeap {
+	heap := MaxHeap(arr)
+	for i := len(arr)/2 - 1; i >= 0; i-- {
+		heap.adjustDown(i)
+	}
+	return heap
+}
+
 func (heap MaxHeap) Put(val int) {
 	if val > heap[0] {
 		return
@@ -68,4 +76,17 @@ func (heap MaxHeap) adjustDown(i int) {
 		i = child
 		child = leftChild(i)
 	}
+}
+
+func (heap MaxHeap) check() bool {
+	for i := range heap {
+		l, r := i*2+1, i*2+2
+		if l < len(heap) && heap[i] < heap[l] {
+			return false
+		}
+		if r < len(heap) && heap[i] < heap[r] {
+			return false
+		}
+	}
+	return true
 }

@@ -45,6 +45,7 @@ func (s *Server) httpHandler(conf *initialize.ServerConfig) http.HandlerFunc {
 		// 暂时解决方法，三个路由
 		if h, p := http.DefaultServeMux.Handler(r); p != "" {
 			h.ServeHTTP(w, r)
+			return
 		}
 		if !stringsi.HasPrefixes(r.RequestURI, includes) || stringsi.HasPrefixes(r.RequestURI, excludes) {
 			ginServer.ServeHTTP(w, r)

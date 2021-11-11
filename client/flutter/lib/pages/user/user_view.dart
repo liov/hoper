@@ -1,6 +1,7 @@
 import 'package:app/components/async/async.dart';
 import 'package:app/global/controller.dart';
 import 'package:app/model/const/const.dart';
+import 'package:app/pages/user/user_controller.dart';
 import 'package:app/routes/route.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
@@ -11,11 +12,12 @@ import 'package:getwidget/components/list_tile/gf_list_tile.dart';
 
 class UserView extends StatelessWidget {
 
+final UserController userController = Get.put(UserController());
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Container(
+      child: Center(
         child: FutureBuilder(
           future: globalState.authState.getSelf(),
           builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
@@ -28,13 +30,17 @@ class UserView extends StatelessWidget {
                   child: CircularProgressIndicator(),
                 );
               case ConnectionState.done:
-                if(globalState.authState.self == null){
-                  return _buildNoLogin();
-                }else return Column(
-                  children: [
-                    _buildHeader()
-                  ],
-                );
+               return GetBuilder<UserController>(builder: (_) {
+                 if(globalState.authState.self == null){
+                   return _buildNoLogin();
+                 }else return Column(
+                   children: [
+                     _buildHeader(),
+                     _buildSignOut()
+                   ],
+                 );
+               },
+               );
             }
           },
         ),
@@ -42,24 +48,33 @@ class UserView extends StatelessWidget {
     );
   }
   Widget _buildNoLogin(){
-      return GestureDetector(
-        onTap: (){
+    return  ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          minimumSize: const Size(100, 45),
+          side: BorderSide(),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4))),
+        ),
+        child: const Text('立即登录'),
+        onPressed: () {
           Get.toNamed(Routes.LOGIN);
         },
-        child: Text('立即登录'),
       );
     }
-
+  Widget _buildSignOut(){
+    return  ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        minimumSize: const Size(100, 45),
+        side: BorderSide(),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4))),
+      ),
+      child: const Text('退出登录'),
+      onPressed: () {
+        globalState.authState.logout();
+      },
+    );
+  }
 
   Widget _buildHeader(){
-    if (globalState.authState.self==null){
-      return GestureDetector(
-        onTap: (){
-          Get.toNamed(Routes.LOGIN);
-        },
-        child: Text('立即登录'),
-      );
-    }
     return GFListTile(
         avatar:CircleAvatar(
           child:ExtendedImage.network(
