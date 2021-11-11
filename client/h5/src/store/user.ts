@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, {AxiosError} from "axios";
 import { Toast } from "vant";
 import router from "@/router/index";
 import { ObjMap } from "@/plugin/utils/user";
@@ -45,16 +45,13 @@ const actions = {
   },
   async login({ state, commit, rootState }, params) {
     try {
-      const { data } = await axios.post("/api/v1/user/login", params);
-      if (data.code && data.code !== 0) Toast.fail(data.message);
-      else {
-        commit("setAuth", data.details.user);
-        commit("setToken", data.details.token);
-        localStorage.setItem("token", data.details.token);
-        axios.defaults.headers["Authorization"] = data.details.token;
+      const { data:{details} } = await axios.post("/api/v1/user/login", params);
+        commit("setAuth", details.user);
+        commit("setToken", details.token);
+        localStorage.setItem("token", details.token);
+        axios.defaults.headers["Authorization"] = details.token;
         await router.push("/");
-      }
-    } catch (error) {
+    } catch (error:any) {
       if (error.response && error.response.status === 401) {
         throw new Error("Bad credentials");
       }
@@ -63,16 +60,14 @@ const actions = {
   },
   async signup({ state, commit, rootState }, params) {
     try {
-      const { data } = await axios.post("/api/v2/user", params);
-      if (data.code && data.code !== 0) Toast.fail(data.message);
-      else {
-        commit("setAuth", data.details.user);
-        commit("setToken", data.details.token);
-        localStorage.setItem("token", data.details.token);
-        axios.defaults.headers["Authorization"] = data.details.token;
+      const { data:{details} } = await axios.post("/api/v2/user", params);
+        commit("setAuth", details.user);
+        commit("setToken", details.token);
+        localStorage.setItem("token", details.token);
+        axios.defaults.headers["Authorization"] = details.token;
         await router.push("/");
-      }
-    } catch (error) {
+
+    } catch (error:any) {
       if (error.response && error.response.status === 401) {
         throw new Error("Bad credentials");
       }

@@ -13,7 +13,7 @@ import (
 
 // 虽然我写的路由比httprouter更强大(没有map,lru cache)，但是还是选择用gin,理由是gin也用同样的方式改造了路由
 
-func Gin(engine *gin.Engine, genApi bool, modName string) {
+func Gin(engine *gin.Engine, genApi bool, modName string, tracing bool) {
 	for _, v := range svcs {
 		describe, preUrl, middleware := v.Service()
 		value := reflect.ValueOf(v)
@@ -35,7 +35,10 @@ func Gin(engine *gin.Engine, genApi bool, modName string) {
 			methodValue := method.Func
 			in2Type := methodType.In(2)
 			engine.Handle(methodInfo.method, methodInfo.path, func(ctx *gin.Context) {
-				ctxi := contexti.CtxWithRequest(ctx.Request.Context(), ctx.Request)
+				ctxi, span := contexti.CtxFromRequest(ctx.Request, tracing)
+				if span != nil {
+					defer span.End()
+				}
 				in1 := reflect.ValueOf(ctxi)
 				in2 := reflect.New(in2Type.Elem())
 				gin_build.Bind(ctx, in2.Interface())

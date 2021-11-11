@@ -4,7 +4,7 @@ use leetcode::multiply::multiply;
 use leetcode::list::ListNode;
 use leetcode::letter_combinations::letter_combinations;
 use leetcode::rotate_right::rotate_right3;
-use leetcode::trap_rain_water_ii::{trap_rain_water2, insert_sort};
+use leetcode::h_trap_rain_water_ii::{trap_rain_water2, insert_sort};
 
 #[test]
 fn two_sum_test(){

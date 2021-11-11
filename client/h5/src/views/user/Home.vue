@@ -2,7 +2,7 @@
   <div class="home">
     <van-row class="info">
       <van-col span="3">
-        <van-image round width="3rem" height="3rem" :src="user.avatarUrl" />
+        <van-image round width="3rem" height="3rem" :src="staticDir + user.avatarUrl" />
       </van-col>
       <van-col span="6">
         {{ user.name }}
@@ -77,13 +77,14 @@
 import { Options, Vue } from "vue-class-component";
 import axios from "axios";
 import { Toast } from "vant";
+import { STATIC_DIR } from "@/plugin/static";
 
 @Options({
   components: {},
 })
 export default class Home extends Vue {
   user = {};
-
+  staticDir = STATIC_DIR;
   async created() {
     this.user = this.$store.state.user.auth;
     if (!this.user.intro) this.user.intro = "我不想介绍自己";

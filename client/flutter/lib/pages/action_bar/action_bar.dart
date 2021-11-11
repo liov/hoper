@@ -13,16 +13,15 @@ import 'package:fixnum/fixnum.dart';
 import 'package:app/generated/protobuf/request/param.pb.dart' as $param;
 
 class ActionBar extends StatefulWidget {
-  ActionBar(this.ext,{this.userAction}) : super();
-  final UserAction? userAction;
-  final ContentExt ext;
+  ActionBar(this.content) : super();
+  final dynamic content;
   @override
-  ActionBarState createState() =>ActionBarState();
+  ActionBarState createState() => ActionBarState();
 }
 
 class ActionBarState extends State<ActionBar> {
-  late ContentExt ext = widget.ext.toBuilder() as ContentExt;
-  late UserAction? action = widget.userAction?.toBuilder() as UserAction?;
+  late ContentExt ext = widget.content.ext.toBuilder() as ContentExt;
+  late UserAction? action = widget.content.action?.toBuilder() as UserAction?;
   static const size = 25.0;
   final ContentClient contentClient =Get.find();
   final ActionClient actionClient =Get.find();
@@ -54,7 +53,11 @@ class ActionBarState extends State<ActionBar> {
             flex: 3,
             child: GestureDetector(
                 onTap: () {
-                  Get.toNamed(Routes.contentDetails(ext.type, ext.refId));
+                  final route = Routes.contentDetails(ext.type, ext.refId);
+                  Get.log(Get.currentRoute);
+                  if (route!=Get.currentRoute){
+                    Get.toNamed(route);
+                  };
                 },
                 child: Row(
                   children: [

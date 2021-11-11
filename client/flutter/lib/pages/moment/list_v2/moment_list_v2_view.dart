@@ -5,6 +5,7 @@ import 'package:app/global/controller.dart';
 
 import 'package:app/pages/moment/item/moment_item_view.dart';
 import 'package:app/pages/moment/detail/moment_detail_view.dart';
+import 'package:app/routes/route.dart';
 import 'package:app/service/moment.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -27,7 +28,7 @@ class _MomentListV2ViewState extends State<MomentListV2View> with AutomaticKeepA
   var times = 0;
   var list = List<$moment.Moment>.empty(growable: true);
 
-
+  late Future<void> _future;
   late final ScrollController _controller = ScrollController()
     ..addListener(() {
       if (_controller.position.atEdge) {
@@ -37,12 +38,13 @@ class _MomentListV2ViewState extends State<MomentListV2View> with AutomaticKeepA
     );
 
   Future<void> resetList() {
-    list.removeRange(0, list.length);
+    list.clear();
     req.pageNo = 1;
     return grpcGetList();
   }
 
   Future<void> grpcGetList() async {
+    Get.log(req.toString());
     var response = await momentClient.stub.list(req);
     if (response.list.isEmpty) return;
     // If the widget was removed from the tree while the message was in flight,
@@ -56,9 +58,17 @@ class _MomentListV2ViewState extends State<MomentListV2View> with AutomaticKeepA
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _future = grpcGetList();
+  }
+
+
+  @override
     Widget build(BuildContext context) {
       super.build(context);
-      final _future = grpcGetList();
+      Get.log("MomentList重绘");
       return FutureBuilder<void>(
           future: _future,
           builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
@@ -66,7 +76,9 @@ class _MomentListV2ViewState extends State<MomentListV2View> with AutomaticKeepA
                         onRefresh: () {
                           return resetList();
                         },
-                        child: ListView.separated(
+                        child: list.isEmpty? Center(child:IconButton(icon: Icon(Icons.refresh), onPressed: () { setState(() {
+                          _future = grpcGetList();
+                        }); },)) : ListView.separated(
                             physics: BouncingScrollPhysics(),
                             controller: _controller,
                             itemCount: list.length,
@@ -76,7 +88,7 @@ class _MomentListV2ViewState extends State<MomentListV2View> with AutomaticKeepA
                             itemBuilder: (context, index) {
                               return InkWell(
                                 onTap: (){
-                                  Get.to(()=>MomentDetailView(),arguments: list[index]);
+                                  Get.toNamed(Routes.contentDetails(list[index].ext.type, list[index].ext.refId),arguments: list[index]);
                                 },
                                 child: MomentItem(
                                     moment: list[index]),
@@ -88,6 +100,21 @@ class _MomentListV2ViewState extends State<MomentListV2View> with AutomaticKeepA
   @override
   void dispose() {
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant MomentListV2View oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    times = 0;
+    req.pageNo = 1;
+    list.clear();
+  }
+
+  @override
+  void reassemble() {
+    print('调用了');
+
+    super.reassemble();
   }
 
   @override

@@ -18,7 +18,6 @@ allprojects {
     mavenCentral()
     gradlePluginPortal()
     google()
-    jcenter()
     mavenLocal()
   }
 }
@@ -44,7 +43,7 @@ subprojects {
     implementation(kotlin("script-runtime"))
   }
 
-  configure<JavaPluginConvention> {
+  configure<JavaPluginExtension> {
     sourceCompatibility = JavaVersion.VERSION_11
   }
 

@@ -1,6 +1,7 @@
 package gormi
 
 import (
+	contexti "github.com/liov/hoper/server/go/lib/utils/context"
 	dbi "github.com/liov/hoper/server/go/lib/utils/dao/db"
 	"gorm.io/gorm"
 )
@@ -37,4 +38,10 @@ WHERE id = ?  AND user_id = ? AND deleted_at = '` + dbi.PostgreZeroTime + `' LIM
 		return false, err
 	}
 	return exists, nil
+}
+
+type CommonDao struct {
+	Ctx      contexti.RequestContext
+	db       *gorm.DB
+	originDB *gorm.DB
 }

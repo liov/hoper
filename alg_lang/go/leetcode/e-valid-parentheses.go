@@ -34,24 +34,34 @@ package leetcode
 
 提示：
 
-1 <= s.length <= 104
+1 <= s.length <= 10^4
 s 仅由括号 '()[]{}' 组成
 
 */
 func isValid(s string) bool {
-	var balance int
+	var balance1, balance2, balance3 int
 	for _, c := range s {
 		if c == '(' {
-			balance++
-		} else {
-			balance--
+			balance1++
 		}
-		if balance < 0 {
+		if c == ')' {
+			balance1--
+		}
+		if c == '[' {
+			balance1++
+		}
+		if c == ']' {
+			balance1--
+		}
+		if c == '{' {
+			balance1++
+		}
+		if c == '}' {
+			balance1--
+		}
+		if balance1 < 0 || balance2 < 0 || balance3 < 0 {
 			return false
 		}
-		if balance == 0 {
-			return true
-		}
 	}
-	return false
+	return balance1 == 0 && balance2 == 0 && balance3 == 0
 }

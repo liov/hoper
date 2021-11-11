@@ -789,3 +789,7 @@ bcdedit /set hypervisorlaunchtype off 重启
 bcdedit /set hypervisorlaunchtype auto
 
 没试过android-sdk卸载HAXM打开Hyper-v是否可行
+
+# flutter pub run . Could not find a file named "pubspec.yaml" in
+flutter pub get
+flutter pub run

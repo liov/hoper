@@ -69,7 +69,7 @@ func main() {
 			app.POST("/api/v1/upload/:md5", handler.Convert(upload.Upload))
 			app.POST("/api/v1/multiUpload", handler.Convert(upload.MultiUpload))
 			app.GET("/api/ws/chat", handler.Convert(chat.Chat))
-			pick.Gin(app, true, initialize.InitConfig.Module)
+			pick.Gin(app, true, initialize.InitConfig.Module, uconf.Conf.Server.OpenTracing)
 		},
 	}).Start()
 }

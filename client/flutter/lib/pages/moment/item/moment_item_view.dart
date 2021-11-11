@@ -103,7 +103,7 @@ class MomentItem extends StatelessWidget {
                     onTap: () => slidePhotoRoute(images![index]),
                   ));
             }),
-      ActionBar(moment.ext,userAction:moment.action),
+      ActionBar(moment),
     ]);
   }
 }

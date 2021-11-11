@@ -35,13 +35,13 @@ func (ctx *valueContext) SetValue(value interface{}) {
 	ctx.value = value
 }
 
-type Context struct {
+type SchedulingContext struct {
 	context.Context
 	run  chan struct{}
 	Done bool
 }
 
-func (c *Context) Monitor() func() {
+func (c *SchedulingContext) Monitor() func() {
 	c.run <- struct{}{}
 	return func() {
 		<-c.run

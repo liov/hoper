@@ -10,7 +10,7 @@
             <span>{{ item.content }}</span>
           </template>
           <template #reference>
-            <img class="avatar" :src="user.avatarUrl" />
+            <img class="avatar" :src="staticDir + user.avatarUrl" />
           </template>
         </van-popover>
       </div>
@@ -44,6 +44,7 @@
 import { Options, Vue } from "vue-class-component";
 import Moment from "@/components/moment/Moment.vue";
 import ActionMore from "@/components/action/More.vue";
+import { STATIC_DIR } from "@/plugin/static";
 
 @Options({
   components: { Moment, ActionMore },
@@ -56,6 +57,7 @@ export default class Chat extends Vue {
   recv = 0; // Email address used for grabbing an avatar
   msgs = [];
   focus = false;
+  staticDir = STATIC_DIR;
 
   created() {
     this.user = this.$store.state.user.auth;

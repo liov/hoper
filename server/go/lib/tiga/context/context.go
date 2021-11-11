@@ -2,28 +2,16 @@ package contexti
 
 import (
 	"context"
-	"encoding/base64"
 	"errors"
-	"github.com/liov/hoper/server/go/lib/tiga/initialize"
-	"github.com/liov/hoper/server/go/lib/utils/net/http/request"
-	timei "github.com/liov/hoper/server/go/lib/utils/time"
-	"github.com/valyala/fasthttp"
-	"go.opencensus.io/trace/propagation"
-	gtrace "golang.org/x/net/trace"
-	"net/http"
-	"net/url"
-	"sync"
-	"time"
-
 	"github.com/dgrijalva/jwt-go/v4"
-	"github.com/google/uuid"
+	contexti "github.com/liov/hoper/server/go/lib/utils/context"
 	"github.com/liov/hoper/server/go/lib/utils/encoding/json"
-	httpi "github.com/liov/hoper/server/go/lib/utils/net/http"
-
 	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
 	jwti "github.com/liov/hoper/server/go/lib/utils/verification/auth/jwt"
 	"go.opencensus.io/trace"
 	"google.golang.org/grpc"
+	"net/http"
+	"sync"
 )
 
 var (
@@ -66,96 +54,9 @@ func (x *Authorization) ParseToken(token, secret string) error {
 	return nil
 }
 
-type DeviceInfo struct {
-	//设备
-	Device     string `json:"device" gorm:"size:255"`
-	Os         string `json:"os" gorm:"size:255"`
-	AppCode    string `json:"appCode" gorm:"size:255"`
-	AppVersion string `json:"appVersion" gorm:"size:255"`
-	IP         string `json:"ip" gorm:"size:255"`
-	Lng        string `json:"lng" gorm:"type:numeric(10,6)"`
-	Lat        string `json:"lat" gorm:"type:numeric(10,6)"`
-	Area       string `json:"area" gorm:"size:255"`
-	UserAgent  string `json:"userAgent" gorm:"size:255"`
-}
-
-func Device(r http.Header) *DeviceInfo {
-	return device(r.Get(httpi.HeaderDeviceInfo),
-		r.Get(httpi.HeaderArea), r.Get(httpi.HeaderLocation),
-		r.Get(httpi.HeaderUserAgent), r.Get(httpi.HeaderXForwardedFor))
-}
-func device(infoHeader, area, localHeader, userAgent, ip string) *DeviceInfo {
-	unknow := true
-	var info DeviceInfo
-	//Device-Info:device,osInfo,appCode,appVersion
-	if infoHeader != "" {
-		unknow = false
-		var n, m int
-		for i, c := range infoHeader {
-			if c == '-' {
-				switch n {
-				case 0:
-					info.Device = infoHeader[m:i]
-				case 1:
-					info.Os = infoHeader[m:i]
-				case 2:
-					info.AppCode = infoHeader[m:i]
-				case 3:
-					info.AppVersion = infoHeader[m:i]
-				}
-				m = i + 1
-				n++
-			}
-		}
-	}
-	// area:xxx
-	// location:1.23456,2.123456
-	if area != "" {
-		unknow = false
-		info.Area, _ = url.PathUnescape(area)
-	}
-	if localHeader != "" {
-		unknow = false
-		var n, m int
-		for i, c := range localHeader {
-			if c == '-' {
-				switch n {
-				case 0:
-					info.Lng = localHeader[m:i]
-				case 1:
-					info.Lat = localHeader[m:i]
-				}
-				m = i + 1
-				n++
-			}
-		}
-
-	}
-
-	if userAgent != "" {
-		unknow = false
-		info.UserAgent = userAgent
-	}
-	if ip != "" {
-		unknow = false
-		info.IP = ip
-	}
-	if unknow {
-		return nil
-	}
-	return &info
-}
-
 type Ctx struct {
-	context.Context
-	TraceID string
 	*Authorization
-	*DeviceInfo
-	request.RequestAt
-	Request     *http.Request
-	FastRequest *fasthttp.Request
-	grpc.ServerTransportStream
-	Internal string
+	*contexti.RequestContext
 }
 
 func (c *Ctx) StartSpan(name string, o ...trace.StartOption) (*Ctx, *trace.Span) {
@@ -171,108 +72,28 @@ func (c *Ctx) WithContext(ctx context.Context) {
 	c.Context = ctx
 }
 
+func CtxFromRequest(r *http.Request, tracing bool) (*Ctx, *trace.Span) {
+	ctxi, span := contexti.CtxWithRequest(r, tracing)
+	return &Ctx{Authorization: &Authorization{}, RequestContext: ctxi}, span
+}
+
 type ctxKey struct{}
 
 func (ctxi *Ctx) ContextWrapper() context.Context {
 	return context.WithValue(context.Background(), ctxKey{}, ctxi)
 }
 
-func CtxWithRequest(ctx context.Context, r *http.Request) *Ctx {
-	// 系统trace只能追踪单个请求，且只记录时间及是否完成
-	t := gtrace.New(initialize.InitConfig.Module, r.RequestURI)
-	defer t.Finish()
-	ctx = gtrace.NewContext(ctx, t)
-
-	traceString := r.Header.Get(httpi.GrpcTraceBin)
-	var traceBin []byte
-	if len(traceString)%4 == 0 {
-		// Input was padded, or padding was not necessary.
-		traceBin, _ = base64.StdEncoding.DecodeString(traceString)
-	}
-	traceBin, _ = base64.RawStdEncoding.DecodeString(traceString)
-
-	var span *trace.Span
-	if parent, ok := propagation.FromBinary(traceBin); ok {
-		ctx, span = trace.StartSpanWithRemoteParent(ctx, r.RequestURI,
-			parent, trace.WithSampler(trace.AlwaysSample()),
-			trace.WithSpanKind(trace.SpanKindServer))
-	} else {
-		ctx, span = trace.StartSpan(ctx, r.RequestURI,
-			trace.WithSampler(trace.AlwaysSample()),
-			trace.WithSpanKind(trace.SpanKindServer))
-	}
-
-	ctxi := newCtx(ctx)
-	ctxi.setWithReq(r)
-	return ctxi
-}
-
-func CtxFromRequest(r *http.Request) *Ctx {
-	ctxi := newCtx(r.Context())
-	ctxi.setWithReq(r)
-	return ctxi
-}
-
 func CtxFromContext(ctx context.Context) *Ctx {
 	ctxi := ctx.Value(ctxKey{})
 	c, ok := ctxi.(*Ctx)
 	if !ok {
-		c = newCtx(ctx)
+		ctxi := contexti.NewCtx(ctx)
+		c = &Ctx{Authorization: &Authorization{}, RequestContext: ctxi}
 	}
 	if c.ServerTransportStream == nil {
 		c.ServerTransportStream = grpc.ServerTransportStreamFromContext(ctx)
 	}
 	return c
-}
-
-func newCtx(ctx context.Context) *Ctx {
-	span := trace.FromContext(ctx)
-	now := time.Now()
-	traceId := span.SpanContext().TraceID.String()
-	if traceId == "" {
-		traceId = uuid.New().String()
-	}
-	return &Ctx{
-		Context:       ctx,
-		TraceID:       traceId,
-		Authorization: &Authorization{},
-		RequestAt: request.RequestAt{
-			Time:       now,
-			TimeStamp:  now.Unix(),
-			TimeString: now.Format(timei.FormatTime),
-		},
-	}
-}
-
-func (c *Ctx) setWithReq(r *http.Request) {
-	c.Request = r
-	c.Token = httpi.GetToken(r)
-	c.DeviceInfo = Device(r.Header)
-	c.Internal = r.Header.Get(httpi.GrpcInternal)
-}
-
-func (c *Ctx) reset(ctx context.Context) *Ctx {
-	span := trace.FromContext(ctx)
-	now := time.Now()
-	traceId := span.SpanContext().TraceID.String()
-	if traceId == "" {
-		traceId = uuid.New().String()
-	}
-	c.Context = ctx
-	c.RequestAt.Time = now
-	c.RequestAt.TimeString = now.Format(timei.FormatTime)
-	c.RequestAt.TimeStamp = now.Unix()
-	return c
-}
-
-func (c *Ctx) GetAuthInfo(auth func(*Ctx) error) (AuthInfo, error) {
-	if c.Authorization == nil {
-		c.Authorization = new(Authorization)
-	}
-	if err := auth(c); err != nil {
-		return nil, err
-	}
-	return c.AuthInfo, nil
 }
 
 func init() {

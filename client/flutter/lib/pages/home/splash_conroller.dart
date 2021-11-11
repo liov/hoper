@@ -25,25 +25,27 @@ class SplashController extends GetxController {
   }
   void advertising(Widget splash){
     if(pausedTime ==null) return;
+    const time = Duration(seconds:3);
     final current = DateTime.now();
     if (current.difference(pausedTime!)  < Duration(seconds:1)) return;
     print('advertising');
     Get.showOverlay(loadingWidget:splash, asyncFunction: () {
       adCompleter = Completer();
-      duration = Duration(seconds:3);
+      duration = time;
       return adCompleter.future;
     });
   }
 
   void startAd(){
     if(globalState.initialized) return;
+    const time = Duration(seconds:1);
     adCompleter = Completer();
     final startTime = DateTime.now();
     globalState.init().then((v){
       final current = DateTime.now();
       final duration = current.difference(startTime);
-      if (duration < Duration(seconds:3)){
-        this.duration = Duration(seconds:3) - duration;
+      if (duration < time){
+        this.duration = time - duration;
       }else{
         if (!adCompleter.isCompleted) adCompleter.complete();
       };
