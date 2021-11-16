@@ -33,7 +33,6 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/google/flatbuffers v2.0.0+incompatible // indirect
 	github.com/google/uuid v1.3.0
-	github.com/googleapis/googleapis v0.0.0-20210826012417-4006aa5cbd12 // indirect
 	github.com/gorilla/sessions v1.2.1
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
@@ -41,7 +40,7 @@ require (
 	github.com/json-iterator/go v1.1.11
 	github.com/lni/dragonboat/v3 v3.3.4
 	github.com/markbates/goth v1.68.0
-	github.com/microcosm-cc/bluemonday v1.0.15
+	github.com/microcosm-cc/bluemonday v1.0.16
 	github.com/modern-go/reflect2 v1.0.1
 	github.com/mozillazg/go-pinyin v0.18.0
 	github.com/mwitkow/go-proto-validators v0.3.2
@@ -175,7 +174,6 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/mrjones/oauth v0.0.0-20180629183705-f4e24b6d100c // indirect
-	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/pierrec/lz4 v2.6.0+incompatible // indirect
 	github.com/pkg/errors v0.9.1 // indirect
