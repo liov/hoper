@@ -71,8 +71,8 @@ class MomentItem extends StatelessWidget {
                     child: ElevatedButton(
                       style: ButtonStyle(
                           fixedSize:MaterialStateProperty.all(Size.fromHeight(5.0)),
-                          backgroundColor:MaterialStateProperty.all(Colors.transparent),
-                          shape: MaterialStateProperty.all(StadiumBorder(
+                          backgroundColor:MaterialStateProperty.resolveWith((states)=>Colors.transparent),
+                          shape: MaterialStateProperty.resolveWith((states)=>StadiumBorder(
                               side: BorderSide(color: Colors.blue)))),
                       child: Text('+关注'),
                       onPressed: () {},

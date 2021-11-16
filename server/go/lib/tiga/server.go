@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	contexti "github.com/liov/hoper/server/go/lib/tiga/context"
-	"go.opencensus.io/examples/exporter"
-	"go.opencensus.io/trace"
 	"go.opencensus.io/zpages"
 	"net/http"
 	"os"
@@ -44,8 +42,8 @@ func (s *Server) Serve() {
 		basictracer.New(dapperish.NewTrivialRecorder(initialize.InitConfig.Module)),
 		)*/
 		//trace.ApplyConfig(trace.Config{DefaultSampler: trace.AlwaysSample()})
-		trace.RegisterExporter(&exporter.PrintExporter{})
-		zpages.Handle(http.DefaultServeMux, "/debug")
+		//trace.RegisterExporter(&exporter.PrintExporter{})
+		zpages.Handle(http.DefaultServeMux, "/api/debug")
 	}
 	handle := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {

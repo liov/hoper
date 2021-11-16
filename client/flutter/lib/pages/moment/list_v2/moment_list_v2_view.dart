@@ -38,9 +38,11 @@ class _MomentListV2ViewState extends State<MomentListV2View> with AutomaticKeepA
     );
 
   Future<void> resetList() {
-    list.clear();
+    times = 0;
     req.pageNo = 1;
-    return grpcGetList();
+    list.clear();
+    _future = grpcGetList();
+    return _future;
   }
 
   Future<void> grpcGetList() async {
@@ -68,7 +70,7 @@ class _MomentListV2ViewState extends State<MomentListV2View> with AutomaticKeepA
   @override
     Widget build(BuildContext context) {
       super.build(context);
-      Get.log("MomentList重绘");
+      Get.log("${this.toStringShort()}重绘");
       return FutureBuilder<void>(
           future: _future,
           builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
@@ -105,15 +107,13 @@ class _MomentListV2ViewState extends State<MomentListV2View> with AutomaticKeepA
   @override
   void didUpdateWidget(covariant MomentListV2View oldWidget) {
     super.didUpdateWidget(oldWidget);
-    times = 0;
-    req.pageNo = 1;
-    list.clear();
+    print('${this.toStringShort()}didUpdateWidget');
+    resetList();
   }
 
   @override
   void reassemble() {
-    print('调用了');
-
+    print('${this.toStringShort()}reassemble');
     super.reassemble();
   }
 
