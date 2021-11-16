@@ -793,3 +793,7 @@ bcdedit /set hypervisorlaunchtype auto
 # flutter pub run . Could not find a file named "pubspec.yaml" in
 flutter pub get
 flutter pub run
+
+# flutter pub run flutter_native_splash:create android12无效
+天坑，不看源码还不知道，flutter_native_splash是根据build.gradle判断编译SKD版本的，判断方法简单粗暴截取转整型，后面有注释识别不了
+去掉注释
