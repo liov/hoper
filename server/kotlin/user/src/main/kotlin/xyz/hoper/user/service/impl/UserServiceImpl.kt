@@ -4,8 +4,9 @@ import io.vertx.core.AsyncResult
 import io.vertx.core.Future
 import io.vertx.core.Handler
 import org.springframework.stereotype.Component
-import xyz.hoper.web.entity.User
-import xyz.hoper.web.service.UserService
+import xyz.hoper.user.service.UserService
+import xyz.hoper.user.entity.User
+
 import xyz.hoper.vertx.annotation.AsyncServiceHandler
 import xyz.hoper.vertx.util.BaseAsyncService
 

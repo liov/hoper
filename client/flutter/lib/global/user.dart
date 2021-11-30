@@ -16,4 +16,8 @@ class UserState {
   appendUsers(List<UserBaseInfo> users){
     users.forEach((e) => _users[e.id] = e);
   }
+  append(UserBaseInfo? user){
+    if (user!=null)
+    _users[user.id] = user;
+  }
 }

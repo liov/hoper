@@ -8,9 +8,11 @@ pluginManagement {
     val quarkusPluginVersion: String by settings
     val quarkusPluginId: String by settings
     repositories {
+        maven { url = uri("https://repo.spring.io/milestone") }
         mavenLocal()
         gradlePluginPortal()
         google()
+        jcenter()
         mavenCentral()
     }
     plugins {

@@ -11,7 +11,7 @@ import xyz.hoper.vertx.resultvo.ResultConstant
 import xyz.hoper.vertx.util.AsyncServiceUtil
 import xyz.hoper.vertx.util.HttpUtil
 import xyz.hoper.vertx.util.ParamUtil
-import xyz.hoper.web.service.UserService
+import xyz.hoper.user.service.UserService
 import java.net.HttpURLConnection.HTTP_INTERNAL_ERROR
 import java.net.HttpURLConnection.HTTP_OK
 

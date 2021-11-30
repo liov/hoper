@@ -1,5 +1,5 @@
-@ModuleGen(name = "hoper", groupPackage = "xyz.hoper.web")
+@ModuleGen(name = "hoper", groupPackage = "xyz.hoper.user")
 
-package xyz.hoper.web;
+package xyz.hoper.user;
 
 import io.vertx.codegen.annotations.ModuleGen;

@@ -5,3 +5,8 @@ logging:
 spring:
   profiles:
     active: dev
+
+grpc:
+  client:
+    host: localhost
+    port: 8090

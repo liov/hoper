@@ -3,7 +3,7 @@ package xyz.hoper.user.service
 import io.vertx.codegen.annotations.ProxyGen
 import io.vertx.core.AsyncResult
 import io.vertx.core.Handler
-import xyz.hoper.web.entity.User
+import xyz.hoper.user.entity.User
 
 
 @ProxyGen

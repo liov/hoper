@@ -26,6 +26,7 @@ class CommentItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("${this.toStringShort()}");
     final user = globalState.userState.getUser(comment.userId);
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(children: [

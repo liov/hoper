@@ -15,3 +15,8 @@ http-server-port: 8090
 worker-pool-size: 40
 #异步服务实例数，建议与CPU核数相同
 async-service-instances: 3
+
+grpc:
+  client:
+    host: localhost
+    port: 8090

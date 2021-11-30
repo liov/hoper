@@ -125,7 +125,7 @@ message MomentRep {
   MomentType type = 3[(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"瞬间类型"'}];
   TinyTag mood = 5 [(go.field) = {tags:'gorm:"-" annotation:"心情"'}];
   TinyTag weather = 7 [(go.field) = {tags:'gorm:"-" annotation:"天气"'}];
-  area.Area area = 9 [(go.field) = {tags:'gorm:"-" annotation:"地区"'}];
+  utils.area.Area area = 9 [(go.field) = {tags:'gorm:"-" annotation:"地区"'}];
   uint64 areaId = 10 [(go.field) = {tags:'gorm:"size:10;default:0" annotation:"地区"'}];
   uint32 areaVisibility = 11 [(go.field) = {tags:'gorm:"type:int2;default:2" annotation:"地区可见性，1-可见"'}];
   string location = 12 [(go.field) = {tags:'gorm:"size:20;default:\'\'" annotation:"位置"'}];

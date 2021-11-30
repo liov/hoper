@@ -31,4 +31,9 @@ function escape() {
     console.log(JSON.parse(Buffer.from(token, 'base64').toString()));
 }
 
-escape()
+function encrypt() {
+    const data = {"userId":2028,"userName":"yi","deptId":923,"deptName":" ","compId":17324,"compName":" ","englishName":"yi","roleCodeList":[" "],"operatorId":10001,"platformType":1,"thirdCompId":23,"systemVersion":0,"isTrial":0}
+    console.log(Buffer.from(JSON.stringify(data)).toString('base64'));
+}
+
+encrypt()

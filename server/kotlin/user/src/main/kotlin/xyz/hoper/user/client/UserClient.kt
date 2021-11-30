@@ -7,9 +7,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import xyz.hoper.protobuf.empty.EmptyOuterClass
 import javax.annotation.PostConstruct
 import xyz.hoper.protobuf.user.UserServiceGrpc
-import xyz.hoper.protobuf.user.UserServiceOuterClass
 
 
 @Component
@@ -32,9 +32,9 @@ class UserClient {
     fun call(){
         val channel = grpcClientMananer?.getChannel(host,port)
         val stub = UserServiceGrpc.newBlockingStub(channel)
-        val request = UserServiceOuterClass.GetReq.newBuilder().setId(2).build()
+        val request = EmptyOuterClass.Empty.newBuilder().build()
         try{
-            val reply = stub.getUser(request)
+            val reply = stub.verifyCode(request)
             log.info("time: $reply")
         }catch (e: StatusRuntimeException) {
             log.error(e.message)

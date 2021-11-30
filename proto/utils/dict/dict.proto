@@ -1,12 +1,12 @@
 syntax = "proto3";
-package dict;
+package utils.dict;
 
 import "patch/go.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 
 
-option java_package = "xyz.hoper.protobuf.dict";
+option java_package = "xyz.hoper.protobuf.utils.dict";
 option go_package = "github.com/liov/hoper/server/go/mod/protobuf/utils/dict";
 
 message Dict{

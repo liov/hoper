@@ -7,8 +7,8 @@ import io.grpc.ManagedChannelBuilder
 
 @Component
 class GrpcClientMananer {
-    fun getChannel(host: String?, port: Int): io.grpc.ManagedChannel? {
-        return io.grpc.ManagedChannelBuilder.forAddress(host, port)
+    fun getChannel(host: String?, port: Int): ManagedChannel? {
+        return ManagedChannelBuilder.forAddress(host, port)
                 .usePlaintext()
                 .disableRetry()
                 .idleTimeout(5, TimeUnit.SECONDS)
