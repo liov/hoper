@@ -1,7 +1,9 @@
 import 'package:app/components/async/async.dart';
+import 'package:app/generated/protobuf/content/action.enum.pb.dart';
+import 'package:app/generated/protobuf/content/content.enum.pb.dart';
 import 'package:app/pages/comment/comment_add_view.dart';
-import 'package:app/pages/comment/comment_list_view.dart';
-import 'package:app/pages/moment/add/moment_add_view.dart';
+import 'package:app/pages/comment/comment_controller.dart';
+import 'package:app/pages/comment/comment_list_view_v2.dart';
 import 'package:app/pages/moment/item/moment_item_view.dart';
 import 'package:app/routes/route.dart';
 import 'package:app/service/moment.dart';
@@ -12,10 +14,14 @@ import 'package:fixnum/fixnum.dart';
 import 'package:app/generated/protobuf/request/param.pb.dart' as $1;
 
 class MomentDetailView extends StatelessWidget {
+  final CommentController commentController = Get.find();
 
   MomentDetailView() : super() {
     if (Get.arguments != null) {
       moment = Get.arguments;
+      commentController.refId = moment.id;
+      commentController.recvId = moment.userId;
+      commentController.type = ContentType.ContentMoment;
       future = Future.value(moment);
       return;
     }
@@ -57,17 +63,23 @@ class MomentDetailView extends StatelessWidget {
           final noReady = snapshot.handle();
           if (noReady != null) return Scaffold(body: noReady);
           final moment = snapshot.data!;
-          return Scaffold(
-              appBar: AppBar(centerTitle: true, title: Text('瞬间'),),
-              body: Center(
-              child: Column(
-                children: [
-                  MomentItem(moment: moment),
-                  CommentListView(moment.ext),
-                ],
+          return SafeArea(
+            child: Scaffold(
+              appBar: AppBar(
+                centerTitle: true,
+                title: Text('瞬间'),
               ),
-          ),
-            bottomSheet: CommentAdd(),
+              body: Center(
+                child: Column(
+                  children: [
+                    MomentItem(moment: moment),
+                    Expanded(flex: 15, child: CommentListViewV2(moment.ext)),
+                    Expanded(flex: 2, child: const Text('没有更多')),
+                  ],
+                ),
+              ),
+              bottomSheet: CommentAdd(),
+            ),
           );
         });
   }

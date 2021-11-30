@@ -8,7 +8,7 @@ plugins {
 
 
 application {
-    mainClassName = "xyz.hoper.user.UserApplication"
+    mainClass.set("xyz.hoper.user.UserApplication")
 }
 
 sourceSets {
@@ -41,6 +41,7 @@ dependencies {
     implementation("io.vertx:vertx-lang-kotlin:${rootProject.ext["vertxVersion"]}")
     implementation("org.reflections:reflections:0.9.12")
     implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     annotationProcessor("org.projectlombok:lombok")

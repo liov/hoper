@@ -4,7 +4,7 @@ package time;
 import "patch/go.proto";
 
 option go_package = "github.com/liov/hoper/server/go/lib/protobuf/time;time";
-option java_package = "xyz.hoper.protobuf.utils.time";
+option java_package = "xyz.hoper.protobuf.time";
 
 
 message Time {

@@ -797,3 +797,65 @@ flutter pub run
 # flutter pub run flutter_native_splash:create android12无效
 天坑，不看源码还不知道，flutter_native_splash是根据build.gradle判断编译SKD版本的，判断方法简单粗暴截取转整型，后面有注释识别不了
 去掉注释
+
+# flutter Scaffold bottomSheet 高度不够，溢出底部
+最外层加SafeArea
+
+# github有,goproxy.io拉不到
+set GOPROXY=https://goproxy.cn
+
+# 无法读取源文件或磁盘
+
+chkdsk E:/R
+
+# caused \"mkdir /sys/fs/cgroup/memory/dock/37b37c01da025b6d3176cbacf151be914678c002c3dda52cad2f69e23331d008: cannot allocate memory\"": unknown
+
+https://zhuanlan.zhihu.com/p/106757502
+CentOS 7.6 3.10.x 内核下创建 memory cgroup 失败原因与解决方案
+3.10.x 内核的 memory cgroup 实现中 kmem accounting 相关是 alpha 特性，实现上由许多 BUG 。具体我们的场景，开启 kmem accouting 后有两个问题：
+
+SLAB 泄露，具体可以参见 Try to Fix Two Linux Kernel Bugs While Testing TiDB Operator in K8s | TiDB
+memory cgroup 泄露，删除后不会被完全回收。又因为内核对 memory cgroup 总数有 65535 总数限制，频繁创建删除开启了 kmem 的 cgroup ，会让内核无法再创建新的 memory cgroup ，出现上面的错误。
+
+从 RedHat 的 Issue 中，据说问题在 7.8 的 kernel-3.10.0-1075.el7 最终修复了。等 CentOS 7.8 发布后，也是一个选择。
+
+升级内核版本到7.6以上即可解决
+
+如果没办法立刻升级，那么就先重启释放内存吧
+
+https://www.cnblogs.com/xzkzzz/p/9627658.html
+
+rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
+yum --enablerepo=elrepo-kernel install kernel-ml
+
+sudo awk -F\' '$1=="menuentry " {print i++ " : " $2}' /etc/grub2.cfg
+grub2-set-default 0
+
+vim /etc/default/grub
+GRUB_DEFAULT=0
+grub2-mkconfig -o /boot/grub2/grub.cfg
+reboot
+
+# Gradle Error:java.lang.OutOfMemoryError: Java heap space.
+
+Gradle设置JVM内存的方法有以下几种方式：
+
+命令行启动任务时增加设置堆内存的参数
+
+修改用户目录下的gradle.properties文件
+
+Windows下路径一般为：C:\Users\用户名.gradle，如果该目录没有这个文件可以新建一个。
+
+修改项目目录下的grable.properties文件（没有可以新建一个）
+
+如果使用的是IDE插件也可以在IDE里面进行设置
+
+如果修改的是gradle.properties文件，加入以下配置：
+
+org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m
+如果是在命令行或IDE里面调整JVM内存分配，只需要使用：
+
+distributionUrl=https\://services.gradle.org/distributions/gradle-7.3-bin.zip
+org.gradle.jvmargs=-Xmx4096m -XX:MaxPermSize=4096m -XX:+HeapDumpOnOutOfMemoryError
+不行再大

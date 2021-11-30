@@ -18,7 +18,7 @@ func main() {
 }
 
 func fixOne(sd *pro.Speed) {
-	fixPic(`fail_pic_2021_02_08_18_04_49`, sd)
+	fixPic(`fail_pic_2021_11_22_09_37_38`, sd)
 }
 
 func fix(sd *pro.Speed) {
@@ -27,7 +27,7 @@ func fix(sd *pro.Speed) {
 		log.Println(err)
 	}
 	for i := range fileInfos {
-		if !fileInfos[i].IsDir() && !strings.HasSuffix(fileInfos[i].Name(), "fail_pic") {
+		if !fileInfos[i].IsDir() && strings.HasPrefix(fileInfos[i].Name(), "fail_post") {
 			pro.FixWeb(fileInfos[i].Name(), sd, pro.Fetch)
 
 		}
@@ -37,7 +37,7 @@ func fix(sd *pro.Speed) {
 		log.Println(err)
 	}
 	for i := range fileInfos {
-		if !fileInfos[i].IsDir() && strings.HasSuffix(fileInfos[i].Name(), "fail_pic") {
+		if !fileInfos[i].IsDir() && strings.HasPrefix(fileInfos[i].Name(), "fail_pic") {
 			fixPic(fileInfos[i].Name(), sd)
 		}
 	}

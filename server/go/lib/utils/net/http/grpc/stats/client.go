@@ -9,7 +9,6 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/status"
-	"strings"
 )
 
 type ClientHandler struct {
@@ -59,9 +58,7 @@ func (c *ClientHandler) HandleRPC(ctx context.Context, rs stats.RPCStats) {
 
 // TagRPC implements per-RPC context management.
 func (c *ClientHandler) TagRPC(ctx context.Context, rti *stats.RPCTagInfo) context.Context {
-	name := strings.TrimPrefix(rti.FullMethodName, "/")
-	name = strings.Replace(name, "/", ".", -1)
-	ctx, span := trace.StartSpan(ctx, name,
+	ctx, span := trace.StartSpan(ctx, rti.FullMethodName,
 		trace.WithSampler(c.StartOptions.Sampler),
 		trace.WithSpanKind(trace.SpanKindClient)) // span is ended by traceHandleRPC
 	traceContextBinary := propagation.Binary(span.SpanContext())

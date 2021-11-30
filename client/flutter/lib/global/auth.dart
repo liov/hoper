@@ -4,6 +4,7 @@ import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/generated/protobuf/user/user.service.pb.dart';
 import 'package:app/generated/protobuf/empty/empty.pb.dart';
 import 'package:app/generated/protobuf/request/param.pb.dart' as request;
+import 'package:app/global/controller.dart';
 import 'package:app/global/service.dart';
 import 'package:app/model/const/const.dart';
 import 'package:app/pages/home/home_controller.dart';
@@ -19,6 +20,7 @@ import 'package:grpc/grpc.dart';
 
 class AuthState {
   UserAuthInfo? userAuth = null;
+  UserBaseInfo? get userBaseInfo => self!=null?UserBaseInfo(id:self!.id,name:self!.name,gender: self!.gender,avatarUrl: self!.avatarUrl):null;
   User? self = null;
 
   static const _PRE = "AuthState";
@@ -37,7 +39,7 @@ class AuthState {
         if (user.id == 0) return;
         this.userAuth = user;
         setAuth(authKey);
-        getSelf();
+        getSelf().then((value) => globalState.userState.append(userBaseInfo));
         return null;
       } catch (err) {
         print(err);

@@ -1,5 +1,5 @@
 syntax = "proto3";
-package time;
+package utils.time;
 
 import "patch/go.proto";
 

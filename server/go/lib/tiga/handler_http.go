@@ -88,7 +88,7 @@ func accessLog(ctxi *contexti.Ctx, iface, method, body, result string, code int)
 			// 性能
 			zap.Duration("processTime", ce.Time.Sub(ctxi.RequestAt.Time)),
 			zap.String("result", result),
-			zap.String("auth", ctxi.Token),
+			zap.String("auth", ctxi.AuthInfoRaw),
 			zap.Int("status", code))
 	}
 }

@@ -8,6 +8,7 @@ import (
 
 //windows的Sleep，2ms算可以了？
 func main() {
+	TestTimeUnix()
 	//这三行没啥意义，证明分时系统不精确而已
 	var StartTime = time.Now().Unix()
 	time.Sleep(1 * time.Second)
@@ -27,4 +28,8 @@ func main() {
 			log.Printf("t:%d", t)
 		}
 	}
+}
+
+func TestTimeUnix() {
+	fmt.Println(time.Unix(time.Now().Unix(), 0))
 }

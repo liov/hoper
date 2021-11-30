@@ -1,16 +1,16 @@
-import java.lang.System.getenv
-
 import com.google.protobuf.gradle.generateProtoTasks
 import com.google.protobuf.gradle.id
 import com.google.protobuf.gradle.ofSourceSet
 import com.google.protobuf.gradle.plugins
 import com.google.protobuf.gradle.protobuf
 import com.google.protobuf.gradle.protoc
+import java.io.ByteArrayOutputStream
 
 plugins {
     //id("com.squareup.wire") version "3.1.0"
-    id("com.google.protobuf") version "0.8.17"
-    id("idea")
+    id("com.google.protobuf") version "0.8.18"
+    java
+    idea
 }
 
 //wire {
@@ -25,14 +25,19 @@ plugins {
 //    }
 //}
 
-sourceSets{
+val protopath = file("${rootDir}/../../proto").absolutePath
+val projectpath = file("${rootDir}/../go/lib").absolutePath
+
+
+sourceSets {
     main {
         java {
             srcDirs("src/main/java")
         }
         proto {
-            srcDir("${rootDir}/../../proto")
+            srcDirs(protopath)
             println(srcDirs)
+            println(includes)
         }
     }
 }
@@ -55,17 +60,18 @@ protobuf {
     }
 
     generateProtoTasks {
+
         ofSourceSet("main").forEach { generateProtoTask ->
             generateProtoTask
-                    .plugins {
-                        id("grpc")
-                        //id("grpckt")
-                    }
+                .plugins {
+                    id("grpc")
+                    //id("grpckt")
+                }
         }
     }
 }
 
-idea{
+idea {
 
 }
 //卧槽
@@ -75,14 +81,19 @@ tasks.getByName<Jar>("jar") {
     enabled = true
 }
 
-dependencies{
+dependencies {
     implementation("io.grpc:grpc-kotlin-stub:${rootProject.ext["grpc_kotlin_version"]}")
     implementation("com.google.protobuf:protobuf-java:${rootProject.ext["protobuf_version"]}")
-    implementation("com.google.protobuf:protobuf-java-util:3.11.1")
+    implementation("com.google.protobuf:protobuf-java-util:${rootProject.ext["protobuf_version"]}")
     api("io.grpc:grpc-netty-shaded:${rootProject.ext["grpc_version"]}")
     api("io.grpc:grpc-protobuf:${rootProject.ext["grpc_version"]}")
     api("io.grpc:grpc-stub:${rootProject.ext["grpc_version"]}")
-    implementation("com.google.guava:guava:28.2-jre")
+    implementation("com.google.guava:guava:31.0.1-jre")
+    protobuf(files("$projectpath/protobuf").filter { file -> file.name.contains("third")||file.name.endsWith(".gen.proto") })
+    protobuf(files("$projectpath/protobuf/third"))
+    //protobuf(files(protolib("github.com/grpc-ecosystem/grpc-gateway/v2")))
+    //protobuf(files(protolib("google.golang.org/protobuf")))
+    //protobuf(files(protolib("github.com/googleapis/googleapis")))
     //api("com.squareup.wire:wire-runtime:${rootProject.ext["wire_version"]}")
     //api("com.squareup.wire:wire-schema-multiplatform:${rootProject.ext["wire_version"]}")
     if (JavaVersion.current().isJava9Compatible) {
@@ -90,5 +101,68 @@ dependencies{
         // see: https://github.com/grpc/grpc-java/issues/3633
         implementation("org.apache.tomcat:annotations-api:6.0.53")
     }
-   // protobuf(files("${rootDir}../../../proto/"))
+    // protobuf(files("${rootDir}../../../proto/"))
+}
+
+/*
+task<Exec>("googeapis"){
+    print(projectpath)
+    description = "获取path"
+    workingDir = File(projectpath)
+    commandLine = listOf("go", "list","-m","-f","{{.Dir}}","github.com/grpc-ecosystem/grpc-gateway/v2")
+    doLast {
+        print("进来了")
+        val outputStr = standardOutput.toString()
+        println(outputStr)
+    }
+}
+*/
+
+fun allProtolib(): List<String> {
+    val stdout = ByteArrayOutputStream()
+    val includes = mutableListOf(protopath)
+    val args = mutableListOf<String>("go", "list", "-m", "-f", "{{.Dir}}", "")
+    exec {
+        workingDir = File(projectpath)
+        args[5] = "github.com/grpc-ecosystem/grpc-gateway/v2"
+        commandLine(args)
+        standardOutput = stdout
+    }
+    var outputStr = stdout.toString("utf-8").trim()
+    includes += outputStr
+    stdout.reset()
+    exec {
+        workingDir = File(projectpath)
+        args[5] = "google.golang.org/protobuf"
+        commandLine(args)
+        standardOutput = stdout
+    }
+    outputStr = stdout.toString("utf-8").trim()
+    includes += outputStr
+    stdout.reset()
+    exec {
+        workingDir = File(projectpath)
+        args[5] = "github.com/googleapis/googleapis"
+        commandLine(args)
+        standardOutput = stdout
+    }
+    outputStr = stdout.toString("utf-8").trim()
+    stdout.reset()
+    includes += outputStr
+    includes += "$projectpath/protobuf"
+    includes += "$projectpath/protobuf/third"
+
+    return includes
+}
+
+fun protolib(lib:String): String {
+    val stdout = ByteArrayOutputStream()
+    val includes = mutableListOf(protopath)
+    val args = mutableListOf<String>("go", "list", "-m", "-f", "{{.Dir}}", lib)
+    exec {
+        workingDir = File(projectpath)
+        commandLine(args)
+        standardOutput = stdout
+    }
+    return stdout.toString("utf-8").trim()
 }

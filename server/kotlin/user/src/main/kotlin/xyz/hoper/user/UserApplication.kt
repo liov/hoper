@@ -1,4 +1,4 @@
-package xyz.hoper.web
+package xyz.hoper.user
 
 import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
@@ -15,9 +15,9 @@ import xyz.hoper.vertx.util.factory.RouterHandlerFactory
 import xyz.hoper.vertx.util.verticle.DeployVertxServer
 import java.io.IOException
 
-@ComponentScan("xyz.hoper")
+@ComponentScan("xyz.hoper.user")
 @SpringBootApplication
-open class UserApplication {
+class UserApplication {
     /**
      * web api所在包路径
      */

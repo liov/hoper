@@ -2,7 +2,7 @@ import 'dart:ffi';
 
 import 'package:app/generated/protobuf/content/content.enum.pb.dart';
 import 'package:app/global/controller.dart';
-import 'package:app/pages/comment/comment_add_controller.dart';
+import 'package:app/pages/comment/comment_controller.dart';
 import 'package:app/pages/home/home_binding.dart';
 import 'package:app/pages/home/home_view.dart';
 import 'package:app/pages/home/splash_view.dart';
@@ -31,12 +31,15 @@ class AppPages {
         GetPage(
           name: Routes.ADD,
           page: () =>  globalState.authCheck() ?? MomentAddView(),
-          binding: BindingsBuilder.put(() => MediaAddController())
+          binding: BindingsBuilder.put(() => MomentAddController())
         ),
         GetPage(
             name: Routes.DynamicId,
             page: () =>  MomentDetailView(),
-            binding: BindingsBuilder.put(() => MediaAddController())
+            binding: BindingsBuilder(() {
+              //Get.put(CommentAddController());
+              Get.put(CommentController());
+            })
         ),
       ]
     ),

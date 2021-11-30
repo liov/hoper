@@ -12,14 +12,10 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
-
-class CommentAddController extends GetxController {
+class MediaController {
 
   List<XFile> imageFiles = List<XFile>.empty(growable: true);
   List<String> imageUrls = List.empty(growable: true);
-  String content = '';
-  final MomentClient momentClient = Get.find();
-
   dynamic pickImageError;
 
   VideoPlayerController? videoController;
@@ -56,7 +52,6 @@ class CommentAddController extends GetxController {
                 pickImageError = e;
             }*/
     }
-    update();
   }
 
   Future<void> playVideo(XFile? file) async {
@@ -89,28 +84,5 @@ class CommentAddController extends GetxController {
     videoController = null;
   }
 
-  Future<void> save() async {
-    try {
-      await momentClient.stub.add(AddMomentReq(
-        type: MomentType.MomentTypeImage,
-        content: content,
-        images: imageUrls.join(','),
-      ));
-      navigator!.pop();
-    }catch (e) {
-      print(e);
-    }
-  }
 
-  @override
-  void onReady() {
-    // TODO: implement onReady
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    // TODO: implement onClose
-    super.onClose();
-  }
 }

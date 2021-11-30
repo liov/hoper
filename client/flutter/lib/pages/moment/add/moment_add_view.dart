@@ -1,6 +1,8 @@
 import 'dart:io';
 
+
 import 'package:app/pages/photo/slide_photo.dart';
+import 'package:app/utils/media.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +14,7 @@ import 'package:video_player/video_player.dart';
 import 'moment_add_controller.dart';
 
 class MomentAddView extends StatelessWidget {
-  final MediaAddController controller = Get.find();
+  final MomentAddController controller = Get.find();
   final _formKey = GlobalKey<FormState>();
 
 
@@ -46,7 +48,7 @@ class MomentAddView extends StatelessWidget {
                         },
                       ),
                     ]))),
-            GetBuilder<MediaAddController>(builder: (_) {
+            GetBuilder<MomentAddController>(builder: (_) {
               if(controller.imageFiles.isEmpty){
                 return Container();
               }
@@ -82,7 +84,7 @@ class MomentAddBottomSheet extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    final MediaAddController controller = Get.find();
+    final MediaController controller = MediaController();
    return Row(
      textBaseline: TextBaseline.alphabetic,
      children: [

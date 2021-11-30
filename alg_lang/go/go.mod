@@ -10,7 +10,6 @@ require (
 	github.com/liov/hoper/server/go/lib v1.0.0
 	github.com/lucasb-eyer/go-colorful v1.0.2
 	github.com/mattetti/filebuffer v1.0.0 // indirect
-	github.com/modern-go/reflect2 v1.0.1
 	github.com/unicorn-engine/unicorn v0.0.0-20191119163456-3cea38bff7bf
 	github.com/xuri/excelize/v2 v2.4.1
 	golang.org/x/exp v0.0.0-20201229011636-eab1b5eb1a03

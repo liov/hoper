@@ -13,7 +13,7 @@ use user::{
     BaseListReq
 };
 
-pub use hello_v3::{empty,response,request,any,oauth};
+pub use timer::{empty,response,request,any,oauth};
 
 
 #[derive(Default)]
@@ -47,13 +47,13 @@ impl UserService for MyUserService {
     async fn signup_verify(
         &self,
         request: Request<SingUpVerifyReq>,
-    ) -> Result<Response<empty::Empty>, Status>{
+    ) -> Result<Response<String>, Status>{
         Ok(Response::new(Default::default()))
     }
     async fn signup(
         &self,
         request: Request<SignupReq>,
-    ) -> Result<Response<empty::Empty>, Status>{
+    ) -> Result<Response<String>, Status>{
         Ok(Response::new(Default::default()))
     }
     async fn easy_signup(
@@ -95,13 +95,13 @@ impl UserService for MyUserService {
     async fn forget_password(
         &self,
         request: Request<LoginReq>,
-    ) -> Result<Response<response::TinyRep>, Status>{
+    ) -> Result<Response<String>, Status>{
         Ok(Response::new(Default::default()))
     }
     async fn reset_password(
         &self,
         request: Request<ResetPasswordReq>,
-    ) -> Result<Response<response::TinyRep>, Status>{
+    ) -> Result<Response<String>, Status>{
         Ok(Response::new(Default::default()))
     }
     async fn info(
@@ -138,7 +138,7 @@ impl UserService for MyUserService {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let addr = "[::1]:50051".parse().unwrap();
+    let addr = "[::1]:8090".parse().unwrap();
     let greeter = MyUserService::default();
 
     Server::builder()

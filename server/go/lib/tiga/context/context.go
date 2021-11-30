@@ -30,7 +30,7 @@ type Authorization struct {
 	LastActiveAt int64  `json:"lat,omitempty"`
 	ExpiredAt    int64  `json:"exp,omitempty"`
 	LoginAt      int64  `json:"iat,omitempty"`
-	Token        string `json:"-"`
+	AuthInfoRaw  string `json:"-"`
 }
 
 func (x *Authorization) Valid(helper *jwt.ValidationHelper) error {
@@ -103,7 +103,7 @@ func init() {
 func jwtUnmarshaller(ctx jwt.CodingContext, data []byte, v interface{}) error {
 	if ctx.FieldDescriptor == jwt.ClaimsFieldDescriptor {
 		if c, ok := (*v.(*jwt.Claims)).(*Authorization); ok {
-			c.Token = stringsi.ToString(data)
+			c.AuthInfoRaw = stringsi.ToString(data)
 			return json.Unmarshal(data, c)
 		}
 	}

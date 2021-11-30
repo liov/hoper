@@ -114,6 +114,7 @@ func Device(infoHeader, area, localHeader, userAgent, ip string) *DeviceInfo {
 type RequestContext struct {
 	context.Context
 	TraceID string
+	Token   string
 	*DeviceInfo
 	request.RequestAt
 	Request     *http.Request
@@ -238,6 +239,7 @@ func (c *RequestContext) setWithReq(r *http.Request) {
 	c.Request = r
 	c.DeviceInfo = DeviceFromHeader(r.Header)
 	c.Internal = r.Header.Get(httpi.GrpcInternal)
+	c.Token = httpi.GetToken(r)
 }
 
 func (c *RequestContext) reset(ctx context.Context) *RequestContext {

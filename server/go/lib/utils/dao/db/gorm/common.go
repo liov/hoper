@@ -41,7 +41,14 @@ WHERE id = ?  AND user_id = ? AND deleted_at = '` + dbi.PostgreZeroTime + `' LIM
 }
 
 type CommonDao struct {
-	Ctx      contexti.RequestContext
-	db       *gorm.DB
-	originDB *gorm.DB
+	Ctx          *contexti.RequestContext
+	db, originDB *gorm.DB
+}
+
+func (c *CommonDao) ResetDB() {
+	c.db = c.originDB
+}
+
+func New(ctx *contexti.RequestContext, db *gorm.DB) *CommonDao {
+	return &CommonDao{Ctx: ctx, db: db, originDB: db}
 }

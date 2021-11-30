@@ -27,9 +27,9 @@ import (
 	"gorm.io/gorm"
 )
 
-const CommonUrl = "https://f1113.wonderfulday30.live/viewthread.php?tid="
+const CommonUrl = "https://f616.wonderfulday27.live/viewthread.php?tid="
 const Loop = 50
-const CommonDir = `F:\pic\pic_4\`
+const CommonDir = `D:\F\工作夹\备份\Pictures\pron\91\pic_4\`
 const Interval = 200 * time.Millisecond
 const Sep = string(os.PathSeparator)
 const Ext = `.txt`
@@ -194,9 +194,9 @@ func Fetch(id int, sd *Speed) {
 }
 
 func ParseHtml(doc *goquery.Document) (string, string, string, string, *goquery.Selection, *Post) {
-	auth := doc.Find(".mainbox td.postauthor .postinfo a").First().Text()
+	auth := doc.Find("#postlist .popuserinfo a").First().Text()
 	title := doc.Find("#threadtitle h1").Text()
-	postTime := doc.Find(".authorinfo em").First().Text()
+	postTime,_ := doc.Find(".authorinfo em span").First().Attr("title")
 	post := &Post{
 		TId:   0,
 		Auth:  auth,
@@ -354,7 +354,7 @@ func Start(job func(sd *Speed)) {
 	wg := new(sync.WaitGroup)
 	wg.Add(3)
 	go func() {
-		f, _ := os.Create(CommonDir + "fail_" + time.Now().Format("2006_01_02_15_04_05") + Ext)
+		f, _ := os.Create(CommonDir + "fail_post_" + time.Now().Format("2006_01_02_15_04_05") + Ext)
 		for txt := range sd.Fail {
 			f.WriteString(txt + "\n")
 		}
@@ -370,7 +370,7 @@ func Start(job func(sd *Speed)) {
 		wg.Done()
 	}()
 	go func() {
-		f, _ := os.Create(CommonDir + "fail_post_" + time.Now().Format("2006_01_02_15_04_05") + Ext)
+		f, _ := os.Create(CommonDir + "fail_db_" + time.Now().Format("2006_01_02_15_04_05") + Ext)
 		for txt := range sd.FailDB {
 			f.WriteString(txt + "\n")
 		}
