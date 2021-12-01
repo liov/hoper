@@ -6,9 +6,9 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 #webApi扫描包路径
-web-api-packages: xyz.hoper.web.api
+web-api-packages: xyz.hoper.user.api
 #异步服务扫描包路径
-async-service-impl-packages: xyz.hoper.web.service.impl
+async-service-impl-packages: xyz.hoper.user.service.impl
 #Http服务器端口号
 http-server-port: 8090
 #工作线程池大小

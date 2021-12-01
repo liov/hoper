@@ -14,7 +14,7 @@ plugins {
 }
 
 ext {
-    set("vertxVersion", "3.9.1")
+    set("vertxVersion", "4.2.1")
     set("junitJupiterEngineVersion", "5.4.0")
     set("grpc_kotlin_version", "1.2.0")
     set("protobuf_version", "3.19.1")

@@ -172,10 +172,13 @@ func TestIsRectangleCover(t *testing.T) {
 }
 
 func TestMaxProduct(t *testing.T) {
-	fmt.Println(maxProduct([]string{"a","aa","aaa","aaaa"}))
+	fmt.Println(maxProduct([]string{"a", "aa", "aaa", "aaaa"}))
 }
 
 func TestOriginalDigits(t *testing.T) {
 	fmt.Println(originalDigits("zeroonetwothreefourfivesixseveneightnine"))
 }
 
+func TestFindNthDigit(t *testing.T) {
+	fmt.Println(findNthDigit(500))
+}
