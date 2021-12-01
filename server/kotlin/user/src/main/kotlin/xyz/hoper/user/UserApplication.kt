@@ -15,7 +15,7 @@ import xyz.hoper.vertx.util.factory.RouterHandlerFactory
 import xyz.hoper.vertx.util.verticle.DeployVertxServer
 import java.io.IOException
 
-@ComponentScan("xyz.hoper.user")
+@ComponentScan("xyz.hoper.util","xyz.hoper.user")
 @SpringBootApplication
 class UserApplication {
     /**
