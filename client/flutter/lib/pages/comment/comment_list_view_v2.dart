@@ -3,6 +3,7 @@ import 'package:app/generated/protobuf/content/action.model.pb.dart';
 import 'package:app/generated/protobuf/content/action.service.pb.dart';
 import 'package:app/pages/comment/comment_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
@@ -46,11 +47,17 @@ class CommentListViewV2 extends StatelessWidget {
                       itemBuilder: (context, index) {
                         return InkWell(
                           onTap: (){
+
                             final tmp = controller.list[index];
                             controller.rootId = tmp.rootId == 0
                                 ? tmp.id : tmp.rootId;
                             controller.recvId = tmp.userId;
                             controller.replyId = tmp.id;
+                            if(controller.focusNode.hasFocus){
+                              SystemChannels.textInput.invokeListMethod('TextInput.show');
+                            }
+                            controller.focusNode.requestFocus();
+
                           },
                           child: CommentItem(
                               comment: controller.list[index]),

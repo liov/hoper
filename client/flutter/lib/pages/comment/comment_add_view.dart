@@ -19,24 +19,21 @@ import 'comment_controller.dart';
 
 class CommentAdd extends StatelessWidget {
   final CommentController controller = Get.find();
-  final TextEditingController _controller = TextEditingController();
-  final _focusNode = FocusNode();
+  late final TextEditingController _controller = controller.textEditingController;
+  late final _focusNode = controller.focusNode;
 
 
   @override
   Widget build(BuildContext context) {
     print('@'.codeUnits);
     var mode = true;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const MomentAddBottomSheet(),
+    return
         Row(mainAxisSize: MainAxisSize.min, children: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 10),
           ),
           Expanded(
-              flex: 6,
+              flex: 7,
               child: TextField(
                 controller: _controller,
                 focusNode: _focusNode,
@@ -83,7 +80,7 @@ class CommentAdd extends StatelessWidget {
             flex: 1,
             child: button1(),
           )
-        ]),
+
 
       ],
     );
@@ -104,6 +101,7 @@ class CommentAdd extends StatelessWidget {
               await controller.save(_controller.text);
               _controller.text = '';
               _focusNode.unfocus();
+              controller.update(['add']);
             },
             color: Colors.blue,
             icon: _controller.text.isEmpty ?Icon(Icons.add) : Text("发送"),
@@ -113,4 +111,3 @@ class CommentAdd extends StatelessWidget {
 
 
 }
-

@@ -44,6 +44,8 @@ class CommentController extends GetxController with MediaController {
     return future;
   }
 
+  final TextEditingController textEditingController = TextEditingController();
+  final focusNode = FocusNode();
   $fixnum.Int64? refId;
   $fixnum.Int64? replyId;
   $fixnum.Int64? rootId;

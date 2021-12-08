@@ -33,6 +33,18 @@ Future<void> main() async {
     themeMode: AppInfo.isDebug?ThemeMode.dark:ThemeMode.system,
     theme: ThemeData.light(),
     darkTheme:ThemeData.dark(),
+      builder: (context, child) => Scaffold(
+        body: GestureDetector(
+          onTap: () {
+            FocusScopeNode focusScopeNode = FocusScope.of(context);
+            if (!focusScopeNode.hasPrimaryFocus &&
+                focusScopeNode.focusedChild != null) {
+              FocusManager.instance.primaryFocus?.unfocus();
+            }
+          },
+          child: child,
+        ),
+      ),
     //home: HomeView(),
     initialRoute: Routes.HOME,
     initialBinding: BindingsBuilder.put(() =>globalState),
