@@ -182,3 +182,7 @@ func TestOriginalDigits(t *testing.T) {
 func TestFindNthDigit(t *testing.T) {
 	fmt.Println(findNthDigit(500))
 }
+
+func TestLargestSumAfterKNegations(t *testing.T) {
+	fmt.Println(largestSumAfterKNegations([]int{2, -3, -1, 5, -4}, 2))
+}

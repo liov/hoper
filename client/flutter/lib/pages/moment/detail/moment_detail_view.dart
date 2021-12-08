@@ -73,8 +73,8 @@ class MomentDetailView extends StatelessWidget {
                 child: Column(
                   children: [
                     MomentItem(moment: moment),
-                    Expanded(flex: 15, child: CommentListViewV2(moment.ext)),
-                    Expanded(flex: 2, child: const Text('没有更多')),
+                    Expanded(flex: 10, child: CommentListViewV2(moment.ext)),
+                    Expanded(flex: 1, child: const Text('')),
                   ],
                 ),
               ),

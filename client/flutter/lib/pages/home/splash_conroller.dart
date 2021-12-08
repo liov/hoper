@@ -27,7 +27,7 @@ class SplashController extends GetxController {
     if(pausedTime ==null) return;
     const time = Duration(seconds:3);
     final current = DateTime.now();
-    if (current.difference(pausedTime!)  < Duration(seconds:1)) return;
+    if (current.difference(pausedTime!)  < Duration(minutes:10)) return;
     print('advertising');
     Get.showOverlay(loadingWidget:splash, asyncFunction: () {
       adCompleter = Completer();
