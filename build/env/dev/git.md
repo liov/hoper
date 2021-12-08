@@ -6,6 +6,8 @@ git rev-list --objects --all | grep 35047899fd3b0dd637b0da2086e7a70fe27b1ccb
 
 git filter-branch --force --index-filter "git rm --cached --ignore-unmatch *" --prune-empty --tag-name-filter cat -- --all
 
+git filter-branch --force --index-filter "git rm --cached --ignore-unmatch *" --prune-empty $commit-id..HEAD
+
 rm -rf .git/refs/original/
  
 git reflog expire --expire=now --all
