@@ -34,7 +34,9 @@ class CommentListViewV2 extends StatelessWidget {
                   onRefresh: () {
                     return controller.resetList();
                   },
-                  child: controller.list.isEmpty? Center(child:TextButton.icon(onPressed: () { controller.update(["list"]); },
+                  child: controller.list.isEmpty? Center(child:TextButton.icon(onPressed: () {
+                    controller.resetList();
+                    },
                     label: const Text('暂无评论，点击刷新'),
                     icon: const Icon(Icons.refresh),)) : ListView.separated(
                       //shrinkWrap: true,

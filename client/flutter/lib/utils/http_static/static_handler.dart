@@ -19,10 +19,9 @@ import 'util.dart';
 
 import 'package:flutter/services.dart' show rootBundle;
 
-import 'package:flutter_inappwebview/src/mime_type_resolver.dart' as mtr;
 
 /// The default resolver for MIME types based on file extensions.
-final _defaultMimeTypeResolver = MimeTypeResolver();
+final DefaultMimeTypeResolver = MimeTypeResolver();
 
 // TODO option to exclude hidden files?
 
@@ -65,7 +64,7 @@ Handler createStaticHandler(String fileSystemPath,
       throw ArgumentError('defaultDocument must be a file name.');
     }
   }
-  final mimeResolver = contentTypeResolver ?? _defaultMimeTypeResolver;
+  final mimeResolver = contentTypeResolver ?? DefaultMimeTypeResolver;
 
   return (Request request) async{
     if(assets){
@@ -180,7 +179,7 @@ Handler createFileHandler(String path, {String? url, String? contentType}) {
     throw ArgumentError.value(url, 'url', 'must be relative.');
   }
 
-  final mimeType = contentType ?? _defaultMimeTypeResolver.lookup(path);
+  final mimeType = contentType ?? DefaultMimeTypeResolver.lookup(path);
   url ??= p.toUri(p.basename(path)).toString();
 
   return (request) {
@@ -291,7 +290,7 @@ Future<Response> _handleAssets(Request request, String path) async {
     HttpHeaders.acceptRangesHeader: 'bytes',
   };
 
-  final contentType = await mtr.MimeTypeResolver.lookup(path);
+  final contentType = await DefaultMimeTypeResolver.lookup(path);
   if (contentType != null) headers[HttpHeaders.contentTypeHeader] = contentType;
 
   headers[HttpHeaders.contentLengthHeader] = body.length.toString();

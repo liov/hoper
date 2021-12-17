@@ -186,3 +186,11 @@ func TestFindNthDigit(t *testing.T) {
 func TestLargestSumAfterKNegations(t *testing.T) {
 	fmt.Println(largestSumAfterKNegations([]int{2, -3, -1, 5, -4}, 2))
 }
+
+func TestMaxSumOfThreeSubarrays(t *testing.T) {
+	fmt.Println(maxSumOfThreeSubarrays3([]int{17, 7, 19, 11, 1, 19, 17, 6, 13, 18, 2, 7, 12, 16, 16, 18, 9, 3, 19, 5}, 6))
+}
+
+func TestValidTicTacToe(t *testing.T) {
+	fmt.Println(validTicTacToe([]string{"XOX", " X ", "   "}))
+}

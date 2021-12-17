@@ -18,7 +18,7 @@ function erp() {
 
 function crm() {
     const sess = {
-        userId: 310,
+        userId: 200,
         userName: '',
         userRealName: '',
         clientIp: '',
@@ -36,4 +36,4 @@ function encrypt() {
     console.log(Buffer.from(JSON.stringify(data)).toString('base64'));
 }
 
-encrypt()
+crm()

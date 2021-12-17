@@ -10,14 +10,13 @@ import 'package:flutter/material.dart';
 import 'package:fixnum/fixnum.dart' as $fixnum;
 
 class CommentController extends GetxController with MediaController {
-
-  final req = CommentListReq(pageNo:1,pageSize:10);
+  final req = CommentListReq(pageNo: 1, pageSize: 10);
   var times = 0;
   var list = List<Comment>.empty(growable: true);
   late Future<void> future;
   final ActionClient actionClient = Get.find();
 
-  void init(ContentType type, $fixnum.Int64 refId,){
+  void init(ContentType type, $fixnum.Int64 refId) {
     req.type = type;
     req.refId = refId;
     future = grpcGetList();
@@ -25,16 +24,20 @@ class CommentController extends GetxController with MediaController {
 
   Future<void> grpcGetList() async {
     Get.log(req.toString());
-    var response = await actionClient.stub.commentList(req);
-    if (response.list.isEmpty) return;
-    // If the widget was removed from the tree while the message was in flight,
-    // we want to discard the reply rather than calling setState to update our
-    // non-existent appearance.
-    globalState.userState.appendUsers(response.users);
-    list.addAll(response.list);
-    times++;
-    req.pageNo++;
-    update(["list"]);
+    try {
+      var response = await actionClient.stub.commentList(req);
+      if (response.list.isEmpty) return;
+      // If the widget was removed from the tree while the message was in flight,
+      // we want to discard the reply rather than calling setState to update our
+      // non-existent appearance.
+      globalState.userState.appendUsers(response.users);
+      list.addAll(response.list);
+      times++;
+      req.pageNo++;
+      update(["list"]);
+    } catch (e) {
+      Get.rawSnackbar(message:e.toString());
+    }
   }
 
   Future<void> resetList() {
@@ -55,7 +58,7 @@ class CommentController extends GetxController with MediaController {
 
   Future<void> save(String content) async {
     try {
-     final object = await actionClient.stub.comment(CommentReq(
+      final object = await actionClient.stub.comment(CommentReq(
         type: type,
         content: content,
         refId: refId,
@@ -64,7 +67,9 @@ class CommentController extends GetxController with MediaController {
         recvId: recvId,
         image: image,
       ));
-      list.add(Comment(id:object.id,content: content,
+      list.add(Comment(
+        id: object.id,
+        content: content,
         type: type,
         refId: refId,
         replyId: replyId,

@@ -12,15 +12,26 @@ DynamicLibrary findDynamicLibrary(String name, String dir) {
 }
 
 final DynamicLibrary nativeAddLib = findDynamicLibrary("rust",'libraries');
+final DynamicLibrary nativeHelloLib = findDynamicLibrary("hello",'libraries');
 
 
-final Pointer<Utf8> Function(Pointer<Utf8> x) nativeGreeting =
+final Pointer<Utf8> Function(Pointer<Utf8> x) rustGreeting =
 nativeAddLib
     .lookup<NativeFunction<Pointer<Utf8> Function(Pointer<Utf8>)>>("rust_greeting")
     .asFunction();
 
-String greeting(){
+String callRustGreeting(){
   final String myString = "😎👿💬";
-  final Pointer<Utf8> charPointer = nativeGreeting(myString.toNativeUtf8());
+  final Pointer<Utf8> charPointer = rustGreeting(myString.toNativeUtf8());
+  return charPointer.toDartString();
+}
+
+final Pointer<Utf8> Function(Pointer<Utf8> x) goPrint =
+nativeHelloLib
+    .lookup<NativeFunction<Pointer<Utf8> Function(Pointer<Utf8>)>>("goprint")
+    .asFunction();
+
+String callGoPrint(String s){
+  final Pointer<Utf8> charPointer = goPrint(s.toNativeUtf8());
   return charPointer.toDartString();
 }
