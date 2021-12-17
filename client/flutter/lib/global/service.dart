@@ -3,10 +3,13 @@ import 'package:app/utils/observer.dart';
 import 'package:app/service/upload.dart';
 import 'package:app/service/user.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get.dart';
 import 'package:grpc/grpc.dart';
 import 'package:hive/hive.dart';
+import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:app/utils/dio.dart' as $dio;
 import 'package:path/path.dart' as $path;
@@ -31,8 +34,17 @@ class GlobalService{
 
   late final Box box;
   late final Database db;
+  late final SharedPreferences shared;
+  final cache = DefaultCacheManager();
+  final log = Logger.root;
+
 
   init() async {
+    log.level = Level.ALL; // defaults to Level.INFO
+    log.onRecord.listen((record) {
+      print('${record.level.name}: ${record.time}: ${record.message}');
+    });
+
     final appDocDir = await getApplicationDocumentsDirectory();
 
     final boxfuture = () async {
@@ -50,6 +62,6 @@ class GlobalService{
 
     };
     await Future.wait([boxfuture(), dbfuture()]);
-
+    shared = await SharedPreferences.getInstance();
   }
 }

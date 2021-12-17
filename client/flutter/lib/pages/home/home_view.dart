@@ -1,7 +1,10 @@
 import 'dart:async';
 
 import 'package:app/components/bottom/bottom.dart';
+import 'package:app/components/christmas_tree.dart';
+import 'package:app/components/snow.dart';
 import 'package:app/ffi/ffi.dart';
+import 'package:app/pages/dynamic/dynamic.dart';
 import 'package:app/pages/home/splash_conroller.dart';
 import 'package:app/pages/home/splash_view.dart';
 import 'package:app/pages/index/index.dart';
@@ -10,6 +13,7 @@ import 'package:app/pages/user/user_view.dart';
 import 'package:app/pages/webview/webview.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import 'dashboard_view.dart';
 import 'package:app/global/controller.dart';
 import 'home_controller.dart';
@@ -56,7 +60,7 @@ class App extends StatelessWidget with WidgetsBindingObserver {
   final List<Widget> _widgetOptions = <Widget>[
     MomentView(),
     IndexPage(),
-    MyApp(),
+    ChristmasTree(),
     UserView(),
   ];
 

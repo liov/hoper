@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'package:app/utils/http_static/static_handler.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
-import 'package:flutter_inappwebview/src/mime_type_resolver.dart';
+
 import 'package:shelf/src/request.dart';
 import 'package:shelf/src/response.dart';
 import 'package:shelf/src/handler.dart';
@@ -67,7 +67,7 @@ class LocalhostServer {
           var contentType = ['text', 'html'];
           if (!request.requestedUri.path.endsWith('/') &&
               request.requestedUri.pathSegments.isNotEmpty) {
-            var mimeType = MimeTypeResolver.lookup(request.requestedUri.path);
+            var mimeType = DefaultMimeTypeResolver.lookup(request.requestedUri.path);
             if (mimeType != null) {
               contentType = mimeType.split('/');
             }

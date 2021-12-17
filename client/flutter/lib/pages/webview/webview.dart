@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
+import 'package:app/utils/httpserver.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:shelf/shelf_io.dart' as shelf_io;
 
 const String kNavigationExamplePage = '''
 <!DOCTYPE html><html>
@@ -55,6 +57,7 @@ class _WebViewExampleState extends State<WebViewExample> {
               initialUrl: 'https://hoper.xyz',
               javascriptMode: JavascriptMode.unrestricted,
               onWebViewCreated: (WebViewController webViewController) {
+               // webViewController.loadFlutterAsset("assets/dist/index.html");
                 _controller.complete(webViewController);
               },
               onProgress: (int progress) {
@@ -115,6 +118,15 @@ class _WebViewExampleState extends State<WebViewExample> {
           return Container();
         });
   }
+}
+
+Future<void> localServer() async {
+  //Directory.fromRawPath(path).create(recursive:true);
+  await shelf_io.serve(
+    apiHandler("https://hoper.xyz"),
+    'localhost',
+    8080,
+  );
 }
 
 enum MenuOptions {
@@ -205,14 +217,14 @@ class SampleMenu extends StatelessWidget {
       WebViewController controller, BuildContext context) async {
     // Send a message with the user agent string to the Toaster JavaScript channel we registered
     // with the WebView.
-    await controller.evaluateJavascript(
+    await controller.runJavascript(
         'Toaster.postMessage("User Agent: " + navigator.userAgent);');
   }
 
   void _onListCookies(
       WebViewController controller, BuildContext context) async {
     final String cookies =
-        await controller.evaluateJavascript('document.cookie');
+        await controller.runJavascriptReturningResult('document.cookie');
     // ignore: deprecated_member_use
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Column(
@@ -227,7 +239,7 @@ class SampleMenu extends StatelessWidget {
   }
 
   void _onAddToCache(WebViewController controller, BuildContext context) async {
-    await controller.evaluateJavascript(
+    await controller.runJavascript(
         'caches.open("test_caches_entry"); localStorage["test_localStorage"] = "dummy_entry";');
     // ignore: deprecated_member_use
     Scaffold.of(context).showSnackBar(const SnackBar(
@@ -236,7 +248,7 @@ class SampleMenu extends StatelessWidget {
   }
 
   void _onListCache(WebViewController controller, BuildContext context) async {
-    await controller.evaluateJavascript('caches.keys()'
+    await controller.runJavascript('caches.keys()'
         '.then((cacheKeys) => JSON.stringify({"cacheKeys" : cacheKeys, "localStorage" : localStorage}))'
         '.then((caches) => Toaster.postMessage(caches))');
   }

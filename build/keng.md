@@ -859,3 +859,20 @@ org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m
 distributionUrl=https\://services.gradle.org/distributions/gradle-7.3-bin.zip
 org.gradle.jvmargs=-Xmx4096m -XX:MaxPermSize=4096m -XX:+HeapDumpOnOutOfMemoryError
 不行再大
+
+# flutter Does not match the generator used previously: Visual Studio 16 2019
+CMake Error: Error: generator : Visual Studio 17 2022
+Does not match the generator used previously: Visual Studio 16 2019
+Either remove the CMakeCache.txt file and CMakeFiles directory or choose a different binary directory.
+Exception: Unable to generate build files
+
+flutter clean
+
+# Duplicate GlobalKey detected in widget tree. 
+Flutter在initState()初始化方法时使用包含context的Widget导致报错问题
+```dart
+ WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      globalService.log.finest("WidgetsBinding.instance");
+      W = MediaQuery.of(context).size.width;
+    });
+```

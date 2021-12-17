@@ -6,20 +6,17 @@ import 'package:app/theme.dart';
 import 'package:app/translations/zh_CN/local.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
 
 import 'package:app/global/controller.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+
 
 import 'global/app_info.dart';
 
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (Platform.isAndroid) {
-    await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
-  }
   ErrorWidget.builder = (FlutterErrorDetails flutterErrorDetails){
     print(flutterErrorDetails.toString());
     return Center(

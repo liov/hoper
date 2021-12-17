@@ -31,8 +31,8 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
-    ndkVersion '21.3.6528147'
-    compileSdkVersion 31
+    ndkVersion '23.1.7779620'
+    compileSdkVersion 32
 
     sourceSets {
         main {
