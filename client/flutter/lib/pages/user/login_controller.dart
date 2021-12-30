@@ -25,7 +25,7 @@ class LoginController extends GetxController {
     try {
     final resp =  await globalService.userClient.stub.signup(
           SignupReq(name: nickname,gender: gender.value, password: password,mail: mail,phone: phone,vCode: 'super'));
-    if(resp.value!="") dialog(resp.value);
+    if(resp.value!="") toast(resp.value);
       globalState.authState.account = mail!;
       mode.value = 1;
     }catch(e){

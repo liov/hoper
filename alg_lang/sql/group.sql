@@ -102,3 +102,5 @@ select CONVERT(varchar(12) , getdate(), 114 );
 #    毫秒 ms
 
 --  EXTRACT (component_name, FROM {datetime | interval})
+-- GROUP BY GROUP_CONCAT 拼某一列
+SELECT t.sid,t.name,t.sex,GROUP_CONCAT(t.num) from distinct_concat t GROUP BY t.sid,t.name,t.sex;

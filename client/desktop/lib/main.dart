@@ -1,7 +1,10 @@
+import 'dart:isolate';
+
 import 'package:flutter/material.dart';
 import 'package:desktop/snow.dart';
 
 import 'christmas_tree.dart';
+import 'ffi.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,7 +30,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const ChristmasTree(),
+      home: const MyHomePage(title: 'desktop',),
     );
   }
 }
@@ -62,6 +65,13 @@ class _MyHomePageState extends State<MyHomePage> {
       // called again, and so nothing would appear to happen.
       _counter++;
     });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Isolate.spawn(server,3000);
   }
 
   @override

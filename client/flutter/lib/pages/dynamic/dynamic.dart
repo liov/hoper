@@ -17,7 +17,7 @@ class Dynamic extends StatelessWidget {
     sendMessage('Alert', JSON.stringify(['alert', ...arguments]));
   }
   """)..onMessage("Alert",(dynamic args) {
-    dialog("${args[1]}");
+    toast("${args[1]}");
   });
 
   Future<String> exec({String path="assets/js/test.js"}) async {

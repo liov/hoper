@@ -53,17 +53,19 @@ fun check(A: IntArray, B: IntArray, len: Int): Boolean {
   for (i in 0 until len) hashA = (hashA * base + A[i]) % mod
   val bucketA: MutableSet<Long> = HashSet()
   bucketA.add(hashA)
-  val mult = qPow(base.toLong(), len - 1.toLong())
+  val mult = qPow(base.toLong(), len.toLong())
   //1到len，2到len+1...
   for (i in len until A.size) {
-    hashA = ((hashA - A[i - len] * mult % mod + mod) % mod * base + A[i]) % mod
+    hashA = (hashA* base - A[i - len] * mult + A[i]) % mod
+    if (hashA < 0) hashA+=mod 
     bucketA.add(hashA)
   }
   var hashB: Long = 0
   for (i in 0 until len) hashB = (hashB * base + B[i]) % mod
   if (bucketA.contains(hashB)) return true
   for (i in len until B.size) {
-    hashB = ((hashB - B[i - len] * mult % mod + mod) % mod * base + B[i]) % mod
+    hashB = (hashB* base - B[i - len] * mult + B[i]) % mod
+    if (hashB < 0) hashA+=mod
     if (bucketA.contains(hashB)) return true
   }
   return false

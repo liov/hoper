@@ -212,3 +212,7 @@ docker build . -t $2
 
 # CSDN 复制
 javascript:document.body.contentEditable='true';document.designMode='on'; void 0
+
+# python
+
+pip install paddleocr -i https://mirror.baidu.com/pypi/simple 

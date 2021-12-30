@@ -18,7 +18,7 @@ function erp() {
 
 function crm() {
     const sess = {
-        userId: 200,
+        userId: 100,
         userName: '',
         userRealName: '',
         clientIp: '',

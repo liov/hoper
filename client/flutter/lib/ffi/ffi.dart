@@ -13,6 +13,7 @@ DynamicLibrary findDynamicLibrary(String name, String dir) {
 
 final DynamicLibrary nativeAddLib = findDynamicLibrary("rust",'libraries');
 final DynamicLibrary nativeHelloLib = findDynamicLibrary("hello",'libraries');
+final DynamicLibrary nativeRustLib = findDynamicLibrary("rust_lib",'libraries');
 
 
 final Pointer<Utf8> Function(Pointer<Utf8> x) rustGreeting =
@@ -35,3 +36,16 @@ String callGoPrint(String s){
   final Pointer<Utf8> charPointer = goPrint(s.toNativeUtf8());
   return charPointer.toDartString();
 }
+
+final void Function(int x) funServe =
+nativeRustLib
+    .lookup<NativeFunction<Void Function(Int32)>>("server")
+    .asFunction();
+
+void serve(int port){
+  funServe(port);
+}
+final int Function(int x) test =
+nativeRustLib
+    .lookup<NativeFunction<Int32 Function(Int32)>>("test")
+    .asFunction();
