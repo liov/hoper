@@ -9,6 +9,8 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:fixnum/fixnum.dart' as $fixnum;
 
+import '../../utils/dialog.dart';
+
 class CommentController extends GetxController with MediaController {
   final req = CommentListReq(pageNo: 1, pageSize: 10);
   var times = 0;
@@ -36,7 +38,7 @@ class CommentController extends GetxController with MediaController {
       req.pageNo++;
       update(["list"]);
     } catch (e) {
-      Get.rawSnackbar(message:e.toString());
+      toast(e.toString());
     }
   }
 

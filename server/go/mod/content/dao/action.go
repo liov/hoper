@@ -15,7 +15,7 @@ import (
 )
 
 func (d *contentDao) ActionCountDB(db *gorm.DB, typ content.ContentType, action content.ActionType, refId uint64, changeCount int) error {
-	ctxi := d
+	ctxi := d.Ctx
 	var expr clause.Expr
 	var column string
 	switch action {
@@ -50,7 +50,7 @@ func (d *contentDao) ActionCountDB(db *gorm.DB, typ content.ContentType, action 
 }
 
 func (d *contentDao) HotCountRedis(conn redis.Cmdable, typ content.ContentType, refId uint64, changeCount float64) error {
-	ctxi := d
+	ctxi := d.Ctx
 	key := content.ContentType_name[int32(typ)][7:] + redisi.SortSet
 	err := conn.ZIncrBy(ctxi.Context, key, changeCount, strconv.FormatUint(refId, 10)).Err()
 	if err != nil {
@@ -60,7 +60,7 @@ func (d *contentDao) HotCountRedis(conn redis.Cmdable, typ content.ContentType, 
 }
 
 func (d *contentDao) ActionCountRedis(conn redis.Cmdable, typ content.ContentType, action content.ActionType, refId uint64, changeCount float64) error {
-	ctxi := d
+	ctxi := d.Ctx
 	key := content.ContentType_name[int32(typ)][7:] + content.ActionType_name[int32(action)][6:] + redisi.SortSet
 	err := conn.ZIncrBy(ctxi.Context, key, changeCount, strconv.FormatUint(refId, 10)).Err()
 	if err != nil {
@@ -70,7 +70,7 @@ func (d *contentDao) ActionCountRedis(conn redis.Cmdable, typ content.ContentTyp
 }
 
 func (d *contentDao) LikeIdDB(db *gorm.DB, typ content.ContentType, action content.ActionType, refId, userId uint64) (uint64, error) {
-	ctxi := d
+	ctxi := d.Ctx
 	// 性能优化之分开写
 	sql := `SELECT id FROM "` + model.ActionTableName(action) + `" 
 WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ? AND ` + dbi.PostgreNotDeleted
@@ -83,7 +83,7 @@ WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ? AND ` + dbi.Postgre
 }
 
 func (d *contentDao) DelActionDB(db *gorm.DB, typ content.ContentType, action content.ActionType, refId, userId uint64) error {
-	ctxi := d
+	ctxi := d.Ctx
 	sql := `Update "` + model.ActionTableName(action) + `" SET deleted_at = ?
 WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ? AND ` + dbi.PostgreNotDeleted
 	err := db.Exec(sql, ctxi.TimeString, typ, refId, action, userId).Error
@@ -94,7 +94,7 @@ WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ? AND ` + dbi.Postgre
 }
 
 func (d *contentDao) DelDB(db *gorm.DB, tableName string, id uint64) error {
-	ctxi := d
+	ctxi := d.Ctx
 	sql := `Update "` + tableName + `" SET deleted_at = ?
 WHERE id = ? AND ` + dbi.PostgreNotDeleted
 	err := db.Exec(sql, ctxi.TimeString, id).Error
@@ -104,45 +104,45 @@ WHERE id = ? AND ` + dbi.PostgreNotDeleted
 	return nil
 }
 
-func (d *contentDao) DelByAuthDB(db *gorm.DB, tableName string, id, userId uint64) error {
-	ctxi := d
+func (d *contentDao) DelByAuthDB(tableName string, id, userId uint64) error {
+	ctxi := d.Ctx
 	sql := `Update "` + tableName + `" SET deleted_at = ?
 WHERE id = ?  AND user_id = ? AND ` + dbi.PostgreNotDeleted
-	err := db.Exec(sql, ctxi.TimeString, id, userId).Error
+	err := d.Exec(sql, ctxi.TimeString, id, userId).Error
 	if err != nil {
 		return ctxi.ErrorLog(errorcode.DBError, err, "DelByAuthDB")
 	}
 	return nil
 }
 
-func (d *contentDao) ExistsByAuthDB(db *gorm.DB, tableName string, id, userId uint64) (bool, error) {
-	ctxi := d
+func (d *contentDao) ExistsByAuthDB(tableName string, id, userId uint64) (bool, error) {
+	ctxi := d.Ctx
 	sql := `SELECT EXISTS(SELECT * FROM "` + tableName + `" 
 WHERE id = ?  AND user_id = ? AND ` + dbi.PostgreNotDeleted + ` LIMIT 1)`
 	var exists bool
-	err := db.Raw(sql, id, userId).Row().Scan(&exists)
+	err := d.Raw(sql, id, userId).Row().Scan(&exists)
 	if err != nil {
 		return false, ctxi.ErrorLog(errorcode.DBError, err, "ExistsByAuthDB")
 	}
 	return exists, nil
 }
 
-func (d *contentDao) ContainerExistsDB(db *gorm.DB, typ content.ContainerType, id, userId uint64) (bool, error) {
-	ctxi := d
+func (d *contentDao) ContainerExistsDB(typ content.ContainerType, id, userId uint64) (bool, error) {
+	ctxi := d.Ctx
 	sql := `SELECT EXISTS(SELECT * FROM "` + model.ContainerTableName + `" 
 WHERE id = ?  AND type = ? AND user_id = ? AND ` + dbi.PostgreNotDeleted + ` LIMIT 1)`
 	var exists bool
-	err := db.Raw(sql, id, typ, userId).Row().Scan(&exists)
+	err := d.Raw(sql, id, typ, userId).Row().Scan(&exists)
 	if err != nil {
 		return false, ctxi.ErrorLog(errorcode.DBError, err, "ContainerExistsDB")
 	}
 	return exists, nil
 }
 
-func (d *contentDao) GetContentActionsDB(db *gorm.DB, action content.ActionType, typ content.ContentType, refIds []uint64, userId uint64) ([]model.ContentAction, error) {
-	ctxi := d
+func (d *contentDao) GetContentActionsDB(action content.ActionType, typ content.ContentType, refIds []uint64, userId uint64) ([]model.ContentAction, error) {
+	ctxi := d.Ctx
 	var actions []model.ContentAction
-	err := db.Select("id,ref_id,action").Table(model.ActionTableName(action)).
+	err := d.Select("id,ref_id,action").Table(model.ActionTableName(action)).
 		Where("type = ? AND ref_id IN (?) AND user_id = ? AND "+dbi.PostgreNotDeleted,
 			typ, refIds, userId).Scan(&actions).Error
 	if err != nil {
@@ -151,10 +151,10 @@ func (d *contentDao) GetContentActionsDB(db *gorm.DB, action content.ActionType,
 	return actions, nil
 }
 
-func (d *contentDao) GetLikeDB(db *gorm.DB, likeId, userId uint64) (*model.ContentAction, error) {
-	ctxi := d
+func (d *contentDao) GetLikeDB(likeId, userId uint64) (*model.ContentAction, error) {
+	ctxi := d.Ctx
 	var action model.ContentAction
-	err := db.Select("id,ref_id,action,type").Table(model.LikeTableName).
+	err := d.Select("id,ref_id,action,type").Table(model.LikeTableName).
 		Where("id = ? AND user_id = ? AND "+dbi.PostgreNotDeleted,
 			likeId, userId).Scan(&action).Error
 	if err != nil {
@@ -163,10 +163,10 @@ func (d *contentDao) GetLikeDB(db *gorm.DB, likeId, userId uint64) (*model.Conte
 	return &action, nil
 }
 
-func (d *contentDao) GetCollectsDB(db *gorm.DB, typ content.ContentType, refIds []uint64, userId uint64) ([]model.ContentCollect, error) {
-	ctxi := d
+func (d *contentDao) GetCollectsDB(typ content.ContentType, refIds []uint64, userId uint64) ([]model.ContentCollect, error) {
+	ctxi := d.Ctx
 	var collects []model.ContentCollect
-	err := db.Select("id,ref_id,fav_id").Table(model.CollectTableName).
+	err := d.Select("id,ref_id,fav_id").Table(model.CollectTableName).
 		Where("type = ? AND ref_id IN (?) AND user_id = ? AND "+dbi.PostgreNotDeleted,
 			typ, refIds, userId).Scan(&collects).Error
 	if err != nil {
@@ -175,9 +175,9 @@ func (d *contentDao) GetCollectsDB(db *gorm.DB, typ content.ContentType, refIds 
 	return collects, nil
 }
 
-func (d *contentDao) GetCommentsDB(db *gorm.DB, typ content.ContentType, refId, rootId uint64, pageNo, pageSize int) (int64, []*content.Comment, error) {
-	ctxi := d
-	db = db.Table(model.CommentTableName).Where(`type = ? AND ref_id = ? AND root_id = ? AND `+dbi.PostgreNotDeleted, typ, refId, rootId)
+func (d *contentDao) GetCommentsDB(typ content.ContentType, refId, rootId uint64, pageNo, pageSize int) (int64, []*content.Comment, error) {
+	ctxi := d.Ctx
+	db := d.Table(model.CommentTableName).Where(`type = ? AND ref_id = ? AND root_id = ? AND `+dbi.PostgreNotDeleted, typ, refId, rootId)
 	var count int64
 	err := db.Count(&count).Error
 	if err != nil {

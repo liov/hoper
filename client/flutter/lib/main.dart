@@ -1,5 +1,6 @@
 
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:app/routes/route.dart';
 import 'package:app/theme.dart';
@@ -12,11 +13,12 @@ import 'package:app/global/controller.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 
+import 'ffi/ffi.dart';
 import 'global/app_info.dart';
 
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  Isolate.spawn(serve,8000);
   ErrorWidget.builder = (FlutterErrorDetails flutterErrorDetails){
     print(flutterErrorDetails.toString());
     return Center(

@@ -26,6 +26,7 @@ class AuthState {
   static const _PRE = "AuthState";
   static const StringAuthKey = _PRE+Authorization;
   static const StringAccountKey = _PRE+"AccountKey";
+  static const StringAuthInfoKey = _PRE+"AuthInfoKey";
 
   set account (String account)=> globalService.box.put(AuthState.StringAccountKey, account);
   String get account => globalService.box.get(AuthState.StringAccountKey);
@@ -33,6 +34,7 @@ class AuthState {
   Future<void> getAuth() async {
     if (userAuth != null) return;
     final authKey = globalService.box.get(StringAuthKey);
+    final authInfo = globalService.box.get(StringAuthInfoKey);
     if (authKey != null) {
       try {
         final user = await globalService.userClient.stub.authInfo(Empty(),options:CallOptions(metadata: {Authorization: authKey}));
@@ -80,7 +82,7 @@ class AuthState {
       //Get.forceAppUpdate();
       Get.rootController.restartApp();
     } on GrpcError catch (e) {
-      dialog(e.message!);
+      toast(e.message!);
     }catch (e) {
       // No specified type, handles all
       print('Something really unknown: $e');
@@ -96,13 +98,17 @@ class AuthState {
       await globalService.userClient.stub.logout(Empty());
       globalService.subject.setState(CallOptions(timeout: Duration(seconds: 5)));
     } on GrpcError catch (e) {
-      dialog(e.message!);
+      toast(e.message!);
     }catch (e) {
       // No specified type, handles all
       print('Something really unknown: $e');
     }
     //Get.forceAppUpdate();
     Get.rootController.restartApp();
+  }
+
+  void test(void test()){
+    test();
   }
 }
 

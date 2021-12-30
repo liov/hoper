@@ -1,21 +1,17 @@
-import 'dart:async';
 
-import 'package:app/components/bottom/bottom.dart';
 import 'package:app/components/christmas_tree.dart';
-import 'package:app/components/snow.dart';
+
 import 'package:app/ffi/ffi.dart';
-import 'package:app/pages/dynamic/dynamic.dart';
 import 'package:app/pages/home/splash_conroller.dart';
 import 'package:app/pages/home/splash_view.dart';
 import 'package:app/pages/index/index.dart';
 import 'package:app/pages/moment/moment_view.dart';
 import 'package:app/pages/user/user_view.dart';
-import 'package:app/pages/webview/webview.dart';
+
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:webview_flutter/webview_flutter.dart';
-import 'dashboard_view.dart';
-import 'package:app/global/controller.dart';
+
 import 'home_controller.dart';
 
 /*
@@ -60,7 +56,7 @@ class App extends StatelessWidget with WidgetsBindingObserver {
   final List<Widget> _widgetOptions = <Widget>[
     MomentView(),
     IndexPage(),
-    ChristmasTree(),
+    SnowChristmasTree(),
     UserView(),
   ];
 
@@ -91,15 +87,37 @@ class App extends StatelessWidget with WidgetsBindingObserver {
           children: _widgetOptions,
           physics: NeverScrollableScrollPhysics(),
         ),
-        bottomNavigationBar: Obx(() => BottomNavigationBar(
-              currentIndex: controller.selectedIndex.value,
-              onTap: controller.onItemTapped,
-              selectedItemColor: Theme.of(context).canvasColor,
-              type: BottomNavigationBarType.fixed,
-              backgroundColor: Theme.of(context).primaryColor,
-              items: controller.bottomNavigationBarList
-                  .map((item) => item.bottomNavigationBarItem())
-                  .toList(),
-            )));
+ /*       floatingActionButtonLocation: CustomFloatingActionButtonLocation(FloatingActionButtonLocation.miniCenterDocked, 0, 15),
+        floatingActionButton: FloatingActionButton(
+            backgroundColor:Get.theme.backgroundColor,
+          onPressed: () {  },),*/
+        bottomNavigationBar: _bottom2());
+  }
+
+  Widget _bottom1(){
+    return Obx(()=>BottomNavigationBar(
+      currentIndex: controller.selectedIndex.value,
+      onTap: controller.onItemTapped,
+      selectedItemColor: Get.theme.canvasColor,
+      type: BottomNavigationBarType.fixed,
+      backgroundColor: Get.theme.primaryColor,
+        landscapeLayout:BottomNavigationBarLandscapeLayout.linear,
+      items: controller.bottomNavigationBarList
+          .map((item) => item.navigationBarItem())
+          .toList(),
+    ));
+  }
+
+  Widget _bottom2(){
+    return ConvexAppBar(
+      initialActiveIndex: controller.selectedIndex.value,
+      onTap: controller.onItemTapped,
+      activeColor: Get.theme.canvasColor,
+      backgroundColor: Get.theme.primaryColor,
+      style: TabStyle.fixedCircle,
+      items: controller.bottomNavigationBarList
+          .map((item) => item.tabItem())
+          .toList(),
+    );
   }
 }

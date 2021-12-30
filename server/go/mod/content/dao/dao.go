@@ -3,6 +3,7 @@ package dao
 import (
 	"database/sql"
 	contexti "github.com/liov/hoper/server/go/lib/tiga/context"
+	gormi "github.com/liov/hoper/server/go/lib/utils/dao/db/gorm"
 	"net/smtp"
 
 	"github.com/cockroachdb/pebble"
@@ -17,14 +18,18 @@ import (
 var Dao *dao = &dao{}
 
 type contentDao struct {
-	*contexti.Ctx
+	ChainDao
 }
 
-func GetDao(ctx *contexti.Ctx) *contentDao {
+func GetDao(ctx *contexti.Ctx, db *gorm.DB) *contentDao {
 	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}
-	return &contentDao{ctx}
+	return &contentDao{ChainDao: ChainDao{gormi.New(ctx.RequestContext, db)}}
+}
+
+type ChainDao struct {
+	*gormi.CommonChainDao
 }
 
 // dao dao.

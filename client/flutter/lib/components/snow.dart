@@ -23,18 +23,13 @@ class _SnowWidgetState extends State<SnowWidget> with SingleTickerProviderStateM
   late Animation animation;
   late List<Snow> _snows;
   double angle = 0;
-  double W = 0;
-  double H = 0;
+  double W = Get.width;
+  double H = Get.height;
 
   @override
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      globalService.log.finest("WidgetsBinding.instance");
-      W = MediaQuery.of(context).size.width;
-      H = MediaQuery.of(context).size.height;
-    });
     _createSnow();
 
     controller = AnimationController(

@@ -3,8 +3,8 @@ import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
   java
-  kotlin("jvm") version "1.5.10"
-  kotlin("plugin.serialization") version "1.5.10"
+  kotlin("jvm") version "1.6.0"
+  kotlin("plugin.serialization") version "1.6.0"
 }
 
 allprojects {
@@ -32,7 +32,7 @@ subprojects {
   dependencies {
     implementation(kotlin("stdlib", KotlinCompilerVersion.VERSION))
     implementation(kotlin("reflect", KotlinCompilerVersion.VERSION))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.3.8")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0-RC2")
     implementation("org.objenesis:objenesis:3.0.1")

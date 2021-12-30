@@ -40,15 +40,21 @@ WHERE id = ?  AND user_id = ? AND deleted_at = '` + dbi.PostgreZeroTime + `' LIM
 	return exists, nil
 }
 
-type CommonDao struct {
-	Ctx          *contexti.RequestContext
-	db, originDB *gorm.DB
+type CommonChainDao struct {
+	Ctx *contexti.RequestContext
+	*gorm.DB
+	originDB *gorm.DB
 }
 
-func (c *CommonDao) ResetDB() {
-	c.db = c.originDB
+func (c *CommonChainDao) ResetDB() {
+	c.DB = c.originDB
 }
 
-func New(ctx *contexti.RequestContext, db *gorm.DB) *CommonDao {
-	return &CommonDao{Ctx: ctx, db: db, originDB: db}
+func New(ctx *contexti.RequestContext, db *gorm.DB) *CommonChainDao {
+	db = db.Session(&gorm.Session{Context: contexti.SetTranceId(ctx.TraceID), NewDB: true})
+	return &CommonChainDao{Ctx: ctx, DB: db, originDB: db}
+}
+
+func (c *CommonChainDao) NewDB(db *gorm.DB) *CommonChainDao {
+	return &CommonChainDao{c.Ctx, db, db}
 }

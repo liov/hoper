@@ -808,7 +808,7 @@ set GOPROXY=https://goproxy.cn
 
 chkdsk E:/R
 
-# caused \"mkdir /sys/fs/cgroup/memory/dock/37b37c01da025b6d3176cbacf151be914678c002c3dda52cad2f69e23331d008: cannot allocate memory\"": unknown
+# OCI runtime create failed: container_linux.go:380: starting container process caused: process_linux.go:385: applying cgroup configuration for process caused: mkdir /sys/fs/cgroup/memory/docker/68044e2dec19557f55a8a8fe6ea035d3ff30325165787f2449f9e2ea17152542: cannot allocate memory: unknown
 
 https://zhuanlan.zhihu.com/p/106757502
 CentOS 7.6 3.10.x 内核下创建 memory cgroup 失败原因与解决方案
@@ -875,4 +875,56 @@ Flutter在initState()初始化方法时使用包含context的Widget导致报错�
       globalService.log.finest("WidgetsBinding.instance");
       W = MediaQuery.of(context).size.width;
     });
+```
+# Error: "linker 'cc' not found" when cross compiling a rust project from windows to linux using cargo
+
+It turns out you need to tell cargo to use the LLVM linker instead. You do this by creating a new directory called .cargo in your base directory, and then a new file called config.toml in this directory. Here you can add the lines:
+
+[target.aarch64-linux-android]
+
+ar = "Android\\Sdk\\ndk-bundle\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\aarch64-linux-android-ar.exe"
+
+linker = "C:\\Users\\mayn\\AppData\\Local\\Android\\Sdk\\ndk-bundle\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\aarch64-linux-android28-clang.cmd"
+
+[target.armv7-linux-androideabi]
+
+ar = "Android\\Sdk\\ndk-bundle\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\arm-linux-androideabi-ar.exe"
+
+linker = "Android\\Sdk\\ndk-bundle\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\armv7a-linux-androideabi28-clang.cmd
+
+Then building with the command cargo build --target=x86_64-unknown-linux-musl should work!
+
+# rust android ld: error: unable to find library -lgcc
+
+https://github.com/mozilla/rust-android-gradle/issues/75
+
+@ncalexan actually make_standalone_toolchain.py is never called. The problem is NDK 23.1.7779620 has stop distributing libgcc . I got around this by hacking linker-wrapper.py to statically linking libgcc.a from NDK 22.1.7171670
+
+args.remove("-lgcc")
+args.append("/home/sto/android/ndk/22.1.7171670/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/lib/gcc/arm-linux-androideabi/4.9.x/libgcc.a")
+published this plugin locally with
+gradle publishToMavenLocal
+
+then rebuild my project with
+gradle cargoBuild
+
+then tested it with
+
+sto@big:~/workspace/gossipy$ adb push ./app/src/main/rust/target/armv7-linux-androideabi/debug/hello-rust /data/local/tmp
+./app/src/main/rust/target/armv7-linux-androideabi/debug/hello-rust: 1 file pushed, 0 skipped. 250.7 MB/s (3264536 bytes in 0.012s)
+sto@big:~/workspace/gossipy$ adb shell /data/local/tmp/hello-rust
+Hello, rust world!
+is there a better way to do this? the plugin should have a way of including static libraries
+
+there should also be an option to change the linker-wrapper.py to not link -lgcc and use static version instead
+
+# serde cannot find derive macro Deserializ in this scope
+在新版本的serde中使用derive需要开启对应的features
+serde = {version="1.0.132",features=["derive"]}
+
+# rust main.rs 和 lib.rs 同时存在，main不能用lib failed to resolve: use of undeclared crate or module `rust_lib` create use of undeclared crate or module `rust_lib`
+cargo.toml crate-type "lib" 补上
+```toml
+name = "rust_lib"
+crate-type = ["lib", "staticlib", "cdylib"]
 ```

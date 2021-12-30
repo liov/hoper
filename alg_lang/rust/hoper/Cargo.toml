@@ -27,7 +27,7 @@ futures-timer = "3.0.2"
 mio = "0.7.13"
 cpp = "0.5"
 libc="0.2"
-axum="0.2.5"
+axum="0.4.3"
 
 [build-dependencies]
 cpp_build = "0.5"

@@ -194,3 +194,7 @@ func TestMaxSumOfThreeSubarrays(t *testing.T) {
 func TestValidTicTacToe(t *testing.T) {
 	fmt.Println(validTicTacToe([]string{"XOX", " X ", "   "}))
 }
+
+func TestRepeatedStringMatch(t *testing.T) {
+	fmt.Println(repeatedStringMatch("abcd", "cdabcdacdabcda"))
+}

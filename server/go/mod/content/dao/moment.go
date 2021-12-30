@@ -7,14 +7,13 @@ import (
 	gormi "github.com/liov/hoper/server/go/lib/utils/dao/db/gorm"
 	"github.com/liov/hoper/server/go/mod/content/model"
 	"github.com/liov/hoper/server/go/mod/protobuf/content"
-	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
-func (d *contentDao) GetMomentListDB(db *gorm.DB, req *content.MomentListReq) (int64, []*content.Moment, error) {
-	ctxi := d
+func (d *contentDao) GetMomentListDB(req *content.MomentListReq) (int64, []*content.Moment, error) {
+	ctxi := d.Ctx
 	var moments []*content.Moment
-	db = db.Table(model.MomentTableName).Where(dbi.PostgreNotDeleted)
+	db := d.Table(model.MomentTableName).Where(dbi.PostgreNotDeleted)
 	var count int64
 	err := db.Count(&count).Error
 	if err != nil {
@@ -30,7 +29,7 @@ func (d *contentDao) GetMomentListDB(db *gorm.DB, req *content.MomentListReq) (i
 }
 
 func (d *contentDao) GetTopMomentsRedis(conn redis.Cmdable, key string, pageNo int, PageSize int) ([]content.Moment, error) {
-	ctxi := d
+	ctxi := d.Ctx
 	var moments []content.Moment
 	exist, err := conn.Exists(ctxi.Context, key).Result()
 	if err != nil {
