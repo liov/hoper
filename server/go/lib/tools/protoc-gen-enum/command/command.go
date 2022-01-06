@@ -7,11 +7,11 @@ import (
 	"os"
 	"strings"
 
+	"github.com/actliboy/hoper/server/go/lib/tools/protoc-gen-enum/generator"
 	"github.com/gogo/protobuf/plugin/testgen"
 	"github.com/gogo/protobuf/proto"
 	plugin_go "github.com/gogo/protobuf/protoc-gen-gogo/plugin"
 	"github.com/gogo/protobuf/vanity/command"
-	"github.com/liov/hoper/server/go/lib/tools/protoc-gen-enum/generator"
 )
 
 func Read() *plugin_go.CodeGeneratorRequest {

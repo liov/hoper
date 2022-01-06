@@ -1,7 +1,7 @@
 package model
 
 import (
-	templatei "github.com/liov/hoper/server/go/lib/utils/def/template"
+	templatei "github.com/actliboy/hoper/server/go/lib/utils/def/template"
 )
 
 const (

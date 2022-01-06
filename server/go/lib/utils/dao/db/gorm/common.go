@@ -1,9 +1,9 @@
 package gormi
 
 import (
-	contexti "github.com/liov/hoper/server/go/lib/utils/context"
-	dbi "github.com/liov/hoper/server/go/lib/utils/dao/db"
+	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
 	"gorm.io/gorm"
+	"strings"
 )
 
 func DelDB(db *gorm.DB, tableName string, id uint64) error {
@@ -40,21 +40,40 @@ WHERE id = ?  AND user_id = ? AND deleted_at = '` + dbi.PostgreZeroTime + `' LIM
 	return exists, nil
 }
 
-type CommonChainDao struct {
-	Ctx *contexti.RequestContext
-	*gorm.DB
-	originDB *gorm.DB
+type Clause []func(db *gorm.DB) *gorm.DB
+
+// db.Scope(ById(1),ByName("a")).First(v)
+func (c Clause) ById(id int) Clause {
+	return append(c, func(db *gorm.DB) *gorm.DB {
+		return db.Where(`id = ?`, id)
+	})
 }
 
-func (c *CommonChainDao) ResetDB() {
-	c.DB = c.originDB
+func (c Clause) ByName(name string) Clause {
+	return append(c, func(db *gorm.DB) *gorm.DB {
+		return db.Where(`name = ?`, name)
+	})
 }
 
-func New(ctx *contexti.RequestContext, db *gorm.DB) *CommonChainDao {
-	db = db.Session(&gorm.Session{Context: contexti.SetTranceId(ctx.TraceID), NewDB: true})
-	return &CommonChainDao{Ctx: ctx, DB: db, originDB: db}
+type Clause2 struct {
+	Expr []string
+	Var  []interface{}
 }
 
-func (c *CommonChainDao) NewDB(db *gorm.DB) *CommonChainDao {
-	return &CommonChainDao{c.Ctx, db, db}
+// db.Scope(ById(1),ByName("a").Build()).First(v)
+func (c *Clause2) ById(id int) *Clause2 {
+	c.Expr = append(c.Expr, `id = ?`)
+	c.Var = append(c.Var, id)
+	return c
+}
+
+func (c *Clause2) ByName(name string) *Clause2 {
+	c.Expr = append(c.Expr, `name = ?`)
+	c.Var = append(c.Var, name)
+	return c
+}
+
+func (c *Clause2) Build(db *gorm.DB) *gorm.DB {
+	db = db.Where(strings.Join(c.Expr, " AND "), c.Var...)
+	return db
 }

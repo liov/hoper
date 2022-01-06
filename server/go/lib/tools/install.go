@@ -1,11 +1,11 @@
 package main
 
 import (
-	osi "github.com/liov/hoper/server/go/lib/utils/os"
+	osi "github.com/actliboy/hoper/server/go/lib/utils/os"
 )
 
 func main() {
-	libDir, _ := osi.CMD("go list -m -f {{.Dir}}  github.com/liov/hoper/server/go/lib")
+	libDir, _ := osi.CMD("go list -m -f {{.Dir}}  github.com/actliboy/hoper/server/go/lib")
 	osi.CMD("go install " + libDir + "/tools/protoc-gen-grpc-gin")
 	osi.CMD("go install google.golang.org/protobuf/cmd/protoc-gen-go")
 	osi.CMD("go install github.com/gogo/protobuf/protoc-gen-gogo")

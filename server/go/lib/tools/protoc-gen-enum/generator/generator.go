@@ -61,10 +61,10 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"github.com/actliboy/hoper/server/go/lib/tools/protoc-gen-enum/generator/internal/remap"
 	"github.com/gogo/protobuf/gogoproto"
 	"github.com/gogo/protobuf/proto"
 	descriptor "github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
-	"github.com/liov/hoper/server/go/lib/tools/protoc-gen-enum/generator/internal/remap"
 
 	plugin "github.com/gogo/protobuf/protoc-gen-gogo/plugin"
 )
@@ -1358,8 +1358,8 @@ func (g *Generator) generateImports() {
 	}
 	for _, enum := range g.file.enum {
 		if EnabledEnumErrorCode(enum.EnumDescriptorProto) {
-			pkg = append(pkg, "github.com/liov/hoper/server/go/lib/protobuf/errorcode")
-			pkg = append(pkg, "github.com/liov/hoper/server/go/lib/utils/log")
+			pkg = append(pkg, "github.com/actliboy/hoper/server/go/lib/protobuf/errorcode")
+			pkg = append(pkg, "github.com/actliboy/hoper/server/go/lib/utils/log")
 			pkg = append(pkg, "google.golang.org/grpc/status")
 			pkg = append(pkg, "google.golang.org/grpc/codes")
 			break
@@ -1367,12 +1367,12 @@ func (g *Generator) generateImports() {
 		if EnabledEnumGqlGen(enum.EnumDescriptorProto) || EnabledFileEnumGqlGen(g.file.FileDescriptorProto) {
 			pkg = append(pkg, "io")
 			pkg = append(pkg, "errors")
-			pkg = append(pkg, "github.com/liov/hoper/server/go/lib/utils/strings")
+			pkg = append(pkg, "github.com/actliboy/hoper/server/go/lib/utils/strings")
 		}
 	}
 	for _, enum := range g.file.enum {
 		if EnabledEnumJsonMarshal(g.file.FileDescriptorProto, enum.EnumDescriptorProto) {
-			pkg = append(pkg, "github.com/liov/hoper/server/go/lib/utils/strings")
+			pkg = append(pkg, "github.com/actliboy/hoper/server/go/lib/utils/strings")
 		}
 	}
 	if len(pkg) > 0 {

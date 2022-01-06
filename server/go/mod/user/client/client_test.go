@@ -1,8 +1,8 @@
 package client
 
 import (
-	"github.com/liov/hoper/server/go/lib/protobuf/empty"
-	"github.com/liov/hoper/server/go/mod/protobuf/user"
+	"github.com/actliboy/hoper/server/go/lib/protobuf/empty"
+	"github.com/actliboy/hoper/server/go/mod/protobuf/user"
 	"testing"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"

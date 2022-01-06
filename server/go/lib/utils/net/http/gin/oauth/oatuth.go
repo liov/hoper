@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/actliboy/hoper/server/go/lib/utils/verification/auth/oauth/provider"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
-	"github.com/liov/hoper/server/go/lib/utils/verification/auth/oauth/provider"
 	"github.com/markbates/goth"
 )
 

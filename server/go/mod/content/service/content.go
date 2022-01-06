@@ -2,17 +2,17 @@ package service
 
 import (
 	"context"
-	"github.com/liov/hoper/server/go/lib/protobuf/request"
-	contexti "github.com/liov/hoper/server/go/lib/tiga/context"
+	"github.com/actliboy/hoper/server/go/lib/protobuf/request"
+	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
 	"gorm.io/gorm"
 	"net/http"
 
-	"github.com/liov/hoper/server/go/lib/protobuf/empty"
-	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
-	"github.com/liov/hoper/server/go/mod/content/conf"
-	"github.com/liov/hoper/server/go/mod/content/dao"
-	"github.com/liov/hoper/server/go/mod/content/model"
-	"github.com/liov/hoper/server/go/mod/protobuf/content"
+	"github.com/actliboy/hoper/server/go/lib/protobuf/empty"
+	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
+	"github.com/actliboy/hoper/server/go/mod/content/conf"
+	"github.com/actliboy/hoper/server/go/mod/content/dao"
+	"github.com/actliboy/hoper/server/go/mod/content/model"
+	"github.com/actliboy/hoper/server/go/mod/protobuf/content"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -109,7 +109,7 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*req
 		if err != nil {
 			return ctxi.ErrorLog(errorcode.DBError, err, "CreateFav")
 		}
-		err = contentDao.CreateContextExt(db, content.ContentFavorites, req.Id)
+		err = contentDao.CreateContextExtDB(tx, content.ContentFavorites, req.Id)
 		if err != nil {
 			return err
 		}
@@ -187,7 +187,7 @@ func (*ContentService) AddContainer(ctx context.Context, req *content.AddContain
 	return nil, nil
 }
 
-// 修改日记本
+// 修改合集
 func (*ContentService) EditDiaryContainer(ctx context.Context, req *content.AddContainerReq) (*empty.Empty, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
@@ -201,7 +201,7 @@ func (*ContentService) EditDiaryContainer(ctx context.Context, req *content.AddC
 		return nil, err
 	}
 	db := ctxi.NewDB(dao.Dao.GORMDB)
-	err = db.Table(model.FavoritesTableName).Where(`id =? AND user_id =?`, req.Id, auth.Id).
+	err = db.Table(model.ContainerTableName).Where(`id =? AND user_id =?`, req.Id, auth.Id).
 		Updates(req).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "CreateFav")

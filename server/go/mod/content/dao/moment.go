@@ -1,19 +1,20 @@
 package dao
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
+	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
+	gormi "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm"
+	"github.com/actliboy/hoper/server/go/mod/content/model"
+	"github.com/actliboy/hoper/server/go/mod/protobuf/content"
 	"github.com/go-redis/redis/v8"
-	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
-	dbi "github.com/liov/hoper/server/go/lib/utils/dao/db"
-	gormi "github.com/liov/hoper/server/go/lib/utils/dao/db/gorm"
-	"github.com/liov/hoper/server/go/mod/content/model"
-	"github.com/liov/hoper/server/go/mod/protobuf/content"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
-func (d *contentDao) GetMomentListDB(req *content.MomentListReq) (int64, []*content.Moment, error) {
+func (d *contentDao) GetMomentListDB(db *gorm.DB, req *content.MomentListReq) (int64, []*content.Moment, error) {
 	ctxi := d.Ctx
 	var moments []*content.Moment
-	db := d.Table(model.MomentTableName).Where(dbi.PostgreNotDeleted)
+	db = db.Table(model.MomentTableName).Where(dbi.PostgreNotDeleted)
 	var count int64
 	err := db.Count(&count).Error
 	if err != nil {

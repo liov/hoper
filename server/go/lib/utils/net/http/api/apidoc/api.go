@@ -7,9 +7,9 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/go-openapi/spec"
 	"github.com/go-openapi/swag"
-	"github.com/liov/hoper/server/go/lib/utils/log"
 )
 
 var Doc *spec.Swagger

@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 
+	cuzproto "github.com/actliboy/hoper/server/go/lib/protobuf/utils/gogo"
 	"github.com/gogo/protobuf/gogoproto"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
@@ -17,7 +18,6 @@ import (
 	"github.com/gogo/protobuf/types"
 	golangproto "github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/any"
-	cuzproto "github.com/liov/hoper/server/go/lib/protobuf/utils/gogo"
 )
 
 const (
@@ -288,7 +288,7 @@ func (p *Plugin) getMessageType(file *descriptor.FileDescriptorProto, typeName s
 			// Any is considered to be scalar
 			if p.IsAny(typeName) {
 				p.scalars[typeName] = &Type{ModelDescriptor: ModelDescriptor{
-					PackageDir: "github.com/liov/hoper/server/go/lib/utils/net/http/api/graphql", //TODO generate gqlgen.yml
+					PackageDir: "github.com/actliboy/hoper/server/go/lib/utils/net/http/api/graphql", //TODO generate gqlgen.yml
 					TypeName:   ScalarAny,
 				}}
 				return nil
@@ -335,35 +335,35 @@ func (p *Plugin) fillTypeMap(typeName string, objects map[string]*Type, inputFie
 					_, typ, _ := getCastType(field)
 					switch typ {
 					case "int8":
-						p.scalars[ScalarInt8] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/liov/hoper/server/go/lib/utils/net/http/api/graphql", TypeName: ScalarInt8}}
+						p.scalars[ScalarInt8] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/actliboy/hoper/server/go/lib/utils/net/http/api/graphql", TypeName: ScalarInt8}}
 					case "uint8":
-						p.scalars[ScalarUint8] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/liov/hoper/server/go/lib/utils/net/http/api/graphql", TypeName: ScalarUint8}}
+						p.scalars[ScalarUint8] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/actliboy/hoper/server/go/lib/utils/net/http/api/graphql", TypeName: ScalarUint8}}
 					}
 				} else {
 					switch *field.Type {
 					case descriptor.FieldDescriptorProto_TYPE_BYTES:
-						p.scalars[ScalarBytes] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/liov/hoper/server/go/lib/utils/net/http/api/graphql", TypeName: ScalarBytes}}
+						p.scalars[ScalarBytes] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/actliboy/hoper/server/go/lib/utils/net/http/api/graphql", TypeName: ScalarBytes}}
 
 					case descriptor.FieldDescriptorProto_TYPE_FLOAT:
-						p.scalars[ScalarFloat32] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/liov/hoper/server/go/lib/utils/net/http/api/graphql", TypeName: ScalarFloat32}}
+						p.scalars[ScalarFloat32] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/actliboy/hoper/server/go/lib/utils/net/http/api/graphql", TypeName: ScalarFloat32}}
 
 					case descriptor.FieldDescriptorProto_TYPE_INT64,
 						descriptor.FieldDescriptorProto_TYPE_SINT64,
 						descriptor.FieldDescriptorProto_TYPE_SFIXED64:
-						p.scalars[ScalarInt64] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/liov/hoper/server/go/lib/utils/net/http/api/graphql", TypeName: ScalarInt64}}
+						p.scalars[ScalarInt64] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/actliboy/hoper/server/go/lib/utils/net/http/api/graphql", TypeName: ScalarInt64}}
 
 					case descriptor.FieldDescriptorProto_TYPE_INT32,
 						descriptor.FieldDescriptorProto_TYPE_SINT32,
 						descriptor.FieldDescriptorProto_TYPE_SFIXED32:
-						p.scalars[ScalarInt32] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/liov/hoper/server/go/lib/utils/net/http/api/graphql", TypeName: ScalarInt32}}
+						p.scalars[ScalarInt32] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/actliboy/hoper/server/go/lib/utils/net/http/api/graphql", TypeName: ScalarInt32}}
 
 					case descriptor.FieldDescriptorProto_TYPE_UINT32,
 						descriptor.FieldDescriptorProto_TYPE_FIXED32:
-						p.scalars[ScalarUint32] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/liov/hoper/server/go/lib/utils/net/http/api/graphql", TypeName: ScalarUint32}}
+						p.scalars[ScalarUint32] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/actliboy/hoper/server/go/lib/utils/net/http/api/graphql", TypeName: ScalarUint32}}
 
 					case descriptor.FieldDescriptorProto_TYPE_UINT64,
 						descriptor.FieldDescriptorProto_TYPE_FIXED64:
-						p.scalars[ScalarUint64] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/liov/hoper/server/go/lib/utils/net/http/api/graphql", TypeName: ScalarUint64}}
+						p.scalars[ScalarUint64] = &Type{ModelDescriptor: ModelDescriptor{PackageDir: "github.com/actliboy/hoper/server/go/lib/utils/net/http/api/graphql", TypeName: ScalarUint64}}
 					}
 				}
 

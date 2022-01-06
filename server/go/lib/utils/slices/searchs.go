@@ -1,6 +1,6 @@
 package slices
 
-import "github.com/liov/hoper/server/go/lib/utils/def"
+import "github.com/actliboy/hoper/server/go/lib/utils/def"
 
 // BinarySearch 二分查找
 func BinarySearch(arr []def.CmpKey, x def.CmpKey) int {

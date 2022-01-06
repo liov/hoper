@@ -2,8 +2,8 @@ package log
 
 import (
 	"fmt"
-	"github.com/liov/hoper/server/go/lib/utils/encoding/json"
-	"github.com/liov/hoper/server/go/lib/utils/strings"
+	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
+	"github.com/actliboy/hoper/server/go/lib/utils/strings"
 	"github.com/spf13/viper"
 	"go.uber.org/zap/zapcore"
 	"time"

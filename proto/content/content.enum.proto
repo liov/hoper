@@ -4,7 +4,7 @@ import "utils/gogo/enum.proto";
 import "patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
-option go_package = "github.com/liov/hoper/server/go/mod/protobuf/content";
+option go_package = "github.com/actliboy/hoper/server/go/mod/protobuf/content";
 
 option (gogo.enum_gqlgen_all) = true;
 option (gogo.enum_prefix_all) = false;

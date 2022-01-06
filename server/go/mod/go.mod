@@ -1,4 +1,4 @@
-module github.com/liov/hoper/server/go/mod
+module github.com/actliboy/hoper/server/go/mod
 
 go 1.17
 
@@ -15,7 +15,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.5.0
-	github.com/liov/hoper/server/go/lib v1.0.0
+	github.com/actliboy/hoper/server/go/lib v1.0.0
 	github.com/mwitkow/go-proto-validators v0.3.2
 	github.com/spf13/viper v1.8.1
 	go.opencensus.io v0.23.0
@@ -110,7 +110,7 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/jstemmer/go-junit-report v0.9.1 // indirect
-	github.com/klauspost/compress v1.13.4 // indirect
+	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/kr/pretty v0.3.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
@@ -159,7 +159,7 @@ require (
 	go.etcd.io/etcd/client/pkg/v3 v3.5.0 // indirect
 	go.etcd.io/etcd/client/v2 v2.305.0 // indirect
 	go.etcd.io/etcd/client/v3 v3.5.0 // indirect
-	go.mongodb.org/mongo-driver v1.4.6 // indirect
+	go.mongodb.org/mongo-driver v1.8.1 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.7.0 // indirect
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
@@ -182,4 +182,4 @@ require (
 	gorm.io/plugin/prometheus v0.0.0-20210820101226-2a49866f83ee // indirect
 )
 
-replace github.com/liov/hoper/server/go/lib => ../lib
+replace github.com/actliboy/hoper/server/go/lib => ../lib

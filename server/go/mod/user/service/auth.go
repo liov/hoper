@@ -1,13 +1,13 @@
 package service
 
 import (
-	contexti "github.com/liov/hoper/server/go/lib/tiga/context"
-	"github.com/liov/hoper/server/go/mod/protobuf/user"
+	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
+	"github.com/actliboy/hoper/server/go/mod/protobuf/user"
 	"strings"
 	"time"
 
-	"github.com/liov/hoper/server/go/mod/user/conf"
-	"github.com/liov/hoper/server/go/mod/user/dao"
+	"github.com/actliboy/hoper/server/go/mod/user/conf"
+	"github.com/actliboy/hoper/server/go/mod/user/dao"
 )
 
 var ExportAuth = auth

@@ -2,8 +2,8 @@ package descriptor
 
 import (
 	"fmt"
-	"github.com/liov/hoper/server/go/lib/protobuf/utils/openapiconfig"
-	"github.com/liov/hoper/server/go/lib/utils/log"
+	"github.com/actliboy/hoper/server/go/lib/protobuf/utils/openapiconfig"
+	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"strings"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"

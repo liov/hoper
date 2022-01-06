@@ -2,8 +2,8 @@ package conf_center
 
 import (
 	"fmt"
-	"github.com/liov/hoper/server/go/lib/utils/configor"
-	"github.com/liov/hoper/server/go/lib/utils/fs"
+	"github.com/actliboy/hoper/server/go/lib/utils/configor"
+	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 )
 
 type Local struct {

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
+	"github.com/actliboy/hoper/server/go/lib/utils/strings"
 	"github.com/dgrijalva/jwt-go/v4"
-	"github.com/liov/hoper/server/go/lib/utils/strings"
 )
 
 var (

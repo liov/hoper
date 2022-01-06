@@ -2,6 +2,8 @@
 import 'package:app/components/christmas_tree.dart';
 
 import 'package:app/ffi/ffi.dart';
+import 'package:app/global/global_state.dart';
+import 'package:app/global/theme.dart';
 import 'package:app/pages/home/splash_conroller.dart';
 import 'package:app/pages/home/splash_view.dart';
 import 'package:app/pages/index/index.dart';
@@ -91,29 +93,32 @@ class App extends StatelessWidget with WidgetsBindingObserver {
         floatingActionButton: FloatingActionButton(
             backgroundColor:Get.theme.backgroundColor,
           onPressed: () {  },),*/
-        bottomNavigationBar: _bottom2());
+        bottomNavigationBar: Obx(()=>_bottom2()));
   }
 
   Widget _bottom1(){
-    return Obx(()=>BottomNavigationBar(
+    final ThemeData theme = globalState.isDarkMode.value ? AppTheme.dark : AppTheme.light;
+    return BottomNavigationBar(
       currentIndex: controller.selectedIndex.value,
       onTap: controller.onItemTapped,
-      selectedItemColor: Get.theme.canvasColor,
+      selectedItemColor: theme.canvasColor,
       type: BottomNavigationBarType.fixed,
-      backgroundColor: Get.theme.primaryColor,
+      backgroundColor: theme.primaryColor,
         landscapeLayout:BottomNavigationBarLandscapeLayout.linear,
       items: controller.bottomNavigationBarList
           .map((item) => item.navigationBarItem())
           .toList(),
-    ));
+    );
   }
 
   Widget _bottom2(){
+    print(Get.theme.backgroundColor);
+    final ThemeData theme = globalState.isDarkMode.value ? AppTheme.dark : AppTheme.light;
     return ConvexAppBar(
       initialActiveIndex: controller.selectedIndex.value,
       onTap: controller.onItemTapped,
-      activeColor: Get.theme.canvasColor,
-      backgroundColor: Get.theme.primaryColor,
+      activeColor: theme.canvasColor,
+      backgroundColor: theme.primaryColor,
       style: TabStyle.fixedCircle,
       items: controller.bottomNavigationBarList
           .map((item) => item.tabItem())

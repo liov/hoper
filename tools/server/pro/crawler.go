@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	py2 "github.com/liov/hoper/server/go/lib/utils/strings/pinyin"
+	py2 "github.com/actliboy/hoper/server/go/lib/utils/strings/pinyin"
 	"io"
 	"log"
 	"math/rand"
@@ -20,9 +20,9 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/liov/hoper/server/go/lib/tools/get_db"
-	"github.com/liov/hoper/server/go/lib/utils/fs"
-	"github.com/liov/hoper/server/go/lib/utils/strings"
+	"github.com/actliboy/hoper/server/go/lib/tools/get_db"
+	"github.com/actliboy/hoper/server/go/lib/utils/fs"
+	"github.com/actliboy/hoper/server/go/lib/utils/strings"
 	"golang.org/x/net/html"
 	"gorm.io/gorm"
 )
@@ -196,7 +196,7 @@ func Fetch(id int, sd *Speed) {
 func ParseHtml(doc *goquery.Document) (string, string, string, string, *goquery.Selection, *Post) {
 	auth := doc.Find("#postlist .popuserinfo a").First().Text()
 	title := doc.Find("#threadtitle h1").Text()
-	postTime,_ := doc.Find(".authorinfo em span").First().Attr("title")
+	postTime, _ := doc.Find(".authorinfo em span").First().Attr("title")
 	post := &Post{
 		TId:   0,
 		Auth:  auth,

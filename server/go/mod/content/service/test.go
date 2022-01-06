@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"unsafe"
 
-	"github.com/liov/hoper/server/go/lib/protobuf/empty"
-	"github.com/liov/hoper/server/go/lib/tiga"
-	"github.com/liov/hoper/server/go/lib/tiga/initialize"
-	model "github.com/liov/hoper/server/go/mod/protobuf/content"
+	"github.com/actliboy/hoper/server/go/lib/protobuf/empty"
+	"github.com/actliboy/hoper/server/go/lib/tiga"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
+	model "github.com/actliboy/hoper/server/go/mod/protobuf/content"
 )
 
 type TestService struct {

@@ -1,9 +1,9 @@
 package gini
 
 import (
+	httpi "github.com/actliboy/hoper/server/go/lib/utils/net/http"
+	"github.com/actliboy/hoper/server/go/lib/utils/net/http/gin/handler"
 	"github.com/gin-gonic/gin"
-	httpi "github.com/liov/hoper/server/go/lib/utils/net/http"
-	"github.com/liov/hoper/server/go/lib/utils/net/http/gin/handler"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 

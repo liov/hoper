@@ -5,8 +5,8 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/gorilla/websocket"
-	"github.com/liov/hoper/server/go/lib/utils/log"
 )
 
 var addr = flag.String("addr", "localhost:12345", "http service address")

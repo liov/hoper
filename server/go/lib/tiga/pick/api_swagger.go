@@ -3,7 +3,7 @@ package pick
 import (
 	"path/filepath"
 
-	"github.com/liov/hoper/server/go/lib/utils/net/http/api/apidoc"
+	"github.com/actliboy/hoper/server/go/lib/utils/net/http/api/apidoc"
 )
 
 func swagger(filePath, modName string) {

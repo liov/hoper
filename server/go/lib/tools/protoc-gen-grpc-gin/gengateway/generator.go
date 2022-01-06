@@ -3,8 +3,8 @@ package gengateway
 import (
 	"errors"
 	"fmt"
-	"github.com/liov/hoper/server/go/lib/tools/protoc-gen-grpc-gin/descriptor"
-	"github.com/liov/hoper/server/go/lib/utils/log"
+	"github.com/actliboy/hoper/server/go/lib/tools/protoc-gen-grpc-gin/descriptor"
+	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"go/format"
 	"path"
 
@@ -47,9 +47,9 @@ func New(reg *descriptor.Registry, useRequestContext bool, registerFuncSuffix st
 		"github.com/gin-gonic/gin",
 		"github.com/grpc-ecosystem/grpc-gateway/v2/runtime",
 		"github.com/grpc-ecosystem/grpc-gateway/v2/utilities",
-		"github.com/liov/hoper/server/go/lib/utils/net/http/gin",
-		"github.com/liov/hoper/server/go/lib/utils/net/http/grpc/gateway",
-		"github.com/liov/hoper/server/go/lib/utils/net/http/request",
+		"github.com/actliboy/hoper/server/go/lib/utils/net/http/gin",
+		"github.com/actliboy/hoper/server/go/lib/utils/net/http/grpc/gateway",
+		"github.com/actliboy/hoper/server/go/lib/utils/net/http/request",
 	} {
 		pkg := descriptor.GoPackage{
 			Path: pkgpath,

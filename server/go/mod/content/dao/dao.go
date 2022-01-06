@@ -2,14 +2,14 @@ package dao
 
 import (
 	"database/sql"
-	contexti "github.com/liov/hoper/server/go/lib/tiga/context"
-	gormi "github.com/liov/hoper/server/go/lib/utils/dao/db/gorm"
+	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
+	gormi "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm"
 	"net/smtp"
 
+	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/cockroachdb/pebble"
 	"github.com/dgraph-io/ristretto"
 	"github.com/go-redis/redis/v8"
-	"github.com/liov/hoper/server/go/lib/utils/log"
 	"gorm.io/gorm"
 )
 
@@ -18,18 +18,19 @@ import (
 var Dao *dao = &dao{}
 
 type contentDao struct {
+	*contexti.Ctx
 	ChainDao
 }
 
-func GetDao(ctx *contexti.Ctx, db *gorm.DB) *contentDao {
+func GetDao(ctx *contexti.Ctx) *contentDao {
 	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}
-	return &contentDao{ChainDao: ChainDao{gormi.New(ctx.RequestContext, db)}}
+	return &contentDao{ctx, ChainDao{}}
 }
 
 type ChainDao struct {
-	*gormi.CommonChainDao
+	gormi.Clause2
 }
 
 // dao dao.

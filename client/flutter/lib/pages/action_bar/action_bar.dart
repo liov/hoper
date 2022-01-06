@@ -2,7 +2,7 @@ import 'package:app/generated/protobuf/content/action.enum.pbenum.dart';
 import 'package:app/generated/protobuf/content/action.model.pb.dart';
 import 'package:app/generated/protobuf/content/action.service.pb.dart';
 import 'package:app/generated/protobuf/content/content.service.pb.dart';
-import 'package:app/global/controller.dart';
+import 'package:app/global/global_state.dart';
 import 'package:app/routes/route.dart';
 import 'package:app/service/action.dart';
 import 'package:app/service/content.dart';

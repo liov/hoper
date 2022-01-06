@@ -1,8 +1,8 @@
 package gini
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/utils/verification/validator"
 	"github.com/gin-gonic/gin"
-	"github.com/liov/hoper/server/go/lib/utils/verification/validator"
 )
 
 func Http(conf *Config, ginHandle func(engine *gin.Engine)) *gin.Engine {

@@ -3,10 +3,10 @@ package binding
 import (
 	"net/http"
 
+	stringsi "github.com/actliboy/hoper/server/go/lib/utils/strings"
+	"github.com/actliboy/hoper/server/go/lib/utils/verification/validator"
 	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
-	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
-	"github.com/liov/hoper/server/go/lib/utils/verification/validator"
 	"github.com/valyala/fasthttp"
 )
 

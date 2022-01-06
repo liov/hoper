@@ -3,16 +3,16 @@ package dao
 import (
 	"strconv"
 
+	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
+	redisi "github.com/actliboy/hoper/server/go/lib/utils/dao/redis"
+	"github.com/actliboy/hoper/server/go/lib/utils/encoding/hash"
+	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
+	"github.com/actliboy/hoper/server/go/lib/utils/log"
+	"github.com/actliboy/hoper/server/go/mod/protobuf/common"
+	model "github.com/actliboy/hoper/server/go/mod/protobuf/user"
+	"github.com/actliboy/hoper/server/go/mod/user/conf"
+	modelconst "github.com/actliboy/hoper/server/go/mod/user/model"
 	"github.com/go-redis/redis/v8"
-	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
-	redisi "github.com/liov/hoper/server/go/lib/utils/dao/redis"
-	"github.com/liov/hoper/server/go/lib/utils/encoding/hash"
-	"github.com/liov/hoper/server/go/lib/utils/encoding/json"
-	"github.com/liov/hoper/server/go/lib/utils/log"
-	"github.com/liov/hoper/server/go/mod/protobuf/common"
-	model "github.com/liov/hoper/server/go/mod/protobuf/user"
-	"github.com/liov/hoper/server/go/mod/user/conf"
-	modelconst "github.com/liov/hoper/server/go/mod/user/model"
 )
 
 // UserToRedis 将用户信息存到redis
@@ -124,6 +124,7 @@ func (d *userDao) EfficientUserHashToRedis() error {
 压缩列表中的节点数量大于 server.hash_max_ziplist_entries （默认值为 512 ）。
 */
 func (d *userDao) EfficientUserHashFromRedis() error {
+	defer d.StartSpan("EfficientUserHashFromRedis")
 	ctxi := d
 	ctx := ctxi.Context
 	loginUser := modelconst.LoginUserKey + ctxi.IdStr

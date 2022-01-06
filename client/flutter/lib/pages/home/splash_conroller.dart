@@ -2,7 +2,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-import 'package:app/global/controller.dart';
+import 'package:app/global/global_state.dart';
 import 'package:get/get.dart';
 
 

@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/liov/hoper/server/go/lib/utils/net"
-	"github.com/liov/hoper/server/go/lib/utils/net/http"
+	"github.com/actliboy/hoper/server/go/lib/utils/net"
+	"github.com/actliboy/hoper/server/go/lib/utils/net/http"
 )
 
 const (

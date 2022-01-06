@@ -16,7 +16,7 @@ export 'service.dart';
 
 final globalState = GlobalState.instance;
 
-class GlobalState {
+class GlobalState extends GetxController{
 
   GlobalState._();
 
@@ -39,4 +39,5 @@ class GlobalState {
 
   Widget? authCheck() => authState.userAuth == null ? LoginView():null;
 
+  var isDarkMode = (AppInfo.isDebug?true:false).obs;
 }

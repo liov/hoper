@@ -3,8 +3,8 @@ package initialize
 import (
 	"flag"
 	"fmt"
-	"github.com/liov/hoper/server/go/lib/tiga/initialize/conf_center"
-	"github.com/liov/hoper/server/go/lib/utils/slices"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/conf_center"
+	"github.com/actliboy/hoper/server/go/lib/utils/slices"
 	"net"
 	"net/http"
 	"net/url"
@@ -14,8 +14,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/liov/hoper/server/go/lib/utils/configor"
-	"github.com/liov/hoper/server/go/lib/utils/log"
+	"github.com/actliboy/hoper/server/go/lib/utils/configor"
+	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/pelletier/go-toml"
 )
 

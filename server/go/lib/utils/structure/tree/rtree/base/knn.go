@@ -1,7 +1,7 @@
 package base
 
 import (
-	"github.com/liov/hoper/server/go/lib/utils/structure/queue"
+	"github.com/actliboy/hoper/server/go/lib/utils/structure/queue"
 )
 
 type queueItem struct {

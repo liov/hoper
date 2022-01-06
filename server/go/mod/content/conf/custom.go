@@ -1,6 +1,6 @@
 package conf
 
-import "github.com/liov/hoper/server/go/lib/utils/fs"
+import "github.com/actliboy/hoper/server/go/lib/utils/fs"
 
 type serverConfig struct {
 	PassSalt    string

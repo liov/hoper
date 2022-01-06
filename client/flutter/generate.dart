@@ -8,7 +8,7 @@ Future<void> main() async{
   const arguments = ["list", "-m","-f","{{.Dir}}"];
 /*  await Process.run("go",["mod" "download","github.com/googleapis/googleapis"],workingDirectory: goprojectPath);
  */
- var result = await Process.run("go",[...arguments,"github.com/liov/hoper/server/go/lib"],workingDirectory: goprojectPath);
+ var result = await Process.run("go",[...arguments,"github.com/actliboy/hoper/server/go/lib"],workingDirectory: goprojectPath);
   var golibPath = (result.stdout as String).trimRight();
   result = await Process.run("go",[...arguments,"github.com/googleapis/googleapis"],workingDirectory: golibPath);
   var googleapis = (result.stdout as String).trimRight();

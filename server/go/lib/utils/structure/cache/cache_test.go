@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/actliboy/hoper/server/go/lib/utils/structure/cache/freecache"
+	"github.com/actliboy/hoper/server/go/lib/utils/structure/cache/gcache"
+	gocache "github.com/actliboy/hoper/server/go/lib/utils/structure/cache/go-cache"
 	"github.com/dgraph-io/ristretto"
-	"github.com/liov/hoper/server/go/lib/utils/structure/cache/freecache"
-	"github.com/liov/hoper/server/go/lib/utils/structure/cache/gcache"
-	gocache "github.com/liov/hoper/server/go/lib/utils/structure/cache/go-cache"
 )
 
 func BenchmarkFree(b *testing.B) {

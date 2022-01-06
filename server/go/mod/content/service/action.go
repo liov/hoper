@@ -2,18 +2,18 @@ package service
 
 import (
 	"context"
-	"github.com/liov/hoper/server/go/lib/protobuf/empty"
-	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
-	"github.com/liov/hoper/server/go/lib/protobuf/request"
-	contexti "github.com/liov/hoper/server/go/lib/tiga/context"
-	"github.com/liov/hoper/server/go/lib/utils/log"
-	"github.com/liov/hoper/server/go/lib/utils/slices"
-	"github.com/liov/hoper/server/go/mod/content/client"
-	"github.com/liov/hoper/server/go/mod/content/conf"
-	"github.com/liov/hoper/server/go/mod/content/dao"
-	"github.com/liov/hoper/server/go/mod/content/model"
-	"github.com/liov/hoper/server/go/mod/protobuf/content"
-	"github.com/liov/hoper/server/go/mod/protobuf/user"
+	"github.com/actliboy/hoper/server/go/lib/protobuf/empty"
+	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
+	"github.com/actliboy/hoper/server/go/lib/protobuf/request"
+	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
+	"github.com/actliboy/hoper/server/go/lib/utils/log"
+	"github.com/actliboy/hoper/server/go/lib/utils/slices"
+	"github.com/actliboy/hoper/server/go/mod/content/client"
+	"github.com/actliboy/hoper/server/go/mod/content/conf"
+	"github.com/actliboy/hoper/server/go/mod/content/dao"
+	"github.com/actliboy/hoper/server/go/mod/content/model"
+	"github.com/actliboy/hoper/server/go/mod/protobuf/content"
+	"github.com/actliboy/hoper/server/go/mod/protobuf/user"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -46,7 +46,7 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 	}
 
 	err = contentDao.Transaction(db, func(tx *gorm.DB) error {
-
+		contentDao.NewDB(tx)
 		err = db.Table(model.LikeTableName).Create(req).Error
 		if err != nil {
 			return ctxi.ErrorLog(errorcode.DBError, err, "Create")
@@ -117,7 +117,7 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*re
 		if err != nil {
 			return ctxi.ErrorLog(errorcode.DBError, err, "Create")
 		}
-		err = contentDao.CreateContextExt(tx, content.ContentComment, req.Id)
+		err = contentDao.CreateContextExtDB(tx, content.ContentComment, req.Id)
 		if err != nil {
 			return err
 		}
