@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:app/components/camrea/camera_view.dart';
 import 'package:app/generated/protobuf/content/content.enum.pb.dart';
 import 'package:app/generated/protobuf/content/moment.service.pb.dart';
-import 'package:app/global/controller.dart';
+import 'package:app/global/global_state.dart';
 import 'package:app/service/moment.dart';
 import 'package:app/utils/media.dart';
 import 'package:camera/camera.dart';

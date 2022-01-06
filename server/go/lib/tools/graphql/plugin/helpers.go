@@ -1,9 +1,9 @@
 package plugin
 
 import (
+	cuzproto "github.com/actliboy/hoper/server/go/lib/protobuf/utils/gogo"
 	"github.com/gogo/protobuf/gogoproto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/generator"
-	cuzproto "github.com/liov/hoper/server/go/lib/protobuf/utils/gogo"
 
 	"strings"
 	"unicode"

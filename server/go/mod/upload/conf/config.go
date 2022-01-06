@@ -1,9 +1,9 @@
 package conf
 
 import (
-	"github.com/liov/hoper/server/go/lib/tiga/initialize"
-	"github.com/liov/hoper/server/go/lib/tiga/initialize/inject_dao"
-	"github.com/liov/hoper/server/go/lib/utils/fs"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/inject_dao"
+	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	"runtime"
 )
 

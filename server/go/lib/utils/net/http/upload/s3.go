@@ -6,10 +6,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/liov/hoper/server/go/lib/utils/log"
 )
 
 func News3() *s3.S3 {

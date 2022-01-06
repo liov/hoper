@@ -2,9 +2,9 @@ package inject_dao
 
 import (
 	"fmt"
-	"github.com/liov/hoper/server/go/lib/tiga/initialize"
-	gormi "github.com/liov/hoper/server/go/lib/utils/dao/db/gorm"
-	"github.com/liov/hoper/server/go/lib/utils/log"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
+	gormi "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm"
+	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"

@@ -3,7 +3,7 @@ package stringsi
 import (
 	"unicode"
 
-	runei "github.com/liov/hoper/server/go/lib/utils/strings/rune"
+	runei "github.com/actliboy/hoper/server/go/lib/utils/strings/rune"
 )
 
 //[。；，：“”（）、？《》]

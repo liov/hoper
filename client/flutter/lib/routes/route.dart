@@ -1,7 +1,7 @@
 import 'dart:ffi';
 
 import 'package:app/generated/protobuf/content/content.enum.pb.dart';
-import 'package:app/global/controller.dart';
+import 'package:app/global/global_state.dart';
 import 'package:app/pages/comment/comment_controller.dart';
 import 'package:app/pages/home/home_binding.dart';
 import 'package:app/pages/home/home_view.dart';

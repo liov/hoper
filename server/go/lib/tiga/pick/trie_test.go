@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
 	"github.com/json-iterator/go/extra"
-	"github.com/liov/hoper/server/go/lib/utils/encoding/json"
 )
 
 func TestTrie(t *testing.T) {

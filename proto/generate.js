@@ -11,7 +11,7 @@ process.execSync(`go mod download github.com/googleapis/googleapis`, {
 const googleapis = process.execSync(`${goList} github.com/googleapis/googleapis`, {
     cwd: projectpath
 }).toString().trimEnd()
-const libpath = process.execSync(`${goList} github.com/liov/hoper/server/go/lib`, {
+const libpath = process.execSync(`${goList} github.com/actliboy/hoper/server/go/lib`, {
     cwd: projectpath
 }).toString().trimEnd()
 console.log(libpath)

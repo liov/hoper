@@ -1,7 +1,7 @@
 package conf_center
 
 import (
-	"github.com/liov/hoper/server/go/lib/utils/configor/nacos"
+	"github.com/actliboy/hoper/server/go/lib/utils/configor/nacos"
 )
 
 type Nacos struct {

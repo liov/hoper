@@ -1,8 +1,8 @@
 package inject_dao
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/dgraph-io/badger/v3"
-	"github.com/liov/hoper/server/go/lib/utils/log"
 )
 
 type BadgerDBConfig struct {

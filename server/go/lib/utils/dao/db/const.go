@@ -10,6 +10,7 @@ const (
 
 const (
 	ColumnDeletedAt = "deleted_at"
+	ColumnId        = "id"
 )
 
 const (

@@ -11,7 +11,7 @@ import "response/response.proto";
 import "utils/policy/policy.proto";
 import "patch/go.proto";
 
-option go_package = "github.com/liov/hoper/server/go/mod/protobuf/content";
+option go_package = "github.com/actliboy/hoper/server/go/mod/protobuf/content";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {

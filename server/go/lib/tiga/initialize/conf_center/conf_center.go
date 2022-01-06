@@ -1,6 +1,6 @@
 package conf_center
 
-import "github.com/liov/hoper/server/go/lib/utils/configor"
+import "github.com/actliboy/hoper/server/go/lib/utils/configor"
 
 type ConfigCenter interface {
 	HandleConfig(func([]byte)) error

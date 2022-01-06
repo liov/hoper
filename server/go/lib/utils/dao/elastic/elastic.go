@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/liov/hoper/server/go/lib/utils/encoding/json"
-	"github.com/liov/hoper/server/go/lib/utils/log"
+	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
+	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/olivere/elastic/v7"
 )
 

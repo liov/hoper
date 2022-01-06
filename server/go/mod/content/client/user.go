@@ -1,9 +1,9 @@
 package client
 
 import (
-	"github.com/liov/hoper/server/go/lib/utils/log"
-	"github.com/liov/hoper/server/go/lib/utils/net/http/grpc/stats"
-	"github.com/liov/hoper/server/go/mod/protobuf/user"
+	"github.com/actliboy/hoper/server/go/lib/utils/log"
+	"github.com/actliboy/hoper/server/go/lib/utils/net/http/grpc/stats"
+	"github.com/actliboy/hoper/server/go/mod/protobuf/user"
 	"google.golang.org/grpc"
 )
 

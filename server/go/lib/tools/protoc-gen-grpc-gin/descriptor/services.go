@@ -2,10 +2,10 @@ package descriptor
 
 import (
 	"fmt"
-	"github.com/liov/hoper/server/go/lib/utils/log"
+	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"strings"
 
-	"github.com/liov/hoper/server/go/lib/tools/protoc-gen-grpc-gin/httprule"
+	"github.com/actliboy/hoper/server/go/lib/tools/protoc-gen-grpc-gin/httprule"
 
 	options "google.golang.org/genproto/googleapis/api/annotations"
 	"google.golang.org/protobuf/proto"

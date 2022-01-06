@@ -1,7 +1,7 @@
 package initialize
 
 import (
-	"github.com/liov/hoper/server/go/lib/utils/log"
+	"github.com/actliboy/hoper/server/go/lib/utils/log"
 )
 
 type LogConfig log.Config

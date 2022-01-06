@@ -1,8 +1,9 @@
 
 import 'package:app/global/service.dart';
+import 'package:get/get.dart';
 
 
-class AppInfo{
+class AppInfo extends GetxController{
 
   AppInfo():assert(isDebug = true);
 

@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/liov/hoper/server/go/lib/utils/encoding/json"
-	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
+	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
+	stringsi "github.com/actliboy/hoper/server/go/lib/utils/strings"
 )
 
 var errUnknownType = errors.New("unknown type")

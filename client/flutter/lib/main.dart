@@ -3,13 +3,13 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:app/routes/route.dart';
-import 'package:app/theme.dart';
+import 'package:app/global/theme.dart';
 import 'package:app/translations/zh_CN/local.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:app/global/controller.dart';
+import 'package:app/global/global_state.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 
@@ -18,7 +18,6 @@ import 'global/app_info.dart';
 
 
 Future<void> main() async {
-  Isolate.spawn(serve,8000);
   ErrorWidget.builder = (FlutterErrorDetails flutterErrorDetails){
     print(flutterErrorDetails.toString());
     return Center(
@@ -29,9 +28,9 @@ Future<void> main() async {
   print(AppInfo.isDebug);
   runApp(GetMaterialApp(
     title: 'hoper',
-    themeMode: AppInfo.isDebug?ThemeMode.dark:ThemeMode.system,
-    theme: ThemeData.light(),
-    darkTheme:ThemeData.dark(),
+    themeMode: globalState.isDarkMode.value?ThemeMode.dark:ThemeMode.system,
+    theme: AppTheme.light,
+    darkTheme:AppTheme.dark,
       builder: (context, child) => Scaffold(
         body: GestureDetector(
           onTap: () {

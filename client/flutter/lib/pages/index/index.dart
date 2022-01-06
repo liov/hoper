@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:animate_do/animate_do.dart';
 import 'package:app/components/async/async.dart';
-import 'package:app/global/controller.dart';
+import 'package:app/global/global_state.dart';
 
 import 'package:app/pages/home/splash_view.dart';
 import 'package:app/routes/route.dart';
@@ -89,11 +89,11 @@ class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixi
                 ))
               ]),
           CupertinoSwitch(
-              value: Get.isDarkMode,
+              value: globalState.isDarkMode.value,
               onChanged: (value) {
-                print(Get.isDarkMode);
+                globalState.isDarkMode.toggle();
                 Get.changeThemeMode(
-                    Get.isDarkMode ? ThemeMode.light : ThemeMode.dark);
+                    globalState.isDarkMode.value ? ThemeMode.dark : ThemeMode.light);
               }),
           Padding(
               padding: const EdgeInsets.all(16.0),

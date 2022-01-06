@@ -7,9 +7,9 @@ import (
 	"path"
 	"strings"
 
+	. "github.com/actliboy/hoper/server/go/lib/tools/graphql/plugin"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/generator"
-	. "github.com/liov/hoper/server/go/lib/tools/graphql/plugin"
 	"gopkg.in/yaml.v3"
 )
 

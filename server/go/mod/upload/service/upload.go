@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
-	contexti "github.com/liov/hoper/server/go/lib/tiga/context"
-	"github.com/liov/hoper/server/go/mod/protobuf/upload"
-	"github.com/liov/hoper/server/go/mod/upload/dao"
+	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
+	"github.com/actliboy/hoper/server/go/mod/protobuf/upload"
+	"github.com/actliboy/hoper/server/go/mod/upload/dao"
 )
 
 type UploadService struct {

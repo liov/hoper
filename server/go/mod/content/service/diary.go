@@ -2,14 +2,14 @@ package service
 
 import (
 	"context"
-	"github.com/liov/hoper/server/go/lib/protobuf/empty"
-	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
-	"github.com/liov/hoper/server/go/lib/protobuf/request"
-	contexti "github.com/liov/hoper/server/go/lib/tiga/context"
-	"github.com/liov/hoper/server/go/mod/content/conf"
-	"github.com/liov/hoper/server/go/mod/content/dao"
-	"github.com/liov/hoper/server/go/mod/content/model"
-	"github.com/liov/hoper/server/go/mod/protobuf/content"
+	"github.com/actliboy/hoper/server/go/lib/protobuf/empty"
+	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
+	"github.com/actliboy/hoper/server/go/lib/protobuf/request"
+	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
+	"github.com/actliboy/hoper/server/go/mod/content/conf"
+	"github.com/actliboy/hoper/server/go/mod/content/dao"
+	"github.com/actliboy/hoper/server/go/mod/content/model"
+	"github.com/actliboy/hoper/server/go/mod/protobuf/content"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"net/http"
@@ -27,7 +27,13 @@ func (*DiaryService) DiaryBook(ctx context.Context, req *content.DiaryBookReq) (
 
 	return nil, status.Errorf(codes.Unimplemented, "method DiaryBook not implemented")
 }
-func (*DiaryService) DiaryBookList(context.Context, *content.DiaryBookListReq) (*content.DiaryBookListRep, error) {
+func (*DiaryService) DiaryBookList(ctx context.Context, req *content.DiaryBookListReq) (*content.DiaryBookListRep, error) {
+	ctxi := contexti.CtxFromContext(ctx)
+	auth, err := auth(ctxi, true)
+	if err != nil {
+		return nil, err
+	}
+
 	return nil, status.Errorf(codes.Unimplemented, "method DiaryBookList not implemented")
 }
 func (*DiaryService) AddDiaryBook(ctx context.Context, req *content.AddDiaryBookReq) (*request.Object, error) {

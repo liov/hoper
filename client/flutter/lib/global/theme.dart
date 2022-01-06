@@ -65,3 +65,8 @@ final TextStyle cardTextStyle = TextStyle(
 );
 
 final Color exampleColor = Colors.white;
+
+class AppTheme {
+  static ThemeData light = ThemeData.light();
+  static ThemeData dark = ThemeData.dark();
+}

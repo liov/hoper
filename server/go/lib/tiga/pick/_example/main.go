@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/liov/hoper/server/go/lib/tiga/pick"
-	"github.com/liov/hoper/server/go/lib/tiga/pick/_example/service"
+	"github.com/actliboy/hoper/server/go/lib/tiga/pick"
+	"github.com/actliboy/hoper/server/go/lib/tiga/pick/_example/service"
 	"log"
 	"net/http"
 
-	_ "github.com/liov/hoper/server/go/lib/tiga/pick/_example/service"
+	_ "github.com/actliboy/hoper/server/go/lib/tiga/pick/_example/service"
 )
 
 func main() {

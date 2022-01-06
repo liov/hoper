@@ -21,8 +21,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/liov/hoper/server/go/lib/utils/encoding/json"
-	"github.com/liov/hoper/server/go/lib/utils/net/http"
+	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
+	"github.com/actliboy/hoper/server/go/lib/utils/net/http"
 	"golang.org/x/net/publicsuffix"
 )
 

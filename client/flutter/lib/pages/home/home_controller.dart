@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:app/components/bottom/bottom.dart';
-import 'package:app/global/controller.dart';
+import 'package:app/global/global_state.dart';
 import 'package:app/pages/home/splash_view.dart';
 import 'package:app/utils/dialog.dart';
 import 'package:flutter/material.dart';

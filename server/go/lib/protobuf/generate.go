@@ -2,8 +2,8 @@ package main
 
 import (
 	"flag"
-	"github.com/liov/hoper/server/go/lib/utils/os"
-	execi "github.com/liov/hoper/server/go/lib/utils/os/exec"
+	"github.com/actliboy/hoper/server/go/lib/utils/os"
+	execi "github.com/actliboy/hoper/server/go/lib/utils/os/exec"
 	"io/ioutil"
 	"log"
 	"os"

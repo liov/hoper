@@ -4,7 +4,7 @@ import "utils/gogo/enum.proto";
 import "patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.errorcode";
-option go_package = "github.com/liov/hoper/server/go/lib/protobuf/errorcode";
+option go_package = "github.com/actliboy/hoper/server/go/lib/protobuf/errorcode";
 option (gogo.enum_prefix_all) = false;
 option (go.file) = {no_enum_prefix:true};
 

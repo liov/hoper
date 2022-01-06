@@ -1,8 +1,8 @@
 package fiber_build
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/utils/net/http/request/binding"
 	"github.com/gofiber/fiber/v2"
-	"github.com/liov/hoper/server/go/lib/utils/net/http/request/binding"
 )
 
 func Bind(c *fiber.Ctx, obj interface{}) error {

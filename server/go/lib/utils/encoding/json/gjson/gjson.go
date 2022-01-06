@@ -3,8 +3,8 @@ package gjson
 
 import (
 	"encoding/json"
-	"github.com/liov/hoper/server/go/lib/utils/encoding/json/pretty"
-	"github.com/liov/hoper/server/go/lib/utils/strings/match"
+	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json/pretty"
+	"github.com/actliboy/hoper/server/go/lib/utils/strings/match"
 	"reflect"
 	"strconv"
 	"strings"

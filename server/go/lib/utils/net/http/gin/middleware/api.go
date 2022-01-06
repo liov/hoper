@@ -5,10 +5,10 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/actliboy/hoper/server/go/lib/utils/net/http/api/apidoc"
+	"github.com/actliboy/hoper/server/go/lib/utils/reflect"
 	"github.com/gin-gonic/gin"
 	"github.com/go-openapi/spec"
-	"github.com/liov/hoper/server/go/lib/utils/net/http/api/apidoc"
-	"github.com/liov/hoper/server/go/lib/utils/reflect"
 )
 
 // Deprecated

@@ -1,6 +1,6 @@
 import 'package:app/generated/protobuf/user/user.enum.pb.dart';
 import 'package:app/generated/protobuf/user/user.service.pb.dart';
-import 'package:app/global/controller.dart';
+import 'package:app/global/global_state.dart';
 import 'package:app/utils/dialog.dart';
 import 'package:get/get.dart';
 

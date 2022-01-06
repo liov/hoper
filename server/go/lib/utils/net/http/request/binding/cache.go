@@ -11,7 +11,7 @@ import (
 	"strings"
 	"sync"
 
-	reflecti "github.com/liov/hoper/server/go/lib/utils/reflect"
+	reflecti "github.com/actliboy/hoper/server/go/lib/utils/reflect"
 )
 
 var invalidPath = errors.New("schema: invalid path")

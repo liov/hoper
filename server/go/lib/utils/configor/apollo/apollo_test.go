@@ -3,7 +3,7 @@ package apollo
 import (
 	"testing"
 
-	"github.com/liov/hoper/server/go/lib/utils/log"
+	"github.com/actliboy/hoper/server/go/lib/utils/log"
 )
 
 func TestApollo(t *testing.T) {

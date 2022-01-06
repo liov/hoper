@@ -1,7 +1,7 @@
 package grpci
 
 import (
-	"github.com/liov/hoper/server/go/lib/utils/log"
+	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"google.golang.org/grpc/grpclog"
 )
 

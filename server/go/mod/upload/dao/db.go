@@ -1,9 +1,9 @@
 package dao
 
 import (
-	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
-	"github.com/liov/hoper/server/go/mod/protobuf/upload"
-	"github.com/liov/hoper/server/go/mod/upload/model"
+	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
+	"github.com/actliboy/hoper/server/go/mod/protobuf/upload"
+	"github.com/actliboy/hoper/server/go/mod/upload/model"
 	"gorm.io/gorm"
 )
 

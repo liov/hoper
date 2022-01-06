@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/liov/hoper/server/go/lib/utils/configor"
+	"github.com/actliboy/hoper/server/go/lib/utils/configor"
 )
 
 func TestUnmatchedKeyInJsonConfigFile(t *testing.T) {

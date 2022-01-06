@@ -1,9 +1,9 @@
 package tiga
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"github.com/armon/go-metrics"
 	"github.com/armon/go-metrics/prometheus"
-	"github.com/liov/hoper/server/go/lib/tiga/initialize"
 )
 
 var (

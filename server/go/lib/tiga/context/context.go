@@ -3,11 +3,11 @@ package contexti
 import (
 	"context"
 	"errors"
+	contexti "github.com/actliboy/hoper/server/go/lib/utils/context"
+	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
+	stringsi "github.com/actliboy/hoper/server/go/lib/utils/strings"
+	jwti "github.com/actliboy/hoper/server/go/lib/utils/verification/auth/jwt"
 	"github.com/dgrijalva/jwt-go/v4"
-	contexti "github.com/liov/hoper/server/go/lib/utils/context"
-	"github.com/liov/hoper/server/go/lib/utils/encoding/json"
-	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
-	jwti "github.com/liov/hoper/server/go/lib/utils/verification/auth/jwt"
 	"go.opencensus.io/trace"
 	"google.golang.org/grpc"
 	"net/http"
@@ -60,16 +60,8 @@ type Ctx struct {
 }
 
 func (c *Ctx) StartSpan(name string, o ...trace.StartOption) (*Ctx, *trace.Span) {
-	ctx, span := trace.StartSpan(c.Context, name, o...)
-	c.Context = ctx
-	if c.TraceID == "" {
-		c.TraceID = span.SpanContext().TraceID.String()
-	}
+	_, span := c.RequestContext.StartSpan(name, o...)
 	return c, span
-}
-
-func (c *Ctx) WithContext(ctx context.Context) {
-	c.Context = ctx
 }
 
 func CtxFromRequest(r *http.Request, tracing bool) (*Ctx, *trace.Span) {

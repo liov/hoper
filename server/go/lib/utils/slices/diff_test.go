@@ -1,7 +1,7 @@
 package slices
 
 import (
-	"github.com/liov/hoper/server/go/lib/utils/def"
+	"github.com/actliboy/hoper/server/go/lib/utils/def"
 	"log"
 	"testing"
 )
