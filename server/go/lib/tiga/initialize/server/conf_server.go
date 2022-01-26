@@ -1,6 +1,7 @@
-package initialize
+package server
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	gini "github.com/actliboy/hoper/server/go/lib/utils/net/http/gin"
 	"reflect"
 	"time"
@@ -24,8 +25,9 @@ func (c *ServerConfig) Init() {
 	c.WriteTimeout = c.WriteTimeout * time.Second
 }
 
-func (init *Init) GetServiceConfig() *ServerConfig {
-	value := reflect.ValueOf(init.conf).Elem()
+func GetServiceConfig() *ServerConfig {
+	iconf := initialize.InitConfig.Config()
+	value := reflect.ValueOf(iconf).Elem()
 	for i := 0; i < value.NumField(); i++ {
 		if conf, ok := value.Field(i).Interface().(ServerConfig); ok {
 			return &conf

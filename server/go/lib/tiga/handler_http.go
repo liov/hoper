@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"github.com/99designs/gqlgen/graphql/handler"
 	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/server"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	httpi "github.com/actliboy/hoper/server/go/lib/utils/net/http"
 	gin_build "github.com/actliboy/hoper/server/go/lib/utils/net/http/gin"
@@ -17,7 +17,7 @@ import (
 	"net/http"
 )
 
-func (s *Server) httpHandler(conf *initialize.ServerConfig) http.HandlerFunc {
+func (s *Server) httpHandler(conf *server.ServerConfig) http.HandlerFunc {
 	// 默认使用gin
 	ginServer := gin_build.Http(conf.Gin, s.GinHandle)
 

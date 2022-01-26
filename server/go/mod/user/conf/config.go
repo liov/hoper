@@ -1,8 +1,12 @@
 package conf
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/inject_dao"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/cache"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/db"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/log"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/mail"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/redis"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/server"
 	"runtime"
 	"time"
 
@@ -17,12 +21,12 @@ var MongoSettings = &MongoConfig{}*/
 type config struct {
 	//自定义的配置
 	Customize serverConfig
-	Server    initialize.ServerConfig
-	Mail      inject_dao.MailConfig
-	GORMDB    inject_dao.DatabaseConfig
-	Redis     inject_dao.RedisConfig
-	Cache     inject_dao.CacheConfig
-	Log       initialize.LogConfig
+	Server    server.ServerConfig
+	Mail      mail.MailConfig
+	GORMDB    db.DatabaseConfig
+	Redis     redis.RedisConfig
+	Cache     cache.CacheConfig
+	Log       log.LogConfig
 	Viper     *viper.Viper
 }
 

@@ -1,4 +1,4 @@
-package inject_dao
+package cache
 
 import (
 	"github.com/dgraph-io/ristretto"

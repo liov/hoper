@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
 	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/server"
 	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	runtimei "github.com/actliboy/hoper/server/go/lib/utils/runtime"
@@ -22,7 +22,7 @@ import (
 	"runtime/debug"
 )
 
-func (s *Server) grpcHandler(conf *initialize.ServerConfig) *grpc.Server {
+func (s *Server) grpcHandler(conf *server.ServerConfig) *grpc.Server {
 	if s.GRPCHandle != nil {
 		var stream = []grpc.StreamServerInterceptor{StreamAccess}
 		var unary = []grpc.UnaryServerInterceptor{UnaryAccess, Validator}

@@ -1,4 +1,4 @@
-package inject_dao
+package mail
 
 import (
 	"net/smtp"

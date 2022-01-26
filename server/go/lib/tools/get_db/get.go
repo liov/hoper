@@ -2,7 +2,7 @@ package get_db
 
 import (
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/inject_dao"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/db"
 	"gorm.io/gorm"
 )
 
@@ -11,7 +11,7 @@ type Dao struct {
 }
 
 type Config struct {
-	Hoper inject_dao.DatabaseConfig
+	Hoper db.DatabaseConfig
 }
 
 func (*Config) Init() {}

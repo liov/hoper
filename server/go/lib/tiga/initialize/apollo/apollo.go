@@ -1,4 +1,4 @@
-package inject_dao
+package apollo
 
 import (
 	"github.com/actliboy/hoper/server/go/lib/utils/configor/apollo"

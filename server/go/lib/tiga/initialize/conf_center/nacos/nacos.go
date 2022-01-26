@@ -1,4 +1,4 @@
-package conf_center
+package nacos
 
 import (
 	"github.com/actliboy/hoper/server/go/lib/utils/configor/nacos"

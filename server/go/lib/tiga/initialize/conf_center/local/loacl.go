@@ -1,4 +1,4 @@
-package conf_center
+package local
 
 import (
 	"fmt"

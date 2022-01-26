@@ -1,17 +1,21 @@
 package conf_center
 
-import "github.com/actliboy/hoper/server/go/lib/utils/configor"
+import (
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/conf_center/local"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/conf_center/nacos"
+	"github.com/actliboy/hoper/server/go/lib/utils/configor"
+)
 
 type ConfigCenter interface {
 	HandleConfig(func([]byte)) error
 }
 
 type ConfigCenterConfig struct {
-	Watch  bool
-	Nacos  *Nacos
-	Local  *Local
-	Etcd   *Etcd
-	Apollo *Apollo
+	Watch bool
+	Nacos *nacos.Nacos
+	Local *local.Local
+	/*	Etcd   *etcd.Etcd
+		Apollo *apollo.Apollo*/
 }
 
 type ConfigCenterEnvConfig struct {
@@ -28,17 +32,17 @@ func (c *ConfigCenterConfig) ConfigCenter(ccec ConfigCenterEnvConfig, model stri
 		c.Nacos.Watch = c.Watch
 		return c.Nacos
 	}
-	if c.Etcd != nil && ccec.EtcdKey != "" {
+	/*	if c.Etcd != nil && ccec.EtcdKey != "" {
 		c.Etcd.Key = ccec.EtcdKey
 		c.Etcd.Watch = c.Watch
 		return c.Etcd
-	}
+	}*/
 	if ccec.LocalConfigName != "" {
 		if c.Local != nil {
 			c.Local.LocalConfigName = ccec.LocalConfigName
 			return c.Local
 		} else {
-			return &Local{Config: configor.Config{
+			return &local.Local{Config: configor.Config{
 				Debug:      debug,
 				AutoReload: c.Watch,
 			}, LocalConfigName: ccec.LocalConfigName}
