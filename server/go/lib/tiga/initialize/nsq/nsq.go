@@ -1,4 +1,4 @@
-package inject_dao
+package nsq
 
 import (
 	"log"

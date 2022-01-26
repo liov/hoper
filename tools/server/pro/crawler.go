@@ -70,10 +70,28 @@ func SetClient(client *http.Client, timeout time.Duration, proxyUrl string) {
 	}
 }
 
+type Fail chan string
+
+func NewFail(cap int) Fail {
+	return make(chan string, cap)
+}
+
+func (f Fail) Do(name string, wg *sync.WaitGroup) {
+	wg.Add(1)
+	go func() {
+		file, _ := os.Create(CommonDir + name + time.Now().Format("2006_01_02_15_04_05") + Ext)
+		for txt := range f {
+			file.WriteString(txt + "\n")
+		}
+		file.Close()
+		wg.Done()
+	}()
+}
+
 type Speed struct {
 	wg                    *sync.WaitGroup
 	web, pic              chan struct{}
-	Fail, FailPic, FailDB chan string
+	Fail, FailPic, FailDB Fail
 }
 
 func (s *Speed) Add(i int) {
@@ -105,9 +123,9 @@ func NewSpeed(cap int) *Speed {
 		wg:      new(sync.WaitGroup),
 		pic:     make(chan struct{}, cap),
 		web:     make(chan struct{}, cap),
-		Fail:    make(chan string, cap),
-		FailPic: make(chan string, cap),
-		FailDB:  make(chan string, cap),
+		Fail:    NewFail(cap),
+		FailPic: NewFail(cap),
+		FailDB:  NewFail(cap),
 	}
 }
 
@@ -353,32 +371,9 @@ func newRequest(url string) (*http.Request, error) {
 func Start(job func(sd *Speed)) {
 	sd := NewSpeed(Loop)
 	wg := new(sync.WaitGroup)
-	wg.Add(3)
-	go func() {
-		f, _ := os.Create(CommonDir + "fail_post_" + time.Now().Format("2006_01_02_15_04_05") + Ext)
-		for txt := range sd.Fail {
-			f.WriteString(txt + "\n")
-		}
-		f.Close()
-		wg.Done()
-	}()
-	go func() {
-		f, _ := os.Create(CommonDir + "fail_pic_" + time.Now().Format("2006_01_02_15_04_05") + Ext)
-		for txt := range sd.FailPic {
-			f.WriteString(txt + "\n")
-		}
-		f.Close()
-		wg.Done()
-	}()
-	go func() {
-		f, _ := os.Create(CommonDir + "fail_db_" + time.Now().Format("2006_01_02_15_04_05") + Ext)
-		for txt := range sd.FailDB {
-			f.WriteString(txt + "\n")
-		}
-		f.Close()
-		wg.Done()
-	}()
-
+	sd.Fail.Do("fail_post_", wg)
+	sd.Fail.Do("fail_pic_", wg)
+	sd.Fail.Do("fail_db_", wg)
 	job(sd)
 	sd.Wait()
 	close(sd.Fail)

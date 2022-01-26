@@ -1,4 +1,4 @@
-package inject_dao
+package kafka
 
 import (
 	"github.com/Shopify/sarama"

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/server"
 	"go.opencensus.io/zpages"
 	"net/http"
 	"os"
@@ -30,7 +31,7 @@ type ConvertContext func(r *http.Request) *contexti.Ctx
 
 func (s *Server) Serve() {
 	//反射从配置中取port
-	serviceConfig := initialize.InitConfig.GetServiceConfig()
+	serviceConfig := server.GetServiceConfig()
 	grpcServer := s.grpcHandler(serviceConfig)
 	httpHandler := s.httpHandler(serviceConfig)
 	openTracing := serviceConfig.OpenTracing

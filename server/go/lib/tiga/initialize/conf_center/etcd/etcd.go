@@ -1,4 +1,4 @@
-package conf_center
+package etcd
 
 import (
 	"context"

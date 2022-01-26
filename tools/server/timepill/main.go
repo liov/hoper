@@ -4,7 +4,8 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/inject_dao"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/cache"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/db"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
 	"github.com/dgraph-io/ristretto"
@@ -15,9 +16,9 @@ import (
 )
 
 type Config struct {
-	Hoper     inject_dao.DatabaseConfig
-	Cache     inject_dao.CacheConfig
-	Customize Customize
+	Hoper    db.DatabaseConfig
+	Cache    cache.CacheConfig
+	TimePill Customize
 }
 
 func (c Config) Init() {
@@ -49,7 +50,7 @@ var (
 
 func main() {
 	defer initialize.Start(&conf, &dao)()
-	token = "Basic " + base64.StdEncoding.EncodeToString([]byte(conf.Customize.User+":"+conf.Customize.Password))
+	token = "Basic " + base64.StdEncoding.EncodeToString([]byte(conf.TimePill.User+":"+conf.TimePill.Password))
 	todayRecord()
 	record()
 	tc := time.NewTicker(time.Second * 20)
@@ -113,7 +114,7 @@ func downloadPic(url string) error {
 	if url == "" {
 		return nil
 	}
-	filepath := conf.Customize.PhotoPath
+	filepath := conf.TimePill.PhotoPath
 	filename := strings.Split(url, "photos")
 	if len(filename) > 1 {
 		filepath += filename[1]

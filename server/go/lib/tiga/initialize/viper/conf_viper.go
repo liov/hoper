@@ -1,6 +1,7 @@
-package initialize
+package viper
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/actliboy/hoper/server/go/lib/utils/reflect"
 	"github.com/spf13/viper"
@@ -14,17 +15,24 @@ type ViperConfig struct {
 	Path     string
 }
 
-func (init *Init) getViper() *viper.Viper {
+func (conf *ViperConfig) Init() {
 
-	conf := &ViperConfig{}
-	if exist := reflecti.GetFieldValue(init.conf, conf); !exist {
+}
+
+func (conf *ViperConfig) Generate() interface{} {
+	return conf.generate()
+}
+
+func (conf *ViperConfig) generate() *viper.Viper {
+	iconf := initialize.InitConfig.Config()
+	if exist := reflecti.GetFieldValue(iconf, conf); !exist {
 		return nil
 	}
 	var runtimeViper = viper.GetViper()
 
 	runtimeViper.SetConfigType("toml") // because there is no file extension in a stream of bytes, supported extensions are "json", "toml", "yaml", "yml", "properties", "props", "prop", "Env", "dotenv"
 	if conf.Remote {
-		runtimeViper.AddRemoteProvider(conf.Provider, conf.Endpoint, InitKey)
+		runtimeViper.AddRemoteProvider(conf.Provider, conf.Endpoint, initialize.InitKey)
 		// read from remote Config the first time.
 		err := runtimeViper.ReadRemoteConfig()
 		if err != nil {
@@ -38,7 +46,7 @@ func (init *Init) getViper() *viper.Viper {
 	}
 
 	// unmarshal Config
-	cCopy := init.conf
+	cCopy := iconf
 	//dCopy := init.dao
 	runtimeViper.Unmarshal(cCopy)
 	log.Debug(cCopy)
@@ -54,8 +62,8 @@ func (init *Init) getViper() *viper.Viper {
 				log.Errorf("unable to read remote Config: %v", err)
 				continue
 			}
-			conf :=runtime_viper.AllSettings()
-			log.Debug(conf)
+			vconf :=runtime_viper.AllSettings()
+			log.Debug(vconf)
 			// unmarshal new Config into our runtime Config struct. you can also use channel
 			// to implement a signal to notify the system of the changes
 			runtime_viper.Unmarshal(cCopy)

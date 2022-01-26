@@ -248,3 +248,7 @@ func (init *Init) UnmarshalAndSet(bytes []byte) {
 	toml.Unmarshal(bytes, init.conf)
 	init.refresh()
 }
+
+func (init *Init) Config() Config {
+	return init.conf
+}
