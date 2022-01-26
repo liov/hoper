@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	http.Handle("/", http.FileServer(http.Dir("D:/hoper/client/flutter/build/app/outputs/flutter-apk")))
+	http.Handle("/", http.FileServer(http.Dir("/home")))
 
 	err := http.ListenAndServe(":80", nil)
 	if err != nil {

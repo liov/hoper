@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc"
 	"net/http"
 	"sync"
+	"time"
 )
 
 var (
@@ -25,16 +26,15 @@ type AuthInfo interface {
 }
 
 type Authorization struct {
-	AuthInfo     `json:"auth"`
-	IdStr        string `json:"-" gorm:"-"`
-	LastActiveAt int64  `json:"lat,omitempty"`
-	ExpiredAt    int64  `json:"exp,omitempty"`
-	LoginAt      int64  `json:"iat,omitempty"`
-	AuthInfoRaw  string `json:"-"`
+	AuthInfo    `json:"auth"`
+	AuthInfoRaw string `json:"-"`
+	IdStr       string `json:"-" gorm:"-"`
+	ExpiredAt   int64  `json:"exp,omitempty"`
+	LoginAt     int64  `json:"iat,omitempty"`
 }
 
 func (x *Authorization) Valid(helper *jwt.ValidationHelper) error {
-	if x.ExpiredAt != 0 && x.LastActiveAt > x.ExpiredAt {
+	if x.ExpiredAt != 0 && time.Now().Unix() > x.ExpiredAt {
 		return errors.New("登录过期")
 	}
 	return nil
@@ -55,6 +55,7 @@ func (x *Authorization) ParseToken(token, secret string) error {
 }
 
 type Ctx struct {
+	LastActiveAt int64
 	*Authorization
 	*contexti.RequestContext
 }
@@ -79,8 +80,7 @@ func CtxFromContext(ctx context.Context) *Ctx {
 	ctxi := ctx.Value(ctxKey{})
 	c, ok := ctxi.(*Ctx)
 	if !ok {
-		ctxi := contexti.NewCtx(ctx)
-		c = &Ctx{Authorization: &Authorization{}, RequestContext: ctxi}
+		return &Ctx{Authorization: &Authorization{}, RequestContext: contexti.NewCtx(ctx)}
 	}
 	if c.ServerTransportStream == nil {
 		c.ServerTransportStream = grpc.ServerTransportStreamFromContext(ctx)

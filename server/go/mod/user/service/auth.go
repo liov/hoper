@@ -17,7 +17,7 @@ func auth(ctx *contexti.Ctx, update bool) (*user.AuthInfo, error) {
 	cacheTmp, ok := dao.Dao.Cache.Get(signature)
 	if ok {
 		cache := cacheTmp.(*contexti.Authorization)
-		cache.LastActiveAt = ctx.TimeStamp
+		ctx.LastActiveAt = ctx.TimeStamp
 		ctx.Authorization = cache
 		auth := cache.AuthInfo.(*user.AuthInfo)
 		return auth, nil

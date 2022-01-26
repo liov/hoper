@@ -1,5 +1,5 @@
 ///接雨水 II
-use std::collections::{HashSet, BTreeMap, BinaryHeap};
+use std::collections::{HashSet, BTreeMap};
 
 #[derive(PartialEq, Eq, PartialOrd, Ord, Debug, Hash, Clone, Copy)]
 struct Point(i32, usize, usize);
@@ -10,9 +10,9 @@ pub fn trap_rain_water(height_map: Vec<Vec<i32>>) -> i32 {
     let m = height_map.len();
     let n = height_map[0].len();
     let mut result = 0;
-    let mut side = BinaryHeap::new();
+    let mut side = BTreeMap::new();
     let mut drop:Vec<Vec<bool>> = Vec::with_capacity(m);
-    for i in 0..m {
+    for _ in 0..m {
         drop.push(vec![false;n])
     }
     for x in 0..m {
@@ -58,7 +58,7 @@ pub fn trap_rain_water(height_map: Vec<Vec<i32>>) -> i32 {
 
 //用Vec插入排开销太大，放弃
 use std::fmt::{Debug};
-use crate::list::ListNode;
+
 
 
 #[derive(PartialEq, Eq, PartialOrd, Ord, Debug, Hash, Clone, Copy)]

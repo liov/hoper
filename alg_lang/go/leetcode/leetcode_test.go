@@ -198,3 +198,11 @@ func TestValidTicTacToe(t *testing.T) {
 func TestRepeatedStringMatch(t *testing.T) {
 	fmt.Println(repeatedStringMatch("abcd", "cdabcdacdabcda"))
 }
+
+func TestIsAdditiveNumber(t *testing.T) {
+	fmt.Println(isAdditiveNumber("199111992"))
+}
+
+func TestFindMinDifference(t *testing.T) {
+	fmt.Println(findMinDifference([]string{"01:01", "02:01", "03:00"}))
+}

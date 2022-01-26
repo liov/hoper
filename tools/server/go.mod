@@ -5,6 +5,7 @@ go 1.15
 require (
 	github.com/PuerkitoBio/goquery v1.6.0
 	github.com/actliboy/hoper/server/go/lib v1.0.0
+	github.com/dgraph-io/ristretto v0.1.0 // indirect
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/tidwall/gjson v1.9.3
 	golang.org/x/net v0.0.0-20210813160813-60bc85c4be6d

@@ -91,7 +91,7 @@ func fetchHistory(id int, sd *pro.Speed) {
 	}
 	reader.Close()
 	s := doc.Find(`img[src="images/common/none.gif"]`)
-	_, _, _, post := parseHtmlHistory(doc)
+	_, _, _, _, _, post := pro.ParseHtml(doc)
 	post.TId = id
 	post.PicNum = uint32(s.Length())
 	status := "0"
@@ -102,60 +102,4 @@ func fetchHistory(id int, sd *pro.Speed) {
 	if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
 		sd.FailDB <- tid + " " + status
 	}
-}
-
-func parseHtmlHistory(doc *goquery.Document) (string, string, string, *pro.Post) {
-	auth := doc.Find(".mainbox td.postauthor .postinfo a").First().Text()
-	title := doc.Find("#threadtitle h1").Text()
-	postTime := doc.Find(".authorinfo em").First().Text()
-	post := &pro.Post{
-		TId:   0,
-		Auth:  auth,
-		Title: title,
-	}
-	if strings.HasPrefix(postTime, "发表于") {
-		postTime = postTime[len(`发表于 `):]
-	}
-	if strings.Contains(postTime, "天") {
-		now := time.Now()
-		var day int
-		if strings.Contains(postTime, "天前") {
-			day, _ = strconv.Atoi(postTime[0:0])
-		} else {
-			describe := postTime[:6]
-			switch describe {
-			case "前天":
-				day = 2
-			case "昨天":
-				day = 1
-			case "今天":
-				day = 0
-			}
-		}
-		now.AddDate(0, 0, -day)
-		date := now.Format("2006-01-02")
-		postTime = date + " " + postTime[len(postTime)-5:]
-	}
-
-	post.CreatedAt = postTime
-	postTime = strings.ReplaceAll(postTime, ":", "-")
-
-	auth = strings.ReplaceAll(auth, "\\", "")
-	auth = strings.ReplaceAll(auth, "/", "")
-	auth = strings.ReplaceAll(auth, ":", "")
-	if strings.HasSuffix(auth, ".") {
-		auth += "$"
-	}
-	title = strings.ReplaceAll(title, "\\", "")
-	title = strings.ReplaceAll(title, "/", "")
-	title = strings.ReplaceAll(title, ":", "")
-	if strings.HasSuffix(title, ".") {
-		title += "$"
-	}
-
-	postTime = strings.ReplaceAll(postTime, ":", "-")
-	content := doc.Find(".t_msgfont").First()
-	text := content.Contents().Not(".t_attach").Text()
-	post.Content = text
-	return auth, title, postTime, post
 }

@@ -137,8 +137,8 @@ func (res *ResponseBody) CheckError() error {
 	return nil
 }
 
-// HTTPRequest create a HTTP request
-func (req *RequestParams) HTTPRequest(response interface{}) error {
+// Do create a HTTP request
+func (req *RequestParams) Do(response interface{}) error {
 	method := req.method
 	url := req.url
 	if req.timeout != 0 {
@@ -218,6 +218,9 @@ func (req *RequestParams) HTTPRequest(response interface{}) error {
 }
 
 func getParam(param interface{}) string {
+	if param == nil {
+		return ""
+	}
 	query := url.Values{}
 	v := reflect.ValueOf(param).Elem()
 	t := v.Type()

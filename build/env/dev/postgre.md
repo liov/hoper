@@ -1,12 +1,5 @@
 https://www.postgresql.org/download/
 ```bash
-#[binary]
-https://www.postgresql.org/download/linux/ubuntu/
-ubuntu 18.04
-vim /etc/apt/sources.list.d/pgdg.list
-deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-sudo apt-get update
 
 #[source]
 wget https://ftp.postgresql.org/pub/source/v11.3/postgresql-11.3.tar.gz
@@ -25,7 +18,7 @@ mkdir /home/postgres/data
 
 cd /home/jyb/
 
-chown -R postgres:postgres postgre
+chown -R postgres:postgres /home/postgres
 
 cd /usr/local/postgresql/bin
 ./initdb -E UTF-8 -D /home/postgres/data --locale=en_US.UTF-8 -U postgres -W
@@ -51,13 +44,17 @@ ALTER USER postgres WITH PASSWORD '123456';
 sudo  passwd -d postgres
 
 sudo -u postgres passwd
-```
 
-```bash
+#[binary]
+https://www.postgresql.org/download/linux/ubuntu/
+
 sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 sudo apt-get update
 sudo apt-get -y install postgresql
+
+/usr/lib/postgresql/14/bin/
+initdb -E UTF-8 -D /home/postgres/data --locale=en_US.UTF-8 -U postgres -W
 
 sudo -u postgres psql
 CREATE DATABASE hoper；

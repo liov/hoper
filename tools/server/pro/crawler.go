@@ -27,9 +27,11 @@ import (
 	"gorm.io/gorm"
 )
 
-const CommonUrl = "https://f616.wonderfulday27.live/viewthread.php?tid="
+const CommonUrl = "https://t1214.wonderfulday27.live/viewthread.php?tid="
 const Loop = 50
-const CommonDir = `D:\F\工作夹\备份\Pictures\pron\91\pic_4\`
+
+var CommonDir = `D:\F\工作夹\备份\Pictures\pron\91\pic_4\`
+
 const Interval = 200 * time.Millisecond
 const Sep = string(os.PathSeparator)
 const Ext = `.txt`
@@ -196,7 +198,7 @@ func Fetch(id int, sd *Speed) {
 func ParseHtml(doc *goquery.Document) (string, string, string, string, *goquery.Selection, *Post) {
 	auth := doc.Find("#postlist .popuserinfo a").First().Text()
 	title := doc.Find("#threadtitle h1").Text()
-	postTime, _ := doc.Find(".authorinfo em span").First().Attr("title")
+	postTime := doc.Find(".posterinfo .authorinfo em").First().Text()
 	post := &Post{
 		TId:   0,
 		Auth:  auth,
@@ -226,7 +228,6 @@ func ParseHtml(doc *goquery.Document) (string, string, string, string, *goquery.
 		postTime = date + " " + postTime[len(postTime)-5:]
 	}
 	post.CreatedAt = postTime
-	postTime = strings.ReplaceAll(postTime, ":", "-")
 	content := doc.Find(".t_msgfont").First()
 	text := content.Contents().Not(".t_attach").Text()
 	html := content.Not(".t_attach").Not("span")

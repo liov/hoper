@@ -24,3 +24,8 @@ protected-mode no
 daemonize no 为 yes 并保存
 
 ./src/redis-server ./redis.conf
+
+[]
+$ sudo add-apt-repository ppa:redislabs/redis
+$ sudo apt-get update
+$ sudo apt-get install redis

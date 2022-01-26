@@ -14,7 +14,7 @@ import (
 )
 
 var PrefixUri = "/api-doc/"
-var FilePath = "../protobuf/api/"
+var FilePath = "../mod/protobuf/api/"
 
 const swagger = "swagger"
 const EXT = ".service.swagger.json"

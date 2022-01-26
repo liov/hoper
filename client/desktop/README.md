@@ -16,3 +16,5 @@ For help getting started with Flutter, view our
 samples, guidance on mobile development, and a full API reference.
 
 flutter config --enable-windows-desktop --enable-linux-desktop --enable-macos-desktop
+
+越来越多的桌面端用electron

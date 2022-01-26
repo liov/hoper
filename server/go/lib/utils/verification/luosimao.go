@@ -42,7 +42,7 @@ func LuosimaoVerify(reqURL, apiKey, response string) error {
 	result := new(LuosimaoResult)
 
 	err := client.NewRequest(reqURL, http.MethodPost, &req).
-		SetContentType(client.ContentTypeForm).HTTPRequest(result)
+		SetContentType(client.ContentTypeForm).Do(result)
 	if err != nil {
 		return err
 	}

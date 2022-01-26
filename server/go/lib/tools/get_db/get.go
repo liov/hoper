@@ -7,7 +7,7 @@ import (
 )
 
 type Dao struct {
-	Hoper *gorm.DB `config:"database"`
+	Hoper *gorm.DB
 }
 
 type Config struct {
