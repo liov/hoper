@@ -7,6 +7,7 @@ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubun
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io
 sudo gpasswd -a ${USER} docker
+newgrp docker
 sudo service docker restart
 mkdir /etc/docker
 vi /etc/docker/daemon.json

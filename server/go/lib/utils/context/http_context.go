@@ -233,6 +233,7 @@ func NewCtx(ctx context.Context) *RequestContext {
 			TimeStamp:  now.Unix(),
 			TimeString: now.Format(timei.FormatTime),
 		},
+		ServerTransportStream: grpc.ServerTransportStreamFromContext(ctx),
 	}
 }
 

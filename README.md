@@ -1,5 +1,57 @@
 # hoper
 
+# alg_lang
+各个语言的语法学习及刷LeetCode的解答
+
+# build
+开发及部署需要的操作总结脚本汇总，开发过程中遇到的坑总结
+## config
+    - nginx的配置
+    - tls证书
+    - rust cargo的配置
+    - gradle 配置
+## env
+    开发所需环境的安装步骤，及安装过程中的问题解决方法
+## k8s
+    各种k8s yaml配置
+## shell
+    开发和部署用的到的脚本，docker和kubectl的命令
+
+# client
+## desktop
+  flutter desktop尝鲜
+## flutter
+    hoper的移动端，flutter开发，Getx状态管理，组件化开发，开发了闪屏页，登录注册功能，瞬间列表，瞬间详情，发布照片瞬间，点赞评论等，grpc调用服务端接口，尝试了简单的dart ffi，调用go，rust交叉编译的动态库，webview嵌入，启动本地服务存储加载页面实现页面热更新，集成sqlite,hive键值对存储
+## h5
+    hoper的h5版本，vue3+typescript，开发了登录注册功能，瞬间列表，瞬间详情，发布瞬间，点赞收藏评论等
+
+# server
+## go
+### lib
+#### protobuf
+通用的protobuf定义，通用的请求和返回定义，用到的工具protobuf定义
+- generate 配合tools工具及第三方工具，生成自定义的http，grpc，graphql服务及api文档，
+#### tiga框架
+    - intialize 配置初始化及dao对象自动注入，
+    -- 自由组合的conf和dao结构体
+    -- 可选的配置中心apollo，etcd，nacos及本地配置,默认nacos
+    -- 可选的dao对象，DB,pebble,redis,本地cache,mail,nsq,etcd.Client,kafka,elastic,badger
+    本地的基本配置写入nacos配置中心地址，配置默认toml格式，main函数第一句`defer initialize.Start(uconf.Conf, udao.Dao)()`即可拉取nacos的配置自动注入配置，并根据配置注入创建dao对象
+    - pick
+        
+    - server
+        通用的对外暴露服务的框架，编写一套业务代码对外暴露http，grpc，graphql接口，集成trace记录，链路追踪，prometheus指标监控，pprof，debug，优雅关闭
+#### tools
+    protoc plugin，配合自定义protobuf文件，生成服务所需的源文件
+    - protoc-gen-enum 针对枚举，生成中文的String();生成graphql所需的MarshalGQL，UnmarshalGQL，针对错误枚举生成error，GRPCStatus方法
+    - protoc-gen-go-patch，fork 自protoc-gen-go-patch，protoc的插件，通过分析protoc生成的源码转为ast，修改ast输出源码来满足自定义属性生成需要的代码，主要用于结构体自定义标签
+    - protoc-gen-grpc-gin，参照protoc-gen-grpc-gateway，生成基于gin的路由服务，用于grpc的业务函数对外外暴露http服务
+#### 
+    - context 一个通用的带有登录验证，trace记录，请求元信息的上下文定义，登录验证采用jwt，记录最基本的登录信息，
+    
+    
+
+
 ## 大杂烩式的项目
 ```
     -awesome
