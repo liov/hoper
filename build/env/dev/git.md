@@ -83,3 +83,16 @@ Git恢复reset --hard丢失的文件
 2.然后找到那个SHA，进行恢复: git reset --hard 98abc5a
 
 git fsck --lost-found碰运气
+
+
+# 修改某次注释
+git rebase -i HEAD~2
+
+你想修改哪条注释，就把哪条注释前面的pick换成edit，注意不要动注释内容，只要改前面的东西就好了。
+i进入编辑模式，把pick换成edit后，Esc退出编辑模式，:wq保存并退出。
+
+接下来输入：
+git commit --amend
+
+修改好注释内容后，输入：
+git rebase --continue
