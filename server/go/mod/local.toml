@@ -1,0 +1,102 @@
+[server]
+Protocol = "https"
+Domain =  "hoper.xyz"
+Port = ":8090"
+ReadTimeout = 60
+WriteTimeout = 60
+OpenTracing = true
+
+
+[server.gin]
+RedirectTrailingSlash = false
+RedirectFixedPath = true
+HandleMethodNotAllowed = false
+MaxMultipartMemory = 20971520
+
+[customize]
+GrpcService = {user = "localhost:8080", note = "localhost:8090"}
+Volume = "../data"
+PassSalt = "%*~&*G(Ysa-jyb"
+TokenSecret = "hjoihiahDAW2iofjiJPO"
+TokenMaxAge = 7
+
+PageSize = 10
+JwtSecret = "233"
+
+UploadUrlPrefix = "/static/"
+#文件
+UploadDir = "F:/upload/"
+
+# MB
+UploadMaxSize = 10
+UploadAllowExt = [".jpg",".jpeg",".png",".gif"]
+
+LuosimaoVerifyURL ="https://captcha.luosimao.com/api/site_verify"
+LuosimaoAPIKey ="f4a1c65ee13911b7bb9f902655c773a6"
+
+QrCodeSaveDir = "/qrcode"
+PrefixUrl =""
+FontSaveDir ="/font"
+
+CrawlerName =""
+
+[customize.content.limit]
+SecondLimitCount = 1
+MinuteLimitCount = 20
+DayLimitCount = 10000
+
+[GORMDB]
+Type = "postgres"
+User = "postgres"
+Password = "123456"
+Host = "192.168.1.212"
+Port = 5432
+Charset = "utf8mb4"
+Database = "hoper"
+MaxIdleConns = 5
+MaxOpenConns = 10
+
+[GORMDB.gorm.config]
+SkipDefaultTransaction = true
+PrepareStmt = true
+DisableForeignKeyConstraintWhenMigrating = true
+
+[GORMDB.gorm.logger]
+SlowThreshold = 100
+Colorful = true
+LogLevel = 4
+
+[redis]
+Addr = "192.168.1.204:6379"
+Password ="123456"
+MaxIdle = 30
+MaxActive = 30
+IdleTimeout = 200
+
+[cache]
+NumCounters = 100
+MaxCost = 10
+Metrics = true
+
+#日志
+[log]
+Level = "debug"
+Caller = true
+OutputPaths = {console = ["stderr"],json = []}
+
+
+#邮件
+[mail]
+Host = "smtp.qq.com"
+Port = ":465"
+From =  "lby.i@qq.com"
+Password = "xxx"
+
+[apollo]
+Addr = "192.168.1.212:8080"
+AppId = "hoper"
+Cluster = "default"
+NameSpace = ["application"]
+
+[consul]
+Addr = "192.168.1.212:8500"
