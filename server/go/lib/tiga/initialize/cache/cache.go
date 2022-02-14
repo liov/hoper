@@ -14,10 +14,11 @@ type CacheConfig struct {
 
 func (conf *CacheConfig) generate() *ristretto.Cache {
 	cache, err := ristretto.NewCache(&ristretto.Config{
-		NumCounters: conf.NumCounters,   // number of keys to track frequency of (10M).
-		MaxCost:     conf.MaxCost * 1e6, // maximum cost of cache (MaxCost * 1MB).
-		BufferItems: 64,                 // number of keys per Get buffer.
-		Metrics:     conf.Metrics,       // number of keys per Get buffer.
+		NumCounters:        conf.NumCounters, // number of keys to track frequency of (10M).
+		MaxCost:            conf.MaxCost,     // maximum cost of cache (MaxCost * 1MB).
+		BufferItems:        64,               // number of keys per Get buffer.
+		Metrics:            conf.Metrics,     // number of keys per Get buffer.
+		IgnoreInternalCost: conf.IgnoreInternalCost,
 	})
 	if err != nil {
 		panic(err)

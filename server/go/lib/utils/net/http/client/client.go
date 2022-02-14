@@ -24,7 +24,7 @@ import (
 
 var client = &http.Client{}
 
-const timeout = 3 * time.Second
+const timeout = time.Minute
 
 func init() {
 	client.Transport = &http.Transport{
@@ -157,9 +157,11 @@ func (req *RequestParams) Do(response interface{}) error {
 
 	var err error
 	if method == http.MethodGet {
-		param := getParam(req.Param)
-		reqBody = param
-		url += "?" + param
+		if req.Param != nil {
+			param := getParam(req.Param)
+			reqBody = param
+			url += "?" + param
+		}
 	} else {
 		if req.ContentType == ContentTypeJson {
 			reqBytes, err := json.Marshal(req.Param)
@@ -205,7 +207,7 @@ func (req *RequestParams) Do(response interface{}) error {
 	respBody = stringsi.ToString(respBytes)
 	statusCode = resp.StatusCode
 	if resp.StatusCode != 200 {
-		return errors.New("status:" + resp.Status)
+		return errors.New("status:" + resp.Status + respBody)
 	}
 	err = json.Unmarshal(respBytes, response)
 	if err != nil {
@@ -222,16 +224,30 @@ func getParam(param interface{}) string {
 		return ""
 	}
 	query := url.Values{}
+	parseParam(param, query)
+	return query.Encode()
+}
+
+func parseParam(param interface{}, query url.Values) {
 	v := reflect.ValueOf(param).Elem()
 	t := v.Type()
 	for i := 0; i < v.NumField(); i++ {
-		value := getFieldValue(v.Field(i))
+		filed := v.Field(i)
+		kind := filed.Kind()
+		if kind == reflect.Interface || kind == reflect.Ptr {
+			parseParam(filed.Interface(), query)
+			continue
+		}
+		if kind == reflect.Struct {
+			parseParam(filed.Addr().Interface(), query)
+			continue
+		}
+		value := getFieldValue(filed)
 		if value != "" {
 			query.Set(t.Field(i).Tag.Get("json"), getFieldValue(v.Field(i)))
 		}
 	}
 
-	return query.Encode()
 }
 
 func getFieldValue(v reflect.Value) string {
@@ -246,6 +262,8 @@ func getFieldValue(v reflect.Value) string {
 		return v.String()
 	case reflect.Interface, reflect.Ptr:
 		return getFieldValue(v.Elem())
+	case reflect.Struct:
+
 	}
 	return ""
 }

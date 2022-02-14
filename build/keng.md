@@ -1032,3 +1032,8 @@ TRUNCATE TABLE questions RESTART IDENTITY CASCADE;
 
 # go build -o timepill timepill/main.go undefined: Diary
 go build -o timepill tools/timepill
+
+# postgres 查询user表 ERROR:  column "id" does not exist
+
+SELECT EXISTS(SELECT id FROM user WHERE user_id = 100192773 LIMIT 1);
+SELECT EXISTS(SELECT id FROM "user" WHERE user_id = 100192773 LIMIT 1);
