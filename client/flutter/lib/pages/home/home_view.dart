@@ -114,15 +114,16 @@ class App extends StatelessWidget with WidgetsBindingObserver {
   Widget _bottom2(){
     print(Get.theme.backgroundColor);
     final ThemeData theme = globalState.isDarkMode.value ? AppTheme.dark : AppTheme.light;
-    return ConvexAppBar(
+    return ConvexAppBar.builder(
       initialActiveIndex: controller.selectedIndex.value,
       onTap: controller.onItemTapped,
       activeColor: theme.canvasColor,
       backgroundColor: theme.primaryColor,
       style: TabStyle.fixedCircle,
-      items: controller.bottomNavigationBarList
-          .map((item) => item.tabItem())
-          .toList(),
+      count: controller.bottomNavigationBarList.length,
+      itemBuilder: ( context, index, active) {
+        return controller.bottomNavigationBarList[index].tabItem()
+      },
     );
   }
 }

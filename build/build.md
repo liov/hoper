@@ -67,3 +67,6 @@ super.dispose();
 }
 ```
 working demo
+
+# go编译mod下的包
+go build -o out modname/package
