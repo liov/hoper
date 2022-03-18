@@ -91,17 +91,11 @@ fun main() = runBlocking<Unit> {
 
 suspend fun selectAorB(a: ReceiveChannel<String>, b: ReceiveChannel<String>): String =
   select<String> {
-    a.onReceiveOrNull { value ->
-      if (value == null)
-        "Channel 'a' is closed"
-      else
-        "a -> '$value'"
+    a.onReceiveCatching { value ->
+      "a -> '$value'"
     }
-    b.onReceiveOrNull { value ->
-      if (value == null)
-        "Channel 'b' is closed"
-      else
-        "b -> '$value'"
+    b.onReceiveCatching { value ->
+      "b -> '$value'"
     }
   }
 
@@ -130,14 +124,14 @@ fun CoroutineScope.switchMapDeferreds(input: ReceiveChannel<Deferred<String>>) =
   while (isActive) { // 循环直到被取消或关闭
     val next = select<Deferred<String>?> { // 从这个 select 中返回下一个延迟值或 null
       //去掉会打印Slow，不去会进入这里
-      input.onReceiveOrNull { update ->
+      input.onReceiveCatching { update ->
         println("update:$update")
-        update // 替换下一个要等待的值
+        update.getOrNull() // 替换下一个要等待的值
       }
       current.onAwait { value ->
         println("value:$value")
         send(value) // 发送当前延迟生成的值
-        val rv = input.receiveOrNull() // 然后使用从输入通道得到的下一个延迟值
+        val rv = input.receiveCatching().getOrNull() // 然后使用从输入通道得到的下一个延迟值
         println("rv:$rv")
         rv
       }

@@ -6,7 +6,7 @@ import (
 )
 
 func TestIsValid(t *testing.T) {
-	println(isValid("()()()"))
+	println(isValid("()"))
 }
 
 func TestCompareVersion(t *testing.T) {
@@ -205,4 +205,8 @@ func TestIsAdditiveNumber(t *testing.T) {
 
 func TestFindMinDifference(t *testing.T) {
 	fmt.Println(findMinDifference([]string{"01:01", "02:01", "03:00"}))
+}
+
+func TestKnightProbability(t *testing.T) {
+	fmt.Println(knightProbability(10, 13, 5, 3))
 }

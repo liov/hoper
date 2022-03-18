@@ -239,6 +239,10 @@ func (merr *MultiError) Errors() []error {
 	return merr.errors
 }
 
+func (merr *MultiError) HasErrors() bool {
+	return merr != nil && len(merr.errors) > 0
+}
+
 // As attempts to find the first error in the error list that matches the type
 // of the value that target points to.
 //
@@ -306,6 +310,14 @@ func (merr *MultiError) writeMultiline(w io.Writer) {
 	for _, item := range merr.errors {
 		w.Write(_multilineSeparator)
 		writePrefixLine(w, _multilineIndent, fmt.Sprintf("%+v", item))
+	}
+}
+
+func (merr *MultiError) Append(err error) {
+	if !merr.copyNeeded.Swap(true) {
+		// Common case where the error on the left is constantly being
+		// appended to.
+		merr.errors = append(merr.errors, err)
 	}
 }
 

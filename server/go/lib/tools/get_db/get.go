@@ -7,11 +7,10 @@ import (
 )
 
 type Dao struct {
-	Hoper *gorm.DB
+	Hoper db.DB
 }
 
 type Config struct {
-	Hoper db.DatabaseConfig
 }
 
 func (*Config) Init() {}
@@ -22,9 +21,9 @@ var config = Config{}
 var dao = Dao{}
 
 func GetDB() *gorm.DB {
-	if dao.Hoper != nil {
-		return dao.Hoper
+	if dao.Hoper.DB != nil {
+		return dao.Hoper.DB
 	}
 	initialize.Start(&config, &dao)
-	return dao.Hoper
+	return dao.Hoper.DB
 }

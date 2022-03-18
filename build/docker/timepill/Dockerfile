@@ -6,8 +6,10 @@ ENV TZ=Asia/Shanghai LANG=C.UTF-8
 RUN apk add --update --no-cache \
 tzdata && ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
-WORKDIR /hoper
+WORKDIR /app
 
-ADD ./attendance /hoper/attendance
+ADD config.toml /app
+ADD local.toml /app
+ADD timepill /app
 
-CMD ["./attendance"]
+CMD ["./timepill", "-t"]

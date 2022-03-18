@@ -30,7 +30,8 @@ import (
 const CommonUrl = "https://t1214.wonderfulday27.live/viewthread.php?tid="
 const Loop = 50
 
-var CommonDir = `D:\F\工作夹\备份\Pictures\pron\91\pic_4\`
+const CommonDir = `D:\F\工作夹\备份\Pictures\pron\91\pic_4\`
+const CommonDirLen = len(CommonDir)
 
 const Interval = 200 * time.Millisecond
 const Sep = string(os.PathSeparator)
@@ -170,7 +171,7 @@ func Fetch(id int, sd *Speed) {
 	}
 	dir = fs.PathClean(dir)
 
-	post.Path = dir[2:]
+	post.Path = dir[CommonDirLen-7:]
 	err = DB.Save(post).Error
 	if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
 		sd.FailDB <- tid + " " + status

@@ -1,4 +1,4 @@
-package cache
+package cache_ristretto
 
 import (
 	"github.com/dgraph-io/ristretto"
@@ -30,6 +30,21 @@ func (conf *CacheConfig) Generate() interface{} {
 	return conf.generate()
 }
 
-// 考虑换cache，ristretto存一个值，循环取居然还会miss,某个issue提要内存占用过大，直接初始化1.5MB
+// 考虑换cache，ristretto存一个值，循环取居然还会miss(没开IgnoreInternalCost的原因),某个issue提要内存占用过大，直接初始化1.5MB
 // freecache不能存对象，可能要为每个对象写UnmarshalBinary 和 MarshalBinary
 // go-cache
+
+type Cache struct {
+	Conf CacheConfig
+	*ristretto.Cache
+}
+
+func (c *Cache) Config() interface{} {
+	return &c.Conf
+}
+
+func (c *Cache) SetEntity(entity interface{}) {
+	if cache, ok := entity.(*ristretto.Cache); ok {
+		c.Cache = cache
+	}
+}

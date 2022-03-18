@@ -1,7 +1,9 @@
 package stringsi
 
 import (
+	"bytes"
 	"strings"
+	"unicode"
 	"unsafe"
 
 	runei "github.com/actliboy/hoper/server/go/lib/utils/strings/rune"
@@ -30,87 +32,104 @@ func QuoteToBytes(s string) []byte {
 	return b
 }
 
-func ConvertToSnackCase(in string) string {
-	const (
-		lower = false
-		upper = true
-	)
+func CamelToSnake(name string) string {
+	var ret bytes.Buffer
 
-	if in == "" {
-		return ""
-	}
-	in = strings.TrimSpace(in)
-	var (
-		buf                                      = new(strings.Builder)
-		lastCase, currCase, nextCase, nextNumber bool
-	)
+	multipleUpper := false
+	var lastUpper rune
+	var beforeUpper rune
 
-	for i, v := range in[:len(in)-1] {
-		nextCase = in[i+1] >= 'A' && in[i+1] <= 'Z'
-		nextNumber = in[i+1] >= '0' && in[i+1] <= '9'
+	for _, c := range name {
+		// Non-lowercase character after uppercase is considered to be uppercase too.
+		isUpper := (unicode.IsUpper(c) || (lastUpper != 0 && !unicode.IsLower(c)))
 
-		if i > 0 {
-			if currCase == upper {
-				if lastCase == upper && (nextCase == upper || nextNumber == upper) {
-					buf.WriteRune(v)
-				} else {
-					if in[i-1] != '_' && in[i+1] != '_' {
-						buf.WriteRune('_')
-					}
-					buf.WriteRune(v)
-				}
-			} else {
-				buf.WriteRune(v)
-				if i == len(in)-2 && (nextCase == upper && nextNumber == lower) {
-					buf.WriteRune('_')
-				}
+		if lastUpper != 0 {
+			// Output a delimiter if last character was either the first uppercase character
+			// in a row, or the last one in a row (e.g. 'S' in "HTTPServer").
+			// Do not output a delimiter at the beginning of the name.
+
+			firstInRow := !multipleUpper
+			lastInRow := !isUpper
+
+			if ret.Len() > 0 && (firstInRow || lastInRow) && beforeUpper != '_' {
+				ret.WriteByte('_')
 			}
-		} else {
-			currCase = upper
-			buf.WriteRune(v)
+			ret.WriteRune(unicode.ToLower(lastUpper))
 		}
-		lastCase = currCase
-		currCase = nextCase
-	}
 
-	buf.WriteByte(in[len(in)-1])
-
-	s := strings.ToLower(buf.String())
-	return s
-}
-
-func ConvertToCamelCase(in string) string {
-	if in == "" {
-		return ""
-	}
-	in = strings.TrimSpace(in)
-	buf := new(strings.Builder)
-	nextCaseUp := false
-	skip := false
-	buf.WriteByte(LowerCase(in[0]))
-	for i, _ := range in[:len(in)-1] {
-		if !skip {
-			if nextCaseUp {
-				buf.WriteByte(UpperCase(in[i]))
-				nextCaseUp = false
-			} else {
-				buf.WriteByte(in[i])
-			}
-		} else {
-			nextCaseUp = true
+		// Buffer uppercase char, do not output it yet as a delimiter may be required if the
+		// next character is lowercase.
+		if isUpper {
+			multipleUpper = (lastUpper != 0)
+			lastUpper = c
 			continue
 		}
-		skip = in[i+1] == '-' || in[i+1] == '_' || in[i+1] == '.'
+
+		ret.WriteRune(c)
+		lastUpper = 0
+		beforeUpper = c
+		multipleUpper = false
 	}
-	return buf.String()
+
+	if lastUpper != 0 {
+		ret.WriteRune(unicode.ToLower(lastUpper))
+	}
+	return string(ret.Bytes())
+}
+
+func ConvertToCamelCase(s string) string {
+	if s == "" {
+		return ""
+	}
+	t := make([]byte, 0, 32)
+	i := 0
+	if s[0] == '_' {
+		// Need a capital letter; drop the '_'.
+		t = append(t, 'X')
+		i++
+	}
+	// Invariant: if the next letter is lower case, it must be converted
+	// to upper case.
+	// That is, we process a word at a time, where words are marked by _ or
+	// upper case letter. Digits are treated as words.
+	for ; i < len(s); i++ {
+		c := s[i]
+		if c == '_' && i+1 < len(s) && isASCIILower(s[i+1]) {
+			continue // Skip the underscore in s.
+		}
+		if isASCIIDigit(c) {
+			t = append(t, c)
+			continue
+		}
+		// Assume we have a letter now - if not, it's a bogus identifier.
+		// The next word is a sequence of characters that must start upper case.
+		if isASCIILower(c) {
+			c ^= ' ' // Make it a capital letter.
+		}
+		t = append(t, c) // Guaranteed not lower case.
+		// Accept lower case sequence that follows.
+		for i+1 < len(s) && isASCIILower(s[i+1]) {
+			i++
+			t = append(t, s[i])
+		}
+	}
+	return string(t)
+}
+
+// Is c an ASCII lower-case letter?
+func isASCIILower(c byte) bool {
+	return 'a' <= c && c <= 'z'
+}
+
+// Is c an ASCII digit?
+func isASCIIDigit(c byte) bool {
+	return '0' <= c && c <= '9'
 }
 
 // 仅首位小写（更符合接口的规范）
 func LowerFirst(t string) string {
 	b := []byte(t)
-	if 'A' <= b[0] && b[0] <= 'Z' {
-		b[0] += 'a' - 'A'
-	}
+	b[0] = LowerCase(b[0])
 	return string(b)
 }
 
@@ -119,6 +138,12 @@ func LowerCase(c byte) byte {
 		c += 'a' - 'A'
 	}
 	return c
+}
+
+func UpperCaseFirst(t string) string {
+	b := []byte(t)
+	b[0] = UpperCase(b[0])
+	return string(b)
 }
 
 func UpperCase(c byte) byte {
