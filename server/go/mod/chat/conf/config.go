@@ -1,7 +1,6 @@
 package conf
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/cache"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/db"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/log"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/redis"
@@ -17,7 +16,7 @@ type config struct {
 	Server    server.ServerConfig
 	GORMDB    db.DatabaseConfig
 	Redis     redis.RedisConfig
-	Cache     cache.CacheConfig
+	Cache     cache_ristretto.CacheConfig
 	Log       log.LogConfig
 }
 

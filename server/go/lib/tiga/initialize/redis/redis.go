@@ -31,3 +31,18 @@ func (conf *RedisConfig) generate() *redis.Client {
 func (conf *RedisConfig) Generate() interface{} {
 	return conf.generate()
 }
+
+type Redis struct {
+	*redis.Client
+	Conf RedisConfig
+}
+
+func (db *Redis) Config() interface{} {
+	return &db.Conf
+}
+
+func (db *Redis) SetEntity(entity interface{}) {
+	if client, ok := entity.(*redis.Client); ok {
+		db.Client = client
+	}
+}

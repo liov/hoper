@@ -46,6 +46,7 @@ unzip file.zip //解压zip
 8、.rar 用 unrar e解压
 9、.zip 用 unzip 解压
 
+--remove-files 删除原文件
 ZIP
 
 zip可能是目前使用得最多的文档压缩格式。它最大的优点就是在不同的操作系统平台，比如Linux， Windows以及Mac OS，上使用。缺点就是支持的压缩率不是很高，而tar.gz和tar.gz2在压缩率方面做得非常好。闲话少说，我们步入正题吧：
@@ -53,6 +54,8 @@ zip可能是目前使用得最多的文档压缩格式。它最大的优点就�
 我们可以使用下列的命令压缩一个目录：
 
 # zip -r archive_name.zip directory_to_compress
+
+-m 删除原文件
 
 下面是如果解压一个zip文档：
 
@@ -63,3 +66,8 @@ TAR
 Tar是在Linux中使用得非常广泛的文档打包格式。它的好处就是它只消耗非常少的CPU以及时间去打包文件，他仅仅只是一个打包工具，并不负责压缩。下面是如何打包一个目录：
 
 tar -zcvf test.tar.gz ./test/
+
+
+压缩某个字符开头的 2010开头
+
+tar -zcvf test.tar.gz 2010*/

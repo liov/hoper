@@ -42,10 +42,9 @@ func SetFieldValue(srcValue reflect.Value, subValue reflect.Value) bool {
 	return false
 }
 
-func setField(obj interface{}, name string, value interface{}) error {
-	structData := reflect.ValueOf(obj).Elem()
-	fieldValue := structData.FieldByName(name)
+func setField(structData reflect.Value, name string, value interface{}) error {
 
+	fieldValue := structData.FieldByName(name)
 	if !fieldValue.IsValid() {
 		return fmt.Errorf("utils.setField() No such field: %s in obj ", name)
 	}
@@ -70,8 +69,9 @@ func setField(obj interface{}, name string, value interface{}) error {
 
 // SetStructByJSON 由json对象生成 struct
 func SetStructByJSON(obj interface{}, mapData map[string]interface{}) error {
+	structData := reflect.ValueOf(obj).Elem()
 	for key, value := range mapData {
-		if err := setField(obj, key, value); err != nil {
+		if err := setField(structData, key, value); err != nil {
 			log.Error(err)
 			return err
 		}

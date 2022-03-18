@@ -34,6 +34,10 @@ type DatabaseConfig struct {
 	Prometheus bool
 }
 
+func (c *DatabaseConfig) Init() {
+	c.Gorm.Init()
+}
+
 func (conf *DatabaseConfig) generate() *gorm.DB {
 	var url string
 	var db *gorm.DB
@@ -94,4 +98,19 @@ func (conf *DatabaseConfig) generate() *gorm.DB {
 
 func (conf *DatabaseConfig) Generate() interface{} {
 	return conf.generate()
+}
+
+type DB struct {
+	*gorm.DB
+	Conf DatabaseConfig
+}
+
+func (db *DB) Config() interface{} {
+	return &db.Conf
+}
+
+func (db *DB) SetEntity(entity interface{}) {
+	if gormdb, ok := entity.(*gorm.DB); ok {
+		db.DB = gormdb
+	}
 }

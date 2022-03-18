@@ -37,31 +37,64 @@ package leetcode
 1 <= s.length <= 10^4
 s 仅由括号 '()[]{}' 组成
 
+链接：https://leetcode-cn.com/problems/valid-parentheses
 */
 func isValid(s string) bool {
-	var balance1, balance2, balance3 int
-	for _, c := range s {
-		if c == '(' {
-			balance1++
+	l := len(s)
+	if l&1 == 1 {
+		return false
+	}
+	b1, b2, b3 := 0, 0, 0
+	stack, si := make([]byte, l/2), 0
+	skip := false
+	for i := 0; i < l; i++ {
+		c := s[i]
+		switch c {
+		case '(':
+			b1++
+		case ')':
+			b1--
+		case '[':
+			b2++
+		case ']':
+			b2--
+		case '{':
+			b3++
+		case '}':
+			b3--
 		}
-		if c == ')' {
-			balance1--
-		}
-		if c == '[' {
-			balance1++
-		}
-		if c == ']' {
-			balance1--
-		}
-		if c == '{' {
-			balance1++
-		}
-		if c == '}' {
-			balance1--
-		}
-		if balance1 < 0 || balance2 < 0 || balance3 < 0 {
+		if b1 < 0 || b2 < 0 || b3 < 0 {
 			return false
 		}
+		if i == 0 {
+			stack[si] = s[i]
+			continue
+		}
+		if skip {
+			skip = false
+			continue
+		}
+		if s[i] > stack[si] && s[i]-stack[si] < 3 {
+			if si == 0 {
+				if i+1 == l {
+					return true
+				} else {
+					skip = true
+					stack[si] = s[i+1]
+				}
+			} else {
+				si--
+			}
+			continue
+		}
+		if i+1 == l {
+			return false
+		}
+		si++
+		if si == len(stack) {
+			return false
+		}
+		stack[si] = s[i]
 	}
-	return balance1 == 0 && balance2 == 0 && balance3 == 0
+	return false
 }

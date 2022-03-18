@@ -1037,3 +1037,70 @@ go build -o timepill tools/timepill
 
 SELECT EXISTS(SELECT id FROM user WHERE user_id = 100192773 LIMIT 1);
 SELECT EXISTS(SELECT id FROM "user" WHERE user_id = 100192773 LIMIT 1);
+
+# docker宿主机访问docker容器服务失败
+
+## 猜测原因
+因为docker的虚拟ip网段是172.17.*。*与局域网的ip网段172.17冲突了，所以有两种方式：
+
+解决方法：
+
+一、
+
+修改docker网卡信息，将网段改为与局域网不同的即可
+```bash
+
+linux修改方法：
+第一步 删除原有配置
+sudo service docker stop
+sudo ip link set dev docker0 down
+sudo brctl delbr docker0
+sudo iptables -t nat -F POSTROUTING
+第二步 创建新的网桥
+sudo brctl addbr docker0
+sudo ip addr add 172.16.10.1/24 dev docker0
+sudo ip link set dev docker0 up
+第三步 配置Docker的文件
+注意： 这里是 增加下面的配置
+vi /etc/docker/daemon.json##追加下面的配置即可
+{
+    "registry-mirrors": ["https://registry.docker-cn.com"],
+    "bip": "172.16.10.1/24"
+}
+
+systemctl  restart  docker
+```
+二、改变网络模式，与宿主机共享一个网卡
+启动时添加 --net=host
+
+## 实际原因
+docker容器开发web程序外部不能访问
+
+最近开发中遇到了一个问题，我使用Dockerfile生成web应用的镜像，在docker容器中运行，测试时发现在外部客户端发起http请求后，cURL返回了错误，error buffer是：Empty reply from server。（本来在本地测一直都是正常的。）说明是外部无法访问这个url。
+
+我排查了很多原因，终于找到是，程序运行的ip写成了app.run(host='127.0.0.1', port=13031)。
+改成app.run(host='0.0.0.0', port=13031)就可以正常访问了。
+
+0.0.0.0，localhost和127.0.0.1的区别
+在服务器中，0.0.0.0指的是本机上的所有IPV4地址，是真正表示“本网络中的本机”。 一般我们在服务端绑定端口的时候可以选择绑定到0.0.0.0，这样我的服务访问方就可以通过我的多个ip地址访问我的服务。
+在路由中，0.0.0.0表示的是默认路由，即当路由表中没有找到完全匹配的路由的时候所对应的路由。
+而127.0.0.1是本地回环地址中的一个，大多数windows和Linux电脑上都将localhost指向了127.0.0.1这个地址，相当于是本机地址。
+localhost是一个域名，可以用它来获取运行在本机上的网络服务。
+在大多数系统中，localhost被指向了IPV4的127.0.0.1和IPV6的::1。
+
+# 关于Ubuntu拒绝root用户ssh远程登录
+sudo vim /etc/ssh/sshd_config
+
+找到并用#注释掉这行：PermitRootLogin prohibit-password
+
+新建一行 添加：PermitRootLogin yes
+
+重启服务
+
+sudo service ssh restart
+
+# Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
+wsl -> wsl2
+wsl --list --verbose
+wsl --set-version Ubuntu-20.04 2
+wsl --set-default-version 2

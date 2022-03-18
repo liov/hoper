@@ -1,6 +1,7 @@
-package main
+package timepill
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
@@ -33,7 +34,7 @@ type Badge struct {
 	IconUrl string `json:"iconUrl" gorm:"size:255;default:''"`
 }
 
-func getSelfInfo() *User {
+func GetSelfInfo() *User {
 	var selfInfo User
 	err := getV2("/users/my", nil, &selfInfo)
 	if err != nil {
@@ -42,7 +43,7 @@ func getSelfInfo() *User {
 	return &selfInfo
 }
 
-func getUserInfo(id int) *User {
+func GetUserInfo(id int) *User {
 	var selfInfo User
 	err := getV2("/users/"+strconv.Itoa(id), nil, &selfInfo)
 	if err != nil {
@@ -85,7 +86,13 @@ type Diary struct {
 	User            *User  `json:"User" gorm:"-"`
 }
 
-func getTodayDiaries(page, pageSize int, firstId string) *TodayDiaries {
+type TinyDiary struct {
+	UserId   int
+	PhotoUrl string
+	Created  string
+}
+
+func GetTodayDiaries(page, pageSize int, firstId string) *TodayDiaries {
 	var todayDiaries TodayDiaries
 	err := getV1("/diaries/today", &TodayDiariesReq{Page{page, pageSize}, firstId}, &todayDiaries)
 	if err != nil {
@@ -94,7 +101,7 @@ func getTodayDiaries(page, pageSize int, firstId string) *TodayDiaries {
 	return &todayDiaries
 }
 
-func getTodayTopicDiaries(page, pageSize int, firstId string) *TodayDiaries {
+func GetTodayTopicDiaries(page, pageSize int, firstId string) *TodayDiaries {
 	var todayDiaries TodayDiaries
 	err := getV1("/topic/diaries", &TodayDiariesReq{Page{page, pageSize}, firstId}, &todayDiaries)
 	if err != nil {
@@ -103,7 +110,7 @@ func getTodayTopicDiaries(page, pageSize int, firstId string) *TodayDiaries {
 	return &todayDiaries
 }
 
-func getFollowDiaries(page, pageSize int, firstId string) *TodayDiaries {
+func GetFollowDiaries(page, pageSize int, firstId string) *TodayDiaries {
 	var todayDiaries TodayDiaries
 	err := getV1("/diaries/follow", &TodayDiariesReq{Page{page, pageSize}, firstId}, &todayDiaries)
 	if err != nil {
@@ -119,7 +126,7 @@ type NotebookDiaries struct {
 	Items    []*Diary `json:"items"`
 }
 
-func getNotebookDiaries(id, page, pageSize int) *NotebookDiaries {
+func GetNotebookDiaries(id, page, pageSize int) *NotebookDiaries {
 	var notebookDiaries NotebookDiaries
 	err := getV1(fmt.Sprintf("/notebooks/%d/diaries", id), &Page{page, pageSize}, &notebookDiaries)
 	if err != nil {
@@ -128,7 +135,7 @@ func getNotebookDiaries(id, page, pageSize int) *NotebookDiaries {
 	return &notebookDiaries
 }
 
-func getUserTodayDiaries(userId int) *TodayDiaries {
+func GetUserTodayDiaries(userId int) *TodayDiaries {
 	var todayDiaries TodayDiaries
 	err := getV1(fmt.Sprintf("/users/%d/diaries", userId), nil, &todayDiaries)
 	if err != nil {
@@ -148,7 +155,7 @@ type Comment struct {
 	Recipient   *User  `json:"recipient" gorm:"-"`
 }
 
-func getDiaryComments(diaryId int) []*Comment {
+func GetDiaryComments(diaryId int) []*Comment {
 	var comments []*Comment
 	err := getV1(fmt.Sprintf("/diaries/%d/comments", diaryId), nil, &comments)
 	if err != nil {
@@ -171,7 +178,7 @@ type NoteBook struct {
 	IsPublic    bool   `json:"isPublic" gorm:"-"`
 }
 
-func getUserNotebooks(userId int) []*NoteBook {
+func GetUserNotebooks(userId int) []*NoteBook {
 	var notebooks []*NoteBook
 	err := getV1(fmt.Sprintf("/users/%d/notebooks", userId), nil, &notebooks)
 	if err != nil {
@@ -180,7 +187,7 @@ func getUserNotebooks(userId int) []*NoteBook {
 	return notebooks
 }
 
-func getRelationUsers(page, pageSize int) *TodayDiaries {
+func GetRelationUsers(page, pageSize int) *TodayDiaries {
 	var todayDiaries TodayDiaries
 	err := getV1("/relation", &Page{page, pageSize}, &todayDiaries)
 	if err != nil {
@@ -189,7 +196,7 @@ func getRelationUsers(page, pageSize int) *TodayDiaries {
 	return &todayDiaries
 }
 
-func getRelationReverseUsers(page, pageSize int) *TodayDiaries {
+func GetRelationReverseUsers(page, pageSize int) *TodayDiaries {
 	var todayDiaries TodayDiaries
 	err := getV1("/relation/reverse", &Page{page, pageSize}, &todayDiaries)
 	if err != nil {
@@ -198,7 +205,7 @@ func getRelationReverseUsers(page, pageSize int) *TodayDiaries {
 	return &todayDiaries
 }
 
-func deleteDiary(diaryId int) *Response {
+func DeleteDiary(diaryId int) *Response {
 	var res Response
 	err := call(http.MethodDelete, baseUrl+fmt.Sprintf("/diaries/%d", diaryId), nil, &res)
 	if err != nil {
@@ -207,7 +214,16 @@ func deleteDiary(diaryId int) *Response {
 	return &res
 }
 
-func getRelation(userId int) *TodayDiaries {
+func DeleteNotebook(noteBookId int) *Response {
+	var res Response
+	err := call(http.MethodDelete, baseUrl+fmt.Sprintf("/notebooks/%d", noteBookId), nil, &res)
+	if err != nil {
+		log.Error(err)
+	}
+	return &res
+}
+
+func GetRelation(userId int) *TodayDiaries {
 	var todayDiaries TodayDiaries
 	err := getV1(fmt.Sprintf("/relation/%d", userId), nil, &todayDiaries)
 	if err != nil {
@@ -239,10 +255,46 @@ func callV2(method, api string, param, result interface{}) error {
 }
 
 func call(method, api string, param, result interface{}) error {
-	return client.NewRequest(api, method, param).SetHeader("Authorization", token).SetLogger(nil).Do(result)
+	return client.NewRequest(api, method, param).SetHeader("Authorization", Token).SetLogger(nil).Do(result)
 }
 
 type Response struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
+}
+
+func LikeDiary(id int) *Response {
+	var res Response
+	err := callV2("PUT", "/like/diaries/"+strconv.Itoa(id), nil, &res)
+	if err != nil {
+		log.Error(err)
+	}
+	return &res
+}
+
+func UpdateUserIcon(photoUri string) *Response {
+	var res Response
+	err := upload("POST", "/users/icon", json.RawMessage(`{
+icon: {uri: photoUri, name: 'image.jpg', type: 'image/jpg'}
+})`), &res)
+	if err != nil {
+		log.Error(err)
+	}
+	return &res
+}
+
+func upload(method, api string, param, result interface{}) error {
+	return client.NewRequest(api, method, param).SetContentType(client.ContentTypeForm).SetHeader("Authorization", Token).SetLogger(nil).Do(result)
+}
+
+func UpdateUserInfo(name, intro string) *Response {
+	var res Response
+	err := call("PUT", "/users", json.RawMessage(`{
+name: name,
+intro: intro
+}`), &res)
+	if err != nil {
+		log.Error(err)
+	}
+	return &res
 }

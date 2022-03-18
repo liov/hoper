@@ -17,6 +17,7 @@ import (
 
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	neti "github.com/actliboy/hoper/server/go/lib/utils/net"
+	mhttp "github.com/actliboy/hoper/server/go/lib/utils/net/http"
 	"github.com/actliboy/hoper/server/go/lib/utils/number"
 	"github.com/actliboy/hoper/server/go/lib/utils/strings"
 	"go.uber.org/zap"
@@ -77,8 +78,9 @@ func defaultLog(url, method, auth, reqBody, respBytes string, status int, proces
 type ContentType uint8
 
 const (
-	ContentTypeJson ContentType = iota
-	ContentTypeForm ContentType = iota
+	ContentTypeJson     ContentType = iota
+	ContentTypeForm     ContentType = iota
+	ContentTypeFormData ContentType = iota
 )
 
 // RequestParams ...
@@ -184,6 +186,8 @@ func (req *RequestParams) Do(response interface{}) error {
 	request.SetBasicAuth(req.AuthUser, req.AuthPass)
 	if req.ContentType == ContentTypeJson {
 		request.Header.Set("Content-Type", "application/json;charset=utf-8")
+	} else if req.ContentType == ContentTypeFormData {
+		request.Header.Set("Content-Type", mhttp.ContentFormMultipartHeaderValue)
 	} else {
 		request.Header.Set("Content-Type", "application/x-www-form-urlencoded;param=value")
 	}
