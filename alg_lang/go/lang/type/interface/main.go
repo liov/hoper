@@ -44,4 +44,11 @@ func main() {
 	x = b
 	x = c
 	fmt.Println(x)
+
+	//interfacePtr(&aa) // error
+	interfacePtr(&x)
+}
+
+func interfacePtr(*any) {
+
 }

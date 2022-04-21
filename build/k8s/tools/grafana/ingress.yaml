@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana
+  annotations:
+    kubernetes.io/ingress.class: "apisix"
+    apisix.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: grafana.hoper.xyz
+      http:
+        paths:
+          - path: /api/live/ws
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: grafana
+                port:
+                  number: 3000
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: grafana
+                port:
+                  number: 3000

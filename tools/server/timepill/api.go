@@ -135,6 +135,15 @@ func GetNotebookDiaries(id, page, pageSize int) *NotebookDiaries {
 	return &notebookDiaries
 }
 
+func GetNotebook(id int) *NoteBook {
+	var notebook NoteBook
+	err := getV1(fmt.Sprintf("/notebooks/%d", id), nil, &notebook)
+	if err != nil {
+		log.Error(err)
+	}
+	return &notebook
+}
+
 func GetUserTodayDiaries(userId int) *TodayDiaries {
 	var todayDiaries TodayDiaries
 	err := getV1(fmt.Sprintf("/users/%d/diaries", userId), nil, &todayDiaries)

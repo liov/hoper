@@ -12,10 +12,11 @@ import (
 	"unicode"
 )
 
-type Method int
+type Operation int
 
 const (
-	Equal Method = iota
+	OperationPlace Operation = iota
+	Equal
 	NotEqual
 	Greater
 	Less
@@ -26,9 +27,10 @@ const (
 	IsNull
 	In
 	NotIn
+	LIKE
 )
 
-func (m Method) Sql() string {
+func (m Operation) SQL() string {
 	switch m {
 	case Equal:
 		return "= ?"
@@ -52,42 +54,45 @@ func (m Method) Sql() string {
 		return "IN (?)"
 	case NotIn:
 		return "NOT IN (?)"
+	case LIKE:
+		return "LIKE ?"
 	}
-	return "= ?"
+	return ""
 }
 
-func (m Method) String() string {
+func (m Operation) String() string {
 	switch m {
 	case Equal:
-		return "="
-	case NotEqual:
-		return "!="
-	case Greater:
-		return ">"
-	case Less:
-		return "<"
-	case Between:
-		return "BETWEEN"
-	case GreaterOrEqual:
-		return ">="
-	case LessOrEqual:
-		return "<="
-	case IsNull:
-		return "IS NULL"
-	case IsNotNull:
-		return "IS NOT NULL"
+		return " = "
 	case In:
-		return "IN"
+		return " IN "
+	case Between:
+		return " BETWEEN "
+	case Greater:
+		return " > "
+	case Less:
+		return " < "
+	case NotEqual:
+		return " != "
+
+	case GreaterOrEqual:
+		return " >= "
+	case LessOrEqual:
+		return " <= "
+	case IsNull:
+		return " IS NULL"
+	case IsNotNull:
+		return " IS NOT NULL"
 	case NotIn:
-		return "NOT IN"
+		return " NOT IN "
 	}
 	return "="
 }
 
 type Expression struct {
-	Field  string        `json:"field"`
-	Method Method        `json:"method"`
-	Value  []interface{} `json:"value"`
+	Field     string        `json:"field"`
+	Operation Operation     `json:"method"`
+	Value     []interface{} `json:"value"`
 }
 
 type Exprs []Expression
@@ -97,19 +102,19 @@ func (f Exprs) Build() string {
 	for _, filter := range f {
 		filter.Field = strings.TrimSpace(filter.Field)
 
-		if filter.Field == "" || filter.Method == 0 || len(filter.Value) == 0 {
+		if filter.Field == "" || filter.Operation == 0 || len(filter.Value) == 0 {
 			continue
 		}
 
-		switch filter.Method {
+		switch filter.Operation {
 		case Greater, Less, Equal, NotEqual, GreaterOrEqual, LessOrEqual:
-			conditions = append(conditions, filter.Field+" "+filter.Method.String()+" "+ConvertParams(filter.Value[0], "'"))
+			conditions = append(conditions, filter.Field+filter.Operation.String()+ConvertParams(filter.Value[0], "'"))
 		case In, NotIn:
 			var vars = make([]string, len(filter.Value))
 			for idx, v := range filter.Value {
 				vars[idx] = ConvertParams(v, "'")
 			}
-			conditions = append(conditions, filter.Field+" "+filter.Method.String()+" "+strings.Join(vars, ","))
+			conditions = append(conditions, filter.Field+filter.Operation.String()+"("+strings.Join(vars, ",")+")")
 		case Between:
 			if len(filter.Value) < 2 {
 				continue
@@ -118,7 +123,11 @@ func (f Exprs) Build() string {
 			for idx, v := range filter.Value {
 				vars[idx] = ConvertParams(v, "'")
 			}
-			conditions = append(conditions, filter.Field+" "+filter.Method.String()+" BETWEEN "+vars[0]+" AND "+vars[1])
+			conditions = append(conditions, filter.Field+filter.Operation.String()+vars[0]+" AND "+vars[1])
+		case LIKE:
+			conditions = append(conditions, filter.Field+filter.Operation.String()+ConvertParams(filter.Value[0], "'"))
+		case IsNull, IsNotNull:
+			conditions = append(conditions, filter.Field+filter.Operation.String())
 		}
 
 	}
@@ -213,12 +222,12 @@ func (f Exprs) BuildORM(odb *gorm.DB) *gorm.DB {
 	for _, filter := range f {
 		filter.Field = strings.TrimSpace(filter.Field)
 
-		if filter.Field == "" || filter.Method == 0 || len(filter.Value) == 0 {
+		if filter.Field == "" || filter.Operation == 0 || len(filter.Value) == 0 {
 			continue
 		}
 
 		scopes = append(scopes, func(db *gorm.DB) *gorm.DB {
-			return db.Where(filter.Field+" "+filter.Method.Sql(), filter.Value...)
+			return db.Where(filter.Field+" "+filter.Operation.SQL(), filter.Value...)
 		})
 	}
 	return odb.Scopes(scopes...)
@@ -228,12 +237,12 @@ func (f Exprs) BuildSQL() (string, []interface{}) {
 	var builder strings.Builder
 	var vars []interface{}
 	for i, filter := range f {
-		if filter.Field == "" || filter.Method == 0 || len(filter.Value) == 0 {
+		if filter.Field == "" || filter.Operation == 0 || len(filter.Value) == 0 {
 			continue
 		}
 		builder.WriteString(filter.Field)
 		builder.WriteByte(' ')
-		builder.WriteString(filter.Method.Sql())
+		builder.WriteString(filter.Operation.SQL())
 		if i < len(f) {
 			builder.WriteString(" AND")
 		}

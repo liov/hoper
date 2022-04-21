@@ -20,7 +20,7 @@ kubectl describe deployment data-center
 pods=$(kubectl get pods --selector=app=${PWD##*/} --output=jsonpath={.items..metadata.name}) && kubectl logs -f $pods
 
 # deploy
-../deploy/main -flow all -env dev -name ${PWD##*/} -ns openmng -path . -ver v1.1.0-$(date "+%Y%m%d%H%M%S")
+../deploy/main -flow all -env dev -name ${PWD##*/} -ns ${USER} -path . -ver v1.1.0-$(date "+%Y%m%d%H%M%S")
 
 env=stage && git pull && make config && make deploy env=$env tag=v$(date "+%y%m%d%H%M")
 

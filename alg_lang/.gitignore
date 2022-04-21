@@ -12,3 +12,4 @@ target
 cmake-build-debug
 ts/dist
 *.pb.go
+sql/work

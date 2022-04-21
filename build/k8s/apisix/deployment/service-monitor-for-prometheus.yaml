@@ -21,19 +21,146 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: apisix-gw
+  name: apisix-prometheus
+  namespace: monitoring
   labels:
-    app: apisix-gw
+    monitoring: prometheus
 spec:
+  jobLabel: apisix-prometheus
   endpoints:
     - interval: 10s
-      honorLabels: true
-      port: http
+      port: prometheus
       path: /apisix/prometheus/metrics
       scheme: http
   selector:
     matchLabels:
-      app: apisix-gw
+      app: apisix-prometheus
   namespaceSelector:
     any: true
 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: apisix-prometheus
+  namespace: ingress-apisix
+  name: apisix-prometheus
+spec:
+  ports:
+    - name: prometheus
+      protocol: TCP
+      port: 9091
+      targetPort: 9091
+
+  selector:
+    app.kubernetes.io/instance: apisix
+    app.kubernetes.io/name: apisix
+  type: ClusterIP
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: prometheus
+  namespace: monitoring
+spec:
+  serviceAccountName: prometheus
+  serviceMonitorSelector:
+    matchLabels:
+      monitoring: prometheus
+  additionalScrapeConfigs:
+    name: additional-scrape-configs
+    key: prometheus-additional.yaml
+  resources:
+    requests:
+      memory: 400Mi
+  enableAdminAPI: false
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus
+  namespace: ingress-apisix
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus
+rules:
+  - apiGroups: [""]
+    resources:
+      - nodes
+      - nodes/metrics
+      - services
+      - endpoints
+      - pods
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources:
+      - configmaps
+    verbs: ["get"]
+  - apiGroups:
+      - networking.k8s.io
+    resources:
+      - ingresses
+    verbs: ["get", "list", "watch"]
+  - nonResourceURLs: ["/metrics","/apisix/prometheus/metrics"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus
+subjects:
+  - kind: ServiceAccount
+    name: prometheus
+    namespace: ingress-apisix
+  - kind: ServiceAccount
+    name: prometheus
+    namespace: default
+
+# 复用prometheus
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: apisix-prometheus
+  namespace: monitoring
+  labels:
+    release: kube-prometheus
+spec:
+  jobLabel: apisix-prometheus
+  endpoints:
+    - interval: 10s
+      port: prometheus
+      path: /apisix/prometheus/metrics
+      scheme: http
+  selector:
+    matchLabels:
+      app: apisix-prometheus
+  namespaceSelector:
+    any: true
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: apisix-prometheus
+  namespace: ingress-apisix
+  name: apisix-prometheus
+spec:
+  ports:
+    - name: prometheus
+      protocol: TCP
+      port: 9091
+      targetPort: 9091
+
+  selector:
+    app.kubernetes.io/instance: apisix
+    app.kubernetes.io/name: apisix
+  type: ClusterIP

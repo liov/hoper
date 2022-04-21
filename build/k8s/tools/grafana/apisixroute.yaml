@@ -1,0 +1,18 @@
+apiVersion: apisix.apache.org/v2beta3
+kind: ApisixRoute
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  http:
+    - name: grafana
+      match:
+        hosts:
+          - grafana.hoper.xyz
+        paths:
+          - /*
+      backends:
+        - serviceName: grafana
+          servicePort: 3000
+          resolveGranularity: service
+      websocket: true

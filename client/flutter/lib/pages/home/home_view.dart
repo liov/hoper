@@ -9,6 +9,7 @@ import 'package:app/pages/home/splash_view.dart';
 import 'package:app/pages/index/index.dart';
 import 'package:app/pages/moment/moment_view.dart';
 import 'package:app/pages/user/user_view.dart';
+import 'package:app/routes/route.dart';
 
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
@@ -114,16 +115,20 @@ class App extends StatelessWidget with WidgetsBindingObserver {
   Widget _bottom2(){
     print(Get.theme.backgroundColor);
     final ThemeData theme = globalState.isDarkMode.value ? AppTheme.dark : AppTheme.light;
-    return ConvexAppBar.builder(
+    return ConvexAppBar(
       initialActiveIndex: controller.selectedIndex.value,
+      onTabNotify: (i) {
+        var intercept = i == 2;
+        if (intercept) {
+          Get.toNamed(Routes.ADD);
+        }
+        return !intercept;
+      },
       onTap: controller.onItemTapped,
       activeColor: theme.canvasColor,
       backgroundColor: theme.primaryColor,
       style: TabStyle.fixedCircle,
-      count: controller.bottomNavigationBarList.length,
-      itemBuilder: ( context, index, active) {
-        return controller.bottomNavigationBarList[index].tabItem()
-      },
+      items: controller.bottomNavigationBarList.map((e) => e.tabItem()).toList(),
     );
   }
 }

@@ -9,7 +9,7 @@ kube get pod
 kube delete -f attendance.yaml
 kube create -f attendance.yaml
 
-minikube start  --driver=docker --memory='8192M' --cpus=4 --base-image="kicbase/stable:v0.0.15-snapshot4" --insecure-registry=reg.hoper.xyz --registry-mirror=https://registry.docker-cn.com --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers
+minikube start  --driver=docker --memory='8192M' --cpus=4 --base-image="kicbase/stable:v0.0.15-snapshot4" --insecure-registry=reg.hoper.xyz --registry-mirror= --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers
 
 ping registry.aliyuncs.com/google_containers
 ping registry.aliyuncs.com
