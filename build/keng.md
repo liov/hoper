@@ -171,6 +171,7 @@ systemctl restart docker.service
 # k8s.gcr.io
 docker pull registry.aliyuncs.com/google_containers/<imagename>:<version>
 docker tag registry.aliyuncs.com/google_containers/<imagename>:<version> k8s.gcr.io/<imagename>:<version>
+k8s.gcr.io/pause:3.1
 ```bash
 eval $(echo ${images}|
         sed 's/k8s\.gcr\.io/anjia0532\/google-containers/g;s/gcr\.io/anjia0532/g;s/\//\./g;s/ /\n/g;s/anjia0532\./anjia0532\//g' |
@@ -254,6 +255,7 @@ chcp 65001
 # minikube The connection to the server localhost:8443 was refused - did you specify the right host or port? waiting for app.kubernetes.io/name=ingress-nginx pods: timed out waiting for the condition]
 delete start
 # pod内无法ping通svc
+-tag ping service clusterIP
 ```bash
 kubectl edit cm kube-proxy -n kube-system
 mode:"ipvs"
@@ -745,7 +747,7 @@ sudo helm install apisix-ingress-controller ./apisix-ingress-controller \
 # spec.ports[0].nodePort: Invalid value: 80: provided port is not in the valid range. The range of valid ports is 30000-32767
 minikube native
 # 无效
-minikube start --extra-config=apiserver.GenericServerRunOptions.ServiceNodePortRange=1-10000
+minikube start --extra-config=apiserver.service-node-port-range=1-10000
 # 有效
 sudo vim /etc/kubernetes/manifests/kube-apiserver.yaml
 command 下添加 --service-node-port-range=1-65535 参数
@@ -1104,3 +1106,15 @@ wsl -> wsl2
 wsl --list --verbose
 wsl --set-version Ubuntu-20.04 2
 wsl --set-default-version 2
+
+# k8s service 本地能访问，公网不能访问
+externalTrafficPolicy: Local -> externalTrafficPolicy: Cluster
+
+# k8s pod 内部ping不通 servicename clusterIP
+kubectl edit cm kube-proxy -n kube-system
+mode 改为 ipvs
+kubectl get pod -n kube-system | grep kube-proxy |awk '{system("kubectl delete pod "$1" -n kube-system")}'
+
+# k8s pod 内部自身服务名访问不通
+curl apisix-prometheus.ingress-apisix:9091/apisix/prometheus/metrics
+https://github.com/kubernetes/minikube/issues/1568

@@ -1,0 +1,1 @@
+SELECT * FROM diary ORDER BY created DESC LIMIT 10;

@@ -1,1 +1,0 @@
-docker run -d -v /data/timepill:/data/timepill -p port:port $image_id

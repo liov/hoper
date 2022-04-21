@@ -1,0 +1,40 @@
+apiVersion: apps/v1 # for versions before 1.8.0 use apps/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: timepill
+  name: timepill
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: timepill
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: timepill
+    spec:
+      containers:
+        - name: timepill
+          image: timepill:1.5
+          volumeMounts:
+            - mountPath: /app/local.toml
+              name: local-toml
+              subPath: local.toml
+            - mountPath: /data/timepill
+              name: picture
+      volumes:
+        - configMap:
+            name: local.toml
+          name: local-toml
+        - hostPath:
+            path: /data/timepill
+            type: DirectoryOrCreate
+          name: picture

@@ -9,8 +9,9 @@ import (
 	initializeredis "github.com/actliboy/hoper/server/go/lib/tiga/initialize/redis"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
-	"gorm.io/gorm"
+	"io"
 	surl "net/url"
+	"os"
 	"path"
 	"strconv"
 	"strings"
@@ -74,8 +75,24 @@ func RecordTask() {
 		}
 		Dao.Cache.Set(diary.Id, diary.Id, 1)
 		Dao.Cache.Wait()
+		RecordNoteBook(diary.NoteBookId)
 		RecordDiary(diary)
 	}
+}
+
+func RecordNoteBook(notebookId int) {
+	var exists bool
+	err := Dao.Hoper.Raw(`SELECT EXISTS(SELECT id FROM "note_book" WHERE id = ?  LIMIT 1)`, notebookId).Row().Scan(&exists)
+	if err != nil {
+		log.Error(err)
+	}
+	if !exists {
+		notebook := GetNotebook(notebookId)
+		if notebook.Id != 0 {
+			Dao.Hoper.Create(notebook)
+		}
+	}
+
 }
 
 func RecordDiary(diary *Diary) {
@@ -90,6 +107,7 @@ func RecordDiary(diary *Diary) {
 	if exists {
 		return
 	}
+
 	err = Dao.Hoper.Create(diary).Error
 	if err != nil {
 		log.Error(err)
@@ -111,6 +129,7 @@ func TodayRecord() {
 	for {
 		todayDiaries := GetTodayDiaries(page, 20, "")
 		for _, diary := range todayDiaries.Diaries {
+			RecordNoteBook(diary.NoteBookId)
 			RecordDiary(diary)
 		}
 		if len(todayDiaries.Diaries) < 20 {
@@ -131,17 +150,50 @@ func DownloadPic(userId int, url, created string) {
 	} else if strings.Contains(URL.Path, "photos") {
 		suffixpath = strings.Split(URL.Path, "photos")[1]
 	}
+	if strings.HasSuffix(suffixpath, ".") {
+		suffixpath += "jpg"
+	}
+	if strings.Contains(suffixpath, "image") {
+		substr := strings.Split(suffixpath, ".")
+		suffixpath = substr[0] + ".jpg"
+	}
 	date := suffixpath[1:11]
 	if strings.Contains(date, "/") {
 		date = created[0:10]
 	}
-	prepath := Conf.TimePill.PhotoPath + "/" + strconv.Itoa(userId) + "/"
-	filepath := prepath + date + "-" + path.Base(suffixpath)
+	num := userId / 10000
+	prepath := Conf.TimePill.PhotoPath + "/" + strconv.Itoa(num) + "-" + strconv.Itoa(num+1) + "/" + strconv.Itoa(userId) + "/"
+	filepath := prepath + date + "_" + path.Base(suffixpath)
 
 	err := client.DownloadImage(filepath, url)
 	if err != nil {
 		log.Error(err)
+	} else {
+		CopyDatePic(filepath, date, strconv.Itoa(userId), path.Base(suffixpath))
 	}
+}
+
+func CopyDatePic(filepath, date, userId, filename string) {
+	dir := Conf.TimePill.PhotoPath + "/"
+	year := date[0:4] + "_"
+	_, err := os.Stat(dir + year + "/" + date)
+	if os.IsNotExist(err) {
+		os.MkdirAll(dir+year+"/"+date, 0666)
+	}
+	dst, err := os.Create(dir + year + "/" + date + "/" + userId + "_" + filename)
+	if err != nil {
+		log.Error(err)
+	}
+	src, err := os.Open(filepath)
+	if err != nil {
+		log.Error(err)
+	}
+	_, err = io.Copy(dst, src)
+	if err != nil {
+		log.Error(err)
+	}
+	dst.Close()
+	src.Close()
 }
 
 func DownloadCover(url string) {
@@ -185,10 +237,7 @@ func DownloadUserCover(url string) {
 func RecordByUser() {
 	for {
 		var user User
-		err := Dao.Hoper.Where(`is_record = ?`, false).First(&user).Error
-		if err != nil && err != gorm.ErrRecordNotFound {
-			log.Error(err)
-		}
+		Dao.Hoper.Where(`is_record = ?`, false).First(&user)
 		RecordUserDiaries(&user)
 	}
 }
@@ -196,7 +245,7 @@ func RecordByUser() {
 func RecordByOrderUser() {
 	ctx := context.Background()
 	key := "RecordByOrderUserID"
-	err := Dao.Redis.SetNX(ctx, key, 0, 0).Err()
+	err := Dao.Redis.SetNX(ctx, key, 1, 0).Err()
 	if err != nil {
 		log.Error(err)
 	}
@@ -281,18 +330,6 @@ func RecordComment(diaryId int) {
 	}
 }
 
-func FixNoteBook() {
-	var users []*User
-	Dao.Hoper.Where(`is_record = ?`, true).Find(&users)
-	for _, user := range users {
-		notebooks := GetUserNotebooks(user.UserId)
-		for _, nodebook := range notebooks {
-			Dao.Hoper.Create(nodebook)
-		}
-	}
-
-}
-
 func RecordUser(userId int, userName string) {
 	var exists bool
 	if _, ok := Dao.UserCache.Get(userId); ok {
@@ -309,10 +346,7 @@ func RecordUser(userId int, userName string) {
 	if !exists {
 		user := GetUserInfo(userId)
 		if user.UserId != 0 {
-			err := Dao.Hoper.Create(user).Error
-			if err != nil {
-				log.Error(err)
-			}
+			Dao.Hoper.Create(user)
 			if user.Badges != nil {
 				for _, bage := range user.Badges {
 					Dao.Hoper.Create(bage)
@@ -328,6 +362,99 @@ func RecordUser(userId int, userName string) {
 	}
 }
 
-func RecordByDiaryBook() {
+func TodayCommentRecord() {
+	var page = 1
+	today := time.Now().Format("2006-01-02")
+	for {
+		var diaryIds []int
+		err := Dao.Hoper.Table(`diary`).Where(`created > ?`, today).Order(`id`).Offset((page-1)*100).Limit(100).Pluck("id", &diaryIds)
+		if err != nil {
+			log.Error(err)
+		}
+		for _, id := range diaryIds {
+			RecordComment(id)
+		}
+		if len(diaryIds) < 100 {
+			return
+		}
+		page++
+	}
+}
 
+func RecordByOrderNoteBook() {
+	ctx := context.Background()
+	key := "RecordByOrderNoteBookID"
+	err := Dao.Redis.SetNX(ctx, key, 1, 0).Err()
+	if err != nil {
+		log.Error(err)
+	}
+	var id int
+	err = Dao.Redis.Get(ctx, key).Scan(&id)
+	if err != nil {
+		log.Error(err)
+	}
+	var maxId int
+	err = Dao.Hoper.Raw(`SELECT MAX(id) FROM "note_book"`).Row().Scan(&maxId)
+	if err != nil {
+		log.Error(err)
+	}
+	var continuouZeroId int
+	tc := time.NewTicker(time.Second)
+	for {
+		var exists bool
+		err = Dao.Hoper.Raw(`SELECT EXISTS(SELECT id FROM "note_book" WHERE id = ? AND expired < '2022-01-01' LIMIT 1)`, id).Row().Scan(&exists)
+		if err != nil {
+			log.Error(err)
+		}
+
+		if exists {
+			id++
+			err = Dao.Redis.Incr(ctx, key).Err()
+			if err != nil {
+				log.Error(err)
+			}
+			continue
+		}
+		<-tc.C
+		notebook := RecordByNoteBook(id)
+		if notebook.Id == 0 {
+			continuouZeroId++
+			if continuouZeroId == 100 && id > maxId {
+				tc.Stop()
+				return
+			}
+		} else {
+			continuouZeroId = 0
+		}
+		id++
+		err = Dao.Redis.Incr(ctx, key).Err()
+		if err != nil {
+			log.Error(err)
+		}
+	}
+}
+
+func RecordByNoteBook(id int) *NoteBook {
+	page, pageNum := 1, 20
+	notebook := GetNotebook(id)
+	if notebook.Id == 0 {
+		return notebook
+	}
+	Dao.Hoper.Create(&notebook)
+	user := GetUserInfo(notebook.UserId)
+	for {
+		diaries := GetNotebookDiaries(id, page, pageNum)
+		if diaries.Items == nil {
+			break
+		}
+		for _, diary := range diaries.Items {
+			diary.User = user
+			RecordDiary(diary)
+		}
+		if len(diaries.Items) < pageNum {
+			break
+		}
+		page++
+	}
+	return notebook
 }

@@ -1,0 +1,17 @@
+apiVersion: apisix.apache.org/v2beta3
+kind: ApisixRoute
+metadata:
+  name: grafana
+  namespace: kubernetes-dashboard
+spec:
+  http:
+    - name: kubernetes-dashboard
+      match:
+        hosts:
+          - dashboard.hoper.xyz
+        paths:
+          - /*
+      backends:
+        - serviceName: kubernetes-dashboard
+          servicePort: 80
+          resolveGranularity: service

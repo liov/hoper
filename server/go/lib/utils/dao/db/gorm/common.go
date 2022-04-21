@@ -42,17 +42,34 @@ WHERE id = ?  AND user_id = ? AND deleted_at = '` + dbi.PostgreZeroTime + `' LIM
 
 type Clause []func(db *gorm.DB) *gorm.DB
 
+type Expression dbi.Expression
+
+func (e *Expression) Clause() func(*gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Where(e.Field+(*dbi.Expression)(e).Operation.SQL(), e.Value...)
+	}
+}
+
+func NewScope(field string, op dbi.Operation, args ...interface{}) func(*gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Where(field+op.SQL(), args...)
+	}
+}
+
 // db.Scope(ById(1),ByName("a")).First(v)
 func (c Clause) ById(id int) Clause {
-	return append(c, func(db *gorm.DB) *gorm.DB {
-		return db.Where(`id = ?`, id)
-	})
+	return append(c, NewScope("id", dbi.Equal, id))
 }
 
 func (c Clause) ByName(name string) Clause {
 	return append(c, func(db *gorm.DB) *gorm.DB {
 		return db.Where(`name = ?`, name)
 	})
+}
+
+func (c Clause) Exec(db *gorm.DB) *gorm.DB {
+	db = db.Scopes(c...)
+	return db
 }
 
 type Clause2 struct {
@@ -75,5 +92,10 @@ func (c *Clause2) ByName(name string) *Clause2 {
 
 func (c *Clause2) Build(db *gorm.DB) *gorm.DB {
 	db = db.Where(strings.Join(c.Expr, " AND "), c.Var...)
+	return db
+}
+
+func (c *Clause2) Exec(db *gorm.DB) *gorm.DB {
+	db = db.Scopes(c.Build)
 	return db
 }
