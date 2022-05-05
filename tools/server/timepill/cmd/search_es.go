@@ -20,41 +20,6 @@ func main() {
 	if !exists {
 		createIndex(ctx)
 	}
-	req := &timepill.ListReq{
-		ListReq: request.ListReq{
-			PageReq: request.PageReq{PageNo: 1, PageSize: timepill.Conf.TimePill.PageSize},
-			SortReq: request.SortReq{SortField: "id", SortType: request.SortTypeASC},
-		},
-		RangeReq: request.RangeReq{
-			RangeField: "id",
-			RangeStart: esmaxId(ctx),
-			RangeEnd:   nil,
-			Include:    false,
-		},
-	}
-	index := timepill.Dao.Es.Index().Index(timepill.DiaryIndex)
-	for {
-		req.PageSize = timepill.Conf.TimePill.PageSize
-		if req.PageSize < 1 {
-			req.PageSize = 10
-		}
-		diaries, err := timepill.List(req)
-		if err != nil {
-			log.Error(err)
-		}
-		for i, diary := range diaries {
-			_, err = index.Id(strconv.Itoa(diary.Id)).BodyJson(diary.DiaryIndex()).Do(ctx)
-			if err != nil {
-				log.Error(err)
-			}
-			if i == len(diaries)-1 {
-				req.RangeStart = diary.Id
-			}
-		}
-		if len(diaries) < req.PageSize {
-			break
-		}
-	}
 }
 
 func createIndex(ctx context.Context) {
@@ -120,4 +85,42 @@ func esmaxId(ctx context.Context) int {
 		return id
 	}
 	return 0
+}
+
+func load(ctx context.Context) {
+	req := &timepill.ListReq{
+		ListReq: request.ListReq{
+			PageReq: request.PageReq{PageNo: 1, PageSize: timepill.Conf.TimePill.PageSize},
+			SortReq: request.SortReq{SortField: "id", SortType: request.SortTypeASC},
+		},
+		RangeReq: request.RangeReq{
+			RangeField: "id",
+			RangeStart: esmaxId(ctx),
+			RangeEnd:   nil,
+			Include:    false,
+		},
+	}
+	index := timepill.Dao.Es.Index().Index(timepill.DiaryIndex)
+	for {
+		req.PageSize = timepill.Conf.TimePill.PageSize
+		if req.PageSize < 1 {
+			req.PageSize = 10
+		}
+		diaries, err := timepill.List(req)
+		if err != nil {
+			log.Error(err)
+		}
+		for i, diary := range diaries {
+			_, err = index.Id(strconv.Itoa(diary.Id)).BodyJson(diary.DiaryIndex()).Do(ctx)
+			if err != nil {
+				log.Error(err)
+			}
+			if i == len(diaries)-1 {
+				req.RangeStart = diary.Id
+			}
+		}
+		if len(diaries) < req.PageSize {
+			break
+		}
+	}
 }

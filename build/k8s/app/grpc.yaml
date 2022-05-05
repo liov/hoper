@@ -7,7 +7,7 @@ spec:
     app: hoper
   portLevelSettings:
     - name: http
-      port: 80
+      port: 8090
       targetPort: 8090
     - name: grpc
       port: 8090
