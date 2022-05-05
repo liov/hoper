@@ -189,7 +189,9 @@ func (req *RequestParams) Do(response interface{}) error {
 		return err
 	}
 	request.Header = req.Header
-	request.SetBasicAuth(req.AuthUser, req.AuthPass)
+	if req.AuthUser != "" && req.AuthPass != "" {
+		request.SetBasicAuth(req.AuthUser, req.AuthPass)
+	}
 	if req.ContentType == ContentTypeJson {
 		request.Header.Set("Content-Type", "application/json;charset=utf-8")
 	} else if req.ContentType == ContentTypeFormData {
@@ -205,20 +207,21 @@ func (req *RequestParams) Do(response interface{}) error {
 	}
 	defer resp.Body.Close()
 
-	if resp.ContentLength > 0 && response != nil {
+	if resp.ContentLength != 0 && response != nil {
 		respBytes, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return err
 		}
 		respBody = stringsi.ToString(respBytes)
 		statusCode = resp.StatusCode
-
-		err = json.Unmarshal(respBytes, response)
-		if err != nil {
-			return err
-		}
-		if v, ok := response.(responseBody); ok {
-			err = v.CheckError()
+		if len(respBytes) > 0 {
+			err = json.Unmarshal(respBytes, response)
+			if err != nil {
+				return err
+			}
+			if v, ok := response.(responseBody); ok {
+				err = v.CheckError()
+			}
 		}
 	}
 

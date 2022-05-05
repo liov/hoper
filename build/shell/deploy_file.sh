@@ -39,10 +39,9 @@ ENV TZ=Asia/Shanghai LANG=C.UTF-8
 RUN apk add --update --no-cache \
 tzdata && ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
-WORKDIR /hoper
+WORKDIR /app
 
-ADD ./${_file} /hoper/${_file}
-ADD ./config.toml /hoper/config.toml
+ADD ./${_file} /app/${_file}
 
 CMD ["./${_file}","-env","test"]
 EOF
@@ -90,16 +89,16 @@ spec:
               memory: 64Mi
           volumeMounts:
             - name: logs
-              mountPath: /hoper/logs
+              mountPath: /app/logs
             - name: static
-              mountPath: /hoper/static
+              mountPath: /app/static
             - name: config
-              mountPath: /hoper
+              mountPath: /app
       volumes:
         - name: logs
           hostPath:
             path: /home/crm/dev/logs
-         - name: static
+        - name: static
           hostPath:
             path: /home/crm/dev/static
         - name: config

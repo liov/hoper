@@ -1,4 +1,4 @@
-apiVersion: apps/v1 # for versions before 1.8.0 use apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
@@ -28,13 +28,22 @@ spec:
             - mountPath: /app/local.toml
               name: local-toml
               subPath: local.toml
+            - mountPath: /app/config.toml
+              name: config-toml
+              subPath: config.toml
             - mountPath: /data/timepill
               name: picture
       volumes:
-        - configMap:
+        - name: local-toml
+          configMap:
             name: local.toml
-          name: local-toml
-        - hostPath:
+            items:
+              - key: local.toml
+                path: local.toml
+        - name: config-toml
+          configMap:
+            name: config.toml
+        - name: picture
+          hostPath:
             path: /data/timepill
             type: DirectoryOrCreate
-          name: picture

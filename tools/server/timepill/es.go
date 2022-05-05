@@ -2,7 +2,7 @@ package timepill
 
 import "time"
 
-const DiaryIndex = "diary"
+const DiaryIndex = "diary_v1"
 
 type IndexDiary struct {
 	Id              int       `json:"id"`
