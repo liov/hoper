@@ -1,14 +1,15 @@
 package timepill
 
 import (
-	"context"
 	"encoding/base64"
 	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/cache_ristretto"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/db"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/elastic"
 	initializeredis "github.com/actliboy/hoper/server/go/lib/tiga/initialize/redis"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
+
 	"io"
 	surl "net/url"
 	"os"
@@ -16,10 +17,12 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"tools/toshi"
 )
 
 type Config struct {
 	TimePill Customize
+	Search   toshi.Config
 }
 
 func (c Config) Init() {
@@ -31,6 +34,8 @@ type Customize struct {
 	Password    string
 	PhotoPath   string
 	PhotoPrefix string
+	SearchHost  string
+	PageSize    int
 }
 
 type TimepillDao struct {
@@ -38,6 +43,7 @@ type TimepillDao struct {
 	Redis     initializeredis.Redis
 	Cache     cache_ristretto.Cache
 	UserCache cache_ristretto.Cache
+	Es        elastic.Es `config:"elasticsearch"`
 }
 
 func (d TimepillDao) Init() {
@@ -242,61 +248,22 @@ func RecordByUser() {
 	}
 }
 
-func RecordByOrderUser() {
-	ctx := context.Background()
-	key := "RecordByOrderUserID"
-	err := Dao.Redis.SetNX(ctx, key, 1, 0).Err()
+func UserExists(userId int) bool {
+	var exists bool
+	err := Dao.Hoper.Raw(`SELECT EXISTS(SELECT id FROM "user" WHERE user_id = ? LIMIT 1)`, userId).Row().Scan(&exists)
 	if err != nil {
 		log.Error(err)
 	}
-	var id int
-	err = Dao.Redis.Get(ctx, key).Scan(&id)
+	return exists
+}
+
+func UserExistsByIdName(userId int, userName string) bool {
+	var exists bool
+	err := Dao.Hoper.Raw(`SELECT EXISTS(SELECT id FROM "user" WHERE user_id = ? AND name = ? LIMIT 1)`, userId, userName).Row().Scan(&exists)
 	if err != nil {
 		log.Error(err)
 	}
-	tc := time.NewTicker(time.Second * 2)
-	for {
-		var exists bool
-		err = Dao.Hoper.Raw(`SELECT EXISTS(SELECT id FROM "user" WHERE user_id = ? LIMIT 1)`, id).Row().Scan(&exists)
-		if err != nil {
-			log.Error(err)
-		}
-		if exists {
-			id++
-			err = Dao.Redis.Incr(ctx, key).Err()
-			if err != nil {
-				log.Error(err)
-			}
-			continue
-		}
-		<-tc.C
-		user := GetUserInfo(id)
-		if user.UserId != 0 {
-			err = Dao.Hoper.Create(user).Error
-			if err != nil {
-				log.Error(err)
-			}
-			if user.Badges != nil {
-				for _, bage := range user.Badges {
-					Dao.Hoper.Create(bage)
-				}
-			}
-			if user.CoverUrl != "" {
-				DownloadUserCover(user.CoverUrl)
-			}
-			if user.IconUrl != "" && user.IconUrl != user.CoverUrl {
-				DownloadUserCover(user.IconUrl)
-			}
-			RecordUserDiaries(user)
-		} else {
-			time.Sleep(time.Second)
-		}
-		id++
-		err = Dao.Redis.Incr(ctx, key).Err()
-		if err != nil {
-			log.Error(err)
-		}
-	}
+	return exists
 }
 
 func RecordUserDiaries(user *User) {
@@ -337,29 +304,31 @@ func RecordUser(userId int, userName string) {
 	}
 	Dao.UserCache.Set(userId, userId, 1)
 	Dao.UserCache.Wait()
-	if !exists {
-		err := Dao.Hoper.Raw(`SELECT EXISTS(SELECT id FROM "user" WHERE user_id = ? AND name = ? LIMIT 1)`, userId, userName).Row().Scan(&exists)
+	if !exists && !UserExistsByIdName(userId, userName) {
+		RecordUserById(userId)
+	}
+}
+
+func RecordUserById(userId int) *User {
+	user := GetUserInfo(userId)
+	if user.UserId != 0 {
+		err := Dao.Hoper.Create(user).Error
 		if err != nil {
 			log.Error(err)
 		}
-	}
-	if !exists {
-		user := GetUserInfo(userId)
-		if user.UserId != 0 {
-			Dao.Hoper.Create(user)
-			if user.Badges != nil {
-				for _, bage := range user.Badges {
-					Dao.Hoper.Create(bage)
-				}
-			}
-			if user.CoverUrl != "" {
-				DownloadUserCover(user.CoverUrl)
-			}
-			if user.IconUrl != "" && user.IconUrl != user.CoverUrl {
-				DownloadUserCover(user.IconUrl)
+		if user.Badges != nil {
+			for _, bage := range user.Badges {
+				Dao.Hoper.Create(bage)
 			}
 		}
+		if user.CoverUrl != "" {
+			DownloadUserCover(user.CoverUrl)
+		}
+		if user.IconUrl != "" && user.IconUrl != user.CoverUrl {
+			DownloadUserCover(user.IconUrl)
+		}
 	}
+	return user
 }
 
 func TodayCommentRecord() {
@@ -378,59 +347,6 @@ func TodayCommentRecord() {
 			return
 		}
 		page++
-	}
-}
-
-func RecordByOrderNoteBook() {
-	ctx := context.Background()
-	key := "RecordByOrderNoteBookID"
-	err := Dao.Redis.SetNX(ctx, key, 1, 0).Err()
-	if err != nil {
-		log.Error(err)
-	}
-	var id int
-	err = Dao.Redis.Get(ctx, key).Scan(&id)
-	if err != nil {
-		log.Error(err)
-	}
-	var maxId int
-	err = Dao.Hoper.Raw(`SELECT MAX(id) FROM "note_book"`).Row().Scan(&maxId)
-	if err != nil {
-		log.Error(err)
-	}
-	var continuouZeroId int
-	tc := time.NewTicker(time.Second)
-	for {
-		var exists bool
-		err = Dao.Hoper.Raw(`SELECT EXISTS(SELECT id FROM "note_book" WHERE id = ? AND expired < '2022-01-01' LIMIT 1)`, id).Row().Scan(&exists)
-		if err != nil {
-			log.Error(err)
-		}
-
-		if exists {
-			id++
-			err = Dao.Redis.Incr(ctx, key).Err()
-			if err != nil {
-				log.Error(err)
-			}
-			continue
-		}
-		<-tc.C
-		notebook := RecordByNoteBook(id)
-		if notebook.Id == 0 {
-			continuouZeroId++
-			if continuouZeroId == 100 && id > maxId {
-				tc.Stop()
-				return
-			}
-		} else {
-			continuouZeroId = 0
-		}
-		id++
-		err = Dao.Redis.Incr(ctx, key).Err()
-		if err != nil {
-			log.Error(err)
-		}
 	}
 }
 

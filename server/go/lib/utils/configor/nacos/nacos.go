@@ -112,6 +112,9 @@ func (c *Client) Listener(handle func([]byte)) {
 	ch <- struct{}{}
 Loop:
 	for {
+		if c == nil {
+			break
+		}
 		select {
 		case <-ch:
 			listeningConfigs = fmt.Sprintf(InitParam, c.DataId, c.Group, c.MD5, c.Tenant)

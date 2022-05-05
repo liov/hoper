@@ -11,7 +11,7 @@ type EtcdConfig clientv3.Config
 func (conf *EtcdConfig) generate() *clientv3.Client {
 	client, _ := clientv3.New((clientv3.Config)(*conf))
 	resp, _ := client.Get(context.Background(), initialize.InitKey)
-	initialize.InitConfig.UnmarshalAndSet(resp.Kvs[0].Value)
+	initialize.InitConfig.UnmarshalAndSetV2(resp.Kvs[0].Value)
 	return client
 }
 

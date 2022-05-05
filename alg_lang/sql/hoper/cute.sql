@@ -1,0 +1,1 @@
+SELECT MAX(t_id) FROM post;

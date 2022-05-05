@@ -90,12 +90,17 @@ type RequestParams struct {
 	AuthUser, AuthPass string
 	ContentType        ContentType
 	Param              interface{}
-	Header             []Pair
+	Header             http.Header
 	logger             LogCallback
 }
 
 func NewRequest(url, method string, param interface{}) *RequestParams {
-	return &RequestParams{url: url, method: strings.ToUpper(method), Param: param, logger: defaultLog}
+	return &RequestParams{url: url, method: strings.ToUpper(method), Header: make(http.Header), Param: param, logger: defaultLog}
+}
+
+func (req *RequestParams) SetParam(param interface{}) *RequestParams {
+	req.Param = param
+	return req
 }
 
 func (req *RequestParams) SetContentType(contentType ContentType) *RequestParams {
@@ -104,7 +109,7 @@ func (req *RequestParams) SetContentType(contentType ContentType) *RequestParams
 }
 
 func (req *RequestParams) SetHeader(k, v string) *RequestParams {
-	req.Header = append(req.Header, Pair{K: k, V: v})
+	req.Header.Set(k, v)
 	return req
 }
 
@@ -123,18 +128,18 @@ type responseBody interface {
 }
 
 type ResponseBody struct {
-	Status int         `json:"status"`
-	Data   interface{} `json:"data"`
-	Msg    string      `json:"msg"`
+	Status  int         `json:"status"`
+	Data    interface{} `json:"data"`
+	Message string      `json:"message"`
 }
 
-func CommonResponse(response interface{}) interface{} {
+func CommonResponse(response interface{}) responseBody {
 	return &ResponseBody{Data: response}
 }
 
 func (res *ResponseBody) CheckError() error {
 	if res.Status != 0 {
-		return errors.New(res.Msg)
+		return errors.New(res.Message)
 	}
 	return nil
 }
@@ -183,6 +188,7 @@ func (req *RequestParams) Do(response interface{}) error {
 	if err != nil {
 		return err
 	}
+	request.Header = req.Header
 	request.SetBasicAuth(req.AuthUser, req.AuthPass)
 	if req.ContentType == ContentTypeJson {
 		request.Header.Set("Content-Type", "application/json;charset=utf-8")
@@ -190,11 +196,6 @@ func (req *RequestParams) Do(response interface{}) error {
 		request.Header.Set("Content-Type", mhttp.ContentFormMultipartHeaderValue)
 	} else {
 		request.Header.Set("Content-Type", "application/x-www-form-urlencoded;param=value")
-	}
-	if len(req.Header) != 0 {
-		for _, pair := range req.Header {
-			request.Header.Set(pair.K, pair.V)
-		}
 	}
 
 	resp, err := client.Do(request)
@@ -204,22 +205,27 @@ func (req *RequestParams) Do(response interface{}) error {
 	}
 	defer resp.Body.Close()
 
-	respBytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
+	if resp.ContentLength > 0 && response != nil {
+		respBytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+		respBody = stringsi.ToString(respBytes)
+		statusCode = resp.StatusCode
+
+		err = json.Unmarshal(respBytes, response)
+		if err != nil {
+			return err
+		}
+		if v, ok := response.(responseBody); ok {
+			err = v.CheckError()
+		}
 	}
-	respBody = stringsi.ToString(respBytes)
-	statusCode = resp.StatusCode
-	if resp.StatusCode != 200 {
+
+	if resp.StatusCode < 200 || resp.StatusCode > 300 {
 		return errors.New("status:" + resp.Status + respBody)
 	}
-	err = json.Unmarshal(respBytes, response)
-	if err != nil {
-		return err
-	}
-	if v, ok := response.(responseBody); ok {
-		err = v.CheckError()
-	}
+
 	return err
 }
 
@@ -270,4 +276,85 @@ func getFieldValue(v reflect.Value) string {
 
 	}
 	return ""
+}
+
+type EasyRequest = RequestParams
+
+func NewEasyRequest() *EasyRequest {
+	return &EasyRequest{Header: make(http.Header), logger: defaultLog}
+}
+
+func Get(url string, param interface{}) *RequestParams {
+	return NewRequest(url, http.MethodGet, param)
+}
+
+func (req *EasyRequest) Get(url string) *EasyRequest {
+	req.url = url
+	req.method = http.MethodGet
+	return req
+}
+
+func (req *EasyRequest) DoGet(url string, param, response interface{}) error {
+	req.url = url
+	req.Param = param
+	req.method = http.MethodGet
+	return (*RequestParams)(req).Do(response)
+}
+
+func Post(url string, param interface{}) *RequestParams {
+	return NewRequest(url, http.MethodPost, param)
+}
+
+func (req *RequestParams) Post(url string) *RequestParams {
+	req.url = url
+	req.method = http.MethodPost
+	return req
+}
+
+func (req *EasyRequest) DoPost(url string, param, response interface{}) error {
+	req.url = url
+	req.Param = param
+	req.method = http.MethodPost
+	return (*RequestParams)(req).Do(response)
+}
+
+func Put(url string, param interface{}) *RequestParams {
+	return NewRequest(url, http.MethodPut, param)
+}
+
+func (req *RequestParams) Put(url string) *RequestParams {
+	req.url = url
+	req.method = http.MethodPut
+	return req
+}
+
+func (req *EasyRequest) DoPut(url string, param, response interface{}) error {
+	req.url = url
+	req.Param = param
+	req.method = http.MethodPut
+	return (*RequestParams)(req).Do(response)
+}
+
+func Delete(url string, param interface{}) *RequestParams {
+	return NewRequest(url, http.MethodDelete, param)
+}
+
+func (req *RequestParams) Delete(url string) *RequestParams {
+	req.url = url
+	req.method = http.MethodDelete
+	return req
+}
+
+func (req *EasyRequest) DoDelete(url string, param, response interface{}) error {
+	req.url = url
+	req.Param = param
+	req.method = http.MethodDelete
+	return (*RequestParams)(req).Do(response)
+}
+
+func (req *EasyRequest) CompleteDo(url, method string, param, response interface{}) error {
+	req.url = url
+	req.Param = param
+	req.method = method
+	return (*RequestParams)(req).Do(response)
 }

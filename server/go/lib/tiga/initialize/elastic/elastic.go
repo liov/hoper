@@ -3,15 +3,13 @@ package elastic
 import (
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/olivere/elastic/v7"
+	"github.com/olivere/elastic/v7/config"
 )
 
-type ElasticConfig struct {
-	Host string
-	Port int32
-}
+type ElasticConfig config.Config
 
 func (conf *ElasticConfig) generate() *elastic.Client {
-	client, err := elastic.NewClient()
+	client, err := elastic.NewClientFromConfig((*config.Config)(conf))
 	if err != nil {
 		log.Error(err)
 	}
@@ -21,4 +19,19 @@ func (conf *ElasticConfig) generate() *elastic.Client {
 
 func (conf *ElasticConfig) Generate() interface{} {
 	return conf.generate()
+}
+
+type Es struct {
+	*elastic.Client
+	Conf ElasticConfig
+}
+
+func (es *Es) Config() interface{} {
+	return &es.Conf
+}
+
+func (es *Es) SetEntity(entity interface{}) {
+	if client, ok := entity.(*elastic.Client); ok {
+		es.Client = client
+	}
 }
