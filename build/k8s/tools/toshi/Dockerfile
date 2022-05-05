@@ -8,6 +8,8 @@ tzdata && ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 WORKDIR /app
 
-ADD ./attendance /app/attendance
+ADD config.toml /app/config/config.toml
+ADD logging.toml /app/config/logging.toml
+ADD toshi /app
 
-CMD ["./attendance"]
+CMD ["./toshi"]

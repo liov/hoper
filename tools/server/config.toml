@@ -12,6 +12,9 @@ Watch  = true
 Addr = "nacos.local.org"
 Group = "hoper"
 
+[configCenter.local]
+ReloadType = "fsnotify"
+
 
 [dev]
 LocalConfigName = "local.toml"

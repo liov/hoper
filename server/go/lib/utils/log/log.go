@@ -93,6 +93,7 @@ func (lf *Config) initLogger() *zap.Logger {
 	}
 	if lf.Development {
 		encoderConfig.EncodeCaller = zapcore.FullCallerEncoder
+		//encoderConfig.ConsoleSeparator = "\n"
 	}
 
 	var consoleEncoder, jsonEncoder zapcore.Encoder

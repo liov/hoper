@@ -82,8 +82,8 @@ type Diary struct {
 	PhotoUrl        string `json:"photoUrl" gorm:"size:255;default:''"`
 	PhotoThumbUrl   string `json:"photoThumbUrl" gorm:"-"`
 	LikeCount       int    `json:"like_count" gorm:"default:0"`
-	Liked           bool   `json:"liked" gorm:"-"`
-	User            *User  `json:"User" gorm:"-"`
+	Liked           bool   `json:"-" gorm:"-"`
+	User            *User  `json:"user,omitempty" gorm:"-"`
 }
 
 type TinyDiary struct {

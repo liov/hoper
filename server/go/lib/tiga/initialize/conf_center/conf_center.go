@@ -40,12 +40,14 @@ func (c *ConfigCenterConfig) ConfigCenter(ccec ConfigCenterEnvConfig, model stri
 	if ccec.LocalConfigName != "" {
 		if c.Local != nil {
 			c.Local.LocalConfigName = ccec.LocalConfigName
+			c.Local.AutoReload = c.Watch
 			return c.Local
 		} else {
 			return &local.Local{Config: configor.Config{
 				Debug:      debug,
 				AutoReload: c.Watch,
-			}, LocalConfigName: ccec.LocalConfigName}
+			},
+				LocalConfigName: ccec.LocalConfigName}
 		}
 	}
 	panic("没有设置配置中心")

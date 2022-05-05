@@ -1118,3 +1118,32 @@ kubectl get pod -n kube-system | grep kube-proxy |awk '{system("kubectl delete p
 # k8s pod 内部自身服务名访问不通
 curl apisix-prometheus.ingress-apisix:9091/apisix/prometheus/metrics
 https://github.com/kubernetes/minikube/issues/1568
+
+# listen tcp :8080: bind: An attempt was made to access a socket in a way forbidden by its access permissions.
+netstat -aon|findstr "8080"
+taskkill /f /pid 12732
+
+# 监听端口外部访问不了,跟docker内监听外部访问不了一样
+127.0.0.1 -> 0.0.0.0
+
+# ERROR:  database "lyy" is being accessed by other users DETAIL:  There is 1 other session using the database.
+SELECT pg_terminate_backend(pg_stat_activity.pid)
+FROM pg_stat_activity
+WHERE pg_stat_activity.datname = 'timepill';
+
+# es ocker ElasticsearchException[failed to bind service]; nested: AccessDeniedException[/usr/share/elasticsearch/data/nodes];
+Dockerfile
+FROM docker.elastic.co/elasticsearch/elasticsearch:5.0.0
+
+
+USER root
+RUN chown elasticsearch:elasticsearch -R /usr/share/elasticsearch/data
+
+USER elasticsearch
+EXPOSE 9200 9300
+
+暴力
+chmod 777 -R /data/es
+
+# Docker挂载的文件(docker run-v)在宿主机修改了后，在容器中没有生效的解决办法
+docker run -v 挂载到容器中的文件（注意不是目录）一般是配置文件，在宿主机vi wq之后，进容器里面看发现改动没有生效，后来找了很久没有发现解决办法，直到看到这篇里面提到了需要修改那个文件的权限为666（chmod 666 xxx.conf），但是值得注意的是：中途修改的无效，需要run之前就修改了。

@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/conf_center"
-	"github.com/actliboy/hoper/server/go/lib/utils/reflect/mtos"
 	"github.com/actliboy/hoper/server/go/lib/utils/slices"
 	"net"
 	"net/http"
@@ -56,6 +55,7 @@ type Init struct {
 	conf         NeedInit
 	dao          Dao
 	//closes     []interface{}
+	deferf []func()
 }
 
 func flaginit() {
@@ -76,7 +76,7 @@ func flaginit() {
 	}
 }
 
-func Start(conf Config, dao Dao) func() {
+func Start(conf Config, dao Dao) func(deferf ...func()) {
 	if conf == nil {
 		log.Fatalf("配置不能为空")
 	}
@@ -84,9 +84,15 @@ func Start(conf Config, dao Dao) func() {
 	//逃逸到堆上了
 	init := NewInit(conf, dao)
 	init.LoadConfig()
-	return func() {
+	return func(deferf ...func()) {
 		init.CloseDao()
 		log.Sync()
+		for _, f := range deferf {
+			f()
+		}
+		for _, f := range init.deferf {
+			f()
+		}
 	}
 }
 
@@ -125,12 +131,12 @@ func (init *Init) LoadConfig() *Init {
 			}*/
 			//会被回收,也可能是被移动了？
 			init.EnvConfig = &(*value.Field(i).Interface().(*EnvConfig))
-			onceConfig.ConfigCenter.ConfigCenter(init.EnvConfig.ConfigCenterEnvConfig, init.Module, init.Env != PRODUCT).HandleConfig(init.UnmarshalAndSet)
+			onceConfig.ConfigCenter.ConfigCenter(init.EnvConfig.ConfigCenterEnvConfig, init.Module, init.Env != PRODUCT).HandleConfig(init.UnmarshalAndSetV2)
 			break
 		}
 	}
 
-	log.Debugf("Configuration:\n  %#v\n", init)
+	log.Debugf("Configuration:  %#v", init.conf)
 	return init
 }
 
@@ -146,6 +152,10 @@ func NewInit(conf Config, dao Dao) *Init {
 func (init *Init) SetInit(conf Config, dao Dao) {
 	init.conf = conf
 	init.dao = dao
+}
+
+func (init *Init) RegisterDeferFunc(deferf ...func()) {
+	init.deferf = append(init.deferf, deferf...)
 }
 
 type NeedInit interface {
@@ -251,73 +261,9 @@ func (init *Init) CloseDao() {
 func (init *Init) UnmarshalAndSet(bytes []byte) {
 	toml.Unmarshal(bytes, &init.confM)
 	init.CloseDao()
-	init.injectM()
+	init.inject()
 }
 
 func (init *Init) Config() Config {
 	return init.conf
-}
-
-// Customize
-func (init *Init) injectM() {
-	v := reflect.ValueOf(init.conf).Elem()
-	for i := 0; i < v.NumField(); i++ {
-		switch v.Field(i).Kind() {
-		case reflect.Ptr:
-			setConfigM(v.Field(i).Interface(), v.Type().Field(i).Name, init.confM)
-		case reflect.Struct:
-			setConfigM(v.Field(i).Addr().Interface(), v.Type().Field(i).Name, init.confM)
-		}
-	}
-	init.conf.Init()
-	if init.dao == nil {
-		return
-	}
-	setDaoM(reflect.ValueOf(init.dao).Elem(), init.confM)
-	init.dao.Init()
-}
-
-func setConfigM(field interface{}, fieldName string, confM map[string]interface{}) {
-	for k, v := range confM {
-		if strings.ToUpper(k) == strings.ToUpper(fieldName) {
-			mtos.Decode(v, field)
-		}
-	}
-}
-
-func setDaoM(v reflect.Value, confM map[string]interface{}) {
-
-	if !v.IsValid() {
-		return
-	}
-	typ := v.Type()
-
-	for i := 0; i < v.NumField(); i++ {
-		field := v.Field(i)
-		if field.Addr().CanInterface() {
-			if field.Kind() == reflect.Ptr && !field.IsValid() {
-				field.Set(reflect.New(field.Type().Elem()))
-			}
-			inter := field.Addr().Interface()
-			if slices.StringContains(InitConfig.NoInject, strings.ToUpper(typ.Field(i).Name)) {
-				continue
-			}
-			if daofield, ok := inter.(DaoField); ok {
-				conf := daofield.Config()
-				var confName string
-				if confName, ok = typ.Field(i).Tag.Lookup("config"); ok {
-					confName = strings.ToUpper(confName)
-				} else {
-					confName = strings.ToUpper(typ.Field(i).Name)
-				}
-				setConfigM(conf, confName, confM)
-				if conf1, ok := conf.(NeedInit); ok {
-					conf1.Init()
-				}
-				if conf1, ok := conf.(Generate); ok {
-					daofield.SetEntity(conf1.Generate())
-				}
-			}
-		}
-	}
 }

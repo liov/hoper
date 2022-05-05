@@ -75,7 +75,7 @@ pg_dump -h localhost -U postgres -c -E UTF8 --inserts -t public.t_* > t_taste.sq
 
 解压  tar -zxvf pgdatabak.tar.gz -C /usr/local/postgres/
 
-重新授权 执行命令  chown -R postgres.postgres data/
+重新授权 执行命令  chown -R postgres:postgres data/
 
 # IDEA
 plugin 仓库地址 https://repo.idechajian.com https://plugins.zhile.io
