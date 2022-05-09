@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: timepill
-          image: timepill:1.5
+          image: timepill:latest
           volumeMounts:
             - mountPath: /app/local.toml
               name: local-toml

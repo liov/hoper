@@ -36,7 +36,7 @@ spec:
             name: apisix-dashboard-conf
           name: apisix-dashboard-cm
         - hostPath:
-            path: /host/apisix/logs
+            path: /data/apisix/logs
             type: DirectoryOrCreate
           name: logs
 ---

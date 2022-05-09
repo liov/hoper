@@ -2,7 +2,6 @@ package timepill
 
 import (
 	"encoding/base64"
-	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/cache_ristretto"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/db"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/elastic"
@@ -36,6 +35,7 @@ type Customize struct {
 	PhotoPrefix string
 	SearchHost  string
 	PageSize    int
+	Timer       time.Duration
 }
 
 type TimepillDao struct {
@@ -58,13 +58,9 @@ var (
 	Token string
 )
 
-func CreateTable() {
-	fmt.Println(Dao.Hoper.Migrator().CreateTable(&Badge{}))
-}
-
 func StartRecord() {
 	RecordTask()
-	tc := time.NewTicker(time.Second * 5)
+	tc := time.NewTicker(time.Second * Conf.TimePill.Timer)
 	for {
 		select {
 		case <-tc.C:

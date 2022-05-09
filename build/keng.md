@@ -767,7 +767,7 @@ RUN apk add --no-cache gcc musl-dev
 
 ```
 docker build -t go-build:1.0 .
-docker run -e "GOPROXY=https://goproxy.io" -it --rm -v `pwd`:/root/src -w /root/src  go-build:1.0  go build github.com/Kong/go-pluginserver
+docker run -e "GOPROXY=https://goproxy.io" -it --rm -v `pwd`:/app -w /app  go-build:1.0  go build github.com/Kong/go-pluginserver
 
 /usr/local/go/pkg/tool/linux_amd64/link: running gcc failed: exec: "gcc": executable file not found in $PATH
 ------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1147,3 +1147,10 @@ chmod 777 -R /data/es
 
 # Docker挂载的文件(docker run-v)在宿主机修改了后，在容器中没有生效的解决办法
 docker run -v 挂载到容器中的文件（注意不是目录）一般是配置文件，在宿主机vi wq之后，进容器里面看发现改动没有生效，后来找了很久没有发现解决办法，直到看到这篇里面提到了需要修改那个文件的权限为666（chmod 666 xxx.conf），但是值得注意的是：中途修改的无效，需要run之前就修改了。
+
+# Drone-Server level=fatal msg="main: invalid configuration" error="Invalid port configuration. See https://discourse.drone.io/t/drone-server-changing-ports-protocol/4144"
+这个问题是 k8s 与 drone 之间的命名问题, 官方竟然一直不解决或者明确说明。
+
+解决方式一: 在创建 deployment、StatefulSet、service 不能创建名字为 drone-server 的服务。
+
+解决方式二: 配置 DRONE_SERVER_PORT=:80 变量

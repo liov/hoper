@@ -55,7 +55,7 @@ require (
 	github.com/tealeg/xlsx/v3 v3.2.3
 	github.com/tidwall/pretty v1.2.0
 	github.com/ugorji/go/codec v1.2.6
-	github.com/valyala/fasthttp v1.34.0
+	github.com/valyala/fasthttp v1.36.0
 	github.com/xuri/excelize/v2 v2.4.1
 	go.etcd.io/etcd/client/v3 v3.5.0
 	go.opencensus.io v0.23.0
@@ -119,6 +119,7 @@ require (
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/google/btree v1.0.0 // indirect
 	github.com/google/go-cmp v0.5.7 // indirect
+	github.com/google/go-jsonnet v0.18.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.0.5 // indirect
 	github.com/googleapis/googleapis v0.0.0-20211124201511-02df998e4073 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
@@ -215,4 +216,5 @@ require (
 	google.golang.org/appengine v1.6.7 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	sigs.k8s.io/yaml v1.2.0 // indirect
 )

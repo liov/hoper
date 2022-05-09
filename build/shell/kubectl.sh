@@ -61,7 +61,7 @@ Examples:
   kubectl logs deployment/nginx -c nginx-1
 
 Options:
-      --all-containers=false: Get all containers' logs in the pod(s).
+      --all-containers=false: Get all containers logs in the pod(s).
   -c, --container='': Print the logs of this container
   -f, --follow=false: Specify if the logs should be streamed.
       --ignore-errors=false: If watching / following pod logs, allow for any errors that occur to be non-fatal
@@ -73,3 +73,8 @@ Options:
       --since=0s: Only return logs newer than a relative duration like 5s, 2m, or 3h. Defaults to all logs. Only one of since-time / since may be used.
       --since-time='': Only return logs after a specific date (RFC3339). Defaults to all logs. Only one of since-time / since may be used.
       --tail=-1: Lines of recent log file to display. Defaults to -1 with no selector, showing all log lines otherwise 10, if a selector is provided.
+
+
+# 将pod进行缩容操作 让其为0 即等同于停止操作
+
+kubectl scale --replicas=0 deployment/<your-deployment>
