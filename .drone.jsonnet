@@ -11,7 +11,7 @@ local Pipeline(name, workdir, buildArg, dockerfile, deployment) = {
   },
   trigger: {
     ref: [
-      "ref/tags/timepill-*"
+      "refs/tags/timepill-*"
       ]
   },
   volumes: [
@@ -93,7 +93,7 @@ local Pipeline(name, workdir, buildArg, dockerfile, deployment) = {
       ]
     },
     {
-       name: "docker build",
+       name: "notify",
        image: "plugins/slack",
        settings: {
           webhook: {
