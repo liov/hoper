@@ -1,6 +1,7 @@
 package timepill
 
 import (
+	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/clause"
 	"github.com/actliboy/hoper/server/go/lib/utils/def/request"
 )
@@ -19,4 +20,16 @@ func List(req *ListReq) ([]*Diary, error) {
 		return nil, err
 	}
 	return diaries, nil
+}
+
+func CreateTable() {
+	fmt.Println(Dao.Hoper.Migrator().CreateTable(&Badge{}, &User{}, &Diary{}, &NoteBook{}, &Comment{}))
+}
+
+func CreateBadgeTable() {
+	fmt.Println(Dao.Hoper.Migrator().CreateTable(&Badge{}))
+}
+
+func CreateCommentTable() {
+	fmt.Println(Dao.Hoper.Migrator().CreateTable(&Comment{}))
 }

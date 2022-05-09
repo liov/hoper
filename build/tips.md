@@ -62,7 +62,7 @@ pg_dump -h localhost -U postgres -c -E UTF8 --inserts -t public.t_* > t_taste.sq
 
 -c 附带创建表命令
 
-## 比较骚
+## 比较骚，只适用同版本
 1.操作位置：迁移数据库源（旧数据库主机）
 
 找到PostgreSql 的data目录   关闭数据库进程
@@ -79,3 +79,18 @@ pg_dump -h localhost -U postgres -c -E UTF8 --inserts -t public.t_* > t_taste.sq
 
 # IDEA
 plugin 仓库地址 https://repo.idechajian.com https://plugins.zhile.io
+
+# k8s的pod镜像的时区正确设置方法
+在k8s中部署pod时，很多时候我们使用的镜像不是我们自己制作的，自己制作的可以把时区设置好，但使用别人的镜像时，这些镜像的时区有可能是UTC，比我们的时间少了8小时，看一些日志时很别扭，比较方便的办法是在部署时设置env环境变量，加上
+
+env:
+- name: TZ
+  value: Asia/Shanghai
+如果是helm的包，特别的bitnami的包，通常都env的扩展参数，但这个参数一般在README中都是[]，那想在helm install --set方式如何设置呢？在网上搜索了几个小时，终于stackoverflow上找到一种可用的方式，这里我以安装postgresql的设置为例：
+
+--set postgresql.extraEnvVars\[0\].name=TZ,postgres
+ql.extraEnvVars\[0\].value=Asia\/Shanghai
+如果你也遇到这种情况，不防试试，也许可以解决
+
+# 利用docker编译
+docker run -v "$GOPATH":/go --rm -v "$PWD":/app -w /app -e GOOS="darwin" -e GOARCH="amd64" golang:1.8 go build -v

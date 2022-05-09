@@ -20,3 +20,4 @@ proto_std
 .vscode
 gradle
 /tools/server/local.toml
+secret.txt

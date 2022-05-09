@@ -1,0 +1,83 @@
+kind: pipeline
+type: kubernetes
+name: default
+
+metadata:
+  namespace: default
+
+platform:
+  os: linux
+  arch: amd64
+
+trigger:
+  ref:
+    - ref/tags/timepill-*
+
+steps:
+  - name: go build
+    image: golang:1.18.1
+    volumes:
+      - name: gopath
+        path: /go/
+    environment:
+      GOOS: linux
+      GOARCH: amd64
+      GOPATH: /go
+      GOPROXY: https://goproxy.io,https://goproxy.cn,direct
+    commands:
+      - cd ./tools/server
+      - go mod download
+      - go mod tidy
+      #- go test -v
+      - go build -o ../../timepill ./timepill/cmd/record.go
+  - name: docker build
+    image: plugins/docker
+    volumes:
+      - name: dockersock
+        path: /var/run/
+    settings:
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      repo: jyblsq/timepill
+      tags: ${DRONE_TAG##timepill-}
+      dockerfile: ./build/k8s/app/Dockerfile
+      #launch_debug: true
+      #insecure: true
+      force_tag: true
+  - name: deploy
+    image: sinlead/drone-kubectl
+#    settings:
+#      # These secrets are defined via the Drone UI repo settings page
+#      kubernetes_server:
+#        from_secret: drone_k8s_server
+#      kubernetes_cert:
+#        from_secret: drone_k8s_cert
+#      kubernetes_token:
+#        from_secret: drone_k8s_token
+
+    # kubectl插件，用于执行kubectl命令
+    volumes:
+      #本地卷，用于挂载本地的k8s认证文件到容器中
+      - name: kube
+        path: /root/.kube/
+    commands: #容器中执行命令
+     # - sed -i "s/#Tag/${DRONE_BUILD_NUMBER}/g" k8s_yaml/deployment.yaml
+      - kubectl apply -f ./build/k8s/app/timepill.yaml
+  - name: notify
+    image: plugins/slack
+    settings:
+      webhook:
+        from_secret: webhook
+
+volumes:
+  - name: gopath
+    host:
+      path: /data/deps/gopath/
+  - name: dockersock
+    host:
+      path: /var/run/
+  - name: kube
+      host:
+        path: /root/.kube/
