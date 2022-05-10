@@ -46,6 +46,12 @@ helm install apisix apisix/apisix \
   --set ingress-controller.config.apisix.serviceNamespace=ingress-apisix
 kubectl get service --namespace ingress-apisix
 
+# minikube
+kubectl edit StatefulSet apisix-etcd -n ingress-apisix
+replicas: 1
+kubectl delete PersistentVolumeClaim data-apisix-etcd-1 -n ingress-apisix
+kubectl delete PersistentVolumeClaim data-apisix-etcd-2 -n ingress-apisix
+
 helm repo add apisix https://charts.apiseven.com
 helm repo update
 helm install apisix-dashboard apisix/apisix-dashboard --namespace ingress-apisix

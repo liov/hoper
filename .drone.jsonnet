@@ -24,7 +24,7 @@ local Pipeline(name, workdir, buildArg, dockerfile, deployment) = {
      {
        name: "dockersock",
        host: {
-         path: "/var/run/"
+         path: "/var/run/docker.sock"
        }
      },
      {
@@ -63,7 +63,7 @@ local Pipeline(name, workdir, buildArg, dockerfile, deployment) = {
       volumes: [
         {
             name: "dockersock",
-            path: "/var/run/"
+            path: "/var/run/docker.sock"
         }
       ],
       settings: {
