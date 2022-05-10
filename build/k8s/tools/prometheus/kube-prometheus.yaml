@@ -1,5 +1,5 @@
 ---
-apiVersion: apisix.apache.org/v2beta3
+apiVersion: apisix.apache.org/v2
 kind: ApisixRoute
 metadata:
   name: grafana
@@ -19,7 +19,7 @@ spec:
       websocket: true
 
 ---
-apiVersion: apisix.apache.org/v2beta3
+apiVersion: apisix.apache.org/v2
 kind: ApisixRoute
 metadata:
   name: prometheus

@@ -85,7 +85,7 @@ spec:
   type: ClusterIP #ClusterIP
 
 ---
-apiVersion: apisix.apache.org/v2beta3
+apiVersion: apisix.apache.org/v2
 kind: ApisixUpstream
 metadata:
   name: grafana
@@ -119,7 +119,7 @@ spec:
           - 200
           - 206
 ---
-apiVersion: apisix.apache.org/v2beta3
+apiVersion: apisix.apache.org/v2
 kind: ApisixRoute
 metadata:
   name: grafana

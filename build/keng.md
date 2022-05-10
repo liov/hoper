@@ -1164,3 +1164,5 @@ kubectl scale --replicas=0 StatefulSet/apisix-etcd -n ingress-apisix
 kubectl delete PersistentVolumeClaim data-apisix-etcd-0 -n ingress-apisix
 kubectl delete PersistentVolume -n ingress-apisix pvc-
 apisix-etcd-0=http://apisix-etcd-0.apisix-etcd-headless.ingress-apisix.svc.cluster.local:2380
+
+# openvpn DEPRECATED OPTION: --cipher set to 'AES-256-CBC' but missing in --data-ciphers (AES-256-GCM:AES-128-GCM). Future O

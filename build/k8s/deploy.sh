@@ -57,7 +57,7 @@ helm repo update
 helm install apisix-dashboard apisix/apisix-dashboard --namespace ingress-apisix
 
 vim apisix-dashboard.yaml - |
-apiVersion: apisix.apache.org/v2beta3
+apiVersion: apisix.apache.org/v2
 kind: ApisixRoute
 metadata:
   name: apisix-dashboard

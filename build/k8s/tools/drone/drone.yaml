@@ -60,7 +60,7 @@ spec:
     app: drone-server
 
 ---
-apiVersion: apisix.apache.org/v2beta3
+apiVersion: apisix.apache.org/v2
 kind: ApisixRoute
 metadata:
   name: drone-server
