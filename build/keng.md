@@ -1154,3 +1154,13 @@ docker run -v 挂载到容器中的文件（注意不是目录）一般是配置
 解决方式一: 在创建 deployment、StatefulSet、service 不能创建名字为 drone-server 的服务。
 
 解决方式二: 配置 DRONE_SERVER_PORT=:80 变量
+
+# Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running
+怎么重启docker都没用
+reboot
+
+# k8s etcd集群无法重启，
+kubectl scale --replicas=0 StatefulSet/apisix-etcd -n ingress-apisix
+kubectl delete PersistentVolumeClaim data-apisix-etcd-0 -n ingress-apisix
+kubectl delete PersistentVolume -n ingress-apisix pvc-
+apisix-etcd-0=http://apisix-etcd-0.apisix-etcd-headless.ingress-apisix.svc.cluster.local:2380
