@@ -1,9 +1,12 @@
+docker rm ssserver-rust -f
 
 {
     "server": "0.0.0.0",
     "server_port": 8388,
     "password": "password",
     "timeout": 300,
+    "plugin": "v2ray-plugin",
+    "plugin_opts": "server"
     "method": "aes-256-gcm"
 }
 

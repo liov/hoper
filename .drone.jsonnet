@@ -34,7 +34,19 @@ local Pipeline(name, workdir, buildArg, dockerfile, deployment) = {
        }
      }
   ],
+  clone: {
+   disable: true
+  },
   steps: [
+    {
+      name: "clone",
+      image: "alpine/git",
+      commands: [
+        "git config --global https.proxy 'socks5://proxy.tools:1080'",
+        "git clone https://github.com/octocat/hello-world.git .",
+        "git checkout $DRONE_COMMIT_REF"
+      ]
+    }
     {
       name: "go build",
       image: "golang:1.18.1",

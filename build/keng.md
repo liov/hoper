@@ -1165,4 +1165,11 @@ kubectl delete PersistentVolumeClaim data-apisix-etcd-0 -n ingress-apisix
 kubectl delete PersistentVolume -n ingress-apisix pvc-
 apisix-etcd-0=http://apisix-etcd-0.apisix-etcd-headless.ingress-apisix.svc.cluster.local:2380
 
-# openvpn DEPRECATED OPTION: --cipher set to 'AES-256-CBC' but missing in --data-ciphers (AES-256-GCM:AES-128-GCM). Future O
+# Docker 启动alpine镜像中可执行程序文件遇到 not found
+问题： docker alpine镜像中遇到 sh: xxx: not found
+例如：
+在容器内/app/目录下放置了可执行文件abc，启动时提示not found
+/app/startup.sh: line 5: ./abc : not found
+原因
+由于alpine镜像使用的是musl libc而不是gnu libc，/lib64/ 是不存在的。但他们是兼容的，可以创建个软连接过去试试!
+RUN mkdir /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
