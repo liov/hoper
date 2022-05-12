@@ -1,4 +1,7 @@
-local Pipeline(name, workdir, buildArg, dockerfile, deployment) = {
+// local mode(mode="app") = if mode == "app" then "app" else "node";
+local tpldir = "./build/k8s/app/";
+
+local Pipeline(name, mode, workdir, sourceFile, opts) = {
   kind: "pipeline",
   type: "kubernetes",
   name: name,
@@ -11,7 +14,7 @@ local Pipeline(name, workdir, buildArg, dockerfile, deployment) = {
   },
   trigger: {
     ref: [
-      "refs/tags/timepill-*"
+      "refs/tags/"+name+"-*"
       ]
   },
   volumes: [
@@ -24,7 +27,7 @@ local Pipeline(name, workdir, buildArg, dockerfile, deployment) = {
      {
        name: "dockersock",
        host: {
-         path: "/var/run/docker.sock"
+         path: "/var/run/"
        }
      },
      {
@@ -32,7 +35,13 @@ local Pipeline(name, workdir, buildArg, dockerfile, deployment) = {
        host: {
            path: "/root/.kube/"
        }
-     }
+     },
+      {
+        name: "minikube",
+        host: {
+            path: "/root/.minikube/"
+        }
+      }
   ],
   clone: {
    disable: true
@@ -43,10 +52,16 @@ local Pipeline(name, workdir, buildArg, dockerfile, deployment) = {
       image: "alpine/git",
       commands: [
         "git config --global https.proxy 'socks5://proxy.tools:1080'",
-        "git clone https://github.com/actliboy/hoper.git .",
-        "git checkout $DRONE_COMMIT_REF"
+        "git clone ${DRONE_GIT_HTTP_URL} .",
+        "git checkout $DRONE_COMMIT_REF",
+        "sed -i 's/$${app}/"+name+"/g' "+tpldir+mode+"/Dockerfile",
+        "sed -i 's/$${opts}/"+std.join(" ,",["\""+opt+"\"" for opt in opts])+"/g' "+tpldir+mode+"/Dockerfile",
+        "cat "+tpldir+mode+"/Dockerfile",
+        "echo",
+        "sed -i 's/$${app}/"+name+"/g' "+tpldir+mode+"/deployment.yaml",
+        "sed -i 's#$${image}#jyblsq/"+name+":${DRONE_TAG##"+name+"-}#g' "+tpldir+mode+"/deployment.yaml"
       ]
-    }
+    },
     {
       name: "go build",
       image: "golang:1.18.1",
@@ -65,7 +80,7 @@ local Pipeline(name, workdir, buildArg, dockerfile, deployment) = {
         "cd " + workdir,
         "go mod download",
         "go mod tidy",
-        buildArg
+        "go build -o /drone/src/"+name+" "+sourceFile
       ]
     },
     {
@@ -74,7 +89,7 @@ local Pipeline(name, workdir, buildArg, dockerfile, deployment) = {
       volumes: [
         {
             name: "dockersock",
-            path: "/var/run/docker.sock"
+            path: "/var/run/"
         }
       ],
       settings: {
@@ -84,37 +99,46 @@ local Pipeline(name, workdir, buildArg, dockerfile, deployment) = {
         password: {
           from_secret: "docker_password"
         },
-       repo: "jyblsq/timepill",
-       tags: ["latest","${DRONE_TAG##timepill-}"],
-       dockerfile: dockerfile,
-       force_tag: true
+       repo: "jyblsq/"+name,
+       tags: "${DRONE_TAG##"+name+"-}",
+       dockerfile: tpldir+mode+"/Dockerfile",
+       force_tag: true,
+       auto_tag: false,
+       daemon_off: true,
+       purge: true
       }
     },
     {
       name: "deploy",
-      image: "sinlead/drone-kubectl",
+      image: "bitnami/kubectl",
+      user: 0, //文档说是string类型，结果"root"不行 k8s runAsUser: 0
       volumes: [
         {
           name: "kube",
           path: "/root/.kube/"
+        },
+        {
+          name: "minikube",
+          path: "/root/.minikube/"
         }
       ],
       commands: [
-        deployment
+        "kubectl --kubeconfig=/root/.kube/config apply -f "+tpldir+mode+"/deployment.yaml"
       ]
     },
     {
-       name: "notify",
-       image: "plugins/slack",
+       name: "dingtalk",
+       image: "lddsb/drone-dingtalk-message",
        settings: {
-          webhook: {
-            from_secret: "wehook"
-          }
+          token: {
+            from_secret: "token"
+          },
+          type: "markdown"
        }
     }
   ]
 };
 
 [
-  Pipeline("timepill","./tools/server", "go build -o ../../timepill ./timepill/cmd/record.go","./build/k8s/app/Dockerfile","kubectl apply -f ./build/k8s/app/timepill.yaml"),
+  Pipeline("timepill","app","./tools/server","./timepill/cmd/record.go",["-t"]),
 ]

@@ -94,3 +94,10 @@ ql.extraEnvVars\[0\].value=Asia\/Shanghai
 
 # 利用docker编译
 docker run -v "$GOPATH":/go --rm -v "$PWD":/app -w /app -e GOOS="darwin" -e GOARCH="amd64" golang:1.8 go build -v
+
+# clusterIP: None的即为headless service
+type: ClusterIP
+clusterIP: None
+具体表现service没有自己的虚拟IP,nslookup会出现所有pod的ip.但是ping的时候只会出现第一个pod的ip
+service没有负载均衡
+检查一下是否用了headless service.headless service是不会自动负载均衡的

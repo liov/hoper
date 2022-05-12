@@ -6,12 +6,14 @@ metadata:
 data:
   config.json: |
     {
-      "server": "172.17.0.3",
+      "server": "${host}",
       "server_port": 8388,
       "local_port": 1080,
       "local_address": "0.0.0.0",
       "password": "password",
       "timeout": 300,
+      "plugin": "v2ray-plugin",
+      "plugin_opts": "server;tls;host=${host}",
       "method": "aes-256-gcm"
     }
 ---
@@ -34,7 +36,7 @@ spec:
     spec:
       containers:
         - name: shadowsocks
-          image: ghcr.io/shadowsocks/sslocal-rust:latest
+          image: sslocal-rust-v2ray:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 1080
@@ -62,10 +64,7 @@ spec:
       targetPort: 1080
       protocol: TCP
       nodePort: 1080
-    - port: 1080
-      targetPort: 1080
-      protocol: UDP
-      nodePort: 1080
+  clusterIP: none
   selector:
     app: shadowsocks
 
