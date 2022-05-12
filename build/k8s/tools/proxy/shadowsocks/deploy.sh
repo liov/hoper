@@ -46,8 +46,9 @@ USER nobody
 ENTRYPOINT [ "ssserver", "--log-without-time", "-c", "/etc/shadowsocks-rust/config.json" ]
 EOF
 
-docker build -t ssserver-rust-v2ray:latest .
+docker rm -f ssserver-rust-v2ray && docker rmi -f ssserver-rust-v2ray && docker build -t ssserver-rust-v2ray:latest .
 
+chown -R nobody ~/.acme.sh/$host/$host.key
 
 docker rm -f ssserver-rust-v2ray && \
 docker run --name ssserver-rust-v2ray \

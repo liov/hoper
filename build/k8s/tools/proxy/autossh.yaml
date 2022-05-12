@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: autossh
+  namespace: tools
+  labels:
+    app: autossh
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: autossh
+  template:
+    metadata:
+      labels:
+        app: autossh
+    spec:
+      containers:
+        - name: autossh
+          env:
+            - name: SSH_HOST
+              value: host
+          image: jnovack/autossh:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - autossh
+          args:
+            - -M
+            - "5678"
+            - -o
+            - "StrictHostKeyChecking no"
+            - -CTN
+            - -D
+            - "1080"
+            - root@$SSH_HOST
+          ports:
+            - containerPort: 1080
+          volumeMounts:
+            - mountPath: /id_rsa
+              name: autossh-id-rsa
+      volumes:
+        - name: autossh-id-rsa
+          hostPath:
+            path: /root/proxy/autossh_id_rsa
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxy
+  namespace: tools
+  labels:
+    app: proxy
+spec:
+  type: NodePort
+  ports:
+    - port: 1080
+      name: tcp
+      targetPort: 1080
+      protocol: TCP
+      nodePort: 1080
+    - port: 1080
+      name: dup
+      targetPort: 1080
+      protocol: UDP
+      nodePort: 1080
+  selector:
+    app: autossh
+

@@ -3,8 +3,6 @@ kind: ConfigMap
 metadata:
   name: shadowsocks-conf
   namespace: tools
-  labels:
-    app: shadowsocks
 data:
   config.json: |
     {
@@ -53,10 +51,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: shadowsocks
+  name: proxy
   namespace: tools
   labels:
-    app: shadowsocks
+    app: proxy
 spec:
   type: NodePort
   ports:
