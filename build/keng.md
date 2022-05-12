@@ -142,7 +142,7 @@ slf4j.log4j12 的依赖问题
 在做多表查询，或者查询的时候产生新的表的时候会出现这个错误：Every derived table must have its own alias（每一个派生出来的表都必须有一个自己的别名）。
 
 # windows OpenSSH WARNING: UNPROTECTED PRIVATE KEY FILE!
-ssh-keygen -t rsa
+ssh-keygen -t rsa -b 4096 -C "autossh" -f autossh_id_rsa
 
 $env:username
 更改文件所有者
@@ -152,9 +152,10 @@ AuthorizedKeysFile   .ssh/authorized_keys   //公钥公钥认证文件
 RSAAuthentication yes
 PubkeyAuthentication yes   //可以使用公钥登录
 
-vim ~/.ssh/authorized_keys
+cat autossh_id_rsa.pub >> ~/.ssh/authorized_keys
 
 service sshd restart
+报错 sshd -T
 
 # nginx nginx: [emerg] unexpected "}" in
 空格与制表符，nginx每行配置不支持空格开头
