@@ -43,7 +43,7 @@ local Pipeline(name, workdir, buildArg, dockerfile, deployment) = {
       image: "alpine/git",
       commands: [
         "git config --global https.proxy 'socks5://proxy.tools:1080'",
-        "git clone https://github.com/octocat/hello-world.git .",
+        "git clone https://github.com/actliboy/hoper.git .",
         "git checkout $DRONE_COMMIT_REF"
       ]
     }
@@ -59,7 +59,6 @@ local Pipeline(name, workdir, buildArg, dockerfile, deployment) = {
       environment: {
          GOOS: "linux",
          GOARCH: "amd64",
-         GOPATH: "/go",
          GOPROXY: "https://goproxy.io,https://goproxy.cn,direct"
       },
       commands: [
