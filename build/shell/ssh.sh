@@ -1,1 +1,2 @@
 ssh -qTfnN -D localhost:1080  host
+autossh -M 0 -o StrictHostKeyChecking=no -o ServerAliveInterval=120 -o ServerAliveCountMax=3 -o ConnectTimeout=60 -o ExitOnForwardFailure=yes -CTN -D 0.0.0.0:1080 root@host

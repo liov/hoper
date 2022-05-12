@@ -2,14 +2,14 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: timepill
-  name: timepill
+    app: ${app}
+  name: ${app}
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: timepill
+      app: ${app}
   minReadySeconds: 5
   strategy:
     type: RollingUpdate
@@ -19,11 +19,11 @@ spec:
   template:
     metadata:
       labels:
-        app: timepill
+        app: ${app}
     spec:
       containers:
-        - name: timepill
-          image: timepill:latest
+        - name: ${app}
+          image: ${image}
           volumeMounts:
             - mountPath: /app/local.toml
               name: local-toml
@@ -31,7 +31,7 @@ spec:
             - mountPath: /app/config.toml
               name: config-toml
               subPath: config.toml
-            - mountPath: /data/timepill
+            - mountPath: /data/${app}
               name: picture
       volumes:
         - name: local-toml
@@ -45,5 +45,5 @@ spec:
             name: config.toml
         - name: picture
           hostPath:
-            path: /data/timepill
+            path: /data/${app}
             type: DirectoryOrCreate

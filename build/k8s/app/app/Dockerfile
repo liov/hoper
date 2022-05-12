@@ -8,6 +8,6 @@ tzdata && ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 WORKDIR /app
 
-ADD timepill /app
+ADD ${app} /app
 
-CMD ["./timepill", "-t"]
+CMD ["./${app}", ${opts}]

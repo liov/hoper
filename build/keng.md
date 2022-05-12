@@ -749,6 +749,8 @@ sudo helm install apisix-ingress-controller ./apisix-ingress-controller \
 minikube native
 # 无效
 minikube start --extra-config=apiserver.service-node-port-range=1-10000
+--extra-config=apiserver.service-node-port-range=1-65536
+-- 最新试的有效
 # 有效
 sudo vim /etc/kubernetes/manifests/kube-apiserver.yaml
 command 下添加 --service-node-port-range=1-65535 参数
@@ -1161,11 +1163,77 @@ docker run -v 挂载到容器中的文件（注意不是目录）一般是配置
 reboot
 
 # k8s etcd集群无法重启，
-kubectl scale --replicas=0 StatefulSet/apisix-etcd -n ingress-apisix
-kubectl delete PersistentVolumeClaim data-apisix-etcd-0 -n ingress-apisix
-kubectl delete PersistentVolume -n ingress-apisix pvc-
-apisix-etcd-0=http://apisix-etcd-0.apisix-etcd-headless.ingress-apisix.svc.cluster.local:2380
+kubectl edit StatefulSet  apisix-etcd -n ingress-apisix
+```yaml
+- name: ETCD_INITIAL_CLUSTER
+    value: $(MY_POD_NAME)=http://$(MY_POD_NAME).apisix-etcd-headless.ingress-apisix.svc.cluster.local:2380
 
+- name: ETCD_INITIAL_CLUSTER_STATE
+  value: new
+```
+kubectl scale --replicas=0 StatefulSet/apisix-etcd -n ingress-apisix
+kubectl delete PersistentVolumeClaim $(kubectl get PersistentVolumeClaim -n ingress-apisix | awk '{print $1}') -n ingress-apisix
+kubectl scale --replicas=1 StatefulSet/apisix-etcd -n ingress-apisix
+## minikube 有秘钥 /var/lib/minikube/certs/etcd
+helm install apisix apisix/apisix
+--set gateway.type=NodePort
+--set ingress-controller.enabled=true
+--namespace ingress-apisix
+--set ingress-controller.config.apisix.serviceNamespace=ingress-apisix
+--set etcd.enabled=false
+--set etcd.auth.tls.enabled=true
+--set etcd.host={https://10.0.20.12:2379}
+--set etcd.auth.tls.existingSecret=etcd-ssl
+--set etcd.auth.tls.certFilename=tls.crt
+--set etcd.auth.tls.certKeyFilename=tls.key
+
+kubectl delete StatefulSet apisix-etcd -n ingress-apisix
+kubectl delete PersistentVolumeClaim $(kubectl get PersistentVolumeClaim -n ingress-apisix | awk '{print $1}') -n ingress-apisix
+
+cp -r /var/lib/minikube/certs/etcd /root/certs/ chmod server.key || k8s.runAsUser=0 || initContainer.command - chown -R nobody:nobody /certs/etcd
+
+kubectl edit cm apisix -n ingress-apisix
+```yaml
+ssl:
+  ssl_trusted_certificate: /certs/etcd/ca.crt
+etcd:
+  host: # it's possible to define multiple etcd hosts addresses of the same etcd cluster.
+    - "https://10.0.20.12:2379"
+  tls:
+    cert: /certs/etcd/server.crt
+    key:  /certs/etcd/server.key
+    verify: false
+    sni: 10.0.20.12
+```
+kubectl edit deployment apisix -n ingress-apisix
+```yaml
+initContainers:
+- command:
+   - sh
+   - -c
+   - until nc -z 10.0.20.12 2379; do echo waiting
+     for etcd `date`; sleep 2; done;
+volumeMounts:
+- name: etcd-certs
+  mountPath: /certs/etcd
+volumes:
+- name: etcd-certs
+  hostPath:
+    path: /root/certs/etcd
+```
+kubectl edit cm apisix-dashboard -n ingress-apisix
+
+```yaml
+etcd:
+endpoints:
+- 10.0.20.12:2379
+mtls:
+  key_file: /certs/etcd/server.key          # Path of your self-signed client side key
+  cert_file: /certs/etcd/server.crt         # Path of your self-signed client side cert
+  ca_file: /certs/etcd/ca.crt           # Path of your self-signed ca cert, the CA is used to sign callers' certificates
+```
+kubectl edit deployment apisix-dashboard -n ingress-apisix
+volumeMounts
 # Docker 启动alpine镜像中可执行程序文件遇到 not found
 问题： docker alpine镜像中遇到 sh: xxx: not found
 例如：
@@ -1174,3 +1242,24 @@ apisix-etcd-0=http://apisix-etcd-0.apisix-etcd-headless.ingress-apisix.svc.clust
 原因
 由于alpine镜像使用的是musl libc而不是gnu libc，/lib64/ 是不存在的。但他们是兼容的，可以创建个软连接过去试试!
 RUN mkdir /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
+
+# k8s找不到执行文件
+command:
+- autossh -M 0 -o StrictHostKeyChecking=no -o ServerAliveInterval=120 -o ServerAliveCountMax=3 -o ConnectTimeout=60 -o ExitOnForwardFailure=yes -CTN -D 0.0.0.0:1080 root@host
+应该用
+---
+command:
+- autossh
+args:
+- "-M 0"
+- "-o StrictHostKeyChecking=no"
+- "-o ServerAliveInterval=120"
+- "-o ServerAliveCountMax=3"
+- "-o ConnectTimeout=60"
+- "-o ExitOnForwardFailure=yes"
+- -CTN
+- "-D 0.0.0.0:1080"
+- root@$SSH_HOST
+
+# job=\"kubelet\", metrics_path=\"/metrics\", namespace=\"kube-system\", node=\"vm-20-12-ubuntu\", service=\"kube-prometheus-kube-prome-kubelet\"}];many-to-many matching not allowed: matching labels must be unique on one side
+

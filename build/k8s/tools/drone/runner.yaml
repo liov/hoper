@@ -48,7 +48,6 @@ rules:
       - list
       - watch
       - update
----
 
 ---
 kind: RoleBinding
@@ -60,6 +59,9 @@ subjects:
   - kind: ServiceAccount
     name: default
     namespace: tools
+  - kind: ServiceAccount
+    name: default
+    namespace: default
 roleRef:
   kind: Role
   name: drone

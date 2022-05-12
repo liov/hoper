@@ -14,7 +14,7 @@ USER nobody
 
 ENTRYPOINT [ "ssserver", "--log-without-time", "-c", "/etc/shadowsocks-rust/config.json" ]
 
-FROM ghcr.io/shadowsocks/ssserver-rust:latest AS sslocal
+FROM ghcr.io/shadowsocks/sslocal-rust:latest AS sslocal
 
 USER root
 

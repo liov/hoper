@@ -44,13 +44,14 @@ helm install apisix apisix/apisix \
   --set ingress-controller.enabled=true \
   --namespace ingress-apisix \
   --set ingress-controller.config.apisix.serviceNamespace=ingress-apisix
+  --set etcd.enabled=false
+  --set etcd.auth.tls.enabled=true
+  --set etcd.host={https://10.0.20.12:2379}
+  --set etcd.auth.tls.existingSecret=etcd-ssl
+  --set etcd.auth.tls.certFilename=tls.crt
+  --set etcd.auth.tls.certKeyFilename=tls.key
 kubectl get service --namespace ingress-apisix
-
-# minikube
-kubectl edit StatefulSet apisix-etcd -n ingress-apisix
-replicas: 1
-kubectl delete PersistentVolumeClaim data-apisix-etcd-1 -n ingress-apisix
-kubectl delete PersistentVolumeClaim data-apisix-etcd-2 -n ingress-apisix
+helm upgrade apisix apisix/apisix --install -n ingress-apisix
 
 helm repo add apisix https://charts.apiseven.com
 helm repo update
@@ -97,29 +98,10 @@ server {
     }
 /usr/local/openresty/nginx/sbin/nginx -c /home/ubuntu/deploy/hoper/nginx/nginx.conf -s reload
 
-kubectl edit cm apisix -n ingress-apisix
-apisix:
- enable_control: true
-  control:
-    ip: "127.0.0.1"
-    port: 9090
-  plugin_attr:
-        prometheus:
-          export_uri: /metrics
-          export_addr:
-            ip: 0.0.0.0
-            port: 9091
-
-kubectl edit deployment apisix -n ingress-apisix
-- containerPort: 9090
-  name: control
-  protocol: TCP
-- containerPort: 9091
-  name: prometheus
-  protocol: TCP
 
 # prometheus
 # grafana
+## helm kube-prometheus-stack
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
 helm install kube-prometheus prometheus-community/kube-prometheus-stack -n monitoring
@@ -151,7 +133,7 @@ docker pull rancher/curlimages-curl:7.73.0
 kubectl get secret kube-prometheus-grafana -n monitoring -o yaml
 echo 'cHJvbS1vcGVyYXRvcg==' | base64 --decode
 prom-operator
-# 仓库安装
+## 仓库安装 prometheus-operator
 git clone https://github.com/prometheus-operator/kube-prometheus
 kubectl apply --server-side -f manifests/setup
 until kubectl get servicemonitors --all-namespaces ; do date; sleep 1; echo ""; done
@@ -160,38 +142,11 @@ kubectl apply -f manifests/
 kubectl apply --server-side -f manifests/setup -f manifests
 kubectl delete --ignore-not-found=true -f manifests/ -f manifests/setup
 
-cat > prometheus-additional.yaml <<- EOF
- - job_name: "apisix-prometheus"
-   scrape_interval: 10s
-   metrics_path: "/apisix/prometheus/metrics"
-   static_configs:
-   - targets: ["apisix-prometheus.ingress-apisix:9091"]
-EOF
-
-kubectl create secret generic additional-scrape-configs --from-file=prometheus-additional.yaml --dry-run=client -oyaml > additional-scrape-configs.yaml
-
-kubectl apply -f additional-scrape-configs.yaml -n monitoring
-cat >  prometheus.yaml <<- EOF
-apiVersion: monitoring.coreos.com/v1
-kind: Prometheus
-metadata:
-  name: prometheus
-  labels:
-    prometheus: prometheus
-spec:
-  replicas: 2
-  serviceAccountName: prometheus
-  serviceMonitorSelector:
-    matchLabels:
-      team: frontend
-  additionalScrapeConfigs:
-    name: additional-scrape-configs
-    key: prometheus-additional.yaml
-EOF
-
-import Apache APISIX 11719
-https://github.com/apache/apisix-ingress-controller/blob/master/docs/assets/other/json/apisix-ingress-controller-grafana.json
-# 第一个图
-Total Requests
-sum(apisix_http_requests_total{instance=~"$instance"})
+# 外部访问
+kubectl edit cm kube-prometheus-grafana -n monitoring
+[security]
+allow_embedding = true
+[auth.anonymous]
+enabled = true
+kubectl delete pod kube-prometheus-grafana-5b8cbc5d5b-t44zc -n monitoring
 
