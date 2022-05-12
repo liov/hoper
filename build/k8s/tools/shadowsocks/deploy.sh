@@ -41,6 +41,8 @@ RUN cd /tmp && \
  mv v2ray* /usr/bin/v2ray-plugin && \
  chmod +x /usr/bin/v2ray-plugin
 
+USER nobody
+
 ENTRYPOINT [ "ssserver", "--log-without-time", "-c", "/etc/shadowsocks-rust/config.json" ]
 EOF
 
@@ -53,7 +55,7 @@ docker run --name ssserver-rust-v2ray \
 -p 8389:8388/tcp \
 -p 8389:8388/udp \
 -v /root/ss/ssconfig.json:/etc/shadowsocks-rust/config.json \
--v "/root/.acme.sh/${host}":"/root/.acme.sh/${host}" \
+-v "/root/.acme.sh/${host}":"//.acme.sh/${host}" \
 -dit ssserver-rust-v2ray:latest \
 && docker logs ssserver-rust-v2ray
 
@@ -74,6 +76,6 @@ docker run --name ssserver-rust-quic \
 -p 8390:8388/tcp \
 -p 8390:8388/udp \
 -v /root/ss/ssudpconfig.json:/etc/shadowsocks-rust/config.json \
--v "/root/.acme.sh/${host}":"/root/.acme.sh/${host}" \
+-v "/root/.acme.sh/${host}":"//.acme.sh/${host}" \
 -dit ssserver-rust-v2ray:latest \
 && docker logs ssserver-rust-quic

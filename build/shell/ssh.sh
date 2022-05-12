@@ -1,1 +1,1 @@
-ssh -D localhost:1080  host
+ssh -qTfnN -D localhost:1080  host

@@ -64,6 +64,10 @@ spec:
       targetPort: 1080
       protocol: TCP
       nodePort: 1080
+    - port: 1080
+      targetPort: 1080
+      protocol: UDP
+      nodePort: 1080
   selector:
     app: shadowsocks
 
