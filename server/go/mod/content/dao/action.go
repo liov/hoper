@@ -4,7 +4,7 @@ import (
 	sqlstd "database/sql"
 	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
 	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
-	gormi "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm"
+	clausei "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/clause"
 	redisi "github.com/actliboy/hoper/server/go/lib/utils/dao/redis"
 	"github.com/actliboy/hoper/server/go/mod/content/model"
 	"github.com/actliboy/hoper/server/go/mod/protobuf/content"
@@ -184,7 +184,7 @@ func (d *contentDao) GetCommentsDB(db *gorm.DB, typ content.ContentType, refId, 
 		return 0, nil, ctxi.ErrorLog(errorcode.DBError, err, "Find")
 	}
 	var clauses []clause.Expression
-	clauses = append(clauses, gormi.Page(pageNo, pageSize))
+	clauses = append(clauses, clausei.Page(pageNo, pageSize))
 	var comments []*content.Comment
 	err = db.Clauses(clauses...).Find(&comments).Error
 	if err != nil {

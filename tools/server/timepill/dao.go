@@ -14,7 +14,7 @@ type ListReq struct {
 func List(req *ListReq) ([]*Diary, error) {
 	var diaries []*Diary
 
-	clauses := append((*clause.ListReq)(&req.ListReq).Clause(), (*clause.RangeReq)(&req.RangeReq).Clause())
+	clauses := append((*clausei.ListReq)(&req.ListReq).Clause(), (*clausei.RangeReq)(&req.RangeReq).Clause())
 	err := Dao.Hoper.Clauses(clauses...).Find(&diaries).Error
 	if err != nil {
 		return nil, err

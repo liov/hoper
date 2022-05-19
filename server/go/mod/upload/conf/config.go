@@ -1,6 +1,7 @@
 package conf
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/cache_ristretto"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/db"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/log"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/redis"

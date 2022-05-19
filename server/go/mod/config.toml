@@ -1,6 +1,7 @@
 Module = "user"
 # dev | test | prod
 # Env = "dev"
+InjectVersion = 1
 
 NoInject = ["Apollo","Etcd"]
 

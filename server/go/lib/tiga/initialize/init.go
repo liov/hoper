@@ -43,8 +43,9 @@ type EnvConfig struct {
 }
 
 type BasicConfig struct {
-	Module   string
-	NoInject []string
+	Module        string
+	NoInject      []string
+	InjectVersion int8
 }
 
 type Init struct {
@@ -59,6 +60,9 @@ type Init struct {
 }
 
 func flaginit() {
+	if flag.Parsed() {
+		return
+	}
 	flag.StringVar(&InitConfig.Env, "env", DEVELOPMENT, "环境")
 	flag.StringVar(&InitConfig.ConfUrl, "conf", `./config.toml`, "配置文件路径")
 	agent := flag.Bool("agent", false, "是否启用代理")
@@ -115,7 +119,6 @@ func (init *Init) LoadConfig() *Init {
 		onceConfig.NoInject[i] = strings.ToUpper(onceConfig.NoInject[i])
 	}
 	init.BasicConfig = onceConfig.BasicConfig
-	init.NoInject = onceConfig.NoInject
 
 	value := reflect.ValueOf(&onceConfig).Elem()
 	typ := reflect.TypeOf(&onceConfig).Elem()
@@ -131,7 +134,11 @@ func (init *Init) LoadConfig() *Init {
 			}*/
 			//会被回收,也可能是被移动了？
 			init.EnvConfig = &(*value.Field(i).Interface().(*EnvConfig))
-			onceConfig.ConfigCenter.ConfigCenter(init.EnvConfig.ConfigCenterEnvConfig, init.Module, init.Env != PRODUCT).HandleConfig(init.UnmarshalAndSetV2)
+			if init.InjectVersion == 1 {
+				onceConfig.ConfigCenter.ConfigCenter(init.EnvConfig.ConfigCenterEnvConfig, init.Module, init.Env != PRODUCT).HandleConfig(init.UnmarshalAndSet)
+			} else {
+				onceConfig.ConfigCenter.ConfigCenter(init.EnvConfig.ConfigCenterEnvConfig, init.Module, init.Env != PRODUCT).HandleConfig(init.UnmarshalAndSetV2)
+			}
 			break
 		}
 	}
@@ -259,7 +266,7 @@ func (init *Init) CloseDao() {
 }
 
 func (init *Init) UnmarshalAndSet(bytes []byte) {
-	toml.Unmarshal(bytes, &init.confM)
+	toml.Unmarshal(bytes, init.conf)
 	init.CloseDao()
 	init.inject()
 }

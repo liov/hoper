@@ -1,7 +1,7 @@
 // local mode(mode="app") = if mode == "app" then "app" else "node";
 local tpldir = "./build/k8s/app/";
 
-local Pipeline(name, mode, workdir, sourceFile, opts) = {
+local Pipeline(group, name, mode, workdir, sourceFile, opts) = {
   kind: "pipeline",
   type: "kubernetes",
   name: name,
@@ -59,6 +59,7 @@ local Pipeline(name, mode, workdir, sourceFile, opts) = {
         "cat "+tpldir+mode+"/Dockerfile",
         "echo",
         "sed -i 's/$${app}/"+name+"/g' "+tpldir+mode+"/deployment.yaml",
+        "sed -i 's/$${group}/"+group+"/g' "+tpldir+mode+"/deployment.yaml",
         "sed -i 's#$${image}#jyblsq/"+name+":${DRONE_TAG##"+name+"-}#g' "+tpldir+mode+"/deployment.yaml"
       ]
     },
@@ -133,12 +134,16 @@ local Pipeline(name, mode, workdir, sourceFile, opts) = {
           token: {
             from_secret: "token"
           },
-          type: "markdown"
+          type: "markdown",
+          message_color: true,
+          message_pic: true,
+          sha_link: true
        }
     }
   ]
 };
 
 [
-  Pipeline("timepill","app","./tools/server","./timepill/cmd/record.go",["-t"]),
+  Pipeline("timepill","timepill","app","tools/server","./timepill/cmd/record.go",["-t"]),
+  Pipeline("hoper","hoper","app","server/go/mod","",[])
 ]

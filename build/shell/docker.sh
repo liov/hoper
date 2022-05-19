@@ -9,3 +9,9 @@ docker run --restart=always
 docker update --restart=always <CONTAINER ID>
 # root用户
 docker run --user="root"
+# 覆盖entrypoint
+docker run --entrypoint /bin/bash
+# 执行后删除
+docker run --rm
+# dind 特权模式
+docker run --user="root" --privileged
