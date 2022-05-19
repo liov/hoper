@@ -1,5 +1,6 @@
 // local mode(mode="app") = if mode == "app" then "app" else "node";
 local tpldir = "./build/k8s/app/";
+local codedir = "/root/code/app/hoper/";
 
 local Pipeline(group, name, mode, workdir, sourceFile, opts) = {
   kind: "pipeline",
@@ -18,6 +19,12 @@ local Pipeline(group, name, mode, workdir, sourceFile, opts) = {
       ]
   },
   volumes: [
+    {
+        name: "codedir",
+        host: {
+           path: codedir
+        }
+    },
     {
       name: "gopath",
       host: {
@@ -50,9 +57,19 @@ local Pipeline(group, name, mode, workdir, sourceFile, opts) = {
     {
       name: "clone",
       image: "alpine/git",
+      volumes: [
+          {
+              name: "codedir",
+              path: "/code/"
+          }
+      ],
       commands: [
         "git config --global https.proxy 'socks5://proxy.tools:1080'",
-        "git clone ${DRONE_GIT_HTTP_URL} .",
+        //"git clone ${DRONE_GIT_HTTP_URL} .",
+        "cd /code",
+        "git fetch --all && git reset --hard origin/master && git pull",
+        "cd /drone/src/",
+        "git clone /code .",
         "git checkout $DRONE_COMMIT_REF",
         "sed -i 's/$${app}/"+name+"/g' "+tpldir+mode+"/Dockerfile",
         "sed -i 's/$${opts}/"+std.join(" ,",["\""+opt+"\"" for opt in opts])+"/g' "+tpldir+mode+"/Dockerfile",

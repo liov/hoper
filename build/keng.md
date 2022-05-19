@@ -1265,3 +1265,19 @@ args:
 
 # drone \ 反斜杠，sed用的反斜杠，yaml found unknown escape character
 解决不了，# 分隔符
+
+# docker遇到的错误:Get https://registry-1.docker.io/v2/: dial tcp: lookup registry-1.docker.io on [::1]:53
+vi /etc/resolv.conf
+加入：
+
+nameserver y.y.y.y
+nameserver x.x.x.x
+## wsl没法上网 ping不通 Temporary failure in name resolution
+wsl.exe --shutdown
+重启
+
+ipconfig
+Ethernet adapter vEthernet (WSL):
+IPv4 Address. . . . . . . . . . . : 172.17.0.1
+猜测ip跟docker0 冲突
+重装解决
