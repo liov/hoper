@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   labels:
     app: ${app}
+    group: ${group}
   name: ${app}
   namespace: default
 spec:
@@ -20,30 +21,32 @@ spec:
     metadata:
       labels:
         app: ${app}
+        group: ${group}
     spec:
       containers:
         - name: ${app}
           image: ${image}
           volumeMounts:
-            - mountPath: /app/local.toml
-              name: local-toml
-              subPath: local.toml
-            - mountPath: /app/config.toml
-              name: config-toml
-              subPath: config.toml
-            - mountPath: /data/${app}
-              name: picture
+            - mountPath: /app
+              name: ${group}-config
+            - mountPath: /data
+              name: data
+            - mountPath: /static
+              name: static
       volumes:
-        - name: local-toml
+        - name: ${group}-config
           configMap:
-            name: local.toml
+            name: ${group}-config
             items:
               - key: local.toml
                 path: local.toml
-        - name: config-toml
-          configMap:
-            name: config.toml
-        - name: picture
+              - key: config.toml
+                path: config.toml
+        - name: data
           hostPath:
             path: /data/${app}
+            type: DirectoryOrCreate
+        - name: static
+          hostPath:
+            path: /data/static
             type: DirectoryOrCreate

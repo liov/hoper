@@ -32,11 +32,4 @@ sudo apt-get install docker-engine
 sudo systemctl enable docker
 sudo systemctl start docker
 
-
-docker build -t manage:1.0 .
-
-docker rm -f `docker ps -a -q` //删除所有容器
-
-docker  run -d -p 8001:8001 manage:1.0 ./manage
-
 ```

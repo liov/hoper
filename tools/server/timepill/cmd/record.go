@@ -21,7 +21,10 @@ func main() {
 		timepill.TodayRecord()
 	}
 	c := cron.New()
-	c.AddFunc("55 23 * * ?", timepill.TodayCommentRecord)
+	c.AddFunc("55 23 * * ?", func() {
+		log.Info("定时任务：记录评论执行")
+		timepill.TodayCommentRecord()
+	})
 	//go timepill.RecordByOrderNoteBook()
 	timepill.StartRecord()
 }

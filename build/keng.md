@@ -1263,3 +1263,5 @@ args:
 
 # job=\"kubelet\", metrics_path=\"/metrics\", namespace=\"kube-system\", node=\"vm-20-12-ubuntu\", service=\"kube-prometheus-kube-prome-kubelet\"}];many-to-many matching not allowed: matching labels must be unique on one side
 
+# drone \ 反斜杠，sed用的反斜杠，yaml found unknown escape character
+解决不了，# 分隔符

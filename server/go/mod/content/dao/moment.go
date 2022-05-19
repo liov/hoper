@@ -3,7 +3,7 @@ package dao
 import (
 	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
 	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
-	gormi "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm"
+	clausei "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/clause"
 	"github.com/actliboy/hoper/server/go/mod/content/model"
 	"github.com/actliboy/hoper/server/go/mod/protobuf/content"
 	"github.com/go-redis/redis/v8"
@@ -21,7 +21,7 @@ func (d *contentDao) GetMomentListDB(db *gorm.DB, req *content.MomentListReq) (i
 		return 0, nil, ctxi.ErrorLog(errorcode.DBError, err, "Count")
 	}
 	var clauses []clause.Expression
-	clauses = append(clauses, gormi.Page(int(req.PageNo), int(req.PageSize)))
+	clauses = append(clauses, clausei.Page(int(req.PageNo), int(req.PageSize)))
 	err = db.Clauses(clauses...).Order("created_at desc").Find(&moments).Error
 	if err != nil {
 		return 0, nil, ctxi.ErrorLog(errorcode.DBError, err, "GetMomentListDB")

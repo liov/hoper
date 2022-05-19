@@ -6,16 +6,16 @@ ReadTimeout = 60
 WriteTimeout = 60
 OpenTracing = true
 
-
 [server.gin]
 RedirectTrailingSlash = false
 RedirectFixedPath = true
 HandleMethodNotAllowed = false
 MaxMultipartMemory = 20971520
 
+
 [customize]
 GrpcService = {user = "localhost:8080", note = "localhost:8090"}
-Volume = "../data"
+Volume = "/data"
 PassSalt = "%*~&*G(Ysa-jyb"
 TokenSecret = "hjoihiahDAW2iofjiJPO"
 TokenMaxAge = 7
@@ -25,7 +25,7 @@ JwtSecret = "233"
 
 UploadUrlPrefix = "/static/"
 #文件
-UploadDir = "F:/upload/"
+UploadDir = "/static/"
 
 # MB
 UploadMaxSize = 10
@@ -36,9 +36,9 @@ LuosimaoAPIKey ="f4a1c65ee13911b7bb9f902655c773a6"
 
 QrCodeSaveDir = "/qrcode"
 PrefixUrl =""
-FontSaveDir ="/font"
+FontSaveDir = "/font"
 
-CrawlerName =""
+CrawlerName = ""
 
 [customize.content.limit]
 SecondLimitCount = 1

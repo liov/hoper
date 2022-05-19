@@ -29,7 +29,7 @@ func (*DiaryService) DiaryBook(ctx context.Context, req *content.DiaryBookReq) (
 }
 func (*DiaryService) DiaryBookList(ctx context.Context, req *content.DiaryBookListReq) (*content.DiaryBookListRep, error) {
 	ctxi := contexti.CtxFromContext(ctx)
-	auth, err := auth(ctxi, true)
+	_, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}

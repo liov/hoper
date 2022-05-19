@@ -37,6 +37,24 @@ int main() {
 ```
 执行如下命令，生成dll
 gcc -shared -pthread -o libgobblob.dll gobblob.c libgobblob.a -lWinMM -lntdll -lWS2_32 -Iinclude
+# 静态编译
+go build -tags netgo
+CGO_ENABLED=0 go build
+go build -ldflags '-s -w --extldflags "-static -fpic"'
+可选参数-ldflags 是编译选项：
+
+-s -w 去掉调试信息，可以减小构建后文件体积，
+--extldflags "-static -fpic" 完全静态编译，这样编译生成的文件就可以任意放到指定平台下运行，而不需要运行环境配置。
+## 显然对于带CGO的交叉编译，CGO_ENABLED必须开启。
+cgo的内部连接和外部连接
+internal linking
+internal linking的大致意思是若用户代码中仅仅使用了net、os/user等几个标准库中的依赖cgo的包时，cmd/link默认使用internal linking，而无需启动外部external linker(如:gcc、clang等)，不过由于cmd/link功能有限，仅仅是将.o和pre-compiled的标准库的.a写到最终二进制文件中。因此如果标准库中是在CGO_ENABLED=1情况下编译的，那么编译出来的最终二进制文件依旧是动态链接的，即便在go build时传入 -ldflags '-extldflags "-static"'亦无用，因为根本没有使用external linker
+
+这样就会出现下文中命令行带参数-ldflags '-extldflags "-static"'，编译出来的还是会显示为动态连接。
+
+external linking
+而external linking机制则是cmd/link将所有生成的.o都打到一个.o文件中，再将其交给外部的链接器，比如gcc或clang去做最终链接处理。如果此时，我们在cmd/link的参数中传入 -ldflags '-linkmode "external" -extldflags "-static"'，那么gcc/clang将会去做静态链接，将.o中undefined的符号都替换为真正的代码。我们可以通过-linkmode=external来强制cmd/link采用external linker
+
 
 # android
 arm64 aarch64-linux-android

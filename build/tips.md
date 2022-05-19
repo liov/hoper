@@ -101,3 +101,8 @@ clusterIP: None
 具体表现service没有自己的虚拟IP,nslookup会出现所有pod的ip.但是ping的时候只会出现第一个pod的ip
 service没有负载均衡
 检查一下是否用了headless service.headless service是不会自动负载均衡的
+
+# alpine 镜像执行go二进制文件
+## 编译静态链接
+go build -tags netgo
+## alpine-glibc镜像

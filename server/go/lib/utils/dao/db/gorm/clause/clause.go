@@ -1,4 +1,4 @@
-package clause
+package clausei
 
 import (
 	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
