@@ -4,7 +4,6 @@ package tools
 
 import (
 	_ "github.com/alta/protopatch/cmd/protoc-gen-go-patch"
-	_ "github.com/googleapis/googleapis"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2"
 	_ "github.com/mwitkow/go-proto-validators/protoc-gen-govalidators"
@@ -12,7 +11,7 @@ import (
 	_ "google.golang.org/protobuf/cmd/protoc-gen-go"
 )
 
-////go:generate go mod download
+//go:generate go mod download github.com/googleapis/googleapis
 //go:generate go install google.golang.org/protobuf/cmd/protoc-gen-go
 //go:generate protoc -I../protobuf --go_out=paths=source_relative:../protobuf ../protobuf/patch/*.proto
 //go:generate protoc -I../protobuf -I../protobuf/third --go_out=paths=source_relative:../protobuf ../protobuf/utils/apiconfig/*.proto

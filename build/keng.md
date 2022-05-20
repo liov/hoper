@@ -1281,3 +1281,17 @@ Ethernet adapter vEthernet (WSL):
 IPv4 Address. . . . . . . . . . . : 172.17.0.1
 猜测ip跟docker0 冲突
 重装解决
+
+# docker protoc 
+Could not make proto path relative: /work/proto/utils/*.proto: No such file or directory
+
+# docker build ADD failed: file not found in build context or excluded by .dockerignore: file does not exist
+所以我在。目录并执行sudo docker构建-t测试7/3/web，它构建容器，但在ADD etc/php /usr/local/etc/php...
+
+您提供给docker build(7/3/web)定义了“构建上下文”。Docker只能访问此目录下的文件。
+
+最简单的解决方案可能是将您的Dockerfile进入toplevel目录，并将您的路径调整为从那里开始的相对路径。
+
+你不需要有要移动Dockerfile (正如Jason所指出的，您可以通过以下方式在任何地方引用它-f)，但这使得目录的组织更加明显。
+## cd topdir && docker build -t tag -f
+## docker build -t tag -f Dockerfile topdir

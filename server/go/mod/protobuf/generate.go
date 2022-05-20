@@ -2,11 +2,12 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
-	"strings"
+	"path/filepath"
 	"text/template"
 
 	"github.com/actliboy/hoper/server/go/lib/utils/os"
@@ -46,20 +47,6 @@ var model = []string{goOut, grpcOut}
 var enum = []string{enumOut, goOut}
 
 var gqlgen []string
-var files = map[string][]string{
-	/*
-		"/utils/errorcode/errrep.proto": model,
-		"/utils/errorcode/*enum.proto":  enum,
-		"/utils/response/*.proto":       model,
-		"/utils/request/*.proto":       model,
-		"/utils/oauth/*.proto":          model,
-		"/utils/time/*.proto":          model,
-		"/utils/proto/gogo/*.gen.proto": {gogoprotoOut},
-		"/utils/proto/go/*.proto":       {goOut},*/
-	"/*service.proto": service,
-	"/*model.proto":   model,
-	"/*enum.proto":    enum,
-}
 
 var (
 	proto                                         *string
@@ -68,15 +55,17 @@ var (
 
 func init() {
 	pwd, _ = os.Getwd()
-	proto = flag.String("proto", "../../../proto", "proto路径")
+	protodef, _ := filepath.Abs("../../../proto")
+	proto = flag.String("proto", protodef, "proto路径")
 	stdPatch := flag.Bool("patch", false, "是否使用原生protopatch")
 	goList = `go list -m -f {{.Dir}} `
 	libDir, _ := osi.CMD(goList + "github.com/actliboy/hoper/server/go/lib")
-	//osi.CMD("go mod download github.com/googleapis/googleapis")
 	os.Chdir(libDir)
+	fmt.Println(osi.CMD("go get github.com/googleapis/googleapis"))
 	google, _ := osi.CMD(
 		goList + "github.com/googleapis/googleapis",
 	)
+	osi.CMD("go mod tidy")
 	gateway, _ = osi.CMD(
 		goList + "github.com/grpc-ecosystem/grpc-gateway/v2",
 	)
@@ -93,65 +82,9 @@ func init() {
 	os.Chdir(pwd)
 }
 
-func run(dir string) {
-	fileInfos, err := ioutil.ReadDir(dir)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	for i := range fileInfos {
-		if fileInfos[i].IsDir() {
-			if fileInfos[i].Name() == "utils" {
-				continue
-			}
-			for k, v := range files {
-				k = dir + "/" + fileInfos[i].Name() + k
-				for _, plugin := range v {
-					arg := "protoc " + include + " " + k + " --" + plugin + ":" + pwd + "/protobuf"
-					if strings.HasPrefix(plugin, "openapiv2_out") {
-						arg = arg + "/api"
-					}
-					if strings.HasPrefix(plugin, "graphql_out") || strings.HasPrefix(plugin, "gqlcfg_out") {
-						arg = arg + "/gql"
-					}
-					//protoc-gen-gqlgen应该在最后生成，gqlgen会调用go编译器，protoc-gen-gqlgen会生成不存在的接口，编译不过去
-					if strings.HasPrefix(plugin, "gqlgen_out") {
-						gqlgen = append(gqlgen, arg)
-						continue
-					}
-					execi.Run(arg)
-				}
-			}
-			run(dir + "/" + fileInfos[i].Name())
-		}
-	}
-}
-
-func single(file string) {
+func single(path string) {
 	for _, plugin := range model {
-		arg := "protoc " + include + " " + *proto + file + " --" + plugin + ":" + pwd + "/protobuf"
-		execi.Run(arg)
-	}
-}
-
-func genutils(dir string) {
-	fileInfos, err := ioutil.ReadDir(dir)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	for i := range fileInfos {
-		if fileInfos[i].IsDir() {
-			genutils(dir + "/" + fileInfos[i].Name())
-		}
-		if strings.HasSuffix(fileInfos[i].Name(), "enum.proto") {
-			arg := "protoc " + include + " " + dir + "/*enum.proto" + " --" + enumOut + ":" + pwd + "/protobuf"
-			execi.Run(arg)
-			break
-		}
-	}
-
-	for _, plugin := range model {
-		arg := "protoc " + include + " " + dir + "/*.proto" + " --" + plugin + ":" + pwd + "/protobuf"
+		arg := "protoc " + include + " " + path + " --" + plugin + ":" + pwd + "/protobuf"
 		execi.Run(arg)
 	}
 }
@@ -191,70 +124,3 @@ func gengql() {
 	}
 
 }
-
-const ymlTpl = `schema:
-  - ./*.graphqls
-
-# Where should the generated server code go?
-exec:
-  filename: ../../{{.}}/generated.gql.go
-  package: {{.}}
-
-# Enable Apollo federation support
-federation:
-  filename: ../../{{.}}/federation.gql.go
-  package: {{.}}
-
-model:
-  filename: ../../{{.}}/models.gql.go
-  package: {{.}}
-
-autobind:
-  - "github.com/actliboy/hoper/server/go/protobuf/{{.}}"
-  - "github.com/actliboy/hoper/server/go/lib/protobuf/response"
-  - "github.com/actliboy/hoper/server/go/lib/protobuf/oauth"
-
-models:
-  ID:
-    model:
-      - github.com/actliboy/hoper/server/go/lib/utils/net/http/api/graphql.UInt64
-  Int:
-    model:
-      - github.com/99designs/gqlgen/graphql.Int
-  Int32:
-    model:
-      - github.com/99designs/gqlgen/graphql.Int32
-  Int64:
-    model:
-      - github.com/99designs/gqlgen/graphql.Int64
-  Uint8:
-    model:
-      - github.com/actliboy/hoper/server/go/lib/utils/net/http/api/graphql.Uint8
-  Uint:
-    model:
-      - github.com/actliboy/hoper/server/go/lib/utils/net/http/api/graphql.Uint
-  Uint32:
-      model:
-        - github.com/actliboy/hoper/server/go/lib/utils/net/http/api/graphql.Uint32
-  Uint64:
-      model:
-        - github.com/actliboy/hoper/server/go/lib/utils/net/http/api/graphql.Uint64
-  Float32:
-    model:
-      - github.com/actliboy/hoper/server/go/lib/utils/net/http/api/graphql.Float32
-  Float64:
-    model:
-      - github.com/actliboy/hoper/server/go/lib/utils/net/http/api/graphql.Float64
-  Float:
-    model:
-      - github.com/99designs/gqlgen/graphql.Float
-  Bytes:
-    model:
-      - github.com/actliboy/hoper/server/go/lib/utils/net/http/api/graphql.Bytes
-  HttpResponse_HeaderEntry:
-    model:
-      - github.com/actliboy/hoper/server/go/lib/utils/net/http/api/graphql.HttpResponse_HeaderEntry
-`
-
-//经过一番查找，发现yaml语法对格式是非常严格的，不可以有制表符！不可以有制表符！不可以有制表符！
-//缩进也有要求

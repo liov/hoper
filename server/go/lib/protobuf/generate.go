@@ -18,9 +18,9 @@ import (
 
 func main() {
 	//single("/content/moment.model.proto")
-
 	genutils(proto)
 	//gengql()
+	os.Chdir(pwd)
 }
 
 const goOut = "go-patch_out=plugin=go,paths=source_relative"
@@ -43,10 +43,11 @@ func init() {
 	gateway, _ = osi.CMD(
 		goList + "github.com/grpc-ecosystem/grpc-gateway/v2",
 	)
-	osi.CMD("go mod download github.com/googleapis/googleapis")
+	osi.CMD("go get github.com/googleapis/googleapis")
 	google, _ := osi.CMD(
 		goList + "github.com/googleapis/googleapis",
 	)
+	osi.CMD("go mod tidy")
 	protopatch := proto
 	if *stdPatch {
 		protopatch, _ = osi.CMD(goList + "github.com/alta/protopatch")

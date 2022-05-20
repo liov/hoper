@@ -1378,7 +1378,11 @@ func (g *Generator) generateImports() {
 	if len(pkg) > 0 {
 		g.P("import (")
 		for _, p := range pkg {
-			g.PrintImport("", GoImportPath(p))
+			if strings.HasSuffix(p, "hoper/server/go/lib/utils/strings") {
+				g.PrintImport("stringsi", GoImportPath(p))
+			} else {
+				g.PrintImport("", GoImportPath(p))
+			}
 		}
 		g.P(")")
 	}
