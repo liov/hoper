@@ -27,12 +27,14 @@ spec:
         - name: ${app}
           image: ${image}
           volumeMounts:
-            - mountPath: /app
+            - mountPath: /app/config.toml
+              subPath: config.toml
+              name: ${group}-config
+            - mountPath: /app/local.toml
+              subPath: local.toml
               name: ${group}-config
             - mountPath: /data
               name: data
-            - mountPath: /static
-              name: static
       volumes:
         - name: ${group}-config
           configMap:
@@ -46,7 +48,4 @@ spec:
           hostPath:
             path: /data/${app}
             type: DirectoryOrCreate
-        - name: static
-          hostPath:
-            path: /data/static
-            type: DirectoryOrCreate
+

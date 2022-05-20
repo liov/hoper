@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-var stuff = map[string][]string{
+var stuffs = map[string][]string{
 	/*
 		"/utils/errorcode/errrep.proto": model,
 		"/utils/errorcode/*enum.proto":  enum,
@@ -37,7 +37,7 @@ func run(dir string) {
 			run(dir + "/" + fileInfos[i].Name())
 			continue
 		}
-		for k, v := range stuff {
+		for k, v := range stuffs {
 			filename := fileInfos[i].Name()
 			file := dir + "/" + filename
 			if strings.HasSuffix(filename, k) {

@@ -64,6 +64,7 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
           }
       ],
       commands: [
+        "git config --global http.proxy 'socks5://proxy.tools:1080'",
         "git config --global https.proxy 'socks5://proxy.tools:1080'",
         //"git clone ${DRONE_GIT_HTTP_URL} .",
         "cd /code",
@@ -71,8 +72,11 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
         "cd /drone/src/",
         "git clone /code .",
         "git checkout -b deploy $DRONE_COMMIT_REF",
+        local buildfile = "/code/"+workdir+"/protobuf/build";
+        if protoc then "if [ -f "+buildfile+" ]; then cp -r /code/"+workdir+"/protobuf  /drone/src/"+workdir+"; fi" else "echo",
         "sed -i 's/$${app}/"+name+"/g' "+tpldir+mode+"/Dockerfile",
-        "sed -i 's/$${opts}/"+std.join(" ,",["\""+opt+"\"" for opt in opts])+"/g' "+tpldir+mode+"/Dockerfile",
+        local cmd = ["./"+name]+opts;
+        "sed -i 's#$${cmd}#"+std.join(" ,",["\""+opt+"\"" for opt in cmd])+"#g' "+tpldir+mode+"/Dockerfile",
         "cat "+tpldir+mode+"/Dockerfile",
         "echo",
         "sed -i 's/$${app}/"+name+"/g' "+tpldir+mode+"/deployment.yaml",
@@ -95,7 +99,8 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
       commands: [
         "cd " + workdir,
         "go mod download",
-         if protoc then "go run ./protobuf" else "echo",
+        local buildfile = "/drone/src/"+workdir+"/protobuf/build";
+         if protoc then "if [ ! -f "+buildfile+" ]; then go run ./protobuf; fi" else "echo",
         "go mod tidy",
         "go build -o /drone/src/"+name+" "+sourceFile
       ]

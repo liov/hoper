@@ -107,7 +107,7 @@ func (init *Init) LoadConfig() *Init {
 		BasicConfig
 	}{}
 	if _, err := os.Stat(init.ConfUrl); os.IsNotExist(err) {
-		log.Fatalf("配置错误: 请确保可执行文件和配置目录在同一目录下")
+		log.Fatalf("配置错误: 请确保可执行文件和配置文件在同一目录下")
 	}
 	err := configor.Load(&onceConfig, init.ConfUrl)
 	if err != nil {

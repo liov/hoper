@@ -10,4 +10,4 @@ WORKDIR /app
 
 ADD ./${app} /app
 
-CMD ["./${app}", ${opts}]
+CMD [${cmd}]
