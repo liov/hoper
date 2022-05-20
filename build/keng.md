@@ -1295,3 +1295,6 @@ Could not make proto path relative: /work/proto/utils/*.proto: No such file or d
 你不需要有要移动Dockerfile (正如Jason所指出的，您可以通过以下方式在任何地方引用它-f)，但这使得目录的组织更加明显。
 ## cd topdir && docker build -t tag -f
 ## docker build -t tag -f Dockerfile topdir
+
+# k8s dial tcp: lookup postgres.tools on x.x.x.x: no such host
+dnsPolicy: Default #无法解析svc

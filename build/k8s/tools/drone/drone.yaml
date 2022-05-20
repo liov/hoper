@@ -29,16 +29,16 @@ spec:
             - containerPort: 443
               name: https
               protocol: TCP
-          volumeMounts:
-            # Persist our configs in an SQLite DB in here
-            - name: drone-server-sqlite-db
-              mountPath: /data
-      dnsPolicy: Default
+#          volumeMounts:
+#            # Persist our configs in an SQLite DB in here
+#            - name: drone-server-sqlite-db
+#              mountPath: /data
+#      dnsPolicy: Default #无法解析svc
       restartPolicy: Always
-      volumes:
-        - name: drone-server-sqlite-db
-          hostPath:
-            path: /var/lib/drone
+#      volumes:
+#        - name: drone-server-sqlite-db
+#          hostPath:
+#            path: /var/lib/drone
 ---
 
 

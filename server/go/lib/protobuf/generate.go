@@ -27,15 +27,20 @@ const goOut = "go-patch_out=plugin=go,paths=source_relative"
 const grpcOut = "go-patch_out=plugin=go-grpc,paths=source_relative"
 const enumOut = "enum_out=plugins=grpc,paths=source_relative"
 
+const googleapis = "googleapis/googleapis@v0.0.0-20220520010701-4c6f5836a32"
+
 var model = []string{goOut, grpcOut}
 
 var (
-	proto                                         string
-	pwd, goList, gateway, protobuf, path, include string
+	proto                                           string
+	pwd, goList, gateway, protobuf, gopath, include string
 )
 
 func init() {
-
+	gopath = os.Getenv("GOPATH")
+	if strings.HasSuffix(gopath, "/") {
+		gopath = gopath[:len(gopath)-1]
+	}
 	stdPatch := flag.Bool("patch", false, "是否使用原生protopatch")
 	pwd, _ = os.Getwd()
 	proto = pwd + "/protobuf"
@@ -43,20 +48,24 @@ func init() {
 	gateway, _ = osi.CMD(
 		goList + "github.com/grpc-ecosystem/grpc-gateway/v2",
 	)
-	osi.CMD("go get github.com/googleapis/googleapis")
-	google, _ := osi.CMD(
-		goList + "github.com/googleapis/googleapis",
-	)
-	osi.CMD("go mod tidy")
+	google := gopath + "pkg/mod/github.com/" + googleapis
+	_, err := os.Stat(google)
+	if os.IsNotExist(err) {
+		osi.CMD("go get " + googleapis)
+		google, _ = osi.CMD(
+			goList + "github.com/googleapis/googleapis",
+		)
+		osi.CMD("go mod tidy")
+	}
 	protopatch := proto
 	if *stdPatch {
 		protopatch, _ = osi.CMD(goList + "github.com/alta/protopatch")
 	}
 	protobuf, _ = osi.CMD(goList + "google.golang.org/protobuf")
 	//gogoProtoOut, _ := cmd.CMD(goList + "github.com/gogo/protobuf")
-	path = os.Getenv("GOPATH")
+
 	include = "-I" + gateway + " -I" + google + " -I" +
-		protobuf + " -I" + protopatch + " -I" + path + "/src" + " -I" + proto
+		protobuf + " -I" + protopatch + " -I" + gopath + "/src" + " -I" + proto
 }
 
 func genutils(dir string) {

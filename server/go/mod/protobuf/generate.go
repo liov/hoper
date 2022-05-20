@@ -2,13 +2,13 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"text/template"
+	"time"
 
 	"github.com/actliboy/hoper/server/go/lib/utils/os"
 	execi "github.com/actliboy/hoper/server/go/lib/utils/os/exec"
@@ -25,6 +25,9 @@ func main() {
 	run(*proto)
 	genutils(*proto + "/utils")
 	//gengql()
+	file, _ := os.Create(pwd + "/protobuf/build")
+	defer file.Close()
+	file.WriteString(time.Now().Format("2006-01-02 15:04:05"))
 }
 
 const goOut = "go-patch_out=plugin=go,paths=source_relative"
@@ -36,6 +39,8 @@ const govalidatorsOut = "govalidators_out=gogoimport=true,paths=source_relative"
 const gogoprotoOut = "gogo_out=plugins=grpc"
 const gqlNogogoOut = "gqlgen_out=gogoimport=false,paths=source_relative"
 const gqlOut = "graphql_out=paths=source_relative"
+
+const googleapis = "github.com/googleapis/googleapis@v0.0.0-20220520010701-4c6f5836a32f"
 
 var service = []string{goOut, grpcOut,
 	gatewayOut, openapiv2Out, govalidatorsOut,
@@ -49,8 +54,8 @@ var enum = []string{enumOut, goOut}
 var gqlgen []string
 
 var (
-	proto                                         *string
-	pwd, goList, gateway, protobuf, path, include string
+	proto                                           *string
+	pwd, goList, gateway, protobuf, gopath, include string
 )
 
 func init() {
@@ -61,11 +66,15 @@ func init() {
 	goList = `go list -m -f {{.Dir}} `
 	libDir, _ := osi.CMD(goList + "github.com/actliboy/hoper/server/go/lib")
 	os.Chdir(libDir)
-	fmt.Println(osi.CMD("go get github.com/googleapis/googleapis"))
-	google, _ := osi.CMD(
-		goList + "github.com/googleapis/googleapis",
-	)
-	osi.CMD("go mod tidy")
+	google := gopath + "pkg/mod/" + googleapis
+	_, err := os.Stat(google)
+	if os.IsNotExist(err) {
+		osi.CMD("go get " + googleapis)
+		google, _ = osi.CMD(
+			goList + "github.com/googleapis/googleapis",
+		)
+		osi.CMD("go mod tidy")
+	}
 	gateway, _ = osi.CMD(
 		goList + "github.com/grpc-ecosystem/grpc-gateway/v2",
 	)
