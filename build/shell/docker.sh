@@ -15,3 +15,5 @@ docker run --entrypoint /bin/bash
 docker run --rm
 # dind 特权模式
 docker run --user="root" --privileged
+
+docker run --rm -v /mnt/d/SDK/gopath:/go -v $PWD:/work -w /work/server/go/mod golang go run /work/server/go/mod/tools/install.go

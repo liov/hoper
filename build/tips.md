@@ -106,3 +106,6 @@ service没有负载均衡
 ## 编译静态链接
 go build -tags netgo
 ## alpine-glibc镜像
+
+# cp复制带.git 的目录
+git clone /src /dst

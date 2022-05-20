@@ -2,7 +2,7 @@
 local tpldir = "./build/k8s/app/";
 local codedir = "/root/code/app/hoper/";
 
-local Pipeline(group, name, mode, workdir, sourceFile, opts) = {
+local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
   kind: "pipeline",
   type: "kubernetes",
   name: name,
@@ -70,7 +70,7 @@ local Pipeline(group, name, mode, workdir, sourceFile, opts) = {
         "git fetch --all && git reset --hard origin/master && git pull",
         "cd /drone/src/",
         "git clone /code .",
-        "git checkout $DRONE_COMMIT_REF",
+        "git checkout -b deploy $DRONE_COMMIT_REF",
         "sed -i 's/$${app}/"+name+"/g' "+tpldir+mode+"/Dockerfile",
         "sed -i 's/$${opts}/"+std.join(" ,",["\""+opt+"\"" for opt in opts])+"/g' "+tpldir+mode+"/Dockerfile",
         "cat "+tpldir+mode+"/Dockerfile",
@@ -82,7 +82,7 @@ local Pipeline(group, name, mode, workdir, sourceFile, opts) = {
     },
     {
       name: "go build",
-      image: "golang:1.18.1",
+      image: if protoc then "jyblsq/golang:protoc" else "golang:1.18.1",
       volumes: [
         {
             name: "gopath",
@@ -90,13 +90,12 @@ local Pipeline(group, name, mode, workdir, sourceFile, opts) = {
         }
       ],
       environment: {
-         GOOS: "linux",
-         GOARCH: "amd64",
          GOPROXY: "https://goproxy.io,https://goproxy.cn,direct"
       },
       commands: [
         "cd " + workdir,
         "go mod download",
+         if protoc then "go run ./protobuf" else "echo",
         "go mod tidy",
         "go build -o /drone/src/"+name+" "+sourceFile
       ]
@@ -161,6 +160,6 @@ local Pipeline(group, name, mode, workdir, sourceFile, opts) = {
 };
 
 [
-  Pipeline("timepill","timepill","app","tools/server","./timepill/cmd/record.go",["-t"]),
-  Pipeline("hoper","hoper","app","server/go/mod","",[])
+  Pipeline("timepill","timepill","app",false,"tools/server","./timepill/cmd/record.go",["-t"]),
+  Pipeline("hoper","hoper","app",true,"server/go/mod","",[])
 ]
