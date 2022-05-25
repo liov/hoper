@@ -27,25 +27,22 @@ spec:
         - name: ${app}
           image: ${image}
           volumeMounts:
-            - mountPath: /app/config.toml
-              subPath: config.toml
-              name: ${group}-config
-            - mountPath: /app/local.toml
-              subPath: local.toml
-              name: ${group}-config
+            - mountPath: /app/config
+              name: ${group}
             - mountPath: /data
               name: data
+            - mountPath: /static
+              name: static
       volumes:
-        - name: ${group}-config
+        - name: ${group}
           configMap:
-            name: ${group}-config
-            items:
-              - key: local.toml
-                path: local.toml
-              - key: config.toml
-                path: config.toml
+            name: ${group}
         - name: data
           hostPath:
             path: /data/${app}
+            type: DirectoryOrCreate
+        - name: static
+          hostPath:
+            path: /data/static/${app}
             type: DirectoryOrCreate
 

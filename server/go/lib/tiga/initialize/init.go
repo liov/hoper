@@ -64,7 +64,12 @@ func flaginit() {
 		return
 	}
 	flag.StringVar(&InitConfig.Env, "env", DEVELOPMENT, "环境")
-	flag.StringVar(&InitConfig.ConfUrl, "conf", `./config.toml`, "配置文件路径")
+	InitConfig.ConfUrl = "./config.toml"
+	if _, err := os.Stat(InitConfig.ConfUrl); os.IsNotExist(err) {
+		InitConfig.ConfUrl = "./config/config.toml"
+	}
+	flag.StringVar(&InitConfig.ConfUrl, "conf", InitConfig.ConfUrl, "配置文件路径,默认./config.toml或./config/config.toml")
+
 	agent := flag.Bool("agent", false, "是否启用代理")
 	testing.Init()
 	flag.Parse()
@@ -107,7 +112,7 @@ func (init *Init) LoadConfig() *Init {
 		BasicConfig
 	}{}
 	if _, err := os.Stat(init.ConfUrl); os.IsNotExist(err) {
-		log.Fatalf("配置错误: 请确保可执行文件和配置文件在同一目录下")
+		log.Fatalf("配置错误: 请确保可执行文件和配置文件在同一目录下或在config目录下或指定配置文件")
 	}
 	err := configor.Load(&onceConfig, init.ConfUrl)
 	if err != nil {

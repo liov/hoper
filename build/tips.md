@@ -1,6 +1,8 @@
 # pogres表移动到另一个库
 pg_dump -t table_to_copy source_db | psql target_db
 
+pg_dump -U postgres -d test | psql -d hoper -U postgres
+
 # win10教育版
 slmgr /ipk NW6C2-QMPVW-D7KKK-3GKT6-VCFB2
 

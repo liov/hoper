@@ -15,5 +15,7 @@ spec:
         - serviceName: apisix-dashboard
           servicePort: 80
       plugins:
-        - name: cors
+        - name: redirect
           enable: true
+          config:
+            http_to_https: true
