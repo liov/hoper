@@ -1,11 +1,11 @@
 import axios from "axios";
 import store from "../store/index";
 import { Toast } from "vant";
-import vue from "vue";
 import router from "../router";
+import {API_HOST} from "@/plugin/config";
 
 //axios.defaults.baseURL = "https://" + window.location.host;
-//axios.defaults.baseURL = "https://hoper.xyz";
+axios.defaults.baseURL = API_HOST;
 const token = localStorage.getItem("token");
 axios.defaults.headers["Authorization"] = token
   ? token

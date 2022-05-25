@@ -88,7 +88,7 @@ spec:
               protocol: TCP
           volumeMounts:
             - name: redis-config
-              mountPath: /conf/redis.conf
+              mountPath: /conf
             - name: redis-data
               mountPath: /data
       volumes:

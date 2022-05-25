@@ -44,7 +44,7 @@
 import { Options, Vue } from "vue-class-component";
 import Moment from "@/components/moment/Moment.vue";
 import ActionMore from "@/components/action/More.vue";
-import { STATIC_DIR } from "@/plugin/static";
+import { API_HOST, STATIC_DIR } from "@/plugin/config";
 
 @Options({
   components: { Moment, ActionMore },
@@ -70,7 +70,7 @@ export default class Chat extends Vue {
     this.ws = new WebSocket(
       document.location.protocol.replace("http", "ws") +
         "//" +
-        window.location.host +
+        API_HOST +
         "/api/ws/chat"
     );
     this.ws.onopen = () => {
@@ -104,14 +104,13 @@ export default class Chat extends Vue {
       this.newWs();
       return;
     }
-
-    this.ws.send(
-      JSON.stringify({
-        recvUserId: this.recv,
-        sendUserId: this.user.id,
-        content: this.message, // Strip out html
-      })
-    );
+    const msg:any = {
+      recvUserId: this.recv,
+      sendUserId: this.user.id,
+      content: this.message, // Strip out html
+    };
+    this.msgs = this.msgs.concat(msg);
+    this.ws.send(JSON.stringify(msg));
   }
   async onFocus() {
     if (!this.$store.state.user.auth) {

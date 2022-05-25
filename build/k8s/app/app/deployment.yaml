@@ -28,13 +28,13 @@ spec:
           image: ${image}
           volumeMounts:
             - mountPath: /app/config
-              name: ${group}
+              name: config
             - mountPath: /data
               name: data
             - mountPath: /static
               name: static
       volumes:
-        - name: ${group}
+        - name: config
           configMap:
             name: ${group}
         - name: data

@@ -31,7 +31,7 @@ export default class Tinymce extends Vue {
         selector: "#editor_t",
         mobile: {
           menubar: true,
-          language_url: "http://hoper.xyz:8090/static/zh_CN.js",
+          language_url: "//hoper.xyz/static/zh_CN.js",
           language: "zh_CN",
           skin: "oxide",
           height: 650,

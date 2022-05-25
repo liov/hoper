@@ -2,7 +2,12 @@
   <div class="home">
     <van-row class="info">
       <van-col span="3">
-        <van-image round width="3rem" height="3rem" :src="staticDir + user.avatarUrl" />
+        <van-image
+          round
+          width="3rem"
+          height="3rem"
+          :src="staticDir + user.avatarUrl"
+        />
       </van-col>
       <van-col span="6">
         {{ user.name }}
@@ -76,8 +81,7 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import axios from "axios";
-import { Toast } from "vant";
-import { STATIC_DIR } from "@/plugin/static";
+import { STATIC_DIR } from "@/plugin/config";
 
 @Options({
   components: {},
@@ -100,7 +104,7 @@ export default class Home extends Vue {
 
 <style scoped lang="less">
 .info {
-  margin: 1rem 0rem;
+  margin: 1rem 0;
   padding: 0 1rem;
 }
 i {

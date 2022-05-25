@@ -156,10 +156,9 @@ export default class Login extends Vue {
   async onSubmit(values: any) {
     if (this.type == 0)
       await this.$store.dispatch("login", this.getFormValues(values));
-    else await this.$store.dispatch("signup", this.getFormValues(values));//await this.signup(values);
-    const LUOCAPTCHA = (window as any).LUOCAPTCHA
+    else await this.$store.dispatch("signup", this.getFormValues(values)); //await this.signup(values);
+    const LUOCAPTCHA = (window as any).LUOCAPTCHA;
     LUOCAPTCHA && LUOCAPTCHA.reset();
-    
   }
 
   onClick(name, title) {

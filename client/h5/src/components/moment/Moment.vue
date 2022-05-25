@@ -41,7 +41,7 @@ import { Options, Vue, prop } from "vue-class-component";
 import { ImagePreview } from "vant";
 import Action from "@/components/action/Action.vue";
 import { jump } from "@/router/utils";
-import { STATIC_DIR } from "@/plugin/static";
+import { STATIC_DIR } from "@/plugin/config";
 class Props {
   moment = prop<any>({ default: {} });
   user = prop<any>({});

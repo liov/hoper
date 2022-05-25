@@ -80,7 +80,7 @@ import { upload } from "@/plugin/utils/upload";
 import dataTool from "@/plugin/utils/date";
 import dayjs from "dayjs";
 import store from "@/store";
-import { STATIC_DIR } from "@/plugin/static";
+import { STATIC_DIR } from "@/plugin/config";
 
 @Options({
   components: {},
