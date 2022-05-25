@@ -1301,3 +1301,35 @@ dnsPolicy: Default #无法解析svc
 
 # k8s docker postgres psql Peer authentication failed for user "postgres"
 -h 0.0.0.0
+
+# fcntl64: symbol not found
+c - 如何强制链接到较旧的libc`fcntl`而不是`fcntl64`？
+
+
+似乎GLIBC 2.28 (released August 2018)对fcntl进行了相当激进的更改。在<fcntl.h>中将定义更改为不再是外部函数but a #define to fcntl64。
+
+结果是，如果您使用此glibc在系统上编译代码（如果它完全使用fcntl（）），那么从2018年8月开始，生成的二进制文件将不会在系统上执行。这会影响很多应用程序。 .fcntl（）的手册页显示，这是一小部分子功能的入口：
+
+https://linux.die.net/man/2/fcntl
+
+如果您可以告诉链接器所需的GLIBC函数的特定版本，那就太好了。但是我发现最接近的是在另一篇文章的答案中描述的这个技巧：
+
+Answer to "Linking against older symbol version in a .so file"
+
+这有点复杂。 fcntl是可变参数，而没有接受va_list。在这种情况下，you cannot forward an invocation of a variadic function。 :-(
+
+当一个程序具有稳定的代码且具有较低的依赖关系时，就很难在当前的Ubuntu上构建它了……然后让可执行文件拒绝在仅一年前（即一天）发布的另一个Ubuntu上运行。一个人有什么追索权？
+
+GLIBC没有办法#define USE_FCNTL_NOT_FCNTL64的事实说明了很多。不管是对是错，大多数OS +工具链制造商似乎已经决定，从较新版本中针对较旧版本系统的二进制文件作为目标并非是当务之急。
+
+阻力最小的途径是使虚拟机远离用于构建项目的最旧的OS +工具链。只要您认为二进制文件将在旧系统上运行，就可以使用该文件来生成二进制文件。
+
+但...
+
+
+如果您认为用法位于fcntl（）调用的子集中，而该子集不受偏移量大小更改的影响（也就是说，您不使用字节范围锁）
+或愿意审查偏移量情况的代码，以使用向后兼容的结构定义
+并且不害怕伏都教
+
+# frolvlad/alpine-glibc镜像 无法运行go程序 fcntl64: symbol not found
+glic升级问题，用alpine镜像 静态编译
