@@ -1,0 +1,11 @@
+apiVersion: apisix.apache.org/v2beta3
+kind: ApisixPluginConfig
+metadata:
+  name: hoper
+  namespace: default
+spec:
+  plugins:
+    - name: redirect
+        enable: true
+        config:
+          http_to_https: true

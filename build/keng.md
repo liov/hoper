@@ -1298,3 +1298,6 @@ Could not make proto path relative: /work/proto/utils/*.proto: No such file or d
 
 # k8s dial tcp: lookup postgres.tools on x.x.x.x: no such host
 dnsPolicy: Default #无法解析svc
+
+# k8s docker postgres psql Peer authentication failed for user "postgres"
+-h 0.0.0.0

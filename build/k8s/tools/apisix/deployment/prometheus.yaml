@@ -24,11 +24,11 @@ metadata:
   name: apisix-prometheus
   namespace: monitoring
   labels:
-    monitoring: prometheus
+    release: kube-prometheus
 spec:
   jobLabel: apisix-prometheus
   endpoints:
-    - interval: 10s
+    - interval: 15s
       port: prometheus
       path: /apisix/prometheus/metrics
       scheme: http
@@ -122,45 +122,3 @@ subjects:
   - kind: ServiceAccount
     name: prometheus
     namespace: default
-
-# 复用prometheus
----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: apisix-prometheus
-  namespace: monitoring
-  labels:
-    release: kube-prometheus
-spec:
-  jobLabel: apisix-prometheus
-  endpoints:
-    - interval: 10s
-      port: prometheus
-      path: /apisix/prometheus/metrics
-      scheme: http
-  selector:
-    matchLabels:
-      app: apisix-prometheus
-  namespaceSelector:
-    any: true
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: apisix-prometheus
-  namespace: ingress-apisix
-  name: apisix-prometheus
-spec:
-  ports:
-    - name: prometheus
-      protocol: TCP
-      port: 9091
-      targetPort: 9091
-
-  selector:
-    app.kubernetes.io/instance: apisix
-    app.kubernetes.io/name: apisix
-  type: ClusterIP

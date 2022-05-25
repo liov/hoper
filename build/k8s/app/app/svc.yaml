@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hoper
+  namespace: default
+  labels:
+    app: hoper
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 8090
+    - name: grpc
+      port: 8090
+      protocol: TCP
+      targetPort: 8090
+  selector:
+    app: hoper
+---
+apiVersion: apisix.apache.org/v2beta3
+kind: ApisixUpstream
+metadata:
+  name: hoper
+  namespace: default
+spec:
+  portLevelSettings:
+    - port: 8090
+      scheme: grpc
+---
+apiVersion: apisix.apache.org/v2beta3
+kind: ApisixRoute
+metadata:
+  name: hoper
+  namespace: default
+spec:
+  http:
+    - name: hoper
+      match:
+        hosts:
+          - hoper.xyz
+        paths:
+          - /api/*
+      backends:
+        - serviceName: hoper
+          servicePort: 80
+          resolveGranularity: service
+      websocket: true
+    - name: hoper-grpc
+      match:
+        hosts:
+          - hoper.xyz
+        paths:
+          - /*
+      backends:
+        - serviceName: hoper
+          servicePort: 8090
+          resolveGranularity: service
+          #subset: hoper

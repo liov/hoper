@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: openresty
+  name: openresty
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openresty
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: openresty
+    spec:
+      containers:
+        - name: openresty
+          image: openresty/openresty:alpine-amd64
+          volumeMounts:
+            - mountPath: /usr/local/openresty/nginx/conf
+              name: openresty-config
+            - mountPath: /static
+              name: static
+            - mountPath: /frontend
+              name: frontend
+            - mountPath: /lua
+              name: lua
+      volumes:
+        - name: openresty-config
+          configMap:
+            name: openresty-config
+        - name: static
+          hostPath:
+            path: /data/static
+            type: DirectoryOrCreate
+        - name: frontend
+          hostPath:
+            path: /data/frontend
+            type: DirectoryOrCreate
+        - name: lua
+          hostPath:
+            path: /root/code/app/hoper/alg_lang/c_lua_python_shell/lua
+            type: DirectoryOrCreate
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openresty
+  namespace: default
+  labels:
+    app: openresty
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: openresty
+
+---
+apiVersion: apisix.apache.org/v2beta3
+kind: ApisixRoute
+metadata:
+  name: openresty
+  namespace: default
+spec:
+  http:
+    - name: openresty
+      match:
+        hosts:
+          - script.hoper.xyz
+        paths:
+          - /lua*
+      backends:
+        - serviceName: openresty
+          servicePort: 80
+          resolveGranularity: service
