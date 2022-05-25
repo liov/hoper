@@ -77,8 +77,6 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
         "sed -i 's/$${app}/"+name+"/g' "+tpldir+mode+"/Dockerfile",
         local cmd = ["./"+name]+opts;
         "sed -i 's#$${cmd}#"+std.join(" ,",["\""+opt+"\"" for opt in cmd])+"#g' "+tpldir+mode+"/Dockerfile",
-        "cat "+tpldir+mode+"/Dockerfile",
-        "echo",
         "sed -i 's/$${app}/"+name+"/g' "+tpldir+mode+"/deployment.yaml",
         "sed -i 's/$${group}/"+group+"/g' "+tpldir+mode+"/deployment.yaml",
         "sed -i 's#$${image}#jyblsq/"+name+":${DRONE_TAG##"+name+"-}#g' "+tpldir+mode+"/deployment.yaml"
@@ -102,7 +100,7 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
         local buildfile = "/drone/src/"+workdir+"/protobuf/build";
          if protoc then "if [ ! -f "+buildfile+" ]; then go run ./protobuf; fi" else "echo",
         "go mod tidy",
-        "go build -o /drone/src/"+name+" "+sourceFile
+        "go build -ldflags '-linkmode \"external\" -extldflags \"-static\"' -o  /drone/src/"+name+" "+sourceFile
       ]
     },
     {
@@ -127,7 +125,8 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
        force_tag: true,
        auto_tag: false,
        daemon_off: true,
-       purge: true
+       purge: true,
+       pull_image: false
       }
     },
     {

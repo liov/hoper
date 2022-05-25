@@ -1,7 +1,7 @@
 github oauth
 
-http://drone.hoper.xyz
-http://drone.hoper.xyz/login
+https://drone.hoper.xyz
+https://drone.hoper.xyz/login
 
 openssl rand -hex 16
 
