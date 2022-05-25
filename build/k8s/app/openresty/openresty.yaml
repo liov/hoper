@@ -26,7 +26,7 @@ spec:
           image: openresty/openresty:alpine-amd64
           volumeMounts:
             - mountPath: /usr/local/openresty/nginx/conf
-              name: openresty-config
+              name: config
             - mountPath: /static
               name: static
             - mountPath: /frontend
@@ -34,9 +34,9 @@ spec:
             - mountPath: /lua
               name: lua
       volumes:
-        - name: openresty-config
+        - name: config
           configMap:
-            name: openresty-config
+            name: nginx
         - name: static
           hostPath:
             path: /data/static

@@ -1,7 +1,7 @@
 <template>
   <div class="comment">
     <div class="auth">
-      <img class="avatar" :src="user.avatarUrl" />
+      <img class="avatar" :src="staticDir + user.avatarUrl" />
       <span class="name">{{ user.name }}</span>
       <span class="time">{{ $date2s(comment.createdAt) }}</span>
       <div class="like">
@@ -30,7 +30,7 @@
       <van-image
         width="100"
         height="100"
-        :src="comment.image"
+        :src="staticDir + comment.image"
         lazy-load
         class="img"
         @click="preview"
@@ -45,6 +45,7 @@ import { ImagePreview } from "vant";
 import Action from "@/components/action/Action.vue";
 import axios from "axios";
 import emitter from "@/plugin/emitter";
+import { STATIC_DIR } from "@/plugin/config";
 class Props {
   comment = prop<any>({ default: {} });
   user = prop<any>({});
@@ -53,6 +54,7 @@ class Props {
 export default class Comment extends Vue.with(Props) {
   images = [];
   timeOutEvent = 0;
+  staticDir = STATIC_DIR;
   preview() {
     ImagePreview({
       images: [this.comment.image],

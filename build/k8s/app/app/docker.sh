@@ -52,6 +52,6 @@ image=$pod:$(date "+%Y%m%d%H%M%S")
 echo "docker build -t $image $dir"
 docker build -t $image $dir
 echo "docker run --name $pod -d -v /data/$name:/app/data $image"
-docker run --name $pod -d -v /data/$name:/app/data -v $dir/config.toml:/app/config.toml -v $dir/local.toml:/app/local.toml -v $dir/config:/app/config $image
+docker run --name $pod -d -v /data/$name:/app/data -v $dir/config:/app/config $image
 echo "docker logs $pod"
 docker logs $pod
