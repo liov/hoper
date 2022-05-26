@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ${app}
+spec:
+  template:
+    spec:
+      - name: ${app}
+          image: ${image}
+          volumeMounts:
+            - mountPath: /app/config
+              name: config
+            - mountPath: /data
+              name: data
+            - mountPath: /static
+              name: static
+          volumes:
+            - name: config
+              configMap:
+                name: ${group}
+            - name: data
+              hostPath:
+                path: /data/${group}
+                type: DirectoryOrCreate
+            - name: static
+              hostPath:
+                path: /data/static/${group}
+                type: DirectoryOrCreate
+      restartPolicy: OnFeailure
