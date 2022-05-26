@@ -3,6 +3,7 @@ local tpldir = "./build/k8s/app/";
 local codedir = "/root/code/app/hoper/";
 
 local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
+  local name = group + "-" + name;
   kind: "pipeline",
   type: "kubernetes",
   name: name,
@@ -164,6 +165,7 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
 };
 
 [
-  Pipeline("timepill","timepill","app",false,"tools/server","./timepill/cmd/record.go",["-t"]),
-  Pipeline("hoper","hoper","app",true,"server/go/mod","",[])
+  Pipeline("timepill","","app",false,"tools/server","./timepill/cmd/record.go",["-t"]),
+  Pipeline("hoper","","app",true,"server/go/mod","",[]),
+  Pipeline("timepill","rbyorderId","job",false,"tools/server","./timepill/cmd/recordby_orderid.go",[]),
 ]
