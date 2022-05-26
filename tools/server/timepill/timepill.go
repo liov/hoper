@@ -6,6 +6,7 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/db"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/elastic"
 	initializeredis "github.com/actliboy/hoper/server/go/lib/tiga/initialize/redis"
+	gormi "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
 
@@ -46,10 +47,10 @@ type TimepillDao struct {
 	Es        elastic.Es `config:"elasticsearch"`
 }
 
-func (d TimepillDao) Init() {
+func (dao TimepillDao) Init() {
 }
 
-func (d TimepillDao) Close() {
+func (dao TimepillDao) Close() {
 }
 
 var (
@@ -70,7 +71,7 @@ func StartRecord() {
 }
 
 func RecordTask() {
-	todayDiaries := GetTodayDiaries(1, 20, "")
+	todayDiaries := ApiService.GetTodayDiaries(1, 20, "")
 	for _, diary := range todayDiaries.Diaries {
 		if _, ok := Dao.Cache.Get(diary.Id); ok {
 			continue
@@ -89,7 +90,7 @@ func RecordNoteBook(notebookId int) {
 		log.Error(err)
 	}
 	if !exists {
-		notebook := GetNotebook(notebookId)
+		notebook := ApiService.GetNotebook(notebookId)
 		if notebook.Id != 0 {
 			Dao.Hoper.Create(notebook)
 		}
@@ -98,19 +99,11 @@ func RecordNoteBook(notebookId int) {
 }
 
 func RecordDiary(diary *Diary) {
-	if diary == nil {
-		return
-	}
-	var exists bool
-	err := Dao.Hoper.Raw(`SELECT EXISTS(SELECT id FROM diary WHERE id = ? LIMIT 1)`, diary.Id).Row().Scan(&exists)
-	if err != nil {
-		log.Error(err)
-	}
-	if exists {
+	if diary == nil || DiaryExists(diary.Id) {
 		return
 	}
 
-	err = Dao.Hoper.Create(diary).Error
+	err := Dao.Hoper.Create(diary).Error
 	if err != nil {
 		log.Error(err)
 	}
@@ -126,10 +119,17 @@ func RecordDiary(diary *Diary) {
 	}
 }
 
+func RecordDiaryById(diaryId int) {
+	diary := ApiService.GetDiary(diaryId)
+	if diary != nil {
+		RecordDiary(diary)
+	}
+}
+
 func TodayRecord() {
 	var page = 1
 	for {
-		todayDiaries := GetTodayDiaries(page, 20, "")
+		todayDiaries := ApiService.GetTodayDiaries(page, 20, "")
 		for _, diary := range todayDiaries.Diaries {
 			RecordNoteBook(diary.NoteBookId)
 			RecordDiary(diary)
@@ -244,6 +244,15 @@ func RecordByUser() {
 	}
 }
 
+func DiaryExists(diaryId int) bool {
+	var exists bool
+	err := Dao.Hoper.Raw(`SELECT EXISTS(SELECT id FROM diary WHERE id = ? LIMIT 1)`, diaryId).Row().Scan(&exists)
+	if err != nil {
+		log.Error(err)
+	}
+	return exists
+}
+
 func UserExists(userId int) bool {
 	var exists bool
 	err := Dao.Hoper.Raw(`SELECT EXISTS(SELECT id FROM "user" WHERE user_id = ? LIMIT 1)`, userId).Row().Scan(&exists)
@@ -263,7 +272,7 @@ func UserExistsByIdName(userId int, userName string) bool {
 }
 
 func RecordUserDiaries(user *User) {
-	notebooks := GetUserNotebooks(user.UserId)
+	notebooks := ApiService.GetUserNotebooks(user.UserId)
 	for _, nodebook := range notebooks {
 		Dao.Hoper.Create(nodebook)
 		if nodebook.CoverUrl != "" {
@@ -271,7 +280,7 @@ func RecordUserDiaries(user *User) {
 		}
 		var page = 1
 		for {
-			diaries := GetNotebookDiaries(nodebook.Id, page, 20)
+			diaries := ApiService.GetNotebookDiaries(nodebook.Id, page, 20)
 			for _, diary := range diaries.Items {
 				diary.User = user
 				RecordDiary(diary)
@@ -282,13 +291,23 @@ func RecordUserDiaries(user *User) {
 			page++
 		}
 	}
-	Dao.Hoper.Table("user").Where("user_id = ?", user.UserId).Update("is_record", true)
 }
 
 func RecordComment(diaryId int) {
-	comments := GetDiaryComments(diaryId)
+	comments := ApiService.GetDiaryComments(diaryId)
 	for _, comment := range comments {
 		RecordUser(comment.UserId, comment.User.Name)
+		Dao.Hoper.Create(comment)
+	}
+}
+
+func RecordCommentWithJudge(diaryId int) {
+	comments := ApiService.GetDiaryComments(diaryId)
+	for _, comment := range comments {
+		RecordUser(comment.UserId, comment.User.Name)
+		if exists, _ := gormi.ExistsById(Dao.Hoper.DB, "comment", uint64(comment.Id)); exists {
+			continue
+		}
 		Dao.Hoper.Create(comment)
 	}
 }
@@ -306,7 +325,7 @@ func RecordUser(userId int, userName string) {
 }
 
 func RecordUserById(userId int) *User {
-	user := GetUserInfo(userId)
+	user := ApiService.GetUserInfo(userId)
 	if user.UserId != 0 {
 		err := Dao.Hoper.Create(user).Error
 		if err != nil {
@@ -346,16 +365,16 @@ func TodayCommentRecord() {
 	}
 }
 
-func RecordByNoteBook(id int) *NoteBook {
+func RecordByNoteBookId(id int) *NoteBook {
 	page, pageNum := 1, 20
-	notebook := GetNotebook(id)
+	notebook := ApiService.GetNotebook(id)
 	if notebook.Id == 0 {
 		return notebook
 	}
 	Dao.Hoper.Create(&notebook)
-	user := GetUserInfo(notebook.UserId)
+	user := ApiService.GetUserInfo(notebook.UserId)
 	for {
-		diaries := GetNotebookDiaries(id, page, pageNum)
+		diaries := ApiService.GetNotebookDiaries(id, page, pageNum)
 		if diaries.Items == nil {
 			break
 		}

@@ -22,20 +22,21 @@ type Badge struct {
 }
 
 type Diary struct {
-	Id              int    `json:"id"`
-	UserId          int    `json:"user_id" gorm:"index"`
-	NoteBookId      int    `json:"notebook_id" gorm:"index"`
-	NoteBookSubject string `json:"notebook_subject" gorm:"index"`
-	Content         string `json:"content" gorm:"type:text"`
-	Created         string `json:"created" gorm:"type:timestamptz(6);default:'0001-01-01 00:00:00';index"`
-	Updated         string `json:"updated" gorm:"type:timestamptz(6);default:'0001-01-01 00:00:00'"`
-	Type            int    `json:"type" gorm:"int2;default:0"`
-	CommentCount    int    `json:"comment_count" gorm:"default:0"`
-	PhotoUrl        string `json:"photoUrl" gorm:"size:255;default:''"`
-	PhotoThumbUrl   string `json:"photoThumbUrl" gorm:"-"`
-	LikeCount       int    `json:"like_count" gorm:"default:0"`
-	Liked           bool   `json:"-" gorm:"-"`
-	User            *User  `json:"user,omitempty" gorm:"-"`
+	Id              int       `json:"id"`
+	UserId          int       `json:"user_id" gorm:"index"`
+	NoteBookId      int       `json:"notebook_id" gorm:"index"`
+	NoteBookSubject string    `json:"notebook_subject" gorm:"index"`
+	Content         string    `json:"content" gorm:"type:text"`
+	Created         string    `json:"created" gorm:"type:timestamptz(6);default:'0001-01-01 00:00:00';index"`
+	Updated         string    `json:"updated" gorm:"type:timestamptz(6);default:'0001-01-01 00:00:00'"`
+	Type            int       `json:"type" gorm:"int2;default:0"`
+	CommentCount    int       `json:"comment_count" gorm:"default:0"`
+	PhotoUrl        string    `json:"photoUrl" gorm:"size:255;default:''"`
+	PhotoThumbUrl   string    `json:"photoThumbUrl" gorm:"-"`
+	LikeCount       int       `json:"like_count" gorm:"default:0"`
+	Liked           bool      `json:"-" gorm:"-"`
+	User            *User     `json:"user,omitempty" gorm:"-"`
+	NoteBook        *NoteBook `json:"notebook,omitempty" gorm:"-"`
 }
 
 type TinyDiary struct {
