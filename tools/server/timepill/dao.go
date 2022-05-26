@@ -11,7 +11,7 @@ type ListReq struct {
 	request.RangeReq
 }
 
-func List(req *ListReq) ([]*Diary, error) {
+func (dao *TimepillDao) ListDB(req *ListReq) ([]*Diary, error) {
 	var diaries []*Diary
 
 	clauses := append((*clausei.ListReq)(&req.ListReq).Clause(), (*clausei.RangeReq)(&req.RangeReq).Clause())

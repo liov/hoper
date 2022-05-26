@@ -20,11 +20,15 @@ func main() {
 		log.Info("todayRecord")
 		timepill.TodayRecord()
 	}
-	c := cron.New()
-	c.AddFunc("55 23 * * ?", func() {
+	c := cron.New(cron.WithSeconds())
+	_, err := c.AddFunc("50 16 * * *", func() {
 		log.Info("定时任务：记录评论执行")
 		timepill.TodayCommentRecord()
 	})
+	if err != nil {
+		log.Error(err)
+	}
+	c.Start()
 	//go timepill.RecordByOrderNoteBook()
 	timepill.StartRecord()
 }

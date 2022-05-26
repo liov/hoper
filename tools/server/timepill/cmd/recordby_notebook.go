@@ -46,7 +46,7 @@ func main() {
 			continue
 		}
 		<-tc.C
-		notebook := timepill.RecordByNoteBook(id)
+		notebook := timepill.RecordByNoteBookId(id)
 		if notebook.Id == 0 {
 			continuouZeroId++
 			if continuouZeroId == 100 && id > maxId {
@@ -62,5 +62,5 @@ func main() {
 			log.Error(err)
 		}
 	}
-	//timepill.RecordByNoteBook(873)
+	//timepill.RecordByNoteBookId(873)
 }
