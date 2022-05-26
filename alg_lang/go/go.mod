@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	bou.ke/monkey v1.0.2
+	github.com/PuerkitoBio/goquery v1.8.0
 	github.com/actliboy/hoper/server/go/lib v1.0.0
 	github.com/bcongdon/corral v0.0.0-20190319213343-1f4ad49dee34
 	github.com/brahma-adshonor/gohook v1.1.9
@@ -14,20 +15,21 @@ require (
 	golang.org/x/exp v0.0.0-20220314205449-43aec2f8a4e7
 	golang.org/x/exp/shiny v0.0.0-20220414153411-bcd21879b8fd
 	golang.org/x/mobile v0.0.0-20201217150744-e6ae53a27f4f
-	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9
+	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad
 )
 
 require (
 	dmitri.shuralyov.com/gpu/mtl v0.0.0-20201218220906-28db891af037 // indirect
 	github.com/Shopify/sarama v1.29.1 // indirect
+	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/aws/aws-lambda-go v1.30.0 // indirect
-	github.com/aws/aws-sdk-go v1.40.28 // indirect
+	github.com/aws/aws-sdk-go v1.43.21 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/eapache/go-resiliency v1.2.0 // indirect
 	github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21 // indirect
 	github.com/eapache/queue v1.1.0 // indirect
-	github.com/fsnotify/fsnotify v1.5.0 // indirect
+	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20200222043503-6f7a984d4dc4 // indirect
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/google/uuid v1.3.0 // indirect
@@ -66,7 +68,7 @@ require (
 	github.com/xuri/efp v0.0.0-20210322160811-ab561f5b45e3 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.7.0 // indirect
-	go.uber.org/zap v1.19.0 // indirect
+	go.uber.org/zap v1.21.0 // indirect
 	golang.org/x/arch v0.0.0-20190312162104-788fe5ffcd8c // indirect
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292 // indirect
 	golang.org/x/image v0.0.0-20210220032944-ac19c3e999fb // indirect
