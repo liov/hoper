@@ -3,10 +3,10 @@ local tpldir = "./build/k8s/app/";
 local codedir = "/root/code/app/hoper/";
 
 local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
-  local name = group + "-" + name;
+  local fullname = if name == "" then group else group + "-" + name,
   kind: "pipeline",
   type: "kubernetes",
-  name: name,
+  name: fullname,
   metadata: {
     namespace: "default"
   },
@@ -16,7 +16,7 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
   },
   trigger: {
     ref: [
-      "refs/tags/"+name+"-*"
+      "refs/tags/"+fullname+"-*"
       ]
   },
   volumes: [
@@ -75,12 +75,12 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
         "git checkout -b deploy $DRONE_COMMIT_REF",
         local buildfile = "/code/"+workdir+"/protobuf/build";
         if protoc then "if [ -f "+buildfile+" ]; then cp -r /code/"+workdir+"/protobuf  /drone/src/"+workdir+"; fi" else "echo",
-        "sed -i 's/$${app}/"+name+"/g' "+tpldir+mode+"/Dockerfile",
-        local cmd = ["./"+name]+opts;
+        "sed -i 's/$${app}/"+fullname+"/g' "+tpldir+mode+"/Dockerfile",
+        local cmd = ["./"+fullname]+opts;
         "sed -i 's#$${cmd}#"+std.join(" ,",["\""+opt+"\"" for opt in cmd])+"#g' "+tpldir+mode+"/Dockerfile",
-        "sed -i 's/$${app}/"+name+"/g' "+tpldir+mode+"/deployment.yaml",
+        "sed -i 's/$${app}/"+fullname+"/g' "+tpldir+mode+"/deployment.yaml",
         "sed -i 's/$${group}/"+group+"/g' "+tpldir+mode+"/deployment.yaml",
-        "sed -i 's#$${image}#jyblsq/"+name+":${DRONE_TAG##"+name+"-}#g' "+tpldir+mode+"/deployment.yaml"
+        "sed -i 's#$${image}#jyblsq/"+fullname+":${DRONE_TAG##"+fullname+"-}#g' "+tpldir+mode+"/deployment.yaml"
       ]
     },
     {
@@ -101,7 +101,7 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
         local buildfile = "/drone/src/"+workdir+"/protobuf/build";
          if protoc then "if [ ! -f "+buildfile+" ]; then go run ./protobuf; fi" else "echo",
         "go mod tidy",
-        "go build -ldflags '-linkmode \"external\" -extldflags \"-static\"' -o  /drone/src/"+name+" "+sourceFile
+        "go build -ldflags '-linkmode \"external\" -extldflags \"-static\"' -o  /drone/src/"+fullname+" "+sourceFile
       ]
     },
     {
@@ -120,8 +120,8 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
         password: {
           from_secret: "docker_password"
         },
-       repo: "jyblsq/"+name,
-       tags: "${DRONE_TAG##"+name+"-}",
+       repo: "jyblsq/"+fullname,
+       tags: "${DRONE_TAG##"+fullname+"-}",
        dockerfile: tpldir+mode+"/Dockerfile",
        force_tag: true,
        auto_tag: false,
