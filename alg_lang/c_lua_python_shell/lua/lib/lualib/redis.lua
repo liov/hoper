@@ -8,7 +8,7 @@ function _M.new()
 
       local ok, err = red:connect("192.168.1.204", 6379)
       if not ok then
-          ngx.say("failed to connect: ", err,"<br>")
+          ngx.log(ngx.ERR, "failed to connect: ", err)
           return nil
       end
 
@@ -17,11 +17,11 @@ function _M.new()
       if 0 == count then
           ok, err = red:auth("123456")
           if not ok then
-              ngx.say("failed to auth: ", err)
+              ngx.log(ngx.ERR, "failed to auth: ", err)
               return
           end
       elseif err then
-          ngx.say("failed to get reused times: ", err)
+          ngx.log(ngx.ERR, "failed to get reused times: ", err)
           return
       end
     return red
@@ -38,7 +38,7 @@ function _M.close_redis(red)
     local ok, err = red:set_keepalive(pool_max_idle_time, pool_size)
     local log = ngx_log
     if not ok then
-        log(ngx_ERR, "set redis keepalive error : ", err)
+        log(ngx.ERR, "set redis keepalive error : ", err)
     end
 end
 
