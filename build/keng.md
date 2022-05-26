@@ -1333,3 +1333,12 @@ GLIBC没有办法#define USE_FCNTL_NOT_FCNTL64的事实说明了很多。不管�
 
 # frolvlad/alpine-glibc镜像 无法运行go程序 fcntl64: symbol not found
 glic升级问题，用alpine镜像 静态编译
+
+# kubernetes svc NodePort设置externalTrafficPolicy:Local无法访问题
+kube-proxy proxy-mode ipvs
+
+# minikube Failed to save config: failed to acquire lock for /root/.minikube/profiles/minikube/config.json: unable to open /tmp/juju-mk270d1b5db5965f2dc9e9e25770a63417031943: permission denied
+如果因为种种原因，上一步运行的时候报错，那再次执行上一步 操作之前，需要先进行 sudo rm -rf /tmp/juju-mk* sudo rm -rf /tmp/minikube.* 删除操作，否则会报出如下错误：Failed to save config: failed to acquire lock for /root/.minikube/profiles/minikube/config.json: unable to open /tmp/juju-mk270d1b5db5965f2dc9e9e25770a63417031943: permission denied
+
+# 卸载postgresql
+apt remove postgresql*
