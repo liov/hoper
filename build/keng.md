@@ -1342,3 +1342,13 @@ kube-proxy proxy-mode ipvs
 
 # 卸载postgresql
 apt remove postgresql*
+
+# minikube start 启动不成功
+--extra-config=apiserver.service-node-port-range=1-63353 端口号改小点
+
+# nginx openresty failed to connect: no resolver defined to resolve
+最近一直在研究 openResty, 使用过程中在用 lua 脚本连接 redis 的时候，使用了阿里云的云 redis，大家都知道的阿里云的云 redis，连接地址是一个域名，这个时候报错 failed to connect: no resolver defined to resolve，先去检查了一下 redis 的白名单，发现内网的 ecsIP 是在白名单的，然后使用 php 测试连接都是正常的，后面去网上查找资料，终于在墙外找到了答案：
+nginx 自己的 resolver 目前尚不支持本地的 /etc/hosts文件（注意，这与 DNS 服务本身无关），而 ngx_lua 的 cosocket 也使用的是 nginx 自己的非阻塞的 DNS resolver 组件。所以我们 只需要在 nginx.conf 中加一行:
+
+http 块加 resolver 8.8.8.8; 
+resolver 10.96.0.10; 
