@@ -106,7 +106,7 @@ func load(ctx context.Context) {
 		if req.PageSize < 1 {
 			req.PageSize = 10
 		}
-		diaries, err := timepill.List(req)
+		diaries, err := timepill.Dao.ListDB(req)
 		if err != nil {
 			log.Error(err)
 		}

@@ -57,7 +57,7 @@ func main() {
 	kqReq.Header.Set("HeaderCookie", "sessionidadms=xxx")
 	kqReq.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
 	Request()
-	c := cron.New()
+	c := cron.New(cron.WithSeconds())
 	c.AddFunc("*/20 * 0,8,9,13,18,19,20,21,22,23 * * *", Request)
 	c.Start()
 	<-ch

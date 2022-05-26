@@ -1352,3 +1352,9 @@ nginx 自己的 resolver 目前尚不支持本地的 /etc/hosts文件（注意�
 
 http 块加 resolver 8.8.8.8; 
 resolver 10.96.0.10; 
+
+# k8s dns 
+nameserver 10.96.0.10
+search default.svc.cluster.local svc.cluster.local cluster.local
+options ndots:5
+默认域名 svcname.namespace.svc.cluster.local
