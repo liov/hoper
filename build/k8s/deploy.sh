@@ -33,5 +33,7 @@ kubectl create namespace monitoring
 helm install kube-prometheus prometheus-community/kube-prometheus-stack -f helm.yaml -n monitoring
 # apisix
 kubectl create namespace ingress-apisix
+# acme
+kubectl apply -f tls.yaml
 # tools
 kubectl create namespace tools
