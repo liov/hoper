@@ -4,6 +4,7 @@ local codedir = "/root/code/app/hoper/";
 
 local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
   local fullname = if name == "" then group else group + "-" + name,
+  local tag = "${DRONE_TAG##"+fullname+"-v}",
   kind: "pipeline",
   type: "kubernetes",
   name: fullname,
@@ -16,7 +17,7 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
   },
   trigger: {
     ref: [
-      "refs/tags/"+fullname+"-*"
+      "refs/tags/"+fullname+"-v*"
       ]
   },
   volumes: [
@@ -80,7 +81,7 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
         "sed -i 's#$${cmd}#"+std.join(" ,",["\""+opt+"\"" for opt in cmd])+"#g' "+tpldir+mode+"/Dockerfile",
         "sed -i 's/$${app}/"+fullname+"/g' "+tpldir+mode+"/deployment.yaml",
         "sed -i 's/$${group}/"+group+"/g' "+tpldir+mode+"/deployment.yaml",
-        "sed -i 's#$${image}#jyblsq/"+fullname+":${DRONE_TAG##"+fullname+"-}#g' "+tpldir+mode+"/deployment.yaml"
+        "sed -i 's#$${image}#jyblsq/"+fullname+":"+tag+"#g' "+tpldir+mode+"/deployment.yaml"
       ]
     },
     {
@@ -121,7 +122,7 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
           from_secret: "docker_password"
         },
        repo: "jyblsq/"+fullname,
-       tags: "${DRONE_TAG##"+fullname+"-}",
+       tags: tag,
        dockerfile: tpldir+mode+"/Dockerfile",
        force_tag: true,
        auto_tag: false,

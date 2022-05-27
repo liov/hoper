@@ -1,5 +1,4 @@
----
-apiVersion: apisix.apache.org/v2
+apiVersion: apisix.apache.org/v2beta3
 kind: ApisixRoute
 metadata:
   name: grafana
@@ -17,9 +16,14 @@ spec:
           servicePort: 80
           resolveGranularity: service
       websocket: true
+      plugins:
+        - name: redirect
+          enable: true
+          config:
+            http_to_https: true
 
 ---
-apiVersion: apisix.apache.org/v2
+apiVersion: apisix.apache.org/v2beta3
 kind: ApisixRoute
 metadata:
   name: prometheus
@@ -36,4 +40,9 @@ spec:
         - serviceName: kube-prometheus-kube-prome-prometheus
           servicePort: 9090
           resolveGranularity: service
+      plugins:
+        - name: redirect
+          enable: true
+          config:
+            http_to_https: true
 

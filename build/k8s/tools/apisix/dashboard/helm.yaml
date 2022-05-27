@@ -1,0 +1,13 @@
+replicaCount: 1
+
+config:
+  conf:
+    etcd:
+      # Supports defining multiple etcd host addresses for an etcd cluster
+      endpoints:
+        - 10.0.20.12:2379
+      # apisix configurations prefix
+      prefix: "/apisix"
+      # Etcd basic auth info
+      username: ~
+      password: ~

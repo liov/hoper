@@ -15,11 +15,11 @@ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 docker中部署Kubernetes
 minikube start --driver=docker --insecure-registry= --registry-mirror= --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers --mount --mount-string=$HOME:/host --cpus=4 --memory='8192M'
 root 直接部署
-minikube start --driver=none --registry-mirror= --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers
+minikube start --driver=none --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers --extra-config=kube-proxy.mode=ipvs
 -- port
---extra-config=apiserver.service-node-port-range=1-10000
+--extra-config=apiserver.service-node-port-range=1-39999
 -- prometheus-operator
---extra-config=apiserver.authorization-mode=RBAC
+--extra-config=apiserver.authorization-mode=Node,RBAC #默认配置是这个 --extra-config=apiserver.authorization-mode=RBAC 官方文档是这个，怀疑后来重启logs报无权限跟这个有关
 --kube-prometheus
 --bootstrapper=kubeadm --extra-config=kubelet.authentication-token-webhook=true --extra-config=kubelet.authorization-mode=Webhook --extra-config=scheduler.bind-address=0.0.0.0 --extra-config=controller-manager.bind-address=0.0.0.0
 外网通过代理访问docker中的服务
