@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: shadowsocks-conf
+  name: shadowsocks
   namespace: tools
 data:
   config.json: |
@@ -43,11 +43,11 @@ spec:
           volumeMounts:
             - mountPath: /etc/shadowsocks-rust/config.json
               subPath: config.json
-              name: shadowsocks-config
+              name: config
       volumes:
-        - name: shadowsocks-config
+        - name: config
           configMap:
-            name: shadowsocks-conf
+            name: shadowsocks
 
 ---
 apiVersion: v1
