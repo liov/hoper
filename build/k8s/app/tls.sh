@@ -1,6 +1,10 @@
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=hoper.xyz/O=hoper.xyz"
-kubectl create secret tls hoper-xyz -n ingress-apisix --cert=fullchain.cer --key=hoper.xyz.key
+openssl rand -hex 16
 
+# openssl
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=hoper.xyz/O=hoper.xyz"
+
+
+# acme
 docker run --rm  -it  \
   -v "$(pwd)/acme":/acme.sh  \
   --net=host \
@@ -11,6 +15,8 @@ docker run --rm  -it  \
   --net=host  \
   neilpang/acme.sh --renew  -d hoper.xyz -d *.hoper.xyz \
     --yes-I-know-dns-manual-mode-enough-go-ahead-please
+
+kubectl create secret tls hoper-xyz -n ingress-apisix --cert=fullchain.cer --key=hoper.xyz.key
 
 kubectl apply -f - <<EOF
 apiVersion: apisix.apache.org/v2beta3
@@ -27,6 +33,7 @@ spec:
     namespace: ingress-apisix
 EOF
 
+# cert-manager
 kubectl apply -f - <<EOF
 apiVersion: cert-manager.io/v1
 kind: Issuer
