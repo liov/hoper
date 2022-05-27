@@ -86,15 +86,15 @@ spec:
               name: redis
               protocol: TCP
           volumeMounts:
-            - name: redis-config
+            - name: config
               mountPath: /conf
-            - name: redis-data
+            - name: data
               mountPath: /data
       volumes:
-        - name: redis-config
+        - name: config
           configMap:
             name: redis-conf
-        - name: redis-data
+        - name: data
           persistentVolumeClaim:
             claimName: redis-pvc
 
