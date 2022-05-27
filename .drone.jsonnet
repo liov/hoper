@@ -93,6 +93,12 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
             path: "/go/"
         }
       ],
+      resources: {
+          limits: {
+            cpu: 1000,
+            memory: "512MiB"
+          }
+      },
       environment: {
          GOPROXY: "https://goproxy.io,https://goproxy.cn,direct"
       },
@@ -108,6 +114,7 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
     {
       name: "docker build",
       image: "plugins/docker",
+      //privileged: true ,
       volumes: [
         {
             name: "dockersock",
