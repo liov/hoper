@@ -98,3 +98,9 @@ spec:
               value: http
             - name: DRONE_RPC_SECRET
               value: bd6c2d42e64197b8753fab0d4cd5d27f
+            - name: DRONE_MEMORY_LIMIT
+              value: 500000000
+            - name: DRONE_MEMORY_SWAP_LIMIT
+              value: 500000000
+            - name: DRONE_MEMORY_SWAP_LIMIT
+              value: 500000000

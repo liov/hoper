@@ -8,7 +8,7 @@ spec:
     - name: apisix-dashboard
       match:
         hosts:
-          - dashboard.apisix.org
+          - apisix.apisix.org
         paths:
           - /*
       backends:
@@ -19,3 +19,21 @@ spec:
           enable: true
           config:
             http_to_https: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apisix-dashboard
+  namespace: ingress-apisix
+  labels:
+    app: apisix-dashboard   # useful for service discovery, for example, prometheus-operator.
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9000
+  selector:
+    app: apisix-dashboard
+  type: ClusterIP
+  # externalTrafficPolicy: Local invalid: spec.externalTrafficPolicy: Invalid value: "Cluster": may only be set when `type` is 'NodePort' or 'LoadBalancer'
+  # sessionAffinity: None

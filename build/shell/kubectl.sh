@@ -78,3 +78,5 @@ Options:
 # 将pod进行缩容操作 让其为0 即等同于停止操作
 
 kubectl scale --replicas=0 deployment/<your-deployment>
+
+kubectl get pod -n kube-system | grep kube-proxy |awk '{system("kubectl delete pod "$1" -n kube-system")}'
