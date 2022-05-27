@@ -77,3 +77,8 @@ spec:
         - serviceName: drone
           servicePort: 80
           resolveGranularity: service
+    plugins:
+      - name: redirect
+        enable: true
+        config:
+          http_to_https: true

@@ -10,10 +10,9 @@ spec:
   claimRef:
     apiVersion: v1
     kind: PersistentVolumeClaim
-    name: data-apisix-etcd-1
-    namespace: ingress-apisix
+    name: data-redis-1
+    namespace: tools
     resourceVersion: "1266"
-    uid: ab68c811-207b-4e37-96a5-5b8b2c2c2ed3
   hostPath:
     path: /data/redis
     type: ""

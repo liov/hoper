@@ -1163,77 +1163,15 @@ docker run -v 挂载到容器中的文件（注意不是目录）一般是配置
 reboot
 
 # k8s etcd集群无法重启，
-kubectl edit StatefulSet  apisix-etcd -n ingress-apisix
-```yaml
-- name: ETCD_INITIAL_CLUSTER
-    value: $(MY_POD_NAME)=http://$(MY_POD_NAME).apisix-etcd-headless.ingress-apisix.svc.cluster.local:2380
+原因有绑定的 PersistentVolumeClaim
 
-- name: ETCD_INITIAL_CLUSTER_STATE
-  value: new
-```
 kubectl scale --replicas=0 StatefulSet/apisix-etcd -n ingress-apisix
 kubectl delete PersistentVolumeClaim $(kubectl get PersistentVolumeClaim -n ingress-apisix | awk '{print $1}') -n ingress-apisix
 kubectl scale --replicas=1 StatefulSet/apisix-etcd -n ingress-apisix
 ## minikube 有秘钥 /var/lib/minikube/certs/etcd
-helm install apisix apisix/apisix
---set gateway.type=NodePort
---set ingress-controller.enabled=true
---namespace ingress-apisix
---set ingress-controller.config.apisix.serviceNamespace=ingress-apisix
---set etcd.enabled=false
---set etcd.auth.tls.enabled=true
---set etcd.host={https://10.0.20.12:2379}
---set etcd.auth.tls.existingSecret=etcd-ssl
---set etcd.auth.tls.certFilename=tls.crt
---set etcd.auth.tls.certKeyFilename=tls.key
 
-kubectl delete StatefulSet apisix-etcd -n ingress-apisix
-kubectl delete PersistentVolumeClaim $(kubectl get PersistentVolumeClaim -n ingress-apisix | awk '{print $1}') -n ingress-apisix
+cp -r /var/lib/minikube/certs/etcd /root/certs &&  chmod 666 /root/certs/etcd/server.key || k8s.runAsUser=0 || initContainer.command - chown -R nobody:nobody /certs/etcd
 
-cp -r /var/lib/minikube/certs/etcd /root/certs/ chmod server.key || k8s.runAsUser=0 || initContainer.command - chown -R nobody:nobody /certs/etcd
-
-kubectl edit cm apisix -n ingress-apisix
-```yaml
-ssl:
-  ssl_trusted_certificate: /certs/etcd/ca.crt
-etcd:
-  host: # it's possible to define multiple etcd hosts addresses of the same etcd cluster.
-    - "https://10.0.20.12:2379"
-  tls:
-    cert: /certs/etcd/server.crt
-    key:  /certs/etcd/server.key
-    verify: false
-    sni: 10.0.20.12
-```
-kubectl edit deployment apisix -n ingress-apisix
-```yaml
-initContainers:
-- command:
-   - sh
-   - -c
-   - until nc -z 10.0.20.12 2379; do echo waiting
-     for etcd `date`; sleep 2; done;
-volumeMounts:
-- name: etcd-certs
-  mountPath: /certs/etcd
-volumes:
-- name: etcd-certs
-  hostPath:
-    path: /root/certs/etcd
-```
-kubectl edit cm apisix-dashboard -n ingress-apisix
-
-```yaml
-etcd:
-endpoints:
-- 10.0.20.12:2379
-mtls:
-  key_file: /certs/etcd/server.key          # Path of your self-signed client side key
-  cert_file: /certs/etcd/server.crt         # Path of your self-signed client side cert
-  ca_file: /certs/etcd/ca.crt           # Path of your self-signed ca cert, the CA is used to sign callers' certificates
-```
-kubectl edit deployment apisix-dashboard -n ingress-apisix
-volumeMounts
 # Docker 启动alpine镜像中可执行程序文件遇到 not found
 问题： docker alpine镜像中遇到 sh: xxx: not found
 例如：
@@ -1344,7 +1282,7 @@ kube-proxy proxy-mode ipvs
 apt remove postgresql*
 
 # minikube start 启动不成功
---extra-config=apiserver.service-node-port-range=1-63353 端口号改小点
+--extra-config=apiserver.service-node-port-range=1-63353 端口号改小点 39999
 
 # nginx openresty failed to connect: no resolver defined to resolve
 最近一直在研究 openResty, 使用过程中在用 lua 脚本连接 redis 的时候，使用了阿里云的云 redis，大家都知道的阿里云的云 redis，连接地址是一个域名，这个时候报错 failed to connect: no resolver defined to resolve，先去检查了一下 redis 的白名单，发现内网的 ecsIP 是在白名单的，然后使用 php 测试连接都是正常的，后面去网上查找资料，终于在墙外找到了答案：
@@ -1358,3 +1296,7 @@ nameserver 10.96.0.10
 search default.svc.cluster.local svc.cluster.local cluster.local
 options ndots:5
 默认域名 svcname.namespace.svc.cluster.local
+
+# Error from server (InternalError): Internal error occurred: Authorization error (user=kube-apiserver-kubelet-client, verb=get, resource=nodes, subresource=proxy)
+kubelet bootstrap 引导出错导致kube-apiserve 和 kubelet 之前自动证书审批未完成，导致两者之间未建立连接
+删除kubelet证书并重启kubelet 让 kubelet bootstrap 重新引导完成自动证书审批工作 ，问题解决

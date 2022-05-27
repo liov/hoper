@@ -3,10 +3,10 @@
 ## helm kube-prometheus-stack
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
-helm install kube-prometheus prometheus-community/kube-prometheus-stack -n monitoring
+helm install kube-prometheus prometheus-community/kube-prometheus-stack -f helm.yaml -n monitoring
 helm pull prometheus-community/kube-prometheus-stack
-helm install kube-prometheus kube-prometheus-stack-34.10.0.tgz -n monitoring
-helm upgrade kube-prometheus prometheus-community/kube-prometheus-stack -n monitoring
+helm install kube-prometheus kube-prometheus-stack-34.10.0.tgz   -f helm.yaml -n monitoring
+helm upgrade kube-prometheus prometheus-community/kube-prometheus-stack  -f helm.yaml -n monitoring
 -- uninstall
 helm uninstall kube-prometheus -n monitoring
 kubectl delete crd alertmanagerconfigs.monitoring.coreos.com
@@ -32,7 +32,9 @@ docker pull rancher/curlimages-curl:7.73.0
 kubectl get secret kube-prometheus-grafana -n monitoring -o yaml
 echo 'cHJvbS1vcGVyYXRvcg==' | base64 --decode
 prom-operator
-## 仓库安装 prometheus-operator
+
+
+## 仓库安装 prometheus-operator 别试，坑
 git clone https://github.com/prometheus-operator/kube-prometheus
 kubectl apply --server-side -f manifests/setup
 until kubectl get servicemonitors --all-namespaces ; do date; sleep 1; echo ""; done
