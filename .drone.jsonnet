@@ -96,7 +96,7 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
       resources: {
           limits: {
             cpu: 1000,
-            memory: "512MiB"
+            memory: "1GiB"
           }
       },
       environment: {
