@@ -1,11 +1,16 @@
 # go 编译动态库
 set GOOS=linux 
 set GOARCH=amd64
-// go 动态库
+## go 动态库
 go install -buildmode=shared -linkshared  std
 go build -buildmode=shared -linkshared demo
-// c abi
+## c abi
 go build -buildmode=c-shared -o libgobblob.so
+
+## go编译mod下的包
+go build -o out modname/package
+## 带时区信息
+-tags timetzdata
 
 ## windows
 windows需要安装gcc编译器，我用的的MinGW包，解压，把bin目录加入环境变量。
@@ -56,6 +61,8 @@ external linking
 而external linking机制则是cmd/link将所有生成的.o都打到一个.o文件中，再将其交给外部的链接器，比如gcc或clang去做最终链接处理。如果此时，我们在cmd/link的参数中传入 -ldflags '-linkmode "external" -extldflags "-static"'，那么gcc/clang将会去做静态链接，将.o中undefined的符号都替换为真正的代码。我们可以通过-linkmode=external来强制cmd/link采用external linker
 
 
+docker run --rm -v /mnt/d/SDK/gopath:/go -v $PWD:/work -w /work/tools/server golang go build -ldflags '-linkmode "external" -extldflags "-static"' -o /work/build/tmp/main /work/tools/server/fileserver.go
+
 # android
 arm64 aarch64-linux-android
 amd64 x86_64-linux-android
@@ -85,6 +92,3 @@ super.dispose();
 }
 ```
 working demo
-
-# go编译mod下的包
-go build -o out modname/package

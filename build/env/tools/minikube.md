@@ -8,6 +8,13 @@ sudo passwd docker
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 sudo install minikube-linux-amd64 /usr/local/bin/minikube
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+
+# 可能需要的镜像
+docker pull jettech/kube-webhook-certgen:v1.2.2
+docker pull siriuszg/nginx-ingress-controller:v0.41.2
+docker pull jettech/kube-webhook-certgen:v1.3.0
+docker tag jettech/kube-webhook-certgen:v1.3.0 registry.cn-hangzhou.aliyuncs.com/google_containers/kube-webhook-certgen:v1.3.0
+
 # 特定版本
 curl -LO https://dl.k8s.io/release/v1.23.0/bin/linux/amd64/kubectl
 sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
