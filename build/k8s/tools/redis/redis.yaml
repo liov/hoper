@@ -10,9 +10,8 @@ spec:
   claimRef:
     apiVersion: v1
     kind: PersistentVolumeClaim
-    name: data-redis-1
+    name: data-redis
     namespace: tools
-    resourceVersion: "1266"
   hostPath:
     path: /data/redis
     type: ""

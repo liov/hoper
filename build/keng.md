@@ -1300,3 +1300,17 @@ options ndots:5
 # Error from server (InternalError): Internal error occurred: Authorization error (user=kube-apiserver-kubelet-client, verb=get, resource=nodes, subresource=proxy)
 kubelet bootstrap 引导出错导致kube-apiserve 和 kubelet 之前自动证书审批未完成，导致两者之间未建立连接
 删除kubelet证书并重启kubelet 让 kubelet bootstrap 重新引导完成自动证书审批工作 ，问题解决
+
+# --net=host无效，只能用端口映射
+经测试是那台服务器问题，具体原因就不知道了，无法监听ipv4
+在Windows或MacOS下运行Docker时，实际上是在Linux虚拟机中运行Docker。设置network_mode: host时，您会将容器连接到虚拟机的网络环境。这很少有用。
+实际上，只有在Linux上本地运行Docker时，network_mode: host才有意义。
+您最好坚持使用端口发布。
+同理是这样？也是服务器跑在vm里的
+wls2完全没问题啊？？？
+curl localhost 127.0.0.1 0.0.0.0 没问题，解决不掉
+反而只有docker的端口映射能成功! docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 8389 -container-ip 172.17.0.2 -container-port 8388
+不知原因，无法解决 
+
+# xshell vim 数字键变字母，复制进去乱码
+vi是正常的

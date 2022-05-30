@@ -6,9 +6,9 @@ import (
 )
 
 func main() {
-	http.Handle("/", http.FileServer(http.Dir("/home")))
+	http.Handle("/", http.FileServer(http.Dir("/")))
 
-	err := http.ListenAndServe(":80", nil)
+	err := http.ListenAndServe(":8090", nil)
 	if err != nil {
 		log.Println(err)
 	}

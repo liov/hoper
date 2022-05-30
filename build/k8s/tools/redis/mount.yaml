@@ -27,14 +27,14 @@ spec:
               name: redis
               protocol: TCP
           volumeMounts:
-            - name: redis-config
+            - name: config
               mountPath: /conf/redis.conf
-            - name: redis-data
+            - name: data
               mountPath: /data
       volumes:
         - name: config
           configMap:
-            name: redis-conf
+            name: redis
         - name: data
           hostPath:
             path: /data/redis
