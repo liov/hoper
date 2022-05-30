@@ -39,9 +39,8 @@ spec:
 #        - name: drone-server-sqlite-db
 #          hostPath:
 #            path: /var/lib/drone
+
 ---
-
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -60,7 +59,7 @@ spec:
     app: drone-server
 
 ---
-apiVersion: apisix.apache.org/v2
+apiVersion: apisix.apache.org/v2beta3
 kind: ApisixRoute
 metadata:
   name: drone-server

@@ -13,7 +13,6 @@ data:
   TZ: Asia/Shanghai
   PGTZ: Asia/Shanghai
   POSTGRES_INITDB_ARGS: "--data-checksums"
-  POSTGRES_HOST_AUTH_METHOD: "host all  all  0.0.0.0/0  md5"
 ---
 apiVersion: apps/v1
 kind: Deployment

@@ -1,13 +1,11 @@
-`helm repo add apisix https://charts.apiseven.com`
-`helm repo update`
-`helm install apisix-dashboard apisix/apisix-dashboard -f dhelm.yaml -n ingress-apisix`
+helm repo add apisix https://charts.apiseven.com
+helm repo update
+helm install apisix-dashboard apisix/apisix-dashboard -f dhelm.yaml -n ingress-apisix
 
 kubectl edit cm apisix-dashboard -n ingress-apisix
 
 ```yaml
 etcd:
-endpoints:
-- 10.0.20.12:2379
 mtls:
   key_file: /etcd-ssl/server.key
   cert_file: /etcd-ssl/server.crt

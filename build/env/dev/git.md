@@ -96,3 +96,85 @@ git commit --amend
 
 修改好注释内容后，输入：
 git rebase --continue
+
+
+# 更改历史提交人信息
+git filter-branch -f --env-filter '
+if [ "$GIT_COMMITTER_NAME" = "oldname" ];
+then
+GIT_COMMITTER_NAME="newname";
+GIT_COMMITTER_EMAIL="newaddr";
+GIT_AUTHOR_NAME="newname";
+GIT_AUTHOR_EMAIL="newaddr";
+fi
+
+if [ "$GIT_AUTHOR_NAME" = "oldname" ];
+then
+GIT_COMMITTER_NAME="newname";
+GIT_COMMITTER_EMAIL="newaddr";
+GIT_AUTHOR_NAME="newname";
+GIT_AUTHOR_EMAIL="newaddr";
+fi
+' -- --all
+
+# 代理
+git config --global http.proxy 'socks5://127.0.0.1:1080'
+
+git config --global https.proxy 'socks5://127.0.0.1:1080'
+
+vi ~/.gitconfig
+[http]
+proxy = socks5://127.0.0.1:2080
+[https]
+proxy = socks5://127.0.0.1:2080
+
+# 多个远程仓库
+方法 1：每次push、pull时需分开操作
+首先，查看本地仓库所关联的远程仓库：（假定最初仅关联了一个远程仓库）
+
+$ git remote -v
+origin  git@github.com:keithnull/keithnull.github.io.git (fetch)
+origin  git@github.com:keithnull/keithnull.github.io.git (push)
+
+然后，用git remote add 添加一个远程仓库，其中name可以任意指定（对应上面的origin部分），比如：
+
+$ git remote add coding.net git@git.coding.net:KeithNull/keithnull.github.io.git
+
+再次查看本地仓库所关联的远程仓库，可以发现成功关联了两个远程仓库：
+
+$ git remote -v
+coding.net      git@git.coding.net:KeithNull/keithnull.github.io.git (fetch)
+coding.net      git@git.coding.net:KeithNull/keithnull.github.io.git (push)
+origin  git@github.com:keithnull/keithnull.github.io.git (fetch)
+origin  git@github.com:keithnull/keithnull.github.io.git (push)
+
+此后，若需进行push操作，则需要指定目标仓库，git push ，对这两个远程仓库分别操作：
+
+$ git push origin master
+$ git push coding.net master
+
+同理，pull操作也需要指定从哪个远程仓库拉取，git pull ，从这两个仓库中选择其一：
+
+$ git pull origin master
+$ git pull coding.net master
+
+方法 2：push和pull无需额外操作
+在方法 1 中，由于我们添加了多个远程仓库，在push和pull时便面临了仓库的选择问题。诚然如此较为严谨，但是在许多情况下，我们只需要保持远程仓库完全一致，而不需要进行区分，因而这样的区分便显得有些“多余”。
+
+同样地，先查看已有的远程仓库：（假定最初仅关联了一个远程仓库）
+
+$ git remote -v
+origin  git@github.com:keithnull/keithnull.github.io.git (fetch)
+origin  git@github.com:keithnull/keithnull.github.io.git (push)
+然后，不额外添加远程仓库，而是给现有的远程仓库添加额外的 URL。使用git remote set-url -add ，给已有的名为name的远程仓库添加一个远程地址，比如：
+
+$ git remote set-url --add origin git@git.coding.net:KeithNull/keithnull.github.io.git
+再次查看所关联的远程仓库：
+
+$ git remote -v
+origin  git@github.com:keithnull/keithnull.github.io.git (fetch)
+origin  git@github.com:keithnull/keithnull.github.io.git (push)
+origin  git@git.coding.net:KeithNull/keithnull.github.io.git (push)
+可以看到，我们并没有如方法 1 一般增加远程仓库的数目，而是给一个远程仓库赋予了多个地址（或者准确地说，多个用于push的地址）。
+
+因此，这样设置后的push 和pull操作与最初的操作完全一致，不需要进行调整。

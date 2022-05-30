@@ -8,6 +8,10 @@ config:
         - 10.0.20.12:2379
       # apisix configurations prefix
       prefix: "/apisix"
-      # Etcd basic auth info
-      username: ~
-      password: ~
+  authentication:
+      secert: secert
+      expireTime: 3600
+      users:
+        - username: admin
+          password: admin
+
