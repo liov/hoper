@@ -1,8 +1,40 @@
 // local mode(mode="app") = if mode == "app" then "app" else "node";
 local tpldir = "./build/k8s/app/";
 local codedir = "/root/code/app/hoper/";
+local kubectl (deplocal,cmd) = if deplocal then{
+      name: "deploy",
+      image: "bitnami/kubectl",
+      user: 0, //文档说是string类型，结果"root"不行 k8s runAsUser: 0
+      volumes: [
+        {
+          name: "kube",
+          path: "/root/.kube/"
+        }
+      ],
+      commands:cmd
+} else {
+      name: "deploy",
+      image: "bitnami/kubectl",
+      user: 0, //文档说是string类型，结果"root"不行 k8s runAsUser: 0
+      environment:  {
+             CA: {
+                from_secret: "ca"
+              },
+              CACRT: {
+                from_secret: "ca_crt"
+              },
+               CAKEY: {
+                  from_secret: "ca_key"
+               },
+      },
+      commands:[
+            "chomd +x "+ tpldir+"user.sh",
+            tpldir+"user.sh",
+      ]+cmd
+};
 
-local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
+
+local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deplocal=false) = {
   local fullname = if name == "" then group else group + "-" + name,
   local tag = "${DRONE_TAG##"+fullname+"-v}",
   kind: "pipeline",
@@ -44,13 +76,7 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
        host: {
            path: "/root/.kube/"
        }
-     },
-      {
-        name: "minikube",
-        host: {
-            path: "/root/.minikube/"
-        }
-      }
+     }
   ],
   clone: {
    disable: true
@@ -138,24 +164,9 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
        pull_image: false
       }
     },
-    {
-      name: "deploy",
-      image: "bitnami/kubectl",
-      user: 0, //文档说是string类型，结果"root"不行 k8s runAsUser: 0
-      volumes: [
-        {
-          name: "kube",
-          path: "/root/.kube/"
-        },
-        {
-          name: "minikube",
-          path: "/root/.minikube/"
-        }
-      ],
-      commands: [
-        "kubectl --kubeconfig=/root/.kube/config apply -f "+tpldir+mode+"/deployment.yaml"
-      ]
-    },
+    kubectl(deplocal,[
+                    "kubectl --kubeconfig=/root/.kube/config apply -f "+tpldir+mode+"/deployment.yaml"
+    ]),
     {
        name: "dingtalk",
        image: "lddsb/drone-dingtalk-message",
@@ -174,6 +185,6 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile, opts) = {
 
 [
   Pipeline("timepill","","app",false,"tools/server","./timepill/cmd/record.go",["-t"]),
-  Pipeline("hoper","","app",true,"server/go/mod","",[]),
-  Pipeline("timepill","rbyorderId","job",false,"tools/server","./timepill/cmd/recordby_orderid.go",[]),
+  Pipeline("hoper","","app",true,"server/go/mod"),
+  Pipeline("timepill","rbyorderId","job",false,"tools/server","./timepill/cmd/recordby_orderid.go",deplocal=true),
 ]
