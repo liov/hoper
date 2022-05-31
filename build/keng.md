@@ -1314,3 +1314,18 @@ curl localhost 127.0.0.1 0.0.0.0 没问题，解决不掉
 
 # xshell vim 数字键变字母，复制进去乱码
 vi是正常的
+
+# apisix路由设置apisix.dev ，配了hosts 总是自动跳转https 307 HSTS 还以为是apisix的问题换了apisix.d可以了
+postman是可以的，感觉跟浏览器有关，请求根本没发出去
+
+# frp直接代理https失败
+配置改成正确ip就可以了
+## kube nodePort 显示监听0.0.0.0 只能通过minikube ip即本机ip访问，不能通过localhost 和 127.0.0.1和0.0.0.0访问
+好像只能通过node ip访问
+端口可以监听到不同ip
+
+# minikube 对外开放
+--apiserver-ips=0.0.0.0（无效）
+--extra-config=apiserver.advertise-address=0.0.0.0（无效）
+
+最后发现配错规则了，不是这个机子...
