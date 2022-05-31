@@ -22,13 +22,18 @@ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 docker中部署Kubernetes
 minikube start --driver=docker --insecure-registry= --registry-mirror= --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers --mount --mount-string=$HOME:/host --cpus=4 --memory='8192M'
 root 直接部署
-minikube start --driver=none --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers --extra-config=kube-proxy.mode=ipvs
+minikube start --driver=none --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers --extra-config=kube-proxy.mode=ipvs --extra-config=apiserver.advertise-address=127.0.0.1 --apiserver-ips=127.0.0.1 --apiserver-port=6443  --apiserver-name=localhost
 -- port
---extra-config=apiserver.service-node-port-range=1-39999
+--extra-config=apiserver.service-node-port-range=1-39999 
 -- prometheus-operator
 --extra-config=apiserver.authorization-mode=Node,RBAC #默认配置是这个 --extra-config=apiserver.authorization-mode=RBAC 官方文档是这个，怀疑后来重启logs报无权限跟这个有关
 --kube-prometheus
 --bootstrapper=kubeadm --extra-config=kubelet.authentication-token-webhook=true --extra-config=kubelet.authorization-mode=Webhook --extra-config=scheduler.bind-address=0.0.0.0 --extra-config=controller-manager.bind-address=0.0.0.0
+# 对外开放（试了没用啊）
+--apiserver-ips=0.0.0.0（无效）
+--extra-config=apiserver.advertise-address=0.0.0.0（无效） --apiserver-port=6443
+## 对于 docker 和 podman 驱动程序，使用--listen-address标志：
+--listen-address=0.0.0.0
 外网通过代理访问docker中的服务
 --url只打印url不自动打开浏览器
 //通过代理暴露集群内ip

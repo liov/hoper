@@ -26,7 +26,7 @@ rules:
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  namespace: tools
+  namespace: default
   name: drone
 rules:
   - apiGroups:
