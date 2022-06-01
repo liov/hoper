@@ -1,8 +1,8 @@
 #!/bin/bash
 
-echo $CA > ca.crt
-echo $CACRT > dev.crt
-echo $CAKEY > dev.key
+echo $CA |base64 -d > ca.crt
+echo $CACRT |base64 -d > dev.crt
+echo $CAKEY |base64 -d > dev.key
 
 server=https://hoper.xyz:6443
 kubectl config set-cluster k8s --server=${server} --certificate-authority=ca.crt --embed-certs=true --kubeconfig=/root/.kube/config
