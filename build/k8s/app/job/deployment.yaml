@@ -4,8 +4,11 @@ metadata:
   name: ${app}
 spec:
   template:
+    metadata:
+      name: ${app}
     spec:
-      - name: ${app}
+      containers:
+        - name: ${app}
           image: ${image}
           volumeMounts:
             - mountPath: /app/config
@@ -14,16 +17,16 @@ spec:
               name: data
             - mountPath: /static
               name: static
-          volumes:
-            - name: config
-              configMap:
-                name: ${group}
-            - name: data
-              hostPath:
-                path: /data/${group}
-                type: DirectoryOrCreate
-            - name: static
-              hostPath:
-                path: /data/static/${group}
-                type: DirectoryOrCreate
-      restartPolicy: OnFeailure
+      volumes:
+        - name: config
+          configMap:
+            name: ${group}
+        - name: data
+          hostPath:
+            path: ${datadir}/${group}
+            type: DirectoryOrCreate
+        - name: static
+          hostPath:
+            path: ${datadir}/static/${group}
+            type: DirectoryOrCreate
+      restartPolicy: OnFailure
