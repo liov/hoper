@@ -117,11 +117,15 @@ rules:
       - delete
   - apiGroups:
       - ""
+      - "apps"
+      - "batch"
     resources:
       - configmaps
       - services
       - apisixroutes
       - apisixtlses
+      - deployments
+      - jobs
       - pods
       - pods/log
     verbs:
