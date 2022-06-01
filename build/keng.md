@@ -1355,3 +1355,10 @@ _cgo_gotypes.go:175 +0x4c fp=0xc0002d9578 sp=0xc0002d9550 pc=0x895bec
 role rolebindind namespace 不一致
 # Error parsing reference: "******/timepill-rbyorderId:1.0.1" is not a valid repository/tag: invalid reference format: repository name must be lowercase
 全小写
+
+# Base64加密后有换行回车的解决办法
+据RFC 822规定,每76个字符,还需要加上一个回车换行
+base64 -w 0 禁用换行
+
+# drone 中执行一个shell，在构建时并不会执行最新的shell,完全无法理解
+估计是有缓存的原因，使用新tag解决
