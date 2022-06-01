@@ -135,6 +135,7 @@ rules:
       - list
       - watch
       - update
+      - patch
 EOF
 ```
 创建Rolebinding
@@ -179,16 +180,16 @@ rules:
   - watch
 ```
 创建ClusterRoleBinding
-cat dev-read-all-pod.yaml
+cat cluster-role.yaml
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
 metadata:
-  name: billy-read-all-pods
+  name: cluster-role
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: cluster-reader
+  name: cluster-role
 subjects:
 - apiGroup: rbac.authorization.k8s.io
   kind: User
@@ -217,7 +218,7 @@ cat  clusterrole.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: test-clusterrole
+  name: clusterrole
 rules:
   - apiGroups: [""]
     resources: ["pods"]
@@ -238,16 +239,16 @@ rules:
     resources: ["role","replicasets","deployments","customresourcedefinitions","configmaps"]
 ```
 集群绑定
-cat  test-classbind.yaml
+cat  clusterrole.yaml
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
 metadata:
-  name: test-all-pods
+  name: cluster-role-binding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: test-clusterrole
+  name: clusterrole
 subjects:
 - apiGroup: rbac.authorization.k8s.io
   kind: User
