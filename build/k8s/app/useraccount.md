@@ -100,14 +100,13 @@ kubectl config use-context dev
 ```
 
 创建Role
-部署了drone跳过
 ```bash
 cat >role.yaml <<EOF
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   namespace: default
-  name: drone
+  name: dev
 rules:
   - apiGroups:
       - ""
@@ -119,6 +118,10 @@ rules:
   - apiGroups:
       - ""
     resources:
+      - configmaps
+      - services
+      - apisixroutes
+      - apisixtlses
       - pods
       - pods/log
     verbs:
@@ -132,16 +135,16 @@ EOF
 ```
 创建Rolebinding
 ```bash
-cat >test-pods-reader.yaml <<EOF
+cat >rolebinding.yaml <<EOF
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: drone
+  name: dev
   namespace: default
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: drone
+  name: dev
 subjects:
   - apiGroup: rbac.authorization.k8s.io
     kind: User
