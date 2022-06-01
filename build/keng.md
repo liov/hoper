@@ -1362,3 +1362,6 @@ base64 -w 0 禁用换行
 
 # drone 中执行一个shell，在构建时并不会执行最新的shell,完全无法理解
 估计是有缓存的原因，使用新tag解决
+
+# The Job "timepill-rbyorderid" is invalid: spec.template: Invalid value: field is immutable
+不写选择器，选择器会自动生成，下次apply 会不匹配
