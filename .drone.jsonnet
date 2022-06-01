@@ -1,6 +1,7 @@
 // local mode(mode="app") = if mode == "app" then "app" else "node";
 local tpldir = "./build/k8s/app/";
 local codedir = "/mnt/new/code/hoper/";
+
 local kubectl (deplocal,cmd) = if deplocal then{
       name: "deploy",
       image: "bitnami/kubectl",
@@ -28,7 +29,7 @@ local kubectl (deplocal,cmd) = if deplocal then{
                },
       },
       commands:[
-            "chomd +x "+ tpldir+"user.sh && "+ tpldir+"user.sh",
+            "chmod +x "+ tpldir+"user.sh && "+ tpldir+"user.sh",
       ]+cmd
 };
 
@@ -36,6 +37,7 @@ local kubectl (deplocal,cmd) = if deplocal then{
 local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deplocal=false) = {
   local fullname = if name == "" then group else group + "-" + name,
   local tag = "${DRONE_TAG##"+fullname+"-v}",
+  local datadir = if deplocal then "/mnt/new/data" else "/data",
   kind: "pipeline",
   type: "kubernetes",
   name: fullname,
@@ -106,6 +108,7 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
         "sed -i 's#$${cmd}#"+std.join(" ,",["\""+opt+"\"" for opt in cmd])+"#g' "+tpldir+mode+"/Dockerfile",
         "sed -i 's/$${app}/"+fullname+"/g' "+tpldir+mode+"/deployment.yaml",
         "sed -i 's/$${group}/"+group+"/g' "+tpldir+mode+"/deployment.yaml",
+        "sed -i 's#$${datadir}#"+datadir+"#g' "+tpldir+mode+"/deployment.yaml",
         "sed -i 's#$${image}#jyblsq/"+fullname+":"+tag+"#g' "+tpldir+mode+"/deployment.yaml"
       ]
     },
@@ -133,7 +136,7 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
     {
       name: "docker build",
       image: "plugins/docker",
-      //privileged: true ,
+      privileged: true ,
       volumes: [
         {
             name: "dockersock",
@@ -179,5 +182,5 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
 [
   Pipeline("timepill","","app",false,"tools/server","./timepill/cmd/record.go",["-t"]),
   Pipeline("hoper","","app",true,"server/go/mod"),
-  Pipeline("timepill","rbyorderId","job",false,"tools/server","./timepill/cmd/recordby_orderid.go"),
+  Pipeline("timepill","rbyorderid","job",false,"tools/server","./timepill/cmd/recordby_orderid.go"),
 ]
