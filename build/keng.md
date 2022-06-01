@@ -1350,3 +1350,8 @@ _cgo_gotypes.go:175 +0x4c fp=0xc0002d9578 sp=0xc0002d9550 pc=0x895bec
 
 ### 动态编译直接本地跑 ./main: /lib64/libc.so.6: version `GLIBC_2.28' not found (required by ./main)
 升级glibc到2.28版本
+
+# secrets is forbidden: User "system:serviceaccount:tools:default" cannot create resource "secrets" in API group "" in the namespace "default"
+role rolebindind namespace 不一致
+# Error parsing reference: "******/timepill-rbyorderId:1.0.1" is not a valid repository/tag: invalid reference format: repository name must be lowercase
+全小写

@@ -39,10 +39,10 @@ spec:
             name: ${group}
         - name: data
           hostPath:
-            path: /data/${group}
+            path: ${datadir}/${group}
             type: DirectoryOrCreate
         - name: static
           hostPath:
-            path: /data/static/${group}
+            path: ${datadir}/static/${group}
             type: DirectoryOrCreate
 
