@@ -21,6 +21,7 @@ func (api *apiService) GetSelfInfo() *User {
 	err := getV2("/users/my", nil, &selfInfo)
 	if err != nil {
 		log.Error(err)
+		return nil
 	}
 	return &selfInfo
 }
@@ -30,6 +31,7 @@ func (api *apiService) GetUserInfo(id int) *User {
 	err := getV2("/users/"+strconv.Itoa(id), nil, &selfInfo)
 	if err != nil {
 		log.Error(err)
+		return nil
 	}
 	return &selfInfo
 }
@@ -56,6 +58,7 @@ func (api *apiService) GetTodayDiaries(page, pageSize int, firstId string) *Toda
 	err := getV1("/diaries/today", &TodayDiariesReq{Page{page, pageSize}, firstId}, &todayDiaries)
 	if err != nil {
 		log.Error(err)
+		return nil
 	}
 	return &todayDiaries
 }
@@ -65,6 +68,7 @@ func (api *apiService) GetTodayTopicDiaries(page, pageSize int, firstId string) 
 	err := getV1("/topic/diaries", &TodayDiariesReq{Page{page, pageSize}, firstId}, &todayDiaries)
 	if err != nil {
 		log.Error(err)
+		return nil
 	}
 	return &todayDiaries
 }
@@ -74,6 +78,7 @@ func (api *apiService) GetFollowDiaries(page, pageSize int, firstId string) *Tod
 	err := getV1("/diaries/follow", &TodayDiariesReq{Page{page, pageSize}, firstId}, &todayDiaries)
 	if err != nil {
 		log.Error(err)
+		return nil
 	}
 	return &todayDiaries
 }
@@ -99,6 +104,7 @@ func (api *apiService) GetNotebook(id int) *NoteBook {
 	err := getV1(fmt.Sprintf("/notebooks/%d", id), nil, &notebook)
 	if err != nil {
 		log.Error(err)
+		return nil
 	}
 	return &notebook
 }
@@ -108,6 +114,7 @@ func (api *apiService) GetUserTodayDiaries(userId int) *TodayDiaries {
 	err := getV1(fmt.Sprintf("/users/%d/diaries", userId), nil, &todayDiaries)
 	if err != nil {
 		log.Error(err)
+		return nil
 	}
 	return &todayDiaries
 }
@@ -117,6 +124,7 @@ func (api *apiService) GetDiaryComments(diaryId int) []*Comment {
 	err := getV1(fmt.Sprintf("/diaries/%d/comments", diaryId), nil, &comments)
 	if err != nil {
 		log.Error(err)
+		return nil
 	}
 	return comments
 }
@@ -126,6 +134,7 @@ func (api *apiService) GetUserNotebooks(userId int) []*NoteBook {
 	err := getV1(fmt.Sprintf("/users/%d/notebooks", userId), nil, &notebooks)
 	if err != nil {
 		log.Error(err)
+		return nil
 	}
 	return notebooks
 }
@@ -135,6 +144,7 @@ func (api *apiService) GetRelationUsers(page, pageSize int) *TodayDiaries {
 	err := getV1("/relation", &Page{page, pageSize}, &todayDiaries)
 	if err != nil {
 		log.Error(err)
+		return nil
 	}
 	return &todayDiaries
 }
@@ -144,6 +154,7 @@ func (api *apiService) GetRelationReverseUsers(page, pageSize int) *TodayDiaries
 	err := getV1("/relation/reverse", &Page{page, pageSize}, &todayDiaries)
 	if err != nil {
 		log.Error(err)
+		return nil
 	}
 	return &todayDiaries
 }
@@ -153,6 +164,7 @@ func (api *apiService) DeleteDiary(diaryId int) *Response {
 	err := call(http.MethodDelete, baseUrl+fmt.Sprintf("/diaries/%d", diaryId), nil, &res)
 	if err != nil {
 		log.Error(err)
+		return nil
 	}
 	return &res
 }
@@ -162,6 +174,7 @@ func (api *apiService) DeleteNotebook(noteBookId int) *Response {
 	err := call(http.MethodDelete, baseUrl+fmt.Sprintf("/notebooks/%d", noteBookId), nil, &res)
 	if err != nil {
 		log.Error(err)
+		return nil
 	}
 	return &res
 }
@@ -171,6 +184,7 @@ func (api *apiService) GetRelation(userId int) *TodayDiaries {
 	err := getV1(fmt.Sprintf("/relation/%d", userId), nil, &todayDiaries)
 	if err != nil {
 		log.Error(err)
+		return nil
 	}
 	return &todayDiaries
 }
@@ -180,6 +194,7 @@ func (api *apiService) GetDiary(diaryId int) *Diary {
 	err := getV1(fmt.Sprintf("/diaries/%d", diaryId), nil, &diary)
 	if err != nil {
 		log.Error(err)
+		return nil
 	}
 	return &diary
 }

@@ -91,7 +91,7 @@ func RecordNoteBook(notebookId int) {
 	}
 	if !exists {
 		notebook := ApiService.GetNotebook(notebookId)
-		if notebook.Id != 0 {
+		if notebook != nil && notebook.Id > 0 {
 			Dao.Hoper.Create(notebook)
 		}
 	}
@@ -99,7 +99,7 @@ func RecordNoteBook(notebookId int) {
 }
 
 func RecordDiary(diary *Diary) {
-	if diary == nil || DiaryExists(diary.Id) {
+	if diary == nil || diary.Id == 0 || DiaryExists(diary.Id) {
 		return
 	}
 
@@ -107,8 +107,9 @@ func RecordDiary(diary *Diary) {
 	if err != nil {
 		log.Error(err)
 	}
-
-	RecordUser(diary.UserId, diary.User.Name)
+	if diary.User != nil && diary.UserId > 0 {
+		RecordUser(diary.UserId, diary.User.Name)
+	}
 
 	if diary.CommentCount > 0 {
 		RecordComment(diary.Id)
@@ -326,7 +327,7 @@ func RecordUser(userId int, userName string) {
 
 func RecordUserById(userId int) *User {
 	user := ApiService.GetUserInfo(userId)
-	if user.UserId != 0 {
+	if user != nil && user.UserId > 0 {
 		err := Dao.Hoper.Create(user).Error
 		if err != nil {
 			log.Error(err)
