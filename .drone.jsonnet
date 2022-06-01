@@ -29,7 +29,7 @@ local kubectl (deplocal,cmd) = if deplocal then{
                },
       },
       commands:[
-            "chmod +x "+ tpldir+"user.sh && "+ tpldir+"user.sh",
+            "chmod +x "+ tpldir+"account.sh && "+ tpldir+"account.sh",
       ]+cmd
 };
 
