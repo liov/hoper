@@ -1,6 +1,6 @@
 // local mode(mode="app") = if mode == "app" then "app" else "node";
 local tpldir = "./build/k8s/app/";
-local codedir = "/root/code/app/hoper/";
+local codedir = "/mnt/new/code/hoper/";
 local kubectl (deplocal,cmd) = if deplocal then{
       name: "deploy",
       image: "bitnami/kubectl",
@@ -28,8 +28,7 @@ local kubectl (deplocal,cmd) = if deplocal then{
                },
       },
       commands:[
-            "chomd +x "+ tpldir+"user.sh",
-            tpldir+"user.sh",
+            "chomd +x "+ tpldir+"user.sh && "+ tpldir+"user.sh",
       ]+cmd
 };
 
@@ -119,12 +118,6 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
             path: "/go/"
         }
       ],
-      resources: {
-          limits: {
-            cpu: 1000,
-            memory: "1GiB"
-          }
-      },
       environment: {
          GOPROXY: "https://goproxy.io,https://goproxy.cn,direct"
       },
@@ -134,7 +127,7 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
         local buildfile = "/drone/src/"+workdir+"/protobuf/build";
          if protoc then "if [ ! -f "+buildfile+" ]; then go run ./protobuf; fi" else "echo",
         "go mod tidy",
-        "go build -ldflags '-linkmode \"external\" -extldflags \"-static\"' -o  /drone/src/"+fullname+" "+sourceFile
+        "go build -o  /drone/src/"+fullname+" "+sourceFile
       ]
     },
     {
@@ -165,7 +158,7 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
       }
     },
     kubectl(deplocal,[
-                    "kubectl --kubeconfig=/root/.kube/config apply -f "+tpldir+mode+"/deployment.yaml"
+       "kubectl --kubeconfig=/root/.kube/config apply -f "+tpldir+mode+"/deployment.yaml"
     ]),
     {
        name: "dingtalk",
@@ -186,5 +179,5 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
 [
   Pipeline("timepill","","app",false,"tools/server","./timepill/cmd/record.go",["-t"]),
   Pipeline("hoper","","app",true,"server/go/mod"),
-  Pipeline("timepill","rbyorderId","job",false,"tools/server","./timepill/cmd/recordby_orderid.go",deplocal=true),
+  Pipeline("timepill","rbyorderId","job",false,"tools/server","./timepill/cmd/recordby_orderid.go"),
 ]

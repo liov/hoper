@@ -1329,3 +1329,24 @@ postman是可以的，感觉跟浏览器有关，请求根本没发出去
 --extra-config=apiserver.advertise-address=0.0.0.0（无效）
 
 最后发现配错规则了，不是这个机子...
+
+# go静态编译在frolvlad/alpine-glibc:latest容器跑报错，alpine:latest是正常的
+fatal error: unexpected signal during runtime execution
+[signal SIGSEGV: segmentation violation code=0x1 addr=0xe5 pc=0x7f5b483c8084]
+
+runtime stack:
+runtime.throw({0x15b9f51?, 0x0?})
+/usr/local/go/src/runtime/panic.go:992 +0x71
+runtime.sigpanic()
+/usr/local/go/src/runtime/signal_unix.go:802 +0x3a9
+
+goroutine 1 [syscall, locked to thread]:
+runtime.cgocall(0x11eff10, 0xc0002d9578)
+/usr/local/go/src/runtime/cgocall.go:157 +0x5c fp=0xc0002d9550 sp=0xc0002d9518 pc=0x405a7c
+os/user._Cfunc_mygetpwuid_r(0x0, 0xc000363b90, 0x37edb70, 0x400, 0xc000286650)
+_cgo_gotypes.go:175 +0x4c fp=0xc0002d9578 sp=0xc0002d9550 pc=0x895bec
+
+## 动态编译frolvlad/alpine-glibc:latest没问题
+
+### 动态编译直接本地跑 ./main: /lib64/libc.so.6: version `GLIBC_2.28' not found (required by ./main)
+升级glibc到2.28版本
