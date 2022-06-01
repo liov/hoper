@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM frolvlad/alpine-glibc
 
 #修改容器时区
 ENV TZ=Asia/Shanghai LANG=C.UTF-8
