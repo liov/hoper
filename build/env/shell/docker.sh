@@ -17,6 +17,7 @@ docker run --rm
 docker run --user="root" --privileged.
 # 细粒度权限控制
 --cap-add=NET_ADMIN
+
 # 下表列出了Linux功能选项，这些选项是默认允许的，可以删除
 SETPCAP |修改进程的权限
 
@@ -100,3 +101,5 @@ docker run --rm -v /mnt/d/SDK/gopath:/go -v $PWD:/work -w /work/server/go/mod go
 
 # 使用宿主机网络
 docker run --net=host
+
+docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t gcr.io/my-project/my-image:latest .

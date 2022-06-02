@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: nacos
+  namespace: monitoring
+  labels:
+    release: kube-prometheus
+spec:
+  endpoints:
+    - interval: 15s
+      port: server
+      path: /nacos/actuator/prometheus
+      scheme: http
+  selector:
+    matchLabels:
+      app: nacos
+  namespaceSelector:
+    matchNames:
+      - tools

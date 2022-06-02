@@ -20,6 +20,14 @@ spec:
       containers:
         - name: ${app}
           image: ${image}
+          resources:
+            resources:
+              requests:
+                memory: "10Mi"
+                cpu: "50m"
+              limits:
+                memory: "50Mi"
+          imagePullPolicy: IfNotPresent
           volumeMounts:
             - mountPath: /app/config
               name: config
