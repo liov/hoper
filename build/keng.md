@@ -1365,3 +1365,6 @@ base64 -w 0 禁用换行
 
 # The Job "timepill-rbyorderid" is invalid: spec.template: Invalid value: field is immutable
 不写选择器，选择器会自动生成，下次apply 会不匹配
+
+# The Job "" is invalid: spec.selector: Invalid value: MatchExpressions:[]v1.LabelSelectorRequirement(nil)}: `selector` not auto-generated
+在Job资源的yaml文件，如果你要是用"selector.matchLabels"，那就必须同时设置“selector.manual:true”。
