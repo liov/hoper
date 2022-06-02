@@ -63,7 +63,7 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
     {
       name: "gopath",
       host: {
-         path: "/data/deps/gopath/"
+         path: datadir+"/deps/gopath/"
       }
     },
      {
