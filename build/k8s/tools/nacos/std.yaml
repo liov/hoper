@@ -46,9 +46,9 @@ metadata:
 data:
   JVM_XMS: "50m"
   JVM_XMX: "256m"
-  JVM_XMN: "50m"
-  JVM_MS: "50m"
-  JVM_MMS: "50m"
+  JVM_XMN: "30m"
+  JVM_MS: "30m"
+  JVM_MMS: "30m"
   NACOS_AUTH_ENABLE: "true"
   NACOS_AUTH_TOKEN: "token"
   NACOS_REPLICAS: "1"
@@ -99,7 +99,7 @@ spec:
               memory: "50Mi"
               cpu: "50m"
             limits:
-              memory: "200Mi"
+              memory: "4500Mi"
           ports:
             - containerPort: 9000
               name: client-port
