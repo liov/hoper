@@ -214,6 +214,9 @@ func (req *RequestParams) Do(response interface{}) error {
 		}
 		respBody = stringsi.ToString(respBytes)
 		statusCode = resp.StatusCode
+		if resp.StatusCode < 200 || resp.StatusCode > 300 {
+			return errors.New("status:" + resp.Status + respBody)
+		}
 		if len(respBytes) > 0 {
 			err = json.Unmarshal(respBytes, response)
 			if err != nil {
@@ -223,10 +226,6 @@ func (req *RequestParams) Do(response interface{}) error {
 				err = v.CheckError()
 			}
 		}
-	}
-
-	if resp.StatusCode < 200 || resp.StatusCode > 300 {
-		return errors.New("status:" + resp.Status + respBody)
 	}
 
 	return err
