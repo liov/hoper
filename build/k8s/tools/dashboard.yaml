@@ -1,7 +1,7 @@
-apiVersion: apisix.apache.org/v2
+apiVersion: apisix.apache.org/v2beta3
 kind: ApisixRoute
 metadata:
-  name: grafana
+  name: dashboard
   namespace: kubernetes-dashboard
 spec:
   http:
