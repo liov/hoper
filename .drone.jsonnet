@@ -97,6 +97,7 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
         "git config --global https.proxy 'socks5://proxy.tools:1080'",
         //"git clone ${DRONE_GIT_HTTP_URL} .",
         "cd /code",
+        "git tag -l | xargs git tag -d",
         "git fetch --all && git reset --hard origin/master && git pull",
         "cd /drone/src/",
         "git clone /code .",
