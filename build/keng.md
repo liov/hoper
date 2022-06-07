@@ -1374,3 +1374,12 @@ mysql -uroot -pxxx
 flush hosts;
 
 mysqladmin flush-hosts -uroot -pxxx
+
+# Exception in thread "main" java.nio.file.FileSystemException: /usr/share/elasticsearch/config/elasticsearch.yml.goCs5oUbSOuqcoNzBPGIAQ.tmp -> /usr/share/elasticsearch/config/elasticsearch.yml: Device or resource busy
+挂载 /usr/share/elasticsearch/config/elasticsearch.yml出的问题，临时方案是取消挂载
+docker的配置默认network.host: 0.0.0.0
+https://github.com/elastic/elasticsearch/issues/85463
+
+
+# elasticsearch8 无法访问
+docker cp es01:/usr/share/elasticsearch/config/certs/http_ca.crt .

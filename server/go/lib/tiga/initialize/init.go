@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/conf_center"
-	"github.com/actliboy/hoper/server/go/lib/utils/slices"
+	"github.com/actliboy/hoper/server/go/lib/utils/configor/local"
 	"net"
 	"net/http"
 	"net/url"
@@ -14,9 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/actliboy/hoper/server/go/lib/utils/configor"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
-	"github.com/pelletier/go-toml"
 )
 
 //约定大于配置
@@ -31,11 +29,6 @@ const (
 	TEST        = "test"
 	PRODUCT     = "prod"
 	InitKey     = "initialize"
-)
-
-const (
-	exprTag   = "expr"
-	configTag = "config"
 )
 
 type EnvConfig struct {
@@ -114,7 +107,7 @@ func (init *Init) LoadConfig() *Init {
 	if _, err := os.Stat(init.ConfUrl); os.IsNotExist(err) {
 		log.Fatalf("配置错误: 请确保可执行文件和配置文件在同一目录下或在config目录下或指定配置文件")
 	}
-	err := configor.Load(&onceConfig, init.ConfUrl)
+	err := local.Load(&onceConfig, init.ConfUrl)
 	if err != nil {
 		log.Fatalf("配置错误: %v", err)
 	}
@@ -192,88 +185,10 @@ type Generate interface {
 	Generate() interface{}
 }
 
-// Customize
-func (init *Init) inject() {
-	var fieldNameDaoMap = make(map[string]interface{})
-	setConfig(reflect.ValueOf(init.conf).Elem(), fieldNameDaoMap)
-	init.conf.Init()
-	if init.dao == nil {
-		return
-	}
-	setDao(reflect.ValueOf(init.dao).Elem(), fieldNameDaoMap)
-	init.dao.Init()
-}
-
-func setConfig(v reflect.Value, fieldNameDaoMap map[string]interface{}) {
-	if !v.IsValid() {
-		return
-	}
-	typ := v.Type()
-	for i := 0; i < v.NumField(); i++ {
-		switch v.Field(i).Kind() {
-		case reflect.Ptr:
-			setConfig(v.Field(i).Elem(), fieldNameDaoMap)
-		case reflect.Struct:
-			setConfig(v.Field(i), fieldNameDaoMap)
-		}
-		if v.Field(i).Addr().CanInterface() {
-			inter := v.Field(i).Addr().Interface()
-			if conf, ok := inter.(NeedInit); ok {
-				conf.Init()
-			}
-			if slices.StringContains(InitConfig.NoInject, strings.ToUpper(typ.Field(i).Name)) {
-				continue
-			}
-			if conf, ok := inter.(Generate); ok {
-				ret := conf.Generate()
-				fieldNameDaoMap[strings.ToUpper(typ.Field(i).Name)] = ret
-			}
-		}
-	}
-}
-
-func setDao(v reflect.Value, fieldNameDaoMap map[string]interface{}) {
-
-	if !v.IsValid() {
-		return
-	}
-	typ := v.Type()
-
-	for i := 0; i < v.NumField(); i++ {
-		var dao interface{}
-		var ok bool
-		if confName, cok := typ.Field(i).Tag.Lookup("config"); cok {
-			dao, ok = fieldNameDaoMap[strings.ToUpper(confName)]
-		}
-		if !ok {
-			dao, ok = fieldNameDaoMap[strings.ToUpper(typ.Field(i).Name)]
-		}
-		if ok {
-			daoValue := reflect.ValueOf(dao)
-			if daoValue.Type().AssignableTo(v.Field(i).Type()) || daoValue.Type().Implements(v.Field(i).Type()) {
-				v.Field(i).Set(daoValue)
-			}
-			continue
-		}
-		switch v.Field(i).Kind() {
-		case reflect.Ptr:
-			setDao(v.Field(i).Elem(), fieldNameDaoMap)
-		case reflect.Struct:
-			setDao(v.Field(i), fieldNameDaoMap)
-		}
-	}
-}
-
 func (init *Init) CloseDao() {
 	if init.dao != nil {
 		init.dao.Close()
 	}
-}
-
-func (init *Init) UnmarshalAndSet(bytes []byte) {
-	toml.Unmarshal(bytes, init.conf)
-	init.CloseDao()
-	init.inject()
 }
 
 func (init *Init) Config() Config {

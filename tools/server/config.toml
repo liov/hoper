@@ -2,7 +2,7 @@ Module = "crawler"
 # dev | test | prod
 # Env = "dev"
 
-NoInject = ["Apollo","Etcd"]
+NoInject = ["Apollo","Etcd", "Es"]
 
 
 [configCenter]
