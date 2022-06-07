@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: elasticsearch
+  name: elasticsearch
+  namespace: tools
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+        - name: elasticsearch
+          image: elasticsearch:8.2.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: ES_JAVA_OPTS
+              value: "-Xms1g -Xmx4g"
+            - name: "discovery.type"
+              value: "single-node"
+            - name: "xpack.security.enabled"
+              value: "true"
+           # - name: "ELASTIC_PASSWORD_FILE"
+            #  value: "/var/passwd"
+            - name: "xpack.security.http.ssl.enabled"
+              value: "false"
+          volumeMounts:
+           # - mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+            #  name: config
+            #  subPath: elasticsearch.yml
+            - mountPath: /usr/share/elasticsearch/data
+              name: data
+              subPath: data
+            - mountPath: /usr/share/elasticsearch/logs
+              name: data
+              subPath: log
+            - mountPath: /usr/share/elasticsearch/plugins
+              name: data
+              subPath: plugins
+      volumes:
+        #- name: config
+         # configMap:
+         #   name: elasticsearch
+        - name: data
+          hostPath:
+            path: /data/elasticsearch
+            type: DirectoryOrCreate
+
+

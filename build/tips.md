@@ -111,3 +111,15 @@ go build -tags netgo
 
 # cp复制带.git 的目录
 git clone /src /dst
+
+# runAsUser
+spec:
+securityContext:
+runAsUser: 0
+containers:
+
+# elastic改密码
+POST /_security/user/<user>/_password
+{
+"password" : "new-password"
+}

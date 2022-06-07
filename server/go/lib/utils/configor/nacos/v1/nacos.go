@@ -1,4 +1,4 @@
-package nacos
+package v1
 
 import (
 	"encoding/json"
