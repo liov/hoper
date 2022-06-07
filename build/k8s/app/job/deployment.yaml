@@ -2,20 +2,10 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: ${app}
-  labels:
-    job: ${app}
-    group: ${group}
 spec:
-  manualSelector: true
-  selector:
-    matchLabels:
-      job: ${app}
   template:
     metadata:
       name: ${app}
-      labels:
-        job: ${app}
-        group: ${group}
     spec:
       containers:
         - name: ${app}
