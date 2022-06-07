@@ -10,6 +10,10 @@ local kubectl (deplocal,cmd) = if deplocal then{
         {
           name: "kube",
           path: "/root/.kube/"
+        },
+        {
+          name: "minikube",
+          path: "/root/.minikube/"
         }
       ],
       commands:cmd
@@ -77,7 +81,13 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
        host: {
            path: "/root/.kube/"
        }
-     }
+     },
+      {
+        name: "minikube",
+        host: {
+          path: "/root/.minikube/"
+        }
+      }
   ],
   clone: {
    disable: true
