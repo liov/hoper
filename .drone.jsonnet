@@ -159,7 +159,8 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
        auto_tag: false,
        daemon_off: true,
        purge: true,
-       pull_image: false
+       pull_image: false,
+       dry_run: deplocal
       }
     },
     kubectl(deplocal,[
