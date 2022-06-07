@@ -3,7 +3,7 @@ package conf_center
 import (
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/conf_center/local"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/conf_center/nacos"
-	"github.com/actliboy/hoper/server/go/lib/utils/configor"
+	local2 "github.com/actliboy/hoper/server/go/lib/utils/configor/local"
 )
 
 type ConfigCenter interface {
@@ -43,7 +43,7 @@ func (c *ConfigCenterConfig) ConfigCenter(ccec ConfigCenterEnvConfig, model stri
 			c.Local.AutoReload = c.Watch
 			return c.Local
 		} else {
-			return &local.Local{Config: configor.Config{
+			return &local.Local{Config: local2.Config{
 				Debug:      debug,
 				AutoReload: c.Watch,
 			},

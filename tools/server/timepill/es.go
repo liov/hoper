@@ -2,7 +2,53 @@ package timepill
 
 import "time"
 
-const DiaryIndex = "diary_v1"
+const DiaryIndex = "diary"
+
+const Mapping = `
+{
+    "settings": {
+        "number_of_shards": 1,
+        "number_of_replicas": 0
+    },
+    "mappings": {
+        "properties": {
+			"id": {
+                "type": "long"
+            },
+            "user_id": {
+                "type": "keyword",
+                "fields": {
+                    "raw": {
+                        "type": "long"
+                    }
+                }
+            },
+            "notebook_id": {
+                "type": "keyword",
+                "fields": {
+                    "raw": {
+                        "type": "long"
+                    }
+                }
+            },
+            "notebook_subject": {
+                "type": "text",
+                "analyzer": "ik_max_word",
+                "search_analyzer": "ik_smart",
+                "store": true,
+                "fielddata": true
+            },
+            "content": {
+                "type": "text",
+                "analyzer": "ik_max_word",
+                "search_analyzer": "ik_smart"
+            },
+            "created": {
+                "type": "date"
+            }
+        }
+    }
+}`
 
 type IndexDiary struct {
 	Id              int       `json:"id"`

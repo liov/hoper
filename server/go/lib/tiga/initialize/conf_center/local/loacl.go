@@ -2,14 +2,14 @@ package local
 
 import (
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/utils/configor"
+	"github.com/actliboy/hoper/server/go/lib/utils/configor/local"
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/fsnotify/fsnotify"
 )
 
 type Local struct {
-	configor.Config
+	local.Config
 	LocalConfigName string
 	ReloadType      string `json:"reloadType" enum:"fsnotify,timer"` // 本地分为Watch和AutoReload，Watch采用系统调用通知，AutoReload定时器去查文件是否变更
 }
@@ -26,7 +26,7 @@ func (cc *Local) HandleConfig(handle func([]byte)) error {
 				cc.AutoReload = false
 				watch = true
 			}
-			err := configor.New(&cc.Config).
+			err := local.New(&cc.Config).
 				Handle(handle, adCongPath)
 			if err != nil {
 				return fmt.Errorf("配置错误: %v", err)
@@ -62,7 +62,7 @@ func (cc *Local) watch(adCongPath string, handle func([]byte)) {
 			}
 			log.Info("event:", event)
 			if event.Op&fsnotify.Write == fsnotify.Write {
-				err = configor.New(&cc.Config).
+				err = local.New(&cc.Config).
 					Handle(handle, adCongPath)
 				if err != nil {
 					log.Errorf("配置错误: %v", err)

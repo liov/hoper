@@ -1,4 +1,4 @@
-package elastic
+package v7
 
 import (
 	"github.com/actliboy/hoper/server/go/lib/utils/log"

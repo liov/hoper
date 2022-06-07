@@ -1,4 +1,4 @@
-package configor
+package local
 
 import (
 	"encoding/json"
