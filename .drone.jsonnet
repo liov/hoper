@@ -34,7 +34,7 @@ local kubectl (deplocal,cmd) = if deplocal then{
 };
 
 
-local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deplocal=false) = {
+local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deplocal=false,schedule="") = {
   local fullname = if name == "" then group else group + "-" + name,
   local tag = "${DRONE_TAG##"+fullname+"-v}",
   local datadir = if deplocal then "/mnt/new/data" else "/data",
@@ -109,7 +109,8 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
         "sed -i 's/$${app}/"+fullname+"/g' "+tpldir+mode+"/deployment.yaml",
         "sed -i 's/$${group}/"+group+"/g' "+tpldir+mode+"/deployment.yaml",
         "sed -i 's#$${datadir}#"+datadir+"#g' "+tpldir+mode+"/deployment.yaml",
-        "sed -i 's#$${image}#jyblsq/"+fullname+":"+tag+"#g' "+tpldir+mode+"/deployment.yaml"
+        "sed -i 's#$${image}#jyblsq/"+fullname+":"+tag+"#g' "+tpldir+mode+"/deployment.yaml",
+        if  mode == "cronjob"  then "sed -i 's#$${schedule}#"+schedule+"#g' "+tpldir+mode+"/deployment.yaml" else "echo",
       ]
     },
     {
@@ -161,7 +162,8 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
       }
     },
     kubectl(deplocal,[
-       "kubectl --kubeconfig=/root/.kube/config apply -f "+tpldir+mode+"/deployment.yaml"
+        if mode == "job" || mode == "cronjob"  then "kubectl --kubeconfig=/root/.kube/config delete -f "+tpldir+mode+"/deployment.yaml" else "echo",
+       "kubectl --kubeconfig=/root/.kube/config apply -f "+tpldir+mode+"/deployment.yaml",
     ]),
     {
        name: "dingtalk",
@@ -183,4 +185,5 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
   Pipeline("timepill","","app",false,"tools/server","./timepill/cmd/record.go",["-t"]),
   Pipeline("hoper","","app",true,"server/go/mod"),
   Pipeline("timepill","rbyorderid","job",false,"tools/server","./timepill/cmd/recordby_orderid.go"),
+  Pipeline("timepill","esload","cronjob",false,"tools/server","./timepill/cmd/search_es8.go","","0 23 * * *"),
 ]
