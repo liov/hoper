@@ -11,6 +11,8 @@ import (
 func main() {
 	defer initialize.Start(&timepill.Conf, &timepill.Dao)()
 
+	maxid, _ := timepill.Dao.MaxDiaryId()
+
 	ctx := context.Background()
 	key := "RecordByOrderID"
 	err := timepill.Dao.Redis.SetNX(ctx, key, 1, 0).Err()
@@ -39,6 +41,9 @@ func main() {
 		err = timepill.Dao.Redis.Incr(ctx, key).Err()
 		if err != nil {
 			log.Error(err)
+		}
+		if id >= maxid {
+			break
 		}
 	}
 }
