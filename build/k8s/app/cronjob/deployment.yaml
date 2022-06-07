@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ${app}
+spec:
+  schedule: ${schedule}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: ${app}
+        spec:
+          containers:
+            - name: ${app}
+              image: ${image}
+              resources:
+                requests:
+                  memory: "10Mi"
+                  cpu: "50m"
+                limits:
+                  memory: "50Mi"
+              imagePullPolicy: IfNotPresent
+              volumeMounts:
+                - mountPath: /app/config
+                  name: config
+                - mountPath: /data
+                  name: data
+                - mountPath: /static
+                  name: static
+          volumes:
+            - name: config
+              configMap:
+                name: ${group}
+            - name: data
+              hostPath:
+                path: ${datadir}/${group}
+                type: DirectoryOrCreate
+            - name: static
+              hostPath:
+                path: ${datadir}/static/${group}
+                type: DirectoryOrCreate
+          restartPolicy: OnFailure

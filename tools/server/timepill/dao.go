@@ -6,6 +6,10 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/def/request"
 )
 
+const (
+	DiaryTableName = "diary"
+)
+
 type ListReq struct {
 	request.ListReq
 	request.RangeReq
@@ -32,4 +36,14 @@ func CreateBadgeTable() {
 
 func CreateCommentTable() {
 	fmt.Println(Dao.Hoper.Migrator().CreateTable(&Comment{}))
+}
+
+func (dao *TimepillDao) MaxDiaryId() (int, error) {
+	var maxId int
+
+	err := Dao.Hoper.Table(DiaryTableName).Select("MAX(id)").Scan(&maxId).Error
+	if err != nil {
+		return 0, err
+	}
+	return maxId, nil
 }
