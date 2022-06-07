@@ -15,3 +15,11 @@ docker run --name elasticsearch \
 
  -m 1g \
  -p 9200:9200  -p 9300:9300 \
+
+docker exec -it es01 /usr/share/elasticsearch/bin/elasticsearch-reset-password -u elastic
+elasticsearch-setup-passwords interactive
+docker cp es01:/usr/share/elasticsearch/config/certs/http_ca.crt .
+curl --cacert http_ca.crt -u elastic https://localhost:9200
+bin/elasticsearch-keystore show xpack.security.http.ssl.keystore.secure_password
+bin/elasticsearch-keystore show xpack.security.transport.ssl.keystore.secure_password
+docker exec -it es-node01 /usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s kibana

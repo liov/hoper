@@ -25,6 +25,8 @@ require (
 	github.com/eapache/go-resiliency v1.2.0 // indirect
 	github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21 // indirect
 	github.com/eapache/queue v1.1.0 // indirect
+	github.com/elastic/elastic-transport-go/v8 v8.1.0 // indirect
+	github.com/elastic/go-elasticsearch/v8 v8.2.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/gin-gonic/gin v1.7.4 // indirect
 	github.com/go-redis/redis/v8 v8.11.4 // indirect

@@ -3,16 +3,20 @@ package main
 import (
 	"context"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
+	v7 "github.com/actliboy/hoper/server/go/lib/tiga/initialize/elastic/v7"
 	"github.com/actliboy/hoper/server/go/lib/utils/def/request"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"strconv"
 	"tools/timepill"
 )
 
+var es v7.Es
+
 func main() {
 	defer initialize.Start(&timepill.Conf, &timepill.Dao)()
+	es = timepill.Dao.Es
 	ctx := context.Background()
-	exists, err := timepill.Dao.Es.IndexExists(timepill.DiaryIndex).Do(ctx)
+	exists, err := es.IndexExists(timepill.DiaryIndex).Do(ctx)
 	if err != nil {
 		// Handle error
 		panic(err)
@@ -20,55 +24,12 @@ func main() {
 	if !exists {
 		createIndex(ctx)
 	}
+	load(ctx)
 }
 
 func createIndex(ctx context.Context) {
-	const mapping = `
-{
-    "settings": {
-        "number_of_shards": 1,
-        "number_of_replicas": 0
-    },
-    "mappings": {
-        "properties": {
-			"id": {
-                "type": "long"
-            },
-            "user_id": {
-                "type": "keyword",
-                "fields": {
-                    "raw": {
-                        "type": "long"
-                    }
-                }
-            },
-            "notebook_id": {
-                "type": "keyword",
-                "fields": {
-                    "raw": {
-                        "type": "long"
-                    }
-                }
-            },
-            "notebook_subject": {
-                "type": "text",
-                "analyzer": "ik_max_word",
-                "search_analyzer": "ik_smart",
-                "store": true,
-                "fielddata": true
-            },
-            "content": {
-                "type": "text",
-                "analyzer": "ik_max_word",
-                "search_analyzer": "ik_smart"
-            },
-            "created": {
-                "type": "date"
-            }
-        }
-    }
-}`
-	createIndex, err := timepill.Dao.Es.CreateIndex(timepill.DiaryIndex).BodyString(mapping).Do(ctx)
+
+	createIndex, err := es.CreateIndex(timepill.DiaryIndex).BodyString(timepill.Mapping).Do(ctx)
 	if err != nil {
 		// Handle error
 		panic(err)
@@ -79,7 +40,7 @@ func createIndex(ctx context.Context) {
 }
 
 func esmaxId(ctx context.Context) int {
-	rep, _ := timepill.Dao.Es.Search(timepill.DiaryIndex).Sort("id", false).Size(1).Do(ctx)
+	rep, _ := es.Search(timepill.DiaryIndex).Sort("id", false).Size(1).Do(ctx)
 	if rep.TotalHits() > 0 {
 		id, _ := strconv.Atoi(rep.Hits.Hits[0].Id)
 		return id
@@ -100,7 +61,7 @@ func load(ctx context.Context) {
 			Include:    false,
 		},
 	}
-	index := timepill.Dao.Es.Index().Index(timepill.DiaryIndex)
+	index := es.Index().Index(timepill.DiaryIndex)
 	for {
 		req.PageSize = timepill.Conf.TimePill.PageSize
 		if req.PageSize < 1 {

@@ -4,7 +4,8 @@ import (
 	"encoding/base64"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/cache_ristretto"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/db"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/elastic"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/elastic/v7"
+	v8 "github.com/actliboy/hoper/server/go/lib/tiga/initialize/elastic/v8"
 	initializeredis "github.com/actliboy/hoper/server/go/lib/tiga/initialize/redis"
 	gormi "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
@@ -44,7 +45,8 @@ type TimepillDao struct {
 	Redis     initializeredis.Redis
 	Cache     cache_ristretto.Cache
 	UserCache cache_ristretto.Cache
-	Es        elastic.Es `config:"elasticsearch"`
+	Es        v7.Es `init:"notinject;config:elasticsearch"`
+	Es8       v8.Es `init:"config:elasticsearch8"`
 }
 
 func (dao TimepillDao) Init() {
