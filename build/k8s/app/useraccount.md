@@ -126,6 +126,7 @@ rules:
       - apisixtlses
       - deployments
       - jobs
+      - cronjobs
       - pods
       - pods/log
     verbs:
