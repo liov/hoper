@@ -181,3 +181,9 @@ origin  git@git.coding.net:KeithNull/keithnull.github.io.git (push)
 可以看到，我们并没有如方法 1 一般增加远程仓库的数目，而是给一个远程仓库赋予了多个地址（或者准确地说，多个用于push的地址）。
 
 因此，这样设置后的push 和pull操作与最初的操作完全一致，不需要进行调整。
+
+删除所有远程标签
+git show-ref --tag | awk '{print ":" $2}' | xargs git push origin
+
+删除所有本地标签
+git tag -l | xargs git tag -d
