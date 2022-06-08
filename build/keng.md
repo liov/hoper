@@ -1383,3 +1383,16 @@ https://github.com/elastic/elasticsearch/issues/85463
 
 # elasticsearch8 无法访问
 docker cp es01:/usr/share/elasticsearch/config/certs/http_ca.crt .
+
+# nacos 新建不了不配置
+版本不兼容且镜像标签不维护
+nacos/nacos-server:latest->v2.1.0
+
+# nacos go客户端不完善，在k8s中，通过ingress连接，grpc连接选项有问题
+k8s内开frp打洞
+
+# nacos 天坑，文档不说明
+rpc端口是在服务端口+1000 内部rpc +1001 原来的-1000
+
+# frp  port unavailable
+frps无法绑定到此端口

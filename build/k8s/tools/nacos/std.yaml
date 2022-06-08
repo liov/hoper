@@ -8,21 +8,13 @@ metadata:
     app: nacos
 spec:
   type: ClusterIP
-  clusterIP: None
   ports:
     - port: 9000
       name: server
       targetPort: 9000
-    - port: 9848
+    - port: 9001
       name: client-rpc
-      targetPort: 9848
-    - port: 9849
-      name: raft-rpc
-      targetPort: 9849
-    ## 兼容1.4.x版本的选举端口
-    - port: 7848
-      name: old-raft-rpc
-      targetPort: 7848
+      targetPort: 10000
   selector:
     app: nacos
 ---
@@ -33,9 +25,7 @@ metadata:
   namespace: tools
 spec:
   portLevelSettings:
-    - port: 9848
-      scheme: grpc
-    - port: 9849
+    - port: 9001
       scheme: grpc
 ---
 apiVersion: v1
@@ -80,20 +70,10 @@ spec:
       annotations:
         pod.alpha.kubernetes.io/initialized: "true"
     spec:
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: "app"
-                    operator: In
-                    values:
-                      - nacos
-              topologyKey: "kubernetes.io/hostname"
       containers:
         - name: nacos
           imagePullPolicy: Always
-          image: nacos/nacos-server:latest
+          image: nacos/nacos-server:2.1.0
           resources:
             requests:
               memory: "50Mi"
@@ -103,11 +83,11 @@ spec:
           ports:
             - containerPort: 9000
               name: client-port
-            - containerPort: 9848
+            - containerPort: 10000
               name: client-rpc
-            - containerPort: 9849
+            - containerPort: 10001
               name: raft-rpc
-            - containerPort: 7848
+            - containerPort: 8000
               name: old-raft-rpc
           envFrom:
             - configMapRef:
@@ -127,10 +107,10 @@ spec:
           hostPath:
             path: /data/nacos
             type: DirectoryOrCreate
-
   selector:
     matchLabels:
       app: nacos
+
 ---
 apiVersion: apisix.apache.org/v2beta3
 kind: ApisixRoute
@@ -144,7 +124,7 @@ spec:
         hosts:
           - nacos.hoper.xyz
         paths:
-          - /*
+          - /nacos*
       backends:
         - serviceName: nacos
           servicePort: 9000
@@ -154,4 +134,18 @@ spec:
           enable: true
           config:
             http_to_https: true
-
+    - name: nacos-grpc
+      match:
+        hosts:
+          - nacos.hoper.xyz
+        paths:
+          - /*
+      backends:
+        - serviceName: nacos
+          servicePort: 9001
+          resolveGranularity: service
+      plugins:
+        - name: redirect
+          enable: true
+          config:
+            http_to_https: true

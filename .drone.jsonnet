@@ -42,6 +42,8 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
   local fullname = if name == "" then group else group + "-" + name,
   local tag = "${DRONE_TAG##"+fullname+"-v}",
   local datadir = if deplocal then "/mnt/new/data" else "/data",
+  local dockerfilepath = tpldir+mode+"/Dockerfile",
+  local deppath = tpldir+mode+"/deployment.yaml",
   kind: "pipeline",
   type: "kubernetes",
   name: fullname,
@@ -114,14 +116,15 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
         "git checkout -b deploy $DRONE_COMMIT_REF",
         local buildfile = "/code/"+workdir+"/protobuf/build";
         if protoc then "if [ -f "+buildfile+" ]; then cp -r /code/"+workdir+"/protobuf  /drone/src/"+workdir+"; fi" else "echo",
-        "sed -i 's/$${app}/"+fullname+"/g' "+tpldir+mode+"/Dockerfile",
+        "sed -i 's/$${app}/"+fullname+"/g' "+dockerfilepath,
         local cmd = ["./"+fullname]+opts;
-        "sed -i 's#$${cmd}#"+std.join(" ,",["\""+opt+"\"" for opt in cmd])+"#g' "+tpldir+mode+"/Dockerfile",
-        "sed -i 's/$${app}/"+fullname+"/g' "+tpldir+mode+"/deployment.yaml",
-        "sed -i 's/$${group}/"+group+"/g' "+tpldir+mode+"/deployment.yaml",
-        "sed -i 's#$${datadir}#"+datadir+"#g' "+tpldir+mode+"/deployment.yaml",
-        "sed -i 's#$${image}#jyblsq/"+fullname+":"+tag+"#g' "+tpldir+mode+"/deployment.yaml",
-        if  mode == "cronjob"  then "sed -i 's#$${schedule}#"+schedule+"#g' "+tpldir+mode+"/deployment.yaml" else "echo",
+        "sed -i 's#$${cmd}#"+std.join(" ,",["\""+opt+"\"" for opt in cmd])+"#g' "+dockerfilepath,
+        "sed -i 's/$${app}/"+fullname+"/g' "+deppath,
+        "sed -i 's/$${group}/"+group+"/g' "+deppath,
+        "sed -i 's#$${datadir}#"+datadir+"#g' "+deppath,
+        "sed -i 's#$${image}#jyblsq/"+fullname+":"+tag+"#g' "+deppath,
+        if  mode == "cronjob"  then "sed -i 's#$${schedule}#"+schedule+"#g' "+ deppath else "echo",
+        "cp -r "+deppath+" /code/"+tpldir+"/"+fullname+"-"+tag+".yaml",
       ]
     },
     {
@@ -164,7 +167,7 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
         },
        repo: "jyblsq/"+fullname,
        tags: tag,
-       dockerfile: tpldir+mode+"/Dockerfile",
+       dockerfile: dockerfilepath,
        force_tag: true,
        auto_tag: false,
        daemon_off: true,
@@ -174,8 +177,8 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
       }
     },
     kubectl(deplocal,[
-        //if mode == "job" || mode == "cronjob"  then "kubectl --kubeconfig=/root/.kube/config delete -f "+tpldir+mode+"/deployment.yaml" else "echo",
-       "kubectl --kubeconfig=/root/.kube/config apply -f "+tpldir+mode+"/deployment.yaml",
+        if tag != "1.0.0" && (mode == "job" || mode == "cronjob")  then "kubectl --kubeconfig=/root/.kube/config delete -f "+ deppath else "echo",
+       "kubectl --kubeconfig=/root/.kube/config apply -f "+deppath,
     ]),
     {
        name: "dingtalk",

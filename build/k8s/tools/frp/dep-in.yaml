@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: frpc-in
+  name: frpc-in
+  namespace: tools
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frpc-in
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: frpc-in
+    spec:
+      containers:
+        - name: frpc-in
+          image: jyblsq/frpc:latest
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: /app/frpc.ini
+              name: config
+              subPath: frpc2.ini
+      volumes:
+        - name: config
+          configMap:
+            name: frpc2

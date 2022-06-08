@@ -10,13 +10,13 @@ import (
 
 type Local struct {
 	local.Config
-	LocalConfigName string
-	ReloadType      string `json:"reloadType" enum:"fsnotify,timer"` // 本地分为Watch和AutoReload，Watch采用系统调用通知，AutoReload定时器去查文件是否变更
+	ConfigName string
+	ReloadType string `json:"reloadType" enum:"fsnotify,timer"` // 本地分为Watch和AutoReload，Watch采用系统调用通知，AutoReload定时器去查文件是否变更
 }
 
 // 本地配置
 func (cc *Local) HandleConfig(handle func([]byte)) error {
-	localConfigName := cc.LocalConfigName
+	localConfigName := cc.ConfigName
 	if localConfigName != "" {
 		adCongPath, err := fs.FindFile(localConfigName)
 		localConfigName = adCongPath
