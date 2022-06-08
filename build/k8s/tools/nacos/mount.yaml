@@ -13,16 +13,16 @@ spec:
     - port: 9000
       name: server
       targetPort: 9000
-    - port: 9848
+    - port: 10000
       name: client-rpc
-      targetPort: 9848
-    - port: 9849
+      targetPort: 10000
+    - port: 10001
       name: raft-rpc
-      targetPort: 9849
+      targetPort: 981000149
     ## 兼容1.4.x版本的选举端口
-    - port: 7848
+    - port: 8000
       name: old-raft-rpc
-      targetPort: 7848
+      targetPort: 8000
   selector:
     app: nacos
 ---
@@ -95,7 +95,7 @@ spec:
       containers:
         - name: nacos
           imagePullPolicy: Always
-          image: nacos/nacos-server:latest
+          image: nacos/nacos-server:2.1.0
           resources:
             requests:
               memory: "200Mi"
@@ -105,11 +105,11 @@ spec:
           ports:
             - containerPort: 9000
               name: client-port
-            - containerPort: 9848
+            - containerPort: 10000
               name: client-rpc
-            - containerPort: 9849
+            - containerPort: 10001
               name: raft-rpc
-            - containerPort: 7848
+            - containerPort: 8000
               name: old-raft-rpc
           envFrom:
             - configMapRef:
@@ -146,7 +146,7 @@ spec:
         hosts:
           - nacos.hoper.xyz
         paths:
-          - /*
+          - /nacos*
       backends:
         - serviceName: nacos-headless
           servicePort: 9000
@@ -156,4 +156,19 @@ spec:
           enable: true
           config:
             http_to_https: true
+    - name: nacos-grpc
+        match:
+          hosts:
+            - nacos.hoper.xyz
+          paths:
+            - /*
+        backends:
+          - serviceName: nacos-headless
+            servicePort: 9001
+            resolveGranularity: service
+        plugins:
+          - name: redirect
+            enable: true
+            config:
+              http_to_https: true
 
