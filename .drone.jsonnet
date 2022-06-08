@@ -177,7 +177,7 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
       }
     },
     kubectl(deplocal,[
-        if tag != "1.0.0" && (mode == "job" || mode == "cronjob")  then "kubectl --kubeconfig=/root/.kube/config delete -f "+ deppath else "echo",
+        if mode == "job" || mode == "cronjob"  then "kubectl --kubeconfig=/root/.kube/config delete --ignore-not-found -f "+ deppath else "echo",
        "kubectl --kubeconfig=/root/.kube/config apply -f "+deppath,
     ]),
     {
@@ -200,5 +200,5 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
   Pipeline("timepill","","app",false,"tools/server","./timepill/cmd/record.go",["-t"]),
   Pipeline("hoper","","app",true,"server/go/mod"),
   Pipeline("timepill","rbyorderid","job",false,"tools/server","./timepill/cmd/recordby_orderid.go"),
-  Pipeline("timepill","esload","cronjob",false,"tools/server","./timepill/cmd/search_es8.go",deplocal=true, schedule="0 23 * * *"),
+  Pipeline("timepill","esload","cronjob",false,"tools/server","./timepill/cmd/search_es8.go",deplocal=true, schedule="55 8 * * *"),
 ]

@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: ${app}
 spec:
-  timeZone: "Asia/Shanghai"
+  # timeZone: "Asia/Shanghai" 还不支持
   schedule: ${schedule}
   jobTemplate:
     spec:
