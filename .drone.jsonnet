@@ -124,7 +124,7 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
         "sed -i 's#$${datadir}#"+datadir+"#g' "+deppath,
         "sed -i 's#$${image}#jyblsq/"+fullname+":"+tag+"#g' "+deppath,
         if  mode == "cronjob"  then "sed -i 's#$${schedule}#"+schedule+"#g' "+ deppath else "echo",
-        "cp -r "+deppath+" /code/"+tpldir+"/"+fullname+"-"+tag+".yaml",
+        "cp -r "+deppath+" /code/deploy/"+mode+"/"+fullname+"-"+tag+".yaml",
       ]
     },
     {
