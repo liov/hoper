@@ -21,3 +21,4 @@ proto_std
 gradle
 /tools/server/local.toml
 secret.txt
+/tools/server/config.toml
