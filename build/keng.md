@@ -1396,3 +1396,8 @@ rpc端口是在服务端口+1000 内部rpc +1001 原来的-1000
 
 # frp  port unavailable
 frps无法绑定到此端口
+
+# cronjob不执行
+时区不对，kubernetes1.24支持设置timeZone，且需开启feature
+-8小时 
+或者改kube-scheduler的时区 vim /etc/kubernetes/manifests/kube-scheduler.yaml
