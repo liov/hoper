@@ -124,7 +124,8 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
         "sed -i 's#$${datadir}#"+datadir+"#g' "+deppath,
         "sed -i 's#$${image}#jyblsq/"+fullname+":"+tag+"#g' "+deppath,
         if  mode == "cronjob"  then "sed -i 's#$${schedule}#"+schedule+"#g' "+ deppath else "echo",
-        "cp -r "+deppath+" /code/deploy/"+mode+"/"+fullname+"-"+tag+".yaml",
+        local bakdir = "/code/deploy/"+mode+"/";
+        "if [ ! -d "+bakdir+" ];then mkdir -p "+bakdir+"; fi && cp -r "+deppath+" "+ bakdir + fullname+"-"+tag+".yaml",
       ]
     },
     {
@@ -200,5 +201,5 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
   Pipeline("timepill","","app",false,"tools/server","./timepill/cmd/record.go",["-t"]),
   Pipeline("hoper","","app",true,"server/go/mod"),
   Pipeline("timepill","rbyorderid","job",false,"tools/server","./timepill/cmd/recordby_orderid.go"),
-  Pipeline("timepill","esload","cronjob",false,"tools/server","./timepill/cmd/search_es8.go",deplocal=true, schedule="55 8 * * *"),
+  Pipeline("timepill","esload","cronjob",false,"tools/server","./timepill/cmd/search_es8.go",deplocal=true, schedule="10 9 * * *"),
 ]
