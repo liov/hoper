@@ -101,7 +101,6 @@ func Start(conf Config, dao Dao) func(deferf ...func()) {
 func (init *Init) LoadConfig() *Init {
 	onceConfig := struct {
 		Dev, Test, Prod *EnvConfig
-		ConfigCenter    conf_center.ConfigCenterConfig
 		BasicConfig
 	}{}
 	if _, err := os.Stat(init.ConfUrl); os.IsNotExist(err) {
@@ -133,9 +132,9 @@ func (init *Init) LoadConfig() *Init {
 			//会被回收,也可能是被移动了？
 			init.EnvConfig = &(*value.Field(i).Interface().(*EnvConfig))
 			if init.InjectVersion == 1 {
-				onceConfig.ConfigCenter.ConfigCenter(init.EnvConfig.ConfigCenterEnvConfig, init.Module, init.Env != PRODUCT).HandleConfig(init.UnmarshalAndSet)
+				init.EnvConfig.ConfigCenter(init.Module, init.Env != PRODUCT).HandleConfig(init.UnmarshalAndSet)
 			} else {
-				onceConfig.ConfigCenter.ConfigCenter(init.EnvConfig.ConfigCenterEnvConfig, init.Module, init.Env != PRODUCT).HandleConfig(init.UnmarshalAndSetV2)
+				init.EnvConfig.ConfigCenter(init.Module, init.Env != PRODUCT).HandleConfig(init.UnmarshalAndSetV2)
 			}
 			break
 		}
