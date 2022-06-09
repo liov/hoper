@@ -1,9 +1,12 @@
 package v8
 
 import (
+	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"github.com/actliboy/hoper/server/go/lib/utils/io/reader"
+	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/esapi"
 	"net/http"
 )
@@ -62,4 +65,18 @@ func GetResponse[T any](response *esapi.Response, err error) (*T, error) {
 
 func GetSearchResponse[T any](response *esapi.Response, err error) (*SearchResponse[T], error) {
 	return GetResponse[SearchResponse[T]](response, err)
+}
+
+func CreateDocument[T any](ctx context.Context, es *elasticsearch.Client, index, id string, obj T) error {
+	body, _ := json.Marshal(obj)
+	esreq := esapi.CreateRequest{
+		Index:      index,
+		DocumentID: id,
+		Body:       bytes.NewReader(body),
+	}
+	resp, err := esreq.Do(ctx, es)
+	if err != nil {
+		return err
+	}
+	return resp.Body.Close()
 }
