@@ -8,7 +8,7 @@ git filter-branch --force --index-filter "git rm --cached --ignore-unmatch *" --
 
 git filter-branch --force --index-filter "git rm --cached --ignore-unmatch *" --prune-empty $commit-id..HEAD
 
-rm -rf .git/refs/original/
+git rm -rf .git/refs/original/
  
 git reflog expire --expire=now --all
  
