@@ -3,8 +3,6 @@ kind: ConfigMap
 metadata:
   name: frpc
   namespace: tools
-  labels:
-    app: frpc
 data:
   frpc.ini: |-
     [common]

@@ -62,6 +62,7 @@ spec:
       match:
         hosts:
           - grpc.hoper.xyz
+          - grpc.liov.xyz
         paths:
           - /*
       backends:
