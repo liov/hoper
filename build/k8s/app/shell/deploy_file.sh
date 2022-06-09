@@ -83,10 +83,10 @@ spec:
             # keep request = limit to keep this container in guaranteed class
             limits:
               cpu: 500m
-              memory: 512Mi
+              memory: 500Mi
             requests:
-              cpu: 100m
-              memory: 64Mi
+              cpu: 10m
+              memory: 50Mi
           volumeMounts:
             - name: logs
               mountPath: /app/logs

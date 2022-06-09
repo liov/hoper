@@ -29,7 +29,7 @@ spec:
           resources:
             requests:
               memory: "10Mi"
-              cpu: "50m"
+              cpu: "10m"
             limits:
               memory: "50Mi"
           imagePullPolicy: IfNotPresent

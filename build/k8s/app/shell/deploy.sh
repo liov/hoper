@@ -93,8 +93,8 @@ spec:
               cpu: 500m
               memory: 512Mi
             requests:
-              cpu: 100m
-              memory: 64Mi
+              cpu: 10m
+              memory: 50Mi
           volumeMounts:
             - name: logs
               mountPath: /hoper/logs
