@@ -201,5 +201,5 @@ local Pipeline(group, name, mode, protoc, workdir, sourceFile="", opts=[],deploc
   Pipeline("timepill","","app",false,"tools/server","./timepill/cmd/record.go",["-t"]),
   Pipeline("hoper","","app",true,"server/go/mod"),
   Pipeline("timepill","rbyorderid","job",false,"tools/server","./timepill/cmd/recordby_orderid.go"),
-  Pipeline("timepill","esload","cronjob",false,"tools/server","./timepill/cmd/search_es8.go",deplocal=true, schedule="00 10 * * *"),
+  Pipeline("timepill","esload","cronjob",false,"tools/server","./timepill/cmd/search_es.go",deplocal=true, schedule="00 10 * * *"),
 ]

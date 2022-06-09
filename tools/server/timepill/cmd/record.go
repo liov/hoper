@@ -26,7 +26,7 @@ func main() {
 		timepill.CronCommentRecord()
 	})
 	if err != nil {
-		log.Error(err)
+		log.Fatal(err)
 	}
 	c.Start()
 	//go timepill.RecordByOrderNoteBook()
