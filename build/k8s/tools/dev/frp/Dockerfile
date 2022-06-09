@@ -4,7 +4,7 @@ WORKDIR /app
 
 ADD ./frpc /app
 
-ADD ./frpc.ini /app
+ADD frpc.ini /app
 
 CMD ["./frpc","-c","./frpc.ini"]
 
@@ -14,6 +14,6 @@ WORKDIR /app
 
 ADD ./frps /app
 
-ADD ./frps.ini /app
+ADD frps.ini /app
 
 CMD ["./frps","-c","./frps.ini"]
