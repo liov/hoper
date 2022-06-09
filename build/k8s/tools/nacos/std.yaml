@@ -77,9 +77,9 @@ spec:
           resources:
             requests:
               memory: "50Mi"
-              cpu: "50m"
+              cpu: "10m"
             limits:
-              memory: "4500Mi"
+              memory: "500Mi"
           ports:
             - containerPort: 9000
               name: client-port
