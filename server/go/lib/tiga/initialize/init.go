@@ -32,13 +32,13 @@ const (
 )
 
 type EnvConfig struct {
+	NoInject      []string
+	InjectVersion int8
 	conf_center.ConfigCenterEnvConfig
 }
 
 type BasicConfig struct {
-	Module        string
-	NoInject      []string
-	InjectVersion int8
+	Module string
 }
 
 type Init struct {
@@ -112,9 +112,6 @@ func (init *Init) LoadConfig() *Init {
 	}
 	fmt.Printf("Load config from: %s\n", init.ConfUrl)
 
-	for i := range onceConfig.NoInject {
-		onceConfig.NoInject[i] = strings.ToUpper(onceConfig.NoInject[i])
-	}
 	init.BasicConfig = onceConfig.BasicConfig
 
 	value := reflect.ValueOf(&onceConfig).Elem()
@@ -131,13 +128,17 @@ func (init *Init) LoadConfig() *Init {
 			}*/
 			//会被回收,也可能是被移动了？
 			init.EnvConfig = &(*value.Field(i).Interface().(*EnvConfig))
-			if init.InjectVersion == 1 {
-				init.EnvConfig.ConfigCenter(init.Module, init.Env != PRODUCT).HandleConfig(init.UnmarshalAndSet)
-			} else {
-				init.EnvConfig.ConfigCenter(init.Module, init.Env != PRODUCT).HandleConfig(init.UnmarshalAndSetV2)
-			}
 			break
 		}
+	}
+
+	for i := range init.EnvConfig.NoInject {
+		init.EnvConfig.NoInject[i] = strings.ToUpper(init.EnvConfig.NoInject[i])
+	}
+	if init.EnvConfig.InjectVersion == 1 {
+		init.EnvConfig.ConfigCenter(init.Module, init.Env != PRODUCT).HandleConfig(init.UnmarshalAndSet)
+	} else {
+		init.EnvConfig.ConfigCenter(init.Module, init.Env != PRODUCT).HandleConfig(init.UnmarshalAndSetV2)
 	}
 
 	log.Debugf("Configuration:  %#v", init.conf)
