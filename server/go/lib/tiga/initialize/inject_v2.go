@@ -69,7 +69,7 @@ func setDao2(v reflect.Value, confM map[string]any) {
 			}
 			inter := field.Addr().Interface()
 			confName := strings.ToUpper(typ.Field(i).Name)
-			if slices.StringContains(InitConfig.NoInject, confName) {
+			if slices.StringContains(InitConfig.EnvConfig.NoInject, confName) {
 				continue
 			}
 			if daofield, ok := inter.(DaoField); ok {

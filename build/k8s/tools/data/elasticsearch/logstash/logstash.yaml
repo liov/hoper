@@ -1,0 +1,8 @@
+http.host: 0.0.0.0
+monitoring:
+  elasticsearch:
+    hosts: https://es.liov.xyz
+pipeline:
+  batch:
+    size: 125
+    delay: 50
