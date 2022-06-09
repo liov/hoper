@@ -3,8 +3,6 @@ kind: ConfigMap
 metadata:
   name: frps
   namespace: tools
-  labels:
-    app: frps
 data:
   frps.ini: |-
     [common]
