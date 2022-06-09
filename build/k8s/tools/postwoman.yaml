@@ -42,7 +42,7 @@ spec:
               memory: 512Mi
             requests:
               cpu: 10m
-              memory: 64Mi
+              memory: 50Mi
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress

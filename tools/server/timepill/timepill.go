@@ -307,10 +307,10 @@ func RecordComment(diaryId int) {
 func RecordCommentWithJudge(diaryId int) {
 	comments := ApiService.GetDiaryComments(diaryId)
 	for _, comment := range comments {
-		RecordUser(comment.UserId, comment.User.Name)
 		if exists, _ := gormi.ExistsById(Dao.Hoper.DB, "comment", uint64(comment.Id)); exists {
 			continue
 		}
+		RecordUser(comment.UserId, comment.User.Name)
 		Dao.Hoper.Create(comment)
 	}
 }
@@ -360,6 +360,25 @@ func TodayCommentRecord() {
 		}
 		for _, id := range diaryIds {
 			RecordComment(id)
+		}
+		if len(diaryIds) < 100 {
+			return
+		}
+		page++
+	}
+}
+
+func CronCommentRecord() {
+	var page = 1
+	today := time.Now().Format("2006-01-02")
+	for {
+		var diaryIds []int
+		err := Dao.Hoper.Table(`diary`).Where(`created > ?`, today).Order(`id`).Offset((page-1)*100).Limit(100).Pluck("id", &diaryIds)
+		if err != nil {
+			log.Error(err)
+		}
+		for _, id := range diaryIds {
+			RecordCommentWithJudge(id)
 		}
 		if len(diaryIds) < 100 {
 			return

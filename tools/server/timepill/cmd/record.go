@@ -21,9 +21,9 @@ func main() {
 		timepill.TodayRecord()
 	}
 	c := cron.New(cron.WithSeconds())
-	_, err := c.AddFunc("50 16 * * *", func() {
+	_, err := c.AddFunc("0 */1 * * *", func() {
 		log.Info("定时任务：记录评论执行")
-		timepill.TodayCommentRecord()
+		timepill.CronCommentRecord()
 	})
 	if err != nil {
 		log.Error(err)

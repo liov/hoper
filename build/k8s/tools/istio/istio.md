@@ -72,3 +72,23 @@ helm install install/kubernetes/helm/istio --name istio --namespace istio-system
   --set tracing.enabled=true \
   --set kiali.enabled=false
 ```
+# 2022-06-09
+curl -L https://istio.io/downloadIstio | sh -
+cd istio-1.14.0
+export PATH=$PWD/bin:$PATH
+
+istioctl install --set profile=default -y （我觉得不用部署ingress）
+给命名空间添加标签，指示 Istio 在部署应用的时候，自动注入 Envoy 边车代理：
+kubectl label namespace default istio-injection=enabled
+设置入站端口：
+export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
+export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].nodePort}'
+设置入站 IP：
+export INGRESS_HOST=$(minikube ip)
+设置环境变量 GATEWAY_URL:
+export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
+
+# 查看仪表板
+kubectl apply -f samples/addons
+kubectl rollout status deployment/kiali -n istio-system
+istioctl dashboard kiali
