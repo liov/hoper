@@ -32,7 +32,7 @@ func record() {
 	sd.FailPic.Record("fail_pic_")
 	sd.FailDB.Record("fail_db_")
 	notFoundIds := make([]int, 0)
-	timer := time.NewTicker(time.Second * pro.Conf.Pro.Timer)
+	timer := time.NewTicker(pro.Conf.Pro.Timer)
 	for {
 		tid := pro.Record(id, sd)
 		if tid != "" {
