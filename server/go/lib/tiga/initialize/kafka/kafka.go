@@ -53,3 +53,33 @@ func (conf *KafkaConsumerConfig) generate() sarama.Consumer {
 func (conf *KafkaConsumerConfig) Generate() interface{} {
 	return conf.generate()
 }
+
+type KafkaProducer struct {
+	sarama.SyncProducer
+	Conf *KafkaProducerConfig
+}
+
+func (es *KafkaProducer) Config() interface{} {
+	return es.Conf
+}
+
+func (es *KafkaProducer) SetEntity(entity interface{}) {
+	if client, ok := entity.(sarama.SyncProducer); ok {
+		es.SyncProducer = client
+	}
+}
+
+type KafkaConsumer struct {
+	sarama.Consumer
+	Conf KafkaConsumerConfig
+}
+
+func (k *KafkaConsumer) Config() interface{} {
+	return &k.Conf
+}
+
+func (k *KafkaConsumer) SetEntity(entity interface{}) {
+	if client, ok := entity.(sarama.Consumer); ok {
+		k.Consumer = client
+	}
+}

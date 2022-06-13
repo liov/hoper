@@ -16,7 +16,7 @@ type ConfigCenter interface {
 	HandleConfig(func([]byte)) error
 }
 
-type ConfigCenterEnvConfig struct {
+type ConfigCenterConfig struct {
 	ConfigType string
 	Watch      bool
 	Nacos      *nacos.Nacos
@@ -26,7 +26,7 @@ type ConfigCenterEnvConfig struct {
 		Apollo *apollo.Apollo*/
 }
 
-func (c *ConfigCenterEnvConfig) ConfigCenter(model string, debug bool) ConfigCenter {
+func (c *ConfigCenterConfig) ConfigCenter(model string, debug bool) ConfigCenter {
 	if c.ConfigType == Nacos && c.Nacos != nil {
 		c.Nacos.Watch = c.Watch
 		return c.Nacos

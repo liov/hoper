@@ -8,5 +8,5 @@ import (
 
 func main() {
 	defer initialize.Start(&timepill.Conf, &timepill.Dao)()
-	timepill.LoadEs8(context.Background())
+	timepill.Dao.EsDao(context.Background()).LoadEs8()
 }

@@ -33,9 +33,9 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, _ := auth(ctxi, true)
-
-	contentDao := dao.GetDao(ctxi)
 	db := ctxi.NewDB(dao.Dao.GORMDB)
+	contentDBDao := dao.GetDBDao(ctxi, db)
+
 	var moment content.Moment
 	err := db.Table(model.MomentTableName).
 		Where(`id = ?`, req.Id).First(&moment).Error
@@ -43,7 +43,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "First")
 	}
 	// tags
-	contentTags, err := contentDao.GetContentTagDB(db, content.ContentMoment, []uint64{moment.Id})
+	contentTags, err := contentDBDao.GetContentTag(content.ContentMoment, []uint64{moment.Id})
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 	//like
 	if auth != nil {
 		action := &content.UserAction{}
-		likes, err := contentDao.GetContentActionsDB(db, content.ActionLike, content.ContentMoment, []uint64{req.Id}, auth.Id)
+		likes, err := contentDBDao.GetContentActions(content.ActionLike, content.ContentMoment, []uint64{req.Id}, auth.Id)
 		if err != nil {
 			return nil, err
 		}
@@ -69,7 +69,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 				action.UnlikeId = likes[i].Id
 			}
 		}
-		collects, err := contentDao.GetCollectsDB(db, content.ContentMoment, []uint64{req.Id}, auth.Id)
+		collects, err := contentDBDao.GetCollects(content.ContentMoment, []uint64{req.Id}, auth.Id)
 		if err != nil {
 			return nil, err
 		}
@@ -81,7 +81,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 		}
 	}
 	// ext
-	exts, err := contentDao.GetContentExtDB(db, content.ContentMoment, []uint64{moment.Id})
+	exts, err := contentDBDao.GetContentExt(content.ContentMoment, []uint64{moment.Id})
 	if err != nil {
 		return nil, err
 	}
@@ -138,8 +138,9 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 	if err != nil {
 		return nil, err
 	}
-	contentDao := dao.GetDao(ctxi)
 	db := ctxi.NewDB(dao.Dao.GORMDB)
+	contentDBDao := dao.GetDBDao(ctxi, db)
+
 	req.UserId = auth.Id
 
 	/*	var count int64
@@ -149,22 +150,23 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		}*/
 	var tags []model.TinyTag
 	if len(req.Tags) > 0 {
-		tags, err = contentDao.GetTagsDB(db, req.Tags)
+		tags, err = contentDBDao.GetTags(req.Tags)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	req.UserId = auth.Id
-	err = contentDao.Transaction(db, func(tx *gorm.DB) error {
+	err = contentDBDao.Transaction(func(tx *gorm.DB) error {
 		if req.Permission == 0 {
 			req.Permission = content.ViewPermissionAll
 		}
+		contenttxDBDao := dao.GetDBDao(ctxi, tx)
 		err = tx.Table(model.MomentTableName).Create(req).Error
 		if err != nil {
 			return ctxi.ErrorLog(errorcode.DBError, err, "tx.CreateReq")
 		}
-		err = contentDao.CreateContextExtDB(tx, content.ContentMoment, req.Id)
+		err = contenttxDBDao.CreateContextExt(content.ContentMoment, req.Id)
 		if err != nil {
 			return err
 		}
@@ -222,9 +224,10 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, _ := auth(ctxi, true)
-	contentDao := dao.GetDao(ctxi)
 	db := ctxi.NewDB(dao.Dao.GORMDB)
-	total, moments, err := contentDao.GetMomentListDB(db, req)
+	contentDBDao := dao.GetDBDao(ctxi, db)
+
+	total, moments, err := contentDBDao.GetMomentListDB(req)
 	if err != nil {
 		return nil, err
 	}
@@ -249,7 +252,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	}
 
 	// tag
-	tags, err := contentDao.GetContentTagDB(db, content.ContentMoment, ids)
+	tags, err := contentDBDao.GetContentTag(content.ContentMoment, ids)
 	if err != nil {
 		return nil, err
 	}
@@ -260,7 +263,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 		}
 	}
 	// ext
-	exts, err := contentDao.GetContentExtDB(db, content.ContentMoment, ids)
+	exts, err := contentDBDao.GetContentExt(content.ContentMoment, ids)
 	if err != nil {
 		return nil, err
 	}
@@ -271,7 +274,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	}
 	//like
 	if auth != nil {
-		likes, err := contentDao.GetContentActionsDB(db, content.ActionLike, content.ContentMoment, ids, auth.Id)
+		likes, err := contentDBDao.GetContentActions(content.ActionLike, content.ContentMoment, ids, auth.Id)
 		if err != nil {
 			return nil, err
 		}
@@ -288,7 +291,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 				}
 			}
 		}
-		collects, err := contentDao.GetCollectsDB(db, content.ContentMoment, ids, auth.Id)
+		collects, err := contentDBDao.GetCollects(content.ContentMoment, ids, auth.Id)
 		if err != nil {
 			return nil, err
 		}
@@ -323,9 +326,10 @@ func (*MomentService) Delete(ctx context.Context, req *request.Object) (*empty.E
 	if err != nil {
 		return nil, err
 	}
-	contentDao := dao.GetDao(ctxi)
 	db := ctxi.NewDB(dao.Dao.GORMDB)
-	err = contentDao.DelByAuthDB(db, model.MomentTableName, req.Id, auth.Id)
+	contentDBDao := dao.GetDBDao(ctxi, db)
+
+	err = contentDBDao.DelByAuth(model.MomentTableName, req.Id, auth.Id)
 	if err != nil {
 		return nil, err
 	}

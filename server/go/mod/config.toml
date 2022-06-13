@@ -1,24 +1,37 @@
-Module = "user"
+Module = "hoper"
 # dev | test | prod
 # Env = "dev"
-InjectVersion = 1
 
-NoInject = ["Apollo","Etcd"]
-
-
-[configCenter]
+[dev]
+configType = "local"
 Watch  = true
-
-[configCenter.nacos]
+NoInject = ["Apollo","Etcd", "Es"]
+InjectVersion = 1
+[dev.nacos]
 Addr = "nacos.local.org"
 Group = "hoper"
 
+[dev.nacosv2]
+DataId = "timepill"
+Group = "DEFAULT_GROUP"
 
-[dev]
-LocalConfigName = "local.toml"
+[[dev.nacosv2.ServerConfigs]]
+Scheme = "http"
+IpAddr = "xxx"
+Port = 1000
+GrpcPort = 2000
+
+[dev.nacosv2.ClientConfig]
+NamespaceId = ""
+username = "xxx"
+password = "xxx"
+LogLevel = "debug"
+
+[dev.local]
+ConfigName = "local.toml"
+ReloadType = "fsnotify"
 
 [test]
-NacosTenant = "b5b476ab-774f-4637-a8bf-e915635b4b24"
 
 [prod]
-NacosTenant = ""
+

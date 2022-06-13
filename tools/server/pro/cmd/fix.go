@@ -22,7 +22,7 @@ func fixOne(sd *pro.Speed) {
 }
 
 func fix(sd *pro.Speed) {
-	fileInfos, err := ioutil.ReadDir(pro.CommonDir)
+	fileInfos, err := ioutil.ReadDir(pro.Conf.Pro.CommonDir)
 	if err != nil {
 		log.Println(err)
 	}
@@ -32,7 +32,7 @@ func fix(sd *pro.Speed) {
 
 		}
 	}
-	fileInfos, err = ioutil.ReadDir(pro.CommonDir)
+	fileInfos, err = ioutil.ReadDir(pro.Conf.Pro.CommonDir)
 	if err != nil {
 		log.Println(err)
 	}
@@ -44,7 +44,7 @@ func fix(sd *pro.Speed) {
 }
 
 func fixPic(path string, sd *pro.Speed) {
-	f, err := os.Open(pro.CommonDir + path + pro.Ext)
+	f, err := os.Open(pro.Conf.Pro.CommonDir + path + pro.Conf.Pro.Ext)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -58,7 +58,7 @@ func fixPic(path string, sd *pro.Speed) {
 		log.Println(img, dir)
 		sd.Add(1)
 		go pro.Download(img, dir, sd)
-		time.Sleep(pro.Interval)
+		time.Sleep(pro.Conf.Pro.Interval)
 	}
 	if err := scanner.Err(); err != nil {
 		panic(err)

@@ -3,12 +3,13 @@ package log
 import (
 	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/utils/log/output"
+	neti "github.com/actliboy/hoper/server/go/lib/utils/net"
+	osi "github.com/actliboy/hoper/server/go/lib/utils/os"
 	"log"
 	"os"
 	"strconv"
 	"time"
 
-	"github.com/actliboy/hoper/server/go/lib/utils/net"
 	"go.uber.org/multierr"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -43,7 +44,8 @@ type Config struct {
 func (lf *Config) NewLogger() *Logger {
 	logger := lf.initLogger().
 		With(
-			zap.String("source", neti.GetIP()),
+			zap.String("source", osi.Hostname()),
+			zap.String("ip", neti.GetIP()),
 		)
 	return &Logger{logger}
 }

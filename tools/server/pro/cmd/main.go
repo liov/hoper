@@ -1,23 +1,23 @@
 package main
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"time"
-
 	"tools/pro"
 )
 
 func main() {
-	pro.SetDB()
-	//test(401100)
+	defer initialize.Start(&pro.Conf, &pro.Dao)()
+
 	pro.Start(normal)
 }
 
 func normal(sd *pro.Speed) {
-	start := 476003
-	end := 480600
+	start := 492010
+	end := 492020
 	for i := start; i <= end; i++ {
 		sd.WebAdd(1)
 		go pro.Fetch(i, sd)
-		time.Sleep(pro.Interval)
+		time.Sleep(pro.Conf.Pro.Interval)
 	}
 }

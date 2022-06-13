@@ -73,3 +73,18 @@ func (conf *ViperConfig) generate() *viper.Viper {
 	}()*/
 	return runtimeViper
 }
+
+type Viper struct {
+	*viper.Viper
+	Conf ViperConfig
+}
+
+func (v *Viper) Config() interface{} {
+	return &v.Conf
+}
+
+func (v *Viper) SetEntity(entity interface{}) {
+	if client, ok := entity.(*viper.Viper); ok {
+		v.Viper = client
+	}
+}

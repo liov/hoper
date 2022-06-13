@@ -175,7 +175,7 @@ WHERE user_id = ?  AND follow_id = ? AND ` + dbi.PostgreNotDeleted + ` LIMIT 1)`
 	var exists bool
 	err := db.Raw(sql, id, followId).Row().Scan(&exists)
 	if err != nil {
-		return false, ctxi.ErrorLog(errorcode.DBError, err, "ExistsByAuthDB")
+		return false, ctxi.ErrorLog(errorcode.DBError, err, "ExistsByAuth")
 	}
 	return exists, nil
 }

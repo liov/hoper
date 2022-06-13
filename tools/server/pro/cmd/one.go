@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -11,8 +12,8 @@ import (
 )
 
 func main() {
-	pro.SetDB()
-	sd := pro.NewSpeed(pro.Loop)
+	defer initialize.Start(&pro.Conf, &pro.Dao)()
+	sd := pro.NewSpeed(pro.Conf.Pro.Loop)
 
 	s := []int{
 		434657,
@@ -20,13 +21,13 @@ func main() {
 	for i := 0; i < len(s); i++ {
 		sd.WebAdd(1)
 		pro.Fetch(s[i], sd)
-		time.Sleep(pro.Interval)
+		time.Sleep(pro.Conf.Pro.Interval)
 	}
 	sd.Wait()
 }
 
 func test(id int) {
-	reader, err := pro.Request(http.DefaultClient, pro.CommonUrl+strconv.Itoa(id))
+	reader, err := pro.Request(http.DefaultClient, pro.Conf.Pro.CommonUrl+strconv.Itoa(id))
 	if err != nil {
 		log.Fatal(err)
 	}
