@@ -14,7 +14,7 @@ import (
 
 func main() {
 	defer initialize.Start(&pro.Conf, &pro.Dao)()
-	reader, err := pro.Request(http.DefaultClient, pro.Conf.Pro.CommonUrl+strconv.Itoa(410708))
+	reader, err := pro.Request(http.DefaultClient, pro.Conf.Pro.CommonUrl+strconv.Itoa(510708))
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -196,18 +196,26 @@ func Fetch(id int, sd *Speed) {
 func ParseHtml(doc *goquery.Document) (string, string, string, string, *goquery.Selection, *Post) {
 	auth := doc.Find("#postlist .popuserinfo a").First().Text()
 	title := doc.Find("#threadtitle h1").Text()
-	postTime, ok := doc.Find(".posterinfo .authorinfo em span").First().Attr("title")
-	if !ok {
-		postTime = time.Now().Format("2006-01-02 15:04:05")
+	timenode := doc.Find(".posterinfo .authorinfo em").First()
+	postTime := timenode.Text()
+	if strings.HasPrefix(postTime, "发表于") {
+		postTime = postTime[len(`发表于 `):]
 	}
+	if strings.HasSuffix(postTime, "前") {
+		postTime2, ok := timenode.Find("span").First().Attr("title")
+		if !ok {
+			postTime = time.Now().Format("2006-01-02 15:04:05")
+		} else {
+			postTime = postTime2
+		}
+	}
+
 	post := &Post{
 		TId:   0,
 		Auth:  auth,
 		Title: title,
 	}
-	if strings.HasPrefix(postTime, "发表于") {
-		postTime = postTime[len(`发表于 `):]
-	}
+
 	if strings.Contains(postTime, "天") {
 		now := time.Now()
 		var day int
