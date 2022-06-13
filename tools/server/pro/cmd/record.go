@@ -5,6 +5,7 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"strings"
+	"time"
 	"tools/pro"
 )
 
@@ -31,6 +32,7 @@ func record() {
 	sd.FailPic.Record("fail_pic_")
 	sd.FailDB.Record("fail_db_")
 	notFoundIds := make([]int, 0)
+	timer := time.NewTicker(time.Second * pro.Conf.Pro.Timer)
 	for {
 		tid := pro.Record(id, sd)
 		if tid != "" {
@@ -59,5 +61,6 @@ func record() {
 			}
 		}
 		id++
+		<-timer.C
 	}
 }

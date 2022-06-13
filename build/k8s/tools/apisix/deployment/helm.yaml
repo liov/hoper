@@ -126,10 +126,18 @@ gateway:
     http2:
       enabled: true
   stream:  # L4 proxy (TCP/UDP)
-    enabled: false
+    enabled: true
     only: false
-    tcp: []
-    udp: []
+    tcp:
+      - 9100
+      - 9101
+      - 9102
+      - 9103
+    udp:
+      - 9100
+      - 9101
+      - 9102
+      - 9103
   ingress:
     enabled: false
     annotations: {}
