@@ -20,7 +20,7 @@ func main() {
 		log.Info("todayRecord")
 		timepill.TodayRecord()
 	}
-	c := cron.New(cron.WithSeconds())
+	c := cron.New()
 	_, err := c.AddFunc("0 */1 * * *", func() {
 		log.Info("定时任务：记录评论执行")
 		timepill.CronCommentRecord()
