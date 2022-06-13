@@ -1401,3 +1401,7 @@ frps无法绑定到此端口
 时区不对，kubernetes1.24支持设置timeZone，且需开启feature
 -8小时 
 或者改kube-scheduler的时区 vim /etc/kubernetes/manifests/kube-scheduler.yaml
+
+# This version of xxx.exe is not compatible with the version of Windows you're running
+
+原来是包名的问题，需要将包名改成“package main”，之前为“package xxx”
