@@ -1,7 +1,8 @@
 http.host: 0.0.0.0
 monitoring:
+  enabled: true
   elasticsearch:
-    hosts: https://es.liov.xyz
+    hosts: http://elasticsearch.tools:9200
 pipeline:
   batch:
     size: 125

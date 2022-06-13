@@ -196,7 +196,10 @@ func Fetch(id int, sd *Speed) {
 func ParseHtml(doc *goquery.Document) (string, string, string, string, *goquery.Selection, *Post) {
 	auth := doc.Find("#postlist .popuserinfo a").First().Text()
 	title := doc.Find("#threadtitle h1").Text()
-	postTime := doc.Find(".posterinfo .authorinfo em").First().Text()
+	postTime, ok := doc.Find(".posterinfo .authorinfo em span").First().Attr("title")
+	if !ok {
+		postTime = time.Now().Format("2006-01-02 15:04:05")
+	}
 	post := &Post{
 		TId:   0,
 		Auth:  auth,
