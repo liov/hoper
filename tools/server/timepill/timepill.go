@@ -1,12 +1,6 @@
 package timepill
 
 import (
-	"encoding/base64"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/cache_ristretto"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/db"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/elastic/v7"
-	v8 "github.com/actliboy/hoper/server/go/lib/tiga/initialize/elastic/v8"
-	initializeredis "github.com/actliboy/hoper/server/go/lib/tiga/initialize/redis"
 	gormi "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
@@ -18,47 +12,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"tools/toshi"
-)
-
-type Config struct {
-	TimePill Customize
-	Search   toshi.Config
-}
-
-func (c Config) Init() {
-	Token = "Basic " + base64.StdEncoding.EncodeToString([]byte(Conf.TimePill.User+":"+Conf.TimePill.Password))
-}
-
-type Customize struct {
-	User        string
-	Password    string
-	PhotoPath   string
-	PhotoPrefix string
-	SearchHost  string
-	PageSize    int
-	Timer       time.Duration
-}
-
-type TimepillDao struct {
-	Hoper     db.DB
-	Redis     initializeredis.Redis
-	Cache     cache_ristretto.Cache
-	UserCache cache_ristretto.Cache
-	Es        v7.Es `init:"notinject;config:elasticsearch"`
-	Es8       v8.Es `init:"config:elasticsearch8"`
-}
-
-func (dao TimepillDao) Init() {
-}
-
-func (dao TimepillDao) Close() {
-}
-
-var (
-	Dao   TimepillDao
-	Conf  Config
-	Token string
 )
 
 func StartRecord() {

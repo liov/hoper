@@ -31,23 +31,36 @@ const (
 	InitKey     = "initialize"
 )
 
-type EnvConfig struct {
+type ConfigCenterConfig struct {
 	NoInject      []string
 	InjectVersion int8
-	conf_center.ConfigCenterEnvConfig
+	conf_center.ConfigCenterConfig
 }
 
 type BasicConfig struct {
 	Module string
 }
 
-type Init struct {
-	EnvConfig *EnvConfig
+type FileConfig struct {
 	BasicConfig
+	Dev, Test, Prod *ConfigCenterConfig
+}
+
+//TODO: 优先级高于EnvConfig
+type FlagConfig struct {
 	Env, ConfUrl string
-	confM        map[string]interface{}
-	conf         NeedInit
-	dao          Dao
+}
+
+//TODO: 优先级高于FileConfig
+type EnvConfig FlagConfig
+
+type Init struct {
+	Env, ConfUrl string
+	BasicConfig
+	ConfigCenterConfig *ConfigCenterConfig
+	confM              map[string]interface{}
+	conf               NeedInit
+	dao                Dao
 	//closes     []interface{}
 	deferf []func()
 }
@@ -57,6 +70,7 @@ func flaginit() {
 		return
 	}
 	flag.StringVar(&InitConfig.Env, "env", DEVELOPMENT, "环境")
+
 	InitConfig.ConfUrl = "./config.toml"
 	if _, err := os.Stat(InitConfig.ConfUrl); os.IsNotExist(err) {
 		InitConfig.ConfUrl = "./config/config.toml"
@@ -99,10 +113,7 @@ func Start(conf Config, dao Dao) func(deferf ...func()) {
 }
 
 func (init *Init) LoadConfig() *Init {
-	onceConfig := struct {
-		Dev, Test, Prod *EnvConfig
-		BasicConfig
-	}{}
+	onceConfig := FileConfig{}
 	if _, err := os.Stat(init.ConfUrl); os.IsNotExist(err) {
 		log.Fatalf("配置错误: 请确保可执行文件和配置文件在同一目录下或在config目录下或指定配置文件")
 	}
@@ -117,28 +128,28 @@ func (init *Init) LoadConfig() *Init {
 	value := reflect.ValueOf(&onceConfig).Elem()
 	typ := reflect.TypeOf(&onceConfig).Elem()
 
-	tmpTyp := reflect.TypeOf(&EnvConfig{})
+	tmpTyp := reflect.TypeOf(&ConfigCenterConfig{})
 	for i := 0; i < typ.NumField(); i++ {
 		if typ.Field(i).Type == tmpTyp && strings.ToUpper(typ.Field(i).Name) == strings.ToUpper(init.Env) {
 			/*tmpConfig = value.Field(i).Interface().(*nacos.Config)
 			//真·深度复制
 			data,_:=json.Marshal(tmpConfig)
-			if err:=json.Unmarshal(data,init.EnvConfig);err!=nil{
+			if err:=json.Unmarshal(data,init.ConfigCenterConfig);err!=nil{
 				log.Fatal(err)
 			}*/
 			//会被回收,也可能是被移动了？
-			init.EnvConfig = &(*value.Field(i).Interface().(*EnvConfig))
+			init.ConfigCenterConfig = &(*value.Field(i).Interface().(*ConfigCenterConfig))
 			break
 		}
 	}
 
-	for i := range init.EnvConfig.NoInject {
-		init.EnvConfig.NoInject[i] = strings.ToUpper(init.EnvConfig.NoInject[i])
+	for i := range init.ConfigCenterConfig.NoInject {
+		init.ConfigCenterConfig.NoInject[i] = strings.ToUpper(init.ConfigCenterConfig.NoInject[i])
 	}
-	if init.EnvConfig.InjectVersion == 1 {
-		init.EnvConfig.ConfigCenter(init.Module, init.Env != PRODUCT).HandleConfig(init.UnmarshalAndSet)
+	if init.ConfigCenterConfig.InjectVersion == 1 {
+		init.ConfigCenterConfig.ConfigCenter(init.Module, init.Env != PRODUCT).HandleConfig(init.UnmarshalAndSet)
 	} else {
-		init.EnvConfig.ConfigCenter(init.Module, init.Env != PRODUCT).HandleConfig(init.UnmarshalAndSetV2)
+		init.ConfigCenterConfig.ConfigCenter(init.Module, init.Env != PRODUCT).HandleConfig(init.UnmarshalAndSetV2)
 	}
 
 	log.Debugf("Configuration:  %#v", init.conf)
@@ -177,12 +188,12 @@ type Dao interface {
 }
 
 type DaoField interface {
-	Config() interface{}
-	SetEntity(interface{})
+	Config() any
+	SetEntity(any)
 }
 
 type Generate interface {
-	Generate() interface{}
+	Generate() any
 }
 
 func (init *Init) CloseDao() {

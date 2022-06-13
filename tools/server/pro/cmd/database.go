@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"log"
 	"net/http"
 	"os"
@@ -16,7 +17,7 @@ import (
 )
 
 func main() {
-	pro.SetDB()
+	defer initialize.Start(&pro.Conf, &pro.Dao)()
 	pro.Start(history)
 }
 
@@ -26,7 +27,7 @@ func history(sd *pro.Speed) {
 	for i := start; i < end; i++ {
 		sd.WebAdd(1)
 		go fetchHistory(i, sd)
-		time.Sleep(pro.Interval)
+		time.Sleep(pro.Conf.Pro.Interval)
 	}
 }
 
@@ -39,7 +40,7 @@ func historyOne(sd *pro.Speed) {
 }
 
 func historyFormFile(path string, sd *pro.Speed) {
-	f, err := os.Open(pro.CommonDir + path + pro.Ext)
+	f, err := os.Open(pro.Conf.Pro.CommonDir + path + pro.Conf.Pro.Ext)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,7 +53,7 @@ func historyFormFile(path string, sd *pro.Speed) {
 		id, _ := strconv.Atoi(tid)
 		if status == "2" {
 			invalidPost := &pro.Post{TId: id, Status: 2}
-			err := pro.DB.Save(invalidPost).Error
+			err := pro.Dao.DB.Save(invalidPost).Error
 			if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
 				sd.FailDB <- tid + " 2"
 			}
@@ -60,7 +61,7 @@ func historyFormFile(path string, sd *pro.Speed) {
 		}
 		sd.WebAdd(1)
 		go fetchHistory(id, sd)
-		time.Sleep(pro.Interval)
+		time.Sleep(pro.Conf.Pro.Interval)
 	}
 	if err := scanner.Err(); err != nil {
 		panic(err)
@@ -70,14 +71,14 @@ func historyFormFile(path string, sd *pro.Speed) {
 func fetchHistory(id int, sd *pro.Speed) {
 	defer sd.WebDone()
 	tid := strconv.Itoa(id)
-	reader, err := pro.Request(http.DefaultClient, pro.CommonUrl+tid)
+	reader, err := pro.Request(http.DefaultClient, pro.Conf.Pro.CommonUrl+tid)
 	if err != nil {
 		//log.Println(err, "id:", tid)
 		if !strings.HasPrefix(err.Error(), "返回错误") {
 			sd.Fail <- tid
 		}
 		invalidPost := &pro.Post{TId: id, Status: 2}
-		err := pro.DB.Save(invalidPost).Error
+		err := pro.Dao.DB.Save(invalidPost).Error
 		if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
 			sd.FailDB <- tid + " 2"
 		}
@@ -98,7 +99,7 @@ func fetchHistory(id int, sd *pro.Speed) {
 	if post.PicNum == 0 {
 		status = "1"
 	}
-	err = pro.DB.Save(post).Error
+	err = pro.Dao.DB.Save(post).Error
 	if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
 		sd.FailDB <- tid + " " + status
 	}

@@ -18,3 +18,18 @@ func (conf *MailConfig) generate() smtp.Auth {
 func (conf *MailConfig) Generate() interface{} {
 	return conf.generate()
 }
+
+type Mail struct {
+	smtp.Auth
+	Conf MailConfig
+}
+
+func (m *Mail) Config() interface{} {
+	return &m.Conf
+}
+
+func (m *Mail) SetEntity(entity interface{}) {
+	if client, ok := entity.(smtp.Auth); ok {
+		m.Auth = client
+	}
+}

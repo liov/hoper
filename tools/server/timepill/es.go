@@ -8,6 +8,7 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/def/request"
 	"github.com/actliboy/hoper/server/go/lib/utils/io/reader"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
+	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/esapi"
 	"net/http"
 	"strconv"
@@ -83,7 +84,12 @@ func (diary *Diary) DiaryIndex() *IndexDiary {
 	}
 }
 
-func (dao *TimepillDao) MaxIdEs8(ctx context.Context) int {
+type EsDao struct {
+	ctx context.Context
+	Es8 *elasticsearch.Client
+}
+
+func (dao *EsDao) MaxIdEs8() int {
 	size := 1
 	req := esapi.SearchRequest{
 		Index: []string{DiaryIndex},
@@ -91,7 +97,7 @@ func (dao *TimepillDao) MaxIdEs8(ctx context.Context) int {
 		Size:  &size,
 	}
 
-	resp, err := utilv8.GetSearchResponse[IndexDiary](req.Do(ctx, dao.Es8))
+	resp, err := utilv8.GetSearchResponse[IndexDiary](req.Do(dao.ctx, dao.Es8))
 	if err != nil {
 		log.Error(err)
 		return 0
@@ -103,7 +109,7 @@ func (dao *TimepillDao) MaxIdEs8(ctx context.Context) int {
 	return 0
 }
 
-func LoadEs8(ctx context.Context) {
+func (dao *EsDao) LoadEs8() {
 	req := &ListReq{
 		ListReq: request.ListReq{
 			PageReq: request.PageReq{PageNo: 1, PageSize: Conf.TimePill.PageSize},
@@ -111,7 +117,7 @@ func LoadEs8(ctx context.Context) {
 		},
 		RangeReq: request.RangeReq{
 			RangeField: "id",
-			RangeStart: Dao.MaxIdEs8(ctx),
+			RangeStart: dao.MaxIdEs8(),
 			RangeEnd:   nil,
 			Include:    false,
 		},
@@ -122,7 +128,7 @@ func LoadEs8(ctx context.Context) {
 		if req.PageSize < 1 {
 			req.PageSize = 10
 		}
-		diaries, err := Dao.ListDB(req)
+		diaries, err := Dao.DBDao(dao.ctx).ListDB(req)
 		if err != nil {
 			log.Error(err)
 		}
@@ -133,7 +139,7 @@ func LoadEs8(ctx context.Context) {
 				DocumentID: strconv.Itoa(diary.Id),
 				Body:       bytes.NewReader(body),
 			}
-			resp, err := esreq.Do(ctx, Dao.Es8)
+			resp, err := esreq.Do(dao.ctx, Dao.Es8)
 			if err != nil {
 				// Handle error
 				log.Error(err)
@@ -150,7 +156,7 @@ func LoadEs8(ctx context.Context) {
 	}
 }
 
-func (dao *TimepillDao) CreateIndexEs8() {
+func (dao *dao) CreateIndexEs8() {
 	resp, err := dao.Es8.Indices.Exists([]string{DiaryIndex})
 	if err != nil {
 		// Handle error
@@ -167,70 +173,5 @@ func (dao *TimepillDao) CreateIndexEs8() {
 		log.Info("index created")
 	} else {
 		log.Info("index found")
-	}
-}
-
-func (dao *TimepillDao) CreateIndexEs7(ctx context.Context) {
-	exists, err := dao.Es.IndexExists(DiaryIndex).Do(ctx)
-	if err != nil {
-		// Handle error
-		panic(err)
-	}
-	if !exists {
-		createIndex, err := dao.Es.CreateIndex(DiaryIndex).BodyString(Mapping).Do(ctx)
-		if err != nil {
-			// Handle error
-			panic(err)
-		}
-		if !createIndex.Acknowledged {
-			// Not acknowledged
-		}
-	}
-}
-
-func (dao *TimepillDao) MaxIdEs7(ctx context.Context) int {
-	rep, _ := dao.Es.Search(DiaryIndex).Sort("id", false).Size(1).Do(ctx)
-	if rep.TotalHits() > 0 {
-		id, _ := strconv.Atoi(rep.Hits.Hits[0].Id)
-		return id
-	}
-	return 0
-}
-
-func LoadES7(ctx context.Context) {
-	req := &ListReq{
-		ListReq: request.ListReq{
-			PageReq: request.PageReq{PageNo: 1, PageSize: Conf.TimePill.PageSize},
-			SortReq: request.SortReq{SortField: "id", SortType: request.SortTypeASC},
-		},
-		RangeReq: request.RangeReq{
-			RangeField: "id",
-			RangeStart: Dao.MaxIdEs7(ctx),
-			RangeEnd:   nil,
-			Include:    false,
-		},
-	}
-	index := Dao.Es.Index().Index(DiaryIndex)
-	for {
-		req.PageSize = Conf.TimePill.PageSize
-		if req.PageSize < 1 {
-			req.PageSize = 10
-		}
-		diaries, err := Dao.ListDB(req)
-		if err != nil {
-			log.Error(err)
-		}
-		for i, diary := range diaries {
-			_, err = index.Id(strconv.Itoa(diary.Id)).BodyJson(diary.DiaryIndex()).Do(ctx)
-			if err != nil {
-				log.Error(err)
-			}
-			if i == len(diaries)-1 {
-				req.RangeStart = diary.Id
-			}
-		}
-		if len(diaries) < req.PageSize {
-			break
-		}
 	}
 }

@@ -18,3 +18,18 @@ func (conf *EtcdConfig) generate() *clientv3.Client {
 func (conf *EtcdConfig) Generate() interface{} {
 	return conf.generate()
 }
+
+type Eecd struct {
+	*clientv3.Client
+	Conf EtcdConfig
+}
+
+func (e *Eecd) Config() interface{} {
+	return &e.Conf
+}
+
+func (e *Eecd) SetEntity(entity interface{}) {
+	if client, ok := entity.(*clientv3.Client); ok {
+		e.Client = client
+	}
+}

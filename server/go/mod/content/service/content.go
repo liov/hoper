@@ -93,10 +93,11 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*req
 	if err != nil {
 		return nil, err
 	}
-	contentDao := dao.GetDao(ctxi)
 	db := ctxi.NewDB(dao.Dao.GORMDB)
+	contentDBDao := dao.GetDBDao(ctxi, db)
+
 	req.UserId = auth.Id
-	id, err := contentDao.FavExists(db, req.Title)
+	id, err := contentDBDao.FavExists(req.Title)
 	if err != nil {
 		return nil, err
 	}
@@ -104,12 +105,13 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*req
 		return &request.Object{Id: id}, nil
 	}
 
-	err = contentDao.Transaction(db, func(tx *gorm.DB) error {
-		err = db.Table(model.FavoritesTableName).Create(req).Error
+	err = contentDBDao.Transaction(func(tx *gorm.DB) error {
+		contenttxDBDao := dao.GetDBDao(ctxi, tx)
+		err = tx.Table(model.FavoritesTableName).Create(req).Error
 		if err != nil {
 			return ctxi.ErrorLog(errorcode.DBError, err, "CreateFav")
 		}
-		err = contentDao.CreateContextExtDB(tx, content.ContentFavorites, req.Id)
+		err = contenttxDBDao.CreateContextExt(content.ContentFavorites, req.Id)
 		if err != nil {
 			return err
 		}
@@ -127,8 +129,8 @@ func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*em
 	if err != nil {
 		return nil, err
 	}
-	contentDao := dao.GetDao(ctxi)
-	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
+	contentRedisDao := dao.GetRedisDao(ctxi, dao.Dao.Redis)
+	err = contentRedisDao.Limit(&conf.Conf.Customize.Moment.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -173,8 +175,8 @@ func (*ContentService) AddContainer(ctx context.Context, req *content.AddContain
 	if err != nil {
 		return nil, err
 	}
-	contentDao := dao.GetDao(ctxi)
-	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
+	contentRedisDao := dao.GetRedisDao(ctxi, dao.Dao.Redis)
+	err = contentRedisDao.Limit(&conf.Conf.Customize.Moment.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -195,8 +197,8 @@ func (*ContentService) EditDiaryContainer(ctx context.Context, req *content.AddC
 	if err != nil {
 		return nil, err
 	}
-	contentDao := dao.GetDao(ctxi)
-	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
+	contentRedisDao := dao.GetRedisDao(ctxi, dao.Dao.Redis)
+	err = contentRedisDao.Limit(&conf.Conf.Customize.Moment.Limit)
 	if err != nil {
 		return nil, err
 	}

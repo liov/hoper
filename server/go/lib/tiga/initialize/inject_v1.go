@@ -43,7 +43,7 @@ func setConfig(v reflect.Value, fieldNameDaoMap map[string]interface{}) {
 				conf.Init()
 			}
 			confName := strings.ToUpper(typ.Field(i).Name)
-			if slices.StringContains(InitConfig.EnvConfig.NoInject, confName) {
+			if slices.StringContains(InitConfig.ConfigCenterConfig.NoInject, confName) {
 				continue
 			}
 			if conf, ok := inter.(Generate); ok {
@@ -63,7 +63,7 @@ func setDao(v reflect.Value, fieldNameDaoMap map[string]interface{}) {
 
 	for i := 0; i < v.NumField(); i++ {
 		confName := strings.ToUpper(typ.Field(i).Name)
-		if slices.StringContains(InitConfig.EnvConfig.NoInject, confName) {
+		if slices.StringContains(InitConfig.ConfigCenterConfig.NoInject, confName) {
 			continue
 		}
 		var dao interface{}

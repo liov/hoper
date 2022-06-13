@@ -199,29 +199,29 @@ func (api *apiService) GetDiary(diaryId int) *Diary {
 	return &diary
 }
 
-func getV1(api string, param, result interface{}) error {
+func getV1(api string, param, result any) error {
 	return call(http.MethodGet, baseUrl+api, param, result)
 }
-func postV1(api string, param, result interface{}) error {
+func postV1(api string, param, result any) error {
 	return call(http.MethodPost, baseUrl+api, param, result)
 }
 
-func getV2(api string, param, result interface{}) error {
+func getV2(api string, param, result any) error {
 	return call(http.MethodGet, v2Url+api, param, result)
 }
-func postV2(api string, param, result interface{}) error {
+func postV2(api string, param, result any) error {
 	return call(http.MethodPost, v2Url+api, param, result)
 }
 
-func callV1(method, api string, param, result interface{}) error {
+func callV1(method, api string, param, result any) error {
 	return call(method, baseUrl+api, param, result)
 }
 
-func callV2(method, api string, param, result interface{}) error {
+func callV2(method, api string, param, result any) error {
 	return call(method, v2Url+api, param, result)
 }
 
-func call(method, api string, param, result interface{}) error {
+func call(method, api string, param, result any) error {
 	return client.NewRequest(api, method, param).SetHeader("Authorization", Token).SetLogger(nil).Do(result)
 }
 
@@ -250,7 +250,7 @@ icon: {uri: photoUri, name: 'image.jpg', type: 'image/jpg'}
 	return &res
 }
 
-func upload(method, api string, param, result interface{}) error {
+func upload(method, api string, param, result any) error {
 	return client.NewRequest(api, method, param).SetContentType(client.ContentTypeForm).SetHeader("Authorization", Token).SetLogger(nil).Do(result)
 }
 

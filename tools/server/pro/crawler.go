@@ -3,7 +3,6 @@ package pro
 import (
 	"bufio"
 	"compress/gzip"
-	"context"
 	"errors"
 	"fmt"
 	py2 "github.com/actliboy/hoper/server/go/lib/utils/strings/pinyin"
@@ -20,22 +19,10 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/actliboy/hoper/server/go/lib/tools/get_db"
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	"github.com/actliboy/hoper/server/go/lib/utils/strings"
 	"golang.org/x/net/html"
-	"gorm.io/gorm"
 )
-
-const CommonUrl = "https://t1214.wonderfulday27.live/viewthread.php?tid="
-const Loop = 50
-
-const CommonDir = `D:\F\工作夹\备份\Pictures\pron\91\pic_4\`
-const CommonDirLen = len(CommonDir)
-
-const Interval = 200 * time.Millisecond
-const Sep = string(os.PathSeparator)
-const Ext = `.txt`
 
 var userAgent = []string{
 	`Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36`,
@@ -45,16 +32,6 @@ var userAgent = []string{
 	"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36",
 	"Mozilla/5.0 (Macintosh; U; PPC Mac OS X 10.5; en-US; rv:1.9.2.15) Gecko/20110303 Firefox/3.6.15",
 	`Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36`,
-}
-
-var reqCache = make([]*http.Request, 1, Loop)
-var picClient = new(http.Client)
-
-func init() {
-	req, _ := newRequest(CommonUrl)
-	reqCache[0] = req.Clone(context.Background())
-	/*	SetClient(http.DefaultClient,30,`socks5://localhost:8080`)
-		SetClient(picClient,30,`socks5://localhost:8080`)*/
 }
 
 func SetClient(client *http.Client, timeout time.Duration, proxyUrl string) {
@@ -80,7 +57,7 @@ func NewFail(cap int) Fail {
 func (f Fail) Do(name string, wg *sync.WaitGroup) {
 	wg.Add(1)
 	go func() {
-		file, _ := os.Create(CommonDir + name + time.Now().Format("2006_01_02_15_04_05") + Ext)
+		file, _ := os.Create(Conf.Pro.CommonDir + name + time.Now().Format("2006_01_02_15_04_05") + Conf.Pro.Ext)
 		for txt := range f {
 			file.WriteString(txt + "\n")
 		}
@@ -133,24 +110,26 @@ func NewSpeed(cap int) *Speed {
 func Fetch(id int, sd *Speed) {
 	defer sd.WebDone()
 	tid := strconv.Itoa(id)
-	reader, err := Request(http.DefaultClient, CommonUrl+tid)
+	reader, err := Request(http.DefaultClient, Conf.Pro.CommonUrl+tid)
 	if err != nil {
 		log.Println(err, "id:", tid)
 		if !strings.HasPrefix(err.Error(), "返回错误") {
 			sd.Fail <- tid
 		}
 		invalidPost := &Post{TId: id, Status: 2}
-		err := DB.Save(invalidPost).Error
+		err := Dao.DB.Save(invalidPost).Error
 		if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
 			sd.FailDB <- tid + " 2"
 		}
 		return
 	}
+	defer reader.Close()
 	doc, err := goquery.NewDocumentFromReader(reader)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		sd.Fail <- tid
+		return
 	}
-	reader.Close()
 	s := doc.Find(`img[src="images/common/none.gif"]`)
 
 	auth, title, text, postTime, htl, post := ParseHtml(doc)
@@ -161,7 +140,7 @@ func Fetch(id int, sd *Speed) {
 		status = "1"
 	}
 
-	dir := CommonDir
+	dir := Conf.Pro.CommonDir + "pic_" + strconv.Itoa(id/100000) + "/"
 
 	if auth != "" {
 		dir += py2.FistLetter(auth) + Sep + auth + Sep
@@ -172,7 +151,7 @@ func Fetch(id int, sd *Speed) {
 	dir = fs.PathClean(dir)
 
 	post.Path = dir[CommonDirLen-7:]
-	err = DB.Save(post).Error
+	err = Dao.DB.Save(post).Error
 	if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
 		sd.FailDB <- tid + " " + status
 	}
@@ -187,7 +166,7 @@ func Fetch(id int, sd *Speed) {
 		}
 	}
 	if text != "" {
-		f, err := os.Create(dir + postTime + Ext)
+		f, err := os.Create(dir + postTime + Conf.Pro.Ext)
 		f.WriteString(text)
 		f.Close()
 		if err != nil {
@@ -209,7 +188,7 @@ func Fetch(id int, sd *Speed) {
 		if url, ok := s.Attr("file"); ok {
 			sd.Add(1)
 			go Download(url, dir, sd)
-			time.Sleep(Interval)
+			time.Sleep(Conf.Pro.Interval)
 		}
 	})
 }
@@ -370,23 +349,17 @@ func newRequest(url string) (*http.Request, error) {
 }
 
 func Start(job func(sd *Speed)) {
-	sd := NewSpeed(Loop)
+	sd := NewSpeed(Conf.Pro.Loop)
 	wg := new(sync.WaitGroup)
 	sd.Fail.Do("fail_post_", wg)
-	sd.Fail.Do("fail_pic_", wg)
-	sd.Fail.Do("fail_db_", wg)
+	sd.FailPic.Do("fail_pic_", wg)
+	sd.FailDB.Do("fail_db_", wg)
 	job(sd)
 	sd.Wait()
 	close(sd.Fail)
 	close(sd.FailPic)
 	close(sd.FailDB)
 	wg.Wait()
-}
-
-var DB *gorm.DB
-
-func SetDB() {
-	DB = get_db.GetDB()
 }
 
 type Post struct {
@@ -403,7 +376,7 @@ type Post struct {
 }
 
 func FixWeb(path string, sd *Speed, handle func(int, *Speed)) {
-	f, err := os.Open(CommonDir + path)
+	f, err := os.Open(Conf.Pro.CommonDir + path)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -414,7 +387,7 @@ func FixWeb(path string, sd *Speed, handle func(int, *Speed)) {
 		sd.WebAdd(1)
 		id, _ := strconv.Atoi(scanner.Text())
 		go handle(id, sd)
-		time.Sleep(Interval)
+		time.Sleep(Conf.Pro.Interval)
 	}
 	if err := scanner.Err(); err != nil {
 		panic(err)

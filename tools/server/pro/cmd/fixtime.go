@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/PuerkitoBio/goquery"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"log"
 	"net/http"
 	"strconv"
@@ -11,7 +12,7 @@ import (
 )
 
 func main() {
-	pro.SetDB()
+	defer initialize.Start(&pro.Conf, &pro.Dao)()
 	//test(401100)
 	pro.Start(fixtime)
 }
@@ -22,14 +23,14 @@ func fixtime(sd *pro.Speed) {
 	for i := start; i <= end; i++ {
 		sd.WebAdd(1)
 		go doFixtime(i, sd)
-		time.Sleep(pro.Interval)
+		time.Sleep(pro.Conf.Pro.Interval)
 	}
 }
 
 func doFixtime(id int, sd *pro.Speed) {
 	defer sd.WebDone()
 	tid := strconv.Itoa(id)
-	reader, err := pro.Request(http.DefaultClient, pro.CommonUrl+tid)
+	reader, err := pro.Request(http.DefaultClient, pro.Conf.Pro.CommonUrl+tid)
 	if err != nil {
 		//log.Println(err, "id:", tid)
 		return
@@ -65,5 +66,5 @@ func doFixtime(id int, sd *pro.Speed) {
 		date := now.Format("2006-01-02")
 		postTime = date + " " + postTime[len(postTime)-5:]
 	}
-	pro.DB.Exec(`Update post SET created_at = ? Where t_id = ?`, postTime, id)
+	pro.Dao.DB.Exec(`Update post SET created_at = ? Where t_id = ?`, postTime, id)
 }
