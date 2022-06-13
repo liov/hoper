@@ -27,17 +27,13 @@ spec:
           imagePullPolicy: IfNotPresent
           volumeMounts:
             - mountPath: /usr/share/logstash/pipeline
-              name: data
-              subPath: pipeline
-           - mountPath: /usr/share/logstash/config/logstash.yml
-             name: config
-             subPath: logstash.yml
+              name: pipeline
+            - mountPath: /usr/share/logstash/config/logstash.yml
+              name: config
+              subPath: logstash.yml
             - mountPath: /usr/share/logstash/logs
               name: data
-              subPath: log
-              # - mountPath: /usr/share/logstash/config/logstash.yml
-              #  name: config
-              #  subPath: logstash.yml
+              subPath: logs
       volumes:
         - name: data
           hostPath:
@@ -46,3 +42,6 @@ spec:
         - name: config
           configMap:
             name: logstash
+        - name: pipeline
+            configMap:
+              name: logstash-pipeline

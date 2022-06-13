@@ -2,10 +2,6 @@ package main
 
 import (
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
-	"io/ioutil"
-	"log"
-	"net/http"
-	"strconv"
 	"time"
 
 	"tools/pro"
@@ -24,13 +20,4 @@ func main() {
 		time.Sleep(pro.Conf.Pro.Interval)
 	}
 	sd.Wait()
-}
-
-func test(id int) {
-	reader, err := pro.Request(http.DefaultClient, pro.Conf.Pro.CommonUrl+strconv.Itoa(id))
-	if err != nil {
-		log.Fatal(err)
-	}
-	data, _ := ioutil.ReadAll(reader)
-	log.Println(string(data))
 }
