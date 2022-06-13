@@ -49,7 +49,7 @@ func Record(id int, sd *Speed) string {
 	}
 	dir = fs.PathClean(dir)
 
-	post.Path = dir[CommonDirLen-7:]
+	post.Path = dir[CommonDirLen:]
 	err = Dao.DB.Save(post).Error
 	if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
 		sd.FailDB <- tid + " " + status

@@ -31,6 +31,7 @@ func main() {
 				continue
 			}
 			file.Close()
+			os.Remove(dir + "/" + f.Name())
 			jpegfile, err := os.Create(dir + "/" + f.Name() + ".jpg")
 			if err != nil {
 				log.Println(err)
