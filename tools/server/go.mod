@@ -3,7 +3,7 @@ module tools
 go 1.18
 
 require (
-	github.com/PuerkitoBio/goquery v1.6.0
+	github.com/PuerkitoBio/goquery v1.8.0
 	github.com/actliboy/hoper/server/go/lib v1.0.0
 	github.com/elastic/go-elasticsearch/v8 v8.2.0
 	github.com/robfig/cron/v3 v3.0.1
@@ -17,7 +17,7 @@ require (
 	github.com/Shopify/sarama v1.29.1 // indirect
 	github.com/aliyun/alibaba-cloud-sdk-go v1.61.18 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
-	github.com/andybalholm/cascadia v1.1.0 // indirect
+	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
