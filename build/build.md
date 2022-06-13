@@ -50,6 +50,9 @@ go build -ldflags '-s -w --extldflags "-static -fpic"'
 
 -s -w 去掉调试信息，可以减小构建后文件体积，
 --extldflags "-static -fpic" 完全静态编译，这样编译生成的文件就可以任意放到指定平台下运行，而不需要运行环境配置。
+
+windows
+go build -a -ldflags '--extldflags="-static -fpic"'
 ## 显然对于带CGO的交叉编译，CGO_ENABLED必须开启。
 cgo的内部连接和外部连接
 internal linking
