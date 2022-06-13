@@ -114,7 +114,7 @@ var signals = make(chan os.Signal, 1)
 var stop = make(chan struct{}, 1)
 
 func (s *Server) Start() {
-	if initialize.InitConfig.EnvConfig == nil {
+	if initialize.InitConfig.ConfigCenterConfig == nil {
 		log.Fatal(`初始化配置失败:
 	main 函数的第一行应为
 	defer initialize.Start(config.Conf, dao.Dao)()

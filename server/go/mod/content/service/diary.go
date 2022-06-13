@@ -75,8 +75,8 @@ func (*DiaryService) Info(ctx context.Context, req *request.Object) (*content.Di
 	if err != nil {
 		return nil, err
 	}
-	contentDao := dao.GetDao(ctxi)
-	err = contentDao.LimitRedis(dao.Dao.Redis, &conf.Conf.Customize.Moment.Limit)
+	contentRedisDao := dao.GetRedisDao(ctxi, dao.Dao.Redis)
+	err = contentRedisDao.Limit(&conf.Conf.Customize.Moment.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -116,9 +116,9 @@ func (*DiaryService) Delete(ctx context.Context, req *request.Object) (*empty.Em
 	if err != nil {
 		return nil, err
 	}
-	contentDao := dao.GetDao(ctxi)
 	db := ctxi.NewDB(dao.Dao.GORMDB)
-	err = contentDao.DelByAuthDB(db, model.DiaryTableName, req.Id, auth.Id)
+	contentDBDao := dao.GetDBDao(ctxi, db)
+	err = contentDBDao.DelByAuth(model.DiaryTableName, req.Id, auth.Id)
 	if err != nil {
 		return nil, err
 	}

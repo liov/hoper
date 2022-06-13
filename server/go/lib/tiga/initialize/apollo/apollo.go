@@ -31,3 +31,18 @@ func (conf *ApolloConfig) generate() *apollo.Client {
 func (conf *ApolloConfig) Generate() interface{} {
 	return conf.generate()
 }
+
+type ApolloClient struct {
+	*apollo.Client
+	Conf ApolloConfig
+}
+
+func (a *ApolloClient) Config() interface{} {
+	return &a.Conf
+}
+
+func (a *ApolloClient) SetEntity(entity interface{}) {
+	if client, ok := entity.(*apollo.Client); ok {
+		a.Client = client
+	}
+}

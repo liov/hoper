@@ -21,3 +21,18 @@ func (conf *BadgerDBConfig) generate() *badger.DB {
 func (conf *BadgerDBConfig) Generate() interface{} {
 	return conf.generate()
 }
+
+type Consumer struct {
+	*badger.DB
+	Conf BadgerDBConfig
+}
+
+func (b *Consumer) Config() interface{} {
+	return &b.Conf
+}
+
+func (b *Consumer) SetEntity(entity interface{}) {
+	if client, ok := entity.(*badger.DB); ok {
+		b.DB = client
+	}
+}

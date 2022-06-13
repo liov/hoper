@@ -64,16 +64,15 @@ func setDao2(v reflect.Value, confM map[string]any) {
 	for i := 0; i < v.NumField(); i++ {
 		field := v.Field(i)
 		if field.Addr().CanInterface() {
-			if field.Kind() == reflect.Ptr && !field.IsValid() {
+			if field.Kind() == reflect.Ptr && (!field.IsValid() || field.IsNil()) {
 				field.Set(reflect.New(field.Type().Elem()))
 			}
 			inter := field.Addr().Interface()
 			confName := strings.ToUpper(typ.Field(i).Name)
-			if slices.StringContains(InitConfig.EnvConfig.NoInject, confName) {
+			if slices.StringContains(InitConfig.ConfigCenterConfig.NoInject, confName) {
 				continue
 			}
 			if daofield, ok := inter.(DaoField); ok {
-				conf := daofield.Config()
 				tagSettings := ParseTagSetting(typ.Field(i).Tag.Get("init"), ";")
 				if tagSettings.NotInject {
 					continue
@@ -81,6 +80,13 @@ func setDao2(v reflect.Value, confM map[string]any) {
 				if tagSettings.ConfigName != "" {
 					confName = tagSettings.ConfigName
 				}
+				conf := daofield.Config()
+				/*
+					如果conf设置的是指针，且没有初始化，会有问题，这里初始化会报不可寻址，似乎不能返回interface{}
+					valueConf := reflect.ValueOf(conf)
+					if valueConf.Kind() == reflect.Ptr && (!valueConf.IsValid() || valueConf.IsNil()) {
+						valueConf.Set(reflect.New(valueConf.Type().Elem()))
+					}*/
 				injectconf(conf, confName, confM)
 				if conf1, ok := conf.(NeedInit); ok {
 					conf1.Init()

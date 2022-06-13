@@ -66,3 +66,33 @@ func (conf *NsqConsumerConfig) generate() *nsq.Consumer {
 func (conf *NsqConsumerConfig) Generate() interface{} {
 	return conf.generate()
 }
+
+type Producer struct {
+	*nsq.Producer
+	Conf NsqProducerConfig
+}
+
+func (p *Producer) Config() interface{} {
+	return &p.Conf
+}
+
+func (p *Producer) SetEntity(entity interface{}) {
+	if client, ok := entity.(*nsq.Producer); ok {
+		p.Producer = client
+	}
+}
+
+type Consumer struct {
+	*nsq.Consumer
+	Conf NsqProducerConfig
+}
+
+func (c *Consumer) Config() interface{} {
+	return &c.Conf
+}
+
+func (c *Consumer) SetEntity(entity interface{}) {
+	if client, ok := entity.(*nsq.Consumer); ok {
+		c.Consumer = client
+	}
+}

@@ -20,3 +20,18 @@ func (conf *PebbleDBConfig) generate() *pebble.DB {
 func (conf *PebbleDBConfig) Generate() interface{} {
 	return conf.generate()
 }
+
+type PebbleDB struct {
+	*pebble.DB
+	Conf PebbleDBConfig
+}
+
+func (p *PebbleDB) Config() interface{} {
+	return &p.Conf
+}
+
+func (p *PebbleDB) SetEntity(entity interface{}) {
+	if client, ok := entity.(*pebble.DB); ok {
+		p.DB = client
+	}
+}

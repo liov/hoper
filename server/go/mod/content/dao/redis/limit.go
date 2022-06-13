@@ -1,4 +1,4 @@
-package dao
+package redis
 
 import (
 	"time"
@@ -11,14 +11,14 @@ import (
 
 var limitErr = errorcode.TimeTooMuch.Message("您的操作过于频繁，请先休息一会儿。")
 
-func (d *contentDao) LimitRedis(conn redis.Cmdable, l *conf.Limit) error {
+func (d *ContentRedisDao) Limit(l *conf.Limit) error {
 	ctxi := d
 	ctx := ctxi.Context
 	minuteKey := l.MinuteLimitKey + ctxi.IdStr
 	dayKey := l.DayLimitKey + ctxi.IdStr
 
 	var minuteIntCmd, dayIntCmd *redis.IntCmd
-	_, err := conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+	_, err := d.conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
 		minuteIntCmd = pipe.Incr(ctx, minuteKey)
 		dayIntCmd = pipe.Incr(ctx, dayKey)
 		return nil
@@ -31,7 +31,7 @@ func (d *contentDao) LimitRedis(conn redis.Cmdable, l *conf.Limit) error {
 		return limitErr
 	}
 	var minuteDurationCmd, dayDurationCmd *redis.DurationCmd
-	_, err = conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+	_, err = d.conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
 		minuteDurationCmd = pipe.PTTL(ctx, minuteKey)
 		dayDurationCmd = pipe.PTTL(ctx, dayKey)
 		return nil
@@ -40,7 +40,7 @@ func (d *contentDao) LimitRedis(conn redis.Cmdable, l *conf.Limit) error {
 		return ctxi.ErrorLog(errorcode.RedisErr, err, "PTTL")
 	}
 
-	_, err = conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+	_, err = d.conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
 		if minuteDurationCmd.Val() < 0 {
 			pipe.Expire(ctx, minuteKey, time.Minute)
 		}

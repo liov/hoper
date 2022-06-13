@@ -35,8 +35,8 @@ func (conf *CacheConfig) Generate() interface{} {
 // go-cache
 
 type Cache struct {
-	Conf CacheConfig
 	*ristretto.Cache
+	Conf CacheConfig
 }
 
 func (c *Cache) Config() interface{} {
