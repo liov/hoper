@@ -210,12 +210,6 @@ func ParseHtml(doc *goquery.Document) (string, string, string, string, *goquery.
 		}
 	}
 
-	post := &Post{
-		TId:   0,
-		Auth:  auth,
-		Title: title,
-	}
-
 	if strings.Contains(postTime, "天") {
 		now := time.Now()
 		var day int
@@ -236,6 +230,13 @@ func ParseHtml(doc *goquery.Document) (string, string, string, string, *goquery.
 		date := now.Format("2006-01-02")
 		postTime = date + " " + postTime[len(postTime)-5:]
 	}
+
+	post := &Post{
+		TId:   0,
+		Auth:  auth,
+		Title: title,
+	}
+
 	post.CreatedAt = postTime
 	content := doc.Find(".t_msgfont").First()
 	text := content.Contents().Not(".t_attach").Text()
