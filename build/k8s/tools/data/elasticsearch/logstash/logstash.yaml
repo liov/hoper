@@ -3,6 +3,8 @@ monitoring:
   enabled: true
   elasticsearch:
     hosts: http://elasticsearch.tools:9200
+    username: elastic
+    password: "xxx"
 pipeline:
   batch:
     size: 125

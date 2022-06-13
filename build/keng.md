@@ -1405,3 +1405,16 @@ frps无法绑定到此端口
 # This version of xxx.exe is not compatible with the version of Windows you're running
 
 原来是包名的问题，需要将包名改成“package main”，之前为“package xxx”
+
+# logstash Failed to fetch X-Pack information from Elasticsearch. This is likely due to failure to reach a live Elasticsearch cluster
+
+当来自logstash的监视数据无法到达Elasticsearch时，也会发生_xpack错误。
+```yaml
+http.host: 0.0.0.0
+monitoring:
+  enabled: true
+  elasticsearch:
+    hosts: http://elasticsearch.tools:9200
+    username: elastic
+    password: "xxx"
+```
