@@ -1,0 +1,19 @@
+apiVersion: apisix.apache.org/v2beta3
+kind: ApisixRoute
+metadata:
+  name: kafka
+  namespace: tools
+spec:
+  http:
+    - name: kafka
+      match:
+        hosts:
+          - kafka.hoper.xyz
+          - kafka.liov.xyz
+          - kafka.d
+        paths:
+          - /*
+      backends:
+        - serviceName: kafka-ui
+          servicePort: 8080
+          resolveGranularity: service

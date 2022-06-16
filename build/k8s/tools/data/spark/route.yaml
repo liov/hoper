@@ -1,0 +1,19 @@
+apiVersion: apisix.apache.org/v2beta3
+kind: ApisixRoute
+metadata:
+  name: spark
+  namespace: tools
+spec:
+  http:
+    - name: spark
+      match:
+        hosts:
+          - spark.hoper.xyz
+          - spark.liov.xyz
+          - spark.d
+        paths:
+          - /*
+      backends:
+        - serviceName: spark-ui
+          servicePort: 8080
+          resolveGranularity: service

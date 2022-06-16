@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: kafka-ui
+  name: kafka-ui
+  namespace: tools
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-ui
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: kafka-ui
+    spec:
+      containers:
+        - name: kafka-ui
+          image: provectuslabs/kafka-ui:master
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: KAFKA_CLUSTERS_0_NAME
+              value: "kafka"
+            - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
+              value: "kafka.tools:9091"
+            - name: KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL
+              value: "PLAINTEXT"
+            - name: KAFKA_CLUSTERS_0_PROPERTIES_SASL_MECHANISM
+              value: "PLAIN"
+            - name: KAFKA_CLUSTERS_0_PROPERTIES_SASL_KERBEROS_SERVICE_NAME
+              value: "kafka"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-ui
+  namespace: tools
+  labels:
+    app: kafka-ui
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      name: server
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: kafka-ui

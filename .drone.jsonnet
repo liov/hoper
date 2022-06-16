@@ -1,6 +1,6 @@
 // local mode(mode="app") = if mode == "app" then "app" else "node";
 local tpldir = './build/k8s/app/';
-local codedir = '/mnt/new/code/hoper/';
+local codedir = '/home/new/dev/code/hoper/';
 
 local kubectl(deplocal, cmd) = if deplocal then {
   name: 'deploy',
@@ -41,7 +41,7 @@ local kubectl(deplocal, cmd) = if deplocal then {
 local Pipeline(group, name='', mode='app', workdir='tools/server', sourceFile='', protoc=false, opts=[], deplocal=false, schedule='') = {
   local fullname = if name == '' then group else group + '-' + name,
   local tag = '${DRONE_TAG##' + fullname + '-v}',
-  local datadir = if deplocal then '/mnt/new/data' else '/data',
+  local datadir = if deplocal then '/home/new/dev/data' else '/data',
   local dockerfilepath = tpldir + mode + '/Dockerfile',
   local deppath = tpldir + mode + '/deployment.yaml',
   kind: 'pipeline',
@@ -122,7 +122,7 @@ local Pipeline(group, name='', mode='app', workdir='tools/server', sourceFile=''
         "sed -i 's/$${app}/" + fullname + "/g' " + deppath,
         "sed -i 's/$${group}/" + group + "/g' " + deppath,
         "sed -i 's#$${datadir}#" + datadir + "#g' " + deppath,
-        "sed -i 's#$${image}#jyblsq/" + fullname + ':' + tag + "#g' " + deppath,
+        "sed -i 's#$${image}#jybl/" + fullname + ':' + tag + "#g' " + deppath,
         if mode == 'cronjob' then "sed -i 's#$${schedule}#" + schedule + "#g' " + deppath else 'echo',
         local bakdir = '/code/deploy/' + mode + '/';
         'if [ ! -d ' + bakdir + ' ];then mkdir -p ' + bakdir + '; fi && cp -r ' + deppath + ' ' + bakdir + fullname + '-' + tag + '.yaml',
@@ -130,7 +130,7 @@ local Pipeline(group, name='', mode='app', workdir='tools/server', sourceFile=''
     },
     {
       name: 'go build',
-      image: if protoc then 'jyblsq/golang:protoc' else 'golang:1.18.1',
+      image: if protoc then 'jybl/goprotoc' else 'golang:1.18.1',
       volumes: [
         {
           name: 'gopath',
@@ -166,7 +166,7 @@ local Pipeline(group, name='', mode='app', workdir='tools/server', sourceFile=''
         password: {
           from_secret: 'docker_password',
         },
-        repo: 'jyblsq/' + fullname,
+        repo: 'jybl/' + fullname,
         tags: tag,
         dockerfile: dockerfilepath,
         force_tag: true,

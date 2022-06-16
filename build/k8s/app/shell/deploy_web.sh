@@ -113,10 +113,10 @@ spec:
       volumes:
         - name: dist
           hostPath:
-            path: /home/crm/dev/dist
+            path: /home/dev/dev/dist
         - name: static
           hostPath:
-            path: /home/crm/dev/static
+            path: /home/dev/dev/static
         - name: nginx
           configMap:
             name: nginx-configmap

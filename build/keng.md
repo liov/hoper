@@ -1375,6 +1375,8 @@ flush hosts;
 
 mysqladmin flush-hosts -uroot -pxxx
 
+max_connect_errors=1000
+
 # Exception in thread "main" java.nio.file.FileSystemException: /usr/share/elasticsearch/config/elasticsearch.yml.goCs5oUbSOuqcoNzBPGIAQ.tmp -> /usr/share/elasticsearch/config/elasticsearch.yml: Device or resource busy
 挂载 /usr/share/elasticsearch/config/elasticsearch.yml出的问题，临时方案是取消挂载
 docker的配置默认network.host: 0.0.0.0
@@ -1418,3 +1420,9 @@ monitoring:
     username: elastic
     password: "xxx"
 ```
+# k8s kafka deployment 单节点 Error connecting to node kafka-d9f87fff4-mwskl:9091(id: 1044 rack: null) java.net.UnknownHostException: kafka-d9f87fff4-mwskl
+内部监听会打到pod上,只能用StatefulSet 或者不用KAFKA_CFG_INTER_BROKER_LISTENER_NAME
+- name: KAFKA_CFG_ADVERTISED_LISTENERS
+  value: "CLIENT://kafka-nodeport.tools:9092,INTERNAL://:9091,ICLIENT://kafka.tools:9093"
+# rocket broker起不来
+挂载目录没权限 chmod 777 -R data/rocket

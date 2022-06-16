@@ -35,7 +35,7 @@ spec:
       hostNetwork: true
       containers:
         - name: frps
-          image: jyblsq/frps
+          image: jybl/frps
           imagePullPolicy: IfNotPresent
           volumeMounts:
             - mountPath: /app/frps.ini

@@ -64,8 +64,7 @@ func init() {
 	proto = flag.String("proto", protodef, "proto路径")
 	stdPatch := flag.Bool("patch", false, "是否使用原生protopatch")
 	goList = `go list -m -f {{.Dir}} `
-	libDir, _ := osi.CMD(goList + "github.com/actliboy/hoper/server/go/lib")
-	os.Chdir(libDir)
+
 	google := gopath + "pkg/mod/" + googleapis
 	_, err := os.Stat(google)
 	if os.IsNotExist(err) {
@@ -75,6 +74,9 @@ func init() {
 		)
 		osi.CMD("go mod tidy")
 	}
+
+	libDir, _ := osi.CMD(goList + "github.com/actliboy/hoper/server/go/lib")
+	os.Chdir(libDir)
 	gateway, _ = osi.CMD(
 		goList + "github.com/grpc-ecosystem/grpc-gateway/v2",
 	)
