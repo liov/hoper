@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: spark
+  name: spark
+  namespace: tools
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spark
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: spark
+    spec:
+      containers:
+        - name: spark
+          image: bitnami/spark
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SPARK_MODE
+              value: "master"
+            - name: SPARK_RPC_AUTHENTICATION_ENABLED
+              value: "true"
+            - name: SPARK_RPC_AUTHENTICATION_SECRET
+              value: "xxx"
+            - name: SPARK_RPC_ENCRYPTION_ENABLED
+              value: "true"
+            - name: SPARK_RPC_ENCRYPTION
+              value: "yes"
+            - name: SPARK_LOCAL_STORAGE_ENCRYPTION
+              value: "yes"
+          volumeMounts:
+            - mountPath: /bitnami/spark
+              name: data
+      volumes:
+        - name: data
+          hostPath:
+            path: /data/spark
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spark-ui
+  namespace: tools
+  labels:
+    app: spark
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      name: ui
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: spark
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spark
+  namespace: tools
+  labels:
+    app: spark
+spec:
+  type: ClusterIP
+  ports:
+    - port: 7077
+      name: server
+      protocol: TCP
+      targetPort: 7077
+  selector:
+    app: spark
+

@@ -49,7 +49,17 @@ func setConfig2(conf Config, confM map[string]interface{}) {
 func injectconf(conf any, confName string, confM map[string]any) bool {
 	filedv, ok := confM[confName]
 	if ok {
-		mtos.Decode(filedv, conf)
+		config := &mtos.DecoderConfig{
+			Metadata: nil,
+			Squash:   true,
+			Result:   conf,
+		}
+
+		decoder, err := mtos.NewDecoder(config)
+		if err != nil {
+			return false
+		}
+		decoder.Decode(filedv)
 	}
 	return ok
 }

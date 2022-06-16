@@ -41,12 +41,12 @@ spec:
       volumes:
         - name: logs
           hostPath:
-            path: /home/crm/dev/logs
+            path: /home/dev/dev/logs
         - name: config
           configMap:
             items:
               - key: config
-                path: /home/crm/dev/config.toml
+                path: /home/dev/dev/config.toml
 
 ---
 apiVersion: v1

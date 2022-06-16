@@ -10,7 +10,6 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/gin/oauth"
 	model "github.com/actliboy/hoper/server/go/mod/protobuf/user"
 	"github.com/actliboy/hoper/server/go/mod/user/conf"
-	"github.com/actliboy/hoper/server/go/mod/user/dao"
 	"github.com/actliboy/hoper/server/go/mod/user/service"
 	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
@@ -31,14 +30,14 @@ func main() {
 			model.RegisterOauthServiceServer(gs, service.GetOauthService())
 		},
 		GatewayRegistr: func(ctx context.Context, mux *runtime.ServeMux) {
-			_ = model.RegisterUserServiceHandlerServer(ctx, mux, service.GetUserService())
+			_ = model.RegisterUserServiceHandlerServer(ctx, gin, service.GetUserService())
 			_ = model.RegisterOauthServiceHandlerServer(ctx, mux, service.GetOauthService())
 		},
 		GinHandle: func(app *gin.Engine) {
 			oauth.RegisterOauthServiceHandlerServer(app, service.GetOauthService())
 			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
 			pick.RegisterService(service.GetUserService())
-			pick.Gin(app, true, initialize.InitConfig.Module, conf.Conf.Server.OpenTracing)
+			pick.Gin(app, conf.Conf.Server.GenDoc, initialize.InitConfig.Module, conf.Conf.Server.OpenTracing)
 		},
 
 		/*		GraphqlResolve: model.NewExecutableSchema(model.Config{

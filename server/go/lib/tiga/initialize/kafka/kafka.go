@@ -5,23 +5,24 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 )
 
-type KafkaProducerConfig struct {
-	Topic    string
-	ProdAddr []string
+type KafkaConfig struct {
+	Addrs []string
+	*sarama.Config
 }
+
+type KafkaProducerConfig KafkaConfig
 
 func (conf *KafkaProducerConfig) generate() sarama.SyncProducer {
 
-	config := sarama.NewConfig()
 	// 等待服务器所有副本都保存成功后的响应
-	config.Producer.RequiredAcks = sarama.WaitForAll
+	conf.Producer.RequiredAcks = sarama.WaitForAll
 	// 随机的分区类型：返回一个分区器，该分区器每次选择一个随机分区
-	config.Producer.Partitioner = sarama.NewRandomPartitioner
+	conf.Producer.Partitioner = sarama.NewRandomPartitioner
 	// 是否等待成功和失败后的响应
-	config.Producer.Return.Successes = true
+	conf.Producer.Return.Successes = true
 
 	// 使用给定代理地址和配置创建一个同步生产者
-	producer, err := sarama.NewSyncProducer(conf.ProdAddr, config)
+	producer, err := sarama.NewSyncProducer(conf.Addrs, conf.Config)
 	if err != nil {
 		log.Info(err)
 	}
@@ -34,14 +35,11 @@ func (conf *KafkaProducerConfig) Generate() interface{} {
 	return conf.generate()
 }
 
-type KafkaConsumerConfig struct {
-	Topic    string
-	ConsAddr []string
-}
+type KafkaConsumerConfig KafkaConfig
 
 func (conf *KafkaConsumerConfig) generate() sarama.Consumer {
 
-	consumer, err := sarama.NewConsumer(conf.ConsAddr, nil)
+	consumer, err := sarama.NewConsumer(conf.Addrs, conf.Config)
 	if err != nil {
 		log.Info(err)
 	}
@@ -56,16 +54,18 @@ func (conf *KafkaConsumerConfig) Generate() interface{} {
 
 type KafkaProducer struct {
 	sarama.SyncProducer
-	Conf *KafkaProducerConfig
+	Conf KafkaProducerConfig
 }
 
-func (es *KafkaProducer) Config() interface{} {
-	return es.Conf
+func (k *KafkaProducer) Config() interface{} {
+	k.Conf.Config = sarama.NewConfig()
+	k.Conf.Config.Version = sarama.V3_1_0_0
+	return &k.Conf
 }
 
-func (es *KafkaProducer) SetEntity(entity interface{}) {
+func (k *KafkaProducer) SetEntity(entity interface{}) {
 	if client, ok := entity.(sarama.SyncProducer); ok {
-		es.SyncProducer = client
+		k.SyncProducer = client
 	}
 }
 
@@ -75,6 +75,8 @@ type KafkaConsumer struct {
 }
 
 func (k *KafkaConsumer) Config() interface{} {
+	k.Conf.Config = sarama.NewConfig()
+	k.Conf.Config.Version = sarama.V3_1_0_0
 	return &k.Conf
 }
 
