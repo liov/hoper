@@ -41,7 +41,7 @@ func main() {
 	if err := view.Register(ocgrpc.DefaultClientViews...); err != nil {
 		log.Fatal(err)
 	}
-	pick.RegisterService(userservice.GetUserService(), contentervice.GetMomentService())
+
 	(&tiga.Server{
 		//为了可以自定义中间件
 		GRPCOptions: []grpc.ServerOption{
@@ -62,14 +62,15 @@ func main() {
 			_ = content.RegisterMomentServiceHandlerServer(app, contentervice.GetMomentService())
 			_ = content.RegisterContentServiceHandlerServer(app, contentervice.GetContentService())
 			_ = content.RegisterActionServiceHandlerServer(app, contentervice.GetActionService())
-			app.Static("/static", "F:/upload")
+			app.Static("/static", string(upconf.Conf.Customize.UploadDir))
 			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
 			app.GET("/api/v1/exists", handler.Convert(upload.Exists))
 			app.GET("/api/v1/exists/:md5/:size", upload.ExistsGin)
 			app.POST("/api/v1/upload/:md5", handler.Convert(upload.Upload))
 			app.POST("/api/v1/multiUpload", handler.Convert(upload.MultiUpload))
 			app.GET("/api/ws/chat", handler.Convert(chat.Chat))
-			pick.Gin(app, true, initialize.InitConfig.Module, uconf.Conf.Server.OpenTracing)
+			pick.RegisterService(userservice.GetUserService(), contentervice.GetMomentService())
+			pick.Gin(app, uconf.Conf.Server.GenDoc, initialize.InitConfig.Module, uconf.Conf.Server.OpenTracing)
 		},
 	}).Start()
 }

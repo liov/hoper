@@ -1,0 +1,19 @@
+apiVersion: apisix.apache.org/v2beta3
+kind: ApisixRoute
+metadata:
+  name: kafdrop
+  namespace: tools
+spec:
+  http:
+    - name: kafdrop
+      match:
+        hosts:
+          - kafdrop.hoper.xyz
+          - kafdrop.liov.xyz
+          - kafdrop.d
+        paths:
+          - /*
+      backends:
+        - serviceName: kafdrop
+          servicePort: 9000
+          resolveGranularity: service

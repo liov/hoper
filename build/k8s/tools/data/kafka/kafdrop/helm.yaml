@@ -1,0 +1,33 @@
+replicaCount: 1
+
+image:
+  repository: obsidiandynamics/kafdrop
+  tag: latest
+  pullPolicy: IfNotPresent
+
+kafka:
+  brokerConnect: kafka.tools:9093
+  properties: ""
+  truststore: ""
+  keystore: ""
+  propertiesFile: "kafka.properties"
+  truststoreFile: "kafka.truststore.jks"
+  keystoreFile: "kafka.keystore.jks"
+
+host:
+
+jvm:
+  opts: "-Xms32M -Xmx64M"
+jmx:
+  port: 8686
+
+
+server:
+  port: 9000
+  servlet:
+    contextPath: /
+
+service:
+  annotations: {}
+  type: ClusterIP
+  port: 9000

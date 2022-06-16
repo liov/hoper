@@ -45,14 +45,16 @@ gcc -shared -pthread -o libgobblob.dll gobblob.c libgobblob.a -lWinMM -lntdll -l
 # 静态编译
 go build -tags netgo
 CGO_ENABLED=0 go build
-go build -ldflags '-s -w --extldflags "-static -fpic"'
+go build -ldflags '-s -w -extldflags "-static -fpic"'
 可选参数-ldflags 是编译选项：
 
--s -w 去掉调试信息，可以减小构建后文件体积，
---extldflags "-static -fpic" 完全静态编译，这样编译生成的文件就可以任意放到指定平台下运行，而不需要运行环境配置。
+-s -w 去掉调试信息，可以减小构建后文件体积， (这俩选项至少windows会报错)
+-extldflags "-static -fpic" 完全静态编译，这样编译生成的文件就可以任意放到指定平台下运行，而不需要运行环境配置。
 
+go build -ldflags '-linkmode "external" -extldflags "-static -fpic"'
 windows
-go build -a -ldflags '--extldflags="-static -fpic"'
+go build -ldflags "-linkmode=external -extldflags=-static"
+go build -ldflags "-linkmode=external -extldflags=-static -extldflags=-fpic"
 ## 显然对于带CGO的交叉编译，CGO_ENABLED必须开启。
 cgo的内部连接和外部连接
 internal linking

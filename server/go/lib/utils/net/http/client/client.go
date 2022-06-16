@@ -165,22 +165,44 @@ func (req *RequestParams) Do(response interface{}) error {
 	var err error
 	if method == http.MethodGet {
 		if req.Param != nil {
-			param := getParam(req.Param)
-			reqBody = param
-			url += "?" + param
+			switch param := req.Param.(type) {
+			case string:
+				url += param
+			case []byte:
+				url += stringsi.ToString(param)
+			default:
+				params := getParam(req.Param)
+				reqBody = params
+				url += "?" + params
+			}
 		}
 	} else {
-		if req.ContentType == ContentTypeJson {
-			reqBytes, err := json.Marshal(req.Param)
-			if err != nil {
-				return err
+		if req.Param != nil {
+			switch param := req.Param.(type) {
+			case string:
+				body = strings.NewReader(param)
+				reqBody = param
+			case []byte:
+				body = bytes.NewReader(param)
+				reqBody = stringsi.ToString(param)
+			case io.Reader:
+				vbytes, _ := ioutil.ReadAll(param)
+				body = bytes.NewReader(vbytes)
+				reqBody = stringsi.ToString(vbytes)
+			default:
+				if req.ContentType == ContentTypeJson {
+					reqBytes, err := json.Marshal(req.Param)
+					if err != nil {
+						return err
+					}
+					body = bytes.NewReader(reqBytes)
+					reqBody = stringsi.ToString(reqBytes)
+				} else {
+					params := getParam(req.Param)
+					reqBody = params
+					body = strings.NewReader(params)
+				}
 			}
-			body = bytes.NewReader(reqBytes)
-			reqBody = stringsi.ToString(reqBytes)
-		} else {
-			param := getParam(req.Param)
-			reqBody = param
-			body = strings.NewReader(param)
 		}
 	}
 

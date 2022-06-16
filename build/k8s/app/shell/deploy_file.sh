@@ -97,10 +97,10 @@ spec:
       volumes:
         - name: logs
           hostPath:
-            path: /home/crm/dev/logs
+            path: /home/dev/dev/logs
         - name: static
           hostPath:
-            path: /home/crm/dev/static
+            path: /home/dev/dev/static
         - name: config
           configMap:
             items:

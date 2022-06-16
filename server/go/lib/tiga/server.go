@@ -143,3 +143,17 @@ Loop:
 func ReStart() {
 	stop <- struct{}{}
 }
+
+func NewServer(ginhandle func(*gin.Engine), grpchandle func(*grpc.Server), grpcoptions []grpc.ServerOption, gatewayregist gateway.GatewayHandle, graphqlresolve graphql.ExecutableSchema) *Server {
+	return &Server{
+		GinHandle:      ginhandle,
+		GRPCOptions:    grpcoptions,
+		GRPCHandle:     grpchandle,
+		GatewayRegistr: gatewayregist,
+		GraphqlResolve: graphqlresolve,
+	}
+}
+
+func Start(ginhandle func(*gin.Engine), grpchandle func(*grpc.Server), grpcoptions []grpc.ServerOption, gatewayregist gateway.GatewayHandle, graphqlresolve graphql.ExecutableSchema) {
+	NewServer(ginhandle, grpchandle, grpcoptions, gatewayregist, graphqlresolve).Start()
+}

@@ -92,14 +92,14 @@ func flaginit() {
 	}
 }
 
-func Start(conf Config, dao Dao) func(deferf ...func()) {
+func Start(conf Config, dao Dao, notinit ...string) func(deferf ...func()) {
 	if conf == nil {
 		log.Fatalf("配置不能为空")
 	}
 	flaginit()
 	//逃逸到堆上了
 	init := NewInit(conf, dao)
-	init.LoadConfig()
+	init.LoadConfig(notinit...)
 	return func(deferf ...func()) {
 		init.CloseDao()
 		log.Sync()
@@ -112,7 +112,7 @@ func Start(conf Config, dao Dao) func(deferf ...func()) {
 	}
 }
 
-func (init *Init) LoadConfig() *Init {
+func (init *Init) LoadConfig(notinit ...string) *Init {
 	onceConfig := FileConfig{}
 	if _, err := os.Stat(init.ConfUrl); os.IsNotExist(err) {
 		log.Fatalf("配置错误: 请确保可执行文件和配置文件在同一目录下或在config目录下或指定配置文件")
@@ -145,6 +145,9 @@ func (init *Init) LoadConfig() *Init {
 
 	for i := range init.ConfigCenterConfig.NoInject {
 		init.ConfigCenterConfig.NoInject[i] = strings.ToUpper(init.ConfigCenterConfig.NoInject[i])
+	}
+	for i := range notinit {
+		init.ConfigCenterConfig.NoInject = append(init.ConfigCenterConfig.NoInject, strings.ToUpper(notinit[i]))
 	}
 	if init.ConfigCenterConfig.InjectVersion == 1 {
 		init.ConfigCenterConfig.ConfigCenter(init.Module, init.Env != PRODUCT).HandleConfig(init.UnmarshalAndSet)
