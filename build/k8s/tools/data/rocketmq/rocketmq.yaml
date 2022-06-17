@@ -45,7 +45,7 @@ spec:
           imagePullPolicy: IfNotPresent
           resources:
             limits:
-              memory: 1Gi
+              memory: 2Gi
           env:
             - name: JAVA_OPT_EXT
               valueFrom:
