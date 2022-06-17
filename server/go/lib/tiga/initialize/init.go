@@ -1,18 +1,12 @@
 package initialize
 
 import (
-	"flag"
 	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/conf_center"
 	"github.com/actliboy/hoper/server/go/lib/utils/configor/local"
-	"net"
-	"net/http"
-	"net/url"
 	"os"
 	"reflect"
 	"strings"
-	"testing"
-	"time"
 
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 )
@@ -46,14 +40,6 @@ type FileConfig struct {
 	Dev, Test, Prod *ConfigCenterConfig
 }
 
-//TODO: 优先级高于EnvConfig
-type FlagConfig struct {
-	Env, ConfUrl string
-}
-
-//TODO: 优先级高于FileConfig
-type EnvConfig FlagConfig
-
 type Init struct {
 	Env, ConfUrl string
 	BasicConfig
@@ -63,33 +49,6 @@ type Init struct {
 	dao                Dao
 	//closes     []interface{}
 	deferf []func()
-}
-
-func flaginit() {
-	if flag.Parsed() {
-		return
-	}
-	flag.StringVar(&InitConfig.Env, "env", DEVELOPMENT, "环境")
-
-	InitConfig.ConfUrl = "./config.toml"
-	if _, err := os.Stat(InitConfig.ConfUrl); os.IsNotExist(err) {
-		InitConfig.ConfUrl = "./config/config.toml"
-	}
-	flag.StringVar(&InitConfig.ConfUrl, "conf", InitConfig.ConfUrl, "配置文件路径,默认./config.toml或./config/config.toml")
-
-	agent := flag.Bool("agent", false, "是否启用代理")
-	testing.Init()
-	flag.Parse()
-	if *agent {
-		proxyURL, _ := url.Parse("socks5://localhost:1080")
-		http.DefaultClient.Transport = &http.Transport{
-			Proxy: http.ProxyURL(proxyURL),
-			DialContext: (&net.Dialer{
-				Timeout:   30 * time.Second,
-				KeepAlive: 30 * time.Second,
-			}).DialContext,
-		}
-	}
 }
 
 func Start(conf Config, dao Dao, notinit ...string) func(deferf ...func()) {

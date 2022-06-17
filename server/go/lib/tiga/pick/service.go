@@ -12,6 +12,7 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	httpi "github.com/actliboy/hoper/server/go/lib/utils/net/http"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/api/apidoc"
+	http_fs "github.com/actliboy/hoper/server/go/lib/utils/net/http/fs"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/request/binding"
 	"github.com/dgrijalva/jwt-go/v4"
 	"google.golang.org/grpc"
@@ -144,7 +145,7 @@ func resHandler(c *contexti.Ctx, w http.ResponseWriter, result []reflect.Value) 
 		json.NewEncoder(w).Encode(err)
 		return
 	}
-	if info, ok := result[0].Interface().(*httpi.File); ok {
+	if info, ok := result[0].Interface().(*http_fs.File); ok {
 		header := w.Header()
 		header.Set(httpi.HeaderContentType, httpi.ContentBinaryHeaderValue)
 		header.Set(httpi.HeaderContentDisposition, "attachment;filename="+info.Name)
