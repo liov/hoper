@@ -17,11 +17,8 @@ import (
 func StartRecord() {
 	RecordTask()
 	tc := time.NewTicker(time.Second * Conf.TimePill.Timer)
-	for {
-		select {
-		case <-tc.C:
-			RecordTask()
-		}
+	for range tc.C {
+		RecordTask()
 	}
 }
 

@@ -8,22 +8,22 @@ import (
 	_ "github.com/spf13/viper/remote"
 )
 
-type ViperConfig struct {
+type Config struct {
 	Remote   bool
 	Provider string
 	Endpoint string
 	Path     string
 }
 
-func (conf *ViperConfig) Init() {
+func (conf *Config) Init() {
 
 }
 
-func (conf *ViperConfig) Generate() interface{} {
+func (conf *Config) Generate() interface{} {
 	return conf.generate()
 }
 
-func (conf *ViperConfig) generate() *viper.Viper {
+func (conf *Config) generate() *viper.Viper {
 	iconf := initialize.InitConfig.Config()
 	if exist := reflecti.GetFieldValue(iconf, conf); !exist {
 		return nil
@@ -76,7 +76,7 @@ func (conf *ViperConfig) generate() *viper.Viper {
 
 type Viper struct {
 	*viper.Viper
-	Conf ViperConfig
+	Conf Config
 }
 
 func (v *Viper) Config() interface{} {

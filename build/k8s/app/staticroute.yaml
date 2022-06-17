@@ -9,6 +9,7 @@ spec:
       match:
         hosts:
           - static.hoper.xyz
+          - hoper.xyz
         paths:
           - /*
       backends:

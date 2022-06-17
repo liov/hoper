@@ -1,6 +1,7 @@
 package chat
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
 	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
 	httpi "github.com/actliboy/hoper/server/go/lib/utils/net/http"
 	"github.com/actliboy/hoper/server/go/mod/protobuf/user"
@@ -36,11 +37,12 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 	_, err := auth(ctxi, false)
 	if err != nil {
 		(&httpi.ResData{
-			Code:    uint32(user.UserErrLogin),
+			Code:    errorcode.ErrCode(user.UserErrLogin),
 			Message: errRep,
 		}).Response(w)
 		return
 	}
+
 	client := &Client{uuid: uuid.New().String(), conn: conn, send: make(chan []byte), ctx: ctxi}
 
 	manager.register <- client

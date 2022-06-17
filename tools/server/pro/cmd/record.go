@@ -33,7 +33,7 @@ func record() {
 	sd.FailDB.Record("fail_db_")
 	notFoundIds := make([]int, 0)
 	timer := time.NewTicker(pro.Conf.Pro.Timer)
-	for {
+	for range timer.C {
 		tid := pro.Record(id, sd)
 		if tid != "" {
 			if len(notFoundIds) > 0 {
@@ -61,6 +61,5 @@ func record() {
 			}
 		}
 		id++
-		<-timer.C
 	}
 }

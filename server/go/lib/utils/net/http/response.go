@@ -10,16 +10,17 @@ import (
 	"github.com/gin-gonic/gin/render"
 )
 
-type H map[string]interface{}
+type Body map[string]interface{}
 
 type ResData struct {
-	Code    uint32 `json:"code"`
-	Message string `json:"message,omitempty"`
+	Code    errorcode.ErrCode `json:"code"`
+	Message string            `json:"message,omitempty"`
 	//验证码
 	Details interface{} `json:"details,omitempty"`
 }
 
-func (res *ResData) Response(w http.ResponseWriter) {
+func (res *ResData) Response(w http.ResponseWriter, httpcode int) {
+	w.WriteHeader(httpcode)
 	render.WriteJSON(w, res)
 }
 
@@ -29,55 +30,50 @@ func (res *ResData) Response(w http.ResponseWriter) {
 //3.data,msg |code默认SUCCESS
 //4.msg |data默认nil code默认ERROR
 //5.data |msg默认"",code默认SUCCESS
-func Response(w http.ResponseWriter, res ...interface{}) {
-
+func newResData(res ...interface{}) *ResData {
 	var resData ResData
 
 	if len(res) == 1 {
-		resData.Code = uint32(errorcode.Unknown)
+		resData.Code = errorcode.Unknown
 		if msgTmp, ok := res[0].(string); ok {
 			resData.Message = msgTmp
 			resData.Details = nil
 		} else {
 			resData.Details = res[0]
-			resData.Code = uint32(errorcode.SUCCESS)
+			resData.Code = errorcode.SUCCESS
 		}
 	} else if len(res) == 2 {
 		if msgTmp, ok := res[0].(string); ok {
 			resData.Details = nil
 			resData.Message = msgTmp
-			resData.Code = res[1].(uint32)
+			resData.Code = res[1].(errorcode.ErrCode)
 		} else {
 			resData.Details = res[0]
 			resData.Message = res[1].(string)
-			resData.Code = uint32(errorcode.SUCCESS)
+			resData.Code = errorcode.SUCCESS
 		}
 	} else {
 		resData.Details = res[0]
 		resData.Message = res[1].(string)
-		resData.Code = res[2].(uint32)
+		resData.Code = res[2].(errorcode.ErrCode)
 	}
-
-	render.WriteJSON(w, &resData)
+	return &resData
 }
 
-func Res(w http.ResponseWriter, code uint32, msg string, data interface{}) {
-	var resData = ResData{
+func NewResData(code errorcode.ErrCode, msg string, data interface{}) *ResData {
+	return &ResData{
 		Code:    code,
 		Message: msg,
 		Details: data,
 	}
-	render.WriteJSON(w, &resData)
 }
 
-type File struct {
-	File http.File
-	Name string
+func Resp(w http.ResponseWriter, res ...interface{}) {
+	newResData(res...).Response(w, http.StatusOK)
 }
 
-type HttpFile interface {
-	io.Reader
-	Name() string
+func Response(w http.ResponseWriter, code errorcode.ErrCode, msg string, data interface{}) {
+	NewResData(code, msg, data).Response(w, http.StatusOK)
 }
 
 func StreamWriter(w http.ResponseWriter, writer func(w io.Writer) bool) {

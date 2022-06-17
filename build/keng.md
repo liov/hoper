@@ -1426,3 +1426,15 @@ monitoring:
   value: "CLIENT://kafka-nodeport.tools:9092,INTERNAL://:9091,ICLIENT://kafka.tools:9093"
 # rocket broker起不来
 挂载目录没权限 chmod 777 -R data/rocket
+
+# go flag 不生效
+`url := *(flag.String("url", "xxx", "url"))`
+这种写法url只会是默认值
+正确写法
+```go
+var url string
+flag.StringVar(&url,"url", "xxx", "url")
+urlprt:=flag.String("url", "xxx", "url")
+flag.Parse()
+url = *urlprtrl
+```

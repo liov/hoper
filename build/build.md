@@ -3,12 +3,12 @@ set GOOS=linux
 set GOARCH=amd64
 ## go 动态库
 go install -buildmode=shared -linkshared  std
-go build -buildmode=shared -linkshared demo
+go build -trimpath -buildmode=shared -linkshared demo
 ## c abi
-go build -buildmode=c-shared -o libgobblob.so
+go build -trimpath -buildmode=c-shared -o libgobblob.so
 
 ## go编译mod下的包
-go build -o out modname/package
+go build -trimpath -o out modname/package
 ## 带时区信息
 -tags timetzdata
 
@@ -17,12 +17,12 @@ windows需要安装gcc编译器，我用的的MinGW包，解压，把bin目录�
 
 然后执行命令之后发现会报错，windows下go不支持生成动态库。
 
->>go build -buildmode=c-shared -o libgobblob.dll
+>>go build  -trimpath -buildmode=c-shared -o libgobblob.dll
 -buildmode=c-shared not supported on windows/amd64
 这一步折腾了好久，最终在stackoverflow找到了解决方法。[[ https://stackoverflow.com/questions/40573401/building-a-dll-with-go-1-7 | building-a-dll-with-go]]
 
 编译静态库
-go build -buildmode=c-archive -o libgobblob.a
+go build -trimpath -buildmode=c-archive -o libgobblob.a
 gobblob.c文件，然后把go代码中要导出的函数，在gobblob.c中全部调用一遍。
 ```c
 #include <stdio.h>
@@ -55,6 +55,9 @@ go build -ldflags '-linkmode "external" -extldflags "-static -fpic"'
 windows
 go build -ldflags "-linkmode=external -extldflags=-static"
 go build -ldflags "-linkmode=external -extldflags=-static -extldflags=-fpic"
+
+# 相对路径
+go build -trimpath
 ## 显然对于带CGO的交叉编译，CGO_ENABLED必须开启。
 cgo的内部连接和外部连接
 internal linking
@@ -66,7 +69,7 @@ external linking
 而external linking机制则是cmd/link将所有生成的.o都打到一个.o文件中，再将其交给外部的链接器，比如gcc或clang去做最终链接处理。如果此时，我们在cmd/link的参数中传入 -ldflags '-linkmode "external" -extldflags "-static"'，那么gcc/clang将会去做静态链接，将.o中undefined的符号都替换为真正的代码。我们可以通过-linkmode=external来强制cmd/link采用external linker
 
 
-docker run --rm -v /mnt/d/SDK/gopath:/go -v $PWD:/work -w /work/tools/server golang go build -ldflags '-linkmode "external" -extldflags "-static"' -o /work/build/tmp/main /work/tools/server/fileserver.go
+docker run --rm -v /mnt/d/SDK/gopath:/go -v $PWD:/work -w /work/tools/server golang go build  -trimpath -ldflags '-linkmode "external" -extldflags "-static"' -o /work/build/tmp/main /work/tools/server/fileserver.go
 
 # android
 arm64 aarch64-linux-android
