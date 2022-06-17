@@ -21,8 +21,8 @@ nginx_user = root
 #!/usr/bin/env bash
 
 cd go-plugins/session-go
-go build github.com/Kong/go-pluginserver
-go build -o session-go.so -buildmode plugin session_validator.go check_path.go config.go exchange_token.go redis.go
+go build  -trimpath github.com/Kong/go-pluginserver
+go build  -trimpath -o session-go.so -buildmode plugin session_validator.go check_path.go config.go exchange_token.go redis.go
 cd ../../
 
 cat > Dockerfile <<- EOF

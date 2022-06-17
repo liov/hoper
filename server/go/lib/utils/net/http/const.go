@@ -67,6 +67,8 @@ const (
 	HeaderTransferEncoding   = "Transfer-Encoding"
 	HeaderInternal           = "Internal"
 	HeaderTE                 = "TE"
+	LastModified             = "Last-Modified"
+	ContentLength            = "Content-Length"
 )
 
 const (

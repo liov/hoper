@@ -146,7 +146,7 @@ local Pipeline(group, name='', mode='app', workdir='tools/server', sourceFile=''
         local buildfile = '/drone/src/' + workdir + '/protobuf/build';
         if protoc then 'if [ ! -f ' + buildfile + ' ]; then go run ./protobuf; fi' else 'echo',
         'go mod tidy',
-        'go build -o  /drone/src/' + fullname + ' ' + sourceFile,
+        'go build -trimpath -o  /drone/src/' + fullname + ' ' + sourceFile,
       ],
     },
     {

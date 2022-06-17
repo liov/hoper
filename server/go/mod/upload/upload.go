@@ -56,7 +56,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	_, err = auth(ctxi, false)
 	if err != nil {
 		(&httpi.ResData{
-			Code:    uint32(user.UserErrLogin),
+			Code:    errorcode.ErrCode(user.UserErrLogin),
 			Message: errRep,
 		}).Response(w)
 		return
@@ -207,7 +207,7 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 	_, err = auth(ctxi, false)
 	if err != nil {
 		(&httpi.ResData{
-			Code:    uint32(user.UserErrLogin),
+			Code:    errorcode.ErrCode(user.UserErrLogin),
 			Message: errRep,
 		}).Response(w)
 		return

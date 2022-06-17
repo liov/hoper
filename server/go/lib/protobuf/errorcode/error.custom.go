@@ -111,3 +111,11 @@ func (x ErrCode) MarshalJSON() ([]byte, error) {
 func (x ErrCode) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
 	return stringsi.ToBytes(`{"code":` + strconv.Itoa(int(x)) + `,"message":"` + x.String() + `"}`), nil
 }
+
+func Success() *ErrRep {
+	return &ErrRep{Code: SUCCESS, Message: SUCCESS.Error()}
+}
+
+func NewErrReP(code ErrCode, msg string) *ErrRep {
+	return &ErrRep{Code: code, Message: msg}
+}

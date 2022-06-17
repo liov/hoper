@@ -1,4 +1,4 @@
-package watch
+package fsnotify
 
 import (
 	"path/filepath"
@@ -12,10 +12,15 @@ type Watch struct {
 	*fsnotify.Watcher
 	interval time.Duration
 	done     chan struct{}
-	handler  Handler
+	handler  map[string]Callback
 }
 
-type Handler map[string][]func()
+type Callback struct {
+	lastModTime time.Time
+	callbacks   []func()
+}
+
+type Handler map[string]Callback
 
 func New(interval time.Duration) (*Watch, error) {
 	watcher, err := fsnotify.NewWatcher()
@@ -24,10 +29,10 @@ func New(interval time.Duration) (*Watch, error) {
 		interval: interval,
 		done:     make(chan struct{}, 1),
 		//1.map和数组做取舍
-		handler: make(map[string][]func()),
-		//handler:  make(map[string]map[fsnotify.Op]func()),
+		handler: make(map[string]Callback),
+		//Handler:  make(map[string]map[fsnotify.Op]func()),
 		//2.提高时间复杂度，用event做key，然后每次事件循环取值
-		//handler:  make(map[fsnotify.Event]func()),
+		//Handler:  make(map[fsnotify.Event]func()),
 	}
 
 	if err == nil {
@@ -38,21 +43,23 @@ func New(interval time.Duration) (*Watch, error) {
 }
 
 func (w *Watch) Add(name string, op fsnotify.Op, callback func()) error {
-	handle, ok := w.handler[filepath.Clean(name)]
+	name = filepath.Clean(name)
+	handle, ok := w.handler[name]
 	if !ok {
 		err := w.Watcher.Add(name)
 		if err != nil {
 			return err
 		}
-		w.handler[filepath.Clean(name)] = make([]func(), 5, 5)
-		handle = w.handler[filepath.Clean(name)]
+		w.handler[name] = Callback{
+			callbacks: make([]func(), 5, 5),
+		}
+		handle = w.handler[name]
 	}
-	handle[op-1] = callback
+	handle.callbacks[op-1] = callback
 	return nil
 }
 
 func (w *Watch) run() {
-	var last time.Time
 	ev := &fsnotify.Event{}
 OuterLoop:
 	for {
@@ -62,16 +69,16 @@ OuterLoop:
 				return
 			}
 			log.Info("event:", event)
-			now := time.Now()
-			if now.Sub(last) < w.interval && event == *ev {
-				continue
-			}
-			last = now
 			ev = &event
 			if handle, ok := w.handler[event.Name]; ok {
-				for i := range handle {
-					if event.Op&fsnotify.Op(i+1) == fsnotify.Op(i+1) && handle[i] != nil {
-						handle[i]()
+				now := time.Now()
+				if now.Sub(handle.lastModTime) < w.interval && event == *ev {
+					continue
+				}
+				handle.lastModTime = now
+				for i := range handle.callbacks {
+					if event.Op&fsnotify.Op(i+1) == fsnotify.Op(i+1) && handle.callbacks[i] != nil {
+						handle.callbacks[i]()
 					}
 				}
 			}
@@ -84,10 +91,10 @@ OuterLoop:
 			break OuterLoop
 		}
 	}
-	close(w.done)
 }
 
 func (w *Watch) Close() {
 	w.done <- struct{}{}
+	close(w.done)
 	w.Watcher.Close()
 }

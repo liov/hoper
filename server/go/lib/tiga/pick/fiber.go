@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
+	http_fs "github.com/actliboy/hoper/server/go/lib/utils/net/http/fs"
 	"io"
 	"net/http"
 	"reflect"
@@ -45,7 +46,7 @@ func fiberResHandler(ctx *fiber.Ctx, result []reflect.Value) error {
 	if !result[1].IsNil() {
 		return json.NewEncoder(writer).Encode(errorcode.ErrHandle(result[1].Interface()))
 	}
-	if info, ok := result[0].Interface().(*httpi.File); ok {
+	if info, ok := result[0].Interface().(*http_fs.File); ok {
 		header := ctx.Response().Header
 		header.Set(httpi.HeaderContentType, httpi.ContentBinaryHeaderValue)
 		header.Set(httpi.HeaderContentDisposition, "attachment;filename="+info.Name)
