@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func (init *Init) UnmarshalAndSet(bytes []byte) {
+func (init *Init) UnmarshalAndSetV1(bytes []byte) {
 	toml.Unmarshal(bytes, init.conf)
 	init.CloseDao()
 	init.inject()
@@ -68,7 +68,7 @@ func setDao(v reflect.Value, fieldNameDaoMap map[string]interface{}) {
 		}
 		var dao interface{}
 		var ok bool
-		tagSettings := ParseTagSetting(typ.Field(i).Tag.Get("init"), ";")
+		tagSettings := ParseTagSetting(typ.Field(i).Tag.Get(tag), ";")
 		if tagSettings.NotInject {
 			continue
 		}

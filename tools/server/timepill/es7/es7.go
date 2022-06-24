@@ -7,6 +7,7 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"strconv"
 	"tools/timepill"
+	"tools/timepill/es8"
 )
 
 type Dao struct {
@@ -15,13 +16,13 @@ type Dao struct {
 }
 
 func (dao *Dao) CreateIndexEs7() {
-	exists, err := dao.Es.IndexExists(timepill.DiaryIndex).Do(dao.ctx)
+	exists, err := dao.Es.IndexExists(es8.DiaryIndex).Do(dao.ctx)
 	if err != nil {
 		// Handle error
 		panic(err)
 	}
 	if !exists {
-		createIndex, err := dao.Es.CreateIndex(timepill.DiaryIndex).BodyString(timepill.Mapping).Do(dao.ctx)
+		createIndex, err := dao.Es.CreateIndex(es8.DiaryIndex).BodyString(es8.Mapping).Do(dao.ctx)
 		if err != nil {
 			// Handle error
 			panic(err)
@@ -33,7 +34,7 @@ func (dao *Dao) CreateIndexEs7() {
 }
 
 func (dao *Dao) MaxIdEs7() int {
-	rep, _ := dao.Es.Search(timepill.DiaryIndex).Sort("id", false).Size(1).Do(dao.ctx)
+	rep, _ := dao.Es.Search(es8.DiaryIndex).Sort("id", false).Size(1).Do(dao.ctx)
 	if rep.TotalHits() > 0 {
 		id, _ := strconv.Atoi(rep.Hits.Hits[0].Id)
 		return id
@@ -54,7 +55,7 @@ func (dao *Dao) LoadES7(pigeSize int) {
 			Include:    false,
 		},
 	}
-	index := dao.Es.Index().Index(timepill.DiaryIndex)
+	index := dao.Es.Index().Index(es8.DiaryIndex)
 	for {
 		req.PageSize = pigeSize
 		if req.PageSize < 1 {

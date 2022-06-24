@@ -55,7 +55,7 @@ static LOGGER: SimpleLogger = SimpleLogger;
 #[cfg(target_os="windows")]
 fn log_init(){
     log::set_logger(&LOGGER)
-        .map(|()| log::set_max_level(LevelFilter::Info));
+        .map(|()| log::set_max_level(LevelFilter::Info)).expect("log_init failed");
     info!("log init");
 }
 

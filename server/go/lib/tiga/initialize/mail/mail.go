@@ -1,6 +1,7 @@
 package mail
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"net/smtp"
 )
 
@@ -24,7 +25,7 @@ type Mail struct {
 	Conf MailConfig
 }
 
-func (m *Mail) Config() interface{} {
+func (m *Mail) Config() initialize.Generate {
 	return &m.Conf
 }
 

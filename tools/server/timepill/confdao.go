@@ -5,8 +5,6 @@ import (
 	"encoding/base64"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/cache_ristretto"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/db"
-	v8 "github.com/actliboy/hoper/server/go/lib/tiga/initialize/elastic/v8"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/kafka"
 	initializeredis "github.com/actliboy/hoper/server/go/lib/tiga/initialize/redis"
 	"time"
 )
@@ -34,8 +32,6 @@ type dao struct {
 	Redis     initializeredis.Redis
 	Cache     cache_ristretto.Cache
 	UserCache cache_ristretto.Cache
-	Es8       v8.Es `init:"config:elasticsearch8"`
-	Kafka     kafka.KafkaProducer
 }
 
 func (dao *dao) Init() {
@@ -56,8 +52,4 @@ func (dao *dao) DBDao(ctx context.Context) *DBDao {
 
 func (dao *dao) RedisDao(ctx context.Context) *TimepillRedisDao {
 	return &TimepillRedisDao{ctx: ctx, Redis: dao.Redis.Client}
-}
-
-func (dao *dao) EsDao(ctx context.Context) *EsDao {
-	return &EsDao{ctx: ctx, Es8: dao.Es8.Client}
 }

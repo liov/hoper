@@ -6,6 +6,7 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/configor/local"
 	"os"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
@@ -108,11 +109,12 @@ func (init *Init) LoadConfig(notinit ...string) *Init {
 	for i := range notinit {
 		init.ConfigCenterConfig.NoInject = append(init.ConfigCenterConfig.NoInject, strings.ToUpper(notinit[i]))
 	}
-	if init.ConfigCenterConfig.InjectVersion == 1 {
-		init.ConfigCenterConfig.ConfigCenter(init.Module, init.Env != PRODUCT).HandleConfig(init.UnmarshalAndSet)
-	} else {
-		init.ConfigCenterConfig.ConfigCenter(init.Module, init.Env != PRODUCT).HandleConfig(init.UnmarshalAndSetV2)
+	if init.ConfigCenterConfig.InjectVersion == 0 {
+		init.ConfigCenterConfig.InjectVersion = 2
 	}
+	cfgcenter := init.ConfigCenterConfig.ConfigCenter(init.Module, init.Env != PRODUCT)
+
+	cfgcenter.HandleConfig(reflect.ValueOf(init).MethodByName("UnmarshalAndSetV" + strconv.Itoa(int(init.ConfigCenterConfig.InjectVersion))).Interface().(func([]byte)))
 
 	log.Debugf("Configuration:  %#v", init.conf)
 	return init
@@ -134,28 +136,6 @@ func (init *Init) SetInit(conf Config, dao Dao) {
 
 func (init *Init) RegisterDeferFunc(deferf ...func()) {
 	init.deferf = append(init.deferf, deferf...)
-}
-
-type NeedInit interface {
-	Init()
-}
-
-type Config interface {
-	NeedInit
-}
-
-type Dao interface {
-	Close()
-	NeedInit
-}
-
-type DaoField interface {
-	Config() any
-	SetEntity(any)
-}
-
-type Generate interface {
-	Generate() any
 }
 
 func (init *Init) CloseDao() {

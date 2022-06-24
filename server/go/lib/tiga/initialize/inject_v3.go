@@ -1,15 +1,25 @@
 package initialize
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
-	"github.com/actliboy/hoper/server/go/lib/utils/reflect/mtos"
 	"github.com/actliboy/hoper/server/go/lib/utils/slices"
 	"github.com/pelletier/go-toml"
+	"log"
+
 	"reflect"
 	"strings"
 )
 
-func (init *Init) UnmarshalAndSetV2(bytes []byte) {
+type daoField struct {
+	Entity reflect.Value
+	Config reflect.Value
+}
+
+const (
+	EntityField = "ENTITY"
+	ConfigField = "CONFIG"
+)
+
+func (init *Init) UnmarshalAndSetV3(bytes []byte) {
 	tmp := map[string]interface{}{}
 	err := toml.Unmarshal(bytes, &tmp)
 	if err != nil {
@@ -19,52 +29,21 @@ func (init *Init) UnmarshalAndSetV2(bytes []byte) {
 		init.confM[strings.ToUpper(k)] = v
 	}
 	init.CloseDao()
-	init.inject2()
+	init.inject3()
 }
 
 // Customize
-func (init *Init) inject2() {
+func (init *Init) inject3() {
 	setConfig2(init.conf, init.confM)
 	init.conf.Init()
 	if init.dao == nil {
 		return
 	}
-	setDao2(reflect.ValueOf(init.dao).Elem(), init.confM)
+	setDao3(reflect.ValueOf(init.dao).Elem(), init.confM)
 	init.dao.Init()
 }
 
-func setConfig2(conf Config, confM map[string]interface{}) {
-	v := reflect.ValueOf(conf).Elem()
-	for i := 0; i < v.NumField(); i++ {
-		filed := v.Field(i)
-		switch filed.Kind() {
-		case reflect.Ptr:
-			injectconf(filed.Interface(), strings.ToUpper(v.Type().Field(i).Name), confM)
-		case reflect.Struct:
-			injectconf(filed.Addr().Interface(), strings.ToUpper(v.Type().Field(i).Name), confM)
-		}
-	}
-}
-
-func injectconf(conf any, confName string, confM map[string]any) bool {
-	filedv, ok := confM[confName]
-	if ok {
-		config := &mtos.DecoderConfig{
-			Metadata: nil,
-			Squash:   true,
-			Result:   conf,
-		}
-
-		decoder, err := mtos.NewDecoder(config)
-		if err != nil {
-			return false
-		}
-		decoder.Decode(filedv)
-	}
-	return ok
-}
-
-func setDao2(v reflect.Value, confM map[string]any) {
+func setDao3(v reflect.Value, confM map[string]any) {
 
 	if !v.IsValid() {
 		return
@@ -77,12 +56,26 @@ func setDao2(v reflect.Value, confM map[string]any) {
 			if field.Kind() == reflect.Ptr && (!field.IsValid() || field.IsNil()) {
 				field.Set(reflect.New(field.Type().Elem()))
 			}
-			inter := field.Addr().Interface()
+			fieldtyp := field.Type()
 			confName := strings.ToUpper(typ.Field(i).Name)
 			if slices.StringContains(InitConfig.ConfigCenterConfig.NoInject, confName) {
 				continue
 			}
-			if daofield, ok := inter.(DaoField); ok {
+
+			generateTyp := reflect.TypeOf((*Generate)(nil)).Elem()
+			var daoField daoField
+			for j := 0; j < fieldtyp.NumField(); j++ {
+				subfield := fieldtyp.Field(j)
+				if strings.ToUpper(subfield.Name) == EntityField || strings.ToUpper(subfield.Tag.Get(tag)) == EntityField {
+					daoField.Entity = field.Field(j)
+					continue
+				}
+				if strings.ToUpper(subfield.Name) == ConfigField || strings.ToUpper(subfield.Tag.Get(tag)) == ConfigField || subfield.Type.Implements(generateTyp) {
+					daoField.Config = field.Field(j)
+				}
+			}
+
+			if daoField.Config.IsValid() {
 				tagSettings := ParseTagSetting(typ.Field(i).Tag.Get(tag), ";")
 				if tagSettings.NotInject {
 					continue
@@ -90,7 +83,7 @@ func setDao2(v reflect.Value, confM map[string]any) {
 				if tagSettings.ConfigName != "" {
 					confName = tagSettings.ConfigName
 				}
-				conf := daofield.Config()
+				conf := daoField.Config.Addr().Interface()
 				/*
 					如果conf设置的是指针，且没有初始化，会有问题，这里初始化会报不可寻址，似乎不能返回interface{}
 					valueConf := reflect.ValueOf(conf)
@@ -101,7 +94,9 @@ func setDao2(v reflect.Value, confM map[string]any) {
 				if conf1, ok := conf.(NeedInit); ok {
 					conf1.Init()
 				}
-				daofield.SetEntity(conf.Generate())
+				if conf1, ok := conf.(Generate); ok {
+					daoField.Entity.Set(reflect.ValueOf(conf1.Generate()))
+				}
 			}
 		}
 	}
