@@ -23,7 +23,11 @@ func StartRecord() {
 }
 
 func RecordTask() {
-	todayDiaries := ApiService.GetTodayDiaries(1, 20, "")
+	todayDiaries, err := ApiService.GetTodayDiaries(1, 20, "")
+	if err != nil {
+		log.Error(err)
+		return
+	}
 	for _, diary := range todayDiaries.Diaries {
 		if _, ok := Dao.Cache.Get(diary.Id); ok {
 			continue
@@ -42,7 +46,11 @@ func RecordNoteBook(notebookId int) {
 		log.Error(err)
 	}
 	if !exists {
-		notebook := ApiService.GetNotebook(notebookId)
+		notebook, err := ApiService.GetNotebook(notebookId)
+		if err != nil {
+			log.Error(err)
+			return
+		}
 		if notebook != nil && notebook.Id > 0 {
 			Dao.Hoper.Create(notebook)
 		}
@@ -73,16 +81,22 @@ func RecordDiary(diary *Diary) {
 }
 
 func RecordDiaryById(diaryId int) {
-	diary := ApiService.GetDiary(diaryId)
-	if diary != nil {
-		RecordDiary(diary)
+	diary, err := ApiService.GetDiary(diaryId)
+	if err != nil {
+		log.Error(err)
+		return
 	}
+	RecordDiary(diary)
 }
 
 func TodayRecord() {
 	var page = 1
 	for {
-		todayDiaries := ApiService.GetTodayDiaries(page, 20, "")
+		todayDiaries, err := ApiService.GetTodayDiaries(page, 20, "")
+		if err != nil {
+			log.Error(err)
+			break
+		}
 		for _, diary := range todayDiaries.Diaries {
 			RecordNoteBook(diary.NoteBookId)
 			RecordDiary(diary)
@@ -189,14 +203,6 @@ func DownloadUserCover(url string) {
 	}
 }
 
-func RecordByUser() {
-	for {
-		var user User
-		Dao.Hoper.Where(`is_record = ?`, false).First(&user)
-		RecordUserDiaries(&user)
-	}
-}
-
 func DiaryExists(diaryId int) bool {
 	var exists bool
 	err := Dao.Hoper.Raw(`SELECT EXISTS(SELECT id FROM diary WHERE id = ? LIMIT 1)`, diaryId).Row().Scan(&exists)
@@ -225,7 +231,11 @@ func UserExistsByIdName(userId int, userName string) bool {
 }
 
 func RecordUserDiaries(user *User) {
-	notebooks := ApiService.GetUserNotebooks(user.UserId)
+	notebooks, err := ApiService.GetUserNotebooks(user.UserId)
+	if err != nil {
+		log.Error(err)
+		return
+	}
 	for _, nodebook := range notebooks {
 		Dao.Hoper.Create(nodebook)
 		if nodebook.CoverUrl != "" {
@@ -233,7 +243,11 @@ func RecordUserDiaries(user *User) {
 		}
 		var page = 1
 		for {
-			diaries := ApiService.GetNotebookDiaries(nodebook.Id, page, 20)
+			diaries, err := ApiService.GetNotebookDiaries(nodebook.Id, page, 20)
+			if err != nil {
+				log.Error(err)
+				break
+			}
 			for _, diary := range diaries.Items {
 				diary.User = user
 				RecordDiary(diary)
@@ -247,7 +261,10 @@ func RecordUserDiaries(user *User) {
 }
 
 func RecordComment(diaryId int) {
-	comments := ApiService.GetDiaryComments(diaryId)
+	comments, err := ApiService.GetDiaryComments(diaryId)
+	if err != nil {
+		log.Error(err)
+	}
 	for _, comment := range comments {
 		RecordUser(comment.UserId, comment.User.Name)
 		Dao.Hoper.Create(comment)
@@ -255,7 +272,10 @@ func RecordComment(diaryId int) {
 }
 
 func RecordCommentWithJudge(diaryId int) {
-	comments := ApiService.GetDiaryComments(diaryId)
+	comments, err := ApiService.GetDiaryComments(diaryId)
+	if err != nil {
+		log.Error(err)
+	}
 	for _, comment := range comments {
 		if exists, _ := gormi.ExistsById(Dao.Hoper.DB, "comment", uint64(comment.Id)); exists {
 			continue
@@ -278,7 +298,10 @@ func RecordUser(userId int, userName string) {
 }
 
 func RecordUserById(userId int) *User {
-	user := ApiService.GetUserInfo(userId)
+	user, err := ApiService.GetUserInfo(userId)
+	if err != nil {
+		log.Error(err)
+	}
 	if user != nil && user.UserId > 0 {
 		err := Dao.Hoper.Create(user).Error
 		if err != nil {
@@ -339,14 +362,24 @@ func CronCommentRecord() {
 
 func RecordByNoteBookId(id int) *NoteBook {
 	page, pageNum := 1, 20
-	notebook := ApiService.GetNotebook(id)
+	notebook, err := ApiService.GetNotebook(id)
+	if err != nil {
+		log.Error(err)
+	}
 	if notebook.Id == 0 {
 		return notebook
 	}
 	Dao.Hoper.Create(&notebook)
-	user := ApiService.GetUserInfo(notebook.UserId)
+	user, err := ApiService.GetUserInfo(notebook.UserId)
+	if err != nil {
+		log.Error(err)
+	}
 	for {
-		diaries := ApiService.GetNotebookDiaries(id, page, pageNum)
+		diaries, err := ApiService.GetNotebookDiaries(id, page, pageNum)
+		if err != nil {
+			log.Error(err)
+			break
+		}
 		if diaries.Items == nil {
 			break
 		}

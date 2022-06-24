@@ -1438,3 +1438,8 @@ urlprt:=flag.String("url", "xxx", "url")
 flag.Parse()
 url = *urlprtrl
 ```
+
+# hadoop hdfs WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+hdfs dfs -chmod -R 755 / 无效
+
+hadoop fs -chmod -R 777 /
