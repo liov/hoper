@@ -7,10 +7,8 @@ RUN echo -n 'VFppZjIAAAAAAAAAAAAAAAAAAAAAAAADAAAAAwAAAAAAAAAdAAAAAwAAAAyAAAAAoJe
 
 WORKDIR /app
 
-ADD ./${app} /app
+ADD . /app
 
-RUN npm install
+RUN npm i
 
-RUN npm run build
-
-CMD ["npx","nodemon", ${cmd}]
+CMD ["npx","nodemon","src/js/rewrite.js"]

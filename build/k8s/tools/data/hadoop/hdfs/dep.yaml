@@ -1,0 +1,219 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hadoop
+  namespace: tools
+  labels:
+    app: hadoop
+data:
+  core-site.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <?xml-stylesheet type="text/xsl" href="configuration.xsl" rel="external nofollow"  rel="external nofollow" ?>
+    <configuration>
+        <property>
+            <name>fs.defaultFS</name>
+            <value>hdfs://hadoop.tools:9000</value>
+        </property>
+        <property>
+            <name>dfs.namenode.rpc-bind-host</name>
+            <value>0.0.0.0</value>
+        </property>
+    </configuration>
+  hdfs-site.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <?xml-stylesheet type="text/xsl" href="configuration.xsl" rel="external nofollow"  rel="external nofollow" ?>
+    <configuration>
+        <property>
+            <name>dfs.namenode.name.dir</name>
+            <value>file:///opt/hadoop/hdfs/name</value>
+        </property>
+        <property>
+            <name>dfs.datanode.data.dir</name>
+            <value>file:///opt/hadoop/hdfs/data</value>
+        </property>
+        <property>
+            <name>dfs.namenode.datanode.registration.ip-hostname-check</name>
+            <value>false</value>
+        </property>
+        <property>
+            <name>dfs.replication</name>
+            <value>1</value>
+        </property>
+    </configuration>
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hadoop-env
+  namespace: tools
+  labels:
+    app: hadoop
+data:
+  HDFS_DATANODE_USER: root
+  HDFS_NAMENODE_USER: root
+  HDFS_SECONDARYNAMENODE_USER: root
+  JAVA_HOME: /usr/local/openjdk-11
+  HADOOP_OS_TYPE: ${HADOOP_OS_TYPE:-$(uname -s)}
+  HADOOP_OPTS: "-Djava.library.path=${HADOOP_HOME}/lib/native"
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: hadoop
+  namespace: tools
+spec:
+  selector:
+    app: hadoop-namenode
+  type: NodePort
+  ports:
+    - name: rpc
+      port: 9000
+      targetPort: 9000
+      nodePort: 9000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hadoop-http
+  namespace: tools
+spec:
+  selector:
+    app: hadoop-namenode
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 9870
+      targetPort: 9870
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hadoop-datanode
+  namespace: tools
+spec:
+  selector:
+    app: hadoop-datanode
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 9871
+      targetPort: 9864
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hadoop-namenode
+  namespace: tools
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hadoop-namenode
+  template:
+    metadata:
+      labels:
+        app: hadoop-namenode
+    spec:
+      containers:
+        - name: hadoop
+          image: jybl/hadoop
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: site
+              mountPath: /opt/hadoop/etc/hadoop/core-site.xml
+              subPath: core-site.xml
+            - name: site
+              mountPath: /opt/hadoop/etc/hadoop/hdfs-site.xml
+              subPath: hdfs-site.xml
+            - name: data
+              mountPath: /opt/hadoop/hdfs/
+              subPath: hdfs
+            - name: data
+              mountPath: /opt/hadoop/logs/
+              subPath: logs
+          env:
+            - name: HADOOP_NODE_TYPE
+              value: namenode
+          envFrom:
+            - configMapRef:
+                name: hadoop-env
+      volumes:
+        - name: site
+          configMap:
+            name: hadoop
+        - name: data
+          hostPath:
+            path: /data/hadoop
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-hadoop-namenode
+  namespace: tools
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 256Gi
+  storageClassName: "managed-nfs-storage"
+# datanode pod
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: hadoop-datanode
+  namespace: tools
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hadoop-datanode
+  serviceName: hadoop-datanode
+  template:
+    metadata:
+      labels:
+        app: hadoop-datanode
+    spec:
+      containers:
+        - name: hadoop
+          image: jybl/hadoop
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: HADOOP_NODE_TYPE
+              value: datanode
+          envFrom:
+            - configMapRef:
+                name: hadoop-env
+          volumeMounts:
+            - name: site
+              mountPath: /opt/hadoop/etc/hadoop/core-site.xml
+              subPath: core-site.xml
+            - name: site
+              mountPath: /opt/hadoop/etc/hadoop/hdfs-site.xml
+              subPath: hdfs-site.xml
+            - name: data
+              mountPath: /opt/hadoop/hdfs/
+              subPath: hdfs
+            - name: data
+              mountPath: /opt/hadoop/logs/
+              subPath: logs
+      volumes:
+        - name: site
+          configMap:
+            name: hadoop
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        namespace: tools
+      spec:
+        accessModes:
+          - ReadWriteMany
+        resources:
+          requests:
+            storage: 256Gi
+        storageClassName: "managed-nfs-storage"

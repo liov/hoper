@@ -3,12 +3,10 @@ package main
 import (
 	"log"
 	"os"
-
-	"tools/pro"
 )
 
 func main() {
-	del(pro.CommonDir)
+	del(por.CommonDir)
 }
 
 func del(dir string) {
@@ -23,7 +21,7 @@ func del(dir string) {
 	}
 	for i := range fileInfos {
 		if fileInfos[i].IsDir() {
-			del(dir + pro.Sep + fileInfos[i].Name())
+			del(dir + por.Sep + fileInfos[i].Name())
 		}
 	}
 }

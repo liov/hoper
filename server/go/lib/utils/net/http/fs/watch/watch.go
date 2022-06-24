@@ -50,6 +50,9 @@ func (w *Watch) Remove(url string) error {
 }
 
 func (w *Watch) run() {
+	for url, callback := range w.handler {
+		callback.Do(url)
+	}
 	timer := time.NewTicker(w.interval)
 OuterLoop:
 	for {

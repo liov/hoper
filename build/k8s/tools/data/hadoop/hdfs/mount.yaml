@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hadoop
+  namespace: tools
+spec:
+  selector:
+    app: hadoop
+  type: NodePort
+  ports:
+    - name: rpc
+      port: 9000
+      targetPort: 9000
+      nodePort: 9000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hadoop-http
+  namespace: tools
+spec:
+  selector:
+    app: hadoop
+  type: ClusterIP
+  ports:
+    - name: namenode
+      port: 9870
+      targetPort: 9870
+    - name: datanode
+      port: 9864
+      targetPort: 9864
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hadoop
+  namespace: tools
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hadoop
+  template:
+    metadata:
+      labels:
+        app: hadoop
+    spec:
+      hostname: host
+      containers:
+        - name: namenode
+          image: jybl/hadoop
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: site
+              mountPath: /opt/hadoop/etc/hadoop/core-site.xml
+              subPath: core-site.xml
+            - name: site
+              mountPath: /opt/hadoop/etc/hadoop/hdfs-site.xml
+              subPath: hdfs-site.xml
+            - name: data
+              mountPath: /opt/hadoop/hdfs/
+              subPath: hdfs
+            - name: data
+              mountPath: /opt/hadoop/logs/
+              subPath: logs
+          env:
+            - name: HADOOP_NODE_TYPE
+              value: namenode
+          envFrom:
+            - configMapRef:
+                name: hadoop-env
+        - name: datanode
+          image: jybl/hadoop
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: HADOOP_NODE_TYPE
+              value: datanode
+          envFrom:
+            - configMapRef:
+                name: hadoop-env
+          volumeMounts:
+            - name: site
+              mountPath: /opt/hadoop/etc/hadoop/core-site.xml
+              subPath: core-site.xml
+            - name: site
+              mountPath: /opt/hadoop/etc/hadoop/hdfs-site.xml
+              subPath: hdfs-site.xml
+            - name: data
+              mountPath: /opt/hadoop/hdfs/
+              subPath: hdfs
+            - name: data
+              mountPath: /opt/hadoop/logs/
+              subPath: logs
+      volumes:
+        - name: site
+          configMap:
+            name: hadoop
+        - name: data
+          hostPath:
+            path: /data/hadoop
+            type: DirectoryOrCreate
