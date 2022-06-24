@@ -1,4 +1,4 @@
-package timepill
+package es8
 
 import (
 	"bytes"
@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"tools/timepill"
 )
 
 const DiaryIndex = "diary"
@@ -72,7 +73,7 @@ type IndexDiary struct {
 	Created         string `json:"created" gorm:"timestamptz(6);default:'0001-01-01 00:00:00';index"`
 }
 
-func (diary *Diary) DiaryIndex() *IndexDiary {
+func NewIndexDiary(diary *timepill.Diary) *IndexDiary {
 
 	return &IndexDiary{
 		Id:              diary.Id,
@@ -87,6 +88,10 @@ func (diary *Diary) DiaryIndex() *IndexDiary {
 type EsDao struct {
 	ctx context.Context
 	Es8 *elasticsearch.Client
+}
+
+func NewEsDao(ctx context.Context, es8 *elasticsearch.Client) *EsDao {
+	return &EsDao{ctx: ctx, Es8: es8}
 }
 
 func (dao *EsDao) MaxIdEs8() int {
@@ -110,9 +115,9 @@ func (dao *EsDao) MaxIdEs8() int {
 }
 
 func (dao *EsDao) LoadEs8() {
-	req := &ListReq{
+	req := &timepill.ListReq{
 		ListReq: request.ListReq{
-			PageReq: request.PageReq{PageNo: 1, PageSize: Conf.TimePill.PageSize},
+			PageReq: request.PageReq{PageNo: 1, PageSize: timepill.Conf.TimePill.PageSize},
 			SortReq: request.SortReq{SortField: "id", SortType: request.SortTypeASC},
 		},
 		RangeReq: request.RangeReq{
@@ -124,22 +129,22 @@ func (dao *EsDao) LoadEs8() {
 	}
 
 	for {
-		req.PageSize = Conf.TimePill.PageSize
+		req.PageSize = timepill.Conf.TimePill.PageSize
 		if req.PageSize < 1 {
 			req.PageSize = 10
 		}
-		diaries, err := Dao.DBDao(dao.ctx).ListDB(req)
+		diaries, err := timepill.Dao.DBDao(dao.ctx).ListDB(req)
 		if err != nil {
 			log.Error(err)
 		}
 		for i, diary := range diaries {
-			body, _ := json.Marshal(diary.DiaryIndex())
+			body, _ := json.Marshal(NewIndexDiary(diary))
 			esreq := esapi.CreateRequest{
 				Index:      DiaryIndex,
 				DocumentID: strconv.Itoa(diary.Id),
 				Body:       bytes.NewReader(body),
 			}
-			resp, err := esreq.Do(dao.ctx, Dao.Es8)
+			resp, err := esreq.Do(dao.ctx, dao.Es8)
 			if err != nil {
 				// Handle error
 				log.Error(err)
@@ -156,7 +161,7 @@ func (dao *EsDao) LoadEs8() {
 	}
 }
 
-func (dao *dao) CreateIndexEs8() {
+func (dao *EsDao) CreateIndexEs8() {
 	resp, err := dao.Es8.Indices.Exists([]string{DiaryIndex})
 	if err != nil {
 		// Handle error

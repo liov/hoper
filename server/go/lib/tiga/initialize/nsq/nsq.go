@@ -1,21 +1,20 @@
 package nsq
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"log"
 
 	"github.com/nsqio/go-nsq"
 )
 
-type NsqProducerConfig struct {
-	Addr    string
-	Topic   string
-	Channel string
+type ProducerConfig struct {
+	Addr string
+	*nsq.Config
 }
 
-func (conf *NsqProducerConfig) generate() *nsq.Producer {
-	cfg := nsq.NewConfig()
+func (conf *ProducerConfig) generate() *nsq.Producer {
 
-	producer, err := nsq.NewProducer(conf.Addr, cfg)
+	producer, err := nsq.NewProducer(conf.Addr, conf.Config)
 	if err != nil {
 		panic(err)
 	}
@@ -23,21 +22,20 @@ func (conf *NsqProducerConfig) generate() *nsq.Producer {
 	return producer
 }
 
-func (conf *NsqProducerConfig) Generate() interface{} {
+func (conf *ProducerConfig) Generate() interface{} {
 	return conf.generate()
 }
 
-type NsqConsumerConfig struct {
+type ConsumerConfig struct {
 	Addr    string
-	Model   int8 //0生产者，1消费者，2所有
 	Topic   string
 	Channel string
+	*nsq.Config
 }
 
-func (conf *NsqConsumerConfig) generate() *nsq.Consumer {
-	cfg := nsq.NewConfig()
+func (conf *ConsumerConfig) generate() *nsq.Consumer {
 
-	customer, err := nsq.NewConsumer(conf.Topic, conf.Channel, cfg)
+	customer, err := nsq.NewConsumer(conf.Topic, conf.Channel, conf.Config)
 	if err != nil {
 		panic(err)
 	}
@@ -63,16 +61,17 @@ func (conf *NsqConsumerConfig) generate() *nsq.Consumer {
 
 }
 
-func (conf *NsqConsumerConfig) Generate() interface{} {
+func (conf *ConsumerConfig) Generate() interface{} {
 	return conf.generate()
 }
 
 type Producer struct {
 	*nsq.Producer
-	Conf NsqProducerConfig
+	Conf ProducerConfig
 }
 
-func (p *Producer) Config() interface{} {
+func (p *Producer) Config() initialize.Generate {
+	p.Conf.Config = nsq.NewConfig()
 	return &p.Conf
 }
 
@@ -84,10 +83,11 @@ func (p *Producer) SetEntity(entity interface{}) {
 
 type Consumer struct {
 	*nsq.Consumer
-	Conf NsqProducerConfig
+	Conf ProducerConfig
 }
 
 func (c *Consumer) Config() interface{} {
+	c.Conf.Config = nsq.NewConfig()
 	return &c.Conf
 }
 

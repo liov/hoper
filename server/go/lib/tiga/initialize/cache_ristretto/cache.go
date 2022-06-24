@@ -1,6 +1,7 @@
 package cache_ristretto
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"github.com/dgraph-io/ristretto"
 )
 
@@ -39,7 +40,7 @@ type Cache struct {
 	Conf CacheConfig
 }
 
-func (c *Cache) Config() interface{} {
+func (c *Cache) Config() initialize.Generate {
 	return &c.Conf
 }
 

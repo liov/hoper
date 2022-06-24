@@ -40,7 +40,7 @@ class HomeView extends StatelessWidget {
           return splash;
         } else {
           final app = App();
-          WidgetsBinding.instance!.addObserver(app);
+          WidgetsBinding.instance.addObserver(app);
           // Loading is done, return the app:
           return app;
         }

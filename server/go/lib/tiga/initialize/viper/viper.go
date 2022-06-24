@@ -79,7 +79,7 @@ type Viper struct {
 	Conf Config
 }
 
-func (v *Viper) Config() interface{} {
+func (v *Viper) Config() initialize.Generate {
 	return &v.Conf
 }
 

@@ -1,6 +1,7 @@
 package badger
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/dgraph-io/badger/v3"
 )
@@ -27,7 +28,7 @@ type Consumer struct {
 	Conf BadgerDBConfig
 }
 
-func (b *Consumer) Config() interface{} {
+func (b *Consumer) Config() initialize.Generate {
 	return &b.Conf
 }
 

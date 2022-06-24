@@ -2,6 +2,7 @@ package kafka
 
 import (
 	"github.com/Shopify/sarama"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 )
 
@@ -57,7 +58,7 @@ type KafkaProducer struct {
 	Conf KafkaProducerConfig
 }
 
-func (k *KafkaProducer) Config() interface{} {
+func (k *KafkaProducer) Config() initialize.Generate {
 	k.Conf.Config = sarama.NewConfig()
 	k.Conf.Config.Version = sarama.V3_1_0_0
 	return &k.Conf
@@ -74,7 +75,7 @@ type KafkaConsumer struct {
 	Conf KafkaConsumerConfig
 }
 
-func (k *KafkaConsumer) Config() interface{} {
+func (k *KafkaConsumer) Config() initialize.Generate {
 	k.Conf.Config = sarama.NewConfig()
 	k.Conf.Config.Version = sarama.V3_1_0_0
 	return &k.Conf
