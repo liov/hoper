@@ -1,6 +1,7 @@
 package v8
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/auth"
 	"github.com/elastic/go-elasticsearch/v8"
@@ -31,7 +32,7 @@ type Es struct {
 	Conf ElasticConfig
 }
 
-func (es *Es) Config() interface{} {
+func (es *Es) Config() initialize.Generate {
 	return &es.Conf
 }
 
@@ -39,4 +40,9 @@ func (es *Es) SetEntity(entity interface{}) {
 	if client, ok := entity.(*elasticsearch.Client); ok {
 		es.Client = client
 	}
+}
+
+type Esv2 struct {
+	*elasticsearch.Client `init:"entity"`
+	Config                ElasticConfig
 }

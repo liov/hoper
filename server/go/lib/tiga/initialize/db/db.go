@@ -105,7 +105,7 @@ type DB struct {
 	Conf DatabaseConfig
 }
 
-func (db *DB) Config() interface{} {
+func (db *DB) Config() initialize.Generate {
 	return &db.Conf
 }
 

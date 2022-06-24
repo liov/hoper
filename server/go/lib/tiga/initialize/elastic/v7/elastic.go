@@ -1,6 +1,7 @@
 package v7
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/olivere/elastic/v7"
 	"github.com/olivere/elastic/v7/config"
@@ -26,7 +27,7 @@ type Es struct {
 	Conf ElasticConfig
 }
 
-func (es *Es) Config() interface{} {
+func (es *Es) Config() initialize.Generate {
 	return &es.Conf
 }
 

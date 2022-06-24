@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -567,7 +566,8 @@ class _CameraExampleState extends State<CameraExample>
 
   void showInSnackBar(String message) {
     // ignore: deprecated_member_use
-    _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   void onViewFinderTap(TapDownDetails details, BoxConstraints constraints) {

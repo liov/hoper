@@ -67,7 +67,7 @@ dependencies:
   animated_text_kit: ^4.2.1
   auto_size_text: ^3.0.0
   syncfusion_flutter_charts: ^19.2.48
-  camera: ^0.9.4+5
+  camera: ^0.9.8+1
   qr_flutter: ^4.0.0
   image_picker: ^0.8.4+4
   file_picker: ^4.2.1

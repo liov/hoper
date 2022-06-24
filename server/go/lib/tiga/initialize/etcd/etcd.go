@@ -24,7 +24,7 @@ type Eecd struct {
 	Conf EtcdConfig
 }
 
-func (e *Eecd) Config() interface{} {
+func (e *Eecd) Config() initialize.Generate {
 	return &e.Conf
 }
 

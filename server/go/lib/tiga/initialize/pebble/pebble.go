@@ -1,6 +1,7 @@
 package pebble
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/cockroachdb/pebble"
 )
@@ -26,7 +27,7 @@ type PebbleDB struct {
 	Conf PebbleDBConfig
 }
 
-func (p *PebbleDB) Config() interface{} {
+func (p *PebbleDB) Config() initialize.Generate {
 	return &p.Conf
 }
 

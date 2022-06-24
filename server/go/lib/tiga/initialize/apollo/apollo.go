@@ -1,6 +1,7 @@
 package apollo
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/configor/apollo"
 )
 
@@ -37,7 +38,7 @@ type ApolloClient struct {
 	Conf ApolloConfig
 }
 
-func (a *ApolloClient) Config() interface{} {
+func (a *ApolloClient) Config() initialize.Generate {
 	return &a.Conf
 }
 

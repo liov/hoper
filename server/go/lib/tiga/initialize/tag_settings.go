@@ -5,6 +5,7 @@ import (
 )
 
 const (
+	tag        = "init"
 	exprTag    = "expr"
 	configTag  = "config"
 	ConfigName = "CONFIG"
