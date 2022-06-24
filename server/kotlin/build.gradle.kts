@@ -51,7 +51,7 @@ subprojects {
     }
 
     dependencies {
-        implementation("org.apache.logging.log4j:log4j-core:2.12.1")
+        implementation("org.apache.logging.log4j:log4j-core:2.15.0")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
         implementation(kotlin("reflect"))
         implementation(kotlin("stdlib"))
@@ -73,7 +73,7 @@ subprojects {
             dependency("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
             dependency("io.projectreactor.kotlin:reactor-kotlin-extensions:1.1.3")
             dependency("io.projectreactor:reactor-test:3.3.5.RELEASE")
-            dependency("org.apache.logging.log4j:log4j-core:2.13.3")
+            dependency("org.apache.logging.log4j:log4j-core:2.15.0")
             dependency("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.0")
         }
     }
