@@ -96,42 +96,13 @@ local Pipeline(group, name='', mode='app', workdir='tools/server', sourceFile=''
   },
   steps: [
     {
-      name: 'clone',
-      image: 'alpine/git',
-      volumes: [
-        {
-          name: 'codedir',
-          path: '/code/',
-        },
-      ],
-      commands: [
-        "git config --global http.proxy 'socks5://proxy.tools:1080'",
-        "git config --global https.proxy 'socks5://proxy.tools:1080'",
-        //"git clone ${DRONE_GIT_HTTP_URL} .",
-        'cd /code',
-        'git tag -l | xargs git tag -d',
-        'git fetch --all && git reset --hard origin/master && git pull',
-        'cd /drone/src/',
-        'git clone /code .',
-        'git checkout -b deploy $DRONE_COMMIT_REF',
-        local buildfile = '/code/' + workdir + '/protobuf/build';
-        if protoc then 'if [ -f ' + buildfile + ' ]; then cp -r /code/' + workdir + '/protobuf  /drone/src/' + workdir + '; fi' else 'echo',
-        "sed -i 's/$${app}/" + fullname + "/g' " + dockerfilepath,
-        local cmd = ['./' + fullname] + opts;
-        "sed -i 's#$${cmd}#" + std.join(' ,', ['"' + opt + '"' for opt in cmd]) + "#g' " + dockerfilepath,
-        "sed -i 's/$${app}/" + fullname + "/g' " + deppath,
-        "sed -i 's/$${group}/" + group + "/g' " + deppath,
-        "sed -i 's#$${datadir}#" + datadir + "#g' " + deppath,
-        "sed -i 's#$${image}#jybl/" + fullname + ':' + tag + "#g' " + deppath,
-        if mode == 'cronjob' then "sed -i 's#$${schedule}#" + schedule + "#g' " + deppath else 'echo',
-        local bakdir = '/code/deploy/' + mode + '/';
-        'if [ ! -d ' + bakdir + ' ];then mkdir -p ' + bakdir + '; fi && cp -r ' + deppath + ' ' + bakdir + fullname + '-' + tag + '.yaml',
-      ],
-    },
-    {
-      name: 'go build',
+      name: 'clone && build',
       image: if protoc then 'jybl/goprotoc' else 'golang:1.18.1',
       volumes: [
+        {
+            name: 'codedir',
+            path: '/code/',
+        },
         {
           name: 'gopath',
           path: '/go/',
@@ -141,6 +112,30 @@ local Pipeline(group, name='', mode='app', workdir='tools/server', sourceFile=''
         GOPROXY: 'https://goproxy.io,https://goproxy.cn,direct',
       },
       commands: [
+      // git clone
+       "git config --global http.proxy 'socks5://proxy.tools:1080'",
+      "git config --global https.proxy 'socks5://proxy.tools:1080'",
+      //"git clone ${DRONE_GIT_HTTP_URL} .",
+      'cd /code',
+      'git tag -l | xargs git tag -d',
+      'git fetch --all && git reset --hard origin/master && git pull',
+      'cd /drone/src/',
+      'git clone /code .',
+      'git checkout -b deploy $DRONE_COMMIT_REF',
+       // edit Dockerfile && deploy file
+      local buildfile = '/code/' + workdir + '/protobuf/build';
+      if protoc then 'if [ -f ' + buildfile + ' ]; then cp -r /code/' + workdir + '/protobuf  /drone/src/' + workdir + '; fi' else 'echo',
+      "sed -i 's/$${app}/" + fullname + "/g' " + dockerfilepath,
+      local cmd = ['./' + fullname] + opts;
+      "sed -i 's#$${cmd}#" + std.join(' ,', ['"' + opt + '"' for opt in cmd]) + "#g' " + dockerfilepath,
+      "sed -i 's/$${app}/" + fullname + "/g' " + deppath,
+      "sed -i 's/$${group}/" + group + "/g' " + deppath,
+      "sed -i 's#$${datadir}#" + datadir + "#g' " + deppath,
+      "sed -i 's#$${image}#jybl/" + fullname + ':' + tag + "#g' " + deppath,
+      if mode == 'cronjob' then "sed -i 's#$${schedule}#" + schedule + "#g' " + deppath else 'echo',
+      local bakdir = '/code/deploy/' + mode + '/';
+      'if [ ! -d ' + bakdir + ' ];then mkdir -p ' + bakdir + '; fi && cp -r ' + deppath + ' ' + bakdir + fullname + '-' + tag + '.yaml',
+      // go build
         'cd ' + workdir,
         'go mod download',
         local buildfile = '/drone/src/' + workdir + '/protobuf/build';
