@@ -1,78 +1,84 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mysql-env
+  name: oceanbase-env
   namespace: tools
   labels:
-    app: mysql
+    app: oceanbase
 data:
   # 这三个是配套的，这个用户有这个数据库的超级用户访问权限，不需要设置
-  MYSQL_DATABASE: mysql
-  MYSQL_USER: mysql
-  MYSQL_PASSWORD: "123456"
-  MYSQL_ROOT_PASSWORD: "123456"
+  MINI_MODE: "1"
+  OB_ROOT_PASSWORD: "xxxx"
+  OB_DATA_DIR: "/data"
   TZ: Asia/Shanghai
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mysql
+  name: oceanbase
   namespace: tools
   labels:
-    app: mysql
+    app: oceanbase
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mysql
+      app: oceanbase
   template:
     metadata:
       labels:
-        app: mysql
+        app: oceanbase
     spec:
       containers:
-        - name: mysql
-          image: mysql:8.0.29
+        - name: oceanbase
+          image: oceanbase/oceanbase-ce
           resources:
             requests:
-              memory: "100Mi"
+              memory: "50Mi"
             limits:
-              memory: "1Gi"
+              memory: "10Gi"
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 3306
+            - containerPort: 2881
+            - containerPort: 2882
           envFrom:
-            - configMapRef:
-                name: mysql-env
+             - configMapRef:
+                 name: oceanbase-env
           volumeMounts:
             - mountPath: /data
-              name: mysqldb
-            - mountPath: /etc/mysql/conf.d
+              name: oceanbasedb
+            - mountPath: /etc/oceanbase/conf.d
               name: config
       volumes:
-        - name: mysqldb
+        - name: oceanbasedb
           hostPath:
-            path: /data/mysql
+            path: /data/oceanbase
             type: DirectoryOrCreate
         - name: config
           configMap:
-            name: mysql
+            name: oceanbase
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql
+  name: oceanbase
   namespace: tools
   labels:
-    app: mysql
+    app: oceanbase
 spec:
   type: NodePort
   ports:
-    - port: 3306
-      targetPort: 3306
+    - port: 2881
+      targetPort: 2881
       protocol: TCP
-      nodePort: 3306
+      name: mysql
+      nodePort: 2881
+    - port: 2882
+      targetPort: 2882
+      protocol: TCP
+      name: rpc
+      nodePort: 2882
   selector:
-    app: mysql
+    app: oceanbase
 

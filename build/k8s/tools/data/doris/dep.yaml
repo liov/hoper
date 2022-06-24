@@ -1,0 +1,116 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: doris
+  namespace: tools
+  labels:
+    app: doris
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: doris
+  template:
+    metadata:
+      labels:
+        app: doris
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - name: be
+          env:
+            - name: BE_IPADDRESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          image: jybl/doris
+          command: [ "/bin/bash", "-ce", "/opt/be/bin/start_be.sh --daemon;tail -f /dev/null" ]
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8040
+            initialDelaySeconds: 300
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          ports:
+            - containerPort: 9060
+              protocol: TCP
+            - containerPort: 9070
+              protocol: TCP
+            - containerPort: 8040
+              protocol: TCP
+            - containerPort: 9050
+              protocol: TCP
+            - containerPort: 8060
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 2
+              memory: 2G
+            requests:
+              cpu: 200m
+              memory: 1G
+          volumeMounts:
+            - mountPath: /opt/be/storage
+              name: data
+              subPath: be
+        - name: fe
+          env:
+            - name: FE_IPADDRESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          image: jybl/doris
+          command: [ "/bin/bash", "-ce", "/opt/fe/bin/start_fe.sh --daemon;tail -f /dev/null" ]
+          livenessProbe:
+            httpGet:
+              path: /api/bootstrap
+              port: 8030
+            initialDelaySeconds: 300
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          ports:
+            - containerPort: 8030
+              protocol: TCP
+            - containerPort: 9020
+              protocol: TCP
+            - containerPort: 9030
+              protocol: TCP
+            - containerPort: 9010
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 2
+              memory: 4G
+            requests:
+              cpu: 200m
+              memory: 1G
+          volumeMounts:
+            - mountPath: /opt/fe/doris-meta
+              name: data
+              subPath: fe
+      volumes:
+        - name: data
+          hostPath:
+            path: /data/doris
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: doris
+  namespace: tools
+  labels:
+    app: doris
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8030
+      name: http
+      protocol: TCP
+      targetPort: 4161
+  selector:
+    app: doris
