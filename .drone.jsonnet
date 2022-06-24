@@ -1,6 +1,6 @@
 // local mode(mode="app") = if mode == "app" then "app" else "node";
 local tpldir = './build/k8s/app/';
-local codedir = '/home/new/dev/code/hoper/';
+local codedir = '/home/new/code/hoper/';
 
 local kubectl(deplocal, cmd) = if deplocal then {
   name: 'deploy',
@@ -41,7 +41,7 @@ local kubectl(deplocal, cmd) = if deplocal then {
 local Pipeline(group, name='', mode='app', workdir='tools/server', sourceFile='', protoc=false, opts=[], deplocal=false, schedule='') = {
   local fullname = if name == '' then group else group + '-' + name,
   local tag = '${DRONE_TAG##' + fullname + '-v}',
-  local datadir = if deplocal then '/home/new/dev/data' else '/data',
+  local datadir = if deplocal then '/home/new/data' else '/data',
   local dockerfilepath = tpldir + mode + '/Dockerfile',
   local deppath = tpldir + mode + '/deployment.yaml',
   kind: 'pipeline',
