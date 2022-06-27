@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: influxdb-env
+  namespace: tools
+  labels:
+    app: influxdb
+data:
+  DOCKER_INFLUXDB_INIT_MODE: "setup" # setup/upgrade
+  DOCKER_INFLUXDB_INIT_USERNAME: influxdb
+  DOCKER_INFLUXDB_INIT_PASSWORD: "123456"
+  DOCKER_INFLUXDB_INIT_ORG: influxdb
+  TZ: Asia/Shanghai
+  DOCKER_INFLUXDB_INIT_BUCKET: initbucket
+  DOCKER_INFLUXDB_INIT_RETENTION: 1w
+  DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "token"
+  INFLUXD_BOLT_PATH: /data/influxdb/influxdb.bolt
+  INFLUXD_NO_TASKS: "true"
+  INFLUXD_STORAGE_WAL_FSYNC_DELAY: "15m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb
+  namespace: tools
+  labels:
+    app: influxdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: influxdb
+  template:
+    metadata:
+      labels:
+        app: influxdb
+    spec:
+      containers:
+        - name: influxdb
+          image: influxdb:2.3
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: influxdb-env
+          volumeMounts:
+            - mountPath: /etc/influxdb2
+              name: config
+            - mountPath: /var/lib/influxdb2
+              name: db
+      volumes:
+        - name: config
+          configMap:
+            name: config
+        - name: db
+          hostPath:
+            path: /data/influxdb2
+            type: DirectoryOrCreate
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: influxdb
+  namespace: tools
+  labels:
+    app: influxdb
+spec:
+  type: NodePort
+  ports:
+    - port: 8086
+      targetPort: 8086
+      protocol: TCP
+      nodePort: 8086
+  selector:
+    app: influxdb
+

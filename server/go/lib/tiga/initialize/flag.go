@@ -20,7 +20,6 @@ func flaginit() {
 	}
 	flag.StringVar(&InitConfig.Env, "env", DEVELOPMENT, "环境")
 
-	InitConfig.ConfUrl = "./config.toml"
 	if _, err := os.Stat(InitConfig.ConfUrl); os.IsNotExist(err) {
 		InitConfig.ConfUrl = "./config/config.toml"
 	}

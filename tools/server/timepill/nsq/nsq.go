@@ -2,13 +2,13 @@ package nsq
 
 import (
 	"context"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/nsq"
+	insq "github.com/actliboy/hoper/server/go/lib/tiga/initialize/nsq"
 )
 
 type Dao struct {
 	ctx  context.Context
-	NsqP *nsq.Producer
-	NsqC *nsq.Consumer
+	NsqP *insq.Producer
+	NsqC *insq.Consumer
 }
 
 func (dao *Dao) Send(topic string, msg []byte) error {

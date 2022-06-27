@@ -22,6 +22,7 @@ data:
     jobmanager.memory.process.size: 1600m
     taskmanager.memory.process.size: 1728m
     parallelism.default: 2
+    fs.default-scheme: hdfs://hadoop.tools:9000/
     # reactive-mode
     # scheduler-mode: reactive
     # execution.checkpointing.interval: 10s

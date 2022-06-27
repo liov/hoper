@@ -24,6 +24,14 @@ spec:
             limits:
               memory: "200Mi"
           imagePullPolicy: IfNotPresent
+          command: ["npx", "nodemon", "/app/src/sripts/rewrite.js"]
+          volumeMounts:
+            - mountPath: /app/src/sripts
+              name: app
+      volumes:
+        - name: app
+          configMap:
+            name: rewrite # hoper/tools/script/src/js/rewrite.js
 
 ---
 apiVersion: v1
