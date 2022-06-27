@@ -12,6 +12,22 @@ type ProducerConfig struct {
 	*nsq.Config
 }
 
+type Producer struct {
+	*nsq.Producer `init:"entity"`
+	Conf          ProducerConfig `init:"config"`
+}
+
+func (p *Producer) Config() initialize.Generate {
+	p.Conf.Config = nsq.NewConfig()
+	return &p.Conf
+}
+
+func (p *Producer) SetEntity(entity interface{}) {
+	if client, ok := entity.(*nsq.Producer); ok {
+		p.Producer = client
+	}
+}
+
 func (conf *ProducerConfig) generate() *nsq.Producer {
 
 	producer, err := nsq.NewProducer(conf.Addr, conf.Config)
@@ -27,9 +43,10 @@ func (conf *ProducerConfig) Generate() interface{} {
 }
 
 type ConsumerConfig struct {
-	Addr    string
-	Topic   string
-	Channel string
+	NSQLookupdAddrs []string
+	NSQdAddrs       []string
+	Topic           string
+	Channel         string
 	*nsq.Config
 }
 
@@ -37,26 +54,17 @@ func (conf *ConsumerConfig) generate() *nsq.Consumer {
 
 	customer, err := nsq.NewConsumer(conf.Topic, conf.Channel, conf.Config)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	//c.SetLogger(nil, 0)       //屏蔽系统日志
-	//customer.AddHandler(handle) // 添加消费者接口
 
-	//建立NSQLookupd连接
-	if err := customer.ConnectToNSQLookupd(conf.Addr); err != nil {
-		log.Println("consumer 新建失败")
-	}
-	//建立多个nsqd连接
-	// if err := customer.ConnectToNSQDs([]string{"127.0.0.1:4150", "127.0.0.1:4152"}); err != nil {
-	//  panic(err)
-	// }
+	/*	if err := customer.ConnectToNSQLookupds(conf.NSQLookupdAddrs); err != nil {
+		log.Fatal(err)
+	}*/
 
-	// 建立一个nsqd连接
-	/*	if err := customer.ConnectToNSQD(address); err != nil {
-		 panic(err)
+	/*	if err = customer.ConnectToNSQDs(conf.NSQdAddrs); err != nil {
+			log.Fatal(err)
 		}
-		<-c.StopChan*/
-	//closes = append(closes,customer.Stop)
+	*/
 	return customer
 
 }
@@ -65,28 +73,12 @@ func (conf *ConsumerConfig) Generate() interface{} {
 	return conf.generate()
 }
 
-type Producer struct {
-	*nsq.Producer
-	Conf ProducerConfig
-}
-
-func (p *Producer) Config() initialize.Generate {
-	p.Conf.Config = nsq.NewConfig()
-	return &p.Conf
-}
-
-func (p *Producer) SetEntity(entity interface{}) {
-	if client, ok := entity.(*nsq.Producer); ok {
-		p.Producer = client
-	}
-}
-
 type Consumer struct {
-	*nsq.Consumer
-	Conf ProducerConfig
+	*nsq.Consumer `init:"entity"`
+	Conf          ConsumerConfig `init:"config"`
 }
 
-func (c *Consumer) Config() interface{} {
+func (c *Consumer) Config() initialize.Generate {
 	c.Conf.Config = nsq.NewConfig()
 	return &c.Conf
 }

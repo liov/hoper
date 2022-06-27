@@ -25,6 +25,7 @@ spec:
                 fieldRef:
                   fieldPath: status.podIP
           image: jybl/doris
+          imagePullPolicy: IfNotPresent
           command: [ "/bin/bash", "-ce", "/opt/be/bin/start_be.sh --daemon;tail -f /dev/null" ]
           livenessProbe:
             httpGet:
@@ -34,17 +35,6 @@ spec:
             periodSeconds: 30
             timeoutSeconds: 5
             failureThreshold: 3
-          ports:
-            - containerPort: 9060
-              protocol: TCP
-            - containerPort: 9070
-              protocol: TCP
-            - containerPort: 8040
-              protocol: TCP
-            - containerPort: 9050
-              protocol: TCP
-            - containerPort: 8060
-              protocol: TCP
           resources:
             limits:
               cpu: 2
@@ -63,6 +53,7 @@ spec:
                 fieldRef:
                   fieldPath: status.podIP
           image: jybl/doris
+          imagePullPolicy: IfNotPresent
           command: [ "/bin/bash", "-ce", "/opt/fe/bin/start_fe.sh --daemon;tail -f /dev/null" ]
           livenessProbe:
             httpGet:
@@ -72,15 +63,6 @@ spec:
             periodSeconds: 30
             timeoutSeconds: 5
             failureThreshold: 3
-          ports:
-            - containerPort: 8030
-              protocol: TCP
-            - containerPort: 9020
-              protocol: TCP
-            - containerPort: 9030
-              protocol: TCP
-            - containerPort: 9010
-              protocol: TCP
           resources:
             limits:
               cpu: 2

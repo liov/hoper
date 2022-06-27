@@ -14,7 +14,9 @@ import (
 
 //约定大于配置
 var (
-	InitConfig = &Init{}
+	InitConfig = &Init{
+		Env: DEVELOPMENT, ConfUrl: "./config.toml",
+	}
 )
 
 type Env string
