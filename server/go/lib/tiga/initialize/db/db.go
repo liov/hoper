@@ -101,8 +101,8 @@ func (conf *DatabaseConfig) Generate() interface{} {
 }
 
 type DB struct {
-	*gorm.DB
-	Conf DatabaseConfig
+	*gorm.DB `init:"entity"`
+	Conf     DatabaseConfig `init:"config"`
 }
 
 func (db *DB) Config() initialize.Generate {
