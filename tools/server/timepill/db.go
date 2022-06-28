@@ -6,6 +6,7 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/clause"
 	"github.com/actliboy/hoper/server/go/lib/utils/def/request"
 	"gorm.io/gorm"
+	"tools/timepill/model"
 )
 
 const (
@@ -17,8 +18,8 @@ type ListReq struct {
 	request.RangeReq
 }
 
-func (dao *DBDao) ListDB(req *ListReq) ([]*Diary, error) {
-	var diaries []*Diary
+func (dao *DBDao) ListDB(req *ListReq) ([]*model.Diary, error) {
+	var diaries []*model.Diary
 
 	clauses := append((*clausei.ListReq)(&req.ListReq).Clause(), (*clausei.RangeReq)(&req.RangeReq).Clause())
 	err := Dao.Hoper.Clauses(clauses...).Find(&diaries).Error
@@ -29,15 +30,15 @@ func (dao *DBDao) ListDB(req *ListReq) ([]*Diary, error) {
 }
 
 func CreateTable() {
-	fmt.Println(Dao.Hoper.Migrator().CreateTable(&Badge{}, &User{}, &Diary{}, &NoteBook{}, &Comment{}))
+	fmt.Println(Dao.Hoper.Migrator().CreateTable(&model.Badge{}, &model.User{}, &model.Diary{}, &model.NoteBook{}, &model.Comment{}))
 }
 
 func CreateBadgeTable() {
-	fmt.Println(Dao.Hoper.Migrator().CreateTable(&Badge{}))
+	fmt.Println(Dao.Hoper.Migrator().CreateTable(&model.Badge{}))
 }
 
 func CreateCommentTable() {
-	fmt.Println(Dao.Hoper.Migrator().CreateTable(&Comment{}))
+	fmt.Println(Dao.Hoper.Migrator().CreateTable(&model.Comment{}))
 }
 
 type DBDao struct {

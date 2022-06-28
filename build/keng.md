@@ -922,6 +922,10 @@ Hello, rust world!
 is there a better way to do this? the plugin should have a way of including static libraries
 
 there should also be an option to change the linker-wrapper.py to not link -lgcc and use static version instead
+## resove
+find out all the 4 folders containing file libunwind.a, in my PC, it's Android\Sdk\ndk\23.1.7779620\toolchains\llvm\prebuilt\windows-x86_64\lib64\clang\12.0.8\lib\linux\x86_64\ and more.
+create 4 text files named libgcc.a in the same folders with this contents
+INPUT(-lunwind)
 
 # serde cannot find derive macro Deserializ in this scope
 在新版本的serde中使用derive需要开启对应的features
@@ -1443,3 +1447,7 @@ url = *urlprtrl
 hdfs dfs -chmod -R 755 / 无效
 
 hadoop fs -chmod -R 777 /
+
+# Android Launch in a tool window无效
+转到 File->Project Structure->Modules 并添加 Android Framework 并应用。
+

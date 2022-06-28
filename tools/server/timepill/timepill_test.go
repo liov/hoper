@@ -5,10 +5,11 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
 	"testing"
 	"time"
+	"tools/timepill/model"
 )
 
 func TestJson(t *testing.T) {
-	var comments []*Comment
+	var comments []*model.Comment
 	err := json.Unmarshal([]byte(`[]`), &comments)
 	fmt.Println(err, comments)
 }
