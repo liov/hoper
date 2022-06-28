@@ -60,7 +60,7 @@ func (cc *Local) watch(adCongPath string, handle func([]byte)) {
 			if !ok {
 				return
 			}
-			log.Info("event:", event)
+			//log.Info("event:", event)
 			if event.Op&fsnotify.Write == fsnotify.Write {
 				err = local.New(&cc.Config).
 					Handle(handle, adCongPath)

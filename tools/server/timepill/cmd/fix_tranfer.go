@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"tools/timepill"
+	"tools/timepill/model"
 )
 
 func main() {
@@ -57,14 +58,17 @@ func transfer(year string) {
 		log.Error(err)
 	}
 	for i := range dirInfos {
-		var diaries []*timepill.TinyDiary
+		var diaries []*model.TinyDiary
 		date := dirInfos[i].Name()
 		timepill.Dao.Hoper.Table(`diary`).Select(`user_id,photo_url,created`).Where(`type = 2 AND created BETWEEN ? AND ? `, date+" 00:00:00", date+" 23:59:59").Scan(&diaries)
 		for _, diary := range diaries {
 			oldpath, newpath := getDir(diary.UserId, diary.PhotoUrl, diary.Created)
 			_, err := os.Stat(oldpath)
 			if os.IsNotExist(err) {
-				timepill.DownloadPic(diary.UserId, diary.PhotoUrl, diary.Created)
+				err = timepill.DownloadPic(diary.UserId, diary.PhotoUrl, diary.Created)
+				if err != nil {
+					log.Error(err)
+				}
 				return
 			}
 			_, err = os.Stat(newpath)
@@ -155,7 +159,10 @@ func tx() {
 				if os.IsNotExist(err) {
 					os.Mkdir(dir+year+"/"+date, 0666)
 				}
-				timepill.CopyDatePic(subDir+filename, date, dirInfos[i].Name(), filename[11:])
+				err = timepill.CopyDatePic(subDir+filename, date, dirInfos[i].Name(), filename[11:])
+				if err != nil {
+					log.Error(err)
+				}
 				num, _ := strconv.Atoi(dirInfos[i].Name())
 				num /= 10000
 				outdir := dir + strconv.Itoa(num) + "-" + strconv.Itoa(num+1) + "/" + dirInfos[i].Name() + "/"

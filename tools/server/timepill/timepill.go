@@ -1,11 +1,14 @@
 package timepill
 
 import (
+	"errors"
 	gormi "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm"
+	iio "github.com/actliboy/hoper/server/go/lib/utils/io"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
+	"tools/timepill/model"
+	tnsq "tools/timepill/nsq"
 
-	"io"
 	surl "net/url"
 	"os"
 	"path"
@@ -58,7 +61,7 @@ func RecordNoteBook(notebookId int) {
 
 }
 
-func RecordDiary(diary *Diary) {
+func RecordDiary(diary *model.Diary) {
 	if diary == nil || diary.Id == 0 || DiaryExists(diary.Id) {
 		return
 	}
@@ -76,7 +79,11 @@ func RecordDiary(diary *Diary) {
 	}
 
 	if diary.PhotoUrl != "" {
-		DownloadPic(diary.UserId, diary.PhotoUrl, diary.Created)
+		//err = DownloadPic(diary.UserId, diary.PhotoUrl, diary.Created)
+		err = tnsq.PublishPic(Dao.NsqP.Producer, diary.UserId, diary.PhotoUrl, diary.Created)
+		if err != nil {
+			log.Error(err)
+		}
 	}
 }
 
@@ -108,9 +115,9 @@ func TodayRecord() {
 	}
 }
 
-func DownloadPic(userId int, url, created string) {
+func DownloadPic(userId int, url, created string) error {
 	if url == "" {
-		return
+		return errors.New("url is empty")
 	}
 	URL, _ := surl.Parse(url)
 	suffixpath := URL.Path
@@ -136,71 +143,42 @@ func DownloadPic(userId int, url, created string) {
 
 	err := client.DownloadImage(filepath, url)
 	if err != nil {
-		log.Error(err)
-	} else {
-		CopyDatePic(filepath, date, strconv.Itoa(userId), path.Base(suffixpath))
+		return err
 	}
+	return CopyDatePic(filepath, date, strconv.Itoa(userId), path.Base(suffixpath))
+
 }
 
-func CopyDatePic(filepath, date, userId, filename string) {
+func CopyDatePic(filepath, date, userId, filename string) error {
 	dir := Conf.TimePill.PhotoPath + "/"
 	year := date[0:4] + "_"
 	_, err := os.Stat(dir + year + "/" + date)
 	if os.IsNotExist(err) {
-		os.MkdirAll(dir+year+"/"+date, 0666)
+		err = os.MkdirAll(dir+year+"/"+date, 0666)
+		if err != nil {
+			return err
+		}
 	}
-	dst, err := os.Create(dir + year + "/" + date + "/" + userId + "_" + filename)
-	if err != nil {
-		log.Error(err)
-	}
-	src, err := os.Open(filepath)
-	if err != nil {
-		log.Error(err)
-	}
-	_, err = io.Copy(dst, src)
-	if err != nil {
-		log.Error(err)
-	}
-	dst.Close()
-	src.Close()
+	return iio.Copy(dir+year+"/"+date+"/"+userId+"_"+filename, filepath)
 }
 
-func DownloadCover(url string) {
+func DownloadCover(typ, url string) error {
 	if url == "" || strings.HasSuffix(url, "default.jpg") {
-		return
+		return errors.New("url is empty")
 	}
 	URL, _ := surl.Parse(url)
+	v := URL.Query().Get("v")
 	filepath := Conf.TimePill.PhotoPath
-	filename := strings.Split(URL.Path, "book_cover")
+	filename := strings.Split(URL.Path, typ)
+	var originFileName string
 	if len(filename) > 1 {
-		filepath += "/book_cover" + filename[1]
+		originFileName = filename[1]
 	} else {
-		filepath += "/book_cover/" + path.Base(URL.Path)
+		originFileName = path.Base(URL.Path)
 	}
-
-	err := client.DownloadImage(filepath, url)
-	if err != nil {
-		log.Error(err)
-	}
-}
-
-func DownloadUserCover(url string) {
-	if url == "" || strings.HasSuffix(url, "default.jpg") {
-		return
-	}
-	URL, _ := surl.Parse(url)
-	filepath := Conf.TimePill.PhotoPath
-	filename := strings.Split(URL.Path, "user_icon")
-	if len(filename) > 1 {
-		filepath += "/user_icon" + filename[1]
-	} else {
-		filepath += "/user_icon/" + path.Base(URL.Path)
-	}
-
-	err := client.DownloadImage(filepath, url)
-	if err != nil {
-		log.Error(err)
-	}
+	originFileName = strings.TrimSuffix(originFileName, path.Ext(originFileName)) + "-v" + v + path.Ext(originFileName)
+	filepath += typ + originFileName
+	return client.DownloadImage(filepath, url)
 }
 
 func DiaryExists(diaryId int) bool {
@@ -230,7 +208,7 @@ func UserExistsByIdName(userId int, userName string) bool {
 	return exists
 }
 
-func RecordUserDiaries(user *User) {
+func RecordUserDiaries(user *model.User) {
 	notebooks, err := ApiService.GetUserNotebooks(user.UserId)
 	if err != nil {
 		log.Error(err)
@@ -239,7 +217,11 @@ func RecordUserDiaries(user *User) {
 	for _, nodebook := range notebooks {
 		Dao.Hoper.Create(nodebook)
 		if nodebook.CoverUrl != "" {
-			DownloadCover(nodebook.CoverUrl)
+			//err = DownloadCover(model.BookCoverType.String(), nodebook.CoverUrl)
+			err = tnsq.PublishCover(Dao.NsqP.Producer, model.BookCoverType, nodebook.CoverUrl)
+			if err != nil {
+				log.Error(err)
+			}
 		}
 		var page = 1
 		for {
@@ -297,7 +279,7 @@ func RecordUser(userId int, userName string) {
 	}
 }
 
-func RecordUserById(userId int) *User {
+func RecordUserById(userId int) *model.User {
 	user, err := ApiService.GetUserInfo(userId)
 	if err != nil {
 		log.Error(err)
@@ -313,10 +295,11 @@ func RecordUserById(userId int) *User {
 			}
 		}
 		if user.CoverUrl != "" {
-			DownloadUserCover(user.CoverUrl)
-		}
-		if user.IconUrl != "" && user.IconUrl != user.CoverUrl {
-			DownloadUserCover(user.IconUrl)
+			//err = DownloadCover(model.UserCoverType.String(), user.CoverUrl)
+			err = tnsq.PublishCover(Dao.NsqP.Producer, model.UserCoverType, user.CoverUrl)
+			if err != nil {
+				log.Error(err)
+			}
 		}
 	}
 	return user
@@ -360,7 +343,7 @@ func CronCommentRecord() {
 	}
 }
 
-func RecordByNoteBookId(id int) *NoteBook {
+func RecordByNoteBookId(id int) *model.NoteBook {
 	page, pageNum := 1, 20
 	notebook, err := ApiService.GetNotebook(id)
 	if err != nil {

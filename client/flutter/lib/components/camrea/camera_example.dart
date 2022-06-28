@@ -63,7 +63,7 @@ class _CameraExampleState extends State<CameraExample>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
 
     _flashModeControlRowAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -93,7 +93,7 @@ class _CameraExampleState extends State<CameraExample>
 
   @override
   void dispose() {
-    WidgetsBinding.instance?.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     _flashModeControlRowAnimationController.dispose();
     _exposureModeControlRowAnimationController.dispose();
     super.dispose();

@@ -14,6 +14,7 @@ import (
 	"strconv"
 	"strings"
 	"tools/timepill"
+	"tools/timepill/model"
 )
 
 const DiaryIndex = "diary"
@@ -73,7 +74,7 @@ type IndexDiary struct {
 	Created         string `json:"created" gorm:"timestamptz(6);default:'0001-01-01 00:00:00';index"`
 }
 
-func NewIndexDiary(diary *timepill.Diary) *IndexDiary {
+func NewIndexDiary(diary *model.Diary) *IndexDiary {
 
 	return &IndexDiary{
 		Id:              diary.Id,

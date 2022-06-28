@@ -24,7 +24,7 @@ require (
 	google.golang.org/genproto v0.0.0-20211115160612-a5da7257a6f7
 	google.golang.org/grpc v1.42.0
 	google.golang.org/protobuf v1.27.1
-	gorm.io/gorm v1.21.13
+	gorm.io/gorm v1.23.6
 )
 
 require (
@@ -98,7 +98,7 @@ require (
 	github.com/jcmturner/gokrb5/v8 v8.4.2 // indirect
 	github.com/jcmturner/rpc/v2 v2.0.3 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
-	github.com/jinzhu/now v1.1.2 // indirect
+	github.com/jinzhu/now v1.1.4 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect

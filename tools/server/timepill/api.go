@@ -8,6 +8,7 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
 	"net/http"
 	"strconv"
+	"tools/timepill/model"
 )
 
 const baseUrl = "https://open.timepill.net/api"
@@ -21,8 +22,8 @@ func NewApiService(ctx context.Context) *apiService {
 
 type apiService struct{}
 
-func (api *apiService) GetSelfInfo() (*User, error) {
-	var selfInfo User
+func (api *apiService) GetSelfInfo() (*model.User, error) {
+	var selfInfo model.User
 	err := getV2("/users/my", nil, &selfInfo)
 	if err != nil {
 		return nil, err
@@ -30,8 +31,8 @@ func (api *apiService) GetSelfInfo() (*User, error) {
 	return &selfInfo, nil
 }
 
-func (api *apiService) GetUserInfo(id int) (*User, error) {
-	var selfInfo User
+func (api *apiService) GetUserInfo(id int) (*model.User, error) {
+	var selfInfo model.User
 	err := getV2("/users/"+strconv.Itoa(id), nil, &selfInfo)
 	if err != nil {
 		return nil, err
@@ -50,10 +51,10 @@ type TodayDiariesReq struct {
 }
 
 type TodayDiaries struct {
-	Count    int      `json:"count"`
-	Page     string   `json:"page"`
-	PageSize string   `json:"page_size"`
-	Diaries  []*Diary `json:"diaries"`
+	Count    int            `json:"count"`
+	Page     string         `json:"page"`
+	PageSize string         `json:"page_size"`
+	Diaries  []*model.Diary `json:"diaries"`
 }
 
 func (api *apiService) GetTodayDiaries(page, pageSize int, firstId string) (*TodayDiaries, error) {
@@ -84,10 +85,10 @@ func (api *apiService) GetFollowDiaries(page, pageSize int, firstId string) (*To
 }
 
 type NotebookDiaries struct {
-	Count    int      `json:"count"`
-	Page     string   `json:"page"`
-	PageSize string   `json:"page_size"`
-	Items    []*Diary `json:"items"`
+	Count    int            `json:"count"`
+	Page     string         `json:"page"`
+	PageSize string         `json:"page_size"`
+	Items    []*model.Diary `json:"items"`
 }
 
 func (api *apiService) GetNotebookDiaries(id, page, pageSize int) (*NotebookDiaries, error) {
@@ -99,8 +100,8 @@ func (api *apiService) GetNotebookDiaries(id, page, pageSize int) (*NotebookDiar
 	return &notebookDiaries, nil
 }
 
-func (api *apiService) GetNotebook(id int) (*NoteBook, error) {
-	var notebook NoteBook
+func (api *apiService) GetNotebook(id int) (*model.NoteBook, error) {
+	var notebook model.NoteBook
 	err := getV1(fmt.Sprintf("/notebooks/%d", id), nil, &notebook)
 	if err != nil {
 		return nil, err
@@ -117,8 +118,8 @@ func (api *apiService) GetUserTodayDiaries(userId int) (*TodayDiaries, error) {
 	return &todayDiaries, nil
 }
 
-func (api *apiService) GetDiaryComments(diaryId int) ([]*Comment, error) {
-	var comments []*Comment
+func (api *apiService) GetDiaryComments(diaryId int) ([]*model.Comment, error) {
+	var comments []*model.Comment
 	err := getV1(fmt.Sprintf("/diaries/%d/comments", diaryId), nil, &comments)
 	if err != nil {
 		return nil, err
@@ -126,8 +127,8 @@ func (api *apiService) GetDiaryComments(diaryId int) ([]*Comment, error) {
 	return comments, nil
 }
 
-func (api *apiService) GetUserNotebooks(userId int) ([]*NoteBook, error) {
-	var notebooks []*NoteBook
+func (api *apiService) GetUserNotebooks(userId int) ([]*model.NoteBook, error) {
+	var notebooks []*model.NoteBook
 	err := getV1(fmt.Sprintf("/users/%d/notebooks", userId), nil, &notebooks)
 	if err != nil {
 		return nil, err
@@ -180,8 +181,8 @@ func (api *apiService) GetRelation(userId int) (*TodayDiaries, error) {
 	return &todayDiaries, nil
 }
 
-func (api *apiService) GetDiary(diaryId int) (*Diary, error) {
-	var diary Diary
+func (api *apiService) GetDiary(diaryId int) (*model.Diary, error) {
+	var diary model.Diary
 	err := getV1(fmt.Sprintf("/diaries/%d", diaryId), nil, &diary)
 	if err != nil {
 		return nil, err

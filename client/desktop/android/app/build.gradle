@@ -13,12 +13,12 @@ if (flutterRoot == null) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
+    flutterVersionCode = '3'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
+    flutterVersionName = '3.0'
 }
 
 apply plugin: 'com.android.application'
@@ -26,6 +26,8 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
+    ndkVersion '24.0.7956693'
+
     compileSdkVersion flutter.compileSdkVersion
 
     compileOptions {
@@ -34,11 +36,14 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '11'
     }
 
     sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
+        main {
+            java.srcDirs += 'src/main/kotlin'
+            jniLibs.srcDirs = ['../../dynLibs/android']
+        }
     }
 
     defaultConfig {
@@ -65,4 +70,9 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation fileTree(dir: 'libs', include: ['*.so','*.jar'])
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
 }

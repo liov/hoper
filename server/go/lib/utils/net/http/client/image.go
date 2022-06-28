@@ -73,7 +73,6 @@ func DownloadImage(filepath, url string) error {
 	if err != nil {
 		return err
 	}
-	defer reader.Close()
 	dir := path.Dir(filepath)
 	_, err = os.Stat(dir)
 	if os.IsNotExist(err) {
@@ -86,10 +85,12 @@ func DownloadImage(filepath, url string) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+
 	_, err = io.Copy(f, reader)
 	if err != nil {
 		return err
 	}
+	reader.Close()
+	f.Close()
 	return nil
 }

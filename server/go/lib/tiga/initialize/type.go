@@ -8,9 +8,23 @@ type Config interface {
 	NeedInit
 }
 
+type ConfigPlaceholder struct {
+}
+
+func (c *ConfigPlaceholder) Init() {
+}
+
 type Dao interface {
 	Close()
 	NeedInit
+}
+
+type DaoPlaceholder struct {
+}
+
+func (d *DaoPlaceholder) Init() {
+}
+func (d *DaoPlaceholder) Close() {
 }
 
 type DaoField interface {
