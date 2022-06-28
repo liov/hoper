@@ -49,7 +49,7 @@ func setDao3(v reflect.Value, confM map[string]any) {
 		return
 	}
 	typ := v.Type()
-
+	generateTyp := reflect.TypeOf((*Generate)(nil)).Elem()
 	for i := 0; i < v.NumField(); i++ {
 		field := v.Field(i)
 		if field.Addr().CanInterface() {
@@ -57,12 +57,14 @@ func setDao3(v reflect.Value, confM map[string]any) {
 				field.Set(reflect.New(field.Type().Elem()))
 			}
 			fieldtyp := field.Type()
+			if fieldtyp == reflect.TypeOf(DaoPlaceholder{}) {
+				continue
+			}
 			confName := strings.ToUpper(typ.Field(i).Name)
 			if slices.StringContains(InitConfig.ConfigCenterConfig.NoInject, confName) {
 				continue
 			}
 
-			generateTyp := reflect.TypeOf((*Generate)(nil)).Elem()
 			var daoField daoField
 			for j := 0; j < fieldtyp.NumField(); j++ {
 				subfield := fieldtyp.Field(j)

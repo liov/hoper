@@ -1,4 +1,4 @@
-use rust_lib::export::start;
+use rust::export::start;
 
 
 fn main() {

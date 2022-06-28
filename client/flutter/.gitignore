@@ -49,3 +49,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+dynLibs
+!dynLibs/android/armeabi-v7a/up
+!dynLibs/android/arm64-v8a/up
+!dynLibs/android/x86_64/up

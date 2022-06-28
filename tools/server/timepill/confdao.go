@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/cache_ristretto"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/db"
+	insq "github.com/actliboy/hoper/server/go/lib/tiga/initialize/nsq"
 	initializeredis "github.com/actliboy/hoper/server/go/lib/tiga/initialize/redis"
 	"time"
 )
@@ -32,6 +33,7 @@ type dao struct {
 	Redis     initializeredis.Redis
 	Cache     cache_ristretto.Cache
 	UserCache cache_ristretto.Cache
+	NsqP      insq.Producer `init:"config:nsq-producer"`
 }
 
 func (dao *dao) Init() {

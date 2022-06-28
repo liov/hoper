@@ -57,14 +57,17 @@ func (conf *ConsumerConfig) generate() *nsq.Consumer {
 		log.Fatal(err)
 	}
 
-	/*	if err := customer.ConnectToNSQLookupds(conf.NSQLookupdAddrs); err != nil {
-		log.Fatal(err)
-	}*/
-
-	/*	if err = customer.ConnectToNSQDs(conf.NSQdAddrs); err != nil {
-			log.Fatal(err)
+	/*	if len(conf.NSQLookupdAddrs) > 0 {
+			if err := customer.ConnectToNSQLookupds(conf.NSQLookupdAddrs); err != nil {
+				log.Fatal(err)
+			}
 		}
-	*/
+		if len(conf.NSQdAddrs) > 0 {
+			if err = customer.ConnectToNSQDs(conf.NSQdAddrs); err != nil {
+				log.Fatal(err)
+			}
+
+		}*/
 	return customer
 
 }

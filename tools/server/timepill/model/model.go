@@ -1,4 +1,4 @@
-package timepill
+package model
 
 type User struct {
 	Id       int      `json:"-"`
@@ -68,4 +68,18 @@ type Comment struct {
 	Created     string `json:"created" gorm:"type:timestamptz(6);default:'0001-01-01 00:00:00';index"`
 	User        *User  `json:"User" gorm:"-"`
 	Recipient   *User  `json:"recipient" gorm:"-"`
+}
+
+type CoverType int
+
+const (
+	BookCoverType CoverType = iota
+	UserCoverType
+)
+
+func (c CoverType) String() string {
+	if c == BookCoverType {
+		return "/book_cover/"
+	}
+	return "/user_icon/"
 }
