@@ -11,3 +11,7 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+
+*.so
+*.a
+/app/src/main/java/io.flutter.plugins/

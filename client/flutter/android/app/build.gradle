@@ -13,12 +13,12 @@ if (flutterRoot == null) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    flutterVersionCode = '3'
+    flutterVersionCode = '1'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '3.0'
+    flutterVersionName = '1.0'
 }
 
 apply plugin: 'com.android.application'
@@ -31,7 +31,7 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
-    ndkVersion '23.1.7779620'
+    ndkVersion '24.0.7956693'
     compileSdkVersion flutter.compileSdkVersion
 
     compileOptions {
@@ -58,7 +58,7 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "xyz.hoper.dart"
         minSdkVersion 23
-        targetSdkVersion 32
+        targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -92,14 +92,14 @@ android {
         debug{
             ndk {
                 //这里要加上，否则debug包会出问题,后面三个为可选，x86建议加上不然部分模拟器回报错
-                abiFilters "armeabi-v7a","arm64-v8a", "x86_64"
+                abiFilters "arm64-v8a", "x86_64"
             }
         }
     }
 
     packagingOptions {
         // pickFirsts:当出现重复文件，会使用第一个匹配的文件打包进入apk
-        pickFirst 'lib/armeabi-v7a/libluajapi.so'
+        //pickFirst 'lib/armeabi-v7a/libluajapi.so'
     }
 
     externalNativeBuild {

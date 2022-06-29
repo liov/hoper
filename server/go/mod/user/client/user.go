@@ -10,7 +10,7 @@ import (
 
 func GetUserClient() (model.UserServiceClient, *grpc.ClientConn) {
 	// Set up a connection to the server.
-	conn, err := grpc.Dial("hoper.xyz:443", grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{ServerName: "hoper.xyz", InsecureSkipVerify: true})))
+	conn, err := grpc.Dial("grpc.hoper.xyz:443", grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{ServerName: "grpc.hoper.xyz", InsecureSkipVerify: true})))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
