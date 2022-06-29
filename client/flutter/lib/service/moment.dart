@@ -1,6 +1,7 @@
+import 'dart:io';
+
 import 'package:app/generated/protobuf/content/moment.service.pbgrpc.dart';
 import 'package:app/model/moment/moment.service.dart';
-
 
 import 'package:app/utils/dio.dart';
 import 'package:get/get.dart';
@@ -11,23 +12,17 @@ import '../utils/observer.dart';
 
 
 class MomentClient extends Observer<CallOptions> {
-
-
-  final channel = ClientChannel(
-    'hoper.xyz',
-    port: 8090,
-    options: const ChannelOptions(credentials: ChannelCredentials.insecure()),
-  );
+  final channel = ClientChannel('grpc.hoper.xyz');
 
   late MomentServiceClient stub;
 
-  MomentClient(Subject<CallOptions> subject){
+  MomentClient(Subject<CallOptions> subject) {
     setOptions(subject.options);
     subject.attach(this);
   }
 
-  setOptions(CallOptions? options){
-    stub =  MomentServiceClient(channel,options:options);
+  setOptions(CallOptions? options) {
+    stub = MomentServiceClient(channel, options: options);
   }
 
   Future<MomentListResponse$?> getMomentList(int pageNo, pageSize) async {
@@ -44,6 +39,6 @@ class MomentClient extends Observer<CallOptions> {
 
   @override
   void update(CallOptions? options) {
-    if(options!=null) setOptions(options);
+    if (options != null) setOptions(options);
   }
 }

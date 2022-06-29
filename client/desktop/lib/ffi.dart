@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'dart:io';
-import 'dart:math'; // For Platform.isX
+import 'dart:math';
+
 
 DynamicLibrary findDynamicLibrary(String name, String dir) {
   if (Platform.isAndroid) {
@@ -17,10 +18,25 @@ DynamicLibrary findDynamicLibrary(String name, String dir) {
       return DynamicLibrary.open('/data/data/$appId/lib/lib$name.so');
     }
   }
-  if (!dir.endsWith('/')) dir = dir + '/';
-  if (Platform.isLinux) return DynamicLibrary.open('${dir}lib$name.so');
-  if (Platform.isMacOS) return DynamicLibrary.open('${dir}lib$name.dylib');
-  if (Platform.isWindows) return DynamicLibrary.open('$dir$name.dll');
+  if (!dir.endsWith('/')) dir = '$dir/';
+  if (Platform.isLinux) return DynamicLibrary.open('lib$name.so');
+  if (Platform.isMacOS) {
+    try {
+      return DynamicLibrary.open('lib$name.dylib');
+      //return DynamicLibrary.open('$name.framework/$name');
+      // Ignoring the error because its the only way to know if it was sucessful
+      // or not...
+      // ignore: avoid_catching_errors
+    } on ArgumentError catch (_) {
+      // In an iOS app without sqlite3_flutter_libs this falls back to using the version provided by iOS.
+      // This version is different for each iOS release.
+      //
+      // When using sqlcipher_flutter_libs this falls back to the version provided by the SQLCipher pod.
+      return DynamicLibrary.process();
+    }
+
+  }
+  if (Platform.isWindows) return DynamicLibrary.open('$name.dll');
   return DynamicLibrary.process();
 }
 

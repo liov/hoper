@@ -10,11 +10,7 @@ import '../utils/observer.dart';
 class ActionClient extends Observer<CallOptions> {
 
 
-  final channel = ClientChannel(
-    'hoper.xyz',
-    port: 8090,
-    options: const ChannelOptions(credentials: ChannelCredentials.insecure()),
-  );
+  final channel = ClientChannel('grpc.hoper.xyz',);
 
   late ActionServiceClient stub;
 

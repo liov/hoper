@@ -55,9 +55,19 @@ class GlobalService{
       db = await openDatabase(
           $path.join(appDocDir.path, 'databases', 'hoper.db'),
           version: 1, onCreate: (Database db, int version) async {
+
         // When creating the db, create the table
-        await db.execute(
-            'CREATE TABLE hoper (id INTEGER PRIMARY KEY, name TEXT, value INTEGER, num REAL)');
+            await db.execute('''
+              create table if not exists hoper (
+                id integer primary key autoincrement,
+                name text,
+                value text,
+                num REAL,
+                created_at text,
+                updated_at text
+              )
+            ''');
+
       });
 
     };
