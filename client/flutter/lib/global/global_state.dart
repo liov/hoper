@@ -30,6 +30,8 @@ class GlobalState extends GetxController{
 
   var initialized = false;
 
+  var rebuildTimes = 0;
+
   Future<void> init() async {
     if (initialized) return;
     initialized = true;

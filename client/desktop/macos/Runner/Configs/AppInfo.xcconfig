@@ -11,4 +11,4 @@ PRODUCT_NAME = desktop
 PRODUCT_BUNDLE_IDENTIFIER = xyz.hoper.desktop
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2021 xyz.hoper. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2022 xyz.hoper. All rights reserved.

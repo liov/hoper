@@ -1451,3 +1451,7 @@ hadoop fs -chmod -R 777 /
 # Android Launch in a tool window无效
 转到 File->Project Structure->Modules 并添加 Android Framework 并应用。
 
+# java.lang.ClassNotFoundException: org.gradle.wrapper.GradleWrapperMain
+原因是项目目录下缺少  gradle-wrapper.jar
+
+从其他项目拷贝gradle-wrapper.jar文件到本项目gradle文件下, 或者新建一个项目 拷贝gradle文件夹.

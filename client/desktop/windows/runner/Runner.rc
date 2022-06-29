@@ -93,7 +93,7 @@ BEGIN
             VALUE "FileDescription", "A new Flutter project." "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "desktop" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2021 xyz.hoper. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2022 xyz.hoper. All rights reserved." "\0"
             VALUE "OriginalFilename", "desktop.exe" "\0"
             VALUE "ProductName", "desktop" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"

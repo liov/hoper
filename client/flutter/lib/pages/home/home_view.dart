@@ -1,4 +1,6 @@
 
+import 'dart:isolate';
+
 import 'package:app/components/christmas_tree.dart';
 
 import 'package:app/ffi/ffi.dart';
@@ -29,8 +31,11 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.log("HomeView重绘");
+
     controller.startAd();
+    globalState.rebuildTimes++;
+    Get.log("HomeView重绘${globalState.rebuildTimes}次");
+    Isolate.spawn(serve,3000);
     return FutureBuilder(
       // Replace the 3 second delay with your initialization code:
       future: controller.adCompleter.future,
@@ -120,7 +125,7 @@ class App extends StatelessWidget with WidgetsBindingObserver {
       onTabNotify: (i) {
         var intercept = i == 2;
         if (intercept) {
-          Get.toNamed(Routes.ADD);
+          Get.toNamed(Routes.MOMENT_ADD);
         }
         return !intercept;
       },
