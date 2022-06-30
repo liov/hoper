@@ -9,6 +9,7 @@ import java.lang.ref.WeakReference
 
 class NativeActivity: Activity(), View.OnClickListener {
 
+
     private lateinit var binding: NativePageBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +37,9 @@ class NativeActivity: Activity(), View.OnClickListener {
 
 
     companion object {
+        const val CHANNEL = "xyz.hoper.native/view"
+        const val Tag = "NativeActivity"
+
         var sRef: WeakReference<NativeActivity?>? = null
     }
 }

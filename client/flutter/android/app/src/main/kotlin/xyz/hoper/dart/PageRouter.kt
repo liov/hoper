@@ -18,7 +18,7 @@ object PageRouter {
         return try {
             when {
                 url.startsWith(FLUTTER_PAGE_URL) -> {
-                    context.startActivity(FlutterActivity.CachedEngineIntentBuilder(MainActivity::class.java, FlutterEngineFactory.ENGINE_ID)
+                    context.startActivity(FlutterActivity.withCachedEngine(App.ENGINE_ID)
                             .build(context))
                     return true
                 }

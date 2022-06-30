@@ -1455,3 +1455,12 @@ hadoop fs -chmod -R 777 /
 原因是项目目录下缺少  gradle-wrapper.jar
 
 从其他项目拷贝gradle-wrapper.jar文件到本项目gradle文件下, 或者新建一个项目 拷贝gradle文件夹.
+
+# 终极大坑之rust编译的动态库在一个项目能跑起来，一个项目crash
+
+之前怀疑是minSdkVersion的问题，23不解压动态库，并不是因为这个
+
+之前跑flutter总是会打印两遍日志，我一直以为是flutter的bug，没怎么理会，今天细细排查才发现
+之前为了做原生和flutter页面跳转，kotlin代码,写了一个FlutterEngineFactory,里面有个创建flutter enbgine的方法,APP类继承FlutterApplication,
+在onCreate中调用这个方法，而MainActivity继承FlutterActivity,也会自动创建一个flutter engine,这样一来就有两个flutter engine了,所以同时调用动态库绑定同一个端口会crash,而且日志都是两遍,问题来了,为啥其他动态库没问题
+解决：在MainActivity中缓存flutter engine
