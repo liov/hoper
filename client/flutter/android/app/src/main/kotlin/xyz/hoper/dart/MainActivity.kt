@@ -6,12 +6,12 @@ import androidx.core.view.WindowCompat
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity: FlutterActivity() {
 
     companion object{
-        const val CHANNEL = "xyz.hoper.native/view"
         const val Tag = "MainActivity"
     }
 
@@ -33,8 +33,10 @@ class MainActivity: FlutterActivity() {
             super.configureFlutterEngine(flutterEngine)
             (this.applicationContext as App).alreadyRegistered = true
         }
+        FlutterEngineCache.getInstance().put(App.ENGINE_ID, flutterEngine)
+        (this.applicationContext as App).engineCached = true
 
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, NativeActivity.CHANNEL).setMethodCallHandler { call, result ->
             if (call.method == "toNative") {
                val success=  PageRouter.openPageByUrl(this, PageRouter.Native_PAGE_URL, call.arguments())
 

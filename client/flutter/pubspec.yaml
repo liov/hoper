@@ -114,6 +114,7 @@ dev_dependencies:
   flutter_launcher_icons: ^0.9.3
   freezed: ^2.0.3+1
   power_image_ext: 2.5.3
+  flutter_lints: ^2.0.0
 
 dependency_overrides:
   #dart_style: ^2.1.1
