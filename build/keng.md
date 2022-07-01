@@ -1464,3 +1464,6 @@ hadoop fs -chmod -R 777 /
 之前为了做原生和flutter页面跳转，kotlin代码,写了一个FlutterEngineFactory,里面有个创建flutter enbgine的方法,APP类继承FlutterApplication,
 在onCreate中调用这个方法，而MainActivity继承FlutterActivity,也会自动创建一个flutter engine,这样一来就有两个flutter engine了,所以同时调用动态库绑定同一个端口会crash,而且日志都是两遍,问题来了,为啥其他动态库没问题
 解决：在MainActivity中缓存flutter engine
+
+# flutter 编译java乱码
+org.gradle.jvmargs=-Dfile.encoding=UTF-8
