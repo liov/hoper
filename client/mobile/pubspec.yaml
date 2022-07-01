@@ -1,8 +1,8 @@
-name: desktop
+name: app
 description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
-# pub.dev using `flutter pub publish`. This is preferred for private packages.
+# pub.dev using `pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
@@ -18,14 +18,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.18.0-216.0.dev <3.0.0'
+  sdk: ">=2.18.0-216.0.dev <3.0.0"
 
-# Dependencies specify other packages that your package needs in order to work.
-# To automatically upgrade your package dependencies to the latest versions
-# consider running `flutter pub upgrade --major-versions`. Alternatively,
-# dependencies can be manually updated by changing the version numbers below to
-# the latest version available on pub.dev. To see which dependencies have newer
-# versions available, run `flutter pub outdated`.
 dependencies:
   flutter_localizations:
     sdk: flutter
@@ -104,17 +98,13 @@ dependencies:
   infinite_scroll_pagination: ^3.1.0
   convex_bottom_bar: ^3.0.0
   power_image: 0.1.0-pre.2
+  logger: ^1.0.0
+# provider: ^5.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
-  flutter_lints: ^2.0.0
   test: ^1.20.2
   pigeon: ^3.2.1
   build_runner: ^2.1.11
@@ -125,11 +115,19 @@ dev_dependencies:
   flutter_launcher_icons: ^0.9.3
   freezed: ^2.0.3+1
   power_image_ext: 2.5.3
+  flutter_lints: ^2.0.0
+
+dependency_overrides:
+  #dart_style: ^2.1.1
+  #args: ^2.0.0
+  #platform: ^3.1.0
+  ffi: ^2.0.1
+  power_image_ext: ^3.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
-# The following section is specific to Flutter packages.
+# The following section is specific to Flutter.
 flutter:
 
   # The following line ensures that the Material Icons font is
@@ -139,10 +137,17 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/icon/
+    - assets/images/
+    - assets/images/weather/
+    - assets/splash/splash.png
+    - assets/dist/
+    - assets/dist/css/
+    - assets/dist/js/
+    - assets/js/
+  #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/assets-and-images/#resolution-aware
+  # https://flutter.dev/assets-and-images/#resolution-aware.
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/assets-and-images/#from-packages
