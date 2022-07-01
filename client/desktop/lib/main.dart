@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:desktop/snow.dart';
 
 import 'christmas_tree.dart';
-import 'ffi.dart';
 
 void main() {
   runApp(const MyApp());
@@ -71,7 +70,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Isolate.spawn(server,3000);
   }
 
   @override
