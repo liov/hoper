@@ -6,17 +6,26 @@ Future<void> main() async{
   var protoPath = "../../proto";
   var goprojectPath = "../../server/go/mod";
   const arguments = ["list", "-m","-f","{{.Dir}}"];
+  const googleapis = "github.com/googleapis/googleapis@v0.0.0-20220520010701-4c6f5836a32f";
+  var gopath = Platform.environment['GOPATH'];
 /*  await Process.run("go",["mod" "download","github.com/googleapis/googleapis"],workingDirectory: goprojectPath);
  */
  var result = await Process.run("go",[...arguments,"github.com/actliboy/hoper/server/go/lib"],workingDirectory: goprojectPath);
   var golibPath = (result.stdout as String).trimRight();
-  result = await Process.run("go",[...arguments,"github.com/googleapis/googleapis"],workingDirectory: golibPath);
-  var googleapis = (result.stdout as String).trimRight();
+  var google = gopath! + "pkg/mod/" + googleapis;
+  var googleexists = await Directory(google).exists();
+  if (!googleexists) {
+    await Process.run("go",["get",googleapis],workingDirectory: goprojectPath);
+    result = await Process.run("go",[...arguments,"github.com/googleapis/googleapis"],workingDirectory: goprojectPath);
+    google = (result.stdout as String).trimRight();
+    await Process.run("go",["mod","tidy"],workingDirectory: goprojectPath);
+  }
+
   result = await Process.run("go",[...arguments,"github.com/grpc-ecosystem/grpc-gateway/v2"],workingDirectory: golibPath);
   var gateway = (result.stdout as String).trimRight();
   result = await Process.run("go",[...arguments,"google.golang.org/protobuf"],workingDirectory: golibPath);
   var protobuf = (result.stdout as String).trimRight();
-  include = ["-I${googleapis}","-I${gateway}","-I${protobuf}","-I${protoPath}","-I${golibPath}/protobuf","-I${golibPath}/protobuf/third"];
+  include = ["-I${google}","-I${gateway}","-I${protobuf}","-I${protoPath}","-I${golibPath}/protobuf","-I${golibPath}/protobuf/third"];
   Directory('${Directory.current.path}/lib/generated/protobuf').create();
   await generate(protoPath,[]);
   await generate(golibPath+"/protobuf",["third","utils"]);
