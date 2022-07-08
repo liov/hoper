@@ -1,4 +1,4 @@
-function db(momentList) {
+export function db(momentList) {
   // @ts-ignore
   const db = openDatabase("hoper", "1.0", "hoper DB", 2 * 1024 * 1024);
   db.transaction(function (tx) {

@@ -52,85 +52,83 @@
   <AddCollect ref="addCollect"></AddCollect>
 </template>
 
-<script lang="ts">
-import { Options, Vue } from "vue-class-component";
+<script setup lang="ts">
 import axios from "axios";
-import { reactive } from "vue";
+import { onMounted, onUnmounted, reactive, ref } from "vue";
 import emitter from "@/plugin/emitter";
 import AddCollect from "@/components/action/Collect.vue";
-@Options({ components: { AddCollect } })
-export default class ActionMore extends Vue {
-  type = 0;
-  refId = 0;
-  show = false;
 
-  actions = [
-    { name: "分享", callback: () => (this.share.show = !this.share.show) },
-    { name: "不喜欢" },
-    { name: "举报", callback: () => (this.report.show = !this.report.show) },
-    { name: "删除", color: "#D91E46" },
-  ];
-  report = reactive({
-    show: false,
-    checked: false,
-    field: false,
-    message: "",
-    options: [
-      { id: 1, name: "色情暴力" },
-      { id: 2, name: "侮辱谩骂" },
-      { id: 3, name: "涉及政治" },
-      { id: 255, name: "其他原因" },
-    ],
-  });
+let type = 0;
+let refId = 0;
+const show = ref(false);
+const addCollect = ref();
 
-  share = reactive({
-    show: false,
-    options: [
-      [
-        { name: "微信", icon: "wechat" },
-        { name: "朋友圈", icon: "wechat-moments" },
-        { name: "微博", icon: "weibo" },
-        { name: "QQ", icon: "qq" },
-      ],
-      [
-        { name: "复制链接", icon: "link" },
-        { name: "分享海报", icon: "poster" },
-        { name: "二维码", icon: "qrcode" },
-        { name: "小程序码", icon: "weapp-qrcode" },
-      ],
+const actions = [
+  { name: "分享", callback: () => (share.show = !share.show) },
+  { name: "不喜欢" },
+  { name: "举报", callback: () => (report.show = !report.show) },
+  { name: "删除", color: "#D91E46" },
+];
+const report = reactive({
+  show: false,
+  checked: false,
+  field: false,
+  message: "",
+  options: [
+    { id: 1, name: "色情暴力" },
+    { id: 2, name: "侮辱谩骂" },
+    { id: 3, name: "涉及政治" },
+    { id: 255, name: "其他原因" },
+  ],
+});
+
+const share = reactive({
+  show: false,
+  options: [
+    [
+      { name: "微信", icon: "wechat" },
+      { name: "朋友圈", icon: "wechat-moments" },
+      { name: "微博", icon: "weibo" },
+      { name: "QQ", icon: "qq" },
     ],
+    [
+      { name: "复制链接", icon: "link" },
+      { name: "分享海报", icon: "poster" },
+      { name: "二维码", icon: "qrcode" },
+      { name: "小程序码", icon: "weapp-qrcode" },
+    ],
+  ],
+});
+const comment = reactive({
+  show: false,
+  replyId: 0,
+});
+onMounted(() => {
+  emitter.on("more-show", (param: any) => {
+    type = param.type;
+    refId = param.refId;
+    show.value = !show.value; //箭头函数内部不会产生新的this，这边如果不用=>,this指代Event
   });
-  comment = reactive({
-    show: false,
-    replyId: 0,
+  emitter.on("fav-show", (param) => {
+    addCollect.value.setCollect(param);
+    addCollect.value.show = true;
   });
-  mounted() {
-    emitter.on("more-show", (param) => {
-      this.type = param.type;
-      this.refId = param.refId;
-      this.show = !this.show; //箭头函数内部不会产生新的this，这边如果不用=>,this指代Event
-    });
-    emitter.on("fav-show", (param) => {
-      this.$refs.addCollect.setCollect(param);
-      this.$refs.addCollect.show = true;
-    });
-    console.log(emitter.all);
-  }
-  unmounted() {
-    emitter.all.delete("more-show");
-    emitter.all.delete("fav-show");
-  }
-  remark(name: string) {
-    if (name === "255") this.report.field = true;
-    else this.report.field = false;
-  }
-  async onReport() {
-    await axios.post("/api/v1/action/report", {
-      type: this.type,
-      refId: this.refId,
-      remark: this.report.message,
-    });
-  }
+  console.log(emitter.all);
+});
+onUnmounted(() => {
+  emitter.all.delete("more-show");
+  emitter.all.delete("fav-show");
+});
+function remark(name: string) {
+  if (name === "255") report.field = true;
+  else report.field = false;
+}
+async function onReport() {
+  await axios.post("/api/v1/action/report", {
+    type,
+    refId,
+    remark: report.message,
+  });
 }
 </script>
 

@@ -1,10 +1,8 @@
-import axios, {AxiosError} from "axios";
+import axios, { AxiosError } from "axios";
 import { Toast } from "vant";
 import router from "@/router/index";
 import { ObjMap } from "@/plugin/utils/user";
-import { Module } from "vuex";
-import { RootState } from "./index.d";
-import store from ".";
+import { defineStore } from "pinia";
 
 export interface UserState {
   auth: any;
@@ -12,69 +10,64 @@ export interface UserState {
   userCache: Map<number, any>;
 }
 
-const state: UserState = {
+export const state: UserState = {
   auth: null,
   token: "",
   userCache: new Map<number, any>(),
 };
 
-const mutations = {
-  setAuth: function (state, user) {
-    state.auth = user;
-  },
-  setToken: function (state, token) {
-    state.token = token;
-  },
-  appendUsers: function (state, users) {
-    for (const user of users) {
-      state.userCache.set(user.id, user);
-    }
+const getters = {
+  getUser: (state) => (id) => {
+    return state.userCache.get(id);
   },
 };
 
 const actions = {
-  async getAuth({ state, commit, rootState }) {
+  async getAuth() {
     if (state.auth) return;
     const token = localStorage.getItem("token");
     if (token) {
-      commit("setToken", token);
+      state.token = token;
       const res = await axios.get(`/api/v1/auth`);
       // 跟后端的初始化配合
-      if (res.data.code === 0) commit("setAuth", res.data.details);
+      if (res.data.code === 0) state.auth = res.data.details;
     }
   },
-  async login({ state, commit, rootState }, params) {
+  async login(params) {
     try {
-      const { data:{details} } = await axios.post("/api/v1/user/login", params);
-        commit("setAuth", details.user);
-        commit("setToken", details.token);
-        localStorage.setItem("token", details.token);
-        axios.defaults.headers["Authorization"] = details.token;
-        await router.push("/");
-    } catch (error:any) {
+      const {
+        data: { details },
+      } = await axios.post("/api/v1/user/login", params);
+      state.auth = details.user;
+      state.token = details.token;
+      localStorage.setItem("token", details.token);
+      axios.defaults.headers["Authorization"] = details.token;
+      await router.push("/");
+    } catch (error: any) {
       if (error.response && error.response.status === 401) {
         throw new Error("Bad credentials");
       }
       throw error;
     }
   },
-  async signup({ state, commit, rootState }, params) {
+  async signup(params) {
     try {
-      const { data:{details} } = await axios.post("/api/v2/user", params);
-        commit("setAuth", details.user);
-        commit("setToken", details.token);
-        localStorage.setItem("token", details.token);
-        axios.defaults.headers["Authorization"] = details.token;
-        await router.push("/");
-
-    } catch (error:any) {
+      const {
+        data: { details },
+      } = await axios.post("/api/v2/user", params);
+      state.auth = details.user;
+      state.token = details.token;
+      localStorage.setItem("token", details.token);
+      axios.defaults.headers["Authorization"] = details.token;
+      await router.push("/");
+    } catch (error: any) {
       if (error.response && error.response.status === 401) {
         throw new Error("Bad credentials");
       }
       throw error;
     }
   },
-  async appendUsers({ state, commit, rootState }, ids: number[]) {
+  async appendUsersById(ids: number[]) {
     const noExistsId: number[] = [];
     ids.forEach((value) => {
       if (!state.userCache.has(value)) noExistsId.push(value);
@@ -84,23 +77,19 @@ const actions = {
         ids: noExistsId,
       });
       if (data.code && data.code !== 0) Toast.fail(data.message);
-      else commit("appendUsers", data.details.list);
+      else this.appendUsers(data.details.list);
+    }
+  },
+  appendUsers(users) {
+    for (const user of users) {
+      state.userCache.set(user.id, user);
     }
   },
 };
 
-const getters = {
-  getAuth(state, getters, rootState) {
-    return state.auth;
-  },
-  getUser: (state, getters, rootState) => (id) => {
-    return state.userCache.get(id);
-  },
-};
-
-export const user: Module<UserState, RootState> = {
-  state,
-  mutations,
-  actions,
+export const useUserStore = defineStore({
+  id: "user",
+  state: () => state,
   getters,
-};
+  actions,
+});

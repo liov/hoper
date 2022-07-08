@@ -1467,3 +1467,34 @@ hadoop fs -chmod -R 777 /
 
 # flutter 编译java乱码
 org.gradle.jvmargs=-Dfile.encoding=UTF-8
+
+# 解决pip install face_recognition报错 You need to install Visual Studio for C++.
+pip install --no-dependencies face_recognition -i https://pypi.douban.com/simpl
+
+#  CMake must be installed to build dlib
+pip install cmake
+
+# 安装dlib
+git clone https://github.com/davisking/dlib.git
+cd dlib
+mkdir build
+cd build
+
+cmake .. -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=.\lib.win-amd64-cpython-39 -DPYTHON_EXECUTABLE=D:\SDK\Anaconda3\python.exe -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE=lib.win-amd64-cpython-39 -A x64
+CMake Error: Error: generator platform: x64
+
+cmake --build . --config Release -- /m
+
+cd ..
+python setup.py install
+
+如果出现error C2734: “GifAsciiTable8x8”: 如果不是外部的，则必须初始化常量对象
+
+python setup.py install --no DLIB_GIF_SUPPORT
+
+不成功 ValueError: path 'dlib/CMakeLists.txt/' cannot end with '/'
+
+D:\SDK\Anaconda3\Library\include\gif_lib.h
+extern const unsigned char XPORT GifAsciiTable8x8[][GIF_FONT_WIDTH];
+
+python -m pip install dlib

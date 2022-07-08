@@ -29,50 +29,53 @@
   </van-row>
 </template>
 
-<script lang="ts">
-import { Options, Vue, prop } from "vue-class-component";
+<script setup lang="ts">
 import axios from "axios";
 import emitter from "@/plugin/emitter";
 import { jump } from "@/router/utils";
+import { reactive } from "vue";
+import { useRoute } from "vue-router";
 
-class Props {
-  content = prop<any>({ default: {} });
-  readonly type = prop<number>({});
+const props = defineProps<{
+  content: any;
+  readonly type: number;
+}>();
+
+const route = useRoute();
+
+const content = reactive(props.content);
+
+function moreShow() {
+  emitter.emit("more-show", { type: props.type, refId: content.id });
 }
-@Options({})
-export default class Action extends Vue.with(Props) {
-  moreShow() {
-    emitter.emit("more-show", { type: this.type, refId: this.content.id });
+function favShow() {
+  if (!props.content.collects) {
+    content.collects = [];
   }
-  favShow() {
-    if (!this.content.collects) {
-      this.content.collects = [];
-    }
-    emitter.emit("fav-show", {
-      type: this.type,
-      refId: this.content.id,
-      collects: this.content.collects,
+  emitter.emit("fav-show", {
+    type: props.type,
+    refId: content.id,
+    collects: content.collects,
+  });
+  console.log(content.collects);
+}
+function commentShow() {
+  jump(route.path, props.type, content);
+}
+async function like() {
+  const api = `/api/v1/action/like`;
+  const id = content.id;
+  const likeId = content.likeId;
+  if (likeId > 0) {
+    await axios.delete(api + "/" + content.likeId);
+    content.likeId = 0;
+  } else {
+    const { data } = await axios.post(api, {
+      refId: id,
+      type: props.type,
+      action: 2,
     });
-    console.log(this.content.collects);
-  }
-  commentShow() {
-    jump(this.$route.path, this.type, this.content);
-  }
-  async like() {
-    const api = `/api/v1/action/like`;
-    const id = this.content.id;
-    const likeId = this.content.likeId;
-    if (likeId > 0) {
-      await axios.delete(api + "/" + this.content.likeId);
-      this.content.likeId = 0;
-    } else {
-      const { data } = await axios.post(api, {
-        refId: id,
-        type: this.type,
-        action: 2,
-      });
-      this.content.likeId = data.details.id;
-    }
+    content.likeId = data.details.id;
   }
 }
 </script>

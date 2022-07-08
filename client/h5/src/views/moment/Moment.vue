@@ -18,8 +18,7 @@
           </router-link>
         </div>
       </template>
-      <van-tab title="关注">
-      </van-tab>
+      <van-tab title="关注"> </van-tab>
       <van-tab title="推荐"> 内容2 </van-tab>
       <van-tab title="最新"> <MomentList /> </van-tab>
     </van-tabs>
@@ -31,21 +30,15 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import MomentList from "@/views/moment/List.vue"; // @ is an alias to /src
+<script setup lang="ts">
+import MomentList from "@/views/moment/List.vue";
+import { Toast } from "vant";
+import { ref } from "vue";
 
-@Options({
-  components: {
-    MomentList,
-  },
-})
-export default class Moment extends Vue {
-  active = 2;
+const active = ref(2);
 
-  onChange(index: number) {
-    this.$toast({ message: index });
-  }
+function onChange(index: number) {
+  Toast({ message: index });
 }
 </script>
 

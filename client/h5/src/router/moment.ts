@@ -1,5 +1,4 @@
-import { RouteRecordRaw } from "vue-router";
-import { completedAuthenticated } from "@/router/middle";
+import type { RouteRecordRaw } from "vue-router";
 
 export const momentRoute: Array<RouteRecordRaw> = [
   {

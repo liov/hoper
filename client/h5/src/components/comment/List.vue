@@ -19,67 +19,65 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Options, prop, Vue } from "vue-class-component";
+<script setup lang="ts">
 import axios from "axios";
 import { reactive, ref } from "vue";
 import Comment from "@/components/comment/Comment.vue";
 import ActionMore from "@/components/action/More.vue";
+import { useUserStore } from "@/store/user";
+import { useContentStore } from "@/store/content";
 
-class Props {
-  type = prop<number>({});
-  refId = prop<number>({});
-  rootId = prop<number>({ default: 0 });
+const props = defineProps<{
+  type: number;
+  refId: number;
+  rootId: number;
+}>();
+
+const userStore = useUserStore();
+const store = useContentStore();
+
+const active = 0;
+const loading = ref(false);
+const finished = ref(false);
+const pageNo = ref(1);
+const pageSize = ref(10);
+const list = ref([]);
+
+const pullDown = reactive({
+  refreshing: false,
+  successText: "刷新成功",
+});
+
+onLoad();
+
+//mounted() {}
+function user(id: number) {
+  return userStore.getUser(id);
 }
-@Options({
-  components: { Comment, ActionMore },
-})
-export default class CommentList extends Vue.with(Props) {
-  active = 0;
-  loading = false;
-  finished = false;
-  pageNo = 1;
-  pageSize = 10;
-  list = [];
 
-  pullDown = reactive({
-    refreshing: false,
-    successText: "刷新成功",
-  });
-
-  //mounted() {}
-  user(id: number) {
-    return this.$store.getters.getUser(id);
+async function onLoad() {
+  finished.value = false;
+  // 异步更新数据
+  const res = await axios.get(
+    `/api/v1/action/comment?type=${props.type}&refId=${props.refId}&rootId=${props.rootId}&pageNo=${pageNo.value}&pageSize=${pageSize.value}`
+  );
+  loading.value = false;
+  const data = res.data.details;
+  if (!data || !data.list) {
+    store.commentCache.set(props.rootId, list);
+    finished.value = true;
+    return;
   }
-
-  created() {
-    this.onLoad();
+  if (pageNo.value == 1) {
+    list.value = data.list;
+  } else {
+    list.value = list.value.concat(data.list);
   }
+  store.commentCache.set(props.rootId, list);
 
-  async onLoad() {
-    this.finished = false;
-    // 异步更新数据
-    const res = await axios.get(
-      `/api/v1/action/comment?type=${this.type}&refId=${this.refId}&rootId=${this.rootId}&pageNo=${this.pageNo}&pageSize=${this.pageSize}`
-    );
-    this.loading = false;
-    const data = res.data.details;
-    if (!data || !data.list) {
-      this.$store.state.content.commentCache.set(this.rootId, this.list);
-      this.finished = true;
-      return;
-    }
-    if (this.pageNo == 1) {
-      this.list = data.list;
-    } else {
-      this.list = this.list.concat(data.list);
-    }
-    this.$store.state.content.commentCache.set(this.rootId, this.list);
-
-    this.$store.commit("appendUsers", data.users);
-    this.pageNo++;
-    if (data.list.length < this.pageSize) this.finished = true;
-  }
+  userStore.appendUsers(data.users);
+  pageNo.value++;
+  if (data.list.length < pageSize.value) finished.value = true;
 }
 </script>
 
