@@ -30,83 +30,91 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Options, Vue, prop } from "vue-class-component";
-import Action from "@/components/action/Action.vue";
+<script setup lang="ts">
 import axios from "axios";
 import { upload } from "@/plugin/utils/upload";
 import emitter from "@/plugin/emitter";
 import dateTool from "@/plugin/utils/date";
+import { ref, onMounted, onUnmounted, reactive, toRefs } from "vue";
+import { Toast } from "vant";
+import { useRoute, useRouter } from "vue-router";
+import { useUserStore } from "@/store/user";
+import { useContentStore } from "@/store/content";
 
-class Props {
-  comment = prop<any>({ default: {} });
+const props = defineProps<{
+  comment: any;
+}>();
+
+const route = useRoute();
+const router = useRouter();
+const userStore = useUserStore();
+const store = useContentStore();
+const message = ref("");
+const loading = ref(false);
+const uploader = ref([]);
+const focus = ref(false);
+const commentRef = ref();
+const comment = reactive(props.comment);
+
+onMounted(() => {
+  emitter.on("onComment", (param: any) => {
+    if (param) {
+      comment.replyId = param.replyId;
+      comment.rootId = param.rootId;
+      comment.recvId = param.recvId;
+    }
+    commentRef.value.focus();
+    onFocus();
+  });
+});
+onUnmounted(() => {
+  emitter.all.delete("onComment");
+});
+
+async function onComment() {
+  if (message.value.trimStart().trimEnd().length === 0) {
+    Toast.fail("内容为空");
+    return;
+  }
+  const comment: any = {
+    type: props.comment.type,
+    refId: props.comment.refId,
+    content: message,
+    image: uploader.value.length > 0 ? uploader.value[0].url : "",
+    replyId: props.comment.replyId,
+    rootId: props.comment.rootId ? props.comment.rootId : 0,
+    recvId: props.comment.recvId,
+  };
+  const res = await axios.post("/api/v1/action/comment", comment);
+  comment.id = res.data.details.id;
+  comment.userId = userStore.auth.id;
+  const comments = store.commentCache.get(comment.rootId);
+  comments.push(comment);
+  console.log(store.commentCache);
+  Toast.success("评论成功");
+  message.value = "";
 }
-@Options({ components: { Action } })
-export default class AddComment extends Vue.with(Props) {
-  message = "";
-  loading = false;
-  uploader = [];
-  focus = false;
-  mounted() {
-    emitter.on("onComment", (param) => {
-      if (param) {
-        this.comment.replyId = param.replyId;
-        this.comment.rootId = param.rootId;
-        this.comment.recvId = param.recvId;
-      }
-      this.$refs.commentRef.focus();
-      this.onFocus();
+async function afterRead(file: any) {
+  loading.value = true;
+  file.url = await upload(file.file);
+  loading.value = false;
+}
+function user(id: number) {
+  return userStore.getUser(id);
+}
+async function onFocus() {
+  if (!userStore.auth) {
+    await userStore.getAuth();
+  }
+  if (userStore.auth) focus.value = true;
+  else
+    await router.push({
+      name: "Login",
+      query: { back: route.path },
     });
-  }
-  unmounted() {
-    emitter.all.delete("onComment");
-  }
-
-  async onComment() {
-    if (this.message.trimStart().trimEnd().length === 0) {
-      this.$toast.fail("内容为空");
-      return;
-    }
-    const comment = {
-      type: this.comment.type,
-      refId: this.comment.refId,
-      content: this.message,
-      image: this.uploader.length > 0 ? this.uploader[0].url : "",
-      replyId: this.comment.replyId,
-      rootId: this.comment.rootId ? this.comment.rootId : 0,
-      recvId: this.comment.recvId,
-    };
-    const res = await axios.post("/api/v1/action/comment", comment);
-    comment.id = res.data.details.id;
-    comment.userId = this.$store.state.user.auth.id;
-    const comments = this.$store.state.content.commentCache.get(comment.rootId);
-    comments.push(comment);
-    console.log(this.$store.state.content.commentCache);
-    this.$toast.success("评论成功");
-    this.message = "";
-  }
-  async afterRead(file: any) {
-    this.loading = true;
-    file.url = await upload(file.file);
-    this.loading = false;
-  }
-  user(id: number) {
-    return this.$store.getters.getUser(id);
-  }
-  async onFocus() {
-    if (!this.$store.state.user.auth) {
-      await this.$store.dispatch("getAuth");
-    }
-    if (this.$store.state.user.auth) this.focus = true;
-    else
-      await this.$router.push({
-        name: "Login",
-        query: { back: this.$route.path },
-      });
-  }
-  onBlur(e: FocusEvent) {
-    if (!e.relatedTarget) this.focus = false;
-  }
+}
+function onBlur(e: FocusEvent) {
+  if (!e.relatedTarget) focus.value = false;
 }
 </script>
 

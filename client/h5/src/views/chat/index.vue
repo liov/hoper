@@ -40,92 +40,89 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import Moment from "@/components/moment/Moment.vue";
-import ActionMore from "@/components/action/More.vue";
-import { API_HOST, STATIC_DIR } from "@/plugin/config";
+<script setup lang="ts">
+import { API_HOST, STATIC_DIR as staticDir } from "@/plugin/config";
+import { reactive, ref, onMounted, nextTick } from "vue";
+import { useUserStore } from "@/store/user";
+import { useRouter, useRoute } from "vue-router";
 
-@Options({
-  components: { Moment, ActionMore },
-})
-export default class Chat extends Vue {
-  message = "";
-  user = null;
-  ws: WebSocket = null; // Our websocket
-  newMsg = ""; // Holds new messages to be sent to the server
-  recv = 0; // Email address used for grabbing an avatar
-  msgs = [];
-  focus = false;
-  staticDir = STATIC_DIR;
+const router = useRouter();
+const route = useRoute();
 
-  created() {
-    this.user = this.$store.state.user.auth;
-    this.newWs();
-  }
-  beforeDestroy() {
-    this.ws.close();
-  }
-  newWs() {
-    this.ws = new WebSocket(
-      document.location.protocol.replace("http", "ws") +
-        "//" +
-        API_HOST +
-        "/api/ws/chat"
-    );
-    this.ws.onopen = () => {
-      // console.log('建立websocket连接')
-      if (this.message !== "") {
-        this.handleSubmit();
-      }
-    };
-    this.ws.onmessage = (evt) => {
-      this.msgs = this.msgs.concat(JSON.parse(evt.data));
-      console.log(this.msgs);
-      this.message = "";
-      this.$nextTick(function () {
-        document.querySelector(".placeholder").scrollIntoView();
-      });
-    };
+const userStore = useUserStore();
+const message = ref("");
+let ws: WebSocket; // Our websocket
+const newMsg = ref(""); // Holds new messages to be sent to the server
+const recv = 0; // Email address used for grabbing an avatar
+const msgs = reactive([]);
+const focus = ref(false);
 
-    this.ws.onerror = () => {
-      this.newWs();
-    };
-    this.ws.onclose = () => {
-      console.log("websocket连接关闭");
-    };
-  }
-  handleSubmit() {
-    if (this.message == "") {
-      return;
+const user = ref(userStore.auth);
+
+onMounted(() => newWs());
+
+function beforeDestroy() {
+  ws.close();
+}
+function newWs() {
+  ws = new WebSocket(
+    document.location.protocol.replace("http", "ws") +
+      "//" +
+      API_HOST +
+      "/api/ws/chat"
+  );
+  ws.onopen = () => {
+    // console.log('建立websocket连接')
+    if (message.value !== "") {
+      handleSubmit();
     }
+  };
+  ws.onmessage = (evt) => {
+    msgs.value = msgs.value.concat(JSON.parse(evt.data));
+    console.log(msgs);
+    message.value = "";
+    nextTick(() => {
+      document.querySelector(".placeholder")!.scrollIntoView();
+    });
+  };
 
-    if (this.ws.readyState !== 1) {
-      this.newWs();
-      return;
-    }
-    const msg:any = {
-      recvUserId: this.recv,
-      sendUserId: this.user.id,
-      content: this.message, // Strip out html
-    };
-    this.msgs = this.msgs.concat(msg);
-    this.ws.send(JSON.stringify(msg));
+  ws.onerror = () => {
+    newWs();
+  };
+  ws.onclose = () => {
+    console.log("websocket连接关闭");
+  };
+}
+function handleSubmit() {
+  if (message.value == "") {
+    return;
   }
-  async onFocus() {
-    if (!this.$store.state.user.auth) {
-      await this.$store.dispatch("getAuth");
-    }
-    if (this.$store.state.user.auth) this.focus = true;
-    else
-      await this.$router.push({
-        name: "Login",
-        query: { back: this.$route.path },
-      });
+
+  if (ws.readyState !== 1) {
+    newWs();
+    return;
   }
-  onBlur(e: FocusEvent) {
-    if (!e.relatedTarget) this.focus = false;
+  const msg: any = {
+    recvUserId: recv,
+    sendUserId: user.value.id,
+    content: message, // Strip out html
+  };
+  msgs.value = msgs.value.concat(msg);
+  ws.send(JSON.stringify(msg));
+}
+async function onFocus() {
+  if (!userStore.auth) {
+    await userStore.getAuth();
   }
+  if (userStore.auth) focus.value = true;
+  else
+    await router.push({
+      name: "Login",
+      query: { back: route.path },
+    });
+}
+function onBlur(e: FocusEvent) {
+  if (!e.relatedTarget) focus.value = false;
 }
 </script>
 

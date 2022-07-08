@@ -36,37 +36,35 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Options, Vue, prop } from "vue-class-component";
+<script setup lang="ts">
 import { ImagePreview } from "vant";
 import Action from "@/components/action/Action.vue";
 import { jump } from "@/router/utils";
-import { STATIC_DIR } from "@/plugin/config";
-class Props {
-  moment = prop<any>({ default: {} });
-  user = prop<any>({});
-  maxHeight = prop<number>({});
+import { STATIC_DIR as staticDir } from "@/plugin/config";
+import { useRoute } from "vue-router";
+
+const props = defineProps<{
+  moment: any;
+  user: any;
+  maxHeight: number;
+}>();
+
+const route = useRoute();
+
+const images = props.moment.images
+  ?.split(",")
+  .map((image) => staticDir + image);
+
+function preview(idx: number) {
+  ImagePreview({
+    images,
+    startPosition: idx,
+    closeable: true,
+  });
 }
-@Options({ components: { Action } })
-export default class Moment extends Vue.with(Props) {
-  images = [];
-  staticDir = STATIC_DIR;
-  created() {
-    this.images = this.moment.images
-      ?.split(",")
-      .map((image) => STATIC_DIR + image);
-  };
-  preview(idx: number) {
-    ImagePreview({
-      images: this.images,
-      startPosition: idx,
-      closeable: true,
-    });
-  };
-  detail() {
-    jump(this.$route.path, 1, this.moment);
-  };
-};
+function detail() {
+  jump(route.path, 1, props.moment);
+}
 </script>
 
 <style scoped lang="less">

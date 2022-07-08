@@ -1,5 +1,7 @@
-import { RouteRecordRaw } from "vue-router";
+import type { RouteRecordRaw } from "vue-router";
 import { completedAuthenticated } from "@/router/middle";
+import { _import } from "@/router/utils";
+import { defineAsyncComponent } from "vue";
 
 export const userRoute: Array<RouteRecordRaw> = [
   {
@@ -11,7 +13,7 @@ export const userRoute: Array<RouteRecordRaw> = [
   {
     path: "/user/login",
     name: "Login",
-    component: () => import("../views/user/Login.vue"),
+    component: defineAsyncComponent(() => import("../views/user/Login.vue")),
   },
   {
     path: "/user/active/:id/:secret",

@@ -39,67 +39,67 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Options, Vue, prop } from "vue-class-component";
+<script setup lang="ts">
 import { ImagePreview } from "vant";
 import Action from "@/components/action/Action.vue";
 import axios from "axios";
 import emitter from "@/plugin/emitter";
-import { STATIC_DIR } from "@/plugin/config";
-class Props {
-  comment = prop<any>({ default: {} });
-  user = prop<any>({});
+import { STATIC_DIR as staticDir } from "@/plugin/config";
+import { reactive } from "vue";
+
+const props = defineProps<{
+  comment: any;
+  user: any;
+}>();
+
+const comment = reactive(props.comment);
+const images = reactive([]);
+let timeOutEvent = 0;
+
+function preview() {
+  ImagePreview({
+    images: [comment.image],
+    startPosition: 0,
+    closeable: true,
+  });
 }
-@Options({ components: { Action } })
-export default class Comment extends Vue.with(Props) {
-  images = [];
+async function like() {
+  const api = `/api/v1/action/like`;
+  const id = comment.id;
+  const likeId = comment.likeId;
+  if (likeId > 0) {
+    await axios.delete(`${api}/${likeId}`);
+    comment.likeId = 0;
+  } else {
+    const res = await axios.post(api, {
+      refId: id,
+      type: 7,
+      action: 2,
+    });
+    comment.likeId = res.data.details.id;
+  }
+}
+function onComment() {
+  emitter.emit("onComment", {
+    replyId: comment.id,
+    rootId: comment.rootId,
+    recvId: comment.userId,
+  });
+}
+function onTouchStart() {
+  timeOutEvent = setTimeout(longPress, 500);
+}
+function onTouchEnd(e: Event) {
+  clearTimeout(timeOutEvent);
+  if (timeOutEvent != 0) {
+    onComment();
+    e.preventDefault();
+  }
+  return false;
+}
+function longPress() {
   timeOutEvent = 0;
-  staticDir = STATIC_DIR;
-  preview() {
-    ImagePreview({
-      images: [this.comment.image],
-      startPosition: 0,
-      closeable: true,
-    });
-  }
-  async like() {
-    const api = `/api/v1/action/like`;
-    const id = this.comment.id;
-    const likeId = this.comment.likeId;
-    if (likeId > 0) {
-      await axios.delete(`${api}/${likeId}`);
-      this.comment.likeId = 0;
-    } else {
-      const res = await axios.post(api, {
-        refId: id,
-        type: 7,
-        action: 2,
-      });
-      this.comment.likeId = res.data.details.id;
-    }
-  }
-  onComment() {
-    emitter.emit("onComment", {
-      replyId: this.comment.id,
-      rootId: this.comment.rootId,
-      recvId: this.comment.userId,
-    });
-  }
-  onTouchStart() {
-    this.timeOutEvent = setTimeout(this.longPress, 500);
-  }
-  onTouchEnd(e: Event) {
-    clearTimeout(this.timeOutEvent);
-    if (this.timeOutEvent != 0) {
-      this.onComment();
-      e.preventDefault();
-    }
-    return false;
-  }
-  longPress() {
-    this.timeOutEvent = 0;
-    emitter.emit("more-show", { type: 7, refId: this.comment.id });
-  }
+  emitter.emit("more-show", { type: 7, refId: comment.id });
 }
 </script>
 

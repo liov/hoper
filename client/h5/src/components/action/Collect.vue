@@ -42,66 +42,66 @@
   </van-popup>
 </template>
 
-<script lang="ts">
-import { Options, Vue, prop } from "vue-class-component";
+<script setup lang="ts">
 import Action from "@/components/action/Action.vue";
 import axios from "axios";
 import { upload } from "@/plugin/utils/upload";
+import { reactive, ref } from "vue";
+import { Toast } from "vant";
+import type { UnwrapNestedRefs } from "vue";
+import { useUserStore } from "@/store/user";
 
-@Options({ components: { Action } })
-export default class AddCollect extends Vue {
-  show = false;
-  addShow = false;
-  favs: any[] = [];
-  refId = 0;
-  type = 0;
-  collects = [];
-  collectsRef = null;
-  loading = false;
-  uploader = [];
-  title = "";
-  setCollect(param) {
-    this.type = param.type;
-    this.refId = param.refId;
-    this.collects = param.collects;
-    this.collectsRef = param.collects;
+const userStore = useUserStore();
+
+const show = ref(false);
+const addShow = ref(false);
+
+let refId = 0;
+let type = 0;
+let collects: UnwrapNestedRefs<any> = reactive([]);
+
+const loading = ref(false);
+const uploader: UnwrapNestedRefs<any> = reactive([]);
+const title = ref("");
+function setCollect(param) {
+  type = param.type;
+  refId = param.refId;
+  collects = param.collects;
+}
+
+const res = await axios.get("/api/v1/content/tinyFav/0");
+console.log(res);
+const favs: UnwrapNestedRefs<any> = reactive(res.data.details.list);
+
+async function onCollect() {
+  await axios.post("/api/v1/action/collect", {
+    type: type,
+    refId: refId,
+    favIds: collects,
+  });
+  Toast.success("收藏成功");
+  show.value = false;
+}
+async function afterRead(file: any) {
+  loading.value = true;
+  file.url = await upload(file.file);
+  loading.value = false;
+}
+async function onConfirm() {
+  if (title.value.trimStart().trimEnd().length === 0) {
+    Toast.fail("内容为空");
+    return;
   }
-  async created() {
-    const res = await axios.get("/api/v1/content/tinyFav/0");
-    console.log(res);
-    this.favs = res.data.details.list;
-  }
-  async onCollect() {
-    await axios.post("/api/v1/action/collect", {
-      type: this.type,
-      refId: this.refId,
-      favIds: this.collects,
-    });
-    this.$toast.success("收藏成功");
-    this.collectsRef.push(...this.collects);
-    this.show = false;
-  }
-  async afterRead(file: any) {
-    this.loading = true;
-    file.url = await upload(file.file);
-    this.loading = false;
-  }
-  async onConfirm() {
-    if (this.title.trimStart().trimEnd().length === 0) {
-      this.$toast.fail("内容为空");
-      return;
-    }
-    const fav = {
-      title: this.title,
-      cover: this.uploader.length > 0 ? this.uploader[0].url : "",
-    };
-    const res = await axios.post("/api/v1/content/fav", fav);
-    fav.id = res.data.details.id;
-    fav.userId = this.$store.state.user.auth.id;
-    this.favs.push(fav);
-    this.$toast.success("新建成功");
-    this.title = "";
-  }
+  const fav: any = {
+    title: title,
+    cover: uploader.length > 0 ? uploader[0].url : "",
+  };
+  const res = await axios.post("/api/v1/content/fav", fav);
+  fav.id = res.data.details.id;
+  fav.userId = userStore.auth.id;
+  favs.push(fav);
+  Toast.success("新建成功");
+  title.value = "";
 }
 </script>
 
