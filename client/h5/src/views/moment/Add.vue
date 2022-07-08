@@ -50,49 +50,50 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Options, Vue } from "vue-class-component";
+<script setup lang="ts">
 import axios from "axios";
 import { upload } from "@/plugin/utils/upload";
+import { Toast } from "vant";
+import { useRouter } from "vue-router";
+import { reactive, ref } from "vue";
 
-@Options({ components: {} })
-export default class MomentAdd extends Vue {
-  message = "";
-  permission = 0;
-  permissionVal = "全部";
-  columns = ["全部", "自己可见", "陌生人可见"];
-  showPicker = false;
-  uploader: any = [];
+const router = useRouter();
 
-  onOversize(file: any) {
-    if (file.file.size > 5 * 1e5) this.$toast("文件大小不能超过 500kB");
+const message = ref("");
+const permission = ref(0);
+const permissionVal = ref("全部");
+const columns = ["全部", "自己可见", "陌生人可见"];
+const showPicker = ref(false);
+const uploader: any = reactive([]);
+
+function onOversize(file: any) {
+  if (file.file.size > 5 * 1e5) Toast("文件大小不能超过 500kB");
+}
+async function afterRead(file: any) {
+  file.url = await upload(file.file);
+}
+async function submit() {
+  let images = "";
+  for (const up of uploader) {
+    images += up.url + ",";
   }
-  async afterRead(file: any) {
-    file.url = await upload(file.file);
+  if (images !== "") images = images.slice(0, images.length - 1);
+  const res = await axios.post(`/api/v1/moment`, {
+    mood: "",
+    tags: [],
+    permission: permission,
+    anonymous: 2,
+    content: message,
+    images: images,
+  });
+  if (res.data.code === 0) {
+    await router.push({ path: "/" });
   }
-  async submit() {
-    let images = "";
-    for (const up of this.uploader) {
-      images += up.url + ",";
-    }
-    if (images !== "") images = images.slice(0, images.length - 1);
-    const res = await axios.post(`/api/v1/moment`, {
-      mood: "",
-      tags: [],
-      permission: this.permission,
-      anonymous: 2,
-      content: this.message,
-      images: images,
-    });
-    if (res.data.code === 0) {
-      await this.$router.push({ path: "/" });
-    }
-  }
-  onConfirm(value: string, index: number) {
-    this.permission = index;
-    this.permissionVal = value;
-    this.showPicker = false;
-  }
+}
+function onConfirm(value: string, index: number) {
+  permission.value = index;
+  permissionVal.value = value;
+  showPicker.value = false;
 }
 </script>
 

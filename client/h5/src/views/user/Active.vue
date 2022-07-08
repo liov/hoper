@@ -2,28 +2,27 @@
   <div></div>
 </template>
 
-<script lang="ts">
-import { Options, Vue } from "vue-class-component";
+<script setup lang="ts">
 import axios from "axios";
-import store from "@/store/index";
+import { onMounted } from "vue";
+import { useUserStore } from "@/store/user";
+import { useRouter, useRoute } from "vue-router";
+import { Toast } from "vant";
 
-@Options({
-  components: {},
-})
-export default class Active extends Vue {
-  mounted() {
-    axios
-      .get(
-        `/api/v1/user/active/${this.$route.params.id}/${this.$route.params.secret}`
-      )
-      .then((res) => {
-        if (!res.data.code || res.data.code === 0) {
-          this.$toast.success(res.data.message);
-          this.$router.push({ path: "/" });
-        } else this.$toast.fail(res.data.message);
-      });
-  }
-}
+const store = useUserStore();
+const router = useRouter();
+const route = useRoute();
+
+onMounted(() => {
+  axios
+    .get(`/api/v1/user/active/${route.params.id}/${route.params.secret}`)
+    .then((res) => {
+      if (!res.data.code || res.data.code === 0) {
+        Toast.success(res.data.message);
+        router.push({ path: "/" });
+      } else Toast.fail(res.data.message);
+    });
+});
 </script>
 
 <style scoped></style>

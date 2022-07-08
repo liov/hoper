@@ -4,20 +4,19 @@
     <van-tabbar-item replace to="/" icon="notes-o"> 瞬间 </van-tabbar-item>
     <van-tabbar-item replace to="/dairy" icon="search"> 日记 </van-tabbar-item>
     <van-tabbar-item replace to="/chat" icon="chat-o"> 聊天 </van-tabbar-item>
-    <van-tabbar-item replace to="/me" icon="user-circle-o"> 我的 </van-tabbar-item>
+    <van-tabbar-item replace to="/me" icon="user-circle-o">
+      我的
+    </van-tabbar-item>
   </van-tabbar>
 </template>
 
-<script lang="ts">
-import { Options, Vue } from "vue-class-component";
+<script setup lang="ts">
+import { RouterLink, RouterView } from "vue-router";
+import { useUserStore } from "@/store/user";
 
-@Options({})
-export default class App extends Vue {
-  created() {
-    if (!this.$store.state.user.auth) {
-      this.$store.dispatch("getAuth");
-    }
-  }
+const store = useUserStore();
+if (!store.auth) {
+  store.getAuth();
 }
 </script>
 

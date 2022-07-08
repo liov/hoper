@@ -1,33 +1,49 @@
 import { ObjMap } from "@/plugin/utils/user";
+import { defineStore } from "pinia";
 
-const state = {
+export interface ContentStore {
+  moment: any;
+  note?: any;
+  diary?: any;
+  diaryBook?: any;
+  fav?: any;
+  collect?: any;
+  comment?: any;
+  commentCache: Map<number, any>;
+}
+
+const state: ContentStore = {
   moment: null,
   commentCache: new Map<number, []>(),
-};
-
-const mutations = {
-  setMoment: function (state, moment) {
-    state.moment = moment;
-  },
-  setCommentCache: function (state, comment) {
-    state.commentCache.clear();
-  },
 };
 
 const actions = {};
 
 const getters = {
-  getMoment(state, getters, rootState) {
+  getMoment(state) {
     return state.moment;
   },
-  getCommentCache: (state, getters, rootState) => (rooId) => {
+  getCommentCache: (state) => (rooId) => {
     return state.commentCache.get(rooId);
   },
 };
 
-export const content = {
-  state,
-  mutations,
-  actions,
+export const useContentStore = defineStore({
+  id: "content",
+  state: () => state,
   getters,
-};
+  actions,
+});
+
+export const contentMutations = [
+  (place) => {
+    throw new Error(`${place} not implemented`);
+  },
+  (moment) => (state.moment = moment),
+  (note) => (state.note = note),
+  (diary) => (state.diary = diary),
+  (diaryBook) => (state.diary = diaryBook),
+  (fav) => (state.fav = fav),
+  (collect) => (state.collect = collect),
+  (comment) => (state.comment = comment),
+];

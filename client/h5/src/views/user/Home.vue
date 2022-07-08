@@ -65,40 +65,35 @@
           {{ user.signature }}
         </van-row>
         <van-row justify="center">{{ user.intro }}</van-row>
-        <van-row> </van-row
-      ></van-col>
+        <van-row></van-row>
+      </van-col>
     </van-row>
     <van-row>
-      <van-col span="8"
-        ><router-link :to="'/user/edit'">编辑资料</router-link></van-col
-      >
+      <van-col span="8">
+        <router-link :to="'/user/edit'">编辑资料</router-link>
+      </van-col>
       <van-col span="8">span: 8</van-col>
       <van-col span="8" @click="logout">退出登录</van-col>
     </van-row>
   </div>
 </template>
 
-<script lang="ts">
-import { Options, Vue } from "vue-class-component";
+<script setup lang="ts">
 import axios from "axios";
-import { STATIC_DIR } from "@/plugin/config";
+import { STATIC_DIR as staticDir } from "@/plugin/config";
 
-@Options({
-  components: {},
-})
-export default class Home extends Vue {
-  user = {};
-  staticDir = STATIC_DIR;
-  async created() {
-    this.user = this.$store.state.user.auth;
-    if (!this.user.intro) this.user.intro = "我不想介绍自己";
-    if (!this.user.signature) this.user.signature = "太个性签名签不下";
-  }
-  async logout() {
-    const res = await axios.get("/api/v1/user/logout");
-    this.$toast(res.data.message);
-    this.$store.commit("setAuth", null);
-  }
+import { useUserStore } from "@/store/user";
+import { Toast } from "vant";
+
+const store = useUserStore();
+const user = store.auth;
+if (!user.intro) user.intro = "我不想介绍自己";
+if (!user.signature) user.signature = "太个性签名签不下";
+
+async function logout() {
+  const res = await axios.get("/api/v1/user/logout");
+  Toast(res.data.message);
+  store.auth = null;
 }
 </script>
 
@@ -107,6 +102,7 @@ export default class Home extends Vue {
   margin: 1rem 0;
   padding: 0 1rem;
 }
+
 i {
   margin: 0.7rem;
 }

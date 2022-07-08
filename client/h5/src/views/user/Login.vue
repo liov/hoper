@@ -99,71 +99,68 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Options, Vue } from "vue-class-component";
+<script setup lang="ts">
+import { ref } from "vue";
 import axios from "axios";
 import Luosimao from "@/components/Luosimao.vue";
 import Validator from "@/plugin/utils/validator";
+import { useRoute, useRouter } from "vue-router";
+import { useUserStore } from "@/store/user";
+import { Toast } from "vant";
 
-@Options({
-  components: { Luosimao },
-})
-export default class Login extends Vue {
-  account = "";
-  username = "";
-  password = "";
-  password_confirm = "";
-  gender = "1";
-  type = 0;
-  mail = "";
-  phone = "";
-  Validator = Validator;
-  async created() {
-    if (this.$route.query.back) {
-      if (!this.$store.state.user.auth) await this.$store.dispatch("getAuth");
+const account = ref("");
+const username = ref("");
+const password = ref("");
+const password_confirm = ref("");
+const gender = ref("1");
+let type = 0;
+const mail = ref("");
+const phone = ref("");
+const router = useRouter();
+const route = useRoute();
+const store = useUserStore();
+const luosimao = ref();
 
-      if (this.$store.state.user.auth)
-        await this.$router.replace(`${this.$route.query.back}`);
-    }
+if (route.query.back) {
+  if (!store.auth) await store.getAuth();
+
+  if (store.auth) await router.replace(`${route.query.back}`);
+}
+
+function getFormValues(values: any): any {
+  const res = {
+    ...values,
+    password: values.password,
+    vCode: luosimao.value,
+  };
+  if (type) {
+    res.gender = parseInt(gender.value);
+    delete res.password_confirm;
   }
-
-  getFormValues(values: any): any {
-    const res = {
-      ...values,
-      password: values.password,
-      vCode: this.$refs.luosimao.value,
-    };
-    if (this.type) {
-      res.gender = parseInt(this.gender);
-      delete res.password_confirm;
-    }
-    /*    const emailReg = /^([a-zA-Z0-9]+[_.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_.]?)*[a-zA-Z0-9]+.[a-zA-Z]{2,3}$/
+  /*    const emailReg = /^([a-zA-Z0-9]+[_.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_.]?)*[a-zA-Z0-9]+.[a-zA-Z]{2,3}$/
     const phoneReg = new RegExp('^1[0-9]{10}$')
     if (!emailReg.test(values.input) && !phoneReg.test(values.input)) {
       this.$toast.fail("请输入正确的邮箱或手机")
     }*/
-    return res;
-  }
+  return res;
+}
 
-
-  async signup(values: any) {
-    const res = await axios.post("/api/v1/user", this.getFormValues(values));
-    if (res.data.code == 0) {
-      this.$toast.success("请前往邮箱查收激活邮件");
-    }
+async function signup(values: any) {
+  const res = await axios.post("/api/v1/user", getFormValues(values));
+  if (res.data.code == 0) {
+    Toast.success("请前往邮箱查收激活邮件");
   }
+}
 
-  async onSubmit(values: any) {
-    if (this.type == 0)
-      await this.$store.dispatch("login", this.getFormValues(values));
-    else await this.$store.dispatch("signup", this.getFormValues(values)); //await this.signup(values);
-    const LUOCAPTCHA = (window as any).LUOCAPTCHA;
-    LUOCAPTCHA && LUOCAPTCHA.reset();
-  }
+async function onSubmit(values: any) {
+  if (type == 0) await store.login(getFormValues(values));
+  else await store.signup(getFormValues(values)); //await this.signup(values);
+  const LUOCAPTCHA = (window as any).LUOCAPTCHA;
+  LUOCAPTCHA && LUOCAPTCHA.reset();
+}
 
-  onClick(name, title) {
-    this.type = name;
-  }
+function onClick(name, title) {
+  type = name;
 }
 </script>
 

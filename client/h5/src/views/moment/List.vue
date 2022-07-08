@@ -25,71 +25,74 @@
         </van-cell>
       </van-list>
     </van-pull-refresh>
-    <ActionMore v-if="$store.state.auth" key="moment-list"></ActionMore>
+    <ActionMore v-if="userStore.auth" key="moment-list"></ActionMore>
   </div>
 </template>
 
-<script lang="ts">
-import { Options, Vue } from "vue-class-component";
+<script setup lang="ts">
 import axios from "axios";
 import { reactive, ref } from "vue";
 import Moment from "@/components/moment/Moment.vue";
 import ActionMore from "@/components/action/More.vue";
+import { useUserStore } from "@/store/user";
+import { useContentStore } from "@/store/content";
+import type { UnwrapNestedRefs } from "vue";
 
-@Options({
-  components: { Moment, ActionMore },
-})
-export default class MomentList extends Vue {
-  active = 0;
-  loading = false;
-  finished = false;
-  pageNo = 1;
-  pageSize = 10;
-  list = Array.from(new Array(this.pageSize), () => {
+const store = useContentStore();
+const userStore = useUserStore();
+const active = 0;
+const loading = ref(false);
+const finished = ref(false);
+const pageNo = ref(1);
+const pageSize = ref(10);
+const list: UnwrapNestedRefs<any> = ref(
+  Array.from(new Array(pageSize), () => {
     return {};
-  });
+  })
+);
 
-  pullDown = reactive({
-    refreshing: false,
-    successText: "刷新成功",
-  });
-  show = false;
+const pullDown = reactive({
+  refreshing: false,
+  successText: "刷新成功",
+});
+const show = ref(false);
 
-  //mounted() {}
-  user(id: number) {
-    return this.$store.getters.getUser(id);
+//mounted() {}
+function user(id: number) {
+  return userStore.getUser(id);
+}
+
+async function onLoad() {
+  finished.value = false;
+  // 异步更新数据
+  const res = await axios.get(
+    `/api/v1/moment?pageNo=${pageNo.value}&pageSize=${pageSize.value}`
+  );
+  loading.value = false;
+  const data = res.data.details;
+  if (!data || !data.list) {
+    finished.value = true;
+    return;
   }
-
-  async onLoad() {
-    this.finished = false;
-    // 异步更新数据
-    const res = await axios.get(
-      `/api/v1/moment?pageNo=${this.pageNo}&pageSize=${this.pageSize}`
-    );
-    this.loading = false;
-    const data = res.data.details;
-    if (!data || !data.list) {
-      this.finished = true;
-      return;
-    }
-    if (this.pageNo == 1) {
-      this.list = data.list;
-    } else {
-      this.list = this.list.concat(data.list);
-    }
-    this.$store.commit("appendUsers", data.users);
-    this.show = true;
-    this.pageNo++;
-    if (data.list.length < this.pageSize) this.finished = true;
+  if (pageNo.value == 1) {
+    list.value = data.list;
+  } else {
+    list.value = list.value.concat(data.list);
   }
-  onRefresh = () => {
-    this.pullDown.refreshing = true;
-    this.pageNo = 1;
-    this.onLoad().catch(() => {
-      this.pullDown.successText = "刷新失败";
-    });
-    this.pullDown.refreshing = false;
-  };
+  console.log(list);
+  userStore.appendUsers(data.users);
+  show.value = true;
+  pageNo.value++;
+  if (data.list.length < pageSize.value) finished.value = true;
+}
+
+function onRefresh() {
+  pullDown.refreshing = true;
+  pageNo.value = 1;
+  onLoad().catch(() => {
+    pullDown.successText = "刷新失败";
+  });
+  pullDown.refreshing = false;
 }
 </script>
 

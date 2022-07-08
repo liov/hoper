@@ -73,59 +73,55 @@
   >
 </template>
 
-<script lang="ts">
-import { Options, prop, Vue } from "vue-class-component";
+<script setup lang="ts">
 import axios from "axios";
 import { upload } from "@/plugin/utils/upload";
 import dataTool from "@/plugin/utils/date";
 import dayjs from "dayjs";
-import store from "@/store";
+
 import { STATIC_DIR } from "@/plugin/config";
+import { ref, reactive } from "vue";
+import { useUserStore } from "@/store/user";
 
-@Options({
-  components: {},
-})
-export default class Edit extends Vue {
-  user = {};
-  show = false;
-  loading = false;
-  birthday = new Date(2000, 0, 1);
-  minDate = new Date(1900, 0, 1);
-  maxDate = new Date();
-  staticDir = STATIC_DIR;
-  async created() {
-    this.user = this.$store.state.user.auth;
-    if (!this.user.intro) this.user.intro = "我不想介绍自己";
-    if (!this.user.signature) this.user.signature = "太个性签名签不下";
-    this.user.birthday = dayjs(this.user.birthday).format(dataTool.formatYMD);
-    if (this.user.birthday !== dataTool.zeroTime)
-      this.birthday = dayjs(this.user.birthday).toDate();
-  }
+const store = useUserStore();
 
-  async afterRead(file: any) {
-    this.loading = true;
-    this.user.avatarUrl = await upload(file.file);
-    this.loading = false;
-  }
-  async confirm() {
-    this.user.birthday = this.birthday.format(dataTool.formatYMD);
-    const res = await axios.put(`/api/v1/user/${this.user.id}`, {
-      id: this.user.id,
-      details: {
-        name: this.user.name,
-        gender: this.user.gender,
-        avatarUrl: this.user.avatarUrl,
-        signature: this.user.signature,
-        intro: this.user.intro,
-        birthday: this.user.birthday,
-      },
-    });
-    if (res.data.code == 0) this.$store.commit("SET_AUTH", this.user);
-  }
-  onConfirm(value) {
-    this.show = false;
-    this.user.birthday = dayjs(this.birthday).format(dataTool.formatYMD);
-  }
+const show = ref(false);
+const loading = ref(false);
+const birthday = ref(new Date(2000, 0, 1));
+const minDate = new Date(1900, 0, 1);
+const maxDate = new Date();
+const staticDir = STATIC_DIR;
+
+const user = reactive(store.auth);
+if (!user.intro) user.intro = "我不想介绍自己";
+if (!user.signature) user.signature = "太个性签名签不下";
+user.birthday = dayjs(user.birthday).format(dataTool.formatYMD);
+if (user.birthday !== dataTool.zeroTime)
+  birthday.value = dayjs(user.birthday).toDate();
+
+async function afterRead(file: any) {
+  loading.value = true;
+  user.avatarUrl = await upload(file.file);
+  loading.value = false;
+}
+async function confirm() {
+  user.birthday = birthday.value.format(dataTool.formatYMD);
+  const res = await axios.put(`/api/v1/user/${user.id}`, {
+    id: user.id,
+    details: {
+      name: user.name,
+      gender: user.gender,
+      avatarUrl: user.avatarUrl,
+      signature: user.signature,
+      intro: user.intro,
+      birthday: user.birthday,
+    },
+  });
+  if (res.data.code == 0) store.auth = user;
+}
+function onConfirm(value) {
+  show.value = false;
+  user.birthday = dayjs(birthday.value).format(dataTool.formatYMD);
 }
 </script>
 

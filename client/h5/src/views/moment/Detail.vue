@@ -11,41 +11,34 @@
   <div class="placeholder"></div>
 </template>
 
-<script lang="ts">
-import { Options, Vue } from "vue-class-component";
+<script setup lang="ts">
+import { ref } from "vue";
 import Moment from "@/components/moment/Moment.vue";
-import ActionMore from "@/components/action/More.vue";
 import CommentList from "@/components/comment/List.vue";
 import AddComment from "@/components/comment/Add.vue";
 import axios from "axios";
-@Options({
-  components: {
-    Moment,
-    ActionMore,
-    CommentList,
-    AddComment,
-  },
-})
-export default class MomentDetail extends Vue {
-  active = 0;
-  moment = null;
-  user = null;
-  show = false;
-  async created() {
-    this.show = false;
-    this.moment = this.$store.state.content.moment;
-    if (!this.moment) {
-      const res = await axios.get(`/api/v1/moment/${this.$route.params.id}`);
-      this.moment = res.data.details;
-      this.$store.commit("setMoment", this.moment);
-      this.$store.commit("appendUsers", this.moment.users);
-    }
-    this.user = this.getUser(this.moment.userId);
-    this.show = true;
-  }
-  getUser(id: number) {
-    return this.$store.getters.getUser(id);
-  }
+import { useContentStore } from "@/store/content";
+import { useRoute } from "vue-router";
+import { useUserStore } from "@/store/user";
+
+const store = useContentStore();
+const userStore = useUserStore();
+const route = useRoute();
+const active = ref(0);
+
+const moment = ref(store.moment);
+
+if (!moment.value) {
+  const res = await axios.get(`/api/v1/moment/${route.params.id}`);
+  moment.value = res.data.details;
+  store.moment = moment.value;
+  userStore.appendUsers(moment.value!.users);
+}
+const user = getUser(moment.value!.userId);
+const show = true;
+
+function getUser(id: number) {
+  return userStore.getUser(id);
 }
 </script>
 

@@ -10,32 +10,27 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Options, Vue } from "vue-class-component";
+<script setup lang="ts">
 import { dynamicLoadJs } from "@/plugin/utils/script";
-@Options({
-  components: {},
-})
-export default class Luosimao extends Vue {
-  second = false;
-  value = "";
-  created() {
-    if (!this.$store.state.LUOCAPTCHA) {
-      dynamicLoadJs("//captcha.luosimao.com/static/dist/captcha.js");
-      this.$store.commit("setCaptcha", (window as any).LUOCAPTCHA);
-    } else this.second = true;
-    window.getResponse = (resp) => {
-      this.value = resp; // resp 即验证成功后获取的值
-    };
-  }
-  mounted() {
-    if (this.second) this.$store.state.LUOCAPTCHA.render();
-  }
+import { ref, onMounted } from "vue";
 
-  reset() {
-    const LUOCAPTCHA = (window as any).LUOCAPTCHA;
-    LUOCAPTCHA && LUOCAPTCHA.reset();
-  }
+let second = false;
+const value = ref("");
+
+if (!window.LUOCAPTCHA) {
+  dynamicLoadJs("//captcha.luosimao.com/static/dist/captcha.js");
+} else second = true;
+window.LUOCAPTCHA.getResponse = (resp) => {
+  value.value = resp; // resp 即验证成功后获取的值
+};
+
+onMounted(() => {
+  if (second) window.LUOCAPTCHA.render();
+});
+
+function reset() {
+  const LUOCAPTCHA = window.LUOCAPTCHA;
+  LUOCAPTCHA && LUOCAPTCHA.reset();
 }
 </script>
 

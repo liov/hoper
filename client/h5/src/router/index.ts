@@ -1,16 +1,12 @@
-import {
-  createRouter,
-  createWebHashHistory,
-  NavigationGuard,
-  RouteRecordRaw,
-} from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
+import type { RouteRecordRaw } from "vue-router";
 import { completedAuthenticated } from "@/router/middle";
 import { userRoute } from "@/router/user";
 import { momentRoute } from "@/router/moment";
 
-declare module 'vue-router' {
+declare module "vue-router" {
   interface RouteMeta {
-    requiresAuth?: boolean
+    requiresAuth?: boolean;
   }
 }
 
@@ -34,7 +30,7 @@ const routes: Array<RouteRecordRaw> = [
 ];
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: routes.concat(userRoute).concat(momentRoute),
 });
 
