@@ -84,9 +84,12 @@ import { STATIC_DIR as staticDir } from "@/plugin/config";
 
 import { useUserStore } from "@/store/user";
 import { Toast } from "vant";
+import { reactive } from "vue";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const store = useUserStore();
-const user = store.auth;
+const user = reactive(store.auth);
 if (!user.intro) user.intro = "我不想介绍自己";
 if (!user.signature) user.signature = "太个性签名签不下";
 
@@ -94,6 +97,7 @@ async function logout() {
   const res = await axios.get("/api/v1/user/logout");
   Toast(res.data.message);
   store.auth = null;
+  router.push("/");
 }
 </script>
 

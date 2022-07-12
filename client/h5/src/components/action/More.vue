@@ -9,10 +9,9 @@
   >
   </van-action-sheet>
   <van-dialog
-    :show="report.show"
+    v-model:show="report.show"
     title="举报"
     show-cancel-button
-    @cancel="report.show = !report.show"
     teleport="#app"
     @confirm="onReport"
   >
@@ -57,11 +56,13 @@ import axios from "axios";
 import { onMounted, onUnmounted, reactive, ref } from "vue";
 import emitter from "@/plugin/emitter";
 import AddCollect from "@/components/action/Collect.vue";
+import { Dialog } from "vant";
 
+const VanDialog = Dialog.Component;
 let type = 0;
 let refId = 0;
 const show = ref(false);
-const addCollect = ref();
+const addCollect: any = ref(null);
 
 const actions = [
   { name: "分享", callback: () => (share.show = !share.show) },
@@ -120,8 +121,7 @@ onUnmounted(() => {
   emitter.all.delete("fav-show");
 });
 function remark(name: string) {
-  if (name === "255") report.field = true;
-  else report.field = false;
+  report.field = name === "255";
 }
 async function onReport() {
   await axios.post("/api/v1/action/report", {

@@ -1,4 +1,4 @@
-async function errCatch1(asyncFunc) {
+export async function errCatch1(asyncFunc) {
   try {
     const res = await asyncFunc();
     return [null, res];
@@ -7,7 +7,7 @@ async function errCatch1(asyncFunc) {
   }
 }
 
-function errCatch2(asyncFunc): any[] {
+export function errCatch2(asyncFunc): any[] {
   const value = new Array(2);
   asyncFunc()
     .catch((e) => {
@@ -19,7 +19,7 @@ function errCatch2(asyncFunc): any[] {
   return value;
 }
 
-function errCatch(asyncFunc): [any, any] {
+export function errCatch(asyncFunc): [any, any] {
   let error;
   let result;
   asyncFunc()

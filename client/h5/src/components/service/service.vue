@@ -13,8 +13,10 @@ const props = defineProps<{
   url: string | URL;
 }>();
 
+let status;
+
 onMounted(() => {
-  const status = document.querySelector("#status")!;
+  status = document.querySelector("#status")!;
   if ("serviceWorker" in navigator) {
     status.innerHTML += `<p>浏览器是否支持：支持</p>`;
     navigator.serviceWorker

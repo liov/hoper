@@ -3,7 +3,7 @@
     <div class="auth">
       <img class="avatar" :src="staticDir + user.avatarUrl" />
       <span class="name">{{ user.name }}</span>
-      <span class="time">{{ $date2s(moment.createdAt) }}</span>
+      <span class="time">{{ date2s(moment.createdAt) }}</span>
     </div>
     <div class="content" @click="detail">
       <van-field
@@ -32,7 +32,7 @@
         @click="preview(idx)"
       />
     </lazy-component>
-    <Action :content="moment" :type="1"> </Action>
+    <Action :content="moment" :type="1"></Action>
   </div>
 </template>
 
@@ -42,13 +42,16 @@ import Action from "@/components/action/Action.vue";
 import { jump } from "@/router/utils";
 import { STATIC_DIR as staticDir } from "@/plugin/config";
 import { useRoute } from "vue-router";
+import { date2s } from "@/plugin/utils/time";
+import { reactive } from "vue";
 
 const props = defineProps<{
   moment: any;
   user: any;
-  maxHeight: number;
+  maxHeight?: number;
 }>();
 
+const moment = reactive(props.moment);
 const route = useRoute();
 
 const images = props.moment.images
@@ -62,6 +65,7 @@ function preview(idx: number) {
     closeable: true,
   });
 }
+
 function detail() {
   jump(route.path, 1, props.moment);
 }
@@ -71,6 +75,7 @@ function detail() {
 .moment {
   @20px: 20px;
   @avatar: 30px;
+
   .name {
     left: 60px;
     position: absolute;
@@ -80,8 +85,10 @@ function detail() {
     position: absolute;
     right: @20px;
   }
+
   .content {
     width: 100%;
+
     h3 {
       margin: 0;
       font-size: 18px;
@@ -109,9 +116,11 @@ function detail() {
     position: relative;
     margin: 0 16px;
   }
+
   .imgs {
     padding: 0 11px;
   }
+
   .img {
     margin: 5px 5px;
   }

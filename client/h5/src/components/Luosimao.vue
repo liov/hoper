@@ -14,23 +14,38 @@
 import { dynamicLoadJs } from "@/plugin/utils/script";
 import { ref, onMounted } from "vue";
 
-let second = false;
-const value = ref("");
+let value = "";
+let render = false;
+let LUOCAPTCHA = window.LUOCAPTCHA;
 
-if (!window.LUOCAPTCHA) {
-  dynamicLoadJs("//captcha.luosimao.com/static/dist/captcha.js");
-} else second = true;
-window.LUOCAPTCHA.getResponse = (resp) => {
-  value.value = resp; // resp 即验证成功后获取的值
-};
+defineExpose({
+  value,
+  getValue,
+});
+
+if (!LUOCAPTCHA) {
+  dynamicLoadJs("//captcha.luosimao.com/static/dist/captcha.js", () => {
+    LUOCAPTCHA = window.LUOCAPTCHA;
+    !render && LUOCAPTCHA.render();
+    render = true;
+    window.getResponse = (resp) => {
+      value = resp; // resp 即验证成功后获取的值
+      console.log(value);
+    };
+  });
+}
 
 onMounted(() => {
-  if (second) window.LUOCAPTCHA.render();
+  LUOCAPTCHA && !render && LUOCAPTCHA.render();
+  render = true;
 });
 
 function reset() {
-  const LUOCAPTCHA = window.LUOCAPTCHA;
   LUOCAPTCHA && LUOCAPTCHA.reset();
+}
+
+function getValue() {
+  return value;
 }
 </script>
 

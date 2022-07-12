@@ -3,12 +3,7 @@ import type { RouteRecordRaw } from "vue-router";
 import { completedAuthenticated } from "@/router/middle";
 import { userRoute } from "@/router/user";
 import { momentRoute } from "@/router/moment";
-
-declare module "vue-router" {
-  interface RouteMeta {
-    requiresAuth?: boolean;
-  }
-}
+import { defineAsyncComponent } from "vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -18,8 +13,10 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/chat",
+    name: "Chat",
     beforeEnter: completedAuthenticated,
-    component: () => import("../views/chat/index.vue"),
+    component: defineAsyncComponent(() => import("../views/chat/index.vue")),
+    meta: { requiresAuth: true },
   },
   {
     path: "/me",
