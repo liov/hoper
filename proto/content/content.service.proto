@@ -265,7 +265,7 @@ message AttrListRep{
 }
 
 message AddFavReq{
-  uint64 id = 1 [(go.field) = {tags:'validate:"required"'}];
+  uint64 id = 1;
   uint64 userId = 17 [(go.field) = {tags:'annotation:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
   string title = 3 [(go.field) = {tags:'gorm:"size:10;not null" annotation:"标题"'}];
@@ -276,7 +276,7 @@ message AddFavReq{
 }
 
 message AddContainerReq{
-  uint64 id = 1 [(go.field) = {tags:'validate:"required"'}];
+  uint64 id = 1;
   uint64 userId = 17 [(go.field) = {tags:'annotation:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
   ContainerType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null" annotation:"类型"'}];

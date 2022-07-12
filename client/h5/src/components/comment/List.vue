@@ -21,17 +21,21 @@
 
 <script setup lang="ts">
 import axios from "axios";
-import { reactive, ref } from "vue";
+import { reactive, type Ref, ref, type UnwrapNestedRefs } from "vue";
 import Comment from "@/components/comment/Comment.vue";
 import ActionMore from "@/components/action/More.vue";
 import { useUserStore } from "@/store/user";
 import { useContentStore } from "@/store/content";
+import type { UnwrapRef } from "vue";
 
-const props = defineProps<{
-  type: number;
-  refId: number;
-  rootId: number;
-}>();
+const props = withDefaults(
+  defineProps<{
+    type: number;
+    refId: string;
+    rootId?: number;
+  }>(),
+  { rootId: 0 }
+);
 
 const userStore = useUserStore();
 const store = useContentStore();
@@ -41,7 +45,7 @@ const loading = ref(false);
 const finished = ref(false);
 const pageNo = ref(1);
 const pageSize = ref(10);
-const list = ref([]);
+const list: Ref<UnwrapRef<any[]>> = ref([]);
 
 const pullDown = reactive({
   refreshing: false,

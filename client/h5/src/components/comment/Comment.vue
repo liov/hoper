@@ -3,7 +3,7 @@
     <div class="auth">
       <img class="avatar" :src="staticDir + user.avatarUrl" />
       <span class="name">{{ user.name }}</span>
-      <span class="time">{{ $date2s(comment.createdAt) }}</span>
+      <span class="time">{{ date2s(comment.createdAt) }}</span>
       <div class="like">
         <van-icon
           :name="comment.likeId > 0 ? 'like' : 'like-o'"
@@ -41,7 +41,7 @@
 
 <script setup lang="ts">
 import { ImagePreview } from "vant";
-import Action from "@/components/action/Action.vue";
+import { date2s } from "@/plugin/utils/time";
 import axios from "axios";
 import emitter from "@/plugin/emitter";
 import { STATIC_DIR as staticDir } from "@/plugin/config";
@@ -54,7 +54,10 @@ const props = defineProps<{
 
 const comment = reactive(props.comment);
 const images = reactive([]);
-let timeOutEvent = 0;
+let startTime = 0;
+let endTime = 0;
+let timer;
+const timeout = 500;
 
 function preview() {
   ImagePreview({
@@ -87,18 +90,19 @@ function onComment() {
   });
 }
 function onTouchStart() {
-  timeOutEvent = setTimeout(longPress, 500);
+  startTime = Date.now();
+  timer = setTimeout(longPress, timeout);
 }
 function onTouchEnd(e: Event) {
-  clearTimeout(timeOutEvent);
-  if (timeOutEvent != 0) {
+  endTime = Date.now();
+  clearTimeout(timer);
+  if (endTime - startTime < timeout) {
     onComment();
     e.preventDefault();
   }
   return false;
 }
 function longPress() {
-  timeOutEvent = 0;
   emitter.emit("more-show", { type: 7, refId: comment.id });
 }
 </script>

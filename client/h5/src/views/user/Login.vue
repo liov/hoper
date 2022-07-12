@@ -2,7 +2,7 @@
   <div class="login">
     <van-row type="flex" justify="center">
       <van-col span="18">
-        <van-tabs @click="onClick">
+        <van-tabs @click-tab="onClickTab">
           <van-tab title="登录"></van-tab>
           <van-tab title="注册"></van-tab>
         </van-tabs>
@@ -100,7 +100,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { nextTick, ref, watch } from "vue";
 import axios from "axios";
 import Luosimao from "@/components/Luosimao.vue";
 import Validator from "@/plugin/utils/validator";
@@ -113,13 +113,13 @@ const username = ref("");
 const password = ref("");
 const password_confirm = ref("");
 const gender = ref("1");
-let type = 0;
+const type = ref(0);
 const mail = ref("");
 const phone = ref("");
 const router = useRouter();
 const route = useRoute();
 const store = useUserStore();
-const luosimao = ref();
+const luosimao: any = ref(null);
 
 if (route.query.back) {
   if (!store.auth) await store.getAuth();
@@ -128,12 +128,15 @@ if (route.query.back) {
 }
 
 function getFormValues(values: any): any {
+  nextTick(() => {
+    console.log(luosimao.value.value);
+  });
   const res = {
     ...values,
     password: values.password,
-    vCode: luosimao.value,
+    vCode: luosimao.value.getValue(),
   };
-  if (type) {
+  if (type.value) {
     res.gender = parseInt(gender.value);
     delete res.password_confirm;
   }
@@ -153,14 +156,15 @@ async function signup(values: any) {
 }
 
 async function onSubmit(values: any) {
-  if (type == 0) await store.login(getFormValues(values));
+  if (type.value == 0) await store.login(getFormValues(values));
   else await store.signup(getFormValues(values)); //await this.signup(values);
-  const LUOCAPTCHA = (window as any).LUOCAPTCHA;
+  const LUOCAPTCHA = window.LUOCAPTCHA;
   LUOCAPTCHA && LUOCAPTCHA.reset();
 }
 
-function onClick(name, title) {
-  type = name;
+function onClickTab({ name, title }) {
+  console.log(name, title);
+  type.value = name;
 }
 </script>
 

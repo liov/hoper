@@ -54,3 +54,13 @@ function clearObjectStore(db: IDBDatabase, storeName) {
   const store = transaction.objectStore(storeName);
   store.clear();
 }
+
+export default {
+  openDB,
+  deleteDB,
+  addData,
+  getDataByKey,
+  updateDataByKey,
+  deleteDataByKey,
+  clearObjectStore,
+};

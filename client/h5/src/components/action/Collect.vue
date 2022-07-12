@@ -14,7 +14,7 @@
       }}</van-checkbox>
     </van-checkbox-group>
     <div class="button">
-      <span class="button" @click="show = false">取消</span>
+      <span class="button" @click="show = !show">取消</span>
       <span class="button" style="color: red" @click="onCollect">确认</span>
     </div>
   </van-popup>
@@ -48,7 +48,7 @@ import axios from "axios";
 import { upload } from "@/plugin/utils/upload";
 import { reactive, ref } from "vue";
 import { Toast } from "vant";
-import type { UnwrapNestedRefs } from "vue";
+import type { UnwrapNestedRefs, Ref, UnwrapRef } from "vue";
 import { useUserStore } from "@/store/user";
 
 const userStore = useUserStore();
@@ -58,20 +58,34 @@ const addShow = ref(false);
 
 let refId = 0;
 let type = 0;
-let collects: UnwrapNestedRefs<any> = reactive([]);
+const collects: Ref<UnwrapRef<any[]>> = ref([]);
 
 const loading = ref(false);
-const uploader: UnwrapNestedRefs<any> = reactive([]);
+const uploader: UnwrapNestedRefs<any[]> = reactive([]);
 const title = ref("");
 function setCollect(param) {
   type = param.type;
   refId = param.refId;
-  collects = param.collects;
+  collects.value = param.collects;
 }
+
+defineExpose({
+  show,
+  addShow,
+  loading,
+  uploader,
+  title,
+  onCollect,
+  afterRead,
+  onConfirm,
+  setCollect,
+});
 
 const res = await axios.get("/api/v1/content/tinyFav/0");
 console.log(res);
-const favs: UnwrapNestedRefs<any> = reactive(res.data.details.list);
+const favs: UnwrapNestedRefs<any[]> = res.data.details.list
+  ? reactive(res.data.details.list)
+  : reactive([]);
 
 async function onCollect() {
   await axios.post("/api/v1/action/collect", {
@@ -93,7 +107,7 @@ async function onConfirm() {
     return;
   }
   const fav: any = {
-    title: title,
+    title: title.value,
     cover: uploader.length > 0 ? uploader[0].url : "",
   };
   const res = await axios.post("/api/v1/content/fav", fav);
