@@ -1498,3 +1498,24 @@ D:\SDK\Anaconda3\Library\include\gif_lib.h
 extern const unsigned char XPORT GifAsciiTable8x8[][GIF_FONT_WIDTH];
 
 python -m pip install dlib
+
+# vue3.0通过ref获取子组件获取子组件的属性,子组件属性值变更，父组件获取不到
+只能通过在子组件写个get方法获取
+
+# Extraneous non-props attributes (show, title, show-cancel-button, teleport) were passed to component but could not be automatically inherited because component renders fragment or text root nodes. 
+:show -> v-model:show
+只能放在HTML元素上。如果将其放置在Vue组件上，Vue将尝试将其放置在该组件正在呈现的内容的根元素上。但由于组件呈现的内容没有根元素，Vue不知道将其放置在何处
+
+# vant3 dialog
+全局注册   .use(Vant.Dialog) .use(Vant.Dialog.Component) 都无效，dialog会默认显示并报一堆错
+
+只能用到的组件里注册
+import { Dialog } from "vant";
+const VanDialog = Dialog.Component;
+
+# vue3 出现 Component inside ＜Transition＞ renders non-element root node that cannot be animated.
+这因为组件中包裹的不是一个单节点元素。 transition 中不能有多个root元素
+解决: 把我们的组件都包裹成单节点,最外层套div
+
+# vue3 Transition mode="out-in" 会使部分组件无法渲染，找不到原因，太坑了
+fade可行

@@ -2,7 +2,7 @@
   <div class="moment">
     <Moment v-if="show" :moment="moment" :user="user"></Moment>
   </div>
-  <CommentList :type="1" :refId="$route.params.id"></CommentList>
+  <CommentList :type="1" :refId="refId"></CommentList>
   <AddComment
     v-if="show"
     ref="addComment"
@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import Moment from "@/components/moment/Moment.vue";
 import CommentList from "@/components/comment/List.vue";
 import AddComment from "@/components/comment/Add.vue";
@@ -25,16 +25,16 @@ const store = useContentStore();
 const userStore = useUserStore();
 const route = useRoute();
 const active = ref(0);
-
+const refId = route.params.id as string;
 const moment = ref(store.moment);
 
 if (!moment.value) {
   const res = await axios.get(`/api/v1/moment/${route.params.id}`);
   moment.value = res.data.details;
   store.moment = moment.value;
-  userStore.appendUsers(moment.value!.users);
+  userStore.appendUsers(moment.value.users);
 }
-const user = getUser(moment.value!.userId);
+const user = getUser(moment.value.userId);
 const show = true;
 
 function getUser(id: number) {

@@ -1,23 +1,32 @@
 <template>
-  <router-view />
+  <RouterView v-slot="{ Component }">
+    <template v-if="Component">
+      <Transition mode="fade">
+        <KeepAlive>
+          <Suspense>
+            <!-- main content -->
+            <component :is="Component"></component>
+
+            <!-- loading state -->
+            <template #fallback> Loading... </template>
+          </Suspense>
+        </KeepAlive>
+      </Transition>
+    </template>
+  </RouterView>
   <van-tabbar route>
     <van-tabbar-item replace to="/" icon="notes-o"> 瞬间 </van-tabbar-item>
     <van-tabbar-item replace to="/dairy" icon="search"> 日记 </van-tabbar-item>
     <van-tabbar-item replace to="/chat" icon="chat-o"> 聊天 </van-tabbar-item>
-    <van-tabbar-item replace to="/me" icon="user-circle-o">
-      我的
-    </van-tabbar-item>
+    <van-tabbar-item replace to="/me" icon="user-circle-o"
+      >我的</van-tabbar-item
+    >
   </van-tabbar>
 </template>
 
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
 import { useUserStore } from "@/store/user";
-
-const store = useUserStore();
-if (!store.auth) {
-  store.getAuth();
-}
 </script>
 
 <style lang="less">
