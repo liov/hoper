@@ -10,3 +10,4 @@ ADD ./protoc-gen-govalidators /bin/
 ADD ./protoc-gen-grpc-gateway /bin/
 ADD ./protoc-gen-grpc-gin /bin/
 ADD ./protoc-gen-openapiv2 /bin/
+ADD ./generate /bin/

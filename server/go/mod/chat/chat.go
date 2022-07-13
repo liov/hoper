@@ -39,7 +39,7 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 		(&httpi.ResData{
 			Code:    errorcode.ErrCode(user.UserErrLogin),
 			Message: errRep,
-		}).Response(w)
+		}).Response(w, http.StatusOK)
 		return
 	}
 
