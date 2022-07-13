@@ -1518,4 +1518,3 @@ const VanDialog = Dialog.Component;
 解决: 把我们的组件都包裹成单节点,最外层套div
 
 # vue3 Transition mode="out-in" 会使部分组件无法渲染，找不到原因，太坑了
-fade可行

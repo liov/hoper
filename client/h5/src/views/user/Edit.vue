@@ -82,8 +82,10 @@ import dayjs from "dayjs";
 import { STATIC_DIR } from "@/plugin/config";
 import { ref, reactive } from "vue";
 import { useUserStore } from "@/store/user";
+import { useRouter } from "vue-router";
 
 const store = useUserStore();
+const router = useRouter();
 
 const show = ref(false);
 const loading = ref(false);
@@ -118,6 +120,7 @@ async function confirm() {
     },
   });
   if (res.data.code == 0) store.auth = user;
+  router.push("/me");
 }
 function onConfirm(value) {
   show.value = false;

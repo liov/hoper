@@ -1,7 +1,7 @@
 <template>
   <RouterView v-slot="{ Component }">
     <template v-if="Component">
-      <Transition mode="fade">
+      <Transition name="fade">
         <KeepAlive>
           <Suspense>
             <!-- main content -->
