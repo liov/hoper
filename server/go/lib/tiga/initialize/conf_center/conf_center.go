@@ -44,5 +44,5 @@ func (c *ConfigCenterConfig) ConfigCenter(model string, debug bool) ConfigCenter
 		c.Local.AutoReload = c.Watch
 		return c.Local
 	}
-	panic("没有设置配置中心")
+	return c.Local
 }
