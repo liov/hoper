@@ -229,24 +229,22 @@ func (req *RequestParams) Do(response interface{}) error {
 	}
 	defer resp.Body.Close()
 
-	if resp.ContentLength != 0 && response != nil {
-		respBytes, err := ioutil.ReadAll(resp.Body)
+	respBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	respBody = stringsi.ToString(respBytes)
+	statusCode = resp.StatusCode
+	if resp.StatusCode < 200 || resp.StatusCode > 300 {
+		return errors.New("status:" + resp.Status + respBody)
+	}
+	if len(respBytes) > 0 && response != nil {
+		err = json.Unmarshal(respBytes, response)
 		if err != nil {
 			return err
 		}
-		respBody = stringsi.ToString(respBytes)
-		statusCode = resp.StatusCode
-		if resp.StatusCode < 200 || resp.StatusCode > 300 {
-			return errors.New("status:" + resp.Status + respBody)
-		}
-		if len(respBytes) > 0 {
-			err = json.Unmarshal(respBytes, response)
-			if err != nil {
-				return err
-			}
-			if v, ok := response.(responseBody); ok {
-				err = v.CheckError()
-			}
+		if v, ok := response.(responseBody); ok {
+			err = v.CheckError()
 		}
 	}
 
