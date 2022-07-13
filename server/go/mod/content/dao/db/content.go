@@ -1,6 +1,7 @@
 package db
 
 import (
+	sqlib "database/sql"
 	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
 	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
 	"github.com/actliboy/hoper/server/go/mod/content/model"
@@ -13,7 +14,7 @@ WHERE title = ? AND user_id = ? AND ` + dbi.PostgreNotDeleted
 	var id uint64
 
 	err := d.db.Raw(sql, title, d.IdStr).Row().Scan(&id)
-	if err != nil {
+	if err != nil && err != sqlib.ErrNoRows {
 		return 0, ctxi.ErrorLog(errorcode.DBError, err, "ContainerExists")
 	}
 	return id, nil

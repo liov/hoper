@@ -22,6 +22,10 @@ func (x ErrCode) ErrRep() *ErrRep {
 	return &ErrRep{Code: x, Message: x.String()}
 }
 
+func (x ErrCode) Rep() *ErrRep {
+	return &ErrRep{Code: x, Message: x.String()}
+}
+
 //example 实现
 func (x ErrCode) GRPCStatus() *status.Status {
 	return status.New(codes.Code(x), x.String())
@@ -112,10 +116,31 @@ func (x ErrCode) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
 	return stringsi.ToBytes(`{"code":` + strconv.Itoa(int(x)) + `,"message":"` + x.String() + `"}`), nil
 }*/
 
+func FromError(err error) (s *ErrRep, ok bool) {
+	if err == nil {
+		return nil, true
+	}
+	if se, ok := err.(ErrReInterface); ok {
+		return se.ErrRep(), true
+	}
+	return NewErrReP(codes.Unknown, err.Error()), false
+}
+
 func Success() *ErrRep {
 	return &ErrRep{Code: SUCCESS, Message: SUCCESS.Error()}
 }
 
-func NewErrReP(code ErrCode, msg string) *ErrRep {
-	return &ErrRep{Code: code, Message: msg}
+func NewErrReP[E ErrCodeGeneric](code E, msg string) *ErrRep {
+	return &ErrRep{Code: ErrCode(code), Message: msg}
+}
+
+type ErrReInterface interface {
+	ErrRep() *ErrRep
+}
+
+type ErrCodeInterface interface {
+}
+
+type ErrCodeGeneric interface {
+	~int | ~int32 | ~int64 | ~uint | ~uint32 | ~uint64
 }
