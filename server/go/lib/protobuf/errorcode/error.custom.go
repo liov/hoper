@@ -104,13 +104,13 @@ func (x *ErrRep) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
 	return stringsi.ToBytes(`{"code":` + strconv.Itoa(int(x.Code)) + `,"message":"` + x.Message + `"}`), nil
 }
 
-func (x ErrCode) MarshalJSON() ([]byte, error) {
+/*func (x ErrCode) MarshalJSON() ([]byte, error) {
 	return stringsi.ToBytes(`{"code":` + strconv.Itoa(int(x)) + `,"message":"` + x.String() + `"}`), nil
 }
 
 func (x ErrCode) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
 	return stringsi.ToBytes(`{"code":` + strconv.Itoa(int(x)) + `,"message":"` + x.String() + `"}`), nil
-}
+}*/
 
 func Success() *ErrRep {
 	return &ErrRep{Code: SUCCESS, Message: SUCCESS.Error()}

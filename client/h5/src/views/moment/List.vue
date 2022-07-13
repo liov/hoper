@@ -56,10 +56,6 @@ const pullDown = reactive({
 });
 const show = ref(false);
 
-onMounted(() => {
-  console.log("moment list mounted");
-});
-
 function user(id: number) {
   return userStore.getUser(id);
 }
