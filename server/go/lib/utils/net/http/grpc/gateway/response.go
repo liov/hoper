@@ -73,18 +73,21 @@ type responseBody interface {
 }
 
 func ForwardResponseMessage(ctx *gin.Context, md runtime.ServerMetadata, message proto.Message) {
+
+	if md.HeaderMD == nil {
+		md.HeaderMD = metadata.MD(ctx.Request.Header)
+	}
+	handleForwardResponseServerMetadata(ctx.Writer, md.HeaderMD)
+	handleForwardResponseTrailerHeader(ctx.Writer, md.TrailerMD)
+
 	if res, ok := message.(*response.HttpResponse); ok {
 		for k, v := range res.Header {
 			ctx.Header(k, v)
 		}
 		ctx.Status(int(res.StatusCode))
+		ctx.Writer.Write(res.Body)
+		return
 	}
-	if md.HeaderMD == nil {
-		md.HeaderMD = metadata.MD(ctx.Request.Header)
-	}
-
-	handleForwardResponseServerMetadata(ctx.Writer, md.HeaderMD)
-	handleForwardResponseTrailerHeader(ctx.Writer, md.TrailerMD)
 
 	contentType := jsonpb.JsonPb.ContentType(message)
 	ctx.Header(httpi.HeaderContentType, contentType)
