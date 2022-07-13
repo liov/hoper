@@ -9,12 +9,12 @@ export interface ContentStore {
   fav?: any;
   collect?: any;
   comment?: any;
-  commentCache: Map<number, any>;
+  commentCache: Map<number, any[]>;
 }
 
 const state: ContentStore = {
   moment: null,
-  commentCache: new Map<number, []>(),
+  commentCache: new Map<number, any[]>(),
 };
 
 const actions = {};

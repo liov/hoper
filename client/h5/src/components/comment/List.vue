@@ -68,7 +68,7 @@ async function onLoad() {
   loading.value = false;
   const data = res.data.details;
   if (!data || !data.list) {
-    store.commentCache.set(props.rootId, list);
+    store.commentCache.set(props.rootId, list.value);
     finished.value = true;
     return;
   }
@@ -77,7 +77,7 @@ async function onLoad() {
   } else {
     list.value = list.value.concat(data.list);
   }
-  store.commentCache.set(props.rootId, list);
+  store.commentCache.set(props.rootId, list.value);
 
   userStore.appendUsers(data.users);
   pageNo.value++;
