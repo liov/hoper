@@ -37,7 +37,7 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 	_, err := auth(ctxi, false)
 	if err != nil {
 		(&httpi.ResData{
-			Code:    errorcode.ErrCode(user.UserErrLogin),
+			Code:    errorcode.ErrCode(user.UserErrNoLogin),
 			Message: errRep,
 		}).Response(w, http.StatusOK)
 		return
