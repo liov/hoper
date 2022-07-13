@@ -25,9 +25,6 @@ require (
 	google.golang.org/grpc v1.42.0
 	google.golang.org/protobuf v1.27.1
 	gorm.io/gorm v1.23.6
-)
-
-require (
 	cloud.google.com/go v0.81.0 // indirect
 	github.com/99designs/gqlgen v0.13.0 // indirect
 	github.com/DataDog/zstd v1.4.5 // indirect

@@ -1,4 +1,4 @@
-//go:build linux
+//go:build windows
 
 package main
 
@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-var stuffs = map[string][]string{
+var files = map[string][]string{
 	/*
 		"/utils/errorcode/errrep.proto": model,
 		"/utils/errorcode/*enum.proto":  enum,
@@ -19,9 +19,9 @@ var stuffs = map[string][]string{
 		"/utils/time/*.proto":          model,
 		"/utils/proto/gogo/*.gen.proto": {gogoprotoOut},
 		"/utils/proto/go/*.proto":       {goOut},*/
-	"service.proto": service,
-	"model.proto":   model,
-	"enum.proto":    enum,
+	"/*service.proto": service,
+	"/*model.proto":   model,
+	"/*enum.proto":    enum,
 }
 
 func run(dir string) {
@@ -34,15 +34,10 @@ func run(dir string) {
 			if fileInfos[i].Name() == "utils" {
 				continue
 			}
-			run(dir + "/" + fileInfos[i].Name())
-			continue
-		}
-		for k, v := range stuffs {
-			filename := fileInfos[i].Name()
-			file := dir + "/" + filename
-			if strings.HasSuffix(filename, k) {
+			for k, v := range files {
+				k = dir + "/" + fileInfos[i].Name() + k
 				for _, plugin := range v {
-					arg := "protoc " + include + " " + file + " --" + plugin + ":" + pwd + "/protobuf"
+					arg := "protoc " + include + " " + k + " --" + plugin + ":" + genpath
 					if strings.HasPrefix(plugin, "openapiv2_out") {
 						arg = arg + "/api"
 					}
@@ -57,6 +52,7 @@ func run(dir string) {
 					execi.Run(arg)
 				}
 			}
+			run(dir + "/" + fileInfos[i].Name())
 		}
 	}
 }
@@ -68,17 +64,18 @@ func genutils(dir string) {
 	}
 
 	for i := range fileInfos {
-		filename := fileInfos[i].Name()
 		if fileInfos[i].IsDir() {
-			genutils(dir + "/" + filename)
-			continue
+			genutils(dir + "/" + fileInfos[i].Name())
 		}
-		if strings.HasSuffix(filename, "enum.proto") {
-			arg := "protoc " + include + " " + dir + "/" + filename + " --" + enumOut + ":" + pwd + "/protobuf"
+		if strings.HasSuffix(fileInfos[i].Name(), "enum.proto") {
+			arg := "protoc " + include + " " + dir + "/*enum.proto" + " --" + enumOut + ":" + genpath
 			execi.Run(arg)
-			continue
+			break
 		}
-		single(dir + "/" + filename)
 	}
 
+	for _, plugin := range model {
+		arg := "protoc " + include + " " + dir + "/*.proto" + " --" + plugin + ":" + genpath
+		execi.Run(arg)
+	}
 }

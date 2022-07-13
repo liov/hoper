@@ -11,8 +11,6 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/actliboy/hoper/server/go/lib/tools/get_db"
-
 	"tools/pro"
 )
 
@@ -29,10 +27,6 @@ func history(sd *pro.Speed) {
 		go fetchHistory(i, sd)
 		time.Sleep(pro.Conf.Pro.Interval)
 	}
-}
-
-func database() {
-	get_db.GetDB().Migrator().CreateTable(&pro.Post{})
 }
 
 func historyOne(sd *pro.Speed) {
