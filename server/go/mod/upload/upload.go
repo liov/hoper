@@ -58,7 +58,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		(&httpi.ResData{
 			Code:    errorcode.ErrCode(user.UserErrLogin),
 			Message: errRep,
-		}).Response(w)
+		}).Response(w, http.StatusOK)
 		return
 	}
 	upload, err := save(ctxi, info, md5Str)
@@ -66,7 +66,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		errorcode.UploadFail.OriErrRep().Response(w)
 		return
 	}
-	(&httpi.ResData{Details: model.Rep{Id: upload.Id, URL: upload.Path}}).Response(w)
+	(&httpi.ResData{Details: model.Rep{Id: upload.Id, URL: upload.Path}}).Response(w, http.StatusOK)
 
 }
 
@@ -96,12 +96,13 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 			ctxi.ErrorLog(errorcode.DBError, err, "Create")
 		}
 		(&httpi.ResData{
-			Code:    0,
-			Message: "",
+			Code:    1,
+			Message: "已存在",
 			Details: model.Rep{Id: upload.Id, URL: upload.Path},
-		}).Response(w)
+		}).Response(w, http.StatusOK)
 		return
 	}
+	(&httpi.ResData{Message: "不存在"}).Response(w, http.StatusOK)
 }
 
 func save(ctx *contexti.Ctx, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
@@ -209,7 +210,7 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 		(&httpi.ResData{
 			Code:    errorcode.ErrCode(user.UserErrLogin),
 			Message: errRep,
-		}).Response(w)
+		}).Response(w, http.StatusOK)
 		return
 	}
 	if r.MultipartForm == nil || (r.MultipartForm.Value == nil && r.MultipartForm.File == nil) {
@@ -238,5 +239,5 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 	(&httpi.ResData{
 		Message: strings.Join(failures, ",") + errRep,
 		Details: urls,
-	}).Response(w)
+	}).Response(w, http.StatusOK)
 }

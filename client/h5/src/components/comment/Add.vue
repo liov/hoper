@@ -87,7 +87,7 @@ async function onComment() {
   const comment: any = {
     type: props.comment.type,
     refId: props.comment.refId,
-    content: message,
+    content: message.value,
     image: uploader.length > 0 ? uploader[0].url : "",
     replyId: props.comment.replyId,
     rootId: props.comment.rootId ? props.comment.rootId : 0,
@@ -97,10 +97,11 @@ async function onComment() {
   comment.id = res.data.details.id;
   comment.userId = userStore.auth.id;
   const comments = store.commentCache.get(comment.rootId);
-  comments.push(comment);
+  comments?.push(comment);
   console.log(store.commentCache);
   Toast.success("评论成功");
   message.value = "";
+  focus.value = false;
 }
 async function afterRead(file: any) {
   loading.value = true;
