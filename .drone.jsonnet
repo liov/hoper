@@ -136,12 +136,13 @@ local Pipeline(group, name='', mode='app', workdir='tools/server', sourceFile=''
       local bakdir = '/code/deploy/' + mode + '/';
       'if [ ! -d ' + bakdir + ' ];then mkdir -p ' + bakdir + '; fi && cp -r ' + deppath + ' ' + bakdir + fullname + '-' + tag + '.yaml',
       // go build
-        'cd ' + workdir,
-        'go mod download',
-        local genpath = '/drone/src/' + workdir + '/protobuf';
-        if protoc then  'generate -proto=/drone/src/proto -genpath='+genpath else 'echo',
-        'go mod tidy',
-        'go build -trimpath -o  /drone/src/' + fullname + ' ' + sourceFile,
+      'cd ' + workdir,
+      'go mod download',
+      local genpath = '/drone/src/' + workdir + '/protobuf';
+      local buildfile = '/drone/src/' + workdir + '/protobuf/build';
+      if protoc then 'if [ ! -f ' + buildfile + ' ]; then generate -proto=/drone/src/proto -genpath='+genpath+'; fi' else 'echo',
+      'go mod tidy',
+      'go build -trimpath -o  /drone/src/' + fullname + ' ' + sourceFile,
       ],
     },
     {
