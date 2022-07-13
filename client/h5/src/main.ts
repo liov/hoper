@@ -8,7 +8,6 @@ import router from "@/router/index";
 import { createApp } from "vue";
 import App from "@/App.vue";
 import { createPinia } from "pinia";
-import "./registerServiceWorker";
 import { init as axiosInit } from "@/plugin/axios";
 
 import { init as globalInit } from "./store/index";

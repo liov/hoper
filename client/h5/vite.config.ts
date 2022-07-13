@@ -6,10 +6,12 @@ import vueJsx from "@vitejs/plugin-vue-jsx";
 import Components from "unplugin-vue-components/vite";
 import { VantResolver } from "unplugin-vue-components/resolvers";
 import dynamicImportVars from "@rollup/plugin-dynamic-import-vars";
+import { VitePWA } from "vite-plugin-pwa";
+
 import path from "path";
 
 const lessVar = path.resolve(__dirname, "src/assets/var_vant.less");
-console.log(lessVar);
+console.log(process.env);
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
@@ -39,6 +41,7 @@ export default defineConfig({
       // options
       include: ["./src/**/*.ts"],
     }),
+    VitePWA({ registerType: "autoUpdate" }),
   ],
   resolve: {
     alias: {
