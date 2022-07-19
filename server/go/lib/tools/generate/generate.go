@@ -41,13 +41,17 @@ const (
 )
 
 const (
-	goList              = `go list -m -f {{.Dir}} `
+	goListDir           = `go list -m -f {{.Dir}} `
+	goListDep           = `go list -m -f {{.Path}}@{{.Version}} `
 	DepGoogleapis       = "github.com/googleapis/googleapis@v0.0.0-20220520010701-4c6f5836a32f"
-	DepGrpcGateway      = "github.com/grpc-ecosystem/grpc-gateway/v2"
-	DepProtopatch       = "github.com/alta/protopatch"
-	DepProtobuf         = "google.golang.org/protobuf"
 	DepHoper            = "github.com/actliboy/hoper/server/go/lib"
 	DepHoperWithVersion = "github.com/actliboy/hoper/server/go/lib@v0.0.0-20220713022058-3fd4e65cb7bc"
+)
+
+var (
+	DepGrpcGateway = "github.com/grpc-ecosystem/grpc-gateway/v2"
+	DepProtopatch  = "github.com/alta/protopatch"
+	DepProtobuf    = "google.golang.org/protobuf"
 )
 
 var service = []string{goOut, grpcOut,
@@ -88,7 +92,8 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer os.RemoveAll(pwd + "/" + generatePath)
+	generatePath = pwd + "/" + generatePath
+	defer os.RemoveAll(generatePath)
 	err = os.Chdir(generatePath)
 	if err != nil {
 		log.Fatal(err)
@@ -98,9 +103,14 @@ func init() {
 	libHoperDir := getDepDir(DepHoper)
 	if libHoperDir == "" {
 		return
+	} else {
+		os.Chdir(libHoperDir)
+		DepGrpcGateway, _ = osi.CMD(goListDep + DepGrpcGateway)
+		DepProtopatch, _ = osi.CMD(goListDep + DepProtopatch)
+		DepProtobuf, _ = osi.CMD(goListDep + DepProtobuf)
+		os.Chdir(generatePath)
 	}
 	libGoogleDir := getDepDir(DepGoogleapis)
-	log.Println("libGoogleDir:", libGoogleDir)
 
 	libGatewayDir := getDepDir(DepGrpcGateway)
 
@@ -108,32 +118,34 @@ func init() {
 	if *stdPatch {
 		protopatch = getDepDir(DepProtopatch)
 	}
+
 	libProtobufDir := getDepDir(DepProtobuf)
+
 	os.Chdir(pwd)
-	//gogoProtoOut, _ := cmd.CMD(goList + "github.com/gogo/protobuf")
+	//gogoProtoOut, _ := cmd.CMD(goListDir + "github.com/gogo/protobuf")
 	include = "-I" + libGatewayDir + " -I" + protopatch +
 		" -I" + libGoogleDir + " -I" + libHoperDir + "/protobuf -I" +
 		libProtobufDir + " -I" + libHoperDir + "/protobuf/third" + " -I" + proto
+	log.Println("include:", include)
 }
 
 func getDepDir(dep string) string {
 	if !strings.Contains(dep, "@") {
-		return goListDir(dep)
+		return modDepDir(dep)
 	}
 	depPath := modPath + dep
 	_, err := os.Stat(depPath)
 	if os.IsNotExist(err) {
-		dep = strings.Split(dep, "@")[0]
-		depPath = goListDir(dep)
+		depPath = modDepDir(dep)
 	}
 	return depPath
 }
 
-func goListDir(dep string) string {
-	depPath, _ := osi.CMD(goList + dep)
+func modDepDir(dep string) string {
+	depPath, _ := osi.CMD(goListDir + dep)
 	if depPath == "" {
 		osi.CMD("go get " + dep)
-		depPath, _ = osi.CMD(goList + dep)
+		depPath, _ = osi.CMD(goListDir + dep)
 	}
 	return depPath
 }
