@@ -1,20 +1,18 @@
 package main
 
 import (
-	"fmt"
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
 )
 
 func main() {
-	cli.NewApp()
 	app := &cli.App{
 		Name:  "notify",
 		Usage: "通知",
-		Action: func(*cli.Context) error {
-			fmt.Println("boom! I say!")
-			return nil
+		Action: func(c *cli.Context) error {
+			config := GetConfig(c)
+			return Notify(config)
 		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
@@ -28,9 +26,24 @@ func main() {
 				EnvVars: []string{"PLUGIN_DING_SECRET"},
 			},
 			&cli.StringFlag{
-				Name:    "drone_commit_sha",
-				Usage:   "drone_commit_sha",
-				EnvVars: []string{"DRONE_COMMIT_SHA"},
+				Name:    "repo",
+				Usage:   "repo",
+				EnvVars: []string{"DRONE_REPO"},
+			},
+			&cli.StringFlag{
+				Name:    "commit",
+				Usage:   "git commit",
+				EnvVars: []string{"DRONE_COMMIT"},
+			},
+			&cli.StringFlag{
+				Name:    "commit_author",
+				Usage:   "git commit author",
+				EnvVars: []string{"DRONE_COMMIT_AUTHOR"},
+			},
+			&cli.StringFlag{
+				Name:    "commit_ref",
+				Usage:   "git commit ref",
+				EnvVars: []string{"DRONE_COMMIT_REF"},
 			},
 			&cli.StringFlag{
 				Name:    "commit_message",
@@ -38,9 +51,14 @@ func main() {
 				EnvVars: []string{"DRONE_COMMIT_MESSAGE"},
 			},
 			&cli.StringFlag{
-				Name:    "current_branch",
-				Usage:   "current git branch",
-				EnvVars: []string{"PLUGIN_CURRENT_BRANCH"},
+				Name:    "commit_branch",
+				Usage:   "git commit branch",
+				EnvVars: []string{"DRONE_COMMIT_BRANCH"},
+			},
+			&cli.StringFlag{
+				Name:    "commit_tag",
+				Usage:   "git commit tag",
+				EnvVars: []string{"DRONE_TAG"},
 			},
 		},
 	}
@@ -50,23 +68,27 @@ func main() {
 }
 
 type Config struct {
-	//读取当前环境类型
-	DroneServerDomain string
-	//读取当前提交的commit版本
-	CommitSHA     string
+	Repo          string
+	CommitAuthor  string
+	Commit        string
+	CommitTag     string
+	CommitRef     string
 	CommitMessage string
+	CommitBranch  string
 	DingToken     string
 	DingSecret    string
-	CurrentBranch string
 }
 
 func GetConfig(c *cli.Context) *Config {
 	return &Config{
-		DroneServerDomain: c.String("drone_server_domain"),
-		CommitSHA:         c.String("drone_commit_sha"),
-		CommitMessage:     c.String("commit_message"),
-		DingToken:         c.String("ding_token"),
-		DingSecret:        c.String("ding_secret"),
-		CurrentBranch:     c.String("current_branch"),
+		Repo:          c.String("repo"),
+		CommitAuthor:  c.String("commit_author"),
+		Commit:        c.String("commit"),
+		CommitTag:     c.String("commit_tag"),
+		CommitRef:     c.String("commit_ref"),
+		CommitMessage: c.String("commit_message"),
+		CommitBranch:  c.String("commit_branch"),
+		DingToken:     c.String("ding_token"),
+		DingSecret:    c.String("ding_secret"),
 	}
 }

@@ -41,12 +41,13 @@ const (
 )
 
 const (
-	goList         = `go list -m -f {{.Dir}} `
-	DepGoogleapis  = "github.com/googleapis/googleapis@v0.0.0-20220520010701-4c6f5836a32f"
-	DepGrpcGateway = "github.com/grpc-ecosystem/grpc-gateway/v2@v2.5.0"
-	DepProtopatch  = "github.com/alta/protopatch@v0.3.4"
-	DepProtobuf    = "google.golang.org/protobuf@v1.27.1"
-	DepHoper       = "github.com/actliboy/hoper/server/go/lib@v0.0.0-20220713022058-3fd4e65cb7bc"
+	goList              = `go list -m -f {{.Dir}} `
+	DepGoogleapis       = "github.com/googleapis/googleapis@v0.0.0-20220520010701-4c6f5836a32f"
+	DepGrpcGateway      = "github.com/grpc-ecosystem/grpc-gateway/v2"
+	DepProtopatch       = "github.com/alta/protopatch"
+	DepProtobuf         = "google.golang.org/protobuf"
+	DepHoper            = "github.com/actliboy/hoper/server/go/lib"
+	DepHoperWithVersion = "github.com/actliboy/hoper/server/go/lib@v0.0.0-20220713022058-3fd4e65cb7bc"
 )
 
 var service = []string{goOut, grpcOut,
@@ -87,15 +88,20 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer os.RemoveAll(pwd + "/" + generatePath)
 	err = os.Chdir(generatePath)
 	if err != nil {
 		log.Fatal(err)
 	}
 	osi.CMD("go mod init generate")
 
+	libHoperDir := getDepDir(DepHoper)
+	if libHoperDir == "" {
+		return
+	}
 	libGoogleDir := getDepDir(DepGoogleapis)
 	log.Println("libGoogleDir:", libGoogleDir)
-	libHoperDir := getDepDir(DepHoper)
+
 	libGatewayDir := getDepDir(DepGrpcGateway)
 
 	protopatch := libHoperDir + "/protobuf"
@@ -104,7 +110,6 @@ func init() {
 	}
 	libProtobufDir := getDepDir(DepProtobuf)
 	os.Chdir(pwd)
-	os.RemoveAll(generatePath)
 	//gogoProtoOut, _ := cmd.CMD(goList + "github.com/gogo/protobuf")
 	include = "-I" + libGatewayDir + " -I" + protopatch +
 		" -I" + libGoogleDir + " -I" + libHoperDir + "/protobuf -I" +
@@ -112,13 +117,23 @@ func init() {
 }
 
 func getDepDir(dep string) string {
+	if !strings.Contains(dep, "@") {
+		return goListDir(dep)
+	}
 	depPath := modPath + dep
 	_, err := os.Stat(depPath)
 	if os.IsNotExist(err) {
-		log.Println(osi.CMD("go get " + dep))
-		depPath, _ = osi.CMD(
-			goList + dep,
-		)
+		dep = strings.Split(dep, "@")[0]
+		depPath = goListDir(dep)
+	}
+	return depPath
+}
+
+func goListDir(dep string) string {
+	depPath, _ := osi.CMD(goList + dep)
+	if depPath == "" {
+		osi.CMD("go get " + dep)
+		depPath, _ = osi.CMD(goList + dep)
 	}
 	return depPath
 }

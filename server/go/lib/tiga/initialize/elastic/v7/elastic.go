@@ -36,3 +36,7 @@ func (es *Es) SetEntity(entity interface{}) {
 		es.Client = client
 	}
 }
+
+func (es *Es) Close() error {
+	return nil
+}

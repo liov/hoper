@@ -114,3 +114,7 @@ func (db *DB) SetEntity(entity interface{}) {
 		db.DB = gormdb
 	}
 }
+
+func (db *DB) Close() error {
+	return nil
+}

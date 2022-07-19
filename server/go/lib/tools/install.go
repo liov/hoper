@@ -17,4 +17,5 @@ func main() {
 	osi.CMD("go get -u github.com/mwitkow/go-proto-validators")
 	osi.CMD("go install github.com/mwitkow/go-proto-validators/protoc-gen-govalidators")
 	osi.CMD("go install " + libDir + "/tools/protoc-gen-go-patch")
+	osi.CMD("go install " + libDir + "/generate")
 }
