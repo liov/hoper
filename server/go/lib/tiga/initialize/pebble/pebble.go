@@ -36,3 +36,7 @@ func (p *PebbleDB) SetEntity(entity interface{}) {
 		p.DB = client
 	}
 }
+
+func (p *PebbleDB) Close() error {
+	return p.DB.Close()
+}

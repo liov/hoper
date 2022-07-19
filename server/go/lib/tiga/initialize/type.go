@@ -1,12 +1,12 @@
 package initialize
 
+import "io"
+
 type NeedInit interface {
 	Init()
 }
 
-type Config interface {
-	NeedInit
-}
+type Config = NeedInit
 
 type ConfigPlaceholder struct {
 }
@@ -14,22 +14,22 @@ type ConfigPlaceholder struct {
 func (c *ConfigPlaceholder) Init() {
 }
 
-type Dao interface {
-	Close()
-	NeedInit
-}
+type Dao = NeedInit
 
 type DaoPlaceholder struct {
 }
 
 func (d *DaoPlaceholder) Init() {
 }
-func (d *DaoPlaceholder) Close() {
-}
 
 type DaoField interface {
 	Config() Generate
 	SetEntity(any)
+}
+
+type DaoFieldCloser = io.Closer
+type DaoFieldCloser1 interface {
+	Close()
 }
 
 type Generate interface {

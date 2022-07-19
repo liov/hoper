@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/conf_center"
 	"github.com/actliboy/hoper/server/go/lib/utils/configor/local"
+	"github.com/actliboy/hoper/server/go/lib/utils/errors/multierr"
 	"os"
 	"reflect"
 	"strconv"
@@ -14,6 +15,7 @@ import (
 
 //约定大于配置
 var (
+	// 此处不是真正的初始化，只是为了让配置中心能够读取到配置
 	InitConfig = &Init{
 		Env: DEVELOPMENT, ConfUrl: "./config.toml",
 	}
@@ -63,8 +65,6 @@ func Start(conf Config, dao Dao, notinit ...string) func(deferf ...func()) {
 	init := NewInit(conf, dao)
 	init.LoadConfig(notinit...)
 	return func(deferf ...func()) {
-		init.CloseDao()
-		log.Sync()
 		for _, f := range deferf {
 			f()
 		}
@@ -126,7 +126,12 @@ func NewInit(conf Config, dao Dao) *Init {
 	init := &Init{
 		Env: InitConfig.Env, ConfUrl: InitConfig.ConfUrl,
 		confM: map[string]interface{}{},
-		conf:  conf, dao: dao}
+		conf:  conf, dao: dao,
+		deferf: []func(){
+			func() { closeDao(dao) },
+			log.Sync,
+		},
+	}
 	InitConfig = init
 	return init
 }
@@ -140,12 +145,49 @@ func (init *Init) RegisterDeferFunc(deferf ...func()) {
 	init.deferf = append(init.deferf, deferf...)
 }
 
-func (init *Init) CloseDao() {
-	if init.dao != nil {
-		init.dao.Close()
+func (init *Init) Config() Config {
+	return init.conf
+}
+
+func (init *Init) closeDao() {
+	err := closeDao(init.dao)
+	if err != nil {
+		log.Error(err)
 	}
 }
 
-func (init *Init) Config() Config {
-	return init.conf
+func closeDao(dao any) error {
+	if dao == nil {
+		return nil
+	}
+	if err, ok := closeDaoHelper(dao); ok {
+		return err
+	}
+	var err multierr.MultiError
+	daoValue := reflect.ValueOf(dao).Elem()
+	for i := 0; i < daoValue.NumField(); i++ {
+		/*	closer := daoValue.Field(i).MethodByName("Close")
+			if closer.IsValid() {
+				closer.Call(nil)
+			}*/
+		field := daoValue.Field(i).Interface()
+		if err1, ok := closeDaoHelper(field); ok && err1 != nil {
+			err.Append(err1)
+		}
+	}
+	if err.HasErrors() {
+		return &err
+	}
+	return nil
+}
+
+func closeDaoHelper(dao any) (error, bool) {
+	if closer, ok := dao.(DaoFieldCloser); ok {
+		return closer.Close(), true
+	}
+	if closer, ok := dao.(DaoFieldCloser1); ok {
+		closer.Close()
+		return nil, true
+	}
+	return nil, false
 }

@@ -1,0 +1,1 @@
+branch=`git rev-parse --abbrev-ref HEAD` && git checkout dev && git merge $branch && git push && git checkout $branch

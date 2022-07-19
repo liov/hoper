@@ -11,6 +11,7 @@ import (
 var today = flag.Bool("t", false, "记录今天日记")
 
 // go build -o timepill/timepill timepill/cmd/record.go
+// 日记记录
 func main() {
 	defer initialize.Start(&timepill.Conf, &timepill.Dao)()
 

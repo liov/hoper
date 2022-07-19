@@ -9,7 +9,7 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
 	"net/url"
 	"strconv"
-	"strings"
+
 	"time"
 )
 
@@ -19,20 +19,27 @@ func Notify(c *Config) error {
 		return nil
 	}
 	url := "https://oapi.dingtalk.com/robot/send?access_token=" + c.DingToken
-	msg := "\\n # 发布通知 " + " \\n ### 项目: " + Name + " \\n ### 操作人: " + Operator + " \\n ### 环境: " + Env + " \\n ### 命名空间: " + Namespace + " \\n ### 时间: " + fmt.Sprint(time.Now().Format("2006-01-02 15:04:05")) + " \\n ### 镜像: " + Image + "-" + " \\n ### 提交SHA: " + c.CommitSHA + " \\n ### 提交信息: " + c.CommitMessage
+	msg := "\\n # 发布通知 " +
+		" \\n ### 项目: " + c.Repo +
+		" \\n ### 操作人: " + c.CommitAuthor +
+		" \\n ### 参考: " + c.CommitRef +
+		" \\n ### 分支: " + c.CommitBranch +
+		" \\n ### 标签: " + c.CommitTag +
+		" \\n ### 时间: " + fmt.Sprint(time.Now().Format("2006-01-02 15:04:05")) +
+		" \\n ### 提交: " + c.Commit +
+		" \\n ### 提交信息: " + c.CommitMessage
 
-	data := `{
+	msg = `{
    "msgtype": "markdown",
    "markdown": {
 		"title":"发布通知",
-        "text": "[msg]"
+        "text": "` + msg + `"
    },
    "at": {
        "isAtAll": false
    }
 }`
 	var err error
-	msg = strings.Replace(data, "[msg]", msg, -1)
 	if c.DingSecret != "" {
 		//通过加签接口发布
 		err = SendSignDingTalkMessage(c.DingToken, c.DingSecret, msg)

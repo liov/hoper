@@ -1,10 +1,15 @@
-# hoper2.0
+# hoper3.0
 
 ## quickstart
 
 ```sh
-cd tools && go generate
+docker run --rm jybl/goprotoc generate -proto=../../proto -genpath=./mod/protobuf
+go run mod
 ```
+
+## introduction
+依托[lib](https://github.com/actliboy/hoper/tree/master/server/go/lib)(还没想好名字)的强大能力,可以快速开发集grpc,http，graphql的云原生微服务
+
 user.model.proto
 ```protobuf
 syntax = "proto3";

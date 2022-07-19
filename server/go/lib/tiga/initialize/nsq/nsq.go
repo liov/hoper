@@ -28,6 +28,11 @@ func (p *Producer) SetEntity(entity interface{}) {
 	}
 }
 
+func (p *Producer) Close() error {
+	p.Producer.Stop()
+	return nil
+}
+
 func (conf *ProducerConfig) generate() *nsq.Producer {
 
 	producer, err := nsq.NewProducer(conf.Addr, conf.Config)
@@ -90,4 +95,9 @@ func (c *Consumer) SetEntity(entity interface{}) {
 	if client, ok := entity.(*nsq.Consumer); ok {
 		c.Consumer = client
 	}
+}
+
+func (c *Consumer) Close() error {
+	c.Consumer.Stop()
+	return nil
 }

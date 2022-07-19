@@ -46,3 +46,7 @@ func (db *Redis) SetEntity(entity interface{}) {
 		db.Client = client
 	}
 }
+
+func (db *Redis) Close() error {
+	return db.Client.Close()
+}
