@@ -9,7 +9,7 @@ import (
 
 func (init *Init) UnmarshalAndSetV1(bytes []byte) {
 	toml.Unmarshal(bytes, init.conf)
-	init.CloseDao()
+	init.closeDao()
 	init.inject()
 }
 

@@ -49,3 +49,8 @@ func (c *Cache) SetEntity(entity interface{}) {
 		c.Cache = cache
 	}
 }
+
+func (e *Cache) Close() error {
+	e.Cache.Close()
+	return nil
+}

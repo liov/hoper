@@ -28,12 +28,16 @@ type Consumer struct {
 	Conf BadgerDBConfig
 }
 
-func (b *Consumer) Config() initialize.Generate {
-	return &b.Conf
+func (c *Consumer) Config() initialize.Generate {
+	return &c.Conf
 }
 
-func (b *Consumer) SetEntity(entity interface{}) {
+func (c *Consumer) SetEntity(entity interface{}) {
 	if client, ok := entity.(*badger.DB); ok {
-		b.DB = client
+		c.DB = client
 	}
+}
+
+func (c *Consumer) Close() error {
+	return c.DB.Close()
 }

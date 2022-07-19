@@ -6,8 +6,12 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/nsqio/go-nsq"
 	"testing"
-	"tools/timepill"
 )
+
+type config struct{}
+
+func (c *config) Init() {
+}
 
 type dao struct {
 	NsqP insq.Producer `init:"config:nsq-producer"`
@@ -26,14 +30,16 @@ func (d *dao) Close() {
 }
 
 func TestNsqp(t *testing.T) {
+	c := &config{}
 	d := &dao{}
-	defer initialize.Start(&timepill.Conf, d)()
-	t.Log(d.NsqP.Publish("diary", []byte("test")))
+	defer initialize.Start(c, d)()
+	t.Log(d.NsqP.Publish("timepill_pic", []byte("test")))
 }
 
 func TestNsqc(t *testing.T) {
+	c := &config{}
 	d := &dao{}
-	defer initialize.Start(&timepill.Conf, d)()
+	defer initialize.Start(c, d)()
 	/*	if err := d.NsqC.ConnectToNSQLookupds(d.NsqC.Conf.NSQLookupdAddrs); err != nil {
 		log.Fatal(err)
 	}*/

@@ -6,6 +6,7 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/fsnotify/fsnotify"
+	"time"
 )
 
 type Local struct {
@@ -53,6 +54,7 @@ func (cc *Local) watch(adCongPath string, handle func([]byte)) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	interval := make(map[string]time.Time)
 
 	for {
 		select {
@@ -60,6 +62,11 @@ func (cc *Local) watch(adCongPath string, handle func([]byte)) {
 			if !ok {
 				return
 			}
+			now := time.Now()
+			if now.Sub(interval[event.Name]) < time.Second {
+				continue
+			}
+			interval[event.Name] = now
 			//log.Info("event:", event)
 			if event.Op&fsnotify.Write == fsnotify.Write {
 				err = local.New(&cc.Config).

@@ -179,15 +179,14 @@ local Pipeline(group, name='', mode='app', workdir='tools/server', sourceFile=''
     ]),
     {
       name: 'dingtalk',
-      image: 'lddsb/drone-dingtalk-message',
+      image: 'jybl/notify',
       settings: {
-        token: {
-          from_secret: 'token',
+        ding_token: {
+          from_secret: 'ding_token',
         },
-        type: 'markdown',
-        message_color: true,
-        message_pic: true,
-        sha_link: true,
+        ding_secret: {
+          from_secret: 'ding_secret',
+         },
       },
     },
   ],

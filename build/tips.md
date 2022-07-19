@@ -123,3 +123,14 @@ POST /_security/user/<user>/_password
 {
 "password" : "new-password"
 }
+
+# python
+
+https://mirrors.aliyun.com/pypi/simple/     # 阿里云
+https://pypi.douban.com/simple/             # 豆瓣
+https://pypi.tuna.tsinghua.edu.cn/simple    # 清华大学
+
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+pip install -i  https://pypi.tuna.tsinghua.edu.cn/simple face_recognition
+# ubuntu
+deb https://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse

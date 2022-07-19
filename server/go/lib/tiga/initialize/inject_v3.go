@@ -28,7 +28,7 @@ func (init *Init) UnmarshalAndSetV3(bytes []byte) {
 	for k, v := range tmp {
 		init.confM[strings.ToUpper(k)] = v
 	}
-	init.CloseDao()
+	init.closeDao()
 	init.inject3()
 }
 

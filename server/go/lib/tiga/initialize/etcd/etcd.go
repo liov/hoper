@@ -33,3 +33,7 @@ func (e *Eecd) SetEntity(entity interface{}) {
 		e.Client = client
 	}
 }
+
+func (e *Eecd) Close() error {
+	return e.Client.Close()
+}

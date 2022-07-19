@@ -36,4 +36,31 @@ function encrypt() {
     console.log(Buffer.from(JSON.stringify(data)).toString('base64'));
 }
 
-crm()
+function openErp(){
+    const sess = {
+        piId:"10001",
+        employeeId: 2,
+        employeeName: "xxx",
+        deptId: 1,
+        deptName: "xxx",
+        compId: 5,
+        compName: "xxx",
+        englishName: "xxx",
+        phone: "xxxxx",
+        roleCodeList:["20","21","22"],
+        platformType:103,
+        accountType: 4,
+        thirdCompId:10010,
+        thirdCompCode: "",
+        source:0,
+        systemVersion:0,
+        isTrial:0,
+        type: 1,
+        filterIds: [1,2,3],
+        filterDeptIds: [],
+        filterCompIds: []
+    };
+    console.log(Buffer.from(JSON.stringify(sess)).toString('base64'));
+}
+
+openErp()
