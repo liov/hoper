@@ -1,9 +1,9 @@
 package main
 
 import (
-	"flag"
 	"github.com/actliboy/hoper/server/go/lib/utils/os"
 	execi "github.com/actliboy/hoper/server/go/lib/utils/os/exec"
+	"github.com/spf13/cobra"
 	"io/ioutil"
 	"log"
 	"os"
@@ -20,9 +20,16 @@ import (
 
 //go:generate mockgen -destination ../protobuf/user/user.mock.go -package user -source ../protobuf/user/user.service_grpc.pb.go UserServiceServer
 
+var rootCmd = &cobra.Command{
+	Use: "generate",
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		getInclude()
+	},
+}
+
 func main() {
 	//single("/content/moment.model.proto")
-	run(proto)
+	rootCmd.Execute()
 	genutils(proto + "/utils")
 	//gengql()
 
@@ -31,13 +38,13 @@ func main() {
 const (
 	goOut           = "go-patch_out=plugin=go,paths=source_relative"
 	grpcOut         = "go-patch_out=plugin=go-grpc,paths=source_relative"
-	enumOut         = "enum_out=plugins=grpc,paths=source_relative"
+	enumOut         = "enum_out=paths=source_relative"
 	gatewayOut      = "grpc-gin_out=paths=source_relative"
 	openapiv2Out    = "openapiv2_out=logtostderr=true"
-	govalidatorsOut = "govalidators_out=gogoimport=true,paths=source_relative"
-	gogoprotoOut    = "gogo_out=plugins=grpc"
-	gqlNogogoOut    = "gqlgen_out=gogoimport=false,paths=source_relative"
+	govalidatorsOut = "govalidators_out=paths=source_relative"
+	gqlNogogoOut    = "gqlgen_out=paths=source_relative"
 	gqlOut          = "graphql_out=paths=source_relative"
+	dartOut         = "dart_out=grpc"
 )
 
 const (
@@ -51,7 +58,6 @@ const (
 var (
 	DepGrpcGateway = "github.com/grpc-ecosystem/grpc-gateway/v2"
 	DepProtopatch  = "github.com/alta/protopatch"
-	DepProtobuf    = "google.golang.org/protobuf"
 )
 
 var service = []string{goOut, grpcOut,
@@ -68,19 +74,51 @@ var gqlgen []string
 var (
 	proto, genpath           string
 	gopath, modPath, include string
+	stdPatch                 bool
 )
 
 func init() {
-	pwd, _ := os.Getwd()
 	protodef, _ := filepath.Abs("../../../proto")
-	flag.StringVar(&proto, "proto", protodef, "proto路径")
-	flag.StringVar(&genpath, "genpath", pwd+"/protobuf", "生成路径")
-	stdPatch := flag.Bool("patch", false, "是否使用原生protopatch")
-	flag.Parse()
+	pwd, _ := os.Getwd()
+	pflag := rootCmd.PersistentFlags()
+	pflag.StringVarP(&proto, "proto", "p", protodef, "proto file path")
+	pflag.StringVarP(&genpath, "genpath", "g", pwd+"/protobuf", "generate path")
+	pflag.BoolVar(&stdPatch, "patch", false, "是否使用原生protopatch")
+
+	rootCmd.AddCommand(&cobra.Command{
+		Use: "go",
+		Run: func(cmd *cobra.Command, args []string) {
+			run(proto)
+		},
+	})
+	rootCmd.AddCommand(&cobra.Command{
+		Use: "dart",
+		Run: func(cmd *cobra.Command, args []string) {
+
+		},
+	})
+	rootCmd.AddCommand(&cobra.Command{
+		Use: "ts",
+		Run: func(cmd *cobra.Command, args []string) {
+
+		},
+	})
+
+}
+
+func getInclude() {
+	pwd, _ := os.Getwd()
 	proto, _ = filepath.Abs(proto)
 	genpath, _ = filepath.Abs(genpath)
 	log.Println("proto:", proto)
 	log.Println("genpath:", genpath)
+	_, err := os.Stat(genpath + "/api")
+	if os.IsNotExist(err) {
+		err = os.Mkdir(genpath+"/api", os.ModePerm)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 	gopath = os.Getenv("GOPATH")
 	if gopath != "" && !strings.HasSuffix(gopath, "/") {
 		gopath = gopath + "/"
@@ -88,7 +126,7 @@ func init() {
 	modPath = gopath + "pkg/mod/"
 
 	generatePath := "generate" + time.Now().Format("150405")
-	err := os.Mkdir(generatePath, os.ModePerm)
+	err = os.Mkdir(generatePath, os.ModePerm)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -101,13 +139,13 @@ func init() {
 	osi.CMD("go mod init generate")
 
 	libHoperDir := getDepDir(DepHoper)
+	libHoperDir = "D:/code/hoper/server/go/lib"
 	if libHoperDir == "" {
 		return
 	} else {
 		os.Chdir(libHoperDir)
 		DepGrpcGateway, _ = osi.CMD(goListDep + DepGrpcGateway)
 		DepProtopatch, _ = osi.CMD(goListDep + DepProtopatch)
-		DepProtobuf, _ = osi.CMD(goListDep + DepProtobuf)
 		os.Chdir(generatePath)
 	}
 	libGoogleDir := getDepDir(DepGoogleapis)
@@ -115,18 +153,16 @@ func init() {
 	libGatewayDir := getDepDir(DepGrpcGateway)
 
 	protopatch := libHoperDir + "/protobuf"
-	if *stdPatch {
+	if stdPatch {
 		protopatch = getDepDir(DepProtopatch)
 	}
-
-	libProtobufDir := getDepDir(DepProtobuf)
 
 	os.Chdir(pwd)
 	//gogoProtoOut, _ := cmd.CMD(goListDir + "github.com/gogo/protobuf")
 	include = "-I" + libGatewayDir + " -I" + protopatch +
-		" -I" + libGoogleDir + " -I" + libHoperDir + "/protobuf -I" +
-		libProtobufDir + " -I" + libHoperDir + "/protobuf/third" + " -I" + proto
+		" -I" + libGoogleDir + " -I" + libHoperDir + "/protobuf -I" + libHoperDir + "/protobuf/third  -I" + proto
 	log.Println("include:", include)
+
 }
 
 func getDepDir(dep string) string {
@@ -189,4 +225,22 @@ func gengql() {
 		cmd.Run()
 	}
 
+}
+
+func protoc(plugins []string, file string) {
+	for _, plugin := range plugins {
+		arg := "protoc " + include + " " + file + " --" + plugin + ":" + genpath
+		if strings.HasPrefix(plugin, "openapiv2_out") {
+			arg = arg + "/api"
+		}
+		if strings.HasPrefix(plugin, "graphql_out") || strings.HasPrefix(plugin, "gqlcfg_out") {
+			arg = arg + "/gql"
+		}
+		//protoc-gen-gqlgen应该在最后生成，gqlgen会调用go编译器，protoc-gen-gqlgen会生成不存在的接口，编译不过去
+		if strings.HasPrefix(plugin, "gqlgen_out") {
+			gqlgen = append(gqlgen, arg)
+			continue
+		}
+		execi.Run(arg)
+	}
 }

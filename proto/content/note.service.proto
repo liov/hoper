@@ -9,7 +9,7 @@ import "google/protobuf/wrappers.proto";
 import "empty/empty.proto";
 import "response/response.proto";
 import "utils/policy/policy.proto";
-import "patch/go.proto";
+import "utils/patch/go.proto";
 
 option go_package = "github.com/actliboy/hoper/server/go/mod/protobuf/content";
 

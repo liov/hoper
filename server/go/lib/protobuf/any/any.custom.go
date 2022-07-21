@@ -2,7 +2,6 @@ package any
 
 import (
 	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
-	"github.com/golang/protobuf/jsonpb"
 )
 
 func NewAny(v interface{}) (*RawJson, error) {
@@ -27,10 +26,6 @@ func (a *RawJson) MarshalJSON() ([]byte, error) {
 		return []byte("null"), nil
 	}
 	return a.B, nil
-}
-
-func (a *RawJson) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
-	return a.MarshalJSON()
 }
 
 func (a *RawJson) Size() int {

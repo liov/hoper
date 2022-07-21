@@ -25,9 +25,9 @@ func main() {
 
 const goOut = "go-patch_out=plugin=go,paths=source_relative"
 const grpcOut = "go-patch_out=plugin=go-grpc,paths=source_relative"
-const enumOut = "enum_out=plugins=grpc,paths=source_relative"
+const enumOut = "enum_out=paths=source_relative"
 
-const googleapis = "googleapis/googleapis@v0.0.0-20220520010701-4c6f5836a32"
+const googleapis = "github.com/googleapis/googleapis@v0.0.0-20220713003447-5688bdb18b27"
 
 var model = []string{goOut, grpcOut}
 
@@ -48,10 +48,10 @@ func init() {
 	gateway, _ = osi.CMD(
 		goList + "github.com/grpc-ecosystem/grpc-gateway/v2",
 	)
-	google := gopath + "pkg/mod/github.com/" + googleapis
+	google := gopath + "pkg/mod/" + googleapis
 	_, err := os.Stat(google)
 	if os.IsNotExist(err) {
-		osi.CMD("go get " + googleapis)
+		osi.CMD("go get github.com/googleapis/googleapis")
 		google, _ = osi.CMD(
 			goList + "github.com/googleapis/googleapis",
 		)
@@ -61,11 +61,10 @@ func init() {
 	if *stdPatch {
 		protopatch, _ = osi.CMD(goList + "github.com/alta/protopatch")
 	}
-	protobuf, _ = osi.CMD(goList + "google.golang.org/protobuf")
+
 	//gogoProtoOut, _ := cmd.CMD(goList + "github.com/gogo/protobuf")
 
-	include = "-I" + gateway + " -I" + google + " -I" +
-		protobuf + " -I" + protopatch + " -I" + gopath + "/src" + " -I" + proto
+	include = "-I" + gateway + " -I" + google + " -I" + protopatch + " -I" + gopath + "/src" + " -I" + proto
 }
 
 func genutils(dir string) {
@@ -73,7 +72,7 @@ func genutils(dir string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	if strings.Contains(dir, "lib/protobuf/third") {
+	if strings.Contains(dir, "protobuf/third") {
 		return
 	}
 
@@ -86,16 +85,10 @@ func genutils(dir string) {
 			execi.Run(arg)
 		}
 	}
-	if strings.Contains(dir, "lib/protobuf/utils/gogo") {
-		if strings.HasSuffix(dir, ".gen.proto") {
-			arg := "protoc -I" + proto + " " + dir + "/*.gen.proto --gogo_out=plugins=grpc,Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/protoc-gen-gogo/descriptor:" + proto
-			execi.Run(arg)
-		}
-		return
-	}
 
 	for _, plugin := range model {
 		arg := "protoc " + include + " " + dir + "/*.proto --" + plugin + ":" + proto
 		execi.Run(arg)
 	}
+
 }

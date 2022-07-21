@@ -20,13 +20,10 @@ const gateway = process.execSync(`${goList} github.com/grpc-ecosystem/grpc-gatew
 }).toString().trimEnd()
 console.log(gateway)
 
-const protobuf = process.execSync(`${goList} google.golang.org/protobuf`, {
-    cwd: libpath
-}).toString().trimEnd()
 const protopath = __dirname
 const libproto = libpath + "/protobuf"
 const third = libpath + "/protobuf/third"
-let cmd = `protoc -I${gateway} -I${googleapis} -I${protobuf} -I${protopath} -I${libproto} -I${third} `
+let cmd = `protoc -I${gateway} -I${googleapis} -I${protopath} -I${libproto} -I${third} `
 
 function dartgenerate(dir,exlude) {
     fs.readdir(dir, function (err, files) {

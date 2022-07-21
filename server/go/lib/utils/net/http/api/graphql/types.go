@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"google.golang.org/protobuf/types/known/anypb"
+	"log"
+
 	"io"
 	"strconv"
-
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/any"
 )
 
 type DummyResolver struct{}
@@ -36,28 +36,28 @@ func UnmarshalBytes(v interface{}) ([]byte, error) {
 	}
 }
 
-func MarshalAny(any any.Any) Marshaler {
+func MarshalAny(any anypb.Any) Marshaler {
 	return WriterFunc(func(w io.Writer) {
-		d := &ptypes.DynamicAny{}
-		if err := ptypes.UnmarshalAny(&any, d); err != nil {
-			panic("unable to unmarshal any: " + err.Error())
+		d, err := any.UnmarshalNew()
+		if err != nil {
+			log.Println("unable to unmarshal any: ", err)
 			return
 		}
 
-		if err := json.NewEncoder(w).Encode(d.Message); err != nil {
-			panic("unable to encode json: " + err.Error())
+		if err := json.NewEncoder(w).Encode(d); err != nil {
+			log.Println("unable to encode json: ", err)
 		}
 	})
 }
 
-func UnmarshalAny(v interface{}) (any.Any, error) {
+func UnmarshalAny(v interface{}) (anypb.Any, error) {
 	switch v := v.(type) {
 	case []byte:
-		return any.Any{}, nil //TODO add an unmarshal mechanism
+		return anypb.Any{}, nil //TODO add an unmarshal mechanism
 	case json.RawMessage:
-		return any.Any{}, nil
+		return anypb.Any{}, nil
 	default:
-		return any.Any{}, fmt.Errorf("%T is not json.RawMessage", v)
+		return anypb.Any{}, fmt.Errorf("%T is not json.RawMessage", v)
 	}
 }
 
