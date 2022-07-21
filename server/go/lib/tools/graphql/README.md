@@ -1,1 +1,0 @@
-gql目前不支持多文件service

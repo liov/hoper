@@ -10,9 +10,9 @@ import "google/api/annotations.proto";
 import "empty/empty.proto";
 import "request/param.proto";
 import "response/response.proto";
-import "utils/gogo/graphql.proto";
+import "utils/graphql/graphql.proto";
 import "oauth/oauth.proto";
-import "patch/go.proto";
+import "utils/patch/go.proto";
 import "utils/policy/policy.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
@@ -31,7 +31,7 @@ service ContentService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Query;
+    option (graphql.graphql_operation) = Query;
   }
 
   // 新建
@@ -43,7 +43,7 @@ service ContentService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Mutation;
+    option (graphql.graphql_operation) = Mutation;
   }
 
   // 修改
@@ -55,7 +55,7 @@ service ContentService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Mutation;
+    option (graphql.graphql_operation) = Mutation;
   }
 
   // 列表
@@ -66,7 +66,7 @@ service ContentService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Query;
+    option (graphql.graphql_operation) = Query;
   }
 
   // 列表
@@ -77,7 +77,7 @@ service ContentService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Query;
+    option (graphql.graphql_operation) = Query;
   }
 
 
@@ -89,7 +89,7 @@ service ContentService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Query;
+    option (graphql.graphql_operation) = Query;
   }
 
   // 新建
@@ -101,7 +101,7 @@ service ContentService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Mutation;
+    option (graphql.graphql_operation) = Mutation;
   }
 
   // 修改
@@ -113,7 +113,7 @@ service ContentService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Mutation;
+    option (graphql.graphql_operation) = Mutation;
   }
 
   // 列表
@@ -124,7 +124,7 @@ service ContentService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Query;
+    option (graphql.graphql_operation) = Query;
   }
   //收藏夹列表
   rpc FavList (FavListReq) returns (FavListRep) {
@@ -134,7 +134,7 @@ service ContentService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Query;
+    option (graphql.graphql_operation) = Query;
   }
   //收藏夹列表
   rpc TinyFavList (FavListReq) returns (TinyFavListRep) {
@@ -144,7 +144,7 @@ service ContentService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Query;
+    option (graphql.graphql_operation) = Query;
   }
   // 创建收藏夹
   rpc AddFav (AddFavReq) returns (request.Object) {
@@ -154,7 +154,7 @@ service ContentService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Mutation;
+    option (graphql.graphql_operation) = Mutation;
   }
   // 修改收藏夹
   rpc EditFav (AddFavReq) returns (empty.Empty) {
@@ -164,7 +164,7 @@ service ContentService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Mutation;
+    option (graphql.graphql_operation) = Mutation;
   }
   // 创建合集
   rpc AddContainer (AddContainerReq) returns (empty.Empty) {
@@ -174,7 +174,7 @@ service ContentService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Mutation;
+    option (graphql.graphql_operation) = Mutation;
   }
   // 修改合集
   rpc EditDiaryContainer (AddContainerReq) returns (empty.Empty) {
@@ -184,7 +184,7 @@ service ContentService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Mutation;
+    option (graphql.graphql_operation) = Mutation;
   }
   // 用户内容数量
   rpc UserContentCount (request.Object) returns (user.UserContent) {
@@ -194,7 +194,7 @@ service ContentService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Query;
+    option (graphql.graphql_operation) = Query;
   }
 
 }

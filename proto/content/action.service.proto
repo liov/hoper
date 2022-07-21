@@ -12,9 +12,9 @@ import "google/api/annotations.proto";
 import "empty/empty.proto";
 import "request/param.proto";
 import "response/response.proto";
-import "utils/gogo/graphql.proto";
+import "utils/graphql/graphql.proto";
 import "oauth/oauth.proto";
-import "patch/go.proto";
+import "utils/patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
 option go_package = "github.com/actliboy/hoper/server/go/mod/protobuf/content";
@@ -32,7 +32,7 @@ service ActionService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Mutation;
+    option (graphql.graphql_operation) = Mutation;
   }
   // 动作  Like Unlike
   rpc DelLike (request.Object) returns (empty.Empty) {
@@ -42,7 +42,7 @@ service ActionService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Mutation;
+    option (graphql.graphql_operation) = Mutation;
   }
   // 评论
   rpc Comment (CommentReq) returns (request.Object) {
@@ -52,7 +52,7 @@ service ActionService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Mutation;
+    option (graphql.graphql_operation) = Mutation;
   }
   // 评论列表
   rpc CommentList (CommentListReq) returns (CommentListRep) {
@@ -62,7 +62,7 @@ service ActionService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Query;
+    option (graphql.graphql_operation) = Query;
   }
   // 评论
   rpc DelComment (request.Object) returns (empty.Empty) {
@@ -72,7 +72,7 @@ service ActionService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Mutation;
+    option (graphql.graphql_operation) = Mutation;
   }
   // 收藏
   rpc Collect (CollectReq) returns (empty.Empty) {
@@ -82,7 +82,7 @@ service ActionService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Mutation;
+    option (graphql.graphql_operation) = Mutation;
   }
   // 举报
   rpc Report (ReportReq) returns (empty.Empty) {
@@ -92,7 +92,7 @@ service ActionService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Mutation;
+    option (graphql.graphql_operation) = Mutation;
   }
   // 用户的操作
   rpc GetUserAction (ContentReq) returns (UserAction) {
@@ -102,7 +102,7 @@ service ActionService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (gogo.graphql_operation) = Query;
+    option (graphql.graphql_operation) = Query;
   }
 }
 

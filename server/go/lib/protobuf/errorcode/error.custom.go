@@ -4,7 +4,6 @@ import (
 	errorsi "github.com/actliboy/hoper/server/go/lib/utils/errors"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	stringsi "github.com/actliboy/hoper/server/go/lib/utils/strings"
-	"github.com/golang/protobuf/jsonpb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"strconv"
@@ -104,17 +103,11 @@ func (x *ErrRep) MarshalJSON() ([]byte, error) {
 	return stringsi.ToBytes(`{"code":` + strconv.Itoa(int(x.Code)) + `,"message":"` + x.Message + `"}`), nil
 }
 
-func (x *ErrRep) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
-	return stringsi.ToBytes(`{"code":` + strconv.Itoa(int(x.Code)) + `,"message":"` + x.Message + `"}`), nil
-}
-
 /*func (x ErrCode) MarshalJSON() ([]byte, error) {
 	return stringsi.ToBytes(`{"code":` + strconv.Itoa(int(x)) + `,"message":"` + x.String() + `"}`), nil
 }
 
-func (x ErrCode) MarshalJSONPB(*jsonpb.Marshaler) ([]byte, error) {
-	return stringsi.ToBytes(`{"code":` + strconv.Itoa(int(x)) + `,"message":"` + x.String() + `"}`), nil
-}*/
+*/
 
 func FromError(err error) (s *ErrRep, ok bool) {
 	if err == nil {

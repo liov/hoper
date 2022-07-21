@@ -41,21 +41,7 @@ func run(dir string) {
 			filename := fileInfos[i].Name()
 			file := dir + "/" + filename
 			if strings.HasSuffix(filename, k) {
-				for _, plugin := range v {
-					arg := "protoc " + include + " " + file + " --" + plugin + ":" + genpath
-					if strings.HasPrefix(plugin, "openapiv2_out") {
-						arg = arg + "/api"
-					}
-					if strings.HasPrefix(plugin, "graphql_out") || strings.HasPrefix(plugin, "gqlcfg_out") {
-						arg = arg + "/gql"
-					}
-					//protoc-gen-gqlgen应该在最后生成，gqlgen会调用go编译器，protoc-gen-gqlgen会生成不存在的接口，编译不过去
-					if strings.HasPrefix(plugin, "gqlgen_out") {
-						gqlgen = append(gqlgen, arg)
-						continue
-					}
-					execi.Run(arg)
-				}
+				protoc(v, file)
 			}
 		}
 	}

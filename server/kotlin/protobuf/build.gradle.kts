@@ -88,11 +88,10 @@ dependencies {
     api("io.grpc:grpc-netty-shaded:${rootProject.ext["grpc_version"]}")
     api("io.grpc:grpc-protobuf:${rootProject.ext["grpc_version"]}")
     api("io.grpc:grpc-stub:${rootProject.ext["grpc_version"]}")
-    implementation("com.google.guava:guava:31.0.1-jre")
+    implementation("com.google.guava:guava:31.1-jre")
     protobuf(files("$projectpath/protobuf").filter { file -> file.name.contains("third")||file.name.endsWith(".gen.proto") })
     protobuf(files("$projectpath/protobuf/third"))
     //protobuf(files(protolib("github.com/grpc-ecosystem/grpc-gateway/v2")))
-    //protobuf(files(protolib("google.golang.org/protobuf")))
     //protobuf(files(protolib("github.com/googleapis/googleapis")))
     //api("com.squareup.wire:wire-runtime:${rootProject.ext["wire_version"]}")
     //api("com.squareup.wire:wire-schema-multiplatform:${rootProject.ext["wire_version"]}")
@@ -121,32 +120,10 @@ task<Exec>("googeapis"){
 fun allProtolib(): List<String> {
     val stdout = ByteArrayOutputStream()
     val includes = mutableListOf(protopath)
-    val args = mutableListOf<String>("go", "list", "-m", "-f", "{{.Dir}}", "")
-    exec {
-        workingDir = File(projectpath)
-        args[5] = "github.com/grpc-ecosystem/grpc-gateway/v2"
-        commandLine(args)
-        standardOutput = stdout
-    }
-    var outputStr = stdout.toString("utf-8").trim()
+    var outputStr = protolib("github.com/grpc-ecosystem/grpc-gateway/v2")
     includes += outputStr
     stdout.reset()
-    exec {
-        workingDir = File(projectpath)
-        args[5] = "google.golang.org/protobuf"
-        commandLine(args)
-        standardOutput = stdout
-    }
-    outputStr = stdout.toString("utf-8").trim()
-    includes += outputStr
-    stdout.reset()
-    exec {
-        workingDir = File(projectpath)
-        args[5] = "github.com/googleapis/googleapis"
-        commandLine(args)
-        standardOutput = stdout
-    }
-    outputStr = stdout.toString("utf-8").trim()
+    outputStr = protolib("github.com/googleapis/googleapis")
     stdout.reset()
     includes += outputStr
     includes += "$projectpath/protobuf"
