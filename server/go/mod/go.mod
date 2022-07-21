@@ -1,6 +1,6 @@
 module github.com/actliboy/hoper/server/go/mod
 
-go 1.17
+go 1.18
 
 require (
 	github.com/actliboy/hoper/server/go/lib v1.0.0
@@ -11,7 +11,6 @@ require (
 	github.com/go-oauth2/oauth2/v4 v4.4.1
 	github.com/go-redis/redis/v8 v8.11.3
 	github.com/gofiber/fiber/v2 v2.17.0
-	github.com/gogo/protobuf v1.3.2
 	github.com/golang/protobuf v1.5.2
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.4.2
@@ -25,6 +24,9 @@ require (
 	google.golang.org/grpc v1.42.0
 	google.golang.org/protobuf v1.27.1
 	gorm.io/gorm v1.23.6
+)
+
+require (
 	cloud.google.com/go v0.81.0 // indirect
 	github.com/99designs/gqlgen v0.13.0 // indirect
 	github.com/DataDog/zstd v1.4.5 // indirect
@@ -156,7 +158,7 @@ require (
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/driver/mysql v1.3.4 // indirect
 	gorm.io/driver/postgres v1.3.7 // indirect
 	gorm.io/driver/sqlite v1.3.4 // indirect

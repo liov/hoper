@@ -8,7 +8,6 @@ func main() {
 	libDir, _ := osi.CMD("go list -m -f {{.Dir}}  github.com/actliboy/hoper/server/go/lib")
 	osi.CMD("go install " + libDir + "/tools/protoc-gen-grpc-gin")
 	osi.CMD("go install google.golang.org/protobuf/cmd/protoc-gen-go")
-	osi.CMD("go install github.com/gogo/protobuf/protoc-gen-gogo")
 	osi.CMD("go install " + libDir + "/tools/protoc-gen-enum")
 	osi.CMD("go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway")
 	osi.CMD("go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2")

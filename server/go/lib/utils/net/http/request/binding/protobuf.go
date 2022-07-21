@@ -5,12 +5,13 @@
 package binding
 
 import (
+	"google.golang.org/protobuf/proto"
 	"io/ioutil"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang/protobuf/proto"
+
 	"github.com/valyala/fasthttp"
 )
 

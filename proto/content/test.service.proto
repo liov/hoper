@@ -6,7 +6,7 @@ import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
 import "empty/empty.proto";
 import "response/response.proto";
-import "patch/go.proto";
+import "utils/patch/go.proto";
 
 option go_package = "github.com/actliboy/hoper/server/go/mod/protobuf/content";
 

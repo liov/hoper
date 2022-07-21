@@ -17,7 +17,6 @@ var files = map[string][]string{
 		"/utils/request/*.proto":       model,
 		"/utils/oauth/*.proto":          model,
 		"/utils/time/*.proto":          model,
-		"/utils/proto/gogo/*.gen.proto": {gogoprotoOut},
 		"/utils/proto/go/*.proto":       {goOut},*/
 	"/*service.proto": service,
 	"/*model.proto":   model,
@@ -36,21 +35,7 @@ func run(dir string) {
 			}
 			for k, v := range files {
 				k = dir + "/" + fileInfos[i].Name() + k
-				for _, plugin := range v {
-					arg := "protoc " + include + " " + k + " --" + plugin + ":" + genpath
-					if strings.HasPrefix(plugin, "openapiv2_out") {
-						arg = arg + "/api"
-					}
-					if strings.HasPrefix(plugin, "graphql_out") || strings.HasPrefix(plugin, "gqlcfg_out") {
-						arg = arg + "/gql"
-					}
-					//protoc-gen-gqlgen应该在最后生成，gqlgen会调用go编译器，protoc-gen-gqlgen会生成不存在的接口，编译不过去
-					if strings.HasPrefix(plugin, "gqlgen_out") {
-						gqlgen = append(gqlgen, arg)
-						continue
-					}
-					execi.Run(arg)
-				}
+				protoc(v, k)
 			}
 			run(dir + "/" + fileInfos[i].Name())
 		}

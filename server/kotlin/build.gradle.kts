@@ -16,9 +16,9 @@ plugins {
 ext {
     set("vertxVersion", "4.2.1")
     set("junitJupiterEngineVersion", "5.4.0")
-    set("grpc_kotlin_version", "1.2.0")
-    set("protobuf_version", "3.19.1")
-    set("grpc_version", "1.42.1")
+    set("grpc_kotlin_version", "1.3.0")
+    set("protobuf_version", "3.21.1")
+    set("grpc_version", "1.47.0")
     set("springCloudAlibabaVersion", "2.2.0.RELEASE")
     set("wire_version", "4.0.0-alpha.20")
 }

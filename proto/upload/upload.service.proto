@@ -6,9 +6,9 @@ import "google/api/annotations.proto";
 import "empty/empty.proto";
 import "response/response.proto";
 import "request/param.proto";
-import "utils/gogo/graphql.proto";
+import "utils/graphql/graphql.proto";
 import "oauth/oauth.proto";
-import "patch/go.proto";
+import "utils/patch/go.proto";
 import "google/protobuf/wrappers.proto";
 
 option java_package = "xyz.hoper.protobuf.upload";
@@ -35,7 +35,7 @@ service UploadService {
       summary : "获取url"
       description : "获取url接口"
     };
-    option (gogo.graphql_operation) = Query;
+    option (graphql.graphql_operation) = Query;
   }
 
   // 获取url
@@ -48,7 +48,7 @@ service UploadService {
       summary : "获取url"
       description : "获取url接口"
     };
-    option (gogo.graphql_operation) = Query;
+    option (graphql.graphql_operation) = Query;
   }
 }
 

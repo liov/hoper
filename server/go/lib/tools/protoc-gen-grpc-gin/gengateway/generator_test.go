@@ -19,7 +19,7 @@ func newExampleFileDescriptorWithGoPkg(gp *descriptor.GoPackage, filenamePrefix 
 		DescriptorProto: msgdesc,
 		File: &descriptor.File{
 			GoPkg: descriptor.GoPackage{
-				Path: "github.com/golang/protobuf/ptypes/empty",
+				Path: "google.golang.org/protobuf/types/known/emptypb",
 				Name: "emptypb",
 			},
 		},
