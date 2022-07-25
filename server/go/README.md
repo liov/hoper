@@ -252,7 +252,6 @@ func main() {
 本项目需要用到的protobuf插件，运行tools.go文件的//go:generate，会自动安装
 - google.golang.org/protobuf/cmd/protoc-gen-go
 - google.golang.org/grpc/cmd/protoc-gen-go-grpc
-- github.com/gogo/protobuf/protoc-gen-gogo
 - ./protoc-gen-enum 自己写的enum生成插件，分为错误enum及普通enum，生成性能更高的`String()`,错误enum会额外生成`Error()string`
 - github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 用于生成swagger文档
 - protoc-gen-go-patch 在github.com/alta/protopatch/cmd/protoc-gen-go-patch（利用修改ast重新生成源码）基础上，提供自定义json，去enum prefix等功能

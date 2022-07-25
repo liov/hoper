@@ -14,12 +14,10 @@ type dao struct {
 	NsqC1 insq.Consumer `init:"config:nsq-consumer2"`
 }
 
-func main() {
-	dao := &dao{}
-	defer initialize.Start(&timepill.Conf, dao)()
-	dao.NsqC.AddHandler(nsq.HandlerFunc(func(message *nsq.Message) error {
+func (d *dao) Init() {
+	d.NsqC.AddHandler(nsq.HandlerFunc(func(message *nsq.Message) error {
 		log.Debug("消费者1收到消息：", string(message.Body))
-		log.Debug(dao.NsqC)
+		log.Debug(d.NsqC)
 		/*diary := &tnsq.Diary{}
 		err := json.Unmarshal(message.Body, diary)
 		if err != nil {
@@ -31,12 +29,12 @@ func main() {
 		}*/
 		return nil
 	}))
-	if err := dao.NsqC.ConnectToNSQDs(dao.NsqC.Conf.NSQdAddrs); err != nil {
+	if err := d.NsqC.ConnectToNSQDs(d.NsqC.Conf.NSQdAddrs); err != nil {
 		log.Fatal(err)
 	}
-	dao.NsqC1.AddHandler(nsq.HandlerFunc(func(message *nsq.Message) error {
+	d.NsqC1.AddHandler(nsq.HandlerFunc(func(message *nsq.Message) error {
 		log.Debug("消费者2收到消息：", string(message.Body))
-		log.Debug(dao.NsqC1)
+		log.Debug(d.NsqC1)
 		/*cover := &tnsq.Cover{}
 		err := json.Unmarshal(message.Body, cover)
 		if err != nil {
@@ -48,8 +46,14 @@ func main() {
 		}*/
 		return nil
 	}))
-	if err := dao.NsqC1.ConnectToNSQDs(dao.NsqC1.Conf.NSQdAddrs); err != nil {
+	if err := d.NsqC1.ConnectToNSQDs(d.NsqC1.Conf.NSQdAddrs); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func main() {
+	dao := &dao{}
+	defer initialize.Start(&timepill.Conf, dao)()
+
 	select {}
 }

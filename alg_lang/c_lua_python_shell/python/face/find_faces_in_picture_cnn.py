@@ -2,7 +2,7 @@ from PIL import Image
 import face_recognition
 
 # Load the jpg file into a numpy array
-image = face_recognition.load_image_file(r"D:\F\timepill\10016-10017\100165571\2017-03-15_qpobz1ms.jpg")
+image = face_recognition.load_image_file("rqpobz1ms.jpg")
 
 # Find all the faces in the image using a pre-trained convolutional neural network.
 # This method is more accurate than the default HOG model, but it's slower

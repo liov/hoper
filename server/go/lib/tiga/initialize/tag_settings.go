@@ -22,7 +22,7 @@ var tags = []string{IsInject, ConfigName}
 func (t *TagSettings) Set(index int, value string) {
 	switch index {
 	case 0:
-		t.NotInject = value == "true"
+		t.NotInject = true
 	case 1:
 		t.ConfigName = strings.ToUpper(value)
 	}

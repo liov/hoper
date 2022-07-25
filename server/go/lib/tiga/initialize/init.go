@@ -53,7 +53,8 @@ type Init struct {
 	conf               NeedInit
 	dao                Dao
 	//closes     []interface{}
-	deferf []func()
+	deferf      []func()
+	initialized bool
 }
 
 func Start(conf Config, dao Dao, notinit ...string) func(deferf ...func()) {
@@ -64,12 +65,16 @@ func Start(conf Config, dao Dao, notinit ...string) func(deferf ...func()) {
 	//逃逸到堆上了
 	init := NewInit(conf, dao)
 	init.LoadConfig(notinit...)
+	init.initialized = true
 	return func(deferf ...func()) {
 		for _, f := range deferf {
 			f()
 		}
 		for _, f := range init.deferf {
 			f()
+		}
+		if r := recover(); r != nil {
+			log.Error(r)
 		}
 	}
 }
@@ -150,6 +155,9 @@ func (init *Init) Config() Config {
 }
 
 func (init *Init) closeDao() {
+	if !init.initialized {
+		return
+	}
 	err := closeDao(init.dao)
 	if err != nil {
 		log.Error(err)
@@ -170,7 +178,11 @@ func closeDao(dao any) error {
 			if closer.IsValid() {
 				closer.Call(nil)
 			}*/
-		field := daoValue.Field(i).Interface()
+		fieldV := daoValue.Field(i)
+		if fieldV.Type().Kind() == reflect.Struct {
+			fieldV = daoValue.Field(i).Addr()
+		}
+		field := fieldV.Interface()
 		if err1, ok := closeDaoHelper(field); ok && err1 != nil {
 			err.Append(err1)
 		}
@@ -182,6 +194,9 @@ func closeDao(dao any) error {
 }
 
 func closeDaoHelper(dao any) (error, bool) {
+	if dao == nil {
+		return nil, true
+	}
 	if closer, ok := dao.(DaoFieldCloser); ok {
 		return closer.Close(), true
 	}
