@@ -13,7 +13,7 @@ func main() {
 	osi.CMD("go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2")
 	osi.CMD("go install github.com/alta/protopatch/cmd/protoc-gen-go-patch")
 	osi.CMD("go install google.golang.org/grpc/cmd/protoc-gen-go-grpc")
-	osi.CMD("go get -u github.com/mwitkow/go-proto-validators")
+	osi.CMD("go get github.com/mwitkow/go-proto-validators")
 	osi.CMD("go install github.com/mwitkow/go-proto-validators/protoc-gen-govalidators")
 	osi.CMD("go install " + libDir + "/tools/protoc-gen-go-patch")
 	osi.CMD("go install " + libDir + "/generate")

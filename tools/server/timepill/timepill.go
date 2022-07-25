@@ -6,15 +6,13 @@ import (
 	iio "github.com/actliboy/hoper/server/go/lib/utils/io"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
-	"tools/timepill/model"
-	tnsq "tools/timepill/nsq"
-
 	surl "net/url"
 	"os"
 	"path"
 	"strconv"
 	"strings"
 	"time"
+	"tools/timepill/model"
 )
 
 func StartRecord() {
@@ -79,8 +77,8 @@ func RecordDiary(diary *model.Diary) {
 	}
 
 	if diary.PhotoUrl != "" {
-		//err = DownloadPic(diary.UserId, diary.PhotoUrl, diary.Created)
-		err = tnsq.PublishPic(Dao.NsqP.Producer, diary.UserId, diary.PhotoUrl, diary.Created)
+		err = DownloadPic(diary.UserId, diary.PhotoUrl, diary.Created)
+		//err = tnsq.PublishPic(Dao.NsqP.Producer, diary.UserId, diary.PhotoUrl, diary.Created)
 		if err != nil {
 			log.Error(err)
 		}
@@ -217,8 +215,8 @@ func RecordUserDiaries(user *model.User) {
 	for _, nodebook := range notebooks {
 		Dao.Hoper.Create(nodebook)
 		if nodebook.CoverUrl != "" {
-			//err = DownloadCover(model.BookCoverType.String(), nodebook.CoverUrl)
-			err = tnsq.PublishCover(Dao.NsqP.Producer, model.BookCoverType, nodebook.CoverUrl)
+			err = DownloadCover(model.BookCoverType.String(), nodebook.CoverUrl)
+			//err = tnsq.PublishCover(Dao.NsqP.Producer, model.BookCoverType, nodebook.CoverUrl)
 			if err != nil {
 				log.Error(err)
 			}
@@ -295,8 +293,8 @@ func RecordUserById(userId int) *model.User {
 			}
 		}
 		if user.CoverUrl != "" {
-			//err = DownloadCover(model.UserCoverType.String(), user.CoverUrl)
-			err = tnsq.PublishCover(Dao.NsqP.Producer, model.UserCoverType, user.CoverUrl)
+			err = DownloadCover(model.UserCoverType.String(), user.CoverUrl)
+			//err = tnsq.PublishCover(Dao.NsqP.Producer, model.UserCoverType, user.CoverUrl)
 			if err != nil {
 				log.Error(err)
 			}
