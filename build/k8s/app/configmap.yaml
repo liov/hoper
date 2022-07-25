@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${group}
+  namespace: default
+data:
+  config.toml: |
+    Module = "${group}"
+
+    [dev]
+    configType = "local"
+    Watch  = true
+    NoInject = ["Apollo","Etcd", "Es"]
+    InjectVersion = 2
+    [dev.nacos]
+    Addr = "nacos.local.org"
+    Group = "${group}"
+    
+    [dev.nacosv2]
+    DataId = "${app}"
+    Group = "${group}"
+    
+    [[dev.nacosv2.ServerConfigs]]
+    Scheme = "http"
+    IpAddr = "nacos.liov.xyz"
+    Port = 9000
+    GrpcPort = 10000
+    
+    [dev.nacosv2.ClientConfig]
+    NamespaceId = ""
+    username = "nacos"
+    password = "225567"
+    LogLevel = "debug"
+    
+    [dev.local]
+    ConfigName = "local.toml"
+    ReloadType = "fsnotify"
+    
+    [test]
+    configType = "nacosv2"
+    Watch  = true
+    [test.nacos]
+    Addr = "nacos.local.org"
+    Group = "${group}"
+    
+    [test.nacosv2]
+    DataId = "timepill"
+    Group = "DEFAULT_GROUP"
+    
+    [[test.nacosv2.ServerConfigs]]
+    Scheme = "http"
+    IpAddr = "nacos.xxx"
+    Port = 9000
+    GrpcPort = 10000
+    
+    [test.nacosv2.ClientConfig]
+    NamespaceId = ""
+    username = "nacos"
+    password = "xxx"
+    LogLevel = "debug"
+    
+    [test.local]
+    LocalConfigName = "local.toml"
+    ReloadType = "fsnotify"
+    
+    [prod]
+    NacosTenant = ""
+local.toml: |

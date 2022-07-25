@@ -62,8 +62,6 @@ func init() {
 		protopatch, _ = osi.CMD(goList + "github.com/alta/protopatch")
 	}
 
-	//gogoProtoOut, _ := cmd.CMD(goList + "github.com/gogo/protobuf")
-
 	include = "-I" + gateway + " -I" + google + " -I" + protopatch + " -I" + gopath + "/src" + " -I" + proto
 }
 

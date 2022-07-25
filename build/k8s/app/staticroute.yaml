@@ -1,7 +1,7 @@
 apiVersion: apisix.apache.org/v2beta3
 kind: ApisixRoute
 metadata:
-  name: hoper-api
+  name: hoper
   namespace: default
 spec:
   http:

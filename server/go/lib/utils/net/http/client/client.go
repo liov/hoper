@@ -306,7 +306,11 @@ func NewEasyRequest() *EasyRequest {
 	return &EasyRequest{Header: make(http.Header), logger: defaultLog}
 }
 
-func Get(url string, param interface{}) *RequestParams {
+func DoGet(url string, response any) error {
+	return NewGetRequest(url, nil).Do(response)
+}
+
+func NewGetRequest(url string, param interface{}) *RequestParams {
 	return NewRequest(url, http.MethodGet, param)
 }
 

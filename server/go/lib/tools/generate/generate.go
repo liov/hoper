@@ -158,7 +158,7 @@ func getInclude() {
 	}
 
 	os.Chdir(pwd)
-	//gogoProtoOut, _ := cmd.CMD(goListDir + "github.com/gogo/protobuf")
+
 	include = "-I" + libGatewayDir + " -I" + protopatch +
 		" -I" + libGoogleDir + " -I" + libHoperDir + "/protobuf -I" + libHoperDir + "/protobuf/third  -I" + proto
 	log.Println("include:", include)
