@@ -117,6 +117,9 @@ GIT_AUTHOR_EMAIL="newaddr";
 fi
 ' -- --all
 
+# windows下必须双引号
+git filter-branch -f --env-filter "GIT_COMMITTER_EMAIL=lby.i@qq.com;GIT_AUTHOR_EMAIL=lby.i@qq.com" 1cd75a677457d08c803e40e7d4f317c957cc8562..HEAD
+
 # 代理
 git config --global http.proxy 'socks5://127.0.0.1:1080'
 
