@@ -11,6 +11,7 @@ import (
 
 const (
 	DiaryTableName = "diary"
+	FaceTableName  = "face"
 )
 
 type ListReq struct {
@@ -41,6 +42,10 @@ func CreateCommentTable() {
 	fmt.Println(Dao.Hoper.Migrator().CreateTable(&model.Comment{}))
 }
 
+func CreateFaceTable() {
+	fmt.Println(Dao.Hoper.Migrator().CreateTable(&model.Face{}))
+}
+
 type DBDao struct {
 	ctx   context.Context
 	Hoper *gorm.DB
@@ -49,7 +54,7 @@ type DBDao struct {
 func (dao *DBDao) MaxDiaryId() (int, error) {
 	var maxId int
 
-	err := dao.Hoper.Table(DiaryTableName).Select("MAX(id)").Scan(&maxId).Error
+	err := dao.Hoper.Table(FaceTableName).Select("MAX(id)").Scan(&maxId).Error
 	if err != nil {
 		return 0, err
 	}

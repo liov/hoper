@@ -1,4 +1,15 @@
-FROM frolvlad/alpine-glibc
+# Builder Image
+FROM node:16.16-alpine3.16 AS compile
+
+WORKDIR /work
+
+ADD ./* /work
+
+RUN npm install
+
+RUN npm run rollup-${app}
+
+FROM node:16.16-alpine3.16
 
 #修改容器时区
 ENV TZ=Asia/Shanghai LANG=C.UTF-8
@@ -8,6 +19,8 @@ RUN mkdir -p /usr/share/zoneinfo/Asia && ln -s /etc/localtime /usr/share/zoneinf
 
 WORKDIR /app
 
-ADD ./${app} /app
+COPY --from=compile /work/dist/${output} /app
 
-CMD ["${cmd}"]
+RUN npm install nodemon -g
+
+CMD ["nodemon", "${cmd}"]

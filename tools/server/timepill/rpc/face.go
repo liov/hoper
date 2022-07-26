@@ -5,20 +5,18 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
 )
 
-type FaceRecognitionRep struct {
+type FaceDetectionRep struct {
 	Code  int  `json:"code"`
 	Count int  `json:"count"`
-	Fount bool `json:"fount"`
+	Found bool `json:"found"`
 }
 
-func FaceRecognition(url string) {
-	rep := FaceRecognitionRep{}
+func FaceDetection(url string) *FaceDetectionRep {
+	rep := FaceDetectionRep{}
 	err := client.DoGet("http://liov.xyz:5001?url="+url, &rep)
 	if err != nil {
 		log.Error(err)
 	}
 	log.Info(rep)
-	if rep.Fount {
-
-	}
+	return &rep
 }

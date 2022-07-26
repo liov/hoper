@@ -83,3 +83,10 @@ func (c CoverType) String() string {
 	}
 	return "/user_icon/"
 }
+
+type Face struct {
+	Id      int    `json:"id"`
+	UserId  int    `json:"user_id" gorm:"index"`
+	DairyId int    `json:"dairy_id" gorm:"index"`
+	Created string `json:"created" gorm:"type:timestamptz(6);default:now();index"`
+}
