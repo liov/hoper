@@ -1,14 +1,18 @@
 FROM jybl/face
 
+ENV TZ=Asia/Shanghai LANG=C.UTF-8
+COPY ./build/k8s/app/tz/localtime /etc/localtime
+COPY ./build/k8s/app/tz/timezone /etc/timezone
+RUN mkdir -p /usr/share/zoneinfo/Asia && ln -s /etc/localtime /usr/share/zoneinfo/Asia/Shanghai
+
 RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
 RUN python3 -m pip install --upgrade pip
 
-RUN pip3 install -r requirements.txt
-
 WORKDIR /app
 
-ADD ./app.py /app
-ADD ./requirements.txt /app
+ADD . /app
 
-CMD ["python", "app.py"]
+RUN pip3 install -r requirements.txt
+
+CMD ["python", "${cmd}"]

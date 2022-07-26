@@ -127,7 +127,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
       if protoc then 'if [ -f ' + buildfile + ' ]; then cp -r /code/' + workdir + '/protobuf  /drone/src/' + workdir + '; fi' else 'echo',
       "sed -i 's/$${app}/" + fullname + "/g' " + dockerfilepath,
       local cmd = ['./' + fullname] + opts;
-      "sed -i 's#$${cmd}#" + std.join(' ,', ['"' + opt + '"' for opt in cmd]) + "#g' " + dockerfilepath,
+      "sed -i 's#$${cmd}#" + std.join('", "', [opt for opt in cmd]) + "#g' " + dockerfilepath,
       "sed -i 's/$${app}/" + fullname + "/g' " + deppath,
       "sed -i 's/$${group}/" + group + "/g' " + deppath,
       "sed -i 's#$${datadir}#" + datadir + "#g' " + deppath,

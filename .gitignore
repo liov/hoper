@@ -4,6 +4,7 @@
 
 # IntelliJ project files
 /.idea
+/.jpb
 *.iml
 out
 gen

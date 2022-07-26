@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 	"tools/timepill/model"
+	"tools/timepill/rpc"
 )
 
 func StartRecord() {
@@ -81,6 +82,16 @@ func RecordDiary(diary *model.Diary) {
 		//err = tnsq.PublishPic(Dao.NsqP.Producer, diary.UserId, diary.PhotoUrl, diary.Created)
 		if err != nil {
 			log.Error(err)
+		}
+		rep := rpc.FaceDetection(diary.PhotoUrl)
+		if rep.Found {
+			err = Dao.Hoper.Create(&model.Face{
+				UserId:  diary.UserId,
+				DairyId: diary.Id,
+			}).Error
+			if err != nil {
+				log.Error(err)
+			}
 		}
 	}
 }
