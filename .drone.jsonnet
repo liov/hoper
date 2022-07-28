@@ -47,7 +47,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
   local deppath = tpldir + 'deploy-' + mode +'.yaml',
   kind: 'pipeline',
   type: 'kubernetes',
-  name: fullname,
+  name: fullname + if deplocal then '-local' else '',
   metadata: {
     namespace: 'default',
   },
