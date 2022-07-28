@@ -8,12 +8,12 @@ import (
 )
 
 func main() {
+	fmt.Println("开始了")
 	app := &cli.App{
 		Name:  "notify",
 		Usage: "通知",
 		Action: func(c *cli.Context) error {
 			config := GetConfig(c)
-			fmt.Println(config)
 			return Notify(config)
 		},
 		Flags: []cli.Flag{
