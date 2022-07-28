@@ -9,7 +9,7 @@ import (
 )
 
 type Location struct {
-	X, Y int
+	X, Y float64
 }
 
 func (loc Location) GormDataType() string {
@@ -19,7 +19,7 @@ func (loc Location) GormDataType() string {
 func (loc Location) GormValue(ctx context.Context, db *gorm.DB) clause.Expr {
 	return clause.Expr{
 		SQL:  "ST_PointFromText(?)",
-		Vars: []interface{}{fmt.Sprintf("POINT(%d %d)", loc.X, loc.Y)},
+		Vars: []interface{}{fmt.Sprintf("POINT(%f %f)", loc.X, loc.Y)},
 	}
 }
 

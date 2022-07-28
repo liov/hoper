@@ -40,7 +40,8 @@ local kubectl(deplocal, cmd) = if deplocal then {
 
 local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', sourceFile='', protoc=false, opts=[], deplocal=false, schedule='') = {
   local fullname = if name == '' then group else group + '-' + name,
-  local tag = '${DRONE_TAG##' + fullname + '-v}',
+  local committag = fullname + if deplocal then '-local-v' else '-v',
+  local tag = '${DRONE_TAG##' + committag + '}',
   local datadir = if deplocal then '/home/new/data' else '/data',
   local dockerfilepath = tpldir + 'Dockerfile-' + type,
   local deppath = tpldir + 'deploy-' + mode +'.yaml',
@@ -56,7 +57,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
   },
   trigger: {
     ref: [
-      'refs/tags/' + fullname + '-v*',
+      'refs/tags/' + committag + '*',
     ],
   },
   volumes: [
@@ -198,4 +199,5 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
   Pipeline('timepill', 'rbyorderid', 'job',sourceFile='./timepill/cmd/recordby_orderid.go'),
   Pipeline('timepill', 'esload', 'cronjob', sourceFile='./timepill/cmd/search_es.go', deplocal=true, schedule='00 10 * * *'),
   Pipeline('pro', sourceFile='./pro/cmd/record.go'),
+  Pipeline('timepill', sourceFile='./timepill/cmd/record.go',deplocal=true,opts=['-t']),
 ]

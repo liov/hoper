@@ -20,9 +20,25 @@ const (
 	//ROOT is the root url
 	ROOT = "https://oapi.dingtalk.com/"
 
-	ContentTypeTextTmpl     = `{"msgtype":"text","text":{"content":"%s"}}`
-	ContentTypeMarkdownTmpl = `{"msgtype":"markdown","markdown":{"title":"%s","text":"%s"}}`
+	ContentTypeTextTmpl       = `{"msgtype":"text","text":{"content":"%s"}}`
+	ContentTypeMarkdownTmpl   = `{"msgtype":"markdown","markdown":{"title":"%s","text":"%s"}}`
+	ContentTypeMarkdownAtTmpl = `{"msgtype":"markdown","markdown":{"title":"%s","text":"%s"},"at":{"isAtAll": false, "atMobiles":[]}}`
 )
+
+type DingMsg struct {
+	MsgType string `json:"msgtype"`
+	Text    Text   `json:"text"`
+	At      At     `json:"at"`
+}
+
+type Text struct {
+	Content string `json:"content"`
+}
+
+type At struct {
+	AtMobiles []string `json:"atMobiles"`
+	IsAtAll   bool     `json:"isAtAll"`
+}
 
 type ContentType int
 
@@ -83,6 +99,7 @@ func RobotUrl(accessToken, secret string) (string, error) {
 		now := time.Now().UnixNano() / int64(time.Millisecond)
 		timestampStr := strconv.FormatInt(now, 10)
 		h := hmac.New(sha256.New, []byte(secret))
+		h.Write([]byte(timestampStr + "\n" + secret))
 		sum := h.Sum(nil)
 		return fmt.Sprintf("robot/send?access_token=%s&timestamp=%s&sign=%s", accessToken, timestampStr, url.QueryEscape(base64.StdEncoding.EncodeToString(sum))), nil
 	}

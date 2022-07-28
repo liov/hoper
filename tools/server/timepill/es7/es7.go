@@ -44,7 +44,7 @@ func (dao *Dao) MaxIdEs7() int {
 
 func (dao *Dao) LoadES7(pigeSize int) {
 	req := &timepill.ListReq{
-		ListReq: request.ListReq{
+		ListReq: request.PageSortReq{
 			PageReq: request.PageReq{PageNo: 1, PageSize: pigeSize},
 			SortReq: request.SortReq{SortField: "id", SortType: request.SortTypeASC},
 		},
@@ -61,7 +61,7 @@ func (dao *Dao) LoadES7(pigeSize int) {
 		if req.PageSize < 1 {
 			req.PageSize = 10
 		}
-		diaries, err := timepill.Dao.DBDao(dao.ctx).ListDB(req)
+		diaries, err := timepill.Dao.DBDao(dao.ctx).List(req)
 		if err != nil {
 			log.Error(err)
 		}

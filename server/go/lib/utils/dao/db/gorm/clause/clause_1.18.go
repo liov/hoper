@@ -1,7 +1,10 @@
+//go:build go1.18
+
 package clausei
 
 import (
 	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
+	_type "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/type"
 	"github.com/actliboy/hoper/server/go/lib/utils/def/request"
 	"gorm.io/gorm/clause"
 )
@@ -16,7 +19,7 @@ func Page(pageNo, pageSize int) clause.Limit {
 	return clause.Limit{Limit: pageSize}
 }
 
-func NewWhereClause(field string, op dbi.Operation, args ...interface{}) clause.Expression {
+func NewWhereClause(field string, op dbi.Operation, args ...any) clause.Expression {
 	switch op {
 	case dbi.Equal:
 		return clause.Eq{
@@ -97,36 +100,36 @@ func Sort(column string, typ request.SortType) clause.Expression {
 	return clause.OrderBy{Columns: []clause.OrderByColumn{{Column: clause.Column{Name: column, Raw: true}, Desc: desc}}}
 }
 
-type ListReq request.ListReq
+type RangeReq[T _type.Ordered] request.RangeReq[T]
 
-func (req *ListReq) Clause() []clause.Expression {
-	return []clause.Expression{Sort(req.SortField, req.SortType), Page(req.PageNo, req.PageSize)}
-}
-
-type RangeReq request.RangeReq
-
-func (req *RangeReq) Clause() clause.Expression {
+func (req *RangeReq[T]) Clause() clause.Expression {
+	if req == nil || req.RangeField == "" {
+		return new(EmptyClause)
+	}
+	// 泛型还很不好用，这种方式代替原来的interface{}
+	zeroPtr := new(T)
+	zero := *zeroPtr
 	operation := dbi.Between
-	if req.RangeEnd == nil && req.RangeStart != nil {
+	if req.RangeEnd == zero && req.RangeStart != zero {
 		operation = dbi.Greater
 		if req.Include {
 			operation = dbi.GreaterOrEqual
 		}
 		return NewWhereClause(req.RangeField, operation, req.RangeStart)
 	}
-	if req.RangeStart == nil && req.RangeEnd != nil {
+	if req.RangeStart == zero && req.RangeEnd != zero {
 		operation = dbi.Less
 		if req.Include {
 			operation = dbi.LessOrEqual
 		}
 		return NewWhereClause(req.RangeField, operation, req.RangeStart)
 	}
-	if req.RangeStart != nil && req.RangeEnd != nil {
+	if req.RangeStart != zero && req.RangeEnd != zero {
 		if req.Include {
 			return NewWhereClause(req.RangeField, operation, req.RangeStart, req.RangeEnd)
 		} else {
 			return clause.Where{Exprs: []clause.Expression{NewWhereClause(req.RangeField, dbi.Greater, req.RangeStart), NewWhereClause(req.RangeField, dbi.Less, req.RangeStart)}}
 		}
 	}
-	return nil
+	return new(EmptyClause)
 }

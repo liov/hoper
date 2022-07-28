@@ -1,4 +1,4 @@
-package gormi
+package clausei
 
 import (
 	"context"
@@ -7,29 +7,26 @@ import (
 	"strings"
 )
 
-type ChainDao struct {
+type ChainDao[C context.Context] struct {
+	Ctx          C
 	DB, OriginDB *gorm.DB
 }
 
-func (c *ChainDao) ResetDB() {
+func (c *ChainDao[C]) ResetDB() {
 	c.DB = c.OriginDB
 }
 
-func (c *ChainDao) ById(id int) *ChainDao {
+func (c *ChainDao[C]) ById(id int) *ChainDao[C] {
 	c.DB.Where(`id = ?`, id)
 	return c
 }
 
-func (c *ChainDao) ByName(name string) *ChainDao {
+func (c *ChainDao[C]) ByName(name string) *ChainDao[C] {
 	c.DB.Where(`name = ?`, name)
 	return c
 }
 
 type ChainDB func(db *gorm.DB) *gorm.DB
-
-func ChainDBHelper() {
-
-}
 
 func (c ChainDB) ById(id int) ChainDB {
 	return func(db *gorm.DB) *gorm.DB {
@@ -47,24 +44,10 @@ func (c ChainDB) List(db *gorm.DB) {
 	c(db).Find(nil)
 }
 
-type TestChainDBDao struct {
-	ChainDB
-}
-
 func NewChainDB(ctx context.Context) ChainDB {
 	return func(db *gorm.DB) *gorm.DB {
 		return db.WithContext(ctx)
 	}
-}
-
-func NewTestChainDBDao(ctx context.Context) *TestChainDBDao {
-	return &TestChainDBDao{NewChainDB(ctx)}
-}
-
-func testChainDBDao() {
-	dao := NewTestChainDBDao(context.Background())
-	db := new(gorm.DB)
-	dao.ById(1).ByName("a").List(db)
 }
 
 type Clause []func(db *gorm.DB) *gorm.DB
