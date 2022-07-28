@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	_type "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/type"
 	utilv8 "github.com/actliboy/hoper/server/go/lib/utils/dao/es/v8"
 	"github.com/actliboy/hoper/server/go/lib/utils/def/request"
 	"github.com/actliboy/hoper/server/go/lib/utils/io/reader"
@@ -116,8 +117,8 @@ func (dao *EsDao) MaxIdEs8() int {
 }
 
 func (dao *EsDao) LoadEs8() {
-	req := &timepill.ListReq{
-		ListReq: request.ListReq{
+	req := &_type.ListReq{
+		PageSortReq: request.PageSortReq{
 			PageReq: request.PageReq{PageNo: 1, PageSize: timepill.Conf.TimePill.PageSize},
 			SortReq: request.SortReq{SortField: "id", SortType: request.SortTypeASC},
 		},
@@ -134,7 +135,7 @@ func (dao *EsDao) LoadEs8() {
 		if req.PageSize < 1 {
 			req.PageSize = 10
 		}
-		diaries, err := timepill.Dao.DBDao(dao.ctx).ListDB(req)
+		diaries, err := timepill.Dao.DBDao(dao.ctx).List(req)
 		if err != nil {
 			log.Error(err)
 		}

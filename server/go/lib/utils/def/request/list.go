@@ -1,5 +1,10 @@
 package request
 
+import (
+	"github.com/actliboy/hoper/server/go/lib/utils/def/constraints"
+	"time"
+)
+
 type SortType int
 
 const (
@@ -8,9 +13,19 @@ const (
 	SortTypeDESC
 )
 
-type ListReq struct {
+type PageSortReqInter interface {
+	PageReqInter
+	SortReqInter
+}
+
+type PageSortReq struct {
 	PageReq
-	SortReq
+	*SortReq
+}
+
+type PageReqInter interface {
+	PageNo() int
+	PageSize() int
 }
 
 type PageReq struct {
@@ -19,15 +34,28 @@ type PageReq struct {
 }
 
 type SortReq struct {
-	SortField string   `json:"sortField"`
-	SortType  SortType `json:"sortType"`
+	SortField string   `json:"sortField,omitempty"`
+	SortType  SortType `json:"sortType,omitempty"`
 }
 
-type DateReq = RangeReq
+func (receiver *SortReq) Column() string {
+	return receiver.SortField
+}
 
-type RangeReq struct {
-	RangeField string `json:"dateField"`
-	RangeStart any    `json:"dateStart"`
-	RangeEnd   any    `json:"dateEnd"`
-	Include    bool   `json:"include"`
+func (receiver *SortReq) Type() SortType {
+	return receiver.SortType
+}
+
+type SortReqInter interface {
+	Column() string
+	Type() SortType
+}
+
+type DateRangeReq[T ~string | time.Time] RangeReq[T]
+
+type RangeReq[T constraints.Ordered] struct {
+	RangeField string `json:"dateField,omitempty"`
+	RangeStart T      `json:"dateStart,omitempty"`
+	RangeEnd   T      `json:"dateEnd,omitempty"`
+	Include    bool   `json:"include,omitempty"`
 }

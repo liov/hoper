@@ -11,9 +11,16 @@ const (
 const (
 	ColumnDeletedAt = "deleted_at"
 	ColumnId        = "id"
+	ColumnName      = "name"
 )
 
 const (
 	PostgreNotDeleted = ColumnDeletedAt + " = '" + PostgreZeroTime + "'"
 	MysqlNotDeleted   = ColumnDeletedAt + " = '" + MysqlZeroTime + "'"
+)
+
+const (
+	ExprEqual    = " = ?"
+	ExprNotEqual = " != ?"
+	ExprGreater  = " > ?"
 )

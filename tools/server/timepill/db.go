@@ -3,9 +3,10 @@ package timepill
 import (
 	"context"
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/clause"
-	"github.com/actliboy/hoper/server/go/lib/utils/def/request"
+	clausei "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/clause"
+	_type "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/type"
 	"gorm.io/gorm"
+
 	"tools/timepill/model"
 )
 
@@ -14,20 +15,8 @@ const (
 	FaceTableName  = "face"
 )
 
-type ListReq struct {
-	request.ListReq
-	request.RangeReq
-}
-
-func (dao *DBDao) ListDB(req *ListReq) ([]*model.Diary, error) {
-	var diaries []*model.Diary
-
-	clauses := append((*clausei.ListReq)(&req.ListReq).Clause(), (*clausei.RangeReq)(&req.RangeReq).Clause())
-	err := Dao.Hoper.Clauses(clauses...).Find(&diaries).Error
-	if err != nil {
-		return nil, err
-	}
-	return diaries, nil
+func (dao *DBDao) List(req *_type.ListReq[int]) ([]*model.Diary, error) {
+	return clausei.List[*model.Diary, int](Dao.Hoper.DB, req)
 }
 
 func CreateTable() {
