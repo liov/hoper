@@ -20,7 +20,8 @@ func Notify(c *Config) error {
 		" \\n ### 标签: " + c.CommitTag +
 		" \\n ### 时间: " + fmt.Sprint(time.Now().Format("2006-01-02 15:04:05")) +
 		" \\n ### 提交: " + c.Commit +
-		" \\n ### 提交信息: " + c.CommitMessage
+		" \\n ### 提交信息: " + c.CommitMessage +
+		" \\n ### 发布详情: " + c.BuildLink
 
 	var err error
 	if c.DingSecret != "" {

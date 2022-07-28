@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
@@ -12,6 +13,7 @@ func main() {
 		Usage: "通知",
 		Action: func(c *cli.Context) error {
 			config := GetConfig(c)
+			fmt.Println(config)
 			return Notify(config)
 		},
 		Flags: []cli.Flag{
@@ -27,7 +29,7 @@ func main() {
 			},
 			&cli.StringFlag{
 				Name:    "repo",
-				Usage:   "repo",
+				Usage:   "git repo",
 				EnvVars: []string{"DRONE_REPO"},
 			},
 			&cli.StringFlag{
@@ -36,9 +38,19 @@ func main() {
 				EnvVars: []string{"DRONE_COMMIT"},
 			},
 			&cli.StringFlag{
+				Name:    "commit_author_name",
+				Usage:   "git commit author name",
+				EnvVars: []string{"DRONE_COMMIT_AUTHOR_NAME"},
+			},
+			&cli.StringFlag{
 				Name:    "commit_author",
 				Usage:   "git commit author",
 				EnvVars: []string{"DRONE_COMMIT_AUTHOR"},
+			},
+			&cli.StringFlag{
+				Name:    "commit_link",
+				Usage:   "git commit link",
+				EnvVars: []string{"DRONE_COMMIT_LINK"},
 			},
 			&cli.StringFlag{
 				Name:    "commit_ref",
@@ -60,6 +72,11 @@ func main() {
 				Usage:   "git commit tag",
 				EnvVars: []string{"DRONE_TAG"},
 			},
+			&cli.StringFlag{
+				Name:    "drone_build_link",
+				Usage:   "drone build link",
+				EnvVars: []string{"DRONE_BUILD_LINK"},
+			},
 		},
 	}
 	if err := app.Run(os.Args); err != nil {
@@ -77,12 +94,13 @@ type Config struct {
 	CommitBranch  string
 	DingToken     string
 	DingSecret    string
+	BuildLink     string
 }
 
 func GetConfig(c *cli.Context) *Config {
 	return &Config{
 		Repo:          c.String("repo"),
-		CommitAuthor:  c.String("commit_author"),
+		CommitAuthor:  c.String("commit_author_name"),
 		Commit:        c.String("commit"),
 		CommitTag:     c.String("commit_tag"),
 		CommitRef:     c.String("commit_ref"),
@@ -90,5 +108,6 @@ func GetConfig(c *cli.Context) *Config {
 		CommitBranch:  c.String("commit_branch"),
 		DingToken:     c.String("ding_token"),
 		DingSecret:    c.String("ding_secret"),
+		BuildLink:     c.String("drone_build_link"),
 	}
 }
