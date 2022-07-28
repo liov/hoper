@@ -30,7 +30,6 @@ var rootCmd = &cobra.Command{
 func main() {
 	//single("/content/moment.model.proto")
 	rootCmd.Execute()
-	genutils(proto + "/utils")
 	//gengql()
 
 }
@@ -48,11 +47,10 @@ const (
 )
 
 const (
-	goListDir           = `go list -m -f {{.Dir}} `
-	goListDep           = `go list -m -f {{.Path}}@{{.Version}} `
-	DepGoogleapis       = "github.com/googleapis/googleapis@v0.0.0-20220520010701-4c6f5836a32f"
-	DepHoper            = "github.com/actliboy/hoper/server/go/lib"
-	DepHoperWithVersion = "github.com/actliboy/hoper/server/go/lib@v0.0.0-20220713022058-3fd4e65cb7bc"
+	goListDir     = `go list -m -f {{.Dir}} `
+	goListDep     = `go list -m -f {{.Path}}@{{.Version}} `
+	DepGoogleapis = "github.com/googleapis/googleapis@v0.0.0-20220520010701-4c6f5836a32f"
+	DepHoper      = "github.com/actliboy/hoper/server/go/lib"
 )
 
 var (
@@ -84,11 +82,16 @@ func init() {
 	pflag.StringVarP(&proto, "proto", "p", protodef, "proto file path")
 	pflag.StringVarP(&genpath, "genpath", "g", pwd+"/protobuf", "generate path")
 	pflag.BoolVar(&stdPatch, "patch", false, "是否使用原生protopatch")
-
+	rootCmd.AddCommand(&cobra.Command{
+		Use: "test",
+		Run: func(cmd *cobra.Command, args []string) {
+		},
+	})
 	rootCmd.AddCommand(&cobra.Command{
 		Use: "go",
 		Run: func(cmd *cobra.Command, args []string) {
 			run(proto)
+			genutils(proto + "/utils")
 		},
 	})
 	rootCmd.AddCommand(&cobra.Command{
@@ -139,7 +142,7 @@ func getInclude() {
 	osi.CMD("go mod init generate")
 
 	libHoperDir := getDepDir(DepHoper)
-	libHoperDir = "D:/code/hoper/server/go/lib"
+
 	if libHoperDir == "" {
 		return
 	} else {
