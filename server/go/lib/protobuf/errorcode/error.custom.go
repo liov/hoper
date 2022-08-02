@@ -9,12 +9,8 @@ import (
 	"strconv"
 )
 
-func (x *ErrRep) Error() string {
-	return x.Message
-}
-
-func (x *ErrRep) GRPCStatus() *status.Status {
-	return status.New(codes.Code(x.Code), x.Message)
+func (x ErrCode) Code() int {
+	return int(x)
 }
 
 func (x ErrCode) ErrRep() *ErrRep {
@@ -25,7 +21,7 @@ func (x ErrCode) Rep() *ErrRep {
 	return &ErrRep{Code: x, Message: x.String()}
 }
 
-//example 实现
+// example 实现
 func (x ErrCode) GRPCStatus() *status.Status {
 	return status.New(codes.Code(x), x.String())
 }
@@ -99,6 +95,14 @@ func (x ErrCode) OriLog(err error) *errorsi.ErrRep {
 	return &errorsi.ErrRep{Code: errorsi.ErrCode(x), Message: x.String()}
 }
 
+func (x *ErrRep) Error() string {
+	return x.Message
+}
+
+func (x *ErrRep) GRPCStatus() *status.Status {
+	return status.New(codes.Code(x.Code), x.Message)
+}
+
 func (x *ErrRep) MarshalJSON() ([]byte, error) {
 	return stringsi.ToBytes(`{"code":` + strconv.Itoa(int(x.Code)) + `,"message":"` + x.Message + `"}`), nil
 }
@@ -113,7 +117,7 @@ func FromError(err error) (s *ErrRep, ok bool) {
 	if err == nil {
 		return nil, true
 	}
-	if se, ok := err.(ErrReInterface); ok {
+	if se, ok := err.(ErrRepInterface); ok {
 		return se.ErrRep(), true
 	}
 	return NewErrReP(codes.Unknown, err.Error()), false
@@ -127,7 +131,7 @@ func NewErrReP[E ErrCodeGeneric](code E, msg string) *ErrRep {
 	return &ErrRep{Code: ErrCode(code), Message: msg}
 }
 
-type ErrReInterface interface {
+type ErrRepInterface interface {
 	ErrRep() *ErrRep
 }
 

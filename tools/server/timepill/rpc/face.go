@@ -13,7 +13,7 @@ type FaceDetectionRep struct {
 
 func FaceDetection(url string) *FaceDetectionRep {
 	rep := FaceDetectionRep{}
-	err := client.DoGet("http://liov.xyz:5001?url="+url, &rep)
+	err := client.Get("http://liov.xyz:5001?url="+url, &rep)
 	if err != nil {
 		log.Error(err)
 	}

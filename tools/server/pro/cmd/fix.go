@@ -54,7 +54,7 @@ func fixPic(path string, sd *pro.Speed) {
 	for scanner.Scan() {
 		s := strings.Split(scanner.Text(), "<->")
 		img, dir := s[0], s[1]
-		dir = fs.PathClean(dir)
+		dir = fs.PathEdit(dir)
 		log.Println(img, dir)
 		sd.Add(1)
 		go pro.Download(img, dir, sd)

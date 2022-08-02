@@ -6,10 +6,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Response(ctx *gin.Context, res ...interface{}) {
-	httpi.Resp(ctx.Writer, res...)
+func RespErrcode(ctx *gin.Context, code errorcode.ErrCode) {
+	httpi.RespErrcode(ctx.Writer, code)
 }
 
-func Res(ctx *gin.Context, code errorcode.ErrCode, msg string, data interface{}) {
+func RespErr(ctx *gin.Context, err error) {
+	httpi.RespErr(ctx.Writer, err)
+}
+
+func RespErrMsg(ctx *gin.Context, msg string) {
+	httpi.RespErrMsg(ctx.Writer, msg)
+}
+
+func RespErrRep(ctx *gin.Context, rep *errorcode.ErrRep) {
+	httpi.RespErrRep(ctx.Writer, rep)
+}
+
+func Response(ctx *gin.Context, code errorcode.ErrCode, msg string, data interface{}) {
 	httpi.Response(ctx.Writer, code, msg, data)
 }

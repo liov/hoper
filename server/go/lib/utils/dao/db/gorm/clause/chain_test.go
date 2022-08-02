@@ -1,4 +1,4 @@
-package clausei
+package clause
 
 import (
 	"context"

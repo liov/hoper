@@ -47,7 +47,7 @@ func Record(id int, sd *Speed) string {
 	if title != "" {
 		dir += title + `_` + tid + Sep
 	}
-	dir = fs.PathClean(dir)
+	dir = fs.PathEdit(dir)
 
 	post.Path = dir[CommonDirLen:]
 	err = Dao.DB.Save(post).Error
@@ -85,7 +85,7 @@ func Record(id int, sd *Speed) string {
 
 	s.Each(func(i int, s *goquery.Selection) {
 		if url, ok := s.Attr("file"); ok {
-			sd.Add(1)
+			sd.Add()
 			go Download(url, dir, sd)
 			time.Sleep(Conf.Pro.Interval)
 		}

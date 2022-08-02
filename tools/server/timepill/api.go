@@ -213,7 +213,7 @@ func callV2(method, api string, param, result any) error {
 }
 
 func call(method, api string, param, result any) error {
-	return client.NewRequest(api, method, param).SetHeader("Authorization", Token).SetLogger(nil).Do(result)
+	return client.NewRequest(api, method).SetHeader("Authorization", Token).SetLogger(nil).Do(param, result)
 }
 
 type Response struct {
@@ -242,7 +242,7 @@ icon: {uri: photoUri, name: 'image.jpg', type: 'image/jpg'}
 }
 
 func upload(method, api string, param, result any) error {
-	return client.NewRequest(api, method, param).SetContentType(client.ContentTypeForm).SetHeader("Authorization", Token).SetLogger(nil).Do(result)
+	return client.NewRequest(api, method).SetContentType(client.ContentTypeForm).SetHeader("Authorization", Token).SetLogger(nil).Do(param, result)
 }
 
 func UpdateUserInfo(name, intro string) *Response {

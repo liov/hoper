@@ -1,6 +1,8 @@
 // local mode(mode="app") = if mode == "app" then "app" else "node";
 local tpldir = './build/k8s/app/';
 local codedir = '/home/new/code/hoper/';
+local workspace = '/src';
+local srcdir = workspace + '/';
 
 local kubectl(deplocal, cmd) = if deplocal then {
   name: 'deploy',
@@ -55,6 +57,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
     os: 'linux',
     arch: 'amd64',
   },
+  workspace: workspace,
   trigger: {
     ref: [
       'refs/tags/' + committag + '*',
@@ -120,12 +123,12 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
       'cd /code',
       'git tag -l | xargs git tag -d',
       'git fetch --all && git reset --hard origin/master && git pull',
-      'cd /drone/src/',
+      'cd ' + srcdir,
       'git clone /code .',
       'git checkout -b deploy $DRONE_COMMIT_REF',
        // edit Dockerfile && deploy file
       local buildfile = '/code/' + workdir + '/protobuf/build';
-      if protoc then 'if [ -f ' + buildfile + ' ]; then cp -r /code/' + workdir + '/protobuf  /drone/src/' + workdir + '; fi' else 'echo',
+      if protoc then 'if [ -f ' + buildfile + ' ]; then cp -r /code/' + workdir + '/protobuf  '+ srcdir + workdir + '; fi' else 'echo',
       "sed -i 's/$${app}/" + fullname + "/g' " + dockerfilepath,
       local cmd = ['./' + fullname] + opts;
       "sed -i 's#$${cmd}#" + std.join('", "', [opt for opt in cmd]) + "#g' " + dockerfilepath,
@@ -139,11 +142,11 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
       // go build
       'cd ' + workdir,
       'go mod download',
-      local genpath = '/drone/src/' + workdir + '/protobuf';
-      local buildfile = '/drone/src/' + workdir + '/protobuf/build';
-      if protoc then 'if [ ! -f ' + buildfile + ' ]; then generate -proto=/drone/src/proto -genpath='+genpath+'; fi' else 'echo',
+      local genpath = srcdir + workdir + '/protobuf';
+      local buildfile = srcdir + workdir + '/protobuf/build';
+      if protoc then 'if [ ! -f ' + buildfile + ' ]; then generate go --proto='+srcdir+'/proto --genpath='+genpath+'; fi' else 'echo',
       'go mod tidy',
-      'go build -trimpath -o  /drone/src/' + fullname + ' ' + sourceFile,
+      'go build -trimpath -o  '+ srcdir + fullname + ' ' + sourceFile,
       ],
     },
     {

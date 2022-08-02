@@ -1,6 +1,7 @@
 package main
 
 import (
+	_go "github.com/actliboy/hoper/server/go/lib/utils/go"
 	"github.com/actliboy/hoper/server/go/lib/utils/os"
 	execi "github.com/actliboy/hoper/server/go/lib/utils/os/exec"
 	"github.com/spf13/cobra"
@@ -70,9 +71,9 @@ var enum = []string{enumOut, goOut}
 var gqlgen []string
 
 var (
-	proto, genpath           string
-	gopath, modPath, include string
-	stdPatch                 bool
+	proto, genpath string
+	include        string
+	stdPatch       bool
 )
 
 func init() {
@@ -122,11 +123,6 @@ func getInclude() {
 			log.Fatal(err)
 		}
 	}
-	gopath = os.Getenv("GOPATH")
-	if gopath != "" && !strings.HasSuffix(gopath, "/") {
-		gopath = gopath + "/"
-	}
-	modPath = gopath + "pkg/mod/"
 
 	generatePath := "generate" + time.Now().Format("150405")
 	err = os.Mkdir(generatePath, os.ModePerm)
@@ -141,7 +137,7 @@ func getInclude() {
 	}
 	osi.CMD("go mod init generate")
 
-	libHoperDir := getDepDir(DepHoper)
+	libHoperDir := _go.GetDepDir(DepHoper)
 
 	if libHoperDir == "" {
 		return
@@ -151,13 +147,13 @@ func getInclude() {
 		DepProtopatch, _ = osi.CMD(goListDep + DepProtopatch)
 		os.Chdir(generatePath)
 	}
-	libGoogleDir := getDepDir(DepGoogleapis)
+	libGoogleDir := _go.GetDepDir(DepGoogleapis)
 
-	libGatewayDir := getDepDir(DepGrpcGateway)
+	libGatewayDir := _go.GetDepDir(DepGrpcGateway)
 
 	protopatch := libHoperDir + "/protobuf"
 	if stdPatch {
-		protopatch = getDepDir(DepProtopatch)
+		protopatch = _go.GetDepDir(DepProtopatch)
 	}
 
 	os.Chdir(pwd)
@@ -166,27 +162,6 @@ func getInclude() {
 		" -I" + libGoogleDir + " -I" + libHoperDir + "/protobuf -I" + libHoperDir + "/protobuf/third  -I" + proto
 	log.Println("include:", include)
 
-}
-
-func getDepDir(dep string) string {
-	if !strings.Contains(dep, "@") {
-		return modDepDir(dep)
-	}
-	depPath := modPath + dep
-	_, err := os.Stat(depPath)
-	if os.IsNotExist(err) {
-		depPath = modDepDir(dep)
-	}
-	return depPath
-}
-
-func modDepDir(dep string) string {
-	depPath, _ := osi.CMD(goListDir + dep)
-	if depPath == "" {
-		osi.CMD("go get " + dep)
-		depPath, _ = osi.CMD(goListDir + dep)
-	}
-	return depPath
 }
 
 func single(path string) {
