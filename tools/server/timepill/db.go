@@ -3,8 +3,8 @@ package timepill
 import (
 	"context"
 	"fmt"
-	clausei "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/clause"
-	_type "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/type"
+	clausei "github.com/actliboy/hoper/server/go/lib/utils/generics/dao/db/gorm/clause"
+	_type "github.com/actliboy/hoper/server/go/lib/utils/generics/dao/db/type"
 	"gorm.io/gorm"
 
 	"tools/timepill/model"

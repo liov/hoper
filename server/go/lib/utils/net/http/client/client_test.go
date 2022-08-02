@@ -35,8 +35,8 @@ func TestClient(t *testing.T) {
 		PlatformType: 1,
 	}
 	res := &OperatorPublicList{}
-	err := NewRequest(`http://hoper.xyz/api/list`, http.MethodPost, req).
-		SetHeader("Auth", "e30=").Do(CommonResponse(res))
+	err := NewRequest(`http://hoper.xyz/api/list`, http.MethodPost).
+		SetHeader("Auth", "e30=").Do(req, CommonResponse(res))
 	if err != nil {
 		t.Fatal(err)
 	}

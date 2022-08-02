@@ -1,4 +1,4 @@
-package _type
+package constraints
 
 import "golang.org/x/exp/constraints"
 

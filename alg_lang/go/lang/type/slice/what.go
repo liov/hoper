@@ -29,4 +29,6 @@ func main() {
 	s := []int{1, 2, 3, 4, 5, 6}
 	s = s[0:1:2] //切片设置容量上限操作
 	fmt.Printf("%v", s)
+	s = s[0:0]
+	fmt.Printf("%v", s)
 }

@@ -1,4 +1,4 @@
-FROM golang:1.19rc2
+FROM golang:1.19
 
 ADD ./protoc /bin/
 ADD ./protoc-gen-enum /bin/

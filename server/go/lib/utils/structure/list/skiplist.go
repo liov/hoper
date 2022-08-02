@@ -37,7 +37,7 @@ func (s *SkipList) Set(k interface{}, v interface{}) {
 	update := make([]*skiplistitem, s.level()+1, s.effectiveMaxLevel()+1) // make(type, len, cap)
 
 	x := s.path(s.header, update, k)
-	if x != nil && (s.less(x.k, k) || s.less(x.k, k)) { // if key exist, update
+	if x != nil && (s.less(x.k, k) || s.less(x.k, k)) { // if key Exist, update
 		x.v = v
 		return
 	}

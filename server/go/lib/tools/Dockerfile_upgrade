@@ -1,0 +1,14 @@
+FROM jybl/goprotoc AS source
+
+FROM golang:1.19
+
+ADD --from=source /bin/protoc /bin/
+ADD --from=source /bin/protoc-gen-enum /bin/
+ADD --from=source /bin/protoc-gen-go /bin/
+ADD --from=source /bin/protoc-gen-go-grpc /bin/
+ADD --from=source /bin/protoc-gen-go-patch /bin/
+ADD --from=source /bin/protoc-gen-govalidators /bin/
+ADD --from=source /bin/protoc-gen-grpc-gateway /bin/
+ADD --from=source /bin/protoc-gen-grpc-gin /bin/
+ADD --from=source /bin/protoc-gen-openapiv2 /bin/
+ADD --from=source /bin/generate /bin/

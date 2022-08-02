@@ -29,7 +29,7 @@ func GetImage(url string) (io.ReadCloser, error) {
 		if i > 0 {
 			time.Sleep(time.Second)
 		}
-		resp, err = client.Do(req)
+		resp, err = defaultClient.Do(req)
 		if err != nil {
 			log.Println(err, "url:", url)
 			continue

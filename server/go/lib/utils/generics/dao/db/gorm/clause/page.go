@@ -3,8 +3,9 @@
 package clausei
 
 import (
-	_type "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/type"
+	clause2 "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/clause"
 	"github.com/actliboy/hoper/server/go/lib/utils/def/request"
+	"github.com/actliboy/hoper/server/go/lib/utils/generics/dao/db/type"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -30,13 +31,13 @@ type PageSortReq request.PageSortReq
 
 func (req *PageSortReq) Clause() []clause.Expression {
 	if req.PageNo == 0 && req.PageSize == 0 {
-		return []clause.Expression{new(EmptyClause)}
+		return []clause.Expression{new(clause2.EmptyClause)}
 	}
 	if req.SortReq == nil || req.SortReq.SortField == "" {
-		return []clause.Expression{Page(req.PageNo, req.PageSize)}
+		return []clause.Expression{clause2.Page(req.PageNo, req.PageSize)}
 	}
 
-	return []clause.Expression{Sort(req.SortField, req.SortType), Page(req.PageNo, req.PageSize)}
+	return []clause.Expression{clause2.Sort(req.SortField, req.SortType), clause2.Page(req.PageNo, req.PageSize)}
 }
 
 type ListReq[T _type.Ordered] _type.ListReq[T]
@@ -53,5 +54,5 @@ func (req *ListReq[O]) Clause() []clause.Expression {
 	if rqc != nil {
 		return []clause.Expression{rqc}
 	}
-	return []clause.Expression{new(EmptyClause)}
+	return []clause.Expression{new(clause2.EmptyClause)}
 }

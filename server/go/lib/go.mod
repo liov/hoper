@@ -53,7 +53,7 @@ require (
 	github.com/tealeg/xlsx/v3 v3.2.3
 	github.com/tidwall/pretty v1.2.0
 	github.com/ugorji/go/codec v1.2.6
-	github.com/valyala/fasthttp v1.36.0
+	github.com/valyala/fasthttp v1.38.0
 	github.com/xuri/excelize/v2 v2.4.1
 	go.etcd.io/etcd/client/v3 v3.5.4
 	go.opencensus.io v0.23.0

@@ -1,10 +1,9 @@
 //go:build go1.18
 
-package clausei
+package clause
 
 import (
 	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
-	_type "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/type"
 	"github.com/actliboy/hoper/server/go/lib/utils/def/request"
 	"gorm.io/gorm/clause"
 )
@@ -98,38 +97,4 @@ func Sort(column string, typ request.SortType) clause.Expression {
 		desc = true
 	}
 	return clause.OrderBy{Columns: []clause.OrderByColumn{{Column: clause.Column{Name: column, Raw: true}, Desc: desc}}}
-}
-
-type RangeReq[T _type.Ordered] request.RangeReq[T]
-
-func (req *RangeReq[T]) Clause() clause.Expression {
-	if req == nil || req.RangeField == "" {
-		return new(EmptyClause)
-	}
-	// 泛型还很不好用，这种方式代替原来的interface{}
-	zeroPtr := new(T)
-	zero := *zeroPtr
-	operation := dbi.Between
-	if req.RangeEnd == zero && req.RangeStart != zero {
-		operation = dbi.Greater
-		if req.Include {
-			operation = dbi.GreaterOrEqual
-		}
-		return NewWhereClause(req.RangeField, operation, req.RangeStart)
-	}
-	if req.RangeStart == zero && req.RangeEnd != zero {
-		operation = dbi.Less
-		if req.Include {
-			operation = dbi.LessOrEqual
-		}
-		return NewWhereClause(req.RangeField, operation, req.RangeStart)
-	}
-	if req.RangeStart != zero && req.RangeEnd != zero {
-		if req.Include {
-			return NewWhereClause(req.RangeField, operation, req.RangeStart, req.RangeEnd)
-		} else {
-			return clause.Where{Exprs: []clause.Expression{NewWhereClause(req.RangeField, dbi.Greater, req.RangeStart), NewWhereClause(req.RangeField, dbi.Less, req.RangeStart)}}
-		}
-	}
-	return new(EmptyClause)
 }

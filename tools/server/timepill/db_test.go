@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
-	_type "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/type"
+	_type "github.com/actliboy/hoper/server/go/lib/utils/generics/dao/db/type"
 	"testing"
 )
 

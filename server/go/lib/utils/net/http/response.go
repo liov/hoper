@@ -24,42 +24,6 @@ func (res *ResData) Response(w http.ResponseWriter, httpcode int) {
 	render.WriteJSON(w, res)
 }
 
-//先信息后数据最后状态码
-//入参1. data interface{},msg string,code int
-//2.msg,code |data默认nil
-//3.data,msg |code默认SUCCESS
-//4.msg |data默认nil code默认ERROR
-//5.data |msg默认"",code默认SUCCESS
-func newResData(res ...interface{}) *ResData {
-	var resData ResData
-
-	if len(res) == 1 {
-		resData.Code = errorcode.Unknown
-		if msgTmp, ok := res[0].(string); ok {
-			resData.Message = msgTmp
-			resData.Details = nil
-		} else {
-			resData.Details = res[0]
-			resData.Code = errorcode.SUCCESS
-		}
-	} else if len(res) == 2 {
-		if msgTmp, ok := res[0].(string); ok {
-			resData.Details = nil
-			resData.Message = msgTmp
-			resData.Code = res[1].(errorcode.ErrCode)
-		} else {
-			resData.Details = res[0]
-			resData.Message = res[1].(string)
-			resData.Code = errorcode.SUCCESS
-		}
-	} else {
-		resData.Details = res[0]
-		resData.Message = res[1].(string)
-		resData.Code = res[2].(errorcode.ErrCode)
-	}
-	return &resData
-}
-
 func NewResData(code errorcode.ErrCode, msg string, data interface{}) *ResData {
 	return &ResData{
 		Code:    code,
@@ -68,8 +32,20 @@ func NewResData(code errorcode.ErrCode, msg string, data interface{}) *ResData {
 	}
 }
 
-func Resp(w http.ResponseWriter, res ...interface{}) {
-	newResData(res...).Response(w, http.StatusOK)
+func RespErrcode(w http.ResponseWriter, code errorcode.ErrCode) {
+	NewResData(code, code.Error(), nil).Response(w, http.StatusOK)
+}
+
+func RespErr(w http.ResponseWriter, err error) {
+	NewResData(errorcode.Unknown, err.Error(), nil).Response(w, http.StatusOK)
+}
+
+func RespErrMsg(w http.ResponseWriter, msg string) {
+	NewResData(errorcode.SUCCESS, msg, nil).Response(w, http.StatusOK)
+}
+
+func RespErrRep(w http.ResponseWriter, rep *errorcode.ErrRep) {
+	NewResData(rep.Code, rep.Message, nil).Response(w, http.StatusOK)
 }
 
 func Response(w http.ResponseWriter, code errorcode.ErrCode, msg string, data interface{}) {

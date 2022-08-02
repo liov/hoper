@@ -41,6 +41,10 @@ const (
 	ContentFormMultipartHeaderValue = "multipart/form-data"
 	// ContentGRPCHeaderValue Content-Type header value for gRPC.
 	ContentGRPCHeaderValue = "application/grpc"
+
+	ContentJSONUTF8HeaderValue = "application/json;charset=utf-8"
+
+	ContentFormParamHeaderValue = "application/x-www-form-urlencoded;param=value"
 )
 
 const (
