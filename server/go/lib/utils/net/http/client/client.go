@@ -2,7 +2,6 @@ package client
 
 import (
 	"bytes"
-	"compress/gzip"
 	"context"
 	"encoding/json"
 	"errors"
@@ -15,6 +14,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
@@ -23,9 +23,16 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/number"
 	"github.com/actliboy/hoper/server/go/lib/utils/strings"
 	"go.uber.org/zap"
+	urlpkg "net/url"
 )
 
-var defaultClient = &http.Client{}
+// 不是并发安全的
+
+var (
+	defaultClient = &http.Client{}
+	genlog        = true
+	headerMap     = sync.Map{}
+)
 
 const timeout = time.Minute
 
@@ -47,10 +54,12 @@ func SetTimeout(timeout time.Duration) {
 	setTimeout(defaultClient, timeout)
 }
 
-var genlog = true
-
 func DisableLog() {
 	genlog = false
+}
+
+func SetClient(client *http.Client) {
+	client = defaultClient
 }
 
 func setTimeout(client *http.Client, timeout time.Duration) {
@@ -77,8 +86,6 @@ type Pair struct {
 	K, V string
 }
 
-type LogCallback func(url, method, auth, reqBody, respBytes string, status int, process time.Duration)
-
 func defaultLog(url, method, auth, reqBody, respBytes string, status int, process time.Duration) {
 	log.Default.Logger.Info("third-request", zap.String("interface", url),
 		zap.String("method", method),
@@ -100,22 +107,75 @@ const (
 
 // RequestParams ...
 type RequestParams struct {
+	ctx                context.Context
 	client             *http.Client
 	url, method        string
 	timeout            time.Duration
 	AuthUser, AuthPass string
 	ContentType        ContentType
-	Header             http.Header
+	header             http.Header
+	cachedHeaderKey    string
 	logger             LogCallback
 	ResponseHandler    func(response []byte) ([]byte, error)
+	retryTimes         int
+	retryHandle        func(*RequestParams)
+}
+
+func New(url string) *RequestParams {
+	return newRequest(url, "")
 }
 
 func NewRequest(url, method string) *RequestParams {
-	return &RequestParams{client: defaultClient, url: url, method: strings.ToUpper(method), Header: make(http.Header)}
+	return newRequest(url, strings.ToUpper(method))
+}
+
+func newRequest(url, method string) *RequestParams {
+	return &RequestParams{ctx: context.Background(), client: defaultClient, url: url, method: method, header: make(http.Header)}
+}
+
+func NewGetRequest(url string) *RequestParams {
+	return newRequest(url, http.MethodGet)
+}
+
+func NewPostRequest(url string) *RequestParams {
+	return newRequest(url, http.MethodPost)
+}
+
+func NewPutRequest(url string) *RequestParams {
+	return newRequest(url, http.MethodPut)
+}
+
+func NewDeleteRequest(url string) *RequestParams {
+	return newRequest(url, http.MethodDelete)
 }
 
 func (req *RequestParams) DefaultLog() *RequestParams {
 	req.logger = defaultLog
+	return req
+}
+
+func (req *RequestParams) SetMethod(method string) *RequestParams {
+	req.method = strings.ToUpper(method)
+	return req
+}
+
+func (req *RequestParams) Get() *RequestParams {
+	req.method = http.MethodGet
+	return req
+}
+
+func (req *RequestParams) Post() *RequestParams {
+	req.method = http.MethodPost
+	return req
+}
+
+func (req *RequestParams) Put() *RequestParams {
+	req.method = http.MethodPut
+	return req
+}
+
+func (req *RequestParams) Delete() *RequestParams {
+	req.method = http.MethodDelete
 	return req
 }
 
@@ -124,8 +184,18 @@ func (req *RequestParams) SetContentType(contentType ContentType) *RequestParams
 	return req
 }
 
-func (req *RequestParams) SetHeader(k, v string) *RequestParams {
-	req.Header.Set(k, v)
+func (req *RequestParams) AddHeader(k, v string) *RequestParams {
+	req.header.Set(k, v)
+	return req
+}
+
+func (req *RequestParams) SetHeader(header http.Header) *RequestParams {
+	req.header = header
+	return req
+}
+
+func (req *RequestParams) CachedHeader(key string) *RequestParams {
+	req.cachedHeaderKey = key
 	return req
 }
 
@@ -149,7 +219,17 @@ func (req *RequestParams) SetClient(client *http.Client) *RequestParams {
 	return req
 }
 
-type responseBody interface {
+func (req *RequestParams) SetRetryTimes(retryTimes int) *RequestParams {
+	req.retryTimes = retryTimes
+	return req
+}
+
+func (req *RequestParams) SetRetryHandle(handle func(*RequestParams)) *RequestParams {
+	req.retryHandle = handle
+	return req
+}
+
+type ResponseBodyCheck interface {
 	CheckError() error
 }
 
@@ -159,7 +239,7 @@ type ResponseBody struct {
 	Message string      `json:"message"`
 }
 
-func CommonResponse(response interface{}) responseBody {
+func CommonResponse(response interface{}) ResponseBodyCheck {
 	return &ResponseBody{Data: response}
 }
 
@@ -183,12 +263,13 @@ func (req *RequestParams) Do(param, response interface{}) error {
 	var body io.Reader
 	var reqBody, respBody string
 	var statusCode int
+	reqTime := time.Now()
 	// 日志记录
 	defer func(now time.Time) {
 		if req.logger != nil && genlog {
 			req.logger(url, method, req.AuthUser, reqBody, respBody, statusCode, time.Now().Sub(now))
 		}
-	}(time.Now())
+	}(reqTime)
 
 	var err error
 	if method == http.MethodGet {
@@ -234,11 +315,20 @@ func (req *RequestParams) Do(param, response interface{}) error {
 		}
 	}
 
-	request, err := http.NewRequest(method, url, body)
+	request, err := http.NewRequestWithContext(req.ctx, method, url, body)
 	if err != nil {
 		return err
 	}
-	request.Header = req.Header
+
+	// 缓存header
+	if req.cachedHeaderKey != "" {
+		if header, ok := headerMap.Load(req.cachedHeaderKey); ok {
+			request.Header = header.(http.Header)
+		}
+	} else {
+		request.Header = req.header
+	}
+
 	if req.AuthUser != "" && req.AuthPass != "" {
 		request.SetBasicAuth(req.AuthUser, req.AuthPass)
 	}
@@ -249,27 +339,33 @@ func (req *RequestParams) Do(param, response interface{}) error {
 	} else {
 		request.Header.Set(httpi.HeaderContentType, httpi.ContentFormHeaderValue)
 	}
-	var reader io.Reader
-	resp, err := req.client.Do(request)
+	var resp *http.Response
+	resp, err = req.client.Do(request)
 	if err != nil {
-		respBody = err.Error()
-		return err
-	}
-	defer resp.Body.Close()
-	if resp.Header.Get(httpi.HeaderContentEncoding) == "gzip" {
-		reader, err = gzip.NewReader(resp.Body)
-		if err != nil {
+		if req.retryTimes == 0 {
 			respBody = err.Error()
 			return err
 		}
-	} else {
-		reader = resp.Body
+		for i := 0; i < req.retryTimes; i++ {
+			if req.retryHandle != nil {
+				req.retryHandle(req)
+			}
+			resp, err = req.client.Do(request)
+			if err == nil {
+				break
+			} else {
+				if req.logger != nil && genlog {
+					req.logger(url, method, req.AuthUser, reqBody, err.Error()+";will retry", statusCode, time.Now().Sub(reqTime))
+				}
+			}
+		}
 	}
 
-	respBytes, err := io.ReadAll(reader)
+	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
+	resp.Body.Close()
 	if req.ResponseHandler != nil {
 		respBytes, err = req.ResponseHandler(respBytes)
 		if err != nil {
@@ -291,7 +387,7 @@ func (req *RequestParams) Do(param, response interface{}) error {
 		if err != nil {
 			return err
 		}
-		if v, ok := response.(responseBody); ok {
+		if v, ok := response.(ResponseBodyCheck); ok {
 			err = v.CheckError()
 		}
 	}
@@ -348,22 +444,8 @@ func getFieldValue(v reflect.Value) string {
 	return ""
 }
 
-func NewEasyRequest() *RequestParams {
-	return &RequestParams{client: defaultClient, Header: make(http.Header)}
-}
-
 func Get(url string, response any) error {
 	return NewGetRequest(url).Do(nil, response)
-}
-
-func NewGetRequest(url string) *RequestParams {
-	return NewRequest(url, http.MethodGet)
-}
-
-func (req *RequestParams) Get(url string) *RequestParams {
-	req.url = url
-	req.method = http.MethodGet
-	return req
 }
 
 func (req *RequestParams) DoGet(url string, param, response interface{}) error {
@@ -376,12 +458,6 @@ func Post(url string) *RequestParams {
 	return NewRequest(url, http.MethodPost)
 }
 
-func (req *RequestParams) Post(url string) *RequestParams {
-	req.url = url
-	req.method = http.MethodPost
-	return req
-}
-
 func (req *RequestParams) DoPost(url string, param, response interface{}) error {
 	req.url = url
 	req.method = http.MethodPost
@@ -392,12 +468,6 @@ func Put(url string) *RequestParams {
 	return NewRequest(url, http.MethodPut)
 }
 
-func (req *RequestParams) Put(url string) *RequestParams {
-	req.url = url
-	req.method = http.MethodPut
-	return req
-}
-
 func (req *RequestParams) DoPut(url string, param, response interface{}) error {
 	req.url = url
 	req.method = http.MethodPut
@@ -406,12 +476,6 @@ func (req *RequestParams) DoPut(url string, param, response interface{}) error {
 
 func Delete(url string) *RequestParams {
 	return NewRequest(url, http.MethodDelete)
-}
-
-func (req *RequestParams) Delete(url string) *RequestParams {
-	req.url = url
-	req.method = http.MethodDelete
-	return req
 }
 
 func (req *RequestParams) DoDelete(url string, param, response interface{}) error {
@@ -451,4 +515,53 @@ func (req *RequestParams) Download(url, path string) error {
 		return err
 	}
 	return nil
+}
+
+type ReplaceHttpRequest http.Request
+
+func NewReplaceHttpRequest(r *http.Request) *ReplaceHttpRequest {
+	return (*ReplaceHttpRequest)(r)
+}
+
+func (r *ReplaceHttpRequest) SetURL(url string) *ReplaceHttpRequest {
+	u, err := urlpkg.Parse(url)
+	if err != nil {
+		log.Error(err)
+	}
+	u.Host = removeEmptyPort(u.Host)
+	r.URL = u
+	r.Host = u.Host
+	return r
+}
+
+// Given a string of the form "host", "host:port", or "[ipv6::address]:port",
+// return true if the string includes a port.
+func hasPort(s string) bool { return strings.LastIndex(s, ":") > strings.LastIndex(s, "]") }
+
+// removeEmptyPort strips the empty port in ":port" to ""
+// as mandated by RFC 3986 Section 6.2.3.
+func removeEmptyPort(host string) string {
+	if hasPort(host) {
+		return strings.TrimSuffix(host, ":")
+	}
+	return host
+}
+
+func (r *ReplaceHttpRequest) SetMethod(method string) *ReplaceHttpRequest {
+	r.Method = strings.ToUpper(method)
+	return r
+}
+
+func (r *ReplaceHttpRequest) SetBody(body io.ReadCloser) *ReplaceHttpRequest {
+	r.Body = body
+	return r
+}
+
+func (r *ReplaceHttpRequest) SetContext(ctx context.Context) *ReplaceHttpRequest {
+	stdr := (*http.Request)(r).WithContext(ctx)
+	return (*ReplaceHttpRequest)(stdr)
+}
+
+func (r *ReplaceHttpRequest) StdHttpRequest() *http.Request {
+	return (*http.Request)(r)
 }

@@ -56,7 +56,7 @@ func fixPic(path string, sd *pro.Speed) {
 		img, dir := s[0], s[1]
 		dir = fs.PathEdit(dir)
 		log.Println(img, dir)
-		sd.Add(1)
+		sd.Add()
 		go pro.Download(img, dir, sd)
 		time.Sleep(pro.Conf.Pro.Interval)
 	}

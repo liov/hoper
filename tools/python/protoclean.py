@@ -13,8 +13,6 @@ def clean(inputpath, outputpath):
         if os.path.isfile(path):
             replace(path, os.path.join(outputpath, file))
         else:
-            if path.endswith("utils/proto"):
-                continue
             clean(path, os.path.join(outputpath, file))
 
 

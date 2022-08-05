@@ -3,9 +3,8 @@ package main
 import (
 	"flag"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
+	"tools/bilibili/download"
 	"tools/bilibili/tool"
-
-	"tools/bilibili/parser"
 )
 
 func main() {
@@ -16,15 +15,15 @@ func main() {
 	flag.BoolVar(&continuous, "l", false, "是否连续")
 	flag.Parse()
 
-	aid := tool.Bv2av("BV1Br4y1j7pa")
-	req := parser.GetRequestByFav(aid)
-	crawler.New(req)
-
+	/*	aid := tool.Bv2av("BV1Br4y1j7pa")
+		req := parser.GetRequestByFav(aid)
+		crawler.New(req)
+	*/
 	if continuous {
-		req := parser.FavReq(page)
+		req := download.FavReq(page)
 		crawler.New(req)
 	} else {
-		req := parser.FavReqs(page)
+		req := download.FavReqs(page)
 		crawler.New(req...)
 	}
 }

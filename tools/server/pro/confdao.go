@@ -1,12 +1,10 @@
 package pro
 
 import (
-	"context"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/cache_ristretto"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/db"
 	v8 "github.com/actliboy/hoper/server/go/lib/tiga/initialize/elastic/v8"
 	initializeredis "github.com/actliboy/hoper/server/go/lib/tiga/initialize/redis"
-	"net/http"
 	"os"
 	"time"
 )
@@ -19,10 +17,7 @@ func (c *Config) Init() {
 	c.Pro.Interval = c.Pro.Interval * time.Millisecond
 	c.Pro.Timer = c.Pro.Timer * time.Second
 	CommonDirLen = len(c.Pro.CommonDir)
-	reqCache = make([]*http.Request, 1, Conf.Pro.Loop)
-	picClient = new(http.Client)
-	req, _ := newRequest(Conf.Pro.CommonUrl)
-	reqCache[0] = req.Clone(context.Background())
+
 	/*	SetClient(http.DefaultClient,30,`socks5://localhost:8080`)
 		SetClient(picClient,30,`socks5://localhost:8080`)*/
 }
@@ -59,8 +54,6 @@ var (
 	Dao          dao
 	Conf         Config
 	CommonDirLen int
-	reqCache     []*http.Request
-	picClient    *http.Client
 )
 
 const Sep = string(os.PathSeparator)
