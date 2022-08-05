@@ -5,22 +5,21 @@ import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
-	"io/ioutil"
+	"io"
 	"log"
-	"net/http"
 	"strconv"
 	"tools/pro"
 )
 
 func main() {
 	defer initialize.Start(&pro.Conf, &pro.Dao)()
-	reader, err := pro.Request(http.DefaultClient, pro.Conf.Pro.CommonUrl+strconv.Itoa(510780))
+	reader, err := pro.R(pro.Conf.Pro.CommonUrl + strconv.Itoa(510780))
 	if err != nil {
 		log.Fatal(err)
 	}
-	data, _ := ioutil.ReadAll(reader)
+	data, _ := io.ReadAll(reader)
 	log.Println(string(data))
-	defer reader.Close()
+
 	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(data))
 	if err != nil {
 		log.Println(err)

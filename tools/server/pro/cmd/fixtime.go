@@ -4,7 +4,6 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"log"
-	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -30,7 +29,7 @@ func fixtime(sd *pro.Speed) {
 func doFixtime(id int, sd *pro.Speed) {
 	defer sd.WebDone()
 	tid := strconv.Itoa(id)
-	reader, err := pro.Request(http.DefaultClient, pro.Conf.Pro.CommonUrl+tid)
+	reader, err := pro.R(pro.Conf.Pro.CommonUrl + tid)
 	if err != nil {
 		//log.Println(err, "id:", tid)
 		return
@@ -41,7 +40,7 @@ func doFixtime(id int, sd *pro.Speed) {
 		sd.Fail <- tid
 		return
 	}
-	reader.Close()
+
 	postTime := doc.Find(".posterinfo .authorinfo em").First().Text()
 	if strings.HasPrefix(postTime, "发表于") {
 		postTime = postTime[len(`发表于 `):]

@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"log"
-	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -65,7 +64,7 @@ func historyFormFile(path string, sd *pro.Speed) {
 func fetchHistory(id int, sd *pro.Speed) {
 	defer sd.WebDone()
 	tid := strconv.Itoa(id)
-	reader, err := pro.Request(http.DefaultClient, pro.Conf.Pro.CommonUrl+tid)
+	reader, err := pro.R(pro.Conf.Pro.CommonUrl + tid)
 	if err != nil {
 		//log.Println(err, "id:", tid)
 		if !strings.HasPrefix(err.Error(), "返回错误") {
@@ -84,7 +83,7 @@ func fetchHistory(id int, sd *pro.Speed) {
 		sd.Fail <- tid
 		return
 	}
-	reader.Close()
+
 	s := doc.Find(`img[src="images/common/none.gif"]`)
 	_, _, _, _, _, post := pro.ParseHtml(doc)
 	post.TId = id

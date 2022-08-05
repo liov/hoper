@@ -2,9 +2,8 @@ package pro
 
 import (
 	"bufio"
-	"compress/gzip"
-	"errors"
-	"fmt"
+	"bytes"
+	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
 	py2 "github.com/actliboy/hoper/server/go/lib/utils/strings/pinyin"
 	"io"
 	"log"
@@ -110,7 +109,7 @@ func NewSpeed(cap int) *Speed {
 func Fetch(id int, sd *Speed) {
 	defer sd.WebDone()
 	tid := strconv.Itoa(id)
-	reader, err := Request(http.DefaultClient, Conf.Pro.CommonUrl+tid)
+	reader, err := R(Conf.Pro.CommonUrl + tid)
 	if err != nil {
 		log.Println(err, "id:", tid)
 		if !strings.HasPrefix(err.Error(), "返回错误") {
@@ -123,7 +122,7 @@ func Fetch(id int, sd *Speed) {
 		}
 		return
 	}
-	defer reader.Close()
+
 	doc, err := goquery.NewDocumentFromReader(reader)
 	if err != nil {
 		log.Println(err)
@@ -255,7 +254,7 @@ func FixPath(path string) string {
 
 func Download(url, dir string, sd *Speed) {
 	defer sd.Done()
-	reader, err := Request(picClient, url)
+	reader, err := R(url)
 	if err != nil {
 		log.Println(err, "url:", url)
 		if !strings.HasPrefix(err.Error(), "返回错误") {
@@ -263,7 +262,6 @@ func Download(url, dir string, sd *Speed) {
 		}
 		return
 	}
-	defer reader.Close()
 	s := strings.Split(url, "//")
 	name := s[len(s)-1]
 	if strings.Contains(name, "/") {
@@ -289,61 +287,19 @@ func Download(url, dir string, sd *Speed) {
 	log.Printf("下载成功：%s,目录：%s\n", url, dir)
 }
 
-func Request(client *http.Client, url string) (io.ReadCloser, error) {
-	req, err := http.NewRequest("GET", url, nil)
+func R(url string) (io.Reader, error) {
+	var res client.RawResponse
+	err := client.NewGetRequest(url).SetRetryTimes(20).SetRetryHandle(func(req *client.RequestParams) {
+		n := rand.Intn(5)
+		req.AddHeader("User-Agent", userAgent[n])
+	}).AddHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8").
+		AddHeader("Accept-Encoding", "gzip, deflate").
+		AddHeader("Accept-Language", "zh-CN,zh;q=0.9;charset=utf-8").
+		AddHeader("Connection", "keep-alive").Do(nil, &res)
 	if err != nil {
 		return nil, err
 	}
-
-	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
-	req.Header.Set("Accept-Encoding", "gzip, deflate")
-	req.Header.Set("Accept-Language", "zh-CN,zh;q=0.9;charset=utf-8")
-	req.Header.Set("Connection", "keep-alive")
-	var reader io.ReadCloser
-	var resp *http.Response
-	for i := 0; i < 20; i++ {
-		if i > 0 {
-			time.Sleep(time.Second)
-		}
-		n := rand.Intn(5)
-		req.Header.Set("User-Agent", userAgent[n])
-		resp, err = client.Do(req)
-		if err != nil {
-			log.Println(err, "url:", url)
-			continue
-		}
-		if resp.StatusCode != 200 {
-			resp.Body.Close()
-			return nil, fmt.Errorf("返回错误，状态码：%d,url:%s", resp.StatusCode, url)
-		}
-
-		if resp.Header.Get("Content-Encoding") == "gzip" {
-			reader, err = gzip.NewReader(resp.Body)
-			if err != nil {
-				if resp != nil {
-					resp.Body.Close()
-				}
-				log.Println(err, "url:", url)
-				continue
-			}
-		} else {
-			reader = resp.Body
-		}
-		if reader != nil {
-			break
-		}
-	}
-	if reader == nil {
-		if resp != nil {
-			resp.Body.Close()
-		}
-		msg := "请求失败：" + url
-		if err != nil {
-			msg = err.Error() + msg
-		}
-		return nil, errors.New(msg)
-	}
-	return reader, nil
+	return bytes.NewReader(res), nil
 }
 
 func newRequest(url string) (*http.Request, error) {

@@ -1,15 +1,12 @@
 package api
 
 import (
-	"bufio"
-	"bytes"
+	"crypto/md5"
 	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	httpi "github.com/actliboy/hoper/server/go/lib/utils/net/http"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
-	"golang.org/x/net/html/charset"
-	"golang.org/x/text/transform"
-	"io"
+	"tools/bilibili/tool"
 )
 
 type API struct{}
@@ -17,11 +14,12 @@ type API struct{}
 var api = &API{}
 
 const Host = "https://api.bilibili.com"
+
 const Cookie = ``
 
 func AddHeader(req *client.RequestParams) *client.RequestParams {
-	req.SetHeader(httpi.HeaderUserAgent, client.GetUserAgent())
-	req.SetHeader(httpi.HeaderCookie, Cookie)
+	req.AddHeader(httpi.HeaderUserAgent, client.UserAgent1)
+	req.AddHeader(httpi.HeaderCookie, Cookie)
 	return req
 }
 
@@ -43,29 +41,24 @@ func GetV[T any](url string) T {
 	return res.Data
 }
 
-func (api *API) GetView(aid int64) *ViewInfo {
-	url := fmt.Sprintf("%s/x/web-interface/view?aid=%d", Host, aid)
-	return GetV[*ViewInfo](url)
+func (api *API) GetView(aid int) *ViewInfo {
+	return GetV[*ViewInfo](GetViewUrl(aid))
 }
 
-func (api *API) GetNav(aid int64) {
-	url := fmt.Sprintf("%s/x/web-interface/nav", Host)
-	var info ViewInfo
-	err := AddHeader(client.NewGetRequest(url)).Do(nil, &info)
-	if err != nil {
-		log.Error(err)
-	}
-	fmt.Println(info)
+func (api *API) GetNav() *NavInfo {
+	return GetV[*NavInfo](GetNavUrl())
 }
 
 func (api *API) GetFavList(page int) *FavList {
-	url := fmt.Sprintf("%s/x/v3/fav/resource/list?media_id=63181530&pn=%d&ps=20&keyword=&order=mtime&type=0&tid=0&platform=web&jsonp=jsonp", Host, page)
-	return GetV[*FavList](url)
+	return GetV[*FavList](GetFavListUrl(page))
 }
 
 func (api *API) GetPlayerInfo(avid, cid, qn int) *VideoInfo {
-	url := fmt.Sprintf("%s/x/player/playurl?avid=%d&cid=%d&qn=%d&fourk=1", Host, avid, cid, qn)
-	return GetV[*VideoInfo](url)
+	return GetV[*VideoInfo](GetPlayerUrl(avid, cid, qn))
+}
+
+func (api *API) GetPlayerInfoV2(cid, qn int) *VideoInfo {
+	return GetV[*VideoInfo](GetPlayerUrlV2(cid, qn))
 }
 
 type URL[T any] string
@@ -74,8 +67,12 @@ func (u URL[T]) Get() (T, error) {
 	return Get[T](string(u))
 }
 
-func GetViewUrl(aid int64) string {
+func GetViewUrl(aid int) string {
 	return fmt.Sprintf("%s/x/web-interface/view?aid=%d", Host, aid)
+}
+
+func GetNavUrl() string {
+	return fmt.Sprintf("%s/x/web-interface/nav", Host)
 }
 
 func GetFavListUrl(page int) string {
@@ -86,16 +83,27 @@ func GetPlayerUrl(avid, cid, qn int) string {
 	return fmt.Sprintf("%s/x/player/playurl?avid=%d&cid=%d&qn=%d&fourk=1", Host, avid, cid, qn)
 }
 
-func ResponseHandler(body []byte) ([]byte, error) {
-	bodyReader := bufio.NewReader(bytes.NewReader(body))
+const _entropy = "rbMCKn@KuamXWlPMoJGsKcbiJKUfkPF_8dABscJntvqhRSETg"
 
-	bytes, err := bodyReader.Peek(1024)
-	if err != nil {
-		return nil, err
-	}
-	e, _, _ := charset.DetermineEncoding(bytes, "")
-	utf8Reader := transform.NewReader(bodyReader, e.NewDecoder())
-	return io.ReadAll(utf8Reader)
+var (
+	appKey, sec = tool.GetAppKey(_entropy)
+)
+
+func GetPlayerUrlV2(cid, qn int) string {
+	var _paramsTemp = "appkey=%s&cid=%d&otype=json&qn=%d&quality=%d&type="
+	var _playApiTemp = "https://interface.bilibili.com/v2/playurl?%s&sign=%s"
+	params := fmt.Sprintf(_paramsTemp, appKey, cid, qn, qn)
+	chksum := fmt.Sprintf("%x", md5.Sum([]byte(params+sec)))
+	return fmt.Sprintf(_playApiTemp, params, chksum)
+}
+
+func GetUpSpaceListUrl(upid, page int) string {
+	var _getAidUrlTemp = "%s/x/space/arc/search?mid=%d&ps=30&tid=0&pn=%d&keyword=&order=pubdate&jsonp=jsonp"
+	return fmt.Sprintf(_getAidUrlTemp, Host, upid, page)
+}
+
+func (api *API) GetUpSpaceList(upid, page int) (*UpSpaceList, error) {
+	return Get[*UpSpaceList](GetUpSpaceListUrl(upid, page))
 }
 
 type Response[T any] struct {
@@ -334,67 +342,119 @@ type Durl struct {
 }
 
 type FavList struct {
-	Info struct {
-		Id    int    `json:"id"`
-		Fid   int    `json:"fid"`
-		Mid   int    `json:"mid"`
-		Attr  int    `json:"attr"`
-		Title string `json:"title"`
-		Cover string `json:"cover"`
-		Upper struct {
-			Mid       int    `json:"mid"`
-			Name      string `json:"name"`
-			Face      string `json:"face"`
-			Followed  bool   `json:"followed"`
-			VipType   int    `json:"vip_type"`
-			VipStatue int    `json:"vip_statue"`
-		} `json:"upper"`
-		CoverType int `json:"cover_type"`
-		CntInfo   struct {
-			Collect int `json:"collect"`
-			Play    int `json:"play"`
-			ThumbUp int `json:"thumb_up"`
-			Share   int `json:"share"`
-		} `json:"cnt_info"`
-		Type       int    `json:"type"`
-		Intro      string `json:"intro"`
-		Ctime      int    `json:"ctime"`
-		Mtime      int    `json:"mtime"`
-		State      int    `json:"state"`
-		FavState   int    `json:"fav_state"`
-		LikeState  int    `json:"like_state"`
-		MediaCount int    `json:"media_count"`
-	} `json:"info"`
-	Medias []struct {
-		Id       int    `json:"id"`
-		Type     int    `json:"type"`
-		Title    string `json:"title"`
-		Cover    string `json:"cover"`
-		Intro    string `json:"intro"`
-		Page     int    `json:"page"`
-		Duration int    `json:"duration"`
-		Upper    struct {
-			Mid  int    `json:"mid"`
-			Name string `json:"name"`
-			Face string `json:"face"`
-		} `json:"upper"`
-		Attr    int `json:"attr"`
-		CntInfo struct {
-			Collect int `json:"collect"`
-			Play    int `json:"play"`
-			Danmaku int `json:"danmaku"`
-		} `json:"cnt_info"`
-		Link    string      `json:"link"`
-		Ctime   int         `json:"ctime"`
-		Pubtime int         `json:"pubtime"`
-		FavTime int         `json:"fav_time"`
-		BvId    string      `json:"bv_id"`
-		Bvid    string      `json:"bvid"`
-		Season  interface{} `json:"season"`
-		Ogv     interface{} `json:"ogv"`
-		Ugc     struct {
-			FirstCid int `json:"first_cid"`
-		} `json:"ugc"`
-	} `json:"medias"`
-	HasMore bool `json:"has_more"`
+	Info    FavInfo  `json:"info"`
+	Medias  []*Media `json:"medias"`
+	HasMore bool     `json:"has_more"`
+}
+
+type FavInfo struct {
+	Id    int    `json:"id"`
+	Fid   int    `json:"fid"`
+	Mid   int    `json:"mid"`
+	Attr  int    `json:"attr"`
+	Title string `json:"title"`
+	Cover string `json:"cover"`
+	Upper struct {
+		Mid       int    `json:"mid"`
+		Name      string `json:"name"`
+		Face      string `json:"face"`
+		Followed  bool   `json:"followed"`
+		VipType   int    `json:"vip_type"`
+		VipStatue int    `json:"vip_statue"`
+	} `json:"upper"`
+	CoverType int `json:"cover_type"`
+	CntInfo   struct {
+		Collect int `json:"collect"`
+		Play    int `json:"play"`
+		ThumbUp int `json:"thumb_up"`
+		Share   int `json:"share"`
+	} `json:"cnt_info"`
+	Type       int    `json:"type"`
+	Intro      string `json:"intro"`
+	Ctime      int    `json:"ctime"`
+	Mtime      int    `json:"mtime"`
+	State      int    `json:"state"`
+	FavState   int    `json:"fav_state"`
+	LikeState  int    `json:"like_state"`
+	MediaCount int    `json:"media_count"`
+}
+
+type Media struct {
+	Id       int    `json:"id"`
+	Type     int    `json:"type"`
+	Title    string `json:"title"`
+	Cover    string `json:"cover"`
+	Intro    string `json:"intro"`
+	Page     int    `json:"page"`
+	Duration int    `json:"duration"`
+	Upper    struct {
+		Mid  int    `json:"mid"`
+		Name string `json:"name"`
+		Face string `json:"face"`
+	} `json:"upper"`
+	Attr    int `json:"attr"`
+	CntInfo struct {
+		Collect int `json:"collect"`
+		Play    int `json:"play"`
+		Danmaku int `json:"danmaku"`
+	} `json:"cnt_info"`
+	Link    string      `json:"link"`
+	Ctime   int         `json:"ctime"`
+	Pubtime int         `json:"pubtime"`
+	FavTime int         `json:"fav_time"`
+	BvId    string      `json:"bv_id"`
+	Bvid    string      `json:"bvid"`
+	Season  interface{} `json:"season"`
+	Ogv     interface{} `json:"ogv"`
+	Ugc     struct {
+		FirstCid int `json:"first_cid"`
+	} `json:"ugc"`
+}
+
+type UpSpaceList struct {
+	List List `json:"list"`
+	Page struct {
+		Pn    int `json:"pn"`
+		Ps    int `json:"ps"`
+		Count int `json:"count"`
+	} `json:"page"`
+	EpisodicButton struct {
+		Text string `json:"text"`
+		Uri  string `json:"uri"`
+	} `json:"episodic_button"`
+}
+
+type List struct {
+	//Tlist map[string]Tag `json:"tlist"`
+	Vlist []*Video `json:"vlist"`
+}
+
+type Tag struct {
+	Tid   int    `json:"tid"`
+	Count int    `json:"count"`
+	Name  string `json:"name"`
+}
+
+type Video struct {
+	Comment        int    `json:"comment"`
+	Typeid         int    `json:"typeid"`
+	Play           int    `json:"play"`
+	Pic            string `json:"pic"`
+	Subtitle       string `json:"subtitle"`
+	Description    string `json:"description"`
+	Copyright      string `json:"copyright"`
+	Title          string `json:"title"`
+	Review         int    `json:"review"`
+	Author         string `json:"author"`
+	Mid            int    `json:"mid"`
+	Created        int    `json:"created"`
+	Length         string `json:"length"`
+	VideoReview    int    `json:"video_review"`
+	Aid            int    `json:"aid"`
+	Bvid           string `json:"bvid"`
+	HideClick      bool   `json:"hide_click"`
+	IsPay          int    `json:"is_pay"`
+	IsUnionVideo   int    `json:"is_union_video"`
+	IsSteinsGate   int    `json:"is_steins_gate"`
+	IsLivePlayback int    `json:"is_live_playback"`
 }

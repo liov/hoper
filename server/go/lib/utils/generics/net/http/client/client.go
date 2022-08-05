@@ -26,7 +26,7 @@ func (req *RequestParams[RES]) SetContentType(contentType client.ContentType) *R
 }
 
 func (req *RequestParams[RES]) SetHeader(k, v string) *RequestParams[RES] {
-	req.Header.Set(k, v)
+	req.header.Set(k, v)
 	return req
 }
 

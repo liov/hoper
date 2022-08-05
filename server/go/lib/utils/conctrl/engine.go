@@ -6,17 +6,23 @@ import (
 	"log"
 	"sync"
 	"sync/atomic"
+	"time"
 )
 
 type Task func(context.Context)
 
 type Engine struct {
 	limitWorkerCount, currentWorkerCount int64
-	workerChan                           chan chan Task
+	workerChan                           chan *Worker
 	taskChan                             chan Task
 	ctx                                  context.Context
 	cancel                               context.CancelFunc
 	wg                                   sync.WaitGroup
+}
+
+type Worker struct {
+	id int64
+	ch chan Task
 }
 
 func NewEngine(workerCount int) *Engine {
@@ -25,32 +31,43 @@ func NewEngine(workerCount int) *Engine {
 		limitWorkerCount: int64(workerCount),
 		ctx:              ctx,
 		cancel:           cancel,
-		workerChan:       make(chan chan Task),
+		workerChan:       make(chan *Worker),
 		taskChan:         make(chan Task),
 	}
 }
 
 func (c *Engine) Run(tasks ...Task) {
-
+	go func() {
+		time.AfterFunc(time.Second*2, func() {
+			c.taskChan <- func(ctx context.Context) {
+				log.Println("额外任务", c.wg)
+			}
+		})
+	}()
 	c.addWorker()
 
 	go func() {
-		workerList := list.NewSimpleList[chan Task]()
-		requestList := list.NewSimpleList[Task]()
+		workerList := list.NewSimpleList[*Worker]()
+		taskList := list.NewSimpleList[Task]()
+
 	loop:
 		for {
-			var readyWorker chan Task
+
+			var readyWorkerCh chan Task
 			var readyTask Task
-			if workerList.Size > 0 && requestList.Size > 0 {
-				readyWorker = workerList.Pop()
-				readyTask = requestList.Pop()
+			if workerList.Size > 0 && taskList.Size > 0 {
+				readyWorker := workerList.Pop()
+				log.Println("ready worker :", readyWorker.id)
+				readyWorkerCh = readyWorker.ch
+				readyTask = taskList.Pop()
 			}
 			select {
 			case readyTask = <-c.taskChan:
-				requestList.Push(readyTask)
-			case readyWorker = <-c.workerChan:
+				c.wg.Add(1)
+				taskList.Push(readyTask)
+			case readyWorker := <-c.workerChan:
 				workerList.Push(readyWorker)
-			case readyWorker <- readyTask:
+			case readyWorkerCh <- readyTask:
 			case <-c.ctx.Done():
 				break loop
 			}
@@ -67,16 +84,19 @@ func (c *Engine) Run(tasks ...Task) {
 
 func (c *Engine) newWorker() {
 	c.currentWorkerCount++
-	id := c.currentWorkerCount
+	//id := c.currentWorkerCount
 	taskChan := make(chan Task)
+	worker := &Worker{c.currentWorkerCount, taskChan}
 	go func() {
 		for {
 			select {
-			case c.workerChan <- taskChan:
+			case c.workerChan <- worker:
+				log.Println("worker id :", worker.id, "worker count :", c.currentWorkerCount)
 				task := <-taskChan
+				log.Println("有任务做了")
 				if task != nil {
 					task(c.ctx)
-					log.Println("task is done,worker id :", id)
+					//log.Println("task is done,worker id :", id) 删掉就会报错
 				}
 				c.wg.Done()
 			case <-c.ctx.Done():
@@ -109,15 +129,10 @@ func (c *Engine) addWorker() {
 }
 
 func (c *Engine) AddTask(task Task) {
-	c.wg.Add(1)
 	c.taskChan <- task
 }
 
 func (c *Engine) AddWorker(num int) {
 	atomic.AddInt64(&c.limitWorkerCount, int64(num))
 	c.addWorker()
-}
-
-type Worker struct {
-	idleChan chan struct{}
 }

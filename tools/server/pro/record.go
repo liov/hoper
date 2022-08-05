@@ -6,7 +6,6 @@ import (
 	py2 "github.com/actliboy/hoper/server/go/lib/utils/strings/pinyin"
 	"golang.org/x/net/html"
 	"log"
-	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -15,14 +14,13 @@ import (
 
 func Record(id int, sd *Speed) string {
 	tid := strconv.Itoa(id)
-	reader, err := Request(http.DefaultClient, Conf.Pro.CommonUrl+tid)
+	reader, err := R(Conf.Pro.CommonUrl + tid)
 	if err != nil {
 		if !strings.HasPrefix(err.Error(), "返回错误") {
 			log.Println(err)
 		}
 		return ""
 	}
-	defer reader.Close()
 	doc, err := goquery.NewDocumentFromReader(reader)
 	if err != nil {
 		log.Println(err)

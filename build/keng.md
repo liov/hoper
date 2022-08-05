@@ -1531,3 +1531,11 @@ v, ok := proto.GetExtension(desc.Options(), xt).(T)
 	}
 ```
 这里不确定v是不是指针,不能这么写
+
+# panic: sync: WaitGroup is reused before previous Wait has returned
+100%复现
+去掉一行日志后就panic
+sync: WaitGroup状态为0的时候就默认关闭了，不能Add了
+原来有一行日志缓存，在Add后才Done，不会错
+注释掉日志，100%panic
+更改Add的时机

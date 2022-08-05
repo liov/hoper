@@ -9,7 +9,7 @@ var add = 8728348608
 var tr map[string]int
 
 // source code: https://blog.csdn.net/dotastar00/article/details/108805779
-func Bv2av(x string) int64 {
+func Bv2av(x string) int {
 	tr = make(map[string]int)
 	for i := 0; i < 58; i++ {
 		tr[string(table[i])] = i
@@ -18,7 +18,7 @@ func Bv2av(x string) int64 {
 	for i := 0; i < 6; i++ {
 		r += tr[string(x[s[i]])] * int(math.Pow(float64(58), float64(i)))
 	}
-	return int64((r - add) ^ xor)
+	return int((r - add) ^ xor)
 }
 
 func Av2bv(x int) string {
