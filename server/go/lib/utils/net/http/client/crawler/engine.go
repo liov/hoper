@@ -8,31 +8,31 @@ import (
 )
 
 type Engine struct {
-	visited  sync.Map
-	reqsChan chan []*Request
+	ctrlEngine *conctrl.Engine
+	visited    sync.Map
+	reqsChan   chan []*Request
 }
 
-func New(reqs ...*Request) {
-	ctrlEngine := conctrl.NewEngine(10)
-	tasks := make([]conctrl.Task, 0, len(reqs))
-
-	engin := &Engine{
-		reqsChan: make(chan []*Request),
+func New(workerCount int) *Engine {
+	return &Engine{
+		reqsChan:   make(chan []*Request),
+		ctrlEngine: conctrl.NewEngine(workerCount),
 	}
+}
 
+func (e *Engine) Run(reqs ...*Request) {
+	tasks := make([]conctrl.Task, 0, len(reqs))
 	go func() {
-		for reqs := range engin.reqsChan {
+		for reqs := range e.reqsChan {
 			for _, req := range reqs {
-				ctrlEngine.AddTask(engin.NewTask(req))
+				e.ctrlEngine.AddTask(e.NewTask(req))
 			}
 		}
 	}()
-
 	for _, req := range reqs {
-		tasks = append(tasks, engin.NewTask(req))
+		tasks = append(tasks, e.NewTask(req))
 	}
-
-	ctrlEngine.Run(tasks...)
+	e.ctrlEngine.Run(tasks...)
 }
 
 func (e *Engine) NewTask(req *Request) conctrl.Task {

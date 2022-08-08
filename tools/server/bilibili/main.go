@@ -1,29 +1,43 @@
 package main
 
 import (
-	"flag"
+	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
+	"tools/bilibili/api"
 	"tools/bilibili/download"
 	"tools/bilibili/tool"
 )
 
+type Customize struct {
+	Page         int
+	DownloadPath string
+	Continuous   bool
+	Cookie       string
+}
+type config struct {
+	Bilibili Customize
+}
+
+func (c config) Init() {
+	api.Cookie = c.Bilibili.Cookie
+	tool.DownloadPath = c.Bilibili.DownloadPath
+}
+
 func main() {
-	var page int
-	var continuous bool
-	flag.IntVar(&page, "p", 1, "收藏页数")
-	flag.StringVar(&tool.DownloadPath, "d", "D:/F/B站", "收藏页数")
-	flag.BoolVar(&continuous, "l", false, "是否连续")
-	flag.Parse()
 
 	/*	aid := tool.Bv2av("BV1Br4y1j7pa")
 		req := parser.GetRequestByFav(aid)
 		crawler.New(req)
 	*/
-	if continuous {
-		req := download.FavReq(page)
-		crawler.New(req)
+	var c config
+	defer initialize.Start(&c, nil)()
+	if c.Bilibili.Continuous {
+		req := download.FavReqs(c.Bilibili.Page)
+		crawler.New(10).Run(req...)
 	} else {
-		req := download.FavReqs(page)
-		crawler.New(req...)
+		req := download.FavReq(c.Bilibili.Page)
+		crawler.New(10).Run(req)
 	}
+	/*	req := download.GetByBvId("BV1AB4y187HK")
+		crawler.New(10).Run(req)*/
 }

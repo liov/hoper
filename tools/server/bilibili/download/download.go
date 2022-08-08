@@ -2,6 +2,7 @@ package download
 
 import (
 	"fmt"
+	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	gcrawler "github.com/actliboy/hoper/server/go/lib/utils/generics/net/http/client/crawler"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
@@ -57,6 +58,8 @@ func GetRequestByFav(aid int) *crawler.Request {
 	return gcrawler.NewRequest(api.GetViewUrl(aid), ViewInfoHandleFun)
 }
 
+var timer = time.NewTicker(time.Second)
+
 func ViewInfoHandleFun(url string) ([]*crawler.Request, error) {
 	res, err := api.Get[api.ViewInfo](url)
 	if err != nil {
@@ -64,7 +67,7 @@ func ViewInfoHandleFun(url string) ([]*crawler.Request, error) {
 	}
 	var requests []*crawler.Request
 	for _, page := range res.Pages {
-		video := &Video{res.Title, res.Aid, page.Cid, page.Page, page.Part, ""}
+		video := &Video{fs.PathClean(res.Title), res.Aid, page.Cid, page.Page, page.Part, ""}
 		req := gcrawler.NewRequest(api.GetPlayerUrl(res.Aid, page.Cid, 120), video.DownloadHandleFun)
 		requests = append(requests, req)
 	}
@@ -72,12 +75,10 @@ func ViewInfoHandleFun(url string) ([]*crawler.Request, error) {
 }
 
 func (video *Video) DownloadHandleFun(url string) ([]*crawler.Request, error) {
+	<-timer.C
 	res, err := api.Get[*api.VideoInfo](url)
 	if err != nil {
 		return nil, err
-	}
-	if res.Quality != 120 {
-		return []*crawler.Request{gcrawler.NewRequest(api.GetPlayerUrl(video.Aid, video.Cid, res.AcceptQuality[0]), video.DownloadHandleFun)}, nil
 	}
 	video.Quality = res.AcceptDescription[0]
 	var requests []*crawler.Request
@@ -102,7 +103,7 @@ func (video *Video) GetDownloadHandleFun(order int) crawler.HandleFun {
 
 		request, err := http.NewRequest("GET", url, nil)
 		if err != nil {
-			log.Fatalln(url, err)
+			log.Printf(url, err)
 			return nil, err
 		}
 		request.Header.Set("User-Agent", client.UserAgent1)
@@ -117,12 +118,12 @@ func (video *Video) GetDownloadHandleFun(order int) crawler.HandleFun {
 
 		resp, err := c.Do(request)
 		if err != nil {
-			log.Fatalf("下载 %d 时出错, 错误信息：%s", video.Cid, err)
+			log.Printf("下载 %d 时出错, 错误信息：%s", video.Cid, err)
 			return nil, err
 		}
 
 		if resp.StatusCode != http.StatusPartialContent {
-			log.Fatalf("下载 %d 时出错, 错误码：%d", video.Cid, resp.StatusCode)
+			log.Printf("下载 %d 时出错, 错误码：%d", video.Cid, resp.StatusCode)
 			return nil, fmt.Errorf("错误码： %d", resp.StatusCode)
 		}
 		defer resp.Body.Close()
@@ -131,8 +132,8 @@ func (video *Video) GetDownloadHandleFun(order int) crawler.HandleFun {
 		filename := fmt.Sprintf("%d_%s_%d_%d.flv", video.Aid, video.Title, video.Page, order)
 		file, err := os.Create(filepath.Join(aidPath, filename))
 		if err != nil {
-			log.Fatalln(err)
-			os.Exit(1)
+			log.Println("错误信息：", err)
+			return nil, err
 		}
 		defer file.Close()
 
@@ -201,4 +202,9 @@ func UpSpaceListHandleFun(url string) ([]*crawler.Request, error) {
 		requests = append(requests, req)
 	}
 	return requests, nil
+}
+
+func GetByBvId(id string) *crawler.Request {
+	avid := tool.Bv2av(id)
+	return GetRequestByFav(avid)
 }

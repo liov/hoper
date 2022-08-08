@@ -7,13 +7,14 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/errors/multierr"
 	"os"
 	"reflect"
+	"runtime/debug"
 	"strconv"
 	"strings"
 
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 )
 
-//约定大于配置
+// 约定大于配置
 var (
 	// 此处不是真正的初始化，只是为了让配置中心能够读取到配置
 	InitConfig = &Init{
@@ -75,6 +76,7 @@ func Start(conf Config, dao Dao, notinit ...string) func(deferf ...func()) {
 		}
 		if r := recover(); r != nil {
 			log.Error(r)
+			log.Error(string(debug.Stack()))
 		}
 	}
 }

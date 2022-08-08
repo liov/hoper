@@ -15,7 +15,7 @@ var api = &API{}
 
 const Host = "https://api.bilibili.com"
 
-const Cookie = ``
+var Cookie = ``
 
 func AddHeader(req *client.RequestParams) *client.RequestParams {
 	req.AddHeader(httpi.HeaderUserAgent, client.UserAgent1)
@@ -41,6 +41,15 @@ func GetV[T any](url string) T {
 	return res.Data
 }
 
+func GetZ[T any](url string) *T {
+	res := new(T)
+	err := AddHeader(client.NewGetRequest(url)).DefaultLog().Do(nil, res)
+	if err != nil {
+		log.Error(err)
+	}
+	return res
+}
+
 func (api *API) GetView(aid int) *ViewInfo {
 	return GetV[*ViewInfo](GetViewUrl(aid))
 }
@@ -57,8 +66,13 @@ func (api *API) GetPlayerInfo(avid, cid, qn int) *VideoInfo {
 	return GetV[*VideoInfo](GetPlayerUrl(avid, cid, qn))
 }
 
-func (api *API) GetPlayerInfoV2(cid, qn int) *VideoInfo {
-	return GetV[*VideoInfo](GetPlayerUrlV2(cid, qn))
+var appApi = &AppApi{}
+
+type AppApi struct{}
+
+// 客户端api
+func (api *AppApi) GetPlayerInfoV2(cid, qn int) *VideoInfo {
+	return GetZ[VideoInfo](GetPlayerUrlV2(cid, qn))
 }
 
 type URL[T any] string
