@@ -1,4 +1,4 @@
-package _go
+package gocmd
 
 import (
 	osi "github.com/actliboy/hoper/server/go/lib/utils/os"

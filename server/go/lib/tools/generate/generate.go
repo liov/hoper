@@ -1,7 +1,7 @@
 package main
 
 import (
-	_go "github.com/actliboy/hoper/server/go/lib/utils/go"
+	_go "github.com/actliboy/hoper/server/go/lib/utils/gocmd"
 	"github.com/actliboy/hoper/server/go/lib/utils/os"
 	execi "github.com/actliboy/hoper/server/go/lib/utils/os/exec"
 	"github.com/spf13/cobra"

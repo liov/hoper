@@ -22,9 +22,18 @@ func (l *SimpleList[T]) Len() int {
 	return l.Size
 }
 
+func (l *SimpleList[T]) First() T {
+	if l.Size == 0 {
+		panic("list is empty")
+		return *new(T)
+	}
+	return l.Head.Data
+}
+
 func (l *SimpleList[T]) Pop() T {
 	if l.Size == 0 {
 		panic("list is empty")
+		return *new(T)
 	}
 
 	p := l.Head
