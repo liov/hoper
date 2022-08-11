@@ -1,131 +1,4 @@
-package api
-
-import (
-	"crypto/md5"
-	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
-	httpi "github.com/actliboy/hoper/server/go/lib/utils/net/http"
-	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
-	"tools/bilibili/tool"
-)
-
-type API struct{}
-
-var api = &API{}
-
-const Host = "https://api.bilibili.com"
-
-var Cookie = ``
-
-func AddHeader(req *client.RequestParams) *client.RequestParams {
-	req.AddHeader(httpi.HeaderUserAgent, client.UserAgent1)
-	req.AddHeader(httpi.HeaderCookie, Cookie)
-	return req
-}
-
-func Get[T any](url string) (T, error) {
-	var res Response[T]
-	err := AddHeader(client.NewGetRequest(url)).Do(nil, &res)
-	if err != nil {
-		return *new(T), err
-	}
-	return res.Data, nil
-}
-
-func GetV[T any](url string) T {
-	var res Response[T]
-	err := AddHeader(client.NewGetRequest(url)).Do(nil, &res)
-	if err != nil {
-		log.Error(err)
-	}
-	return res.Data
-}
-
-func GetZ[T any](url string) *T {
-	res := new(T)
-	err := AddHeader(client.NewGetRequest(url)).DefaultLog().Do(nil, res)
-	if err != nil {
-		log.Error(err)
-	}
-	return res
-}
-
-func (api *API) GetView(aid int) *ViewInfo {
-	return GetV[*ViewInfo](GetViewUrl(aid))
-}
-
-func (api *API) GetNav() *NavInfo {
-	return GetV[*NavInfo](GetNavUrl())
-}
-
-func (api *API) GetFavList(page int) *FavList {
-	return GetV[*FavList](GetFavListUrl(page))
-}
-
-func (api *API) GetPlayerInfo(avid, cid, qn int) *VideoInfo {
-	return GetV[*VideoInfo](GetPlayerUrl(avid, cid, qn))
-}
-
-var appApi = &AppApi{}
-
-type AppApi struct{}
-
-// 客户端api
-func (api *AppApi) GetPlayerInfoV2(cid, qn int) *VideoInfo {
-	return GetZ[VideoInfo](GetPlayerUrlV2(cid, qn))
-}
-
-type URL[T any] string
-
-func (u URL[T]) Get() (T, error) {
-	return Get[T](string(u))
-}
-
-func GetViewUrl(aid int) string {
-	return fmt.Sprintf("%s/x/web-interface/view?aid=%d", Host, aid)
-}
-
-func GetNavUrl() string {
-	return fmt.Sprintf("%s/x/web-interface/nav", Host)
-}
-
-func GetFavListUrl(page int) string {
-	return fmt.Sprintf("%s/x/v3/fav/resource/list?media_id=63181530&pn=%d&ps=20&keyword=&order=mtime&type=0&tid=0&platform=web&jsonp=jsonp", Host, page)
-}
-
-func GetPlayerUrl(avid, cid, qn int) string {
-	return fmt.Sprintf("%s/x/player/playurl?avid=%d&cid=%d&qn=%d&fourk=1", Host, avid, cid, qn)
-}
-
-const _entropy = "rbMCKn@KuamXWlPMoJGsKcbiJKUfkPF_8dABscJntvqhRSETg"
-
-var (
-	appKey, sec = tool.GetAppKey(_entropy)
-)
-
-func GetPlayerUrlV2(cid, qn int) string {
-	var _paramsTemp = "appkey=%s&cid=%d&otype=json&qn=%d&quality=%d&type="
-	var _playApiTemp = "https://interface.bilibili.com/v2/playurl?%s&sign=%s"
-	params := fmt.Sprintf(_paramsTemp, appKey, cid, qn, qn)
-	chksum := fmt.Sprintf("%x", md5.Sum([]byte(params+sec)))
-	return fmt.Sprintf(_playApiTemp, params, chksum)
-}
-
-func GetUpSpaceListUrl(upid, page int) string {
-	var _getAidUrlTemp = "%s/x/space/arc/search?mid=%d&ps=30&tid=0&pn=%d&keyword=&order=pubdate&jsonp=jsonp"
-	return fmt.Sprintf(_getAidUrlTemp, Host, upid, page)
-}
-
-func (api *API) GetUpSpaceList(upid, page int) (*UpSpaceList, error) {
-	return Get[*UpSpaceList](GetUpSpaceListUrl(upid, page))
-}
-
-type Response[T any] struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-	Ttl     int    `json:"ttl"`
-	Data    T      `json:"data"`
-}
+package rpc
 
 type DescV2 struct {
 	RawText string `json:"raw_text"`
@@ -155,7 +28,7 @@ type Rights struct {
 }
 
 type Stat struct {
-	Aid        int    `json:"aid"`
+	Aid        int    `json:"aid" gorm:"primaryKey"`
 	View       int    `json:"view"`
 	Danmaku    int    `json:"danmaku"`
 	Reply      int    `json:"reply"`
@@ -177,45 +50,46 @@ type Dimension struct {
 }
 
 type Page struct {
-	Cid        int        `json:"cid"`
+	Cid        int        `json:"cid" gorm:"primaryKey"`
 	Page       int        `json:"page"`
 	From       string     `json:"from"`
 	Part       string     `json:"part"`
 	Duration   int        `json:"duration"`
 	Vid        string     `json:"vid"`
-	WeblInk    string     `json:"webl       ink"`
+	WebLink    string     `json:"weblink"`
 	Dimension  *Dimension `json:"dimension"`
 	FirstFrame string     `json:"first_frame"`
 }
 
 type Owner struct {
-	Mid  int    `json:"mid"`
+	Mid  int    `json:"mid" gorm:"primaryKey"`
 	Name string `json:"name"`
 	Face string `json:"face"`
 }
 
 type ViewInfo struct {
-	Bvid               string      `json:"bvid"`
-	Aid                int         `json:"aid"`
+	Bvid               string      `json:"bvid" gorm:"index:idx_bvid,unique"`
+	Aid                int         `json:"aid" gorm:"primaryKey"`
 	Videos             int         `json:"videos"`
 	Tid                int         `json:"tid"`
 	Tname              string      `json:"tname"`
 	Copyright          int         `json:"copyright"`
 	Pic                string      `json:"pic"`
 	Title              string      `json:"title"`
-	PubDate            int         `json:"pub       date"`
+	PubDate            int         `json:"pubdate"`
 	Ctime              int         `json:"ctime"`
 	Desc               string      `json:"desc"`
-	DescV2             []*DescV2   `json:"desc_v2"`
+	DescV2             []*DescV2   `json:"desc_v2" gorm:"-"`
 	State              int         `json:"state"`
 	Duration           int         `json:"duration"`
 	Rights             *Rights     `json:"rights"`
-	Owner              *Owner      `json:"owner"`
+	Owner              *Owner      `json:"owner" gorm:"-"`
+	OwnerMid           int         `json:"-" gorm:"index"`
 	Stat               *Stat       `json:"stat"`
 	Dynamic            string      `json:"dynamic"`
-	Cid                int         `json:"cid     "`
+	Cid                int         `json:"cid"`
 	Dimension          *Dimension  `json:"dimension"`
-	Premiere           interface{} `json:"premiere"`
+	Premiere           interface{} `json:"premiere,omitempty"`
 	TeenageMode        int         `json:"teenage_mode"`
 	IsChargeableSeason bool        `json:"is_chargeable_season"`
 	IsStory            bool        `json:"is_story"`
@@ -224,13 +98,17 @@ type ViewInfo struct {
 	Subtitle           struct {
 		AllowSubmit bool          `json:"allow_submit"`
 		List        []interface{} `json:"list"`
-	} `json:"subtitle"`
+	} `json:"subtitle" gorm:"-"`
 	IsSeasonDisplay bool `json:"is_season_display"`
 	UserGarb        struct {
 		UrlImageAniCut string `json:"url_image_ani_cut"`
-	} `json:"user_garb"`
+	} `json:"user_garb" gorm:"-"`
 	HonorReply struct {
-	} `json:"honor_reply"`
+	} `json:"honor_reply,omitempty" gorm:"-"`
+}
+
+func (*ViewInfo) TableName() string {
+	return "view"
 }
 
 type NavInfo struct {
@@ -332,27 +210,43 @@ type Label struct {
 }
 
 type VideoInfo struct {
-	From              string   `json:"from"`
-	Result            string   `json:"result"`
-	Quality           int      `json:"quality"`
-	Format            string   `json:"format"`
+	Aid               int      `json:"-" gorm:"index"`
+	Cid               int      `json:"-" gorm:"index"`
+	From              string   `json:"from,omitempty"`
+	Result            string   `json:"result,omitempty"`
+	Quality           int      `json:"quality,omitempty"`
+	Format            string   `json:"format,omitempty"`
 	Timelength        int      `json:"timelength"`
 	AcceptFormat      string   `json:"accept_format"`
-	AcceptDescription []string `json:"accept_description"`
+	AcceptDescription []string `json:"accept_description,omitempty"`
 	AcceptQuality     []int    `json:"accept_quality"`
-	VideoCodecid      int      `json:"video_codecid"`
+	VideoCodecid      int      `json:"video_codecid" gorm:"primaryKey"`
 	VideoProject      bool     `json:"video_project"`
-	SeekParam         string   `json:"seek_param"`
-	SeekType          string   `json:"seek_type"`
-	Durl              []Durl   `json:"durl"`
+	SeekParam         string   `json:"seek_param,omitempty"`
+	SeekType          string   `json:"seek_type,omitempty"`
+	Durl              []*Durl  `json:"durl" gorm:"-"`
+}
+
+func (v *VideoInfo) JsonClean() {
+	v.From = ""
+	v.Result = ""
+	v.Quality = 0
+	v.Format = ""
+	v.SeekParam = ""
+	v.SeekType = ""
+	v.AcceptDescription = nil
+	for _, durl := range v.Durl {
+		durl.Url = ""
+		durl.BackupUrl = nil
+	}
 }
 
 type Durl struct {
 	Order     int      `json:"order"`
 	Length    int      `json:"length"`
 	Size      int      `json:"size"`
-	Url       string   `json:"url"`
-	BackupUrl []string `json:"backup_url"`
+	Url       string   `json:"url,omitempty"`
+	BackupUrl []string `json:"backup_url,omitempty"`
 }
 
 type FavList struct {

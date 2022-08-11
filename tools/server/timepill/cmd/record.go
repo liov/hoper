@@ -5,6 +5,7 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/robfig/cron/v3"
+	"time"
 	"tools/timepill"
 )
 
@@ -31,5 +32,9 @@ func main() {
 	}
 	c.Start()
 	//go timepill.RecordByOrderNoteBook()
-	timepill.StartRecord()
+	timepill.RecordTask()
+	tc := time.NewTicker(time.Second * timepill.Conf.TimePill.Timer)
+	for range tc.C {
+		timepill.RecordTask()
+	}
 }

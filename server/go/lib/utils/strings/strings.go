@@ -275,3 +275,10 @@ func PrintComments(comments protogen.CommentSet, g *protogen.GeneratedFile) {
 	g.P(comments.Leading)
 	g.P(comments.LeadingDetached)
 }
+
+type NumLetterSlice[T any] ['z' - '0' + 1]T
+
+// 原来数组支持这样用
+func (n *NumLetterSlice[T]) Set(b byte, v T) {
+	n[b-'0'] = v
+}

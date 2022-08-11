@@ -9,6 +9,14 @@ import (
 	"strings"
 )
 
+/*
+注入这种
+
+	type DB struct {
+		*gorm.DB `init:"entity"`
+		Conf     DatabaseConfig `init:"config"`
+	}
+*/
 type daoField struct {
 	Entity reflect.Value
 	Config reflect.Value
@@ -57,7 +65,7 @@ func setDao3(v reflect.Value, confM map[string]any) {
 				field.Set(reflect.New(field.Type().Elem()))
 			}
 			fieldtyp := field.Type()
-			if fieldtyp == reflect.TypeOf(DaoPlaceholder{}) {
+			if fieldtyp == reflect.TypeOf(NeedInitPlaceholder{}) {
 				continue
 			}
 			confName := strings.ToUpper(typ.Field(i).Name)

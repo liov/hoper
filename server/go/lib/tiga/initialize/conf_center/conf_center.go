@@ -41,6 +41,7 @@ func (c *ConfigCenterConfig) ConfigCenter(model string, debug bool) ConfigCenter
 		return c.Etcd
 	}*/
 	if c.ConfigType == Local && c.Local != nil {
+		c.Local.Debug = debug
 		c.Local.AutoReload = c.Watch
 		return c.Local
 	}

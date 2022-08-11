@@ -3,6 +3,7 @@ package initialize
 import (
 	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/conf_center"
+	ilocal "github.com/actliboy/hoper/server/go/lib/tiga/initialize/conf_center/local"
 	"github.com/actliboy/hoper/server/go/lib/utils/configor/local"
 	"github.com/actliboy/hoper/server/go/lib/utils/errors/multierr"
 	"os"
@@ -112,6 +113,28 @@ func (init *Init) LoadConfig(notinit ...string) *Init {
 		}
 	}
 
+	// 单配置文件
+	if init.ConfigCenterConfig == nil || init.ConfigCenterConfig.ConfigType == "" {
+		init.ConfigCenterConfig = &ConfigCenterConfig{
+			ConfigCenterConfig: conf_center.ConfigCenterConfig{
+				ConfigType: "local",
+				Local: &ilocal.Local{
+					Config:     local.Config{},
+					ConfigName: init.ConfUrl,
+					ReloadType: "fsnotify",
+				},
+			},
+		}
+		cfgcenter := init.ConfigCenterConfig.ConfigCenter(init.Module, init.Env != PRODUCT)
+		err = cfgcenter.HandleConfig(init.UnmarshalAndSetV3)
+		if err != nil {
+			log.Fatalf("配置错误: %v", err)
+		}
+
+		log.Debugf("Configuration:  %#v", init.conf)
+		return init
+	}
+
 	for i := range init.ConfigCenterConfig.NoInject {
 		init.ConfigCenterConfig.NoInject[i] = strings.ToUpper(init.ConfigCenterConfig.NoInject[i])
 	}
@@ -123,7 +146,10 @@ func (init *Init) LoadConfig(notinit ...string) *Init {
 	}
 	cfgcenter := init.ConfigCenterConfig.ConfigCenter(init.Module, init.Env != PRODUCT)
 
-	cfgcenter.HandleConfig(reflect.ValueOf(init).MethodByName("UnmarshalAndSetV" + strconv.Itoa(int(init.ConfigCenterConfig.InjectVersion))).Interface().(func([]byte)))
+	err = cfgcenter.HandleConfig(reflect.ValueOf(init).MethodByName("UnmarshalAndSetV" + strconv.Itoa(int(init.ConfigCenterConfig.InjectVersion))).Interface().(func([]byte)))
+	if err != nil {
+		log.Fatalf("配置错误: %v", err)
+	}
 
 	log.Debugf("Configuration:  %#v", init.conf)
 	return init

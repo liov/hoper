@@ -8,19 +8,10 @@ type NeedInit interface {
 
 type Config = NeedInit
 
-type ConfigPlaceholder struct {
-}
-
-func (c *ConfigPlaceholder) Init() {
+type NeedInitPlaceholder struct {
 }
 
 type Dao = NeedInit
-
-type DaoPlaceholder struct {
-}
-
-func (d *DaoPlaceholder) Init() {
-}
 
 type DaoField interface {
 	Config() Generate

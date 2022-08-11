@@ -76,7 +76,7 @@ func (configor *Configor) GetEnvironment() string {
 func (configor *Configor) Load(config interface{}, files ...string) (err error) {
 	defaultValue := reflect.Indirect(reflect.ValueOf(config))
 	if !defaultValue.CanAddr() {
-		return fmt.Errorf("Config %v should be addressable", config)
+		return fmt.Errorf("config %v should be addressable", config)
 	}
 	err, _ = configor.load(config, false, files...)
 

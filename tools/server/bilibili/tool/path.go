@@ -6,16 +6,6 @@ import (
 	"path/filepath"
 )
 
-var DownloadPath string
-
-func GetAidFileDownloadDir() string {
-	err := os.MkdirAll(DownloadPath, 0777)
-	if err != nil {
-		panic(err)
-	}
-	return DownloadPath
-}
-
 func GetMp4Dir(title string) string {
 	curDir, err := os.Getwd()
 	if err != nil {

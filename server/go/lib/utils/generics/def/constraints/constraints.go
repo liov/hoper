@@ -9,6 +9,7 @@ type Integer interface {
 }
 
 type Number interface {
+	constraints.Integer | constraints.Float
 }
 
 type Ordered interface {

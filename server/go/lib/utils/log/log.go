@@ -32,19 +32,22 @@ type Logger struct {
 	*zap.Logger
 }
 
+type ZapConfig zap.Config
+
 type Config struct {
-	Development bool
-	Caller      bool
-	Level       zapcore.Level
-	OutputPaths map[string][]string
-	ModuleName  string //系统名称namespace.service
+	Development      bool
+	Caller           bool
+	Level            zapcore.Level
+	OutputPaths      map[string][]string
+	ErrorOutputPaths map[string][]string
+	ModuleName       string //系统名称namespace.service
 }
 
-//初始化日志对象
-func (lf *Config) NewLogger() *Logger {
-	logger := lf.initLogger().
+// 初始化日志对象
+func (lf *Config) NewLogger(cores ...zapcore.Core) *Logger {
+	logger := lf.initLogger(cores...).
 		With(
-			zap.String("source", osi.Hostname()),
+			zap.String("hostname", osi.Hostname()),
 			zap.String("ip", neti.GetIP()),
 		)
 	return &Logger{logger}
@@ -64,12 +67,18 @@ func (l *Logger) With(fields ...zap.Field) *Logger {
 }
 
 func (l *Logger) Sugar() *zap.SugaredLogger {
-	l.Logger.WithOptions(zap.AddCallerSkip(-1))
+	l.WithOptions(zap.AddCallerSkip(-1))
 	return l.Logger.Sugar()
 }
 
-//构建日志对象基本信息
-func (lf *Config) initLogger() *zap.Logger {
+func (l *Logger) AddCore(newCore zapcore.Core) {
+	l.WithOptions(zap.WrapCore(func(core zapcore.Core) zapcore.Core {
+		return zapcore.NewTee(core, newCore)
+	}))
+}
+
+// 构建日志对象基本信息
+func (lf *Config) initLogger(cores ...zapcore.Core) *zap.Logger {
 
 	encoderConfig := zapcore.EncoderConfig{
 		TimeKey:       "time",
@@ -99,7 +108,6 @@ func (lf *Config) initLogger() *zap.Logger {
 	}
 
 	var consoleEncoder, jsonEncoder zapcore.Encoder
-	var cores []zapcore.Core
 
 	if len(lf.OutputPaths["console"]) > 0 {
 		consoleEncoder = zapcore.NewConsoleEncoder(encoderConfig)

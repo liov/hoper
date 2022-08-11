@@ -2,100 +2,81 @@ package conctrl
 
 import (
 	"context"
-	"log"
-	"sync"
+	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
 )
 
-type Task[T any] func(context.Context) (T, error)
+type TaskFunc[T any] func(context.Context) (T, error)
 
 type TaskB[REQ, RES any] func(context.Context, REQ) (RES, error)
 
-type TaskCo[REQ, RES any] interface {
-	Task[RES] | TaskB[REQ, RES]
+type TaskC[REQ, RES any] interface {
+	TaskFunc[RES] | TaskB[REQ, RES]
 }
 
-type Engine[T any] struct {
-	limitWorkerCount, currentWorkerCount int
-	workerChan                           chan struct{}
-	taskChan                             chan Task[T]
-	//taskList   list.SimpleList[Task]
-	ctx    context.Context
-	cancel context.CancelFunc
-	wg     sync.WaitGroup
+type Task[T any] struct {
+	Id        uint
+	Kind      conctrl.Kind
+	Do        TaskFunc[T]
+	ErrHandle conctrl.ErrHandle
 }
 
-func NewEngine[T any](workerCount int) *Engine[T] {
-	ctx, cancel := context.WithCancel(context.Background())
-	return &Engine[T]{
-		limitWorkerCount: workerCount,
-		workerChan:       make(chan struct{}, workerCount),
-		ctx:              ctx,
-		cancel:           cancel,
-		taskChan:         make(chan Task[T]),
+func NewTask[T any](taskFun TaskFunc[T]) *Task[T] {
+	return &Task[T]{
+		Do: taskFun,
 	}
 }
 
-func (c *Engine[T]) Run(tasks ...Task[T]) {
+type Engine[T, V any] struct {
+	ctrlEngine   *conctrl.Engine
+	Properties   V
+	resultChan   chan T
+	resultHandle func(T)
+	failChan     chan *Task[T]
+	failHandle   func(*Task[T])
+}
 
-	if c.currentWorkerCount == 0 {
-		c.NewWorker()
+func NewEngine[T, V any](workerCount uint, props V, fun func(T), failFun func(*Task[T])) *Engine[T, V] {
+	return &Engine[T, V]{
+		ctrlEngine:   conctrl.NewEngine(workerCount),
+		resultChan:   make(chan T),
+		resultHandle: fun,
+		failHandle:   failFun,
+		failChan:     make(chan *Task[T]),
+		Properties:   props,
 	}
+}
 
+func (e *Engine[T, V]) Run(tasks ...*Task[T]) {
 	go func() {
-	loop:
-		for {
-			select {
-			case readyTask := <-c.taskChan:
-				if c.currentWorkerCount < c.limitWorkerCount {
-					c.NewWorker()
-				}
-				c.taskChan <- readyTask
-				if c.currentWorkerCount == c.limitWorkerCount {
-					break loop
-				}
-			case <-c.ctx.Done():
-				break loop
-			}
+		for res := range e.resultChan {
+			e.resultHandle(res)
 		}
 	}()
-	c.wg.Add(len(tasks))
+	go func() {
+		for fail := range e.failChan {
+			e.failHandle(fail)
+		}
+	}()
+	ctrlTasks := make([]*conctrl.Task, 0, len(tasks))
 	for _, task := range tasks {
-		c.taskChan <- task
+		ctrlTasks = append(ctrlTasks, e.NewTask(task))
 	}
-
-	c.wg.Wait()
+	e.ctrlEngine.Run(ctrlTasks...)
 }
 
-func (c *Engine[T]) NewWorker() {
-	select {
-	case c.workerChan <- struct{}{}:
-		c.currentWorkerCount++
-		id := c.currentWorkerCount
-		go func() {
-		loop:
-			for {
-				select {
-				case task := <-c.taskChan:
-					if task != nil {
-						task(c.ctx)
-						log.Println("task is done,worker id :", id)
-					}
-					c.wg.Done()
-				case <-c.ctx.Done():
-					break loop
+func (e *Engine[T, V]) NewTask(task *Task[T]) *conctrl.Task {
+	return &conctrl.Task{
+		Do: func(ctx context.Context) error {
+			res, err := task.Do(ctx)
+			if err != nil {
+				if task.ErrHandle != nil {
+					task.ErrHandle(ctx, err)
 				}
+				e.failChan <- task
+				return nil
 			}
-		}()
-	default:
-		log.Println("worker is full")
+			e.resultChan <- res
+			return nil
+		},
 	}
-}
-
-func (c *Engine[T]) AddTask(task Task[T]) {
-	c.wg.Add(1)
-	c.taskChan <- task
-}
-
-type Worker[REQ, RES any, T TaskCo[REQ, RES]] struct {
-	isReady bool
 }

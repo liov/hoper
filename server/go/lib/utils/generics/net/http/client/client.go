@@ -15,18 +15,13 @@ func NewRequest[RES any](url, method string) *RequestParams[RES] {
 	return (*RequestParams[RES])(client.NewRequest(url, method))
 }
 
-func (req *RequestParams[RES]) DefaultLog() *RequestParams[RES] {
-	(*client.RequestParams)(req).DefaultLog()
-	return req
-}
-
 func (req *RequestParams[RES]) SetContentType(contentType client.ContentType) *RequestParams[RES] {
 	req.ContentType = contentType
 	return req
 }
 
-func (req *RequestParams[RES]) SetHeader(k, v string) *RequestParams[RES] {
-	req.header.Set(k, v)
+func (req *RequestParams[RES]) AddHeader(k, v string) *RequestParams[RES] {
+	(*client.RequestParams)(req).AddHeader(k, v)
 	return req
 }
 
@@ -50,17 +45,13 @@ func (req *RequestParams[RES]) SetClient(c *http.Client) *RequestParams[RES] {
 	return req
 }
 
-type responseBody interface {
-	CheckError() error
-}
-
 type ResponseBody[RES any] struct {
 	Status  int    `json:"status"`
 	Data    RES    `json:"data"`
 	Message string `json:"message"`
 }
 
-func CommonResponse[RES any]() responseBody {
+func CommonResponse[RES any]() client.ResponseBodyCheck {
 	return &ResponseBody[RES]{}
 }
 
@@ -70,8 +61,6 @@ func (res *ResponseBody[RES]) CheckError() error {
 	}
 	return nil
 }
-
-type RawResponse = []byte
 
 // Do create a HTTP request
 func (r *RequestParams[RES]) Do(req any) (*RES, error) {
