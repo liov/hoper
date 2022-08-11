@@ -117,15 +117,15 @@ func (dao *EsDao) MaxIdEs8() int {
 }
 
 func (dao *EsDao) LoadEs8() {
-	req := &_type.ListReq{
+	req := &_type.ListReq[int]{
 		PageSortReq: request.PageSortReq{
 			PageReq: request.PageReq{PageNo: 1, PageSize: timepill.Conf.TimePill.PageSize},
-			SortReq: request.SortReq{SortField: "id", SortType: request.SortTypeASC},
+			SortReq: &request.SortReq{SortField: "id", SortType: request.SortTypeASC},
 		},
-		RangeReq: request.RangeReq{
+		RangeReq: &request.RangeReq[int]{
 			RangeField: "id",
 			RangeStart: dao.MaxIdEs8(),
-			RangeEnd:   nil,
+			RangeEnd:   0,
 			Include:    false,
 		},
 	}

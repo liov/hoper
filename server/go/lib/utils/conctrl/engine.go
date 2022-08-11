@@ -2,151 +2,195 @@ package conctrl
 
 import (
 	"context"
+	"github.com/actliboy/hoper/server/go/lib/utils/generics/slices"
 	"github.com/actliboy/hoper/server/go/lib/utils/generics/structure/list"
 	"log"
+	"runtime/debug"
 	"sync"
 	"sync/atomic"
 	"time"
 )
 
-type Task func(context.Context)
+type Kind uint8
 
-type Engine struct {
-	limitWorkerCount, currentWorkerCount int64
-	workerChan                           chan *Worker
-	taskChan                             chan Task
-	ctx                                  context.Context
-	cancel                               context.CancelFunc
-	wg                                   sync.WaitGroup
+const (
+	KindNormal = iota
+)
+
+type ErrHandle func(context.Context, error)
+
+type Task struct {
+	id        uint
+	Kind      Kind
+	Do        func(context.Context) error
+	ErrHandle ErrHandle
 }
 
 type Worker struct {
-	id int64
-	ch chan Task
+	id uint
+	ch chan *Task
 }
 
-func NewEngine(workerCount int) *Engine {
+type Engine struct {
+	limitWorkerCount, currentWorkerCount uint64
+	workerChan                           chan *Worker
+	taskChan                             chan *Task
+	ctx                                  context.Context
+	cancel                               context.CancelFunc
+	wg                                   sync.WaitGroup
+	excludeKinds                         []bool
+}
+
+func NewEngine(workerCount uint) *Engine {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &Engine{
-		limitWorkerCount: int64(workerCount),
+		limitWorkerCount: uint64(workerCount),
 		ctx:              ctx,
 		cancel:           cancel,
 		workerChan:       make(chan *Worker),
-		taskChan:         make(chan Task),
+		taskChan:         make(chan *Task),
 	}
 }
 
-func (c *Engine) Run(tasks ...Task) {
+func (e *Engine) ExcludeKind(kinds ...Kind) *Engine {
+	length := slices.Max(kinds) + 1
+	if e.excludeKinds == nil {
+		e.excludeKinds = make([]bool, length)
+	}
+	if int(length) > len(e.excludeKinds) {
+		e.excludeKinds = append(e.excludeKinds, make([]bool, int(length)-len(e.excludeKinds))...)
+	}
+	for _, kind := range kinds {
+		e.excludeKinds[kind] = true
+	}
+	return e
+}
 
-	c.addWorker()
+func (e *Engine) Run(tasks ...*Task) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println(r)
+			log.Println(string(debug.Stack()))
+		}
+	}()
+	e.addWorker()
 
 	go func() {
 		workerList := list.NewSimpleList[*Worker]()
-		taskList := list.NewSimpleList[Task]()
+		taskList := list.NewSimpleList[*Task]()
 		timer := time.NewTimer(time.Second * 1)
 		var emptyTimes int
 	loop:
 		for {
-			var readyWorkerCh chan Task
-			var readyTask Task
+			var readyWorkerCh chan *Task
+			var readyTask *Task
 			if workerList.Size > 0 && taskList.Size > 0 {
 				readyWorkerCh = workerList.First().ch
 				readyTask = taskList.First()
 			}
 			select {
-			case readyTask = <-c.taskChan:
+			case readyTask = <-e.taskChan:
 				taskList.Push(readyTask)
-			case readyWorker := <-c.workerChan:
+			case readyWorker := <-e.workerChan:
 				workerList.Push(readyWorker)
 			case readyWorkerCh <- readyTask:
 				workerList.Pop()
 				taskList.Pop()
 				//检测任务是否已空
 			case <-timer.C:
-				if workerList.Size == int(c.currentWorkerCount) && taskList.Size == 0 {
+				if workerList.Size == int(e.currentWorkerCount) && taskList.Size == 0 {
 					emptyTimes++
-					log.Println("任务即将结束")
 					if emptyTimes > 5 {
 						log.Println("task is empty")
-						c.wg.Done()
+						log.Println("任务即将结束")
+						e.wg.Done()
 					}
 				}
 				timer.Reset(time.Second * 1)
-			case <-c.ctx.Done():
+			case <-e.ctx.Done():
 				timer.Stop()
 				break loop
 			}
 		}
 	}()
 
-	c.wg.Add(len(tasks) + 1)
+	e.wg.Add(len(tasks) + 1)
 	for _, task := range tasks {
-		c.taskChan <- task
+		e.taskChan <- task
 	}
 
-	c.wg.Wait()
+	e.wg.Wait()
 }
 
-func (c *Engine) newWorker(readyTask Task) {
-	c.currentWorkerCount++
+func (e *Engine) newWorker(readyTask *Task) {
+	e.currentWorkerCount++
 	//id := c.currentWorkerCount
-	taskChan := make(chan Task)
-	worker := &Worker{c.currentWorkerCount, taskChan}
+	taskChan := make(chan *Task)
+	worker := &Worker{uint(e.currentWorkerCount), taskChan}
 	go func() {
 		if readyTask != nil {
-			readyTask(c.ctx)
-			c.wg.Done()
+			err := readyTask.Do(e.ctx)
+			if err != nil && readyTask.ErrHandle != nil {
+				readyTask.ErrHandle(e.ctx, err)
+			}
+			e.wg.Done()
 		}
 		for {
 			select {
-			case c.workerChan <- worker:
+			case e.workerChan <- worker:
 				task := <-taskChan
 				if task != nil {
-					task(c.ctx)
+					err := task.Do(e.ctx)
+					if err != nil && task.ErrHandle != nil {
+						task.ErrHandle(e.ctx, err)
+					}
 				}
-				c.wg.Done()
-			case <-c.ctx.Done():
+				e.wg.Done()
+			case <-e.ctx.Done():
 				return
 			}
 		}
 	}()
 }
 
-func (c *Engine) addWorker() {
-	if c.currentWorkerCount == 0 {
-		c.newWorker(nil)
+func (e *Engine) addWorker() {
+	if e.currentWorkerCount == 0 {
+		e.newWorker(nil)
 	}
 	go func() {
 		for {
 			select {
-			case readyTask := <-c.taskChan:
-				if c.currentWorkerCount < c.limitWorkerCount {
-					c.newWorker(readyTask)
+			case readyTask := <-e.taskChan:
+				if e.currentWorkerCount < e.limitWorkerCount {
+					e.newWorker(readyTask)
 				}
-				if c.currentWorkerCount == c.limitWorkerCount {
+				if e.currentWorkerCount == e.limitWorkerCount {
 					log.Println("worker count is full")
 					return
 				}
-			case <-c.ctx.Done():
+			case <-e.ctx.Done():
 				return
 			}
 		}
 	}()
 }
 
-func (c *Engine) AddTask(task Task) {
-	c.wg.Add(1)
-	c.taskChan <- task
+func (e *Engine) AddTask(task *Task) {
+	if e.excludeKinds != nil && int(task.Kind) < len(e.excludeKinds) && e.excludeKinds[task.Kind] {
+		return
+	}
+	e.wg.Add(1)
+	e.taskChan <- task
 }
 
-func (c *Engine) AddTasks(tasks ...Task) {
-	c.wg.Add(len(tasks))
+func (e *Engine) AddTasks(tasks ...*Task) {
+	e.wg.Add(len(tasks))
 	for _, task := range tasks {
-		c.taskChan <- task
+		e.taskChan <- task
 	}
 }
 
-func (c *Engine) AddWorker(num int) {
-	atomic.AddInt64(&c.limitWorkerCount, int64(num))
-	c.addWorker()
+func (e *Engine) AddWorker(num int) {
+	atomic.AddUint64(&e.limitWorkerCount, uint64(num))
+	e.addWorker()
 }

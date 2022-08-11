@@ -3,14 +3,13 @@ package persist
 import (
 	"fmt"
 	"sync"
-	"tools/bilibili/model"
 )
 
 var _videoPageMap = make(map[int64]map[int64]int64)
 
 // var _contactFile2Name = "contactCid.txt"
 // var _videoOutputNameExt = ".mp4"
-var xMap = make(map[int64]map[int64]*model.VideoCid)
+var xMap = make(map[int64]map[int64]*VideoCid)
 
 func VideoItemProcessor(wgOutside *sync.WaitGroup) (chan *Item, error) {
 	out := make(chan *Item)
@@ -21,15 +20,15 @@ func VideoItemProcessor(wgOutside *sync.WaitGroup) (chan *Item, error) {
 		for item := range out {
 
 			switch x := item.Payload.(type) {
-			case *model.VideoAid:
+			case *VideoAid:
 				_videoPageMap[x.Aid] = make(map[int64]int64)
-				xMap[x.Aid] = make(map[int64]*model.VideoCid)
+				xMap[x.Aid] = make(map[int64]*VideoCid)
 
-			case *model.VideoCid:
+			case *VideoCid:
 				_videoPageMap[x.ParAid.Aid][x.Page] = x.AllOrder
 				xMap[x.ParAid.Aid][x.Page] = x // save as video.ParCid with type of *model.VideoCid
 
-			case *model.Video:
+			case *Video:
 				_videoPageMap[x.ParCid.ParAid.Aid][x.ParCid.Page] -= 1
 				if _videoPageMap[x.ParCid.ParAid.Aid][x.ParCid.Page] == 0 {
 					delete(_videoPageMap[x.ParCid.ParAid.Aid], x.ParCid.Page)

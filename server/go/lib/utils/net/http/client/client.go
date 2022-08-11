@@ -18,7 +18,6 @@ import (
 	"time"
 
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
-	neti "github.com/actliboy/hoper/server/go/lib/utils/net"
 	httpi "github.com/actliboy/hoper/server/go/lib/utils/net/http"
 	"github.com/actliboy/hoper/server/go/lib/utils/number"
 	"github.com/actliboy/hoper/server/go/lib/utils/strings"
@@ -58,6 +57,10 @@ func DisableLog() {
 	genlog = false
 }
 
+func SetDefaultLogger(logger LogCallback) {
+	defaultLog = logger
+}
+
 func SetClient(client *http.Client) {
 	client = defaultClient
 }
@@ -86,15 +89,39 @@ type Pair struct {
 	K, V string
 }
 
-func defaultLog(url, method, auth, reqBody, respBytes string, status int, process time.Duration) {
+var defaultLog = DefaultLogger
+
+func DefaultLogger(url, method, auth string, reqBody, respBody *Body, status int, process time.Duration, err error) {
+	reqField, respField := zap.Skip(), zap.Skip()
+	if reqBody != nil {
+		key := "param"
+		if reqBody.IsJson() {
+			reqField = zap.Reflect(key, log.BytesJson(reqBody.Data))
+		} else if reqBody.IsProtobuf() {
+			reqField = zap.Binary(key, reqBody.Data)
+		} else {
+			reqField = zap.String(key, stringsi.ToString(reqBody.Data))
+		}
+	}
+	if respBody != nil {
+		key := "result"
+		if respBody.IsJson() {
+			respField = zap.Reflect(key, log.BytesJson(respBody.Data))
+		} else if respBody.IsProtobuf() {
+			respField = zap.Binary(key, respBody.Data)
+		} else {
+			respField = zap.String(key, stringsi.ToString(respBody.Data))
+		}
+	}
+
 	log.Default.Logger.Info("third-request", zap.String("interface", url),
 		zap.String("method", method),
-		zap.String("param", reqBody),
+		reqField,
 		zap.Duration("processTime", process),
-		zap.String("result", respBytes),
+		respField,
 		zap.String("other", auth),
 		zap.Int("status", status),
-		zap.String("source", neti.GetIP()))
+		zap.Error(err))
 }
 
 type ContentType uint8
@@ -103,6 +130,7 @@ const (
 	ContentTypeJson     ContentType = iota
 	ContentTypeForm     ContentType = iota
 	ContentTypeFormData ContentType = iota
+	ContentTypeProtobuf ContentType = iota
 )
 
 // RequestParams ...
@@ -116,6 +144,7 @@ type RequestParams struct {
 	header             http.Header
 	cachedHeaderKey    string
 	logger             LogCallback
+	genlog             bool
 	ResponseHandler    func(response []byte) ([]byte, error)
 	retryTimes         int
 	retryHandle        func(*RequestParams)
@@ -130,7 +159,7 @@ func NewRequest(url, method string) *RequestParams {
 }
 
 func newRequest(url, method string) *RequestParams {
-	return &RequestParams{ctx: context.Background(), client: defaultClient, url: url, method: method, header: make(http.Header)}
+	return &RequestParams{ctx: context.Background(), client: defaultClient, url: url, method: method, header: make(http.Header), logger: defaultLog}
 }
 
 func NewGetRequest(url string) *RequestParams {
@@ -147,11 +176,6 @@ func NewPutRequest(url string) *RequestParams {
 
 func NewDeleteRequest(url string) *RequestParams {
 	return newRequest(url, http.MethodDelete)
-}
-
-func (req *RequestParams) DefaultLog() *RequestParams {
-	req.logger = defaultLog
-	return req
 }
 
 func (req *RequestParams) SetMethod(method string) *RequestParams {
@@ -201,6 +225,19 @@ func (req *RequestParams) CachedHeader(key string) *RequestParams {
 
 func (req *RequestParams) SetLogger(logger LogCallback) *RequestParams {
 	req.logger = logger
+	return req
+}
+
+func (req *RequestParams) DisableLog() *RequestParams {
+	req.logger = nil
+	return req
+}
+
+func (req *RequestParams) GenLog() *RequestParams {
+	if req.logger == nil {
+		req.logger = DefaultLogger
+	}
+	req.genlog = true
 	return req
 }
 
@@ -261,61 +298,64 @@ func (req *RequestParams) Do(param, response interface{}) error {
 		setTimeout(req.client, req.timeout)
 	}
 	var body io.Reader
-	var reqBody, respBody string
+	var reqBody, respBody *Body
 	var statusCode int
+	var err error
 	reqTime := time.Now()
 	// 日志记录
 	defer func(now time.Time) {
-		if req.logger != nil && genlog {
-			req.logger(url, method, req.AuthUser, reqBody, respBody, statusCode, time.Now().Sub(now))
+		if req.genlog || (req.logger != nil && genlog) {
+			req.logger(url, method, req.AuthUser, reqBody, respBody, statusCode, time.Now().Sub(now), err)
 		}
 	}(reqTime)
 
-	var err error
 	if method == http.MethodGet {
 		if param != nil {
 			switch paramt := param.(type) {
 			case string:
-				url += paramt
+				url += "?" + paramt
 			case []byte:
-				url += stringsi.ToString(paramt)
+				url += "?" + stringsi.ToString(paramt)
 			default:
 				params := getParam(param)
-				reqBody = params
 				url += "?" + params
 			}
 		}
 	} else {
+		reqBody = &Body{}
 		if param != nil {
 			switch paramt := param.(type) {
 			case string:
 				body = strings.NewReader(paramt)
-				reqBody = paramt
+				reqBody.Data = stringsi.ToBytes(paramt)
 			case []byte:
 				body = bytes.NewReader(paramt)
-				reqBody = stringsi.ToString(paramt)
+				reqBody.Data = paramt
 			case io.Reader:
-				vbytes, _ := io.ReadAll(paramt)
-				body = bytes.NewReader(vbytes)
-				reqBody = stringsi.ToString(vbytes)
+				var reqBytes []byte
+				reqBytes, err = io.ReadAll(paramt)
+				body = bytes.NewReader(reqBytes)
+				reqBody.Data = reqBytes
 			default:
 				if req.ContentType == ContentTypeJson {
-					reqBytes, err := json.Marshal(param)
+					var reqBytes []byte
+					reqBytes, err = json.Marshal(param)
 					if err != nil {
 						return err
 					}
 					body = bytes.NewReader(reqBytes)
-					reqBody = stringsi.ToString(reqBytes)
+					reqBody.Data = reqBytes
+					reqBody.ContentType = ContentTypeJson
 				} else {
 					params := getParam(param)
-					reqBody = params
+					reqBody.Data = stringsi.ToBytes(params)
 					body = strings.NewReader(params)
 				}
 			}
 		}
 	}
-
-	request, err := http.NewRequestWithContext(req.ctx, method, url, body)
+	var request *http.Request
+	request, err = http.NewRequestWithContext(req.ctx, method, url, body)
 	if err != nil {
 		return err
 	}
@@ -343,56 +383,80 @@ func (req *RequestParams) Do(param, response interface{}) error {
 	resp, err = req.client.Do(request)
 	if err != nil {
 		if req.retryTimes == 0 {
-			respBody = err.Error()
 			return err
 		}
 		for i := 0; i < req.retryTimes; i++ {
 			if req.retryHandle != nil {
 				req.retryHandle(req)
 			}
+			reqTime = time.Now()
 			resp, err = req.client.Do(request)
 			if err == nil {
 				break
 			} else {
-				if req.logger != nil && genlog {
-					req.logger(url, method, req.AuthUser, reqBody, err.Error()+";will retry", statusCode, time.Now().Sub(reqTime))
+				if req.genlog || (req.logger != nil && genlog) {
+					req.logger(url, method, req.AuthUser, reqBody, respBody, statusCode, time.Now().Sub(reqTime), errors.New(err.Error()+";will retry"))
 				}
 			}
 		}
 	}
-
-	respBytes, err := io.ReadAll(resp.Body)
+	respBody = &Body{}
+	var respBytes []byte
+	respBytes, err = io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
-	resp.Body.Close()
+	err = resp.Body.Close()
 	if req.ResponseHandler != nil {
 		respBytes, err = req.ResponseHandler(respBytes)
 		if err != nil {
 			return err
 		}
 	}
-	respBody = stringsi.ToString(respBytes)
+	respBody.Data = respBytes
 	statusCode = resp.StatusCode
 	if resp.StatusCode < 200 || resp.StatusCode > 300 {
-		return errors.New("status:" + resp.Status + respBody)
+		respBody.ContentType = ContentTypeForm
+		err = errors.New("status:" + resp.Status + "" + stringsi.ToString(respBytes))
+		return err
 	}
 	if len(respBytes) > 0 && response != nil {
 		if raw, ok := response.(*RawResponse); ok {
 			*raw = respBytes
-			return err
+			if resp.Header.Get(httpi.HeaderContentType) == httpi.ContentFormHeaderValue {
+				respBody.ContentType = ContentTypeForm
+			} else {
+				respBody.ContentType = ContentTypeJson
+			}
+			return nil
+		}
+		if resp.Header.Get(httpi.HeaderContentType) == httpi.ContentFormHeaderValue {
+			// TODO
+			respBody.ContentType = ContentTypeForm
+		} else {
+			// 默认json
+			respBody.ContentType = ContentTypeJson
+			err = json.Unmarshal(respBytes, response)
+			if err != nil {
+				return err
+			}
 		}
 
-		err = json.Unmarshal(respBytes, response)
-		if err != nil {
-			return err
-		}
 		if v, ok := response.(ResponseBodyCheck); ok {
 			err = v.CheckError()
 		}
 	}
 
 	return err
+}
+
+func (req *RequestParams) DoRaw(param, response interface{}) (RawResponse, error) {
+	var raw RawResponse
+	err := req.Do(param, &raw)
+	if err != nil {
+		return raw, err
+	}
+	return raw, json.Unmarshal(raw, response)
 }
 
 func getParam(param interface{}) string {

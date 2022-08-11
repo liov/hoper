@@ -5,8 +5,12 @@ import (
 	"os"
 )
 
+var CommonDir = "./"
+
+const Sep = string(os.PathSeparator)
+
 func main() {
-	del(por.CommonDir)
+	del(CommonDir)
 }
 
 func del(dir string) {
@@ -21,7 +25,7 @@ func del(dir string) {
 	}
 	for i := range fileInfos {
 		if fileInfos[i].IsDir() {
-			del(dir + por.Sep + fileInfos[i].Name())
+			del(dir + Sep + fileInfos[i].Name())
 		}
 	}
 }

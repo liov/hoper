@@ -9,6 +9,24 @@ import (
 	"strings"
 )
 
+/*
+注入这种类型的dao
+type DB struct {
+	*gorm.DB
+	Conf     DatabaseConfig
+}
+
+func (db *DB) Config() initialize.Generate {
+	return &db.Conf
+}
+
+func (db *DB) SetEntity(entity interface{}) {
+	if gormdb, ok := entity.(*gorm.DB); ok {
+		db.DB = gormdb
+	}
+}
+*/
+
 func (init *Init) UnmarshalAndSetV2(bytes []byte) {
 	tmp := map[string]interface{}{}
 	err := toml.Unmarshal(bytes, &tmp)
@@ -42,6 +60,12 @@ func setConfig2(conf Config, confM map[string]interface{}) {
 			injectconf(filed.Interface(), strings.ToUpper(v.Type().Field(i).Name), confM)
 		case reflect.Struct:
 			injectconf(filed.Addr().Interface(), strings.ToUpper(v.Type().Field(i).Name), confM)
+		}
+		if filed.Addr().CanInterface() {
+			inter := v.Field(i).Addr().Interface()
+			if conf, ok := inter.(NeedInit); ok {
+				conf.Init()
+			}
 		}
 	}
 }

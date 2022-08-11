@@ -24,11 +24,11 @@ const (
 )
 
 type DatabaseConfig struct {
-	Type, Charset, Database    string
-	Host, User, Password       string
-	TimeFormat                 string
-	MaxIdleConns, MaxOpenConns int
-	Port                       int32
+	Type, Charset, Database, TimeZone string
+	Host, User, Password              string
+	TimeFormat                        string
+	MaxIdleConns, MaxOpenConns        int
+	Port                              int32
 	//bug 字段gorm toml不生效
 	Gorm       gormi.GORMConfig
 	Prometheus bool
@@ -36,6 +36,26 @@ type DatabaseConfig struct {
 
 func (c *DatabaseConfig) Init() {
 	c.Gorm.Init()
+	if c.TimeFormat == "" {
+		c.TimeZone = "Asia/Shanghai"
+	}
+	if c.TimeFormat == "" {
+		c.TimeFormat = "2006-01-02 15:04:05"
+	}
+	if c.Charset == "" {
+		c.Charset = "utf8"
+	}
+	if c.Type == "" {
+		c.Type = POSTGRES
+	}
+	if c.Port == 0 {
+		if c.Type == MYSQL {
+			c.Port = 3306
+		}
+		if c.Type == POSTGRES {
+			c.Port = 5432
+		}
+	}
 }
 
 func (conf *DatabaseConfig) generate() *gorm.DB {
@@ -55,8 +75,8 @@ func (conf *DatabaseConfig) generate() *gorm.DB {
 			conf.Port, conf.Database, conf.Charset)
 		db, err = gorm.Open(mysql.Open(url), dbConfig)
 	} else if conf.Type == POSTGRES {
-		url = fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s",
-			conf.Host, conf.User, conf.Database, conf.Password)
+		url = fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s TimeZone=%s",
+			conf.Host, conf.User, conf.Database, conf.Password, conf.TimeZone)
 		db, err = gorm.Open(postgres.Open(url), dbConfig)
 	} else if conf.Type == SQLite {
 		url = "/data/db/sqlite/" + conf.Database + ".db"

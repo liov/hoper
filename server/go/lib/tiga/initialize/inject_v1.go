@@ -7,6 +7,10 @@ import (
 	"strings"
 )
 
+/*
+配置写在config中，生成第三方包中的类型
+*/
+
 func (init *Init) UnmarshalAndSetV1(bytes []byte) {
 	toml.Unmarshal(bytes, init.conf)
 	init.closeDao()

@@ -1,7 +1,10 @@
 package download
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
+	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	gcrawler "github.com/actliboy/hoper/server/go/lib/utils/generics/net/http/client/crawler"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
@@ -10,9 +13,14 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
 	"path/filepath"
+	"strconv"
+	"strings"
 	"time"
-	"tools/bilibili/api"
+	"tools/bilibili/config"
+	"tools/bilibili/dao"
+	"tools/bilibili/rpc"
 	"tools/bilibili/tool"
 )
 
@@ -25,79 +33,107 @@ type Video struct {
 	Quality string
 }
 
-func FavReqs(page int) []*crawler.Request {
+func FavReqs(pageStart, pageEnd int) []*crawler.Request {
 	var requests []*crawler.Request
-	for i := 1; i <= page; i++ {
-		req := gcrawler.NewRequest(api.GetFavListUrl(i), FavList)
+	for i := pageStart; i <= pageEnd; i++ {
+		req := gcrawler.NewRequest(rpc.GetFavListUrl(i), FavList)
 		requests = append(requests, req)
 	}
 	return requests
 }
 
-func FavReq(page int) *crawler.Request {
-	return gcrawler.NewRequest(api.GetFavListUrl(page), FavList)
-}
+var apiService = &rpc.API{}
 
-var apiService = &api.API{}
-
-func FavList(url string) ([]*crawler.Request, error) {
-	res, err := api.Get[*api.FavList](url)
+func FavList(ctx context.Context, url string) ([]*crawler.Request, error) {
+	res, err := rpc.Get[*rpc.FavList](url)
 	if err != nil {
 		return nil, err
 	}
 	var requests []*crawler.Request
 	for _, fav := range res.Medias {
 		aid := tool.Bv2av(fav.Bvid)
-		req := GetRequestByFav(aid)
-		requests = append(requests, req)
+		req1 := GetViewInfoReq(aid).SetKind(1)
+		req2 := crawler.NewRequest(fav.Cover, DownloadCover(fav.Id)).SetKind(2)
+		requests = append(requests, req1, req2)
 	}
 	return requests, nil
 }
 
-func GetRequestByFav(aid int) *crawler.Request {
-	return gcrawler.NewRequest(api.GetViewUrl(aid), ViewInfoHandleFun)
+func GetViewInfoReq(aid int) *crawler.Request {
+	return gcrawler.NewRequest(rpc.GetViewUrl(aid), ViewInfoHandleFun)
 }
 
-var timer = time.NewTicker(time.Second)
-
-func ViewInfoHandleFun(url string) ([]*crawler.Request, error) {
-	res, err := api.Get[api.ViewInfo](url)
+func ViewInfoHandleFun(ctx context.Context, url string) ([]*crawler.Request, error) {
+	res, err := rpc.Get[rpc.ViewInfo](url)
 	if err != nil {
+		return nil, err
+	}
+	data, err := json.Marshal(res)
+	if err != nil {
+		return nil, err
+	}
+	bilibiliDao := dao.NewDao(ctx, dao.Dao.Hoper.DB)
+	err = bilibiliDao.CreateView(&dao.View{
+		Bvid:        res.Bvid,
+		Aid:         res.Aid,
+		Data:        data,
+		CoverRecord: false,
+	})
+	if err != nil && !postgres.IsDuplicate(err) {
 		return nil, err
 	}
 	var requests []*crawler.Request
 	for _, page := range res.Pages {
 		video := &Video{fs.PathClean(res.Title), res.Aid, page.Cid, page.Page, page.Part, ""}
-		req := gcrawler.NewRequest(api.GetPlayerUrl(res.Aid, page.Cid, 120), video.DownloadHandleFun)
-		requests = append(requests, req)
+		_, err = video.DownloadHandleFun(ctx, rpc.GetPlayerUrl(res.Aid, page.Cid, 120))
+		if err != nil {
+			return nil, err
+		}
+		/*		req := crawler.NewRequest(rpc.GetPlayerUrl(res.Aid, page.Cid, 120), video.DownloadHandleFun)
+				requests = append(requests, req)*/
 	}
 	return requests, nil
 }
 
-func (video *Video) DownloadHandleFun(url string) ([]*crawler.Request, error) {
-	<-timer.C
-	res, err := api.Get[*api.VideoInfo](url)
+func (video *Video) DownloadHandleFun(ctx context.Context, url string) ([]*crawler.Request, error) {
+	res, err := rpc.Get[*rpc.VideoInfo](url)
 	if err != nil {
 		return nil, err
 	}
+
 	video.Quality = res.AcceptDescription[0]
 	var requests []*crawler.Request
 	for _, durl := range res.Durl {
-		req := gcrawler.NewRequest(durl.Url, video.GetDownloadHandleFun(durl.Order))
+		req := gcrawler.NewRequest(durl.Url, video.GetDownloadHandleFun(durl.Order)).SetKind(3)
 		requests = append(requests, req)
 	}
+
+	res.JsonClean()
+	data, err := json.Marshal(res)
+	if err != nil {
+		return nil, err
+	}
+	bilibiliDao := dao.NewDao(ctx, dao.Dao.Hoper.DB)
+	err = bilibiliDao.CreateVideo(&dao.Video{
+		Aid:    video.Aid,
+		Cid:    video.Cid,
+		Data:   data,
+		Record: false,
+	})
+	if err != nil && !postgres.IsDuplicate(err) {
+		return nil, err
+	}
+
 	return requests, nil
 }
 
-var _startUrlTem = "https://api.bilibili.com/x/web-interface/view?aid=%d"
-
 func (video *Video) GetDownloadHandleFun(order int) crawler.HandleFun {
-	referer := fmt.Sprintf(_startUrlTem, video.Aid)
+	referer := rpc.GetViewUrl(video.Aid)
 	for i := 1; i <= video.Page; i++ {
 		referer += fmt.Sprintf("/?p=%d", i)
 	}
 
-	return func(url string) ([]*crawler.Request, error) {
+	return func(ctx context.Context, url string) ([]*crawler.Request, error) {
 
 		c := http.Client{CheckRedirect: genCheckRedirectfun(referer)}
 
@@ -114,7 +150,7 @@ func (video *Video) GetDownloadHandleFun(order int) crawler.HandleFun {
 		request.Header.Set("Referer", referer)
 		request.Header.Set("Origin", "https://www.bilibili.com")
 		request.Header.Set("Connection", "keep-alive")
-		request.Header.Set("Cookie", api.Cookie)
+		request.Header.Set("Cookie", rpc.Cookie)
 
 		resp, err := c.Do(request)
 		if err != nil {
@@ -128,9 +164,9 @@ func (video *Video) GetDownloadHandleFun(order int) crawler.HandleFun {
 		}
 		defer resp.Body.Close()
 
-		aidPath := tool.GetAidFileDownloadDir()
-		filename := fmt.Sprintf("%d_%s_%d_%d.flv", video.Aid, video.Title, video.Page, order)
-		file, err := os.Create(filepath.Join(aidPath, filename))
+		filename := fmt.Sprintf("%d_%s_%s_%d_%d.flv", video.Aid, video.Title, video.Quality, video.Page, order)
+		filename = strings.ReplaceAll(filename, " ", "")
+		file, err := os.Create(filepath.Join(config.Conf.Bilibili.DownloadPath, filename))
 		if err != nil {
 			log.Println("错误信息：", err)
 			return nil, err
@@ -174,31 +210,31 @@ func requestLater(file *os.File, resp *http.Response, video *Video) error {
 }
 
 func UpSpaceList(upid int) *crawler.Request {
-	return gcrawler.NewRequest(api.GetUpSpaceListUrl(upid, 1), UpSpaceListFirstPageHandleFun(upid))
+	return gcrawler.NewRequest(rpc.GetUpSpaceListUrl(upid, 1), UpSpaceListFirstPageHandleFun(upid))
 }
 
 func UpSpaceListFirstPageHandleFun(upid int) crawler.HandleFun {
-	return func(url string) ([]*crawler.Request, error) {
-		res, err := api.Get[*api.UpSpaceList](url)
+	return func(ctx context.Context, url string) ([]*crawler.Request, error) {
+		res, err := rpc.Get[*rpc.UpSpaceList](url)
 		if err != nil {
 			return nil, err
 		}
 		var requests []*crawler.Request
 		for i := 1; i <= res.Page.Count; i++ {
-			requests = append(requests, gcrawler.NewRequest(api.GetUpSpaceListUrl(upid, i), UpSpaceListHandleFun))
+			requests = append(requests, gcrawler.NewRequest(rpc.GetUpSpaceListUrl(upid, i), UpSpaceListHandleFun))
 		}
 		return requests, nil
 	}
 }
 
-func UpSpaceListHandleFun(url string) ([]*crawler.Request, error) {
-	res, err := api.Get[*api.UpSpaceList](url)
+func UpSpaceListHandleFun(ctx context.Context, url string) ([]*crawler.Request, error) {
+	res, err := rpc.Get[*rpc.UpSpaceList](url)
 	if err != nil {
 		return nil, err
 	}
 	var requests []*crawler.Request
 	for _, video := range res.List.Vlist {
-		req := GetRequestByFav(video.Aid)
+		req := GetViewInfoReq(video.Aid)
 		requests = append(requests, req)
 	}
 	return requests, nil
@@ -206,5 +242,11 @@ func UpSpaceListHandleFun(url string) ([]*crawler.Request, error) {
 
 func GetByBvId(id string) *crawler.Request {
 	avid := tool.Bv2av(id)
-	return GetRequestByFav(avid)
+	return GetViewInfoReq(avid)
+}
+
+func DownloadCover(id int) crawler.HandleFun {
+	return func(ctx context.Context, url string) ([]*crawler.Request, error) {
+		return nil, client.DownloadImage(filepath.Join(config.Conf.Bilibili.DownloadPicPath, strconv.Itoa(id)+"_"+path.Base(url)), url)
+	}
 }

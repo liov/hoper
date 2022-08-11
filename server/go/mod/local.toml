@@ -17,7 +17,7 @@ MaxMultipartMemory = 20971520
 GrpcService = {user = "localhost:8080", note = "localhost:8090"}
 Volume = "/data"
 PassSalt = "%*~&*G(Ysa-jyb"
-TokenSecret = "hjoihiahDAW2iofjiJPO"
+TokenSecret = "xxxxxx"
 TokenMaxAge = 7
 
 PageSize = 10
@@ -32,7 +32,7 @@ UploadMaxSize = 10
 UploadAllowExt = [".jpg",".jpeg",".png",".gif"]
 
 LuosimaoVerifyURL ="https://captcha.luosimao.com/api/site_verify"
-LuosimaoAPIKey ="f4a1c65ee13911b7bb9f902655c773a6"
+LuosimaoAPIKey ="xxxx"
 
 QrCodeSaveDir = "/qrcode"
 PrefixUrl =""

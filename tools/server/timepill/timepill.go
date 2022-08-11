@@ -2,7 +2,7 @@ package timepill
 
 import (
 	"errors"
-	gormi "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm"
+	postgres "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/postgres"
 	iio "github.com/actliboy/hoper/server/go/lib/utils/io"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
@@ -15,14 +15,6 @@ import (
 	"tools/timepill/model"
 	"tools/timepill/rpc"
 )
-
-func StartRecord() {
-	RecordTask()
-	tc := time.NewTicker(time.Second * Conf.TimePill.Timer)
-	for range tc.C {
-		RecordTask()
-	}
-}
 
 func RecordTask() {
 	todayDiaries, err := ApiService.GetTodayDiaries(1, 20, "")
@@ -193,8 +185,7 @@ func DownloadCover(typ, url string) error {
 }
 
 func DiaryExists(diaryId int) bool {
-	var exists bool
-	err := Dao.Hoper.Raw(`SELECT EXISTS(SELECT id FROM diary WHERE id = ? LIMIT 1)`, diaryId).Row().Scan(&exists)
+	exists, err := postgres.Exists(Dao.Hoper.DB, "diary", "id ", diaryId, false)
 	if err != nil {
 		log.Error(err)
 	}
@@ -202,8 +193,7 @@ func DiaryExists(diaryId int) bool {
 }
 
 func UserExists(userId int) bool {
-	var exists bool
-	err := Dao.Hoper.Raw(`SELECT EXISTS(SELECT id FROM "user" WHERE user_id = ? LIMIT 1)`, userId).Row().Scan(&exists)
+	exists, err := postgres.Exists(Dao.Hoper.DB, "user", "user_id ", userId, false)
 	if err != nil {
 		log.Error(err)
 	}
@@ -270,7 +260,7 @@ func RecordCommentWithJudge(diaryId int) {
 		log.Error(err)
 	}
 	for _, comment := range comments {
-		if exists, _ := gormi.ExistsById(Dao.Hoper.DB, "comment", uint64(comment.Id)); exists {
+		if exists, _ := postgres.ExistsById(Dao.Hoper.DB, "comment", uint64(comment.Id)); exists {
 			continue
 		}
 		RecordUser(comment.UserId, comment.User.Name)

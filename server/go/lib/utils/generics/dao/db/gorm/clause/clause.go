@@ -15,8 +15,7 @@ func (req *RangeReq[T]) Clause() clause.Expression {
 		return new(clause2.EmptyClause)
 	}
 	// 泛型还很不好用，这种方式代替原来的interface{}
-	zeroPtr := new(T)
-	zero := *zeroPtr
+	zero := *new(T)
 	operation := dbi.Between
 	if req.RangeEnd == zero && req.RangeStart != zero {
 		operation = dbi.Greater
