@@ -17,9 +17,19 @@ const (
 	KindNormal = iota
 )
 
-type ErrHandle func(context.Context, error)
+type TaskFun func(context.Context)
 
 type Task struct {
+	id   uint
+	Kind Kind
+	Do   TaskFun
+}
+
+type ErrHandle func(context.Context, error)
+
+// TaskWithErrHandle Deprecated
+// 原本设计框架参与error处理，但是error处理仍然需要传参指定，不如就在task内部自己处理掉
+type TaskWithErrHandle struct {
 	id        uint
 	Kind      Kind
 	Do        func(context.Context) error
@@ -42,7 +52,11 @@ type Engine struct {
 }
 
 func NewEngine(workerCount uint) *Engine {
-	ctx, cancel := context.WithCancel(context.Background())
+	return NewEngineWithContext(workerCount, context.Background())
+}
+
+func NewEngineWithContext(workerCount uint, ctx context.Context) *Engine {
+	ctx, cancel := context.WithCancel(ctx)
 	return &Engine{
 		limitWorkerCount: uint64(workerCount),
 		ctx:              ctx,
@@ -52,7 +66,7 @@ func NewEngine(workerCount uint) *Engine {
 	}
 }
 
-func (e *Engine) ExcludeKind(kinds ...Kind) *Engine {
+func (e *Engine) SkipKind(kinds ...Kind) *Engine {
 	length := slices.Max(kinds) + 1
 	if e.excludeKinds == nil {
 		e.excludeKinds = make([]bool, length)
@@ -104,6 +118,8 @@ func (e *Engine) Run(tasks ...*Task) {
 						log.Println("task is empty")
 						log.Println("任务即将结束")
 						e.wg.Done()
+						timer.Stop()
+						break loop
 					}
 				}
 				timer.Reset(time.Second * 1)
@@ -120,6 +136,7 @@ func (e *Engine) Run(tasks ...*Task) {
 	}
 
 	e.wg.Wait()
+	log.Println("任务结束")
 }
 
 func (e *Engine) newWorker(readyTask *Task) {
@@ -129,10 +146,7 @@ func (e *Engine) newWorker(readyTask *Task) {
 	worker := &Worker{uint(e.currentWorkerCount), taskChan}
 	go func() {
 		if readyTask != nil {
-			err := readyTask.Do(e.ctx)
-			if err != nil && readyTask.ErrHandle != nil {
-				readyTask.ErrHandle(e.ctx, err)
-			}
+			readyTask.Do(e.ctx)
 			e.wg.Done()
 		}
 		for {
@@ -140,10 +154,7 @@ func (e *Engine) newWorker(readyTask *Task) {
 			case e.workerChan <- worker:
 				task := <-taskChan
 				if task != nil {
-					err := task.Do(e.ctx)
-					if err != nil && task.ErrHandle != nil {
-						task.ErrHandle(e.ctx, err)
-					}
+					task.Do(e.ctx)
 				}
 				e.wg.Done()
 			case <-e.ctx.Done():

@@ -5,8 +5,14 @@ import (
 	"time"
 )
 
-func Timer(ctx context.Context, task Task) {
-	timer := time.NewTicker(time.Second)
+type TimerTask struct {
+	Times uint
+	Do    TaskFun
+}
+
+func Timer(ctx context.Context, task *TimerTask, interval time.Duration) {
+	timer := time.NewTicker(interval)
+	task.Times = 1
 	task.Do(ctx)
 	for {
 		select {
@@ -14,6 +20,7 @@ func Timer(ctx context.Context, task Task) {
 			timer.Stop()
 			return
 		case <-timer.C:
+			task.Times++
 			task.Do(ctx)
 		}
 	}

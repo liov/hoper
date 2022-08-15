@@ -18,7 +18,13 @@ EOF
 #~/.acme.sh/acme.sh --issue --dns dns_cf -d ${host}
 #~/.acme.sh/acme.sh --issue --dns -d ${host} --yes-I-know-dns-manual-mode-enough-go-ahead-please
 #~/.acme.sh/acme.sh --renew -d ${host} --yes-I-know-dns-manual-mode-enough-go-ahead-please
-
+#~/.acme.sh/acme.sh --issue -d ${host} --standalone --httpport 88
+docker run --rm  -it  \
+  -v "$(pwd)/.acme.sh":/acme.sh  \
+  --net=host \
+  neilpang/acme.sh  --issue -d ${host}  --standalone --httpport 88
+# zerossl连接失败更改letsencrypt
+--set-default-ca --server letsencrypt
 
 cd ..
 git clone https://github.com/shadowsocks/v2ray-plugin.git

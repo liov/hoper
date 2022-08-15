@@ -15,7 +15,7 @@ func main() {
 	*/
 
 	defer initialize.Start(config.Conf, nil)()
-	req := download.FavReqs(config.Conf.Bilibili.PageStart, config.Conf.Bilibili.PageEnd)
+	req := download.FavReqs(config.Conf.Bilibili.PageStart, config.Conf.Bilibili.PageEnd, download.FavList)
 	crawler.New(10).Run(req...)
 	/*	req := download.GetByBvId("BV1AB4y187HK")
 		crawler.New(10).Run(req)*/

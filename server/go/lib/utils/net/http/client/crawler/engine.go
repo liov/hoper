@@ -24,7 +24,7 @@ func New(workerCount uint) *Engine {
 	}
 }
 
-func (e *Engine) ExcludeKind(kinds ...conctrl.Kind) *Engine {
+func (e *Engine) SkipKind(kinds ...conctrl.Kind) *Engine {
 	length := slices.Max(kinds) + 1
 	if e.excludeKinds == nil {
 		e.excludeKinds = make([]bool, length)
@@ -43,7 +43,7 @@ func (e *Engine) Timer(kind conctrl.Kind, interval time.Duration) *Engine {
 		e.timer = make([]*time.Ticker, int(kind)+1)
 	}
 	if int(kind)+1 > len(e.timer) {
-		e.timer = append(e.timer, make([]*time.Ticker, int(kind)-len(e.timer))...)
+		e.timer = append(e.timer, make([]*time.Ticker, int(kind)+1-len(e.timer))...)
 	}
 	e.timer[kind] = time.NewTicker(interval)
 	return e
@@ -74,28 +74,25 @@ func (e *Engine) NewTask(req *Request) *conctrl.Task {
 	}
 	return &conctrl.Task{
 		Kind: req.Kind,
-		Do: func(ctx context.Context) error {
+		Do: func(ctx context.Context) {
 			if e.timer != nil && int(req.Kind) < len(e.timer) && e.timer[req.Kind] != nil {
 				<-e.timer[req.Kind].C
 			}
 			if _, ok := e.visited.Load(req.Url); ok {
-				return nil
+				return
 			}
 			reqs, err := req.HandleFun(ctx, req.Url)
 			if err != nil {
-				if req.ErrHandle != nil {
-					req.ErrHandle(ctx, err)
-				}
 				log.Println("爬取失败", err)
 				log.Println("重新爬取,url :", req.Url)
 				e.reqsChan <- []*Request{req}
-				return nil
+				return
 			}
 			e.visited.Store(req.Url, struct{}{})
 			if len(reqs) > 0 {
 				e.reqsChan <- reqs
 			}
-			return nil
+			return
 		},
 	}
 }

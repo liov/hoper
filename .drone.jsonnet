@@ -202,39 +202,6 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
   Pipeline('timepill', 'rbyorderid', 'job',sourceFile='./timepill/cmd/recordby_orderid.go'),
   Pipeline('timepill', 'esload', 'cronjob', sourceFile='./timepill/cmd/search_es.go', deplocal=true, schedule='00 10 * * *'),
   Pipeline('pro', sourceFile='./pro/cmd/record.go'),
-  Pipeline('timepill', sourceFile='./timepill/cmd/record.go',deplocal=true,opts=['-t']),
-  {
-   kind: 'pipeline',
-    type: 'kubernetes',
-    name: 'notify',
-    metadata: {
-      namespace: 'default',
-    },
-    platform: {
-      os: 'linux',
-      arch: 'amd64',
-    },
-    trigger: {
-      ref: [
-        'refs/tags/notify*',
-      ],
-    },
-    clone: {
-      disable: true,
-    },
-    steps: [
-         {
-              name: 'dingtalk',
-              image: 'jybl/notify',
-              settings: {
-                ding_token: {
-                  from_secret: 'ding_token',
-                },
-                ding_secret: {
-                  from_secret: 'ding_secret',
-                 },
-              },
-            },
-    ]
-  }
+  //Pipeline('timepill', sourceFile='./timepill/cmd/record.go',deplocal=true,opts=['-t']),
+  Pipeline('bilibili', sourceFile='./bilibili/cmd/record_fav.go'),
 ]

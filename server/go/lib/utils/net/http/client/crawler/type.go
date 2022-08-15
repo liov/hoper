@@ -15,16 +15,14 @@ type Request struct {
 	Kind      conctrl.Kind
 	Url       string
 	HandleFun HandleFun
-	ErrHandle conctrl.ErrHandle
 }
 
 func NewRequest(url string, handleFun HandleFun) *Request {
 	return &Request{Url: url, HandleFun: handleFun}
 }
 
-func (r *Request) SetFailFun(f conctrl.ErrHandle) *Request {
-	r.ErrHandle = f
-	return r
+func NewKindRequest(url string, kind conctrl.Kind, handleFun HandleFun) *Request {
+	return &Request{Url: url, Kind: kind, HandleFun: handleFun}
 }
 
 func (r *Request) SetKind(k conctrl.Kind) *Request {
