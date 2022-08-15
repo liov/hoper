@@ -5,6 +5,7 @@ package clause
 import (
 	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
 	"github.com/actliboy/hoper/server/go/lib/utils/def/request"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
@@ -97,4 +98,10 @@ func Sort(column string, typ request.SortType) clause.Expression {
 		desc = true
 	}
 	return clause.OrderBy{Columns: []clause.OrderByColumn{{Column: clause.Column{Name: column, Raw: true}, Desc: desc}}}
+}
+
+func TableName(tx *gorm.DB, name string) *gorm.DB {
+	tx.Statement.TableExpr = &clause.Expr{SQL: tx.Statement.Quote(name)}
+	tx.Statement.Table = name
+	return tx
 }

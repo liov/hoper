@@ -1,5 +1,9 @@
 package dao
 
+import (
+	"time"
+)
+
 const (
 	Schema         = "bilibili."
 	TableNameView  = Schema + "view"
@@ -11,6 +15,7 @@ type View struct {
 	Aid         int    `json:"aid" gorm:"primaryKey"`
 	Data        []byte `json:"data" gorm:"type:jsonb"`
 	CoverRecord bool
+	CreatedAt   time.Time `json:"created_at" gorm:"default:current_timestamp"`
 }
 
 func (v *View) TableName() string {
@@ -18,10 +23,11 @@ func (v *View) TableName() string {
 }
 
 type Video struct {
-	Aid    int    `json:"aid" gorm:"primaryKey"`
-	Cid    int    `json:"cid" gorm:"primaryKey"`
-	Data   []byte `json:"data" gorm:"type:jsonb"`
-	Record bool
+	Aid       int    `json:"aid" gorm:"primaryKey"`
+	Cid       int    `json:"cid" gorm:"primaryKey"`
+	Data      []byte `json:"data" gorm:"type:jsonb"`
+	Record    bool
+	CreatedAt time.Time `json:"created_at" gorm:"default:current_timestamp"`
 }
 
 func (v *Video) TableName() string {

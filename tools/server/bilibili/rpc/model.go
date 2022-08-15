@@ -221,7 +221,7 @@ type VideoInfo struct {
 	AcceptDescription []string `json:"accept_description,omitempty"`
 	AcceptQuality     []int    `json:"accept_quality"`
 	VideoCodecid      int      `json:"video_codecid" gorm:"primaryKey"`
-	VideoProject      bool     `json:"video_project"`
+	VideoProject      bool     `json:"video_project,omitempty"`
 	SeekParam         string   `json:"seek_param,omitempty"`
 	SeekType          string   `json:"seek_type,omitempty"`
 	Durl              []*Durl  `json:"durl" gorm:"-"`

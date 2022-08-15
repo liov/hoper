@@ -43,7 +43,7 @@ func ExistsByColumn(db *gorm.DB, tableName, column string, value any) (bool, err
 }
 
 func ExistsSQL(tableName, column string, withDeletedAt bool) string {
-	sql := `SELECT EXISTS(SELECT * FROM "` + tableName + `" WHERE ` + column + ` = ?`
+	sql := `SELECT EXISTS(SELECT * FROM ` + tableName + ` WHERE ` + column + ` = ?`
 	if withDeletedAt {
 		sql += postgres.WithNotDeleted
 	}
@@ -51,9 +51,9 @@ func ExistsSQL(tableName, column string, withDeletedAt bool) string {
 	return sql
 }
 
-func ExistsBySQL(db *gorm.DB, sql string, value any) (bool, error) {
+func ExistsBySQL(db *gorm.DB, sql string, value ...any) (bool, error) {
 	var exists bool
-	err := db.Raw(sql, value).Row().Scan(&exists)
+	err := db.Raw(sql, value...).Row().Scan(&exists)
 	if err != nil {
 		return false, err
 	}

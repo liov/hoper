@@ -1,0 +1,1 @@
+UPDATE video SET data = data - '{seek_type,seek_param}'::text[];

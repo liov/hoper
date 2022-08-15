@@ -1539,3 +1539,7 @@ sync: WaitGroup状态为0的时候就默认关闭了，不能Add了
 原来有一行日志缓存，在Add后才Done，不会错
 注释掉日志，100%panic
 更改Add的时机
+
+# acme Can not init api, for https://acme.zerossl.com/v2/DV90
+https://github.com/acmesh-official/acme.sh/issues/3842
+acme.sh  --set-default-ca --server letsencrypt

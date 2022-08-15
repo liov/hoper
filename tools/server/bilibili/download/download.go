@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
 	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	gcrawler "github.com/actliboy/hoper/server/go/lib/utils/generics/net/http/client/crawler"
@@ -33,16 +34,22 @@ type Video struct {
 	Quality string
 }
 
-func FavReqs(pageStart, pageEnd int) []*crawler.Request {
+func FavReqs(pageStart, pageEnd int, handleFun crawler.HandleFun) []*crawler.Request {
 	var requests []*crawler.Request
 	for i := pageStart; i <= pageEnd; i++ {
-		req := gcrawler.NewRequest(rpc.GetFavListUrl(i), FavList)
+		req := gcrawler.NewRequest(rpc.GetFavListUrl(i), handleFun)
 		requests = append(requests, req)
 	}
 	return requests
 }
 
-var apiService = &rpc.API{}
+const (
+	KindGetFavListUrl conctrl.Kind = 0
+	KindViewInfo      conctrl.Kind = 1
+	KindDownloadCover conctrl.Kind = 2
+	KindGetPlayerUrl  conctrl.Kind = 3
+	KindDownloadVideo conctrl.Kind = 4
+)
 
 func FavList(ctx context.Context, url string) ([]*crawler.Request, error) {
 	res, err := rpc.Get[*rpc.FavList](url)
@@ -52,15 +59,15 @@ func FavList(ctx context.Context, url string) ([]*crawler.Request, error) {
 	var requests []*crawler.Request
 	for _, fav := range res.Medias {
 		aid := tool.Bv2av(fav.Bvid)
-		req1 := GetViewInfoReq(aid).SetKind(1)
-		req2 := crawler.NewRequest(fav.Cover, DownloadCover(fav.Id)).SetKind(2)
+		req1 := GetViewInfoReq(aid)
+		req2 := crawler.NewKindRequest(fav.Cover, KindDownloadCover, DownloadCover(fav.Id))
 		requests = append(requests, req1, req2)
 	}
 	return requests, nil
 }
 
 func GetViewInfoReq(aid int) *crawler.Request {
-	return gcrawler.NewRequest(rpc.GetViewUrl(aid), ViewInfoHandleFun)
+	return crawler.NewKindRequest(rpc.GetViewUrl(aid), KindViewInfo, ViewInfoHandleFun)
 }
 
 func ViewInfoHandleFun(ctx context.Context, url string) ([]*crawler.Request, error) {
@@ -68,29 +75,32 @@ func ViewInfoHandleFun(ctx context.Context, url string) ([]*crawler.Request, err
 	if err != nil {
 		return nil, err
 	}
-	data, err := json.Marshal(res)
+	bilibiliDao := dao.NewDao(ctx, dao.Dao.Hoper.DB)
+	exists, err := bilibiliDao.ViewExists(res.Aid)
 	if err != nil {
 		return nil, err
 	}
-	bilibiliDao := dao.NewDao(ctx, dao.Dao.Hoper.DB)
-	err = bilibiliDao.CreateView(&dao.View{
-		Bvid:        res.Bvid,
-		Aid:         res.Aid,
-		Data:        data,
-		CoverRecord: false,
-	})
-	if err != nil && !postgres.IsDuplicate(err) {
-		return nil, err
+	if !exists {
+		data, err := json.Marshal(res)
+		if err != nil {
+			return nil, err
+		}
+		err = bilibiliDao.CreateView(&dao.View{
+			Bvid:        res.Bvid,
+			Aid:         res.Aid,
+			Data:        data,
+			CoverRecord: false,
+		})
+		if err != nil && !postgres.IsDuplicate(err) {
+			return nil, err
+		}
 	}
 	var requests []*crawler.Request
 	for _, page := range res.Pages {
 		video := &Video{fs.PathClean(res.Title), res.Aid, page.Cid, page.Page, page.Part, ""}
-		_, err = video.DownloadHandleFun(ctx, rpc.GetPlayerUrl(res.Aid, page.Cid, 120))
-		if err != nil {
-			return nil, err
-		}
-		/*		req := crawler.NewRequest(rpc.GetPlayerUrl(res.Aid, page.Cid, 120), video.DownloadHandleFun)
-				requests = append(requests, req)*/
+
+		req := crawler.NewKindRequest(rpc.GetPlayerUrl(res.Aid, page.Cid, 120), KindGetPlayerUrl, video.DownloadHandleFun)
+		requests = append(requests, req)
 	}
 	return requests, nil
 }
@@ -104,24 +114,30 @@ func (video *Video) DownloadHandleFun(ctx context.Context, url string) ([]*crawl
 	video.Quality = res.AcceptDescription[0]
 	var requests []*crawler.Request
 	for _, durl := range res.Durl {
-		req := gcrawler.NewRequest(durl.Url, video.GetDownloadHandleFun(durl.Order)).SetKind(3)
+		req := crawler.NewKindRequest(durl.Url, KindDownloadVideo, video.GetDownloadHandleFun(durl.Order))
 		requests = append(requests, req)
 	}
 
-	res.JsonClean()
-	data, err := json.Marshal(res)
+	bilibiliDao := dao.NewDao(ctx, dao.Dao.Hoper.DB)
+	exists, err := bilibiliDao.VideoExists(video.Aid, video.Cid)
 	if err != nil {
 		return nil, err
 	}
-	bilibiliDao := dao.NewDao(ctx, dao.Dao.Hoper.DB)
-	err = bilibiliDao.CreateVideo(&dao.Video{
-		Aid:    video.Aid,
-		Cid:    video.Cid,
-		Data:   data,
-		Record: false,
-	})
-	if err != nil && !postgres.IsDuplicate(err) {
-		return nil, err
+	if !exists {
+		res.JsonClean()
+		data, err := json.Marshal(res)
+		if err != nil {
+			return nil, err
+		}
+		err = bilibiliDao.CreateVideo(&dao.Video{
+			Aid:    video.Aid,
+			Cid:    video.Cid,
+			Data:   data,
+			Record: false,
+		})
+		if err != nil && !postgres.IsDuplicate(err) {
+			return nil, err
+		}
 	}
 
 	return requests, nil
