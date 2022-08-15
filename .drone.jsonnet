@@ -57,7 +57,9 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
     os: 'linux',
     arch: 'amd64',
   },
-  workspace: workspace,
+  workspace: {
+    path: workspace,
+  },
   trigger: {
     ref: [
       'refs/tags/' + committag + '*',
