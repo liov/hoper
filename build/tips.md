@@ -104,10 +104,6 @@ clusterIP: None
 service没有负载均衡
 检查一下是否用了headless service.headless service是不会自动负载均衡的
 
-# alpine 镜像执行go二进制文件
-## 编译静态链接
-go build -tags netgo
-## alpine-glibc镜像
 
 # cp复制带.git 的目录
 git clone /src /dst

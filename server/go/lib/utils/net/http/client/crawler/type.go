@@ -52,3 +52,9 @@ func NewRequest2(url string, fetchFun FetchFun, parseFunction ParseFun) *Request
 type ReqInterface interface {
 	HandleFun
 }
+
+func (r *Request) NewTask() *conctrl.Task {
+	return &conctrl.Task{Id: r.Id, Kind: r.Kind, Do: func(ctx context.Context) {
+		r.HandleFun(ctx, r.Url)
+	}}
+}

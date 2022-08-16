@@ -31,16 +31,7 @@ type Video struct {
 	Cid     int
 	Page    int
 	Part    string
-	Quality string
-}
-
-func FavReqs(pageStart, pageEnd int, handleFun crawler.HandleFun) []*crawler.Request {
-	var requests []*crawler.Request
-	for i := pageStart; i <= pageEnd; i++ {
-		req := gcrawler.NewRequest(rpc.GetFavListUrl(i), handleFun)
-		requests = append(requests, req)
-	}
-	return requests
+	Quality int
 }
 
 const (
@@ -59,15 +50,11 @@ func FavList(ctx context.Context, url string) ([]*crawler.Request, error) {
 	var requests []*crawler.Request
 	for _, fav := range res.Medias {
 		aid := tool.Bv2av(fav.Bvid)
-		req1 := GetViewInfoReq(aid)
-		req2 := crawler.NewKindRequest(fav.Cover, KindDownloadCover, DownloadCover(fav.Id))
+		req1 := GetViewInfoReq(aid, ViewInfoHandleFun)
+		req2 := crawler.NewKindRequest(fav.Cover, KindDownloadCover, DownloadCover(ctx, fav.Id))
 		requests = append(requests, req1, req2)
 	}
 	return requests, nil
-}
-
-func GetViewInfoReq(aid int) *crawler.Request {
-	return crawler.NewKindRequest(rpc.GetViewUrl(aid), KindViewInfo, ViewInfoHandleFun)
 }
 
 func ViewInfoHandleFun(ctx context.Context, url string) ([]*crawler.Request, error) {
@@ -97,7 +84,7 @@ func ViewInfoHandleFun(ctx context.Context, url string) ([]*crawler.Request, err
 	}
 	var requests []*crawler.Request
 	for _, page := range res.Pages {
-		video := &Video{fs.PathClean(res.Title), res.Aid, page.Cid, page.Page, page.Part, ""}
+		video := &Video{fs.PathClean(res.Title), res.Aid, page.Cid, page.Page, page.Part, 0}
 
 		req := crawler.NewKindRequest(rpc.GetPlayerUrl(res.Aid, page.Cid, 120), KindGetPlayerUrl, video.DownloadHandleFun)
 		requests = append(requests, req)
@@ -111,7 +98,7 @@ func (video *Video) DownloadHandleFun(ctx context.Context, url string) ([]*crawl
 		return nil, err
 	}
 
-	video.Quality = res.AcceptDescription[0]
+	video.Quality = res.Quality
 	var requests []*crawler.Request
 	for _, durl := range res.Durl {
 		req := crawler.NewKindRequest(durl.Url, KindDownloadVideo, video.GetDownloadHandleFun(durl.Order))
@@ -180,7 +167,7 @@ func (video *Video) GetDownloadHandleFun(order int) crawler.HandleFun {
 		}
 		defer resp.Body.Close()
 
-		filename := fmt.Sprintf("%d_%s_%s_%d_%d.flv", video.Aid, video.Title, video.Quality, video.Page, order)
+		filename := fmt.Sprintf("%d_%s_%d_%d_%d.flv", video.Aid, video.Title, video.Quality, video.Page, order)
 		filename = strings.ReplaceAll(filename, " ", "")
 		file, err := os.Create(filepath.Join(config.Conf.Bilibili.DownloadPath, filename))
 		if err != nil {
@@ -225,10 +212,6 @@ func requestLater(file *os.File, resp *http.Response, video *Video) error {
 	return err
 }
 
-func UpSpaceList(upid int) *crawler.Request {
-	return gcrawler.NewRequest(rpc.GetUpSpaceListUrl(upid, 1), UpSpaceListFirstPageHandleFun(upid))
-}
-
 func UpSpaceListFirstPageHandleFun(upid int) crawler.HandleFun {
 	return func(ctx context.Context, url string) ([]*crawler.Request, error) {
 		res, err := rpc.Get[*rpc.UpSpaceList](url)
@@ -250,19 +233,18 @@ func UpSpaceListHandleFun(ctx context.Context, url string) ([]*crawler.Request, 
 	}
 	var requests []*crawler.Request
 	for _, video := range res.List.Vlist {
-		req := GetViewInfoReq(video.Aid)
+		req := GetViewInfoReq(video.Aid, ViewInfoHandleFun)
 		requests = append(requests, req)
 	}
 	return requests, nil
 }
 
-func GetByBvId(id string) *crawler.Request {
-	avid := tool.Bv2av(id)
-	return GetViewInfoReq(avid)
-}
-
-func DownloadCover(id int) crawler.HandleFun {
+func DownloadCover(ctx context.Context, id int) crawler.HandleFun {
 	return func(ctx context.Context, url string) ([]*crawler.Request, error) {
-		return nil, client.DownloadImage(filepath.Join(config.Conf.Bilibili.DownloadPicPath, strconv.Itoa(id)+"_"+path.Base(url)), url)
+		err := client.DownloadImage(filepath.Join(config.Conf.Bilibili.DownloadPicPath, strconv.Itoa(id)+"_"+path.Base(url)), url)
+		if err != nil {
+			log.Println("下载图片失败：", err)
+		}
+		return nil, err
 	}
 }

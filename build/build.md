@@ -71,6 +71,34 @@ external linking
 
 docker run --rm -v /mnt/d/SDK/gopath:/go -v $PWD:/work -w /work/tools/server golang go build  -trimpath -ldflags '-linkmode "external" -extldflags "-static"' -o /work/build/tmp/main /work/tools/server/fileserver.go
 
+# 编译在docker alpine linux中可用的go程序
+## 静态编译
+CGO_ENABLED=0 go build
+----------------------
+go build -tags netgo
+-------------------
+## 链接glibc
+```Dockerfile
+FROM docker.io/golang:alpine
+
+RUN echo "https://mirror.tuna.tsinghua.edu.cn/alpine/v3.14/main" > /etc/apk/repositories
+
+RUN apk add --no-cache gcc musl-dev
+
+```
+docker build -t go-build:1.0 .
+docker run -e "GOPROXY=https://goproxy.io" -it --rm -v `pwd`:/app -w /app  go-build:1.0  go build github.com/Kong/go-pluginserver
+
+/usr/local/go/pkg/tool/linux_amd64/link: running gcc failed: exec: "gcc": executable file not found in $PATH
+------------------------------------------------------------------------------------------------------------------------------------------------------
+mkdir /lib64
+ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2 \
+&& ln -s /usr/lib/libGraphicsMagickWand.so.2.9.4 /lib/libGraphicsMagickWand-Q16.so.2 \
+&& ln -s /usr/lib/libGraphicsMagick.so.3.21.0 /lib/libGraphicsMagick-Q16.so.3
+
+## 链接musllibc
+docker run -e "GOPROXY=https://goproxy.io" -it --rm -v `pwd`:/app -w /app  glang:alpine  go build github.com/Kong/go-pluginserver
+
 # android
 arm64 aarch64-linux-android
 amd64 x86_64-linux-android
@@ -86,17 +114,22 @@ go build -buildmode=c-shared -o libhello.so hello.go
 # go 编译静态库
 go build -buildmode=c-archive -o libgobblob.a
 
-# '_debugLifecycleState != _ElementLifecycle.defunct': is not true.
-
-You can copy paste run full code below
-You can move _controller.dispose(); before super.dispose();
-code snippet
-
-```dart
-@override
-void dispose() {
-_controller.dispose();
-super.dispose();
-}
-```
 working demo
+
+# alpine 镜像执行go二进制文件
+## 编译静态链接
+go build -tags netgo
+## alpine-glibc镜像
+
+# typescript
+
+## Locally in your project.
+npm install -D typescript
+npm install -D ts-node
+
+## Or globally with TypeScript.
+npm install -g typescript
+npm install -g ts-node
+
+## Depending on configuration, you may also need these
+npm install -D tslib @types/node

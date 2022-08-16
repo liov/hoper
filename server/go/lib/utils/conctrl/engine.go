@@ -19,8 +19,11 @@ const (
 
 type TaskFun func(context.Context)
 
+// TODO
+type TaskMeta struct{}
+
 type Task struct {
-	id   uint
+	Id   uint
 	Kind Kind
 	Do   TaskFun
 }
@@ -37,7 +40,7 @@ type TaskWithErrHandle struct {
 }
 
 type Worker struct {
-	id uint
+	Id uint
 	ch chan *Task
 }
 
@@ -187,6 +190,9 @@ func (e *Engine) addWorker() {
 }
 
 func (e *Engine) AddTask(task *Task) {
+	if task == nil {
+		return
+	}
 	if e.excludeKinds != nil && int(task.Kind) < len(e.excludeKinds) && e.excludeKinds[task.Kind] {
 		return
 	}

@@ -115,3 +115,9 @@ helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.c
 # snap
 
 apt insatall snapd
+
+# linux
+vim /etc/profile
+export PATH=$PATH:/usr/local/go/bin:/usr/local/node/bin
+export HISTCONTROL=ignoredups
+source /etc/profile
