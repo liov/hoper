@@ -2,6 +2,7 @@ package crawler
 
 import (
 	"context"
+	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
 )
 
@@ -27,3 +28,14 @@ func NewRequest2[T any](url string, fetchFun FetchFun[T], parseFunction ParseFun
 }
 
 type Callback[T any] func(t T) error
+
+type Request struct {
+	Url       string
+	HandleFun crawler.HandleFun
+}
+
+func (r *Request) NewTaskFun(id uint, kind conctrl.Kind) conctrl.TaskFun {
+	return func(ctx context.Context) {
+		r.HandleFun(ctx, r.Url)
+	}
+}

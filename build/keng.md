@@ -40,10 +40,10 @@ pom中只有test，少了
 ## springboot管理普通类
 @Component，@Autowired，@PostConstruct，init()
 
-## java调go 远程主机强迫关闭了一个现有的连接。
+## grpc java调go 远程主机强迫关闭了一个现有的连接。
 建channel的时候少了usePlaintext()
 
-## go调java 远程主机强迫关闭了一个现有的连接。
+## grpc go调java 远程主机强迫关闭了一个现有的连接。
 [https://github.com/grpc/grpc-java/issues/6011]
 windows问题
 So the problem is just the shutdown of the connection, which is not actually a problem.
@@ -240,7 +240,7 @@ crontab -l
 crontab -r
 rm xxx
 
-#windows 文件夹删不掉 该项目不在 请确认该项目的位置
+# windows 文件夹删不掉 该项目不在 请确认该项目的位置
 ```bat
 DEL /F /A /Q \\?\%1
 RD /S /Q \\?\%1
@@ -249,9 +249,6 @@ RD /S /Q \\?\%1
 
 # cmd中文乱码
 chcp 65001
-
-# etcd 共用
-使用apisix，最初想与k8s集群共用etcd，但是minikube中无法实现,应该是minikube部署在docker中，docker重启IP变了，证书不认了
 
 # minikube The connection to the server localhost:8443 was refused - did you specify the right host or port? waiting for app.kubernetes.io/name=ingress-nginx pods: timed out waiting for the condition]
 delete start
@@ -329,297 +326,8 @@ tsconfig.json添加"noImplicitAny": false，
 ts问题 识别不了类型
 @vue/cli-plugin-typescript 版本回退
 
-# vue3.0 响应式Map在模板中获取不到值
-``` vue
-<template>
-  <div>
-    <van-action-sheet
-      :show="show.moreShow"
-      :actions="report.actions"
-      cancel-text="取消"
-      close-on-click-action
-      @click="show.moreShow = !show.moreShow"
-      teleport="#app"
-    >
-    </van-action-sheet>
-    <van-dialog
-      :show="report.show"
-      title="举报"
-      show-cancel-button
-      @cancel="report.show = !report.show"
-      teleport="#app"
-    >
-      <van-field name="radio">
-        <template #input>
-          <van-radio-group
-            v-model="report.checked"
-            direction="horizontal"
-            @change="remark"
-          >
-            <van-radio name="1" shape="square">色情暴力</van-radio>
-            <van-radio name="2" shape="square">侮辱谩骂</van-radio>
-            <van-radio name="3" shape="square">政治政策</van-radio>
-            <van-radio name="255" shape="square">其他原因</van-radio>
-          </van-radio-group>
-        </template>
-      </van-field>
-      <van-field
-        v-if="report.field"
-        v-model="report.message"
-        rows="1"
-        autosize
-        label="备注"
-        type="textarea"
-        placeholder="请输入举报内容"
-      />
-    </van-dialog>
-    <van-pull-refresh
-      v-model="pullDown.refreshing"
-      :success-text="pullDown.successText"
-      @refresh="onRefresh"
-    >
-      <van-list
-        :loading="state.loading"
-        :finished="state.finished"
-        finished-text="没有更多了"
-        @load="onLoad"
-      >
-        <van-cell v-for="(item, index) in state.list">
-          <template #default>
-            <van-skeleton title avatar round :row="3" :loading="state.loading">
-              <div class="moment" v-if="show.listShow">
-                <div class="auth">
-                  <img
-                    class="avatar"
-                    :src="state.map.get(item.userId).avatarUrl"
-                  />
-                  <span class="name">{{
-                    state.map.get(item.userId).name
-                  }}</span>
-                  <span class="time">{{ $date2s(item.createdAt) }}</span>
-                </div>
-                <div class="content">
-                  <van-field
-                    v-model="item.content"
-                    rows="1"
-                    :autosize="{ maxHeight: 200 }"
-                    readonly
-                    type="textarea"
-                  >
-                    <template #extra>
-                      <div class="arrow">
-                        <van-icon name="arrow-down" />
-                      </div>
-                    </template>
-                  </van-field>
-                </div>
-                <lazy-component class="imgs" v-if:="item.images">
-                  <van-image
-                    width="100"
-                    height="100"
-                    v-for="(img, idx) in item.images.split(',')"
-                    :src="img"
-                    lazy-load
-                    class="img"
-                    @click="preview(idx, item.images)"
-                  />
-                </lazy-component>
-              </div>
+# vue3.0 响应式Map在模板中获取不到值（20220816 有待验证）
 
-              <van-row>
-                <van-col
-                  span="6"
-                  class="action"
-                  @click="show.moreShow = !show.moreShow"
-                  ><van-icon name="more-o"
-                /></van-col>
-                <van-col span="6" class="action"
-                  ><van-icon
-                    :name="item.collect ? 'star' : 'star-o'"
-                    :color="item.collect ? '#F6DF02' : ''"
-                /></van-col>
-                <van-col span="6" class="action"
-                  ><van-icon name="comment-o"
-                /></van-col>
-                <van-col span="6" class="action"
-                  ><van-icon
-                    :name="item.likeId > 0 ? 'like' : 'like-o'"
-                    :color="item.likeId > 0 ? '#D91E46' : ''"
-                    @click="like(index)"
-                /></van-col>
-              </van-row>
-            </van-skeleton>
-          </template>
-        </van-cell>
-      </van-list>
-    </van-pull-refresh>
-  </div>
-</template>
-
-<script lang="ts" setup>
-import axios from "axios";
-import { ObjMap } from "@/plugin/utils/user";
-import { ImagePreview } from "vant";
-import { reactive, ref } from "vue";
-
-const pageNo = ref(1);
-const pageSize = 10;
-const userM = new ObjMap();
-const state = reactive({
-  loading: false,
-  finished: false,
-  list: Array.from(new Array(pageSize), (v, i) => {
-    return { id: i };
-  }),
-  map: new Map(),
-});
-
-const pullDown = reactive({
-  successText: "刷新成功",
-  refreshing: false,
-});
-const show = reactive({
-  listShow: false,
-  moreShow: false,
-  shareShow: false,
-});
-
-const report = reactive({
-  show: false,
-  actions: [
-    { name: "不喜欢" },
-    {
-      name: "举报",
-      callback: () => (report.show = !report.show),
-    },
-    {
-      name: "删除",
-      color: "#D91E46",
-    },
-  ],
-  checked: false,
-  field: false,
-  message: "",
-});
-//mounted() {}
-const onLoad = async () => {
-  state.loading = false;
-  // 异步更新数据
-  const res = await axios.get(
-    `/api/v1/moment?pageNo=${pageNo.value}&pageSize=${pageSize}`
-  );
-  if (res.data.code !== 0) {
-    this.$toast.fail(res.data.message);
-    state.finished = true;
-  }
-  const data = res.data.details;
-  if (state.pageNo == 1) {
-    state.list = data.list;
-  } else {
-    state.list = state.list.concat(data.list);
-  }
-  userM.appendMap(data.users);
-  for (let user of data.users) {
-    state.map.set(user.id, user);
-  }
-  state.loading = false;
-  show.listShow = true;
-  pageNo.value++;
-  if (data.list.length < pageSize) state.finished = true;
-};
-const preview = (idx: number, images: string) => {
-  ImagePreview({
-    images: images.split(","),
-    startPosition: idx,
-    closeable: true,
-  });
-};
-const onRefresh = () => {
-  pullDown.refreshing = true;
-  pageNo.value = 1;
-  onLoad().catch(() => {
-    pullDown.successText = "刷新失败";
-  });
-  pullDown.refreshing = false;
-};
-const remark = (name: string) => {
-  console.log(name);
-  if (name === "255") {
-    report.field = true;
-  }
-};
-const like = async (idx: number) => {
-  console.log(state.list[idx]);
-  const api = `/api/v1/action/like`;
-  const id = state.list[idx].id;
-  const likeId = state.list[idx].likeId;
-  if (likeId > 0) {
-    await axios.delete(api, { data: { id: likeId } });
-    state.list[idx].likeId = 0;
-  } else {
-    state.list[idx].likeId = await axios.post(api, {
-      refId: id,
-      type: 1,
-      action: 2,
-    });
-  }
-};
-</script>
-
-<style scoped lang="less">
-.moment {
-  @20px: 20px;
-  @avatar: 30px;
-  .name {
-    left: 60px;
-    position: absolute;
-  }
-
-  .time {
-    position: absolute;
-    right: @20px;
-  }
-  .content {
-    width: 100%;
-    h3 {
-      margin: 0;
-      font-size: 18px;
-      line-height: 20px;
-    }
-
-    .arrow {
-      position: absolute;
-      bottom: 16px;
-      right: 0;
-    }
-
-    .van-multi-ellipsis--l3 {
-      margin: 13px 0 0;
-      font-size: 14px;
-      line-height: 20px;
-    }
-  }
-
-  .avatar {
-    flex-shrink: 0;
-    width: @avatar;
-    height: @avatar;
-    border-radius: 40px;
-    position: relative;
-    margin: 0 16px;
-  }
-  .imgs {
-    padding: 0 11px;
-  }
-  .img {
-    margin: 5px 5px;
-  }
-  .action {
-    text-align: center;
-  }
-}
-</style>
-```
 # The import path must contain at least one forward slash ('/') character.
 See https://developers.google.com/protocol-buffers/docs/reference/go-generated#package for more information.
 --go_out: protoc-gen-go: Plugin failed with status code 1.
@@ -686,18 +394,6 @@ IPv4 的环回地址是保留地址之一 127.0.0.1。尽管只使用 127.0.0.1 
 1.移除"type": "module" in package.json  
 2.tsconfig "module": "commonjs"
 
-# typescript
-
-## Locally in your project.
-npm install -D typescript
-npm install -D ts-node
-
-## Or globally with TypeScript.
-npm install -g typescript
-npm install -g ts-node
-
-## Depending on configuration, you may also need these
-npm install -D tslib @types/node
 
 # TS1378: Top-level 'await' expressions are only allowed when the 'module' option is set to 'esnext' or 'system', and the 'target' option is set to 'es2017' or higher.
 "type": "module" in package.json
@@ -756,28 +452,6 @@ sudo vim /etc/kubernetes/manifests/kube-apiserver.yaml
 command 下添加 --service-node-port-range=1-65535 参数
 kill 掉 kube-apiserver
 
-# 编译在docker alpine linux中可用的go程序
-CGO_ENABLED=0 go build
-----------------------
-go build -tags netgo
--------------------
-```Dockerfile
-FROM docker.io/golang:alpine
-
-RUN echo "https://mirror.tuna.tsinghua.edu.cn/alpine/v3.14/main" > /etc/apk/repositories
-
-RUN apk add --no-cache gcc musl-dev
-
-```
-docker build -t go-build:1.0 .
-docker run -e "GOPROXY=https://goproxy.io" -it --rm -v `pwd`:/app -w /app  go-build:1.0  go build github.com/Kong/go-pluginserver
-
-/usr/local/go/pkg/tool/linux_amd64/link: running gcc failed: exec: "gcc": executable file not found in $PATH
-------------------------------------------------------------------------------------------------------------------------------------------------------
-mkdir /lib64
-ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2 \
-&& ln -s /usr/lib/libGraphicsMagickWand.so.2.9.4 /lib/libGraphicsMagickWand-Q16.so.2 \
-&& ln -s /usr/lib/libGraphicsMagick.so.3.21.0 /lib/libGraphicsMagick-Q16.so.3
 
 # go.info.runtime.firstmoduledata: relocation target go.info.github.com/actliboy/hoper/server/go/lib/utils/reflect.moduledata not defined
 https://github.com/golang/go/issues/46777
@@ -881,6 +555,21 @@ Flutter在initState()初始化方法时使用包含context的Widget导致报错�
       W = MediaQuery.of(context).size.width;
     });
 ```
+
+# '_debugLifecycleState != _ElementLifecycle.defunct': is not true.
+
+You can copy paste run full code below
+You can move _controller.dispose(); before super.dispose();
+code snippet
+
+```dart
+@override
+void dispose() {
+_controller.dispose();
+super.dispose();
+}
+```
+
 # Error: "linker 'cc' not found" when cross compiling a rust project from windows to linux using cargo
 
 It turns out you need to tell cargo to use the LLVM linker instead. You do this by creating a new directory called .cargo in your base directory, and then a new file called config.toml in this directory. Here you can add the lines:
@@ -993,7 +682,7 @@ pg_dump -h localhost -U postgres -c -E UTF8 --inserts -t public.t_* > t_taste.sq
 
 -c 附带创建表命令
 
-## 比较骚
+## 比较骚（应该不行，初始化的时候会校验）
 1.操作位置：迁移数据库源（旧数据库主机）
 
 找到PostgreSql 的data目录   关闭数据库进程
@@ -1531,6 +1220,7 @@ v, ok := proto.GetExtension(desc.Options(), xt).(T)
 	}
 ```
 这里不确定v是不是指针,不能这么写
+`*new(T)`
 
 # panic: sync: WaitGroup is reused before previous Wait has returned
 100%复现

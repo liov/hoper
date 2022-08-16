@@ -25,16 +25,12 @@ func RecordFavList(ctx context.Context, url string) ([]*crawler.Request, error) 
 			return nil, err
 		}
 		if !exists {
-			req1 := RecordGetViewInfoReq(aid)
-			req2 := crawler.NewKindRequest(fav.Cover, KindDownloadCover, DownloadCover(fav.Id))
+			req1 := GetViewInfoReq(aid, RecordViewInfoHandleFun)
+			req2 := crawler.NewKindRequest(fav.Cover, KindDownloadCover, DownloadCover(ctx, fav.Id))
 			requests = append(requests, req1, req2)
 		}
 	}
 	return requests, nil
-}
-
-func RecordGetViewInfoReq(aid int) *crawler.Request {
-	return crawler.NewKindRequest(rpc.GetViewUrl(aid), KindViewInfo, RecordViewInfoHandleFun)
 }
 
 func RecordViewInfoHandleFun(ctx context.Context, url string) ([]*crawler.Request, error) {
@@ -60,7 +56,7 @@ func RecordViewInfoHandleFun(ctx context.Context, url string) ([]*crawler.Reques
 
 	var requests []*crawler.Request
 	for _, page := range res.Pages {
-		video := &Video{fs.PathClean(res.Title), res.Aid, page.Cid, page.Page, page.Part, ""}
+		video := &Video{fs.PathClean(res.Title), res.Aid, page.Cid, page.Page, page.Part, 0}
 
 		exists, err := bilibiliDao.VideoExists(video.Aid, video.Cid)
 		if err != nil {
@@ -80,7 +76,7 @@ func (video *Video) RecordDownloadHandleFun(ctx context.Context, url string) ([]
 		return nil, err
 	}
 
-	video.Quality = res.AcceptDescription[0]
+	video.Quality = res.Quality
 	var requests []*crawler.Request
 	for _, durl := range res.Durl {
 		req := crawler.NewKindRequest(durl.Url, KindDownloadVideo, video.GetDownloadHandleFun(durl.Order))
