@@ -35,7 +35,7 @@ func (c *config) Init() {
 	if err != nil {
 		panic(err)
 	}
-	c.Bilibili.DownloadPicPath = c.Bilibili.DownloadPath + "pic"
+	c.Bilibili.DownloadPicPath = c.Bilibili.DownloadPath + "/pic"
 	err = os.MkdirAll(c.Bilibili.DownloadPicPath, 0777)
 	if err != nil {
 		panic(err)
