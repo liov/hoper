@@ -51,7 +51,11 @@ type Engine struct {
 	ctx                                  context.Context
 	cancel                               context.CancelFunc
 	wg                                   sync.WaitGroup
-	excludeKinds                         []bool
+	kindHandler                          []KindHandler
+}
+
+type KindHandler struct {
+	Skip bool
 }
 
 func NewEngine(workerCount uint) *Engine {
@@ -71,14 +75,14 @@ func NewEngineWithContext(workerCount uint, ctx context.Context) *Engine {
 
 func (e *Engine) SkipKind(kinds ...Kind) *Engine {
 	length := slices.Max(kinds) + 1
-	if e.excludeKinds == nil {
-		e.excludeKinds = make([]bool, length)
+	if e.kindHandler == nil {
+		e.kindHandler = make([]KindHandler, length)
 	}
-	if int(length) > len(e.excludeKinds) {
-		e.excludeKinds = append(e.excludeKinds, make([]bool, int(length)-len(e.excludeKinds))...)
+	if int(length) > len(e.kindHandler) {
+		e.kindHandler = append(e.kindHandler, make([]KindHandler, int(length)-len(e.kindHandler))...)
 	}
 	for _, kind := range kinds {
-		e.excludeKinds[kind] = true
+		e.kindHandler[kind].Skip = true
 	}
 	return e
 }
@@ -193,7 +197,7 @@ func (e *Engine) AddTask(task *Task) {
 	if task == nil {
 		return
 	}
-	if e.excludeKinds != nil && int(task.Kind) < len(e.excludeKinds) && e.excludeKinds[task.Kind] {
+	if e.kindHandler != nil && int(task.Kind) < len(e.kindHandler) && e.kindHandler[task.Kind].Skip {
 		return
 	}
 	e.wg.Add(1)

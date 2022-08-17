@@ -9,7 +9,6 @@ import (
 )
 
 type dao struct {
-	initialize.DaoPlaceholder
 	NsqC  insq.Consumer `init:"config:nsq-consumer"`
 	NsqC1 insq.Consumer `init:"config:nsq-consumer2"`
 }

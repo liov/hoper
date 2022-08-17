@@ -58,3 +58,15 @@ func (r *Request) NewTask() *conctrl.Task {
 		r.HandleFun(ctx, r.Url)
 	}}
 }
+
+type HandleFuncs []HandleFun
+
+func (h HandleFun) Append(handleFun HandleFun) *HandleFuncs {
+	newh := append(HandleFuncs{h}, handleFun)
+	return &newh
+}
+
+func (h *HandleFuncs) Append(handleFun HandleFun) *HandleFuncs {
+	newh := append(*h, handleFun)
+	return &newh
+}

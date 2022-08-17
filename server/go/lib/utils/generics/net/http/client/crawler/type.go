@@ -34,8 +34,6 @@ type Request struct {
 	HandleFun crawler.HandleFun
 }
 
-func (r *Request) NewTaskFun(id uint, kind conctrl.Kind) conctrl.TaskFun {
-	return func(ctx context.Context) {
-		r.HandleFun(ctx, r.Url)
-	}
+func (r *Request) NewTaskFun(id uint, kind conctrl.Kind) *crawler.Request {
+	return &crawler.Request{Id: id, Kind: kind, Url: r.Url, HandleFun: r.HandleFun}
 }

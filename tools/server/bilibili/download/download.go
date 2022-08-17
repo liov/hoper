@@ -169,7 +169,7 @@ func (video *Video) GetDownloadHandleFun(order int) crawler.HandleFun {
 
 		filename := fmt.Sprintf("%d_%s_%d_%d_%d.flv", video.Aid, video.Title, video.Quality, video.Page, order)
 		filename = strings.ReplaceAll(filename, " ", "")
-		file, err := os.Create(filepath.Join(config.Conf.Bilibili.DownloadPath, filename))
+		file, err := os.Create(filepath.Join(config.Conf.Bilibili.DownloadVideoPath, filename))
 		if err != nil {
 			log.Println("错误信息：", err)
 			return nil, err
