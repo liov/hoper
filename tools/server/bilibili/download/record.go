@@ -63,28 +63,20 @@ func RecordViewInfoHandleFun(ctx context.Context, url string) ([]*crawler.Reques
 			return nil, err
 		}
 		if !exists {
-			req := crawler.NewKindRequest(rpc.GetPlayerUrl(res.Aid, page.Cid, 120), KindGetPlayerUrl, video.RecordDownloadHandleFun)
+			req := crawler.NewKindRequest(rpc.GetPlayerUrl(res.Aid, page.Cid, 120), KindGetPlayerUrl, video.RecordHandleFun)
 			requests = append(requests, req)
 		}
 	}
 	return requests, nil
 }
 
-func (video *Video) RecordDownloadHandleFun(ctx context.Context, url string) ([]*crawler.Request, error) {
+func (video *Video) RecordHandleFun(ctx context.Context, url string) ([]*crawler.Request, error) {
 	res, err := rpc.Get[*rpc.VideoInfo](url)
 	if err != nil {
 		return nil, err
 	}
 
-	video.Quality = res.Quality
-	var requests []*crawler.Request
-	for _, durl := range res.Durl {
-		req := crawler.NewKindRequest(durl.Url, KindDownloadVideo, video.GetDownloadHandleFun(durl.Order))
-		requests = append(requests, req)
-	}
-
 	bilibiliDao := dao.NewDao(ctx, dao.Dao.Hoper.DB)
-
 	res.JsonClean()
 	data, err := json.Marshal(res)
 	if err != nil {
@@ -100,5 +92,5 @@ func (video *Video) RecordDownloadHandleFun(ctx context.Context, url string) ([]
 		return nil, err
 	}
 
-	return requests, nil
+	return nil, nil
 }

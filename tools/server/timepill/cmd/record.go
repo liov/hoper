@@ -1,10 +1,11 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
+	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
-	"github.com/robfig/cron/v3"
 	"time"
 	"tools/timepill"
 )
@@ -22,19 +23,18 @@ func main() {
 		log.Info("todayRecord")
 		timepill.TodayRecord()
 	}
-	c := cron.New()
-	_, err := c.AddFunc("0 */1 * * *", func() {
-		log.Info("定时任务：记录评论执行")
+	task := &conctrl.TimerTask{}
+	task.Do = func(ctx context.Context) {
+		log.Info("定时任务：记录评论执行,times:", task.Times)
 		timepill.CronCommentRecord()
-	})
-	if err != nil {
-		log.Fatal(err)
 	}
-	c.Start()
+	go conctrl.Timer(context.Background(), task, time.Hour)
+
 	//go timepill.RecordByOrderNoteBook()
-	timepill.RecordTask()
-	tc := time.NewTicker(time.Second * timepill.Conf.TimePill.Timer)
-	for range tc.C {
+	recordtask := &conctrl.TimerTask{}
+	recordtask.Do = func(ctx context.Context) {
+		log.Info("定时任务：记录评论执行,times:", task.Times)
 		timepill.RecordTask()
 	}
+	conctrl.Timer(context.Background(), recordtask, time.Second*timepill.Conf.TimePill.Timer)
 }

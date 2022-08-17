@@ -10,11 +10,16 @@ import (
 )
 
 type Engine struct {
-	ctrlEngine   *conctrl.Engine
-	visited      sync.Map
-	reqsChan     chan []*Request
-	excludeKinds []bool
-	timer        []*time.Ticker
+	ctrlEngine  *conctrl.Engine
+	visited     sync.Map
+	reqsChan    chan []*Request
+	kindHandler []KindHandler
+}
+
+type KindHandler struct {
+	conctrl.KindHandler
+	*time.Ticker
+	HandleFun HandleFun
 }
 
 func New(workerCount uint) *Engine {
@@ -26,26 +31,26 @@ func New(workerCount uint) *Engine {
 
 func (e *Engine) SkipKind(kinds ...conctrl.Kind) *Engine {
 	length := slices.Max(kinds) + 1
-	if e.excludeKinds == nil {
-		e.excludeKinds = make([]bool, length)
+	if e.kindHandler == nil {
+		e.kindHandler = make([]KindHandler, length)
 	}
-	if int(length) > len(e.excludeKinds) {
-		e.excludeKinds = append(e.excludeKinds, make([]bool, int(length)-len(e.excludeKinds))...)
+	if int(length) > len(e.kindHandler) {
+		e.kindHandler = append(e.kindHandler, make([]KindHandler, int(length)-len(e.kindHandler))...)
 	}
 	for _, kind := range kinds {
-		e.excludeKinds[kind] = true
+		e.kindHandler[kind].Skip = true
 	}
 	return e
 }
 
 func (e *Engine) Timer(kind conctrl.Kind, interval time.Duration) *Engine {
-	if e.timer == nil {
-		e.timer = make([]*time.Ticker, int(kind)+1)
+	if e.kindHandler == nil {
+		e.kindHandler = make([]KindHandler, int(kind)+1)
 	}
-	if int(kind)+1 > len(e.timer) {
-		e.timer = append(e.timer, make([]*time.Ticker, int(kind)+1-len(e.timer))...)
+	if int(kind)+1 > len(e.kindHandler) {
+		e.kindHandler = append(e.kindHandler, make([]KindHandler, int(kind)+1-len(e.kindHandler))...)
 	}
-	e.timer[kind] = time.NewTicker(interval)
+	e.kindHandler[kind].Ticker = time.NewTicker(interval)
 	return e
 }
 
@@ -54,7 +59,7 @@ func (e *Engine) Run(reqs ...*Request) {
 	go func() {
 		for reqs := range e.reqsChan {
 			for _, req := range reqs {
-				if e.excludeKinds != nil && int(req.Kind) < len(e.excludeKinds) && e.excludeKinds[req.Kind] {
+				if e.kindHandler != nil && int(req.Kind) < len(e.kindHandler) && e.kindHandler[req.Kind].Skip {
 					continue
 				}
 				e.ctrlEngine.AddTask(e.NewTask(req))
@@ -75,8 +80,8 @@ func (e *Engine) NewTask(req *Request) *conctrl.Task {
 	return &conctrl.Task{
 		Kind: req.Kind,
 		Do: func(ctx context.Context) {
-			if e.timer != nil && int(req.Kind) < len(e.timer) && e.timer[req.Kind] != nil {
-				<-e.timer[req.Kind].C
+			if e.kindHandler != nil && int(req.Kind) < len(e.kindHandler) && e.kindHandler[req.Kind].Ticker != nil {
+				<-e.kindHandler[req.Kind].Ticker.C
 			}
 			if _, ok := e.visited.Load(req.Url); ok {
 				return

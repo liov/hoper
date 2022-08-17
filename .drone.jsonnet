@@ -201,9 +201,9 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
 [
   Pipeline('timepill', sourceFile='./timepill/cmd/record.go',opts=['-t']),
   Pipeline('hoper', workdir='server/go/mod', protoc=true,),
-  Pipeline('timepill', 'rbyorderid', 'job',sourceFile='./timepill/cmd/recordby_orderid.go'),
-  Pipeline('timepill', 'esload', 'cronjob', sourceFile='./timepill/cmd/search_es.go', deplocal=true, schedule='00 10 * * *'),
+  Pipeline('timepill', 'rbyorderid', type='job',sourceFile='./timepill/cmd/recordby_orderid.go'),
+  Pipeline('timepill', 'esload', type='cronjob', sourceFile='./timepill/cmd/search_es.go', deplocal=true, schedule='00 10 * * *'),
   Pipeline('pro', sourceFile='./pro/cmd/record.go'),
   //Pipeline('timepill', sourceFile='./timepill/cmd/record.go',deplocal=true,opts=['-t']),
-  Pipeline('bilibili', sourceFile='./bilibili/cmd/record_fav.go'),
+  Pipeline('bilibili',  sourceFile='./bilibili/cmd/record_fav.go'),
 ]
