@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
 	"os"
+	"path/filepath"
 	"tools/bilibili/rpc"
 )
 
@@ -29,6 +30,7 @@ func (c *config) Init() {
 		c.Bilibili.PageBegin = c.Bilibili.PageEnd
 	}
 	rpc.Cookie = c.Bilibili.Cookie
+	c.Bilibili.DownloadPath, _ = filepath.Abs(c.Bilibili.DownloadPath)
 	c.Bilibili.DownloadVideoPath = c.Bilibili.DownloadPath + "/video"
 	err := os.MkdirAll(c.Bilibili.DownloadVideoPath, 0777)
 	if err != nil {

@@ -196,6 +196,7 @@ func (video *Video) GetDownloadHandleFun(order int) crawler.HandleFun {
 			//go requestLater(file, resp, video)
 			return nil, err
 		}
+		dao.Dao.Hoper.Table(dao.TableNameVideo).Where("cid = ?", video.Cid).Update("record", true)
 		log.Println("下载完成：" + filename)
 
 		return nil, nil
@@ -253,7 +254,9 @@ func DownloadCover(ctx context.Context, id int) crawler.HandleFun {
 		err := client.DownloadImage(filepath.Join(config.Conf.Bilibili.DownloadPicPath, strconv.Itoa(id)+"_"+path.Base(url)), url)
 		if err != nil {
 			log.Println("下载图片失败：", err)
+			return nil, err
 		}
-		return nil, err
+		dao.Dao.Hoper.Table(dao.TableNameView).Where("aid = ?", id).Update("cover_record", true)
+		return nil, nil
 	}
 }
