@@ -121,7 +121,7 @@ func (e *Engine) Run(tasks ...*Task) {
 			case <-timer.C:
 				if workerList.Size == int(e.currentWorkerCount) && taskList.Size == 0 {
 					emptyTimes++
-					if emptyTimes > 5 {
+					if emptyTimes > 2 {
 						log.Println("task is empty")
 						log.Println("任务即将结束")
 						e.wg.Done()

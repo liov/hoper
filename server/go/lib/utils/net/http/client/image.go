@@ -1,8 +1,6 @@
 package client
 
 import (
-	"compress/gzip"
-	"errors"
 	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	"io"
@@ -11,6 +9,8 @@ import (
 	"os"
 	"time"
 )
+
+const DownloadKey = ".downloading"
 
 func GetImage(url string) (io.ReadCloser, error) {
 	req, err := http.NewRequest("GET", url, nil)
@@ -23,7 +23,6 @@ func GetImage(url string) (io.ReadCloser, error) {
 	req.Header.Set("Accept-Language", "zh-CN,zh;q=0.9;charset=utf-8")
 	req.Header.Set("Connection", "keep-alive")
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36")
-	var reader io.ReadCloser
 	var resp *http.Response
 	for i := 0; i < 20; i++ {
 		if i > 0 {
@@ -38,34 +37,9 @@ func GetImage(url string) (io.ReadCloser, error) {
 			resp.Body.Close()
 			return nil, fmt.Errorf("返回错误，状态码：%d,url:%s", resp.StatusCode, url)
 		}
+	}
 
-		if resp.Header.Get("Content-Encoding") == "gzip" {
-			reader, err = gzip.NewReader(resp.Body)
-			if err != nil {
-				if resp != nil {
-					resp.Body.Close()
-				}
-				log.Println(err, "url:", url)
-				continue
-			}
-		} else {
-			reader = resp.Body
-		}
-		if reader != nil {
-			break
-		}
-	}
-	if reader == nil {
-		if resp != nil {
-			resp.Body.Close()
-		}
-		msg := "请求失败：" + url
-		if err != nil {
-			msg = err.Error() + msg
-		}
-		return nil, errors.New(msg)
-	}
-	return reader, nil
+	return resp.Body, nil
 }
 
 func DownloadImage(filepath, url string) error {
@@ -73,15 +47,21 @@ func DownloadImage(filepath, url string) error {
 	if err != nil {
 		return err
 	}
+	err = Download(filepath, reader)
+	reader.Close()
+	return err
+}
+
+func Download(filepath string, reader io.Reader) error {
 	dir := fs.GetDir(filepath)
-	_, err = os.Stat(dir)
+	_, err := os.Stat(dir)
 	if os.IsNotExist(err) {
 		err = os.MkdirAll(dir, 0666)
 		if err != nil {
 			return err
 		}
 	}
-	filepath = filepath + ".downloading"
+	filepath = filepath + DownloadKey
 	f, err := os.Create(filepath)
 	if err != nil {
 		return err
@@ -91,13 +71,10 @@ func DownloadImage(filepath, url string) error {
 	if err != nil {
 		return err
 	}
-	err = reader.Close()
-	if err != nil {
-		return err
-	}
+
 	err = f.Close()
 	if err != nil {
 		return err
 	}
-	return os.Rename(filepath, filepath[:len(filepath)-len(".downloading")])
+	return os.Rename(filepath, filepath[:len(filepath)-len(DownloadKey)])
 }

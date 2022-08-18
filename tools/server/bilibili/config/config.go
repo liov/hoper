@@ -10,6 +10,7 @@ import (
 type Customize struct {
 	PageBegin         int `init:flag:p`
 	PageEnd           int
+	WorkCount         uint
 	DownloadPath      string
 	DownloadVideoPath string
 	DownloadPicPath   string
@@ -28,6 +29,9 @@ func (c *config) Init() {
 	}
 	if c.Bilibili.PageBegin == 0 {
 		c.Bilibili.PageBegin = c.Bilibili.PageEnd
+	}
+	if c.Bilibili.WorkCount == 0 {
+		c.Bilibili.WorkCount = 5
 	}
 	rpc.Cookie = c.Bilibili.Cookie
 	c.Bilibili.DownloadPath, _ = filepath.Abs(c.Bilibili.DownloadPath)

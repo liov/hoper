@@ -16,5 +16,5 @@ func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
 	flag.Parse()
 	req := download.FavReqs(config.Conf.Bilibili.PageBegin, config.Conf.Bilibili.PageEnd, download.FavList)
-	crawler.New(100).Timer(1, time.Millisecond*500).Timer(3, time.Second*10).Run(req...)
+	crawler.New(config.Conf.Bilibili.WorkCount).Timer(1, time.Millisecond*500).Timer(3, time.Second*10).Run(req...)
 }
