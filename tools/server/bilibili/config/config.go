@@ -1,17 +1,19 @@
 package config
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
 	"os"
 	"tools/bilibili/rpc"
 )
 
 type Customize struct {
-	PageStart         int
+	PageBegin         int `init:flag:p`
 	PageEnd           int
 	DownloadPath      string
 	DownloadVideoPath string
 	DownloadPicPath   string
 	Cookie            string
+	SkipKind          []conctrl.Kind
 }
 
 type config struct {
@@ -23,11 +25,8 @@ func (c *config) Init() {
 	if c.Bilibili.PageEnd == 0 {
 		c.Bilibili.PageEnd = 1
 	}
-	if c.Bilibili.PageStart == 0 {
-		c.Bilibili.PageStart = c.Bilibili.PageEnd
-	}
-	if c.Bilibili.PageStart > c.Bilibili.PageEnd {
-		c.Bilibili.PageEnd = c.Bilibili.PageStart
+	if c.Bilibili.PageBegin == 0 {
+		c.Bilibili.PageBegin = c.Bilibili.PageEnd
 	}
 	rpc.Cookie = c.Bilibili.Cookie
 	c.Bilibili.DownloadVideoPath = c.Bilibili.DownloadPath + "/video"

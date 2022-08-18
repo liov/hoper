@@ -1,8 +1,8 @@
 package service
 
 import (
+	pick2 "github.com/actliboy/hoper/server/go/lib/pick"
 	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
-	"github.com/actliboy/hoper/server/go/lib/tiga/pick"
 	"net/http"
 )
 
@@ -17,8 +17,8 @@ type SignupReq struct {
 }
 
 func (*TestService) Test(ctx *contexti.Ctx, req *SignupReq) (*TinyRep, error) {
-	pick.Api(func() {
-		pick.Post("").
+	pick2.Api(func() {
+		pick2.Post("").
 			Title("用户注册").
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").End()
 	})
@@ -27,8 +27,8 @@ func (*TestService) Test(ctx *contexti.Ctx, req *SignupReq) (*TinyRep, error) {
 }
 
 func (*TestService) Test1(ctx *contexti.Ctx, req *SignupReq) (*TinyRep, error) {
-	pick.Api(func() {
-		pick.Post("/").
+	pick2.Api(func() {
+		pick2.Post("/").
 			Title("用户注册").
 			Version(1).
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
@@ -39,8 +39,8 @@ func (*TestService) Test1(ctx *contexti.Ctx, req *SignupReq) (*TinyRep, error) {
 }
 
 func (*TestService) Test2(ctx *contexti.Ctx, req *SignupReq) (*TinyRep, error) {
-	pick.Api(func() {
-		pick.Post("/a/").
+	pick2.Api(func() {
+		pick2.Post("/a/").
 			Title("用户注册").
 			Version(2).
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").End()
@@ -50,8 +50,8 @@ func (*TestService) Test2(ctx *contexti.Ctx, req *SignupReq) (*TinyRep, error) {
 }
 
 func (*TestService) Test3(ctx *contexti.Ctx, req *SignupReq) (*TinyRep, error) {
-	pick.Api(func() {
-		pick.Post("/a/:b").
+	pick2.Api(func() {
+		pick2.Post("/a/:b").
 			Title("用户注册").
 			Version(3).
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建")

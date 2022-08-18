@@ -25,6 +25,18 @@ func (db *DB) SetEntity(entity interface{}) {
 		db.DB = gormdb
 	}
 }
+
+type config struct {
+	//自定义的配置
+	Customize serverConfig
+	Server    server.ServerConfig
+	Log       log.LogConfig
+	Viper     *viper.Viper
+}
+type dao struct {
+	// GORMDB 数据库连接
+	GORMDB   db.DB
+}
 */
 
 func (init *Init) UnmarshalAndSetV2(bytes []byte) {
@@ -107,7 +119,7 @@ func setDao2(v reflect.Value, confM map[string]any) {
 				continue
 			}
 			if daofield, ok := inter.(DaoField); ok {
-				tagSettings := ParseTagSetting(typ.Field(i).Tag.Get(tag), ";")
+				tagSettings := ParseDaoTagSettings(typ.Field(i).Tag.Get(tag))
 				if tagSettings.NotInject {
 					continue
 				}

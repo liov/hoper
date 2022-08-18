@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-//没跑基准测试
+// 没跑基准测试
 func TestFindFile(t *testing.T) {
 	log.SetFlags(15)
 	/*	path, err := FindFile("config/add-config.toml")
@@ -18,7 +18,7 @@ func TestFindFile(t *testing.T) {
 			log.Fatal(err)
 		}
 		fmt.Println(string(bytes))*/
-	files, _ := FindFiles("BUILD.bazel", 5, nil)
+	files, _ := FindFiles("BUILD.bazel", 5, 0)
 	fmt.Println(files)
 	files2, _ := FindFiles2("BUILD.bazel", 5, 0)
 	fmt.Println(files2)
@@ -58,7 +58,7 @@ func isDuplicate2(files []string) (string, int, int) {
 
 // 0.0170 ns/op
 func BenchmarkFindFiles(b *testing.B) {
-	FindFiles("BUILD.bazel", 5, nil)
+	FindFiles("BUILD.bazel", 5, 0)
 }
 
 // 0.0130 ns/op

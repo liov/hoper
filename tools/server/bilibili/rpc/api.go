@@ -16,12 +16,25 @@ const Host = "https://api.bilibili.com"
 var Cookie = ``
 
 func ReqCommonSet(req *client.RequestParams) *client.RequestParams {
+	return ReqCommonSetWithoutCookie(req).AddHeader(httpi.HeaderCookie, Cookie)
+}
+
+func ReqCommonSetWithoutCookie(req *client.RequestParams) *client.RequestParams {
 	return req.AddHeader(httpi.HeaderUserAgent, client.UserAgent1).AddHeader(httpi.HeaderCookie, Cookie).DisableLog()
 }
 
 func Get[T any](url string) (T, error) {
 	var res Response[T]
 	err := ReqCommonSet(client.NewGetRequest(url)).Do(nil, &res)
+	if err != nil {
+		return *new(T), err
+	}
+	return res.Data, nil
+}
+
+func GetWithoutCookie[T any](url string) (T, error) {
+	var res Response[T]
+	err := ReqCommonSetWithoutCookie(client.NewGetRequest(url)).Do(nil, &res)
 	if err != nil {
 		return *new(T), err
 	}

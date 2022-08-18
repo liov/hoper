@@ -13,8 +13,8 @@ import (
 	"gorm.io/gorm"
 )
 
-//原本是个单独模块，但是考虑到数据库必须初始化，所以合进来了
-//其实init主要就是配置文件数据库连接，可以理解为init放进dao
+// 原本是个单独模块，但是考虑到数据库必须初始化，所以合进来了
+// 其实init主要就是配置文件数据库连接，可以理解为init放进dao
 var Dao *dao = &dao{}
 
 // dao dao.
@@ -27,7 +27,7 @@ type dao struct {
 	Redis *redis.Client
 	Cache *ristretto.Cache
 	//elastic
-	MailAuth smtp.Auth `config:"mail"`
+	MailAuth smtp.Auth `init:"config:mail"`
 }
 
 // CloseDao close the resource.

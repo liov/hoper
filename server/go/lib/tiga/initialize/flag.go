@@ -1,7 +1,7 @@
 package initialize
 
 import (
-	"flag"
+	"github.com/spf13/pflag"
 	"net"
 	"net/http"
 	"net/url"
@@ -9,27 +9,24 @@ import (
 	"time"
 )
 
-//TODO: 优先级高于EnvConfig
+// TODO: 优先级高于EnvConfig
 type FlagConfig struct {
 	Env, ConfUrl string
 }
 
 func flaginit() {
-	if flag.Parsed() {
-		return
-	}
-	flag.StringVar(&InitConfig.Env, "env", DEVELOPMENT, "环境")
+	pflag.StringVarP(&InitConfig.Env, "env", "e", DEVELOPMENT, "环境")
 
 	if _, err := os.Stat(InitConfig.ConfUrl); os.IsNotExist(err) {
 		InitConfig.ConfUrl = "./config/config.toml"
 	}
-	flag.StringVar(&InitConfig.ConfUrl, "conf", InitConfig.ConfUrl, "配置文件路径,默认./config.toml或./config/config.toml")
+	pflag.StringVarP(&InitConfig.ConfUrl, "conf", "c", InitConfig.ConfUrl, "配置文件路径,默认./config.toml或./config/config.toml")
+	var agent string // socks5://localhost:1080
+	pflag.StringVarP(&agent, "proxy", "p", "", "是否启用代理")
 
-	agent := flag.Bool("agent", false, "是否启用代理")
-
-	flag.Parse()
-	if *agent {
-		proxyURL, _ := url.Parse("socks5://localhost:1080")
+	pflag.Parse()
+	if agent != "" {
+		proxyURL, _ := url.Parse(agent)
 		http.DefaultClient.Transport = &http.Transport{
 			Proxy: http.ProxyURL(proxyURL),
 			DialContext: (&net.Dialer{

@@ -9,6 +9,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 	"gorm.io/plugin/prometheus"
@@ -137,4 +138,11 @@ func (db *DB) SetEntity(entity interface{}) {
 
 func (db *DB) Close() error {
 	return nil
+}
+
+func (db *DB) Table(name string) *gorm.DB {
+	gdb := db.DB.Clauses()
+	gdb.Statement.TableExpr = &clause.Expr{SQL: gdb.Statement.Quote(name)}
+	gdb.Statement.Table = name
+	return gdb
 }

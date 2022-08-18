@@ -115,7 +115,7 @@ func (api *apiInfo) End() {
 	panic(api)
 }
 
-//获取负责人
+// 获取负责人
 func (api *apiInfo) getPrincipal() string {
 	if len(api.changelog) == 0 {
 		return api.createlog.auth
@@ -126,7 +126,7 @@ func (api *apiInfo) getPrincipal() string {
 	return api.changelog[len(api.changelog)-1].auth
 }
 
-//简直就是精髓所在，真的是脑洞大开才能想到
+// 简直就是精髓所在，真的是脑洞大开才能想到
 func getMethodInfo(method *reflect.Method, preUrl string, claimsTyp reflect.Type) (info *apiInfo) {
 	defer func() {
 		if err := recover(); err != nil {

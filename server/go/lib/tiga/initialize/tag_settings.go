@@ -1,25 +1,44 @@
 package initialize
 
 import (
+	"github.com/spf13/pflag"
+	"os"
+	"reflect"
 	"strings"
 )
 
 const (
-	tag        = "init"
-	exprTag    = "expr"
-	configTag  = "config"
-	ConfigName = "CONFIG"
-	IsInject   = "NOTINJECT"
+	tag     = "init"
+	exprTag = "expr"
 )
 
-type TagSettings struct {
+type DaoTagSettings struct {
 	NotInject  bool
 	ConfigName string
 }
 
-var tags = []string{IsInject, ConfigName}
+type ConfigTagSettings struct {
+	Flag string
+	Env  string
+}
 
-func (t *TagSettings) Set(index int, value string) {
+func (c *ConfigTagSettings) Set(index int, value string) {
+	switch index {
+	case 0:
+		c.Flag = strings.ToUpper(value)
+	case 1:
+		c.Env = strings.ToUpper(value)
+	}
+}
+
+type TagSettings interface {
+	Set(index int, value string)
+}
+
+var daotags = []string{"NOTINJECT", "CONFIG"}
+var conftags = []string{"FLAG", "ENV"}
+
+func (t *DaoTagSettings) Set(index int, value string) {
 	switch index {
 	case 0:
 		t.NotInject = true
@@ -28,8 +47,21 @@ func (t *TagSettings) Set(index int, value string) {
 	}
 }
 
-func ParseTagSetting(str string, sep string) TagSettings {
-	var settings TagSettings
+func ParseDaoTagSettings(str string) *DaoTagSettings {
+	var settings DaoTagSettings
+	ParseTagSetting(str, ";", &settings, daotags)
+	return &settings
+}
+
+func ParseConfigTagSettings(str string) *ConfigTagSettings {
+	var settings ConfigTagSettings
+	ParseTagSetting(str, ";", &settings, conftags)
+	return &settings
+}
+
+// ParseTagSetting default sep ;
+func ParseTagSetting(str string, sep string, settings TagSettings, tags []string) {
+
 	names := strings.Split(str, sep)
 	for i := 0; i < len(names); i++ {
 		j := i
@@ -59,10 +91,33 @@ func ParseTagSetting(str string, sep string) TagSettings {
 				break
 			}
 		}
-		if settings.NotInject {
-			return settings
-		}
 	}
 
-	return settings
+	return
+}
+
+func Unmarshal(v reflect.Value) error {
+	typ := v.Type()
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		switch field.Kind() {
+		case reflect.Ptr:
+			Unmarshal(v.Field(i).Elem())
+		case reflect.Struct:
+			Unmarshal(v.Field(i))
+		}
+		tag := typ.Field(i).Tag.Get(tag)
+		if tag != "" {
+			settings := ParseConfigTagSettings(tag)
+			switch field.Kind() {
+			case reflect.String:
+				field.Set(reflect.ValueOf(os.Getenv(settings.Env)))
+				pflag.StringVarP(field.Addr().Interface().(*string), "", settings.Flag, field.Interface().(string), "")
+			case reflect.Int:
+				pflag.StringVarP(field.Addr().Interface().(*string), "", settings.Flag, field.Interface().(string), "")
+			}
+
+		}
+	}
+	return nil
 }
