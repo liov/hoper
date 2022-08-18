@@ -4,11 +4,11 @@ import (
 	"compress/gzip"
 	"errors"
 	"fmt"
+	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	"io"
 	"log"
 	"net/http"
 	"os"
-	"path"
 	"time"
 )
 
@@ -73,7 +73,7 @@ func DownloadImage(filepath, url string) error {
 	if err != nil {
 		return err
 	}
-	dir := path.Dir(filepath)
+	dir := fs.GetDir(filepath)
 	_, err = os.Stat(dir)
 	if os.IsNotExist(err) {
 		err = os.MkdirAll(dir, 0666)
@@ -81,6 +81,7 @@ func DownloadImage(filepath, url string) error {
 			return err
 		}
 	}
+	filepath = filepath + ".downloading"
 	f, err := os.Create(filepath)
 	if err != nil {
 		return err
@@ -90,7 +91,13 @@ func DownloadImage(filepath, url string) error {
 	if err != nil {
 		return err
 	}
-	reader.Close()
-	f.Close()
-	return nil
+	err = reader.Close()
+	if err != nil {
+		return err
+	}
+	err = f.Close()
+	if err != nil {
+		return err
+	}
+	return os.Rename(filepath, filepath[:len(filepath)-len(".downloading")])
 }

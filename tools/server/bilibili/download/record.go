@@ -71,7 +71,7 @@ func RecordViewInfoHandleFun(ctx context.Context, url string) ([]*crawler.Reques
 }
 
 func (video *Video) RecordHandleFun(ctx context.Context, url string) ([]*crawler.Request, error) {
-	res, err := rpc.Get[*rpc.VideoInfo](url)
+	res, err := rpc.GetWithoutCookie[*rpc.VideoInfo](url)
 	if err != nil {
 		return nil, err
 	}

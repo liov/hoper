@@ -5,9 +5,9 @@ import (
 	"context"
 	"crypto/md5"
 	"fmt"
+	"github.com/actliboy/hoper/server/go/lib/pick"
 	"github.com/actliboy/hoper/server/go/lib/protobuf/request"
 	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
-	"github.com/actliboy/hoper/server/go/lib/tiga/pick"
 	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
 	"net/http"
 	"strconv"
@@ -197,7 +197,7 @@ func sendMail(ctxi *contexti.Ctx, action model.Action, curTime int64, user *mode
 	}
 }
 
-//验证密码是否正确
+// 验证密码是否正确
 func checkPassword(password string, user *model.User) bool {
 	if password == "" || user.Password == "" {
 		return false

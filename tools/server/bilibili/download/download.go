@@ -17,7 +17,6 @@ import (
 	"path"
 	"path/filepath"
 	"strconv"
-	"strings"
 	"time"
 	"tools/bilibili/config"
 	"tools/bilibili/dao"
@@ -98,13 +97,19 @@ func (video *Video) DownloadHandleFun(ctx context.Context, url string) ([]*crawl
 		return nil, err
 	}
 
+	var record bool
+	err = dao.Dao.Hoper.Table(dao.TableNameVideo).Select("record").Where("cid = ?", video.Cid).Scan(&record).Error
+	if err != nil {
+		return nil, err
+	}
 	video.Quality = res.Quality
 	var requests []*crawler.Request
-	for _, durl := range res.Durl {
-		req := crawler.NewKindRequest(durl.Url, KindDownloadVideo, video.GetDownloadHandleFun(durl.Order))
-		requests = append(requests, req)
+	if !record {
+		for _, durl := range res.Durl {
+			req := crawler.NewKindRequest(durl.Url, KindDownloadVideo, video.GetDownloadHandleFun(durl.Order))
+			requests = append(requests, req)
+		}
 	}
-
 	bilibiliDao := dao.NewDao(ctx, dao.Dao.Hoper.DB)
 	exists, err := bilibiliDao.VideoExists(video.Aid, video.Cid)
 	if err != nil {
@@ -167,15 +172,19 @@ func (video *Video) GetDownloadHandleFun(order int) crawler.HandleFun {
 		}
 		defer resp.Body.Close()
 
-		filename := fmt.Sprintf("%d_%s_%d_%d_%d.flv", video.Aid, video.Title, video.Quality, video.Page, order)
-		filename = strings.ReplaceAll(filename, " ", "")
-		file, err := os.Create(filepath.Join(config.Conf.Bilibili.DownloadVideoPath, filename))
+		filename := fmt.Sprintf("%d_%d_%s_%d_%d.flv.downloading", video.Aid, video.Cid, video.Title, order, video.Quality)
+		filename = fs.PathClean(filename)
+		filename = filepath.Join(config.Conf.Bilibili.DownloadVideoPath, filename)
+		file, err := os.Create(filename)
 		if err != nil {
 			log.Println("错误信息：", err)
 			return nil, err
 		}
 		defer file.Close()
-
+		err = os.Rename(filename, filename[:len(filename)-len(".downloading")])
+		if err != nil {
+			return nil, err
+		}
 		log.Println("正在下载："+filename, "质量：", video.Quality)
 		_, err = io.Copy(file, resp.Body)
 		if err != nil {

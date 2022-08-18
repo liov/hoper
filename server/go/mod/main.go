@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/tiga/pick"
+	"github.com/actliboy/hoper/server/go/lib/pick"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/gin/handler"
 	"github.com/actliboy/hoper/server/go/mod/chat"
 	"github.com/actliboy/hoper/server/go/mod/upload"

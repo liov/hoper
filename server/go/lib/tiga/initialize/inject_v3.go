@@ -16,6 +16,19 @@ import (
 		*gorm.DB `init:"entity"`
 		Conf     DatabaseConfig `init:"config"`
 	}
+
+	type config struct {
+		//自定义的配置
+		Customize serverConfig
+		Server    server.ServerConfig
+		Log       log.LogConfig
+		Viper     *viper.Viper
+	}
+
+	type dao struct {
+		// GORMDB 数据库连接
+		GORMDB   db.DB
+	}
 */
 type daoField struct {
 	Entity reflect.Value
@@ -86,7 +99,7 @@ func setDao3(v reflect.Value, confM map[string]any) {
 			}
 
 			if daoField.Config.IsValid() {
-				tagSettings := ParseTagSetting(typ.Field(i).Tag.Get(tag), ";")
+				tagSettings := ParseDaoTagSettings(typ.Field(i).Tag.Get(tag))
 				if tagSettings.NotInject {
 					continue
 				}

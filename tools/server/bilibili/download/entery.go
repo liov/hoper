@@ -7,9 +7,12 @@ import (
 	"tools/bilibili/tool"
 )
 
-func FavReqs(pageStart, pageEnd int, handleFun crawler.HandleFun) []*crawler.Request {
+func FavReqs(pageBegin, pageEnd int, handleFun crawler.HandleFun) []*crawler.Request {
+	if pageEnd < pageBegin {
+		pageEnd = pageBegin
+	}
 	var requests []*crawler.Request
-	for i := pageStart; i <= pageEnd; i++ {
+	for i := pageBegin; i <= pageEnd; i++ {
 		req := gcrawler.NewRequest(rpc.GetFavListUrl(i), handleFun)
 		requests = append(requests, req)
 	}

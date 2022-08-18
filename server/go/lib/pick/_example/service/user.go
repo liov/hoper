@@ -1,9 +1,9 @@
 package service
 
 import (
+	pick2 "github.com/actliboy/hoper/server/go/lib/pick"
+	"github.com/actliboy/hoper/server/go/lib/pick/_example/middle"
 	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
-	"github.com/actliboy/hoper/server/go/lib/tiga/pick"
-	"github.com/actliboy/hoper/server/go/lib/tiga/pick/_example/middle"
 	"net/http"
 )
 
@@ -15,8 +15,8 @@ func (*UserService) Service() (string, string, []http.HandlerFunc) {
 
 func (*UserService) Add(ctx *contexti.Ctx, req *SignupReq) (*TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
-	pick.Api(func() {
-		pick.Post("").
+	pick2.Api(func() {
+		pick2.Post("").
 			Title("用户注册").
 			Version(2).
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
@@ -32,8 +32,8 @@ type EditReq_EditDetails struct {
 }
 
 func (*UserService) Edit(ctx *contexti.Ctx, req *EditReq) (*EditReq_EditDetails, error) {
-	pick.Api(func() {
-		pick.Put("/:id").
+	pick2.Api(func() {
+		pick2.Put("/:id").
 			Title("用户编辑").
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
 			Deprecated("1.0.0", "jyb", "2019/12/16", "删除").End()
@@ -47,8 +47,8 @@ type Object struct {
 }
 
 func (*UserService) Get(ctx *contexti.Ctx, req *Object) (*TinyRep, error) {
-	pick.Api(func() {
-		pick.Get("/:id").
+	pick2.Api(func() {
+		pick2.Get("/:id").
 			Title("用户注册").
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").End()
 	})
@@ -68,8 +68,8 @@ type TinyRep struct {
 }
 
 func (*StaticService) Get2(ctx *contexti.Ctx, req *SignupReq) (*TinyRep, error) {
-	pick.Api(func() {
-		pick.Get("/*mail").
+	pick2.Api(func() {
+		pick2.Get("/*mail").
 			Title("用户注册").
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").End()
 	})

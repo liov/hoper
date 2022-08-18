@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"github.com/actliboy/hoper/server/go/lib/tiga/pick"
+	"github.com/actliboy/hoper/server/go/lib/pick"
 	"net/http"
 
 	tailmon "github.com/actliboy/hoper/server/go/lib/tiga"

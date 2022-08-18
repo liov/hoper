@@ -2,26 +2,24 @@ package iio
 
 import (
 	"io"
-	"os"
 )
 
-func Copy(dstpath, srcpath string) error {
-	dst, err := os.Create(dstpath)
-	if err != nil {
-		return err
-	}
-	src, err := os.Open(srcpath)
-	if err != nil {
-		return err
-	}
-	_, err = io.Copy(dst, src)
-	if err != nil {
-		return err
-	}
-	err = dst.Close()
-	if err != nil {
-		return err
-	}
+const BUFFERSIZE = 1024 * 1024 * 1024
 
-	return src.Close()
+func BufferCopy(dst io.Writer, src io.Reader) error {
+	buf := make([]byte, BUFFERSIZE)
+	for {
+		n, err := src.Read(buf)
+		if err != nil && err != io.EOF {
+			return err
+		}
+		if n == 0 {
+			break
+		}
+
+		if _, err = dst.Write(buf[:n]); err != nil {
+			return err
+		}
+	}
+	return nil
 }

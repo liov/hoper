@@ -9,7 +9,6 @@ require (
 	github.com/fatedier/frp v0.43.0
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/nsqio/go-nsq v1.0.8
-	github.com/robfig/cron/v3 v3.0.1
 	golang.org/x/image v0.0.0-20220601225756-64ec528b34cd
 	golang.org/x/net v0.0.0-20220520000938-2e3eb7b945c2
 	gorm.io/gorm v1.23.8
@@ -79,6 +78,7 @@ require (
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.32.1 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
+	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/templexxx/cpufeat v0.0.0-20180724012125-cef66df7f161 // indirect
 	github.com/templexxx/xor v0.0.0-20191217153810-f85b25db303b // indirect
 	github.com/tjfoc/gmsm v1.4.1 // indirect

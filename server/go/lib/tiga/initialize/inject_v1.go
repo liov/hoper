@@ -9,6 +9,28 @@ import (
 
 /*
 配置写在config中，生成第三方包中的类型
+type config struct {
+	//自定义的配置
+	Customize serverConfig
+	Server    server.ServerConfig
+	Mail      mail.MailConfig
+	GORMDB    db.DatabaseConfig
+	Redis     redis.RedisConfig
+	Cache     cache_ristretto.CacheConfig
+	Log       log.LogConfig
+}
+
+type dao struct {
+	// GORMDB 数据库连接
+	GORMDB   *gorm.DB
+	StdDB    *sql.DB
+	PebbleDB *pebble.DB
+	// RedisPool Redis连接池
+	Redis *redis.Client
+	Cache *ristretto.Cache
+	//elastic
+	MailAuth smtp.Auth
+}
 */
 
 func (init *Init) UnmarshalAndSetV1(bytes []byte) {
@@ -72,7 +94,7 @@ func setDao(v reflect.Value, fieldNameDaoMap map[string]interface{}) {
 		}
 		var dao interface{}
 		var ok bool
-		tagSettings := ParseTagSetting(typ.Field(i).Tag.Get(tag), ";")
+		tagSettings := ParseDaoTagSettings(typ.Field(i).Tag.Get(tag))
 		if tagSettings.NotInject {
 			continue
 		}

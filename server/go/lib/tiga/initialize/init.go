@@ -107,32 +107,26 @@ func (init *Init) LoadConfig(notinit ...string) *Init {
 			if err:=json.Unmarshal(data,init.ConfigCenterConfig);err!=nil{
 				log.Fatal(err)
 			}*/
-			//会被回收,也可能是被移动了？
-			init.ConfigCenterConfig = &(*value.Field(i).Interface().(*ConfigCenterConfig))
+
+			if value.Field(i).IsValid() && !value.Field(i).IsNil() {
+				//会被回收,也可能是被移动了？
+				init.ConfigCenterConfig = &(*value.Field(i).Interface().(*ConfigCenterConfig))
+			} else {
+				// 单配置文件
+				init.ConfigCenterConfig = &ConfigCenterConfig{
+					InjectVersion: 3,
+					ConfigCenterConfig: conf_center.ConfigCenterConfig{
+						ConfigType: "local",
+						Local: &ilocal.Local{
+							Config:     local.Config{},
+							ConfigName: init.ConfUrl,
+							ReloadType: "fsnotify",
+						},
+					},
+				}
+			}
 			break
 		}
-	}
-
-	// 单配置文件
-	if init.ConfigCenterConfig == nil || init.ConfigCenterConfig.ConfigType == "" {
-		init.ConfigCenterConfig = &ConfigCenterConfig{
-			ConfigCenterConfig: conf_center.ConfigCenterConfig{
-				ConfigType: "local",
-				Local: &ilocal.Local{
-					Config:     local.Config{},
-					ConfigName: init.ConfUrl,
-					ReloadType: "fsnotify",
-				},
-			},
-		}
-		cfgcenter := init.ConfigCenterConfig.ConfigCenter(init.Module, init.Env != PRODUCT)
-		err = cfgcenter.HandleConfig(init.UnmarshalAndSetV3)
-		if err != nil {
-			log.Fatalf("配置错误: %v", err)
-		}
-
-		log.Debugf("Configuration:  %#v", init.conf)
-		return init
 	}
 
 	for i := range init.ConfigCenterConfig.NoInject {

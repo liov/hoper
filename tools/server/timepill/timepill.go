@@ -3,7 +3,7 @@ package timepill
 import (
 	"errors"
 	postgres "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/postgres"
-	iio "github.com/actliboy/hoper/server/go/lib/utils/io"
+	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
 	surl "net/url"
@@ -162,7 +162,7 @@ func CopyDatePic(filepath, date, userId, filename string) error {
 			return err
 		}
 	}
-	return iio.Copy(dir+year+"/"+date+"/"+userId+"_"+filename, filepath)
+	return fs.CopyFile(dir+year+"/"+date+"/"+userId+"_"+filename, filepath)
 }
 
 func DownloadCover(typ, url string) error {
