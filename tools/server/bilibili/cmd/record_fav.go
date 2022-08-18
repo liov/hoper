@@ -19,7 +19,7 @@ func main() {
 	task.Do = func(ctx context.Context) {
 		log.Println("times", task.Times)
 		req := download.FavReqs(1, 1, download.RecordFavList)
-		crawler.New(10).SkipKind(4).Timer(1, time.Millisecond*500).Timer(3, time.Second).Run(req...)
+		crawler.New(config.Conf.Bilibili.WorkCount).SkipKind(4).Timer(1, time.Millisecond*500).Timer(3, time.Second).Run(req...)
 	}
 	conctrl.Timer(context.Background(), task, time.Minute*30)
 }

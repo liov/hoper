@@ -85,13 +85,13 @@ func ViewInfoHandleFun(ctx context.Context, url string) ([]*crawler.Request, err
 	for _, page := range res.Pages {
 		video := &Video{fs.PathClean(res.Title), res.Aid, page.Cid, page.Page, page.Part, 0}
 
-		req := crawler.NewKindRequest(rpc.GetPlayerUrl(res.Aid, page.Cid, 120), KindGetPlayerUrl, video.DownloadHandleFun)
+		req := crawler.NewKindRequest(rpc.GetPlayerUrl(res.Aid, page.Cid, 120), KindGetPlayerUrl, video.PlayerUrlHandleFun)
 		requests = append(requests, req)
 	}
 	return requests, nil
 }
 
-func (video *Video) DownloadHandleFun(ctx context.Context, url string) ([]*crawler.Request, error) {
+func (video *Video) PlayerUrlHandleFun(ctx context.Context, url string) ([]*crawler.Request, error) {
 	res, err := rpc.Get[*rpc.VideoInfo](url)
 	if err != nil {
 		return nil, err
@@ -106,7 +106,7 @@ func (video *Video) DownloadHandleFun(ctx context.Context, url string) ([]*crawl
 	var requests []*crawler.Request
 	if !record {
 		for _, durl := range res.Durl {
-			req := crawler.NewKindRequest(durl.Url, KindDownloadVideo, video.GetDownloadHandleFun(durl.Order))
+			req := crawler.NewKindRequest(durl.Url, KindDownloadVideo, video.DownloadVideoHandleFun(durl.Order))
 			requests = append(requests, req)
 		}
 	}
@@ -135,7 +135,7 @@ func (video *Video) DownloadHandleFun(ctx context.Context, url string) ([]*crawl
 	return requests, nil
 }
 
-func (video *Video) GetDownloadHandleFun(order int) crawler.HandleFun {
+func (video *Video) DownloadVideoHandleFun(order int) crawler.HandleFun {
 	referer := rpc.GetViewUrl(video.Aid)
 	for i := 1; i <= video.Page; i++ {
 		referer += fmt.Sprintf("/?p=%d", i)
@@ -181,7 +181,8 @@ func (video *Video) GetDownloadHandleFun(order int) crawler.HandleFun {
 			return nil, err
 		}
 		defer file.Close()
-		err = os.Rename(filename, filename[:len(filename)-len(".downloading")])
+		newname := filename[:len(filename)-len(".downloading")]
+		err = os.Rename(filename, newname)
 		if err != nil {
 			return nil, err
 		}
@@ -197,7 +198,7 @@ func (video *Video) GetDownloadHandleFun(order int) crawler.HandleFun {
 			return nil, err
 		}
 		dao.Dao.Hoper.Table(dao.TableNameVideo).Where("cid = ?", video.Cid).Update("record", true)
-		log.Println("下载完成：" + filename)
+		log.Println("下载完成：" + newname)
 
 		return nil, nil
 	}
@@ -250,6 +251,11 @@ func UpSpaceListHandleFun(ctx context.Context, url string) ([]*crawler.Request, 
 }
 
 func DownloadCover(ctx context.Context, id int) crawler.HandleFun {
+	var record bool
+	err := dao.Dao.Hoper.Table(dao.TableNameView).Select("cover_record").Where("aid = ?", id).Scan(&record).Error
+	if err != nil || !record {
+		return nil
+	}
 	return func(ctx context.Context, url string) ([]*crawler.Request, error) {
 		err := client.DownloadImage(filepath.Join(config.Conf.Bilibili.DownloadPicPath, strconv.Itoa(id)+"_"+path.Base(url)), url)
 		if err != nil {
