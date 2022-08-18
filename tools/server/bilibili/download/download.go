@@ -10,6 +10,7 @@ import (
 	gcrawler "github.com/actliboy/hoper/server/go/lib/utils/generics/net/http/client/crawler"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
+	"gorm.io/gorm"
 	"io"
 	"log"
 	"net/http"
@@ -97,25 +98,22 @@ func (video *Video) PlayerUrlHandleFun(ctx context.Context, url string) ([]*craw
 		return nil, err
 	}
 
-	var record bool
-	err = dao.Dao.Hoper.Table(dao.TableNameVideo).Select("record").Where("cid = ?", video.Cid).Scan(&record).Error
-	if err != nil {
+	var dvideo dao.Video
+	err = dao.Dao.Hoper.Table(dao.TableNameVideo).Select("record").Where("cid = ?", video.Cid).First(&dvideo).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
 	video.Quality = res.Quality
 	var requests []*crawler.Request
-	if !record {
+	if !dvideo.Record {
 		for _, durl := range res.Durl {
 			req := crawler.NewKindRequest(durl.Url, KindDownloadVideo, video.DownloadVideoHandleFun(durl.Order))
 			requests = append(requests, req)
 		}
 	}
+
 	bilibiliDao := dao.NewDao(ctx, dao.Dao.Hoper.DB)
-	exists, err := bilibiliDao.VideoExists(video.Aid, video.Cid)
-	if err != nil {
-		return nil, err
-	}
-	if !exists {
+	if err == gorm.ErrRecordNotFound || dvideo.Cid == 0 {
 		res.JsonClean()
 		data, err := json.Marshal(res)
 		if err != nil {
@@ -252,8 +250,8 @@ func UpSpaceListHandleFun(ctx context.Context, url string) ([]*crawler.Request, 
 
 func DownloadCover(ctx context.Context, id int) crawler.HandleFun {
 	var record bool
-	err := dao.Dao.Hoper.Table(dao.TableNameView).Select("cover_record").Where("aid = ?", id).Scan(&record).Error
-	if err != nil || !record {
+	dao.Dao.Hoper.Table(dao.TableNameView).Select("cover_record").Where("aid = ?", id).Scan(&record)
+	if record {
 		return nil
 	}
 	return func(ctx context.Context, url string) ([]*crawler.Request, error) {

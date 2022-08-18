@@ -37,6 +37,6 @@ func (d *dao) CreateVideo(video *Video) error {
 	return d.db.Create(video).Error
 }
 
-func (d *dao) VideoExists(aid, cid int) (bool, error) {
-	return postgres.ExistsBySQL(d.db, `SELECT EXISTS(SELECT * FROM `+TableNameVideo+` WHERE aid = ? AND cid = ? LIMIT 1)`, aid, cid)
+func (d *dao) VideoExists(cid int) (bool, error) {
+	return postgres.ExistsBySQL(d.db, `SELECT EXISTS(SELECT * FROM `+TableNameVideo+` WHERE cid = ? LIMIT 1)`, cid)
 }
