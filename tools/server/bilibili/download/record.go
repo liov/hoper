@@ -58,7 +58,7 @@ func RecordViewInfoHandleFun(ctx context.Context, url string) ([]*crawler.Reques
 	for _, page := range res.Pages {
 		video := &Video{fs.PathClean(res.Title), res.Aid, page.Cid, page.Page, page.Part, 0}
 
-		exists, err := bilibiliDao.VideoExists(video.Aid, video.Cid)
+		exists, err := bilibiliDao.VideoExists(video.Cid)
 		if err != nil {
 			return nil, err
 		}
