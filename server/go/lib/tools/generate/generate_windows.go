@@ -4,8 +4,8 @@ package main
 
 import (
 	execi "github.com/actliboy/hoper/server/go/lib/utils/os/exec"
-	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 )
 
@@ -19,12 +19,12 @@ var files = map[string][]string{
 		"/utils/time/*.proto":          model,
 		"/utils/proto/go/*.proto":       {goOut},*/
 	"/*service.proto": service,
-	"/*model.proto":   model,
+	"/*.proto":        model,
 	"/*enum.proto":    enum,
 }
 
 func run(dir string) {
-	fileInfos, err := ioutil.ReadDir(dir)
+	fileInfos, err := os.ReadDir(dir)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -43,7 +43,7 @@ func run(dir string) {
 }
 
 func genutils(dir string) {
-	fileInfos, err := ioutil.ReadDir(dir)
+	fileInfos, err := os.ReadDir(dir)
 	if err != nil {
 		log.Fatalln(err)
 	}

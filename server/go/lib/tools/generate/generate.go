@@ -59,14 +59,14 @@ var (
 	DepProtopatch  = "github.com/alta/protopatch"
 )
 
-var service = []string{goOut, grpcOut,
+var service = []string{grpcOut,
 	gatewayOut, openapiv2Out, govalidatorsOut,
 	//gqlNogogoOut, gqlOut,
 	//"gqlgencfg_out=paths=source_relative",
 }
 
-var model = []string{goOut, grpcOut}
-var enum = []string{enumOut, goOut}
+var model = []string{goOut}
+var enum = []string{enumOut}
 
 var gqlgen []string
 
