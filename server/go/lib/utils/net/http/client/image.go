@@ -53,27 +53,22 @@ func DownloadImage(filepath, url string) error {
 }
 
 func Download(filepath string, reader io.Reader) error {
-	dir := fs.GetDir(filepath)
-	_, err := os.Stat(dir)
-	if os.IsNotExist(err) {
-		err = os.MkdirAll(dir, 0666)
-		if err != nil {
-			return err
-		}
-	}
 	filepath = filepath + DownloadKey
-	f, err := os.Create(filepath)
+	f, err := fs.Create(filepath)
 	if err != nil {
 		return err
 	}
 
 	_, err = io.Copy(f, reader)
 	if err != nil {
+		f.Close()
+		os.Remove(filepath)
 		return err
 	}
 
 	err = f.Close()
 	if err != nil {
+		os.Remove(filepath)
 		return err
 	}
 	return os.Rename(filepath, filepath[:len(filepath)-len(DownloadKey)])

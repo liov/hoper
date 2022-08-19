@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"sort"
 
 	runtimei "github.com/actliboy/hoper/server/go/lib/utils/runtime"
 )
@@ -28,7 +29,7 @@ func (d Dir) Open(name string) (*os.File, error) {
 	return f, nil
 }
 
-//path和filepath两个包，filepath文件专用
+// path和filepath两个包，filepath文件专用
 func FindFile(path string) (string, error) {
 	files, err := FindFiles(path, 8, 1)
 	if err != nil {
@@ -105,7 +106,7 @@ func supDirFiles(dir, path string, files *[]string, deep, step int8, num int) {
 	supDirFiles(dir, path, files, deep, step, num)
 }
 
-//path和filepath两个包，filepath文件专用
+// path和filepath两个包，filepath文件专用
 func FindFiles2(path string, deep int8, num int) ([]string, error) {
 	wd, err := os.Getwd()
 	if err != nil {
@@ -305,4 +306,39 @@ func OpenLogFile(fileName, filePath string) (*os.File, error) {
 	}
 
 	return f, nil
+}
+
+func CreateDir(filepath string) error {
+	dir := GetDir(filepath)
+	_, err := os.Stat(dir)
+	if os.IsNotExist(err) {
+		return os.MkdirAll(dir, 0666)
+
+	}
+	return nil
+}
+
+func Create(filepath string) (*os.File, error) {
+	dir := GetDir(filepath)
+	_, err := os.Stat(dir)
+	if os.IsNotExist(err) {
+		err = os.MkdirAll(dir, 0666)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return os.Create(filepath)
+}
+
+func LastFile(dir string) (os.FileInfo, error) {
+	entities, err := os.ReadDir(dir)
+	if err != nil {
+		return nil, err
+	}
+	sort.Sort(DirEntities(entities))
+	lastFile, err := entities[0].Info()
+	if err != nil {
+		return nil, err
+	}
+	return lastFile, nil
 }

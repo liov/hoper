@@ -94,3 +94,24 @@ func (c *SafeCopy) Close() {
 	c.err = c.r.Close()
 	c.err = c.w.Close()
 }
+
+func Copy(filepath string, reader io.Reader) error {
+	f, err := Create(filepath)
+	if err != nil {
+		return err
+	}
+
+	_, err = io.Copy(f, reader)
+	if err != nil {
+		f.Close()
+		os.Remove(filepath)
+		return err
+	}
+
+	err = f.Close()
+	if err != nil {
+		os.Remove(filepath)
+		return err
+	}
+	return nil
+}
