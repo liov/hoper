@@ -20,7 +20,7 @@ var stuffs = map[string][]string{
 		"/utils/proto/gogo/*.gen.proto": {gogoprotoOut},
 		"/utils/proto/go/*.proto":       {goOut},*/
 	"service.proto": service,
-	"model.proto":   model,
+	".proto":        model,
 	"enum.proto":    enum,
 }
 
