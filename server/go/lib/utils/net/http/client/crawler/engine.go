@@ -3,43 +3,33 @@ package crawler
 import (
 	"context"
 	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
-	"github.com/actliboy/hoper/server/go/lib/utils/generics/slices"
 	"log"
 	"sync"
 	"time"
 )
 
 type Engine struct {
-	ctrlEngine  *conctrl.Engine
+	*conctrl.Engine
 	visited     sync.Map
 	reqsChan    chan []*Request
 	kindHandler []KindHandler
 }
 
 type KindHandler struct {
-	conctrl.KindHandler
 	*time.Ticker
+	// TODO 指定Kind的Handler
 	HandleFun HandleFun
 }
 
 func New(workerCount uint) *Engine {
 	return &Engine{
-		reqsChan:   make(chan []*Request),
-		ctrlEngine: conctrl.NewEngine(workerCount),
+		reqsChan: make(chan []*Request),
+		Engine:   conctrl.NewEngine(workerCount),
 	}
 }
 
 func (e *Engine) SkipKind(kinds ...conctrl.Kind) *Engine {
-	length := slices.Max(kinds) + 1
-	if e.kindHandler == nil {
-		e.kindHandler = make([]KindHandler, length)
-	}
-	if int(length) > len(e.kindHandler) {
-		e.kindHandler = append(e.kindHandler, make([]KindHandler, int(length)-len(e.kindHandler))...)
-	}
-	for _, kind := range kinds {
-		e.kindHandler[kind].Skip = true
-	}
+	e.Engine.SkipKind(kinds...)
 	return e
 }
 
@@ -59,10 +49,7 @@ func (e *Engine) Run(reqs ...*Request) {
 	go func() {
 		for reqs := range e.reqsChan {
 			for _, req := range reqs {
-				if e.kindHandler != nil && int(req.Kind) < len(e.kindHandler) && e.kindHandler[req.Kind].Skip {
-					continue
-				}
-				e.ctrlEngine.AddTask(e.NewTask(req))
+				e.Engine.AddTask(e.NewTask(req))
 			}
 		}
 	}()
@@ -70,10 +57,13 @@ func (e *Engine) Run(reqs ...*Request) {
 	for _, req := range reqs {
 		tasks = append(tasks, e.NewTask(req))
 	}
-	e.ctrlEngine.Run(tasks...)
+	e.Engine.Run(tasks...)
 }
 
 func (e *Engine) NewTask(req *Request) *conctrl.Task {
+	if req == nil || req.HandleFun == nil {
+		return nil
+	}
 	if _, ok := e.visited.Load(req.Url); ok {
 		return nil
 	}

@@ -2,7 +2,6 @@ package conctrl
 
 import (
 	"context"
-	"github.com/actliboy/hoper/server/go/lib/utils/generics/slices"
 	"github.com/actliboy/hoper/server/go/lib/utils/generics/structure/list"
 	"log"
 	"runtime/debug"
@@ -11,101 +10,56 @@ import (
 	"time"
 )
 
-type Kind uint8
+type TaskFun func(context.Context)
 
-const (
-	KindNormal = iota
-)
-
-// TODO
-type TaskMeta struct{}
-
-type Task struct {
-	Id   uint
-	Kind Kind
-	Do   TaskFun
+type BaseTask struct {
+	Id uint
+	Do TaskFun
 }
 
-type ErrHandle func(context.Context, error)
-
-// TaskWithErrHandle Deprecated
-// 原本设计框架参与error处理，但是error处理仍然需要传参指定，不如就在task内部自己处理掉
-type TaskWithErrHandle struct {
-	id        uint
-	Kind      Kind
-	Do        func(context.Context) error
-	ErrHandle ErrHandle
+type BaseWorker struct {
+	Id uint
+	ch chan *BaseTask
 }
 
-type Worker struct {
-	Id     uint
-	Kind   Kind
-	taskCh chan *Task
-}
-
-type Engine struct {
+type BaseEngine struct {
 	limitWorkerCount, currentWorkerCount uint64
-	workerChan                           chan *Worker
-	taskChan                             chan *Task
+	workerChan                           chan *BaseWorker
+	taskChan                             chan *BaseTask
 	ctx                                  context.Context
 	cancel                               context.CancelFunc
 	wg                                   sync.WaitGroup
-	kindHandler                          []KindHandler
 }
 
-type KindHandler struct {
-	Skip bool
+func NewBaseEngine(workerCount uint) *BaseEngine {
+	return NewBaseEngineWithContext(workerCount, context.Background())
 }
 
-func NewEngine(workerCount uint) *Engine {
-	return NewEngineWithContext(workerCount, context.Background())
-}
-
-func NewEngineWithContext(workerCount uint, ctx context.Context) *Engine {
+func NewBaseEngineWithContext(workerCount uint, ctx context.Context) *BaseEngine {
 	ctx, cancel := context.WithCancel(ctx)
-	return &Engine{
+	return &BaseEngine{
 		limitWorkerCount: uint64(workerCount),
 		ctx:              ctx,
 		cancel:           cancel,
-		workerChan:       make(chan *Worker),
-		taskChan:         make(chan *Task),
+		workerChan:       make(chan *BaseWorker),
+		taskChan:         make(chan *BaseTask),
 	}
 }
 
-func (e *Engine) SkipKind(kinds ...Kind) *Engine {
-	length := slices.Max(kinds) + 1
-	if e.kindHandler == nil {
-		e.kindHandler = make([]KindHandler, length)
-	}
-	if int(length) > len(e.kindHandler) {
-		e.kindHandler = append(e.kindHandler, make([]KindHandler, int(length)-len(e.kindHandler))...)
-	}
-	for _, kind := range kinds {
-		e.kindHandler[kind].Skip = true
-	}
-	return e
-}
-
-func (e *Engine) Run(tasks ...*Task) {
-	defer func() {
-		if r := recover(); r != nil {
-			log.Println(r)
-			log.Println(string(debug.Stack()))
-		}
-	}()
+func (e *BaseEngine) Run(tasks ...*BaseTask) {
 	e.addWorker()
 
 	go func() {
-		workerList := list.NewSimpleList[*Worker]()
-		taskList := list.NewSimpleList[*Task]()
+		workerList := list.NewSimpleList[*BaseWorker]()
+		taskList := list.NewSimpleList[*BaseTask]()
 		timer := time.NewTimer(time.Second * 1)
 		var emptyTimes int
 	loop:
 		for {
-			var readyWorkerCh chan *Task
-			var readyTask *Task
+			var readyWorkerCh chan *BaseTask
+			var readyTask *BaseTask
 			if workerList.Size > 0 && taskList.Size > 0 {
-				readyWorkerCh = workerList.First().taskCh
+				readyWorkerCh = workerList.First().ch
 				readyTask = taskList.First()
 			}
 			select {
@@ -146,11 +100,11 @@ func (e *Engine) Run(tasks ...*Task) {
 	log.Println("任务结束")
 }
 
-func (e *Engine) newWorker(readyTask *Task) {
+func (e *BaseEngine) newWorker(readyTask *BaseTask) {
 	e.currentWorkerCount++
 	//id := c.currentWorkerCount
-	taskChan := make(chan *Task)
-	worker := &Worker{Id: uint(e.currentWorkerCount), taskCh: taskChan}
+	taskChan := make(chan *BaseTask)
+	worker := &BaseWorker{uint(e.currentWorkerCount), taskChan}
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
@@ -160,7 +114,7 @@ func (e *Engine) newWorker(readyTask *Task) {
 			}
 			atomic.AddUint64(&e.currentWorkerCount, ^uint64(0))
 		}()
-		if readyTask != nil && readyTask.Do != nil {
+		if readyTask != nil {
 			readyTask.Do(e.ctx)
 			e.wg.Done()
 		}
@@ -168,7 +122,7 @@ func (e *Engine) newWorker(readyTask *Task) {
 			select {
 			case e.workerChan <- worker:
 				task := <-taskChan
-				if task != nil && task.Do != nil {
+				if task != nil {
 					task.Do(e.ctx)
 				}
 				e.wg.Done()
@@ -179,7 +133,7 @@ func (e *Engine) newWorker(readyTask *Task) {
 	}()
 }
 
-func (e *Engine) addWorker() {
+func (e *BaseEngine) addWorker() {
 	if e.currentWorkerCount == 0 {
 		e.newWorker(nil)
 	}
@@ -201,25 +155,26 @@ func (e *Engine) addWorker() {
 	}()
 }
 
-func (e *Engine) AddTask(task *Task) {
+func (e *BaseEngine) AddTask(task *BaseTask) {
 	if task == nil {
-		return
-	}
-	if e.kindHandler != nil && int(task.Kind) < len(e.kindHandler) && e.kindHandler[task.Kind].Skip {
 		return
 	}
 	e.wg.Add(1)
 	e.taskChan <- task
 }
 
-func (e *Engine) AddTasks(tasks ...*Task) {
+func (e *BaseEngine) AddTasks(tasks ...*BaseTask) {
 	e.wg.Add(len(tasks))
 	for _, task := range tasks {
 		e.taskChan <- task
 	}
 }
 
-func (e *Engine) AddWorker(num int) {
+func (e *BaseEngine) AddWorker(num int) {
 	atomic.AddUint64(&e.limitWorkerCount, uint64(num))
 	e.addWorker()
+}
+
+func (e *BaseEngine) Cancel() {
+	e.cancel()
 }
