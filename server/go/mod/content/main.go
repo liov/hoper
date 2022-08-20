@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 
+	"github.com/actliboy/hoper/server/go/lib/initialize"
 	"github.com/actliboy/hoper/server/go/lib/tiga"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"github.com/actliboy/hoper/server/go/mod/content/conf"
 	"github.com/actliboy/hoper/server/go/mod/content/dao"
 	"github.com/actliboy/hoper/server/go/mod/content/service"

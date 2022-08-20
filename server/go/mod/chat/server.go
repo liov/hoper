@@ -1,7 +1,7 @@
 package chat
 
 import (
-	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
+	contexti "github.com/actliboy/hoper/server/go/lib/context"
 	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
 	"github.com/actliboy/hoper/server/go/mod/content/dao"
 	"github.com/actliboy/hoper/server/go/mod/protobuf/user"

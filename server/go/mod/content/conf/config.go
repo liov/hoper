@@ -1,12 +1,12 @@
 package conf
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/cache_ristretto"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/db"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/log"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/mail"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/redis"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/server"
+	"github.com/actliboy/hoper/server/go/lib/initialize/cache_ristretto"
+	"github.com/actliboy/hoper/server/go/lib/initialize/db"
+	"github.com/actliboy/hoper/server/go/lib/initialize/log"
+	"github.com/actliboy/hoper/server/go/lib/initialize/mail"
+	"github.com/actliboy/hoper/server/go/lib/initialize/redis"
+	"github.com/actliboy/hoper/server/go/lib/initialize/server"
 	"runtime"
 	"time"
 
@@ -16,7 +16,7 @@ import (
 
 /*var ServerSettings = &ServerConfig{}
 var DatabaseSettings = &DatabaseConfig{}
-var RedisSettings = &RedisConfig{}
+var RedisSettings = &Config{}
 var MongoSettings = &MongoConfig{}*/
 
 type config struct {
@@ -25,7 +25,7 @@ type config struct {
 	Server    server.ServerConfig
 	Mail      mail.MailConfig
 	GORMDB    db.DatabaseConfig
-	Redis     redis.RedisConfig
+	Redis     redis.Config
 	Cache     cache_ristretto.CacheConfig
 	Log       log.LogConfig
 	Viper     *viper.Viper

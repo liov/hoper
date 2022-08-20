@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
+	"github.com/actliboy/hoper/server/go/lib/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"strings"
 	"time"

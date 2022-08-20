@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
+	"github.com/actliboy/hoper/server/go/lib/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
 	"time"
 	"tools/bilibili/config"

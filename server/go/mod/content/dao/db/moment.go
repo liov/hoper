@@ -2,8 +2,8 @@ package db
 
 import (
 	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
-	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
 	clausei "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/clause"
+	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
 	"github.com/actliboy/hoper/server/go/mod/content/model"
 	"github.com/actliboy/hoper/server/go/mod/protobuf/content"
 	"gorm.io/gorm/clause"
@@ -12,7 +12,7 @@ import (
 func (d *ContentDBDao) GetMomentListDB(req *content.MomentListReq) (int64, []*content.Moment, error) {
 	ctxi := d.Ctx
 	var moments []*content.Moment
-	db := d.db.Table(model.MomentTableName).Where(dbi.PostgreNotDeleted)
+	db := d.db.Table(model.MomentTableName).Where(postgres.NotDeleted)
 	var count int64
 	err := db.Count(&count).Error
 	if err != nil {

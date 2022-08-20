@@ -2,8 +2,9 @@ package dbtoentity
 
 import (
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/db"
+	"github.com/actliboy/hoper/server/go/lib/initialize"
+	initmysql "github.com/actliboy/hoper/server/go/lib/initialize/db/mysql"
+	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
 	"go/ast"
 	"go/format"
 	"go/parser"
@@ -13,7 +14,7 @@ import (
 )
 
 type dao struct {
-	MysqlTest db.DB
+	MysqlTest initmysql.DB
 }
 
 func (d *dao) Close() {
@@ -44,7 +45,7 @@ func TestTableToEntity(t *testing.T) {
 
 func TestAst(t *testing.T) {
 	fset := token.NewFileSet()
-	f, err := parser.ParseFile(fset, "tmpl.go", tmpl, parser.ParseComments)
+	f, err := parser.ParseFile(fset, "tmpl.go", dbi.Tmpl, parser.ParseComments)
 	if err != nil {
 		fmt.Println(err)
 		return

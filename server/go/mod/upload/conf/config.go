@@ -1,11 +1,11 @@
 package conf
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/cache_ristretto"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/db"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/log"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/redis"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/server"
+	"github.com/actliboy/hoper/server/go/lib/initialize/cache_ristretto"
+	"github.com/actliboy/hoper/server/go/lib/initialize/db"
+	"github.com/actliboy/hoper/server/go/lib/initialize/log"
+	"github.com/actliboy/hoper/server/go/lib/initialize/redis"
+	"github.com/actliboy/hoper/server/go/lib/initialize/server"
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	"runtime"
 )
@@ -17,7 +17,7 @@ type config struct {
 	Customize serverConfig
 	Server    server.ServerConfig
 	GORMDB    db.DatabaseConfig
-	Redis     redis.RedisConfig
+	Redis     redis.Config
 	Cache     cache_ristretto.CacheConfig
 	Log       log.LogConfig
 }

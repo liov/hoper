@@ -1,7 +1,7 @@
 package service
 
 import (
-	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
+	contexti "github.com/actliboy/hoper/server/go/lib/context"
 	"github.com/actliboy/hoper/server/go/mod/protobuf/user"
 	"strings"
 	"time"

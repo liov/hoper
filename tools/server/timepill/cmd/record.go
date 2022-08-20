@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
+	"github.com/actliboy/hoper/server/go/lib/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"time"

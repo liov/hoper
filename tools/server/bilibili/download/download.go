@@ -93,22 +93,27 @@ func ViewInfoHandleFun(ctx context.Context, url string) ([]*crawler.Request, err
 }
 
 func (video *Video) PlayerUrlHandleFun(ctx context.Context, url string) ([]*crawler.Request, error) {
+	var dvideo dao.Video
+	err := dao.Dao.Hoper.Table(dao.TableNameVideo).Select("cid,record").Where("cid = ?", video.Cid).First(&dvideo).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+	if dvideo.Record {
+		return nil, nil
+	}
 	res, err := rpc.Get[*rpc.VideoInfo](url)
 	if err != nil {
 		return nil, err
 	}
 
-	var dvideo dao.Video
-	err = dao.Dao.Hoper.Table(dao.TableNameVideo).Select("cid,record").Where("cid = ?", video.Cid).First(&dvideo).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil, err
-	}
 	video.Quality = res.Quality
 	var requests []*crawler.Request
 	if !dvideo.Record {
 		for _, durl := range res.Durl {
-			req := crawler.NewKindRequest(durl.Url, KindDownloadVideo, video.DownloadVideoHandleFun(durl.Order))
-			requests = append(requests, req)
+			requests, err = video.DownloadVideoHandleFun(durl.Order)(ctx, durl.Url)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 
@@ -193,11 +198,12 @@ func (video *Video) DownloadVideoHandleFun(order int) crawler.HandleFun {
 			return nil, err
 		}
 		file.Close()
-		dao.Dao.Hoper.Table(dao.TableNameVideo).Where("cid = ?", video.Cid).Update("record", true)
+
 		err = os.Rename(filename, newname)
 		if err != nil {
 			return nil, err
 		}
+		dao.Dao.Hoper.Table(dao.TableNameVideo).Where("cid = ?", video.Cid).Update("record", true)
 		log.Println("下载完成：" + newname)
 
 		return nil, nil

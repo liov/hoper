@@ -1,7 +1,7 @@
 package tiga
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
+	"github.com/actliboy/hoper/server/go/lib/initialize"
 	"github.com/armon/go-metrics"
 	"github.com/armon/go-metrics/prometheus"
 )

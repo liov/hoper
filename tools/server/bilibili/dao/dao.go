@@ -2,13 +2,14 @@ package dao
 
 import (
 	"context"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/db"
+	initpostgres "github.com/actliboy/hoper/server/go/lib/initialize/db/postgres"
 	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/postgres"
+
 	"gorm.io/gorm"
 )
 
 type dao3 struct {
-	Hoper db.DB
+	Hoper initpostgres.DB
 }
 
 func (d dao3) Init() {

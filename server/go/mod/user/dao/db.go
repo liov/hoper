@@ -2,7 +2,7 @@ package dao
 
 import (
 	"encoding/json"
-	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
+	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
 	"gorm.io/gorm/clause"
 	"strconv"
 	"time"
@@ -17,14 +17,14 @@ import (
 
 func DBNotNil(db **gorm.DB) {
 	if *db == nil {
-		*db = Dao.GORMDB
+		*db = Dao.GORMDB.DB
 	}
 }
 
 func (d *userDao) ExitsCheck(db *gorm.DB, field, value string) (bool, error) {
 	DBNotNil(&db)
 	ctxi := d
-	sql := `SELECT EXISTS(SELECT id FROM "` + model.UserTableName + `" WHERE ` + dbi.PostgreNotDeleted + ` AND `
+	sql := `SELECT EXISTS(SELECT id FROM "` + model.UserTableName + `" WHERE ` + postgres.NotDeleted + ` AND `
 	var exists bool
 	err := db.Raw(sql+field+` = ? AND status != ?  LIMIT 1)`, value, user.UserStatusDeleted).Row().Scan(&exists)
 
@@ -43,9 +43,9 @@ func (d *userDao) GetByEmailORPhone(db *gorm.DB, email, phone string, fields ...
 		db = db.Table(model.UserTableName).Select(fields)
 	}
 	if email != "" {
-		err = db.Where("email = ? AND status != ? AND "+dbi.PostgreNotDeleted, email, user.UserStatusDeleted).Find(&u).Error
+		err = db.Where("email = ? AND status != ? AND "+postgres.NotDeleted, email, user.UserStatusDeleted).Find(&u).Error
 	} else {
-		err = db.Where("phone = ? AND status != ? AND "+dbi.PostgreNotDeleted, phone, user.UserStatusDeleted).Find(&u).Error
+		err = db.Where("phone = ? AND status != ? AND "+postgres.NotDeleted, phone, user.UserStatusDeleted).Find(&u).Error
 	}
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "GetByEmailORPhone")
@@ -171,7 +171,7 @@ func (d *userDao) GetBaseListDB(db *gorm.DB, ids []uint64, pageNo, pageSize int)
 func (d *userDao) FollowExistsDB(db *gorm.DB, id, followId uint64) (bool, error) {
 	ctxi := d
 	sql := `SELECT EXISTS(SELECT * FROM "` + model.FollowTableName + `" 
-WHERE user_id = ?  AND follow_id = ? AND ` + dbi.PostgreNotDeleted + ` LIMIT 1)`
+WHERE user_id = ?  AND follow_id = ? AND ` + postgres.NotDeleted + ` LIMIT 1)`
 	var exists bool
 	err := db.Raw(sql, id, followId).Row().Scan(&exists)
 	if err != nil {

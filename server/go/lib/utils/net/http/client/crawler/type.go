@@ -15,6 +15,7 @@ type Request struct {
 	Kind      conctrl.Kind
 	Url       string
 	HandleFun HandleFun
+	errTimes  int
 }
 
 func NewRequest(url string, handleFun HandleFun) *Request {

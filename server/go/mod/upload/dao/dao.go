@@ -1,12 +1,12 @@
 package dao
 
 import (
-	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
+	contexti "github.com/actliboy/hoper/server/go/lib/context"
+	"github.com/actliboy/hoper/server/go/lib/initialize/cache_ristretto"
+	"github.com/actliboy/hoper/server/go/lib/initialize/db/postgres"
+	initredis "github.com/actliboy/hoper/server/go/lib/initialize/redis"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/cockroachdb/pebble"
-	"github.com/dgraph-io/ristretto"
-	"github.com/go-redis/redis/v8"
-	"gorm.io/gorm"
 )
 
 var Dao *dao = &dao{}
@@ -24,26 +24,11 @@ func GetDao(ctx *contexti.Ctx) *uploadDao {
 
 // dao dao.
 type dao struct {
-	// GORMDB 数据库连接
-	GORMDB   *gorm.DB
-	PebbleDB *pebble.DB
+	GORMDB   postgres.DB
+	PebbleDB pebble.DB
 	// RedisPool Redis连接池
-	Redis *redis.Client
-	Cache *ristretto.Cache
-}
-
-// CloseDao close the resource.
-func (d *dao) Close() {
-	if d.PebbleDB != nil {
-		d.PebbleDB.Close()
-	}
-	if d.Redis != nil {
-		d.Redis.Close()
-	}
-	if d.GORMDB != nil {
-		rawDB, _ := d.GORMDB.DB()
-		rawDB.Close()
-	}
+	Redis initredis.Redis
+	Cache cache_ristretto.Cache
 }
 
 func (d *dao) Init() {

@@ -8,6 +8,7 @@ require (
 	github.com/elastic/go-elasticsearch/v8 v8.2.0
 	github.com/fatedier/frp v0.43.0
 	github.com/go-redis/redis/v8 v8.11.4
+	github.com/jlaffaye/ftp v0.0.0-20220817234345-39592b91e4d6
 	github.com/nsqio/go-nsq v1.0.8
 	golang.org/x/image v0.0.0-20220601225756-64ec528b34cd
 	golang.org/x/net v0.0.0-20220520000938-2e3eb7b945c2
@@ -57,7 +58,6 @@ require (
 	github.com/jackc/pgx/v4 v4.16.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
-	github.com/jlaffaye/ftp v0.0.0-20220817234345-39592b91e4d6 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
@@ -110,7 +110,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/driver/mysql v1.3.5 // indirect
 	gorm.io/driver/postgres v1.3.8 // indirect
-	gorm.io/driver/sqlite v1.3.4 // indirect
+	gorm.io/driver/sqlite v1.3.6 // indirect
 	gorm.io/plugin/prometheus v0.0.0-20210820101226-2a49866f83ee // indirect
 )
 

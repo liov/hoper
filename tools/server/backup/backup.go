@@ -26,6 +26,7 @@ func main() {
 }
 
 func Backup(c *ftp.ServerConn) {
-	//DCIM(c)
+	DCIM(c)
 	Pietures(c)
+	//Wechat(c)
 }

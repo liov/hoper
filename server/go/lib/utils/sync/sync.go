@@ -33,3 +33,8 @@ func (wg *WaitGroup) state() (statep *uint64, semap *uint32) {
 		return (*uint64)(unsafe.Pointer(&state[1])), &state[0]
 	}
 }
+
+func WaitGroupStopWait(wg *sync.WaitGroup) {
+	state, _ := WaitGroupState(wg)
+	wg.Add(int(-state))
+}

@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"fmt"
+	contexti "github.com/actliboy/hoper/server/go/lib/context"
 	"github.com/actliboy/hoper/server/go/lib/protobuf/request"
-	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
 	"github.com/actliboy/hoper/server/go/mod/content/client"
 	"net/http"
 	"unicode/utf8"
@@ -33,7 +33,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, _ := auth(ctxi, true)
-	db := ctxi.NewDB(dao.Dao.GORMDB)
+	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
 	contentDBDao := dao.GetDBDao(ctxi, db)
 
 	var moment content.Moment
@@ -138,7 +138,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(dao.Dao.GORMDB)
+	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
 	contentDBDao := dao.GetDBDao(ctxi, db)
 
 	req.UserId = auth.Id
@@ -224,7 +224,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, _ := auth(ctxi, true)
-	db := ctxi.NewDB(dao.Dao.GORMDB)
+	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
 	contentDBDao := dao.GetDBDao(ctxi, db)
 
 	total, moments, err := contentDBDao.GetMomentListDB(req)
@@ -326,7 +326,7 @@ func (*MomentService) Delete(ctx context.Context, req *request.Object) (*empty.E
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(dao.Dao.GORMDB)
+	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
 	contentDBDao := dao.GetDBDao(ctxi, db)
 
 	err = contentDBDao.DelByAuth(model.MomentTableName, req.Id, auth.Id)

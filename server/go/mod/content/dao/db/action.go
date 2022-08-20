@@ -3,8 +3,8 @@ package db
 import (
 	sqlstd "database/sql"
 	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
-	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
 	clausei "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/clause"
+	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
 	"github.com/actliboy/hoper/server/go/mod/content/model"
 	"github.com/actliboy/hoper/server/go/mod/protobuf/content"
 	"gorm.io/gorm"
@@ -51,7 +51,7 @@ func (d *ContentDBDao) LikeId(typ content.ContentType, action content.ActionType
 	ctxi := d.Ctx
 	// 性能优化之分开写
 	sql := `SELECT id FROM "` + model.ActionTableName(action) + `" 
-WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ? AND ` + dbi.PostgreNotDeleted
+WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ? AND ` + postgres.NotDeleted
 	var id uint64
 	err := d.db.Raw(sql, typ, refId, action, userId).Row().Scan(&id)
 	if err != nil && err != sqlstd.ErrNoRows {
@@ -63,7 +63,7 @@ WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ? AND ` + dbi.Postgre
 func (d *ContentDBDao) DelAction(typ content.ContentType, action content.ActionType, refId, userId uint64) error {
 	ctxi := d.Ctx
 	sql := `Update "` + model.ActionTableName(action) + `" SET deleted_at = ?
-WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ? AND ` + dbi.PostgreNotDeleted
+WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ? AND ` + postgres.NotDeleted
 	err := d.db.Exec(sql, ctxi.TimeString, typ, refId, action, userId).Error
 	if err != nil {
 		return ctxi.ErrorLog(errorcode.DBError, err, "DelAction")
@@ -74,7 +74,7 @@ WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ? AND ` + dbi.Postgre
 func (d *ContentDBDao) Del(tableName string, id uint64) error {
 	ctxi := d.Ctx
 	sql := `Update "` + tableName + `" SET deleted_at = ?
-WHERE id = ? AND ` + dbi.PostgreNotDeleted
+WHERE id = ? AND ` + postgres.NotDeleted
 	err := d.db.Exec(sql, ctxi.TimeString, id).Error
 	if err != nil {
 		return ctxi.ErrorLog(errorcode.DBError, err, "Del")
@@ -85,7 +85,7 @@ WHERE id = ? AND ` + dbi.PostgreNotDeleted
 func (d *ContentDBDao) DelByAuth(tableName string, id, userId uint64) error {
 	ctxi := d.Ctx
 	sql := `Update "` + tableName + `" SET deleted_at = ?
-WHERE id = ?  AND user_id = ? AND ` + dbi.PostgreNotDeleted
+WHERE id = ?  AND user_id = ? AND ` + postgres.NotDeleted
 	err := d.db.Exec(sql, ctxi.TimeString, id, userId).Error
 	if err != nil {
 		return ctxi.ErrorLog(errorcode.DBError, err, "DelByAuth")
@@ -96,7 +96,7 @@ WHERE id = ?  AND user_id = ? AND ` + dbi.PostgreNotDeleted
 func (d *ContentDBDao) ExistsByAuth(tableName string, id, userId uint64) (bool, error) {
 	ctxi := d.Ctx
 	sql := `SELECT EXISTS(SELECT * FROM "` + tableName + `" 
-WHERE id = ?  AND user_id = ? AND ` + dbi.PostgreNotDeleted + ` LIMIT 1)`
+WHERE id = ?  AND user_id = ? AND ` + postgres.NotDeleted + ` LIMIT 1)`
 	var exists bool
 	err := d.db.Raw(sql, id, userId).Row().Scan(&exists)
 	if err != nil {
@@ -108,7 +108,7 @@ WHERE id = ?  AND user_id = ? AND ` + dbi.PostgreNotDeleted + ` LIMIT 1)`
 func (d *ContentDBDao) ContainerExists(typ content.ContainerType, id, userId uint64) (bool, error) {
 	ctxi := d.Ctx
 	sql := `SELECT EXISTS(SELECT * FROM "` + model.ContainerTableName + `" 
-WHERE id = ?  AND type = ? AND user_id = ? AND ` + dbi.PostgreNotDeleted + ` LIMIT 1)`
+WHERE id = ?  AND type = ? AND user_id = ? AND ` + postgres.NotDeleted + ` LIMIT 1)`
 	var exists bool
 	err := d.db.Raw(sql, id, typ, userId).Row().Scan(&exists)
 	if err != nil {
@@ -121,7 +121,7 @@ func (d *ContentDBDao) GetContentActions(action content.ActionType, typ content.
 	ctxi := d.Ctx
 	var actions []model.ContentAction
 	err := d.db.Select("id,ref_id,action").Table(model.ActionTableName(action)).
-		Where("type = ? AND ref_id IN (?) AND user_id = ? AND "+dbi.PostgreNotDeleted,
+		Where("type = ? AND ref_id IN (?) AND user_id = ? AND "+postgres.NotDeleted,
 			typ, refIds, userId).Scan(&actions).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "GetContentActions")
@@ -133,7 +133,7 @@ func (d *ContentDBDao) GetLike(likeId, userId uint64) (*model.ContentAction, err
 	ctxi := d.Ctx
 	var action model.ContentAction
 	err := d.db.Select("id,ref_id,action,type").Table(model.LikeTableName).
-		Where("id = ? AND user_id = ? AND "+dbi.PostgreNotDeleted,
+		Where("id = ? AND user_id = ? AND "+postgres.NotDeleted,
 			likeId, userId).Scan(&action).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "GetContentActions")
@@ -145,7 +145,7 @@ func (d *ContentDBDao) GetCollects(typ content.ContentType, refIds []uint64, use
 	ctxi := d.Ctx
 	var collects []model.ContentCollect
 	err := d.db.Select("id,ref_id,fav_id").Table(model.CollectTableName).
-		Where("type = ? AND ref_id IN (?) AND user_id = ? AND "+dbi.PostgreNotDeleted,
+		Where("type = ? AND ref_id IN (?) AND user_id = ? AND "+postgres.NotDeleted,
 			typ, refIds, userId).Scan(&collects).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "GetContentActions")
@@ -155,7 +155,7 @@ func (d *ContentDBDao) GetCollects(typ content.ContentType, refIds []uint64, use
 
 func (d *ContentDBDao) GetComments(typ content.ContentType, refId, rootId uint64, pageNo, pageSize int) (int64, []*content.Comment, error) {
 	ctxi := d.Ctx
-	db := d.db.Table(model.CommentTableName).Where(`type = ? AND ref_id = ? AND root_id = ? AND `+dbi.PostgreNotDeleted, typ, refId, rootId)
+	db := d.db.Table(model.CommentTableName).Where(`type = ? AND ref_id = ? AND root_id = ? AND `+postgres.NotDeleted, typ, refId, rootId)
 	var count int64
 	err := db.Count(&count).Error
 	if err != nil {
