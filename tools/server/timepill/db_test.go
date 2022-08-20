@@ -3,7 +3,7 @@ package timepill
 import (
 	"context"
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
+	"github.com/actliboy/hoper/server/go/lib/initialize"
 	_type "github.com/actliboy/hoper/server/go/lib/utils/generics/dao/db/type"
 	"testing"
 )

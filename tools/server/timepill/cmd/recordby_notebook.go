@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
+	"github.com/actliboy/hoper/server/go/lib/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"time"
 	"tools/timepill"

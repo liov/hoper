@@ -2,10 +2,10 @@ package service
 
 import (
 	"context"
+	contexti "github.com/actliboy/hoper/server/go/lib/context"
 	"github.com/actliboy/hoper/server/go/lib/protobuf/empty"
 	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
-	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
-	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
+	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
 	"github.com/actliboy/hoper/server/go/mod/protobuf/user"
 	"github.com/actliboy/hoper/server/go/mod/user/dao"
 	"github.com/actliboy/hoper/server/go/mod/user/model"
@@ -20,7 +20,7 @@ func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*empty.E
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(dao.Dao.GORMDB)
+	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
 	userDao := dao.GetDao(ctxi)
 	exists, err := userDao.FollowExistsDB(db, req.Id, auth.Id)
 	if err != nil {
@@ -48,7 +48,7 @@ func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(dao.Dao.GORMDB)
+	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
 	userDao := dao.GetDao(ctxi)
 	exists, err := userDao.FollowExistsDB(db, req.Id, auth.Id)
 	if err != nil {
@@ -57,7 +57,7 @@ func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user
 	if !exists {
 		return nil, nil
 	}
-	err = db.Table(model.FollowTableName).Where("user_id = ? AND follow_id = ? AND "+dbi.PostgreNotDeleted, req.Id, auth.Id).
+	err = db.Table(model.FollowTableName).Where("user_id = ? AND follow_id = ? AND "+postgres.NotDeleted, req.Id, auth.Id).
 		UpdateColumn("deleted_at", ctxi.RequestAt.TimeString).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "Create")

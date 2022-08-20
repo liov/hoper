@@ -214,15 +214,6 @@ func Mkdir(src string) error {
 	return nil
 }
 
-func Open(name string, flag int, perm os.FileMode) (*os.File, error) {
-	f, err := os.OpenFile(name, flag, perm)
-	if err != nil {
-		return nil, err
-	}
-
-	return f, nil
-}
-
 func CheckExist(src string) bool {
 	_, err := os.Stat(src)
 
@@ -268,7 +259,7 @@ func MustOpen(fileName, filePath string) (*os.File, error) {
 		return nil, fmt.Errorf("file.IsNotExistMkdir src: %s, err: %v", src, err)
 	}
 
-	f, err := Open(src+fileName, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)
+	f, err := os.OpenFile(src+fileName, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)
 	if err != nil {
 		return nil, fmt.Errorf("Fail to OpenFile :%v", err)
 	}
@@ -300,7 +291,7 @@ func OpenLogFile(fileName, filePath string) (*os.File, error) {
 		return nil, fmt.Errorf("文件不存在 src: %s, err: %v", src, err)
 	}
 
-	f, err := Open(src+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	f, err := os.OpenFile(src+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return nil, fmt.Errorf("打开失败 :%v", err)
 	}
@@ -330,15 +321,19 @@ func Create(filepath string) (*os.File, error) {
 	return os.Create(filepath)
 }
 
-func LastFile(dir string) (os.FileInfo, error) {
+func LastFile(dir string) (os.FileInfo, map[string]os.FileInfo, error) {
 	entities, err := os.ReadDir(dir)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	sort.Sort(DirEntities(entities))
 	lastFile, err := entities[0].Info()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return lastFile, nil
+	m := make(map[string]os.FileInfo)
+	for _, entity := range entities {
+		m[entity.Name()], _ = entity.Info()
+	}
+	return lastFile, m, nil
 }

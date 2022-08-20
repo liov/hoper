@@ -2,7 +2,7 @@ package main
 
 import (
 	"bufio"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
+	"github.com/actliboy/hoper/server/go/lib/initialize"
 	"log"
 	"os"
 	"strconv"

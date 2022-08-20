@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
+	contexti "github.com/actliboy/hoper/server/go/lib/context"
 	"github.com/actliboy/hoper/server/go/lib/protobuf/request"
-	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
 	"gorm.io/gorm"
 	"net/http"
 
@@ -36,7 +36,7 @@ func (*ContentService) AddTag(ctx context.Context, req *content.AddTagReq) (*emp
 	if err != nil {
 		return nil, err
 	}
-	db := dao.Dao.GORMDB
+	db := dao.Dao.GORMDB.DB
 	req.UserId = user.Id
 	err = db.Create(req).Error
 	if err != nil {
@@ -52,7 +52,7 @@ func (*ContentService) EditTag(ctx context.Context, req *content.EditTagReq) (*e
 		return nil, err
 	}
 	ctx = ctxi.Context
-	db := dao.Dao.GORMDB
+	db := dao.Dao.GORMDB.DB
 	err = db.Updates(&content.Tag{
 		Description:   req.Description,
 		ExpressionURL: req.ExpressionURL,
@@ -70,7 +70,7 @@ func (*ContentService) TagList(ctx context.Context, req *content.TagListReq) (*c
 	if err != nil {
 		return nil, err
 	}
-	db := dao.Dao.GORMDB
+	db := dao.Dao.GORMDB.DB
 
 	if req.Name != "" {
 		db = db.Where(`name LIKE ?` + "%" + req.Name + "%")
@@ -93,7 +93,7 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*req
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(dao.Dao.GORMDB)
+	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
 	contentDBDao := dao.GetDBDao(ctxi, db)
 
 	req.UserId = auth.Id
@@ -134,7 +134,7 @@ func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*em
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(dao.Dao.GORMDB)
+	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
 	err = db.Table(model.FavoritesTableName).Where(`id =? AND user_id =?`, req.Id, auth.Id).
 		Updates(req).Error
 	if err != nil {
@@ -143,12 +143,12 @@ func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*em
 	return nil, nil
 }
 
-//收藏夹列表
+// 收藏夹列表
 func (*ContentService) FavList(ctx context.Context, req *content.FavListReq) (*content.FavListRep, error) {
 	return nil, nil
 }
 
-//收藏夹列表
+// 收藏夹列表
 func (*ContentService) TinyFavList(ctx context.Context, req *content.FavListReq) (*content.TinyFavListRep, error) {
 	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
@@ -156,7 +156,7 @@ func (*ContentService) TinyFavList(ctx context.Context, req *content.FavListReq)
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(dao.Dao.GORMDB)
+	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
 	var favs []*content.TinyFavorites
 	if req.UserId == 0 {
 		err = db.Table(model.FavoritesTableName).Select("id,title").Where(`user_id = ?`, auth.Id).Find(&favs).Error
@@ -180,7 +180,7 @@ func (*ContentService) AddContainer(ctx context.Context, req *content.AddContain
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(dao.Dao.GORMDB)
+	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
 	req.UserId = auth.Id
 	err = db.Table(model.ContainerTableName).Create(req).Error
 	if err != nil {
@@ -202,7 +202,7 @@ func (*ContentService) EditDiaryContainer(ctx context.Context, req *content.AddC
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(dao.Dao.GORMDB)
+	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
 	err = db.Table(model.ContainerTableName).Where(`id =? AND user_id =?`, req.Id, auth.Id).
 		Updates(req).Error
 	if err != nil {

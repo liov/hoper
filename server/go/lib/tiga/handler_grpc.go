@@ -3,9 +3,9 @@ package tiga
 import (
 	"context"
 	"fmt"
+	"github.com/actliboy/hoper/server/go/lib/context"
+	"github.com/actliboy/hoper/server/go/lib/initialize/server"
 	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
-	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/server"
 	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	runtimei "github.com/actliboy/hoper/server/go/lib/utils/runtime"

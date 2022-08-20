@@ -5,8 +5,8 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/pick"
 	"net/http"
 
+	"github.com/actliboy/hoper/server/go/lib/initialize"
 	tailmon "github.com/actliboy/hoper/server/go/lib/tiga"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/gin/oauth"
 	model "github.com/actliboy/hoper/server/go/mod/protobuf/user"
 	"github.com/actliboy/hoper/server/go/mod/user/conf"

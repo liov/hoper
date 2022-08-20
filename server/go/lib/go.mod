@@ -70,7 +70,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/driver/mysql v1.3.5
 	gorm.io/driver/postgres v1.3.8
-	gorm.io/driver/sqlite v1.3.4
+	gorm.io/driver/sqlite v1.3.6
 	gorm.io/gorm v1.23.8
 	gorm.io/plugin/prometheus v0.0.0-20210820101226-2a49866f83ee
 )

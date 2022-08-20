@@ -33,6 +33,11 @@ func (e *Engine) SkipKind(kinds ...conctrl.Kind) *Engine {
 	return e
 }
 
+func (e *Engine) StopAfter(interval time.Duration) *Engine {
+	time.AfterFunc(interval, e.Cancel)
+	return e
+}
+
 func (e *Engine) Timer(kind conctrl.Kind, interval time.Duration) *Engine {
 	if e.kindHandler == nil {
 		e.kindHandler = make([]KindHandler, int(kind)+1)
@@ -78,9 +83,12 @@ func (e *Engine) NewTask(req *Request) *conctrl.Task {
 			}
 			reqs, err := req.HandleFun(ctx, req.Url)
 			if err != nil {
+				req.errTimes++
 				log.Println("爬取失败", err)
 				log.Println("重新爬取,url :", req.Url)
-				e.reqsChan <- []*Request{req}
+				if req.errTimes < 5 {
+					e.reqsChan <- []*Request{req}
+				}
 				return
 			}
 			e.visited.Store(req.Url, struct{}{})

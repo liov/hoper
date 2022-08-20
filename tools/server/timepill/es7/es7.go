@@ -2,7 +2,7 @@ package es7
 
 import (
 	"context"
-	v7 "github.com/actliboy/hoper/server/go/lib/tiga/initialize/elastic/v7"
+	v7 "github.com/actliboy/hoper/server/go/lib/initialize/elastic/v7"
 	"github.com/actliboy/hoper/server/go/lib/utils/def/request"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"strconv"

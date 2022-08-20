@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
+	"github.com/actliboy/hoper/server/go/lib/initialize"
 	"io"
 	"log"
 	"strconv"

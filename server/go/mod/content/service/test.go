@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"unsafe"
 
+	"github.com/actliboy/hoper/server/go/lib/initialize"
 	"github.com/actliboy/hoper/server/go/lib/protobuf/empty"
 	"github.com/actliboy/hoper/server/go/lib/tiga"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	model "github.com/actliboy/hoper/server/go/mod/protobuf/content"
 )
 

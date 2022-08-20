@@ -2,15 +2,15 @@ package main
 
 import (
 	"context"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/db"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/elastic/v8"
+	"github.com/actliboy/hoper/server/go/lib/initialize"
+	initpostgres "github.com/actliboy/hoper/server/go/lib/initialize/db/postgres"
+	"github.com/actliboy/hoper/server/go/lib/initialize/elastic/v8"
 	"tools/timepill"
 	"tools/timepill/es8"
 )
 
 type dao1 struct {
-	Hoper db.DB
+	Hoper initpostgres.DB
 	Es8   v8.Es `init:"config:elasticsearch8"`
 }
 
@@ -21,7 +21,7 @@ func (dao *dao1) Close() {
 }
 
 type dao2 struct {
-	Hoper db.DB
+	Hoper initpostgres.DB
 	Es8   v8.Esv2 `init:"config:elasticsearch8"`
 }
 

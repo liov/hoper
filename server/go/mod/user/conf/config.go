@@ -1,12 +1,8 @@
 package conf
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/cache_ristretto"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/db"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/log"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/mail"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/redis"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/server"
+	"github.com/actliboy/hoper/server/go/lib/initialize/log"
+	"github.com/actliboy/hoper/server/go/lib/initialize/server"
 	"runtime"
 	"time"
 
@@ -22,10 +18,6 @@ type config struct {
 	//自定义的配置
 	Customize serverConfig
 	Server    server.ServerConfig
-	Mail      mail.MailConfig
-	GORMDB    db.DatabaseConfig
-	Redis     redis.RedisConfig
-	Cache     cache_ristretto.CacheConfig
 	Log       log.LogConfig
 	Viper     *viper.Viper
 }

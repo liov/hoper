@@ -37,7 +37,7 @@ func GetOauthService() *OauthService {
 	// generate jwt access token
 	manager.MapAccessGenerate(generates.NewJWTAccessGenerate("", stringsi.ToBytes(conf.Conf.Customize.TokenSecret), jwt.SigningMethodHS512))
 
-	clientStore := oauth.NewClientStore(dao.Dao.GORMDB)
+	clientStore := oauth.NewClientStore(dao.Dao.GORMDB.DB)
 
 	manager.MapClientStorage(clientStore)
 

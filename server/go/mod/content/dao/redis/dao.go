@@ -1,7 +1,7 @@
 package redis
 
 import (
-	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
+	contexti "github.com/actliboy/hoper/server/go/lib/context"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/go-redis/redis/v8"
 )

@@ -3,9 +3,9 @@ package timepill
 import (
 	"context"
 	"encoding/base64"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/cache_ristretto"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/db"
-	initializeredis "github.com/actliboy/hoper/server/go/lib/tiga/initialize/redis"
+	"github.com/actliboy/hoper/server/go/lib/initialize/cache_ristretto"
+	"github.com/actliboy/hoper/server/go/lib/initialize/db"
+	initializeredis "github.com/actliboy/hoper/server/go/lib/initialize/redis"
 	"time"
 )
 

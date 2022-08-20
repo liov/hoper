@@ -16,7 +16,7 @@ const sep = string(os.PathSeparator)
 
 func DCIM(c *ftp.ServerConn) {
 	jpdir := BackUpDiskPron + "pic\\jiepai"
-	jplastFile, err := fs.LastFile(jpdir)
+	jplastFile, jpm, err := fs.LastFile(jpdir)
 	if err != nil {
 		log.Println(err)
 		return
@@ -24,7 +24,7 @@ func DCIM(c *ftp.ServerConn) {
 	log.Println(jplastFile.Name())
 
 	xhsdir := BackUpDisk + "XHS"
-	xhslastFile, err := fs.LastFile(xhsdir)
+	xhslastFile, xhsm, err := fs.LastFile(xhsdir)
 	if err != nil {
 		log.Println(err)
 		return
@@ -32,7 +32,7 @@ func DCIM(c *ftp.ServerConn) {
 	log.Println(xhslastFile.Name())
 
 	dydir := BackUpDisk + "douyin"
-	dylastFile, err := fs.LastFile(dydir)
+	dylastFile, dym, err := fs.LastFile(dydir)
 	if err != nil {
 		log.Println(err)
 		return
@@ -40,7 +40,7 @@ func DCIM(c *ftp.ServerConn) {
 	log.Println(dylastFile.Name())
 
 	dyvdir := BackUpDisk + "douyin_video"
-	dyvlastFile, err := fs.LastFile(dyvdir)
+	dyvlastFile, dyvm, err := fs.LastFile(dyvdir)
 	if err != nil {
 		log.Println(err)
 		return
@@ -69,7 +69,32 @@ func DCIM(c *ftp.ServerConn) {
 			break
 		}
 	}
-	for i := lastIdx; i > 0; i-- {
+	if lastIdx == 0 {
+		for i := 0; i < len(list); i++ {
+			item := list[i]
+			if _, ok := jpm[item.Name]; ok {
+				lastIdx = i
+				break
+			}
+			if _, ok := xhsm[item.Name]; ok {
+				lastIdx = i
+				break
+			}
+			if _, ok := dym[item.Name]; ok {
+				lastIdx = i
+				break
+			}
+			if _, ok := dyvm[item.Name]; ok {
+				lastIdx = i
+				break
+			}
+		}
+	}
+	if lastIdx == 0 {
+		lastIdx = len(list)
+	}
+
+	for i := lastIdx - 1; i > 0; i-- {
 		item := list[i]
 		if item.Type != ftp.EntryTypeFile {
 			continue

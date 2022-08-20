@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/PuerkitoBio/goquery"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
+	"github.com/actliboy/hoper/server/go/lib/initialize"
 	"log"
 	"strconv"
 	"strings"

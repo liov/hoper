@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/actliboy/hoper/server/go/lib/utils/generics/slices"
 	"github.com/actliboy/hoper/server/go/lib/utils/generics/structure/list"
+	synci "github.com/actliboy/hoper/server/go/lib/utils/sync"
 	"log"
 	"runtime/debug"
 	"sync"
@@ -72,6 +73,13 @@ func NewEngineWithContext(workerCount uint, ctx context.Context) *Engine {
 	}
 }
 
+func (e *Engine) Cancel() {
+	log.Println("取消任务")
+	e.cancel()
+	synci.WaitGroupStopWait(&e.wg)
+
+}
+
 func (e *Engine) SkipKind(kinds ...Kind) *Engine {
 	length := slices.Max(kinds) + 1
 	if e.kindHandler == nil {
@@ -130,7 +138,7 @@ func (e *Engine) Run(tasks ...*Task) {
 				}
 				timer.Reset(time.Second * 1)
 			case <-e.ctx.Done():
-				e.wg.Done()
+				log.Println("任务取消")
 				timer.Stop()
 				break loop
 			}
@@ -173,6 +181,7 @@ func (e *Engine) newWorker(readyTask *Task) {
 				}
 				e.wg.Done()
 			case <-e.ctx.Done():
+				log.Println("task cancel")
 				return
 			}
 		}
@@ -195,6 +204,7 @@ func (e *Engine) addWorker() {
 					return
 				}
 			case <-e.ctx.Done():
+				log.Println("add worker cancel")
 				return
 			}
 		}

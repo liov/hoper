@@ -1,21 +1,21 @@
 package main
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/db"
+	"github.com/actliboy/hoper/server/go/lib/initialize"
+	initpostgres "github.com/actliboy/hoper/server/go/lib/initialize/db/postgres"
 	"tools/bilibili/config"
-	"tools/bilibili/model"
+	"tools/bilibili/dao"
 )
 
 type dao1 struct {
-	Hoper db.DB
+	Hoper initpostgres.DB
 }
 
 func (d dao1) Init() {
 }
 
 func main() {
-	var dao dao1
-	defer initialize.Start(config.Conf, &dao)()
-	dao.Hoper.Migrator().CreateTable(&model.View{}, &model.Video{})
+	var daod dao1
+	defer initialize.Start(config.Conf, &daod)()
+	daod.Hoper.Migrator().CreateTable(&dao.View{}, &dao.Video{})
 }

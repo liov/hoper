@@ -1,8 +1,8 @@
 package chat
 
 import (
+	contexti "github.com/actliboy/hoper/server/go/lib/context"
 	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
-	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
 	httpi "github.com/actliboy/hoper/server/go/lib/utils/net/http"
 	"github.com/actliboy/hoper/server/go/mod/protobuf/user"
 	"github.com/google/uuid"

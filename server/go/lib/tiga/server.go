@@ -3,8 +3,9 @@ package tiga
 import (
 	"context"
 	"fmt"
-	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/server"
+	"github.com/actliboy/hoper/server/go/lib/context"
+	"github.com/actliboy/hoper/server/go/lib/initialize"
+	"github.com/actliboy/hoper/server/go/lib/initialize/server"
 	"go.opencensus.io/zpages"
 	"net/http"
 	"os"
@@ -14,7 +15,6 @@ import (
 	"syscall"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	httpi "github.com/actliboy/hoper/server/go/lib/utils/net/http"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/grpc/gateway"

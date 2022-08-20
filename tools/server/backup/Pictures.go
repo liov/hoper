@@ -65,7 +65,7 @@ func Pietures(c *ftp.ServerConn) {
 }
 
 func Copy(c *ftp.ServerConn, src, dst string) error {
-	lastFile, err := fs.LastFile(dst)
+	lastFile, m, err := fs.LastFile(dst)
 	if err != nil {
 		return err
 	}
@@ -84,7 +84,20 @@ func Copy(c *ftp.ServerConn, src, dst string) error {
 			break
 		}
 	}
-	for i := lastIdx; i > 0; i-- {
+	if lastIdx == 0 {
+		for i := 0; i < len(list); i++ {
+			item := list[i]
+
+			if _, ok := m[item.Name]; ok {
+				lastIdx = i
+				break
+			}
+		}
+	}
+	if lastIdx == 0 {
+		lastIdx = len(list)
+	}
+	for i := lastIdx - 1; i > 0; i-- {
 		item := list[i]
 		if item.Type != ftp.EntryTypeFile {
 			continue

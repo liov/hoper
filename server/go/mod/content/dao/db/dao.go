@@ -2,9 +2,9 @@ package db
 
 import (
 	"database/sql"
+	contexti "github.com/actliboy/hoper/server/go/lib/context"
 	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
-	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
-	gormi "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm"
+	clausei "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/clause"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/actliboy/hoper/server/go/mod/content/model"
 	"github.com/actliboy/hoper/server/go/mod/protobuf/content"
@@ -33,7 +33,7 @@ func (d *ContentDBDao) Begin() *ContentDBDao {
 }
 
 type ChainDao struct {
-	gormi.Clause2
+	clausei.Clause2
 	db *gorm.DB
 }
 

@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/actliboy/hoper/server/go/lib/initialize"
 	"github.com/actliboy/hoper/server/go/lib/tiga"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	cconf "github.com/actliboy/hoper/server/go/mod/content/conf"
 	cdao "github.com/actliboy/hoper/server/go/mod/content/dao"

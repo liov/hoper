@@ -1,8 +1,8 @@
 package get_db
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize/db"
+	"github.com/actliboy/hoper/server/go/lib/initialize"
+	"github.com/actliboy/hoper/server/go/lib/initialize/db"
 	"gorm.io/gorm"
 )
 

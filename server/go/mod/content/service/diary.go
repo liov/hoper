@@ -2,10 +2,10 @@ package service
 
 import (
 	"context"
+	contexti "github.com/actliboy/hoper/server/go/lib/context"
 	"github.com/actliboy/hoper/server/go/lib/protobuf/empty"
 	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
 	"github.com/actliboy/hoper/server/go/lib/protobuf/request"
-	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
 	"github.com/actliboy/hoper/server/go/mod/content/conf"
 	"github.com/actliboy/hoper/server/go/mod/content/dao"
 	"github.com/actliboy/hoper/server/go/mod/content/model"
@@ -44,7 +44,7 @@ func (*DiaryService) AddDiaryBook(ctx context.Context, req *content.AddDiaryBook
 		return nil, err
 	}
 
-	db := ctxi.NewDB(dao.Dao.GORMDB)
+	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
 	req.UserId = auth.Id
 	err = db.Table(model.DiaryBookTableName).Create(req).Error
 	if err != nil {
@@ -59,7 +59,7 @@ func (*DiaryService) EditDiaryBook(ctx context.Context, req *content.AddDiaryBoo
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(dao.Dao.GORMDB)
+	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
 	req.UserId = auth.Id
 	err = db.Table(model.DiaryBookTableName).Where(`id =? AND user_id =?`, req.Id, auth.Id).
 		Updates(req).Error
@@ -80,7 +80,7 @@ func (*DiaryService) Info(ctx context.Context, req *request.Object) (*content.Di
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(dao.Dao.GORMDB)
+	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
 	var diary content.Diary
 	err = db.Where(`id = ? AND user_id = ?`, req.Id, auth.Id).First(&diary).Error
 	if err != nil {
@@ -95,7 +95,7 @@ func (*DiaryService) Add(ctx context.Context, req *content.AddDiaryReq) (*empty.
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(dao.Dao.GORMDB)
+	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
 	req.UserId = auth.Id
 	err = db.Table(model.DiaryTableName).Create(req).Error
 	if err != nil {
@@ -116,7 +116,7 @@ func (*DiaryService) Delete(ctx context.Context, req *request.Object) (*empty.Em
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(dao.Dao.GORMDB)
+	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
 	contentDBDao := dao.GetDBDao(ctxi, db)
 	err = contentDBDao.DelByAuth(model.DiaryTableName, req.Id, auth.Id)
 	if err != nil {

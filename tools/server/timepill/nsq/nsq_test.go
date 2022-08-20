@@ -1,8 +1,8 @@
 package nsq
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/tiga/initialize"
-	insq "github.com/actliboy/hoper/server/go/lib/tiga/initialize/nsq"
+	"github.com/actliboy/hoper/server/go/lib/initialize"
+	insq "github.com/actliboy/hoper/server/go/lib/initialize/nsq"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/nsqio/go-nsq"
 	"testing"

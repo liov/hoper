@@ -17,3 +17,9 @@ const (
 	ExprNotEqual = " != ?"
 	ExprGreater  = " > ?"
 )
+
+const (
+	MYSQL    = "mysql"
+	POSTGRES = "postgres"
+	SQLite   = "sqlite3"
+)

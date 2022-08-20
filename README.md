@@ -104,12 +104,12 @@
                                          ```go
                                              func (*UserService) Add(ctx context.Context, req *model.SignupReq) (*response.TinyRep, error) {
                                              	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
-                                             	pick.Api(func() interface{} {
-                                             		return pick.Method(http.MethodPost).
+                                             	pick.Api(func() {
+                                             		pick.Method(http.MethodPost).
                                              			Title("用户注册").
                                              			Version(2).
                                              			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
-                                             			ChangeLog("1.0.1", "jyb", "2019/12/16", "修改测试")
+                                             			ChangeLog("1.0.1", "jyb", "2019/12/16", "修改测试").End()
                                              	})
                                              
                                              	return &response.TinyRep{Message: "测试"}, nil

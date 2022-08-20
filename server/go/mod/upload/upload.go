@@ -4,8 +4,8 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/hex"
+	contexti "github.com/actliboy/hoper/server/go/lib/context"
 	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
-	contexti "github.com/actliboy/hoper/server/go/lib/tiga/context"
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	httpi "github.com/actliboy/hoper/server/go/lib/utils/net/http"
 	timei "github.com/actliboy/hoper/server/go/lib/utils/time"
@@ -80,7 +80,7 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 	ctxi := contexti.CtxFromContext(ctx)
 	auth, err := auth(ctxi, false)
 	uploadDao := dao.GetDao(ctxi)
-	db := ctxi.NewDB(dao.Dao.GORMDB)
+	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
 	upload, err := uploadDao.UploadDB(db, md5, size)
 	if err != nil {
 		errorcode.DBError.OriErrRep().Response(w)
@@ -107,7 +107,7 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 
 func save(ctx *contexti.Ctx, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
 	uploadDao := dao.GetDao(ctx)
-	db := ctx.NewDB(dao.Dao.GORMDB)
+	db := ctx.NewDB(dao.Dao.GORMDB.DB)
 	auth := ctx.AuthInfo.(*user.AuthInfo)
 	if md5Str != "" {
 		upload, err = uploadDao.UploadDB(db, md5Str, strconv.FormatInt(info.Size, 10))
