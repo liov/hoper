@@ -3,6 +3,8 @@
 # time: 2019/07/21--20:12
 __author__ = 'Henry'
 
+from tools.python.bilibili.api import get_play_list_from_session, down_video
+from tools.python.bilibili.util import combine_video, format_size
 
 '''
 项目: B站动漫番剧(bangumi)下载
@@ -26,25 +28,6 @@ import imageio
 imageio.plugins.ffmpeg.download()
 
 # 访问API地址
-def get_play_list(aid, cid, quality):
-    url_api = 'https://api.bilibili.com/x/player/playurl?cid={}&avid={}&qn={}'.format(cid, aid, quality)
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36',
-        'Cookie': 'SESSDATA=75a75cf2%2C1564669876%2Cb7c7b171', # 登录B站后复制一下cookie中的SESSDATA字段,有效期1个月
-        'Host': 'api.bilibili.com'
-    }
-    html = requests.get(url_api, headers=headers).json()
-    # print(html)
-    # 当下载会员视频时,如果cookie中传入的不是大会员的SESSDATA时就会返回: {'code': -404, 'message': '啥都木有', 'ttl': 1, 'data': None}
-    if html['code'] != 0:
-        print('注意!当前集数为B站大会员专享,若想下载,Cookie中请传入大会员的SESSDATA')
-        return 'NoVIP'
-    video_list = []
-    for i in html['data']['durl']:
-        video_list.append(i['url'])
-    print(video_list)
-    return video_list
-
 
 # 下载视频
 '''
@@ -92,87 +75,7 @@ def Schedule(blocknum, blocksize, totalsize):
     # print('\r')
 
 
-# 字节bytes转化K\M\G
-def format_size(bytes):
-    try:
-        bytes = float(bytes)
-        kb = bytes / 1024
-    except:
-        print("传入的字节格式不对")
-        return "Error"
-    if kb >= 1024:
-        M = kb / 1024
-        if M >= 1024:
-            G = M / 1024
-            return "%.3fG" % (G)
-        else:
-            return "%.3fM" % (M)
-    else:
-        return "%.3fK" % (kb)
 
-
-#  下载视频
-def down_video(video_list, title, start_url, page):
-    num = 1
-    print('[正在下载第{}话视频,请稍等...]:'.format(page) + title)
-    currentVideoPath = os.path.join(sys.path[0], 'bilibili_video', title)  # 当前目录作为下载目录
-    for i in video_list:
-        opener = urllib.request.build_opener()
-        # 请求头
-        opener.addheaders = [
-            # ('Host', 'upos-hz-mirrorks3.acgvideo.com'),  #注意修改host,不用也行
-            ('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:56.0) Gecko/20100101 Firefox/56.0'),
-            ('Accept', '*/*'),
-            ('Accept-Language', 'en-US,en;q=0.5'),
-            ('Accept-Encoding', 'gzip, deflate, br'),
-            ('Range', 'bytes=0-'),  # Range 的值要为 bytes=0- 才能下载完整视频
-            ('Referer', start_url),  # 注意修改referer,必须要加的!
-            ('Origin', 'https://www.bilibili.com'),
-            ('Connection', 'keep-alive'),
-
-        ]
-        urllib.request.install_opener(opener)
-        # 创建文件夹存放下载的视频
-        if not os.path.exists(currentVideoPath):
-            os.makedirs(currentVideoPath)
-        # 开始下载
-        if len(video_list) > 1:
-            urllib.request.urlretrieve(url=i, filename=os.path.join(currentVideoPath, r'{}-{}.flv'.format(title, num)),
-                                       reporthook=Schedule_cmd)  # 写成mp4也行  title + '-' + num + '.flv'
-        else:
-            urllib.request.urlretrieve(url=i, filename=os.path.join(currentVideoPath, r'{}.flv'.format(title)),
-                                       reporthook=Schedule_cmd)  # 写成mp4也行  title + '-' + num + '.flv'
-        num += 1
-
-
-# 合并视频(20190802新版)
-def combine_video(title_list):
-    video_path = os.path.join(sys.path[0], 'bilibili_video')  # 下载目录
-    for title in title_list:
-        current_video_path = os.path.join(video_path ,title)
-        if len(os.listdir(current_video_path)) >= 2:
-            # 视频大于一段才要合并
-            print('[下载完成,正在合并视频...]:' + title)
-            # 定义一个数组
-            L = []
-            # 遍历所有文件
-            for file in sorted(os.listdir(current_video_path), key=lambda x: int(x[x.rindex("-") + 1:x.rindex(".")])):
-                # 如果后缀名为 .mp4/.flv
-                if os.path.splitext(file)[1] == '.flv':
-                    # 拼接成完整路径
-                    filePath = os.path.join(current_video_path, file)
-                    # 载入视频
-                    video = VideoFileClip(filePath)
-                    # 添加到数组
-                    L.append(video)
-            # 拼接视频
-            final_clip = concatenate_videoclips(L)
-            # 生成目标视频文件
-            final_clip.to_videofile(os.path.join(current_video_path, r'{}.mp4'.format(title)), fps=24, remove_temp=False)
-            print('[视频合并完成]' + title)
-        else:
-            # 视频只有一段则直接打印下载完成
-            print('[视频合并完成]:' + title)
 
 
 if __name__ == '__main__':
@@ -237,7 +140,7 @@ if __name__ == '__main__':
         print('[下载番剧标题]:' + title)
         title_list.append(title)
         start_url = ep_url
-        video_list = get_play_list(aid, cid, quality)
+        video_list = get_play_list_from_session(aid, cid, quality)
         start_time = time.time()
         # down_video(video_list, title, start_url, page)
         # 定义线程

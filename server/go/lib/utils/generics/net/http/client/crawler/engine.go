@@ -65,7 +65,7 @@ func (e *Engine) NewTask(req *crawler.Request) *conctrl.Task {
 	handler := e.kindHandlers[req.Kind]
 	req.HandleFun = handler.handleFun
 	return &conctrl.Task{
-		Kind: req.Kind,
+		TaskMeta: conctrl.TaskMeta{Kind: req.Kind},
 		Do: func(ctx context.Context) {
 			if handler.timer != nil {
 				<-handler.timer.C

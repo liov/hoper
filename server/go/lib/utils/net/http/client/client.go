@@ -37,15 +37,17 @@ const timeout = time.Minute
 
 func init() {
 	defaultClient.Transport = &http.Transport{
+		Proxy:             http.ProxyFromEnvironment, // 代理使用
+		ForceAttemptHTTP2: true,
 		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
 			c, err := net.DialTimeout(network, addr, timeout)
 			if err != nil {
 				return nil, err
 			}
-			c.SetDeadline(time.Now().Add(timeout))
-			return c, nil
+			err = c.SetDeadline(time.Now().Add(timeout))
+			return c, err
 		},
-		DisableKeepAlives: true,
+		//DisableKeepAlives: true,
 	}
 }
 
@@ -138,14 +140,14 @@ type RequestParams struct {
 	ctx                context.Context
 	client             *http.Client
 	url, method        string
+	contentType        ContentType
 	timeout            time.Duration
 	AuthUser, AuthPass string
-	ContentType        ContentType
 	header             http.Header
 	cachedHeaderKey    string
 	logger             LogCallback
 	genlog             bool
-	ResponseHandler    func(response []byte) ([]byte, error)
+	responseHandler    func(response []byte) ([]byte, error)
 	retryTimes         int
 	retryHandle        func(*RequestParams)
 }
@@ -178,7 +180,7 @@ func NewDeleteRequest(url string) *RequestParams {
 	return newRequest(url, http.MethodDelete)
 }
 
-func (req *RequestParams) SetMethod(method string) *RequestParams {
+func (req *RequestParams) Method(method string) *RequestParams {
 	req.method = strings.ToUpper(method)
 	return req
 }
@@ -203,8 +205,8 @@ func (req *RequestParams) Delete() *RequestParams {
 	return req
 }
 
-func (req *RequestParams) SetContentType(contentType ContentType) *RequestParams {
-	req.ContentType = contentType
+func (req *RequestParams) ContentType(contentType ContentType) *RequestParams {
+	req.contentType = contentType
 	return req
 }
 
@@ -223,7 +225,7 @@ func (req *RequestParams) CachedHeader(key string) *RequestParams {
 	return req
 }
 
-func (req *RequestParams) SetLogger(logger LogCallback) *RequestParams {
+func (req *RequestParams) WithLogger(logger LogCallback) *RequestParams {
 	req.logger = logger
 	return req
 }
@@ -241,28 +243,38 @@ func (req *RequestParams) GenLog() *RequestParams {
 	return req
 }
 
-func (req *RequestParams) SetResponseHandler(handler func([]byte) ([]byte, error)) *RequestParams {
-	req.ResponseHandler = handler
+func (req *RequestParams) ResponseHandler(handler func([]byte) ([]byte, error)) *RequestParams {
+	req.responseHandler = handler
 	return req
 }
 
-func (req *RequestParams) SetTimeout(timeout time.Duration) *RequestParams {
+func (req *RequestParams) Timeout(timeout time.Duration) *RequestParams {
 	req.timeout = timeout
 	return req
 }
 
-func (req *RequestParams) SetClient(client *http.Client) *RequestParams {
+func (req *RequestParams) WithClient(client *http.Client) *RequestParams {
 	req.client = client
 	return req
 }
 
-func (req *RequestParams) SetRetryTimes(retryTimes int) *RequestParams {
+func (req *RequestParams) RetryTimes(retryTimes int) *RequestParams {
 	req.retryTimes = retryTimes
 	return req
 }
 
-func (req *RequestParams) SetRetryHandle(handle func(*RequestParams)) *RequestParams {
+func (req *RequestParams) RetryHandle(handle func(*RequestParams)) *RequestParams {
 	req.retryHandle = handle
+	return req
+}
+
+func (req *RequestParams) QueryParam(param interface{}) *RequestParams {
+	params := GetParam(param)
+	if strings.Contains(req.url, "?") {
+		req.url += "&" + params
+	} else {
+		req.url += "?" + params
+	}
 	return req
 }
 
@@ -289,6 +301,18 @@ func (res *ResponseBody) CheckError() error {
 
 type RawResponse = []byte
 
+func (req *RequestParams) DoWithNoParam(response interface{}) error {
+	return req.Do(nil, response)
+}
+
+func (req *RequestParams) DoWithNoResponse(param interface{}) error {
+	return req.Do(param, nil)
+}
+
+func (req *RequestParams) DoEmpty() error {
+	return req.Do(nil, nil)
+}
+
 // Do create a HTTP request
 func (req *RequestParams) Do(param, response interface{}) error {
 	method := req.method
@@ -305,7 +329,7 @@ func (req *RequestParams) Do(param, response interface{}) error {
 	// 日志记录
 	defer func(now time.Time) {
 		if req.genlog || (req.logger != nil && genlog) {
-			req.logger(url, method, req.AuthUser, reqBody, respBody, statusCode, time.Now().Sub(now), err)
+			req.logger(url, method, req.AuthUser, reqBody, respBody, statusCode, time.Since(now), err)
 		}
 	}(reqTime)
 
@@ -317,7 +341,7 @@ func (req *RequestParams) Do(param, response interface{}) error {
 			case []byte:
 				url += "?" + stringsi.ToString(paramt)
 			default:
-				params := getParam(param)
+				params := GetParam(param)
 				url += "?" + params
 			}
 		}
@@ -337,7 +361,7 @@ func (req *RequestParams) Do(param, response interface{}) error {
 				body = bytes.NewReader(reqBytes)
 				reqBody.Data = reqBytes
 			default:
-				if req.ContentType == ContentTypeJson {
+				if req.contentType == ContentTypeJson {
 					var reqBytes []byte
 					reqBytes, err = json.Marshal(param)
 					if err != nil {
@@ -347,7 +371,7 @@ func (req *RequestParams) Do(param, response interface{}) error {
 					reqBody.Data = reqBytes
 					reqBody.ContentType = ContentTypeJson
 				} else {
-					params := getParam(param)
+					params := GetParam(param)
 					reqBody.Data = stringsi.ToBytes(params)
 					body = strings.NewReader(params)
 				}
@@ -372,9 +396,9 @@ func (req *RequestParams) Do(param, response interface{}) error {
 	if req.AuthUser != "" && req.AuthPass != "" {
 		request.SetBasicAuth(req.AuthUser, req.AuthPass)
 	}
-	if req.ContentType == ContentTypeJson {
+	if req.contentType == ContentTypeJson {
 		request.Header.Set(httpi.HeaderContentType, httpi.ContentJSONHeaderValue)
-	} else if req.ContentType == ContentTypeFormData {
+	} else if req.contentType == ContentTypeFormData {
 		request.Header.Set(httpi.HeaderContentType, httpi.ContentFormMultipartHeaderValue)
 	} else {
 		request.Header.Set(httpi.HeaderContentType, httpi.ContentFormHeaderValue)
@@ -395,10 +419,18 @@ func (req *RequestParams) Do(param, response interface{}) error {
 				break
 			} else {
 				if req.genlog || (req.logger != nil && genlog) {
-					req.logger(url, method, req.AuthUser, reqBody, respBody, statusCode, time.Now().Sub(reqTime), errors.New(err.Error()+";will retry"))
+					req.logger(url, method, req.AuthUser, reqBody, respBody, statusCode, time.Since(reqTime), errors.New(err.Error()+";will retry"))
 				}
 			}
 		}
+	}
+	if httpresp, ok := response.(**http.Response); ok {
+		*httpresp = resp
+		return err
+	}
+	if httpresp, ok := response.(*io.ReadCloser); ok {
+		*httpresp = resp.Body
+		return err
 	}
 	respBody = &Body{}
 	var respBytes []byte
@@ -406,20 +438,21 @@ func (req *RequestParams) Do(param, response interface{}) error {
 	if err != nil {
 		return err
 	}
-	err = resp.Body.Close()
-	if req.ResponseHandler != nil {
-		respBytes, err = req.ResponseHandler(respBytes)
-		if err != nil {
-			return err
-		}
-	}
-	respBody.Data = respBytes
+	resp.Body.Close()
 	statusCode = resp.StatusCode
 	if resp.StatusCode < 200 || resp.StatusCode > 300 {
 		respBody.ContentType = ContentTypeForm
 		err = errors.New("status:" + resp.Status + "" + stringsi.ToString(respBytes))
 		return err
 	}
+
+	if req.responseHandler != nil {
+		respBytes, err = req.responseHandler(respBytes)
+		if err != nil {
+			return err
+		}
+	}
+	respBody.Data = respBytes
 	if len(respBytes) > 0 && response != nil {
 		if raw, ok := response.(*RawResponse); ok {
 			*raw = respBytes
@@ -459,7 +492,25 @@ func (req *RequestParams) DoRaw(param, response interface{}) (RawResponse, error
 	return raw, json.Unmarshal(raw, response)
 }
 
-func getParam(param interface{}) string {
+func (req *RequestParams) DoStream(param interface{}) (io.ReadCloser, error) {
+	var resp *http.Response
+	err := req.Do(param, &resp)
+	if err != nil {
+		return resp.Body, err
+	}
+	return resp.Body, nil
+}
+
+func GetStream(url string) (io.ReadCloser, error) {
+	var resp *http.Response
+	err := Get(url, &resp)
+	if err != nil {
+		return resp.Body, err
+	}
+	return resp.Body, nil
+}
+
+func GetParam(param interface{}) string {
 	if param == nil {
 		return ""
 	}
@@ -509,7 +560,7 @@ func getFieldValue(v reflect.Value) string {
 }
 
 func Get(url string, response any) error {
-	return NewGetRequest(url).Do(nil, response)
+	return NewGetRequest(url).DoWithNoParam(response)
 }
 
 func (req *RequestParams) DoGet(url string, param, response interface{}) error {

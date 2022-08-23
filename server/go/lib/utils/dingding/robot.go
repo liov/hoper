@@ -87,7 +87,7 @@ func SendRobotMessage(accessToken, secret, title, content string, contentType Co
 	}
 	body := strings.NewReader(contentType.Body(title, content))
 
-	return client.Post(ROOT+signUrl, body).Do(nil)
+	return client.Post(ROOT + signUrl).DoWithNoResponse(body)
 }
 
 func RobotUrl(accessToken, secret string) (string, error) {
@@ -106,7 +106,7 @@ func RobotUrl(accessToken, secret string) (string, error) {
 	return fmt.Sprintf("robot/send?access_token=%s", accessToken), nil
 }
 
-//SendRobotTextMessage can send a text message to a group chat
+// SendRobotTextMessage can send a text message to a group chat
 func SendRobotTextMessage(accessToken string, content string) error {
 	return SendRobotMessage(accessToken, "", "", content, ContentTypeText)
 }

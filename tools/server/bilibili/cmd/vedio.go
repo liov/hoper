@@ -15,6 +15,7 @@ func main() {
 	flag.IntVar(&config.Conf.Bilibili.PageEnd, "pe", 1, "开始页")
 	defer initialize.Start(config.Conf, &dao.Dao)()
 	flag.Parse()
-	req := download.FavReqs(config.Conf.Bilibili.PageBegin, config.Conf.Bilibili.PageEnd, download.FavList)
-	crawler.New(config.Conf.Bilibili.WorkCount).StopAfter(time.Hour * time.Duration(config.Conf.Bilibili.StopTime)).Run(req...)
+	engine := crawler.New(config.Conf.Bilibili.WorkCount).StopAfter(time.Hour * time.Duration(config.Conf.Bilibili.StopTime))
+	go download.FavVideo(engine)
+	engine.Run()
 }

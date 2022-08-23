@@ -3,6 +3,8 @@
 # time: 2019/07/02--08:12
 __author__ = 'Henry'
 
+from tools.python.bilibili.api import get_play_list
+from tools.python.bilibili.util import format_size
 
 '''
 项目: B站视频下载 - 多线程下载
@@ -50,24 +52,7 @@ def signal_handler(signal,frame):
 signal.signal(signal.SIGINT,signal_handler)
 
 # 访问API地址
-def get_play_list(start_url, cid, quality):
-    entropy = 'rbMCKn@KuamXWlPMoJGsKcbiJKUfkPF_8dABscJntvqhRSETg'
-    appkey, sec = ''.join([chr(ord(i) + 2) for i in entropy[::-1]]).split(':')
-    params = 'appkey=%s&cid=%s&otype=json&qn=%s&quality=%s&type=' % (appkey, cid, quality, quality)
-    chksum = hashlib.md5(bytes(params + sec, 'utf8')).hexdigest()
-    url_api = 'https://interface.bilibili.com/v2/playurl?%s&sign=%s' % (params, chksum)
-    headers = {
-        'Referer': start_url,  # 注意加上referer
-        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36'
-    }
-    # print(url_api)
-    html = requests.get(url_api, headers=headers).json()
-    # print(json.dumps(html))
-    video_list = []
-    for i in html['durl']:
-        video_list.append(i['url'])
-    # print(video_list)
-    return video_list
+
 
 
 # 下载视频
@@ -99,24 +84,6 @@ def Schedule_cmd(title, page):
         print('P{}:'.format(page) + '[' + s + ']  ' + percent_str.ljust(6, ' ') + speed_str)
     return Schedule
 
-
-# 字节bytes转化K\M\G
-def format_size(bytes):
-    try:
-        bytes = float(bytes)
-        kb = bytes / 1024
-    except:
-        print("传入的字节格式不对")
-        return "Error"
-    if kb >= 1024:
-        M = kb / 1024
-        if M >= 1024:
-            G = M / 1024
-            return "%.3fG" % (G)
-        else:
-            return "%.3fM" % (M)
-    else:
-        return "%.3fK" % (kb)
 
 
 #  下载视频
