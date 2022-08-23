@@ -289,7 +289,7 @@ func Download(url, dir string, sd *Speed) {
 
 func R(url string) (io.Reader, error) {
 	var res client.RawResponse
-	err := client.NewGetRequest(url).SetRetryTimes(20).SetRetryHandle(func(req *client.RequestParams) {
+	err := client.NewGetRequest(url).RetryTimes(20).RetryHandle(func(req *client.RequestParams) {
 		n := rand.Intn(5)
 		req.AddHeader("User-Agent", userAgent[n])
 	}).AddHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8").

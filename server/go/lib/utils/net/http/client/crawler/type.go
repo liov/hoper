@@ -11,8 +11,7 @@ type ParseFun func(ctx context.Context, content []byte) ([]*Request, error)
 type HandleFun func(ctx context.Context, url string) ([]*Request, error)
 
 type Request struct {
-	Id        uint
-	Kind      conctrl.Kind
+	conctrl.TaskMeta
 	Url       string
 	HandleFun HandleFun
 	errTimes  int
@@ -23,7 +22,7 @@ func NewRequest(url string, handleFun HandleFun) *Request {
 }
 
 func NewKindRequest(url string, kind conctrl.Kind, handleFun HandleFun) *Request {
-	return &Request{Url: url, Kind: kind, HandleFun: handleFun}
+	return &Request{Url: url, TaskMeta: conctrl.TaskMeta{Kind: kind}, HandleFun: handleFun}
 }
 
 func (r *Request) SetKind(k conctrl.Kind) *Request {
@@ -55,7 +54,7 @@ type ReqInterface interface {
 }
 
 func (r *Request) NewTask() *conctrl.Task {
-	return &conctrl.Task{Id: r.Id, Kind: r.Kind, Do: func(ctx context.Context) {
+	return &conctrl.Task{TaskMeta: r.TaskMeta, Do: func(ctx context.Context) {
 		r.HandleFun(ctx, r.Url)
 	}}
 }

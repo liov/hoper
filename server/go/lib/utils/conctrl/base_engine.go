@@ -10,8 +10,6 @@ import (
 	"time"
 )
 
-type TaskFun func(context.Context)
-
 type BaseTask struct {
 	Id uint
 	Do TaskFun
@@ -62,31 +60,45 @@ func (e *BaseEngine) Run(tasks ...*BaseTask) {
 				readyWorkerCh = workerList.First().ch
 				readyTask = taskList.First()
 			}
-			select {
-			case readyTask = <-e.taskChan:
-				taskList.Push(readyTask)
-			case readyWorker := <-e.workerChan:
-				workerList.Push(readyWorker)
-			case readyWorkerCh <- readyTask:
-				workerList.Pop()
-				taskList.Pop()
-				//检测任务是否已空
-			case <-timer.C:
-				if workerList.Size == int(e.currentWorkerCount) && taskList.Size == 0 {
-					emptyTimes++
-					if emptyTimes > 2 {
-						log.Println("task is empty")
-						log.Println("任务即将结束")
-						e.wg.Done()
-						timer.Stop()
-						break loop
-					}
+			if taskList.Size > int(e.limitWorkerCount*2) {
+				select {
+				case readyWorker := <-e.workerChan:
+					workerList.Push(readyWorker)
+				case readyWorkerCh <- readyTask:
+					workerList.Pop()
+					taskList.Pop()
+				case <-e.ctx.Done():
+					timer.Stop()
+					break loop
 				}
-				timer.Reset(time.Second * 1)
-			case <-e.ctx.Done():
-				e.wg.Done()
-				timer.Stop()
-				break loop
+			} else {
+				select {
+				case readyTask = <-e.taskChan:
+					taskList.Push(readyTask)
+				case readyWorker := <-e.workerChan:
+					workerList.Push(readyWorker)
+				case readyWorkerCh <- readyTask:
+					workerList.Pop()
+					taskList.Pop()
+					//检测任务是否已空
+				case <-timer.C:
+					if workerList.Size == int(e.currentWorkerCount) && taskList.Size == 0 {
+						emptyTimes++
+						if emptyTimes > 2 {
+							log.Println("task is empty")
+							log.Println("任务即将结束")
+							e.wg.Done()
+							timer.Stop()
+							break loop
+						}
+					}
+					emptyTimes = 0
+					timer.Reset(time.Second * 1)
+				case <-e.ctx.Done():
+					e.wg.Done()
+					timer.Stop()
+					break loop
+				}
 			}
 		}
 	}()

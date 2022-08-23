@@ -15,8 +15,8 @@ func NewRequest[RES any](url, method string) *RequestParams[RES] {
 	return (*RequestParams[RES])(client.NewRequest(url, method))
 }
 
-func (req *RequestParams[RES]) SetContentType(contentType client.ContentType) *RequestParams[RES] {
-	req.ContentType = contentType
+func (req *RequestParams[RES]) ContentType(contentType client.ContentType) *RequestParams[RES] {
+	(*client.RequestParams)(req).ContentType(contentType)
 	return req
 }
 
@@ -26,22 +26,22 @@ func (req *RequestParams[RES]) AddHeader(k, v string) *RequestParams[RES] {
 }
 
 func (req *RequestParams[RES]) SetLogger(logger client.LogCallback) *RequestParams[RES] {
-	(*client.RequestParams)(req).SetLogger(logger)
+	(*client.RequestParams)(req).WithLogger(logger)
 	return req
 }
 
-func (req *RequestParams[RES]) SetResponseHandler(handler func([]byte) ([]byte, error)) *RequestParams[RES] {
-	req.ResponseHandler = handler
+func (req *RequestParams[RES]) ResponseHandler(handler func([]byte) ([]byte, error)) *RequestParams[RES] {
+	(*client.RequestParams)(req).ResponseHandler(handler)
 	return req
 }
 
-func (req *RequestParams[RES]) SetTimeout(timeout time.Duration) *RequestParams[RES] {
-	(*client.RequestParams)(req).SetTimeout(timeout)
+func (req *RequestParams[RES]) Timeout(timeout time.Duration) *RequestParams[RES] {
+	(*client.RequestParams)(req).Timeout(timeout)
 	return req
 }
 
-func (req *RequestParams[RES]) SetClient(c *http.Client) *RequestParams[RES] {
-	(*client.RequestParams)(req).SetClient(c)
+func (req *RequestParams[RES]) WithClient(c *http.Client) *RequestParams[RES] {
+	(*client.RequestParams)(req).WithClient(c)
 	return req
 }
 

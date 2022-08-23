@@ -27,10 +27,3 @@ Version: Python3
 ```
 pip3 install -r requirements.txt
 ```
-## :dolphin:运行截图
-> - **运行下载**<br><br>
-
-> - **GUI图形界面**<br><br>  
-
-> - **下载完成**<br><br>
-

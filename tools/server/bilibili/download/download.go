@@ -110,7 +110,7 @@ func (video *Video) PlayerUrlHandleFun(ctx context.Context, url string) ([]*craw
 	var requests []*crawler.Request
 	if !dvideo.Record {
 		for _, durl := range res.Durl {
-			requests, err = video.DownloadVideoHandleFun(durl.Order)(ctx, durl.Url)
+			err = video.DownloadVideoHandleFun(durl.Order, durl.Url)
 			if err != nil {
 				return nil, err
 			}
@@ -138,76 +138,71 @@ func (video *Video) PlayerUrlHandleFun(ctx context.Context, url string) ([]*craw
 	return requests, nil
 }
 
-func (video *Video) DownloadVideoHandleFun(order int) crawler.HandleFun {
+func (video *Video) DownloadVideoHandleFun(order int, url string) error {
 	referer := rpc.GetViewUrl(video.Aid)
-	for i := 1; i <= video.Page; i++ {
-		referer += fmt.Sprintf("/?p=%d", i)
+	referer = referer + fmt.Sprintf("/?p=%d", video.Page)
+
+	c := http.Client{CheckRedirect: genCheckRedirectfun(referer)}
+
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return err
+	}
+	request.Header.Set("User-Agent", client.UserAgent1)
+	request.Header.Set("Accept", "*/*")
+	request.Header.Set("Accept-Language", "en-US,en;q=0.5")
+	request.Header.Set("Accept-Encoding", "gzip, deflate, br")
+	request.Header.Set("Range", "bytes=0-")
+	request.Header.Set("Referer", referer)
+	request.Header.Set("Origin", "https://www.bilibili.com")
+	request.Header.Set("Connection", "keep-alive")
+	request.Header.Set("Cookie", rpc.Cookie)
+
+	resp, err := c.Do(request)
+	if err != nil {
+		log.Printf("下载 %d 时出错, 错误信息：%s", video.Cid, err)
+		return err
 	}
 
-	return func(ctx context.Context, url string) ([]*crawler.Request, error) {
-
-		c := http.Client{CheckRedirect: genCheckRedirectfun(referer)}
-
-		request, err := http.NewRequest("GET", url, nil)
-		if err != nil {
-			log.Printf(url, err)
-			return nil, err
-		}
-		request.Header.Set("User-Agent", client.UserAgent1)
-		request.Header.Set("Accept", "*/*")
-		request.Header.Set("Accept-Language", "en-US,en;q=0.5")
-		request.Header.Set("Accept-Encoding", "gzip, deflate, br")
-		request.Header.Set("Range", "bytes=0-")
-		request.Header.Set("Referer", referer)
-		request.Header.Set("Origin", "https://www.bilibili.com")
-		request.Header.Set("Connection", "keep-alive")
-		request.Header.Set("Cookie", rpc.Cookie)
-
-		resp, err := c.Do(request)
-		if err != nil {
-			log.Printf("下载 %d 时出错, 错误信息：%s", video.Cid, err)
-			return nil, err
-		}
-
-		if resp.StatusCode != http.StatusPartialContent {
-			log.Printf("下载 %d 时出错, 错误码：%d", video.Cid, resp.StatusCode)
-			return nil, fmt.Errorf("错误码： %d", resp.StatusCode)
-		}
-		defer resp.Body.Close()
-
-		filename := fmt.Sprintf("%d_%d_%s_%d_%d.flv.downloading", video.Aid, video.Cid, video.Title, order, video.Quality)
-		filename = fs.PathClean(filename)
-		filename = filepath.Join(config.Conf.Bilibili.DownloadVideoPath, filename)
-		file, err := os.Create(filename)
-		if err != nil {
-			log.Println("错误信息：", err)
-			return nil, err
-		}
-
-		newname := filename[:len(filename)-len(".downloading")]
-
-		log.Println("正在下载："+filename, "质量：", video.Quality)
-		_, err = io.Copy(file, resp.Body)
-		if err != nil {
-			log.Printf("下载失败 aid: %d, cid: %d, title: %s, part: %s",
-				video.Aid, video.Cid, video.Title, video.Part)
-			log.Println("错误信息：", err)
-
-			// request again
-			//go requestLater(file, resp, video)
-			return nil, err
-		}
-		file.Close()
-
-		err = os.Rename(filename, newname)
-		if err != nil {
-			return nil, err
-		}
-		dao.Dao.Hoper.Table(dao.TableNameVideo).Where("cid = ?", video.Cid).Update("record", true)
-		log.Println("下载完成：" + newname)
-
-		return nil, nil
+	if resp.StatusCode != http.StatusPartialContent {
+		log.Printf("下载 %d 时出错, 错误码：%d", video.Cid, resp.StatusCode)
+		return fmt.Errorf("错误码： %d", resp.StatusCode)
 	}
+	defer resp.Body.Close()
+
+	filename := fmt.Sprintf("%d_%d_%s_%d_%d.flv.downloading", video.Aid, video.Cid, video.Title, order, video.Quality)
+	filename = fs.PathClean(filename)
+	filename = filepath.Join(config.Conf.Bilibili.DownloadVideoPath, filename)
+	file, err := os.Create(filename)
+	if err != nil {
+		log.Println("错误信息：", err)
+		return err
+	}
+
+	newname := filename[:len(filename)-len(".downloading")]
+
+	log.Println("正在下载："+filename, "质量：", video.Quality)
+	_, err = io.Copy(file, resp.Body)
+	if err != nil {
+		os.Remove(filename)
+		log.Printf("下载失败 aid: %d, cid: %d, title: %s, part: %s",
+			video.Aid, video.Cid, video.Title, video.Part)
+		log.Println("错误信息：", err)
+
+		// request again
+		//go requestLater(file, resp, video)
+		return err
+	}
+	file.Close()
+
+	err = os.Rename(filename, newname)
+	if err != nil {
+		return err
+	}
+	dao.Dao.Hoper.Table(dao.TableNameVideo).Where("cid = ?", video.Cid).Update("record", true)
+	log.Println("下载完成：" + newname)
+
+	return nil
 }
 
 func genCheckRedirectfun(referer string) func(req *http.Request, via []*http.Request) error {

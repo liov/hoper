@@ -67,8 +67,8 @@ func (api *API) GetNav() *NavInfo {
 	return GetV[*NavInfo](GetNavUrl())
 }
 
-func (api *API) GetFavList(page int) *FavList {
-	return GetV[*FavList](GetFavListUrl(page))
+func (api *API) GetFavList(favId, page int) *FavList {
+	return GetV[*FavList](GetFavListUrl(favId, page))
 }
 
 func (api *API) GetPlayerInfo(avid, cid, qn int) *VideoInfo {
@@ -83,8 +83,8 @@ func GetNavUrl() string {
 	return fmt.Sprintf("%s/x/web-interface/nav", Host)
 }
 
-func GetFavListUrl(page int) string {
-	return fmt.Sprintf("%s/x/v3/fav/resource/list?media_id=63181530&pn=%d&ps=20&keyword=&order=mtime&type=0&tid=0&platform=web&jsonp=jsonp", Host, page)
+func GetFavListUrl(favId, page int) string {
+	return fmt.Sprintf("%s/x/v3/fav/resource/list?media_id=%d&pn=%d&ps=20&keyword=&order=mtime&type=0&tid=0&platform=web&jsonp=jsonp", Host, favId, page)
 }
 
 func GetPlayerUrl(avid, cid, qn int) string {

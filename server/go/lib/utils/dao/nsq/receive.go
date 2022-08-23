@@ -14,13 +14,13 @@ type Consumer struct{}
 
 // 主函数
 
-//处理消息
+// 处理消息
 func (*Consumer) HandleMessage(msg *nsq.Message) error {
 	log.Info("receive", msg.NSQDAddress, "message:", string(msg.Body))
 	return nil
 }
 
-//初始化消费者
+// 初始化消费者
 func NewConsumer(topic string, channel string, handle nsq.HandlerFunc) {
 	cfg := nsq.NewConfig()
 	//cfg.LookupdPollInterval = time.Second          //设置重连时间
@@ -28,7 +28,7 @@ func NewConsumer(topic string, channel string, handle nsq.HandlerFunc) {
 	if err != nil {
 		panic(err)
 	}
-	//c.SetLogger(nil, 0)       //屏蔽系统日志
+	//c.WithLogger(nil, 0)       //屏蔽系统日志
 	c.AddHandler(handle) // 添加消费者接口
 
 	//建立NSQLookupd连接

@@ -35,5 +35,5 @@ type Request struct {
 }
 
 func (r *Request) NewTaskFun(id uint, kind conctrl.Kind) *crawler.Request {
-	return &crawler.Request{Id: id, Kind: kind, Url: r.Url, HandleFun: r.HandleFun}
+	return &crawler.Request{TaskMeta: conctrl.TaskMeta{Id: id, Kind: kind}, Url: r.Url, HandleFun: r.HandleFun}
 }

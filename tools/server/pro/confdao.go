@@ -18,8 +18,8 @@ func (c *Config) Init() {
 	c.Pro.Timer = c.Pro.Timer * time.Second
 	CommonDirLen = len(c.Pro.CommonDir)
 
-	/*	SetClient(http.DefaultClient,30,`socks5://localhost:8080`)
-		SetClient(picClient,30,`socks5://localhost:8080`)*/
+	/*	WithClient(http.DefaultClient,30,`socks5://localhost:8080`)
+		WithClient(picClient,30,`socks5://localhost:8080`)*/
 }
 
 type Customize struct {
