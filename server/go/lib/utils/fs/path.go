@@ -1,7 +1,6 @@
 package fs
 
 import (
-	"os"
 	sdpath "path"
 	"runtime"
 	"strings"
@@ -54,12 +53,12 @@ func Split(path string) (dir, file string) {
 // lastSlash(s) is strings.LastIndex(s, "/") but we can't import strings.
 func lastSlash(s string) int {
 	i := len(s) - 1
-	for i >= 0 && s[i] != os.PathSeparator {
+	for i >= 0 && s[i] != '/' {
 		i--
 	}
 	if i == -1 && runtime.GOOS == "windows" {
 		i := len(s) - 1
-		if i >= 0 && s[i] == '/' {
+		if i >= 0 && s[i] == '\\' {
 			i--
 		}
 	}

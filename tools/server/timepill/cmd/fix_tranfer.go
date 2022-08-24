@@ -14,7 +14,16 @@ import (
 
 func main() {
 	defer initialize.Start(&timepill.Conf, &timepill.Dao)()
-	tx()
+	var diaries []*model.TinyDiary
+	timepill.Dao.Hoper.Table(model.DiaryTableName).Select(`user_id,photo_url,created`).Where(`type = 2 AND created > '2022-08-24'`).Scan(&diaries)
+	for _, diary := range diaries {
+		if diary.PhotoUrl != "" {
+			err := timepill.DownloadPic(diary.UserId, diary.PhotoUrl, diary.Created)
+			if err != nil {
+				log.Error(err)
+			}
+		}
+	}
 }
 
 func getDir(userId int, url, created string) (string, string) {
@@ -60,7 +69,7 @@ func transfer(year string) {
 	for i := range dirInfos {
 		var diaries []*model.TinyDiary
 		date := dirInfos[i].Name()
-		timepill.Dao.Hoper.Table(`diary`).Select(`user_id,photo_url,created`).Where(`type = 2 AND created BETWEEN ? AND ? `, date+" 00:00:00", date+" 23:59:59").Scan(&diaries)
+		timepill.Dao.Hoper.Table(model.DiaryTableName).Select(`user_id,photo_url,created`).Where(`type = 2 AND created BETWEEN ? AND ? `, date+" 00:00:00", date+" 23:59:59").Scan(&diaries)
 		for _, diary := range diaries {
 			oldpath, newpath := getDir(diary.UserId, diary.PhotoUrl, diary.Created)
 			_, err := os.Stat(oldpath)
