@@ -33,9 +33,11 @@ func GetImage(url string) (io.ReadCloser, error) {
 			log.Println(err, "url:", url)
 			continue
 		}
-		if resp.StatusCode != 200 {
+		if resp.StatusCode < 200 || resp.StatusCode > 299 {
 			resp.Body.Close()
 			return nil, fmt.Errorf("返回错误，状态码：%d,url:%s", resp.StatusCode, url)
+		} else {
+			break
 		}
 	}
 
