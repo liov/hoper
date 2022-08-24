@@ -285,7 +285,7 @@ func (req *RequestParams) Do(param, response interface{}) error {
 	}(reqTime)
 
 	if method == http.MethodGet {
-		req.UrlParam(param)
+		url = req.UrlParam(param).url
 	} else {
 		reqBody = &Body{}
 		if param != nil {
