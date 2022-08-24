@@ -162,7 +162,7 @@ func CopyDatePic(filepath, date, userId, filename string) error {
 			return err
 		}
 	}
-	return fs.CopyFile(dir+year+"/"+date+"/"+userId+"_"+filename, filepath)
+	return fs.CopyFile(filepath, dir+year+"/"+date+"/"+userId+"_"+filename)
 }
 
 func DownloadCover(typ, url string) error {
