@@ -18,7 +18,7 @@ func main() {
 	defer initialize.Start(&timepill.Conf, &timepill.Dao)()
 
 	//go timepill.RecordByOrderUser()
-
+	flag.Parse()
 	if *today {
 		log.Info("todayRecord")
 		timepill.TodayRecord()
