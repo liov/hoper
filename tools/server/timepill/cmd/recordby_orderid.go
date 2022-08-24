@@ -14,7 +14,7 @@ func main() {
 
 	maxid, _ := timepill.Dao.DBDao(ctx).MaxDiaryId()
 
-	key := "RecordByOrderID2"
+	key := "RecordByOrderID"
 	err := timepill.Dao.Redis.SetNX(ctx, key, 1, 0).Err()
 	if err != nil {
 		log.Error(err)
