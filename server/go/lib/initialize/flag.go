@@ -15,6 +15,7 @@ type FlagConfig struct {
 }
 
 func init() {
+	pflag.CommandLine.ParseErrorsWhitelist.UnknownFlags = true
 	pflag.StringVarP(&InitConfig.Env, "env", "e", DEVELOPMENT, "环境")
 
 	if _, err := os.Stat(InitConfig.ConfUrl); os.IsNotExist(err) {
