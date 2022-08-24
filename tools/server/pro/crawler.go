@@ -343,6 +343,10 @@ type Post struct {
 	Path      string `gorm:"size:255;default:''"`
 }
 
+func (p *Post) TableName() string {
+	return "nineone.post"
+}
+
 func FixWeb(path string, sd *Speed, handle func(int, *Speed)) {
 	f, err := os.Open(Conf.Pro.CommonDir + path)
 	if err != nil {
