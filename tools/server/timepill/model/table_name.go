@@ -1,10 +1,11 @@
 package model
 
 const (
-	DiaryTableName    = "timepill.diary"
-	BadgeTableName    = "timepill.badge"
-	UserTableName     = "timepill.user"
-	NoteBookTableName = "timepill.note_book"
-	CommentTableName  = "timepill.comment"
-	FaceTableName     = "timepill.face"
+	Schema            = "timepill."
+	DiaryTableName    = Schema + "diary"
+	BadgeTableName    = Schema + "badge"
+	UserTableName     = Schema + "user"
+	NoteBookTableName = Schema + "note_book"
+	CommentTableName  = Schema + "comment"
+	FaceTableName     = Schema + "face"
 )

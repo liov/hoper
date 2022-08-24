@@ -15,11 +15,11 @@ import (
 )
 
 type DatabaseConfig struct {
-	Type, Charset, Database, TimeZone string
-	Host, User, Password              string
-	TimeFormat                        string
-	MaxIdleConns, MaxOpenConns        int
-	Port                              int32
+	Type, Charset, Database, Schema, TimeZone string
+	Host, User, Password                      string
+	TimeFormat                                string
+	MaxIdleConns, MaxOpenConns                int
+	Port                                      int32
 	//bug 字段gorm toml不生效
 	Gorm       gormi.GORMConfig
 	Prometheus bool

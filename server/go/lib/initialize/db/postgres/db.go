@@ -6,6 +6,7 @@ import (
 	pkdb "github.com/actliboy/hoper/server/go/lib/initialize/db"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type DatabaseConfig pkdb.DatabaseConfig
@@ -38,4 +39,16 @@ func (db *DB) SetEntity(entity interface{}) {
 
 func (db *DB) Close() error {
 	return nil
+}
+
+func (db *DB) Table(name string) *gorm.DB {
+	name = db.Conf.Schema + name
+	gdb := db.DB.Clauses()
+	gdb.Statement.TableExpr = &clause.Expr{SQL: gdb.Statement.Quote(name)}
+	gdb.Statement.Table = name
+	return gdb
+}
+
+func (db *DB) TableName(name string) string {
+	return db.Conf.Schema + name
 }

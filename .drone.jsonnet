@@ -42,7 +42,7 @@ local kubectl(deplocal, cmd) = if deplocal then {
 
 local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', sourceFile='', protoc=false, opts=[], deplocal=false, schedule='') = {
   local fullname = if name == '' then group else group + '-' + name,
-  local committag = fullname + if deplocal then '-local-v' else '-v',
+  local committag = fullname + '-v',
   local tag = '${DRONE_TAG##' + committag + '}',
   local datadir = if deplocal then '/home/new/data' else '/data',
   local dockerfilepath = tpldir + 'Dockerfile-' + type,
