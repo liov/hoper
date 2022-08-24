@@ -4,6 +4,7 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	gcrawler "github.com/actliboy/hoper/server/go/lib/utils/generics/net/http/client/crawler"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
+	"math"
 	"tools/bilibili/dao"
 	"tools/bilibili/rpc"
 	"tools/bilibili/tool"
@@ -22,7 +23,7 @@ func FavReqs(pageBegin, pageEnd int, handleFun crawler.HandleFun) []*crawler.Req
 }
 
 func FavVideo(engine *crawler.Engine) {
-
+	minAid := math.MaxInt
 	for {
 		var videos []*Video
 		dao.Dao.Hoper.DB.Raw(`SELECT
@@ -31,13 +32,14 @@ func FavVideo(engine *crawler.Engine) {
 FROM
     "bilibili"."view" a,jsonb_path_query(a.data,'$.pages[*]') AS p
 LEFT JOIN "bilibili"."video" b ON (p->'cid')::int8 = b.cid
-WHERE b.record = false
-LIMIT 20;`).Find(&videos)
+WHERE b.record = false AND a.id < ?  ORDER BY a.aid DESC
+LIMIT 20;`, minAid).Find(&videos)
 		for _, video := range videos {
 			video.Title = fs.PathClean(video.Title)
 			req := crawler.NewKindRequest(rpc.GetPlayerUrl(video.Aid, video.Cid, 120), KindGetPlayerUrl, video.PlayerUrlHandleFun)
 			engine.Engine.AddTask(engine.NewTask(req))
 		}
+		minAid = videos[len(videos)-1].Aid
 	}
 }
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"github.com/actliboy/hoper/server/go/lib/initialize/cache_ristretto"
-	"github.com/actliboy/hoper/server/go/lib/initialize/db"
+	"github.com/actliboy/hoper/server/go/lib/initialize/db/postgres"
 	initializeredis "github.com/actliboy/hoper/server/go/lib/initialize/redis"
 	"time"
 )
@@ -28,7 +28,7 @@ type Customize struct {
 }
 
 type dao struct {
-	Hoper     db.DB
+	Hoper     postgres.DB
 	Redis     initializeredis.Redis
 	Cache     cache_ristretto.Cache
 	UserCache cache_ristretto.Cache

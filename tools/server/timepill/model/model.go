@@ -12,6 +12,10 @@ type User struct {
 	Badges   []*Badge `json:"badges" gorm:"-"`
 }
 
+func (receiver *User) TableName() string {
+	return UserTableName
+}
+
 type Badge struct {
 	Id      int    `json:"id"`
 	UserId  int    `json:"user_id" gorm:"index"`
@@ -19,6 +23,10 @@ type Badge struct {
 	Created string `json:"created" gorm:"type:timestamptz(6);default:'0001-01-01 00:00:00';index"`
 	Title   string `json:"title" gorm:"size:255;default:''"`
 	IconUrl string `json:"iconUrl" gorm:"size:255;default:''"`
+}
+
+func (receiver *Badge) TableName() string {
+	return BadgeTableName
 }
 
 type Diary struct {
@@ -37,6 +45,31 @@ type Diary struct {
 	Liked           bool      `json:"-" gorm:"-"`
 	User            *User     `json:"user,omitempty" gorm:"-"`
 	NoteBook        *NoteBook `json:"notebook,omitempty" gorm:"-"`
+}
+
+func (receiver *Diary) TableName() string {
+	return DiaryTableName
+}
+
+type IndexDiary struct {
+	Id              int    `json:"id"`
+	UserId          int    `json:"user_id" gorm:"index"`
+	NoteBookId      int    `json:"notebook_id" gorm:"index"`
+	NoteBookSubject string `json:"notebook_subject" gorm:"index"`
+	Content         string `json:"content" gorm:"type:text"`
+	Created         string `json:"created" gorm:"timestamptz(6);default:'0001-01-01 00:00:00';index"`
+}
+
+func (diary *Diary) IndexDiary() *IndexDiary {
+
+	return &IndexDiary{
+		Id:              diary.Id,
+		UserId:          diary.UserId,
+		NoteBookId:      diary.NoteBookId,
+		NoteBookSubject: diary.NoteBookSubject,
+		Content:         diary.Content,
+		Created:         diary.Created,
+	}
 }
 
 type TinyDiary struct {
@@ -59,6 +92,10 @@ type NoteBook struct {
 	IsPublic    bool   `json:"isPublic" gorm:"-"`
 }
 
+func (receiver *NoteBook) TableName() string {
+	return NoteBookTableName
+}
+
 type Comment struct {
 	Id          int    `json:"id"`
 	UserId      int    `json:"user_id" gorm:"index"`
@@ -68,6 +105,10 @@ type Comment struct {
 	Created     string `json:"created" gorm:"type:timestamptz(6);default:'0001-01-01 00:00:00';index"`
 	User        *User  `json:"User" gorm:"-"`
 	Recipient   *User  `json:"recipient" gorm:"-"`
+}
+
+func (receiver *Comment) TableName() string {
+	return CommentTableName
 }
 
 type CoverType int
@@ -89,4 +130,8 @@ type Face struct {
 	UserId  int    `json:"user_id" gorm:"index"`
 	DairyId int    `json:"dairy_id" gorm:"index"`
 	Created string `json:"created" gorm:"type:timestamptz(6);default:now();index"`
+}
+
+func (receiver *Face) TableName() string {
+	return FaceTableName
 }

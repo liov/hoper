@@ -8,7 +8,6 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/errors/multierr"
 	"os"
 	"reflect"
-	"runtime/debug"
 	"strings"
 
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
@@ -72,10 +71,7 @@ func Start(conf Config, dao Dao, notinit ...string) func(deferf ...func()) {
 		for _, f := range init.deferf {
 			f()
 		}
-		if r := recover(); r != nil {
-			log.Error(r)
-			log.Error(string(debug.Stack()))
-		}
+
 	}
 }
 

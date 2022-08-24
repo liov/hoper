@@ -4,6 +4,7 @@ import (
 	"context"
 	v7 "github.com/actliboy/hoper/server/go/lib/initialize/elastic/v7"
 	"github.com/actliboy/hoper/server/go/lib/utils/def/request"
+	_type "github.com/actliboy/hoper/server/go/lib/utils/generics/dao/db/type"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"strconv"
 	"tools/timepill"
@@ -43,15 +44,15 @@ func (dao *Dao) MaxIdEs7() int {
 }
 
 func (dao *Dao) LoadES7(pigeSize int) {
-	req := &timepill.ListReq{
-		ListReq: request.PageSortReq{
+	req := &_type.ListReq[int]{
+		PageSortReq: request.PageSortReq{
 			PageReq: request.PageReq{PageNo: 1, PageSize: pigeSize},
-			SortReq: request.SortReq{SortField: "id", SortType: request.SortTypeASC},
+			SortReq: &request.SortReq{SortField: "id", SortType: request.SortTypeASC},
 		},
-		RangeReq: request.RangeReq{
+		RangeReq: &request.RangeReq[int]{
 			RangeField: "id",
 			RangeStart: dao.MaxIdEs7(),
-			RangeEnd:   nil,
+			RangeEnd:   0,
 			Include:    false,
 		},
 	}
@@ -66,7 +67,7 @@ func (dao *Dao) LoadES7(pigeSize int) {
 			log.Error(err)
 		}
 		for i, diary := range diaries {
-			_, err = index.Id(strconv.Itoa(diary.Id)).BodyJson(diary.DiaryIndex()).Do(dao.ctx)
+			_, err = index.Id(strconv.Itoa(diary.Id)).BodyJson(diary.IndexDiary()).Do(dao.ctx)
 			if err != nil {
 				log.Error(err)
 			}

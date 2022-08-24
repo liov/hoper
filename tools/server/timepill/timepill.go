@@ -35,7 +35,7 @@ func RecordTask() {
 
 func RecordNoteBook(notebookId int) {
 	var exists bool
-	err := Dao.Hoper.Raw(`SELECT EXISTS(SELECT id FROM "note_book" WHERE id = ?  LIMIT 1)`, notebookId).Row().Scan(&exists)
+	err := Dao.Hoper.Raw(`SELECT EXISTS(SELECT id FROM `+model.NoteBookTableName+` WHERE id = ?  LIMIT 1)`, notebookId).Row().Scan(&exists)
 	if err != nil {
 		log.Error(err)
 	}
@@ -185,7 +185,7 @@ func DownloadCover(typ, url string) error {
 }
 
 func DiaryExists(diaryId int) bool {
-	exists, err := postgres.Exists(Dao.Hoper.DB, "diary", "id ", diaryId, false)
+	exists, err := postgres.Exists(Dao.Hoper.DB, model.DiaryTableName, "id ", diaryId, false)
 	if err != nil {
 		log.Error(err)
 	}
@@ -193,7 +193,7 @@ func DiaryExists(diaryId int) bool {
 }
 
 func UserExists(userId int) bool {
-	exists, err := postgres.Exists(Dao.Hoper.DB, "user", "user_id ", userId, false)
+	exists, err := postgres.Exists(Dao.Hoper.DB, model.UserTableName, "user_id ", userId, false)
 	if err != nil {
 		log.Error(err)
 	}
@@ -202,7 +202,7 @@ func UserExists(userId int) bool {
 
 func UserExistsByIdName(userId int, userName string) bool {
 	var exists bool
-	err := Dao.Hoper.Raw(`SELECT EXISTS(SELECT id FROM "user" WHERE user_id = ? AND name = ? LIMIT 1)`, userId, userName).Row().Scan(&exists)
+	err := Dao.Hoper.Raw(`SELECT EXISTS(SELECT id FROM `+model.UserTableName+` WHERE user_id = ? AND name = ? LIMIT 1)`, userId, userName).Row().Scan(&exists)
 	if err != nil {
 		log.Error(err)
 	}
@@ -260,7 +260,7 @@ func RecordCommentWithJudge(diaryId int) {
 		log.Error(err)
 	}
 	for _, comment := range comments {
-		if exists, _ := postgres.ExistsById(Dao.Hoper.DB, "comment", uint64(comment.Id)); exists {
+		if exists, _ := postgres.ExistsById(Dao.Hoper.DB, model.CommentTableName, uint64(comment.Id)); exists {
 			continue
 		}
 		RecordUser(comment.UserId, comment.User.Name)
@@ -311,7 +311,7 @@ func TodayCommentRecord() {
 	today := time.Now().Format("2006-01-02")
 	for {
 		var diaryIds []int
-		err := Dao.Hoper.Table(`diary`).Where(`created > ?`, today).Order(`id`).Offset((page-1)*100).Limit(100).Pluck("id", &diaryIds)
+		err := Dao.Hoper.Table(model.DiaryTableName).Where(`created > ?`, today).Order(`id`).Offset((page-1)*100).Limit(100).Pluck("id", &diaryIds)
 		if err != nil {
 			log.Error(err)
 		}
@@ -330,7 +330,7 @@ func CronCommentRecord() {
 	today := time.Now().Format("2006-01-02")
 	for {
 		var diaryIds []int
-		err := Dao.Hoper.Table(`diary`).Where(`created > ?`, today).Order(`id`).Offset((page-1)*100).Limit(100).Pluck("id", &diaryIds)
+		err := Dao.Hoper.Table(model.DiaryTableName).Where(`created > ?`, today).Order(`id`).Offset((page-1)*100).Limit(100).Pluck("id", &diaryIds)
 		if err != nil {
 			log.Error(err)
 		}

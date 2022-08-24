@@ -10,17 +10,12 @@ import (
 	"tools/timepill/model"
 )
 
-const (
-	DiaryTableName = "diary"
-	FaceTableName  = "face"
-)
-
 func (dao *DBDao) List(req *_type.ListReq[int]) ([]*model.Diary, error) {
 	return clausei.List[*model.Diary, int](Dao.Hoper.DB, req)
 }
 
 func CreateTable() {
-	fmt.Println(Dao.Hoper.Migrator().CreateTable(&model.Badge{}, &model.User{}, &model.Diary{}, &model.NoteBook{}, &model.Comment{}))
+	fmt.Println(Dao.Hoper.Migrator().CreateTable(&model.Badge{}, &model.User{}, &model.Diary{}, &model.NoteBook{}, &model.Comment{}, &model.Face{}))
 }
 
 func CreateBadgeTable() {
@@ -43,7 +38,7 @@ type DBDao struct {
 func (dao *DBDao) MaxDiaryId() (int, error) {
 	var maxId int
 
-	err := dao.Hoper.Table(FaceTableName).Select("MAX(id)").Scan(&maxId).Error
+	err := dao.Hoper.Table(model.DiaryTableName).Select("COALESCE(MAX(id),10000)").Scan(&maxId).Error
 	if err != nil {
 		return 0, err
 	}
