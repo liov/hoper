@@ -9,7 +9,7 @@ import (
 
 func main() {
 	//defer initialize.Start(config.Conf, &dao.Dao)()
-	dir := "G:\\B站\\video"
+	dir := "D:\\F\\B站\\video"
 	log.Println(path.Dir(dir))
 	files, _ := os.ReadDir(dir)
 	m := map[string]struct{}{}

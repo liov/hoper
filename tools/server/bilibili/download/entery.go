@@ -32,7 +32,7 @@ func FavVideo(engine *crawler.Engine) {
 FROM
     "bilibili"."view" a,jsonb_path_query(a.data,'$.pages[*]') AS p
 LEFT JOIN "bilibili"."video" b ON (p->'cid')::int8 = b.cid
-WHERE b.record = false AND a.id < ?  ORDER BY a.aid DESC
+WHERE b.record = false AND a.aid < ?  ORDER BY a.aid DESC
 LIMIT 20;`, minAid).Find(&videos)
 		for _, video := range videos {
 			video.Title = fs.PathClean(video.Title)
