@@ -60,7 +60,7 @@ func transfer(year string) {
 	for i := range dirInfos {
 		var diaries []*model.TinyDiary
 		date := dirInfos[i].Name()
-		timepill.Dao.Hoper.Table(`diary`).Select(`user_id,photo_url,created`).Where(`type = 2 AND created BETWEEN ? AND ? `, date+" 00:00:00", date+" 23:59:59").Scan(&diaries)
+		timepill.Dao.Hoper.Table(model.DiaryTableName).Select(`user_id,photo_url,created`).Where(`type = 2 AND created BETWEEN ? AND ? `, date+" 00:00:00", date+" 23:59:59").Scan(&diaries)
 		for _, diary := range diaries {
 			oldpath, newpath := getDir(diary.UserId, diary.PhotoUrl, diary.Created)
 			_, err := os.Stat(oldpath)
