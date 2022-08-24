@@ -17,12 +17,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	httpi "github.com/actliboy/hoper/server/go/lib/utils/net/http"
 	"github.com/actliboy/hoper/server/go/lib/utils/number"
 	"github.com/actliboy/hoper/server/go/lib/utils/strings"
-	"go.uber.org/zap"
-	urlpkg "net/url"
 )
 
 // 不是并发安全的
@@ -74,65 +71,29 @@ func setTimeout(client *http.Client, timeout time.Duration) {
 	if timeout < time.Second {
 		timeout = timeout * time.Second
 	}
-	client.Transport = &http.Transport{
-		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-			c, err := net.DialTimeout(network, addr, timeout)
-			if err != nil {
-				return nil, err
-			}
-			c.SetDeadline(time.Now().Add(timeout))
-			return c, nil
-		},
-		DisableKeepAlives: true,
+	client.Transport.(*http.Transport).DialContext = func(ctx context.Context, network, addr string) (net.Conn, error) {
+		c, err := net.DialTimeout(network, addr, timeout)
+		if err != nil {
+			return nil, err
+		}
+		err = c.SetDeadline(time.Now().Add(timeout))
+		return c, err
 	}
+
 }
 
 type Pair struct {
 	K, V string
 }
 
-var defaultLog = DefaultLogger
-
-func DefaultLogger(url, method, auth string, reqBody, respBody *Body, status int, process time.Duration, err error) {
-	reqField, respField := zap.Skip(), zap.Skip()
-	if reqBody != nil {
-		key := "param"
-		if reqBody.IsJson() {
-			reqField = zap.Reflect(key, log.BytesJson(reqBody.Data))
-		} else if reqBody.IsProtobuf() {
-			reqField = zap.Binary(key, reqBody.Data)
-		} else {
-			reqField = zap.String(key, stringsi.ToString(reqBody.Data))
-		}
-	}
-	if respBody != nil {
-		key := "result"
-		if respBody.IsJson() {
-			respField = zap.Reflect(key, log.BytesJson(respBody.Data))
-		} else if respBody.IsProtobuf() {
-			respField = zap.Binary(key, respBody.Data)
-		} else {
-			respField = zap.String(key, stringsi.ToString(respBody.Data))
-		}
-	}
-
-	log.Default.Logger.Info("third-request", zap.String("interface", url),
-		zap.String("method", method),
-		reqField,
-		zap.Duration("processTime", process),
-		respField,
-		zap.String("other", auth),
-		zap.Int("status", status),
-		zap.Error(err))
-}
-
 type ContentType uint8
 
 const (
-	ContentTypeJson     ContentType = iota
-	ContentTypeForm     ContentType = iota
-	ContentTypeFormData ContentType = iota
-	ContentTypeProtobuf ContentType = iota
+	ContentTypeJson ContentType = iota
+	ContentTypeForm
+	ContentTypeFormData
+	ContentTypeProtobuf
+	ContentTypeText
 )
 
 // RequestParams ...
@@ -182,26 +143,6 @@ func NewDeleteRequest(url string) *RequestParams {
 
 func (req *RequestParams) Method(method string) *RequestParams {
 	req.method = strings.ToUpper(method)
-	return req
-}
-
-func (req *RequestParams) Get() *RequestParams {
-	req.method = http.MethodGet
-	return req
-}
-
-func (req *RequestParams) Post() *RequestParams {
-	req.method = http.MethodPost
-	return req
-}
-
-func (req *RequestParams) Put() *RequestParams {
-	req.method = http.MethodPut
-	return req
-}
-
-func (req *RequestParams) Delete() *RequestParams {
-	req.method = http.MethodDelete
 	return req
 }
 
@@ -268,12 +209,22 @@ func (req *RequestParams) RetryHandle(handle func(*RequestParams)) *RequestParam
 	return req
 }
 
-func (req *RequestParams) QueryParam(param interface{}) *RequestParams {
-	params := GetParam(param)
-	if strings.Contains(req.url, "?") {
-		req.url += "&" + params
-	} else {
-		req.url += "?" + params
+func (req *RequestParams) UrlParam(param interface{}) *RequestParams {
+	if param == nil {
+		return req
+	}
+	sep := "?"
+	if strings.Contains(req.url, sep) {
+		sep = "&"
+	}
+	switch paramt := param.(type) {
+	case string:
+		req.url += sep + paramt
+	case []byte:
+		req.url += sep + stringsi.ToString(paramt)
+	default:
+		params := UrlParam(param)
+		req.url += sep + params
 	}
 	return req
 }
@@ -334,17 +285,7 @@ func (req *RequestParams) Do(param, response interface{}) error {
 	}(reqTime)
 
 	if method == http.MethodGet {
-		if param != nil {
-			switch paramt := param.(type) {
-			case string:
-				url += "?" + paramt
-			case []byte:
-				url += "?" + stringsi.ToString(paramt)
-			default:
-				params := GetParam(param)
-				url += "?" + params
-			}
-		}
+		req.UrlParam(param)
 	} else {
 		reqBody = &Body{}
 		if param != nil {
@@ -371,7 +312,7 @@ func (req *RequestParams) Do(param, response interface{}) error {
 					reqBody.Data = reqBytes
 					reqBody.ContentType = ContentTypeJson
 				} else {
-					params := GetParam(param)
+					params := UrlParam(param)
 					reqBody.Data = stringsi.ToBytes(params)
 					body = strings.NewReader(params)
 				}
@@ -399,9 +340,9 @@ func (req *RequestParams) Do(param, response interface{}) error {
 	if req.contentType == ContentTypeJson {
 		request.Header.Set(httpi.HeaderContentType, httpi.ContentJSONHeaderValue)
 	} else if req.contentType == ContentTypeFormData {
-		request.Header.Set(httpi.HeaderContentType, httpi.ContentFormMultipartHeaderValue)
-	} else {
 		request.Header.Set(httpi.HeaderContentType, httpi.ContentFormHeaderValue)
+	} else {
+		request.Header.Set(httpi.HeaderContentType, httpi.ContentFormMultipartHeaderValue)
 	}
 	var resp *http.Response
 	resp, err = req.client.Do(request)
@@ -441,7 +382,7 @@ func (req *RequestParams) Do(param, response interface{}) error {
 	resp.Body.Close()
 	statusCode = resp.StatusCode
 	if resp.StatusCode < 200 || resp.StatusCode > 300 {
-		respBody.ContentType = ContentTypeForm
+		respBody.ContentType = ContentTypeText
 		err = errors.New("status:" + resp.Status + "" + stringsi.ToString(respBytes))
 		return err
 	}
@@ -454,21 +395,20 @@ func (req *RequestParams) Do(param, response interface{}) error {
 	}
 	respBody.Data = respBytes
 	if len(respBytes) > 0 && response != nil {
-		if raw, ok := response.(*RawResponse); ok {
-			*raw = respBytes
-			if resp.Header.Get(httpi.HeaderContentType) == httpi.ContentFormHeaderValue {
-				respBody.ContentType = ContentTypeForm
-			} else {
-				respBody.ContentType = ContentTypeJson
-			}
-			return nil
-		}
 		if resp.Header.Get(httpi.HeaderContentType) == httpi.ContentFormHeaderValue {
-			// TODO
 			respBody.ContentType = ContentTypeForm
 		} else {
-			// 默认json
 			respBody.ContentType = ContentTypeJson
+		}
+
+		if raw, ok := response.(*RawResponse); ok {
+			*raw = respBytes
+			return nil
+		}
+		if respBody.ContentType == ContentTypeForm {
+			// TODO
+		} else {
+			// 默认json
 			err = json.Unmarshal(respBytes, response)
 			if err != nil {
 				return err
@@ -483,13 +423,13 @@ func (req *RequestParams) Do(param, response interface{}) error {
 	return err
 }
 
-func (req *RequestParams) DoRaw(param, response interface{}) (RawResponse, error) {
+func (req *RequestParams) DoRaw(param interface{}) (RawResponse, error) {
 	var raw RawResponse
 	err := req.Do(param, &raw)
 	if err != nil {
 		return raw, err
 	}
-	return raw, json.Unmarshal(raw, response)
+	return raw, nil
 }
 
 func (req *RequestParams) DoStream(param interface{}) (io.ReadCloser, error) {
@@ -510,7 +450,7 @@ func GetStream(url string) (io.ReadCloser, error) {
 	return resp.Body, nil
 }
 
-func GetParam(param interface{}) string {
+func UrlParam(param interface{}) string {
 	if param == nil {
 		return ""
 	}
@@ -563,37 +503,37 @@ func Get(url string, response any) error {
 	return NewGetRequest(url).DoWithNoParam(response)
 }
 
-func (req *RequestParams) DoGet(url string, param, response interface{}) error {
+func (req *RequestParams) Get(url string, response interface{}) error {
 	req.url = url
 	req.method = http.MethodGet
-	return req.Do(param, response)
+	return req.Do(nil, response)
 }
 
-func Post(url string) *RequestParams {
-	return NewRequest(url, http.MethodPost)
+func Post(url string, param, response interface{}) error {
+	return NewPostRequest(url).Do(param, response)
 }
 
-func (req *RequestParams) DoPost(url string, param, response interface{}) error {
+func (req *RequestParams) Post(url string, param, response interface{}) error {
 	req.url = url
 	req.method = http.MethodPost
 	return (req).Do(param, response)
 }
 
-func Put(url string) *RequestParams {
-	return NewRequest(url, http.MethodPut)
+func Put(url string, param, response interface{}) error {
+	return NewPutRequest(url).Do(param, response)
 }
 
-func (req *RequestParams) DoPut(url string, param, response interface{}) error {
+func (req *RequestParams) Put(url string, param, response interface{}) error {
 	req.url = url
 	req.method = http.MethodPut
 	return req.Do(param, response)
 }
 
-func Delete(url string) *RequestParams {
-	return NewRequest(url, http.MethodDelete)
+func Delete(url string, param, response interface{}) error {
+	return NewDeleteRequest(url).Do(param, response)
 }
 
-func (req *RequestParams) DoDelete(url string, param, response interface{}) error {
+func (req *RequestParams) Delete(url string, param, response interface{}) error {
 	req.url = url
 	req.method = http.MethodDelete
 	return req.Do(param, response)
@@ -630,53 +570,4 @@ func (req *RequestParams) Download(url, path string) error {
 		return err
 	}
 	return nil
-}
-
-type ReplaceHttpRequest http.Request
-
-func NewReplaceHttpRequest(r *http.Request) *ReplaceHttpRequest {
-	return (*ReplaceHttpRequest)(r)
-}
-
-func (r *ReplaceHttpRequest) SetURL(url string) *ReplaceHttpRequest {
-	u, err := urlpkg.Parse(url)
-	if err != nil {
-		log.Error(err)
-	}
-	u.Host = removeEmptyPort(u.Host)
-	r.URL = u
-	r.Host = u.Host
-	return r
-}
-
-// Given a string of the form "host", "host:port", or "[ipv6::address]:port",
-// return true if the string includes a port.
-func hasPort(s string) bool { return strings.LastIndex(s, ":") > strings.LastIndex(s, "]") }
-
-// removeEmptyPort strips the empty port in ":port" to ""
-// as mandated by RFC 3986 Section 6.2.3.
-func removeEmptyPort(host string) string {
-	if hasPort(host) {
-		return strings.TrimSuffix(host, ":")
-	}
-	return host
-}
-
-func (r *ReplaceHttpRequest) SetMethod(method string) *ReplaceHttpRequest {
-	r.Method = strings.ToUpper(method)
-	return r
-}
-
-func (r *ReplaceHttpRequest) SetBody(body io.ReadCloser) *ReplaceHttpRequest {
-	r.Body = body
-	return r
-}
-
-func (r *ReplaceHttpRequest) SetContext(ctx context.Context) *ReplaceHttpRequest {
-	stdr := (*http.Request)(r).WithContext(ctx)
-	return (*ReplaceHttpRequest)(stdr)
-}
-
-func (r *ReplaceHttpRequest) StdHttpRequest() *http.Request {
-	return (*http.Request)(r)
 }

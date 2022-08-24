@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/actliboy/hoper/server/go/lib/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
-	"time"
 	"tools/timepill"
 )
 
@@ -15,7 +14,7 @@ func main() {
 
 	maxid, _ := timepill.Dao.DBDao(ctx).MaxDiaryId()
 
-	key := "RecordByOrderID"
+	key := "RecordByOrderID2"
 	err := timepill.Dao.Redis.SetNX(ctx, key, 1, 0).Err()
 	if err != nil {
 		log.Error(err)
@@ -25,7 +24,6 @@ func main() {
 	if err != nil {
 		log.Error(err)
 	}
-	tc := time.NewTicker(time.Second * 1)
 	for {
 		if timepill.DiaryExists(id) {
 			id++
@@ -36,7 +34,6 @@ func main() {
 			timepill.RecordCommentWithJudge(id)
 			continue
 		}
-		<-tc.C
 		timepill.RecordDiaryById(id)
 		id++
 		err = timepill.Dao.Redis.Incr(ctx, key).Err()

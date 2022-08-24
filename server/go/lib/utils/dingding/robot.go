@@ -87,7 +87,7 @@ func SendRobotMessage(accessToken, secret, title, content string, contentType Co
 	}
 	body := strings.NewReader(contentType.Body(title, content))
 
-	return client.Post(ROOT + signUrl).DoWithNoResponse(body)
+	return client.Post(ROOT+signUrl, body, nil)
 }
 
 func RobotUrl(accessToken, secret string) (string, error) {

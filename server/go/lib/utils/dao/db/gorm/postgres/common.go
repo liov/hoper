@@ -5,16 +5,16 @@ import (
 	"gorm.io/gorm"
 )
 
-const existsSQL = `SELECT EXISTS(SELECT * FROM "%s" WHERE %s = ?` + postgres.WithNotDeleted + ` LIMIT 1)`
+const existsSQL = `SELECT EXISTS(SELECT * FROM %s WHERE %s = ?` + postgres.WithNotDeleted + ` LIMIT 1)`
 
 func Delete(db *gorm.DB, tableName string, id uint64) error {
-	sql := `Update "` + tableName + `" SET deleted_at = now()
+	sql := `Update ` + tableName + ` SET deleted_at = now()
 WHERE id = ?` + postgres.WithNotDeleted
 	return db.Exec(sql, id).Error
 }
 
 func DeleteByAuth(db *gorm.DB, tableName string, id, userId uint64) error {
-	sql := `Update "` + tableName + `" SET deleted_at = now()
+	sql := `Update ` + tableName + ` SET deleted_at = now()
 WHERE id = ?  AND user_id = ?` + postgres.WithNotDeleted
 	return db.Exec(sql, id, userId).Error
 }
@@ -24,7 +24,7 @@ func ExistsByIdWithDeletedAt(db *gorm.DB, tableName string, id uint64) (bool, er
 }
 
 func ExistsByAuthWithDeletedAt(db *gorm.DB, tableName string, id, userId uint64) (bool, error) {
-	sql := `SELECT EXISTS(SELECT * FROM "` + tableName + `" 
+	sql := `SELECT EXISTS(SELECT * FROM ` + tableName + ` 
 WHERE id = ?  AND user_id = ?` + postgres.WithNotDeleted + ` LIMIT 1)`
 	var exists bool
 	err := db.Raw(sql, id, userId).Row().Scan(&exists)
