@@ -12,7 +12,7 @@ import (
 )
 
 func RecordFavList(ctx context.Context, url string) ([]*crawler.Request, error) {
-	res, err := rpc.Get[*rpc.FavList](url)
+	res, err := rpc.Get[*rpc.FavResourceList](url)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +26,7 @@ func RecordFavList(ctx context.Context, url string) ([]*crawler.Request, error) 
 		}
 		if !exists {
 			req1 := GetViewInfoReq(aid, RecordViewInfoHandleFun)
-			req2 := crawler.NewKindRequest(fav.Cover, KindDownloadCover, DownloadCover(ctx, fav.Id))
+			req2 := crawler.NewUrlKindRequest(fav.Cover, KindDownloadCover, DownloadCover(ctx, fav.Id))
 			requests = append(requests, req1, req2)
 		}
 	}
@@ -63,7 +63,7 @@ func RecordViewInfoHandleFun(ctx context.Context, url string) ([]*crawler.Reques
 			return nil, err
 		}
 		if !exists {
-			req := crawler.NewKindRequest(rpc.GetPlayerUrl(res.Aid, page.Cid, 120), KindGetPlayerUrl, video.RecordHandleFun)
+			req := crawler.NewUrlKindRequest(rpc.GetPlayerUrl(res.Aid, page.Cid, 120), KindGetPlayerUrl, video.RecordHandleFun)
 			requests = append(requests, req)
 		}
 	}

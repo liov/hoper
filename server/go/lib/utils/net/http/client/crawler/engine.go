@@ -66,11 +66,13 @@ func (e *Engine) Run(reqs ...*Request) {
 }
 
 func (e *Engine) NewTask(req *Request) *conctrl.Task {
-	if req == nil || req.HandleFun == nil {
+	if req == nil || req.TaskFun == nil {
 		return nil
 	}
-	if _, ok := e.visited.Load(req.Url); ok {
-		return nil
+	if req.Key != "" {
+		if _, ok := e.visited.Load(req.Key); ok {
+			return nil
+		}
 	}
 	return &conctrl.Task{
 		TaskMeta: conctrl.TaskMeta{Kind: req.Kind},
@@ -78,20 +80,19 @@ func (e *Engine) NewTask(req *Request) *conctrl.Task {
 			if e.kindHandler != nil && int(req.Kind) < len(e.kindHandler) && e.kindHandler[req.Kind].Ticker != nil {
 				<-e.kindHandler[req.Kind].Ticker.C
 			}
-			if _, ok := e.visited.Load(req.Url); ok {
-				return
-			}
-			reqs, err := req.HandleFun(ctx, req.Url)
+			reqs, err := req.TaskFun(ctx)
 			if err != nil {
 				req.errTimes++
 				log.Println("爬取失败", err)
-				log.Println("重新爬取,url :", req.Url)
+				log.Println("重新爬取,url :", req.Key)
 				if req.errTimes < 5 {
 					e.ReqsChan <- []*Request{req}
 				}
 				return
 			}
-			e.visited.Store(req.Url, struct{}{})
+			if req.Key != "" {
+				e.visited.Store(req.Key, struct{}{})
+			}
 			if len(reqs) > 0 {
 				e.ReqsChan <- reqs
 			}

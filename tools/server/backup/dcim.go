@@ -94,7 +94,7 @@ func DCIM(c *ftp.ServerConn) {
 		lastIdx = len(list)
 	}
 
-	for i := lastIdx - 1; i > 0; i-- {
+	for i := lastIdx - 1; i >= 0; i-- {
 		item := list[i]
 		if item.Type != ftp.EntryTypeFile {
 			continue
@@ -104,24 +104,25 @@ func DCIM(c *ftp.ServerConn) {
 			log.Println(err)
 			return
 		}
-		//log.Println(item)
+		dst := jpdir
 		switch {
 		case strings.HasPrefix(item.Name, "IMG"), strings.HasPrefix(item.Name, "MVIMG"), strings.HasPrefix(item.Name, "VID"):
-			err = fs.Copy(jpdir+sep+item.Name, resp)
+			dst = jpdir
 		case strings.HasPrefix(item.Name, "XHS"):
-			err = fs.Copy(xhsdir+sep+item.Name, resp)
+			dst = xhsdir
 		default:
 			if strings.HasSuffix(item.Name, "mp4") {
-				err = fs.Copy(dyvdir+sep+item.Name, resp)
+				dst = dyvdir
 			} else {
-				err = fs.Copy(dydir+sep+item.Name, resp)
+				dst = dydir
 			}
 		}
+		err = fs.Copy(dst+sep+item.Name, resp)
 		if err != nil {
 			log.Println(err)
 			return
 		}
-		log.Println("copy file: ", item.Name)
+		log.Println("copy file: ", dst+sep+item.Name)
 		resp.Close()
 	}
 }

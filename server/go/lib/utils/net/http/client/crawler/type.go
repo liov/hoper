@@ -9,24 +9,40 @@ type FetchFun func(ctx context.Context, url string) ([]byte, error)
 type ParseFun func(ctx context.Context, content []byte) ([]*Request, error)
 
 type HandleFun func(ctx context.Context, url string) ([]*Request, error)
+type TaskFun func(context.Context) ([]*Request, error)
 
 type Request struct {
 	conctrl.TaskMeta
-	Url       string
-	HandleFun HandleFun
-	errTimes  int
+	Key      string
+	TaskFun  TaskFun
+	errTimes int
 }
 
-func NewRequest(url string, handleFun HandleFun) *Request {
-	return &Request{Url: url, HandleFun: handleFun}
+func NewRequest(key string, taskFun TaskFun) *Request {
+	return &Request{Key: key, TaskFun: taskFun}
 }
 
-func NewKindRequest(url string, kind conctrl.Kind, handleFun HandleFun) *Request {
-	return &Request{Url: url, TaskMeta: conctrl.TaskMeta{Kind: kind}, HandleFun: handleFun}
+func NewKindRequest(key string, kind conctrl.Kind, taskFun TaskFun) *Request {
+	return NewRequest(key, taskFun).SetKind(kind)
+}
+
+func NewUrlRequest(url string, handleFun HandleFun) *Request {
+	return &Request{Key: url, TaskFun: func(ctx context.Context) ([]*Request, error) {
+		return handleFun(ctx, url)
+	}}
+}
+
+func NewUrlKindRequest(url string, kind conctrl.Kind, handleFun HandleFun) *Request {
+	return NewUrlRequest(url, handleFun).SetKind(kind)
 }
 
 func (r *Request) SetKind(k conctrl.Kind) *Request {
 	r.Kind = k
+	return r
+}
+
+func (r *Request) SetKey(key string) *Request {
+	r.Key = key
 	return r
 }
 
@@ -45,18 +61,12 @@ func NewHandleFun(f FetchFun, p ParseFun) HandleFun {
 	}
 }
 
-func NewRequest2(url string, fetchFun FetchFun, parseFunction ParseFun) *Request {
-	return &Request{Url: url, HandleFun: NewHandleFun(fetchFun, parseFunction)}
+func NewUrlRequest2(url string, fetchFun FetchFun, parseFunction ParseFun) *Request {
+	return NewUrlRequest(url, NewHandleFun(fetchFun, parseFunction))
 }
 
 type ReqInterface interface {
 	HandleFun
-}
-
-func (r *Request) NewTask() *conctrl.Task {
-	return &conctrl.Task{TaskMeta: r.TaskMeta, Do: func(ctx context.Context) {
-		r.HandleFun(ctx, r.Url)
-	}}
 }
 
 type HandleFuncs []HandleFun

@@ -7,7 +7,6 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
 	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
-	gcrawler "github.com/actliboy/hoper/server/go/lib/utils/generics/net/http/client/crawler"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
 	"gorm.io/gorm"
@@ -43,7 +42,7 @@ const (
 )
 
 func FavList(ctx context.Context, url string) ([]*crawler.Request, error) {
-	res, err := rpc.Get[*rpc.FavList](url)
+	res, err := rpc.Get[*rpc.FavResourceList](url)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +50,7 @@ func FavList(ctx context.Context, url string) ([]*crawler.Request, error) {
 	for _, fav := range res.Medias {
 		aid := tool.Bv2av(fav.Bvid)
 		req1 := GetViewInfoReq(aid, ViewInfoHandleFun)
-		req2 := crawler.NewKindRequest(fav.Cover, KindDownloadCover, DownloadCover(ctx, fav.Id))
+		req2 := crawler.NewUrlKindRequest(fav.Cover, KindDownloadCover, DownloadCover(ctx, fav.Id))
 		requests = append(requests, req1, req2)
 	}
 	return requests, nil
@@ -86,7 +85,7 @@ func ViewInfoHandleFun(ctx context.Context, url string) ([]*crawler.Request, err
 	for _, page := range res.Pages {
 		video := &Video{fs.PathClean(res.Title), res.Aid, page.Cid, page.Page, page.Part, 0}
 
-		req := crawler.NewKindRequest(rpc.GetPlayerUrl(res.Aid, page.Cid, 120), KindGetPlayerUrl, video.PlayerUrlHandleFun)
+		req := crawler.NewUrlKindRequest(rpc.GetPlayerUrl(res.Aid, page.Cid, 120), KindGetPlayerUrl, video.PlayerUrlHandleFun)
 		requests = append(requests, req)
 	}
 	return requests, nil
@@ -103,6 +102,9 @@ func (video *Video) PlayerUrlHandleFun(ctx context.Context, url string) ([]*craw
 	}
 	res, err := rpc.Get[*rpc.VideoInfo](url)
 	if err != nil {
+		if err.Error() == "啥都木有" {
+			return nil, nil
+		}
 		return nil, err
 	}
 
@@ -232,7 +234,7 @@ func UpSpaceListFirstPageHandleFun(upid int) crawler.HandleFun {
 		}
 		var requests []*crawler.Request
 		for i := 1; i <= res.Page.Count; i++ {
-			requests = append(requests, gcrawler.NewRequest(rpc.GetUpSpaceListUrl(upid, i), UpSpaceListHandleFun))
+			requests = append(requests, crawler.NewUrlRequest(rpc.GetUpSpaceListUrl(upid, i), UpSpaceListHandleFun))
 		}
 		return requests, nil
 	}

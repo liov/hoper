@@ -9,8 +9,8 @@ import (
 type FetchFun[T any] func(ctx context.Context, url string) (T, error)
 type ParseFun[T any] func(ctx context.Context, t T) ([]*crawler.Request, error)
 
-func NewRequest(url string, handleFun crawler.HandleFun) *crawler.Request {
-	return &crawler.Request{Url: url, HandleFun: handleFun}
+func NewUrlRequest(url string, handleFun crawler.HandleFun) *crawler.Request {
+	return crawler.NewUrlRequest(url, handleFun)
 }
 
 func NewHandleFun[T any](f FetchFun[T], p ParseFun[T]) crawler.HandleFun {
@@ -24,7 +24,7 @@ func NewHandleFun[T any](f FetchFun[T], p ParseFun[T]) crawler.HandleFun {
 }
 
 func NewRequest2[T any](url string, fetchFun FetchFun[T], parseFunction ParseFun[T]) *crawler.Request {
-	return &crawler.Request{Url: url, HandleFun: NewHandleFun[T](fetchFun, parseFunction)}
+	return crawler.NewUrlRequest(url, NewHandleFun[T](fetchFun, parseFunction))
 }
 
 type Callback[T any] func(t T) error
@@ -35,5 +35,8 @@ type Request struct {
 }
 
 func (r *Request) NewTaskFun(id uint, kind conctrl.Kind) *crawler.Request {
-	return &crawler.Request{TaskMeta: conctrl.TaskMeta{Id: id, Kind: kind}, Url: r.Url, HandleFun: r.HandleFun}
+	req := crawler.NewUrlRequest(r.Url, r.HandleFun)
+	req.Id = id
+	req.Kind = kind
+	return req
 }

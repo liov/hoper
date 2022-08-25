@@ -13,11 +13,11 @@ func CoverViewInfoHandleFun(ctx context.Context, url string) ([]*crawler.Request
 		return nil, err
 	}
 
-	return []*crawler.Request{crawler.NewKindRequest(res.Pic, KindDownloadCover, DownloadCover(ctx, res.Aid))}, nil
+	return []*crawler.Request{crawler.NewUrlKindRequest(res.Pic, KindDownloadCover, DownloadCover(ctx, res.Aid))}, nil
 }
 
 func CoverFavList(ctx context.Context, url string) ([]*crawler.Request, error) {
-	res, err := rpc.Get[*rpc.FavList](url)
+	res, err := rpc.Get[*rpc.FavResourceList](url)
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +25,7 @@ func CoverFavList(ctx context.Context, url string) ([]*crawler.Request, error) {
 	for _, fav := range res.Medias {
 		aid := tool.Bv2av(fav.Bvid)
 		req1 := GetViewInfoReq(aid, ViewInfoHandleFun)
-		req2 := crawler.NewKindRequest(fav.Cover, KindDownloadCover, DownloadCover(ctx, fav.Id))
+		req2 := crawler.NewUrlKindRequest(fav.Cover, KindDownloadCover, DownloadCover(ctx, fav.Id))
 		requests = append(requests, req1, req2)
 	}
 	return requests, nil
