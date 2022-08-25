@@ -9,8 +9,8 @@ func TestAPI(t *testing.T) {
 	t.Run("GetView", func(t *testing.T) {
 		t.Log(api.GetView(tool.Bv2av("BV15G411h7gY")))
 	})
-	t.Run("GetFavList", func(t *testing.T) {
-		t.Log(api.GetFavList(63181530, 1))
+	t.Run("GetFavLResourceList", func(t *testing.T) {
+		t.Log(api.GetFavLResourceList(63181530, 1))
 	})
 	t.Run("GetVideoInfo", func(t *testing.T) {
 		t.Log(api.GetPlayerInfo(471601857, 790731181, 120))

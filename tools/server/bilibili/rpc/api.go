@@ -1,6 +1,7 @@
 package rpc
 
 import (
+	"errors"
 	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	httpi "github.com/actliboy/hoper/server/go/lib/utils/net/http"
@@ -41,7 +42,7 @@ func GetWithoutCookie[T any](url string) (T, error) {
 	return res.Data, nil
 }
 
-func GetV[T any](url string) T {
+func GetIgnoreErr[T any](url string) T {
 	var res Response[T]
 	err := ReqCommonSet(client.NewGetRequest(url)).Do(nil, &res)
 	if err != nil {
@@ -59,20 +60,20 @@ func GetZ[T any](url string) *T {
 	return res
 }
 
-func (api *API) GetView(aid int) *ViewInfo {
-	return GetV[*ViewInfo](GetViewUrl(aid))
+func (api *API) GetView(aid int) (*ViewInfo, error) {
+	return Get[*ViewInfo](GetViewUrl(aid))
 }
 
 func (api *API) GetNav() *NavInfo {
-	return GetV[*NavInfo](GetNavUrl())
+	return GetIgnoreErr[*NavInfo](GetNavUrl())
 }
 
-func (api *API) GetFavList(favId, page int) *FavList {
-	return GetV[*FavList](GetFavListUrl(favId, page))
+func (api *API) GetFavLResourceList(favId, page int) (*FavResourceList, error) {
+	return Get[*FavResourceList](GetFavResourceListUrl(favId, page))
 }
 
-func (api *API) GetPlayerInfo(avid, cid, qn int) *VideoInfo {
-	return GetV[*VideoInfo](GetPlayerUrl(avid, cid, qn))
+func (api *API) GetPlayerInfo(avid, cid, qn int) (*VideoInfo, error) {
+	return Get[*VideoInfo](GetPlayerUrl(avid, cid, qn))
 }
 
 func GetViewUrl(aid int) string {
@@ -83,7 +84,7 @@ func GetNavUrl() string {
 	return fmt.Sprintf("%s/x/web-interface/nav", Host)
 }
 
-func GetFavListUrl(favId, page int) string {
+func GetFavResourceListUrl(favId, page int) string {
 	return fmt.Sprintf("%s/x/v3/fav/resource/list?media_id=%d&pn=%d&ps=20&keyword=&order=mtime&type=0&tid=0&platform=web&jsonp=jsonp", Host, favId, page)
 }
 
@@ -105,4 +106,37 @@ type Response[T any] struct {
 	Message string `json:"message"`
 	Ttl     int    `json:"ttl"`
 	Data    T      `json:"data"`
+}
+
+func (receiver *Response[T]) CheckError() error {
+	if receiver.Code != 0 {
+		return errors.New(receiver.Message)
+	}
+	return nil
+}
+
+// 收藏夹
+func GetFavListUrl(mid int) string {
+	var _getAidUrlTemp = "%s/x/v3/fav/folder/created/list-all?up_mid=%d&jsonp=jsonp"
+	return fmt.Sprintf(_getAidUrlTemp, Host, mid)
+}
+
+func GetFavList(mid int) *FavList {
+	return GetIgnoreErr[*FavList](GetFavListUrl(mid))
+}
+
+// 收藏订阅
+func GetFavCollectedListUrl(mid, page int) string {
+	var _getAidUrlTemp = "%s/x/v3/fav/folder/collected/list?pn=%d&ps=20&up_mid=%d&platform=web&jsonp=jsonp"
+	return fmt.Sprintf(_getAidUrlTemp, Host, page, mid)
+}
+
+func GetFavCollectedList(mid, page int) string {
+	var _getAidUrlTemp = "%s/x/v3/fav/folder/collected/list?pn=%d&ps=20&up_mid=%d&platform=web&jsonp=jsonp"
+	return fmt.Sprintf(_getAidUrlTemp, Host, page, mid)
+}
+
+func GetFavSeasonListUrl(seasonId, page int) string {
+	var _getAidUrlTemp = "%sx/space/fav/season/list?season_id=%d&pn=%d&ps=20&jsonp=jsonp"
+	return fmt.Sprintf(_getAidUrlTemp, Host, seasonId, page)
 }

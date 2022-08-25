@@ -18,8 +18,8 @@ type Engine struct {
 
 type KindHandler struct {
 	conctrl.KindHandler
-	handleFun crawler.HandleFun
-	timer     *time.Ticker
+	taskFun crawler.TaskFun
+	timer   *time.Ticker
 }
 
 func New(workerCount uint) *Engine {
@@ -29,8 +29,8 @@ func New(workerCount uint) *Engine {
 	}
 }
 
-func (e *KindHandler) HandleFun(handleFun crawler.HandleFun) *KindHandler {
-	e.handleFun = handleFun
+func (e *KindHandler) HandleFun(taskFun crawler.TaskFun) *KindHandler {
+	e.taskFun = taskFun
 	return e
 }
 
@@ -56,31 +56,36 @@ func (e *Engine) Run(reqs ...*crawler.Request) {
 }
 
 func (e *Engine) NewTask(req *crawler.Request) *conctrl.Task {
-	if _, ok := e.visited.Load(req.Url); ok {
-		return nil
+	if req.Key != "" {
+		if _, ok := e.visited.Load(req.Key); ok {
+			return nil
+		}
 	}
+
 	if e.kindHandlers == nil || int(req.Kind) < len(e.kindHandlers) || e.kindHandlers[req.Kind] == nil {
 		return nil
 	}
 	handler := e.kindHandlers[req.Kind]
-	req.HandleFun = handler.handleFun
+	req.TaskFun = handler.taskFun
 	return &conctrl.Task{
 		TaskMeta: conctrl.TaskMeta{Kind: req.Kind},
 		Do: func(ctx context.Context) {
 			if handler.timer != nil {
 				<-handler.timer.C
 			}
-			if _, ok := e.visited.Load(req.Url); ok {
+			if _, ok := e.visited.Load(req.Key); ok {
 				return
 			}
-			reqs, err := req.HandleFun(ctx, req.Url)
+			reqs, err := req.TaskFun(ctx)
 			if err != nil {
 				log.Println("爬取失败", err)
-				log.Println("重新爬取,url :", req.Url)
+				log.Println("重新爬取,url :", req.Key)
 				e.reqsChan <- reqs
 				return
 			}
-			e.visited.Store(req.Url, struct{}{})
+			if req.Key != "" {
+				e.visited.Store(req.Key, struct{}{})
+			}
 			if len(reqs) > 0 {
 				e.reqsChan <- reqs
 			}

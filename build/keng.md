@@ -1233,3 +1233,7 @@ sync: WaitGroup状态为0的时候就默认关闭了，不能Add了
 # acme Can not init api, for https://acme.zerossl.com/v2/DV90
 https://github.com/acmesh-official/acme.sh/issues/3842
 acme.sh  --set-default-ca --server letsencrypt
+
+# user 是postgresql的保留字，要用需要加双引号
+schema.table 或者 "schema"."table" 而不是 "schema.table"
+实测14单引号也行

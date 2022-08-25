@@ -22,3 +22,7 @@ SELECT
 FROM
     "bilibili"."view",jsonb_path_query(data,'$.pages[*]') AS p,jsonb_to_record(p) AS t(cid int8, page int2, part text)
 WHERE aid = 33640070;
+
+SELECT * FROM "view" WHERE (data-> 'cid')::int8 = 760279439;
+
+SELECT data #> '{accept_quality,0}' quality FROM "video" LIMIT 10;

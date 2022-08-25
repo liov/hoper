@@ -97,7 +97,7 @@ func Copy(c *ftp.ServerConn, src, dst string) error {
 	if lastIdx == 0 {
 		lastIdx = len(list)
 	}
-	for i := lastIdx - 1; i > 0; i-- {
+	for i := lastIdx - 1; i >= 0; i-- {
 		item := list[i]
 		if item.Type != ftp.EntryTypeFile {
 			continue
