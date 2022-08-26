@@ -9,7 +9,7 @@ import (
 
 func CoverViewInfoHandleFun(ctx context.Context, url string) ([]*crawler.Request, error) {
 	res, err := rpc.Get[rpc.ViewInfo](url)
-	if err != nil {
+	if err != nil && err.Error() != rpc.ErrorNotFound && err.Error() != rpc.ErrorNotPermission {
 		return nil, err
 	}
 

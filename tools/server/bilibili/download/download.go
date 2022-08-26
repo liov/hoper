@@ -58,7 +58,7 @@ func FavList(ctx context.Context, url string) ([]*crawler.Request, error) {
 
 func ViewInfoHandleFun(ctx context.Context, url string) ([]*crawler.Request, error) {
 	res, err := rpc.Get[rpc.ViewInfo](url)
-	if err != nil || res.Aid == 0 {
+	if err != nil && err.Error() != rpc.ErrorNotFound && err.Error() != rpc.ErrorNotPermission {
 		return nil, err
 	}
 	bilibiliDao := dao.NewDao(ctx, dao.Dao.Hoper.DB)
@@ -102,7 +102,7 @@ func (video *Video) PlayerUrlHandleFun(ctx context.Context, url string) ([]*craw
 	}
 	res, err := rpc.Get[*rpc.VideoInfo](url)
 	if err != nil {
-		if err.Error() == "啥都木有" {
+		if err.Error() == rpc.ErrorNotFound {
 			dao.Dao.Hoper.Table(dao.TableNameVideo).Where(`cid = ?`, video.Cid).UpdateColumn("deleted_at", time.Now())
 			return nil, nil
 		}
