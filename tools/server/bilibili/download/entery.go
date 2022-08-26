@@ -1,6 +1,7 @@
 package download
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
 	"math"
@@ -29,7 +30,7 @@ func FavVideo(engine *crawler.Engine) {
 		dao.Dao.Hoper.DB.Raw(`SELECT b.aid,b.cid,a.title,a.p->'page' page,a.p->'part' part
 FROM `+dao.TableNameVideo+` b 
 LEFT JOIN (SELECT data->'title' title ,jsonb_path_query(data,'$.pages[*]') p FROM `+dao.TableNameView+`)  a ON (a.p->'cid')::int8 = b.cid
-WHERE b.record = false AND b.aid < ? AND b.deleted_at IS NULL ORDER BY b.aid DESC LIMIT 20`, minAid).Find(&videos)
+WHERE b.record = false AND b.aid < ? AND b.`+postgres.NotDeleted+` ORDER BY b.aid DESC LIMIT 20`, minAid).Find(&videos)
 		if len(videos) == 0 {
 			return
 		}
