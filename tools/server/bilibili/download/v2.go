@@ -24,7 +24,7 @@ func FavListV2(ctx context.Context) ([]*crawler.Request, error) {
 	for _, fav := range res.Medias {
 		aid := tool.Bv2av(fav.Bvid)
 		req1 := GetViewInfoReqV2(aid)
-		req2 := crawler.NewUrlKindRequest(fav.Cover, KindDownloadCover, DownloadCover(ctx, fav.Id))
+		req2 := crawler.NewUrlKindRequest(fav.Cover, KindDownloadCover, CoverDownload(ctx, fav.Id))
 		requests = append(requests, req1, req2)
 	}
 	return requests, nil

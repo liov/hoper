@@ -10,6 +10,7 @@ import (
 type Customize struct {
 	PageBegin         int `init:flag:p`
 	PageEnd           int
+	FavId             int
 	StopTime          int
 	WorkCount         uint
 	DownloadPath      string

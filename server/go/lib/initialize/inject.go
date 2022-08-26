@@ -118,8 +118,6 @@ func setDao2(v reflect.Value, confM map[string]any) {
 	}
 	typ := v.Type()
 	generateTyp := reflect.TypeOf((*Generate)(nil)).Elem()
-	daoFieldCloserTyp := reflect.TypeOf((*DaoFieldCloser)(nil)).Elem()
-	daoFieldCloser1Typ := reflect.TypeOf((*DaoFieldCloser1)(nil)).Elem()
 	needInitPlaceholderTyp := reflect.TypeOf(NeedInitPlaceholder{})
 	for i := 0; i < v.NumField(); i++ {
 		field := v.Field(i)
@@ -136,7 +134,7 @@ func setDao2(v reflect.Value, confM map[string]any) {
 			if field.Kind() == reflect.Ptr && (!field.IsValid() || field.IsNil()) {
 				field.Set(reflect.New(field.Type().Elem()))
 			}
-			inter := field.Addr().Interface()
+
 			confName := strings.ToUpper(typ.Field(i).Name)
 			if slices.StringContains(InitConfig.ConfigCenterConfig.NoInject, confName) {
 				continue
@@ -145,14 +143,21 @@ func setDao2(v reflect.Value, confM map[string]any) {
 			var daoField daoField
 			for j := 0; j < fieldtyp.NumField(); j++ {
 				subfield := fieldtyp.Field(j)
-				if strings.ToUpper(subfield.Name) == EntityField || strings.ToUpper(subfield.Tag.Get(tag)) == EntityField && (subfield.Type.Implements(daoFieldCloserTyp) || subfield.Type.Implements(daoFieldCloser1Typ)) {
+				log.Info(subfield)
+				if strings.ToUpper(subfield.Name) == EntityField || strings.ToUpper(subfield.Tag.Get(tag)) == EntityField {
 					daoField.Entity = field.Field(j)
 					daoField.entitySet = true
 					continue
 				}
-				if strings.ToUpper(subfield.Name) == ConfigField || strings.ToUpper(subfield.Tag.Get(tag)) == ConfigField && subfield.Type.Implements(generateTyp) {
-					daoField.Config = field.Field(j)
-					daoField.configSet = true
+				// TODO: 定义新的Generate方法, 判断config Generate方法返回值方法类型为entity的类型
+				if strings.ToUpper(subfield.Name) == ConfigField || strings.ToUpper(subfield.Tag.Get(tag)) == ConfigField {
+					if subfield.Type.Implements(generateTyp) {
+						daoField.Config = field.Field(j)
+						daoField.configSet = true
+					} else if field.Field(j).Addr().Type().Implements(generateTyp) {
+						daoField.Config = field.Field(j).Addr()
+						daoField.configSet = true
+					}
 				}
 				if daoField.entitySet && daoField.configSet {
 					break
@@ -167,7 +172,7 @@ func setDao2(v reflect.Value, confM map[string]any) {
 				if tagSettings.ConfigName != "" {
 					confName = tagSettings.ConfigName
 				}
-				conf := daoField.Config.Addr().Interface()
+				conf := daoField.Config.Interface()
 				/*
 					如果conf设置的是指针，且没有初始化，会有问题，这里初始化会报不可寻址，似乎不能返回interface{}
 					valueConf := reflect.ValueOf(conf)
@@ -183,7 +188,10 @@ func setDao2(v reflect.Value, confM map[string]any) {
 				}
 				continue
 			}
+
 			// 根据接口实现获取配置和要注入的类型
+			inter := field.Addr().Interface()
+
 			if daofield, ok := inter.(DaoField); ok {
 				tagSettings := ParseDaoTagSettings(typ.Field(i).Tag.Get(tag))
 				if tagSettings.NotInject {

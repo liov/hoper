@@ -50,7 +50,7 @@ func FavList(ctx context.Context, url string) ([]*crawler.Request, error) {
 	for _, fav := range res.Medias {
 		aid := tool.Bv2av(fav.Bvid)
 		req1 := GetViewInfoReq(aid, ViewInfoHandleFun)
-		req2 := crawler.NewUrlKindRequest(fav.Cover, KindDownloadCover, DownloadCover(ctx, fav.Id))
+		req2 := crawler.NewUrlKindRequest(fav.Cover, KindDownloadCover, CoverDownload(ctx, fav.Id))
 		requests = append(requests, req1, req2)
 	}
 	return requests, nil
@@ -103,13 +103,13 @@ func (video *Video) PlayerUrlHandleFun(ctx context.Context, url string) ([]*craw
 	res, err := rpc.Get[*rpc.VideoInfo](url)
 	if err != nil {
 		if err.Error() == "啥都木有" {
+			dao.Dao.Hoper.Table(dao.TableNameVideo).Where(`cid = ?`, video.Cid).UpdateColumn("deleted_at", time.Now())
 			return nil, nil
 		}
 		return nil, err
 	}
 
 	video.Quality = res.Quality
-	var requests []*crawler.Request
 	if !dvideo.Record {
 		for _, durl := range res.Durl {
 			err = video.DownloadVideoHandleFun(durl.Order, durl.Url)
@@ -137,7 +137,7 @@ func (video *Video) PlayerUrlHandleFun(ctx context.Context, url string) ([]*craw
 		}
 	}
 
-	return requests, nil
+	return nil, nil
 }
 
 func (video *Video) DownloadVideoHandleFun(order int, url string) error {
@@ -253,7 +253,7 @@ func UpSpaceListHandleFun(ctx context.Context, url string) ([]*crawler.Request, 
 	return requests, nil
 }
 
-func DownloadCover(ctx context.Context, id int) crawler.HandleFun {
+func CoverDownload(ctx context.Context, id int) crawler.HandleFun {
 	var record bool
 	dao.Dao.Hoper.Table(dao.TableNameView).Select("cover_record").Where("aid = ?", id).Scan(&record)
 	if record {

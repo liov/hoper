@@ -11,7 +11,7 @@ import (
 
 func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
-	req := download.GetViewInfoReq(428936215, download.CoverViewInfoHandleFun)
-	//req := download.GetViewInfoReq(343078552, download.RecordViewInfoHandleFun)
+	//req := download.GetViewInfoReq(428936215, download.CoverViewInfoHandleFun)
+	req := download.ViewRecordUpdate(814800523)
 	crawler.New(10).SkipKind(4).Timer(1, time.Millisecond*500).Timer(3, time.Millisecond*500).Run(req)
 }

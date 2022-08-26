@@ -2,10 +2,10 @@ package conctrl
 
 import (
 	"context"
-	"github.com/actliboy/hoper/server/go/lib/utils/generics/slices"
 	"github.com/actliboy/hoper/server/go/lib/utils/generics/structure/list"
 	synci "github.com/actliboy/hoper/server/go/lib/utils/sync"
 	"log"
+	"math"
 	"runtime/debug"
 	"sync"
 	"sync/atomic"
@@ -53,18 +53,14 @@ type Worker struct {
 
 type Engine struct {
 	limitWorkerCount, currentWorkerCount uint64
+	limitWaitTaskCount                   int
 	workerChan                           chan *Worker
 	taskChan                             chan *Task
 	ctx                                  context.Context
 	cancel                               context.CancelFunc
 	wg                                   sync.WaitGroup
-	kindHandler                          []KindHandler
 	averageTimeCost                      time.Duration
 	taskDoneCount, taskTotalCount        uint64
-}
-
-type KindHandler struct {
-	Skip bool
 }
 
 func NewEngine(workerCount uint) *Engine {
@@ -74,11 +70,12 @@ func NewEngine(workerCount uint) *Engine {
 func NewEngineWithContext(workerCount uint, ctx context.Context) *Engine {
 	ctx, cancel := context.WithCancel(ctx)
 	return &Engine{
-		limitWorkerCount: uint64(workerCount),
-		ctx:              ctx,
-		cancel:           cancel,
-		workerChan:       make(chan *Worker),
-		taskChan:         make(chan *Task),
+		limitWorkerCount:   uint64(workerCount),
+		limitWaitTaskCount: math.MaxInt,
+		ctx:                ctx,
+		cancel:             cancel,
+		workerChan:         make(chan *Worker),
+		taskChan:           make(chan *Task),
 	}
 }
 
@@ -91,20 +88,6 @@ func (e *Engine) Cancel() {
 	e.cancel()
 	synci.WaitGroupStopWait(&e.wg)
 
-}
-
-func (e *Engine) SkipKind(kinds ...Kind) *Engine {
-	length := slices.Max(kinds) + 1
-	if e.kindHandler == nil {
-		e.kindHandler = make([]KindHandler, length)
-	}
-	if int(length) > len(e.kindHandler) {
-		e.kindHandler = append(e.kindHandler, make([]KindHandler, int(length)-len(e.kindHandler))...)
-	}
-	for _, kind := range kinds {
-		e.kindHandler[kind].Skip = true
-	}
-	return e
 }
 
 func (e *Engine) Run(tasks ...*Task) {
@@ -123,13 +106,18 @@ func (e *Engine) Run(tasks ...*Task) {
 				readyWorkerCh = workerList.First().taskCh
 				readyTask = taskList.First()
 			}
-			if taskList.Size > int(e.limitWorkerCount*2) {
+			if taskList.Size > e.limitWaitTaskCount {
 				select {
 				case readyWorker := <-e.workerChan:
 					workerList.Push(readyWorker)
 				case readyWorkerCh <- readyTask:
 					workerList.Pop()
 					taskList.Pop()
+				case <-timer.C:
+					//检测任务是否卡住
+					log.Println(taskList.Size, e.taskTotalCount, e.taskDoneCount)
+					e.limitWaitTaskCount++
+					timer.Reset(time.Second * 1)
 				case <-e.ctx.Done():
 					timer.Stop()
 					break loop
@@ -155,7 +143,6 @@ func (e *Engine) Run(tasks ...*Task) {
 							break loop
 						}
 					}
-					emptyTimes = 0
 					timer.Reset(time.Second * 1)
 				case <-e.ctx.Done():
 					timer.Stop()
@@ -233,10 +220,7 @@ func (e *Engine) addWorker() {
 }
 
 func (e *Engine) AddTask(task *Task) {
-	if task == nil {
-		return
-	}
-	if e.kindHandler != nil && int(task.Kind) < len(e.kindHandler) && e.kindHandler[task.Kind].Skip {
+	if task == nil || task.Do == nil {
 		return
 	}
 	atomic.AddUint64(&e.taskTotalCount, 1)
