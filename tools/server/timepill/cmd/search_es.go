@@ -32,7 +32,8 @@ func (dao *dao2) Close() {
 }
 
 func main() {
-	var dao dao2
-	defer initialize.Start(&timepill.Conf, &dao)()
-	es8.NewEsDao(context.Background(), dao.Es8.Client).LoadEs8()
+	var vdao dao2
+	defer initialize.Start(&timepill.Conf, &vdao)()
+	timepill.Dao.Hoper = vdao.Hoper
+	es8.NewEsDao(context.Background(), vdao.Es8.Client).LoadEs8()
 }

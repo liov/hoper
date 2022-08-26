@@ -13,15 +13,15 @@ func TestEngine(t *testing.T) {
 	rand.Seed(time.Now().UnixNano())
 	engine := NewEngine(10)
 
-	tasks := make([]Task, 100)
+	tasks := make([]*Task, 100)
 	for i := 0; i < len(tasks); i++ {
 		tasks[i] = taskgen(strconv.Itoa(i), engine)
 	}
 	engine.Run(tasks...)
 }
 
-func taskgen(id string, engine *Engine) func(ctx context.Context) {
-	return func(ctx context.Context) {
+func taskgen(id string, engine *Engine) *Task {
+	return &Task{Do: func(ctx context.Context) {
 		log.Println("task", id)
 		n := rand.Intn(10)
 		//log.Println("rand", n)
@@ -30,7 +30,7 @@ func taskgen(id string, engine *Engine) func(ctx context.Context) {
 				engine.AddTask(taskgen(id+"_"+strconv.Itoa(i), engine))
 			}
 		}
-	}
+	}}
 }
 
 func TestEngineOneTask(t *testing.T) {
@@ -46,18 +46,22 @@ func TestEngineOneTask(t *testing.T) {
 			}
 		}
 	}()
-	engine.Run(func(ctx context.Context) {
-		ch <- "1"
+	engine.Run(&Task{
+		Do: func(ctx context.Context) {
+			ch <- "1"
+		},
 	})
 }
 
-func taskgen2(id string, ch chan string) func(ctx context.Context) {
-	return func(ctx context.Context) {
-		log.Println("task", id)
-		n := rand.Intn(10)
-		//log.Println("rand", n)
-		if n < 3 {
-			ch <- id
-		}
+func taskgen2(id string, ch chan string) *Task {
+	return &Task{
+		Do: func(ctx context.Context) {
+			log.Println("task", id)
+			n := rand.Intn(10)
+			//log.Println("rand", n)
+			if n < 3 {
+				ch <- id
+			}
+		},
 	}
 }

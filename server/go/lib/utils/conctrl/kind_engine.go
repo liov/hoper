@@ -12,14 +12,13 @@ type KindEngine struct {
 	cancel                        context.CancelFunc
 	wg                            sync.WaitGroup
 	taskDoneCount, taskTotalCount uint64
-	engines                       []*Engine
+	kindConfigs                   []*KindConfig
 }
 
-type kindEngine struct {
+type KindConfig struct {
 	limitWorkerCount, currentWorkerCount uint64
 	workerChan                           chan *Worker
 	taskChan                             chan *Task
-	kindHandler                          KindHandler
 	taskDoneCount, taskTotalCount        uint64
 	averageTimeCost                      time.Duration
 }

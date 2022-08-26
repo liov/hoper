@@ -26,3 +26,10 @@ WHERE aid = 33640070;
 SELECT * FROM "view" WHERE (data-> 'cid')::int8 = 760279439;
 
 SELECT data #> '{accept_quality,0}' quality FROM "video" LIMIT 10;
+
+
+SELECT b.aid,b.cid,a.title,a.p->'page' page,a.p->'part' part
+FROM "bilibili"."video" b
+         LEFT JOIN (SELECT data->'title' title ,jsonb_path_query(data,'$.pages[*]') p FROM "bilibili"."view")  a ON (a.p->'cid')::int8 = b.cid
+WHERE b.record = false AND b.aid < 10000000000  ORDER BY b.aid DESC
+    LIMIT 20;

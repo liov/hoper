@@ -374,7 +374,7 @@ func (configor *Configor) handle(handle func([]byte), watchMode bool, files ...s
 		if configor.Config.Debug || configor.Config.Verbose {
 			fmt.Printf("Loading configurations from file '%v'...\n", file)
 		}
-		data, err := ioutil.ReadFile(file)
+		data, err := os.ReadFile(file)
 		if err != nil {
 			return err, true
 		}

@@ -4,6 +4,7 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
 	"math"
+	"tools/bilibili/config"
 	"tools/bilibili/dao"
 	"tools/bilibili/rpc"
 	"tools/bilibili/tool"
@@ -15,7 +16,7 @@ func FavReqs(pageBegin, pageEnd int, handleFun crawler.HandleFun) []*crawler.Req
 	}
 	var requests []*crawler.Request
 	for i := pageBegin; i <= pageEnd; i++ {
-		req := crawler.NewUrlRequest(rpc.GetFavResourceListUrl(63181530, i), handleFun) //62504730
+		req := crawler.NewUrlRequest(rpc.GetFavResourceListUrl(config.Conf.Bilibili.FavId, i), handleFun) //62504730,63181530
 		requests = append(requests, req)
 	}
 	return requests
@@ -25,23 +26,30 @@ func FavVideo(engine *crawler.Engine) {
 	minAid := math.MaxInt
 	for {
 		var videos []*Video
-		dao.Dao.Hoper.DB.Raw(`SELECT
-    a.aid,b.cid,a.data->'title' title,
-    p->'page' page,p->'part' part
-FROM "bilibili"."view" a,jsonb_path_query(a.data,'$.pages[*]') AS p
-LEFT JOIN "bilibili"."video" b ON (p->'cid')::int8 = b.cid
-WHERE b.record = false AND a.aid < ?  ORDER BY a.aid DESC
-LIMIT 20;`, minAid).Find(&videos)
+		dao.Dao.Hoper.DB.Raw(`SELECT b.aid,b.cid,a.title,a.p->'page' page,a.p->'part' part
+FROM `+dao.TableNameVideo+` b 
+LEFT JOIN (SELECT data->'title' title ,jsonb_path_query(data,'$.pages[*]') p FROM `+dao.TableNameView+`)  a ON (a.p->'cid')::int8 = b.cid
+WHERE b.record = false AND b.aid < ? AND b.deleted_at IS NULL ORDER BY b.aid DESC LIMIT 20`, minAid).Find(&videos)
 		if len(videos) == 0 {
 			return
 		}
 		for _, video := range videos {
-			video.Title = fs.PathClean(video.Title)
-			req := crawler.NewUrlKindRequest(rpc.GetPlayerUrl(video.Aid, video.Cid, 120), KindGetPlayerUrl, video.PlayerUrlHandleFun)
-			engine.Engine.AddTask(engine.NewTask(req))
+			if video.Title == "" {
+				req := ViewRecordUpdate(video.Aid)
+				engine.Engine.AddTask(engine.NewTask(req))
+			} else {
+				video.Title = fs.PathClean(video.Title)
+				req := crawler.NewUrlKindRequest(rpc.GetPlayerUrl(video.Aid, video.Cid, 120), KindGetPlayerUrl, video.PlayerUrlHandleFun)
+				engine.Engine.AddTask(engine.NewTask(req))
+			}
 		}
 		minAid = videos[len(videos)-1].Aid
 	}
+}
+
+func ViewUpdate(aid int) *crawler.Request {
+	video := &Video{Aid: aid, Cid: 0}
+	return crawler.NewUrlKindRequest(rpc.GetPlayerUrl(aid, 0, 120), KindGetPlayerUrl, video.VideoRecord)
 }
 
 func GetByBvId(id string, handleFun crawler.HandleFun) *crawler.Request {

@@ -42,7 +42,13 @@ func (es *Es) SetEntity(entity interface{}) {
 	}
 }
 
+func (es *Es) Close() {
+}
+
 type Esv2 struct {
 	*elasticsearch.Client `init:"entity"`
-	Config                ElasticConfig
+	Config                ElasticConfig `init:"config"`
+}
+
+func (es *Esv2) Close() {
 }

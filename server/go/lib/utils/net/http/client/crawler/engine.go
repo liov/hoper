@@ -3,6 +3,7 @@ package crawler
 import (
 	"context"
 	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
+	"github.com/actliboy/hoper/server/go/lib/utils/generics/slices"
 	"log"
 	"sync"
 	"time"
@@ -12,10 +13,11 @@ type Engine struct {
 	*conctrl.Engine
 	visited     sync.Map
 	ReqsChan    chan []*Request
-	kindHandler []KindHandler
+	kindHandler []*KindHandler
 }
 
 type KindHandler struct {
+	Skip bool
 	*time.Ticker
 	// TODO 指定Kind的Handler
 	HandleFun HandleFun
@@ -29,10 +31,23 @@ func New(workerCount uint) *Engine {
 }
 
 func (e *Engine) SkipKind(kinds ...conctrl.Kind) *Engine {
-	e.Engine.SkipKind(kinds...)
+	length := slices.Max(kinds) + 1
+	if e.kindHandler == nil {
+		e.kindHandler = make([]*KindHandler, length)
+	}
+	if int(length) > len(e.kindHandler) {
+		e.kindHandler = append(e.kindHandler, make([]*KindHandler, int(length)-len(e.kindHandler))...)
+	}
+	for _, kind := range kinds {
+		if e.kindHandler[kind] == nil {
+			e.kindHandler[kind] = &KindHandler{Skip: true}
+		} else {
+			e.kindHandler[kind].Skip = true
+		}
+
+	}
 	return e
 }
-
 func (e *Engine) StopAfter(interval time.Duration) *Engine {
 	time.AfterFunc(interval, e.Cancel)
 	return e
@@ -40,12 +55,16 @@ func (e *Engine) StopAfter(interval time.Duration) *Engine {
 
 func (e *Engine) Timer(kind conctrl.Kind, interval time.Duration) *Engine {
 	if e.kindHandler == nil {
-		e.kindHandler = make([]KindHandler, int(kind)+1)
+		e.kindHandler = make([]*KindHandler, int(kind)+1)
 	}
 	if int(kind)+1 > len(e.kindHandler) {
-		e.kindHandler = append(e.kindHandler, make([]KindHandler, int(kind)+1-len(e.kindHandler))...)
+		e.kindHandler = append(e.kindHandler, make([]*KindHandler, int(kind)+1-len(e.kindHandler))...)
 	}
-	e.kindHandler[kind].Ticker = time.NewTicker(interval)
+	if e.kindHandler[kind] == nil {
+		e.kindHandler[kind] = &KindHandler{Ticker: time.NewTicker(interval)}
+	} else {
+		e.kindHandler[kind].Ticker = time.NewTicker(interval)
+	}
 	return e
 }
 
@@ -69,6 +88,14 @@ func (e *Engine) NewTask(req *Request) *conctrl.Task {
 	if req == nil || req.TaskFun == nil {
 		return nil
 	}
+	var kindHandler *KindHandler
+	if e.kindHandler != nil && int(req.Kind) < len(e.kindHandler) {
+		kindHandler = e.kindHandler[req.Kind]
+	}
+
+	if kindHandler != nil && kindHandler.Skip {
+		return nil
+	}
 	if req.Key != "" {
 		if _, ok := e.visited.Load(req.Key); ok {
 			return nil
@@ -77,8 +104,8 @@ func (e *Engine) NewTask(req *Request) *conctrl.Task {
 	return &conctrl.Task{
 		TaskMeta: conctrl.TaskMeta{Kind: req.Kind},
 		Do: func(ctx context.Context) {
-			if e.kindHandler != nil && int(req.Kind) < len(e.kindHandler) && e.kindHandler[req.Kind].Ticker != nil {
-				<-e.kindHandler[req.Kind].Ticker.C
+			if kindHandler != nil && kindHandler.Ticker != nil {
+				<-kindHandler.Ticker.C
 			}
 			reqs, err := req.TaskFun(ctx)
 			if err != nil {
