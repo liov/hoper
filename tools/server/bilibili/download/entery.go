@@ -5,7 +5,6 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
 	"math"
-	"tools/bilibili/config"
 	"tools/bilibili/dao"
 	"tools/bilibili/rpc"
 	"tools/bilibili/tool"
@@ -17,8 +16,9 @@ func FavReqs(pageBegin, pageEnd int, handleFun crawler.HandleFun) []*crawler.Req
 	}
 	var requests []*crawler.Request
 	for i := pageBegin; i <= pageEnd; i++ {
-		req := crawler.NewUrlRequest(rpc.GetFavResourceListUrl(config.Conf.Bilibili.FavId, i), handleFun) //62504730,63181530
-		requests = append(requests, req)
+		req1 := crawler.NewUrlRequest(rpc.GetFavResourceListUrl(63181530, i), handleFun) //62504730,63181530
+		req2 := crawler.NewUrlRequest(rpc.GetFavResourceListUrl(62504730, i), handleFun) //62504730,63181530
+		requests = append(requests, req1, req2)
 	}
 	return requests
 }
