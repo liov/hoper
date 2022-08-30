@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/initialize"
 	"log"
 	"os"
@@ -12,7 +13,7 @@ import (
 
 func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
-	fixRecord()
+	fixQuality()
 }
 
 func fixRecord() {
@@ -25,18 +26,22 @@ func fixRecord() {
 }
 
 func fixQuality() {
-	dir := "F:\\B站\\video"
+	dir := "D:\\F\\B站\\video"
 	files, _ := os.ReadDir(dir)
 	for _, file := range files {
 		if strings.HasSuffix(file.Name(), "64.flv") || strings.HasSuffix(file.Name(), "80.flv") {
 			cid := strings.Split(file.Name(), "_")[1]
-			var quality int
+			var quality string
 			err := dao.Dao.Hoper.Raw(`SELECT data #> '{accept_quality,0}' quality FROM ` + dao.TableNameVideo + ` WHERE cid = ` + cid).Row().Scan(&quality)
 			if err != nil {
 				log.Println(err)
 				return
 			}
-			dao.Dao.Hoper.Table(dao.TableNameVideo).Where(`cid = `+cid).UpdateColumn("record", true)
+			fmt.Println(file.Name()[len(file.Name())-6 : len(file.Name())-4])
+			if quality != file.Name()[len(file.Name())-6:len(file.Name())-4] {
+				dao.Dao.Hoper.Table(dao.TableNameVideo).Where(`cid = `+cid).UpdateColumn("record", false)
+				os.Remove(path.Join(dir, file.Name()))
+			}
 		}
 	}
 }

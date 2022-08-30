@@ -13,7 +13,7 @@ type KafkaConfig struct {
 
 type KafkaProducerConfig KafkaConfig
 
-func (conf *KafkaProducerConfig) generate() sarama.SyncProducer {
+func (conf *KafkaProducerConfig) Build() sarama.SyncProducer {
 
 	// 等待服务器所有副本都保存成功后的响应
 	conf.Producer.RequiredAcks = sarama.WaitForAll
@@ -33,7 +33,7 @@ func (conf *KafkaProducerConfig) generate() sarama.SyncProducer {
 }
 
 func (conf *KafkaProducerConfig) Generate() interface{} {
-	return conf.generate()
+	return conf.Build()
 }
 
 type KafkaConsumerConfig KafkaConfig

@@ -73,7 +73,9 @@ func (e *Engine) Run(reqs ...*Request) {
 	go func() {
 		for reqs := range e.ReqsChan {
 			for _, req := range reqs {
-				e.Engine.AddTask(e.NewTask(req))
+				if req != nil {
+					e.Engine.AddTask(e.NewTask(req))
+				}
 			}
 		}
 	}()

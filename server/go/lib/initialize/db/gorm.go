@@ -2,7 +2,6 @@ package db
 
 import (
 	"github.com/actliboy/hoper/server/go/lib/initialize"
-	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
 	gormi "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"gorm.io/gorm"
@@ -12,6 +11,12 @@ import (
 	"gorm.io/plugin/prometheus"
 	stdlog "log"
 	"os"
+)
+
+const (
+	MYSQL    = "mysql"
+	POSTGRES = "postgres"
+	SQLite   = "sqlite3"
 )
 
 type DatabaseConfig struct {
@@ -37,13 +42,13 @@ func (c *DatabaseConfig) Init() {
 		c.Charset = "utf8"
 	}
 	if c.Type == "" {
-		c.Type = dbi.POSTGRES
+		c.Type = POSTGRES
 	}
 	if c.Port == 0 {
-		if c.Type == dbi.MYSQL {
+		if c.Type == MYSQL {
 			c.Port = 3306
 		}
-		if c.Type == dbi.POSTGRES {
+		if c.Type == POSTGRES {
 			c.Port = 5432
 		}
 	}
@@ -73,7 +78,7 @@ func (conf *DatabaseConfig) Generate(dialector gorm.Dialector) *gorm.DB {
 	}
 
 	if conf.Prometheus {
-		if conf.Type == dbi.MYSQL {
+		if conf.Type == MYSQL {
 			db.Use(prometheus.New(prometheus.Config{
 				DBName:          conf.Database,               // 使用 `DBName` 作为指标 label
 				RefreshInterval: 15,                          // 指标刷新频率（默认为 15 秒）

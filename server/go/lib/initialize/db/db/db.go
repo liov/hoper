@@ -13,7 +13,7 @@ import (
 
 type DatabaseConfig pkdb.DatabaseConfig
 
-func (conf *DatabaseConfig) generate() *gorm.DB {
+func (conf *DatabaseConfig) Build() *gorm.DB {
 
 	var dialector gorm.Dialector
 
@@ -38,7 +38,7 @@ func (conf *DatabaseConfig) generate() *gorm.DB {
 }
 
 func (conf *DatabaseConfig) Generate() interface{} {
-	return conf.generate()
+	return conf.Build()
 }
 
 type DB pkdb.DB

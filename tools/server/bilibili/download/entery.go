@@ -10,15 +10,14 @@ import (
 	"tools/bilibili/tool"
 )
 
-func FavReqs(pageBegin, pageEnd int, handleFun crawler.HandleFun) []*crawler.Request {
+func FavReqs(favId, pageBegin, pageEnd int, handleFun crawler.HandleFun) []*crawler.Request {
 	if pageEnd < pageBegin {
 		pageEnd = pageBegin
 	}
 	var requests []*crawler.Request
 	for i := pageBegin; i <= pageEnd; i++ {
-		req1 := crawler.NewUrlRequest(rpc.GetFavResourceListUrl(63181530, i), handleFun) //62504730,63181530
-		req2 := crawler.NewUrlRequest(rpc.GetFavResourceListUrl(62504730, i), handleFun) //62504730,63181530
-		requests = append(requests, req1, req2)
+		req := crawler.NewUrlRequest(rpc.GetFavResourceListUrl(favId, i), handleFun)
+		requests = append(requests, req)
 	}
 	return requests
 }

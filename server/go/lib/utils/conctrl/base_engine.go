@@ -60,7 +60,7 @@ func (e *BaseEngine) Run(tasks ...*BaseTask) {
 				readyWorkerCh = workerList.First().ch
 				readyTask = taskList.First()
 			}
-			if taskList.Size > int(e.limitWorkerCount*2) {
+			if taskList.Size > uint(e.limitWorkerCount*2) {
 				select {
 				case readyWorker := <-e.workerChan:
 					workerList.Push(readyWorker)
@@ -82,7 +82,7 @@ func (e *BaseEngine) Run(tasks ...*BaseTask) {
 					taskList.Pop()
 					//检测任务是否已空
 				case <-timer.C:
-					if workerList.Size == int(e.currentWorkerCount) && taskList.Size == 0 {
+					if workerList.Size == uint(e.currentWorkerCount) && taskList.Size == 0 {
 						emptyTimes++
 						if emptyTimes > 2 {
 							log.Println("task is empty")

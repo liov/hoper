@@ -14,13 +14,13 @@ func (conf *LogConfig) Init() {
 	log.SetDefaultLogger(logConf)
 }
 
-func (conf *LogConfig) generate() *log.Logger {
+func (conf *LogConfig) Build() *log.Logger {
 
 	return (*log.Config)(conf).NewLogger()
 }
 
 func (conf *LogConfig) Generate() interface{} {
-	return conf.generate()
+	return conf.Build()
 }
 
 type Logger struct {

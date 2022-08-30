@@ -10,7 +10,7 @@ import (
 
 type ElasticConfig elasticsearch.Config
 
-func (conf *ElasticConfig) generate() *elasticsearch.Client {
+func (conf *ElasticConfig) Build() *elasticsearch.Client {
 	conf.Header = http.Header{}
 	if conf.Username != "" && conf.Password != "" {
 		auth.SetBasicAuth(conf.Header, conf.Username, conf.Password)
@@ -24,7 +24,7 @@ func (conf *ElasticConfig) generate() *elasticsearch.Client {
 }
 
 func (conf *ElasticConfig) Generate() interface{} {
-	return conf.generate()
+	return conf.Build()
 }
 
 type Es struct {

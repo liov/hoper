@@ -16,7 +16,7 @@ type Config struct {
 	Index       int
 }
 
-func (conf *Config) generate() *redis.Client {
+func (conf *Config) Build() *redis.Client {
 	conf.IdleTimeout = conf.IdleTimeout * time.Second
 	client := redis.NewClient(&redis.Options{
 		Addr:         conf.Addr,
@@ -30,7 +30,7 @@ func (conf *Config) generate() *redis.Client {
 }
 
 func (conf *Config) Generate() interface{} {
-	return conf.generate()
+	return conf.Build()
 }
 
 type Redis struct {
