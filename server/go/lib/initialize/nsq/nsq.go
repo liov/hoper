@@ -33,7 +33,7 @@ func (p *Producer) Close() error {
 	return nil
 }
 
-func (conf *ProducerConfig) generate() *nsq.Producer {
+func (conf *ProducerConfig) Build() *nsq.Producer {
 
 	producer, err := nsq.NewProducer(conf.Addr, conf.Config)
 	if err != nil {
@@ -44,7 +44,7 @@ func (conf *ProducerConfig) generate() *nsq.Producer {
 }
 
 func (conf *ProducerConfig) Generate() interface{} {
-	return conf.generate()
+	return conf.Build()
 }
 
 type ConsumerConfig struct {
@@ -55,7 +55,7 @@ type ConsumerConfig struct {
 	*nsq.Config
 }
 
-func (conf *ConsumerConfig) generate() *nsq.Consumer {
+func (conf *ConsumerConfig) Build() *nsq.Consumer {
 
 	customer, err := nsq.NewConsumer(conf.Topic, conf.Channel, conf.Config)
 	if err != nil {
@@ -78,7 +78,7 @@ func (conf *ConsumerConfig) generate() *nsq.Consumer {
 }
 
 func (conf *ConsumerConfig) Generate() interface{} {
-	return conf.generate()
+	return conf.Build()
 }
 
 type Consumer struct {

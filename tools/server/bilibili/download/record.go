@@ -6,11 +6,74 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
+	"log"
+	"strconv"
+	"strings"
 	"time"
 	"tools/bilibili/dao"
 	"tools/bilibili/rpc"
 	"tools/bilibili/tool"
 )
+
+func RecordFav(ctx context.Context, engine *crawler.Engine) {
+	favIds := []int{62504730, 63181530}
+	timer := time.NewTicker(time.Second)
+	lastRecordTime, err := dao.NewDao(ctx, dao.Dao.Hoper.DB).LastCreated(dao.TableNameView)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	for _, favId := range favIds {
+		go func(favId int) {
+			page := 1
+			favIdStr := strconv.Itoa(favId)
+			cancel := make(chan struct{}, 1)
+		Loop:
+			for {
+				select {
+				case <-timer.C:
+					taskFun := RecordFavList2(favId, page, lastRecordTime, cancel)
+					engine.AddTask(engine.NewTask(crawler.NewRequest(favIdStr+strconv.Itoa(page), taskFun)))
+				case <-cancel:
+					timer.Stop()
+					break Loop
+				}
+				page++
+			}
+		}(favId)
+	}
+}
+
+func RecordFavList2(favId, page int, lastRecordTime time.Time, cancel chan struct{}) crawler.TaskFun {
+	return func(ctx context.Context) ([]*crawler.Request, error) {
+		res, err := apiservice.GetFavLResourceList(favId, page)
+		if err != nil {
+			return nil, err
+		}
+		zeroTime := time.Time{}
+		var requests []*crawler.Request
+		for _, fav := range res.Medias {
+			aid := tool.Bv2av(fav.Bvid)
+			bilibiliDao := dao.NewDao(ctx, dao.Dao.Hoper.DB)
+			createdAt, err := bilibiliDao.ViewCreatedTime(aid)
+			if err != nil {
+				return nil, err
+			}
+			if createdAt == zeroTime {
+				if !strings.HasSuffix(fav.Cover, "be27fd62c99036dce67efface486fb0a88ffed06.jpg") {
+					req1 := GetViewInfoReq(aid, ViewInfoRecord)
+					req2 := crawler.NewUrlKindRequest(fav.Cover, KindDownloadCover, CoverDownload(ctx, fav.Id))
+					requests = append(requests, req1, req2)
+				}
+			} else if createdAt.Before(lastRecordTime) {
+				cancel <- struct{}{}
+				return requests, nil
+			}
+		}
+		return requests, nil
+	}
+}
 
 func RecordFavList(ctx context.Context, url string) ([]*crawler.Request, error) {
 	res, err := rpc.Get[*rpc.FavResourceList](url)
@@ -26,9 +89,12 @@ func RecordFavList(ctx context.Context, url string) ([]*crawler.Request, error) 
 			return nil, err
 		}
 		if !exists {
-			req1 := GetViewInfoReq(aid, ViewInfoRecord)
-			req2 := crawler.NewUrlKindRequest(fav.Cover, KindDownloadCover, CoverDownload(ctx, fav.Id))
-			requests = append(requests, req1, req2)
+			if !strings.HasSuffix(fav.Cover, "be27fd62c99036dce67efface486fb0a88ffed06.jpg") {
+				req1 := GetViewInfoReq(aid, ViewInfoRecord)
+				requests = append(requests, req1)
+				req2 := crawler.NewUrlKindRequest(fav.Cover, KindDownloadCover, CoverDownload(ctx, fav.Id))
+				requests = append(requests, req2)
+			}
 		}
 	}
 	return requests, nil

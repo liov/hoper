@@ -9,7 +9,7 @@ import (
 
 type ElasticConfig config.Config
 
-func (conf *ElasticConfig) generate() *elastic.Client {
+func (conf *ElasticConfig) Build() *elastic.Client {
 	client, err := elastic.NewClientFromConfig((*config.Config)(conf))
 	if err != nil {
 		log.Error(err)
@@ -19,7 +19,7 @@ func (conf *ElasticConfig) generate() *elastic.Client {
 }
 
 func (conf *ElasticConfig) Generate() interface{} {
-	return conf.generate()
+	return conf.Build()
 }
 
 type Es struct {

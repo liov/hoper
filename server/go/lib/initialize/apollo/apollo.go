@@ -15,7 +15,7 @@ type ApolloConfig struct {
 	InitNameSpace string
 }
 
-func (conf *ApolloConfig) generate() *apollo.Client {
+func (conf *ApolloConfig) Build() *apollo.Client {
 	//初始化更新配置，这里不需要，开启实时更新时初始化会更新一次
 	/*	c := apollo.NewConfig(conf.Addr, conf.AppId, conf.Cluster, conf.IP)
 		aConf, err := c.GetInitConfig(InitKey)
@@ -30,7 +30,7 @@ func (conf *ApolloConfig) generate() *apollo.Client {
 }
 
 func (conf *ApolloConfig) Generate() interface{} {
-	return conf.generate()
+	return conf.Build()
 }
 
 type ApolloClient struct {

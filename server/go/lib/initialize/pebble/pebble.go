@@ -10,7 +10,7 @@ type Config struct {
 	DirName string
 }
 
-func (conf *Config) generate() *pebble.DB {
+func (conf *Config) Build() *pebble.DB {
 	if conf.DirName == "" {
 		return nil
 	}
@@ -22,7 +22,7 @@ func (conf *Config) generate() *pebble.DB {
 }
 
 func (conf *Config) Generate() interface{} {
-	return conf.generate()
+	return conf.Build()
 }
 
 type DB struct {

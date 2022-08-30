@@ -19,20 +19,32 @@ type Request struct {
 }
 
 func NewRequest(key string, taskFun TaskFun) *Request {
+	if taskFun == nil {
+		return nil
+	}
 	return &Request{Key: key, TaskFun: taskFun}
 }
 
 func NewKindRequest(key string, kind conctrl.Kind, taskFun TaskFun) *Request {
+	if taskFun == nil {
+		return nil
+	}
 	return NewRequest(key, taskFun).SetKind(kind)
 }
 
 func NewUrlRequest(url string, handleFun HandleFun) *Request {
+	if handleFun == nil {
+		return nil
+	}
 	return &Request{Key: url, TaskFun: func(ctx context.Context) ([]*Request, error) {
 		return handleFun(ctx, url)
 	}}
 }
 
 func NewUrlKindRequest(url string, kind conctrl.Kind, handleFun HandleFun) *Request {
+	if handleFun == nil {
+		return nil
+	}
 	return NewUrlRequest(url, handleFun).SetKind(kind)
 }
 

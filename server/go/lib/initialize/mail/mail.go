@@ -12,12 +12,12 @@ type MailConfig struct {
 	Password string
 }
 
-func (conf *MailConfig) generate() smtp.Auth {
+func (conf *MailConfig) Build() smtp.Auth {
 	return smtp.PlainAuth("", conf.From, conf.Password, conf.Host)
 }
 
 func (conf *MailConfig) Generate() interface{} {
-	return conf.generate()
+	return conf.Build()
 }
 
 type Mail struct {

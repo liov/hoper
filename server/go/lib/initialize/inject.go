@@ -165,6 +165,8 @@ func setDao2(v reflect.Value, confM map[string]any) {
 			}
 
 			if daoField.entitySet && daoField.configSet && daoField.Config.IsValid() {
+				// TODO:
+				// daoField.Config.MethodByName("Build").Type().Out(0) == daoField.Entity.Type()
 				tagSettings := ParseDaoTagSettings(typ.Field(i).Tag.Get(tag))
 				if tagSettings.NotInject {
 					continue

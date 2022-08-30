@@ -12,14 +12,14 @@ import (
 type DatabaseConfig pkdb.DatabaseConfig
 
 func (conf *DatabaseConfig) Generate() any {
-	return conf.generate()
+	return conf.Build()
 }
 
 func (conf *DatabaseConfig) Init() {
 	(*pkdb.DatabaseConfig)(conf).Init()
 }
 
-func (conf *DatabaseConfig) generate() *gorm.DB {
+func (conf *DatabaseConfig) Build() *gorm.DB {
 	url := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s TimeZone=%s",
 		conf.Host, conf.User, conf.Database, conf.Password, conf.TimeZone)
 	return (*pkdb.DatabaseConfig)(conf).Generate(postgres.Open(url))
@@ -51,4 +51,9 @@ func (db *DB) Table(name string) *gorm.DB {
 
 func (db *DB) TableName(name string) string {
 	return db.Conf.Schema + name
+}
+
+// TODO:
+func (db *DB) Inject(configName string) {
+
 }

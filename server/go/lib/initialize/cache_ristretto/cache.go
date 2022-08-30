@@ -13,7 +13,7 @@ type CacheConfig struct {
 	IgnoreInternalCost bool
 }
 
-func (conf *CacheConfig) generate() *ristretto.Cache {
+func (conf *CacheConfig) Build() *ristretto.Cache {
 	cache, err := ristretto.NewCache(&ristretto.Config{
 		NumCounters:        conf.NumCounters, // number of keys to track frequency of (10M).
 		MaxCost:            conf.MaxCost,     // maximum cost of cache (MaxCost * 1MB).
@@ -28,7 +28,7 @@ func (conf *CacheConfig) generate() *ristretto.Cache {
 }
 
 func (conf *CacheConfig) Generate() interface{} {
-	return conf.generate()
+	return conf.Build()
 }
 
 // 考虑换cache，ristretto存一个值，循环取居然还会miss(没开IgnoreInternalCost的原因),某个issue提要内存占用过大，直接初始化1.5MB

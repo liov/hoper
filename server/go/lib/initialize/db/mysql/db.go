@@ -11,14 +11,14 @@ import (
 type DatabaseConfig pkdb.DatabaseConfig
 
 func (conf *DatabaseConfig) Generate() any {
-	return conf.generate()
+	return conf.Build()
 }
 
 func (conf *DatabaseConfig) Init() {
 	(*pkdb.DatabaseConfig)(conf).Init()
 }
 
-func (conf *DatabaseConfig) generate() *gorm.DB {
+func (conf *DatabaseConfig) Build() *gorm.DB {
 	url := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
 		conf.User, conf.Password, conf.Host,
 		conf.Port, conf.Database, conf.Charset)

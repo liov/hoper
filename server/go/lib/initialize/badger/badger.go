@@ -10,7 +10,7 @@ type BadgerDBConfig struct {
 	Path string
 }
 
-func (conf *BadgerDBConfig) generate() *badger.DB {
+func (conf *BadgerDBConfig) Build() *badger.DB {
 	opts := badger.DefaultOptions(conf.Path)
 	db, err := badger.Open(opts)
 	if err != nil {
@@ -20,7 +20,7 @@ func (conf *BadgerDBConfig) generate() *badger.DB {
 }
 
 func (conf *BadgerDBConfig) Generate() interface{} {
-	return conf.generate()
+	return conf.Build()
 }
 
 type Consumer struct {

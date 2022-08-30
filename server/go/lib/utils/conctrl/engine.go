@@ -5,7 +5,6 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/generics/structure/list"
 	synci "github.com/actliboy/hoper/server/go/lib/utils/sync"
 	"log"
-	"math"
 	"runtime/debug"
 	"sync"
 	"sync/atomic"
@@ -53,7 +52,7 @@ type Worker struct {
 
 type Engine struct {
 	limitWorkerCount, currentWorkerCount uint64
-	limitWaitTaskCount                   int
+	limitWaitTaskCount                   uint
 	workerChan                           chan *Worker
 	taskChan                             chan *Task
 	ctx                                  context.Context
@@ -71,7 +70,7 @@ func NewEngineWithContext(workerCount uint, ctx context.Context) *Engine {
 	ctx, cancel := context.WithCancel(ctx)
 	return &Engine{
 		limitWorkerCount:   uint64(workerCount),
-		limitWaitTaskCount: math.MaxInt,
+		limitWaitTaskCount: workerCount * 10,
 		ctx:                ctx,
 		cancel:             cancel,
 		workerChan:         make(chan *Worker),
@@ -115,8 +114,7 @@ func (e *Engine) Run(tasks ...*Task) {
 					taskList.Pop()
 				case <-timer.C:
 					//检测任务是否卡住
-					log.Println(taskList.Size, e.taskTotalCount, e.taskDoneCount)
-					e.limitWaitTaskCount++
+					e.limitWaitTaskCount += uint(e.limitWorkerCount)
 					timer.Reset(time.Second * 1)
 				case <-e.ctx.Done():
 					timer.Stop()
@@ -133,7 +131,7 @@ func (e *Engine) Run(tasks ...*Task) {
 					taskList.Pop()
 				case <-timer.C:
 					//检测任务是否已空
-					if workerList.Size == int(e.currentWorkerCount) && taskList.Size == 0 {
+					if workerList.Size == uint(e.currentWorkerCount) && taskList.Size == 0 {
 						emptyTimes++
 						if emptyTimes > 2 {
 							log.Println("task is empty")

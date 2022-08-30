@@ -7,7 +7,7 @@ type SingleNode[T any] struct {
 
 type SimpleList[T any] struct {
 	Head, Tail *SingleNode[T]
-	Size       int
+	Size       uint
 }
 
 func NewSimpleList[T any]() SimpleList[T] {
@@ -18,7 +18,7 @@ func NewSimpleList[T any]() SimpleList[T] {
 	return l
 }
 
-func (l *SimpleList[T]) Len() int {
+func (l *SimpleList[T]) Len() uint {
 	return l.Size
 }
 

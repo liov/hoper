@@ -4,6 +4,7 @@ import (
 	"context"
 	initpostgres "github.com/actliboy/hoper/server/go/lib/initialize/db/postgres"
 	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/postgres"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -32,6 +33,33 @@ func (d *dao) CreateView(view *View) error {
 
 func (d *dao) ViewExists(aid int) (bool, error) {
 	return postgres.Exists(d.db, TableNameView, "aid", aid, false)
+}
+
+func (d *dao) ViewCreatedTime(aid int) (time.Time, error) {
+	var t time.Time
+	err := d.db.Table(TableNameView).Select(`created_at`).Where(`aid = ?`, aid).Scan(&t).Error
+	if err != nil {
+		return t, err
+	}
+	return t, nil
+}
+
+func (d *dao) LastCreated(tableName string) (time.Time, error) {
+	var t time.Time
+	err := d.db.Table(tableName).Select(`created_at`).Order(`created_at DESC`).Limit(1).Scan(&t).Error
+	if err != nil {
+		return t, err
+	}
+	return t, nil
+}
+
+func (d *dao) LastRecordAid() (int, error) {
+	var id int
+	err := d.db.Table(TableNameView).Select(`aid`).Order(`created_at DESC`).Limit(1).Scan(&id).Error
+	if err != nil {
+		return id, err
+	}
+	return id, nil
 }
 
 func (d *dao) CreateVideo(video *Video) error {

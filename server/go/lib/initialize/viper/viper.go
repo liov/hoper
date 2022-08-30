@@ -20,10 +20,10 @@ func (conf *Config) Init() {
 }
 
 func (conf *Config) Generate() interface{} {
-	return conf.generate()
+	return conf.Build()
 }
 
-func (conf *Config) generate() *viper.Viper {
+func (conf *Config) Build() *viper.Viper {
 	iconf := initialize2.InitConfig.Config()
 	if exist := reflecti.GetFieldValue(iconf, conf); !exist {
 		return nil
