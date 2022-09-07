@@ -17,7 +17,7 @@ type TestService struct {
 
 func (*TestService) GC(ctx context.Context, req *model.GCReq) (*empty.Empty, error) {
 	//address:= strconv.FormatUint()
-	init := (*initialize.Init)(unsafe.Pointer(uintptr(req.Address)))
+	init := (*initialize.initConfig)(unsafe.Pointer(uintptr(req.Address)))
 	fmt.Println(*init)
 	return &empty.Empty{}, nil
 }

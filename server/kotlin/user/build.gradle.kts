@@ -1,11 +1,28 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.gradle.api.tasks.testing.logging.TestLogEvent.*
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     application
-    id("org.springframework.boot")
-    kotlin("plugin.spring")
-    id("com.github.johnrengelman.shadow") version "5.1.0"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
     kotlin("kapt")
 }
 
+repositories {
+    maven {
+        url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots")
+        mavenContent {
+            snapshotsOnly()
+        }
+    }
+    mavenCentral()
+}
+
+val mainVerticleName = "user.UserApplication"
+val launcherClassName = "io.vertx.core.Launcher"
+
+val watchForChange = "src/**/*"
+val doOnChange = "${projectDir}/gradlew classes"
 
 application {
     mainClass.set("xyz.hoper.user.UserApplication")
@@ -19,43 +36,63 @@ sourceSets {
     }
 }
 
+configurations {
+    implementation {
+        exclude(group = "org.slf4j", module = "slf4j-log4j12")
+    }
+}
+
 dependencies {
-    val vertxVersion = "4.2.1"
+    val vertxVersion: String by project
     implementation(project(":protobuf"))
-    implementation("io.vertx:vertx-web-client:$vertxVersion")
-    implementation("io.vertx:vertx-auth-jwt:$vertxVersion")
-    implementation("io.vertx:vertx-web:$vertxVersion")
-    implementation("io.vertx:vertx-grpc:$vertxVersion")
-    implementation("io.vertx:vertx-service-proxy:$vertxVersion")
-    implementation("io.vertx:vertx-mysql-client:$vertxVersion")
-    implementation("io.vertx:vertx-web-api-contract:$vertxVersion")
-    implementation("io.vertx:vertx-auth-oauth2:$vertxVersion")
-    implementation("io.vertx:vertx-redis-client:$vertxVersion")
-    implementation("io.vertx:vertx-reactive-streams:$vertxVersion")
-    implementation("io.vertx:vertx-web-graphql:$vertxVersion")
-    implementation("io.vertx:vertx-rx-java2:$vertxVersion")
-    implementation("io.vertx:vertx-junit5:$vertxVersion")
-    implementation("io.vertx:vertx-service-factory:$vertxVersion")
-    implementation("io.vertx:vertx-pg-client:$vertxVersion")
-    implementation("io.vertx:vertx-lang-kotlin-coroutines:$vertxVersion")
-    implementation("io.vertx:vertx-rabbitmq-client:$vertxVersion")
-    implementation("io.vertx:vertx-lang-kotlin:$vertxVersion")
-    implementation("org.reflections:reflections:0.10.2")
-    implementation("org.springframework.boot:spring-boot-starter")
+    implementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
+    implementation(platform("io.vertx:vertx-stack-depchain:$vertxVersion"))
+    implementation("io.vertx:vertx-web-client")
+    implementation("io.vertx:vertx-service-proxy")
+    implementation("io.vertx:vertx-health-check")
+    implementation("io.vertx:vertx-web-openapi")
+    implementation("io.vertx:vertx-grpc-server")
+    implementation("io.vertx:vertx-auth-oauth2")
+    implementation("io.vertx:vertx-tcp-eventbus-bridge")
+    implementation("io.vertx:vertx-opentracing")
+    implementation("io.vertx:vertx-dropwizard-metrics")
+    implementation("io.vertx:vertx-reactive-streams")
+    implementation("io.vertx:vertx-grpc-client")
+    implementation("io.vertx:vertx-jdbc-client")
+    implementation("io.vertx:vertx-service-factory")
+    implementation("io.vertx:vertx-pg-client")
+    implementation("io.vertx:vertx-web-sstore-cookie")
+    implementation("io.vertx:vertx-lang-kotlin-coroutines")
+    implementation("io.vertx:vertx-web-sstore-redis")
+    implementation("io.vertx:vertx-web-validation")
+    implementation("io.vertx:vertx-auth-jwt")
+    implementation("io.vertx:vertx-web")
+    implementation("io.vertx:vertx-zookeeper")
+    implementation("io.vertx:vertx-grpc")
+    implementation("io.vertx:vertx-mysql-client")
+    implementation("io.vertx:vertx-http-service-factory")
+    implementation("io.vertx:vertx-micrometer-metrics")
+    implementation("io.vertx:vertx-json-schema")
+    implementation("io.vertx:vertx-web-api-contract")
+    implementation("io.vertx:vertx-uri-template")
+    implementation("io.vertx:vertx-rx-java3")
+    implementation("io.vertx:vertx-redis-client")
+    implementation("io.vertx:vertx-config")
+    implementation("io.vertx:vertx-zipkin")
+    implementation("io.vertx:vertx-web-graphql")
+    implementation("io.vertx:vertx-opentelemetry")
+    implementation("io.vertx:vertx-mail-client")
+    implementation("io.vertx:vertx-consul-client")
+    implementation("io.vertx:vertx-auth-jdbc")
+    implementation("io.vertx:vertx-kafka-client")
+    implementation("io.vertx:vertx-lang-kotlin")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
-    compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
-    compileOnly("io.vertx:vertx-service-proxy:$vertxVersion")
-    compileOnly("io.vertx:vertx-codegen:$vertxVersion")
-    annotationProcessor("io.vertx:vertx-service-proxy:$vertxVersion")
     kapt("io.vertx:vertx-codegen:$vertxVersion:processor")
-    testImplementation("io.vertx:vertx-junit5:$vertxVersion")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${rootProject.ext["junitJupiterEngineVersion"]}")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:${rootProject.ext["junitJupiterEngineVersion"]}")
+    testImplementation("io.vertx:vertx-junit5")
 }
 
 
@@ -67,8 +104,26 @@ tasks.withType<Test> {
 }
 
 tasks.withType<JavaCompile> {
-    options.annotationProcessorGeneratedSourcesDirectory = file("$projectDir/build/generated")
+    options.generatedSourceOutputDirectory.set(file("$projectDir/build/generated"))
     options.compilerArgs = listOf(
-            "-Acodegen.output=src/main"
+        "-Acodegen.output=src/main"
+    )
+}
+
+tasks.withType<ShadowJar> {
+    archiveClassifier.set("fat")
+    manifest {
+        attributes(mapOf("Main-Verticle" to mainVerticleName))
+    }
+    mergeServiceFiles()
+}
+
+tasks.withType<JavaExec> {
+    args = listOf(
+        "run",
+        mainVerticleName,
+        "--redeploy=$watchForChange",
+        "--launcher-class=$launcherClassName",
+        "--on-redeploy=$doOnChange"
     )
 }

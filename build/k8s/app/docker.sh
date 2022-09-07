@@ -1,7 +1,7 @@
 GOPATH=/mnt/d/SDK/gopath
 Code=/mnt/d/code/hoper
 GOPROXY=https://goproxy.io
-GOIMAGE=golang:1.19rc2
+GOIMAGE=golang:1.19
 
 # go mod tidy
 docker run --rm -v $GOPATH:/go -v $Code:/work -w /work/server/go/lib -e GOPROXY=$GOPROXY $GOIMAGE go mod tidy

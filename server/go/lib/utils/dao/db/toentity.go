@@ -1,14 +1,10 @@
 package dbi
 
 import (
-	"bytes"
-	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	stringsi "github.com/actliboy/hoper/server/go/lib/utils/strings"
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"os"
-	"path/filepath"
 	"strings"
 )
 
@@ -59,7 +55,7 @@ func (f *Field) goTYpe(dbType string) string {
 		if strings.Contains(f.Type, "varchar") || strings.Contains(f.Type, "text") {
 			return "string"
 		}
-		if strings.Contains(f.Type, "timestamp") || strings.Contains(f.Type, "datetime") {
+		if strings.Contains(f.Type, "timestamp") || strings.Contains(f.Type, "datetime") || strings.Contains(f.Type, "date") {
 			return "time.Time"
 		}
 		if strings.Contains(f.Type, "float") || strings.Contains(f.Type, "double") || strings.Contains(f.Type, "decimal") {
@@ -84,11 +80,6 @@ func (f *Field) Generate(dbType string) *ast.Field {
 		Tag:     &ast.BasicLit{Kind: token.STRING, Value: "`" + `json:"` + stringsi.LowerFirst(field) + `" explain:"` + f.Comment + "\"`"},
 		Comment: nil,
 	}
-}
-
-func Write(buf *bytes.Buffer, filename string) {
-	pwd, _ := os.Getwd()
-	fs.Write(buf, filepath.Join(pwd, "generate", filename))
 }
 
 func GetDecl() *ast.GenDecl {

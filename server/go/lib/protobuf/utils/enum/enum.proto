@@ -3,7 +3,7 @@ package enum;
 
 import "google/protobuf/descriptor.proto";
 
-option java_package = "xyz.hoper.protobuf.utils.enum";
+option java_package = "xyz.hoper.protobuf.utils.enums";
 option java_outer_classname = "EnumProtos";
 option go_package = "github.com/actliboy/hoper/server/go/lib/protobuf/utils/enum";
 

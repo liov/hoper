@@ -26,5 +26,5 @@ var Config = &config{}
 
 func main() {
 	defer initialize.Start(Config, Dao)()
-	dbtoentity.MysqlConvert(Dao.DB.DB)
+	dbtoentity.MysqlConvert(Dao.DB.DB, "./build/generate.go")
 }

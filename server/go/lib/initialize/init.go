@@ -16,7 +16,7 @@ import (
 // 约定大于配置
 var (
 	// 此处不是真正的初始化，只是为了让配置中心能够读取到配置
-	InitConfig = &Init{
+	InitConfig = &initConfig{
 		Env: DEVELOPMENT, ConfUrl: "./config.toml",
 	}
 )
@@ -44,7 +44,7 @@ type FileConfig struct {
 	Dev, Test, Prod *ConfigCenterConfig
 }
 
-type Init struct {
+type initConfig struct {
 	Env, ConfUrl string
 	BasicConfig
 	ConfigCenterConfig *ConfigCenterConfig
@@ -57,9 +57,6 @@ type Init struct {
 }
 
 func Start(conf Config, dao Dao, notinit ...string) func(deferf ...func()) {
-	if conf == nil {
-		log.Fatalf("配置不能为空")
-	}
 	//逃逸到堆上了
 	init := NewInit(conf, dao)
 	init.LoadConfig(notinit...)
@@ -75,7 +72,7 @@ func Start(conf Config, dao Dao, notinit ...string) func(deferf ...func()) {
 	}
 }
 
-func (init *Init) LoadConfig(notinit ...string) *Init {
+func (init *initConfig) LoadConfig(notinit ...string) *initConfig {
 	onceConfig := FileConfig{}
 	if _, err := os.Stat(init.ConfUrl); os.IsNotExist(err) {
 		log.Fatalf("配置错误: 请确保可执行文件和配置文件在同一目录下或在config目录下或指定配置文件")
@@ -139,8 +136,8 @@ func (init *Init) LoadConfig(notinit ...string) *Init {
 	return init
 }
 
-func NewInit(conf Config, dao Dao) *Init {
-	init := &Init{
+func NewInit(conf Config, dao Dao) *initConfig {
+	init := &initConfig{
 		Env: InitConfig.Env, ConfUrl: InitConfig.ConfUrl,
 		confM: map[string]interface{}{},
 		conf:  conf, dao: dao,
@@ -153,20 +150,20 @@ func NewInit(conf Config, dao Dao) *Init {
 	return init
 }
 
-func (init *Init) SetInit(conf Config, dao Dao) {
+func (init *initConfig) SetInit(conf Config, dao Dao) {
 	init.conf = conf
 	init.dao = dao
 }
 
-func (init *Init) RegisterDeferFunc(deferf ...func()) {
+func (init *initConfig) RegisterDeferFunc(deferf ...func()) {
 	init.deferf = append(init.deferf, deferf...)
 }
 
-func (init *Init) Config() Config {
+func (init *initConfig) Config() Config {
 	return init.conf
 }
 
-func (init *Init) closeDao() {
+func (init *initConfig) closeDao() {
 	if !init.initialized {
 		return
 	}

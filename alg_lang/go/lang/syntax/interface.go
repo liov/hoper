@@ -35,4 +35,24 @@ func main() {
 		fmt.Println(subType.Type.Implements(closeTyp))
 		fmt.Println(reflect.ValueOf(&b).Elem().Field(i).Addr().Type().Implements(closeTyp))
 	}
+	structs := []*Struct1{{}, {}}
+	test4(structs.([]Interface1))
+	test4(([]Interface1)(structs))
+}
+
+type Interface1 interface {
+	GetA() int
+}
+
+type Struct1 struct {
+}
+
+func (s *Struct1) GetA() int {
+	return 1
+}
+
+func test4(params []Interface1) {
+	for _, item := range params {
+		fmt.Println(item.GetA())
+	}
 }

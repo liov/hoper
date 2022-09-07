@@ -104,3 +104,6 @@ select CONVERT(varchar(12) , getdate(), 114 );
 --  EXTRACT (component_name, FROM {datetime | interval})
 -- GROUP BY GROUP_CONCAT 拼某一列
 SELECT t.sid,t.name,t.sex,GROUP_CONCAT(t.num) from distinct_concat t GROUP BY t.sid,t.name,t.sex;
+
+-- order by 在 group by之后执行，要保留第一行要做子查询(搜素有的说要加limit bignum,待考证)
+SELECT * FROM (SELECT * FROM tsp_settle_info WHERE effect_date <= now() ORDER BY effect_date DESC) GROUP BY tsp_id
