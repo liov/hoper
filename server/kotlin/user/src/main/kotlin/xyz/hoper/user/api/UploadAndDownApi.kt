@@ -25,7 +25,7 @@ class UploadAndDownApi {
     @RouteMapping(value = "/upload", method = RouteMethod.POST)
     fun upload(): Handler<RoutingContext> {
         return Handler { ctx ->
-            val uploads: Set<FileUpload> = ctx.fileUploads()
+            val uploads: List<FileUpload> = ctx.fileUploads()
             val fs: FileSystem = vertxInstance!!.fileSystem()
             uploads.forEach(Consumer<FileUpload> { fileUpload: FileUpload ->
                 val path = "/upload/" + fileUpload.fileName()

@@ -2,9 +2,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
+  val kotlinVersion = "1.7.10"
   java
-  kotlin("jvm") version "1.6.0"
-  kotlin("plugin.serialization") version "1.6.0"
+  kotlin("jvm") version kotlinVersion
+  kotlin("plugin.serialization") version kotlinVersion
 }
 
 allprojects {

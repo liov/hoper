@@ -39,7 +39,7 @@ type dao struct {
 }
 */
 
-func (init *Init) UnmarshalAndSet(bytes []byte) {
+func (init *initConfig) UnmarshalAndSet(bytes []byte) {
 	tmp := map[string]interface{}{}
 	err := toml.Unmarshal(bytes, &tmp)
 	if err != nil {
@@ -53,18 +53,19 @@ func (init *Init) UnmarshalAndSet(bytes []byte) {
 }
 
 // Customize
-func (init *Init) inject() {
-	setConfig(init.conf, init.confM)
-	init.conf.Init()
-	if init.dao == nil {
-		return
+func (init *initConfig) inject() {
+	if init.conf != nil {
+		setConfig(reflect.ValueOf(init.conf).Elem(), init.confM)
+		init.conf.Init()
 	}
-	setDao2(reflect.ValueOf(init.dao).Elem(), init.confM)
-	init.dao.Init()
+
+	if init.dao != nil {
+		setDao(reflect.ValueOf(init.dao).Elem(), init.confM)
+		init.dao.Init()
+	}
 }
 
-func setConfig(conf Config, confM map[string]interface{}) {
-	v := reflect.ValueOf(conf).Elem()
+func setConfig(v reflect.Value, confM map[string]interface{}) {
 	for i := 0; i < v.NumField(); i++ {
 		filed := v.Field(i)
 		switch filed.Kind() {
@@ -111,7 +112,7 @@ const (
 	ConfigField = "CONFIG"
 )
 
-func setDao2(v reflect.Value, confM map[string]any) {
+func setDao(v reflect.Value, confM map[string]any) {
 
 	if !v.IsValid() {
 		return
@@ -143,7 +144,6 @@ func setDao2(v reflect.Value, confM map[string]any) {
 			var daoField daoField
 			for j := 0; j < fieldtyp.NumField(); j++ {
 				subfield := fieldtyp.Field(j)
-				log.Info(subfield)
 				if strings.ToUpper(subfield.Name) == EntityField || strings.ToUpper(subfield.Tag.Get(tag)) == EntityField {
 					daoField.Entity = field.Field(j)
 					daoField.entitySet = true

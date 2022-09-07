@@ -37,7 +37,6 @@ String storageUrl = System.getenv('FLUTTER_STORAGE_BASE_URL') ?: "https://storag
 
 repositories {
     google()
-    jcenter()
     maven {
         url "$storageUrl/download.flutter.io"
     }

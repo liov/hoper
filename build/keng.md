@@ -535,7 +535,7 @@ Windows下路径一般为：C:\Users\用户名.gradle，如果该目录没有这
 org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m
 如果是在命令行或IDE里面调整JVM内存分配，只需要使用：
 
-distributionUrl=https\://services.gradle.org/distributions/gradle-7.3-bin.zip
+distributionUrl=https\://services.gradle.org/distributions/gradle-7.5-bin.zip
 org.gradle.jvmargs=-Xmx4096m -XX:MaxPermSize=4096m -XX:+HeapDumpOnOutOfMemoryError
 不行再大
 
@@ -1237,3 +1237,14 @@ acme.sh  --set-default-ca --server letsencrypt
 # user 是postgresql的保留字，要用需要加双引号
 schema.table 或者 "schema"."table" 而不是 "schema.table"
 实测14单引号也行
+
+# 不兼容的类型: NonExistentClass无法转换为Annotation
+少了某个注解依赖
+如`implementation("org.apache.tomcat:annotations-api:6.0.53")`
+由于proto生成的代码到其他模块，所以需要用 `api("org.apache.tomcat:annotations-api:6.0.53")`把包导出
+
+# SLF4J: Class path contains multiple SLF4J bindings
+SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
+产生这个错误的原因是在产生日志信息的时候有两个桥接器，发生冲突导致error。
+
+解决方法如下：

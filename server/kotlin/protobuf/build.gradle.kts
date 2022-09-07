@@ -9,8 +9,7 @@ import java.io.ByteArrayOutputStream
 plugins {
     //id("com.squareup.wire") version "3.1.0"
     id("com.google.protobuf") version "0.8.18"
-    java
-    idea
+    //kotlin("kapt")
 }
 
 //wire {
@@ -25,8 +24,10 @@ plugins {
 //    }
 //}
 
-val protopath = file("${rootDir}/../../proto").absolutePath
-val projectpath = file("${rootDir}/../go/lib").absolutePath
+val grpcKotlinVersion:String by project
+
+val protopath: String = file("${rootDir}/../../proto").absolutePath
+val projectpath: String = file("${rootDir}/../go/lib").absolutePath
 
 
 sourceSets {
@@ -42,17 +43,20 @@ sourceSets {
     }
 }
 
+val grpcVersion:String by project
+val protocVersion:String by project
+
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:${rootProject.ext["protobuf_version"]}"
+        artifact = "com.google.protobuf:protoc:$protocVersion"
     }
 
     plugins {
         id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:${rootProject.ext["grpc_version"]}"
+            artifact = "io.grpc:protoc-gen-grpc-java:$grpcVersion"
         }
         id("grpckt") {
-            artifact = "io.grpc:protoc-gen-grpc-kotlin:${rootProject.ext["grpc_kotlin_version"]}"
+            artifact = "io.grpc:protoc-gen-grpc-kotlin:$grpcKotlinVersion}"
         }
 //        id("reactor") {
 //            artifact = "com.salesforce.servicelibs:reactor-grpc:1.0.0"
@@ -82,15 +86,15 @@ tasks.getByName<Jar>("jar") {
 }
 
 dependencies {
-    implementation("io.grpc:grpc-kotlin-stub:${rootProject.ext["grpc_kotlin_version"]}")
-    implementation("com.google.protobuf:protobuf-java:${rootProject.ext["protobuf_version"]}")
-    implementation("com.google.protobuf:protobuf-java-util:${rootProject.ext["protobuf_version"]}")
-    api("io.grpc:grpc-netty-shaded:${rootProject.ext["grpc_version"]}")
-    api("io.grpc:grpc-protobuf:${rootProject.ext["grpc_version"]}")
-    api("io.grpc:grpc-stub:${rootProject.ext["grpc_version"]}")
+    api("io.grpc:grpc-kotlin-stub:$grpcKotlinVersion")
+    implementation("com.google.protobuf:protobuf-java:$protocVersion")
+    implementation("com.google.protobuf:protobuf-java-util:$protocVersion")
+    api("io.grpc:grpc-netty-shaded:$grpcVersion")
+    api("io.grpc:grpc-protobuf:$grpcVersion")
+    api("io.grpc:grpc-stub:$grpcVersion")
     implementation("com.google.guava:guava:31.1-jre")
-    protobuf(files("$projectpath/protobuf").filter { file -> file.name.contains("third")||file.name.endsWith(".gen.proto") })
-    protobuf(files("$projectpath/protobuf/third"))
+    protobuf(files("$projectpath/protobuf").filter { file -> file.name.contains("third") })
+    protobuf(files("$projectpath/protobuf/third").filter { file -> file.name.contains("patch") })
     //protobuf(files(protolib("github.com/grpc-ecosystem/grpc-gateway/v2")))
     //protobuf(files(protolib("github.com/googleapis/googleapis")))
     //api("com.squareup.wire:wire-runtime:${rootProject.ext["wire_version"]}")
@@ -98,7 +102,7 @@ dependencies {
     if (JavaVersion.current().isJava9Compatible) {
         // Workaround for @javax.annotation.Generated
         // see: https://github.com/grpc/grpc-java/issues/3633
-        implementation("org.apache.tomcat:annotations-api:6.0.53")
+        api("org.apache.tomcat:annotations-api:6.0.53")
     }
     // protobuf(files("${rootDir}../../../proto/"))
 }

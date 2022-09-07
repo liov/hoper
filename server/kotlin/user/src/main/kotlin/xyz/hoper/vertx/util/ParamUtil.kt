@@ -42,7 +42,7 @@ object ParamUtil {
     }
 
     fun getRequestBody(ctx: RoutingContext): JsonObject {
-        return ctx.bodyAsJson
+        return ctx.body().asJsonObject()
     }
 
     /**

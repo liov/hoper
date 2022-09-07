@@ -2,35 +2,29 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
-    id("org.springframework.boot") version "2.6.0"
-    kotlin("plugin.spring") version "1.6.0"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    kotlin("jvm") version "1.6.0"
-    kotlin("plugin.allopen") version "1.6.0"
-    id("io.quarkus")
-    kotlin("plugin.jpa") version "1.6.0" apply false
-    kotlin("plugin.serialization") version "1.6.0"
+    val kotlinVersion = "1.7.10"
+    id("org.springframework.boot") version "3.0.0-SNAPSHOT"
+    kotlin("plugin.spring") version kotlinVersion
+    id("io.spring.dependency-management") version "1.0.13.RELEASE"
+    kotlin("jvm") version kotlinVersion
+    kotlin("plugin.allopen") version kotlinVersion
+    kotlin("plugin.jpa") version kotlinVersion apply false
+    kotlin("plugin.serialization") version kotlinVersion
+    java
+    idea
     //id("org.springframework.experimental.aot") version "0.11.0-RC1"
-}
-
-ext {
-    set("vertxVersion", "4.2.1")
-    set("junitJupiterEngineVersion", "5.4.0")
-    set("grpc_kotlin_version", "1.3.0")
-    set("protobuf_version", "3.21.1")
-    set("grpc_version", "1.47.0")
-    set("springCloudAlibabaVersion", "2.2.0.RELEASE")
-    set("wire_version", "4.0.0-alpha.20")
 }
 
 allprojects {
     apply<JavaPlugin>()
+    apply<IdeaPlugin>()
     group = "xyz.hoper"
     version = "0.0.1-SNAPSHOT"
-    java.sourceCompatibility = JavaVersion.VERSION_11
+    java.sourceCompatibility = JavaVersion.VERSION_17
 
     repositories {
         maven { url = uri("https://repo.spring.io/milestone") }
+        maven { url = uri("https://repo.spring.io/snapshot") }
         //maven("https://maven.aliyun.com/repository/public")
         mavenCentral()
         gradlePluginPortal()
@@ -39,9 +33,22 @@ allprojects {
     }
 }
 
+extra["slf4j.version"] = "1.7.20"
+
+configurations.all {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "org.slf4j") {
+            useVersion("1.7.20")
+        }
+    }
+}
+
 subprojects {
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "org.jetbrains.kotlin.plugin.spring")
+    apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
+    apply(plugin = "org.springframework.boot")
 
 
     configurations {
@@ -51,30 +58,35 @@ subprojects {
     }
 
     dependencies {
-        implementation("org.apache.logging.log4j:log4j-core:2.15.0")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
         implementation(kotlin("reflect"))
-        implementation(kotlin("stdlib"))
-        implementation("org.jetbrains.kotlin:kotlin-reflect")
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+        implementation(kotlin("stdlib-jdk8"))
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
-        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
         implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
+        implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+        implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
+        implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+        developmentOnly("org.springframework.boot:spring-boot-devtools")
+        compileOnly("org.projectlombok:lombok")
+        runtimeOnly("mysql:mysql-connector-java")
+        //runtimeOnly("org.postgresql:postgresql")
+        //runtimeOnly("org.postgresql:r2dbc-postgresql")
+        annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+        annotationProcessor("org.projectlombok:lombok")
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
         testImplementation("io.projectreactor:reactor-test")
+        implementation("org.junit.jupiter:junit-jupiter:5.9.0")
+        implementation("org.reflections:reflections:0.10.2")
     }
 
     dependencyManagement {
+        val springCloudAlibabaVersion: String by project
         imports {
-            mavenBom("com.alibaba.cloud:spring-cloud-alibaba-dependencies:${property("springCloudAlibabaVersion")}")
+            mavenBom("com.alibaba.cloud:spring-cloud-alibaba-dependencies:$springCloudAlibabaVersion")
+            mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
         }
         dependencies {
-            dependency("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.5.2")
-            dependency("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
-            dependency("io.projectreactor.kotlin:reactor-kotlin-extensions:1.1.3")
-            dependency("io.projectreactor:reactor-test:3.3.5.RELEASE")
-            dependency("org.apache.logging.log4j:log4j-core:2.15.0")
-            dependency("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.0")
         }
     }
 
@@ -84,10 +96,12 @@ subprojects {
 
     tasks.withType<KotlinCompile> {
         kotlinOptions {
+            javaParameters = true
             freeCompilerArgs = listOf("-Xjsr305=strict")
-            jvmTarget = "11"
+            jvmTarget = "17"
         }
     }
+
 
     tasks.withType<BootBuildImage> {
         builder = "paketobuildpacks/builder:tiny"

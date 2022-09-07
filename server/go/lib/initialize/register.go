@@ -1,6 +1,6 @@
 package initialize
 
-func (init *Init) Register() {
+func (init *initConfig) Register() {
 	/*	if init.ConfigCenter == nil {
 			return
 		}

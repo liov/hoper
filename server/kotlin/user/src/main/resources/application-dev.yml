@@ -4,6 +4,14 @@ spring:
     username: web
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
+  datasource-postgres:
+    url: jdbc:postgresql://localhost:5432/test
+    username: postgres
+    password: 123456
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database:
+
 
 #webApi扫描包路径
 web-api-packages: xyz.hoper.user.api

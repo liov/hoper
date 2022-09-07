@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
+	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	stringsi "github.com/actliboy/hoper/server/go/lib/utils/strings"
 	"go/ast"
 	"go/format"
@@ -11,7 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func MysqlConvert(db *gorm.DB) {
+func MysqlConvert(db *gorm.DB, filename string) {
 	var tables []string
 	db.Raw(`SHOW TABLES`).Scan(&tables)
 	mysqlgen := mysqlgen{db: db, decl: dbi.GetDecl()}
@@ -21,7 +22,7 @@ func MysqlConvert(db *gorm.DB) {
 		buf.Write(mysqlgen.genTable(tables[i]))
 		buf.Write(dbi.TwoLine())
 	}
-	dbi.Write(&buf, "generate.go")
+	fs.Write(&buf, filename)
 }
 
 func MysqlConvertByTable(db *gorm.DB, tableName string) {
@@ -31,7 +32,7 @@ func MysqlConvertByTable(db *gorm.DB, tableName string) {
 	buf.Write(mysqlgen.genTable(tableName))
 	buf.Write(dbi.TwoLine())
 
-	dbi.Write(&buf, tableName+".go")
+	fs.Write(&buf, tableName+".go")
 }
 
 type mysqlgen struct {
