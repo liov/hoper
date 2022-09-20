@@ -1,4 +1,4 @@
-package main
+package backup
 
 import (
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
@@ -16,7 +16,7 @@ const sep = string(os.PathSeparator)
 
 func DCIM(c *ftp.ServerConn) {
 	jpdir := BackUpDiskPron + "pic\\jiepai"
-	jplastFile, jpm, err := fs.LastFile(jpdir)
+	jplastFile, jpm, err := LastFile(jpdir)
 	if err != nil {
 		log.Println(err)
 		return
@@ -32,7 +32,7 @@ func DCIM(c *ftp.ServerConn) {
 	log.Println(xhslastFile.Name())
 
 	dydir := BackUpDisk + "douyin"
-	dylastFile, dym, err := fs.LastFile(dydir)
+	dylastFile, dym, err := LastFile(dydir)
 	if err != nil {
 		log.Println(err)
 		return
@@ -40,7 +40,7 @@ func DCIM(c *ftp.ServerConn) {
 	log.Println(dylastFile.Name())
 
 	dyvdir := BackUpDisk + "douyin_video"
-	dyvlastFile, dyvm, err := fs.LastFile(dyvdir)
+	dyvlastFile, dyvm, err := LastFile(dyvdir)
 	if err != nil {
 		log.Println(err)
 		return
@@ -50,7 +50,7 @@ func DCIM(c *ftp.ServerConn) {
 	lastFile := jplastFile
 	for _, file := range []os.FileInfo{xhslastFile, dylastFile, dyvlastFile} {
 		if file.ModTime().After(lastFile.ModTime()) {
-			lastFile = xhslastFile
+			lastFile = file
 		}
 	}
 
@@ -63,34 +63,40 @@ func DCIM(c *ftp.ServerConn) {
 	log.Println(len(list))
 	sort.Sort(Entities(list))
 	var lastIdx int
+	var findLast bool
 	for i, item := range list {
 		if item.Name == lastFile.Name() {
 			lastIdx = i
+			findLast = true
 			break
 		}
 	}
-	if lastIdx == 0 {
+	if lastIdx == 0 && !findLast {
 		for i := 0; i < len(list); i++ {
 			item := list[i]
 			if _, ok := jpm[item.Name]; ok {
 				lastIdx = i
+				findLast = true
 				break
 			}
 			if _, ok := xhsm[item.Name]; ok {
 				lastIdx = i
+				findLast = true
 				break
 			}
 			if _, ok := dym[item.Name]; ok {
 				lastIdx = i
+				findLast = true
 				break
 			}
 			if _, ok := dyvm[item.Name]; ok {
 				lastIdx = i
+				findLast = true
 				break
 			}
 		}
 	}
-	if lastIdx == 0 {
+	if lastIdx == 0 && !findLast {
 		lastIdx = len(list)
 	}
 
@@ -107,7 +113,7 @@ func DCIM(c *ftp.ServerConn) {
 		dst := jpdir
 		switch {
 		case strings.HasPrefix(item.Name, "IMG"), strings.HasPrefix(item.Name, "MVIMG"), strings.HasPrefix(item.Name, "VID"):
-			dst = jpdir
+			dst = jpdir + sep + item.Time.Format("200601")
 		case strings.HasPrefix(item.Name, "XHS"):
 			dst = xhsdir
 		default:
@@ -116,6 +122,7 @@ func DCIM(c *ftp.ServerConn) {
 			} else {
 				dst = dydir
 			}
+			dst += sep + item.Time.Format("200601")
 		}
 		err = fs.Copy(dst+sep+item.Name, resp)
 		if err != nil {

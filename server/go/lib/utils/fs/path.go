@@ -57,8 +57,8 @@ func lastSlash(s string) int {
 		i--
 	}
 	if i == -1 && runtime.GOOS == "windows" {
-		i := len(s) - 1
-		if i >= 0 && s[i] == '\\' {
+		i = len(s) - 1
+		for i >= 0 && s[i] != '\\' {
 			i--
 		}
 	}

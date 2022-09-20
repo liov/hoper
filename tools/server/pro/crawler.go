@@ -230,6 +230,10 @@ func ParseHtml(doc *goquery.Document) (string, string, string, string, *goquery.
 		postTime = date + " " + postTime[len(postTime)-5:]
 	}
 
+	if strings.Contains(postTime, "刚才") {
+		postTime = time.Now().Format("2006-01-02 15:04:05")
+	}
+
 	post := &Post{
 		TId:   0,
 		Auth:  auth,

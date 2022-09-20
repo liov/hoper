@@ -14,6 +14,10 @@
 #   docker-ce | 17.03.0~ce-0~ubuntu-xenial | https://mirrors.aliyun.com/docker-ce/linux/ubuntu xenial/stable amd64 Packages
 # Step 4.1.2: 安装指定版本的Docker-CE: (VERSION例如上面的17.03.1~ce-0~ubuntu-xenial)
 # sudo apt-get -y install docker-ce=[VERSION]# Step 5: 查看docker的版本# docker -v# Step 6: 查看docker的启动状态# sudo service docker status# Step 7：启动docker# sudo service docker start  //备注：WSL目前是WSL1，所以linux的发行版本部分命令还不能使用，比如systemctl命令。此处启动docker可以使用：sudo systemctl start docker# Step 8：拉取hello-world镜像，验证docker是否正常# docker run hello-world# 输出：# Hello from Docker!# This message shows that your installation appears to be working correctly.# ......
+
+sudo gpasswd -a ${USER} docker
+newgrp docker
+
 echo "export DOCKER_HOST=tcp://192.168.1.212:2375" >> ~/.bashrc && source ~/.bashrc
 
 

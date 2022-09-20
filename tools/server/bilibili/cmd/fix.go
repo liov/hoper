@@ -13,7 +13,7 @@ import (
 
 func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
-	fixQuality()
+	remove()
 }
 
 func fixRecord() {
@@ -47,7 +47,7 @@ func fixQuality() {
 }
 
 func remove() {
-	dir := "D:\\F\\B站\\video"
+	dir := "F:\\B站\\video"
 	log.Println(path.Dir(dir))
 	files, _ := os.ReadDir(dir)
 	m := map[string]struct{}{}

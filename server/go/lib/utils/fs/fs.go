@@ -323,7 +323,7 @@ func Create(filepath string) (*os.File, error) {
 
 func LastFile(dir string) (os.FileInfo, map[string]os.FileInfo, error) {
 	entities, err := os.ReadDir(dir)
-	if err != nil {
+	if len(entities) == 0 {
 		return nil, nil, err
 	}
 	sort.Sort(DirEntities(entities))

@@ -16,6 +16,10 @@ type Config struct {
 func (c *Config) Init() {
 	c.Pro.Interval = c.Pro.Interval * time.Millisecond
 	c.Pro.Timer = c.Pro.Timer * time.Second
+	os.MkdirAll(c.Pro.CommonDir, 0666)
+	if c.Pro.CommonDir[len(c.Pro.CommonDir)-1] != '/' {
+		c.Pro.CommonDir += "/"
+	}
 	CommonDirLen = len(c.Pro.CommonDir)
 
 	/*	WithClient(http.DefaultClient,30,`socks5://localhost:8080`)

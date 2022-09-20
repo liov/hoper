@@ -21,8 +21,13 @@ type TaskFun func(context.Context)
 
 // TODO
 type TaskMeta struct {
-	Id   uint
-	Kind Kind
+	Id         uint
+	Generation int
+	Kind       Kind
+}
+
+func (m *TaskMeta) NextGeneration() int {
+	return m.Generation + 1
 }
 
 type TaskStatistics struct {

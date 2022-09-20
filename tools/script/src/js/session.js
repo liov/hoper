@@ -27,7 +27,7 @@ function crm() {
 }
 
 function escape() {
-    const token = "eyJ1c2VySWQiOjIxNzYsInVzZXJOYW1lIjoieW95b2d1IiwidXNlclJlYWxOYW1lIjoi6aG+5Zut5ZutIiwidXNlclJvbGUiOiIiLCJjbGllbnRJcCI6IiJ9"
+    const token = "eyJhY2NvdW50VHlwZSI6OCwiY29tcElkIjoxODI3MCwiY29tcE5hbWUiOiLlvbHpmaLnu5Pnrpfns7vnu58xLjAiLCJkZXB0SWQiOjE5MDQsImRlcHROYW1lIjoi6YOo6ZeoMSIsImVtcGxveWVlSWQiOjEwNTg4LCJlbXBsb3llZU5hbWUiOiJlbHNhdGVzdCIsImVuZ2xpc2hOYW1lIjoiZWxzYXRlc3QiLCJmaWx0ZXJDb21wSWRzIjpbMTgyNzBdLCJmaWx0ZXJEZXB0SWRzIjpbXSwiZmlsdGVySWRzIjpbMTA1ODhdLCJvd25lckNvbXBJZCI6MCwicGhvbmUiOiIxMzYyMDQxMzQ1MyIsInBsYXRmb3JtVHlwZSI6MTA5LCJyb2xlQ29kZUxpc3QiOm51bGwsInNvdXJjZSI6MCwidGhpcmRDb21wQ29kZSI6IiIsInRoaXJkQ29tcElkIjo5LCJ0eXBlIjozfQ=="
     console.log(JSON.parse(Buffer.from(token, 'base64').toString()));
 }
 
@@ -62,5 +62,7 @@ function openErp(){
     };
     console.log(Buffer.from(JSON.stringify(sess)).toString('base64'));
 }
+
+const all  = "e30="
 
 escape()
