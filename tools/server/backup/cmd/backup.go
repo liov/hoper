@@ -4,10 +4,11 @@ import (
 	"github.com/jlaffaye/ftp"
 	"log"
 	"time"
+	"tools/backup"
 )
 
 func main() {
-	c, err := ftp.Dial("192.168.137.171:2100", ftp.DialWithTimeout(5*time.Second))
+	c, err := ftp.Dial("192.168.137.252:2100", ftp.DialWithTimeout(5*time.Second))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -26,7 +27,7 @@ func main() {
 }
 
 func Backup(c *ftp.ServerConn) {
-	DCIM(c)
-	Pietures(c)
+	backup.DCIM(c)
+	backup.Pietures(c)
 	//Wechat(c)
 }

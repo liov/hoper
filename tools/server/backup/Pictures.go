@@ -1,4 +1,4 @@
-package main
+package backup
 
 import (
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
@@ -8,68 +8,72 @@ import (
 )
 
 func Pietures(c *ftp.ServerConn) {
-	err := Copy(c, "/Pictures/Twitter", BackUpDisk+"pron\\Twitter")
+	err := Copy(c, "/Pictures/Twitter", BackUpDisk+"pron\\Twitter", true)
 	if err != nil {
 		log.Println(err)
 	}
 
-	err = Copy(c, "/Pictures/douyin", BackUpDisk+"douyin")
+	err = Copy(c, "/Pictures/douyin", BackUpDisk+"douyin", true)
 	if err != nil {
 		log.Println(err)
 	}
 
-	err = Copy(c, "/Movies/TwDown", BackUpDiskPron+"TwDown")
+	err = Copy(c, "/Movies/TwDown", BackUpDiskPron+"TwDown", true)
 	if err != nil {
 		log.Println(err)
 	}
-	err = Copy(c, "/Movies/Telegram", BackUpDiskPron+"Telegram")
+	err = Copy(c, "/Movies/Telegram", BackUpDiskPron+"Telegram", false)
 	if err != nil {
 		log.Println(err)
 	}
-	err = Copy(c, "/Pictures/CoolMarket", BackUpDisk+"CoolMarket")
+	err = Copy(c, "/Pictures/CoolMarket", BackUpDisk+"CoolMarket", false)
 	if err != nil {
 		log.Println(err)
 	}
-	err = Copy(c, "/Pictures/weibo", BackUpDiskPron+"weibo")
+	err = Copy(c, "/Pictures/weibo", BackUpDiskPron+"weibo", true)
 	if err != nil {
 		log.Println(err)
 	}
-	err = Copy(c, "/Pictures/微博动图", BackUpDiskPron+"微博动图")
+	err = Copy(c, "/Pictures/微博动图", BackUpDiskPron+"微博动图", true)
 	if err != nil {
 		log.Println(err)
 	}
-	err = Copy(c, "/Pictures/Vipaccount", BackUpDisk+"Vipaccount")
+	err = Copy(c, "/Pictures/Vipaccount", BackUpDisk+"Vipaccount", false)
 	if err != nil {
 		log.Println(err)
 	}
-	err = Copy(c, "/nico/downloadImages", BackUpDisk+"nico\\downloadImages")
+	err = Copy(c, "/nico/downloadImages", BackUpDisk+"nico\\downloadImages", false)
 	if err != nil {
 		log.Println(err)
 	}
-	err = Copy(c, "/soul/Pictures", BackUpDisk+"soul\\Pictures")
+	err = Copy(c, "/soul/Pictures", BackUpDisk+"soul\\Pictures", false)
 	if err != nil {
 		log.Println(err)
 	}
-	err = Copy(c, "/Download/IDMP/Videos", BackUpDiskPron+"Videos")
+	err = Copy(c, "/Download/IDMP/Videos", BackUpDiskPron+"Videos", false)
 	if err != nil {
 		log.Println(err)
 	}
-	err = Copy(c, "/DCIM/weibo", BackUpDiskPron+"Share")
+	err = Copy(c, "/DCIM/weibo", BackUpDiskPron+"Share", false)
 	if err != nil {
 		log.Println(err)
 	}
-	err = Copy(c, "/DCIM/weibovideo", BackUpDiskPron+"Share")
+	err = Copy(c, "/DCIM/weibovideo", BackUpDiskPron+"Share", false)
 	if err != nil {
 		log.Println(err)
 	}
-	err = Copy(c, "/DCIM/Screenshots", BackUpDiskPron+"pic\\weibo_sq")
+	err = Copy(c, "/DCIM/Screenshots", BackUpDiskPron+"pic\\weibo_sq", false)
 	if err != nil {
 		log.Println(err)
 	}
 }
 
-func Copy(c *ftp.ServerConn, src, dst string) error {
-	lastFile, m, err := fs.LastFile(dst)
+func Copy(c *ftp.ServerConn, src, dst string, date bool) error {
+	lastFileFun := fs.LastFile
+	if date {
+		lastFileFun = LastFile
+	}
+	lastFile, m, err := lastFileFun(dst)
 	if err != nil {
 		return err
 	}
@@ -82,23 +86,26 @@ func Copy(c *ftp.ServerConn, src, dst string) error {
 	log.Println(len(list))
 	sort.Sort(Entities(list))
 	var lastIdx int
+	var findLast bool
 	for i, item := range list {
 		if item.Name == lastFile.Name() {
 			lastIdx = i
+			findLast = true
 			break
 		}
 	}
-	if lastIdx == 0 {
+	if lastIdx == 0 && !findLast {
 		for i := 0; i < len(list); i++ {
 			item := list[i]
 
 			if _, ok := m[item.Name]; ok {
 				lastIdx = i
+				findLast = true
 				break
 			}
 		}
 	}
-	if lastIdx == 0 {
+	if lastIdx == 0 && !findLast {
 		lastIdx = len(list)
 	}
 	for i := lastIdx - 1; i >= 0; i-- {
@@ -111,7 +118,12 @@ func Copy(c *ftp.ServerConn, src, dst string) error {
 			return err
 		}
 
-		err = fs.Copy(dst+sep+item.Name, resp)
+		if date {
+			err = fs.Copy(dst+sep+item.Time.Format("200601")+sep+item.Name, resp)
+		} else {
+			err = fs.Copy(dst+sep+item.Name, resp)
+		}
+
 		if err != nil {
 			return err
 		}

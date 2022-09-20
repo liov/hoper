@@ -85,7 +85,7 @@ func GetNavUrl() string {
 }
 
 func GetFavResourceListUrl(favId, page int) string {
-	return fmt.Sprintf("%s/x/v3/fav/resource/list?media_id=%d&pn=%d&ps=20&keyword=&order=mtime&type=0&tid=0&platform=web&jsonp=jsonp", Host, favId, page)
+	return fmt.Sprintf("%s/x/v3/fav/resource/list?media_id=%d&pn=%d&ps=20", Host, favId, page)
 }
 
 func GetPlayerUrl(avid, cid, qn int) string {
