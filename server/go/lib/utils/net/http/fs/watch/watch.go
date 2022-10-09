@@ -38,9 +38,12 @@ func New(interval time.Duration) *Watch {
 }
 
 func (w *Watch) Add(url string, callback func(file *http_fs.FileInfo)) error {
-	w.handler[url] = &Callback{
+	c := &Callback{
 		callback: callback,
 	}
+
+	c.Do(url)
+	w.handler[url] = c
 	return nil
 }
 
@@ -50,9 +53,6 @@ func (w *Watch) Remove(url string) error {
 }
 
 func (w *Watch) run() {
-	for url, callback := range w.handler {
-		callback.Do(url)
-	}
 	timer := time.NewTicker(w.interval)
 OuterLoop:
 	for {

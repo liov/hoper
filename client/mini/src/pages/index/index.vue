@@ -1,52 +1,45 @@
 <template>
-  <view class="index">
-    <view>
-      <img src="" alt="">
-    </view>
-    {{ msg }}
-    <view class="btn">
-      <nut-button type="primary" @click="handleClick('text', msg2, true)">点我</nut-button>
-    </view>
-    <nut-toast :msg="msg" v-model:visible="show" :type="type" :cover="cover" />
-  </view>
+  <div>
+  <Moment v-if="activeName==='moment'"></Moment>
+  <nut-tabbar @tab-switch="tabSwitch" bottom safeAreaInsetBottom v-model:visible="activeName">
+    <nut-tabbar-item icon="image" tab-title="瞬间" name="moment">
+    </nut-tabbar-item>
+    <nut-tabbar-item  icon="search" tab-title="日记" name="search"></nut-tabbar-item>
+    <nut-tabbar-item  icon="message" tab-title="聊天" name="message"></nut-tabbar-item>
+    <nut-tabbar-item  icon="my" tab-title="我的" name="my"></nut-tabbar-item>
+  </nut-tabbar>
+  </div>
 </template>
 
-<script lang="ts">
-import { reactive, toRefs } from 'vue';
-export default {
-  name: 'Index',
-  components: {
-    
-  },
-  setup(){
-    const state = reactive({
-      msg: '欢迎使用 NutUI3.0 开发小程序',
-      msg2: '你成功了～',
-      type: 'text',
-      show: false,
-      cover: false
-    });
+<script setup lang="ts">
 
-    const handleClick = (type: string, msg: string, cover: boolean = false) => {
-      state.show = true;
-      state.msg2 = msg;
-      state.type = type;
-      state.cover = cover;
-    };
+import { useUserStore } from "@/stores/user";
+import articleIcon  from  '@/assets/icon/article.svg'
+import Moment from '@/pages/moment/moment.vue'
+import { ref } from "vue";
 
-    return {
-      ...toRefs(state),
-      handleClick
-    }
-  }
+const activeName = ref("moment");
+function tabSwitch(item:any, index:number) {
+  console.log(item, index);
 }
+
 </script>
 
 <style lang="scss">
-.index {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
+  color: #2c3e50;
+}
+
+#nav {
+  padding: 30px;
+
+  a {
+    font-weight: bold;
+    color: #2c3e50;
+  }
 }
 </style>

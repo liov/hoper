@@ -31,7 +31,7 @@ func Av2bv(x int) string {
 	x = (x ^ xor) + add
 	r := []byte("BV1  4 1 7  ")
 	for i := 0; i < 6; i++ {
-		r[s[i]] = table[int(math.Floor(float64(x)/float64(int(math.Pow(58, float64(i)))%58)))]
+		r[s[i]] = table[int(math.Floor(float64(x)/math.Pow(58, float64(i))))%58]
 	}
 
 	return string(r)

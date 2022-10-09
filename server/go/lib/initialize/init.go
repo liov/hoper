@@ -108,7 +108,7 @@ func (init *initConfig) LoadConfig(notinit ...string) *initConfig {
 						ConfigType: "local",
 						Local: &ilocal.Local{
 							Config:     local.Config{},
-							ConfigName: init.ConfUrl,
+							ConfigPath: init.ConfUrl,
 							ReloadType: "fsnotify",
 						},
 					},

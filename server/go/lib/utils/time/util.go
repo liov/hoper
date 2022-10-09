@@ -8,7 +8,7 @@ import (
 )
 
 func Format(t time.Time) string {
-	return t.Format(FormatTime)
+	return t.Format(TimeFormat)
 }
 
 func TimeCost(start time.Time) {
@@ -24,4 +24,9 @@ func SetUnixSysTime(t time.Time) {
 func SyncHwTime() {
 	cmd := exec.Command("clock --systohc")
 	cmd.Run()
+}
+
+func TodayZeroTime() time.Time {
+	todayZeroTime, _ := time.Parse(DateFormat, time.Now().Format(DateFormat))
+	return todayZeroTime
 }

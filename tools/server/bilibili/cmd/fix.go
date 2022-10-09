@@ -76,3 +76,7 @@ func remove() {
 		}
 	}
 }
+
+func fixName() {
+
+}

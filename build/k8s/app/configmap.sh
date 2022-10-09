@@ -1,3 +1,3 @@
 #!/bin/bash
 
-kubectl create configmap ${app}-config --from-file=config.toml,local.toml
+kubectl create configmap ${app} --from-file=config.toml,local.toml

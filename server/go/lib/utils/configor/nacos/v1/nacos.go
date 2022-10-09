@@ -3,7 +3,7 @@ package v1
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 
@@ -66,7 +66,7 @@ func (c *Config) GetConfig() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ioutil.ReadAll(resp.Body)
+	return io.ReadAll(resp.Body)
 }
 
 func (c *Client) GetConfigAllInfo() ([]byte, error) {
@@ -76,7 +76,7 @@ func (c *Client) GetConfigAllInfo() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	data, err := ioutil.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +118,7 @@ Loop:
 		select {
 		case <-ch:
 			listeningConfigs = fmt.Sprintf(InitParam, c.DataId, c.Group, c.MD5, c.Tenant)
-			req.Body = ioutil.NopCloser(strings.NewReader(listeningConfigs))
+			req.Body = io.NopCloser(strings.NewReader(listeningConfigs))
 			log.Debug("发送请求:", req.URL)
 			resp, err := client.Do(req)
 			if err != nil {
@@ -126,7 +126,7 @@ Loop:
 				continue
 			}
 
-			body, err := ioutil.ReadAll(resp.Body)
+			body, err := io.ReadAll(resp.Body)
 			if err != nil {
 				log.Error(err)
 			}

@@ -27,7 +27,7 @@ function crm() {
 }
 
 function escape() {
-    const token = "eyJhY2NvdW50VHlwZSI6OCwiY29tcElkIjoxODI3MCwiY29tcE5hbWUiOiLlvbHpmaLnu5Pnrpfns7vnu58xLjAiLCJkZXB0SWQiOjE5MDQsImRlcHROYW1lIjoi6YOo6ZeoMSIsImVtcGxveWVlSWQiOjEwNTg4LCJlbXBsb3llZU5hbWUiOiJlbHNhdGVzdCIsImVuZ2xpc2hOYW1lIjoiZWxzYXRlc3QiLCJmaWx0ZXJDb21wSWRzIjpbMTgyNzBdLCJmaWx0ZXJEZXB0SWRzIjpbXSwiZmlsdGVySWRzIjpbMTA1ODhdLCJvd25lckNvbXBJZCI6MCwicGhvbmUiOiIxMzYyMDQxMzQ1MyIsInBsYXRmb3JtVHlwZSI6MTA5LCJyb2xlQ29kZUxpc3QiOm51bGwsInNvdXJjZSI6MCwidGhpcmRDb21wQ29kZSI6IiIsInRoaXJkQ29tcElkIjo5LCJ0eXBlIjozfQ=="
+    const token = "eyJjb21wSWQiOjEsImNvbXBOYW1lIjoi5rex5Zyz5biC5Y2O5a6H6K6v56eR5oqA5pyJ6ZmQ5YWs5Y+4IiwiZGVwdElkIjoxLCJkZXB0TmFtZSI6Iua3seWcs+W4guWNjuWuh+iur+enkeaKgOaciemZkOWFrOWPuCIsImVtcGxveWVlSWQiOjEsImVtcGxveWVlTmFtZSI6Iui2hee6p+euoeeQhuWRmCIsImVuZ2xpc2hOYW1lIjoiZXJwYWRtaW4iLCJmaWx0ZXJDb21wSWRzIjpbXSwiZmlsdGVyRGVwdElkcyI6W10sImZpbHRlcklkcyI6W10sInBob25lIjoiIiwicGxhdGZvcm1UeXBlIjoxMDgsInJvbGVDb2RlTGlzdCI6WyIxMiJdLCJ0eXBlIjozfQ=="
     console.log(JSON.parse(Buffer.from(token, 'base64').toString()));
 }
 
@@ -65,4 +65,5 @@ function openErp(){
 
 const all  = "e30="
 
+console.log(Buffer.from('{}').toString('base64'));
 escape()

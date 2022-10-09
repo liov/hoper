@@ -2,7 +2,7 @@ package dao
 
 import (
 	contexti "github.com/actliboy/hoper/server/go/lib/context"
-	"github.com/actliboy/hoper/server/go/lib/initialize/cache_ristretto"
+	"github.com/actliboy/hoper/server/go/lib/initialize/cache/ristretto"
 	"github.com/actliboy/hoper/server/go/lib/initialize/db/postgres"
 	initredis "github.com/actliboy/hoper/server/go/lib/initialize/redis"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
@@ -28,7 +28,7 @@ type dao struct {
 	PebbleDB pebble.DB
 	// RedisPool Redis连接池
 	Redis initredis.Redis
-	Cache cache_ristretto.Cache
+	Cache ristretto.Cache
 }
 
 func (d *dao) Init() {

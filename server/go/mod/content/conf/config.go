@@ -1,7 +1,7 @@
 package conf
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/initialize/cache_ristretto"
+	"github.com/actliboy/hoper/server/go/lib/initialize/cache/ristretto"
 	"github.com/actliboy/hoper/server/go/lib/initialize/db"
 	"github.com/actliboy/hoper/server/go/lib/initialize/log"
 	"github.com/actliboy/hoper/server/go/lib/initialize/mail"
@@ -26,7 +26,7 @@ type config struct {
 	Mail      mail.MailConfig
 	GORMDB    db.DatabaseConfig
 	Redis     redis.Config
-	Cache     cache_ristretto.CacheConfig
+	Cache     ristretto.CacheConfig
 	Log       log.LogConfig
 	Viper     *viper.Viper
 }

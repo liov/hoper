@@ -1,7 +1,7 @@
 package pro
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/initialize/cache_ristretto"
+	"github.com/actliboy/hoper/server/go/lib/initialize/cache/ristretto"
 	initpostgres "github.com/actliboy/hoper/server/go/lib/initialize/db/postgres"
 	v8 "github.com/actliboy/hoper/server/go/lib/initialize/elastic/v8"
 	initializeredis "github.com/actliboy/hoper/server/go/lib/initialize/redis"
@@ -38,13 +38,13 @@ type Customize struct {
 type TimepillDao struct {
 	Hoper initpostgres.DB
 	Redis initializeredis.Redis
-	Cache cache_ristretto.Cache
+	Cache ristretto.Cache
 }
 
 type dao struct {
 	DB    initpostgres.DB `init:"config:hoper"`
 	Redis initializeredis.Redis
-	Cache cache_ristretto.Cache
+	Cache ristretto.Cache
 	Es8   v8.Es `init:"config:elasticsearch8"`
 }
 

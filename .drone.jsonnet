@@ -1,6 +1,6 @@
 // local mode(mode="app") = if mode == "app" then "app" else "node";
 local tpldir = './build/k8s/app/';
-local codedir = '/home/new/code/hoper/';
+local codedir = '/mnt/d/code/hoper/';
 local workspace = '/src';
 local srcdir = workspace + '/';
 
@@ -12,10 +12,6 @@ local kubectl(deplocal, cmd) = if deplocal then {
     {
       name: 'kube',
       path: '/root/.kube/',
-    },
-    {
-      name: 'minikube',
-      path: '/root/.minikube/',
     },
   ],
   commands: cmd,
@@ -90,12 +86,6 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
         path: '/root/.kube/',
       },
     },
-    {
-      name: 'minikube',
-      host: {
-        path: '/root/.minikube/',
-      },
-    },
   ],
   clone: {
     disable: true,
@@ -119,12 +109,12 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
       },
       commands: [
       // git clone
-       "git config --global http.proxy 'socks5://proxy.tools:1080'",
-      "git config --global https.proxy 'socks5://proxy.tools:1080'",
+      // "git config --global http.proxy 'socks5://proxy.tools:1080'",
+      //"git config --global https.proxy 'socks5://proxy.tools:1080'",
       //"git clone ${DRONE_GIT_HTTP_URL} .",
       'cd /code',
-      'git tag -l | xargs git tag -d',
-      'git fetch --all && git reset --hard origin/master && git pull',
+      //  'git tag -l | xargs git tag -d',
+      //'git fetch --all && git reset --hard origin/master && git pull',
       'cd ' + srcdir,
       'git clone /code .',
       'git checkout -b deploy $DRONE_COMMIT_REF',
@@ -132,7 +122,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
       local buildfile = '/code/' + workdir + '/protobuf/build';
       if protoc then 'if [ -f ' + buildfile + ' ]; then cp -r /code/' + workdir + '/protobuf  '+ srcdir + workdir + '; fi' else 'echo',
       "sed -i 's/$${app}/" + fullname + "/g' " + dockerfilepath,
-      local cmd = ['./' + fullname] + opts;
+      local cmd = ['./' + fullname , '-c','./config/'+group+'.toml'] + opts;
       "sed -i 's#$${cmd}#" + std.join('", "', [opt for opt in cmd]) + "#g' " + dockerfilepath,
       "sed -i 's/$${app}/" + fullname + "/g' " + deppath,
       "sed -i 's/$${group}/" + group + "/g' " + deppath,
@@ -204,6 +194,5 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
   Pipeline('timepill', 'rbyorderid', mode='job',sourceFile='./timepill/cmd/recordby_orderid.go'),
   Pipeline('timepill', 'esload', mode='cronjob', sourceFile='./timepill/cmd/search_es.go', deplocal=true, schedule='00 10 * * *'),
   Pipeline('pro', sourceFile='./pro/cmd/record.go'),
-  //Pipeline('timepill', sourceFile='./timepill/cmd/record.go',deplocal=true,opts=['-t']),
   Pipeline('bilibili',  sourceFile='./bilibili/cmd/record_fav.go'),
 ]

@@ -3,7 +3,7 @@ package dao
 import (
 	"database/sql"
 	contexti "github.com/actliboy/hoper/server/go/lib/context"
-	"github.com/actliboy/hoper/server/go/lib/initialize/cache_ristretto"
+	"github.com/actliboy/hoper/server/go/lib/initialize/cache/ristretto"
 	"github.com/actliboy/hoper/server/go/lib/initialize/db/postgres"
 	"github.com/actliboy/hoper/server/go/lib/initialize/mail"
 	"github.com/actliboy/hoper/server/go/lib/initialize/pebble"
@@ -34,7 +34,7 @@ type dao struct {
 	PebbleDB pebble.DB
 	// RedisPool Redis连接池
 	Redis redis.Redis
-	Cache cache_ristretto.Cache
+	Cache ristretto.Cache
 	//elastic
 	Mail mail.Mail `init:"config:mail"`
 }

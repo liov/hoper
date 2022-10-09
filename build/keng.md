@@ -1248,3 +1248,45 @@ SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
 产生这个错误的原因是在产生日志信息的时候有两个桥接器，发生冲突导致error。
 
 解决方法如下：
+
+# gorm date 查询的坑
+```go
+begin, end := req.ContractEndDayRange.Param() //begin end time.Time类型
+db = db.Where("tsp.contract_end_day BETWEEN ? AND ?", begin, end)
+```
+生成的sql
+```sql
+SELECT count(*) FROM tsp_info tsp WHERE tsp.type = 0 AND (tsp.contract_end_day BETWEEN '2022-09-26 00:00:00' AND '2022-09-26 23:59:59') AND (tsp.id != 1 AND tsp.status = 0 );
+
+SELECT DISTINCT(tsp.id) FROM tsp_info tsp WHERE tsp.type = 0 AND (tsp.contract_end_day BETWEEN '2022-09-26 00:00:00' AND '2022-09-26 23:59:59') AND (tsp.id != 1 AND tsp.status = 0 ) 
+ORDER BY contract_end_day LIMIT 10;
+```
+直接在数据库执行都是有返回的,但是用gorm怎么都查询不到
+最后觉得是 contract_end_day date类型用时间去查有问题
+改了代码
+```go
+begin, end := req.ContractEndDayRange.Param() //begin end time.Time类型
+db = db.Where("tsp.contract_end_day BETWEEN ? AND ?", begin.Format("2006-01-02"), end.Format("2006-01-02"))
+```
+正常了,这是啥坑?
+
+# webpack 别名的坑 alias
+能识别 `'@': path.resolve(__dirname, '..', 'src'),`
+不能识别 `'@/': path.resolve(__dirname, '..', 'src/'),`
+
+# Extraneous non-props attributes (maskClosable) were passed to component but could not be automatically inherited because component renders fragment or text root nodes.
+
+报错翻译
+无关的非道具属性(类)被传递给组件，但不能被自动继承，因为组件呈现片段或文本根节点。
+
+存在的问题
+根据报错信息
+首先检查是否传递了没有解析的属性，可以检查一下你用的第三方的组件，或者自己编写的组件，是否 存在没有解析的属性，例如：class等属性
+
+其次，还有一个重要原因是组件呈现片段或文本根节点，即组件暴露在了最外层。也就是vue内置或封装的组件、使用的第三方组件是否直接放在了template下。外面套一层div即可解决。
+
+# windows编辑wsl.conf 权限不足
+
+ubuntu config --default-user root
+wsl --shutdown
+重启
