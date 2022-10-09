@@ -12,57 +12,32 @@ data:
     Watch  = true
     NoInject = ["Apollo","Etcd", "Es"]
     InjectVersion = 2
-    [dev.nacos]
-    Addr = "nacos.local.org"
-    Group = "${group}"
     
-    [dev.nacosv2]
+    
+    [dev.local]
+    ConfigPath = "./config/${group}.toml"
+    ReloadType = "fsnotify"
+    
+    [test]
+    configType = "nacos"
+    Watch  = true
+    
+    [dev.nacos]
     DataId = "${app}"
     Group = "${group}"
     
-    [[dev.nacosv2.ServerConfigs]]
+    [[dev.nacos.ServerConfigs]]
     Scheme = "http"
     IpAddr = "nacos.liov.xyz"
     Port = 9000
     GrpcPort = 10000
     
-    [dev.nacosv2.ClientConfig]
+    [dev.nacos.ClientConfig]
     NamespaceId = ""
     username = "nacos"
-    password = "225567"
+    password = "123456"
     LogLevel = "debug"
-    
-    [dev.local]
-    ConfigName = "local.toml"
-    ReloadType = "fsnotify"
-    
-    [test]
-    configType = "nacosv2"
-    Watch  = true
-    [test.nacos]
-    Addr = "nacos.local.org"
-    Group = "${group}"
-    
-    [test.nacosv2]
-    DataId = "timepill"
-    Group = "DEFAULT_GROUP"
-    
-    [[test.nacosv2.ServerConfigs]]
-    Scheme = "http"
-    IpAddr = "nacos.xxx"
-    Port = 9000
-    GrpcPort = 10000
-    
-    [test.nacosv2.ClientConfig]
-    NamespaceId = ""
-    username = "nacos"
-    password = "xxx"
-    LogLevel = "debug"
-    
-    [test.local]
-    LocalConfigName = "local.toml"
-    ReloadType = "fsnotify"
     
     [prod]
     NacosTenant = ""
-local.toml: |
+  local.toml: |

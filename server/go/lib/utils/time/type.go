@@ -46,9 +46,9 @@ func (date Date) MarshalJSON() ([]byte, error) {
 		return nil, errors.New("Time.MarshalJSON: year outside of range [0,9999]")
 	}
 
-	b := make([]byte, 0, len("2006-01-02")+2)
+	b := make([]byte, 0, len(DateFormat)+2)
 	b = append(b, '"')
-	b = t.AppendFormat(b, "2006-01-02")
+	b = t.AppendFormat(b, DateFormat)
 	b = append(b, '"')
 	return b, nil
 }
@@ -75,8 +75,7 @@ func (date *Time) Scan(value interface{}) (err error) {
 }
 
 func (date Time) Value() (driver.Value, error) {
-	y, m, d := time.Time(date).Date()
-	return time.Date(y, m, d, 0, 0, 0, 0, time.Time(date).Location()), nil
+	return time.Time(date), nil
 }
 
 func (date Time) Format(foramt string) string {
@@ -104,9 +103,9 @@ func (date Time) MarshalJSON() ([]byte, error) {
 		return nil, errors.New("Time.MarshalJSON: year outside of range [0,9999]")
 	}
 
-	b := make([]byte, 0, len("2006-01-02 15:04:05")+2)
+	b := make([]byte, 0, len(TimeFormatDisplay)+2)
 	b = append(b, '"')
-	b = t.AppendFormat(b, "2006-01-02 15:04:05")
+	b = t.AppendFormat(b, TimeFormatDisplay)
 	b = append(b, '"')
 	return b, nil
 }

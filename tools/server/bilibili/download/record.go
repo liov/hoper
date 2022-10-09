@@ -168,10 +168,20 @@ func (video *Video) VideoRecord(ctx context.Context, url string) ([]*crawler.Req
 
 func ViewRecordUpdate(aid int) *crawler.Request {
 	return crawler.NewRequest("", func(ctx context.Context) ([]*crawler.Request, error) {
-		err := dao.Dao.Hoper.Exec(`INSERT INTO `+dao.TableNameViewBak+`(aid,data) (SELECT aid,data FROM `+dao.TableNameView+` WHERE aid = ?) `, aid).Error
+		bilibiliDao := dao.NewDao(ctx, dao.Dao.Hoper.DB)
+		exists, err := bilibiliDao.ViewExists(aid)
 		if err != nil {
 			return nil, err
 		}
+		if !exists {
+			req1 := GetViewInfoReq(aid, ViewInfoRecord)
+			return []*crawler.Request{req1}, nil
+		}
+
+		err = dao.Dao.Hoper.Exec(`INSERT INTO `+dao.TableNameViewBak+`(aid,data) (SELECT aid,data FROM `+dao.TableNameView+` WHERE aid = ?) `, aid).Error
+		/*	if err != nil {
+			return nil, err
+		}*/
 		res, err := apiservice.GetView(aid)
 		if err != nil || res.Aid == 0 {
 			return nil, err

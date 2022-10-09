@@ -1,4 +1,4 @@
-package timei
+package stamap
 
 import (
 	"log"

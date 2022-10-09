@@ -9,7 +9,7 @@ module.exports = {
     "plugin:vue/vue3-essential",
     "eslint:recommended",
     "@vue/eslint-config-typescript/recommended",
-    "@vue/eslint-config-prettier"
+    "@vue/eslint-config-prettier",
   ],
   parserOptions: {
     ecmaVersion: 2020,
@@ -27,12 +27,8 @@ module.exports = {
   },
   overrides: [
     {
-      files: [
-        "cypress/e2e/**.{cy,spec}.{js,ts,jsx,tsx}"
-      ],
-      "extends": [
-        "plugin:cypress/recommended"
-      ],
+      files: ["cypress/e2e/**.{cy,spec}.{js,ts,jsx,tsx}"],
+      extends: ["plugin:cypress/recommended"],
       env: {
         mocha: true,
       },

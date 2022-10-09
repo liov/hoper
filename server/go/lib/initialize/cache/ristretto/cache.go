@@ -1,4 +1,4 @@
-package cache_ristretto
+package ristretto
 
 import (
 	"github.com/actliboy/hoper/server/go/lib/initialize"

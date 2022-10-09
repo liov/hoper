@@ -1,3 +1,3 @@
-package timei
+package str
 
 type TimeStr string

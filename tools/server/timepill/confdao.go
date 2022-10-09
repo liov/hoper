@@ -3,7 +3,7 @@ package timepill
 import (
 	"context"
 	"encoding/base64"
-	"github.com/actliboy/hoper/server/go/lib/initialize/cache_ristretto"
+	"github.com/actliboy/hoper/server/go/lib/initialize/cache/ristretto"
 	"github.com/actliboy/hoper/server/go/lib/initialize/db/postgres"
 	initializeredis "github.com/actliboy/hoper/server/go/lib/initialize/redis"
 	"time"
@@ -30,8 +30,8 @@ type Customize struct {
 type dao struct {
 	Hoper     postgres.DB
 	Redis     initializeredis.Redis
-	Cache     cache_ristretto.Cache
-	UserCache cache_ristretto.Cache
+	Cache     ristretto.Cache
+	UserCache ristretto.Cache
 	//NsqP      insq.Producer `init:"notInject;config:nsq-producer"`
 }
 

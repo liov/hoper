@@ -231,7 +231,7 @@ func NewCtx(ctx context.Context) *RequestContext {
 		RequestAt: request.RequestAt{
 			Time:       now,
 			TimeStamp:  now.Unix(),
-			TimeString: now.Format(timei.FormatTime),
+			TimeString: now.Format(timei.TimeFormat),
 		},
 		ServerTransportStream: grpc.ServerTransportStreamFromContext(ctx),
 	}
@@ -256,7 +256,7 @@ func (c *RequestContext) reset(ctx context.Context) *RequestContext {
 	}
 	c.Context = ctx
 	c.RequestAt.Time = now
-	c.RequestAt.TimeString = now.Format(timei.FormatTime)
+	c.RequestAt.TimeString = now.Format(timei.TimeFormat)
 	c.RequestAt.TimeStamp = now.Unix()
 	return c
 }

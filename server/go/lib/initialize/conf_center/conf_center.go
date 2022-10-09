@@ -1,15 +1,15 @@
 package conf_center
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/initialize/conf_center/http"
 	"github.com/actliboy/hoper/server/go/lib/initialize/conf_center/local"
-	"github.com/actliboy/hoper/server/go/lib/initialize/conf_center/nacos"
 	"github.com/actliboy/hoper/server/go/lib/initialize/conf_center/nacos/v2"
 )
 
 const (
-	Local   = "local"
-	Nacos   = "nacos"
-	Nacosv2 = "nacosv2"
+	Local = "local"
+	Nacos = "nacos"
+	Http  = "http"
 )
 
 type ConfigCenter interface {
@@ -19,21 +19,20 @@ type ConfigCenter interface {
 type ConfigCenterConfig struct {
 	ConfigType string
 	Watch      bool
-	Nacos      *nacos.Nacos
-	Nacosv2    *v2.Nacos
+	Nacos      *v2.Nacos
 	Local      *local.Local
+	Http       *http.Config
 	/*	Etcd   *etcd.Etcd
 		Apollo *apollo.Apollo*/
 }
 
 func (c *ConfigCenterConfig) ConfigCenter(model string, debug bool) ConfigCenter {
-	if c.ConfigType == Nacos && c.Nacos != nil {
-		c.Nacos.Watch = c.Watch
-		return c.Nacos
+	if c.ConfigType == Http && c.Http != nil {
+		return c.Http
 	}
 
-	if c.ConfigType == Nacosv2 && c.Nacosv2 != nil {
-		return c.Nacosv2
+	if c.ConfigType == Nacos && c.Nacos != nil {
+		return c.Nacos
 	}
 	/*	if c.Etcd != nil && ccec.EtcdKey != "" {
 		c.Etcd.Key = ccec.EtcdKey

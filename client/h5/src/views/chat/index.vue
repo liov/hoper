@@ -2,11 +2,11 @@
   <div id="chat">
     <div v-if="msgs.length > 0">
       <div v-for="(item, idx) in msgs" :key="idx">
-        <div :class="item.sendUserId == user.id ? 'right' : 'left'">
+        <div :class="item.sendUserId === user.id ? 'right' : 'left'">
           <van-popover
             teleport="#chat"
             :show="true"
-            :placement="item.sendUserId == user.id ? 'left' : 'right'"
+            :placement="item.sendUserId === user.id ? 'left' : 'right'"
           >
             <span>{{ item.content }}</span>
             <template #reference>
