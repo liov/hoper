@@ -30,8 +30,9 @@ spec:
                   name: static
           volumes:
             - name: config
-              configMap:
-                name: ${group}
+              hostPath:
+                path: ${confdir}
+                type: DirectoryOrCreate
             - name: data
               hostPath:
                 path: ${datadir}/${group}

@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql
+  namespace: tools
+  labels:
+    app: mysql
+data:
+  conf.ini: |
+    BRAND_NAME = Gogs
+    ; The system user who should be running the applications. It has no effect on Windows,
+    ; otherwise, it should match the value of $USER environment variable.
+    RUN_USER = jyb
+    ; The running mode of the application, can be either "dev", "prod" or "test".
+    RUN_MODE = prod
+  
+    [repository]
+    ; The root path for storing managed repositories, default is "~/gogs-repositories"
+    ROOT = /data
+
+
+    [database]
+    ; The database backend, either "postgres", "mysql" "sqlite3" or "mssql".
+    ; You can connect to TiDB with MySQL protocol.
+    TYPE = postgres
+    HOST = postgres.tools:5432
+    NAME = tools
+    USER = gogs
+    PASSWORD =
+    ; For "postgres" only
+    SCHEMA = gogs
+    ; For "postgres" only, either "disable", "require" or "verify-full".
+    SSL_MODE = disable
+    ; The maximum open connections of the pool.
+    MAX_OPEN_CONNS = 30
+    ; The maximum idle connections of the pool.
+    MAX_IDLE_CONNS = 30
+  
+  
+  
+    [email]
+    ; Whether to enable the email service.
+    ENABLED = false
+    ; The prefix prepended to the subject line.
+    SUBJECT_PREFIX = `[%(BRAND_NAME)s] `
+    ; The SMTP server with its port, e.g. smtp.mailgun.org:587, smtp.gmail.com:587, smtp.qq.com:465
+    ; If the port ends is "465", SMTPS will be used. Using STARTTLS on port 587 is recommended per RFC 6409.
+    ; If the server supports STARTTLS it will always be used.
+    HOST = smtp.mailgun.org:587
+    ; The email from address (RFC 5322). This can be just an email address, or the `"Name" <email@example.com>` format.
+    FROM = noreply@gogs.localhost
+    ; The login user.
+    USER = noreply@gogs.localhost
+    ; The login password.
+    PASSWORD =
+    
+    ; Whether to disable HELO operation when the hostname is different.
+    DISABLE_HELO =
+    ; The custom hostname for HELO operation, default is from system.
+    HELO_HOSTNAME =
+  
+    ; Whether to skip verifying the certificate of the server. Only use this for self-signed certificates.
+    SKIP_VERIFY = false
+    ; Whether to use client certificates.
+    USE_CERTIFICATE = false
+    CERT_FILE = custom/email/cert.pem
+    KEY_FILE = custom/email/key.pem
+    
+    ; Whether to use "text/plain" as content format.
+    USE_PLAIN_TEXT = false
+    ; Whether to attach a plaintext alternative to the MIME message while sending HTML emails.
+    ; It is used to support older mail clients and make spam filters happier.
+    ADD_PLAIN_TEXT_ALT = false
+  
+
+  
+    [user]
+    ; Whether to enable email notifications for users.
+    ENABLE_EMAIL_NOTIFICATION = false
+  
+  
+    [time]
+    ; Specifies the format for fully outputed dates.
+    ; Values should be one of the following:
+    ; ANSIC, UnixDate, RubyDate, RFC822, RFC822Z, RFC850, RFC1123, RFC1123Z, RFC3339, RFC3339Nano, Kitchen, Stamp, StampMilli, StampMicro and StampNano.
+    ; For more information about the format see http://golang.org/pkg/time/#pkg-constants.
+    FORMAT = RFC1123
+  
+    [cron]
+    ; Enable running cron tasks periodically.
+    ENABLED = false
+  
+    [prometheus]
+    ; Whether to enable Prometheus metrics.
+    ENABLED = false

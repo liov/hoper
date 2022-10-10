@@ -1,10 +1,31 @@
 // local mode(mode="app") = if mode == "app" then "app" else "node";
 local tpldir = './build/k8s/app/';
-local codedir = '/mnt/d/code/hoper/';
 local workspace = '/src';
 local srcdir = workspace + '/';
 
-local kubectl(deplocal, cmd) = if deplocal then {
+local compileHost = {
+    localhost : {
+        codedir:'/mnt/d/code/hoper/',
+        gopath:'/mnt/d/SDK/gopath',
+    },
+     tot: {
+         codedir:'/home/new/data/code/hoper',
+         gopath:'/home/new/data/gopath',
+     }
+};
+
+local targetHost = {
+    tx : {
+       datadir:'/data',
+       confdir:'/root/config',
+    },
+    tot: {
+     datadir:'/home/new/data',
+     confdir:'/home/new/config',
+    }
+};
+
+local kubectl(compile,target, cmd) = if compile == target then {
   name: 'deploy',
   image: 'bitnami/kubectl',
   user: 0,  //文档说是string类型，结果"root"不行 k8s runAsUser: 0
@@ -36,16 +57,21 @@ local kubectl(deplocal, cmd) = if deplocal then {
 };
 
 
-local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', sourceFile='', protoc=false, opts=[], deplocal=false, schedule='') = {
+local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', sourceFile='', protoc=false, opts=[], compile='localhost',target = 'tx', schedule='') = {
+
+  local cconfig = compileHost[compile],
+  local tconfig = targetHost[target],
+
+
   local fullname = if name == '' then group else group + '-' + name,
   local committag = fullname + '-v',
   local tag = '${DRONE_TAG##' + committag + '}',
-  local datadir = if deplocal then '/home/new/data' else '/data',
+  local datadir = tconfig.datadir,
   local dockerfilepath = tpldir + 'Dockerfile-' + type,
   local deppath = tpldir + 'deploy-' + mode +'.yaml',
   kind: 'pipeline',
-  type: 'kubernetes',
-  name: fullname + if deplocal then '-local' else '',
+  type: 'docker',
+  name: fullname + '-' + target,
   metadata: {
     namespace: 'default',
   },
@@ -65,13 +91,13 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
     {
       name: 'codedir',
       host: {
-        path: codedir,
+        path: cconfig.codedir,
       },
     },
     {
       name: 'gopath',
       host: {
-        path: datadir + '/deps/gopath/',
+        path: cconfig.gopath,
       },
     },
     {
@@ -93,7 +119,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
   steps: [
     {
       name: 'clone && build',
-      image: if protoc then 'jybl/goprotoc' else 'golang:1.18.1',
+      image: if protoc then 'jybl/goprotoc' else 'golang:1.19.2',
       volumes: [
         {
             name: 'codedir',
@@ -127,10 +153,11 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
       "sed -i 's/$${app}/" + fullname + "/g' " + deppath,
       "sed -i 's/$${group}/" + group + "/g' " + deppath,
       "sed -i 's#$${datadir}#" + datadir + "#g' " + deppath,
+      "sed -i 's#$${confdir}#" + tconfig.confdir + "#g' " + deppath,
       "sed -i 's#$${image}#jybl/" + fullname + ':' + tag + "#g' " + deppath,
       if mode == 'cronjob' then "sed -i 's#$${schedule}#" + schedule + "#g' " + deppath else 'echo',
-      local bakdir = '/code/deploy/';
-      'if [ ! -d ' + bakdir + ' ];then mkdir -p ' + bakdir + '; fi && cp -r ' + deppath + ' ' + bakdir + fullname + '-' + tag + '.yaml',
+      local bakdir = '/code/build/k8s/app/deploy/';
+      'if [ ! -d ' + bakdir + ' ];then mkdir -p ' + bakdir + '; fi && cp -r ' + deppath + ' ' + bakdir + fullname + '.yaml && cp -r ' + dockerfilepath + ' ' + bakdir + fullname  + '-Dockerfile',
       // go build
       'cd ' + workdir,
       'go mod download',
@@ -166,10 +193,10 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
         daemon_off: true,
         purge: true,
         pull_image: false,
-        dry_run: deplocal,
+        dry_run: compile == target,
       },
     },
-    kubectl(deplocal, [
+    kubectl(compile,target, [
       if mode == 'job' || mode == 'cronjob' then 'kubectl --kubeconfig=/root/.kube/config delete --ignore-not-found -f ' + deppath else 'echo',
       'kubectl --kubeconfig=/root/.kube/config apply -f ' + deppath,
     ]),
@@ -192,7 +219,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
   Pipeline('timepill', sourceFile='./timepill/cmd/record.go',opts=['-t']),
   Pipeline('hoper', workdir='server/go/mod', protoc=true,),
   Pipeline('timepill', 'rbyorderid', mode='job',sourceFile='./timepill/cmd/recordby_orderid.go'),
-  Pipeline('timepill', 'esload', mode='cronjob', sourceFile='./timepill/cmd/search_es.go', deplocal=true, schedule='00 10 * * *'),
+  Pipeline('timepill', 'esload', mode='cronjob', sourceFile='./timepill/cmd/search_es.go', schedule='00 10 * * *'),
   Pipeline('pro', sourceFile='./pro/cmd/record.go'),
   Pipeline('bilibili',  sourceFile='./bilibili/cmd/record_fav.go'),
 ]

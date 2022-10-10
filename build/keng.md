@@ -1290,3 +1290,8 @@ db = db.Where("tsp.contract_end_day BETWEEN ? AND ?", begin.Format("2006-01-02")
 ubuntu config --default-user root
 wsl --shutdown
 重启
+
+# drone pending 无反应 context canceled
+.drone.jsonnet
+type: 'kubernetes' 
+type不正确，部署在docker里 type: 'docker' 

@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gogs
+  namespace: tools
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gogs
+  template:
+    metadata:
+      labels:
+        app: gogs
+    spec:
+      containers:
+        - name: gogs
+          image: gogs/gogs:latest
+          imagePullPolicy: Always
+          resources:
+            # keep request = limit to keep this container in guaranteed class
+            limits:
+              cpu: 200m
+              memory: 200Mi
+            requests:
+              cpu: 10m
+              memory: 50Mi
+          volumeMounts:
+            - mountPath: /data
+              name: data
+      volumes:
+        - name: data
+          hostPath:
+            path: /data/gogs
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gogs
+  namespace: tools
+  labels:
+    app: gogs
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 3000
+      protocol: TCP
+      targetPort: 3000
+    - name: ssh
+      port: 22
+      protocol: TCP
+      targetPort: 22
+  selector:
+    app: gogs
+
+---
+apiVersion: apisix.apache.org/v2beta3
+kind: ApisixRoute
+metadata:
+  name: gogs
+  namespace: tools
+spec:
+  http:
+    - name: gogs
+      match:
+        hosts:
+          - gogs.hoper.xyz
+        paths:
+          - /*
+      backends:
+        - serviceName: gogs
+          servicePort: 3000
+          resolveGranularity: service
+      plugins:
+        - name: redirect
+          enable: true
+          config:
+            http_to_https: true
