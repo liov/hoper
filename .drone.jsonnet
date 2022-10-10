@@ -6,20 +6,24 @@ local srcdir = workspace + '/';
 local compileHost = {
     localhost : {
         codedir:'/mnt/d/code/hoper/',
-        gopath:'/mnt/d/SDK/gopath'
-    }
+        gopath:'/mnt/d/SDK/gopath',
+    },
+     tot: {
+         codedir:'/home/new/data/code/hoper',
+         gopath:'/home/new/data/gopath',
+     }
 };
 
 local targetHost = {
     tx : {
-       datadir:'/data'
+       datadir:'/data',
     },
     tot: {
-     datadir:'/home/new/data'
+     datadir:'/home/new/data',
     }
 };
 
-local kubectl(deplocal, cmd) = if deplocal then {
+local kubectl(compile,target, cmd) = if compile == target then {
   name: 'deploy',
   image: 'bitnami/kubectl',
   user: 0,  //文档说是string类型，结果"root"不行 k8s runAsUser: 0
