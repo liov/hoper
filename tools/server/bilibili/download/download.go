@@ -51,7 +51,7 @@ func FavList(ctx context.Context, url string) ([]*crawler.Request, error) {
 	for _, fav := range res.Medias {
 		aid := tool.Bv2av(fav.Bvid)
 		req1 := GetViewInfoReq(aid, ViewInfoHandleFun)
-		req2 := crawler.NewUrlKindRequest(fav.Cover, KindDownloadCover, CoverDownload(ctx, fav.Id))
+		req2 := crawler.NewUrlKindRequest(fav.Cover, KindDownloadCover, CoverDownload(ctx, fav.Upper.Mid, fav.Id))
 		requests = append(requests, req1, req2)
 	}
 	return requests, nil
@@ -175,8 +175,8 @@ func (video *Video) DownloadVideoHandleFun(order int, url string) error {
 
 	filename := fmt.Sprintf("%d_%d_%d_%s_%s_%d_%d.flv.downloading", video.UpId, video.Aid, video.Cid, video.Title, video.Part, order, video.Quality)
 	filename = fs.PathClean(filename)
-	filename = filepath.Join(config.Conf.Bilibili.DownloadVideoPath, filename)
-	file, err := os.Create(filename)
+	filename = filepath.Join(config.Conf.Bilibili.DownloadPath, strconv.Itoa(video.UpId), config.Conf.Bilibili.DownloadVideoPath, filename)
+	file, err := fs.Create(filename)
 	if err != nil {
 		log.Println("错误信息：", err)
 		return err
@@ -260,7 +260,7 @@ func CoverDownload(ctx context.Context, upId, id int) crawler.HandleFun {
 		return nil
 	}
 	return func(ctx context.Context, url string) ([]*crawler.Request, error) {
-		err := client.DownloadImage(filepath.Join(config.Conf.Bilibili.DownloadPicPath, strconv.Itoa(upId)+strconv.Itoa(id)+"_"+path.Base(url)), url)
+		err := client.DownloadImage(filepath.Join(config.Conf.Bilibili.DownloadVideoPath, strconv.Itoa(upId), config.Conf.Bilibili.DownloadPicPath, strconv.Itoa(upId)+strconv.Itoa(id)+"_"+path.Base(url)), url)
 		if err != nil {
 			log.Println("下载图片失败：", err)
 			return nil, err
