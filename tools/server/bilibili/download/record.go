@@ -63,7 +63,7 @@ func RecordFavList2(favId, page int, lastRecordTime time.Time, cancel chan struc
 			if createdAt == zeroTime {
 				if !strings.HasSuffix(fav.Cover, "be27fd62c99036dce67efface486fb0a88ffed06.jpg") {
 					req1 := GetViewInfoReq(aid, ViewInfoRecord)
-					req2 := crawler.NewUrlKindRequest(fav.Cover, KindDownloadCover, CoverDownload(ctx, fav.Id))
+					req2 := crawler.NewUrlKindRequest(fav.Cover, KindDownloadCover, CoverDownload(ctx, fav.Upper.Mid, fav.Id))
 					requests = append(requests, req1, req2)
 				}
 			} else if createdAt.Before(lastRecordTime) {
@@ -92,7 +92,7 @@ func RecordFavList(ctx context.Context, url string) ([]*crawler.Request, error) 
 			if !strings.HasSuffix(fav.Cover, "be27fd62c99036dce67efface486fb0a88ffed06.jpg") {
 				req1 := GetViewInfoReq(aid, ViewInfoRecord)
 				requests = append(requests, req1)
-				req2 := crawler.NewUrlKindRequest(fav.Cover, KindDownloadCover, CoverDownload(ctx, fav.Id))
+				req2 := crawler.NewUrlKindRequest(fav.Cover, KindDownloadCover, CoverDownload(ctx, fav.Upper.Mid, fav.Id))
 				requests = append(requests, req2)
 			}
 		}
@@ -123,7 +123,7 @@ func ViewInfoRecord(ctx context.Context, url string) ([]*crawler.Request, error)
 
 	var requests []*crawler.Request
 	for _, page := range res.Pages {
-		video := &Video{fs.PathClean(res.Title), res.Aid, page.Cid, page.Page, page.Part, 0}
+		video := &Video{res.Owner.Mid, fs.PathClean(res.Title), res.Aid, page.Cid, page.Page, page.Part, 0}
 
 		exists, err := bilibiliDao.VideoExists(video.Cid)
 		if err != nil {
@@ -196,7 +196,7 @@ func ViewRecordUpdate(aid int) *crawler.Request {
 		}
 		var requests []*crawler.Request
 		for _, page := range res.Pages {
-			video := &Video{fs.PathClean(res.Title), res.Aid, page.Cid, page.Page, page.Part, 0}
+			video := &Video{res.Owner.Mid, fs.PathClean(res.Title), res.Aid, page.Cid, page.Page, page.Part, 0}
 
 			req := crawler.NewUrlKindRequest(rpc.GetPlayerUrl(res.Aid, page.Cid, 120), KindGetPlayerUrl, video.VideoRecord)
 			requests = append(requests, req)
