@@ -3,9 +3,12 @@ package main
 import (
 	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/initialize"
+	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
+	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	"log"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 	"tools/bilibili/config"
 	"tools/bilibili/dao"
@@ -13,7 +16,7 @@ import (
 
 func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
-	remove()
+	fixName()
 }
 
 func fixRecord() {
@@ -78,5 +81,125 @@ func remove() {
 }
 
 func fixName() {
+	type VideoName struct {
+		Aid           int
+		VideoFileName string
+		strs          []string
+	}
+	type Video struct {
+		UpId    int
+		Title   string
+		Aid     int
+		Cid     int
+		Page    int
+		Part    string
+		Order   int
+		Quality int
+	}
 
+	commondir := "F:\\B站\\"
+
+	videoPath := make(map[int]*VideoName)
+	picPath := make(map[int]string)
+	vdir := commondir + "video"
+	files, _ := os.ReadDir(vdir)
+	for _, file := range files {
+		strs := strings.Split(file.Name(), "_")
+		aid, _ := strconv.Atoi(strs[0])
+		cid, _ := strconv.Atoi(strs[1])
+		videoPath[cid] = &VideoName{aid, file.Name(), strs}
+	}
+	fmt.Println(len(videoPath))
+	pdir := commondir + "pic"
+	files, _ = os.ReadDir(pdir)
+	for _, file := range files {
+		aidStr := strings.Split(file.Name(), "_")[0]
+		aid, _ := strconv.Atoi(aidStr)
+		picPath[aid] = file.Name()
+	}
+	pageNo, pageSize := 0, 100
+	for {
+		var videos []*Video
+		dao.Dao.Hoper.DB.Raw(`SELECT a.owner->'mid' up_id,b.aid,b.cid,a.title,a.p->'page' page,a.p->'part' part
+FROM ` + dao.TableNameVideo + ` b 
+LEFT JOIN (SELECT data->'title' title , data->'owner' owner ,jsonb_path_query(data,'$.pages[*]') p FROM ` + dao.TableNameView + `)  a ON (a.p->'cid')::int8 = b.cid
+WHERE b.` + postgres.NotDeleted + ` LIMIT 100 OFFSET ` + strconv.Itoa(pageNo*pageSize)).Find(&videos)
+
+		for _, v := range videos {
+			cv, ok := videoPath[v.Cid]
+			if ok {
+				dir := commondir + strconv.Itoa(v.UpId)
+				_, err := os.Stat(dir)
+				if os.IsNotExist(err) {
+					err = os.Mkdir(dir, 0666)
+					if err != nil {
+						log.Println(err)
+					}
+				}
+				_, err = os.Stat(dir + "\\pic")
+				if os.IsNotExist(err) {
+					err = os.Mkdir(dir+"\\pic", 0666)
+					if err != nil {
+						log.Println(err)
+					}
+				}
+				_, err = os.Stat(dir + "\\video")
+				if os.IsNotExist(err) {
+					err = os.Mkdir(dir+"\\video", 0666)
+					if err != nil {
+						log.Println(err)
+					}
+				}
+				part := fs.PathClean(v.Part)
+				if part == cv.strs[2] {
+					part = "!part=title!"
+				}
+				newpath := dir + "\\video\\" + fmt.Sprintf("%d_%s_%s_%s_%s_%s_%s", v.UpId, cv.strs[0], cv.strs[1], cv.strs[2], part, cv.strs[3], cv.strs[4])
+				fmt.Println("rename:", newpath)
+				err = os.Rename(vdir+"\\"+cv.VideoFileName, newpath)
+				if err != nil {
+					log.Println(err)
+				}
+			}
+			cp, ok := picPath[v.Aid]
+			if ok {
+				dir := commondir + strconv.Itoa(v.UpId)
+				_, err := os.Stat(dir)
+				if os.IsNotExist(err) {
+					err = os.Mkdir(dir, 0666)
+					if err != nil {
+						log.Println(err)
+					}
+				}
+				_, err = os.Stat(dir + "\\pic")
+				if os.IsNotExist(err) {
+					err = os.Mkdir(dir+"\\pic", 0666)
+					if err != nil {
+						log.Println(err)
+					}
+				}
+				_, err = os.Stat(dir + "\\video")
+				if os.IsNotExist(err) {
+					err = os.Mkdir(dir+"\\video", 0666)
+					if err != nil {
+						log.Println(err)
+					}
+				}
+				_, err = os.Stat(pdir + "\\" + cp)
+				if os.IsNotExist(err) {
+					continue
+				}
+				newpath := dir + "\\pic\\" + strconv.Itoa(v.UpId) + "_" + cp
+				fmt.Println("rename:", newpath)
+				err = os.Rename(pdir+"\\"+cp, newpath)
+				if err != nil {
+					log.Println(err)
+				}
+			}
+		}
+		if len(videos) < pageSize {
+			break
+		}
+		pageNo++
+	}
 }

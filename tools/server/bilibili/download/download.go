@@ -25,6 +25,7 @@ import (
 )
 
 type Video struct {
+	UpId    int
 	Title   string
 	Aid     int
 	Cid     int
@@ -83,7 +84,7 @@ func ViewInfoHandleFun(ctx context.Context, url string) ([]*crawler.Request, err
 	}
 	var requests []*crawler.Request
 	for _, page := range res.Pages {
-		video := &Video{fs.PathClean(res.Title), res.Aid, page.Cid, page.Page, page.Part, 0}
+		video := &Video{res.Owner.Mid, fs.PathClean(res.Title), res.Aid, page.Cid, page.Page, page.Part, 0}
 
 		req := crawler.NewUrlKindRequest(rpc.GetPlayerUrl(res.Aid, page.Cid, 120), KindGetPlayerUrl, video.PlayerUrlHandleFun)
 		requests = append(requests, req)
@@ -172,7 +173,7 @@ func (video *Video) DownloadVideoHandleFun(order int, url string) error {
 	}
 	defer resp.Body.Close()
 
-	filename := fmt.Sprintf("%d_%d_%s_%d_%d.flv.downloading", video.Aid, video.Cid, video.Title, order, video.Quality)
+	filename := fmt.Sprintf("%d_%d_%d_%s_%s_%d_%d.flv.downloading", video.UpId, video.Aid, video.Cid, video.Title, video.Part, order, video.Quality)
 	filename = fs.PathClean(filename)
 	filename = filepath.Join(config.Conf.Bilibili.DownloadVideoPath, filename)
 	file, err := os.Create(filename)
@@ -187,8 +188,7 @@ func (video *Video) DownloadVideoHandleFun(order int, url string) error {
 	_, err = io.Copy(file, resp.Body)
 	if err != nil {
 		os.Remove(filename)
-		log.Printf("下载失败 aid: %d, cid: %d, title: %s, part: %s",
-			video.Aid, video.Cid, video.Title, video.Part)
+		log.Printf("下载失败 filename: %s", filename)
 		log.Println("错误信息：", err)
 
 		// request again
@@ -253,14 +253,14 @@ func UpSpaceListHandleFun(ctx context.Context, url string) ([]*crawler.Request, 
 	return requests, nil
 }
 
-func CoverDownload(ctx context.Context, id int) crawler.HandleFun {
+func CoverDownload(ctx context.Context, upId, id int) crawler.HandleFun {
 	var record bool
 	dao.Dao.Hoper.Table(dao.TableNameView).Select("cover_record").Where("aid = ?", id).Scan(&record)
 	if record {
 		return nil
 	}
 	return func(ctx context.Context, url string) ([]*crawler.Request, error) {
-		err := client.DownloadImage(filepath.Join(config.Conf.Bilibili.DownloadPicPath, strconv.Itoa(id)+"_"+path.Base(url)), url)
+		err := client.DownloadImage(filepath.Join(config.Conf.Bilibili.DownloadPicPath, strconv.Itoa(upId)+strconv.Itoa(id)+"_"+path.Base(url)), url)
 		if err != nil {
 			log.Println("下载图片失败：", err)
 			return nil, err

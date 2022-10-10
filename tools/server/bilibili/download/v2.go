@@ -60,7 +60,7 @@ func GetViewInfoReqV2(aid int) *crawler.Request {
 			}
 			var requests []*crawler.Request
 			for _, page := range view.Pages {
-				video := &Video{fs.PathClean(view.Title), view.Aid, page.Cid, page.Page, page.Part, 0}
+				video := &Video{view.Owner.Mid, fs.PathClean(view.Title), view.Aid, page.Cid, page.Page, page.Part, 0}
 
 				req := crawler.NewKindRequest("", KindGetPlayerUrl, video.PlayerUrlHandleFunV2)
 				requests = append(requests, req)
