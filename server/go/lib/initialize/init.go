@@ -106,6 +106,7 @@ func (init *initConfig) LoadConfig(notinit ...string) *initConfig {
 				init.ConfigCenterConfig = &ConfigCenterConfig{
 					ConfigCenterConfig: conf_center.ConfigCenterConfig{
 						ConfigType: "local",
+						Watch:      true,
 						Local: &ilocal.Local{
 							Config:     local.Config{},
 							ConfigPath: init.ConfUrl,
