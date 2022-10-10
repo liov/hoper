@@ -17,9 +17,11 @@ local compileHost = {
 local targetHost = {
     tx : {
        datadir:'/data',
+       confdir:'/root/config',
     },
     tot: {
      datadir:'/home/new/data',
+     confdir:'/home/new/config',
     }
 };
 
@@ -151,6 +153,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
       "sed -i 's/$${app}/" + fullname + "/g' " + deppath,
       "sed -i 's/$${group}/" + group + "/g' " + deppath,
       "sed -i 's#$${datadir}#" + datadir + "#g' " + deppath,
+      "sed -i 's#$${confdir}#" + tconfig.confdir + "#g' " + deppath,
       "sed -i 's#$${image}#jybl/" + fullname + ':' + tag + "#g' " + deppath,
       if mode == 'cronjob' then "sed -i 's#$${schedule}#" + schedule + "#g' " + deppath else 'echo',
       local bakdir = '/code/build/k8s/app/deploy/';

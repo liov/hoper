@@ -34,11 +34,16 @@ spec:
               memory: "50Mi"
           imagePullPolicy: IfNotPresent
           volumeMounts:
+            - mountPath: /app/config
+              name: config
             - mountPath: /data
               name: data
             - mountPath: /static
               name: static
       volumes:
+        - name: config
+          hostPath:
+            path: ${confdir}/${group}.toml
         - name: data
           hostPath:
             path: ${datadir}/${group}
