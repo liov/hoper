@@ -190,10 +190,10 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
         daemon_off: true,
         purge: true,
         pull_image: false,
-        dry_run: deplocal,
+        dry_run: compile == target,
       },
     },
-    kubectl(deplocal, [
+    kubectl(compile,target, [
       if mode == 'job' || mode == 'cronjob' then 'kubectl --kubeconfig=/root/.kube/config delete --ignore-not-found -f ' + deppath else 'echo',
       'kubectl --kubeconfig=/root/.kube/config apply -f ' + deppath,
     ]),
