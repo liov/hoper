@@ -24,4 +24,5 @@ gradle
 secret.txt
 /tools/server/config.toml
 /build/tmp
+/build/k8s/app/deploy
 logs
