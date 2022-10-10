@@ -1,8 +1,23 @@
 // local mode(mode="app") = if mode == "app" then "app" else "node";
 local tpldir = './build/k8s/app/';
-local codedir = '/mnt/d/code/hoper/';
 local workspace = '/src';
 local srcdir = workspace + '/';
+
+local compileHost = {
+    localhost : {
+        codedir:'/mnt/d/code/hoper/',
+        gopath:'/mnt/d/SDK/gopath'
+    }
+};
+
+local targetHost = {
+    tx : {
+       datadir:'/data'
+    },
+    tot: {
+     datadir:'/home/new/data'
+    }
+};
 
 local kubectl(deplocal, cmd) = if deplocal then {
   name: 'deploy',
@@ -36,16 +51,21 @@ local kubectl(deplocal, cmd) = if deplocal then {
 };
 
 
-local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', sourceFile='', protoc=false, opts=[], deplocal=false, schedule='') = {
+local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', sourceFile='', protoc=false, opts=[], compile='localhost',target = 'tx', schedule='') = {
+
+  local cconfig = compileHost[compile],
+  local tconfig = targetHost[target],
+
+
   local fullname = if name == '' then group else group + '-' + name,
   local committag = fullname + '-v',
   local tag = '${DRONE_TAG##' + committag + '}',
-  local datadir = if deplocal then '/home/new/data' else '/data',
+  local datadir = tconfig.datadir,
   local dockerfilepath = tpldir + 'Dockerfile-' + type,
   local deppath = tpldir + 'deploy-' + mode +'.yaml',
   kind: 'pipeline',
-  type: 'kubernetes',
-  name: fullname + if deplocal then '-local' else '',
+  type: 'docker',
+  name: fullname + '-' + target,
   metadata: {
     namespace: 'default',
   },
@@ -65,13 +85,13 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
     {
       name: 'codedir',
       host: {
-        path: codedir,
+        path: cconfig.codedir,
       },
     },
     {
       name: 'gopath',
       host: {
-        path: datadir + '/deps/gopath/',
+        path: cconfig.gopath,
       },
     },
     {
@@ -93,7 +113,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
   steps: [
     {
       name: 'clone && build',
-      image: if protoc then 'jybl/goprotoc' else 'golang:1.18.1',
+      image: if protoc then 'jybl/goprotoc' else 'golang:1.19.2',
       volumes: [
         {
             name: 'codedir',
@@ -192,7 +212,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
   Pipeline('timepill', sourceFile='./timepill/cmd/record.go',opts=['-t']),
   Pipeline('hoper', workdir='server/go/mod', protoc=true,),
   Pipeline('timepill', 'rbyorderid', mode='job',sourceFile='./timepill/cmd/recordby_orderid.go'),
-  Pipeline('timepill', 'esload', mode='cronjob', sourceFile='./timepill/cmd/search_es.go', deplocal=true, schedule='00 10 * * *'),
+  Pipeline('timepill', 'esload', mode='cronjob', sourceFile='./timepill/cmd/search_es.go', schedule='00 10 * * *'),
   Pipeline('pro', sourceFile='./pro/cmd/record.go'),
   Pipeline('bilibili',  sourceFile='./bilibili/cmd/record_fav.go'),
 ]
