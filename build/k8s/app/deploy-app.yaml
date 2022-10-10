@@ -43,7 +43,7 @@ spec:
       volumes:
         - name: config
           hostPath:
-            path: ${confdir}/${group}.toml
+            path: ${confdir}
         - name: data
           hostPath:
             path: ${datadir}/${group}
