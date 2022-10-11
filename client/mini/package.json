@@ -85,7 +85,7 @@
     "eslint": "^8.24.0",
     "eslint-config-taro": "3.5.6",
     "eslint-plugin-vue": "^9.5.1",
-    "jsdom": "^20.0.0",
+    "jsdom": "^20.0.1",
     "style-loader": "3.3.1",
     "stylelint": "14.12.1",
     "taro-plugin-dynamic-import-weapp": "^0.3.0",

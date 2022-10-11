@@ -84,7 +84,7 @@ func ViewInfoHandleFun(ctx context.Context, url string) ([]*crawler.Request, err
 	}
 	var requests []*crawler.Request
 	for _, page := range res.Pages {
-		video := &Video{res.Owner.Mid, fs.PathClean(res.Title), res.Aid, page.Cid, page.Page, page.Part, 0}
+		video := &Video{res.Owner.Mid, res.Title, res.Aid, page.Cid, page.Page, page.Part, 0}
 
 		req := crawler.NewUrlKindRequest(rpc.GetPlayerUrl(res.Aid, page.Cid, 120), KindGetPlayerUrl, video.PlayerUrlHandleFun)
 		requests = append(requests, req)

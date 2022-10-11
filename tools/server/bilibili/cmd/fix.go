@@ -5,6 +5,7 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
+	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
 	"log"
 	"os"
 	"path"
@@ -12,6 +13,7 @@ import (
 	"strings"
 	"tools/bilibili/config"
 	"tools/bilibili/dao"
+	"tools/bilibili/download"
 )
 
 func main() {
@@ -20,12 +22,17 @@ func main() {
 }
 
 func fixRecord() {
-	dir := "F:\\B站\\video"
+	dir := "F:\\B站\\pic"
 	files, _ := os.ReadDir(dir)
+	var reqs []*crawler.Request
 	for _, file := range files {
-		cid := strings.Split(file.Name(), "_")[1]
-		dao.Dao.Hoper.Table(dao.TableNameVideo).Where(`cid = `+cid).UpdateColumn("record", true)
+		aidStr := strings.Split(file.Name(), "_")[0]
+		aid, _ := strconv.Atoi(aidStr)
+		req := download.GetViewInfoReqV2(aid)
+		reqs = append(reqs, req)
 	}
+	engine := crawler.New(10).SkipKind(4)
+	engine.Run(reqs...)
 }
 
 func fixQuality() {
@@ -117,6 +124,7 @@ func fixName() {
 		aid, _ := strconv.Atoi(aidStr)
 		picPath[aid] = file.Name()
 	}
+	fmt.Println(len(picPath))
 	pageNo, pageSize := 0, 100
 	for {
 		var videos []*Video
@@ -136,16 +144,9 @@ WHERE b.` + postgres.NotDeleted + ` LIMIT 100 OFFSET ` + strconv.Itoa(pageNo*pag
 						log.Println(err)
 					}
 				}
-				_, err = os.Stat(dir + "\\pic")
+				_, err = os.Stat(dir + "\\" + config.Conf.Bilibili.DownloadVideoPath)
 				if os.IsNotExist(err) {
-					err = os.Mkdir(dir+"\\pic", 0666)
-					if err != nil {
-						log.Println(err)
-					}
-				}
-				_, err = os.Stat(dir + "\\video")
-				if os.IsNotExist(err) {
-					err = os.Mkdir(dir+"\\video", 0666)
+					err = os.Mkdir(dir+"\\"+config.Conf.Bilibili.DownloadVideoPath, 0666)
 					if err != nil {
 						log.Println(err)
 					}
@@ -171,16 +172,9 @@ WHERE b.` + postgres.NotDeleted + ` LIMIT 100 OFFSET ` + strconv.Itoa(pageNo*pag
 						log.Println(err)
 					}
 				}
-				_, err = os.Stat(dir + "\\pic")
+				_, err = os.Stat(dir + "\\" + config.Conf.Bilibili.DownloadPicPath)
 				if os.IsNotExist(err) {
-					err = os.Mkdir(dir+"\\pic", 0666)
-					if err != nil {
-						log.Println(err)
-					}
-				}
-				_, err = os.Stat(dir + "\\video")
-				if os.IsNotExist(err) {
-					err = os.Mkdir(dir+"\\video", 0666)
+					err = os.Mkdir(dir+"\\"+config.Conf.Bilibili.DownloadPicPath, 0666)
 					if err != nil {
 						log.Println(err)
 					}

@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
-	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
 	"log"
 	"strconv"
@@ -123,7 +122,7 @@ func ViewInfoRecord(ctx context.Context, url string) ([]*crawler.Request, error)
 
 	var requests []*crawler.Request
 	for _, page := range res.Pages {
-		video := &Video{res.Owner.Mid, fs.PathClean(res.Title), res.Aid, page.Cid, page.Page, page.Part, 0}
+		video := &Video{res.Owner.Mid, res.Title, res.Aid, page.Cid, page.Page, page.Part, 0}
 
 		exists, err := bilibiliDao.VideoExists(video.Cid)
 		if err != nil {
@@ -196,7 +195,7 @@ func ViewRecordUpdate(aid int) *crawler.Request {
 		}
 		var requests []*crawler.Request
 		for _, page := range res.Pages {
-			video := &Video{res.Owner.Mid, fs.PathClean(res.Title), res.Aid, page.Cid, page.Page, page.Part, 0}
+			video := &Video{res.Owner.Mid, res.Title, res.Aid, page.Cid, page.Page, page.Part, 0}
 
 			req := crawler.NewUrlKindRequest(rpc.GetPlayerUrl(res.Aid, page.Cid, 120), KindGetPlayerUrl, video.VideoRecord)
 			requests = append(requests, req)

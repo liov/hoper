@@ -2,7 +2,6 @@ package download
 
 import (
 	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
-	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
 	"math"
 	"tools/bilibili/dao"
@@ -38,7 +37,6 @@ WHERE b.record = false AND b.aid < ? AND b.`+postgres.NotDeleted+` ORDER BY b.ai
 				req := ViewRecordUpdate(video.Aid)
 				engine.Engine.AddTask(engine.NewTask(req))
 			} else {
-				video.Title = fs.PathClean(video.Title)
 				req := crawler.NewUrlKindRequest(rpc.GetPlayerUrl(video.Aid, video.Cid, 120), KindGetPlayerUrl, video.PlayerUrlHandleFun)
 				engine.Engine.AddTask(engine.NewTask(req))
 			}
