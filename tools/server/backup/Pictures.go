@@ -117,13 +117,11 @@ func Copy(c *ftp.ServerConn, src, dst string, date bool) error {
 		if err != nil {
 			return err
 		}
-
+		filename := dst + sep + item.Name
 		if date {
-			err = fs.Copy(dst+sep+item.Time.Format("200601")+sep+item.Name, resp)
-		} else {
-			err = fs.Copy(dst+sep+item.Name, resp)
+			filename = dst + sep + item.Time.Format("200601") + sep + item.Name
 		}
-
+		err = fs.Copy(filename, resp)
 		if err != nil {
 			return err
 		}
