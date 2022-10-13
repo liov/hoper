@@ -1297,3 +1297,10 @@ type: 'kubernetes'
 type不正确，部署在docker里 type: 'docker' 
 
 # openvpn --cipher is not set. Previous OpenVPN version defaulted to BF-CBC as fallback when cipher negotiation failed in this case. If you need this fallback please add '--data-ciphers-fallback BF-CBC' to your configuration and/or add BF-CBC to --data-ciphers.
+
+# 修复kubectl cp出现tar: Removing leading from member names, error: open is a directory错误
+这个问题本质是个kubectl的bug, kubectl cp的时候, 是从work dir开始的, 目前不支持绝对路径.
+
+issue 链接 https://github.com/kubernetes/kubernetes/issues/58692
+
+这里设置work_dir为/var/www/html/.换种姿势破解即可

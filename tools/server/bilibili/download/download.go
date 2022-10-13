@@ -260,7 +260,7 @@ func CoverDownload(ctx context.Context, upId, id int) crawler.HandleFun {
 		return nil
 	}
 	return func(ctx context.Context, url string) ([]*crawler.Request, error) {
-		err := client.DownloadImage(filepath.Join(config.Conf.Bilibili.DownloadPath, strconv.Itoa(upId), config.Conf.Bilibili.DownloadPicPath, strconv.Itoa(upId)+strconv.Itoa(id)+"_"+path.Base(url)), url)
+		err := client.DownloadImage(filepath.Join(config.Conf.Bilibili.DownloadPath, strconv.Itoa(upId), config.Conf.Bilibili.DownloadPicPath, strconv.Itoa(upId)+"_"+strconv.Itoa(id)+"_"+path.Base(url)), url)
 		if err != nil {
 			log.Println("下载图片失败：", err)
 			return nil, err
