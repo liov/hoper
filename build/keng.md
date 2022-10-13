@@ -1295,3 +1295,5 @@ wsl --shutdown
 .drone.jsonnet
 type: 'kubernetes' 
 type不正确，部署在docker里 type: 'docker' 
+
+# openvpn --cipher is not set. Previous OpenVPN version defaulted to BF-CBC as fallback when cipher negotiation failed in this case. If you need this fallback please add '--data-ciphers-fallback BF-CBC' to your configuration and/or add BF-CBC to --data-ciphers.

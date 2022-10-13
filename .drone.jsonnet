@@ -1,5 +1,5 @@
 // local mode(mode="app") = if mode == "app" then "app" else "node";
-local tpldir = './build/k8s/app/';
+local tpldir = 'build/k8s/app/';
 local workspace = '/src';
 local srcdir = workspace + '/';
 
@@ -156,7 +156,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
       "sed -i 's#$${confdir}#" + tconfig.confdir + "#g' " + deppath,
       "sed -i 's#$${image}#jybl/" + fullname + ':' + tag + "#g' " + deppath,
       if mode == 'cronjob' then "sed -i 's#$${schedule}#" + schedule + "#g' " + deppath else 'echo',
-      local bakdir = '/code/build/k8s/app/deploy/';
+      local bakdir = '/code/'+ tpldir + 'deploy/';
       'if [ ! -d ' + bakdir + ' ];then mkdir -p ' + bakdir + '; fi && cp -r ' + deppath + ' ' + bakdir + fullname + '.yaml && cp -r ' + dockerfilepath + ' ' + bakdir + fullname  + '-Dockerfile',
       // go build
       'cd ' + workdir,
