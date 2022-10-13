@@ -5,20 +5,24 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
+	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
 	"log"
 	"os"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"tools/bilibili/config"
 	"tools/bilibili/dao"
 	"tools/bilibili/download"
+	"tools/bilibili/rpc"
+	"tools/bilibili/tool"
 )
 
 func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
-	fixName()
+	fixCover()
 }
 
 func fixRecord() {
@@ -196,4 +200,20 @@ WHERE b.` + postgres.NotDeleted + ` LIMIT 100 OFFSET ` + strconv.Itoa(pageNo*pag
 		}
 		pageNo++
 	}
+}
+
+func fixCover() {
+	apiservice := rpc.API{}
+	res, err := apiservice.GetFavLResourceList(1, 1)
+	if err != nil {
+		log.Println(err)
+	}
+	for _, fav := range res.Medias {
+		aid := tool.Bv2av(fav.Bvid)
+		err = client.DownloadImage(filepath.Join(config.Conf.Bilibili.DownloadPath, strconv.Itoa(fav.Upper.Mid), config.Conf.Bilibili.DownloadPicPath, strconv.Itoa(fav.Upper.Mid)+"_"+strconv.Itoa(aid)+"_"+path.Base(fav.Cover)), fav.Cover)
+		if err != nil {
+			log.Println("下载图片失败：", err)
+		}
+	}
+
 }
