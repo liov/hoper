@@ -175,7 +175,7 @@ func StringToTimeHookFunc(layout string) DecodeHookFunc {
 		}
 
 		// Convert it by parsing
-		return time.Parse(layout, data.(string))
+		return time.ParseInLocation(layout, data.(string), time.Local)
 	}
 }
 

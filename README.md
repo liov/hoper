@@ -13,20 +13,16 @@
 - rust cargo的配置
 - gradle 配置
 ## env
-### data
-开发所需环境的安装步骤，及安装过程中的问题解决方法，及使用方法
 ### dev
 开发所需工具的安装步骤，及安装过程中的问题解决方法，及使用方法
 ### shell
 开发所需脚本
-### tools
-部署所需工具的安装步骤，及安装过程中的问题解决方法，及使用方法
 ## k8s
-各种k8s yaml配置
+各种工具部署的k8s 配置
 ### app
 个人项目配置drone所需的Dockerfile，k8s配置文件模板、脚本
 ### tools
-k8s环境中所需工具的安装方法，helm & yaml config
+k8s环境中所需工具的安装方法，helm & yaml config,及使用方法
 ### tpl
 k8s配置模板
 

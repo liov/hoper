@@ -14,6 +14,9 @@ slmgr /ato
 # CSDN 复制
 javascript:document.body.contentEditable='true';document.designMode='on'; void 0
 
+javascript:document.querySelectorAll(".prism").forEach((b)=>{b.onclick = function(e){mdcp.copyCode(e)}});
+document.querySelectorAll("style").forEach((s)=>{if((s.innerText||"").indexOf('#content_views pre')>-1){s.parentElement.removeChild(s)}});
+
 # python
 
 pip install paddleocr -i https://mirror.baidu.com/pypi/simple

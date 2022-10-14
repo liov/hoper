@@ -113,3 +113,8 @@ module.exports = function (merge) {
   }
   return merge({}, config, require('./prod'))
 }
+
+function p(v){
+  console.log(v)
+  return v
+}

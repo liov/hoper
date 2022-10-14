@@ -1304,3 +1304,39 @@ type不正确，部署在docker里 type: 'docker'
 issue 链接 https://github.com/kubernetes/kubernetes/issues/58692
 
 这里设置work_dir为/var/www/html/.换种姿势破解即可
+
+# dial tcp: lookup production.cloudflare.docker.com on 114.114.114.114:53: read udp i/o timeout
+发现没，这其实是通过代理方式请求dns服务器，获取index.docker.io的ip超时了。原因可能是随机的本机(192.168.1.117)某端口无法正常访问。所以，为了避免向dns服务器请求，直接手动ping index.docker.io 的方式获取ip，然后写到hosts里面。
+/etc/hosts
+
+# go time.Parse 时区问题，默认时区UTC
+time.Parse 在time.Local有值的情况下取time.Local,没有的情况下取UTC
+但是结果却和`time.ParseInLocation(layout, timeStr, time.Local)`不一致
+
+`time.ParseInLocation(layout, timeStr, time.Local)`可以取到CTS time.Parse出来是UTC
+``go
+// format 有时区会解析时区
+if z != nil {
+return Date(year, Month(month), day, hour, min, sec, nsec, z), nil
+}
+// zoneOffset初始值-1，一样layout有'+','-' 才会改变用time.Local
+if zoneOffset != -1 {
+t := Date(year, Month(month), day, hour, min, sec, nsec, UTC)
+t.addSec(-int64(zoneOffset))
+
+// Look for local zone with the given offset.
+// If that zone was in effect at the given time, use it.
+name, offset, _, _, _ := local.lookup(t.unixSec())
+if offset == zoneOffset && (zoneName == "" || name == zoneName) {
+    t.setLoc(local)
+    return t, nil
+}
+
+// Otherwise create fake zone to record offset.
+t.setLoc(FixedZone(zoneName, zoneOffset))
+return t, nil
+}
+``
+time.Parse = time.parse(layout, value, UTC, time.Local)
+time.ParseInLocation(layout, timeStr, time.Local) = time.parse(layout, value, time.Local, time.Local)
+time.ParseInLocation 最保险
