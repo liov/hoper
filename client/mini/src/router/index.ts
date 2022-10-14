@@ -1,18 +1,14 @@
-import { createRouter, createWebHashHistory } from "vue-router";
-import type { RouteRecordRaw } from "vue-router";
+import Taro from "@tarojs/taro";
 
+class Router {
+  push(url:string) {
+    Taro.navigateTo({
+      url: url
+    })
 
-const routes: Array<RouteRecordRaw> = [
-  {
-    path: "/pages/index/index",
-    name: "Index",
-    component: () => import("../pages/moment/moment.vue"),
-  },
-];
+  }
+}
 
-const router = createRouter({
-  history: createWebHashHistory(process.env.BASE_URL),
-  routes: routes,
-});
+const router = new Router()
 
 export default router;

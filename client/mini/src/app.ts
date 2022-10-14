@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import { Button, Toast as TToast,Tabs, TabPane,Tabbar, TabbarItem, Icon, Layout,Row,Col } from '@nutui/nutui-taro';
+import { Button, Toast as TToast,Tabs, TabPane,Tabbar, TabbarItem, Icon, Layout,Row,Col,TextArea,Image,OverLay,List,Skeleton,Cell, CellGroup,ImagePreview,Avatar} from '@nutui/nutui-taro';
 import { createPinia } from 'pinia'
 import '@material-design-icons/font/outlined.css';
 
@@ -73,6 +73,7 @@ const App = createApp({
 App.use(createPinia()).use(Button).use(TToast).use(Icon).
 use(Tabs).use(TabPane).
 use(Tabbar).use(TabbarItem).
-use( Layout).use(Row).use(Col)
+use( Layout).use(Row).use(Col).
+  use(TextArea).use(Image).use(OverLay).use(List).use(Skeleton).use(Cell).use(CellGroup).use(ImagePreview).use(Avatar)
 
 export default App

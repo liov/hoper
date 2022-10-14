@@ -178,7 +178,7 @@ func (t Result) Float() float64 {
 
 // Time returns a time.Time representation.
 func (t Result) Time() time.Time {
-	res, _ := time.Parse(time.RFC3339, t.String())
+	res, _ := time.ParseInLocation(time.RFC3339, t.String(), time.Local)
 	return res
 }
 
@@ -595,9 +595,9 @@ func tostr(json string) (raw string, str string) {
 
 // Exists returns true if value exists.
 //
-//  if gjson.Get(json, "name.last").Exists(){
-//		println("value exists")
-//  }
+//	 if gjson.Get(json, "name.last").Exists(){
+//			println("value exists")
+//	 }
 func (t Result) Exists() bool {
 	return t.Type != Null || len(t.Raw) != 0
 }
@@ -611,7 +611,6 @@ func (t Result) Exists() bool {
 //	nil, for JSON null
 //	map[string]interface{}, for JSON objects
 //	[]interface{}, for JSON arrays
-//
 func (t Result) Value() interface{} {
 	if t.Type == String {
 		return t.Str
@@ -864,19 +863,28 @@ func parseArrayPath(path string) (r arrayPathResult) {
 }
 
 // splitQuery takes a query and splits it into three parts:
-//   path, op, middle, and right.
+//
+//	path, op, middle, and right.
+//
 // So for this query:
-//   #(first_name=="Murphy").last
+//
+//	#(first_name=="Murphy").last
+//
 // Becomes
-//   first_name   # path
-//   =="Murphy"   # middle
-//   .last        # right
+//
+//	first_name   # path
+//	=="Murphy"   # middle
+//	.last        # right
+//
 // Or,
-//   #(service_roles.#(=="one")).cap
+//
+//	#(service_roles.#(=="one")).cap
+//
 // Becomes
-//   service_roles.#(=="one")   # path
-//                              # middle
-//   .cap                       # right
+//
+//	service_roles.#(=="one")   # path
+//	                           # middle
+//	.cap                       # right
 func parseQuery(query string) (
 	path, op, value, remain string, i int, ok bool,
 ) {
@@ -1841,23 +1849,23 @@ type parseContext struct {
 // the '#' character.
 // The dot and wildcard character can be escaped with '\'.
 //
-//  {
-//    "name": {"first": "Tom", "last": "Anderson"},
-//    "age":37,
-//    "children": ["Sara","Alex","Jack"],
-//    "friends": [
-//      {"first": "James", "last": "Murphy"},
-//      {"first": "Roger", "last": "Craig"}
-//    ]
-//  }
-//  "name.last"          >> "Anderson"
-//  "age"                >> 37
-//  "children"           >> ["Sara","Alex","Jack"]
-//  "children.#"         >> 3
-//  "children.1"         >> "Alex"
-//  "child*.2"           >> "Jack"
-//  "c?ildren.0"         >> "Sara"
-//  "friends.#.first"    >> ["James","Roger"]
+//	{
+//	  "name": {"first": "Tom", "last": "Anderson"},
+//	  "age":37,
+//	  "children": ["Sara","Alex","Jack"],
+//	  "friends": [
+//	    {"first": "James", "last": "Murphy"},
+//	    {"first": "Roger", "last": "Craig"}
+//	  ]
+//	}
+//	"name.last"          >> "Anderson"
+//	"age"                >> 37
+//	"children"           >> ["Sara","Alex","Jack"]
+//	"children.#"         >> 3
+//	"children.1"         >> "Alex"
+//	"child*.2"           >> "Jack"
+//	"c?ildren.0"         >> "Sara"
+//	"friends.#.first"    >> ["James","Roger"]
 //
 // This function expects that the json is well-formed, and does not validate.
 // Invalid json will not panic, but it may return back unexpected results.
@@ -2047,8 +2055,7 @@ func unescape(json string) string {
 // The caseSensitive paramater is used when the tokens are Strings.
 // The order when comparing two different type is:
 //
-//  Null < False < Number < String < True < JSON
-//
+//	Null < False < Number < String < True < JSON
 func (t Result) Less(token Result, caseSensitive bool) bool {
 	if t.Type < token.Type {
 		return true
@@ -2461,11 +2468,10 @@ func validnull(data []byte, i int) (outi int, ok bool) {
 
 // Valid returns true if the input is valid json.
 //
-//  if !gjson.Valid(json) {
-//  	return errors.New("invalid json")
-//  }
-//  value := gjson.Get(json, "name.last")
-//
+//	if !gjson.Valid(json) {
+//		return errors.New("invalid json")
+//	}
+//	value := gjson.Get(json, "name.last")
 func Valid(json string) bool {
 	_, ok := validpayload(stringBytes(json), 0)
 	return ok
@@ -2473,13 +2479,12 @@ func Valid(json string) bool {
 
 // ValidBytes returns true if the input is valid json.
 //
-//  if !gjson.Valid(json) {
-//  	return errors.New("invalid json")
-//  }
-//  value := gjson.Get(json, "name.last")
+//	if !gjson.Valid(json) {
+//		return errors.New("invalid json")
+//	}
+//	value := gjson.Get(json, "name.last")
 //
 // If working with bytes, this method preferred over ValidBytes(string(data))
-//
 func ValidBytes(json []byte) bool {
 	_, ok := validpayload(json, 0)
 	return ok
@@ -2706,9 +2711,13 @@ func modReverse(json, arg string) string {
 }
 
 // @flatten an array with child arrays.
-//   [1,[2],[3,4],[5,[6,7]]] -> [1,2,3,4,5,[6,7]]
+//
+//	[1,[2],[3,4],[5,[6,7]]] -> [1,2,3,4,5,[6,7]]
+//
 // The {"deep":true} arg can be provide for deep flattening.
-//   [1,[2],[3,4],[5,[6,7]]] -> [1,2,3,4,5,6,7]
+//
+//	[1,[2],[3,4],[5,[6,7]]] -> [1,2,3,4,5,6,7]
+//
 // The original json is returned when the json is not an array.
 func modFlatten(json, arg string) string {
 	res := Parse(json)
@@ -2748,11 +2757,17 @@ func modFlatten(json, arg string) string {
 }
 
 // @join multiple objects into a single object.
-//   [{"first":"Tom"},{"last":"Smith"}] -> {"first","Tom","last":"Smith"}
+//
+//	[{"first":"Tom"},{"last":"Smith"}] -> {"first","Tom","last":"Smith"}
+//
 // The arg can be "true" to specify that duplicate keys should be preserved.
-//   [{"first":"Tom","age":37},{"age":41}] -> {"first","Tom","age":37,"age":41}
+//
+//	[{"first":"Tom","age":37},{"age":41}] -> {"first","Tom","age":37,"age":41}
+//
 // Without preserved keys:
-//   [{"first":"Tom","age":37},{"age":41}] -> {"first","Tom","age":41}
+//
+//	[{"first":"Tom","age":37},{"age":41}] -> {"first","Tom","age":41}
+//
 // The original json is returned when the json is not an object.
 func modJoin(json, arg string) string {
 	res := Parse(json)

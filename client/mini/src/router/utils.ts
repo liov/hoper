@@ -15,4 +15,4 @@ export const jump = (path: string, type: number, content: any) => {
 };
 
 export const _import = (path) =>
-  defineAsyncComponent(() => import(`../views/${path}.vue`));
+  defineAsyncComponent(() => import(`../pages/${path}.vue`));

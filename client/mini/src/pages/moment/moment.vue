@@ -3,7 +3,6 @@
     <nut-tabs
       v-model="active"
       @change="onChange"
-      auto-height
     >
       <template #nav-left>
         <div style="width: 30%"></div>
@@ -15,9 +14,10 @@
       </template>
       <nut-tabpane title="关注"> 内容1 </nut-tabpane>
       <nut-tabpane title="推荐"> 内容2 </nut-tabpane>
-      <nut-tabpane title="最新"> </nut-tabpane>
+      <nut-tabpane title="最新"><MomentList v-if="active==2"/> </nut-tabpane>
     </nut-tabs>
-    <nut-row type="flex" wrap="nowrap">
+
+    <nut-row type="flex" wrap="nowrap" class="row">
       <nut-col span="6"> span: 6 </nut-col>
       <nut-col span="12">span: 12 </nut-col>
       <nut-col span="6">span: 6</nut-col>
@@ -27,11 +27,12 @@
 
 <script setup lang="ts">
 import { Toast } from "@/plugins/compatible/toast";
+import MomentList from "@/pages/moment/list.vue";
 import { defineAsyncComponent, ref } from "vue";
-const active = ref(2);
+const active = ref(1);
 
-function onChange(index: number) {
-  Toast.text(index.toString());
+function onChange(tab) {
+  console.log(tab)
 }
 </script>
 

@@ -204,7 +204,7 @@ WHERE b.` + postgres.NotDeleted + ` LIMIT 100 OFFSET ` + strconv.Itoa(pageNo*pag
 
 func fixCover() {
 	apiservice := rpc.API{}
-	res, err := apiservice.GetFavLResourceList(1, 1)
+	res, err := apiservice.GetFavLResourceList(63181530, 5)
 	if err != nil {
 		log.Println(err)
 	}

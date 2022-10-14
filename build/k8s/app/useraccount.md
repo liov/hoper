@@ -37,8 +37,6 @@ cp /var/lib/minikube/certs/ca.crt  .
 cp /var/lib/minikube/certs/ca.key .
 
 # 创建根证书
-openssl genrsa -out private/ca_cert.key 2048
-openssl req -config ssl.cnf -new -x509 -days 3650 -key private/ca.key -out ca.crt -extensions v3_ca -subj "/O=k8s/CN=dev"
 
 (umask 077;openssl genrsa -out dev.key 2048)
 openssl req -new -key dev.key -out dev.csr -subj "/O=k8s/CN=dev"
@@ -70,20 +68,20 @@ kubectl config use-context    #切换context
 * context简单的理解就是用什么用户来管理哪个集群，即用户和集群的结合。
 * 创建集群配置
 ```Bash
-kubectl config set-cluster k8s --server=https://192.168.253.136:6443 --certificate-authority=ca.crt --embed-certs=true --kubeconfig=/root/dev.conf
-kubectl config set-cluster k8s --server=https://192.168.253.136:6443 --certificate-authority=ca.pem  --embed-certs=true --kubeconfig=/root/dev.conf
+kubectl config set-cluster k8s --server=https://192.168.253.136:6443 --certificate-authority=ca.crt --embed-certs=true --kubeconfig=/root/.kube/dev.conf
+kubectl config set-cluster k8s --server=https://192.168.253.136:6443 --certificate-authority=ca.pem  --embed-certs=true --kubeconfig=/root/.kube/dev.conf
 ```
 创建用户配置
 ```Bash
-kubectl config set-credentials dev --client-certificate=dev.crt --client-key=dev.key --embed-certs=true --kubeconfig=/root/dev.conf
+kubectl config set-credentials dev --client-certificate=dev.crt --client-key=dev.key --embed-certs=true --kubeconfig=/root/.kube/dev.conf
 ```
 创建context配置
 ```Bash
-kubectl config set-context dev --cluster=k8s --user=dev --kubeconfig=/root/dev.conf
+kubectl config set-context dev --cluster=k8s --user=dev --kubeconfig=/root/.kube/dev.conf
 ```
 切换context
 ```Bash
-kubectl config use-context dev --kubeconfig=/root/dev.conf
+kubectl config use-context dev --kubeconfig=/root/.kube/dev.conf
 ```
 kubectl config view
 

@@ -1,27 +1,30 @@
 <template>
   <div class="moment">
     <div class="auth">
-      <img class="avatar" :src="staticDir + user.avatarUrl" />
+      <image class="avatar" :src="staticDir + user.avatarUrl" />
       <span class="name">{{ user.name }}</span>
       <span class="time">{{ date2s(moment.createdAt) }}</span>
     </div>
+
     <div class="content" @click="detail">
-      <van-field
-        v-model="moment.content"
-        rows="1"
-        :autosize="maxHeight ? { maxHeight } : true"
-        readonly
-        type="textarea"
-      >
-        <template #extra>
-          <div class="arrow">
-            <van-icon name="arrow-down" />
-          </div>
-        </template>
-      </van-field>
+      <nut-textarea v-model="moment.content"
+                    rows="1"
+                    :autosize="maxHeight ? { maxHeight } : true"
+                    readonly/>
     </div>
-    <lazy-component class="imgs" v-if="moment.images">
-      <van-image
+    <view class="components-page" v-if="moment.images">
+      <nut-imagepreview :show="showPreview" :images="images" @close="closePreview"/>
+      <image
+        style="width: 100px;height: 100px;background: #fff;"
+        v-for="(img, idx) in images"
+        :key="idx"
+        :src="img"
+        lazyLoad
+        preview
+      />
+    </view>
+    <div class="imgs" v-if:="moment.images">
+      <nut-image
         width="100"
         height="100"
         v-for="(img, idx) in images"
@@ -29,21 +32,18 @@
         :src="img"
         lazy-load
         class="img"
-        @click="preview(idx)"
       />
-    </lazy-component>
-    <Action :content="moment" :type="1"></Action>
+    </div>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { ImagePreview } from "vant";
-import Action from "@/components/action/Action.vue";
 import { jump } from "@/router/utils";
-import { STATIC_DIR as staticDir } from "@/plugin/config";
-import { useRoute } from "vue-router";
-import { date2s } from "@/plugin/utils/time";
-import { reactive } from "vue";
+import { STATIC_DIR as staticDir } from "@/plugins/config";
+import { date2s } from "@/plugins/utils/time";
+import { reactive, ref } from "vue";
+import Taro from "@tarojs/taro";
 
 const props = defineProps<{
   moment: any;
@@ -52,29 +52,26 @@ const props = defineProps<{
 }>();
 
 const moment = reactive(props.moment);
-const route = useRoute();
+const route = Taro.getCurrentInstance().router;
+const showPreview = ref(false);
 
 const images = props.moment.images
   ?.split(",")
   .map((image) => staticDir + image);
 
-function preview(idx: number) {
-  ImagePreview({
-    images,
-    startPosition: idx,
-    closeable: true,
-  });
+function closePreview() {
+  showPreview.value = false
 }
 
 function detail() {
-  jump(route.path, 1, props.moment);
+  jump(route!.path, 1, props.moment);
 }
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .moment {
-  @20px: 20px;
-  @avatar: 30px;
+  $twelvepx: 20px;
+  $avatar: 30px;
 
   .name {
     left: 60px;
@@ -83,7 +80,7 @@ function detail() {
 
   .time {
     position: absolute;
-    right: @20px;
+    right: $twelvepx;
   }
 
   .content {
@@ -109,9 +106,10 @@ function detail() {
   }
 
   .avatar {
+    text-align:left;
     flex-shrink: 0;
-    width: @avatar;
-    height: @avatar;
+    width: $avatar;
+    height: $avatar;
     border-radius: 40px;
     position: relative;
     margin: 0 16px;

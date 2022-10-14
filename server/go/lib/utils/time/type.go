@@ -59,7 +59,7 @@ func (date *Date) UnmarshalJSON(data []byte) error {
 	}
 	// Fractional seconds are handled implicitly by Parse.
 	var err error
-	t, err := time.Parse(`"2006-01-02"`, string(data))
+	t, err := time.ParseInLocation(`"2006-01-02"`, string(data), time.Local)
 	*date = (Date)(t)
 	return err
 }
@@ -116,7 +116,7 @@ func (date *Time) UnmarshalJSON(data []byte) error {
 	}
 	// Fractional seconds are handled implicitly by Parse.
 	var err error
-	t, err := time.Parse(`"2006-01-02 15:04:05"`, string(data))
+	t, err := time.ParseInLocation(`"2006-01-02 15:04:05"`, string(data), time.Local)
 	*date = (Time)(t)
 	return err
 }

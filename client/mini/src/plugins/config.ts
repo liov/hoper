@@ -1,7 +1,8 @@
-export const Env: NodeJS.ProcessEnv = process.env;
-console.log(Env);
-export const STATIC_DIR = Env.VITE_STATIC_DIR;
-export const API_HOST = Env.VITE_API_HOST;
+
+console.log(process.env.VITE_STATIC_DIR);
+console.log(process.env.VITE_API_HOST);
+export const STATIC_DIR = process.env.VITE_STATIC_DIR;
+export const API_HOST = process.env.VITE_API_HOST;
 
 
 enum Environment {

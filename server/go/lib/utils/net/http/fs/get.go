@@ -2,7 +2,7 @@ package fs
 
 import (
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"path"
 	"strconv"
@@ -19,7 +19,7 @@ func FetchFile(url string) (*FileInfo, error) {
 		return nil, errors.New(resp.Status)
 	}
 
-	vbytes, err := ioutil.ReadAll(resp.Body)
+	vbytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +27,7 @@ func FetchFile(url string) (*FileInfo, error) {
 	var file FileInfo
 	file.Binary = vbytes
 	file.name = path.Base(resp.Request.URL.Path)
-	file.modTime, _ = time.Parse(time.RFC1123, resp.Header.Get("Last-Modified"))
+	file.modTime, _ = time.ParseInLocation(time.RFC1123, resp.Header.Get("Last-Modified"), time.Local)
 	file.size, _ = strconv.ParseInt(resp.Header.Get("Content-Length"), 10, 64)
 	return &file, nil
 }
