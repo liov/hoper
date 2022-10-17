@@ -52,7 +52,7 @@ local kubectl(compile,target, cmd) = if compile == target then {
     },
   },
   commands: [
-    'chmod +x ' + tpldir + 'account.sh && ' + tpldir + 'account.sh',
+    'cd '+ tpldir + '&& chmod +x account.sh && './account.sh '+ target,
   ] + cmd,
 };
 
@@ -219,7 +219,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
   Pipeline('timepill', sourceFile='./timepill/cmd/record.go',opts=['-t']),
   Pipeline('hoper', workdir='server/go/mod', protoc=true,),
   Pipeline('timepill', 'rbyorderid', mode='job',sourceFile='./timepill/cmd/recordby_orderid.go'),
-  Pipeline('timepill', 'esload', mode='cronjob', sourceFile='./timepill/cmd/search_es.go', schedule='00 10 * * *'),
+  Pipeline('timepill', 'esload', mode='cronjob', sourceFile='./timepill/cmd/search_es.go',target='tot', schedule='00 10 * * *'),
   Pipeline('pro', sourceFile='./pro/cmd/record.go'),
   Pipeline('bilibili',  sourceFile='./bilibili/cmd/record_fav.go'),
 ]

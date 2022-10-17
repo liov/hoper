@@ -32,6 +32,7 @@ X509客户端证书
 
 1、创建证书
 创建user私钥
+-- 202210117 验证可行
 ```bash
 cp /var/lib/minikube/certs/ca.crt  .
 cp /var/lib/minikube/certs/ca.key .
@@ -43,6 +44,7 @@ openssl req -new -key dev.key -out dev.csr -subj "/O=k8s/CN=dev"
 openssl  x509 -req -in dev.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out dev.crt -days 365
 ```
 到底该信哪一个
+-- 202210117 未验证
 ```bash
 # 准备工作
 mkdir /root/pki/
@@ -68,7 +70,9 @@ kubectl config use-context    #切换context
 * context简单的理解就是用什么用户来管理哪个集群，即用户和集群的结合。
 * 创建集群配置
 ```Bash
+# 202210117 验证可行
 kubectl config set-cluster k8s --server=https://192.168.253.136:6443 --certificate-authority=ca.crt --embed-certs=true --kubeconfig=/root/.kube/dev.conf
+# 202210117 未验证
 kubectl config set-cluster k8s --server=https://192.168.253.136:6443 --certificate-authority=ca.pem  --embed-certs=true --kubeconfig=/root/.kube/dev.conf
 ```
 创建用户配置
