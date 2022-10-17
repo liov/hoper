@@ -22,7 +22,7 @@ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 docker中部署Kubernetes
 minikube start --driver=docker --insecure-registry= --registry-mirror= --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers --mount --mount-string=$HOME:/host --cpus=4 --memory='8192M'
 root 直接部署
-minikube start --driver=none --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers --extra-config=kube-proxy.mode=ipvs --extra-config=apiserver.advertise-address=127.0.0.1 --apiserver-ips=127.0.0.1 --apiserver-port=6443  --apiserver-name=localhost
+minikube start --driver=none --image-repository=registry.cn-hangzhou.aliyuncs.com/google_containers --extra-config=kube-proxy.mode=ipvs --extra-config=apiserver.advertise-address=0.0.0.0 --apiserver-ips=0.0.0.0 --apiserver-port=6443  --apiserver-name=localhost
 -- port
 --extra-config=apiserver.service-node-port-range=1-39999 
 -- prometheus-operator

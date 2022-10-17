@@ -26,3 +26,4 @@ secret.txt
 /build/tmp
 /build/k8s/app/deploy
 /build/logs
+/build/k8s/app/certs

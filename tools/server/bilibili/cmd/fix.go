@@ -22,7 +22,7 @@ import (
 
 func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
-	fixCover()
+	fixName()
 }
 
 func fixRecord() {
@@ -108,7 +108,7 @@ func fixName() {
 		Quality int
 	}
 
-	commondir := "F:\\B站\\"
+	commondir := "G:\\B站\\"
 
 	videoPath := make(map[int]*VideoName)
 	picPath := make(map[int]string)
