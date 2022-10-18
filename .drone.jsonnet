@@ -5,12 +5,14 @@ local srcdir = workspace + '/';
 
 local compileHost = {
     localhost : {
-        codedir:'/mnt/d/code/hoper/',
-        gopath:'/mnt/d/SDK/gopath',
+        dirprefix : '/mnt/d/',
+        codedir: self.dirprefix + 'code/hoper/',
+        gopath: self.dirprefix +'SDK/gopath',
     },
      tot: {
-         codedir:'/home/new/data/code/hoper',
-         gopath:'/home/new/data/gopath',
+         dirprefix : '/home/new/data/',
+         codedir: self.dirprefix +'code/hoper',
+         gopath: self.dirprefix + 'gopath',
      }
 };
 
@@ -20,8 +22,9 @@ local targetHost = {
        confdir:'/root/config',
     },
     tot: {
-     datadir:'/home/new/data',
-     confdir:'/home/new/config',
+     dirprefix : '/home/new/',
+     datadir: self.dirprefix + 'data',
+     confdir: self.dirprefix + 'config',
     }
 };
 
@@ -52,7 +55,7 @@ local kubectl(compile,target, cmd) = if compile == target then {
     },
   },
   commands: [
-    'cd '+ tpldir + ' && chmod +x account.sh && ./account.sh /code/' + tpldir + 'certs ' + target,
+    'cd '+ tpldir + ' && chmod +x account.sh && ./account.sh ' + target,
     'cd ' + workspace,
   ] + cmd,
 };
@@ -145,6 +148,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
       'cd ' + srcdir,
       'git clone /code .',
       'git checkout -b deploy $DRONE_COMMIT_REF',
+      'cp -r /code/'+tpldir + 'certs '+ srcdir +tpldir,
        // edit Dockerfile && deploy file
       local buildfile = '/code/' + workdir + '/protobuf/build';
       if protoc then 'if [ -f ' + buildfile + ' ]; then cp -r /code/' + workdir + '/protobuf  '+ srcdir + workdir + '; fi' else 'echo',
@@ -171,7 +175,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
     },
     {
       name: 'docker build',
-      image: 'plugins/docker',
+      image: 'docker:20.10.19-cli-alpine3.16',
       privileged: true,
       volumes: [
         {
@@ -179,23 +183,22 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
           path: '/var/run/',
         },
       ],
-      settings: {
-        username: {
-          from_secret: 'docker_username',
-        },
-        password: {
-          from_secret: 'docker_password',
-        },
-        repo: 'jybl/' + fullname,
-        tags: tag,
-        dockerfile: dockerfilepath,
-        force_tag: true,
-        auto_tag: false,
-        daemon_off: true,
-        purge: true,
-        pull_image: false,
-        dry_run: compile == target,
+      environment: {
+          USERNAME: {
+            from_secret: 'docker_username',
+          },
+          PASSWORD: {
+            from_secret: 'docker_password',
+          },
+
       },
+    commands: [
+        //'docker version',
+        'docker login -u $USERNAME -p $PASSWORD',
+        'docker build --rm=true -f build/k8s/app/Dockerfile-bin -t $USERNAME/' + fullname+':'+tag+' .',
+        if compile != target then 'docker push $USERNAME/'+ fullname+':'+ tag,
+    ],
+
     },
     kubectl(compile,target, [
       if mode == 'job' || mode == 'cronjob' then 'kubectl --kubeconfig=/root/.kube/config delete --ignore-not-found -f ' + deppath else 'echo',
