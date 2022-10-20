@@ -17,3 +17,6 @@ SET TIMEZONE='Asia/Shanghai';
 vim postgresql.conf
 log_timezone = 'Asia/Shanghai'
 timezone = 'Asia/Shanghai'
+
+# upgrade
+pg_dumpall -U postgres -h postgres.tools -p 5432 | psql -U postgres

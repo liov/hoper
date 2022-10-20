@@ -16,6 +16,6 @@ func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
 	flag.Parse()
 	engine := crawler.New(config.Conf.Bilibili.WorkCount).StopAfter(time.Hour * time.Duration(config.Conf.Bilibili.StopTime))
-	go download.FavVideo(engine)
+	go download.DownloadRecordVideo(engine)
 	engine.Run()
 }

@@ -49,7 +49,7 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/russross/blackfriday v1.6.0
 	github.com/spf13/viper v1.12.0
-	github.com/stretchr/testify v1.7.1
+	github.com/stretchr/testify v1.8.0
 	github.com/tealeg/xlsx/v3 v3.2.3
 	github.com/tidwall/pretty v1.2.0
 	github.com/ugorji/go/codec v1.2.6
@@ -69,7 +69,7 @@ require (
 	google.golang.org/protobuf v1.28.0
 	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/driver/mysql v1.3.5
-	gorm.io/driver/postgres v1.3.8
+	gorm.io/driver/postgres v1.4.4
 	gorm.io/driver/sqlite v1.3.6
 	gorm.io/gorm v1.23.8
 	gorm.io/plugin/prometheus v0.0.0-20210820101226-2a49866f83ee
@@ -162,13 +162,13 @@ require (
 	github.com/henrylee2cn/goutil v0.0.0-20210127050712-89660552f6f8 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
-	github.com/jackc/pgconn v1.12.1 // indirect
+	github.com/jackc/pgconn v1.13.0 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
-	github.com/jackc/pgproto3/v2 v2.3.0 // indirect
+	github.com/jackc/pgproto3/v2 v2.3.1 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20200714003250-2b9c44734f2b // indirect
-	github.com/jackc/pgtype v1.11.0 // indirect
-	github.com/jackc/pgx/v4 v4.16.1 // indirect
+	github.com/jackc/pgtype v1.12.0 // indirect
+	github.com/jackc/pgx/v4 v4.17.2 // indirect
 	github.com/jcmturner/aescts/v2 v2.0.0 // indirect
 	github.com/jcmturner/dnsutils/v2 v2.0.0 // indirect
 	github.com/jcmturner/gofork v1.0.0 // indirect
@@ -229,7 +229,7 @@ require (
 	go.etcd.io/etcd/client/pkg/v3 v3.5.4 // indirect
 	go.etcd.io/etcd/client/v2 v2.305.4 // indirect
 	go.mongodb.org/mongo-driver v1.8.1 // indirect
-	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4 // indirect
+	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
 	golang.org/x/sync v0.0.0-20220513210516-0976fa681c29 // indirect
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
 	golang.org/x/xerrors v0.0.0-20220517211312-f3a8303e98df // indirect

@@ -6,32 +6,37 @@ Module = "hoper"
 configType = "local"
 Watch  = true
 NoInject = ["Apollo","Etcd", "Es"]
-InjectVersion = 1
-[dev.nacos]
-Addr = "nacos.local.org"
-Group = "hoper"
-
-[dev.nacosv2]
-DataId = "timepill"
-Group = "DEFAULT_GROUP"
-
-[[dev.nacosv2.ServerConfigs]]
-Scheme = "http"
-IpAddr = "xxx"
-Port = 1000
-GrpcPort = 2000
-
-[dev.nacosv2.ClientConfig]
-NamespaceId = ""
-username = "xxx"
-password = "xxx"
-LogLevel = "debug"
 
 [dev.local]
-ConfigName = "local.toml"
+Debug = true
+ConfigPath = "local.toml"
 ReloadType = "fsnotify"
 
+[dev.http]
+Interval = 100
+Url = "http://localhost:6666/local.toml"
+
+
 [test]
+configType = "nacos"
+Watch  = true
+NoInject = ["Apollo","Etcd", "Es"]
+
+[test.nacos]
+DataId = "pro"
+Group = "DEFAULT_GROUP"
+
+[[test.nacos.ServerConfigs]]
+Scheme = "http"
+IpAddr = "nacos.liov.xyz"
+Port = 9000
+GrpcPort = 10000
+
+[test.nacos.ClientConfig]
+NamespaceId = ""
+username = "nacos"
+password = "225567"
+LogLevel = "debug"
 
 [prod]
 
