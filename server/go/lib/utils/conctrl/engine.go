@@ -17,7 +17,7 @@ const (
 	KindNormal = iota
 )
 
-type TaskFun func(context.Context)
+type TaskFunc func(context.Context)
 
 // TODO
 type TaskMeta struct {
@@ -36,7 +36,7 @@ type TaskStatistics struct {
 
 type Task struct {
 	TaskMeta
-	Do TaskFun
+	Do TaskFunc
 }
 
 type ErrHandle func(context.Context, error)

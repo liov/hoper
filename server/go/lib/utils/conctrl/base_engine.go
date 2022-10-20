@@ -12,7 +12,7 @@ import (
 
 type BaseTask struct {
 	Id uint
-	Do TaskFun
+	Do TaskFunc
 }
 
 type BaseWorker struct {

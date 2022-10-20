@@ -38,7 +38,7 @@ type Video struct {
 	Aid       int    `json:"aid" gorm:"primaryKey"`
 	Cid       int    `json:"cid" gorm:"primaryKey"`
 	Data      []byte `json:"data" gorm:"type:jsonb"`
-	Record    bool
+	Record    int
 	CreatedAt time.Time `json:"created_at" gorm:"default:current_timestamp"`
 	DeletedAt time.Time `json:"deleted_at" gorm:"default:null"`
 }

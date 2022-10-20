@@ -9,5 +9,5 @@ type Task[T TaskProps] struct {
 }
 
 type TaskProps interface {
-	NewTaskFun(id uint, kind conctrl.Kind) conctrl.TaskFun
+	NewTaskFun(id uint, kind conctrl.Kind) conctrl.TaskFunc
 }

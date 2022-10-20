@@ -1,16 +1,15 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
-	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
-	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
+	osi "github.com/actliboy/hoper/server/go/lib/utils/os"
 	"log"
 	"os"
 	"path"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"tools/bilibili/config"
@@ -22,21 +21,35 @@ import (
 
 func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
-	fixName()
+	rename()
 }
 
 func fixRecord() {
-	dir := "F:\\B站\\pic"
-	files, _ := os.ReadDir(dir)
-	var reqs []*crawler.Request
-	for _, file := range files {
-		aidStr := strings.Split(file.Name(), "_")[0]
-		aid, _ := strconv.Atoi(aidStr)
-		req := download.GetViewInfoReqV2(aid)
-		reqs = append(reqs, req)
+	dir := "F:\\B站\\"
+	var videos []*Video
+	dao.Dao.Hoper.DB.Raw(`SELECT a.owner->'mid' up_id,b.aid,b.cid,a.title,a.p->'page' page,a.p->'part' part
+FROM ` + dao.TableNameVideo + ` b 
+LEFT JOIN (SELECT data->'title' title, data->'owner' owner, jsonb_path_query(data,'$.pages[*]') p FROM ` + dao.TableNameView + `)  a ON (a.p->'cid')::int8 = b.cid
+WHERE b.created_at > '2022-09-28 11:33:26' AND b.record = 0 AND b.` + postgres.NotDeleted + ` ORDER BY created_at`).Find(&videos)
+
+	for _, video := range videos {
+		if video.Part != video.Title {
+			continue
+		}
+		for _, q := range []int{112, 116, 120} {
+			filename := fmt.Sprintf("%d_%d_%d_%s_%s_%d_%d.flv", video.UpId, video.Aid, video.Cid, video.Title, video.Part, 1, q)
+			oldpath := dir + strconv.Itoa(video.UpId) + "\\video\\" + fs.PathClean(filename)
+			info, err := os.Stat(oldpath)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+			if info != nil {
+				dao.Dao.Hoper.Table(dao.TableNameVideo).Where("cid = ?", video.Cid).Update("record", 1)
+			}
+		}
 	}
-	engine := crawler.New(10).SkipKind(4)
-	engine.Run(reqs...)
+
 }
 
 func fixQuality() {
@@ -53,7 +66,7 @@ func fixQuality() {
 			}
 			fmt.Println(file.Name()[len(file.Name())-6 : len(file.Name())-4])
 			if quality != file.Name()[len(file.Name())-6:len(file.Name())-4] {
-				dao.Dao.Hoper.Table(dao.TableNameVideo).Where(`cid = `+cid).UpdateColumn("record", false)
+				dao.Dao.Hoper.Table(dao.TableNameVideo).Where(`cid = `+cid).UpdateColumn("record", 1)
 				os.Remove(path.Join(dir, file.Name()))
 			}
 		}
@@ -91,21 +104,22 @@ func remove() {
 	}
 }
 
+type Video struct {
+	UpId    int
+	Title   string
+	Aid     int
+	Cid     int
+	Page    int
+	Part    string
+	Order   int
+	Quality int
+}
+
 func fixName() {
 	type VideoName struct {
 		Aid           int
 		VideoFileName string
 		strs          []string
-	}
-	type Video struct {
-		UpId    int
-		Title   string
-		Aid     int
-		Cid     int
-		Page    int
-		Part    string
-		Order   int
-		Quality int
 	}
 
 	commondir := "G:\\B站\\"
@@ -134,13 +148,13 @@ func fixName() {
 		var videos []*Video
 		dao.Dao.Hoper.DB.Raw(`SELECT a.owner->'mid' up_id,b.aid,b.cid,a.title,a.p->'page' page,a.p->'part' part
 FROM ` + dao.TableNameVideo + ` b 
-LEFT JOIN (SELECT data->'title' title , data->'owner' owner ,jsonb_path_query(data,'$.pages[*]') p FROM ` + dao.TableNameView + `)  a ON (a.p->'cid')::int8 = b.cid
+LEFT JOIN (SELECT data->'title' title, data->'owner' owner, jsonb_path_query(data,'$.pages[*]') p FROM ` + dao.TableNameView + `)  a ON (a.p->'cid')::int8 = b.cid
 WHERE b.` + postgres.NotDeleted + ` LIMIT 100 OFFSET ` + strconv.Itoa(pageNo*pageSize)).Find(&videos)
 
 		for _, v := range videos {
 			cv, ok := videoPath[v.Cid]
 			if ok {
-				dir := commondir + strconv.Itoa(v.UpId)
+				dir := commondir
 				_, err := os.Stat(dir)
 				if os.IsNotExist(err) {
 					err = os.Mkdir(dir, 0666)
@@ -148,9 +162,9 @@ WHERE b.` + postgres.NotDeleted + ` LIMIT 100 OFFSET ` + strconv.Itoa(pageNo*pag
 						log.Println(err)
 					}
 				}
-				_, err = os.Stat(dir + "\\" + config.Conf.Bilibili.DownloadVideoPath)
+				_, err = os.Stat(dir + "video\\" + strconv.Itoa(v.UpId))
 				if os.IsNotExist(err) {
-					err = os.Mkdir(dir+"\\"+config.Conf.Bilibili.DownloadVideoPath, 0666)
+					err = os.Mkdir(dir+"video\\"+strconv.Itoa(v.UpId), 0666)
 					if err != nil {
 						log.Println(err)
 					}
@@ -159,7 +173,7 @@ WHERE b.` + postgres.NotDeleted + ` LIMIT 100 OFFSET ` + strconv.Itoa(pageNo*pag
 				if part == cv.strs[2] {
 					part = "!part=title!"
 				}
-				newpath := dir + "\\video\\" + fmt.Sprintf("%d_%s_%s_%s_%s_%s_%s", v.UpId, cv.strs[0], cv.strs[1], cv.strs[2], part, cv.strs[3], cv.strs[4])
+				newpath := dir + "\\video\\" + strconv.Itoa(v.UpId) + "\\" + fmt.Sprintf("%d_%s_%s_%s_%s_%s_%s", v.UpId, cv.strs[0], cv.strs[1], cv.strs[2], part, cv.strs[3], cv.strs[4])
 				fmt.Println("rename:", newpath)
 				err = os.Rename(vdir+"\\"+cv.VideoFileName, newpath)
 				if err != nil {
@@ -176,9 +190,9 @@ WHERE b.` + postgres.NotDeleted + ` LIMIT 100 OFFSET ` + strconv.Itoa(pageNo*pag
 						log.Println(err)
 					}
 				}
-				_, err = os.Stat(dir + "\\" + config.Conf.Bilibili.DownloadPicPath)
+				_, err = os.Stat(dir + "\\pic\\" + strconv.Itoa(v.UpId))
 				if os.IsNotExist(err) {
-					err = os.Mkdir(dir+"\\"+config.Conf.Bilibili.DownloadPicPath, 0666)
+					err = os.Mkdir(dir+"\\pic\\"+strconv.Itoa(v.UpId), 0666)
 					if err != nil {
 						log.Println(err)
 					}
@@ -210,10 +224,105 @@ func fixCover() {
 	}
 	for _, fav := range res.Medias {
 		aid := tool.Bv2av(fav.Bvid)
-		err = client.DownloadImage(filepath.Join(config.Conf.Bilibili.DownloadPath, strconv.Itoa(fav.Upper.Mid), config.Conf.Bilibili.DownloadPicPath, strconv.Itoa(fav.Upper.Mid)+"_"+strconv.Itoa(aid)+"_"+path.Base(fav.Cover)), fav.Cover)
+		err = download.CoverDownload(context.Background(), fav.Cover, fav.Upper.Mid, aid)
 		if err != nil {
 			log.Println("下载图片失败：", err)
 		}
 	}
 
+}
+
+func transferCodec() {
+	command := `ffmpeg  -hwaccel_output_format qsv -c:v h264_qsv -i %s -c:v hevc_qsv -global_quality 23  -gpu_copy 1 -c:a copy %s.mp4`
+	commondir := "D:\\F\\B站\\"
+	dirs, _ := os.ReadDir(commondir)
+	for _, dir := range dirs {
+		if dir.IsDir() {
+			subdir := commondir + dir.Name() + "\\video\\"
+			files, _ := os.ReadDir(subdir)
+			for _, file := range files {
+				fileName := file.Name()
+				if !strings.HasSuffix(fileName, ".flv") {
+					continue
+				}
+				filePath := subdir + file.Name()
+				command = fmt.Sprintf(command, filePath, filePath[:len(filePath)-len(".flv")])
+				log.Println(command)
+				res, err := osi.CMD(command)
+				if err != nil {
+					log.Println(err)
+					continue
+				}
+				log.Println(res)
+				//log.Println(os.Remove(filePath))
+			}
+		}
+	}
+}
+
+func rename() {
+	commondir := "F:\\B站\\"
+	dirs, _ := os.ReadDir(commondir)
+	for _, dir := range dirs {
+		if dir.IsDir() {
+			newpicDir := commondir + "pic\\" + dir.Name() + "\\"
+			_, err := os.Stat(newpicDir)
+			if os.IsNotExist(err) {
+				err = os.Mkdir(newpicDir, 0666)
+				if err != nil {
+					log.Println(err)
+				}
+			}
+			newvidDir := commondir + "video\\" + dir.Name() + "\\"
+			_, err = os.Stat(newvidDir)
+			if os.IsNotExist(err) {
+				err = os.Mkdir(newvidDir, 0666)
+				if err != nil {
+					log.Println(err)
+				}
+			}
+			subpicdir := commondir + dir.Name() + "\\pic\\"
+			files, _ := os.ReadDir(subpicdir)
+			for _, file := range files {
+				fileName := file.Name()
+				filePath := subpicdir + file.Name()
+				err = os.Rename(filePath, newpicDir+fileName)
+				if err != nil {
+					log.Println(err)
+				}
+			}
+			files, _ = os.ReadDir(subpicdir)
+			if len(files) == 0 {
+				err = os.Remove(subpicdir)
+				if err != nil {
+					log.Println(err)
+				}
+			}
+			subviddir := commondir + dir.Name() + "\\video\\"
+			files, _ = os.ReadDir(subviddir)
+			for _, file := range files {
+				fileName := file.Name()
+				filePath := subviddir + file.Name()
+				err = os.Rename(filePath, newvidDir+fileName)
+				if err != nil {
+					log.Println(err)
+				}
+			}
+			files, _ = os.ReadDir(subviddir)
+			if len(files) == 0 {
+				err = os.Remove(subviddir)
+				if err != nil {
+					log.Println(err)
+				}
+			}
+		}
+
+		files, _ := os.ReadDir(commondir + dir.Name())
+		if len(files) == 0 {
+			err := os.Remove(commondir + dir.Name())
+			if err != nil {
+				log.Println(err)
+			}
+		}
+	}
 }

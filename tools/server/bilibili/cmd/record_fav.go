@@ -22,7 +22,7 @@ func main() {
 		req2 := download.FavReqs(62504730, 1, 1, download.RecordFavList)
 		req := append(req1, req2...)*/
 		engine := crawler.New(config.Conf.Bilibili.WorkCount).SkipKind(4).Timer(1, time.Millisecond*500).Timer(3, time.Second)
-		download.RecordFav(ctx, engine)
+		download.RecordFavTimer(ctx, engine)
 		engine.Run()
 	}
 	conctrl.Timer(context.Background(), task, time.Minute*10)

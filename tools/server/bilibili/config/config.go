@@ -2,6 +2,8 @@ package config
 
 import (
 	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
+	"log"
+	"os/exec"
 	"path/filepath"
 	"tools/bilibili/rpc"
 )
@@ -17,6 +19,7 @@ type Customize struct {
 	DownloadPicPath   string
 	Cookie            string
 	SkipKind          []conctrl.Kind
+	FFmpegPath        string
 }
 
 type config struct {
@@ -39,8 +42,15 @@ func (c *config) Init() {
 	}
 	rpc.Cookie = c.Bilibili.Cookie
 	c.Bilibili.DownloadPath, _ = filepath.Abs(c.Bilibili.DownloadPath)
-	c.Bilibili.DownloadVideoPath = "video"
-	c.Bilibili.DownloadPicPath = "pic"
+	c.Bilibili.DownloadVideoPath = c.Bilibili.DownloadPath + "/video"
+	c.Bilibili.DownloadPicPath = c.Bilibili.DownloadPath + "/pic"
+
+	path, err := exec.LookPath("ffmpeg")
+	if err != nil {
+		log.Println(err)
+	} else {
+		c.Bilibili.FFmpegPath = path
+	}
 }
 
 var Conf = &config{}

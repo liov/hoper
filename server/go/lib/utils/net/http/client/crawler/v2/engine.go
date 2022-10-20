@@ -12,20 +12,18 @@ import (
 type Engine struct {
 	*conctrl.Engine
 	visited     sync.Map
-	ReqsChan    chan []*Request
+	ReqsChan    chan []Request
 	kindHandler []*KindHandler
 }
 
 type KindHandler struct {
 	Skip bool
 	*time.Ticker
-	// TODO 指定Kind的Handler
-	HandleFun HandleFunc
 }
 
 func New(workerCount uint) *Engine {
 	return &Engine{
-		ReqsChan: make(chan []*Request),
+		ReqsChan: make(chan []Request),
 		Engine:   conctrl.NewEngine(workerCount),
 	}
 }
@@ -68,7 +66,7 @@ func (e *Engine) Timer(kind conctrl.Kind, interval time.Duration) *Engine {
 	return e
 }
 
-func (e *Engine) Run(reqs ...*Request) {
+func (e *Engine) Run(reqs ...Request) {
 
 	go func() {
 		for reqs := range e.ReqsChan {
@@ -86,41 +84,47 @@ func (e *Engine) Run(reqs ...*Request) {
 	e.Engine.Run(tasks...)
 }
 
-func (e *Engine) NewTask(req *Request) *conctrl.Task {
-	if req == nil || req.TaskFunc == nil {
+func (e *Engine) NewTask(req Request) *conctrl.Task {
+
+	if req == nil {
 		return nil
 	}
+	reqInfo := req.RequestInfo()
+	if reqInfo == nil {
+		return nil
+	}
+
 	var kindHandler *KindHandler
-	if e.kindHandler != nil && int(req.Kind) < len(e.kindHandler) {
-		kindHandler = e.kindHandler[req.Kind]
+	if e.kindHandler != nil && int(reqInfo.Kind) < len(e.kindHandler) {
+		kindHandler = e.kindHandler[reqInfo.Kind]
 	}
 
 	if kindHandler != nil && kindHandler.Skip {
 		return nil
 	}
-	if req.Key != "" {
-		if _, ok := e.visited.Load(req.Key); ok {
+	if reqInfo.Key != "" {
+		if _, ok := e.visited.Load(reqInfo.Key); ok {
 			return nil
 		}
 	}
 	return &conctrl.Task{
-		TaskMeta: conctrl.TaskMeta{Kind: req.Kind},
+		TaskMeta: conctrl.TaskMeta{Kind: reqInfo.Kind},
 		Do: func(ctx context.Context) {
 			if kindHandler != nil && kindHandler.Ticker != nil {
 				<-kindHandler.Ticker.C
 			}
 			reqs, err := req.TaskFunc(ctx)
 			if err != nil {
-				req.errTimes++
+				reqInfo.errTimes++
 				log.Println("爬取失败", err)
-				log.Println("重新爬取,url :", req.Key)
-				if req.errTimes < 5 {
-					e.ReqsChan <- []*Request{req}
+				log.Println("重新爬取,url :", reqInfo.Key)
+				if reqInfo.errTimes < 5 {
+					e.ReqsChan <- []Request{req}
 				}
 				return
 			}
-			if req.Key != "" {
-				e.visited.Store(req.Key, struct{}{})
+			if reqInfo.Key != "" {
+				e.visited.Store(reqInfo.Key, struct{}{})
 			}
 			if len(reqs) > 0 {
 				e.ReqsChan <- reqs

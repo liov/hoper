@@ -72,8 +72,8 @@ func (api *API) GetFavLResourceList(favId, page int) (*FavResourceList, error) {
 	return Get[*FavResourceList](GetFavResourceListUrl(favId, page))
 }
 
-func (api *API) GetPlayerInfo(avid, cid, qn int) (*VideoInfo, error) {
-	return Get[*VideoInfo](GetPlayerUrl(avid, cid, qn))
+func (api *API) GetPlayerInfo(avid, cid int) (*VideoInfo, error) {
+	return Get[*VideoInfo](GetPlayerUrl(avid, cid))
 }
 
 func GetViewUrl(aid int) string {
@@ -88,8 +88,8 @@ func GetFavResourceListUrl(favId, page int) string {
 	return fmt.Sprintf("%s/x/v3/fav/resource/list?media_id=%d&pn=%d&ps=20", Host, favId, page)
 }
 
-func GetPlayerUrl(avid, cid, qn int) string {
-	return fmt.Sprintf("%s/x/player/playurl?avid=%d&cid=%d&qn=%d&fourk=1", Host, avid, cid, qn)
+func GetPlayerUrl(avid, cid int) string {
+	return fmt.Sprintf("%s/x/player/playurl?avid=%d&cid=%d&qn=127&fourk=1&fnval=80", Host, avid, cid)
 }
 
 func GetUpSpaceListUrl(upid, page int) string {

@@ -18,7 +18,7 @@ type Engine struct {
 
 type KindHandler struct {
 	conctrl.KindHandler
-	taskFun crawler.TaskFun
+	taskFun crawler.TaskFunc
 	timer   *time.Ticker
 }
 
@@ -29,7 +29,7 @@ func New(workerCount uint) *Engine {
 	}
 }
 
-func (e *KindHandler) HandleFun(taskFun crawler.TaskFun) *KindHandler {
+func (e *KindHandler) HandleFun(taskFun crawler.TaskFunc) *KindHandler {
 	e.taskFun = taskFun
 	return e
 }
@@ -66,7 +66,7 @@ func (e *Engine) NewTask(req *crawler.Request) *conctrl.Task {
 		return nil
 	}
 	handler := e.kindHandlers[req.Kind]
-	req.TaskFun = handler.taskFun
+	req.TaskFunc = handler.taskFun
 	return &conctrl.Task{
 		TaskMeta: conctrl.TaskMeta{Kind: req.Kind},
 		Do: func(ctx context.Context) {
@@ -76,7 +76,7 @@ func (e *Engine) NewTask(req *crawler.Request) *conctrl.Task {
 			if _, ok := e.visited.Load(req.Key); ok {
 				return
 			}
-			reqs, err := req.TaskFun(ctx)
+			reqs, err := req.TaskFunc(ctx)
 			if err != nil {
 				log.Println("爬取失败", err)
 				log.Println("重新爬取,url :", req.Key)

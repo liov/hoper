@@ -32,6 +32,6 @@ func NewEngineN[REQ, RES, V any, FUN TaskFunc[REQ, RES]](workerCount uint, props
 
 func (e *Engine[REQ, RES, V, FUN]) NewTaskA(task TaskFuncA) *conctrl.Task {
 	return &conctrl.Task{
-		Do: conctrl.TaskFun(task),
+		Do: conctrl.TaskFunc(task),
 	}
 }

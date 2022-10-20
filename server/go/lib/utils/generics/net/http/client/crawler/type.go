@@ -9,11 +9,11 @@ import (
 type FetchFun[T any] func(ctx context.Context, url string) (T, error)
 type ParseFun[T any] func(ctx context.Context, t T) ([]*crawler.Request, error)
 
-func NewUrlRequest(url string, handleFun crawler.HandleFun) *crawler.Request {
+func NewUrlRequest(url string, handleFun crawler.HandleFunc) *crawler.Request {
 	return crawler.NewUrlRequest(url, handleFun)
 }
 
-func NewHandleFun[T any](f FetchFun[T], p ParseFun[T]) crawler.HandleFun {
+func NewHandleFun[T any](f FetchFun[T], p ParseFun[T]) crawler.HandleFunc {
 	return func(ctx context.Context, url string) ([]*crawler.Request, error) {
 		content, err := f(ctx, url)
 		if err != nil {
@@ -31,7 +31,7 @@ type Callback[T any] func(t T) error
 
 type Request struct {
 	Url       string
-	HandleFun crawler.HandleFun
+	HandleFun crawler.HandleFunc
 }
 
 func (r *Request) NewTaskFun(id uint, kind conctrl.Kind) *crawler.Request {
