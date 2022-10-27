@@ -12,29 +12,17 @@
                     :autosize="maxHeight ? { maxHeight } : true"
                     readonly/>
     </div>
-    <view class="components-page" v-if="moment.images">
-      <nut-imagepreview :show="showPreview" :images="images" @close="closePreview"/>
+    <view class="imgs" v-if="moment.images">
       <image
-        style="width: 100px;height: 100px;background: #fff;"
+        style="width: 70px;height: 70px;background: #fff;"
         v-for="(img, idx) in images"
         :key="idx"
         :src="img"
         lazyLoad
-        preview
-      />
-    </view>
-    <div class="imgs" v-if:="moment.images">
-      <nut-image
-        width="100"
-        height="100"
-        v-for="(img, idx) in images"
-        :key="idx"
-        :src="img"
-        lazy-load
+        @click=preview(img)
         class="img"
       />
-    </div>
-
+    </view>
   </div>
 </template>
 
@@ -56,11 +44,10 @@ const route = Taro.getCurrentInstance().router;
 const showPreview = ref(false);
 
 const images = props.moment.images
-  ?.split(",")
-  .map((image) => staticDir + image);
+  ?.split(",").map((image) => staticDir + image);
 
-function closePreview() {
-  showPreview.value = false
+function preview(img:string) {
+  Taro.previewImage({urls:images as string[],current:img})
 }
 
 function detail() {
@@ -72,6 +59,17 @@ function detail() {
 .moment {
   $twelvepx: 20px;
   $avatar: 30px;
+.auth{
+  height: 30px;
+  .avatar {
+    left: 10px;
+    position: absolute;
+    flex-shrink: 0;
+    width: $avatar;
+    height: $avatar;
+    border-radius: 40px;
+    margin: 0 16px;
+  }
 
   .name {
     left: 60px;
@@ -82,6 +80,8 @@ function detail() {
     position: absolute;
     right: $twelvepx;
   }
+}
+
 
   .content {
     width: 100%;
@@ -103,16 +103,6 @@ function detail() {
       font-size: 14px;
       line-height: 20px;
     }
-  }
-
-  .avatar {
-    text-align:left;
-    flex-shrink: 0;
-    width: $avatar;
-    height: $avatar;
-    border-radius: 40px;
-    position: relative;
-    margin: 0 16px;
   }
 
   .imgs {

@@ -40,4 +40,7 @@ function onChange(tab) {
 i {
   margin: 0.7rem;
 }
+.nut-tabpane{
+  padding: 0
+}
 </style>

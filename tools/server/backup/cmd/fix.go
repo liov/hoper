@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/actliboy/hoper/server/go/lib/initialize"
+	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"os"
 	"strings"
@@ -10,7 +12,9 @@ import (
 )
 
 func main() {
-	normal(backup.BackUpDiskPron + "OracleBuBu")
+	defer initialize.Start(nil, &backup.Dao)()
+	aliyun()
+	//normal(backup.BackUpDiskPron + "OracleBuBu")
 }
 
 func dcim() {
@@ -98,5 +102,61 @@ func fix2(dir string) {
 		winFile := info.Sys().(*syscall.Win32FileAttributeData)
 		log.Info(time.Unix(0, winFile.CreationTime.Nanoseconds()), time.Unix(0, winFile.LastWriteTime.Nanoseconds()))
 
+	}
+}
+
+func aliyun() {
+	aliyun := "E:\\Pictures\\aliyun"
+	dir := "E:\\Pictures\\douyin_video"
+	fileMap := make(map[string]struct{})
+	getFileMap(dir, fileMap)
+	entities, _ := os.ReadDir(aliyun)
+	if len(entities) == 0 {
+		return
+	}
+	for _, entity := range entities {
+		if _, ok := fileMap[entity.Name()]; ok {
+			os.Remove(aliyun + fs.PathSeparator + entity.Name())
+		} else {
+			var file backup.File
+			err := backup.Dao.Hoper.Where("name = ?", entity.Name()).First(&file).Error
+			if err != nil {
+				log.Error(err)
+				continue
+			}
+			oldpath := aliyun + fs.PathSeparator + entity.Name()
+			date := file.ModTime.Format("200601")
+			newDir := dir + fs.PathSeparator + date
+			_, err = os.Stat(newDir)
+			if os.IsNotExist(err) {
+				err = os.Mkdir(newDir, 0666)
+				if err != nil {
+					log.Error(err)
+				}
+			}
+			newPath := newDir + fs.PathSeparator + entity.Name()
+			_, err = os.Stat(newPath)
+			if os.IsNotExist(err) {
+				log.Info("rename:", newPath)
+				err = os.Rename(oldpath, newPath)
+				if err != nil {
+					log.Error(err)
+				}
+			} else {
+				log.Info("delete:", oldpath)
+				os.Remove(oldpath)
+			}
+		}
+	}
+
+}
+
+func getFileMap(dir string, fileMap map[string]struct{}) {
+	entities, _ := os.ReadDir(dir)
+	for _, entity := range entities {
+		if entity.IsDir() {
+			getFileMap(dir+fs.PathSeparator+entity.Name(), fileMap)
+		}
+		fileMap[entity.Name()] = struct{}{}
 	}
 }

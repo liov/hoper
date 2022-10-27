@@ -11,6 +11,7 @@ const (
 )
 
 const (
-	VideoTypeFlv = 0
-	VideoTypeM4s = 1
+	VideoTypeFlv        = 0
+	VideoTypeM4sCodec12 = 1
+	VideoTypeM4sCodec7  = 2
 )

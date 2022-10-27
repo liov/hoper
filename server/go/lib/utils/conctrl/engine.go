@@ -2,6 +2,7 @@ package conctrl
 
 import (
 	"context"
+	"github.com/actliboy/hoper/server/go/lib/utils/generics/structure/heap"
 	"github.com/actliboy/hoper/server/go/lib/utils/generics/structure/list"
 	synci "github.com/actliboy/hoper/server/go/lib/utils/sync"
 	"log"
@@ -21,13 +22,9 @@ type TaskFunc func(context.Context)
 
 // TODO
 type TaskMeta struct {
-	Id         uint
-	Generation int
-	Kind       Kind
-}
-
-func (m *TaskMeta) NextGeneration() int {
-	return m.Generation + 1
+	Id       uint
+	Kind     Kind
+	Priority int
 }
 
 type TaskStatistics struct {
@@ -37,6 +34,10 @@ type TaskStatistics struct {
 type Task struct {
 	TaskMeta
 	Do TaskFunc
+}
+
+func (t *Task) CompareField() int {
+	return t.Priority
 }
 
 type ErrHandle func(context.Context, error)
@@ -100,17 +101,17 @@ func (e *Engine) Run(tasks ...*Task) {
 	go func() {
 		timer := time.NewTimer(time.Second * 1)
 		workerList := list.NewSimpleList[*Worker]()
-		taskList := list.NewSimpleList[*Task]()
-		var emptyTimes int
+		taskList := heap.Heap[*Task]{}
+		var emptyTimes, stopTimes uint
 	loop:
 		for {
 			var readyWorkerCh chan *Task
 			var readyTask *Task
-			if workerList.Size > 0 && taskList.Size > 0 {
+			if workerList.Size > 0 && len(taskList) > 0 {
 				readyWorkerCh = workerList.First().taskCh
 				readyTask = taskList.First()
 			}
-			if taskList.Size > e.limitWaitTaskCount {
+			if len(taskList) > int(e.limitWaitTaskCount) {
 				select {
 				case readyWorker := <-e.workerChan:
 					workerList.Push(readyWorker)
@@ -119,7 +120,11 @@ func (e *Engine) Run(tasks ...*Task) {
 					taskList.Pop()
 				case <-timer.C:
 					//检测任务是否卡住
-					e.limitWaitTaskCount += uint(e.limitWorkerCount)
+					stopTimes++
+					if stopTimes == 10 {
+						e.limitWaitTaskCount += uint(e.limitWorkerCount)
+						stopTimes = 0
+					}
 					timer.Reset(time.Second * 1)
 				case <-e.ctx.Done():
 					timer.Stop()
@@ -136,7 +141,7 @@ func (e *Engine) Run(tasks ...*Task) {
 					taskList.Pop()
 				case <-timer.C:
 					//检测任务是否已空
-					if workerList.Size == uint(e.currentWorkerCount) && taskList.Size == 0 {
+					if workerList.Size == uint(e.currentWorkerCount) && len(taskList) == 0 {
 						emptyTimes++
 						if emptyTimes > 2 {
 							log.Println("task is empty")

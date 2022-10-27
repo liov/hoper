@@ -12,7 +12,7 @@ import (
 type Engine struct {
 	*conctrl.Engine
 	visited     sync.Map
-	ReqsChan    chan []*Request
+	ReqsChan    chan Requests
 	kindHandler []*KindHandler
 }
 
@@ -25,7 +25,7 @@ type KindHandler struct {
 
 func New(workerCount uint) *Engine {
 	return &Engine{
-		ReqsChan: make(chan []*Request),
+		ReqsChan: make(chan Requests),
 		Engine:   conctrl.NewEngine(workerCount),
 	}
 }
@@ -72,8 +72,9 @@ func (e *Engine) Run(reqs ...*Request) {
 
 	go func() {
 		for reqs := range e.ReqsChan {
-			for _, req := range reqs {
+			for _, req := range reqs.reqs {
 				if req != nil {
+					req.Priority = reqs.generation
 					e.Engine.AddTask(e.NewTask(req))
 				}
 			}
@@ -104,7 +105,7 @@ func (e *Engine) NewTask(req *Request) *conctrl.Task {
 		}
 	}
 	return &conctrl.Task{
-		TaskMeta: conctrl.TaskMeta{Kind: req.Kind},
+		TaskMeta: req.TaskMeta,
 		Do: func(ctx context.Context) {
 			if kindHandler != nil && kindHandler.Ticker != nil {
 				<-kindHandler.Ticker.C
@@ -115,7 +116,7 @@ func (e *Engine) NewTask(req *Request) *conctrl.Task {
 				log.Println("爬取失败", err)
 				log.Println("重新爬取,url :", req.Key)
 				if req.errTimes < 5 {
-					e.ReqsChan <- []*Request{req}
+					e.ReqsChan <- Requests{reqs, req.Priority}
 				}
 				return
 			}
@@ -123,7 +124,7 @@ func (e *Engine) NewTask(req *Request) *conctrl.Task {
 				e.visited.Store(req.Key, struct{}{})
 			}
 			if len(reqs) > 0 {
-				e.ReqsChan <- reqs
+				e.ReqsChan <- Requests{reqs, req.Priority + 1}
 			}
 			return
 		},

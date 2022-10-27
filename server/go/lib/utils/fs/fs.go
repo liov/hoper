@@ -337,3 +337,42 @@ func LastFile(dir string) (os.FileInfo, map[string]os.FileInfo, error) {
 	}
 	return lastFile, m, nil
 }
+
+func CopyDir(src, dst string) error {
+	if src[len(src)-1] == os.PathSeparator {
+		src = src[:len(src)-1]
+	}
+	if dst[len(dst)-1] == os.PathSeparator {
+		dst = dst[:len(dst)-1]
+	}
+	_, err := os.Stat(dst)
+	if os.IsNotExist(err) {
+		err = os.MkdirAll(dst, 0666)
+		if err != nil {
+			return err
+		}
+	}
+	entities, err := os.ReadDir(src)
+	if len(entities) == 0 {
+		return nil
+	}
+	for _, entity := range entities {
+		entityName := entity.Name()
+		if entity.IsDir() {
+			err = CopyDir(src+PathSeparator+entityName, dst+PathSeparator+entityName)
+			if err != nil {
+				return err
+			}
+		} else {
+			_, err = os.Stat(dst + PathSeparator + entityName)
+			if os.IsNotExist(err) {
+				log.Println(os.Stat(src + PathSeparator + entityName))
+				err = CopyFile(src+PathSeparator+entityName, dst+PathSeparator+entityName)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}

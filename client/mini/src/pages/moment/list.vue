@@ -1,15 +1,15 @@
 <template>
 
- <nut-cell round-radius="0">
+ <nut-cell round-radius="0" class="moment-list">
     <nut-list
-      :height="100"
+      :height="200"
       :listData="list"
-      :container-height="600"
+      :container-height="700"
       @scroll-bottom="onLoad"
     >
       <template v-slot="{ item }">
         <nut-cell>
-          <nut-skeleton width="250px" height="15px"  title animated avatar avatarSize="50px" row="3" :loading="listConfig.loading">
+          <nut-skeleton width="250px" height="200px"  title animated avatar avatarSize="50px" row="3" :loading="listConfig.loading">
             <Moment
               :moment="item"
               :user="user(item.userId)"
@@ -93,9 +93,11 @@ function onRefresh() {
 </script>
 
 <style lang="scss">
-
+  .moment-list{
+    padding:0
+  }
   .nut-cell {
-    height: 60%;
+    height: 100%;
     .list-item {
       display: flex;
       align-items: center;

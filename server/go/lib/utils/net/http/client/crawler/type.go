@@ -100,3 +100,8 @@ func (h *HandleFuncs) Append(handleFunc HandleFunc) *HandleFuncs {
 	newh := append(*h, handleFunc)
 	return &newh
 }
+
+type Requests struct {
+	reqs       []*Request
+	generation int
+}
