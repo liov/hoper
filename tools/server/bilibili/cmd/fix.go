@@ -21,7 +21,8 @@ import (
 
 func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
-	rename()
+	//delete("F:\\B站\\video\\10139490\\10139490_207568591_395475557_～Alone～_alone_1_120.flv")
+	fixext()
 }
 
 func fixRecord() {
@@ -322,6 +323,105 @@ func rename() {
 			err := os.Remove(commondir + dir.Name())
 			if err != nil {
 				log.Println(err)
+			}
+		}
+	}
+}
+
+func copyDir() {
+	err := CopyDir("F:\\B站\\video", "D:\\F\\B站\\video")
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func CopyDir(src, dst string) error {
+	if src[len(src)-1] == os.PathSeparator {
+		src = src[:len(src)-1]
+	}
+	if dst[len(dst)-1] == os.PathSeparator {
+		dst = dst[:len(dst)-1]
+	}
+	_, err := os.Stat(dst)
+	if os.IsNotExist(err) {
+		log.Println("Mkdir:", dst)
+		err = os.MkdirAll(dst, 0666)
+		if err != nil {
+			return err
+		}
+	}
+	entities, err := os.ReadDir(src)
+	if len(entities) == 0 {
+		return nil
+	}
+	for _, entity := range entities {
+		entityName := entity.Name()
+		if entity.IsDir() {
+			err = CopyDir(src+fs.PathSeparator+entityName, dst+fs.PathSeparator+entityName)
+			if err != nil {
+				return err
+			}
+		} else {
+			_, err = os.Stat(dst + fs.PathSeparator + entityName)
+			if os.IsNotExist(err) {
+				log.Println(os.Stat(src + fs.PathSeparator + entityName))
+				log.Println("CopyFile:", src+fs.PathSeparator+entityName, dst+fs.PathSeparator+entityName)
+				err = fs.CopyFile(src+fs.PathSeparator+entityName, dst+fs.PathSeparator+entityName)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func delete(name string) {
+	strs := strings.Split(name, "_")
+	cid := strs[2]
+	dao.Dao.Hoper.Table(dao.TableNameVideo).Where("cid = "+cid).Update("record", 0)
+}
+
+var apiservice = &rpc.API{}
+
+func fixext() {
+	dir := "D:\\F\\video"
+	entities, err := os.ReadDir(dir)
+	if err != nil {
+		log.Println(err)
+	}
+	for _, e := range entities {
+		if e.IsDir() {
+			files, err := os.ReadDir(dir + fs.PathSeparator + e.Name())
+			if err != nil {
+				log.Println(err)
+			}
+			for _, f := range files {
+				name := f.Name()
+				ext := name[len(name)-3:]
+				if ext == "flv" || ext == "mp4" {
+					continue
+				}
+				filepath := dir + fs.PathSeparator + e.Name() + fs.PathSeparator + name
+				strs := strings.Split(filepath, "_")
+				aid, _ := strconv.Atoi(strs[1])
+				cid, _ := strconv.Atoi(strs[2])
+				res, _ := apiservice.GetPlayerInfo(aid, cid)
+				newext := ".flv"
+				if res.Dash != nil {
+					for _, v := range res.Dash.Video {
+						if v.Id == res.Quality {
+							if v.Codecid == 12 {
+								newext = ".mp4"
+							}
+						} else {
+							break
+						}
+					}
+
+				}
+				log.Println("rename:", filepath+newext)
+				os.Rename(filepath, filepath+newext)
 			}
 		}
 	}

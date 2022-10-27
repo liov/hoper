@@ -7,6 +7,7 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
 	"gorm.io/gorm"
+	"log"
 	"time"
 	"tools/bilibili/dao"
 	"tools/bilibili/rpc"
@@ -31,6 +32,7 @@ func (video *Video) GetVideoReqAfterDownloadVideo() *crawler.Request {
 		TaskMeta: conctrl.TaskMeta{Kind: KindGetPlayerUrl},
 		Key:      "",
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
+			log.Println("获取视频：", video.Cid)
 			res, err := apiservice.GetPlayerInfo(video.Aid, video.Cid)
 			if err != nil {
 				if err.Error() == rpc.ErrorNotFound {
@@ -50,19 +52,44 @@ func (video *Video) GetVideoReqAfterDownloadVideo() *crawler.Request {
 func GetDownloadRequests(videoInfo *rpc.VideoInfo, video *Video) ([]*crawler.Request, error) {
 	var requests []*crawler.Request
 	for _, durl := range videoInfo.Durl {
-		req := video.DownloadVideoReq("", VideoTypeFlv, durl.Order, durl.Url)
+		req := video.DownloadVideoReq("", durl.Order, durl.Url)
 		requests = append(requests, req)
 	}
 	if videoInfo.Dash != nil {
+		var code7Url string
 		for _, v := range videoInfo.Dash.Video {
-			if v.Id == video.Quality && v.Codecid == 12 {
-				req := video.DownloadVideoReq("video", VideoTypeM4s, 1, v.BaseUrl)
-				requests = append(requests, req)
+			if v.Id == video.Quality {
+				if v.Codecid == 7 {
+					video.CodecId = VideoTypeM4sCodec7
+					code7Url = v.BaseUrl
+				}
+				if v.Codecid == 12 {
+					video.CodecId = VideoTypeM4sCodec12
+					req := video.DownloadVideoReq("video", 1, v.BaseUrl)
+					requests = append(requests, req)
+					break
+				}
+			} else {
 				break
 			}
 		}
-		req := video.DownloadVideoReq("audio", VideoTypeM4s, 1, videoInfo.Dash.Audio[0].BaseUrl)
-		requests = append(requests, req)
+
+		// H.265的视频 或者没有下载过的视频需要下载音频
+		if video.CodecId == VideoTypeM4sCodec12 || video.Record == 0 {
+			if videoInfo.Dash.Audio == nil || len(videoInfo.Dash.Audio) == 0 {
+				merge.Map.Store(video.Cid, true)
+			} else {
+				req := video.DownloadVideoReq("audio", 1, videoInfo.Dash.Audio[0].BaseUrl)
+				requests = append(requests, req)
+			}
+
+		}
+
+		// 只有H.264的视频 并且没有被下载过的
+		if video.CodecId == VideoTypeM4sCodec7 && video.Record == 0 {
+			req := video.DownloadVideoReq("video", 1, code7Url)
+			requests = append(requests, req)
+		}
 	}
 	return requests, nil
 }
@@ -129,12 +156,12 @@ func (video *Video) RecordVideo(ctx context.Context) (*rpc.VideoInfo, error) {
 
 func DownloadRecordVideo(engine *crawler.Engine) {
 	now := time.Now()
-	for {
+	{
 		var videos []*Video
-		dao.Dao.Hoper.DB.Raw(`SELECT a.owner->'mid' up_id,b.aid,b.cid,a.title,a.p->'page' page,a.p->'part' part
+		dao.Dao.Hoper.DB.Raw(`SELECT a.owner->'mid' up_id,b.aid,b.cid,a.title,a.p->'page' page,a.p->'part' part, b.created_at,b.record
 FROM `+dao.TableNameVideo+` b 
 LEFT JOIN (SELECT data->'title' title, data->'owner' owner, jsonb_path_query(data,'$.pages[*]') p FROM `+dao.TableNameView+`)  a ON (a.p->'cid')::int8 = b.cid
-WHERE b.record = false AND b.created_at < ? AND b.`+postgres.NotDeleted+` ORDER BY b.created_at DESC LIMIT 20`, now).Find(&videos)
+WHERE b.record < 2 AND b.created_at < ? AND b.`+postgres.NotDeleted+` ORDER BY b.created_at DESC LIMIT 100`, now).Find(&videos)
 		if len(videos) == 0 {
 			return
 		}
@@ -147,5 +174,6 @@ WHERE b.record = false AND b.created_at < ? AND b.`+postgres.NotDeleted+` ORDER 
 				engine.Engine.AddTask(engine.NewTask(req))
 			}
 		}
+		now = videos[len(videos)-1].CreatedAt
 	}
 }

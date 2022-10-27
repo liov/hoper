@@ -12,7 +12,7 @@ import (
 )
 
 // CopyFile : General Approach
-func CopyFile(dst, src string) error {
+func CopyFile(src, dst string) error {
 	r, err := os.Open(src)
 	if err != nil {
 		return fmt.Errorf("copy %s %s: %v", src, dst, err)
