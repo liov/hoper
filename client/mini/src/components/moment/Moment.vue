@@ -1,7 +1,7 @@
 <template>
   <div class="moment">
     <div class="auth">
-      <image class="avatar" :src="staticDir + user.avatarUrl" />
+      <image class="avatar" style=" width:20px;height:20px;" :src="staticDir + user.avatarUrl" />
       <span class="name">{{ user.name }}</span>
       <span class="time">{{ date2s(moment.createdAt) }}</span>
     </div>
@@ -65,8 +65,6 @@ function detail() {
     left: 10px;
     position: absolute;
     flex-shrink: 0;
-    width: $avatar;
-    height: $avatar;
     border-radius: 40px;
     margin: 0 16px;
   }

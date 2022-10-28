@@ -5,9 +5,11 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
 	"log"
+	"os"
 	"path"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"tools/bilibili/config"
 	"tools/bilibili/dao"
 	"tools/bilibili/rpc"
@@ -48,17 +50,25 @@ func CoverDownloadReq(url string, upId, id int) *crawler.Request {
 }
 
 func CoverDownload(ctx context.Context, url string, upId, id int) error {
-	var record bool
-	dao.Dao.Hoper.Table(dao.TableNameView).Select("cover_record").Where("aid = ?", id).Scan(&record)
-	if record {
+	if strings.HasSuffix(url, "be27fd62c99036dce67efface486fb0a88ffed06.jpg") {
 		return nil
 	}
-
-	err := client.DownloadImage(filepath.Join(config.Conf.Bilibili.DownloadPicPath, strconv.Itoa(upId), strconv.Itoa(upId)+"_"+strconv.Itoa(id)+"_"+path.Base(url)), url)
-	if err != nil {
-		log.Println("下载图片失败：", err)
-		return err
+	/*	var record bool
+		dao.Dao.Hoper.Table(dao.TableNameView).Select("cover_record").Where("aid = ?", id).Scan(&record)
+		if record {
+			return nil
+		}*/
+	filepath := filepath.Join(config.Conf.Bilibili.DownloadPicPath, strconv.Itoa(upId), strconv.Itoa(upId)+"_"+strconv.Itoa(id)+"_"+path.Base(url))
+	_, err := os.Stat(filepath)
+	if os.IsNotExist(err) {
+		err = client.DownloadImage(filepath, url)
+		if err != nil {
+			log.Println("下载图片失败：", err)
+			go CoverDownload(ctx, url, upId, id)
+			return err
+		}
+		dao.Dao.Hoper.Table(dao.TableNameView).Where("aid = ?", id).Update("cover_record", true)
 	}
-	dao.Dao.Hoper.Table(dao.TableNameView).Where("aid = ?", id).Update("cover_record", true)
+	log.Println("下载图片成功：", filepath)
 	return nil
 }

@@ -152,15 +152,3 @@ func genCheckRedirectfun(referer string) func(req *http.Request, via []*http.Req
 		return nil
 	}
 }
-func requestLater(file *os.File, resp *http.Response, video *Video) error {
-
-	log.Println("连接失败，30秒后重试 (Unable to open the file due to the remote host, request in 30 seconds)")
-	time.Sleep(time.Second * 30)
-
-	_, err := io.Copy(file, resp.Body)
-	if err != nil {
-		log.Printf("下载失败 aid: %d, cid: %d, title: %s, part: %s again",
-			video.Aid, video.Cid, video.Title, video.Part)
-	}
-	return err
-}

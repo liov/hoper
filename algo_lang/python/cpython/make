@@ -1,2 +1,0 @@
-gcc -fpic -c -I /usr/include/python3.7 c.cpp
-gcc -shared -o test.so test.o

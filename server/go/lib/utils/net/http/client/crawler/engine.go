@@ -10,7 +10,7 @@ import (
 )
 
 type Engine struct {
-	*conctrl.Engine
+	*conctrl.BaseEngine
 	visited     sync.Map
 	ReqsChan    chan Requests
 	kindHandler []*KindHandler
@@ -25,8 +25,8 @@ type KindHandler struct {
 
 func New(workerCount uint) *Engine {
 	return &Engine{
-		ReqsChan: make(chan Requests),
-		Engine:   conctrl.NewEngine(workerCount),
+		ReqsChan:   make(chan Requests),
+		BaseEngine: conctrl.NewEngine(workerCount),
 	}
 }
 
@@ -75,7 +75,7 @@ func (e *Engine) Run(reqs ...*Request) {
 			for _, req := range reqs.reqs {
 				if req != nil {
 					req.Priority = reqs.generation
-					e.Engine.AddTask(e.NewTask(req))
+					e.BaseEngine.AddTask(e.NewTask(req))
 				}
 			}
 		}
@@ -84,7 +84,7 @@ func (e *Engine) Run(reqs ...*Request) {
 	for _, req := range reqs {
 		tasks = append(tasks, e.NewTask(req))
 	}
-	e.Engine.Run(tasks...)
+	e.BaseEngine.Run(tasks...)
 }
 
 func (e *Engine) NewTask(req *Request) *conctrl.Task {

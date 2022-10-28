@@ -13,9 +13,13 @@ import (
 
 func main() {
 	defer initialize.Start(nil, &backup.Dao)()
+
+}
+
+func backdir(dir string) {
 	backup.Dao.Hoper.Migrator().CreateTable(&backup.File{})
 	wg := &sync.WaitGroup{}
-	back(wg, "F:/", 0, 0)
+	back(wg, dir, 0, 0)
 	wg.Wait()
 }
 
@@ -56,4 +60,11 @@ func back(wg *sync.WaitGroup, dir string, id, level int) {
 		}
 
 	}
+}
+
+func statistics(dir string) {
+	fs.RangeDir(dir, func(entry os.DirEntry) error {
+
+		return nil
+	})
 }

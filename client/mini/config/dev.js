@@ -1,12 +1,12 @@
 module.exports = {
   env: {
     NODE_ENV: '"development"',
-    VITE_STATIC_DIR:'"https://static.hoper.xyz/hoper/"',
-    VITE_API_HOST:'"https://api.hoper.xyz"'
+    HOPRE_STATIC_DIR:'"https://static.hoper.xyz/hoper/"',
+    HOPRE_API_HOST:'"https://api.hoper.xyz"'
   },
   defineConstants: {
-    'process.env.VITE_STATIC_DIR': '"https://static.hoper.xyz/hoper/"',
-    'process.env.VITE_API_HOST': '"https://api.hoper.xyz"'
+    'process.env.HOPRE_STATIC_DIR': '"https://static.hoper.xyz/hoper/"',
+    'process.env.HOPRE_API_HOST': '"https://api.hoper.xyz"'
   },
   mini: {},
   h5: {

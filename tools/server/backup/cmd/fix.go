@@ -13,7 +13,11 @@ import (
 
 func main() {
 	defer initialize.Start(nil, &backup.Dao)()
-	aliyun()
+	//aliyun()
+	type Dir struct {
+		D1, D2, D3 string
+	}
+
 	//normal(backup.BackUpDiskPron + "OracleBuBu")
 }
 
@@ -106,10 +110,10 @@ func fix2(dir string) {
 }
 
 func aliyun() {
-	aliyun := "E:\\Pictures\\aliyun"
-	dir := "E:\\Pictures\\douyin_video"
+	aliyun := "D:\\F\\pron\\weibo"
+	dir := "D:\\F\\pron\\weibo"
 	fileMap := make(map[string]struct{})
-	getFileMap(dir, fileMap)
+	//getFileMap(dir, fileMap)
 	entities, _ := os.ReadDir(aliyun)
 	if len(entities) == 0 {
 		return
@@ -160,3 +164,5 @@ func getFileMap(dir string, fileMap map[string]struct{}) {
 		fileMap[entity.Name()] = struct{}{}
 	}
 }
+
+const sql = `SELECT b3.NAME  d1,b2.NAME d2,b1.NAME d3 FROM "public"."bak_dir1" b1 LEFT JOIN "public"."bak_dir1" b2 ON b1.pid = b2.ID LEFT JOIN "public"."bak_dir1" b3 ON b2.pid = b3.ID WHERE b1."name" = ?`

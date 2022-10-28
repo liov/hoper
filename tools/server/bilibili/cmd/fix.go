@@ -22,7 +22,7 @@ import (
 func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
 	//delete("F:\\B站\\video\\10139490\\10139490_207568591_395475557_～Alone～_alone_1_120.flv")
-	fixext()
+	fixCover()
 }
 
 func fixRecord() {
@@ -218,19 +218,28 @@ WHERE b.` + postgres.NotDeleted + ` LIMIT 100 OFFSET ` + strconv.Itoa(pageNo*pag
 }
 
 func fixCover() {
+	config.Conf.Bilibili.DownloadPicPath = "D:\\F\\B站\\pic"
 	apiservice := rpc.API{}
-	res, err := apiservice.GetFavLResourceList(63181530, 5)
-	if err != nil {
-		log.Println(err)
-	}
-	for _, fav := range res.Medias {
-		aid := tool.Bv2av(fav.Bvid)
-		err = download.CoverDownload(context.Background(), fav.Cover, fav.Upper.Mid, aid)
+	page := 50
+	for {
+		log.Printf("第%d页\n", page)
+		res, err := apiservice.GetFavLResourceList(63181530, page)
 		if err != nil {
-			log.Println("下载图片失败：", err)
+			log.Println(err)
 		}
-	}
 
+		for _, fav := range res.Medias {
+			aid := tool.Bv2av(fav.Bvid)
+			err = download.CoverDownload(context.Background(), fav.Cover, fav.Upper.Mid, aid)
+			if err != nil {
+				log.Println("下载图片失败：", err)
+			}
+		}
+		if len(res.Medias) == 0 {
+			return
+		}
+		page++
+	}
 }
 
 func transferCodec() {

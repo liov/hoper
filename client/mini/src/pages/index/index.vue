@@ -1,28 +1,11 @@
 <template>
-  <div>
-  <Moment v-if="activeName==='moment'"></Moment>
-  <nut-tabbar @tab-switch="tabSwitch" bottom safeAreaInsetBottom v-model:visible="activeName">
-    <nut-tabbar-item icon="image" tab-title="瞬间" name="moment">
-    </nut-tabbar-item>
-    <nut-tabbar-item  icon="search" tab-title="日记" name="search"></nut-tabbar-item>
-    <nut-tabbar-item  icon="message" tab-title="聊天" name="message"></nut-tabbar-item>
-    <nut-tabbar-item  icon="my" tab-title="我的" name="my"></nut-tabbar-item>
-  </nut-tabbar>
-  </div>
+  <web-view src='https://hoper.xyz/' @message="handleMessage" />
 </template>
 
 <script setup lang="ts">
+function handleMessage() {
 
-import { useUserStore } from "@/stores/user";
-import articleIcon  from  '@/assets/icon/article.svg'
-import Moment from '@/pages/moment/moment.vue'
-import { ref } from "vue";
-
-const activeName = ref("moment");
-function tabSwitch(item:any, index:number) {
-  console.log(item, index);
 }
-
 </script>
 
 <style lang="scss">

@@ -8,7 +8,7 @@ import (
 )
 
 type Engine[T TaskProps] struct {
-	ctrlEngine   *conctrl.Engine
+	ctrlEngine   *conctrl.BaseEngine
 	visited      sync.Map
 	reqsChan     chan []*Task[T]
 	excludeKinds []bool

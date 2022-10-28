@@ -11,7 +11,7 @@ func NewTask[REQ, RES any, FUN TaskFunc[REQ, RES]](taskFun FUN) *Task[REQ, RES, 
 }
 
 type Engine[REQ, RES, V any, FUN TaskFunc[REQ, RES]] struct {
-	ctrlEngine   *conctrl.Engine
+	ctrlEngine   *conctrl.BaseEngine
 	Properties   V
 	resultChan   chan RES
 	resultHandle func(RES)
