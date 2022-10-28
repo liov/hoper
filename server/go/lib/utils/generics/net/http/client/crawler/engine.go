@@ -10,7 +10,7 @@ import (
 )
 
 type Engine struct {
-	ctrlEngine   *conctrl.Engine
+	ctrlEngine   *conctrl.BaseEngine
 	visited      sync.Map
 	reqsChan     chan []*crawler.Request
 	kindHandlers []*KindHandler

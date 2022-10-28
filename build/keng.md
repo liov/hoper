@@ -1340,3 +1340,8 @@ return t, nil
 time.Parse = time.parse(layout, value, UTC, time.Local)
 time.ParseInLocation(layout, timeStr, time.Local) = time.parse(layout, value, time.Local, time.Local)
 time.ParseInLocation 最保险
+
+# export ‘default‘ (imported as ‘xxx‘) was not found in ‘xxx‘解决办法
+
+方法一：将module.exports 改为 export default
+方法二：将import xxx from "xxx";改为。import * as xxx from "xxx";

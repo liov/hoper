@@ -1,13 +1,14 @@
 import axios from "@/plugins/axios_warp";
 import { Toast } from "@/plugins/compatible/toast";
 import { API_HOST } from "@/plugins/config";
-import { useUserStore } from "@/stores/user";
 import Taro from "@tarojs/taro";
 import Router from "@/router/config";
+import { useUserStore } from "@/stores/user";
+import { get } from "@/plugins/storage";
 
 
 axios.defaults.baseURL = API_HOST;
-const token = localStorage.getItem("token");
+const token = get("token");
 const userStore = useUserStore();
 axios.defaults.headers["Authorization"] = token ? token : userStore.token;
 

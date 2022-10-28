@@ -14,6 +14,8 @@ const lessVar = path.resolve(__dirname, "src/assets/var_vant.less");
 console.log(process.env);
 // https://vitejs.dev/config/
 export default defineConfig({
+  envDir: "./env",
+  envPrefix: "HOPRE_",
   server: {
     port: 80,
     strictPort: true, // 严格端口 true:如果端口已被使用，则直接退出，而不会再进行后续端口的尝试。
