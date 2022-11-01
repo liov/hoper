@@ -110,10 +110,10 @@ func fix2(dir string) {
 }
 
 func aliyun() {
-	aliyun := "D:\\F\\pron\\weibo"
-	dir := "D:\\F\\pron\\weibo"
+	aliyun := "F:\\Pictures\\pron\\pic\\aliyun"
+	dir := "F:\\Pictures\\pron\\pic\\WeiXin"
 	fileMap := make(map[string]struct{})
-	//getFileMap(dir, fileMap)
+	getFileMap(dir, fileMap)
 	entities, _ := os.ReadDir(aliyun)
 	if len(entities) == 0 {
 		return

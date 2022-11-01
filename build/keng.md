@@ -1345,3 +1345,34 @@ time.ParseInLocation 最保险
 
 方法一：将module.exports 改为 export default
 方法二：将import xxx from "xxx";改为。import * as xxx from "xxx";
+
+# Attempt to assign to const or readonly variable
+```ts
+import { defineStore } from "pinia";
+import { Platform } from "@/model/const";
+
+interface GlobalState {
+  platform: Platform;
+}
+
+const state: GlobalState = {
+  platform: Platform.H5,
+};
+export const useGlobalStore = defineStore({
+  state: () => state,
+  getters: {
+    platform: () => state.platform,
+    // getPlatform: () => state.platform, 正确写法
+  },
+  actions: {
+    setPlatform(platform: Platform) {
+      this.platform = platform;
+    },
+  },
+});
+
+```
+原本一直以为是枚举的问题，是state里的platform属性和getters里的platform冲突了 platform改成getPlatform
+
+# vite-plugin-wasm-pack copy crates failed
+https://github.com/nshen/vite-plugin-wasm-pack/issues/10

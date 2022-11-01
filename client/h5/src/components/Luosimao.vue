@@ -25,8 +25,8 @@ defineExpose({
 if (!LUOCAPTCHA) {
   dynamicLoadJs("//captcha.luosimao.com/static/dist/captcha.js", () => {
     LUOCAPTCHA = window.LUOCAPTCHA;
-    !window.render && LUOCAPTCHA.render();
-    window.render = true;
+    !window.luosimaorendered && LUOCAPTCHA.render();
+    window.luosimaorendered = true;
     window.getResponse = (resp) => {
       value = resp; // resp 即验证成功后获取的值
       console.log(value);
@@ -35,8 +35,8 @@ if (!LUOCAPTCHA) {
 }
 
 onMounted(() => {
-  LUOCAPTCHA && !window.render && LUOCAPTCHA.render();
-  window.render = true;
+  LUOCAPTCHA && !window.luosimaorendered && LUOCAPTCHA.render();
+  window.luosimaorendered = true;
 });
 
 function reset() {

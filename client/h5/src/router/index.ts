@@ -24,6 +24,11 @@ const routes: Array<RouteRecordRaw> = [
     beforeEnter: completedAuthenticated,
     component: () => import("../views/user/Home.vue"),
   },
+  {
+    path: "/wasm",
+    name: "Wasm",
+    component: () => import("../components/wasm/wasm.vue"),
+  },
 ];
 
 const router = createRouter({

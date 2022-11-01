@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	dir := "E:\\Pictures\\pron\\\\OracleBuBu"
+	dir := "F:\\Pictures\\pron\\pic\\WeiXin"
 	entities, _ := os.ReadDir(dir)
 	if len(entities) == 0 {
 		return
