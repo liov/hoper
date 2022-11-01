@@ -9,6 +9,8 @@ import dynamicImportVars from "@rollup/plugin-dynamic-import-vars";
 import { VitePWA } from "vite-plugin-pwa";
 
 import path from "path";
+import ViteRsw from "vite-plugin-rsw";
+import wasm from "vite-plugin-wasm";
 
 const lessVar = path.resolve(__dirname, "src/assets/var_vant.less");
 console.log(process.env);
@@ -44,7 +46,13 @@ export default defineConfig({
       include: ["./src/**/*.ts"],
     }),
     VitePWA({ registerType: "autoUpdate" }),
+    wasm(),
+    //ViteRsw(),
   ],
+  worker: {
+    format: "es",
+    //plugins: [wasm()],
+  },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
