@@ -1,10 +1,10 @@
 export const enum Platform {
-  H5 = "h5",
-  Weapp = "weapp",
-  App = "app",
+  H5 = "H5",
+  Weapp = "WEAPP",
+  App = "APP",
 }
 
 export const enum OS {
-  Android = "android",
+  Android = "Android",
   Ios = "ios",
 }

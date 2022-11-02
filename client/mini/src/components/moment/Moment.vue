@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { jump } from "@/router/utils";
-import { STATIC_DIR as staticDir } from "@/plugins/config";
+import { STATIC_DIR as staticDir } from "@/model/config";
 import { date2s } from "@/plugins/utils/time";
 import { reactive, ref } from "vue";
 import Taro from "@tarojs/taro";

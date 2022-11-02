@@ -8,6 +8,7 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
 	"gorm.io/gorm"
 	"log"
+	"strconv"
 	"time"
 	"tools/bilibili/dao"
 	"tools/bilibili/rpc"
@@ -15,8 +16,7 @@ import (
 
 func (video *Video) RecordVideoReqAfterDownloadVideo() *crawler.Request {
 	return &crawler.Request{
-		TaskMeta: conctrl.TaskMeta{Kind: KindGetPlayerUrl},
-		Key:      "",
+		TaskInfo: conctrl.TaskInfo{TaskMeta: conctrl.TaskMeta{Kind: KindGetPlayerUrl}},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 			videoInfo, err := video.RecordVideo(ctx)
 			if err != nil {
@@ -29,8 +29,7 @@ func (video *Video) RecordVideoReqAfterDownloadVideo() *crawler.Request {
 
 func (video *Video) GetVideoReqAfterDownloadVideo() *crawler.Request {
 	return &crawler.Request{
-		TaskMeta: conctrl.TaskMeta{Kind: KindGetPlayerUrl},
-		Key:      "",
+		TaskInfo: conctrl.TaskInfo{Key: strconv.Itoa(video.Cid), TaskMeta: conctrl.TaskMeta{Kind: KindGetPlayerUrl}},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 			log.Println("获取视频：", video.Cid)
 			res, err := apiservice.GetPlayerInfo(video.Aid, video.Cid)
@@ -96,8 +95,8 @@ func GetDownloadRequests(videoInfo *rpc.VideoInfo, video *Video) ([]*crawler.Req
 
 func (video *Video) RecordVideoReq() *crawler.Request {
 	return &crawler.Request{
-		TaskMeta: conctrl.TaskMeta{Kind: KindGetPlayerUrl},
-		Key:      "",
+		TaskInfo: conctrl.TaskInfo{TaskMeta: conctrl.TaskMeta{Kind: KindGetPlayerUrl}},
+
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 			_, err := video.RecordVideo(ctx)
 			return nil, err
@@ -154,7 +153,7 @@ func (video *Video) RecordVideo(ctx context.Context) (*rpc.VideoInfo, error) {
 	return res, nil
 }
 
-func DownloadRecordVideo(engine *crawler.Engine) {
+func DownloadRecordVideo(engine *conctrl.Engine) {
 	now := time.Now()
 	{
 		var videos []*Video

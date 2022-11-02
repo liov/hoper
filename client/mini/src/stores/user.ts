@@ -1,8 +1,9 @@
 import axios from "axios";
 import { Toast } from "@/plugins/compatible/toast";
-import router from "@/router/index";
+
 
 import { defineStore } from "pinia";
+import Taro from "@tarojs/taro";
 
 export interface UserState {
   auth: any;
@@ -42,7 +43,7 @@ const actions = {
       state.token = details.token;
       localStorage.setItem("token", details.token);
       axios.defaults.headers["Authorization"] = details.token;
-      await router.push("/");
+      await Taro.navigateTo({url:"/pages/index/index"});
     } catch (error: any) {
       if (error.response && error.response.status === 401) {
         throw new Error("Bad credentials");
@@ -59,7 +60,7 @@ const actions = {
       state.token = details.token;
       localStorage.setItem("token", details.token);
       axios.defaults.headers["Authorization"] = details.token;
-      await router.push("/");
+      await Taro.navigateTo({url:"/pages/index/index"});
     } catch (error: any) {
       if (error.response && error.response.status === 401) {
         throw new Error("Bad credentials");

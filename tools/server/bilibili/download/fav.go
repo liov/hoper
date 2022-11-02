@@ -2,6 +2,7 @@ package download
 
 import (
 	"context"
+	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
 	"log"
 	"strconv"
@@ -14,7 +15,7 @@ import (
 
 var apiservice = &rpc.API{}
 
-func RecordFavTimer(ctx context.Context, engine *crawler.Engine) {
+func RecordFavTimer(ctx context.Context, engine *conctrl.Engine) {
 	favIds := []int{63181530, 62504730}
 	timer := time.NewTicker(time.Second)
 	lastRecordTime, err := dao.NewDao(ctx, dao.Dao.Hoper.DB).LastCreated(dao.TableNameView)
