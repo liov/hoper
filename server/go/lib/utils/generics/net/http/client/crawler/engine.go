@@ -66,7 +66,7 @@ func (e *Engine) NewTask(req *crawler.Request) *conctrl.Task {
 		return nil
 	}
 	handler := e.kindHandlers[req.Kind]
-	req.TaskFunc = handler.taskFun
+	req.HasTaskFunc = handler.taskFun
 	return &conctrl.Task{
 		TaskMeta: conctrl.TaskMeta{Kind: req.Kind},
 		Do: func(ctx context.Context) {
@@ -76,7 +76,7 @@ func (e *Engine) NewTask(req *crawler.Request) *conctrl.Task {
 			if _, ok := e.visited.Load(req.Key); ok {
 				return
 			}
-			reqs, err := req.TaskFunc(ctx)
+			reqs, err := req.HasTaskFunc(ctx)
 			if err != nil {
 				log.Println("爬取失败", err)
 				log.Println("重新爬取,url :", req.Key)

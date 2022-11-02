@@ -72,8 +72,10 @@ func (e *Engine[T]) NewTask(req *Task[T]) *conctrl.Task {
 		return nil
 	}
 	return &conctrl.Task{
-		Id:   req.Id,
-		Kind: req.Kind,
-		Do:   fun,
+		TaskMeta: conctrl.TaskMeta{
+			Id:   req.Id,
+			Kind: req.Kind,
+		},
+		Do: fun,
 	}
 }

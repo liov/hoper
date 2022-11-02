@@ -1,21 +1,20 @@
 import { defineStore } from "pinia";
+import { Platform } from "@/model/config";
+
 
 interface GlobalState {
-  counter: number;
+  platform: Platform;
+}
+
+const state:GlobalState = {
+  platform:Platform.Weapp
 }
 
 export const useGlobalStore = defineStore({
   id: "global",
-  state: () =>
-    ({
-      counter: 0,
-    } as GlobalState),
+  state: () => state,
   getters: {
-    doubleCount: (state) => state.counter * 2,
   },
   actions: {
-    increment() {
-      this.counter++;
-    },
   },
 });

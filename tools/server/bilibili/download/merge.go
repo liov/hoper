@@ -3,7 +3,6 @@ package download
 import (
 	"context"
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
 	osi "github.com/actliboy/hoper/server/go/lib/utils/os"
@@ -23,8 +22,6 @@ type VideoMerge struct {
 
 func (m *VideoMerge) AddReq(video *Video) *crawler.Request {
 	return &crawler.Request{
-		TaskMeta: conctrl.TaskMeta{},
-		Key:      "",
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 			return nil, m.Add(video)
 		},

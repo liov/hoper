@@ -100,13 +100,34 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref, watch } from "vue";
+import { nextTick, onMounted, ref } from "vue";
 import axios from "axios";
 import Luosimao from "@/components/Luosimao.vue";
 import Validator from "@/plugin/utils/validator";
 import { useRoute, useRouter } from "vue-router";
 import { useUserStore } from "@/store/user";
-import { Toast } from "vant";
+import { Dialog, Toast } from "vant";
+import { useGlobalStore } from "@/store/global";
+import { Platform } from "@/model/const";
+
+const globalState = useGlobalStore();
+onMounted(() => {
+  if (globalState.platform === Platform.Weapp) {
+    Dialog.confirm({
+      title: "微信登录",
+      message: "使用微信登录",
+    })
+      .then(() => {
+        // on confirm
+        window.wx.miniProgram.navigateTo({
+          url: `/pages/user/login?h5Url=${encodeURIComponent(route.fullPath)}`,
+        });
+      })
+      .catch(() => {
+        // on cancel
+      });
+  }
+});
 
 const account = ref("");
 const username = ref("");

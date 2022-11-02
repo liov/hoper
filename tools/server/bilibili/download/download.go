@@ -46,8 +46,7 @@ func NewVideo(upId int, title string, aid, cid, page int, part string, created t
 
 func (video *Video) DownloadVideoReq(typ string, order int, url string) *crawler.Request {
 	return &crawler.Request{
-		TaskMeta: conctrl.TaskMeta{Kind: KindDownloadVideo},
-		Key:      "",
+		TaskInfo: conctrl.TaskInfo{TaskMeta: conctrl.TaskMeta{Kind: KindDownloadVideo}},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 			return video.DownloadVideo(typ, order, url)
 		},

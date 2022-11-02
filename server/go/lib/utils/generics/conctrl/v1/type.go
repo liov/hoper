@@ -1,4 +1,4 @@
-package conctrl
+package v1
 
 import (
 	"context"
@@ -11,10 +11,12 @@ type TaskFuncB func(context.Context) error
 
 type TaskFuncC[T any] func(context.Context) (T, error)
 
-type TaskFuncD[REQ, RES any] func(context.Context, REQ) (RES, error)
+type TaskFuncD[T any] func(context.Context, T) error
+
+type TaskFuncE[REQ, RES any] func(context.Context, REQ) (RES, error)
 
 type TaskFunc[REQ, RES any] interface {
-	TaskFuncA | TaskFuncB | TaskFuncC[RES] | TaskFuncD[REQ, RES]
+	TaskFuncA | TaskFuncB | TaskFuncC[RES] | TaskFuncD[REQ] | TaskFuncE[REQ, RES]
 }
 
 type Task[REQ, RES any, FUN TaskFunc[REQ, RES]] struct {

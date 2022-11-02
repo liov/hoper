@@ -20,17 +20,31 @@ func (t TaskFunc) TaskFunc(ctx context.Context) ([]*Request, error) {
 }
 
 type Request struct {
-	conctrl.TaskMeta
-	Key      string
+	conctrl.TaskInfo
 	TaskFunc TaskFunc
-	errTimes int
+}
+
+func (r *Request) HasRequestInfo() *conctrl.TaskInfo {
+	return &r.TaskInfo
+}
+
+func (r *Request) HasTaskFunc(ctx context.Context) ([]conctrl.ErrHandleTask, error) {
+	reqs, err := r.TaskFunc(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var result []conctrl.ErrHandleTask
+	for _, req := range reqs {
+		result = append(result, req)
+	}
+	return result, nil
 }
 
 func NewRequest(key string, taskFunc TaskFunc) *Request {
 	if taskFunc == nil {
 		return nil
 	}
-	return &Request{Key: key, TaskFunc: taskFunc}
+	return &Request{TaskInfo: conctrl.TaskInfo{Key: key}, TaskFunc: taskFunc}
 }
 
 func NewKindRequest(key string, kind conctrl.Kind, taskFunc TaskFunc) *Request {
@@ -44,7 +58,7 @@ func NewUrlRequest(url string, handleFunc HandleFunc) *Request {
 	if handleFunc == nil {
 		return nil
 	}
-	return &Request{Key: url, TaskFunc: func(ctx context.Context) ([]*Request, error) {
+	return &Request{TaskInfo: conctrl.TaskInfo{Key: url}, TaskFunc: func(ctx context.Context) ([]*Request, error) {
 		return handleFunc(ctx, url)
 	}}
 }
@@ -105,3 +119,5 @@ type Requests struct {
 	reqs       []*Request
 	generation int
 }
+
+type Engine = conctrl.Engine

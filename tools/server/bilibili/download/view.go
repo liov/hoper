@@ -14,8 +14,7 @@ import (
 
 func RecordViewInfoReqAfterRecordVideo(aid int) *crawler.Request {
 	return &crawler.Request{
-		TaskMeta: conctrl.TaskMeta{Kind: KindViewInfo},
-		Key:      "",
+		TaskInfo: conctrl.TaskInfo{TaskMeta: conctrl.TaskMeta{Kind: KindViewInfo}},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 			view, err := RecordViewInfo(ctx, aid)
 			if err != nil {
@@ -35,8 +34,7 @@ func RecordViewInfoReqAfterRecordVideo(aid int) *crawler.Request {
 
 func RecordViewInfoReq(aid int) *crawler.Request {
 	return &crawler.Request{
-		TaskMeta: conctrl.TaskMeta{Kind: KindViewInfo},
-		Key:      "",
+		TaskInfo: conctrl.TaskInfo{TaskMeta: conctrl.TaskMeta{Kind: KindViewInfo}},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 			_, err := RecordViewInfo(ctx, aid)
 			return nil, err
@@ -74,8 +72,7 @@ func RecordViewInfo(ctx context.Context, aid int) (*rpc.ViewInfo, error) {
 
 func ViewRecordUpdateReqAfterRecordVideo(aid int) *crawler.Request {
 	return &crawler.Request{
-		TaskMeta: conctrl.TaskMeta{Kind: KindViewInfo},
-		Key:      "",
+		TaskInfo: conctrl.TaskInfo{TaskMeta: conctrl.TaskMeta{Kind: KindViewInfo}},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 			bilibiliDao := dao.NewDao(ctx, dao.Dao.Hoper.DB)
 			exists, err := bilibiliDao.ViewExists(aid)

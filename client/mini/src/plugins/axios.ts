@@ -1,8 +1,7 @@
 import axios from "@/plugins/axios_warp";
 import { Toast } from "@/plugins/compatible/toast";
-import { API_HOST } from "@/plugins/config";
+import { API_HOST } from "@/model/config";
 import Taro from "@tarojs/taro";
-import Router from "@/router/config";
 import { useUserStore } from "@/stores/user";
 import { get } from "@/plugins/storage";
 

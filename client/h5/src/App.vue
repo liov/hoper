@@ -28,25 +28,24 @@
 import { RouterView, useRouter } from "vue-router";
 import { useGlobalStore } from "@/store/global";
 import { Platform } from "@/model/const";
-import { dynamicLoadJs } from "@/plugin/utils/script";
 import wxenv from "@/plugin/platform/weixin";
+import { parseQueryString } from "@/plugin/location";
 
-const router = useRouter();
 const store = useGlobalStore();
-switch (router.currentRoute.value.query.platform) {
+
+const queryParams = parseQueryString();
+console.log(queryParams);
+switch (queryParams.platform) {
   case Platform.Weapp:
     store.platform = Platform.Weapp;
-    if (!wxenv.wx) {
-      dynamicLoadJs("//res.wx.qq.com/open/js/jweixin-1.3.2.js", () => {
-        wxenv.wx = window.wx;
-      });
+    if (!window.wx) {
+      wxenv.loadwxSDK();
+      console.log(window.wx);
     }
 }
 
-if (wxenv.IsWeappPlatform() && !wxenv.wx) {
-  dynamicLoadJs("//res.wx.qq.com/open/js/jweixin-1.3.2.js", () => {
-    wxenv.wx = window.wx;
-  });
+if (wxenv.IsWeappPlatform() && !window.wx) {
+  wxenv.loadwxSDK();
 }
 </script>
 

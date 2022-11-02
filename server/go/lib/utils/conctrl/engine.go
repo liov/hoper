@@ -8,21 +8,41 @@ import (
 	"time"
 )
 
+type TaskInfo struct {
+	TaskMeta
+	Key      string
+	errTimes int
+}
+
+type ErrHandleTask interface {
+	HasRequestInfo() *TaskInfo
+	HasTaskFunc(ctx context.Context) ([]ErrHandleTask, error)
+}
+
+type ErrHandleTasks struct {
+	tasks      []ErrHandleTask
+	generation int
+}
+
+type HandleFunc func(ctx context.Context) ([]ErrHandleTask, error)
+
 type Engine struct {
 	*BaseEngine
 	done        sync.Map
-	ReqsChan    chan Requests
+	ReqsChan    chan ErrHandleTasks
 	kindHandler []*KindHandler
 }
 
 type KindHandler struct {
 	Skip bool
 	*time.Ticker
+	// TODO 指定Kind的Handler
+	HandleFun HandleFunc
 }
 
 func New(workerCount uint) *Engine {
 	return &Engine{
-		ReqsChan:   make(chan Requests),
+		ReqsChan:   make(chan ErrHandleTasks),
 		BaseEngine: NewEngine(workerCount),
 	}
 }
@@ -65,13 +85,13 @@ func (e *Engine) Timer(kind Kind, interval time.Duration) *Engine {
 	return e
 }
 
-func (e *Engine) Run(reqs ...Request) {
+func (e *Engine) Run(reqs ...ErrHandleTask) {
 
 	go func() {
 		for reqs := range e.ReqsChan {
-			for _, req := range reqs.reqs {
+			for _, req := range reqs.tasks {
 				if req != nil {
-					req.RequestInfo().Priority = reqs.generation
+					req.HasRequestInfo().Priority = reqs.generation
 					e.BaseEngine.AddTask(e.NewTask(req))
 				}
 			}
@@ -84,12 +104,12 @@ func (e *Engine) Run(reqs ...Request) {
 	e.BaseEngine.Run(tasks...)
 }
 
-func (e *Engine) NewTask(req Request) *Task {
+func (e *Engine) NewTask(req ErrHandleTask) *Task {
 
 	if req == nil {
 		return nil
 	}
-	reqInfo := req.RequestInfo()
+	reqInfo := req.HasRequestInfo()
 	if reqInfo == nil {
 		return nil
 	}
@@ -113,13 +133,13 @@ func (e *Engine) NewTask(req Request) *Task {
 			if kindHandler != nil && kindHandler.Ticker != nil {
 				<-kindHandler.Ticker.C
 			}
-			reqs, err := req.TaskFunc(ctx)
+			reqs, err := req.HasTaskFunc(ctx)
 			if err != nil {
 				reqInfo.errTimes++
 				log.Println("执行失败", err)
 				log.Println("重新执行,key :", reqInfo.Key)
 				if reqInfo.errTimes < 5 {
-					e.ReqsChan <- Requests{[]Request{req}, req.RequestInfo().Priority + 1}
+					e.ReqsChan <- ErrHandleTasks{[]ErrHandleTask{req}, req.HasRequestInfo().Priority + 1}
 				}
 				return
 			}
@@ -127,7 +147,7 @@ func (e *Engine) NewTask(req Request) *Task {
 				e.done.Store(reqInfo.Key, struct{}{})
 			}
 			if len(reqs) > 0 {
-				e.ReqsChan <- Requests{reqs, req.RequestInfo().Priority + 1}
+				e.ReqsChan <- ErrHandleTasks{reqs, req.HasRequestInfo().Priority + 1}
 			}
 			return
 		},
