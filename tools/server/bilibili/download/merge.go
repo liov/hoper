@@ -3,6 +3,7 @@ package download
 import (
 	"context"
 	"fmt"
+	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	"github.com/actliboy/hoper/server/go/lib/utils/generics/net/http/client/crawler"
 
@@ -17,8 +18,13 @@ import (
 
 var merge VideoMerge
 
+func GetMerge() *VideoMerge {
+	return &merge
+}
+
 type VideoMerge struct {
-	Map sync.Map
+	Map  sync.Map
+	ctrl conctrl.Controller
 }
 
 func (m *VideoMerge) AddReq(video *Video) *crawler.Request {
@@ -31,28 +37,32 @@ func (m *VideoMerge) AddReq(video *Video) *crawler.Request {
 
 func (m *VideoMerge) Add(video *Video) error {
 	if single, ok := m.Map.Load(video.Cid); ok {
-		src := fmt.Sprintf("%d_%d_%d", video.UpId, video.Aid, video.Cid)
-		dst := src + "_" + video.Title + "_" + video.Part + "_" + strconv.Itoa(video.Quality)
-		err := MergeVideo(src, dst, video.UpId, video.Cid, single.(bool), video.CodecId)
-		if err != nil {
-			return err
-		}
-		m.Map.Delete(video.Cid)
+		m.ctrl.AddTask(func() error {
+			err := MergeVideo(video, single.(bool))
+			if err != nil {
+				return err
+			}
+			m.Map.Delete(video.Cid)
+			return nil
+		})
 	} else {
 		m.Map.Store(video.Cid, false)
 	}
 	return nil
 }
 
-func MergeVideo(src, dst string, upId, cid int, single bool, codec int) error {
+func MergeVideo(video *Video, single bool) error {
+	src := fmt.Sprintf("%d_%d_%d", video.UpId, video.Aid, video.Cid)
+	dst := src + "_" + video.Title + "_" + video.Part + "_" + strconv.Itoa(video.Quality)
+
 	fpath := config.Conf.Bilibili.DownloadTmpPath + fs.PathSeparator + src
-	dir := config.Conf.Bilibili.DownloadVideoPath + fs.PathSeparator + strconv.Itoa(upId)
+	dir := config.Conf.Bilibili.DownloadVideoPath + fs.PathSeparator + strconv.Itoa(video.UpId)
 	_, err := os.Stat(dir)
 	if os.IsNotExist(err) {
 		os.Mkdir(dir, 0666)
 	}
 	var ext string
-	if codec == VideoTypeM4sCodec12 {
+	if video.CodecId == VideoTypeM4sCodec12 {
 		ext = "mp4"
 	} else {
 		ext = "flv"
@@ -86,11 +96,15 @@ func MergeVideo(src, dst string, upId, cid int, single bool, codec int) error {
 		}
 	}
 	record := 2
-	if codec == VideoTypeM4sCodec7 {
+	if video.CodecId == VideoTypeM4sCodec7 {
 		record = 3
 	}
 
-	dao.Dao.Hoper.Table(dao.TableNameVideo).Where("cid = ?", cid).Update("record", record)
+	dao.Dao.Hoper.Table(dao.TableNameVideo).Where("cid = ?", video.Cid).Update("record", record)
 	log.Println("合并完成：" + dst)
 	return nil
+}
+
+func (m *VideoMerge) Start() {
+	go m.ctrl.Start()
 }
