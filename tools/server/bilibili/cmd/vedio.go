@@ -15,7 +15,7 @@ func main() {
 	flag.IntVar(&config.Conf.Bilibili.PageEnd, "pe", 1, "开始页")
 	defer initialize.Start(config.Conf, &dao.Dao)()
 	flag.Parse()
-	engine := conctrl.New(config.Conf.Bilibili.WorkCount).StopAfter(time.Hour * time.Duration(config.Conf.Bilibili.StopTime))
+	engine := conctrl.NewEngine(config.Conf.Bilibili.WorkCount).StopAfter(time.Hour * time.Duration(config.Conf.Bilibili.StopTime))
 	go download.DownloadRecordVideo(engine)
 	time.Sleep(time.Second)
 	engine.Run()

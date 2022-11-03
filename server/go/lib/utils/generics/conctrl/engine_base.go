@@ -28,14 +28,15 @@ type TaskMeta struct {
 }
 
 type TaskStatistics struct {
-	timeCost time.Duration
+	timeCost  time.Duration
+	reDoTimes uint
 }
 
 type Task[T any] struct {
 	TaskMeta
-	Do        TaskFunc
-	ReDoTimes int
-	ExtField  T
+	Do TaskFunc
+	TaskStatistics
+	ExtField T
 }
 
 func (t *Task[T]) CompareField() int {
@@ -51,6 +52,11 @@ type Worker[T, W any] struct {
 	ExtField W
 }
 
+type WorkStatistics struct {
+	averageTimeCost               time.Duration
+	taskDoneCount, taskTotalCount uint64
+}
+
 type BaseEngine[T, W any] struct {
 	limitWorkerCount, currentWorkerCount uint64
 	limitWaitTaskCount                   uint
@@ -59,8 +65,11 @@ type BaseEngine[T, W any] struct {
 	ctx                                  context.Context
 	cancel                               context.CancelFunc
 	wg                                   sync.WaitGroup
-	averageTimeCost                      time.Duration
-	taskDoneCount, taskTotalCount        uint64
+	EngineStatistics
+}
+
+type EngineStatistics struct {
+	WorkStatistics
 }
 
 func NewEngine[T, W any](workerCount uint) *BaseEngine[T, W] {

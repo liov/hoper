@@ -12,59 +12,29 @@ import (
 	"time"
 )
 
-type Kind uint8
-
-const (
-	KindNormal = iota
-)
-
-type TaskFunc func(context.Context)
-
-// TODO
-type TaskMeta struct {
-	Id       uint
-	Kind     Kind
-	Priority int
-}
-
-type TaskStatistics struct {
-	timeCost time.Duration
-}
-
-type Task struct {
-	TaskMeta
-	Do TaskFunc
-}
-
-func (t *Task) CompareField() int {
-	return t.Priority
-}
-
-type ErrHandle func(context.Context, error)
-
-type Worker struct {
-	Id     uint
-	Kind   Kind
-	taskCh chan *Task
-}
-
 type BaseEngine struct {
 	limitWorkerCount, currentWorkerCount uint64
 	limitWaitTaskCount                   uint
 	workerChan                           chan *Worker
-	taskChan                             chan *Task
+	taskChan                             chan *BaseTask
 	ctx                                  context.Context
 	cancel                               context.CancelFunc
 	wg                                   sync.WaitGroup
-	averageTimeCost                      time.Duration
-	taskDoneCount, taskTotalCount        uint64
+	done                                 sync.Map
+	TasksChan                            chan TaskInterfaces
+	kindHandler                          []*KindHandler
+	EngineStatistics
 }
 
-func NewEngine(workerCount uint) *BaseEngine {
-	return NewEngineWithContext(workerCount, context.Background())
+type EngineStatistics struct {
+	WorkStatistics
 }
 
-func NewEngineWithContext(workerCount uint, ctx context.Context) *BaseEngine {
+func NewBaseEngine(workerCount uint) *BaseEngine {
+	return NewBaseEngineWithContext(workerCount, context.Background())
+}
+
+func NewBaseEngineWithContext(workerCount uint, ctx context.Context) *BaseEngine {
 	ctx, cancel := context.WithCancel(ctx)
 	return &BaseEngine{
 		limitWorkerCount:   uint64(workerCount),
@@ -72,7 +42,7 @@ func NewEngineWithContext(workerCount uint, ctx context.Context) *BaseEngine {
 		ctx:                ctx,
 		cancel:             cancel,
 		workerChan:         make(chan *Worker),
-		taskChan:           make(chan *Task),
+		taskChan:           make(chan *BaseTask),
 	}
 }
 
@@ -87,18 +57,18 @@ func (e *BaseEngine) Cancel() {
 
 }
 
-func (e *BaseEngine) Run(tasks ...*Task) {
+func (e *BaseEngine) Run(tasks ...*BaseTask) {
 	e.addWorker()
 
 	go func() {
 		timer := time.NewTimer(time.Second * 1)
 		workerList := list.NewSimpleList[*Worker]()
-		taskList := heap.Heap[*Task]{}
+		taskList := heap.Heap[*BaseTask]{}
 		var emptyTimes, stopTimes uint
 	loop:
 		for {
-			var readyWorkerCh chan *Task
-			var readyTask *Task
+			var readyWorkerCh chan *BaseTask
+			var readyTask *BaseTask
 			if workerList.Size > 0 && len(taskList) > 0 {
 				readyWorkerCh = workerList.First().taskCh
 				readyTask = taskList.First()
@@ -163,30 +133,29 @@ func (e *BaseEngine) Run(tasks ...*Task) {
 	log.Println("任务结束")
 }
 
-func (e *BaseEngine) newWorker(readyTask *Task) {
+func (e *BaseEngine) newWorker(readyTask *BaseTask) {
 	e.currentWorkerCount++
 	//id := c.currentWorkerCount
-	taskChan := make(chan *Task)
+	taskChan := make(chan *BaseTask)
 	worker := &Worker{Id: uint(e.currentWorkerCount), taskCh: taskChan}
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
-				log.Println(r)
 				log.Println(string(debug.Stack()))
 				e.wg.Done()
 			}
 			atomic.AddUint64(&e.currentWorkerCount, ^uint64(0))
 		}()
-		if readyTask != nil && readyTask.Do != nil {
-			readyTask.Do(e.ctx)
+		if readyTask != nil && readyTask.BaseTaskFunc != nil {
+			readyTask.BaseTaskFunc(e.ctx)
 			e.wg.Done()
 		}
 		for {
 			select {
 			case e.workerChan <- worker:
 				task := <-taskChan
-				if task != nil && task.Do != nil {
-					task.Do(e.ctx)
+				if task != nil && task.BaseTaskFunc != nil {
+					task.BaseTaskFunc(e.ctx)
 					atomic.AddUint64(&e.taskDoneCount, 1)
 				}
 				e.wg.Done()
@@ -219,8 +188,8 @@ func (e *BaseEngine) addWorker() {
 	}()
 }
 
-func (e *BaseEngine) AddTask(task *Task) {
-	if task == nil || task.Do == nil {
+func (e *BaseEngine) AddTask(task *BaseTask) {
+	if task == nil || task.BaseTaskFunc == nil {
 		return
 	}
 	atomic.AddUint64(&e.taskTotalCount, 1)
@@ -228,7 +197,7 @@ func (e *BaseEngine) AddTask(task *Task) {
 	e.taskChan <- task
 }
 
-func (e *BaseEngine) AddTasks(tasks ...*Task) {
+func (e *BaseEngine) AddTasks(tasks ...*BaseTask) {
 	e.wg.Add(len(tasks))
 	for _, task := range tasks {
 		e.taskChan <- task

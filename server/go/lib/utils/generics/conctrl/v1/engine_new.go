@@ -21,7 +21,7 @@ type Engine[REQ, RES, V any, FUN TaskFunc[REQ, RES]] struct {
 
 func NewEngineN[REQ, RES, V any, FUN TaskFunc[REQ, RES]](workerCount uint, props V, fun func(RES), failFun func(*Task[REQ, RES, FUN])) *Engine[REQ, RES, V, FUN] {
 	return &Engine[REQ, RES, V, FUN]{
-		ctrlEngine:   conctrl.NewEngine(workerCount),
+		ctrlEngine:   conctrl.NewBaseEngine(workerCount),
 		resultChan:   make(chan RES),
 		resultHandle: fun,
 		failHandle:   failFun,
@@ -32,6 +32,6 @@ func NewEngineN[REQ, RES, V any, FUN TaskFunc[REQ, RES]](workerCount uint, props
 
 func (e *Engine[REQ, RES, V, FUN]) NewTaskA(task TaskFuncA) *conctrl.Task {
 	return &conctrl.Task{
-		Do: conctrl.TaskFunc(task),
+		Do: conctrl.BaseTaskFunc(task),
 	}
 }

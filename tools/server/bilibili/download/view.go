@@ -14,13 +14,13 @@ import (
 
 func RecordViewInfoReqAfterRecordVideo(aid int) *crawler.Request {
 	return &crawler.Request{
-		TaskInfo: conctrl.TaskInfo{TaskMeta: conctrl.TaskMeta{Kind: KindViewInfo}},
-		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
+		TaskMeta: conctrl.TaskMeta{Kind: KindViewInfo},
+		TaskFunc: func(ctx context.Context) ([]conctrl.TaskInterface, error) {
 			view, err := RecordViewInfo(ctx, aid)
 			if err != nil {
 				return nil, err
 			}
-			var requests []*crawler.Request
+			var requests []conctrl.TaskInterface
 			for _, page := range view.Pages {
 				video := NewVideo(view.Owner.Mid, view.Title, view.Aid, page.Cid, page.Page, page.Part, time.Now())
 
@@ -34,8 +34,8 @@ func RecordViewInfoReqAfterRecordVideo(aid int) *crawler.Request {
 
 func RecordViewInfoReq(aid int) *crawler.Request {
 	return &crawler.Request{
-		TaskInfo: conctrl.TaskInfo{TaskMeta: conctrl.TaskMeta{Kind: KindViewInfo}},
-		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
+		TaskMeta: conctrl.TaskMeta{Kind: KindViewInfo},
+		TaskFunc: func(ctx context.Context) ([]conctrl.TaskInterface, error) {
 			_, err := RecordViewInfo(ctx, aid)
 			return nil, err
 		},
@@ -72,8 +72,8 @@ func RecordViewInfo(ctx context.Context, aid int) (*rpc.ViewInfo, error) {
 
 func ViewRecordUpdateReqAfterRecordVideo(aid int) *crawler.Request {
 	return &crawler.Request{
-		TaskInfo: conctrl.TaskInfo{TaskMeta: conctrl.TaskMeta{Kind: KindViewInfo}},
-		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
+		TaskMeta: conctrl.TaskMeta{Kind: KindViewInfo},
+		TaskFunc: func(ctx context.Context) ([]conctrl.TaskInterface, error) {
 			bilibiliDao := dao.NewDao(ctx, dao.Dao.Hoper.DB)
 			exists, err := bilibiliDao.ViewExists(aid)
 			if err != nil {
@@ -81,7 +81,7 @@ func ViewRecordUpdateReqAfterRecordVideo(aid int) *crawler.Request {
 			}
 			if !exists {
 				req1 := RecordViewInfoReqAfterRecordVideo(aid)
-				return []*crawler.Request{req1}, nil
+				return []conctrl.TaskInterface{req1}, nil
 			}
 
 			err = dao.Dao.Hoper.Exec(`INSERT INTO `+dao.TableNameViewBak+`(aid,data) (SELECT aid,data FROM `+dao.TableNameView+` WHERE aid = ?) `, aid).Error
@@ -100,7 +100,7 @@ func ViewRecordUpdateReqAfterRecordVideo(aid int) *crawler.Request {
 			if err != nil {
 				return nil, err
 			}
-			var requests []*crawler.Request
+			var requests []conctrl.TaskInterface
 			for _, page := range res.Pages {
 				video := NewVideo(res.Owner.Mid, res.Title, res.Aid, page.Cid, page.Page, page.Part, time.Now())
 

@@ -16,8 +16,8 @@ import (
 
 func (video *Video) RecordVideoReqAfterDownloadVideo() *crawler.Request {
 	return &crawler.Request{
-		TaskInfo: conctrl.TaskInfo{TaskMeta: conctrl.TaskMeta{Kind: KindGetPlayerUrl}},
-		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
+		TaskMeta: conctrl.TaskMeta{Kind: KindGetPlayerUrl},
+		TaskFunc: func(ctx context.Context) ([]conctrl.TaskInterface, error) {
 			videoInfo, err := video.RecordVideo(ctx)
 			if err != nil {
 				return nil, err
@@ -29,8 +29,8 @@ func (video *Video) RecordVideoReqAfterDownloadVideo() *crawler.Request {
 
 func (video *Video) GetVideoReqAfterDownloadVideo() *crawler.Request {
 	return &crawler.Request{
-		TaskInfo: conctrl.TaskInfo{Key: strconv.Itoa(video.Cid), TaskMeta: conctrl.TaskMeta{Kind: KindGetPlayerUrl}},
-		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
+		TaskMeta: conctrl.TaskMeta{Key: strconv.Itoa(video.Cid), Kind: KindGetPlayerUrl},
+		TaskFunc: func(ctx context.Context) ([]conctrl.TaskInterface, error) {
 			log.Println("获取视频：", video.Cid)
 			res, err := apiservice.GetPlayerInfo(video.Aid, video.Cid)
 			if err != nil {
@@ -48,8 +48,8 @@ func (video *Video) GetVideoReqAfterDownloadVideo() *crawler.Request {
 	}
 }
 
-func GetDownloadRequests(videoInfo *rpc.VideoInfo, video *Video) ([]*crawler.Request, error) {
-	var requests []*crawler.Request
+func GetDownloadRequests(videoInfo *rpc.VideoInfo, video *Video) ([]conctrl.TaskInterface, error) {
+	var requests []conctrl.TaskInterface
 	for _, durl := range videoInfo.Durl {
 		req := video.DownloadVideoReq("", durl.Order, durl.Url)
 		requests = append(requests, req)
@@ -95,9 +95,8 @@ func GetDownloadRequests(videoInfo *rpc.VideoInfo, video *Video) ([]*crawler.Req
 
 func (video *Video) RecordVideoReq() *crawler.Request {
 	return &crawler.Request{
-		TaskInfo: conctrl.TaskInfo{TaskMeta: conctrl.TaskMeta{Kind: KindGetPlayerUrl}},
-
-		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
+		TaskMeta: conctrl.TaskMeta{Kind: KindGetPlayerUrl},
+		TaskFunc: func(ctx context.Context) ([]conctrl.TaskInterface, error) {
 			_, err := video.RecordVideo(ctx)
 			return nil, err
 		},
