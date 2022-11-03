@@ -70,27 +70,32 @@ func MergeVideo(video *Video, single bool) error {
 		ext = ".flv"
 	}
 	mergePath := dir + fs.PathSeparator + src + ext
-
-	_, err = os.Stat(dir)
+	renamePath := dir + fs.PathSeparator + dst + ext
+	// 开发过程的bug，这里兼容解决一下，都先检查模板文件是否存在，不存在才执行响应操作
+	_, err = os.Stat(renamePath)
 	if os.IsNotExist(err) {
-		var cmd string
-		if single {
-			cmd = config.Conf.Bilibili.FFmpegPath + fmt.Sprintf(" -i %s.m4s.video  -c copy -strict experimental %s", fpath, mergePath)
-		} else {
-			cmd = config.Conf.Bilibili.FFmpegPath + fmt.Sprintf(" -i %s.m4s.video -i %s.m4s.audio -c copy -strict experimental %s", fpath, fpath, mergePath)
+		_, err = os.Stat(mergePath)
+		if os.IsNotExist(err) {
+			var cmd string
+			if single {
+				cmd = config.Conf.Bilibili.FFmpegPath + fmt.Sprintf(" -i %s.m4s.video  -c copy -strict experimental %s", fpath, mergePath)
+			} else {
+				cmd = config.Conf.Bilibili.FFmpegPath + fmt.Sprintf(" -i %s.m4s.video -i %s.m4s.audio -c copy -strict experimental %s", fpath, fpath, mergePath)
+			}
+			_, err = osi.CMD(cmd)
+			if err != nil {
+				log.Println("合并失败：", dst, err)
+				log.Println("cmd:", cmd)
+				return err
+			}
 		}
-		_, err = osi.CMD(cmd)
+
+		err = os.Rename(mergePath, dir+fs.PathSeparator+dst+ext)
 		if err != nil {
-			log.Println("合并失败：", dst, err)
-			log.Println("cmd:", cmd)
+			log.Println(err)
 			return err
 		}
-	}
 
-	err = os.Rename(mergePath, dir+fs.PathSeparator+dst+ext)
-	if err != nil {
-		log.Println(err)
-		return err
 	}
 
 	err = os.Remove(fpath + ".m4s.video")
