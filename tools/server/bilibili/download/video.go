@@ -32,7 +32,7 @@ func (video *Video) GetVideoReqAfterDownloadVideo() *crawler.Request {
 	return &crawler.Request{
 		TaskMeta: crawler.TaskMeta{Key: strconv.Itoa(video.Cid), Kind: KindGetPlayerUrl},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
-			log.Println("获取视频：", video.Cid)
+			log.Println("获取视频：", video.Cid, video.Title)
 			res, err := apiservice.GetPlayerInfo(video.Aid, video.Cid)
 			if err != nil {
 				if err.Error() == rpc.ErrorNotFound {
