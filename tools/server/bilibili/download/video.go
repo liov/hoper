@@ -3,9 +3,10 @@ package download
 import (
 	"context"
 	"encoding/json"
-	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
+	"github.com/actliboy/hoper/server/go/lib/utils/generics/net/http/client/crawler"
+
 	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
-	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
+
 	"gorm.io/gorm"
 	"log"
 	"strconv"
@@ -16,8 +17,8 @@ import (
 
 func (video *Video) RecordVideoReqAfterDownloadVideo() *crawler.Request {
 	return &crawler.Request{
-		TaskMeta: conctrl.TaskMeta{Kind: KindGetPlayerUrl},
-		TaskFunc: func(ctx context.Context) ([]conctrl.TaskInterface, error) {
+		TaskMeta: crawler.TaskMeta{Kind: KindGetPlayerUrl},
+		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 			videoInfo, err := video.RecordVideo(ctx)
 			if err != nil {
 				return nil, err
@@ -29,8 +30,8 @@ func (video *Video) RecordVideoReqAfterDownloadVideo() *crawler.Request {
 
 func (video *Video) GetVideoReqAfterDownloadVideo() *crawler.Request {
 	return &crawler.Request{
-		TaskMeta: conctrl.TaskMeta{Key: strconv.Itoa(video.Cid), Kind: KindGetPlayerUrl},
-		TaskFunc: func(ctx context.Context) ([]conctrl.TaskInterface, error) {
+		TaskMeta: crawler.TaskMeta{Key: strconv.Itoa(video.Cid), Kind: KindGetPlayerUrl},
+		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 			log.Println("获取视频：", video.Cid)
 			res, err := apiservice.GetPlayerInfo(video.Aid, video.Cid)
 			if err != nil {
@@ -48,8 +49,8 @@ func (video *Video) GetVideoReqAfterDownloadVideo() *crawler.Request {
 	}
 }
 
-func GetDownloadRequests(videoInfo *rpc.VideoInfo, video *Video) ([]conctrl.TaskInterface, error) {
-	var requests []conctrl.TaskInterface
+func GetDownloadRequests(videoInfo *rpc.VideoInfo, video *Video) ([]*crawler.Request, error) {
+	var requests []*crawler.Request
 	for _, durl := range videoInfo.Durl {
 		req := video.DownloadVideoReq("", durl.Order, durl.Url)
 		requests = append(requests, req)
@@ -95,8 +96,8 @@ func GetDownloadRequests(videoInfo *rpc.VideoInfo, video *Video) ([]conctrl.Task
 
 func (video *Video) RecordVideoReq() *crawler.Request {
 	return &crawler.Request{
-		TaskMeta: conctrl.TaskMeta{Kind: KindGetPlayerUrl},
-		TaskFunc: func(ctx context.Context) ([]conctrl.TaskInterface, error) {
+		TaskMeta: crawler.TaskMeta{Kind: KindGetPlayerUrl},
+		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 			_, err := video.RecordVideo(ctx)
 			return nil, err
 		},
@@ -152,7 +153,7 @@ func (video *Video) RecordVideo(ctx context.Context) (*rpc.VideoInfo, error) {
 	return res, nil
 }
 
-func DownloadRecordVideo(engine *conctrl.Engine) {
+func DownloadRecordVideo(engine *crawler.Engine) {
 	now := time.Now()
 	{
 		var videos []*Video

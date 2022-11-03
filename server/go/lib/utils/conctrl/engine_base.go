@@ -21,7 +21,6 @@ type BaseEngine struct {
 	cancel                               context.CancelFunc
 	wg                                   sync.WaitGroup
 	done                                 sync.Map
-	TasksChan                            chan TaskInterfaces
 	kindHandler                          []*KindHandler
 	EngineStatistics
 }

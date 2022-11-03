@@ -19,7 +19,7 @@ type BaseTask struct {
 }
 
 type BaseTaskMeta struct {
-	Id       uint
+	Id       uint64
 	Priority int
 }
 
@@ -43,7 +43,7 @@ func (r *TaskMeta) SetKey(key string) {
 	r.Key = key
 }
 
-func (r *TaskMeta) SetId(id uint) {
+func (r *TaskMeta) SetId(id uint64) {
 	r.Id = id
 }
 
@@ -64,10 +64,16 @@ func (t *Task) HasTask() *Task {
 	return t
 }
 
-type Tasks struct {
-	tasks      []*Task
-	generation int
+func (t *Task) BaseTask() *BaseTask {
+	return &BaseTask{
+		BaseTaskMeta: t.BaseTaskMeta,
+		BaseTaskFunc: func(ctx context.Context) {
+			t.TaskFunc(ctx)
+		},
+	}
 }
+
+type Tasks []*Task
 
 // ---------------
 

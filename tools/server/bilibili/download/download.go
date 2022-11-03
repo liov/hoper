@@ -3,10 +3,10 @@ package download
 import (
 	"context"
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
+	"github.com/actliboy/hoper/server/go/lib/utils/generics/net/http/client/crawler"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
-	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
+
 	"io"
 	"log"
 	"net/http"
@@ -46,14 +46,14 @@ func NewVideo(upId int, title string, aid, cid, page int, part string, created t
 
 func (video *Video) DownloadVideoReq(typ string, order int, url string) *crawler.Request {
 	return &crawler.Request{
-		TaskMeta: conctrl.TaskMeta{Kind: KindDownloadVideo},
-		TaskFunc: func(ctx context.Context) ([]conctrl.TaskInterface, error) {
+		TaskMeta: crawler.TaskMeta{Kind: KindDownloadVideo},
+		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 			return video.DownloadVideo(typ, order, url)
 		},
 	}
 }
 
-func (video *Video) DownloadVideo(typ string, order int, url string) ([]conctrl.TaskInterface, error) {
+func (video *Video) DownloadVideo(typ string, order int, url string) ([]*crawler.Request, error) {
 
 	var filename string
 
@@ -138,7 +138,7 @@ func (video *Video) DownloadVideo(typ string, order int, url string) ([]conctrl.
 	if video.CodecId == VideoTypeM4sCodec12 || video.CodecId == VideoTypeM4sCodec7 {
 		err = merge.Add(video)
 		if err != nil {
-			return []conctrl.TaskInterface{merge.AddReq(video)}, nil
+			return []*crawler.Request{merge.AddReq(video)}, nil
 		}
 
 	}

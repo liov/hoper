@@ -13,15 +13,15 @@ func TestEngine(t *testing.T) {
 	rand.Seed(time.Now().UnixNano())
 	engine := NewBaseEngine(10)
 
-	tasks := make([]*Task, 100)
+	tasks := make([]*BaseTask, 100)
 	for i := 0; i < len(tasks); i++ {
 		tasks[i] = taskgen(strconv.Itoa(i), engine)
 	}
 	engine.Run(tasks...)
 }
 
-func taskgen(id string, engine *BaseEngine) *Task {
-	return &Task{Do: func(ctx context.Context) {
+func taskgen(id string, engine *BaseEngine) *BaseTask {
+	return &BaseTask{BaseTaskFunc: func(ctx context.Context) {
 		log.Println("task", id)
 		n := rand.Intn(10)
 		//log.Println("rand", n)
@@ -33,7 +33,7 @@ func taskgen(id string, engine *BaseEngine) *Task {
 	}}
 }
 
-func TestEngineOneTask(t *testing.T) {
+func TestBaseEngineOneTask(t *testing.T) {
 	rand.Seed(time.Now().UnixNano())
 	engine := NewBaseEngine(10)
 	ch := make(chan string)
@@ -46,16 +46,16 @@ func TestEngineOneTask(t *testing.T) {
 			}
 		}
 	}()
-	engine.Run(&Task{
-		Do: func(ctx context.Context) {
+	engine.Run(&BaseTask{
+		BaseTaskFunc: func(ctx context.Context) {
 			ch <- "1"
 		},
 	})
 }
 
-func taskgen2(id string, ch chan string) *Task {
-	return &Task{
-		Do: func(ctx context.Context) {
+func taskgen2(id string, ch chan string) *BaseTask {
+	return &BaseTask{
+		BaseTaskFunc: func(ctx context.Context) {
 			log.Println("task", id)
 			n := rand.Intn(10)
 			//log.Println("rand", n)
