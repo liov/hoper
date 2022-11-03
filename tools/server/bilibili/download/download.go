@@ -6,6 +6,7 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	"github.com/actliboy/hoper/server/go/lib/utils/generics/net/http/client/crawler"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
+	"strings"
 
 	"io"
 	"log"
@@ -59,7 +60,7 @@ func (video *Video) DownloadVideo(typ string, order int, url string) ([]*crawler
 
 	video.Part = fs.PathClean(video.Part)
 	video.Title = fs.PathClean(video.Title)
-	if video.Part == video.Title {
+	if strings.HasSuffix(video.Title, video.Part) {
 		video.Part = "!part=title!"
 	}
 
