@@ -13,5 +13,5 @@ func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
 	//req := download.GetViewInfoReq(428936215, download.CoverViewInfoHandleFun)
 	req := download.ViewRecordUpdateReqAfterRecordVideo(15576810)
-	conctrl.New(10).SkipKind(4).Timer(1, time.Millisecond*500).Timer(3, time.Millisecond*500).Run(req)
+	conctrl.NewEngine(10).SkipKind(4).Timer(1, time.Millisecond*500).Timer(3, time.Millisecond*500).Run(req)
 }

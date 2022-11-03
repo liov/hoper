@@ -11,7 +11,7 @@ import (
 
 func TestEngine(t *testing.T) {
 	rand.Seed(time.Now().UnixNano())
-	engine := NewEngine(10)
+	engine := NewBaseEngine(10)
 
 	tasks := make([]*Task, 100)
 	for i := 0; i < len(tasks); i++ {
@@ -35,7 +35,7 @@ func taskgen(id string, engine *BaseEngine) *Task {
 
 func TestEngineOneTask(t *testing.T) {
 	rand.Seed(time.Now().UnixNano())
-	engine := NewEngine(10)
+	engine := NewBaseEngine(10)
 	ch := make(chan string)
 	go func() {
 		for {

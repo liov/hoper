@@ -2,6 +2,7 @@ package download
 
 import (
 	"context"
+	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
 	"log"
@@ -44,7 +45,7 @@ func CoverFavList(ctx context.Context, url string) ([]*crawler.Request, error) {
 }
 
 func CoverDownloadReq(url string, upId, id int) *crawler.Request {
-	return crawler.NewUrlKindRequest(url, KindDownloadCover, func(ctx context.Context, url string) ([]*crawler.Request, error) {
+	return crawler.NewUrlKindRequest(url, KindDownloadCover, func(ctx context.Context, url string) ([]conctrl.TaskInterface, error) {
 		return nil, CoverDownload(ctx, url, upId, id)
 	})
 }

@@ -18,7 +18,7 @@ type Engine[T Task] struct {
 func New[T Task](workerCount uint) *Engine[T] {
 	return &Engine[T]{
 		reqsChan:   make(chan []T),
-		ctrlEngine: conctrl.NewEngine(workerCount),
+		ctrlEngine: conctrl.NewBaseEngine(workerCount),
 	}
 }
 

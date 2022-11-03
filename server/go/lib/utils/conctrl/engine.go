@@ -8,28 +8,10 @@ import (
 	"time"
 )
 
-type TaskInfo struct {
-	TaskMeta
-	Key      string
-	errTimes int
-}
-
-type ErrHandleTask interface {
-	HasRequestInfo() *TaskInfo
-	HasTaskFunc(ctx context.Context) ([]ErrHandleTask, error)
-}
-
-type ErrHandleTasks struct {
-	tasks      []ErrHandleTask
-	generation int
-}
-
-type HandleFunc func(ctx context.Context) ([]ErrHandleTask, error)
-
 type Engine struct {
 	*BaseEngine
 	done        sync.Map
-	ReqsChan    chan ErrHandleTasks
+	TasksChan   chan TaskInterfaces
 	kindHandler []*KindHandler
 }
 
@@ -37,13 +19,13 @@ type KindHandler struct {
 	Skip bool
 	*time.Ticker
 	// TODO 指定Kind的Handler
-	HandleFun HandleFunc
+	HandleFun TaskFunc
 }
 
-func New(workerCount uint) *Engine {
+func NewEngine(workerCount uint) *Engine {
 	return &Engine{
-		ReqsChan:   make(chan ErrHandleTasks),
-		BaseEngine: NewEngine(workerCount),
+		TasksChan:  make(chan TaskInterfaces),
+		BaseEngine: NewBaseEngine(workerCount),
 	}
 }
 
@@ -85,31 +67,31 @@ func (e *Engine) Timer(kind Kind, interval time.Duration) *Engine {
 	return e
 }
 
-func (e *Engine) Run(reqs ...ErrHandleTask) {
+func (e *Engine) Run(reqs ...TaskInterface) {
 
 	go func() {
-		for reqs := range e.ReqsChan {
+		for reqs := range e.TasksChan {
 			for _, req := range reqs.tasks {
 				if req != nil {
-					req.HasRequestInfo().Priority = reqs.generation
+					req.HasTask().Priority = reqs.generation
 					e.BaseEngine.AddTask(e.NewTask(req))
 				}
 			}
 		}
 	}()
-	tasks := make([]*Task, 0, len(reqs))
+	tasks := make([]*BaseTask, 0, len(reqs))
 	for _, req := range reqs {
 		tasks = append(tasks, e.NewTask(req))
 	}
 	e.BaseEngine.Run(tasks...)
 }
 
-func (e *Engine) NewTask(req ErrHandleTask) *Task {
+func (e *Engine) NewTask(req TaskInterface) *BaseTask {
 
 	if req == nil {
 		return nil
 	}
-	reqInfo := req.HasRequestInfo()
+	reqInfo := req.HasTask()
 	if reqInfo == nil {
 		return nil
 	}
@@ -127,19 +109,19 @@ func (e *Engine) NewTask(req ErrHandleTask) *Task {
 			return nil
 		}
 	}
-	return &Task{
-		TaskMeta: TaskMeta{Kind: reqInfo.Kind},
-		Do: func(ctx context.Context) {
+	return &BaseTask{
+		BaseTaskMeta: BaseTaskMeta{Id: reqInfo.Id, Priority: reqInfo.Priority},
+		BaseTaskFunc: func(ctx context.Context) {
 			if kindHandler != nil && kindHandler.Ticker != nil {
 				<-kindHandler.Ticker.C
 			}
-			reqs, err := req.HasTaskFunc(ctx)
+			reqs, err := reqInfo.TaskFunc(ctx)
 			if err != nil {
-				reqInfo.errTimes++
+				reqInfo.ErrTimes++
 				log.Println("执行失败", err)
 				log.Println("重新执行,key :", reqInfo.Key)
-				if reqInfo.errTimes < 5 {
-					e.ReqsChan <- ErrHandleTasks{[]ErrHandleTask{req}, req.HasRequestInfo().Priority + 1}
+				if reqInfo.ErrTimes < 5 {
+					e.TasksChan <- TaskInterfaces{[]TaskInterface{req}, reqInfo.Priority + 1}
 				}
 				return
 			}
@@ -147,7 +129,7 @@ func (e *Engine) NewTask(req ErrHandleTask) *Task {
 				e.done.Store(reqInfo.Key, struct{}{})
 			}
 			if len(reqs) > 0 {
-				e.ReqsChan <- ErrHandleTasks{reqs, req.HasRequestInfo().Priority + 1}
+				e.TasksChan <- TaskInterfaces{reqs, reqInfo.Priority + 1}
 			}
 			return
 		},

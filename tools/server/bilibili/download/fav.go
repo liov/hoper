@@ -45,14 +45,14 @@ func RecordFavTimer(ctx context.Context, engine *conctrl.Engine) {
 	}
 }
 
-func RecordFavListReqAfterRecordView(favId, page int, lastRecordTime time.Time, cancel chan struct{}) crawler.TaskFunc {
-	return func(ctx context.Context) ([]*crawler.Request, error) {
+func RecordFavListReqAfterRecordView(favId, page int, lastRecordTime time.Time, cancel chan struct{}) conctrl.TaskFunc {
+	return func(ctx context.Context) ([]conctrl.TaskInterface, error) {
 		res, err := apiservice.GetFavLResourceList(favId, page)
 		if err != nil {
 			return nil, err
 		}
 		zeroTime := time.Time{}
-		var requests []*crawler.Request
+		var requests []conctrl.TaskInterface
 		for _, fav := range res.Medias {
 			aid := tool.Bv2av(fav.Bvid)
 			bilibiliDao := dao.NewDao(ctx, dao.Dao.Hoper.DB)

@@ -2,17 +2,18 @@ package download
 
 import (
 	"context"
+	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
 	"tools/bilibili/rpc"
 )
 
 func UpSpaceListFirstPageHandleFun(upid int) crawler.HandleFunc {
-	return func(ctx context.Context, url string) ([]*crawler.Request, error) {
+	return func(ctx context.Context, url string) ([]conctrl.TaskInterface, error) {
 		res, err := rpc.Get[*rpc.UpSpaceList](url)
 		if err != nil {
 			return nil, err
 		}
-		var requests []*crawler.Request
+		var requests []conctrl.TaskInterface
 		for i := 1; i <= res.Page.Count; i++ {
 			requests = append(requests, crawler.NewUrlRequest(rpc.GetUpSpaceListUrl(upid, i), UpSpaceListHandleFun))
 		}
@@ -20,12 +21,12 @@ func UpSpaceListFirstPageHandleFun(upid int) crawler.HandleFunc {
 	}
 }
 
-func UpSpaceListHandleFun(ctx context.Context, url string) ([]*crawler.Request, error) {
+func UpSpaceListHandleFun(ctx context.Context, url string) ([]conctrl.TaskInterface, error) {
 	res, err := rpc.Get[*rpc.UpSpaceList](url)
 	if err != nil {
 		return nil, err
 	}
-	var requests []*crawler.Request
+	var requests []conctrl.TaskInterface
 	for _, video := range res.List.Vlist {
 		req := RecordViewInfoReqAfterRecordVideo(video.Aid)
 		requests = append(requests, req)

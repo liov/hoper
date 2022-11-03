@@ -6,59 +6,33 @@ import (
 )
 
 type FetchFunc func(ctx context.Context, url string) ([]byte, error)
-type ParseFunc func(ctx context.Context, content []byte) ([]*Request, error)
+type ParseFunc func(ctx context.Context, content []byte) ([]conctrl.TaskInterface, error)
 
-type HandleFunc func(ctx context.Context, url string) ([]*Request, error)
-type TaskFunc func(context.Context) ([]*Request, error)
+type HandleFunc func(ctx context.Context, url string) ([]conctrl.TaskInterface, error)
 
-type TaskFuncInterface interface {
-	TaskFunc(context.Context) ([]*Request, error)
-}
+type Request = conctrl.Task
 
-func (t TaskFunc) TaskFunc(ctx context.Context) ([]*Request, error) {
-	return t(ctx)
-}
-
-type Request struct {
-	conctrl.TaskInfo
-	TaskFunc TaskFunc
-}
-
-func (r *Request) HasRequestInfo() *conctrl.TaskInfo {
-	return &r.TaskInfo
-}
-
-func (r *Request) HasTaskFunc(ctx context.Context) ([]conctrl.ErrHandleTask, error) {
-	reqs, err := r.TaskFunc(ctx)
-	if err != nil {
-		return nil, err
-	}
-	var result []conctrl.ErrHandleTask
-	for _, req := range reqs {
-		result = append(result, req)
-	}
-	return result, nil
-}
-
-func NewRequest(key string, taskFunc TaskFunc) *Request {
+func NewRequest(key string, taskFunc conctrl.TaskFunc) *Request {
 	if taskFunc == nil {
 		return nil
 	}
-	return &Request{TaskInfo: conctrl.TaskInfo{Key: key}, TaskFunc: taskFunc}
+	return &Request{TaskMeta: conctrl.TaskMeta{Key: key}, TaskFunc: taskFunc}
 }
 
-func NewKindRequest(key string, kind conctrl.Kind, taskFunc TaskFunc) *Request {
+func NewKindRequest(key string, kind conctrl.Kind, taskFunc conctrl.TaskFunc) *Request {
 	if taskFunc == nil {
 		return nil
 	}
-	return NewRequest(key, taskFunc).SetKind(kind)
+	req := NewRequest(key, taskFunc)
+	req.SetKind(kind)
+	return req
 }
 
 func NewUrlRequest(url string, handleFunc HandleFunc) *Request {
 	if handleFunc == nil {
 		return nil
 	}
-	return &Request{TaskInfo: conctrl.TaskInfo{Key: url}, TaskFunc: func(ctx context.Context) ([]*Request, error) {
+	return &Request{TaskMeta: conctrl.TaskMeta{Key: url}, TaskFunc: func(ctx context.Context) ([]conctrl.TaskInterface, error) {
 		return handleFunc(ctx, url)
 	}}
 }
@@ -67,26 +41,13 @@ func NewUrlKindRequest(url string, kind conctrl.Kind, handleFunc HandleFunc) *Re
 	if handleFunc == nil {
 		return nil
 	}
-	return NewUrlRequest(url, handleFunc).SetKind(kind)
-}
-
-func (r *Request) SetKind(k conctrl.Kind) *Request {
-	r.Kind = k
-	return r
-}
-
-func (r *Request) SetKey(key string) *Request {
-	r.Key = key
-	return r
-}
-
-func (r *Request) SetId(id uint) *Request {
-	r.Id = id
-	return r
+	req := NewUrlRequest(url, handleFunc)
+	req.SetKind(kind)
+	return req
 }
 
 func NewHandleFun(f FetchFunc, p ParseFunc) HandleFunc {
-	return func(ctx context.Context, url string) ([]*Request, error) {
+	return func(ctx context.Context, url string) ([]conctrl.TaskInterface, error) {
 		content, err := f(ctx, url)
 		if err != nil {
 			return nil, err

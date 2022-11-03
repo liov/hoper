@@ -7,7 +7,7 @@ import (
 
 type TimerTask struct {
 	Times uint
-	Do    TaskFunc
+	Do    BaseTaskFunc
 }
 
 func Timer(ctx context.Context, task *TimerTask, interval time.Duration) {

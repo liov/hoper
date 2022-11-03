@@ -1,0 +1,93 @@
+package conctrl
+
+import (
+	"context"
+	"time"
+)
+
+type Kind uint8
+
+const (
+	KindNormal = iota
+)
+
+type BaseTaskFunc func(context.Context)
+
+type BaseTask struct {
+	BaseTaskMeta
+	BaseTaskFunc
+}
+
+type BaseTaskMeta struct {
+	Id       uint
+	Priority int
+}
+
+func (t *BaseTaskMeta) CompareField() int {
+	return t.Priority
+}
+
+// TODO
+type TaskMeta struct {
+	BaseTaskMeta
+	Kind Kind
+	Key  string
+	TaskStatistics
+}
+
+func (r *TaskMeta) SetKind(k Kind) {
+	r.Kind = k
+}
+
+func (r *TaskMeta) SetKey(key string) {
+	r.Key = key
+}
+
+func (r *TaskMeta) SetId(id uint) {
+	r.Id = id
+}
+
+type TaskStatistics struct {
+	timeCost  time.Duration
+	reDoTimes uint
+	ErrTimes  int
+}
+
+type TaskFunc1 func(ctx context.Context) ([]*Task, error)
+
+type Task struct {
+	TaskMeta
+	TaskFunc
+}
+
+func (t *Task) HasTask() *Task {
+	return t
+}
+
+type Tasks struct {
+	tasks      []*Task
+	generation int
+}
+
+// ---------------
+
+type ErrHandle func(context.Context, error)
+
+type TaskInterface interface {
+	HasTask() *Task
+}
+
+type TaskInterfaces struct {
+	tasks      []TaskInterface
+	generation int
+}
+
+type TaskFunc func(ctx context.Context) ([]TaskInterface, error)
+
+type TaskFuncInterface interface {
+	TaskFunc(context.Context) ([]TaskInterface, error)
+}
+
+func (t TaskFunc) TaskFunc(ctx context.Context) ([]TaskInterface, error) {
+	return t(ctx)
+}

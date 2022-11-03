@@ -18,7 +18,7 @@ type Engine[T TaskProps] struct {
 func New[A any, T TaskProps](workerCount uint) *Engine[T] {
 	return &Engine[T]{
 		reqsChan:   make(chan []*Task[T]),
-		ctrlEngine: conctrl.NewEngine(workerCount),
+		ctrlEngine: conctrl.NewBaseEngine(workerCount),
 	}
 }
 

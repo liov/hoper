@@ -46,14 +46,14 @@ func NewVideo(upId int, title string, aid, cid, page int, part string, created t
 
 func (video *Video) DownloadVideoReq(typ string, order int, url string) *crawler.Request {
 	return &crawler.Request{
-		TaskInfo: conctrl.TaskInfo{TaskMeta: conctrl.TaskMeta{Kind: KindDownloadVideo}},
-		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
+		TaskMeta: conctrl.TaskMeta{Kind: KindDownloadVideo},
+		TaskFunc: func(ctx context.Context) ([]conctrl.TaskInterface, error) {
 			return video.DownloadVideo(typ, order, url)
 		},
 	}
 }
 
-func (video *Video) DownloadVideo(typ string, order int, url string) ([]*crawler.Request, error) {
+func (video *Video) DownloadVideo(typ string, order int, url string) ([]conctrl.TaskInterface, error) {
 
 	var filename string
 
@@ -138,7 +138,7 @@ func (video *Video) DownloadVideo(typ string, order int, url string) ([]*crawler
 	if video.CodecId == VideoTypeM4sCodec12 || video.CodecId == VideoTypeM4sCodec7 {
 		err = merge.Add(video)
 		if err != nil {
-			return []*crawler.Request{merge.AddReq(video)}, nil
+			return []conctrl.TaskInterface{merge.AddReq(video)}, nil
 		}
 
 	}
