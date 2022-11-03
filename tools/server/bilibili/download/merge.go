@@ -16,7 +16,9 @@ import (
 	"tools/bilibili/dao"
 )
 
-var merge VideoMerge
+var merge = VideoMerge{
+	ctrl: make(conctrl.Controller),
+}
 
 func GetMerge() *VideoMerge {
 	return &merge
@@ -63,23 +65,29 @@ func MergeVideo(video *Video, single bool) error {
 	}
 	var ext string
 	if video.CodecId == VideoTypeM4sCodec12 {
-		ext = "mp4"
+		ext = ".mp4"
 	} else {
-		ext = "flv"
+		ext = ".flv"
 	}
-	var cmd string
-	if single {
-		cmd = config.Conf.Bilibili.FFmpegPath + fmt.Sprintf(" -i %s.m4s.video  -c copy -strict experimental %s.%s", fpath, dir+fs.PathSeparator+src, ext)
-	} else {
-		cmd = config.Conf.Bilibili.FFmpegPath + fmt.Sprintf(" -i %s.m4s.video -i %s.m4s.audio -c copy -strict experimental %s.%s", fpath, fpath, dir+fs.PathSeparator+src, ext)
+	mergePath := dir + fs.PathSeparator + src + ext
+
+	_, err = os.Stat(dir)
+	if os.IsNotExist(err) {
+		var cmd string
+		if single {
+			cmd = config.Conf.Bilibili.FFmpegPath + fmt.Sprintf(" -i %s.m4s.video  -c copy -strict experimental %s", fpath, mergePath)
+		} else {
+			cmd = config.Conf.Bilibili.FFmpegPath + fmt.Sprintf(" -i %s.m4s.video -i %s.m4s.audio -c copy -strict experimental %s", fpath, fpath, mergePath)
+		}
+		_, err = osi.CMD(cmd)
+		if err != nil {
+			log.Println("合并失败：", dst, err)
+			log.Println("cmd:", cmd)
+			return err
+		}
 	}
-	_, err = osi.CMD(cmd)
-	if err != nil {
-		log.Println("合并失败：", dst, err)
-		log.Println("cmd:", cmd)
-		return err
-	}
-	err = os.Rename(dir+fs.PathSeparator+src+"."+ext, dir+fs.PathSeparator+dst+"."+ext)
+
+	err = os.Rename(mergePath, dir+fs.PathSeparator+dst+ext)
 	if err != nil {
 		log.Println(err)
 		return err

@@ -1,17 +1,15 @@
 package conctrl
 
-type Controller struct {
-	ch chan func() error
-}
+type Controller chan func() error
 
-func (c *Controller) AddTask(f func() error) {
+func (c Controller) AddTask(f func() error) {
 	go func() {
-		c.ch <- f
+		c <- f
 	}()
 }
 
-func (c *Controller) Start() {
-	for f := range c.ch {
+func (c Controller) Start() {
+	for f := range c {
 		err := f()
 		if err != nil {
 			c.AddTask(f)
