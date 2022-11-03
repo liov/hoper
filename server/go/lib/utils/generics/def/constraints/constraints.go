@@ -23,3 +23,6 @@ type Callback[T any] interface {
 type ID interface {
 	constraints.Integer | ~string | ~[]byte | ~[8]byte | ~[16]byte
 }
+
+type Basic struct {
+}

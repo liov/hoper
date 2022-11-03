@@ -3,9 +3,9 @@ package download
 import (
 	"context"
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
-	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client/crawler"
+	"github.com/actliboy/hoper/server/go/lib/utils/generics/net/http/client/crawler"
+
 	osi "github.com/actliboy/hoper/server/go/lib/utils/os"
 	"log"
 	"os"
@@ -23,7 +23,7 @@ type VideoMerge struct {
 
 func (m *VideoMerge) AddReq(video *Video) *crawler.Request {
 	return &crawler.Request{
-		TaskFunc: func(ctx context.Context) ([]conctrl.TaskInterface, error) {
+		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 			return nil, m.Add(video)
 		},
 	}
@@ -75,9 +75,15 @@ func MergeVideo(src, dst string, upId, cid int, single bool, codec int) error {
 		return err
 	}
 
-	os.Remove(fpath + ".m4s.video")
+	err = os.Remove(fpath + ".m4s.video")
+	if err != nil {
+		log.Println(err)
+	}
 	if !single {
-		os.Remove(fpath + ".m4s.audio")
+		err = os.Remove(fpath + ".m4s.audio")
+		if err != nil {
+			log.Println(err)
+		}
 	}
 	record := 2
 	if codec == VideoTypeM4sCodec7 {

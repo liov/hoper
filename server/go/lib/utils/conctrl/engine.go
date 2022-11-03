@@ -2,6 +2,7 @@ package conctrl
 
 import (
 	"context"
+	"github.com/actliboy/hoper/server/go/lib/utils/gen"
 	"github.com/actliboy/hoper/server/go/lib/utils/generics/slices"
 	"log"
 	"sync"
@@ -11,7 +12,6 @@ import (
 type Engine struct {
 	*BaseEngine
 	done        sync.Map
-	TasksChan   chan TaskInterfaces
 	kindHandler []*KindHandler
 }
 
@@ -24,7 +24,6 @@ type KindHandler struct {
 
 func NewEngine(workerCount uint) *Engine {
 	return &Engine{
-		TasksChan:  make(chan TaskInterfaces),
 		BaseEngine: NewBaseEngine(workerCount),
 	}
 }
@@ -67,71 +66,82 @@ func (e *Engine) Timer(kind Kind, interval time.Duration) *Engine {
 	return e
 }
 
-func (e *Engine) Run(reqs ...TaskInterface) {
+func (e *Engine) Run(tasks ...TaskInterface) {
 
-	go func() {
-		for reqs := range e.TasksChan {
-			for _, req := range reqs.tasks {
-				if req != nil {
-					req.HasTask().Priority = reqs.generation
-					e.BaseEngine.AddTask(e.NewTask(req))
-				}
-			}
-		}
-	}()
-	tasks := make([]*BaseTask, 0, len(reqs))
-	for _, req := range reqs {
-		tasks = append(tasks, e.NewTask(req))
+	baseTasks := make([]*BaseTask, 0, len(tasks))
+	for _, req := range tasks {
+		baseTasks = append(baseTasks, e.NewTask(req))
 	}
-	e.BaseEngine.Run(tasks...)
+	e.BaseEngine.Run(baseTasks...)
 }
 
-func (e *Engine) NewTask(req TaskInterface) *BaseTask {
+func (e *Engine) NewTask(task TaskInterface) *BaseTask {
 
-	if req == nil {
+	if task == nil {
 		return nil
 	}
-	reqInfo := req.HasTask()
-	if reqInfo == nil {
+	taskInfo := task.HasTask()
+	if taskInfo == nil {
 		return nil
 	}
+	taskInfo.Id = gen.GenOrderID()
 
 	var kindHandler *KindHandler
-	if e.kindHandler != nil && int(reqInfo.Kind) < len(e.kindHandler) {
-		kindHandler = e.kindHandler[reqInfo.Kind]
+	if e.kindHandler != nil && int(taskInfo.Kind) < len(e.kindHandler) {
+		kindHandler = e.kindHandler[taskInfo.Kind]
 	}
 
 	if kindHandler != nil && kindHandler.Skip {
 		return nil
 	}
-	if reqInfo.Key != "" {
-		if _, ok := e.done.Load(reqInfo.Key); ok {
+	if taskInfo.Key != "" {
+		if _, ok := e.done.Load(taskInfo.Key); ok {
 			return nil
 		}
 	}
 	return &BaseTask{
-		BaseTaskMeta: BaseTaskMeta{Id: reqInfo.Id, Priority: reqInfo.Priority},
+		BaseTaskMeta: BaseTaskMeta{Id: taskInfo.Id, Priority: taskInfo.Priority},
 		BaseTaskFunc: func(ctx context.Context) {
 			if kindHandler != nil && kindHandler.Ticker != nil {
 				<-kindHandler.Ticker.C
 			}
-			reqs, err := reqInfo.TaskFunc(ctx)
+			tasks, err := taskInfo.TaskFunc(ctx)
 			if err != nil {
-				reqInfo.ErrTimes++
+				taskInfo.ErrTimes++
 				log.Println("执行失败", err)
-				log.Println("重新执行,key :", reqInfo.Key)
-				if reqInfo.ErrTimes < 5 {
-					e.TasksChan <- TaskInterfaces{[]TaskInterface{req}, reqInfo.Priority + 1}
+				log.Println("重新执行,key :", taskInfo.Key)
+				if taskInfo.ErrTimes < 5 {
+					e.AsyncAddTask(taskInfo.Priority+1, task)
 				}
 				return
 			}
-			if reqInfo.Key != "" {
-				e.done.Store(reqInfo.Key, struct{}{})
+			if taskInfo.Key != "" {
+				e.done.Store(taskInfo.Key, struct{}{})
 			}
-			if len(reqs) > 0 {
-				e.TasksChan <- TaskInterfaces{reqs, reqInfo.Priority + 1}
+			if len(tasks) > 0 {
+				e.AsyncAddTask(taskInfo.Priority+1, tasks...)
 			}
 			return
 		},
 	}
+}
+
+func (e *Engine) AddTasks(generation int, tasks ...TaskInterface) {
+	for _, task := range tasks {
+		if task != nil {
+			task.HasTask().Priority = generation
+			e.BaseEngine.AddTask(e.NewTask(task))
+		}
+	}
+}
+
+func (e *Engine) AsyncAddTask(generation int, tasks ...TaskInterface) {
+	go func() {
+		for _, task := range tasks {
+			if task != nil {
+				task.HasTask().Priority = generation
+				e.BaseEngine.AddTask(e.NewTask(task))
+			}
+		}
+	}()
 }

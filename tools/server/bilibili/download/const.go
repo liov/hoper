@@ -1,13 +1,14 @@
 package download
 
-import "github.com/actliboy/hoper/server/go/lib/utils/conctrl"
+import "github.com/actliboy/hoper/server/go/lib/utils/generics/conctrl"
 
 const (
-	KindGetFavListUrl conctrl.Kind = 0
-	KindViewInfo      conctrl.Kind = 1
-	KindDownloadCover conctrl.Kind = 2
-	KindGetPlayerUrl  conctrl.Kind = 3
-	KindDownloadVideo conctrl.Kind = 4
+	KindGetFavListUrl conctrl.Kind = iota
+	KindViewInfo
+	KindDownloadCover
+	KindGetPlayerUrl
+	KindDownloadVideo
+	KindRecordFavList
 )
 
 const (
