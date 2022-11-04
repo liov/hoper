@@ -3,8 +3,8 @@ package download
 import (
 	"context"
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
+	"github.com/actliboy/hoper/server/go/lib/utils/generics/conctrl"
 	"github.com/actliboy/hoper/server/go/lib/utils/generics/net/http/client/crawler"
 
 	osi "github.com/actliboy/hoper/server/go/lib/utils/os"
@@ -16,41 +16,31 @@ import (
 	"tools/bilibili/dao"
 )
 
-var merge = VideoMerge{
-	ctrl: make(conctrl.Controller),
-}
+var merge VideoMerge
 
-func GetMerge() *VideoMerge {
+func GetEngineMerge(engine *crawler.Engine) *VideoMerge {
+	merge.engine = engine
+	merge.fixedWorkerId = engine.NewFixedWorker()
 	return &merge
 }
 
 type VideoMerge struct {
-	Map  sync.Map
-	ctrl conctrl.Controller
+	Map           sync.Map
+	engine        *crawler.Engine
+	fixedWorkerId int
 }
 
-func (m *VideoMerge) AddReq(video *Video) *crawler.Request {
-	return &crawler.Request{
-		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
-			return nil, m.Add(video)
-		},
-	}
-}
-
-func (m *VideoMerge) Add(video *Video) error {
+func (m *VideoMerge) Add(video *Video) {
 	if single, ok := m.Map.Load(video.Cid); ok {
-		m.ctrl.AddTask(func() error {
-			err := MergeVideo(video, single.(bool))
-			if err != nil {
-				return err
-			}
-			m.Map.Delete(video.Cid)
-			return nil
+		m.engine.BaseEngine.AddFixedTask(merge.fixedWorkerId, &conctrl.BaseTask[string, crawler.Prop]{
+			BaseTaskFunc: func(ctx context.Context) {
+				MergeVideo(video, single.(bool))
+				m.Map.Delete(video.Cid)
+			},
 		})
 	} else {
 		m.Map.Store(video.Cid, false)
 	}
-	return nil
 }
 
 func MergeVideo(video *Video, single bool) error {
@@ -116,8 +106,4 @@ func MergeVideo(video *Video, single bool) error {
 	dao.Dao.Hoper.Table(dao.TableNameVideo).Where("cid = ?", video.Cid).Update("record", record)
 	log.Println("合并完成：" + dst)
 	return nil
-}
-
-func (m *VideoMerge) Start() {
-	go m.ctrl.Start()
 }

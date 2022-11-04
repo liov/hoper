@@ -47,7 +47,7 @@ func NewVideo(upId int, title string, aid, cid, page int, part string, created t
 
 func (video *Video) DownloadVideoReq(typ string, order int, url string) *crawler.Request {
 	return &crawler.Request{
-		TaskMeta: crawler.TaskMeta{Kind: KindDownloadVideo},
+		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: "下载视频：" + strconv.Itoa(video.Cid) + typ}, Kind: KindDownloadVideo},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 			return video.DownloadVideo(typ, order, url)
 		},
@@ -137,11 +137,7 @@ func (video *Video) DownloadVideo(typ string, order int, url string) ([]*crawler
 	}
 
 	if video.CodecId == VideoTypeM4sCodec12 || video.CodecId == VideoTypeM4sCodec7 {
-		err = merge.Add(video)
-		if err != nil {
-			return []*crawler.Request{merge.AddReq(video)}, nil
-		}
-
+		merge.Add(video)
 	}
 	return nil, nil
 }

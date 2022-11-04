@@ -1,3 +1,4 @@
+
 ## 用其他主机docker login登录Harbor仓库报错
 ```bash
 Error response from daemon: Get https://192.168.30.24/v2/: dial tcp 192.168.30.24:443: connect: connection refused
@@ -1376,3 +1377,40 @@ export const useGlobalStore = defineStore({
 
 # vite-plugin-wasm-pack copy crates failed
 https://github.com/nshen/vite-plugin-wasm-pack/issues/10
+
+# 这种坑，不好发现
+```go
+func (e *BaseEngine) Run(tasks ...*BaseTask) {
+	e.addWorker()
+
+	go func() {
+		workerList := list.NewSimpleList[*Worker]()
+		taskList := heap.Heap[*BaseTask]{}
+		var readyWorkerCh chan *BaseTask
+		var readyTask *BaseTask
+	loop:
+		for {
+			if workerList.Size > 0 && len(taskList) > 0 {
+				if readyWorkerCh == nil {
+					readyWorkerCh = workerList.Pop().taskCh
+				}
+				if readyTask == nil {
+					readyTask = taskList.Pop()
+				}
+			}
+
+			select {
+			// 这里是上面的局部变量被复制，会造成重复执行任务，应该改成临时变量 case readyTask := <-e.taskChan: 更直观一点 case readyTaskTmp := <-e.taskChan:
+			case readyTask = <-e.taskChan:
+				taskList.Push(readyTask)
+			case readyWorker := <-e.workerChan:
+				workerList.Push(readyWorker)
+			case readyWorkerCh <- readyTask:
+				readyWorkerCh = nil
+				readyTask = nil
+		}
+	}()
+}
+}
+
+```

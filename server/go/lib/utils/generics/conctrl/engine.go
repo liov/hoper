@@ -10,7 +10,7 @@ import (
 )
 
 type Engine[KEY comparable, T, W any] struct {
-	*BaseEngine[T, W]
+	*BaseEngine[KEY, T, W]
 	done        sync.Map
 	TasksChan   chan []*Task[KEY, T]
 	kindHandler []*KindHandler[KEY, T]
@@ -25,7 +25,7 @@ type KindHandler[KEY comparable, T any] struct {
 
 func NewEngine[KEY comparable, T, W any](workerCount uint) *Engine[KEY, T, W] {
 	return &Engine[KEY, T, W]{
-		BaseEngine: NewBaseEngine[T, W](workerCount),
+		BaseEngine: NewBaseEngine[KEY, T, W](workerCount),
 	}
 }
 
@@ -68,14 +68,14 @@ func (e *Engine[KEY, T, W]) Timer(kind Kind, interval time.Duration) *Engine[KEY
 }
 
 func (e *Engine[KEY, T, W]) Run(tasks ...*Task[KEY, T]) {
-	baseTasks := make([]*BaseTask[T], 0, len(tasks))
+	baseTasks := make([]*BaseTask[KEY, T], 0, len(tasks))
 	for _, task := range tasks {
 		baseTasks = append(baseTasks, e.NewTask(task))
 	}
 	e.BaseEngine.Run(baseTasks...)
 }
 
-func (e *Engine[KEY, T, W]) NewTask(task *Task[KEY, T]) *BaseTask[T] {
+func (e *Engine[KEY, T, W]) NewTask(task *Task[KEY, T]) *BaseTask[KEY, T] {
 
 	if task == nil {
 		return nil
@@ -99,8 +99,8 @@ func (e *Engine[KEY, T, W]) NewTask(task *Task[KEY, T]) *BaseTask[T] {
 			return nil
 		}
 	}
-	return &BaseTask[T]{
-		BaseTaskMeta: BaseTaskMeta{Id: task.Id, Priority: task.Priority},
+	return &BaseTask[KEY, T]{
+		BaseTaskMeta: task.BaseTaskMeta,
 		BaseTaskFunc: func(ctx context.Context) {
 			if kindHandler != nil && kindHandler.Ticker != nil {
 				<-kindHandler.Ticker.C
@@ -143,5 +143,29 @@ func (e *Engine[KEY, T, W]) AsyncAddTask(generation int, tasks ...*Task[KEY, T])
 				e.BaseEngine.AddTask(e.NewTask(task))
 			}
 		}
+	}()
+}
+
+func (e *Engine[KEY, T, W]) AddFixedTask(workerId int, task *Task[KEY, T]) {
+	if workerId > len(e.fixedWorker)-1 {
+		return
+	}
+	ch := e.fixedWorker[workerId]
+	baseTask := &BaseTask[KEY, T]{
+		BaseTaskMeta: task.BaseTaskMeta,
+		Props:        task.Props,
+	}
+	baseTask.BaseTaskFunc = func(ctx context.Context) {
+		_, err := task.TaskFunc(ctx)
+		if err != nil {
+			e.wg.Add(1)
+			go func() {
+				ch <- baseTask
+			}()
+		}
+	}
+	e.wg.Add(1)
+	go func() {
+		ch <- baseTask
 	}()
 }

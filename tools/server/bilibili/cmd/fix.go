@@ -22,7 +22,7 @@ import (
 func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
 	//delete("F:\\B站\\video\\10139490\\10139490_207568591_395475557_～Alone～_alone_1_120.flv")
-	fixCover()
+	remove()
 }
 
 func fixRecord() {
@@ -77,30 +77,45 @@ func fixQuality() {
 func remove() {
 	dir := "F:\\B站\\video"
 	log.Println(path.Dir(dir))
-	files, _ := os.ReadDir(dir)
+	dirs, _ := os.ReadDir(dir)
 	m := map[string]struct{}{}
-	for _, file := range files {
-		cid := strings.Split(file.Name(), "_")[1]
-		m[cid] = struct{}{}
-		/*err := dao.Dao.Hoper.Table(dao.TableNameVideo).Where("cid = "+cid).Update("record", true).Error
-		if err != nil {
-			log.Println(err)
-			return
-		}*/
-	}
-	dir = "F:\\Pictures\\B站"
-	files, _ = os.ReadDir(dir)
-	for _, file := range files {
-		if strings.Contains(file.Name(), "-") {
-			cid := strings.Split(file.Name(), "-")[0]
-			if _, ok := m[cid]; ok {
-				err := os.Remove(path.Join(dir, file.Name()))
+	for _, subdir := range dirs {
+		if subdir.IsDir() {
+			files, _ := os.ReadDir(dir + fs.PathSeparator + subdir.Name())
+			for _, file := range files {
+				cid := strings.Split(file.Name(), "_")[2]
+				m[cid] = struct{}{}
+				/*err := dao.Dao.Hoper.Table(dao.TableNameVideo).Where("cid = "+cid).Update("record", true).Error
 				if err != nil {
 					log.Println(err)
 					return
-				}
-				log.Println("remove", file.Name())
+				}*/
 			}
+		}
+
+	}
+	dir = "F:\\B站"
+	files, _ := os.ReadDir(dir)
+	for _, file := range files {
+		if file.IsDir() {
+			continue
+		}
+		var cid string
+		if strings.Contains(file.Name(), "-") {
+			cid = strings.Split(file.Name(), "-")[0]
+		} else if strings.Contains(file.Name(), "_") {
+			cid = strings.Split(file.Name(), "-")[0]
+		} else {
+			continue
+		}
+
+		if _, ok := m[cid]; ok {
+			err := os.Remove(path.Join(dir, file.Name()))
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			log.Println("remove", file.Name())
 		}
 	}
 }

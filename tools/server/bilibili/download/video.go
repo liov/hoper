@@ -30,7 +30,7 @@ func (video *Video) RecordVideoReqAfterDownloadVideo() *crawler.Request {
 
 func (video *Video) GetVideoReqAfterDownloadVideo() *crawler.Request {
 	return &crawler.Request{
-		TaskMeta: crawler.TaskMeta{Key: strconv.Itoa(video.Cid), Kind: KindGetPlayerUrl},
+		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: "获取视频：" + strconv.Itoa(video.Cid)}, Kind: KindGetPlayerUrl},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 			log.Println("获取视频：", video.Cid, video.Title, video.Part)
 			res, err := apiservice.GetPlayerInfo(video.Aid, video.Cid)
@@ -74,19 +74,16 @@ func GetDownloadRequests(videoInfo *rpc.VideoInfo, video *Video) ([]*crawler.Req
 			}
 		}
 
-		// H.265的视频 或者没有下载过的视频需要下载音频
-		if video.CodecId == VideoTypeM4sCodec12 || video.Record == 0 {
-			if videoInfo.Dash.Audio == nil || len(videoInfo.Dash.Audio) == 0 {
-				merge.Map.Store(video.Cid, true)
-			} else {
-				req := video.DownloadVideoReq("audio", 1, videoInfo.Dash.Audio[0].BaseUrl)
-				requests = append(requests, req)
-			}
-
+		// 无音频的视频
+		if videoInfo.Dash.Audio == nil || len(videoInfo.Dash.Audio) == 0 {
+			merge.Map.Store(video.Cid, true)
+		} else {
+			req := video.DownloadVideoReq("audio", 1, videoInfo.Dash.Audio[0].BaseUrl)
+			requests = append(requests, req)
 		}
 
-		// 只有H.264的视频 并且没有被下载过的
-		if video.CodecId == VideoTypeM4sCodec7 && video.Record == 0 {
+		// 只有H.264的视频
+		if video.CodecId == VideoTypeM4sCodec7 {
 			req := video.DownloadVideoReq("video", 1, code7Url)
 			requests = append(requests, req)
 		}
@@ -160,7 +157,7 @@ func DownloadRecordVideo(engine *crawler.Engine) {
 		dao.Dao.Hoper.DB.Raw(`SELECT a.owner->'mid' up_id,b.aid,b.cid,a.title,a.p->'page' page,a.p->'part' part, b.created_at,b.record
 FROM `+dao.TableNameVideo+` b 
 LEFT JOIN (SELECT data->'title' title, data->'owner' owner, jsonb_path_query(data,'$.pages[*]') p FROM `+dao.TableNameView+`)  a ON (a.p->'cid')::int8 = b.cid
-WHERE b.record < 2 AND b.created_at < ? AND b.`+postgres.NotDeleted+` ORDER BY b.created_at DESC LIMIT 100`, now).Find(&videos)
+WHERE b.record < 2  AND b.created_at < ? AND b.`+postgres.NotDeleted+` ORDER BY b.created_at DESC LIMIT 100`, now).Find(&videos)
 		if len(videos) == 0 {
 			return
 		}

@@ -13,38 +13,38 @@ const (
 
 type BaseTaskFunc func(context.Context)
 
-type BaseTask[T any] struct {
-	BaseTaskMeta
+type BaseTask[KEY comparable, T any] struct {
+	BaseTaskMeta[KEY]
 	BaseTaskFunc
 	Props T
 }
 
-type BaseTaskMeta struct {
+type BaseTaskMeta[KEY comparable] struct {
 	Id       uint64
+	Key      KEY
 	Priority int
 }
 
-func (t *BaseTaskMeta) CompareField() int {
+func (t *BaseTaskMeta[KEY]) CompareField() int {
 	return t.Priority
 }
 
 // TODO
-type TaskMeta[T comparable] struct {
-	BaseTaskMeta
+type TaskMeta[KEY comparable] struct {
+	BaseTaskMeta[KEY]
 	Kind Kind
-	Key  T
 	TaskStatistics
 }
 
-func (r *TaskMeta[T]) SetKind(k Kind) {
+func (r *TaskMeta[KEY]) SetKind(k Kind) {
 	r.Kind = k
 }
 
-func (r *TaskMeta[T]) SetKey(key T) {
+func (r *TaskMeta[KEY]) SetKey(key KEY) {
 	r.Key = key
 }
 
-func (r *TaskMeta[T]) SetId(id uint64) {
+func (r *TaskMeta[KEY]) SetId(id uint64) {
 	r.Id = id
 }
 
@@ -60,8 +60,8 @@ type Task[T comparable, P any] struct {
 	Props P
 }
 
-func (t *Task[T, P]) BaseTask() *BaseTask[P] {
-	return &BaseTask[P]{
+func (t *Task[KEY, T]) BaseTask() *BaseTask[KEY, T] {
+	return &BaseTask[KEY, T]{
 		BaseTaskMeta: t.BaseTaskMeta,
 		BaseTaskFunc: func(ctx context.Context) {
 			t.TaskFunc(ctx)

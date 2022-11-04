@@ -20,6 +20,7 @@ type BaseTask struct {
 
 type BaseTaskMeta struct {
 	Id       uint64
+	Key      string
 	Priority int
 }
 
@@ -31,7 +32,6 @@ func (t *BaseTaskMeta) CompareField() int {
 type TaskMeta struct {
 	BaseTaskMeta
 	Kind Kind
-	Key  string
 	TaskStatistics
 }
 
