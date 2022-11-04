@@ -62,13 +62,17 @@ func (e *BaseEngine[T, W]) Run(tasks ...*BaseTask[T]) {
 		workerList := list.NewSimpleList[*Worker[T, W]]()
 		taskList := heap.Heap[*BaseTask[T]]{}
 		var emptyTimes, stopTimes uint
+		var readyWorkerCh chan *BaseTask[T]
+		var readyTask *BaseTask[T]
 	loop:
 		for {
-			var readyWorkerCh chan *BaseTask[T]
-			var readyTask *BaseTask[T]
 			if workerList.Size > 0 && len(taskList) > 0 {
-				readyWorkerCh = workerList.First().taskCh
-				readyTask = taskList.First()
+				if readyWorkerCh == nil {
+					readyWorkerCh = workerList.First().taskCh
+				}
+				if readyTask == nil {
+					readyTask = taskList.First()
+				}
 			}
 			if len(taskList) > int(e.limitWaitTaskCount) {
 				select {
@@ -77,6 +81,8 @@ func (e *BaseEngine[T, W]) Run(tasks ...*BaseTask[T]) {
 				case readyWorkerCh <- readyTask:
 					workerList.Pop()
 					taskList.Pop()
+					readyWorkerCh = nil
+					readyTask = nil
 				case <-timer.C:
 					//检测任务是否卡住
 					stopTimes++
@@ -98,6 +104,8 @@ func (e *BaseEngine[T, W]) Run(tasks ...*BaseTask[T]) {
 				case readyWorkerCh <- readyTask:
 					workerList.Pop()
 					taskList.Pop()
+					readyWorkerCh = nil
+					readyTask = nil
 				case <-timer.C:
 					//检测任务是否已空
 					if workerList.Size == uint(e.currentWorkerCount) && len(taskList) == 0 {

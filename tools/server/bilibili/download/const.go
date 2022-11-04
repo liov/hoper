@@ -16,3 +16,8 @@ const (
 	VideoTypeM4sCodec12 = 1
 	VideoTypeM4sCodec7  = 2
 )
+
+const (
+	DownloadingExt = ".downloading"
+	PartEqTitle    = "!part=title!"
+)
