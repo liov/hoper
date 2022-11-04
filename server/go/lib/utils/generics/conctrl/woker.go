@@ -4,10 +4,10 @@ import (
 	"time"
 )
 
-type Worker[T, W any] struct {
+type Worker[KEY comparable, T, W any] struct {
 	Id     uint
 	Kind   Kind
-	taskCh chan *BaseTask[T]
+	taskCh chan *BaseTask[KEY, T]
 	Props  W
 }
 

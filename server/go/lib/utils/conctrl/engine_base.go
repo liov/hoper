@@ -60,52 +60,41 @@ func (e *BaseEngine) Run(tasks ...*BaseTask) {
 	e.addWorker()
 
 	go func() {
-		timer := time.NewTimer(time.Second * 1)
+		timer := time.NewTimer(time.Second * 5)
 		workerList := list.NewSimpleList[*Worker]()
 		taskList := heap.Heap[*BaseTask]{}
-		var emptyTimes, stopTimes uint
+		var emptyTimes uint
 		var readyWorkerCh chan *BaseTask
 		var readyTask *BaseTask
 	loop:
 		for {
 			if workerList.Size > 0 && len(taskList) > 0 {
 				if readyWorkerCh == nil {
-					readyWorkerCh = workerList.First().taskCh
+					readyWorkerCh = workerList.Pop().taskCh
 				}
 				if readyTask == nil {
-					readyTask = taskList.First()
+					readyTask = taskList.Pop()
 				}
 			}
+
 			if len(taskList) > int(e.limitWaitTaskCount) {
 				select {
 				case readyWorker := <-e.workerChan:
 					workerList.Push(readyWorker)
 				case readyWorkerCh <- readyTask:
-					workerList.Pop()
-					taskList.Pop()
 					readyWorkerCh = nil
 					readyTask = nil
-				case <-timer.C:
-					//检测任务是否卡住
-					stopTimes++
-					if stopTimes == 10 {
-						e.limitWaitTaskCount += uint(e.limitWorkerCount)
-						stopTimes = 0
-					}
-					timer.Reset(time.Second * 1)
 				case <-e.ctx.Done():
 					timer.Stop()
 					break loop
 				}
 			} else {
 				select {
-				case readyTask = <-e.taskChan:
-					taskList.Push(readyTask)
+				case readyTaskTmp := <-e.taskChan:
+					taskList.Push(readyTaskTmp)
 				case readyWorker := <-e.workerChan:
 					workerList.Push(readyWorker)
 				case readyWorkerCh <- readyTask:
-					workerList.Pop()
-					taskList.Pop()
 					readyWorkerCh = nil
 					readyTask = nil
 				case <-timer.C:
@@ -122,11 +111,9 @@ func (e *BaseEngine) Run(tasks ...*BaseTask) {
 					}
 					timer.Reset(time.Second * 1)
 				case <-e.ctx.Done():
-					timer.Stop()
 					break loop
 				}
 			}
-
 		}
 	}()
 
@@ -160,9 +147,9 @@ func (e *BaseEngine) newWorker(readyTask *BaseTask) {
 		for {
 			select {
 			case e.workerChan <- worker:
-				task := <-taskChan
-				if task != nil && task.BaseTaskFunc != nil {
-					task.BaseTaskFunc(e.ctx)
+				readyTask = <-taskChan
+				if readyTask != nil && readyTask.BaseTaskFunc != nil {
+					readyTask.BaseTaskFunc(e.ctx)
 					atomic.AddUint64(&e.taskDoneCount, 1)
 				}
 				e.wg.Done()
