@@ -155,7 +155,7 @@ func (video *Video) RecordVideo(ctx context.Context) (*rpc.VideoInfo, error) {
 
 func DownloadRecordVideo(engine *crawler.Engine) {
 	now := time.Now()
-	{
+	for {
 		var videos []*Video
 		dao.Dao.Hoper.DB.Raw(`SELECT a.owner->'mid' up_id,b.aid,b.cid,a.title,a.p->'page' page,a.p->'part' part, b.created_at,b.record
 FROM `+dao.TableNameVideo+` b 

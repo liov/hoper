@@ -61,7 +61,7 @@ func (video *Video) DownloadVideo(typ string, order int, url string) ([]*crawler
 	video.Part = fs.PathClean(video.Part)
 	video.Title = fs.PathClean(video.Title)
 	if strings.HasSuffix(video.Title, video.Part) {
-		video.Part = "!part=title!"
+		video.Part = PartEqTitle
 	}
 
 	if video.CodecId == VideoTypeFlv {
@@ -72,7 +72,7 @@ func (video *Video) DownloadVideo(typ string, order int, url string) ([]*crawler
 		filename = config.Conf.Bilibili.DownloadTmpPath + fs.PathSeparator + filename
 	}
 
-	newname := filename[:len(filename)-len(".downloading")]
+	newname := filename[:len(filename)-len(DownloadingExt)]
 
 	_, err := os.Stat(newname)
 	if os.IsNotExist(err) {
@@ -81,7 +81,7 @@ func (video *Video) DownloadVideo(typ string, order int, url string) ([]*crawler
 
 		c := http.Client{CheckRedirect: genCheckRedirectfun(referer)}
 
-		request, err := http.NewRequest("GET", url, nil)
+		request, err := http.NewRequest(http.MethodGet, url, nil)
 		if err != nil {
 			return nil, err
 		}

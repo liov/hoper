@@ -24,6 +24,9 @@ func RecordViewInfoReqAfterRecordVideo(aid int) *crawler.Request {
 			}
 			var requests []*crawler.Request
 			for _, page := range view.Pages {
+				if len(view.Pages) == 1 {
+					page.Part = PartEqTitle
+				}
 				video := NewVideo(view.Owner.Mid, view.Title, view.Aid, page.Cid, page.Page, page.Part, time.Now())
 
 				req := video.RecordVideoReqAfterDownloadVideo()
