@@ -1414,3 +1414,23 @@ func (e *BaseEngine) Run(tasks ...*BaseTask) {
 }
 
 ```
+
+# 莫名其妙的bug,代码走不下去,go1.19.1
+```go
+files, _ := os.ReadDir(dir)
+for _, file := range files {
+    if file.IsDir() {
+    continue
+    }
+	var cid string
+    if strings.Contains(file.Name(), "-") {
+        cid = strings.Split(file.Name(), "-")[0]
+    } else if strings.Contains(file.Name(), "_") {
+        cid = strings.Split(file.Name(), "_")[0]
+    } else {
+        continue
+    }
+}
+```
+后面加了个`log.Println(cid)`可以跑下去了
+后来发现是后面的if判断是false,自动跳过，跑不到断点那,但是后面的语句执行了却不能断点，坑

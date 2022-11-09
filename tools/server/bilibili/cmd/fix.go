@@ -1,12 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
 	"github.com/actliboy/hoper/server/go/lib/utils/fs"
-	osi "github.com/actliboy/hoper/server/go/lib/utils/os"
 	"log"
 	"os"
 	"path"
@@ -22,7 +22,7 @@ import (
 func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
 	//delete("F:\\B站\\video\\10139490\\10139490_207568591_395475557_～Alone～_alone_1_120.flv")
-	remove()
+	deduplication()
 }
 
 func fixRecord() {
@@ -92,23 +92,25 @@ func remove() {
 				}*/
 			}
 		}
-
 	}
 	dir = "F:\\B站"
 	files, _ := os.ReadDir(dir)
+	var buf bytes.Buffer
 	for _, file := range files {
 		if file.IsDir() {
 			continue
 		}
+
 		var cid string
 		if strings.Contains(file.Name(), "-") {
 			cid = strings.Split(file.Name(), "-")[0]
-		} else if strings.Contains(file.Name(), "_") {
-			cid = strings.Split(file.Name(), "-")[0]
-		} else {
-			continue
 		}
-
+		if strings.Contains(file.Name(), "_") {
+			cid = strings.Split(file.Name(), "_")[0]
+		}
+		buf.WriteString(cid)
+		buf.WriteString(",")
+		//log.Println(cid)
 		if _, ok := m[cid]; ok {
 			err := os.Remove(path.Join(dir, file.Name()))
 			if err != nil {
@@ -118,6 +120,7 @@ func remove() {
 			log.Println("remove", file.Name())
 		}
 	}
+	log.Println(buf.String())
 }
 
 type Video struct {
@@ -131,104 +134,127 @@ type Video struct {
 	Quality int
 }
 
-func fixName() {
-	type VideoName struct {
-		Aid           int
-		VideoFileName string
-		strs          []string
-	}
+type VideoName struct {
+	Aid           int
+	VideoFileName string
+	strs          []string
+}
 
-	commondir := "G:\\B站\\"
+func fixName() {
+
+	commondir := "D:\\F\\B站\\"
 
 	videoPath := make(map[int]*VideoName)
 	picPath := make(map[int]string)
-	vdir := commondir + "video"
+	vdir := commondir + "video_bak"
+	var cids []int
 	files, _ := os.ReadDir(vdir)
 	for _, file := range files {
+		if file.IsDir() {
+			continue
+		}
 		strs := strings.Split(file.Name(), "_")
 		aid, _ := strconv.Atoi(strs[0])
 		cid, _ := strconv.Atoi(strs[1])
+		cids = append(cids, cid)
 		videoPath[cid] = &VideoName{aid, file.Name(), strs}
+		if len(cids) == 100 {
+			fixNameVideoHelper(vdir, cids, videoPath)
+			cids = cids[:0]
+			videoPath = make(map[int]*VideoName)
+		}
+	}
+	if len(cids) > 0 {
+		fixNameVideoHelper(vdir, cids, videoPath)
+		cids = cids[:0]
+		videoPath = make(map[int]*VideoName)
 	}
 	fmt.Println(len(videoPath))
-	pdir := commondir + "pic"
+	pdir := commondir + "pic_bak"
 	files, _ = os.ReadDir(pdir)
+	var aids []int
 	for _, file := range files {
+		if file.IsDir() {
+			continue
+		}
 		aidStr := strings.Split(file.Name(), "_")[0]
 		aid, _ := strconv.Atoi(aidStr)
+		aids = append(aids, aid)
 		picPath[aid] = file.Name()
+		if len(aids) == 100 {
+			fixNamePicHelper(pdir, aids, picPath)
+			aids = aids[:0]
+			picPath = make(map[int]string)
+		}
 	}
 	fmt.Println(len(picPath))
-	pageNo, pageSize := 0, 100
-	for {
-		var videos []*Video
-		dao.Dao.Hoper.DB.Raw(`SELECT a.owner->'mid' up_id,b.aid,b.cid,a.title,a.p->'page' page,a.p->'part' part
-FROM ` + dao.TableNameVideo + ` b 
-LEFT JOIN (SELECT data->'title' title, data->'owner' owner, jsonb_path_query(data,'$.pages[*]') p FROM ` + dao.TableNameView + `)  a ON (a.p->'cid')::int8 = b.cid
-WHERE b.` + postgres.NotDeleted + ` LIMIT 100 OFFSET ` + strconv.Itoa(pageNo*pageSize)).Find(&videos)
+	if len(aids) > 0 {
+		fixNamePicHelper(pdir, aids, picPath)
+		aids = aids[:0]
+		picPath = make(map[int]string)
+	}
 
-		for _, v := range videos {
-			cv, ok := videoPath[v.Cid]
-			if ok {
-				dir := commondir
-				_, err := os.Stat(dir)
-				if os.IsNotExist(err) {
-					err = os.Mkdir(dir, 0666)
-					if err != nil {
-						log.Println(err)
-					}
-				}
-				_, err = os.Stat(dir + "video\\" + strconv.Itoa(v.UpId))
-				if os.IsNotExist(err) {
-					err = os.Mkdir(dir+"video\\"+strconv.Itoa(v.UpId), 0666)
-					if err != nil {
-						log.Println(err)
-					}
-				}
-				part := fs.PathClean(v.Part)
-				if part == cv.strs[2] {
-					part = "!part=title!"
-				}
-				newpath := dir + "\\video\\" + strconv.Itoa(v.UpId) + "\\" + fmt.Sprintf("%d_%s_%s_%s_%s_%s_%s", v.UpId, cv.strs[0], cv.strs[1], cv.strs[2], part, cv.strs[3], cv.strs[4])
-				fmt.Println("rename:", newpath)
-				err = os.Rename(vdir+"\\"+cv.VideoFileName, newpath)
+}
+
+func fixNameVideoHelper(vdir string, cids []int, videoPath map[int]*VideoName) {
+	var videos []*Video
+	dao.Dao.Hoper.DB.Raw(`SELECT a.owner->'mid' up_id,b.aid,b.cid,a.title,a.p->'page' page,a.p->'part' part
+FROM `+dao.TableNameVideo+` b 
+LEFT JOIN (SELECT data->'title' title, data->'owner' owner, jsonb_path_query(data,'$.pages[*]') p FROM `+dao.TableNameView+`)  a ON (a.p->'cid')::int8 = b.cid
+WHERE b.cid IN (?) `, cids).Scan(&videos)
+	for _, v := range videos {
+		cv, ok := videoPath[v.Cid]
+		if ok {
+			dir := vdir + fs.PathSeparator + strconv.Itoa(v.UpId)
+			_, err := os.Stat(dir)
+			if os.IsNotExist(err) {
+				err = os.Mkdir(dir, 0666)
 				if err != nil {
 					log.Println(err)
 				}
 			}
-			cp, ok := picPath[v.Aid]
-			if ok {
-				dir := commondir + strconv.Itoa(v.UpId)
-				_, err := os.Stat(dir)
-				if os.IsNotExist(err) {
-					err = os.Mkdir(dir, 0666)
-					if err != nil {
-						log.Println(err)
-					}
-				}
-				_, err = os.Stat(dir + "\\pic\\" + strconv.Itoa(v.UpId))
-				if os.IsNotExist(err) {
-					err = os.Mkdir(dir+"\\pic\\"+strconv.Itoa(v.UpId), 0666)
-					if err != nil {
-						log.Println(err)
-					}
-				}
-				_, err = os.Stat(pdir + "\\" + cp)
-				if os.IsNotExist(err) {
-					continue
-				}
-				newpath := dir + "\\pic\\" + strconv.Itoa(v.UpId) + "_" + cp
-				fmt.Println("rename:", newpath)
-				err = os.Rename(pdir+"\\"+cp, newpath)
+			part := fs.PathClean(v.Part)
+
+			if strings.HasSuffix(cv.strs[2], part) {
+				part = "!part=title!"
+			}
+			newpath := dir + fs.PathSeparator + fmt.Sprintf("%d_%s_%s_%s_%s_%s_%s", v.UpId, cv.strs[0], cv.strs[1], cv.strs[2], part, cv.strs[3], cv.strs[4])
+			fmt.Println("rename:", newpath)
+			err = os.Rename(vdir+fs.PathSeparator+cv.VideoFileName, newpath)
+			if err != nil {
+				log.Println(err)
+			}
+		}
+	}
+}
+
+type PicName struct {
+	Aid  int
+	UpId int
+}
+
+func fixNamePicHelper(pdir string, aids []int, picPath map[int]string) {
+	var pics []*PicName
+	dao.Dao.Hoper.DB.Raw(`SELECT a.owner->'mid' up_id,a.aid
+FROM  (SELECT  data->'owner' owner, aid FROM `+dao.TableNameView+` WHERE aid IN (?))  a`, aids).Scan(&pics)
+	for _, v := range pics {
+		cp, ok := picPath[v.Aid]
+		if ok {
+			dir := pdir + fs.PathSeparator + strconv.Itoa(v.UpId)
+			_, err := os.Stat(dir)
+			if os.IsNotExist(err) {
+				err = os.Mkdir(dir, 0666)
 				if err != nil {
 					log.Println(err)
 				}
 			}
+			newpath := dir + fs.PathSeparator + strconv.Itoa(v.UpId) + "_" + cp
+			fmt.Println("rename:", newpath)
+			err = os.Rename(pdir+fs.PathSeparator+cp, newpath)
+			if err != nil {
+				log.Println(err)
+			}
 		}
-		if len(videos) < pageSize {
-			break
-		}
-		pageNo++
 	}
 }
 
@@ -254,34 +280,6 @@ func fixCover() {
 			return
 		}
 		page++
-	}
-}
-
-func transferCodec() {
-	command := `ffmpeg  -hwaccel_output_format qsv -c:v h264_qsv -i %s -c:v hevc_qsv -global_quality 23  -gpu_copy 1 -c:a copy %s.mp4`
-	commondir := "D:\\F\\B站\\"
-	dirs, _ := os.ReadDir(commondir)
-	for _, dir := range dirs {
-		if dir.IsDir() {
-			subdir := commondir + dir.Name() + "\\video\\"
-			files, _ := os.ReadDir(subdir)
-			for _, file := range files {
-				fileName := file.Name()
-				if !strings.HasSuffix(fileName, ".flv") {
-					continue
-				}
-				filePath := subdir + file.Name()
-				command = fmt.Sprintf(command, filePath, filePath[:len(filePath)-len(".flv")])
-				log.Println(command)
-				res, err := osi.CMD(command)
-				if err != nil {
-					log.Println(err)
-					continue
-				}
-				log.Println(res)
-				//log.Println(os.Remove(filePath))
-			}
-		}
 	}
 }
 
@@ -352,54 +350,6 @@ func rename() {
 	}
 }
 
-func copyDir() {
-	err := CopyDir("F:\\B站\\video", "D:\\F\\B站\\video")
-	if err != nil {
-		log.Println(err)
-	}
-}
-
-func CopyDir(src, dst string) error {
-	if src[len(src)-1] == os.PathSeparator {
-		src = src[:len(src)-1]
-	}
-	if dst[len(dst)-1] == os.PathSeparator {
-		dst = dst[:len(dst)-1]
-	}
-	_, err := os.Stat(dst)
-	if os.IsNotExist(err) {
-		log.Println("Mkdir:", dst)
-		err = os.MkdirAll(dst, 0666)
-		if err != nil {
-			return err
-		}
-	}
-	entities, err := os.ReadDir(src)
-	if len(entities) == 0 {
-		return nil
-	}
-	for _, entity := range entities {
-		entityName := entity.Name()
-		if entity.IsDir() {
-			err = CopyDir(src+fs.PathSeparator+entityName, dst+fs.PathSeparator+entityName)
-			if err != nil {
-				return err
-			}
-		} else {
-			_, err = os.Stat(dst + fs.PathSeparator + entityName)
-			if os.IsNotExist(err) {
-				log.Println(os.Stat(src + fs.PathSeparator + entityName))
-				log.Println("CopyFile:", src+fs.PathSeparator+entityName, dst+fs.PathSeparator+entityName)
-				err = fs.CopyFile(src+fs.PathSeparator+entityName, dst+fs.PathSeparator+entityName)
-				if err != nil {
-					return err
-				}
-			}
-		}
-	}
-	return nil
-}
-
 func delete(name string) {
 	strs := strings.Split(name, "_")
 	cid := strs[2]
@@ -408,44 +358,35 @@ func delete(name string) {
 
 var apiservice = &rpc.API{}
 
-func fixext() {
-	dir := "D:\\F\\video"
-	entities, err := os.ReadDir(dir)
-	if err != nil {
-		log.Println(err)
-	}
-	for _, e := range entities {
-		if e.IsDir() {
-			files, err := os.ReadDir(dir + fs.PathSeparator + e.Name())
-			if err != nil {
-				log.Println(err)
-			}
-			for _, f := range files {
-				name := f.Name()
-				ext := name[len(name)-3:]
-				if ext == "flv" || ext == "mp4" {
-					continue
-				}
-				filepath := dir + fs.PathSeparator + e.Name() + fs.PathSeparator + name
-				strs := strings.Split(filepath, "_")
-				aid, _ := strconv.Atoi(strs[1])
-				cid, _ := strconv.Atoi(strs[2])
-				res, _ := apiservice.GetPlayerInfo(aid, cid)
-				newext := ".flv"
-				if res.Dash != nil {
-					for _, v := range res.Dash.Video {
-						if v.Id == res.Quality {
-							if v.Codecid == 12 {
-								newext = ".mp4"
+func deduplication() {
+	dir := "F:\\B站\\video"
+	log.Println(path.Dir(dir))
+	dirs, _ := os.ReadDir(dir)
+
+	for _, subdir := range dirs {
+		if subdir.IsDir() {
+			m := make(map[string]string)
+			files, _ := os.ReadDir(dir + fs.PathSeparator + subdir.Name())
+			for _, file := range files {
+				cid := strings.Split(file.Name(), "_")[2]
+				if path, ok := m[cid]; ok {
+					remove := file.Name()
+					if strings.HasSuffix(path, ".flv") {
+						if strings.HasSuffix(remove, ".flv") {
+							if strings.Contains(path, "_1_") {
+								remove = path
 							}
 						} else {
-							break
+							remove = path
 						}
-					}
 
+					}
+					log.Println(remove)
+					os.Remove(dir + fs.PathSeparator + subdir.Name() + fs.PathSeparator + remove)
+				} else {
+					m[cid] = file.Name()
 				}
-				log.Println("rename:", filepath+newext)
-				os.Rename(filepath, filepath+newext)
+
 			}
 		}
 	}

@@ -51,6 +51,7 @@ type TaskStatistics struct {
 	timeCost  time.Duration
 	reDoTimes uint
 	ErrTimes  int
+	Errs      []error
 }
 
 type TaskFunc1 func(ctx context.Context) ([]*Task, error)

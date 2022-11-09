@@ -14,6 +14,8 @@ type Engine[KEY comparable, T, W any] struct {
 	done        sync.Map
 	TasksChan   chan []*Task[KEY, T]
 	kindHandler []*KindHandler[KEY, T]
+	errHandler  func(task *Task[KEY, T])
+	errChan     chan *Task[KEY, T]
 }
 
 type KindHandler[KEY comparable, T any] struct {
@@ -26,6 +28,10 @@ type KindHandler[KEY comparable, T any] struct {
 func NewEngine[KEY comparable, T, W any](workerCount uint) *Engine[KEY, T, W] {
 	return &Engine[KEY, T, W]{
 		BaseEngine: NewBaseEngine[KEY, T, W](workerCount),
+		errHandler: func(task *Task[KEY, T]) {
+			log.Println("")
+		},
+		errChan: make(chan *Task[KEY, T]),
 	}
 }
 
@@ -52,6 +58,11 @@ func (e *Engine[KEY, T, W]) StopAfter(interval time.Duration) *Engine[KEY, T, W]
 	return e
 }
 
+func (e *Engine[KEY, T, W]) ErrHandler(errHandler func(task *Task[KEY, T])) *Engine[KEY, T, W] {
+	e.errHandler = errHandler
+	return e
+}
+
 func (e *Engine[KEY, T, W]) Timer(kind Kind, interval time.Duration) *Engine[KEY, T, W] {
 	if e.kindHandler == nil {
 		e.kindHandler = make([]*KindHandler[KEY, T], int(kind)+1)
@@ -72,6 +83,11 @@ func (e *Engine[KEY, T, W]) Run(tasks ...*Task[KEY, T]) {
 	for _, task := range tasks {
 		baseTasks = append(baseTasks, e.NewTask(task))
 	}
+	go func() {
+		for group := range e.errChan {
+			e.errHandler(group)
+		}
+	}()
 	e.BaseEngine.Run(baseTasks...)
 }
 
@@ -108,10 +124,14 @@ func (e *Engine[KEY, T, W]) NewTask(task *Task[KEY, T]) *BaseTask[KEY, T] {
 			tasks, err := task.TaskFunc(ctx)
 			if err != nil {
 				task.ErrTimes++
+				task.Errs = append(task.Errs, err)
 				log.Println("执行失败", err)
 				log.Println("重新执行,key :", task.Key)
 				if task.ErrTimes < 5 {
 					e.AsyncAddTask(task.Priority+1, task)
+				}
+				if task.ErrTimes == 5 {
+					e.errChan <- task
 				}
 				return
 			}

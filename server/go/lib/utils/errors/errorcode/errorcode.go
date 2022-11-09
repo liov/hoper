@@ -1,13 +1,17 @@
 package errorcode
 
 type ErrCodeInterface interface {
-	Code() int
-	Error() string
+	ErrCode() int
+	error
 }
 
 type ErrCode struct {
 	Code    int
 	Message string
+}
+
+func (x *ErrCode) ErrCode() int {
+	return x.Code
 }
 
 func (x *ErrCode) Error() string {
