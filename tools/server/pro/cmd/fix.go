@@ -2,9 +2,10 @@ package main
 
 import (
 	"bufio"
-	"io/ioutil"
 	"log"
 	"os"
+	"path"
+	"strconv"
 	"strings"
 	"time"
 
@@ -14,36 +15,36 @@ import (
 
 func main() {
 	//pro.SetDB()
-	pro.Start(fixOne)
+	maxId()
 }
 
-func fixOne(sd *pro.Speed) {
-	fixPic(`fail_pic_2022_01_24_16_27_50`, sd)
+func fixOne() {
+	fixPic(`fail_pic_2022_01_24_16_27_50`)
 }
 
-func fix(sd *pro.Speed) {
-	fileInfos, err := ioutil.ReadDir(pro.Conf.Pro.CommonDir)
+func fix() {
+	fileInfos, err := os.ReadDir(pro.Conf.Pro.CommonDir)
 	if err != nil {
 		log.Println(err)
 	}
 	for i := range fileInfos {
 		if !fileInfos[i].IsDir() && strings.HasPrefix(fileInfos[i].Name(), "fail_post") {
-			pro.FixWeb(fileInfos[i].Name(), sd, pro.Fetch)
+			pro.FixWeb(fileInfos[i].Name(), pro.Fetch)
 
 		}
 	}
-	fileInfos, err = ioutil.ReadDir(pro.Conf.Pro.CommonDir)
+	fileInfos, err = os.ReadDir(pro.Conf.Pro.CommonDir)
 	if err != nil {
 		log.Println(err)
 	}
 	for i := range fileInfos {
 		if !fileInfos[i].IsDir() && strings.HasPrefix(fileInfos[i].Name(), "fail_pic") {
-			fixPic(fileInfos[i].Name(), sd)
+			fixPic(fileInfos[i].Name())
 		}
 	}
 }
 
-func fixPic(path string, sd *pro.Speed) {
+func fixPic(path string) {
 	f, err := os.Open(pro.Conf.Pro.CommonDir + path + pro.Conf.Pro.Ext)
 	if err != nil {
 		log.Fatal(err)
@@ -54,13 +55,42 @@ func fixPic(path string, sd *pro.Speed) {
 	for scanner.Scan() {
 		s := strings.Split(scanner.Text(), "<->")
 		img, dir := s[0], s[1]
-		dir = fs.PathEdit(dir)
+		dir = fs.FileNameEdit(dir)
 		log.Println(img, dir)
-		sd.Add()
-		go pro.Download(img, dir, sd)
+
+		go pro.Download(img, dir)
 		time.Sleep(pro.Conf.Pro.Interval)
 	}
 	if err := scanner.Err(); err != nil {
 		panic(err)
 	}
+}
+
+func maxId() {
+	dir := "F:\\Pictures\\pron\\91\\pic_5"
+	log.Println(path.Dir(dir))
+	dirs, _ := os.ReadDir(dir)
+	var maxId int
+	for _, subdir := range dirs {
+		if subdir.IsDir() {
+			allSubDir := dir + fs.PathSeparator + subdir.Name()
+			subDirs, _ := os.ReadDir(allSubDir)
+			for _, subdir2 := range subDirs {
+				if subdir2.IsDir() {
+					allSubDir2 := allSubDir + fs.PathSeparator + subdir2.Name()
+					subDirs2, _ := os.ReadDir(allSubDir2)
+					for _, subdir3 := range subDirs2 {
+						if subdir3.IsDir() {
+							strs := strings.Split(subdir3.Name(), "_")
+							id, _ := strconv.Atoi(strs[len(strs)-1])
+							if id > maxId {
+								maxId = id
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	log.Println(maxId)
 }

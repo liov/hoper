@@ -52,6 +52,7 @@ type TaskStatistics struct {
 	timeCost  time.Duration
 	reDoTimes uint
 	ErrTimes  int
+	Errs      []error
 }
 
 type Task[T comparable, P any] struct {

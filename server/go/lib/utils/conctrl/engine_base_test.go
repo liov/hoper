@@ -59,6 +59,9 @@ func taskgen2(id string, ch chan string) *BaseTask {
 			log.Println("task", id)
 			n := rand.Intn(10)
 			//log.Println("rand", n)
+			if n == 5 {
+				panic("5")
+			}
 			if n < 3 {
 				ch <- id
 			}

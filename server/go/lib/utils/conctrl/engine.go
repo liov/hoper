@@ -5,6 +5,7 @@ import (
 	"github.com/actliboy/hoper/server/go/lib/utils/gen"
 	"github.com/actliboy/hoper/server/go/lib/utils/generics/slices"
 	"log"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -13,6 +14,8 @@ type Engine struct {
 	*BaseEngine
 	done        sync.Map
 	kindHandler []*KindHandler
+	errHandler  func(task *Task)
+	errChan     chan *Task
 }
 
 type KindHandler struct {
@@ -25,6 +28,10 @@ type KindHandler struct {
 func NewEngine(workerCount uint) *Engine {
 	return &Engine{
 		BaseEngine: NewBaseEngine(workerCount),
+		errHandler: func(task *Task) {
+			log.Println("错误次数达到"+strconv.Itoa(task.ErrTimes)+"次,放弃执行:", task.Errs)
+		},
+		errChan: make(chan *Task),
 	}
 }
 
@@ -51,6 +58,11 @@ func (e *Engine) StopAfter(interval time.Duration) *Engine {
 	return e
 }
 
+func (e *Engine) ErrHandler(errHandler func(group *Task)) *Engine {
+	e.errHandler = errHandler
+	return e
+}
+
 func (e *Engine) Timer(kind Kind, interval time.Duration) *Engine {
 	if e.kindHandler == nil {
 		e.kindHandler = make([]*KindHandler, int(kind)+1)
@@ -72,6 +84,11 @@ func (e *Engine) Run(tasks ...TaskInterface) {
 	for _, req := range tasks {
 		baseTasks = append(baseTasks, e.NewTask(req))
 	}
+	go func() {
+		for group := range e.errChan {
+			e.errHandler(group)
+		}
+	}()
 	e.BaseEngine.Run(baseTasks...)
 }
 
@@ -108,10 +125,14 @@ func (e *Engine) NewTask(task TaskInterface) *BaseTask {
 			tasks, err := taskInfo.TaskFunc(ctx)
 			if err != nil {
 				taskInfo.ErrTimes++
+				taskInfo.Errs = append(taskInfo.Errs, err)
 				log.Println("执行失败", err)
 				log.Println("重新执行,key :", taskInfo.Key)
 				if taskInfo.ErrTimes < 5 {
 					e.AsyncAddTask(taskInfo.Priority+1, task)
+				}
+				if taskInfo.ErrTimes == 5 {
+					e.errChan <- taskInfo
 				}
 				return
 			}

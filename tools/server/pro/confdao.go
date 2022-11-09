@@ -33,6 +33,8 @@ type Customize struct {
 	Ext       string
 	Timer     time.Duration
 	Interval  time.Duration
+	WorkCount uint
+	StopTime  time.Duration
 }
 
 type TimepillDao struct {

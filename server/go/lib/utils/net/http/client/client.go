@@ -2,6 +2,7 @@ package client
 
 import (
 	"bytes"
+	"compress/gzip"
 	"context"
 	"encoding/json"
 	"errors"
@@ -94,6 +95,7 @@ const (
 	ContentTypeFormData
 	ContentTypeProtobuf
 	ContentTypeText
+	ContentTypeImage
 )
 
 // RequestParams ...
@@ -369,13 +371,25 @@ func (req *RequestParams) Do(param, response interface{}) error {
 		*httpresp = resp
 		return err
 	}
-	if httpresp, ok := response.(*io.ReadCloser); ok {
-		*httpresp = resp.Body
+
+	var reader io.Reader
+	if resp.Header.Get(httpi.HeaderContentEncoding) == "gzip" {
+		reader, err = gzip.NewReader(resp.Body)
+		if err != nil {
+			if resp != nil {
+				resp.Body.Close()
+			}
+		}
+	} else {
+		reader = resp.Body
+	}
+	if httpresp, ok := response.(*io.Reader); ok {
+		*httpresp = reader
 		return err
 	}
 	respBody = &Body{}
 	var respBytes []byte
-	respBytes, err = io.ReadAll(resp.Body)
+	respBytes, err = io.ReadAll(reader)
 	if err != nil {
 		return err
 	}
@@ -383,7 +397,11 @@ func (req *RequestParams) Do(param, response interface{}) error {
 	statusCode = resp.StatusCode
 	if resp.StatusCode < 200 || resp.StatusCode > 300 {
 		respBody.ContentType = ContentTypeText
-		err = errors.New("status:" + resp.Status + "" + stringsi.ToString(respBytes))
+		if resp.StatusCode == http.StatusNotFound {
+			err = errors.New("not found")
+		} else {
+			err = errors.New("status:" + resp.Status + "" + stringsi.ToString(respBytes))
+		}
 		return err
 	}
 
@@ -395,8 +413,15 @@ func (req *RequestParams) Do(param, response interface{}) error {
 	}
 	respBody.Data = respBytes
 	if len(respBytes) > 0 && response != nil {
-		if resp.Header.Get(httpi.HeaderContentType) == httpi.ContentFormHeaderValue {
+		contentType := resp.Header.Get(httpi.HeaderContentType)
+		if contentType == httpi.ContentJSONHeaderValue {
+			respBody.ContentType = ContentTypeJson
+		} else if contentType == httpi.ContentFormHeaderValue {
 			respBody.ContentType = ContentTypeForm
+		} else if strings.HasPrefix(contentType, "text") {
+			respBody.ContentType = ContentTypeText
+		} else if strings.HasPrefix(contentType, "image") {
+			respBody.ContentType = ContentTypeImage
 		} else {
 			respBody.ContentType = ContentTypeJson
 		}

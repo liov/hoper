@@ -3,18 +3,16 @@ package pro
 import (
 	"bufio"
 	"bytes"
+	"context"
+	"github.com/actliboy/hoper/server/go/lib/utils/generics/net/http/client/crawler"
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
 	py2 "github.com/actliboy/hoper/server/go/lib/utils/strings/pinyin"
 	"io"
 	"log"
 	"math/rand"
-	"net"
-	"net/http"
-	"net/url"
 	"os"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
@@ -33,101 +31,47 @@ var userAgent = []string{
 	`Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36`,
 }
 
-func SetClient(client *http.Client, timeout time.Duration, proxyUrl string) {
-	if timeout < time.Second {
-		timeout = timeout * time.Second
-	}
-	proxyURL, _ := url.Parse(proxyUrl)
-	client.Transport = &http.Transport{
-		Proxy: http.ProxyURL(proxyURL),
-		DialContext: (&net.Dialer{
-			Timeout:   timeout,
-			KeepAlive: timeout,
-		}).DialContext,
-	}
-}
-
-type Fail chan string
-
-func NewFail(cap int) Fail {
-	return make(chan string, cap)
-}
-
-func (f Fail) Do(name string, wg *sync.WaitGroup) {
-	wg.Add(1)
-	go func() {
-		file, _ := os.Create(Conf.Pro.CommonDir + name + time.Now().Format("2006_01_02_15_04_05") + Conf.Pro.Ext)
-		for txt := range f {
-			file.WriteString(txt + "\n")
-		}
-		file.Close()
-		wg.Done()
-	}()
-}
-
-type Speed struct {
-	wg                    *sync.WaitGroup
-	web, pic              chan struct{}
-	Fail, FailPic, FailDB Fail
-}
-
-func (s *Speed) Add() {
-	s.wg.Add(1)
-	s.pic <- struct{}{}
-}
-
-func (s *Speed) WebAdd(i int) {
-	s.wg.Add(i)
-	s.web <- struct{}{}
-}
-
-func (s *Speed) Done() {
-	s.wg.Done()
-	<-s.pic
-}
-
-func (s *Speed) WebDone() {
-	s.wg.Done()
-	<-s.web
-}
-
-func (s *Speed) Wait() {
-	s.wg.Wait()
-}
-
-func NewSpeed(cap int) *Speed {
-	return &Speed{
-		wg:      new(sync.WaitGroup),
-		pic:     make(chan struct{}, cap),
-		web:     make(chan struct{}, cap),
-		Fail:    NewFail(cap),
-		FailPic: NewFail(cap),
-		FailDB:  NewFail(cap),
+func GetFetchReq(id int) *crawler.Request {
+	return &crawler.Request{
+		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: "Fetch " + strconv.Itoa(id)}},
+		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
+			s, dir, err := Fetch(id)
+			if err != nil {
+				return nil, err
+			}
+			if s != nil {
+				var reqs []*crawler.Request
+				s.Each(func(i int, s *goquery.Selection) {
+					if url, ok := s.Attr("file"); ok {
+						reqs = append(reqs, GetDownloadReq(url, dir))
+					}
+				})
+				return reqs, nil
+			}
+			return nil, nil
+		},
 	}
 }
 
-func Fetch(id int, sd *Speed) {
-	defer sd.WebDone()
+func Fetch(id int) (*goquery.Selection, string, error) {
+
 	tid := strconv.Itoa(id)
 	reader, err := R(Conf.Pro.CommonUrl + tid)
 	if err != nil {
-		log.Println(err, "id:", tid)
-		if !strings.HasPrefix(err.Error(), "返回错误") {
-			sd.Fail <- tid
+		if !strings.HasPrefix(err.Error(), "not found") {
+			return nil, "", ReqPostError.Message(err.Error())
 		}
 		invalidPost := &Post{TId: id, Status: 2}
-		err := Dao.DB.Save(invalidPost).Error
+		err = Dao.DB.Save(invalidPost).Error
 		if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
-			sd.FailDB <- tid + " 2"
+			log.Println(err)
 		}
-		return
+		return nil, "", nil
 	}
 
 	doc, err := goquery.NewDocumentFromReader(reader)
 	if err != nil {
-		log.Println(err)
-		sd.Fail <- tid
-		return
+		return nil, "", ReqPostError.Message(err.Error())
 	}
 	s := doc.Find(`img[src="images/common/none.gif"]`)
 
@@ -136,6 +80,7 @@ func Fetch(id int, sd *Speed) {
 	post.PicNum = uint32(s.Length())
 	status := "0"
 	if post.PicNum == 0 {
+		post.Status = 1
 		status = "1"
 	}
 
@@ -147,12 +92,12 @@ func Fetch(id int, sd *Speed) {
 	if title != "" {
 		dir += title + `_` + tid + Sep
 	}
-	dir = fs.PathEdit(dir)
+	dir = fs.PathClean(dir)
 
 	post.Path = dir[CommonDirLen:]
 	err = Dao.DB.Save(post).Error
 	if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
-		sd.FailDB <- tid + " " + status
+		log.Println(err)
 	}
 
 	_, err = os.Stat(dir)
@@ -160,8 +105,7 @@ func Fetch(id int, sd *Speed) {
 		err = os.MkdirAll(dir, 0666)
 		if err != nil {
 			log.Println(err, dir)
-			sd.Fail <- tid
-			return
+			return nil, "", MkdirError.Message(tid + " " + status).AppendErr(err)
 		}
 	}
 	if text != "" {
@@ -183,13 +127,7 @@ func Fetch(id int, sd *Speed) {
 		}
 	}
 
-	s.Each(func(i int, s *goquery.Selection) {
-		if url, ok := s.Attr("file"); ok {
-			sd.Add()
-			go Download(url, dir, sd)
-			time.Sleep(Conf.Pro.Interval)
-		}
-	})
+	return s, dir, nil
 }
 
 func ParseHtml(doc *goquery.Document) (string, string, string, string, *goquery.Selection, *Post) {
@@ -256,16 +194,17 @@ func FixPath(path string) string {
 	return path
 }
 
-func Download(url, dir string, sd *Speed) {
-	defer sd.Done()
-	reader, err := R(url)
-	if err != nil {
-		log.Println(err, "url:", url)
-		if !strings.HasPrefix(err.Error(), "返回错误") {
-			sd.FailPic <- url + "<->" + dir
-		}
-		return
+func GetDownloadReq(url, dir string) *crawler.Request {
+	return &crawler.Request{
+		TaskMeta: crawler.NewTaskMeta("Download: " + url),
+		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
+			return nil, Download(url, dir)
+		},
 	}
+}
+
+func Download(url, dir string) error {
+
 	s := strings.Split(url, "//")
 	name := s[len(s)-1]
 	if strings.Contains(name, "/") {
@@ -276,19 +215,12 @@ func Download(url, dir string, sd *Speed) {
 		s = strings.Split(url, "\\")
 		name = s[len(s)-1]
 	}
-	f, err := os.Create(dir + name)
+	err := client.DownloadImage(dir+name, url)
 	if err != nil {
 		log.Println(err)
-		return
+		return DownloadError.Message(url).AppendErr(err)
 	}
-	defer f.Close()
-	_, err = io.Copy(f, reader)
-	if err != nil {
-		log.Printf("写入文件错误：%v, 下载失败：%s,目录：%s\n", err, url, dir)
-		sd.FailPic <- url + "<->" + dir
-		return
-	}
-	log.Printf("下载成功：%s,目录：%s\n", url, dir)
+	return nil
 }
 
 func R(url string) (io.Reader, error) {
@@ -306,52 +238,7 @@ func R(url string) (io.Reader, error) {
 	return bytes.NewReader(res), nil
 }
 
-func newRequest(url string) (*http.Request, error) {
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
-	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
-	req.Header.Set("Accept-Encoding", "gzip, deflate")
-	req.Header.Set("Accept-Language", "zh-CN,zh;q=0.9;charset=utf-8")
-	req.Header.Set("Connection", "keep-alive")
-	http.DefaultClient.Timeout = 300 * time.Second
-	return req, nil
-}
-
-func Start(job func(sd *Speed)) {
-	sd := NewSpeed(Conf.Pro.Loop)
-	wg := new(sync.WaitGroup)
-	sd.Fail.Do("fail_post_", wg)
-	sd.FailPic.Do("fail_pic_", wg)
-	sd.FailDB.Do("fail_db_", wg)
-	job(sd)
-	sd.Wait()
-	close(sd.Fail)
-	close(sd.FailPic)
-	close(sd.FailDB)
-	wg.Wait()
-}
-
-type Post struct {
-	ID        uint32
-	TId       int    `gorm:"uniqueIndex"`
-	Auth      string `gorm:"size:255;default:''"`
-	Title     string `gorm:"size:255;default:''"`
-	Content   string `gorm:"type:text"`
-	CreatedAt string `gorm:"type:timestamptz(6);default:'0001-01-01 00:00:00'"`
-	PicNum    uint32 `gorm:"default:0"`
-	Score     uint8  `gorm:"default:0"`
-	Status    uint8  `gorm:"default:0"`
-	Path      string `gorm:"size:255;default:''"`
-}
-
-func (p *Post) TableName() string {
-	return "nineone.post"
-}
-
-func FixWeb(path string, sd *Speed, handle func(int, *Speed)) {
+func FixWeb(path string, handle func(int) error) {
 	f, err := os.Open(Conf.Pro.CommonDir + path)
 	if err != nil {
 		log.Fatal(err)
@@ -360,9 +247,9 @@ func FixWeb(path string, sd *Speed, handle func(int, *Speed)) {
 
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
-		sd.WebAdd(1)
+
 		id, _ := strconv.Atoi(scanner.Text())
-		go handle(id, sd)
+		go handle(id)
 		time.Sleep(Conf.Pro.Interval)
 	}
 	if err := scanner.Err(); err != nil {

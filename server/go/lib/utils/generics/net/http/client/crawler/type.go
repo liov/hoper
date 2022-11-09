@@ -48,3 +48,7 @@ func NewUrlKindRequest(url string, kind conctrl.Kind, handleFunc HandleFunc) *Re
 	req.SetKind(kind)
 	return req
 }
+
+func NewTaskMeta(key string) TaskMeta {
+	return TaskMeta{BaseTaskMeta: BaseTaskMeta{Key: key}}
+}

@@ -46,14 +46,18 @@ func DefaultLogger(url, method, auth string, reqBody, respBody *Body, status int
 			reqField = zap.String(key, stringsi.ToString(reqBody.Data))
 		}
 	}
-	if respBody != nil {
+	if respBody != nil && respBody.Data != nil {
 		key := "result"
 		if respBody.IsJson() {
 			respField = zap.Reflect(key, log.BytesJson(respBody.Data))
 		} else if respBody.IsProtobuf() {
 			respField = zap.Binary(key, respBody.Data)
 		} else {
-			respField = zap.String(key, stringsi.ToString(respBody.Data))
+			if len(respBody.Data) > 500 {
+				respField = zap.String(key, "result is too long")
+			} else {
+				respField = zap.String(key, stringsi.ToString(respBody.Data))
+			}
 		}
 	}
 

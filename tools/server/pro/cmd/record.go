@@ -2,8 +2,11 @@ package main
 
 import (
 	"context"
+	"github.com/PuerkitoBio/goquery"
 	"github.com/actliboy/hoper/server/go/lib/initialize"
+	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
+	"strconv"
 	"strings"
 	"time"
 	"tools/pro"
@@ -19,7 +22,7 @@ func record() {
 	ctx := context.Background()
 
 	key := "Pro_RecordByOrderID"
-	err := pro.Dao.Redis.SetNX(ctx, key, 492110, 0).Err()
+	err := pro.Dao.Redis.SetNX(ctx, key, 510682, 0).Err()
 	if err != nil {
 		log.Error(err)
 	}
@@ -28,14 +31,12 @@ func record() {
 	if err != nil {
 		log.Error(err)
 	}
-	sd := pro.NewSpeed(pro.Conf.Pro.Loop)
-	sd.FailPic.Record("fail_pic_")
-	sd.FailDB.Record("fail_db_")
+
 	notFoundIds := make([]int, 0)
 	timer := time.NewTicker(pro.Conf.Pro.Timer)
 	for range timer.C {
-		tid := pro.Record(id, sd)
-		if tid != "" {
+		s, dir, _ := pro.Fetch(id)
+		if s != nil {
 			if len(notFoundIds) > 0 {
 				for _, id := range notFoundIds {
 					invalidPost := &pro.Post{TId: id, Status: 2}
@@ -46,7 +47,14 @@ func record() {
 				}
 				notFoundIds = notFoundIds[:0]
 			}
-			err := pro.Dao.Redis.Set(ctx, key, tid, 0).Err()
+			s.Each(func(i int, s *goquery.Selection) {
+				if url, ok := s.Attr("file"); ok {
+					conctrl.ReTry(5, func() error {
+						return pro.Download(url, dir)
+					})
+				}
+			})
+			err := pro.Dao.Redis.Set(ctx, key, strconv.Itoa(id), 0).Err()
 			if err != nil {
 				log.Error(err)
 			}
