@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
@@ -14,9 +13,7 @@ import (
 	"strings"
 	"tools/bilibili/config"
 	"tools/bilibili/dao"
-	"tools/bilibili/download"
 	"tools/bilibili/rpc"
-	"tools/bilibili/tool"
 )
 
 func main() {
@@ -255,31 +252,6 @@ FROM  (SELECT  data->'owner' owner, aid FROM `+dao.TableNameView+` WHERE aid IN 
 				log.Println(err)
 			}
 		}
-	}
-}
-
-func fixCover() {
-	config.Conf.Bilibili.DownloadPicPath = "D:\\F\\B站\\pic"
-	apiservice := rpc.API{}
-	page := 50
-	for {
-		log.Printf("第%d页\n", page)
-		res, err := apiservice.GetFavLResourceList(63181530, page)
-		if err != nil {
-			log.Println(err)
-		}
-
-		for _, fav := range res.Medias {
-			aid := tool.Bv2av(fav.Bvid)
-			err = download.CoverDownload(context.Background(), fav.Cover, fav.Upper.Mid, aid)
-			if err != nil {
-				log.Println("下载图片失败：", err)
-			}
-		}
-		if len(res.Medias) == 0 {
-			return
-		}
-		page++
 	}
 }
 
