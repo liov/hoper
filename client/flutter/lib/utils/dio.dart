@@ -1,4 +1,4 @@
-import 'package:app/model/const/const.dart';
+import 'package:app/global/const.dart';
 import 'package:dio/dio.dart';
 
 Dio httpClient = Dio(BaseOptions(

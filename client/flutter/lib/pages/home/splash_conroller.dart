@@ -7,14 +7,14 @@ import 'package:get/get.dart';
 
 
 class SplashController extends GetxController {
-  late Completer<Null> adCompleter;
+  late Completer<void> adCompleter;
   DateTime? pausedTime;
   int countdown = 0;
   set duration(Duration duration){
     countdown = (duration.inMilliseconds/1000).round();
-    print(countdown);
+    globalService.logger.d(countdown);
     update();
-    Timer.periodic(Duration(seconds: 1), (timer) {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
       countdown--;
       if(countdown <= 0){
         timer.cancel();
@@ -27,8 +27,8 @@ class SplashController extends GetxController {
     if(pausedTime ==null) return;
     const time = Duration(seconds:3);
     final current = DateTime.now();
-    if (current.difference(pausedTime!)  < Duration(minutes:10)) return;
-    print('advertising');
+    if (current.difference(pausedTime!)  < const Duration(minutes:10)) return;
+    globalService.logger.d('advertising');
     Get.showOverlay(loadingWidget:splash, asyncFunction: () {
       adCompleter = Completer();
       duration = time;

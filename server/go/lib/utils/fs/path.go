@@ -1,50 +1,38 @@
 package fs
 
 import (
+	stringsi "github.com/actliboy/hoper/server/go/lib/utils/strings"
 	sdpath "path"
 	"runtime"
 	"strings"
 )
 
 // windows需要,由于linux的文件也要放到windows看,统一处理
-func FileNameEdit(dir string) string {
-	dir = strings.ReplaceAll(dir, "<", "《")
-	dir = strings.ReplaceAll(dir, ">", "》")
-	dir = strings.ReplaceAll(dir, "\"", "")
-	dir = strings.ReplaceAll(dir, "|", "")
-	dir = strings.ReplaceAll(dir, "?", "？")
-	dir = strings.ReplaceAll(dir, "*", "")
-	dir = strings.ReplaceAll(dir, "/", "")
-	dir = strings.ReplaceAll(dir, ":", "")
-	return dir
+func FileNameEdit(filename string) string {
+	filename = strings.ReplaceAll(filename, "<", "《")
+	filename = strings.ReplaceAll(filename, ">", "》")
+	filename = strings.ReplaceAll(filename, "\"", "")
+	filename = strings.ReplaceAll(filename, "|", "")
+	filename = strings.ReplaceAll(filename, "?", "？")
+	filename = strings.ReplaceAll(filename, "*", "")
+	filename = strings.ReplaceAll(filename, "/", "")
+	filename = strings.ReplaceAll(filename, ":", "")
+	return filename
+}
+
+func FileNameClean(filename string) string {
+	return stringsi.ReplaceBytesEmpty(filename, []byte{'<', '>', '"', '|', '?', '*', '/', ':', ' ', '\\'})
 }
 
 func DirClean(dir string) string { // will be used when save the dir or the part
 	// remove special symbol
 	// :unix允许存在，windows需要
-	dir = strings.ReplaceAll(dir, ":", "")
-	dir = strings.ReplaceAll(dir, "\\", "")
-	dir = strings.ReplaceAll(dir, "*", "")
-	dir = strings.ReplaceAll(dir, "?", "")
-	dir = strings.ReplaceAll(dir, "\"", "")
-	dir = strings.ReplaceAll(dir, "<", "")
-	dir = strings.ReplaceAll(dir, ">", "")
-	dir = strings.ReplaceAll(dir, "|", "")
-	dir = strings.ReplaceAll(dir, " ", "")
-	dir = strings.ReplaceAll(dir, ".", "")
-	return dir
+	return stringsi.ReplaceBytesEmpty(dir, []byte{':', '\\', '*', '?', '"', '<', '>', '|', ' ', '.'})
 }
 
 func PathClean(dir string) string { // will be used when save the dir or the part
 	// remove special symbol
-	dir = strings.ReplaceAll(dir, "*", "")
-	dir = strings.ReplaceAll(dir, "?", "")
-	dir = strings.ReplaceAll(dir, "\"", "")
-	dir = strings.ReplaceAll(dir, "<", "")
-	dir = strings.ReplaceAll(dir, ">", "")
-	dir = strings.ReplaceAll(dir, "|", "")
-	dir = strings.ReplaceAll(dir, " ", "")
-	return dir
+	return stringsi.ReplaceBytesEmpty(dir, []byte{'*', '?', '"', '<', '>', '|', ' '})
 }
 
 func GetDir(path string) string {

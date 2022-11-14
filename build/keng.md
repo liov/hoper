@@ -1434,3 +1434,51 @@ for _, file := range files {
 ```
 后面加了个`log.Println(cid)`可以跑下去了
 后来发现是后面的if判断是false,自动跳过，跑不到断点那,但是后面的语句执行了却不能断点，坑
+
+# go语言 cmd执行命令,遇到空格或者双引号无法执行成功的解决方案
+```go
+package main
+
+import (
+	"fmt"
+	"os/exec"
+	"syscall"
+)
+
+func main() {
+	cmd := exec.Command("cmd.exe")
+	cmdExec := `mkdir "C:\a a"`
+	fmt.Println(fmt.Sprintf(`/c %s`, cmdExec))
+	//核心点,直接修改执行命令方式
+	cmd.SysProcAttr = &syscall.SysProcAttr{CmdLine: fmt.Sprintf(`/c %s`, cmdExec), HideWindow: true}
+	output, err := cmd.Output()
+	fmt.Printf("output:\n%s\n", output)
+	if err != nil {
+		fmt.Printf("error: %+v\n", err)
+	}
+}
+
+```
+
+# flutter 无法hot reload
+有这种代码`import 'model/content.dart';`->`import 'package:app/model/content.dart';`
+网上有人说这种也会影响`import '../../global/global_service.dart';`
+但是protoc默认生成的就是这种import,而且实测，不改也可以，是第一种相对路径的问题
+
+## 后续补充
+好吧，只可以hot reload 并不能hot restart
+# IDEA 工具栏不能重叠
+关闭Appearance tool window side by side layout
+
+# ts TS2669: Augmentations for the global scope can only be directly nested in external modules or ambient module declarations.
+全局声明报错
+```typescript
+declare global{
+var foo:any
+}
+``
+让文件变成一个模块
+加
+```typescript
+export {}
+```

@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	c, err := ftp.Dial("192.168.137.133:2100", ftp.DialWithTimeout(5*time.Second))
+	c, err := ftp.Dial("192.168.137.212:2121", ftp.DialWithTimeout(5*time.Second))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -27,7 +27,7 @@ func main() {
 }
 
 func Backup(c *ftp.ServerConn) {
-	backup.DCIM(c)
-	backup.Pietures(c)
-	//Wechat(c)
+	//backup.DCIM(c)
+	//backup.Pietures(c)
+	backup.Wechat(c)
 }

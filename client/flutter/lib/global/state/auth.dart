@@ -5,7 +5,7 @@ import 'package:app/generated/protobuf/user/user.service.pb.dart';
 import 'package:app/generated/protobuf/empty/empty.pb.dart';
 import 'package:app/generated/protobuf/request/param.pb.dart' as request;
 import 'package:app/global/global_state.dart';
-import 'package:app/model/const/const.dart';
+import 'package:app/global/const.dart';
 import 'package:app/pages/home/home_controller.dart';
 import 'package:app/pages/user/login_view.dart';
 import 'package:app/utils/dialog.dart';

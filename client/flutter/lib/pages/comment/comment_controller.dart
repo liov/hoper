@@ -4,7 +4,7 @@ import 'package:app/generated/protobuf/content/content.enum.pb.dart';
 import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/global/global_state.dart';
 import 'package:app/service/action.dart';
-import 'package:app/utils/media.dart';
+import 'package:app/components/media/media.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:fixnum/fixnum.dart' as $fixnum;

@@ -14,5 +14,6 @@ targets:
           disallow_unrecognized_keys: false
           explicit_to_json: false
           field_rename: none
+          generic_argument_factories: false
           ignore_unannotated: false
           include_if_null: true

@@ -163,24 +163,24 @@ func ReplaceRuneEmpty(s string, old []rune) string {
 	t := make([]byte, len(s))
 	w := 0
 	start := 0
-	needCoby := false
+	needCopy := false
 	last := false
 	for i, r := range s {
 		if runei.In(r, old) {
-			if needCoby {
+			if needCopy {
 				w += copy(t[w:], s[start:i])
-				needCoby = false
+				needCopy = false
 			}
 			last = true
 			continue
 		}
-		needCoby = true
+		needCopy = true
 		if last {
 			start = i
 			last = false
 		}
 	}
-	if needCoby {
+	if needCopy {
 		w += copy(t[w:], s[start:])
 	}
 	return string(t[0:w])
@@ -281,4 +281,41 @@ type NumLetterSlice[T any] ['z' - '0' + 1]T
 // 原来数组支持这样用
 func (n *NumLetterSlice[T]) Set(b byte, v T) {
 	n[b-'0'] = v
+}
+
+func ReplaceBytesEmpty(s string, old []byte) string {
+	if len(old) == 0 {
+		return s // avoid allocation
+	}
+	tmpl := make([]bool, 255)
+
+	for _, b := range old {
+		tmpl[b] = true
+	}
+
+	// Apply replacements to buffer.
+	t := make([]byte, len(s))
+	w := 0
+	start := 0
+	needCopy := false
+	last := false
+	for i, r := range s {
+		if r < 256 && tmpl[r] {
+			if needCopy {
+				w += copy(t[w:], s[start:i])
+				needCopy = false
+			}
+			last = true
+			continue
+		}
+		needCopy = true
+		if last {
+			start = i
+			last = false
+		}
+	}
+	if needCopy {
+		w += copy(t[w:], s[start:])
+	}
+	return string(t[0:w])
 }

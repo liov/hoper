@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 
 class SlidePhotoView extends StatelessWidget {
-  SlidePhotoView(this.url) :super();
+  SlidePhotoView(this.url, {super.key});
   final String url;
   final _slidePageKey  = GlobalKey<ExtendedImageSlidePageState>();
 
@@ -17,8 +17,13 @@ class SlidePhotoView extends StatelessWidget {
       type: MaterialType.transparency,
       child: ExtendedImageSlidePage(
         key: _slidePageKey,
+        slideAxis: SlideAxis.both,
+        slideType: SlideType.onlyImage,
         child: GestureDetector(
           child:  HeroWidget(
+            tag: url,
+            slideType: SlideType.onlyImage,
+            slidePageKey: _slidePageKey,
             child: url.startsWith("http")?ExtendedImage.network(
               url,
               enableSlideOutPage: true,
@@ -26,17 +31,12 @@ class SlidePhotoView extends StatelessWidget {
               File(url),
               enableSlideOutPage: true,
             ),
-            tag: url,
-            slideType: SlideType.onlyImage,
-            slidePageKey: _slidePageKey,
           ),
           onTap: () {
             _slidePageKey.currentState!.popPage();
             Navigator.pop(context);
           },
         ),
-        slideAxis: SlideAxis.both,
-        slideType: SlideType.onlyImage,
       ),
     );
   }

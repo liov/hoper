@@ -1,6 +1,6 @@
 import 'package:app/components/async/async.dart';
 import 'package:app/global/global_state.dart';
-import 'package:app/model/const/const.dart';
+import 'package:app/global/const.dart';
 import 'package:app/pages/user/user_controller.dart';
 import 'package:app/routes/route.dart';
 import 'package:extended_image/extended_image.dart';

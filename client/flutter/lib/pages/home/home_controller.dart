@@ -56,7 +56,7 @@ class HomeController extends GetxController {
     // TODO: implement onReady
     super.onReady();
     Timer.periodic(
-      Duration(seconds: 1),
+      const Duration(seconds: 1),
       (timer) {
         now.value = DateTime.now();
       },

@@ -18,6 +18,7 @@
           :max-size="500 * 1024"
           @oversize="onOversize"
           :after-read="afterRead"
+          @click="notH5Upload"
         />
       </template>
     </van-field>
@@ -56,6 +57,10 @@ import { upload } from "@/plugin/utils/upload";
 import { Toast } from "vant";
 import { useRouter } from "vue-router";
 import { reactive, ref } from "vue";
+import { useGlobalStore } from "@/store/global";
+import { Platform } from "@/model/const";
+
+const globalState = useGlobalStore();
 
 const router = useRouter();
 
@@ -94,6 +99,14 @@ function onConfirm(value: string, index: number) {
   permission.value = index;
   permissionVal.value = value;
   showPicker.value = false;
+}
+
+function notH5Upload() {
+  if (globalState.platform == Platform.App) {
+    window.Flutter.postMessage(
+      JSON.stringify({ method: "pickPhoto", params: [] })
+    );
+  }
 }
 </script>
 

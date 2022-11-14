@@ -52,12 +52,12 @@ type TaskStatistics struct {
 	timeCost  time.Duration
 	reDoTimes uint
 	ErrTimes  int
-	Errs      []error
 }
 
 type Task[T comparable, P any] struct {
 	TaskMeta[T]
 	TaskFunc[T, P]
+	Errs  []error
 	Props P
 }
 

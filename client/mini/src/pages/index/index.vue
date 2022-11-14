@@ -9,12 +9,18 @@ import Taro from "@tarojs/taro";
 const host = "http://127.0.0.1";
 
 const router = Taro.getCurrentInstance().router;
-let url = `${host}?platform=${Taro.getEnv()}&appUrl=${router?.path}`
+const device = Taro.getDeviceInfo()
+const os = device.system.split(" ")[0]
+
+console.log(device);
+const baseUrl = `${host}?platform=${Taro.getEnv()}&os=${os}&appUrl=${router?.path}`
+let url = `${baseUrl}#/`;
 
 const h5Url = router?.params.h5Url
 if (h5Url && h5Url !== "") {
-  console.log(decodeURIComponent(h5Url));
-  url = `${host}/?platform=${Taro.getEnv()}&appUrl=${router?.path}#${decodeURIComponent(h5Url)}`
+  const decodeH5Url = decodeURIComponent(h5Url)
+  console.log(decodeH5Url);
+  url = `${baseUrl}#${decodeH5Url}`
   console.log(url);
 }
 console.log("当前url",url);

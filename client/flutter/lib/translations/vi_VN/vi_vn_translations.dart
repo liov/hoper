@@ -1,4 +1,4 @@
-import '../strings.dart';
+import 'package:app/translations/strings.dart';
 
 final Map<String, String> viVn = {
   'hi': 'Xin chào',

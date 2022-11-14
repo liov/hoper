@@ -3,10 +3,10 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  connectivity_plus_windows
-  flutter_js
+  connectivity_plus
   geolocator_windows
   permission_handler_windows
+  share_plus
   url_launcher_windows
 )
 
