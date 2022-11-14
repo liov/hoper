@@ -10,7 +10,7 @@ import 'package:dio/dio.dart';
 
 import 'package:grpc/src/client/call.dart';
 
-import '../utils/observer.dart';
+import 'package:app/utils/observer.dart';
 
 class UploadClient extends Observer<CallOptions> {
 

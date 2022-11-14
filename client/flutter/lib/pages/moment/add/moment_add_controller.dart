@@ -5,7 +5,7 @@ import 'package:app/generated/protobuf/content/content.enum.pb.dart';
 import 'package:app/generated/protobuf/content/moment.service.pb.dart';
 import 'package:app/global/global_state.dart';
 import 'package:app/service/moment.dart';
-import 'package:app/utils/media.dart';
+import 'package:app/components/media/media.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';

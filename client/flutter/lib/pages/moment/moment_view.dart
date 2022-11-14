@@ -1,5 +1,4 @@
 import 'package:app/components/todo.dart';
-import 'package:app/pages/dynamic/dynamic.dart';
 import 'package:app/global/global_state.dart';
 import 'package:app/pages/moment/list/moment_list_view.dart';
 import 'package:app/pages/moment/physics.dart';
@@ -16,6 +15,8 @@ import 'moment_controller.dart';
 
 
 class MomentView extends StatefulWidget{
+  const MomentView({super.key});
+
   @override
   State<StatefulWidget> createState() => _MomentState();
 
@@ -40,9 +41,12 @@ class _MomentState extends State<MomentView> with AutomaticKeepAliveClientMixin 
           controller: controller.tabController,
         ),
         actions: [
-          IconButton(icon: Icon(Icons.add),onPressed: (){
-            if (globalState.authState.userAuth!=null) Get.toNamed(Routes.MOMENT_ADD);
-            else Get.to(()=>LoginView());
+          IconButton(icon: const Icon(Icons.add),onPressed: (){
+            if (globalState.authState.userAuth!=null) {
+              Get.toNamed(Routes.MOMENT_ADD);
+            } else {
+              Get.to(()=>LoginView());
+            }
           },)
         ],
       ),
@@ -50,11 +54,11 @@ class _MomentState extends State<MomentView> with AutomaticKeepAliveClientMixin 
         //physics:PageViewTabClampingScrollPhysics(controller:controller.homeController.to),
         controller: controller.tabController,
         children: controller.tabValues.map((f) {
-          print(f);
+          globalService.logger.d(f);
           if (f == "推荐") return TODOView();
           if (f == "刚刚") return MomentListV2View(tag:'newest');
           if (f == "关注") return TODOView();
-          return Container(child:Text(f));
+          return Text(f);
         }).toList(),
       ),
     );

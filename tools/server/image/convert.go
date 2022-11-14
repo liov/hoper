@@ -3,7 +3,6 @@ package main
 import (
 	"golang.org/x/image/webp"
 	"image/jpeg"
-	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -14,7 +13,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	for _, f := range files {
 		if f.IsDir() {
 			continue

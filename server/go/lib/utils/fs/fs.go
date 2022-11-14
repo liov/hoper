@@ -3,6 +3,7 @@ package fs
 import (
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"mime/multipart"
@@ -198,7 +199,7 @@ func supDirFiles2(dir, path string, file chan string, deep, step int8, ctx *runt
 }
 
 func GetSize(f multipart.File) int {
-	content, err := ioutil.ReadAll(f)
+	content, err := io.ReadAll(f)
 	if err != nil {
 		return 0
 	}
@@ -206,17 +207,32 @@ func GetSize(f multipart.File) int {
 }
 
 func Mkdir(src string) error {
-	err := os.MkdirAll(src, os.ModePerm)
-	if err != nil {
-		return err
+	_, err := os.Stat(src)
+	if os.IsNotExist(err) {
+		err = os.Mkdir(src, os.ModePerm)
+		if err != nil {
+			return err
+		}
 	}
+	return err
+}
 
-	return nil
+func MkdirAll(src string) error {
+	_, err := os.Stat(src)
+	if os.IsNotExist(err) {
+		err = os.MkdirAll(src, os.ModePerm)
+		if err != nil {
+			return err
+		}
+	}
+	return err
 }
 
 func CheckExist(src string) bool {
 	_, err := os.Stat(src)
-
+	if os.IsNotExist(err) {
+		return false
+	}
 	return err == nil
 }
 

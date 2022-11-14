@@ -1,9 +1,9 @@
 package main
 
 import (
-	"flag"
 	"github.com/actliboy/hoper/server/go/lib/initialize"
 	"github.com/actliboy/hoper/server/go/lib/utils/generics/net/http/client/crawler"
+	"os"
 
 	"time"
 	"tools/bilibili/config"
@@ -12,10 +12,15 @@ import (
 )
 
 func main() {
-	flag.IntVar(&config.Conf.Bilibili.PageBegin, "pb", 1, "开始页")
-	flag.IntVar(&config.Conf.Bilibili.PageEnd, "pe", 1, "开始页")
 	defer initialize.Start(config.Conf, &dao.Dao)()
-	flag.Parse()
+	err := os.MkdirAll(config.Conf.Bilibili.DownloadVideoPath, 0777)
+	if err != nil {
+		panic(err)
+	}
+	err = os.MkdirAll(config.Conf.Bilibili.DownloadTmpPath, 0777)
+	if err != nil {
+		panic(err)
+	}
 	engine := crawler.NewEngine(config.Conf.Bilibili.WorkCount).StopAfter(time.Hour * time.Duration(config.Conf.Bilibili.StopTime))
 	go download.DownloadRecordVideo(engine)
 	download.GetEngineMerge(engine)

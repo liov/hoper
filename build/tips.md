@@ -159,3 +159,11 @@ systemd=true
 
 # 数据库尽量不要用bool表示状态
 否则你将只能表示两种状态，用int2利于扩展
+
+# Android Emulator Networking
+10.0.2.1	Router/gateway address
+10.0.2.2	Special alias to your host loopback interface (i.e., 127.0.0.1 on your development machine)
+10.0.2.3	First DNS server
+10.0.2.4 / 10.0.2.5 / 10.0.2.6	Optional second, third and fourth DNS server (if any)
+10.0.2.15	The emulated device's own network/ethernet interface
+127.0.0.1	The emulated device's own loopback interface

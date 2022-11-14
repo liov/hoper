@@ -1,6 +1,6 @@
 import 'package:app/generated/protobuf/content/content.model.pb.dart';
 import 'package:app/generated/protobuf/user/user.model.pb.dart';
-import 'package:app/model/const/const.dart';
+import 'package:app/global/const.dart';
 import 'package:app/global/global_state.dart';
 
 import 'package:app/pages/photo/photo.dart';
@@ -11,19 +11,19 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:get/get.dart';
 import 'package:fixnum/fixnum.dart';
 
-import '../../action_bar/action_bar.dart';
+import 'package:app/pages/action_bar/action_bar.dart';
 
 class MomentItem extends StatelessWidget {
   MomentItem({Key? key, required this.moment}) : super(key: key) {
-    if (this.moment.images != "")
-      this.images = this
-          .moment
+    if (moment.images != "") {
+      images = moment
           .images
           .split(",")
           .map((url) => BASE_STATIC_URL + url)
           .toList();
-    else
-      this.images = null;
+    } else {
+      images = null;
+    }
   }
 
   final Moment moment;
@@ -59,7 +59,7 @@ class MomentItem extends StatelessWidget {
                   )),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [Text('${user.name}'), Text('${moment.createdAt}')],
+                children: [Text(user.name), Text(moment.createdAt)],
               ),
             ])),
         Expanded(
@@ -72,18 +72,18 @@ class MomentItem extends StatelessWidget {
                       style: ButtonStyle(
                           fixedSize:MaterialStateProperty.all(Size.fromHeight(5.0)),
                           backgroundColor:MaterialStateProperty.resolveWith((states)=>Colors.transparent),
-                          shape: MaterialStateProperty.resolveWith((states)=>StadiumBorder(
+                          shape: MaterialStateProperty.resolveWith((states)=>const StadiumBorder(
                               side: BorderSide(color: Colors.blue)))),
-                      child: Text('+关注'),
+                      child: const Text('+关注'),
                       onPressed: () {},
                     )))),
       ]),
       Padding(
           padding: const EdgeInsets.symmetric(vertical:5.0,horizontal:10),
-          child: MarkdownBody(data: '${moment.content}')),
+          child: MarkdownBody(data: moment.content)),
       if (images != null)
         GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3, //横轴三个子widget
               childAspectRatio: 1.0, //宽高比为1时，子widget
             ),

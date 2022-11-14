@@ -32,16 +32,24 @@ import wxenv from "@/plugin/platform/weixin";
 import { parseQueryString } from "@/plugin/location";
 
 const store = useGlobalStore();
-
+console.log("url:", window.location.href);
 const queryParams = parseQueryString();
 console.log(queryParams);
-switch (queryParams.platform) {
-  case Platform.Weapp:
-    store.platform = Platform.Weapp;
-    if (!window.wx) {
-      wxenv.loadwxSDK();
-      console.log(window.wx);
-    }
+if (queryParams.platform) {
+  switch (queryParams.platform.toUpperCase()) {
+    case Platform.Weapp:
+      store.platform = Platform.Weapp;
+      if (!window.wx) {
+        wxenv.loadwxSDK();
+        console.log(window.wx);
+      }
+      break;
+    case Platform.App:
+      store.platform = Platform.App;
+      break;
+  }
+} else {
+  store.platform = Platform.H5;
 }
 
 if (wxenv.IsWeappPlatform() && !window.wx) {

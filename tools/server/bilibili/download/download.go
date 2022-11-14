@@ -58,8 +58,8 @@ func (video *Video) DownloadVideo(typ string, order int, url string) ([]*crawler
 
 	var filename string
 
-	video.Part = fs.PathClean(video.Part)
-	video.Title = fs.PathClean(video.Title)
+	video.Part = fs.FileNameClean(video.Part)
+	video.Title = fs.FileNameClean(video.Title)
 	if strings.HasSuffix(video.Title, video.Part) {
 		video.Part = PartEqTitle
 	}

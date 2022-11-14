@@ -47,7 +47,21 @@ WHERE b.created_at > '2022-09-28 11:33:26' AND b.record = 0 AND b.` + postgres.N
 			}
 		}
 	}
+}
 
+func fixRecord2() {
+	dir := "D:\\F\\video\\"
+
+	dirs, _ := os.ReadDir(dir)
+	for _, subdir := range dirs {
+		files, _ := os.ReadDir(dir + subdir.Name())
+		for _, file := range files {
+			if strings.HasSuffix(file.Name(), "64.flv") {
+				cid := strings.Split(file.Name(), "_")[2]
+				dao.Dao.Hoper.Table(dao.TableNameVideo).Where("cid = "+cid).Update("record", 1)
+			}
+		}
+	}
 }
 
 func fixQuality() {

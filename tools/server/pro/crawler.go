@@ -231,7 +231,7 @@ func R(url string) (io.Reader, error) {
 	}).AddHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8").
 		AddHeader("Accept-Encoding", "gzip, deflate").
 		AddHeader("Accept-Language", "zh-CN,zh;q=0.9;charset=utf-8").
-		AddHeader("Connection", "keep-alive").Do(nil, &res)
+		AddHeader("Connection", "keep-alive").DisableLog().Do(nil, &res)
 	if err != nil {
 		return nil, err
 	}

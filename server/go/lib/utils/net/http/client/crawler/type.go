@@ -16,7 +16,7 @@ func NewRequest(key string, taskFunc conctrl.TaskFunc) *Request {
 	if taskFunc == nil {
 		return nil
 	}
-	return &Request{TaskMeta: conctrl.TaskMeta{Key: key}, TaskFunc: taskFunc}
+	return &Request{TaskMeta: conctrl.TaskMeta{BaseTaskMeta: conctrl.BaseTaskMeta{Key: key}}, TaskFunc: taskFunc}
 }
 
 func NewKindRequest(key string, kind conctrl.Kind, taskFunc conctrl.TaskFunc) *Request {
@@ -32,7 +32,7 @@ func NewUrlRequest(url string, handleFunc HandleFunc) *Request {
 	if handleFunc == nil {
 		return nil
 	}
-	return &Request{TaskMeta: conctrl.TaskMeta{Key: url}, TaskFunc: func(ctx context.Context) ([]conctrl.TaskInterface, error) {
+	return &Request{TaskMeta: conctrl.TaskMeta{BaseTaskMeta: conctrl.BaseTaskMeta{Key: url}}, TaskFunc: func(ctx context.Context) ([]conctrl.TaskInterface, error) {
 		return handleFunc(ctx, url)
 	}}
 }

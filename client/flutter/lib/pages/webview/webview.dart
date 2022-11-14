@@ -2,10 +2,16 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
+import 'package:app/global/global_state.dart';
 import 'package:app/utils/httpserver.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
+
+import 'package:app/model/webview_message.dart';
+
+import 'package:app/components/media/pick.dart';
 
 const String kNavigationExamplePage = '''
 <!DOCTYPE html><html>
@@ -23,6 +29,8 @@ The navigation delegate is set to block navigation to the youtube website.
 ''';
 
 class WebViewExample extends StatefulWidget {
+  const WebViewExample({super.key});
+
   @override
   _WebViewExampleState createState() => _WebViewExampleState();
 }
@@ -54,31 +62,31 @@ class _WebViewExampleState extends State<WebViewExample> {
           // to allow calling ScaffoldMessenger.of(context) so we can show a snackbar.
           body: Builder(builder: (BuildContext context) {
             return WebView(
-              initialUrl: 'https://hoper.xyz',
+              initialUrl: 'http://10.0.2.2/?platform=app&os=${Platform.operatingSystem}',
               javascriptMode: JavascriptMode.unrestricted,
               onWebViewCreated: (WebViewController webViewController) {
                // webViewController.loadFlutterAsset("assets/dist/index.html");
                 _controller.complete(webViewController);
               },
               onProgress: (int progress) {
-                print("WebView is loading (progress : $progress%)");
+                globalService.logger.d("WebView is loading (progress : $progress%)");
               },
               javascriptChannels: <JavascriptChannel>{
-                _toasterJavascriptChannel(context),
+                _flutterJavascriptChannel(context),
               },
               navigationDelegate: (NavigationRequest request) {
-                if (request.url.startsWith('https://www.youtube.com/')) {
-                  print('blocking navigation to $request}');
+                if (request.url.startsWith('https://hoper.xyz')) {
+                  globalService.logger.d('blocking navigation to $request}');
                   return NavigationDecision.prevent;
                 }
-                print('allowing navigation to $request');
+                globalService.logger.d('allowing navigation to $request');
                 return NavigationDecision.navigate;
               },
               onPageStarted: (String url) {
-                print('Page started loading: $url');
+                globalService.logger.d('Page started loading: $url');
               },
               onPageFinished: (String url) {
-                print('Page finished loading: $url');
+                globalService.logger.d('Page finished loading: $url');
               },
               gestureNavigationEnabled: true,
             );
@@ -87,16 +95,22 @@ class _WebViewExampleState extends State<WebViewExample> {
         ));
   }
 
-  JavascriptChannel _toasterJavascriptChannel(BuildContext context) {
+  JavascriptChannel _flutterJavascriptChannel(BuildContext context) {
     return JavascriptChannel(
-        name: 'Toaster',
+        name: 'Flutter',
         onMessageReceived: (JavascriptMessage message) {
-          // ignore: deprecated_member_use
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(message.message)),
-          );
+          final msg = WebviewMessage.fromJson(json.decode(message.message));
+          if (msg.method == "pickPhoto"){
+            Get.dialog(const MediaPick(title:"照片选择"));
+          }else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(message.message)),
+            );
+          }
+
         });
   }
+
 
   Widget favoriteButton() {
     return FutureBuilder<WebViewController>(
@@ -140,7 +154,7 @@ enum MenuOptions {
 }
 
 class SampleMenu extends StatelessWidget {
-  SampleMenu(this.controller);
+  SampleMenu(this.controller, {super.key});
 
   final Future<WebViewController> controller;
   final CookieManager cookieManager = CookieManager();
@@ -180,8 +194,8 @@ class SampleMenu extends StatelessWidget {
           itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
             PopupMenuItem<MenuOptions>(
               value: MenuOptions.showUserAgent,
-              child: const Text('Show user agent'),
               enabled: controller.hasData,
+              child: const Text('Show user agent'),
             ),
             const PopupMenuItem<MenuOptions>(
               value: MenuOptions.listCookies,

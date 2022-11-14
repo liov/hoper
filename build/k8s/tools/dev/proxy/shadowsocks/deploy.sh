@@ -59,12 +59,15 @@ chown -R nobody ~/.acme.sh/$host/$host.key
 docker rm -f ssserver-rust-v2ray && \
 docker run --name ssserver-rust-v2ray \
 --restart always \
--p 8389:8388/tcp \
--p 8389:8388/udp \
+-p 66:8388/tcp \
+-p 66:8388/udp \
 -v /root/ss/ssconfig.json:/etc/shadowsocks-rust/config.json \
--v "/root/.acme.sh/${host}":"//.acme.sh/${host}" \
+-v /root/ss/cert":"/cert \
 -dit ssserver-rust-v2ray:latest \
 && docker logs ssserver-rust-v2ray
+
+# 如果用acme生成
+-v "/root/.acme.sh/${host}":"//.acme.sh/${host}" \
 
 cat > ssudpconfig.json <<- EOF
 {
@@ -73,7 +76,7 @@ cat > ssudpconfig.json <<- EOF
     "password": "${password}",
     "timeout": 300,
     "plugin": "v2ray-plugin",
-    "plugin_opts": "server;mode=quic;host=${host}",
+    "plugin_opts": "server;mode=quic;host=${host};cert=/cert/fullchain.cer;key=/cert/${host}.key",
     "method": "aes-256-gcm"
 }
 EOF

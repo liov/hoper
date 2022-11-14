@@ -23,9 +23,9 @@ class GlobalService{
 
   static GlobalService get instance => _instance ??= GlobalService._();
 
-  final logger = Logger(printer: PrettyPrinter(),level:Level.verbose);
+  final logger = Logger(printer: HybridPrinter(PrettyPrinter(), debug: SimplePrinter()),level:Level.verbose);
 
-  Subject<CallOptions> subject = Subject(CallOptions(timeout: Duration(seconds: 5)));
+  Subject<CallOptions> subject = Subject(CallOptions(timeout: const Duration(seconds: 5)));
   set callOptions(CallOptions callOptions)=> subject.setState(callOptions);
 
   late final UserClient userClient = Get.put(UserClient(subject));
@@ -49,11 +49,11 @@ class GlobalService{
     logger.d(appSupportDir.path);
     //final dbpath = await getDatabasesPath();
 
-    final boxfuture = () async {
+    boxfuture() async {
       box = await Hive.openBox('box', path: $path.join(appDocDir.path, "hive"));
-    };
+    }
 
-    final dbfuture = () async {
+    dbfuture() async {
       db = await openDatabase(
           $path.join(appDocDir.path,'database', 'hoper.db'),
           version: 1, onCreate: (Database db, int version) async {
@@ -72,7 +72,7 @@ class GlobalService{
 
       });
 
-    };
+    }
     await Future.wait([boxfuture(), dbfuture()]);
     shared = await SharedPreferences.getInstance();
   }

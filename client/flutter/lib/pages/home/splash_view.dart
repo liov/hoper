@@ -2,18 +2,18 @@
 import 'package:app/pages/home/splash_conroller.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/get_state.dart';
 
-final splash = Splash();
+const splash = Splash();
 
 class Splash extends StatelessWidget {
+  const Splash({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: ExtendedImage.asset(
-        "assets/splash/splash.png",
+        "assets/splash/splash.jpg",
         alignment: Alignment.center,
         width: Get.width,
         height: Get.height,
@@ -23,7 +23,7 @@ class Splash extends StatelessWidget {
       floatingActionButton: GetBuilder<SplashController>(
         builder:(controller){
           if (controller.countdown == 0) {
-            return Text('初始化');
+            return const Text('初始化');
           }
           return GestureDetector(
             onTap: (){

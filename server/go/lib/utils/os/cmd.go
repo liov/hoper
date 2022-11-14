@@ -1,6 +1,7 @@
 package osi
 
 import (
+	stringsi "github.com/actliboy/hoper/server/go/lib/utils/strings"
 	"log"
 	"os"
 	"os/exec"
@@ -14,12 +15,12 @@ func CMD(s string) (string, error) {
 	cmd := exec.Command(words[0], words[1:]...)
 	buf, err := cmd.CombinedOutput()
 	if err != nil {
-		return "", err
+		return stringsi.ToString(buf), err
 	}
 	if len(buf) == 0 {
 		return "", nil
 	}
-	return string(buf[:len(buf)-1]), nil
+	return stringsi.ToString(buf), nil
 }
 
 func Split(line string) []string {

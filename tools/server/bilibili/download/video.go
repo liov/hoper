@@ -37,7 +37,8 @@ func (video *Video) GetVideoReqAfterDownloadVideo() *crawler.Request {
 			if err != nil {
 				if err.Error() == rpc.ErrorNotFound {
 					dao.Dao.Hoper.Table(dao.TableNameVideo).Where(`cid = ?`, video.Cid).UpdateColumn("deleted_at", time.Now())
-					return nil, nil
+					req := ViewRecordUpdateReq(video.Aid)
+					return []*crawler.Request{req}, nil
 				}
 				return nil, err
 			}
@@ -163,7 +164,7 @@ WHERE b.record < 2  AND b.created_at < ? AND b.`+postgres.NotDeleted+` ORDER BY 
 		}
 		for _, video := range videos {
 			if video.Title == "" {
-				req := ViewRecordUpdateReqAfterRecordVideo(video.Aid)
+				req := RecordViewInfoReqAfterRecordVideo(video.Aid)
 				engine.BaseEngine.AddTask(engine.NewTask(req))
 			} else {
 				req := video.GetVideoReqAfterDownloadVideo()

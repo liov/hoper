@@ -7,4 +7,6 @@ declare interface Window {
   wx: any;
   WeixinJSBridge: any;
   __wxjs_environment: string;
+
+  Flutter: PlatformCompatible;
 }

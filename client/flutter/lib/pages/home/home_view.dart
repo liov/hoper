@@ -1,5 +1,6 @@
 
-import 'dart:isolate';
+
+import 'dart:io';
 
 import 'package:app/components/christmas_tree.dart';
 
@@ -16,7 +17,9 @@ import 'package:app/routes/route.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
+import 'package:app/components/media/pick.dart';
 import 'home_controller.dart';
 
 /*
@@ -28,6 +31,8 @@ class HomeView extends StatefulWidget {
 
 class HomeView extends StatelessWidget {
   final SplashController controller = Get.find();
+
+   HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -62,15 +67,17 @@ class App extends StatelessWidget with WidgetsBindingObserver {
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
   final List<Widget> _widgetOptions = <Widget>[
-    MomentView(),
-    IndexPage(),
-    SnowChristmasTree(),
+    const MomentView(),
+    const IndexPage(),
+    const MediaPick(),
     UserView(),
   ];
 
+  App({super.key});
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    globalService.logger.d("--" + state.toString());
+    globalService.logger.d("--$state");
     switch (state) {
       case AppLifecycleState.inactive: // 处于这种状态的应用程序应该假设它们可能在任何时候暂停。
         break;
@@ -91,9 +98,9 @@ class App extends StatelessWidget with WidgetsBindingObserver {
     return Scaffold(
         body: PageView(
           controller: controller.pageController,
+          physics: const NeverScrollableScrollPhysics(),
           //onPageChanged: controller.onPageChanged,
           children: _widgetOptions,
-          physics: NeverScrollableScrollPhysics(),
         ),
  /*       floatingActionButtonLocation: CustomFloatingActionButtonLocation(FloatingActionButtonLocation.miniCenterDocked, 0, 15),
         floatingActionButton: FloatingActionButton(
@@ -118,9 +125,10 @@ class App extends StatelessWidget with WidgetsBindingObserver {
   }
 
   Widget _bottom2(){
-    globalService.logger.d(Get.theme.backgroundColor);
+    globalService.logger.d(Get.theme.colorScheme.background);
     final ThemeData theme = globalState.isDarkMode.value ? AppTheme.dark : AppTheme.light;
     return ConvexAppBar(
+      disableDefaultTabController: true,
       initialActiveIndex: controller.selectedIndex.value,
       onTabNotify: (i) {
         var intercept = i == 2;

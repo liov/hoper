@@ -13,18 +13,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:shelf/shelf_io.dart' as shelf_io;
-import 'package:shelf_proxy/shelf_proxy.dart';
-import '../user/login_view.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+
+import '../webview/webview.dart';
 
 class IndexPage extends StatefulWidget {
+  const IndexPage({super.key});
+
   @override
   _IndexPageState createState() => _IndexPageState();
 }
 
 class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixin {
-  final MethodChannel _methodChannel = MethodChannel('xyz.hoper.native/view');
+  final MethodChannel _methodChannel = const MethodChannel('xyz.hoper.native/view');
 
   final TextEditingController _controller = TextEditingController();
   final _focusNode = FocusNode();
@@ -52,21 +53,21 @@ class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixi
         centerTitle: true,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text('🍀'),
+        title: const Text('🍀'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Shimmer.fromColors(
               loop: 1,
-              baseColor: theme.textTheme.bodyText2!.color!,
+              baseColor: theme.textTheme.bodyMedium!.color!,
               highlightColor: Colors.blue,
-              child: Text(
+              child: const Text(
                 '点击下方加号:',
               )),
           Text(
             '$_counter',
-            style: theme.textTheme.headline4,
+            style: theme.textTheme.headlineMedium,
           ),
           Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -77,15 +78,23 @@ class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixi
                   heroTag: 'Increment',
                   onPressed: _incrementCounter,
                   tooltip: 'Increment',
-                  child: Icon(Icons.add),
+                  child: const Icon(Icons.add),
                 )),
-                SizedBox(width: 20),
+                const SizedBox(width: 20),
+                FadeIn(
+                    child: FloatingActionButton(
+                      heroTag: 'Webview',
+                      onPressed: ()=>{Get.to(()=> const WebViewExample())},
+                      tooltip: 'Webview',
+                      child: const Icon(Icons.web),
+                    )),
+                const SizedBox(width: 20),
                 FadeInRight(
                     child: FloatingActionButton(
                   heroTag: 'Reduce',
                   onPressed: _reduceCounter,
                   tooltip: 'Reduce',
-                  child: Icon(Icons.remove),
+                  child: const Icon(Icons.remove),
                 ))
               ]),
           CupertinoSwitch(
@@ -101,7 +110,7 @@ class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixi
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
+                  SizedBox(
                       height: 60,
                       width: 150,
                       child: TextField(
@@ -109,14 +118,14 @@ class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixi
                           focusNode: _focusNode,
                           maxLines: 1,
                           maxLength: 3,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             counterText: '',
                             fillColor: Color(0x30cccccc),
                             filled: true,
                             border: OutlineInputBorder(
                                 borderSide:
-                                    const BorderSide(color: Colors.blue),
-                                borderRadius: const BorderRadius.all(
+                                    BorderSide(color: Colors.blue),
+                                borderRadius: BorderRadius.all(
                                     Radius.circular(100))),
                           ))),
                   IconButton(
@@ -128,7 +137,7 @@ class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixi
                         setState(() {});
                       },
                       color: Colors.blue,
-                      icon: Icon(Icons.check))
+                      icon: const Icon(Icons.check))
                 ],
               ))
         ],
@@ -140,17 +149,17 @@ class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixi
           final user = globalState.authState.userAuth;
           if (user != null) {
             Get.dialog(AlertDialog(
-              title: Text('提示', textAlign: TextAlign.center),
-              content: Text('确认退出吗？', textAlign: TextAlign.center),
+              title: const Text('提示', textAlign: TextAlign.center),
+              content: const Text('确认退出吗？', textAlign: TextAlign.center),
               actions: <Widget>[
                 TextButton(
-                  child: Text('取消'),
+                  child: const Text('取消'),
                   onPressed: () {
                     navigator!.pop('cancel');
                   },
                 ),
                 TextButton(
-                  child: Text('确认'),
+                  child: const Text('确认'),
                   onPressed: () {
                     globalState.authState.logout();
                     navigator!.pop('ok');
@@ -163,7 +172,7 @@ class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixi
           }
         },
         tooltip: 'ToBrowser',
-        child: Icon(Icons.send),
+        child: const Icon(Icons.send),
       ),
       // This trailing comma makes auto-formatting nicer for build methods.
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,

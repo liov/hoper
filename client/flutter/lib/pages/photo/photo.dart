@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get_core/src/get_main.dart';
 
 class PhotoView extends StatelessWidget {
-  PhotoView(this.urls,this.initialPage) :super();
+  PhotoView(this.urls,this.initialPage, {super.key});
   final List<String> urls;
   final int initialPage;
 
@@ -42,8 +42,8 @@ class PhotoView extends StatelessWidget {
           );
         } else {
           return Container(
+            padding: const EdgeInsets.all(5.0),
             child: image,
-            padding: EdgeInsets.all(5.0),
           );
         }
       },
