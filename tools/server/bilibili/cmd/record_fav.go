@@ -22,7 +22,7 @@ func main() {
 		req2 := download.FavReqs(62504730, 1, 1, download.GetFavList)
 		req := append(req1, req2...)*/
 		engine := crawler.NewEngine(config.Conf.Bilibili.WorkCount).SkipKind(download.KindDownloadVideo).Timer(1, time.Millisecond*500).Timer(3, time.Second)
-		go download.FixRecordFav(ctx, engine)
+		download.RecordFavTimer(ctx, engine)
 		engine.Run()
 	}
 	conctrl.Timer(context.Background(), task, time.Minute*10)
