@@ -6,7 +6,7 @@
     "wasm": "wasm-pack build ./wasm --target web",
     "wasm:link": "npm link ./wasm/pkg",
     "dev": "vite --mode dev",
-    "build": "run-p rsw type-check build-only",
+    "build": "run-p type-check build-only",
     "preview": "vite preview --port 4173",
     "test:unit": "vitest --environment jsdom",
     "test:e2e": "start-server-and-test preview http://127.0.0.1:4173/ 'cypress open --e2e'",

@@ -51,6 +51,9 @@ func (video *Video) GetVideoReqAfterDownloadVideo() *crawler.Request {
 }
 
 func GetDownloadRequests(videoInfo *rpc.VideoInfo, video *Video) ([]*crawler.Request, error) {
+	if videoInfo == nil {
+		return nil, nil
+	}
 	var requests []*crawler.Request
 	for _, durl := range videoInfo.Durl {
 		req := video.DownloadVideoReq("", durl.Order, durl.Url)
@@ -108,7 +111,7 @@ func (video *Video) RecordVideo(ctx context.Context) (*rpc.VideoInfo, error) {
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
-	if dvideo.Cid > 0 {
+	if dvideo.Cid > 0 && dvideo.Record > 0 {
 		return nil, nil
 	}
 	res, err := apiservice.GetPlayerInfo(video.Aid, video.Cid)
@@ -121,12 +124,9 @@ func (video *Video) RecordVideo(ctx context.Context) (*rpc.VideoInfo, error) {
 	}
 
 	video.Quality = res.Quality
-	var durl []*rpc.Durl
-	var dash *rpc.Dash
-	if dvideo.Record == 0 {
-		durl = res.Durl
-		dash = res.Dash
-	}
+
+	durl := res.Durl
+	dash := res.Dash
 
 	bilibiliDao := dao.NewDao(ctx, dao.Dao.Hoper.DB)
 	if err == gorm.ErrRecordNotFound || dvideo.Cid == 0 {

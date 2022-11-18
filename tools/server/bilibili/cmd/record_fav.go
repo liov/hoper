@@ -18,11 +18,11 @@ func main() {
 	task := &conctrl.TimerTask{}
 	task.Do = func(ctx context.Context) {
 		log.Println("times", task.Times)
-		/*req1 := download.FavReqs(63181530, 1, 5, download.RecordFavList)
-		req2 := download.FavReqs(62504730, 1, 1, download.RecordFavList)
+		/*req1 := download.FavReqs(63181530, 1, 5, download.GetFavList)
+		req2 := download.FavReqs(62504730, 1, 1, download.GetFavList)
 		req := append(req1, req2...)*/
-		engine := crawler.NewEngine(config.Conf.Bilibili.WorkCount).SkipKind(download.KindGetPlayerUrl).Timer(1, time.Millisecond*500).Timer(3, time.Second)
-		download.RecordFavTimer(ctx, engine)
+		engine := crawler.NewEngine(config.Conf.Bilibili.WorkCount).SkipKind(download.KindDownloadVideo).Timer(1, time.Millisecond*500).Timer(3, time.Second)
+		go download.FixRecordFav(ctx, engine)
 		engine.Run()
 	}
 	conctrl.Timer(context.Background(), task, time.Minute*10)

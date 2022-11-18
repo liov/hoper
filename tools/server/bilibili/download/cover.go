@@ -3,6 +3,7 @@ package download
 import (
 	"context"
 	"github.com/actliboy/hoper/server/go/lib/utils/generics/net/http/client/crawler"
+	"gorm.io/gorm"
 
 	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
 
@@ -29,7 +30,7 @@ func CoverViewInfoHandleFun(ctx context.Context, url string) ([]*crawler.Request
 }
 
 // 收藏夹封面下载
-func CoverFavList(ctx context.Context, url string) ([]*crawler.Request, error) {
+func DownloadFavCover(ctx context.Context, url string) ([]*crawler.Request, error) {
 	res, err := rpc.Get[*rpc.FavResourceList](url)
 	if err != nil {
 		return nil, err
@@ -37,11 +38,23 @@ func CoverFavList(ctx context.Context, url string) ([]*crawler.Request, error) {
 	var requests []*crawler.Request
 	for _, fav := range res.Medias {
 		aid := tool.Bv2av(fav.Bvid)
-		req1 := RecordViewInfoReq(aid)
-		req2 := CoverDownloadReq(fav.Cover, fav.Upper.Mid, fav.Id)
-		requests = append(requests, req1, req2)
+		bilibiliDao := dao.NewDao(ctx, dao.Dao.Hoper.DB)
+		view, err := bilibiliDao.ViewInfo(aid)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			return nil, err
+		}
+		if err == gorm.ErrRecordNotFound {
+			if !strings.HasSuffix(fav.Cover, "be27fd62c99036dce67efface486fb0a88ffed06.jpg") {
+				req := CoverDownloadReq(fav.Cover, fav.Upper.Mid, fav.Id)
+				requests = append(requests, req)
+			}
+		} else {
+			if view.CoverRecord == false {
+				req := CoverDownloadReq(fav.Cover, fav.Upper.Mid, fav.Id)
+				requests = append(requests, req)
+			}
+		}
 	}
-
 	return requests, nil
 }
 
@@ -51,8 +64,10 @@ func CoverDownloadReq(url string, upId, id int) *crawler.Request {
 	})
 }
 
+const NULLCOVER = "be27fd62c99036dce67efface486fb0a88ffed06.jpg"
+
 func CoverDownload(ctx context.Context, url string, upId, id int) error {
-	if strings.HasSuffix(url, "be27fd62c99036dce67efface486fb0a88ffed06.jpg") {
+	if strings.HasSuffix(url, NULLCOVER) {
 		return nil
 	}
 	/*	var record bool
@@ -66,7 +81,6 @@ func CoverDownload(ctx context.Context, url string, upId, id int) error {
 		err = client.DownloadImage(filepath, url)
 		if err != nil {
 			log.Println("下载图片失败：", err)
-			go CoverDownload(ctx, url, upId, id)
 			return err
 		}
 		dao.Dao.Hoper.Table(dao.TableNameView).Where("aid = ?", id).Update("cover_record", true)
