@@ -1,6 +1,8 @@
 greeting:
   message: "hello"
 quarkus:
+  datasource:
+    db-kind: "postgresql"
   hibernate-orm:
     database:
       generation: "drop-and-create"

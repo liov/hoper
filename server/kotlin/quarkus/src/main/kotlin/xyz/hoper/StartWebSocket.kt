@@ -1,6 +1,9 @@
 package xyz.hoper
 
-import java.io.IOException
+import io.vertx.mutiny.ext.web.Session
+import jakarta.websocket.server.PathParam
+import jakarta.websocket.server.ServerEndpoint
+
 import javax.enterprise.context.ApplicationScoped
 import javax.websocket.*
 import javax.websocket.server.PathParam

@@ -10,7 +10,7 @@ import reactor.core.publisher.MonoSink
 
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/hello")
 class HelloController {
     val log = LoggerFactory.getLogger(this.javaClass)
 

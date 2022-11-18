@@ -1,28 +1,22 @@
 package xyz.hoper.user.service.impl
 
-import io.vertx.core.AsyncResult
-import io.vertx.core.Future
-import io.vertx.core.Handler
+
 import org.springframework.stereotype.Component
 import xyz.hoper.user.service.UserService
 import xyz.hoper.user.entity.User
 
-import xyz.hoper.vertx.annotation.AsyncServiceHandler
-import xyz.hoper.vertx.util.BaseAsyncService
-
 
 @Component
-@AsyncServiceHandler
-class UserServiceImpl : UserService, BaseAsyncService {
-    override fun info(id: Long, resultHandler: Handler<AsyncResult<User>>) {
+class UserServiceImpl : UserService {
+    override fun info(id: Long): User? {
         try {
             val user = User()
             user.id = id
             user.name = "测试"
-            Future.succeededFuture(user).onComplete(resultHandler)
+            return user
         } catch (e: Exception) {
             e.printStackTrace()
-            resultHandler.handle(Future.failedFuture(e))
         }
+        return null
     }
 }

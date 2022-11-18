@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
-    val kotlinVersion = "1.7.10"
+    val kotlinVersion = "1.7.21"
     id("org.springframework.boot") version "3.0.0-SNAPSHOT"
     kotlin("plugin.spring") version kotlinVersion
     id("io.spring.dependency-management") version "1.0.13.RELEASE"
@@ -30,6 +30,11 @@ allprojects {
         gradlePluginPortal()
         google()
         mavenLocal()
+    }
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
@@ -104,8 +109,8 @@ subprojects {
 
 
     tasks.withType<BootBuildImage> {
-        builder = "paketobuildpacks/builder:tiny"
-        environment = mapOf("BP_NATIVE_IMAGE" to "true")
+        //builder = "paketobuildpacks/builder:tiny"
+        //environment = mapOf("BP_NATIVE_IMAGE" to "true")
     }
 
 }
