@@ -6,7 +6,7 @@ flask~=2.0.2
 lxml~=4.9.1
 numpy==1.22.4
 paddleocr==2.3.0.2
-Pillow==9.2.0
+Pillow==9.3.0
 requests==2.26.0
 setuptools==58.0.4
 taichi==1.0.3
