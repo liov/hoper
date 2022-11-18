@@ -167,3 +167,5 @@ systemd=true
 10.0.2.4 / 10.0.2.5 / 10.0.2.6	Optional second, third and fourth DNS server (if any)
 10.0.2.15	The emulated device's own network/ethernet interface
 127.0.0.1	The emulated device's own loopback interface
+
+# go用channel控制批量任务的结束，要用close(ch) 不要用ch<-,只会停掉一个任务，其他会卡住

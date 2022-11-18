@@ -71,8 +71,7 @@ impl Universe {
                 } else {
                     Cell::Dead
                 }
-            })
-            .collect();
+            }).collect();
 
         Universe {
             width,

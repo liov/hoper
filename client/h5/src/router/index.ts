@@ -25,7 +25,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/user/Home.vue"),
   },
   {
-    path: "/wasm",
+    path: "/diary",
     name: "Wasm",
     component: () => import("../components/wasm/wasm.vue"),
   },

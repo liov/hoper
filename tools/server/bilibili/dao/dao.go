@@ -35,6 +35,15 @@ func (d *dao) ViewExists(aid int) (bool, error) {
 	return postgres.Exists(d.db, TableNameView, "aid", aid, false)
 }
 
+func (d *dao) ViewInfo(aid int) (*View, error) {
+	var view View
+	err := d.db.Table(TableNameView).Where(`aid = ?`, aid).First(&view).Error
+	if err != nil {
+		return nil, err
+	}
+	return &view, nil
+}
+
 func (d *dao) ViewCreatedTime(aid int) (time.Time, error) {
 	var t time.Time
 	err := d.db.Table(TableNameView).Select(`created_at`).Where(`aid = ?`, aid).Scan(&t).Error
