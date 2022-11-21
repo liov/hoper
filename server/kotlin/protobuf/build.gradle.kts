@@ -12,6 +12,7 @@ plugins {
     //kotlin("kapt")
 }
 
+
 //wire {
 //    sourcePath {
 //        srcDir ("${rootDir}\\..\\..\\..\\proto")

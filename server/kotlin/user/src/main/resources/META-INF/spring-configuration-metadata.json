@@ -1,0 +1,28 @@
+{
+  "groups": [],
+  "hints": [],
+  "properties": [
+    {
+      "name": "config.name",
+      "type": "java.lang.String",
+      "description": "username"
+    },
+    {
+      "name": "config.password",
+      "type": "java.lang.String",
+      "description": "password"
+    },
+    {
+      "name": "config.host",
+      "type": "java.lang.String",
+      "defaultValue": "localhost",
+      "description": "hostname"
+    },
+    {
+      "name": "config.port",
+      "type": "java.lang.Integer",
+      "defaultValue": "8080",
+      "description": "port"
+    }
+  ]
+}

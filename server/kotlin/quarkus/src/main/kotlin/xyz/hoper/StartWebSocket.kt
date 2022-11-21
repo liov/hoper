@@ -1,13 +1,11 @@
 package xyz.hoper
 
-import io.vertx.mutiny.ext.web.Session
+
 import jakarta.websocket.server.PathParam
 import jakarta.websocket.server.ServerEndpoint
 
 import javax.enterprise.context.ApplicationScoped
 import javax.websocket.*
-import javax.websocket.server.PathParam
-import javax.websocket.server.ServerEndpoint
 
 @ServerEndpoint("/start-websocket/{name}")
 @ApplicationScoped

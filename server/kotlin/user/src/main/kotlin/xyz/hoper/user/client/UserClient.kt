@@ -20,7 +20,7 @@ class UserClient {
     private var port: Int = 8080
 
     @Autowired
-    private var grpcClientMananer: GrpcClientMananer? = null
+    private var grpcClientManager: GrpcClientManager? = null
 
     val log : Logger = LoggerFactory.getLogger(UserClient::class.java)
 
@@ -30,7 +30,7 @@ class UserClient {
     }
 
     fun call(){
-        val channel = grpcClientMananer?.getChannel(host,port)
+        val channel = grpcClientManager?.getChannel(host,port)
         val stub = UserServiceGrpc.newBlockingStub(channel)
         val request = EmptyOuterClass.Empty.newBuilder().build()
         try{
