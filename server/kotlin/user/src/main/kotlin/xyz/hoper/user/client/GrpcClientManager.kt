@@ -6,7 +6,7 @@ import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
 
 @Component
-class GrpcClientMananer {
+class GrpcClientManager {
     fun getChannel(host: String?, port: Int): ManagedChannel? {
         return ManagedChannelBuilder.forAddress(host, port)
                 .usePlaintext()

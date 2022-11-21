@@ -99,6 +99,7 @@ dependencies:
   convex_bottom_bar: ^3.1.0+1
   power_image: 0.1.0-pre.2
   logger: ^1.1.0
+  flame: ^1.4.0
 # provider: ^5.0.0
 
 dev_dependencies:

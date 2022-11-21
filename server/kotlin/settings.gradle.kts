@@ -3,6 +3,7 @@ rootProject.name = "kotlin"
 include("user")
 include("protobuf")
 include("quarkus")
+include("content")
 
 pluginManagement {
     val quarkusPluginVersion: String by settings
@@ -33,3 +34,4 @@ pluginManagement {
         }
     }
 }
+

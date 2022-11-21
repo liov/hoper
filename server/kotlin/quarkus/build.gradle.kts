@@ -23,6 +23,7 @@ sourceSets {
 
 dependencies {
     implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
+    implementation(enforcedPlatform("${quarkusPlatformGroupId}:quarkus-camel-bom:${quarkusPlatformVersion}"))
     implementation("io.quarkus:quarkus-rest-client-reactive-kotlin-serialization")
     implementation("io.quarkus:quarkus-smallrye-jwt")
     implementation("io.quarkus:quarkus-smallrye-graphql")
@@ -57,6 +58,8 @@ dependencies {
     implementation("io.quarkus:quarkus-hibernate-validator")
     implementation("io.quarkus:quarkus-smallrye-reactive-messaging")
     implementation("io.quarkus:quarkus-websockets")
+    implementation("javax.websocket:javax.websocket-api:1.1")
+    implementation("org.apache.camel.quarkus:camel-quarkus-vertx-websocket")
     implementation("io.quarkus:quarkus-spring-di")
     implementation("io.quarkus:quarkus-redis-client")
     implementation("io.quarkus:quarkus-smallrye-jwt-build")
@@ -68,6 +71,7 @@ dependencies {
 tasks.withType<Test> {
     systemProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager")
 }
+
 allOpen {
     annotation("javax.ws.rs.Path")
     annotation("javax.enterprise.context.ApplicationScoped")

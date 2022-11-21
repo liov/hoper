@@ -4,12 +4,13 @@ import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 plugins {
     val kotlinVersion = "1.7.21"
     id("org.springframework.boot") version "3.0.0-SNAPSHOT"
-    kotlin("plugin.spring") version kotlinVersion
-    id("io.spring.dependency-management") version "1.0.13.RELEASE"
+    id("io.spring.dependency-management") version "1.1.0"
+    id("org.graalvm.buildtools.native") version "0.9.17"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.allopen") version kotlinVersion
     kotlin("plugin.jpa") version kotlinVersion apply false
     kotlin("plugin.serialization") version kotlinVersion
+    kotlin("plugin.spring") version kotlinVersion
     java
     idea
     //id("org.springframework.experimental.aot") version "0.11.0-RC1"
@@ -20,7 +21,6 @@ allprojects {
     apply<IdeaPlugin>()
     group = "xyz.hoper"
     version = "0.0.1-SNAPSHOT"
-    java.sourceCompatibility = JavaVersion.VERSION_17
 
     repositories {
         maven { url = uri("https://repo.spring.io/milestone") }
@@ -38,12 +38,10 @@ allprojects {
     }
 }
 
-extra["slf4j.version"] = "1.7.20"
-
 configurations.all {
     resolutionStrategy.eachDependency {
         if (requested.group == "org.slf4j") {
-            useVersion("1.7.20")
+            useVersion("1.7.21")
         }
     }
 }
@@ -57,32 +55,43 @@ subprojects {
 
 
     configurations {
+        implementation {
+            exclude(group = "org.slf4j", module = "slf4j-log4j12")
+        }
         compileOnly {
             extendsFrom(configurations.annotationProcessor.get())
         }
     }
 
+    sourceSets {
+        main {
+            java {
+                srcDirs("src/main/java")
+            }
+        }
+    }
+
     dependencies {
+        annotationProcessor("org.apache.logging.log4j:log4j-core:2.19.0")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
         implementation(kotlin("reflect"))
         implementation(kotlin("stdlib-jdk8"))
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
         implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
-        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
-        implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-        implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
-        implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+        //implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
         developmentOnly("org.springframework.boot:spring-boot-devtools")
-        compileOnly("org.projectlombok:lombok")
-        runtimeOnly("mysql:mysql-connector-java")
-        //runtimeOnly("org.postgresql:postgresql")
-        //runtimeOnly("org.postgresql:r2dbc-postgresql")
-        annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-        annotationProcessor("org.projectlombok:lombok")
-        testImplementation("org.springframework.boot:spring-boot-starter-test")
-        testImplementation("io.projectreactor:reactor-test")
-        implementation("org.junit.jupiter:junit-jupiter:5.9.0")
+        //runtimeOnly("mysql:mysql-connector-java")
         implementation("org.reflections:reflections:0.10.2")
+        runtimeOnly("org.postgresql:postgresql")
+
+        annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+        //annotationProcessor("org.projectlombok:lombok")
+        testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
+        testImplementation("io.projectreactor:reactor-test")
+        testImplementation("org.springframework.boot:spring-boot-starter-test") {
+            exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
+        }
     }
 
     dependencyManagement {

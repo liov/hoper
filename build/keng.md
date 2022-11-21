@@ -1482,3 +1482,10 @@ var foo:any
 ```typescript
 export {}
 ```
+# jpa 加Entity注解报必须要有@Id,
+注意引用Id注解的包，jakarta.persistence里的
+
+# @Table注解自动改表名加下划线 @Table(name="public.content") -> public_content
+@Table(name="content",schema="public")
+保持大小写
+spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl

@@ -17,7 +17,7 @@ repositories {
     mavenCentral()
 }
 
-val mainVerticleName = "xyz.hoper.user.UserApplication"
+val mainVerticleName = "xyz.hoper.content.ContentApplication"
 
 val watchForChange = "src/**/*"
 val doOnChange = "${projectDir}/gradlew classes"
@@ -29,11 +29,10 @@ application {
 
 dependencies {
     implementation(project(":protobuf"))
-    implementation("org.springframework.boot:spring-boot-starter-graphql")
     implementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
-    runtimeOnly("org.postgresql:r2dbc-postgresql")
-    implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-graphql")
 }
 
 
@@ -44,12 +43,6 @@ tasks.withType<Test> {
     }
 }
 
-/*tasks.withType<JavaCompile> {
-    options.generatedSourceOutputDirectory.set(file("$projectDir/build/generated"))
-    options.compilerArgs = listOf(
-        "-Acodegen.output=src/main"
-    )
-}*/
 
 tasks.withType<ShadowJar> {
     archiveClassifier.set("fat")
