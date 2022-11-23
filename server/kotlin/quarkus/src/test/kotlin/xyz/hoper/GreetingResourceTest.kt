@@ -6,7 +6,7 @@ import org.hamcrest.CoreMatchers.`is`
 import org.junit.jupiter.api.Test
 
 @QuarkusTest
-class ExampleResourceTest {
+class GreetingResourceTest {
 
     @Test
     fun testHelloEndpoint() {
@@ -14,7 +14,7 @@ class ExampleResourceTest {
           .`when`().get("/hello")
           .then()
              .statusCode(200)
-             .body(`is`("hello"))
+             .body(`is`("Hello from RESTEasy Reactive"))
     }
 
 }

@@ -1489,3 +1489,45 @@ export {}
 @Table(name="content",schema="public")
 保持大小写
 spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+# java.lang.NoClassDefFoundError: javax.validation.ConstraintValidatorFactory
+移除 validation包
+
+
+As @Korgen mentioned in comments hibernate-validator-5.x.x isn't compatible with validation-api-1.0.x. This is because of moving to new specification JSR-303 -> JSR-349.
+
+There are two ways to solve this issue:
+
+1. Downgrade hibernate validator version (which is implements JSR-303):
+
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-validator</artifactId>
+    <version>4.3.1.Final</version>
+</dependency> 
+2. If you don't want to move back from hibernate validator 5 to hibernate validator 4 another solution is to upgrade javax.validation to higher version (which is describe JSR-349):
+
+<dependency>
+    <groupId>javax.validation</groupId>
+    <artifactId>validation-api</artifactId>
+    <version>1.1.0.Final</version>
+</dependency>
+
+
+---
+For those who got error NoClassDefFoundError: javax/validation/valueextraction/ValueExtractorDeclarationException and their validation-api was already javax.validation:validation-api:1.1.0.Final
+
+The fix was to upgrade from javax.validation:validation-api:1.1.0.Final to javax.validation:validation-api:2.0.1.Final.
+
+# quarkus Caused by: java.lang.ClassNotFoundException: javax.websocket.server.ServerEndpoint
+应该是依赖冲突,jakarta.websocket:jakarta.websocket-api:1.1.2 -> 2.1.0 依赖jakarta.websocket:1.1.2 结果变成2.1.0,包名变了，注解少了
+试了删各种依赖没用,只好
+```kotlin
+configurations.all {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "jakarta.websocket") {
+        useVersion("1.1.2")
+        }
+    }
+}
+``

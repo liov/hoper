@@ -1,15 +1,17 @@
 package xyz.hoper
 
 
-import jakarta.websocket.server.PathParam
-import jakarta.websocket.server.ServerEndpoint
-
+import java.util.concurrent.ConcurrentHashMap
 import javax.enterprise.context.ApplicationScoped
 import javax.websocket.*
+import javax.websocket.server.PathParam
+import javax.websocket.server.ServerEndpoint
 
-@ServerEndpoint("/start-websocket/{name}")
 @ApplicationScoped
+@ServerEndpoint("/start-websocket/{name}")
 class StartWebSocket {
+
+    var sessions: Map<String, Session> = ConcurrentHashMap()
 
     @OnOpen
     fun onOpen(session: Session?, @PathParam("name") name: String) {
@@ -29,5 +31,15 @@ class StartWebSocket {
     @OnMessage
     fun onMessage(message: String, @PathParam("name") name: String) {
         println("onMessage> $name: $message")
+    }
+
+    private fun broadcast(message: String) {
+        sessions.values.forEach { s ->
+            s.asyncRemote.sendObject(message) { result ->
+                if (result.exception != null) {
+                    println("Unable to send message: " + result.exception)
+                }
+            }
+        }
     }
 }
