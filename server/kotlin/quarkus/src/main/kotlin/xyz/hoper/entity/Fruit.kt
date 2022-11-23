@@ -1,15 +1,15 @@
 package xyz.hoper.entity
 
-import io.quarkus.hibernate.orm.panache.kotlin.PanacheEntity
-import javax.persistence.Cacheable
-import javax.persistence.Column
-import javax.persistence.Entity
+
+import javax.persistence.*
 
 
 @Entity
 @Cacheable
-class Fruit: PanacheEntity() {
-
+class Fruit {
+    @get:GeneratedValue
+    @get:Id
+    var id: Long = 0
     @Column(length = 40, unique = true)
-    lateinit var name:String
+     var name:String =""
 }

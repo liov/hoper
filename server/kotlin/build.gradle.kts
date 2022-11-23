@@ -8,7 +8,7 @@ plugins {
     id("org.graalvm.buildtools.native") version "0.9.17"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.allopen") version kotlinVersion
-    kotlin("plugin.jpa") version kotlinVersion apply false
+    kotlin("plugin.jpa") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     java
@@ -51,7 +51,7 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "org.jetbrains.kotlin.plugin.spring")
     apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
-    apply(plugin = "org.springframework.boot")
+
 
 
     configurations {
@@ -73,25 +73,20 @@ subprojects {
 
     dependencies {
         annotationProcessor("org.apache.logging.log4j:log4j-core:2.19.0")
-        implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
         implementation(kotlin("reflect"))
         implementation(kotlin("stdlib-jdk8"))
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
         implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
-        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
         //implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
-        developmentOnly("org.springframework.boot:spring-boot-devtools")
         //runtimeOnly("mysql:mysql-connector-java")
         implementation("org.reflections:reflections:0.10.2")
         runtimeOnly("org.postgresql:postgresql")
 
-        annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
         //annotationProcessor("org.projectlombok:lombok")
         testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
         testImplementation("io.projectreactor:reactor-test")
-        testImplementation("org.springframework.boot:spring-boot-starter-test") {
-            exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
-        }
+
     }
 
     dependencyManagement {
@@ -112,7 +107,7 @@ subprojects {
         kotlinOptions {
             javaParameters = true
             freeCompilerArgs = listOf("-Xjsr305=strict")
-            jvmTarget = "17"
+            jvmTarget = JavaVersion.VERSION_17.toString()
         }
     }
 

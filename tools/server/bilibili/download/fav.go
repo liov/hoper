@@ -23,7 +23,7 @@ func RecordFavTimer(ctx context.Context, engine *crawler.Engine) {
 		log.Println(err)
 		return
 	}
-	cancel := make(chan struct{}, 1)
+	subCtx, cancel := context.WithCancel(ctx)
 
 	for _, favId := range favIds {
 		go func(favId int) {
@@ -35,7 +35,7 @@ func RecordFavTimer(ctx context.Context, engine *crawler.Engine) {
 				case <-timer.C:
 					taskFun := GetFavListReqAfterRecordView(favId, page, lastRecordTime, cancel)
 					engine.AddTask(engine.NewTask(crawler.NewRequest(favIdStr+strconv.Itoa(page), KindRecordFavList, taskFun)))
-				case <-cancel:
+				case <-subCtx.Done():
 					timer.Stop()
 					break Loop
 				}
@@ -45,8 +45,9 @@ func RecordFavTimer(ctx context.Context, engine *crawler.Engine) {
 	}
 }
 
-func GetFavListReqAfterRecordView(favId, page int, lastRecordTime time.Time, cancel chan struct{}) crawler.TaskFunc {
+func GetFavListReqAfterRecordView(favId, page int, lastRecordTime time.Time, cancel context.CancelFunc) crawler.TaskFunc {
 	return func(ctx context.Context) ([]*crawler.Request, error) {
+		log.Printf("获取收藏夹%d,第%d页\n", favId, page)
 		res, err := apiservice.GetFavLResourceList(favId, page)
 		if err != nil {
 			return nil, err
@@ -67,7 +68,7 @@ func GetFavListReqAfterRecordView(favId, page int, lastRecordTime time.Time, can
 					requests = append(requests, req1, req2)
 				}
 			} else if createdAt.Before(lastRecordTime) {
-				close(cancel)
+				cancel()
 				return requests, nil
 			}
 		}

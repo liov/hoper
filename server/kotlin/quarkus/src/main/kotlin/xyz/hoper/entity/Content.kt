@@ -1,4 +1,4 @@
-package xyz.hoper
+package xyz.hoper.entity
 
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
@@ -23,9 +23,9 @@ import javax.persistence.Id
  * }
  */
 @Entity
-class MyKotlinEntity {
+class Content {
     @get:GeneratedValue
     @get:Id
-    var id: Long? = null
-    var field: String? = null
+    var id: Long = 0
+    var name: String = ""
 }
