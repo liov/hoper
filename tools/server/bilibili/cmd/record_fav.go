@@ -25,5 +25,5 @@ func main() {
 		download.RecordFavTimer(ctx, engine)
 		engine.Run()
 	}
-	conctrl.Timer(context.Background(), task, time.Hour)
+	conctrl.Timer(context.Background(), task, time.Minute*10)
 }
