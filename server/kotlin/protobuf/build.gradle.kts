@@ -1,14 +1,9 @@
-import com.google.protobuf.gradle.generateProtoTasks
-import com.google.protobuf.gradle.id
-import com.google.protobuf.gradle.ofSourceSet
-import com.google.protobuf.gradle.plugins
-import com.google.protobuf.gradle.protobuf
-import com.google.protobuf.gradle.protoc
+import com.google.protobuf.gradle.*
 import java.io.ByteArrayOutputStream
 
 plugins {
     //id("com.squareup.wire") version "3.1.0"
-    id("com.google.protobuf") version "0.8.18"
+    id("com.google.protobuf") version "0.9.1"
     //kotlin("kapt")
 }
 
@@ -65,7 +60,15 @@ protobuf {
     }
 
     generateProtoTasks {
-
+        tasks.forEach{task->
+            println(task)
+            if (task.name == "extractProto") {
+                task.actions.add{
+                    val extractDir = "$buildDir/extracted-protos/main"
+                    delete("$extractDir/third",  "$extractDir/patch")
+                }
+            }
+        }
         ofSourceSet("main").forEach { generateProtoTask ->
             generateProtoTask
                 .plugins {
@@ -73,7 +76,9 @@ protobuf {
                     //id("grpckt")
                 }
         }
+
     }
+
 }
 
 idea {
@@ -94,8 +99,8 @@ dependencies {
     api("io.grpc:grpc-protobuf:$grpcVersion")
     api("io.grpc:grpc-stub:$grpcVersion")
     implementation("com.google.guava:guava:31.1-jre")
-    protobuf(files("$projectpath/protobuf").filter { file -> file.name.contains("third") })
-    protobuf(files("$projectpath/protobuf/third").filter { file -> file.name.contains("patch") })
+    protobuf(files("$projectpath/protobuf") )
+    protobuf(files("$projectpath/protobuf/third"))
     //protobuf(files(protolib("github.com/grpc-ecosystem/grpc-gateway/v2")))
     //protobuf(files(protolib("github.com/googleapis/googleapis")))
     //api("com.squareup.wire:wire-runtime:${rootProject.ext["wire_version"]}")
@@ -139,7 +144,6 @@ fun allProtolib(): List<String> {
 
 fun protolib(lib:String): String {
     val stdout = ByteArrayOutputStream()
-    val includes = mutableListOf(protopath)
     val args = mutableListOf<String>("go", "list", "-m", "-f", "{{.Dir}}", lib)
     exec {
         workingDir = File(projectpath)
@@ -148,3 +152,4 @@ fun protolib(lib:String): String {
     }
     return stdout.toString("utf-8").trim()
 }
+

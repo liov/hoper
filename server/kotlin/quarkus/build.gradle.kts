@@ -33,6 +33,10 @@ configurations.all {
 dependencies {
     implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
     //implementation(enforcedPlatform("${quarkusPlatformGroupId}:quarkus-camel-bom:${quarkusPlatformVersion}"))
+    //2.x版本 SLF4J: No SLF4J providers were found SLF4J: Class path contains SLF4J bindings targeting slf4j-api versions 1.7.x
+    implementation("org.slf4j:slf4j-api:1.7.36")
+    implementation("ch.qos.logback:logback-core:1.4.5")
+    implementation("ch.qos.logback:logback-classic:1.4.5")
     implementation("io.quarkus:quarkus-smallrye-jwt")
     implementation("io.quarkus:quarkus-spring-boot-properties")
     implementation("io.quarkus:quarkus-elasticsearch-rest-high-level-client")
@@ -43,13 +47,9 @@ dependencies {
     implementation("io.quarkus:quarkus-rest-client-reactive-jackson")
     implementation("io.quarkus:quarkus-rest-client-reactive-kotlin-serialization")
     implementation("io.quarkus:quarkus-resteasy-reactive-kotlin-serialization")
-    implementation("io.quarkus:quarkus-hibernate-reactive")
+    implementation("io.quarkus:quarkus-hibernate-reactive-panache")
     implementation("io.quarkus:quarkus-rest-client-reactive")
-    implementation("io.quarkus:quarkus-hibernate-orm-panache-kotlin")
-    implementation("io.quarkus:quarkus-reactive-mysql-client")
-    implementation("io.quarkus:quarkus-jdbc-mysql")
     implementation("io.quarkus:quarkus-reactive-pg-client")
-    implementation("io.quarkus:quarkus-jdbc-postgresql")
     implementation("io.quarkus:quarkus-config-yaml")
     implementation("io.quarkus:quarkus-spring-web")
     implementation("io.quarkus:quarkus-smallrye-metrics")
@@ -74,4 +74,11 @@ allOpen {
     annotation("javax.ws.rs.Path")
     annotation("javax.enterprise.context.ApplicationScoped")
     annotation("io.quarkus.test.junit.QuarkusTest")
+    annotation("javax.persistence.Entity")
+}
+
+tasks.quarkusDev {
+    compilerOptions {
+        compiler("kotlin").args(listOf("-Werror"))
+    }
 }

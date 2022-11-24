@@ -1,8 +1,21 @@
 greeting:
-  message: "hello"
+  message: hello
 quarkus:
   datasource:
-    db-kind: "postgresql"
+    db-kind: postgresql
+    username: postgres
+    password: "123456"
+    jdbc: false
+    reactive:
+      url: vertx-reactive:postgresql://192.168.1.212:5432/postgres
   hibernate-orm:
     database:
-      generation: "drop-and-create"
+      generation: update
+    log:
+      sql: true
+
+logging:
+  level:
+    root: info
+
+

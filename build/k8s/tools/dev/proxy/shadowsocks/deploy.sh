@@ -24,7 +24,7 @@ docker run --rm  -it  \
   --net=host \
   neilpang/acme.sh  --issue -d ${host}  --standalone --httpport 88
 # zerossl连接失败更改letsencrypt
---set-default-ca --server letsencrypt
+#~/.acme.sh/acme.sh --set-default-ca --server letsencrypt
 
 cd ..
 git clone https://github.com/shadowsocks/v2ray-plugin.git

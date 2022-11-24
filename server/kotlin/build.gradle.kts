@@ -3,7 +3,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
     val kotlinVersion = "1.7.21"
-    id("org.springframework.boot") version "3.0.0-SNAPSHOT"
+    id("org.springframework.boot") version "3.0.0-RC2"
     id("io.spring.dependency-management") version "1.1.0"
     id("org.graalvm.buildtools.native") version "0.9.17"
     kotlin("jvm") version kotlinVersion
@@ -41,7 +41,7 @@ allprojects {
 configurations.all {
     resolutionStrategy.eachDependency {
         if (requested.group == "org.slf4j") {
-            useVersion("1.7.21")
+            useVersion("1.8.0")
         }
     }
 }
@@ -55,9 +55,7 @@ subprojects {
 
 
     configurations {
-        implementation {
-            exclude(group = "org.slf4j", module = "slf4j-log4j12")
-        }
+
         compileOnly {
             extendsFrom(configurations.annotationProcessor.get())
         }
@@ -72,7 +70,7 @@ subprojects {
     }
 
     dependencies {
-        annotationProcessor("org.apache.logging.log4j:log4j-core:2.19.0")
+        implementation("org.slf4j:slf4j-api:2.0.4")
         implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
         implementation(kotlin("reflect"))
         implementation(kotlin("stdlib-jdk8"))

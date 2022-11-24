@@ -218,22 +218,12 @@ func Mkdir(src string) error {
 }
 
 func MkdirAll(src string) error {
-	_, err := os.Stat(src)
-	if os.IsNotExist(err) {
-		err = os.MkdirAll(src, os.ModePerm)
-		if err != nil {
-			return err
-		}
-	}
-	return err
+	return os.MkdirAll(src, os.ModePerm)
 }
 
 func CheckExist(src string) bool {
 	_, err := os.Stat(src)
-	if os.IsNotExist(err) {
-		return false
-	}
-	return err == nil
+	return !os.IsNotExist(err)
 }
 
 func CheckNotExist(src string) bool {

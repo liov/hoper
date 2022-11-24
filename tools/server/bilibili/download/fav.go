@@ -89,8 +89,8 @@ func RecordFavReq(favId, page int) *crawler.Request {
 				aid := tool.Bv2av(fav.Bvid)
 				if !strings.HasSuffix(fav.Cover, NULLCOVER) {
 					req1 := RecordViewInfoReqAfterRecordVideo(aid)
-					//req2 := CoverDownloadReq(fav.Cover, fav.Upper.Mid, fav.Id)
-					requests = append(requests, req1)
+					req2 := CoverDownloadReq(fav.Cover, fav.Upper.Mid, fav.Id)
+					requests = append(requests, req1, req2)
 				}
 
 			}
@@ -99,7 +99,7 @@ func RecordFavReq(favId, page int) *crawler.Request {
 	}
 }
 
-func FixRecordFav(ctx context.Context, engine *crawler.Engine) {
+func FixRecordFav(engine *crawler.Engine) {
 	for page := 2; page < 20; page++ {
 		log.Printf("第%d页", page)
 		engine.AddTask(engine.NewTask(RecordFavReq(63181530, page)))
