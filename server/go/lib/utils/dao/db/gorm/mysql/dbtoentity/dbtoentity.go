@@ -10,6 +10,7 @@ import (
 	"go/format"
 	"go/token"
 	"gorm.io/gorm"
+	"strings"
 )
 
 func MysqlConvert(db *gorm.DB, filename string) {
@@ -48,7 +49,8 @@ func (m *mysqlgen) genTable(tableName string) []byte {
 	var dbfields []*dbi.Field
 	m.db.Raw(`SHOW FULL COLUMNS FROM ` + tableName).Scan(&dbfields)
 	for j := range dbfields {
-		fields.List = append(fields.List, dbfields[j].Generate(dbi.MYSQL))
+		dbfields[j].GoTYpe = MysqlTypeToGoTYpe(dbfields[j].Type)
+		fields.List = append(fields.List, dbfields[j].Generate())
 	}
 	var b bytes.Buffer
 	err := format.Node(&b, token.NewFileSet(), m.decl)
@@ -56,4 +58,20 @@ func (m *mysqlgen) genTable(tableName string) []byte {
 		fmt.Println(err)
 	}
 	return b.Bytes()
+}
+
+func MysqlTypeToGoTYpe(typ string) string {
+	if strings.Contains(typ, "int") {
+		return "int"
+	}
+	if strings.Contains(typ, "varchar") || strings.Contains(typ, "text") {
+		return "string"
+	}
+	if strings.Contains(typ, "timestamp") || strings.Contains(typ, "datetime") || strings.Contains(typ, "date") {
+		return "time.Time"
+	}
+	if strings.Contains(typ, "float") || strings.Contains(typ, "double") || strings.Contains(typ, "decimal") {
+		return "float64"
+	}
+	return "bool"
 }

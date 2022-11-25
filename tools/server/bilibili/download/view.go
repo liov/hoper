@@ -3,10 +3,10 @@ package download
 import (
 	"context"
 	"encoding/json"
+	gormpostgres "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/postgres"
+	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
 
 	"github.com/actliboy/hoper/server/go/lib/utils/generics/net/http/client/crawler"
-
-	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
 
 	"time"
 	"tools/bilibili/dao"
@@ -22,22 +22,26 @@ func RecordViewInfoReqAfterRecordVideo(aid int) *crawler.Request {
 			if err != nil {
 				return nil, err
 			}
-			if view == nil {
-				return nil, nil
-			}
-			var requests []*crawler.Request
-			for _, page := range view.Pages {
-				if len(view.Pages) == 1 {
-					page.Part = PartEqTitle
-				}
-				video := NewVideo(view.Owner.Mid, view.Title, view.Aid, page.Cid, page.Page, page.Part, time.Now())
-
-				req := video.RecordVideoReqAfterDownloadVideo()
-				requests = append(requests, req)
-			}
-			return requests, nil
+			return ViewGetRecordVideoReqs(view)
 		},
 	}
+}
+
+func ViewGetRecordVideoReqs(view *rpc.ViewInfo) ([]*crawler.Request, error) {
+	if view == nil {
+		return nil, nil
+	}
+	var requests []*crawler.Request
+	for _, page := range view.Pages {
+		if len(view.Pages) == 1 {
+			page.Part = PartEqTitle
+		}
+		video := NewVideo(view.Owner.Mid, view.Title, view.Aid, page.Cid, page.Page, page.Part, time.Now())
+
+		req := video.RecordVideoReqAfterDownloadVideo()
+		requests = append(requests, req)
+	}
+	return requests, nil
 }
 
 func RecordViewInfoReq(aid int) *crawler.Request {
@@ -82,6 +86,19 @@ func RecordViewInfo(ctx context.Context, aid int) (*rpc.ViewInfo, error) {
 	return view, err
 }
 
+func ViewRecordUpdateReqAfterRecordVideo(aid int) *crawler.Request {
+	return &crawler.Request{
+		TaskMeta: crawler.TaskMeta{Kind: KindViewInfo},
+		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
+			view, err := ViewRecordUpdate(ctx, aid)
+			if err != nil {
+				return nil, err
+			}
+			return ViewGetRecordVideoReqs(view)
+		},
+	}
+}
+
 func ViewRecordUpdateReq(aid int) *crawler.Request {
 	return &crawler.Request{
 		TaskMeta: crawler.TaskMeta{Kind: KindViewInfo},
@@ -109,6 +126,8 @@ func ViewRecordUpdate(ctx context.Context, aid int) (*rpc.ViewInfo, error) {
 	res, err := apiservice.GetView(aid)
 	if err != nil {
 		if err.Error() == rpc.ErrorNotFound || err.Error() == rpc.ErrorNotPermission {
+			gormpostgres.Delete(dao.TableNameView)
+			dao.Dao.Hoper.Table(dao.TableNameView).Where(`aid = ?`, aid).Update("deleted_at", data)
 			return nil, nil
 		}
 		return nil, err

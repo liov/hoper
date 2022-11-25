@@ -6,11 +6,16 @@ import (
 )
 
 const existsSQL = `SELECT EXISTS(SELECT * FROM %s WHERE %s = ?` + postgres.WithNotDeleted + ` LIMIT 1)`
+const deleteSQL = `Update %s SET deleted_at = now() WHERE %s = ?` + postgres.WithNotDeleted
 
 func Delete(db *gorm.DB, tableName string, id uint64) error {
+	return DeleteSQL(db, tableName, "id", id)
+}
+
+func DeleteSQL(db *gorm.DB, tableName, column string, value any) error {
 	sql := `Update ` + tableName + ` SET deleted_at = now()
-WHERE id = ?` + postgres.WithNotDeleted
-	return db.Exec(sql, id).Error
+WHERE ` + column + ` = ?` + postgres.WithNotDeleted
+	return db.Exec(sql, value).Error
 }
 
 func DeleteByAuth(db *gorm.DB, tableName string, id, userId uint64) error {
