@@ -164,7 +164,7 @@ WHERE b.record < 2  AND b.created_at < ? AND b.`+postgres.NotDeleted+` ORDER BY 
 		}
 		for _, video := range videos {
 			if video.Title == "" {
-				req := RecordViewInfoReqAfterRecordVideo(video.Aid)
+				req := ViewRecordUpdateReqAfterRecordVideo(video.Aid)
 				engine.BaseEngine.AddTask(engine.NewTask(req))
 			} else {
 				req := video.GetVideoReqAfterDownloadVideo()

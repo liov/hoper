@@ -1,7 +1,7 @@
 package clause
 
 import (
-	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
+	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db/const"
 )
 
 const (

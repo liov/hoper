@@ -1,6 +1,8 @@
 package postgres
 
-import dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
+import (
+	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db/const"
+)
 
 const (
 	ZeroTime         = "0001-01-01 00:00:00"

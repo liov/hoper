@@ -5,7 +5,6 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"strings"
 )
 
 const Tmpl = `package entity
@@ -45,28 +44,10 @@ type Field struct {
 	Field   string
 	Type    string
 	Comment string
+	GoTYpe  string
 }
 
-func (f *Field) goTYpe(dbType string) string {
-	if dbType == MYSQL {
-		if strings.Contains(f.Type, "int") {
-			return "int"
-		}
-		if strings.Contains(f.Type, "varchar") || strings.Contains(f.Type, "text") {
-			return "string"
-		}
-		if strings.Contains(f.Type, "timestamp") || strings.Contains(f.Type, "datetime") || strings.Contains(f.Type, "date") {
-			return "time.Time"
-		}
-		if strings.Contains(f.Type, "float") || strings.Contains(f.Type, "double") || strings.Contains(f.Type, "decimal") {
-			return "float64"
-		}
-		return "bool"
-	}
-	return ""
-}
-
-func (f *Field) Generate(dbType string) *ast.Field {
+func (f *Field) Generate() *ast.Field {
 	field := stringsi.ConvertToCamelCase(f.Field)
 	return &ast.Field{
 		Doc: nil,
@@ -76,7 +57,7 @@ func (f *Field) Generate(dbType string) *ast.Field {
 				Obj:  &ast.Object{Kind: ast.Var, Name: f.Field},
 			},
 		},
-		Type:    &ast.Ident{Name: f.goTYpe(dbType)},
+		Type:    &ast.Ident{Name: f.GoTYpe},
 		Tag:     &ast.BasicLit{Kind: token.STRING, Value: "`" + `json:"` + stringsi.LowerFirst(field) + `" explain:"` + f.Comment + "\"`"},
 		Comment: nil,
 	}

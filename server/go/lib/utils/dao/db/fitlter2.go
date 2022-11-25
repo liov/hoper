@@ -3,6 +3,7 @@ package dbi
 import (
 	"database/sql/driver"
 	"fmt"
+	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/const"
 	"gorm.io/gorm"
 	"gorm.io/gorm/utils"
 	"reflect"
@@ -144,19 +145,19 @@ func ConvertParams(v interface{}, escaper string) string {
 		return strconv.FormatBool(v)
 	case time.Time:
 		if v.IsZero() {
-			return escaper + tmFmtZero + escaper
+			return escaper + _const.TmFmtZero + escaper
 		} else {
-			return escaper + v.Format(tmFmtWithMS) + escaper
+			return escaper + v.Format(_const.TmFmtWithMS) + escaper
 		}
 	case *time.Time:
 		if v != nil {
 			if v.IsZero() {
-				return escaper + tmFmtZero + escaper
+				return escaper + _const.TmFmtZero + escaper
 			} else {
-				return escaper + v.Format(tmFmtWithMS) + escaper
+				return escaper + v.Format(_const.TmFmtWithMS) + escaper
 			}
 		} else {
-			return nullStr
+			return _const.NullStr
 		}
 	case driver.Valuer:
 		reflectValue := reflect.ValueOf(v)
@@ -164,14 +165,14 @@ func ConvertParams(v interface{}, escaper string) string {
 			r, _ := v.Value()
 			ConvertParams(r, escaper)
 		} else {
-			return nullStr
+			return _const.NullStr
 		}
 	case fmt.Stringer:
 		reflectValue := reflect.ValueOf(v)
 		if v != nil && reflectValue.IsValid() && ((reflectValue.Kind() == reflect.Ptr && !reflectValue.IsNil()) || reflectValue.Kind() != reflect.Ptr) {
 			return escaper + strings.Replace(fmt.Sprintf("%v", v), escaper, "\\"+escaper, -1) + escaper
 		} else {
-			return nullStr
+			return _const.NullStr
 		}
 	case []byte:
 		if isPrintable(v) {
@@ -188,7 +189,7 @@ func ConvertParams(v interface{}, escaper string) string {
 	default:
 		rv := reflect.ValueOf(v)
 		if v == nil || !rv.IsValid() || rv.Kind() == reflect.Ptr && rv.IsNil() {
-			return nullStr
+			return _const.NullStr
 		} else if valuer, ok := v.(driver.Valuer); ok {
 			v, _ = valuer.Value()
 			ConvertParams(v, escaper)

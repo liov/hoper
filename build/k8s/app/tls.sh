@@ -16,6 +16,7 @@ docker run --rm  -it  \
   neilpang/acme.sh --renew  -d hoper.xyz -d *.hoper.xyz \
     --yes-I-know-dns-manual-mode-enough-go-ahead-please
 
+kubectl delete secret tls hoper-xyz -n ingress-apisix
 kubectl create secret tls hoper-xyz -n ingress-apisix --cert=fullchain.cer --key=hoper.xyz.key
 
 kubectl apply -f - <<EOF

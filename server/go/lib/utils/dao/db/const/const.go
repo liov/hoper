@@ -1,9 +1,9 @@
-package dbi
+package _const
 
 const (
-	tmFmtWithMS = "2006-01-02 15:04:05.999"
-	tmFmtZero   = "0000-00-00 00:00:00"
-	nullStr     = "NULL"
+	TmFmtWithMS = "2006-01-02 15:04:05.999"
+	TmFmtZero   = "0000-00-00 00:00:00"
+	NullStr     = "NULL"
 )
 
 const (
