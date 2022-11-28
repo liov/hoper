@@ -14,7 +14,7 @@ cat > ssconfig.json <<- EOF
 }
 EOF
 
-#curl https://get.acme.sh | sh -s email=lby.i@qq.com
+#curl https://get.acme.sh | sh -s email=liovx@qq.com
 #~/.acme.sh/acme.sh --issue --dns dns_cf -d ${host}
 #~/.acme.sh/acme.sh --issue --dns -d ${host} --yes-I-know-dns-manual-mode-enough-go-ahead-please
 #~/.acme.sh/acme.sh --renew -d ${host} --yes-I-know-dns-manual-mode-enough-go-ahead-please
