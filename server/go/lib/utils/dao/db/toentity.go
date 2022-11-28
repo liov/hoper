@@ -1,8 +1,12 @@
 package dbi
 
 import (
+	"bytes"
+	"fmt"
+	"github.com/actliboy/hoper/server/go/lib/utils/fs"
 	stringsi "github.com/actliboy/hoper/server/go/lib/utils/strings"
 	"go/ast"
+	"go/format"
 	"go/parser"
 	"go/token"
 )
@@ -88,3 +92,51 @@ func GetDecl() *ast.GenDecl {
 	}
 }
 */
+
+type ConvertInterface interface {
+	Tables() []string
+	Fields(tableName string) []*Field
+	TypeToGoTYpe(typ string) string
+}
+
+func Convert(c ConvertInterface, filename string) {
+	tables := c.Tables()
+	decl := GetDecl()
+	var buf bytes.Buffer
+	buf.WriteString(FileTmpl)
+	for i := range tables {
+		buf.Write(genTable(c, tables[i], decl))
+		buf.Write(TwoLine())
+	}
+	fs.Write(&buf, filename)
+}
+
+func ConvertByTable(c ConvertInterface, tableName string) {
+	decl := GetDecl()
+	var buf bytes.Buffer
+	buf.WriteString(FileTmpl)
+	buf.Write(genTable(c, tableName, decl))
+	buf.Write(TwoLine())
+
+	fs.Write(&buf, tableName+".go")
+}
+
+func genTable(c ConvertInterface, tableName string, decl *ast.GenDecl) []byte {
+	node := decl.Specs[0].(*ast.TypeSpec)
+	node.Name.Name = stringsi.ConvertToCamelCase(tableName)
+	fields := node.Type.(*ast.StructType).Fields
+	fields.List = nil
+	dbfields := c.Fields(tableName)
+	for j := range dbfields {
+		if dbfields[j].GoTYpe == "" {
+			dbfields[j].GoTYpe = c.TypeToGoTYpe(dbfields[j].Type)
+		}
+		fields.List = append(fields.List, dbfields[j].Generate())
+	}
+	var b bytes.Buffer
+	err := format.Node(&b, token.NewFileSet(), decl)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return b.Bytes()
+}

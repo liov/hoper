@@ -3,7 +3,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
     val kotlinVersion = "1.7.21"
-    id("org.springframework.boot") version "3.0.0-RC2"
+    id("org.springframework.boot") version "3.0.0"
     id("io.spring.dependency-management") version "1.1.0"
     id("org.graalvm.buildtools.native") version "0.9.17"
     kotlin("jvm") version kotlinVersion

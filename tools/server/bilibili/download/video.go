@@ -157,8 +157,8 @@ func DownloadRecordVideo(engine *crawler.Engine) {
 		var videos []*Video
 		dao.Dao.Hoper.DB.Raw(`SELECT a.owner->'mid' up_id,b.aid,b.cid,a.title,a.p->'page' page,a.p->'part' part, b.created_at,b.record
 FROM `+dao.TableNameVideo+` b 
-LEFT JOIN (SELECT data->'title' title, data->'owner' owner, jsonb_path_query(data,'$.pages[*]') p FROM `+dao.TableNameView+`)  a ON (a.p->'cid')::int8 = b.cid
-WHERE b.record < 2  AND b.created_at < ? AND b.`+postgres.NotDeleted+` ORDER BY b.created_at DESC LIMIT 100`, now).Find(&videos)
+LEFT JOIN (SELECT data->'title' title, data->'owner' owner, jsonb_path_query(data,'$.pages[*]') p, deleted_at FROM `+dao.TableNameView+`)  a ON (a.p->'cid')::int8 = b.cid
+WHERE b.record < 2  AND b.created_at < ? AND b.`+postgres.NotDeleted+`AND a.`+postgres.NotDeleted+` ORDER BY b.created_at DESC LIMIT 100`, now).Find(&videos)
 		if len(videos) == 0 {
 			return
 		}

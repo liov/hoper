@@ -89,7 +89,7 @@ OutputPaths = {console = ["stderr"],json = []}
 [mail]
 Host = "smtp.qq.com"
 Port = ":465"
-From =  "lby.i@qq.com"
+From =  "liovx@qq.com"
 Password = "xxx"
 
 [apollo]
