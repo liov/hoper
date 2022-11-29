@@ -16,19 +16,19 @@ import (
 var apiservice = &rpc.API{}
 
 func RecordFavTimer(ctx context.Context, engine *crawler.Engine) {
-	favIds := []int{63181530, 62504730}
+	favIds := []int{62504730, 63181530}
 	timer := time.NewTicker(time.Second)
 	lastRecordTime, err := dao.NewDao(ctx, dao.Dao.Hoper.DB).LastCreated(dao.TableNameView)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	subCtx, cancel := context.WithCancel(ctx)
 
 	for _, favId := range favIds {
 		go func(favId int) {
 			page := 1
 			favIdStr := strconv.Itoa(favId)
+			subCtx, cancel := context.WithCancel(ctx)
 		Loop:
 			for {
 				select {
