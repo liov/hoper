@@ -108,7 +108,7 @@ func (e *BaseEngine[KEY, T, W]) Run(tasks ...*BaseTask[KEY, T]) {
 							break loop
 						}
 					}
-					timer.Reset(time.Second * 1)
+					timer.Reset(time.Second)
 				case <-e.ctx.Done():
 					break loop
 				}
@@ -203,11 +203,18 @@ func (e *BaseEngine[KEY, T, W]) AddWorker(num int) {
 	e.addWorker()
 }
 
-func (e *BaseEngine[KEY, T, W]) NewFixedWorker() int {
+func (e *BaseEngine[KEY, T, W]) NewFixedWorker(interval time.Duration) int {
 	ch := make(chan *BaseTask[KEY, T])
 	e.fixedWorker = append(e.fixedWorker, ch)
 	go func() {
+		var timer *time.Ticker
+		if interval > 0 {
+			timer = time.NewTicker(interval)
+		}
 		for task := range ch {
+			if interval > 0 {
+				<-timer.C
+			}
 			task.BaseTaskFunc(e.ctx)
 			e.wg.Done()
 		}
@@ -224,4 +231,15 @@ func (e *BaseEngine[KEY, T, W]) AddFixedTask(workerId int, task *BaseTask[KEY, T
 	go func() {
 		ch <- task
 	}()
+}
+
+func (e *BaseEngine[KEY, T, W]) SyncRun(tasks ...*BaseTask[KEY, T]) {
+	panic("TODO")
+}
+
+func (e *BaseEngine[KEY, T, W]) RunSingleWorker(tasks ...*BaseTask[KEY, T]) {
+	e.NewFixedWorker(0)
+	for _, task := range tasks {
+		e.AddFixedTask(0, task)
+	}
 }

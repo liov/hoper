@@ -126,8 +126,7 @@ func ViewRecordUpdate(ctx context.Context, aid int) (*rpc.ViewInfo, error) {
 	res, err := apiservice.GetView(aid)
 	if err != nil {
 		if err.Error() == rpc.ErrorNotFound || err.Error() == rpc.ErrorNotPermission {
-			gormpostgres.Delete(dao.TableNameView)
-			dao.Dao.Hoper.Table(dao.TableNameView).Where(`aid = ?`, aid).Update("deleted_at", data)
+			gormpostgres.DeleteSQL(dao.Dao.Hoper.DB, dao.TableNameView, "aid", aid)
 			return nil, nil
 		}
 		return nil, err

@@ -20,7 +20,7 @@ var merge VideoMerge
 
 func GetEngineMerge(engine *crawler.Engine) *VideoMerge {
 	merge.engine = engine
-	merge.fixedWorkerId = engine.NewFixedWorker()
+	merge.fixedWorkerId = engine.NewFixedWorker(0)
 	return &merge
 }
 
