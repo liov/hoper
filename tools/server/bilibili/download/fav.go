@@ -3,7 +3,6 @@ package download
 import (
 	"context"
 	"github.com/actliboy/hoper/server/go/lib/utils/generics/net/http/client/crawler"
-
 	"log"
 	"strconv"
 	"strings"
@@ -15,9 +14,9 @@ import (
 
 var apiservice = &rpc.API{}
 
-func RecordFavTimer(ctx context.Context, engine *crawler.Engine) {
+func RecordFavTimer(ctx context.Context, engine *crawler.Engine, timer *time.Ticker) {
 	favIds := []int{62504730, 63181530}
-	timer := time.NewTicker(time.Second)
+
 	lastRecordTime, err := dao.NewDao(ctx, dao.Dao.Hoper.DB).LastCreated(dao.TableNameView)
 	if err != nil {
 		log.Println(err)
@@ -36,7 +35,6 @@ func RecordFavTimer(ctx context.Context, engine *crawler.Engine) {
 					taskFun := GetFavListReqAfterRecordView(favId, page, lastRecordTime, cancel)
 					engine.AddTask(engine.NewTask(crawler.NewRequest(favIdStr+strconv.Itoa(page), KindRecordFavList, taskFun)))
 				case <-subCtx.Done():
-					timer.Stop()
 					break Loop
 				}
 				page++
