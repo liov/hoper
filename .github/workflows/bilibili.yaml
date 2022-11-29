@@ -1,0 +1,16 @@
+name: learn-github-actions
+run-name: ${{ github.actor }} is learning GitHub Actions
+on:
+  push:
+    tags:
+      - bilibili-v*
+jobs:
+  check-bats-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '^1.19.3'
+      - run: go mod tidy
+      - run: go build -o bilibili ./cmd/record_fav.go
