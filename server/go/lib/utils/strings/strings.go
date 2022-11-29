@@ -3,6 +3,7 @@ package stringsi
 import (
 	"bytes"
 	"google.golang.org/protobuf/compiler/protogen"
+	"math/rand"
 	"strings"
 	"unicode"
 	"unsafe"
@@ -318,4 +319,22 @@ func ReplaceBytesEmpty(s string, old []byte) string {
 		w += copy(t[w:], s[start:])
 	}
 	return string(t[0:w])
+}
+
+func Rand(length int) string {
+	randId := make([]byte, length)
+	for i := range randId {
+		n := rand.Intn(62)
+		if n > 9 {
+			if n > 35 {
+				randId[i] = byte(n - 36 + 'a')
+			} else {
+				randId[i] = byte(n - 10 + 'a')
+			}
+
+		} else {
+			randId[i] = byte(n + '0')
+		}
+	}
+	return ToString(randId)
 }

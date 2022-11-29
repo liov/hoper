@@ -354,6 +354,10 @@ func deduplication() {
 			m := make(map[string]string)
 			files, _ := os.ReadDir(dir + fs.PathSeparator + subdir.Name())
 			for _, file := range files {
+				if strings.HasSuffix(file.Name(), "downloading") {
+					os.Remove(dir + fs.PathSeparator + subdir.Name() + fs.PathSeparator + file.Name())
+					continue
+				}
 				cid := strings.Split(file.Name(), "_")[2]
 				if path, ok := m[cid]; ok {
 					remove := file.Name()

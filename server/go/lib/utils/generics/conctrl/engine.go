@@ -19,8 +19,8 @@ type Engine[KEY comparable, T, W any] struct {
 }
 
 type KindHandler[KEY comparable, T any] struct {
-	Skip bool
-	*time.Ticker
+	Skip   bool
+	Ticker *time.Ticker
 	// TODO 指定Kind的Handler
 	HandleFun TaskFunc[KEY, T]
 }
@@ -167,25 +167,18 @@ func (e *Engine[KEY, T, W]) AsyncAddTask(generation int, tasks ...*Task[KEY, T])
 }
 
 func (e *Engine[KEY, T, W]) AddFixedTask(workerId int, task *Task[KEY, T]) {
-	if workerId > len(e.fixedWorker)-1 {
-		return
-	}
-	ch := e.fixedWorker[workerId]
-	baseTask := &BaseTask[KEY, T]{
-		BaseTaskMeta: task.BaseTaskMeta,
-		Props:        task.Props,
-	}
-	baseTask.BaseTaskFunc = func(ctx context.Context) {
-		_, err := task.TaskFunc(ctx)
+	e.BaseEngine.AddFixedTask(workerId, task.BaseTask(func(tasks []*Task[KEY, T], err error) {
 		if err != nil {
-			e.wg.Add(1)
-			go func() {
-				ch <- baseTask
-			}()
+			e.AddFixedTask(workerId, task)
+		} else {
+			for _, task := range tasks {
+				e.AddFixedTask(workerId, task)
+			}
 		}
-	}
-	e.wg.Add(1)
-	go func() {
-		ch <- baseTask
-	}()
+	}))
+}
+
+func (e *Engine[KEY, T, W]) RunSingleWorker(tasks ...*Task[KEY, T]) {
+	e.limitWorkerCount = 1
+	e.Run(tasks...)
 }

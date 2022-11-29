@@ -54,27 +54,27 @@ type TaskStatistics struct {
 	ErrTimes  int
 }
 
-type Task[T comparable, P any] struct {
-	TaskMeta[T]
-	TaskFunc[T, P]
+type Task[KEY comparable, P any] struct {
+	TaskMeta[KEY]
+	TaskFunc[KEY, P]
 	Errs  []error
 	Props P
 }
 
-func (t *Task[KEY, T]) BaseTask() *BaseTask[KEY, T] {
-	return &BaseTask[KEY, T]{
+func (t *Task[KEY, P]) BaseTask(handle func(tasks []*Task[KEY, P], err error)) *BaseTask[KEY, P] {
+	return &BaseTask[KEY, P]{
 		BaseTaskMeta: t.BaseTaskMeta,
 		BaseTaskFunc: func(ctx context.Context) {
-			t.TaskFunc(ctx)
+			handle(t.TaskFunc(ctx))
 		},
 		Props: t.Props,
 	}
 }
 
-type Tasks[T comparable, P any] []*Task[T, P]
+type Tasks[KEY comparable, P any] []*Task[KEY, P]
 
 // ---------------
 
 type ErrHandle func(context.Context, error)
 
-type TaskFunc[T comparable, P any] func(ctx context.Context) ([]*Task[T, P], error)
+type TaskFunc[KEY comparable, P any] func(ctx context.Context) ([]*Task[KEY, P], error)
