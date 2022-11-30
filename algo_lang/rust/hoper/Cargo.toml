@@ -21,14 +21,8 @@ async-std = { version = "1.10.0", features = ["unstable","attributes"]}
 futures = "0.3.17"
 thiserror = "1.0.25"
 futures-timer = "3.0.2"
-mio = "0.8.5"
-cpp = "0.5"
-libc="0.2"
-axum= "0.5.17"
+axum= "0.6.1"
 
-[build-dependencies]
-cpp_build = "0.5"
-cc = { version = "1.0.38", features = ["parallel"] }
 
 
 [[bin]]
@@ -42,10 +36,6 @@ path = "src/bin/async/feature_recursive.rs"
 [[bin]]
 name = "feature_select"
 path = "src/bin/async/feature_select.rs"
-
-[[bin]]
-name = "cpp"
-path = "src/bin/cpp/cpp.rs"
 
 [[bin]]
 name = "axum"

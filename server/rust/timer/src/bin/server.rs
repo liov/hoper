@@ -138,7 +138,7 @@ impl UserService for MyUserService {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let addr = "[::1]:8090".parse().unwrap();
+    let addr = "[::1]:50051".parse().unwrap();
     let greeter = MyUserService::default();
 
     Server::builder()

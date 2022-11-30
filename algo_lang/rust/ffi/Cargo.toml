@@ -7,11 +7,18 @@ build = "build.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-crate-type = ["staticlib", "cdylib"]
+#  --crate-type [bin|lib|rlib|dylib|cdylib|staticlib|proc-macro]
+crate-type = ["staticlib","cdylib","lib"]
 
 [dependencies]
 libc="0.2"
 libloading = "0.7"
+cpp = "0.5"
 
 [build-dependencies]
+cpp_build = "0.5"
 cc = { version = "1.0.38", features = ["parallel"] }
+
+[[bin]]
+name = "cpp"
+path = "src/bin/cpp/cpp.rs"
