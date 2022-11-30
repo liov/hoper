@@ -17,6 +17,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let gopath = env::var("GOPATH").unwrap() + r"\src";
     println!("gopath：{}", gopath);
     tonic_build::configure()
+        .server_mod_attribute("attrs", "#[cfg(feature = \"server\")]")
+        .server_attribute("Echo", "#[derive(PartialEq)]")
+        .client_mod_attribute("attrs", "#[cfg(feature = \"client\")]")
+        .client_attribute("Echo", "#[derive(PartialEq)]")
         .compile(
             &[
                 "/user/user.service.proto",
@@ -25,9 +29,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ].map(|v| PROTOPATH.to_owned() + v),
             &[
                 PROTOPATH.to_owned(),
-                PROJECTPATH.to_owned() + "/protobuf/third",
                 PROJECTPATH.to_owned() + "/protobuf",
-                gateway, googleapis, protopatch, protobuf, gopath
+                PROJECTPATH.to_owned() + "/protobuf/third",
+               // gateway, googleapis, protopatch, protobuf, gopath
             ],
         )?;
     Ok(())
@@ -36,6 +40,5 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 fn get_include_path(path: &str) -> String {
     let args = ["list", "-m", "-f", "{{.Dir}}", path];
     let stdout = Command::new("go").args(&args).current_dir(PROJECTPATH).output().expect("failed to execute process").stdout;
-    let result = str::from_utf8(&stdout).unwrap().strip_suffix('\n').unwrap().to_owned();
-    result
+    str::from_utf8(&stdout).unwrap().to_owned()
 }

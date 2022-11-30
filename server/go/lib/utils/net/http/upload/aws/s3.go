@@ -1,4 +1,4 @@
-package upload
+package aws
 
 import (
 	"bufio"
@@ -60,7 +60,7 @@ func download(service *s3.S3) {
 	}
 }
 
-//目录遍历
+// 目录遍历
 func ListObjectsPages(service *s3.S3) {
 	var objkeys []string
 

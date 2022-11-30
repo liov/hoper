@@ -22,5 +22,6 @@ func main() {
 	}
 	engine := crawler.NewEngine(config.Conf.Bilibili.WorkCount).Timer(download.KindViewInfo, time.Second).SkipKind(download.KindDownloadVideo).Timer(download.KindGetPlayerUrl, time.Second).StopAfter(time.Hour * time.Duration(config.Conf.Bilibili.StopTime))
 	go download.FixRecordFav(engine)
+
 	engine.RunSingleWorker()
 }

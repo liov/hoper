@@ -1,9 +1,6 @@
 pub mod utils;
 pub mod math;
 pub mod timer_future;
-pub mod mycpp;
-#[macro_use]
-extern crate cpp;
 
 mod test {
     #[test]
