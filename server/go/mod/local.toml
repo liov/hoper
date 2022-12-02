@@ -5,6 +5,7 @@ Port = ":8090"
 ReadTimeout = 60
 WriteTimeout = 60
 OpenTracing = true
+GrpcWeb = true
 
 [server.gin]
 RedirectTrailingSlash = false

@@ -43,6 +43,7 @@ func main() {
 	}
 
 	(&tiga.Server{
+		Config: uconf.Conf.Server.Origin(),
 		//为了可以自定义中间件
 		GRPCOptions: []grpc.ServerOption{
 			grpc.ChainUnaryInterceptor(),

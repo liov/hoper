@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/context"
-	"github.com/actliboy/hoper/server/go/lib/initialize/server"
 	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
 	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
@@ -22,7 +21,7 @@ import (
 	"runtime/debug"
 )
 
-func (s *Server) grpcHandler(conf *server.ServerConfig) *grpc.Server {
+func (s *Server) grpcHandler(conf *ServerConfig) *grpc.Server {
 	if s.GRPCHandle != nil {
 		var stream = []grpc.StreamServerInterceptor{StreamAccess}
 		var unary = []grpc.UnaryServerInterceptor{UnaryAccess, Validator}

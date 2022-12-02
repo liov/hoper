@@ -132,9 +132,9 @@ func setDao(v reflect.Value, confM map[string]any) {
 				continue
 			}
 
-			if field.Kind() == reflect.Ptr && (!field.IsValid() || field.IsNil()) {
-				field.Set(reflect.New(field.Type().Elem()))
-			}
+			/*			if field.Kind() == reflect.Ptr && (!field.IsValid() || field.IsNil()) {
+						field.Set(reflect.New(field.Type().Elem()))
+					}*/
 
 			confName := strings.ToUpper(typ.Field(i).Name)
 			if slices.StringContains(InitConfig.ConfigCenterConfig.NoInject, confName) {

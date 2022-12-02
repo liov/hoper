@@ -10,6 +10,7 @@ import { VitePWA } from "vite-plugin-pwa";
 
 import path from "path";
 import wasm from "vite-plugin-wasm";
+import { viteCommonjs } from "@originjs/vite-plugin-commonjs";
 
 const lessVar = path.resolve(__dirname, "src/assets/var_vant.less");
 console.log(process.env);
@@ -34,9 +35,13 @@ export default defineConfig({
       },
     },
   },
+  optimizeDeps: {
+    include: ["esm-dep > cjs-dep"],
+  },
   plugins: [
     vue(),
     vueJsx(),
+    viteCommonjs(),
     Components({
       resolvers: [VantResolver()],
     }),
@@ -55,6 +60,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "@generated": fileURLToPath(new URL("./generated", import.meta.url)),
     },
   },
   build: {

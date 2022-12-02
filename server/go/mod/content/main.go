@@ -9,15 +9,15 @@ import (
 	"github.com/actliboy/hoper/server/go/mod/content/dao"
 	"github.com/actliboy/hoper/server/go/mod/content/service"
 	model "github.com/actliboy/hoper/server/go/mod/protobuf/content"
-	"github.com/actliboy/hoper/server/go/mod/protobuf/user"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 )
 
 func main() {
-	defer initialize.Start(conf.Config, dao.Dao)()
+	defer initialize.Start(conf.Conf, dao.Dao)()
 
 	s := tiga.Server{
+		Config: conf.Conf.Server.Origin(),
 		GRPCHandle: func(gs *grpc.Server) {
 			model.RegisterMomentServiceServer(gs, service.GetMomentService())
 		},
@@ -25,8 +25,6 @@ func main() {
 			_ = model.RegisterMomentServiceHandlerServer(ctx, mux, service.GetMomentService())
 
 		},
-		CustomContext:  user.CtxWithRequest,
-		ConvertContext: user.Authorization,
 	}
 	s.Start()
 }

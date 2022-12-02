@@ -28,3 +28,4 @@ lerna-debug.log*
 *.sln
 *.sw?
 /public/img/icons/
+/generated

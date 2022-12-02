@@ -116,7 +116,21 @@ func (date *Time) UnmarshalJSON(data []byte) error {
 	}
 	// Fractional seconds are handled implicitly by Parse.
 	var err error
-	t, err := time.ParseInLocation(`"2006-01-02 15:04:05"`, string(data), time.Local)
+	t, err := time.ParseInLocation(`"`+TimeFormatDisplay+`"`, string(data), time.Local)
 	*date = (Time)(t)
 	return err
+}
+
+type StdTime time.Time
+
+func (t StdTime) Origin() time.Time {
+	return (time.Time)(t)
+}
+
+func (t StdTime) TimeStamp() int64 {
+	return t.Origin().Unix()
+}
+
+func (t StdTime) TimeString() string {
+	return t.Origin().Format(TimeFormatDisplay)
 }

@@ -32,3 +32,7 @@ yarn lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+protoc -I=$DIR echo.proto \
+--js_out=import_style=commonjs,binary:$OUT_DIR \
+--grpc-web_out=import_style=typescript,mode=grpcweb:$OUT_DIR

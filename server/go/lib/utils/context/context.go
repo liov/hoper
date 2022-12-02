@@ -2,38 +2,7 @@ package contexti
 
 import (
 	"context"
-	"time"
 )
-
-var vctx = new(valueContext)
-
-func ValueContext() context.Context {
-	return vctx
-}
-
-type valueContext struct {
-	value interface{}
-}
-
-func (*valueContext) Deadline() (deadline time.Time, ok bool) {
-	return
-}
-
-func (*valueContext) Done() <-chan struct{} {
-	return nil
-}
-
-func (*valueContext) Err() error {
-	return nil
-}
-
-func (ctx *valueContext) Value(key interface{}) interface{} {
-	return ctx.value
-}
-
-func (ctx *valueContext) SetValue(value interface{}) {
-	ctx.value = value
-}
 
 type SchedulingContext struct {
 	context.Context

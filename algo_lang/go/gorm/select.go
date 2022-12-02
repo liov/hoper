@@ -3,23 +3,23 @@ package main
 import "log"
 
 func Select() {
-	var tspSettleInfos []*TspSettleInfo
-	err := db.Table(TableNameTspSettleInfo).Find(&tspSettleInfos).Error
+	var models []*Model
+	err := db.Table(ModelTable).Find(&models).Error
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, tspSettleInfo := range tspSettleInfos {
-		log.Println(tspSettleInfo)
+	for _, model := range models {
+		log.Println(model)
 	}
 }
 
 func SelectStrTime() {
-	var tspSettleInfos []*TspSettleInfo2
-	err := db.Table(TableNameTspSettleInfo).Find(&tspSettleInfos).Error
+	var models []*ModelA
+	err := db.Table(ModelTable).Find(&models).Error
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, tspSettleInfo := range tspSettleInfos {
-		log.Println(tspSettleInfo.ContractEndDay)
+	for _, model := range models {
+		log.Println(model.K)
 	}
 }

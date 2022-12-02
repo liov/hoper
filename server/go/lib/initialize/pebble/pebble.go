@@ -41,5 +41,8 @@ func (p *DB) SetEntity(entity interface{}) {
 }
 
 func (p *DB) Close() error {
+	if p.DB == nil {
+		return nil
+	}
 	return p.DB.Close()
 }

@@ -30,6 +30,7 @@ import { useGlobalStore } from "@/store/global";
 import { Platform } from "@/model/const";
 import wxenv from "@/plugin/platform/weixin";
 import { parseQueryString } from "@/plugin/location";
+import "@/service/grpc_custom_status";
 
 const store = useGlobalStore();
 console.log("url:", window.location.href);
