@@ -1,12 +1,13 @@
 {
   "extends": "@vue/tsconfig/tsconfig.web.json",
-  "include": ["./env/env.d.ts", "src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "include": ["env/env.d.ts", "src/**/*.ts", "src/**/*.tsx", "src/**/*.vue","generated/**/*.ts"],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@generated/*": ["./generated/*"],
     },
     "target": "esnext",
     "module": "esnext",

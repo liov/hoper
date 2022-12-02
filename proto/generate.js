@@ -1,59 +1,66 @@
-const process = require('child_process');
-const fs = require('fs');
-const path = require('path');
+const process = require("child_process");
+const fs = require("fs");
+const path = require("path");
 
-const projectpath = 'D:/code/hoper/server/go/mod'
+const projectpath = "D:/code/hoper/server/go/mod";
 
-const goList = "go list -m -f {{.Dir}}"
+const goList = "go list -m -f {{.Dir}}";
 process.execSync(`go mod download github.com/googleapis/googleapis`, {
-    cwd: projectpath
-})
-const googleapis = process.execSync(`${goList} github.com/googleapis/googleapis`, {
-    cwd: projectpath
-}).toString().trimEnd()
-const libpath = process.execSync(`${goList} github.com/actliboy/hoper/server/go/lib`, {
-    cwd: projectpath
-}).toString().trimEnd()
-console.log(libpath)
-const gateway = process.execSync(`${goList} github.com/grpc-ecosystem/grpc-gateway/v2`, {
-    cwd: libpath
-}).toString().trimEnd()
-console.log(gateway)
+  cwd: projectpath
+});
 
-const protopath = __dirname
-const libproto = libpath + "/protobuf"
-const third = libpath + "/protobuf/third"
-let cmd = `protoc -I${gateway} -I${googleapis} -I${protopath} -I${libproto} -I${third} `
+function getDepPath(mod){
+  return process.execSync(`${goList} ${mod}`, {
+    cwd: projectpath
+  }).toString().trimEnd()
+}
+const googleapis = getDepPath("github.com/googleapis/googleapis");
+const libpath = getDepPath("github.com/actliboy/hoper/server/go/lib");
+console.log(libpath);
+const gateway = getDepPath("github.com/grpc-ecosystem/grpc-gateway/v2");
+console.log(gateway);
 
-function dartgenerate(dir,exlude) {
-    fs.readdir(dir, function (err, files) {
-        files.forEach(function (filename) {
-            //获取当前文件的绝对路径
-            let filepath = path.join(dir, filename);
-            //根据文件路径获取文件信息，返回一个fs.Stats对象
-            fs.stat(filepath, function (err2, stats) {
-                if (err2) {
-                    console.warn(`获取文件stats失败,${filepath}`);
-                } else {
-                    if (stats.isDirectory()) {
-                        if(exlude.includes(filename)){
-                            return
-                        }
-                        try {
-                            process.execSync(`${cmd} ${path.join(filepath, '*.proto')} --dart_out=grpc:D:/code/hoper\\client\\flutter\\lib\\generated\\protobuf`, {
-                                cwd: "D:/code/hoper\\client\\flutter"
-                            })
-                        } catch (e) {
-                        }
-                        dartgenerate(filepath,[])
-                    }
-                }
-            })
-        });
-    })
+const protopath = __dirname;
+const libproto = libpath + "/protobuf";
+const third = libpath + "/protobuf/third";
+
+
+
+const dartConfig = {
+  output: "D:/code/hoper\\client\\flutter\\lib\\generated\\protobuf",
+  cwd: "D:/code/hoper\\client\\flutter",
+  getCmd(filepath) { `protoc -I${gateway} -I${googleapis} -I${protopath} -I${libproto} -I${third} ${path.join(filepath, "*.proto")} --dart_out=grpc:${this.output}`},
+};
+
+function dartgenerate(dir, exclude, config) {
+  fs.readdir(dir, function(err, files) {
+    files.forEach(function(filename) {
+      //获取当前文件的绝对路径
+      let filepath = path.join(dir, filename);
+      //根据文件路径获取文件信息，返回一个fs.Stats对象
+      fs.stat(filepath, function(err2, stats) {
+        if (err2) {
+          console.warn(`获取文件stats失败,${filepath}`);
+        } else {
+          if (stats.isDirectory()) {
+            if (exclude.includes(filename)) {
+              return;
+            }
+            try {
+              process.execSync(config.getCmd(filepath), {
+                cwd: config.cwd
+              });
+            } catch (e) {
+              console.log(e);
+            }
+            dartgenerate(filepath, [],config);
+          }
+        }
+      });
+    });
+  });
 }
 
-dartgenerate(protopath,[])
-dartgenerate(libpath + "/protobuf",["third","utils"])
-cmd = `protoc -I${gateway}  -I${protobuf} -I${protopath} -I${third} `
-dartgenerate(libpath + "/protobuf/third",[])
+dartgenerate(protopath, [], dartConfig);
+dartgenerate(libproto, ["third"], dartConfig);
+dartgenerate(third, [], dartConfig);

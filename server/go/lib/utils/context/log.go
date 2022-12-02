@@ -19,6 +19,6 @@ func (c *RequestContext) HandleError(err error) {
 
 func (c *RequestContext) ErrorLog(err, originErr error, funcName string) error {
 	// caller 用原始logger skip刚好
-	log.Default.Error(originErr.Error(), zap.String(log.TraceId, c.TraceID), zap.Int(log.Type, errorcode.Code(err)), zap.String(log.Position, funcName))
+	log.GetSkipLogger(1).Error(originErr.Error(), zap.String(log.TraceId, c.TraceID), zap.Int(log.Type, errorcode.Code(err)), zap.String(log.Position, funcName))
 	return err
 }

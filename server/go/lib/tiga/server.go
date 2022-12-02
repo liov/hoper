@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"github.com/actliboy/hoper/server/go/lib/context"
 	"github.com/actliboy/hoper/server/go/lib/initialize"
-	"github.com/actliboy/hoper/server/go/lib/initialize/server"
+	"github.com/improbable-eng/grpc-web/go/grpcweb"
+	"github.com/rs/cors"
 	"go.opencensus.io/zpages"
 	"net/http"
 	"os"
@@ -30,11 +31,18 @@ type CustomContext func(c context.Context, r *http.Request) context.Context
 type ConvertContext func(r *http.Request) *contexti.Ctx
 
 func (s *Server) Serve() {
-	//反射从配置中取port
-	serviceConfig := server.GetServiceConfig()
-	grpcServer := s.grpcHandler(serviceConfig)
-	httpHandler := s.httpHandler(serviceConfig)
-	openTracing := serviceConfig.OpenTracing
+	grpcServer := s.grpcHandler(s.Config)
+	httpHandler := s.httpHandler(s.Config)
+
+	// cors
+	corsServer := cors.AllowAll()
+	// grpc-web
+	var wrappedGrpc *grpcweb.WrappedGrpcServer
+	if s.Config.GrpcWeb {
+		wrappedGrpc = NewGrpcWebServer(grpcServer)
+	}
+
+	openTracing := s.Config.OpenTracing
 	//systemTracing := serviceConfig.SystemTracing
 	if openTracing {
 		grpc.EnableTracing = true
@@ -55,23 +63,35 @@ func (s *Server) Serve() {
 			}
 		}()
 
+		// 跨域
+		if r.Method == http.MethodOptions && r.Header.Get(httpi.HeaderAccessControlRequestMethod) != "" {
+			corsServer.HandlerFunc(w, r)
+			return
+		}
+
 		ctx, span := contexti.CtxFromRequest(r, openTracing)
 		if span != nil {
 			defer span.End()
 		}
 		r = r.WithContext(ctx.ContextWrapper())
-		if r.ProtoMajor == 2 && grpcServer != nil && strings.Contains(r.Header.Get(httpi.HeaderContentType), httpi.ContentGRPCHeaderValue) {
-			grpcServer.ServeHTTP(w, r) // gRPC Server
+
+		contentType := r.Header.Get(httpi.HeaderContentType)
+		if strings.HasPrefix(contentType, httpi.ContentGRPCHeaderValue) {
+			if strings.HasPrefix(contentType[len(httpi.ContentGRPCHeaderValue):], "-web") && wrappedGrpc != nil {
+				wrappedGrpc.ServeHTTP(w, r)
+			} else if r.ProtoMajor == 2 && grpcServer != nil {
+				grpcServer.ServeHTTP(w, r) // gRPC Server
+			}
 		} else {
 			httpHandler(w, r)
 		}
 	})
 	h2Handler := h2c.NewHandler(handle, new(http2.Server))
 	server := &http.Server{
-		Addr:         serviceConfig.Port,
+		Addr:         s.Config.Port,
 		Handler:      h2Handler,
-		ReadTimeout:  serviceConfig.ReadTimeout,
-		WriteTimeout: serviceConfig.WriteTimeout,
+		ReadTimeout:  s.Config.ReadTimeout,
+		WriteTimeout: s.Config.WriteTimeout,
 	}
 	// 服务注册
 	initialize.InitConfig.Register()
@@ -96,13 +116,14 @@ func (s *Server) Serve() {
 		log.Debug("重启服务")
 		cs()
 	}()
-	fmt.Println("listening: " + serviceConfig.Domain + serviceConfig.Port)
+	fmt.Println("listening: " + s.Config.Domain + s.Config.Port)
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("failed to serve: %v", err)
 	}
 }
 
 type Server struct {
+	Config         *ServerConfig
 	GRPCOptions    []grpc.ServerOption
 	GRPCHandle     func(*grpc.Server)
 	GatewayRegistr gateway.GatewayHandle
@@ -114,11 +135,8 @@ var signals = make(chan os.Signal, 1)
 var stop = make(chan struct{}, 1)
 
 func (s *Server) Start() {
-	if initialize.InitConfig.ConfigCenterConfig == nil {
-		log.Fatal(`初始化配置失败:
-	main 函数的第一行应为
-	defer initialize.Start(config.Conf, dao.Dao)()
-`)
+	if s.Config == nil {
+		s.Config = defaultServerConfig()
 	}
 	signal.Notify(signals,
 		// kill -SIGINT XXXX 或 Ctrl+c
@@ -144,8 +162,9 @@ func ReStart() {
 	stop <- struct{}{}
 }
 
-func NewServer(ginhandle func(*gin.Engine), grpchandle func(*grpc.Server), grpcoptions []grpc.ServerOption, gatewayregist gateway.GatewayHandle, graphqlresolve graphql.ExecutableSchema) *Server {
+func NewServer(config *ServerConfig, ginhandle func(*gin.Engine), grpchandle func(*grpc.Server), grpcoptions []grpc.ServerOption, gatewayregist gateway.GatewayHandle, graphqlresolve graphql.ExecutableSchema) *Server {
 	return &Server{
+		Config:         config,
 		GinHandle:      ginhandle,
 		GRPCOptions:    grpcoptions,
 		GRPCHandle:     grpchandle,
@@ -154,6 +173,6 @@ func NewServer(ginhandle func(*gin.Engine), grpchandle func(*grpc.Server), grpco
 	}
 }
 
-func Start(ginhandle func(*gin.Engine), grpchandle func(*grpc.Server), grpcoptions []grpc.ServerOption, gatewayregist gateway.GatewayHandle, graphqlresolve graphql.ExecutableSchema) {
-	NewServer(ginhandle, grpchandle, grpcoptions, gatewayregist, graphqlresolve).Start()
+func Start(config *ServerConfig, ginhandle func(*gin.Engine), grpchandle func(*grpc.Server), grpcoptions []grpc.ServerOption, gatewayregist gateway.GatewayHandle, graphqlresolve graphql.ExecutableSchema) {
+	NewServer(config, ginhandle, grpchandle, grpcoptions, gatewayregist, graphqlresolve).Start()
 }

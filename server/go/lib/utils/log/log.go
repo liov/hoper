@@ -21,11 +21,22 @@ func init() {
 }
 
 var (
-	Default *Logger
+	Default     *Logger
+	skipLoggers = make([]*Logger, 10)
 )
 
 func SetDefaultLogger(lf *Config) {
 	Default = lf.NewLogger()
+}
+
+func GetSkipLogger(skip int) *Logger {
+	if skip > 10 {
+		panic("最大不超过10")
+	}
+	if skipLoggers[skip] == nil {
+		skipLoggers[skip] = Default.AddSkip(skip)
+	}
+	return skipLoggers[skip]
 }
 
 type Logger struct {
@@ -71,10 +82,14 @@ func (l *Logger) Sugar() *zap.SugaredLogger {
 	return l.Logger.Sugar()
 }
 
-func (l *Logger) AddCore(newCore zapcore.Core) {
-	l.WithOptions(zap.WrapCore(func(core zapcore.Core) zapcore.Core {
+func (l *Logger) AddCore(newCore zapcore.Core) *Logger {
+	return l.WithOptions(zap.WrapCore(func(core zapcore.Core) zapcore.Core {
 		return zapcore.NewTee(core, newCore)
 	}))
+}
+
+func (l *Logger) AddSkip(skip int) *Logger {
+	return &Logger{l.Logger.WithOptions(zap.AddCallerSkip(skip))}
 }
 
 // 构建日志对象基本信息

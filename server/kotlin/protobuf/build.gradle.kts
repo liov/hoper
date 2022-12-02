@@ -52,7 +52,7 @@ protobuf {
             artifact = "io.grpc:protoc-gen-grpc-java:$grpcVersion"
         }
         id("grpckt") {
-            artifact = "io.grpc:protoc-gen-grpc-kotlin:$grpcKotlinVersion}"
+            artifact = "io.grpc:protoc-gen-grpc-kotlin:$grpcKotlinVersion"
         }
 //        id("reactor") {
 //            artifact = "com.salesforce.servicelibs:reactor-grpc:1.0.0"
@@ -92,12 +92,14 @@ tasks.getByName<Jar>("jar") {
 }
 
 dependencies {
-    api("io.grpc:grpc-kotlin-stub:$grpcKotlinVersion")
     implementation("com.google.protobuf:protobuf-java:$protocVersion")
     implementation("com.google.protobuf:protobuf-java-util:$protocVersion")
+    //implementation("com.google.protobuf:protobuf-kotlin-lite:$protocVersion")
     api("io.grpc:grpc-netty-shaded:$grpcVersion")
     api("io.grpc:grpc-protobuf:$grpcVersion")
+    api("io.grpc:grpc-protobuf-lite:$grpcVersion")
     api("io.grpc:grpc-stub:$grpcVersion")
+    //api("io.grpc:grpc-kotlin-stub:$grpcKotlinVersion")
     implementation("com.google.guava:guava:31.1-jre")
     protobuf(files("$projectpath/protobuf") )
     protobuf(files("$projectpath/protobuf/third"))
@@ -152,4 +154,3 @@ fun protolib(lib:String): String {
     }
     return stdout.toString("utf-8").trim()
 }
-

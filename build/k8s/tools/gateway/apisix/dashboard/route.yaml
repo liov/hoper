@@ -19,3 +19,5 @@ spec:
           enable: true
           config:
             http_to_https: true
+        - name: grpc-web
+          enable: true

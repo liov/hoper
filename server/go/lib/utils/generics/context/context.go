@@ -1,13 +1,24 @@
-package context
+package contexti
 
 import (
-	"time"
+	"context"
+	contexti "github.com/actliboy/hoper/server/go/lib/utils/context"
+	"github.com/actliboy/hoper/server/go/lib/utils/net/http/request"
+	"github.com/valyala/fasthttp"
+	"google.golang.org/grpc"
+	"net/http"
 )
 
-// 不现实，context里可能装任何数据，泛型会限定只能装一种，除非限定就是any
-type Context[K any, V any] interface {
-	Deadline() (deadline time.Time, ok bool)
-	Done() <-chan struct{}
-	Err() error
-	Value(key K) V
+// TODO
+type RequestContext[REQ http.Request | fasthttp.Request, P any] struct {
+	context.Context
+	TraceID string
+	Token   string
+	*contexti.DeviceInfo
+	request.RequestAt
+	Request *REQ
+	grpc.ServerTransportStream
+	Internal string
+	Values   map[string]interface{}
+	Props    P
 }

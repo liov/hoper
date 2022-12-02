@@ -4,9 +4,9 @@ import (
 	contexti "github.com/actliboy/hoper/server/go/lib/context"
 	"github.com/actliboy/hoper/server/go/lib/initialize/cache/ristretto"
 	"github.com/actliboy/hoper/server/go/lib/initialize/db/postgres"
+	"github.com/actliboy/hoper/server/go/lib/initialize/pebble"
 	initredis "github.com/actliboy/hoper/server/go/lib/initialize/redis"
 	"github.com/actliboy/hoper/server/go/lib/utils/log"
-	"github.com/cockroachdb/pebble"
 )
 
 var Dao *dao = &dao{}

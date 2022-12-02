@@ -1530,4 +1530,28 @@ configurations.all {
         }
     }
 }
-``
+```
+
+# vite commonjs 报错 SyntaxError: The requested module 'xxx' does not provide an export named 'xx'
+https://vitejs.dev/guide/dep-pre-bundling.html#caching
+https://vitejs.dev/config/dep-optimization-options.html#optimizedeps-exclude
+
+npm install @originjs/vite-plugin-commonjs --save-dev
+
+# js对象中的this指向的属性 undefined
+```javascript
+const protobufTsConfig = {
+    output: "output",
+    getCmd: () => console.log(this.output), //undefined
+};
+```
+匿名函数的执行环境是全局作用域
+true:
+```javascript
+const protobufTsConfig = {
+    output: "output",
+    getCmd(){
+      console.log(this.output)
+    }
+};
+```

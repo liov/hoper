@@ -2,30 +2,21 @@ package server
 
 import (
 	"github.com/actliboy/hoper/server/go/lib/initialize"
-	gini "github.com/actliboy/hoper/server/go/lib/utils/net/http/gin"
+	"github.com/actliboy/hoper/server/go/lib/tiga"
 	"reflect"
-	"time"
 )
 
-type ServerConfig struct {
-	Protocol                        string
-	Domain                          string
-	Port                            string
-	ReadTimeout                     time.Duration `expr:"$+5"`
-	WriteTimeout                    time.Duration `expr:"$+5"`
-	OpenTracing, Prometheus, GenDoc bool
-	Gin                             *gini.Config
-}
+type ServerConfig tiga.ServerConfig
 
 func (c *ServerConfig) Init() {
-	if c.Port == "" {
-		c.Port = ":8080"
-	}
-	c.ReadTimeout = c.ReadTimeout * time.Second
-	c.WriteTimeout = c.WriteTimeout * time.Second
+	(*tiga.ServerConfig)(c).Init()
 }
 
-func GetServiceConfig() *ServerConfig {
+func (c *ServerConfig) Origin() *tiga.ServerConfig {
+	return (*tiga.ServerConfig)(c)
+}
+
+func GetServerConfig() *ServerConfig {
 	iconf := initialize.InitConfig.Config()
 	value := reflect.ValueOf(iconf).Elem()
 	for i := 0; i < value.NumField(); i++ {
