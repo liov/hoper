@@ -85,7 +85,8 @@ func CoverDownload(ctx context.Context, url string, upId, id int) error {
 		}
 		dao.Dao.Hoper.Table(dao.TableNameView).Where("aid = ?", id).Update("cover_record", true)
 		log.Println("下载图片成功：", filepath)
+	} else {
+		log.Println("图片已存在：", filepath)
 	}
-	log.Println("图片已存在：", filepath)
 	return nil
 }

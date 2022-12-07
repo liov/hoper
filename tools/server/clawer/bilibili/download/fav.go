@@ -6,6 +6,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"time"
 	"tools/clawer/bilibili/dao"
 	"tools/clawer/bilibili/rpc"
 	"tools/clawer/bilibili/tool"
@@ -13,16 +14,18 @@ import (
 
 var apiservice = &rpc.API{}
 
-func RecordFavTimer() []*crawler.Request {
+func RecordFavTimer(startTime time.Time) []*crawler.Request {
 	favIds := []int{62504730, 63181530}
 	var requests []*crawler.Request
 	for _, favId := range favIds {
-		requests = append(requests, GetFavListReqAfterRecordView(favId, 1))
+		requests = append(requests, GetFavListReqAfterRecordView(favId, 1, startTime))
 	}
 	return requests
 }
 
-func GetFavListReqAfterRecordView(favId, page int) *crawler.Request {
+var zeroTime = time.Time{}
+
+func GetFavListReqAfterRecordView(favId, page int, startTime time.Time) *crawler.Request {
 	return &crawler.Request{
 		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: strconv.Itoa(favId) + strconv.Itoa(page)}, Kind: KindRecordFavList},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
@@ -36,20 +39,22 @@ func GetFavListReqAfterRecordView(favId, page int) *crawler.Request {
 			for _, fav := range res.Medias {
 				aid := tool.Bv2av(fav.Bvid)
 				bilibiliDao := dao.NewDao(ctx, dao.Dao.Hoper.DB)
-				exists, err := bilibiliDao.ViewExists(aid)
+				createdTime, err := bilibiliDao.ViewCreatedTime(aid)
 				if err != nil {
 					return nil, err
 				}
-				if exists {
+				if createdTime == zeroTime {
+					if !strings.HasSuffix(fav.Cover, NULLCOVER) {
+						req1 := RecordViewInfoReqAfterRecordVideo(aid)
+						req2 := CoverDownloadReq(fav.Cover, fav.Upper.Mid, fav.Id)
+						requests = append(requests, req1, req2)
+					}
+				} else if createdTime.Before(startTime) {
 					return requests, nil
 				}
-				if !strings.HasSuffix(fav.Cover, NULLCOVER) {
-					req1 := RecordViewInfoReqAfterRecordVideo(aid)
-					req2 := CoverDownloadReq(fav.Cover, fav.Upper.Mid, fav.Id)
-					requests = append(requests, req1, req2)
-				}
+
 			}
-			requests = append(requests, GetFavListReqAfterRecordView(favId, page+1))
+			requests = append(requests, GetFavListReqAfterRecordView(favId, page+1, startTime))
 			return requests, nil
 		},
 	}
@@ -79,7 +84,7 @@ func RecordFavReq(favId, page int) *crawler.Request {
 }
 
 func FixRecordFav(engine *crawler.Engine) {
-	for page := 1; page < 10; page++ {
+	for page := 1; page < 5; page++ {
 		log.Printf("第%d页", page)
 		engine.AddTask(engine.NewTask(RecordFavReq(63181530, page)))
 		page++
