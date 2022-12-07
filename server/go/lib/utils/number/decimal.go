@@ -9,10 +9,10 @@ import (
 	"strings"
 	"unsafe"
 
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
+	"github.com/liov/hoper/server/go/lib/utils/log"
 )
 
-//放弃，省空间，但计算时间浪费，来回不停转字符串
+// 放弃，省空间，但计算时间浪费，来回不停转字符串
 type Decimal1 struct {
 	Int uint64
 	//小数部分翻转 0.001 =》 100
@@ -331,11 +331,12 @@ func abs(x int) int {
 	return -x
 }
 
-/*func (x *Decimal3) Div2(v Decimal3) *Decimal3 {
-	f1:=big.NewFloat(x.Float())
-	f2:=big.NewFloat(v.Float())
-	f3,_:=f1.Quo(f1,f2).Float64()
-}
+/*
+	func (x *Decimal3) Div2(v Decimal3) *Decimal3 {
+		f1:=big.NewFloat(x.Float())
+		f2:=big.NewFloat(v.Float())
+		f3,_:=f1.Quo(f1,f2).Float64()
+	}
 */
 func (x Decimal3) String() string {
 	if x.mant == 0 {

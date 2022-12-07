@@ -2,8 +2,8 @@ package contexti
 
 import (
 	"context"
-	contexti "github.com/actliboy/hoper/server/go/lib/utils/context"
-	"github.com/actliboy/hoper/server/go/lib/utils/net/http/request"
+	contexti "github.com/liov/hoper/server/go/lib/utils/context"
+	"github.com/liov/hoper/server/go/lib/utils/net/http/request"
 	"github.com/valyala/fasthttp"
 	"google.golang.org/grpc"
 	"net/http"

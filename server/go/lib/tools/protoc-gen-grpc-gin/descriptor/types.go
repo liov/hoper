@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/actliboy/hoper/server/go/lib/tools/protoc-gen-grpc-gin/httprule"
-	stringsi "github.com/actliboy/hoper/server/go/lib/utils/strings"
+	"github.com/liov/hoper/server/go/lib/tools/clawer/protoc-gen-grpc-gin/httprule"
+	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/pluginpb"
 )

@@ -3,16 +3,16 @@ package list
 import (
 	"fmt"
 
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
+	"github.com/liov/hoper/server/go/lib/utils/log"
 )
 
-//链表结点
+// 链表结点
 type Node[T any] struct {
 	data       T
 	next, prev *Node[T]
 }
 
-//链表
+// 链表
 type LinkList[T comparable] struct {
 	head, tail *Node[T]
 	size       int
@@ -27,17 +27,17 @@ func CreateLinkList[T comparable]() LinkList[T] {
 	return l
 }
 
-//是否为空链表
+// 是否为空链表
 func (l *LinkList[T]) IsEmpty() bool {
 	return l.size == 0
 }
 
-//获取链表长度
+// 获取链表长度
 func (l *LinkList[T]) GetLength() int {
 	return l.size
 }
 
-//是否含有指定结点
+// 是否含有指定结点
 func (l *LinkList[T]) Exist(node *Node[T]) bool {
 	var p = l.head
 	for p != nil {
@@ -50,7 +50,7 @@ func (l *LinkList[T]) Exist(node *Node[T]) bool {
 	return false
 }
 
-//获取含有指定数据的第一个结点
+// 获取含有指定数据的第一个结点
 func (l *LinkList[T]) GetNode(e T) *Node[T] {
 	var p = l.head
 	for p != nil {
@@ -64,7 +64,7 @@ func (l *LinkList[T]) GetNode(e T) *Node[T] {
 	return nil
 }
 
-//在链表尾部添加数据
+// 在链表尾部添加数据
 func (l *LinkList[T]) Append(e T) {
 	//为数据创建新结点
 	newNode := Node[T]{}
@@ -81,7 +81,7 @@ func (l *LinkList[T]) Append(e T) {
 	l.size++
 }
 
-//在链表头部插入数据
+// 在链表头部插入数据
 func (l *LinkList[T]) InsertHead(e T) {
 	newNode := Node[T]{}
 	newNode.data = e
@@ -93,7 +93,7 @@ func (l *LinkList[T]) InsertHead(e T) {
 	l.size++
 }
 
-//在指定结点后面插入数据
+// 在指定结点后面插入数据
 func (l *LinkList[T]) InsertAfterNode(pre *Node[T], e T) {
 	//如果链表中存在该结点，才进行插入
 	if l.Exist(pre) {
@@ -111,7 +111,7 @@ func (l *LinkList[T]) InsertAfterNode(pre *Node[T], e T) {
 	}
 }
 
-//在第一次出现指定数据的结点后插入数据,若链表中无该数据，返回false
+// 在第一次出现指定数据的结点后插入数据,若链表中无该数据，返回false
 func (l *LinkList[T]) InsertAfterData(preData T, e T) bool {
 	var p = l.head
 	for p != nil {
@@ -128,7 +128,7 @@ func (l *LinkList[T]) InsertAfterData(preData T, e T) bool {
 	return false
 }
 
-//在指定下标处插入数据
+// 在指定下标处插入数据
 func (l *LinkList[T]) Insert(position int, e T) bool {
 	if position < 0 {
 		log.Error("指定下标不合法")
@@ -160,7 +160,7 @@ func (l *LinkList[T]) Insert(position int, e T) bool {
 
 }
 
-//删除指定结点
+// 删除指定结点
 func (l *LinkList[T]) DeleteNode(node *Node[T]) {
 	//存在该结点
 	if l.Exist(node) {
@@ -188,7 +188,7 @@ func (l *LinkList[T]) DeleteNode(node *Node[T]) {
 	}
 }
 
-//删除第一个含指定数据的结点
+// 删除第一个含指定数据的结点
 func (l *LinkList[T]) Delete(e T) {
 	p := l.GetNode(e)
 	if p == nil {
@@ -198,7 +198,7 @@ func (l *LinkList[T]) Delete(e T) {
 	}
 }
 
-//遍历链表
+// 遍历链表
 func (l *LinkList[T]) traverse(f func(T)) {
 	var p = l.head
 	if l.IsEmpty() {
@@ -213,7 +213,7 @@ func (l *LinkList[T]) traverse(f func(T)) {
 	}
 }
 
-//打印链表信息
+// 打印链表信息
 func (l *LinkList[T]) PrintInfo() {
 	fmt.Println("###############################################")
 	fmt.Println("链表长度为：", l.GetLength())

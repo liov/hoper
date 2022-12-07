@@ -1,8 +1,8 @@
 package server
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/initialize"
-	"github.com/actliboy/hoper/server/go/lib/tiga"
+	"github.com/liov/hoper/server/go/lib/initialize"
+	"github.com/liov/hoper/server/go/lib/tiga"
 	"reflect"
 )
 

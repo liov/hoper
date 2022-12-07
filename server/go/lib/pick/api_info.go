@@ -7,10 +7,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
-	"github.com/actliboy/hoper/server/go/lib/utils/reflect"
-	"github.com/actliboy/hoper/server/go/lib/utils/strings"
 	"github.com/go-openapi/spec"
+	"github.com/liov/hoper/server/go/lib/utils/log"
+	"github.com/liov/hoper/server/go/lib/utils/reflect"
+	"github.com/liov/hoper/server/go/lib/utils/strings"
 )
 
 const Template = `

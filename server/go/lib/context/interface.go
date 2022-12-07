@@ -2,9 +2,9 @@ package contexti
 
 import (
 	"context"
-	contexti "github.com/actliboy/hoper/server/go/lib/utils/context"
-	httpi "github.com/actliboy/hoper/server/go/lib/utils/net/http"
-	stringsi "github.com/actliboy/hoper/server/go/lib/utils/strings"
+	contexti "github.com/liov/hoper/server/go/lib/utils/context"
+	httpi "github.com/liov/hoper/server/go/lib/utils/net/http"
+	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
 	"github.com/valyala/fasthttp"
 	"net/http"
 )

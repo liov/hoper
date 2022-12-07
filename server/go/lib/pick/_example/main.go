@@ -1,12 +1,12 @@
 package main
 
 import (
-	pick2 "github.com/actliboy/hoper/server/go/lib/pick"
-	service2 "github.com/actliboy/hoper/server/go/lib/pick/_example/service"
+	pick2 "github.com/liov/hoper/server/go/lib/pick"
+	service2 "github.com/liov/hoper/server/go/lib/pick/_example/service"
 	"log"
 	"net/http"
 
-	_ "github.com/actliboy/hoper/server/go/lib/pick/_example/service"
+	_ "github.com/liov/hoper/server/go/lib/pick/_example/service"
 )
 
 func main() {

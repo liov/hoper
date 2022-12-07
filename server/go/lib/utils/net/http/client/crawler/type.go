@@ -2,7 +2,7 @@ package crawler
 
 import (
 	"context"
-	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
+	"github.com/liov/hoper/server/go/lib/utils/conctrl"
 )
 
 type FetchFunc func(ctx context.Context, url string) ([]byte, error)

@@ -1,9 +1,9 @@
 package client
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
-	grpci "github.com/actliboy/hoper/server/go/lib/utils/net/http/grpc"
-	"github.com/actliboy/hoper/server/go/mod/protobuf/upload"
+	"github.com/liov/hoper/server/go/lib/utils/log"
+	grpci "github.com/liov/hoper/server/go/lib/utils/net/http/grpc"
+	"github.com/liov/hoper/server/go/mod/protobuf/upload"
 )
 
 func GetUploadClient() upload.UploadServiceClient {

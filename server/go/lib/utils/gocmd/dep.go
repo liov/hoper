@@ -1,7 +1,7 @@
 package gocmd
 
 import (
-	osi "github.com/actliboy/hoper/server/go/lib/utils/os"
+	osi "github.com/liov/hoper/server/go/lib/utils/os"
 	"os"
 	"strings"
 )

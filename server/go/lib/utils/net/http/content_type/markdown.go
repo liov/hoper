@@ -1,7 +1,7 @@
 package content_type
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/utils/strings"
+	"github.com/liov/hoper/server/go/lib/utils/strings"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
 )

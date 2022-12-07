@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/tools/get_db"
-	"github.com/actliboy/hoper/server/go/mod/protobuf/content"
-	"github.com/actliboy/hoper/server/go/mod/protobuf/user"
-	"github.com/actliboy/hoper/server/go/mod/upload/model"
+	"github.com/liov/hoper/server/go/lib/tools/get_db"
+	"github.com/liov/hoper/server/go/mod/protobuf/content"
+	"github.com/liov/hoper/server/go/mod/protobuf/user"
+	"github.com/liov/hoper/server/go/mod/upload/model"
 )
 
 var userMod = []interface{}{

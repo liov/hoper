@@ -1,6 +1,6 @@
 package apollo
 
-import "github.com/actliboy/hoper/server/go/lib/utils/configor/apollo"
+import "github.com/liov/hoper/server/go/lib/utils/configor/apollo"
 
 type Apollo struct {
 	apollo.Config

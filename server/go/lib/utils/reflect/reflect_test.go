@@ -2,11 +2,11 @@ package reflecti
 
 import (
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/utils/def/foo"
+	"github.com/liov/hoper/server/go/lib/utils/def/foo"
 	"github.com/modern-go/reflect2"
 	"testing"
 
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
+	"github.com/liov/hoper/server/go/lib/utils/log"
 )
 
 type Foo struct {

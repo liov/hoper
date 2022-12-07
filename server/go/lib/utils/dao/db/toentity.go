@@ -3,8 +3,8 @@ package dbi
 import (
 	"bytes"
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/utils/fs"
-	stringsi "github.com/actliboy/hoper/server/go/lib/utils/strings"
+	"github.com/liov/hoper/server/go/lib/utils/fs"
+	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
 	"go/ast"
 	"go/format"
 	"go/parser"

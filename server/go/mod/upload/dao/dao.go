@@ -1,12 +1,12 @@
 package dao
 
 import (
-	contexti "github.com/actliboy/hoper/server/go/lib/context"
-	"github.com/actliboy/hoper/server/go/lib/initialize/cache/ristretto"
-	"github.com/actliboy/hoper/server/go/lib/initialize/db/postgres"
-	"github.com/actliboy/hoper/server/go/lib/initialize/pebble"
-	initredis "github.com/actliboy/hoper/server/go/lib/initialize/redis"
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
+	contexti "github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/initialize/cache/ristretto"
+	"github.com/liov/hoper/server/go/lib/initialize/db/postgres"
+	"github.com/liov/hoper/server/go/lib/initialize/pebble"
+	initredis "github.com/liov/hoper/server/go/lib/initialize/redis"
+	"github.com/liov/hoper/server/go/lib/utils/log"
 )
 
 var Dao *dao = &dao{}

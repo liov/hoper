@@ -2,7 +2,7 @@ package client
 
 import (
 	"context"
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
+	"github.com/liov/hoper/server/go/lib/utils/log"
 	"io"
 	"net/http"
 	urlpkg "net/url"

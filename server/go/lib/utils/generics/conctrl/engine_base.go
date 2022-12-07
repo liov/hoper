@@ -2,10 +2,11 @@ package conctrl
 
 import (
 	"context"
-	"github.com/actliboy/hoper/server/go/lib/utils/generics/structure/heap"
-	"github.com/actliboy/hoper/server/go/lib/utils/generics/structure/list"
-	synci "github.com/actliboy/hoper/server/go/lib/utils/sync"
+	"github.com/liov/hoper/server/go/lib/utils/generics/structure/heap"
+	"github.com/liov/hoper/server/go/lib/utils/generics/structure/list"
+	synci "github.com/liov/hoper/server/go/lib/utils/sync"
 	"log"
+	"math/rand"
 	"runtime/debug"
 	"sync"
 	"sync/atomic"
@@ -13,14 +14,18 @@ import (
 )
 
 type BaseEngine[KEY comparable, T, W any] struct {
-	limitWorkerCount, currentWorkerCount uint64
-	limitWaitTaskCount                   uint
-	workerChan                           chan *Worker[KEY, T, W]
-	taskChan                             chan *BaseTask[KEY, T]
-	ctx                                  context.Context
-	cancel                               context.CancelFunc
-	wg                                   sync.WaitGroup
-	fixedWorker                          []chan *BaseTask[KEY, T]
+	limitWorkerCount, currentWorkerCount    uint64
+	limitWaitTaskCount                      uint
+	workerChan                              chan *Worker[KEY, T, W]
+	taskChan                                chan *BaseTask[KEY, T]
+	ctx                                     context.Context
+	cancel                                  context.CancelFunc
+	wg                                      sync.WaitGroup
+	fixedWorker                             []chan *BaseTask[KEY, T]
+	speedLimit                              *time.Timer
+	randSpeedLimitBase, randSpeedLimitRange time.Duration
+	//TODO
+	monitor *time.Ticker // 全局检测定时器，任务的卡住检测，worker panic recover都可以用这个检测
 	EngineStatistics
 }
 
@@ -46,6 +51,17 @@ func NewBaseEngineWithContext[KEY comparable, T, W any](workerCount uint, ctx co
 
 func (e *BaseEngine[KEY, T, W]) Context() context.Context {
 	return e.ctx
+}
+
+func (e *BaseEngine[KEY, T, W]) SpeedLimited(interval time.Duration) {
+	e.speedLimit = time.NewTimer(interval)
+	e.randSpeedLimitBase, e.randSpeedLimitRange = interval, 0
+}
+
+func (e *BaseEngine[KEY, T, W]) RandSpeedLimited(start, stop time.Duration) {
+	rand.Seed(time.Now().UnixNano())
+	e.randSpeedLimitBase, e.randSpeedLimitRange = start, stop-start
+	e.speedLimit = time.NewTimer(time.Duration(rand.Intn(int(e.randSpeedLimitBase))) + e.randSpeedLimitRange)
 }
 
 func (e *BaseEngine[KEY, T, W]) Cancel() {
@@ -127,7 +143,7 @@ func (e *BaseEngine[KEY, T, W]) Run(tasks ...*BaseTask[KEY, T]) {
 }
 
 func (e *BaseEngine[KEY, T, W]) newWorker(readyTask *BaseTask[KEY, T]) {
-	e.currentWorkerCount++
+	atomic.AddUint64(&e.currentWorkerCount, 1)
 	//id := c.currentWorkerCount
 	taskChan := make(chan *BaseTask[KEY, T])
 	worker := &Worker[KEY, T, W]{Id: uint(e.currentWorkerCount), taskCh: taskChan}
@@ -137,6 +153,8 @@ func (e *BaseEngine[KEY, T, W]) newWorker(readyTask *BaseTask[KEY, T]) {
 				log.Println(r)
 				log.Println(string(debug.Stack()))
 				e.wg.Done()
+				// 创建一个新的
+				e.newWorker(nil)
 			}
 			atomic.AddUint64(&e.currentWorkerCount, ^uint64(0))
 		}()
@@ -149,6 +167,14 @@ func (e *BaseEngine[KEY, T, W]) newWorker(readyTask *BaseTask[KEY, T]) {
 			case e.workerChan <- worker:
 				readyTask = <-taskChan
 				if readyTask != nil && readyTask.BaseTaskFunc != nil {
+					if e.speedLimit != nil {
+						<-e.speedLimit.C
+						if e.randSpeedLimitRange == 0 {
+							e.speedLimit.Reset(e.randSpeedLimitBase)
+						} else {
+							e.speedLimit.Reset(time.Duration(rand.Intn(int(e.randSpeedLimitBase))) + e.randSpeedLimitRange)
+						}
+					}
 					readyTask.BaseTaskFunc(e.ctx)
 					atomic.AddUint64(&e.taskDoneCount, 1)
 				}
@@ -164,6 +190,7 @@ func (e *BaseEngine[KEY, T, W]) addWorker() {
 	if e.currentWorkerCount == 0 {
 		e.newWorker(nil)
 	}
+
 	go func() {
 		for {
 			select {

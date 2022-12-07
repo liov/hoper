@@ -2,8 +2,8 @@ package descriptor
 
 import (
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/protobuf/utils/openapiconfig"
-	"github.com/actliboy/hoper/server/go/lib/utils/encoding/yaml"
+	"github.com/liov/hoper/server/go/lib/protobuf/utils/openapiconfig"
+	"github.com/liov/hoper/server/go/lib/utils/encoding/yaml"
 	"io/ioutil"
 
 	"google.golang.org/protobuf/encoding/protojson"

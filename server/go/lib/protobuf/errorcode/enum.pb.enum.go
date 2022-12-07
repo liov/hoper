@@ -2,7 +2,7 @@ package errorcode
 
 import (
 	errors "errors"
-	strings "github.com/actliboy/hoper/server/go/lib/utils/strings"
+	strings "github.com/liov/hoper/server/go/lib/utils/strings"
 	io "io"
 )
 

@@ -4,9 +4,9 @@ import (
 	"mime"
 	"net/http"
 
-	"github.com/actliboy/hoper/server/go/lib/utils/net/http/api/apidoc"
-	"github.com/actliboy/hoper/server/go/lib/utils/net/http/gin/handler"
 	"github.com/gin-gonic/gin"
+	"github.com/liov/hoper/server/go/lib/utils/net/http/api/apidoc"
+	"github.com/liov/hoper/server/go/lib/utils/net/http/gin/handler"
 )
 
 func OpenApi(mux *gin.Engine, filePath string) {

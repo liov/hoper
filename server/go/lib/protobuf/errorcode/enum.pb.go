@@ -7,8 +7,8 @@
 package errorcode
 
 import (
-	_ "github.com/actliboy/hoper/server/go/lib/protobuf/utils/enum"
-	_ "github.com/actliboy/hoper/server/go/lib/protobuf/utils/patch"
+	_ "github.com/liov/hoper/server/go/lib/protobuf/utils/enum"
+	_ "github.com/liov/hoper/server/go/lib/protobuf/utils/patch"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"

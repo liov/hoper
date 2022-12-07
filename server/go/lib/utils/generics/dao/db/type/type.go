@@ -1,7 +1,7 @@
 package _type
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/utils/def/request"
+	"github.com/liov/hoper/server/go/lib/utils/def/request"
 	"golang.org/x/exp/constraints"
 	"time"
 )

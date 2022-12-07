@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
+	"github.com/liov/hoper/server/go/lib/utils/net/http/client"
 )
 
 var LuosimaoErr = errors.New("人机识别验证失败")

@@ -10,17 +10,13 @@ import (
 	"io"
 	"net"
 	"net/http"
-	"net/url"
 	"os"
-	"reflect"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
 
-	httpi "github.com/actliboy/hoper/server/go/lib/utils/net/http"
-	"github.com/actliboy/hoper/server/go/lib/utils/number"
-	"github.com/actliboy/hoper/server/go/lib/utils/strings"
+	httpi "github.com/liov/hoper/server/go/lib/utils/net/http"
+	"github.com/liov/hoper/server/go/lib/utils/strings"
 )
 
 // 不是并发安全的
@@ -266,6 +262,20 @@ func (req *RequestParams) DoEmpty() error {
 	return req.Do(nil, nil)
 }
 
+func (req *RequestParams) setHeader(request *http.Request) {
+	request.Header = req.header
+	if req.AuthUser != "" && req.AuthPass != "" {
+		request.SetBasicAuth(req.AuthUser, req.AuthPass)
+	}
+	if req.contentType == ContentTypeJson {
+		request.Header.Set(httpi.HeaderContentType, httpi.ContentJSONHeaderValue)
+	} else if req.contentType == ContentTypeFormData {
+		request.Header.Set(httpi.HeaderContentType, httpi.ContentFormHeaderValue)
+	} else {
+		request.Header.Set(httpi.HeaderContentType, httpi.ContentFormMultipartHeaderValue)
+	}
+}
+
 // Do create a HTTP request
 func (req *RequestParams) Do(param, response interface{}) error {
 	method := req.method
@@ -331,21 +341,14 @@ func (req *RequestParams) Do(param, response interface{}) error {
 	if req.cachedHeaderKey != "" {
 		if header, ok := headerMap.Load(req.cachedHeaderKey); ok {
 			request.Header = header.(http.Header)
+		} else {
+			req.setHeader(request)
+			headerMap.Store(req.cachedHeaderKey, request.Header)
 		}
 	} else {
-		request.Header = req.header
+		req.setHeader(request)
 	}
 
-	if req.AuthUser != "" && req.AuthPass != "" {
-		request.SetBasicAuth(req.AuthUser, req.AuthPass)
-	}
-	if req.contentType == ContentTypeJson {
-		request.Header.Set(httpi.HeaderContentType, httpi.ContentJSONHeaderValue)
-	} else if req.contentType == ContentTypeFormData {
-		request.Header.Set(httpi.HeaderContentType, httpi.ContentFormHeaderValue)
-	} else {
-		request.Header.Set(httpi.HeaderContentType, httpi.ContentFormMultipartHeaderValue)
-	}
 	var resp *http.Response
 	resp, err = req.client.Do(request)
 	if err != nil {
@@ -466,76 +469,10 @@ func (req *RequestParams) DoStream(param interface{}) (io.ReadCloser, error) {
 	return resp.Body, nil
 }
 
-func GetStream(url string) (io.ReadCloser, error) {
-	var resp *http.Response
-	err := Get(url, &resp)
-	if err != nil {
-		return resp.Body, err
-	}
-	return resp.Body, nil
-}
-
-func UrlParam(param interface{}) string {
-	if param == nil {
-		return ""
-	}
-	query := url.Values{}
-	parseParam(param, query)
-	return query.Encode()
-}
-
-func parseParam(param interface{}, query url.Values) {
-	v := reflect.ValueOf(param).Elem()
-	t := v.Type()
-	for i := 0; i < v.NumField(); i++ {
-		filed := v.Field(i)
-		kind := filed.Kind()
-		if kind == reflect.Interface || kind == reflect.Ptr {
-			parseParam(filed.Interface(), query)
-			continue
-		}
-		if kind == reflect.Struct {
-			parseParam(filed.Addr().Interface(), query)
-			continue
-		}
-		value := getFieldValue(filed)
-		if value != "" {
-			query.Set(t.Field(i).Tag.Get("json"), getFieldValue(v.Field(i)))
-		}
-	}
-
-}
-
-func getFieldValue(v reflect.Value) string {
-	switch v.Kind() {
-	case reflect.Bool,
-		reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
-		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-		return strconv.Itoa(int(v.Int()))
-	case reflect.Float32, reflect.Float64:
-		return number.FormatFloat(v.Float())
-	case reflect.String:
-		return v.String()
-	case reflect.Interface, reflect.Ptr:
-		return getFieldValue(v.Elem())
-	case reflect.Struct:
-
-	}
-	return ""
-}
-
-func Get(url string, response any) error {
-	return NewGetRequest(url).DoWithNoParam(response)
-}
-
 func (req *RequestParams) Get(url string, response interface{}) error {
 	req.url = url
 	req.method = http.MethodGet
 	return req.Do(nil, response)
-}
-
-func Post(url string, param, response interface{}) error {
-	return NewPostRequest(url).Do(param, response)
 }
 
 func (req *RequestParams) Post(url string, param, response interface{}) error {
@@ -544,18 +481,10 @@ func (req *RequestParams) Post(url string, param, response interface{}) error {
 	return (req).Do(param, response)
 }
 
-func Put(url string, param, response interface{}) error {
-	return NewPutRequest(url).Do(param, response)
-}
-
 func (req *RequestParams) Put(url string, param, response interface{}) error {
 	req.url = url
 	req.method = http.MethodPut
 	return req.Do(param, response)
-}
-
-func Delete(url string, param, response interface{}) error {
-	return NewDeleteRequest(url).Do(param, response)
 }
 
 func (req *RequestParams) Delete(url string, param, response interface{}) error {
@@ -596,3 +525,35 @@ func (req *RequestParams) Download(url, path string) error {
 	}
 	return nil
 }
+
+func (req *RequestParams) CacheDo(url, method string, param, response interface{}) error {
+	req.url = url
+	req.method = method
+	return req.Do(param, response)
+}
+
+func (req *RequestParams) CacheGet(url string, response interface{}) error {
+	req.url = url
+	req.method = http.MethodGet
+	return req.Do(nil, response)
+}
+
+func (req *RequestParams) CachePost(url string, param, response interface{}) error {
+	req.url = url
+	req.method = http.MethodPost
+	return req.Do(param, response)
+}
+
+func (req *RequestParams) CachePut(url string, param, response interface{}) error {
+	req.url = url
+	req.method = http.MethodPut
+	return req.Do(param, response)
+}
+
+func (req *RequestParams) CacheDelete(url string, param, response interface{}) error {
+	req.url = url
+	req.method = http.MethodDelete
+	return req.Do(param, response)
+}
+
+type SetParams func(req *RequestParams) *RequestParams

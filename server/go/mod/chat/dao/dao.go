@@ -1,11 +1,11 @@
 package dao
 
 import (
-	contexti "github.com/actliboy/hoper/server/go/lib/context"
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
 	"github.com/cockroachdb/pebble"
 	"github.com/dgraph-io/ristretto"
 	"github.com/go-redis/redis/v8"
+	contexti "github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/utils/log"
 	"gorm.io/gorm"
 )
 

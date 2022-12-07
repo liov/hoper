@@ -1,9 +1,9 @@
 package service
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
-	"github.com/actliboy/hoper/server/go/lib/utils/verification"
-	"github.com/actliboy/hoper/server/go/mod/user/conf"
+	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
+	"github.com/liov/hoper/server/go/lib/utils/verification"
+	"github.com/liov/hoper/server/go/mod/user/conf"
 )
 
 func LuosimaoVerify(vCode string) error {

@@ -2,25 +2,9 @@ package dbtoentity
 
 import (
 	"database/sql"
-	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
-	"strings"
+	dbi "github.com/liov/hoper/server/go/lib/utils/dao/db"
+	"github.com/liov/hoper/server/go/lib/utils/dao/db/mysql"
 )
-
-func MySqlTypeToGoType(typ string) string {
-	if strings.Contains(typ, "int") {
-		return "int"
-	}
-	if strings.Contains(typ, "varchar") || strings.Contains(typ, "text") {
-		return "string"
-	}
-	if strings.Contains(typ, "timestamp") || strings.Contains(typ, "datetime") || strings.Contains(typ, "date") {
-		return "time.Time"
-	}
-	if strings.Contains(typ, "float") || strings.Contains(typ, "double") || strings.Contains(typ, "decimal") {
-		return "float64"
-	}
-	return "bool"
-}
 
 func MysqlConvert(db *sql.DB, filename string) {
 	mysqlgen := mysqlgen{db: db}
@@ -59,5 +43,5 @@ func (m *mysqlgen) Fields(tableName string) []*dbi.Field {
 }
 
 func (m *mysqlgen) TypeToGoTYpe(typ string) string {
-	return MySqlTypeToGoType(typ)
+	return mysql.MySqlTypeToGoType(typ)
 }

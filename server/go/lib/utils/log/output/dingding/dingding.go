@@ -2,8 +2,8 @@ package dingding
 
 import (
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
-	"github.com/actliboy/hoper/server/go/lib/utils/strings"
+	"github.com/liov/hoper/server/go/lib/utils/encoding/json/iterator"
+	"github.com/liov/hoper/server/go/lib/utils/strings"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -62,7 +62,7 @@ func (core) Enabled(zapcore.Level) bool          { return false }
 func (n core) With([]zapcore.Field) zapcore.Core { return n }
 func (core) Check(e zapcore.Entry, ce *zapcore.CheckedEntry) *zapcore.CheckedEntry {
 	fields := new(KibanaField)
-	json.Unmarshal(stringsi.ToBytes(e.Message), fields)
+	iterator.Unmarshal(stringsi.ToBytes(e.Message), fields)
 	t := e.Time
 	url := fmt.Sprintf(viper.GetString("domain.kibana")+"/app/kibana#/discover?_g=%28refreshInterval:%28display:Off,pause:!f,value:0%29,time:%28from:'%s',mode:absolute,to:'%s'%29%29&_a=%28columns:!%28_source%29,index:'8c289dc0-83ed-11e8-9c6f-f5bb9ff824a1',interval:auto,query:%28language:lucene,query:'@source:%%22%+v%%22%%20%%20AND%%20@fields.uuid:%%22[%+v]%%22'%29%29",
 		t.Add(-time.Minute).Format("2006-01-02T15:04:05+08:00"), t.Add(time.Minute).Format("2006-01-02T15:04:05+08:00"), e.Caller.String(), fields.Id,

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/actliboy/hoper/server/go/lib/utils/strings"
 	"github.com/dgrijalva/jwt-go/v4"
+	"github.com/liov/hoper/server/go/lib/utils/strings"
 )
 
 var (
@@ -13,10 +13,10 @@ var (
 	err    = errors.New("无效的token")
 )
 
-//如果只存一个id，jwt的意义在哪呢，跟session_id有什么区别
-//jwt应该存放一些用户不能更改的信息，所以不能全存在jwt里
-//或者说用户每更改一次信息就刷新token（貌似可行）
-//有泛型这里多好写
+// 如果只存一个id，jwt的意义在哪呢，跟session_id有什么区别
+// jwt应该存放一些用户不能更改的信息，所以不能全存在jwt里
+// 或者说用户每更改一次信息就刷新token（貌似可行）
+// 有泛型这里多好写
 type Claims struct {
 	UserId uint64 `json:"userId"`
 	*jwt.StandardClaims

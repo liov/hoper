@@ -1,9 +1,9 @@
 package v8
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/initialize"
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
-	"github.com/actliboy/hoper/server/go/lib/utils/net/http/auth"
+	"github.com/liov/hoper/server/go/lib/initialize"
+	"github.com/liov/hoper/server/go/lib/utils/log"
+	"github.com/liov/hoper/server/go/lib/utils/net/http/auth"
 	"github.com/elastic/go-elasticsearch/v8"
 	"net/http"
 )

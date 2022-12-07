@@ -2,13 +2,13 @@ package gateway
 
 import (
 	"context"
+	"github.com/liov/hoper/server/go/lib/utils/encoding/json/iterator"
 	"net/http"
 	"net/url"
 
-	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
-	"github.com/actliboy/hoper/server/go/lib/utils/encoding/protobuf/jsonpb"
-	"github.com/actliboy/hoper/server/go/lib/utils/net/http"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/liov/hoper/server/go/lib/utils/encoding/protobuf/jsonpb"
+	"github.com/liov/hoper/server/go/lib/utils/net/http"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -18,7 +18,7 @@ func Gateway(gatewayHandle GatewayHandle) *runtime.ServeMux {
 	ctx := context.Background()
 
 	gwmux := runtime.NewServeMux(
-		runtime.WithMarshalerOption(runtime.MIMEWildcard, &jsonpb.JSONPb{API: json.Standard}),
+		runtime.WithMarshalerOption(runtime.MIMEWildcard, &jsonpb.JSONPb{API: iterator.Standard}),
 
 		runtime.WithMetadata(func(ctx context.Context, req *http.Request) metadata.MD {
 			area, err := url.PathUnescape(req.Header.Get(httpi.HeaderArea))

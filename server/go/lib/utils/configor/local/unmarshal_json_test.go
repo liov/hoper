@@ -2,7 +2,7 @@ package local_test
 
 import (
 	"encoding/json"
-	"github.com/actliboy/hoper/server/go/lib/utils/configor/local"
+	"github.com/liov/hoper/server/go/lib/utils/configor/local"
 	"io/ioutil"
 	"os"
 	"strings"

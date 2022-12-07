@@ -1,8 +1,8 @@
 package plugin
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/protobuf/utils/enum"
-	protogeni "github.com/actliboy/hoper/server/go/lib/utils/protogen"
+	"github.com/liov/hoper/server/go/lib/protobuf/utils/enum"
+	protogeni "github.com/liov/hoper/server/go/lib/utils/protogen"
 	"google.golang.org/protobuf/compiler/protogen"
 )
 

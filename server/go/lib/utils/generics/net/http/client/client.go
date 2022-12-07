@@ -2,7 +2,7 @@ package client
 
 import (
 	"errors"
-	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
+	"github.com/liov/hoper/server/go/lib/utils/net/http/client"
 
 	"net/http"
 	"time"
@@ -69,10 +69,8 @@ func (r *RequestParams[RES]) Do(req any) (*RES, error) {
 	return response, err
 }
 
-func Get[RES any](url string) (*RES, error) {
-	return NewGetRequest[RES](url).Do(nil)
-}
-
 func NewGetRequest[RES any](url string) *RequestParams[RES] {
 	return NewRequest[RES](url, http.MethodGet)
 }
+
+type SetParams[RES any] func(req *RequestParams[RES]) *RequestParams[RES]

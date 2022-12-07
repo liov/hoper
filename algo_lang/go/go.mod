@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	bou.ke/monkey v1.0.2
-	github.com/actliboy/hoper/server/go/lib v1.0.0
+	github.com/liov/hoper/server/go/lib v1.0.0
 	github.com/bcongdon/corral v0.0.0-20190319213343-1f4ad49dee34
 	github.com/brahma-adshonor/gohook v1.1.9
 	github.com/google/flatbuffers v2.0.0+incompatible
@@ -97,4 +97,4 @@ require (
 	gorm.io/plugin/prometheus v0.0.0-20210820101226-2a49866f83ee // indirect
 )
 
-replace github.com/actliboy/hoper/server/go/lib => ../../server/go/lib
+replace github.com/liov/hoper/server/go/lib => ../../server/go/lib

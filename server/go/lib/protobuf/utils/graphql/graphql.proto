@@ -3,7 +3,7 @@ package graphql;
 
 import "google/protobuf/descriptor.proto";
 
-option go_package = "github.com/actliboy/hoper/server/go/lib/protobuf/utils/graphql";
+option go_package = "github.com/liov/hoper/server/go/lib/protobuf/utils/graphql";
 option java_package = "xyz.hoper.protobuf.utils.graphql";
 option java_outer_classname = "GraphqlProtos";
 

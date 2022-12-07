@@ -1,6 +1,6 @@
 package slices
 
-import "github.com/actliboy/hoper/server/go/lib/utils/generics/def/constraints"
+import "github.com/liov/hoper/server/go/lib/utils/generics/def/constraints"
 
 func ReverseRunes[T any](runes []T) []T {
 	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {

@@ -2,8 +2,8 @@ package mysql
 
 import (
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/initialize"
-	pkdb "github.com/actliboy/hoper/server/go/lib/initialize/db"
+	"github.com/liov/hoper/server/go/lib/initialize"
+	pkdb "github.com/liov/hoper/server/go/lib/initialize/db"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )

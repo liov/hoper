@@ -1,11 +1,11 @@
 package any
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
+	"github.com/liov/hoper/server/go/lib/utils/encoding/json/iterator"
 )
 
 func NewAny(v interface{}) (*RawJson, error) {
-	data, err := json.Standard.Marshal(v)
+	data, err := iterator.Standard.Marshal(v)
 	if err != nil {
 		return nil, err
 	}

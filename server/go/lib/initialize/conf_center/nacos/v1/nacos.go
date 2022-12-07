@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
+	"github.com/liov/hoper/server/go/lib/utils/log"
 	"github.com/nacos-group/nacos-sdk-go/clients"
 	"github.com/nacos-group/nacos-sdk-go/vo"
 )

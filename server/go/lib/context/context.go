@@ -3,11 +3,11 @@ package contexti
 import (
 	"context"
 	"errors"
-	contexti "github.com/actliboy/hoper/server/go/lib/utils/context"
-	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
-	stringsi "github.com/actliboy/hoper/server/go/lib/utils/strings"
-	jwti "github.com/actliboy/hoper/server/go/lib/utils/verification/auth/jwt"
 	"github.com/dgrijalva/jwt-go/v4"
+	contexti "github.com/liov/hoper/server/go/lib/utils/context"
+	"github.com/liov/hoper/server/go/lib/utils/encoding/json/iterator"
+	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
+	jwti "github.com/liov/hoper/server/go/lib/utils/verification/auth/jwt"
 	"go.opencensus.io/trace"
 	"google.golang.org/grpc"
 	"net/http"
@@ -96,8 +96,8 @@ func jwtUnmarshaller(ctx jwt.CodingContext, data []byte, v interface{}) error {
 	if ctx.FieldDescriptor == jwt.ClaimsFieldDescriptor {
 		if c, ok := (*v.(*jwt.Claims)).(*Authorization); ok {
 			c.AuthInfoRaw = stringsi.ToString(data)
-			return json.Unmarshal(data, c)
+			return iterator.Unmarshal(data, c)
 		}
 	}
-	return json.Unmarshal(data, v)
+	return iterator.Unmarshal(data, v)
 }

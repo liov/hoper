@@ -7,7 +7,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/actliboy/hoper/server/go/lib/utils/crypto"
+	"github.com/liov/hoper/server/go/lib/utils/crypto"
 )
 
 func GetImageFullUrl(uploadPath, name string) string {

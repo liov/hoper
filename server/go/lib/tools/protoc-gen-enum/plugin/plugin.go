@@ -1,7 +1,7 @@
 package plugin
 
 import (
-	stringsi "github.com/actliboy/hoper/server/go/lib/utils/strings"
+	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/types/pluginpb"
 	"strconv"
@@ -157,7 +157,7 @@ func (b *Builder) generateGQLMarshal(f *protogen.File, e *protogen.Enum, g *prot
 		typ = typ1
 	}
 	g.P("func (x ", ccTypeName, ") MarshalGQL(w ", generateImport("Writer", "io", g), ") {")
-	g.P(`w.Write(`, generateImport("QuoteToBytes", "github.com/actliboy/hoper/server/go/lib/utils/strings", g), `(x.String()))`)
+	g.P(`w.Write(`, generateImport("QuoteToBytes", "github.com/liov/hoper/server/go/lib/utils/strings", g), `(x.String()))`)
 	g.P("}")
 	g.P()
 	g.P("func (x *", ccTypeName, ") UnmarshalGQL(v interface{}) error {")
@@ -174,7 +174,7 @@ func (b *Builder) generateJsonMarshal(f *protogen.File, e *protogen.Enum, g *pro
 	ccTypeName := stringsi.CamelCase(e.Desc.Name())
 	if EnabledEnumStringer(e) {
 		g.P("func (x ", ccTypeName, ") MarshalJSON() ([]byte, error) {")
-		g.P("return ", generateImport("QuoteToBytes", "github.com/actliboy/hoper/server/go/lib/utils/strings", g), "(x.String())", ", nil")
+		g.P("return ", generateImport("QuoteToBytes", "github.com/liov/hoper/server/go/lib/utils/strings", g), "(x.String())", ", nil")
 		g.P("}")
 		g.P()
 	}
@@ -204,7 +204,7 @@ func (b *Builder) generateErrorCode(f *protogen.File, e *protogen.Enum, g *proto
 
 	g.P("}")
 	g.P()
-	g.P("func (x ", ccTypeName, ") ErrRep() *", generateImport("ErrRep", "github.com/actliboy/hoper/server/go/lib/protobuf/errorcode", g), " {")
+	g.P("func (x ", ccTypeName, ") ErrRep() *", generateImport("ErrRep", "github.com/liov/hoper/server/go/lib/protobuf/errorcode", g), " {")
 
 	g.P(`return &errorcode.ErrRep{Code: errorcode.ErrCode(x), Message: x.String()}`)
 
@@ -218,7 +218,7 @@ func (b *Builder) generateErrorCode(f *protogen.File, e *protogen.Enum, g *proto
 	g.P()
 	g.P("func (x ", ccTypeName, ") ErrorLog(err error) error {")
 
-	g.P(generateImport("Error", "github.com/actliboy/hoper/server/go/lib/utils/log", g), `(err)`)
+	g.P(generateImport("Error", "github.com/liov/hoper/server/go/lib/utils/log", g), `(err)`)
 	g.P(`return &errorcode.ErrRep{Code: errorcode.ErrCode(x), Message: x.String()}`)
 
 	g.P("}")

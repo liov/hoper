@@ -2,12 +2,12 @@ package main
 
 import (
 	"flag"
-	http_fs "github.com/actliboy/hoper/server/go/lib/utils/net/http/fs"
-	http_fs_watch "github.com/actliboy/hoper/server/go/lib/utils/net/http/fs/watch"
 	_ "github.com/fatedier/frp/assets/frpc"
 	"github.com/fatedier/frp/client"
 	"github.com/fatedier/frp/pkg/config"
 	"github.com/fatedier/frp/pkg/util/log"
+	http_fs "github.com/liov/hoper/server/go/lib/utils/net/http/fs"
+	http_fs_watch "github.com/liov/hoper/server/go/lib/utils/net/http/fs/watch"
 	"os"
 	"time"
 )

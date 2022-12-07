@@ -2,8 +2,8 @@ package postgres
 
 import (
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/initialize"
-	pkdb "github.com/actliboy/hoper/server/go/lib/initialize/db"
+	"github.com/liov/hoper/server/go/lib/initialize"
+	pkdb "github.com/liov/hoper/server/go/lib/initialize/db"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"

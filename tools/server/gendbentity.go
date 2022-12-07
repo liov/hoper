@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/initialize"
-	"github.com/actliboy/hoper/server/go/lib/initialize/db/mysql"
-	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/mysql/dbtoentity"
+	"github.com/liov/hoper/server/go/lib/initialize"
+	"github.com/liov/hoper/server/go/lib/initialize/db/mysql"
+	"github.com/liov/hoper/server/go/lib/utils/dao/db/gorm/mysql/dbtoentity"
 )
 
 type config struct {

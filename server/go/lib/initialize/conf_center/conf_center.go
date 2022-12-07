@@ -1,9 +1,9 @@
 package conf_center
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/initialize/conf_center/http"
-	"github.com/actliboy/hoper/server/go/lib/initialize/conf_center/local"
-	"github.com/actliboy/hoper/server/go/lib/initialize/conf_center/nacos/v2"
+	"github.com/liov/hoper/server/go/lib/initialize/conf_center/http"
+	"github.com/liov/hoper/server/go/lib/initialize/conf_center/local"
+	"github.com/liov/hoper/server/go/lib/initialize/conf_center/nacos/v2"
 )
 
 const (

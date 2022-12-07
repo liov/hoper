@@ -8,11 +8,11 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/actliboy/hoper/server/go/lib/protobuf/oauth"
-	"github.com/actliboy/hoper/server/go/lib/protobuf/response"
 	"github.com/go-oauth2/oauth2/v4"
 	"github.com/go-oauth2/oauth2/v4/errors"
 	"github.com/go-oauth2/oauth2/v4/server"
+	"github.com/liov/hoper/server/go/lib/protobuf/oauth"
+	"github.com/liov/hoper/server/go/lib/protobuf/response"
 )
 
 type Server struct {

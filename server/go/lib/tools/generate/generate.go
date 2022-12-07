@@ -1,9 +1,9 @@
 package main
 
 import (
-	_go "github.com/actliboy/hoper/server/go/lib/utils/gocmd"
-	"github.com/actliboy/hoper/server/go/lib/utils/os"
-	execi "github.com/actliboy/hoper/server/go/lib/utils/os/exec"
+	_go "github.com/liov/hoper/server/go/lib/utils/gocmd"
+	"github.com/liov/hoper/server/go/lib/utils/os"
+	execi "github.com/liov/hoper/server/go/lib/utils/os/exec"
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"log"
@@ -51,7 +51,7 @@ const (
 	goListDir     = `go list -m -f {{.Dir}} `
 	goListDep     = `go list -m -f {{.Path}}@{{.Version}} `
 	DepGoogleapis = "github.com/googleapis/googleapis@v0.0.0-20220520010701-4c6f5836a32f"
-	DepHoper      = "github.com/actliboy/hoper/server/go/lib"
+	DepHoper      = "github.com/liov/hoper/server/go/lib"
 )
 
 var (

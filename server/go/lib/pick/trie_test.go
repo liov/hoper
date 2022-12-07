@@ -2,10 +2,10 @@ package pick
 
 import (
 	"fmt"
+	"github.com/liov/hoper/server/go/lib/utils/encoding/json/iterator"
 	"net/http"
 	"testing"
 
-	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
 	"github.com/json-iterator/go/extra"
 )
 
@@ -30,7 +30,7 @@ func TestTrie(t *testing.T) {
 	//	node.addRoute("/*filepath", &methodHandle{method: http.MethodGet,httpHandler: http.NotFoundHandler()})
 	node.addRoute("/id", &methodHandle{method: http.MethodGet, httpHandler: http.NotFoundHandler()})
 	extra.SupportPrivateFields()
-	data, err := json.Marshal(node)
+	data, err := iterator.Marshal(node)
 	if err != nil {
 		t.Log(err)
 	}

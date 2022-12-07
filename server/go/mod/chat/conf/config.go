@@ -1,10 +1,10 @@
 package conf
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/initialize/db"
-	"github.com/actliboy/hoper/server/go/lib/initialize/log"
-	"github.com/actliboy/hoper/server/go/lib/initialize/redis"
-	"github.com/actliboy/hoper/server/go/lib/initialize/server"
+	"github.com/liov/hoper/server/go/lib/initialize/db"
+	"github.com/liov/hoper/server/go/lib/initialize/log"
+	"github.com/liov/hoper/server/go/lib/initialize/redis"
+	"github.com/liov/hoper/server/go/lib/initialize/server"
 	"runtime"
 )
 

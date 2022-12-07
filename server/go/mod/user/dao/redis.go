@@ -1,25 +1,25 @@
 package dao
 
 import (
+	"github.com/liov/hoper/server/go/lib/utils/encoding/json/iterator"
 	"strconv"
 
-	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
-	redisi "github.com/actliboy/hoper/server/go/lib/utils/dao/redis"
-	"github.com/actliboy/hoper/server/go/lib/utils/encoding/hash"
-	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
-	"github.com/actliboy/hoper/server/go/mod/protobuf/common"
-	model "github.com/actliboy/hoper/server/go/mod/protobuf/user"
-	"github.com/actliboy/hoper/server/go/mod/user/conf"
-	modelconst "github.com/actliboy/hoper/server/go/mod/user/model"
 	"github.com/go-redis/redis/v8"
+	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
+	redisi "github.com/liov/hoper/server/go/lib/utils/dao/redis"
+	"github.com/liov/hoper/server/go/lib/utils/encoding/hash"
+	"github.com/liov/hoper/server/go/lib/utils/log"
+	"github.com/liov/hoper/server/go/mod/protobuf/common"
+	model "github.com/liov/hoper/server/go/mod/protobuf/user"
+	"github.com/liov/hoper/server/go/mod/user/conf"
+	modelconst "github.com/liov/hoper/server/go/mod/user/model"
 )
 
 // UserToRedis 将用户信息存到redis
 func (d *userDao) UserToRedis() error {
 	ctxi := d
 	ctx := ctxi.Context
-	UserString, err := json.Standard.MarshalToString(ctxi.AuthInfo)
+	UserString, err := iterator.Standard.MarshalToString(ctxi.AuthInfo)
 	if err != nil {
 		return d.ErrorLog(errorcode.RedisErr, err, "UserToRedis.MarshalToString")
 	}
@@ -42,7 +42,7 @@ func (d *userDao) UserFromRedis() (*model.AuthInfo, error) {
 		return nil, d.ErrorLog(errorcode.RedisErr, err, "UserFromRedis.Get")
 	}
 	var user model.AuthInfo
-	err = json.Standard.UnmarshalFromString(userString, &user)
+	err = iterator.Standard.UnmarshalFromString(userString, &user)
 	if err != nil {
 		return nil, d.ErrorLog(errorcode.RedisErr, err, "UserFromRedis.UnmarshalFromString")
 	}
@@ -51,7 +51,7 @@ func (d *userDao) UserFromRedis() (*model.AuthInfo, error) {
 
 func (d *userDao) EditRedisUser() error {
 	ctx := d.Context
-	UserString, err := json.Standard.MarshalToString(d.AuthInfo)
+	UserString, err := iterator.Standard.MarshalToString(d.AuthInfo)
 	if err != nil {
 		return d.ErrorLog(errorcode.RedisErr, err, "EditRedisUser.MarshalToString")
 	}

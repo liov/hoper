@@ -1,8 +1,8 @@
 package fiber_build
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/utils/net/http/request/binding"
 	"github.com/gofiber/fiber/v2"
+	"github.com/liov/hoper/server/go/lib/utils/net/http/request/binding"
 )
 
 func Bind(c *fiber.Ctx, obj interface{}) error {
@@ -45,8 +45,10 @@ func MustBindWith(c *fiber.Ctx, obj interface{}, b binding.Binding) error {
 
 // ShouldBind checks the Content-Type to select a binding engine automatically,
 // Depending the "Content-Type" header different bindings are used:
-//     "application/json" --> JSON binding
-//     "application/xml"  --> XML binding
+//
+//	"application/json" --> JSON binding
+//	"application/xml"  --> XML binding
+//
 // otherwise --> returns an error
 // It parses the request's body as JSON if Content-Type == "application/json" using JSON or XML as a JSON input.
 // It decodes the json payload into the struct specified as a pointer.

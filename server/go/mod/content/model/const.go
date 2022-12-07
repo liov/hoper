@@ -1,6 +1,6 @@
 package model
 
-import "github.com/actliboy/hoper/server/go/mod/protobuf/content"
+import "github.com/liov/hoper/server/go/mod/protobuf/content"
 
 const (
 	LikeTableName       = "like"

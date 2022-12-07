@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
+	"github.com/liov/hoper/server/go/lib/utils/dao/db/postgres"
 	"gorm.io/gorm"
 )
 

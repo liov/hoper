@@ -1,9 +1,8 @@
-module github.com/actliboy/hoper/server/go/mod
+module github.com/liov/hoper/server/go/mod
 
 go 1.18
 
 require (
-	github.com/actliboy/hoper/server/go/lib v1.0.0
 	github.com/cockroachdb/pebble v0.0.0-20220719144226-63d552794411
 	github.com/dgraph-io/ristretto v0.1.0
 	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
@@ -15,15 +14,16 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.5.0
+	github.com/liov/hoper/server/go/lib v1.0.0
 	github.com/mwitkow/go-proto-validators v0.3.2
 	github.com/spf13/viper v1.12.0
 	go.opencensus.io v0.23.0
 	go.uber.org/zap v1.23.0
-	golang.org/x/net v0.0.0-20220520000938-2e3eb7b945c2
+	golang.org/x/net v0.0.0-20220722155237-a158d28d115b
 	google.golang.org/genproto v0.0.0-20220519153652-3a47de7e79bd
 	google.golang.org/grpc v1.46.2
 	google.golang.org/protobuf v1.28.0
-	gorm.io/gorm v1.23.8
+	gorm.io/gorm v1.24.0
 )
 
 require (
@@ -139,11 +139,11 @@ require (
 	go.mongodb.org/mongo-driver v1.8.1 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
-	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
+	golang.org/x/crypto v0.0.0-20221005025214-4161e89ecf1b // indirect
 	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e // indirect
 	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5 // indirect
-	golang.org/x/sync v0.0.0-20220513210516-0976fa681c29 // indirect
-	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
+	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
+	golang.org/x/sys v0.0.0-20221006211917-84dc82d7e875 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
@@ -155,4 +155,4 @@ require (
 	nhooyr.io/websocket v1.8.6 // indirect
 )
 
-replace github.com/actliboy/hoper/server/go/lib => ../lib
+replace github.com/liov/hoper/server/go/lib => ../lib

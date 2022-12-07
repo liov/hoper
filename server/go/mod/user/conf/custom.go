@@ -3,7 +3,7 @@ package conf
 import (
 	"time"
 
-	"github.com/actliboy/hoper/server/go/lib/utils/fs"
+	"github.com/liov/hoper/server/go/lib/utils/fs"
 )
 
 type serverConfig struct {

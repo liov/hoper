@@ -7,7 +7,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
+	"github.com/liov/hoper/server/go/lib/utils/log"
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/spec"

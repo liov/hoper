@@ -1,7 +1,7 @@
 package redis
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/initialize"
+	"github.com/liov/hoper/server/go/lib/initialize"
 	"time"
 
 	"github.com/go-redis/redis/v8"

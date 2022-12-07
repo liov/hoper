@@ -1,8 +1,8 @@
 package contexti
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
+	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
+	"github.com/liov/hoper/server/go/lib/utils/log"
 	"go.uber.org/zap"
 )
 

@@ -2,7 +2,7 @@ package clause
 
 import (
 	"context"
-	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
+	dbi "github.com/liov/hoper/server/go/lib/utils/dao/db"
 	"gorm.io/gorm"
 	"strings"
 )

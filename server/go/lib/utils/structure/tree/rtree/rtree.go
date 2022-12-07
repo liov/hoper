@@ -1,7 +1,7 @@
 package rtree
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/utils/structure/tree/rtree/base"
+	"github.com/liov/hoper/server/go/lib/utils/structure/tree/rtree/base"
 	"math"
 	"sync"
 )
