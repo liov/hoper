@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/liov/hoper/server/go/lib/utils/encoding/json/iterator"
 	"reflect"
 
-	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
+	"github.com/liov/hoper/server/go/lib/utils/log"
 	"github.com/olivere/elastic/v7"
 )
 
@@ -26,7 +26,7 @@ type Employee struct {
 	Interests []string `json:"interests"`
 }
 
-//初始化
+// 初始化
 func init() {
 
 	var err error
@@ -50,7 +50,7 @@ func init() {
 
 /*下面是简单的CURD*/
 
-//创建
+// 创建
 func create() {
 
 	//使用结构体
@@ -93,7 +93,7 @@ func create() {
 
 }
 
-//删除
+// 删除
 func delete() {
 
 	res, err := client.Delete().Index("megacorp").
@@ -107,7 +107,7 @@ func delete() {
 	fmt.Printf("delete result %s\n", res.Result)
 }
 
-//修改
+// 修改
 func update() {
 	res, err := client.Update().
 		Index("megacorp").
@@ -122,7 +122,7 @@ func update() {
 
 }
 
-//查找
+// 查找
 func gets() {
 	//通过id查找
 	get1, err := client.Get().Index("megacorp").Type("employee").Id("2").Do(context.Background())
@@ -134,7 +134,7 @@ func gets() {
 	}
 }
 
-//搜索
+// 搜索
 func query() {
 	var res *elastic.SearchResult
 	var err error
@@ -156,7 +156,7 @@ func query() {
 		for _, hit := range res.Hits.Hits {
 
 			var t Employee
-			err := json.Standard.Unmarshal(hit.Source, &t) //另外一种取数据的方法
+			err := iterator.Standard.Unmarshal(hit.Source, &t) //另外一种取数据的方法
 			if err != nil {
 				fmt.Println("Deserialization failed")
 			}
@@ -187,7 +187,7 @@ func query() {
 
 }
 
-//简单分页
+// 简单分页
 func list(size, page int) {
 	if size < 0 || page < 1 {
 		fmt.Printf("param error")
@@ -202,7 +202,7 @@ func list(size, page int) {
 
 }
 
-//打印查询到的Employee
+// 打印查询到的Employee
 func printEmployee(res *elastic.SearchResult, err error) {
 	if err != nil {
 		print(err.Error())

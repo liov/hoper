@@ -3,8 +3,8 @@
 package clause
 
 import (
-	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
-	"github.com/actliboy/hoper/server/go/lib/utils/def/request"
+	dbi "github.com/liov/hoper/server/go/lib/utils/dao/db"
+	"github.com/liov/hoper/server/go/lib/utils/def/request"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )

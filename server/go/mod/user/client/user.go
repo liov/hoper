@@ -2,8 +2,8 @@ package client
 
 import (
 	"crypto/tls"
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
-	model "github.com/actliboy/hoper/server/go/mod/protobuf/user"
+	"github.com/liov/hoper/server/go/lib/utils/log"
+	model "github.com/liov/hoper/server/go/mod/protobuf/user"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )

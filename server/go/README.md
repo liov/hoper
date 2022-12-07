@@ -8,7 +8,7 @@ go run mod
 ```
 
 ## introduction
-依托[lib](https://github.com/actliboy/hoper/tree/master/server/go/lib)(还没想好名字)的强大能力,可以快速开发集grpc,http，graphql的云原生微服务
+依托[lib](https://github.com/liov/hoper/tree/master/server/go/lib)(还没想好名字)的强大能力,可以快速开发集grpc,http，graphql的云原生微服务
 
 user.model.proto
 ```protobuf
@@ -19,7 +19,7 @@ import "patch/go.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 option java_package = "xyz.hoper.protobuf.user";
-option go_package = "github.com/actliboy/hoper/server/go/lib/protobuf/user";
+option go_package = "github.com/liov/hoper/server/go/lib/protobuf/user";
 // 用户
 message User {
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
@@ -40,7 +40,7 @@ import "patch/go.proto";
 option (gogo.enum_gqlgen_all) = true;
 
 option java_package = "xyz.hoper.protobuf.user";
-option go_package = "github.com/actliboy/hoper/server/go/lib/protobuf/user";
+option go_package = "github.com/liov/hoper/server/go/lib/protobuf/user";
 
 option (gogo.enum_prefix_all) = false;
 option (go.file) = {no_enum_prefix:true};
@@ -177,19 +177,19 @@ main.go
 package main
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/tailmon/pick"
-	"github.com/actliboy/hoper/server/go/lib/utils/net/http/gin/handler"
+	"github.com/liov/hoper/server/go/lib/tailmon/pick"
+	"github.com/liov/hoper/server/go/lib/utils/net/http/gin/handler"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/actliboy/hoper/server/go/lib/protobuf/user"
-	"github.com/actliboy/hoper/server/go/lib/tailmon"
-	"github.com/actliboy/hoper/server/go/lib/tailmon/initialize"
-	uconf "github.com/actliboy/hoper/server/go/lib/user/conf"
-	udao "github.com/actliboy/hoper/server/go/lib/user/dao"
-	userservice "github.com/actliboy/hoper/server/go/lib/user/service"
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
+	"github.com/liov/hoper/server/go/lib/protobuf/user"
+	"github.com/liov/hoper/server/go/lib/tailmon"
+	"github.com/liov/hoper/server/go/lib/tailmon/initialize"
+	uconf "github.com/liov/hoper/server/go/lib/user/conf"
+	udao "github.com/liov/hoper/server/go/lib/user/dao"
+	userservice "github.com/liov/hoper/server/go/lib/user/service"
+	"github.com/liov/hoper/server/go/lib/utils/log"
 
 	"go.opencensus.io/examples/exporter"
 	"go.opencensus.io/plugin/ocgrpc"

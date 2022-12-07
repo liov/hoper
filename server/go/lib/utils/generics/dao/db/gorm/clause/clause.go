@@ -1,10 +1,10 @@
 package clausei
 
 import (
-	dbi "github.com/actliboy/hoper/server/go/lib/utils/dao/db"
-	clause2 "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/clause"
-	"github.com/actliboy/hoper/server/go/lib/utils/def/request"
-	_type "github.com/actliboy/hoper/server/go/lib/utils/generics/dao/db/type"
+	dbi "github.com/liov/hoper/server/go/lib/utils/dao/db"
+	clause2 "github.com/liov/hoper/server/go/lib/utils/dao/db/gorm/clause"
+	"github.com/liov/hoper/server/go/lib/utils/def/request"
+	_type "github.com/liov/hoper/server/go/lib/utils/generics/dao/db/type"
 	"gorm.io/gorm/clause"
 )
 

@@ -1,6 +1,6 @@
 package slices
 
-import "github.com/actliboy/hoper/server/go/lib/utils/def"
+import "github.com/liov/hoper/server/go/lib/utils/def"
 
 // 没有泛型，范例，实际需根据不同类型各写一遍,用CmpKey，基本类型又用不了，go需要能给基本类型实现方法不能给外部类型实现方法
 func IsCoincide(s1, s2 []def.CmpKey) bool {

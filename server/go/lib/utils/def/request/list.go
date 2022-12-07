@@ -1,7 +1,7 @@
 package request
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/utils/generics/def/constraints"
+	"github.com/liov/hoper/server/go/lib/utils/generics/def/constraints"
 	"time"
 )
 

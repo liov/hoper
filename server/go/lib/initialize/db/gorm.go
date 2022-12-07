@@ -1,9 +1,9 @@
 package db
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/initialize"
-	gormi "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm"
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
+	"github.com/liov/hoper/server/go/lib/initialize"
+	gormi "github.com/liov/hoper/server/go/lib/utils/dao/db/gorm"
+	"github.com/liov/hoper/server/go/lib/utils/log"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"gorm.io/gorm/logger"

@@ -1,9 +1,9 @@
 package initialize
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
-	"github.com/actliboy/hoper/server/go/lib/utils/reflect/mtos"
-	"github.com/actliboy/hoper/server/go/lib/utils/slices"
+	"github.com/liov/hoper/server/go/lib/utils/log"
+	"github.com/liov/hoper/server/go/lib/utils/reflect/mtos"
+	"github.com/liov/hoper/server/go/lib/utils/slices"
 	"github.com/pelletier/go-toml"
 	"reflect"
 	"strings"

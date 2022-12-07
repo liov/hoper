@@ -2,9 +2,8 @@ package reflecti
 
 import (
 	"fmt"
+	"github.com/liov/hoper/server/go/lib/utils/encoding/json/iterator"
 	"testing"
-
-	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
 )
 
 type InvokeFoo struct{}
@@ -27,10 +26,10 @@ func TestInvokeByValues(t *testing.T) {
 	reflectinvoker.RegisterMethod(foo)
 	reflectinvoker.RegisterMethod(bar)
 	req := Request{FuncName: "InvokeFoo.FooFuncSwap", Params: []interface{}{"1", "2"}}
-	data, _ := json.Standard.Marshal(req)
+	data, _ := iterator.Standard.Marshal(req)
 	resultJson := reflectinvoker.InvokeByJson(data)
 	result := Response{}
-	err := json.Standard.Unmarshal(resultJson, &result)
+	err := iterator.Standard.Unmarshal(resultJson, &result)
 	if err != nil {
 		t.Log(err)
 	}

@@ -1,7 +1,7 @@
 package gormi
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
+	"github.com/liov/hoper/server/go/lib/utils/log"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )

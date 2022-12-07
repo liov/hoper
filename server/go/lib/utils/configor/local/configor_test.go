@@ -73,7 +73,7 @@ func generateDefaultConfig() testConfig {
 func TestLoadNormaltestConfig(t *testing.T) {
 	config := generateDefaultConfig()
 	if bytes, err := json.Marshal(config); err == nil {
-		if file, err := ioutil.TempFile("/tmp", "configor"); err == nil {
+		if file, err := os.CreateTemp("/tmp", "configor"); err == nil {
 			defer file.Close()
 			defer os.Remove(file.Name())
 			file.Write(bytes)
@@ -142,7 +142,7 @@ func TestDefaultValue(t *testing.T) {
 	config.DB.SSL = false
 
 	if bytes, err := json.Marshal(config); err == nil {
-		if file, err := ioutil.TempFile("/tmp", "configor"); err == nil {
+		if file, err := os.CreateTemp("/tmp", "configor"); err == nil {
 			defer file.Close()
 			defer os.Remove(file.Name())
 			file.Write(bytes)

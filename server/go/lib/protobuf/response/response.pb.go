@@ -7,8 +7,8 @@
 package response
 
 import (
-	any1 "github.com/actliboy/hoper/server/go/lib/protobuf/any"
-	_ "github.com/actliboy/hoper/server/go/lib/protobuf/utils/patch"
+	any1 "github.com/liov/hoper/server/go/lib/protobuf/any"
+	_ "github.com/liov/hoper/server/go/lib/protobuf/utils/patch"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	anypb "google.golang.org/protobuf/types/known/anypb"

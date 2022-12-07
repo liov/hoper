@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/actliboy/hoper/server/go/lib/utils/mock"
+	"github.com/liov/hoper/server/go/lib/utils/mock"
 )
 
 func Autowired(v interface{}) {

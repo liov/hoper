@@ -1,7 +1,7 @@
 package mysql
 
 import (
-	timei "github.com/actliboy/hoper/server/go/lib/utils/time"
+	timei "github.com/liov/hoper/server/go/lib/utils/time"
 	"time"
 )
 

@@ -1,7 +1,7 @@
 package mail
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/initialize"
+	"github.com/liov/hoper/server/go/lib/initialize"
 	"net/smtp"
 )
 

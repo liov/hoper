@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
-	httpi "github.com/actliboy/hoper/server/go/lib/utils/net/http"
+	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
+	httpi "github.com/liov/hoper/server/go/lib/utils/net/http"
 	"github.com/gin-gonic/gin"
 )
 

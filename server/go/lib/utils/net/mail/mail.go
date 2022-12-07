@@ -6,8 +6,8 @@ import (
 	"net"
 	"net/smtp"
 
-	templatei "github.com/actliboy/hoper/server/go/lib/utils/def/template"
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
+	templatei "github.com/liov/hoper/server/go/lib/utils/def/template"
+	"github.com/liov/hoper/server/go/lib/utils/log"
 )
 
 //550,Mailbox not found or access denied.是因为收件邮箱不存在

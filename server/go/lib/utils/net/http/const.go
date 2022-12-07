@@ -66,6 +66,7 @@ const (
 	HeaderContentDisposition          = "Content-Disposition"
 	HeaderContentEncoding             = "Content-Encoding"
 	HeaderReferer                     = "Referer"
+	HeaderAccept                      = "Accept"
 	HeaderCacheControl                = "Cache-Control"
 	HeaderSetCookie                   = "Set-Cookie"
 	HeaderTrailer                     = "Trailer"

@@ -2,10 +2,10 @@ package contexti
 
 import (
 	"context"
-	contexti "github.com/actliboy/hoper/server/go/lib/utils/context"
-	httpi "github.com/actliboy/hoper/server/go/lib/utils/net/http"
-	fasthttpi "github.com/actliboy/hoper/server/go/lib/utils/net/http/fasthttp"
-	stringsi "github.com/actliboy/hoper/server/go/lib/utils/strings"
+	contexti "github.com/liov/hoper/server/go/lib/utils/context"
+	httpi "github.com/liov/hoper/server/go/lib/utils/net/http"
+	fasthttpi "github.com/liov/hoper/server/go/lib/utils/net/http/fasthttp"
+	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
 	"github.com/valyala/fasthttp"
 )
 

@@ -61,7 +61,7 @@ local kubectl(compile,target, cmd) = if compile == target then {
 };
 
 
-local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', sourceFile='', protoc=false, opts=[], compile='localhost',target = 'tx', schedule='') = {
+local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server/clawer', sourceFile='', protopath='', opts=[], compile='localhost',target = 'tx', schedule='') = {
 
   local cconfig = compileHost[compile],
   local tconfig = targetHost[target],
@@ -150,8 +150,8 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
       'git checkout -b deploy $DRONE_COMMIT_REF',
       'cp -r /code/'+tpldir + 'certs '+ srcdir +tpldir,
        // edit Dockerfile && deploy file
-      local buildfile = '/code/' + workdir + '/protobuf/build';
-      if protoc then 'if [ -f ' + buildfile + ' ]; then cp -r /code/' + workdir + '/protobuf  '+ srcdir + workdir + '; fi' else 'echo',
+      local buildfile =  '/code/' + workdir + protopath + '/build';
+      if protopath != '' then 'if [ -f ' + buildfile + ' ]; then cp -r ' + protopath + ' '+ srcdir + workdir + '; fi' else 'echo',
       "sed -i 's/$${app}/" + fullname + "/g' " + dockerfilepath,
       local cmd = ['./' + fullname , '-c','./config/'+group+'.toml'] + opts;
       "sed -i 's#$${cmd}#" + std.join('", "', [opt for opt in cmd]) + "#g' " + dockerfilepath,
@@ -166,9 +166,9 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
       // go build
       'cd ' + workdir,
       'go mod download',
-      local genpath = srcdir + workdir + '/protobuf';
-      local buildfile = srcdir + workdir + '/protobuf/build';
-      if protoc then 'if [ ! -f ' + buildfile + ' ]; then generate go --proto='+srcdir+'/proto --genpath='+genpath+'; fi' else 'echo',
+      local genpath = srcdir + workdir + protopath;
+      local buildfile = genpath + '/build';
+      if protopath != '' then 'if [ ! -f ' + buildfile + ' ]; then generate go --proto='+srcdir+'/proto --genpath='+genpath+'; fi' else 'echo',
       'go mod tidy',
       'go build -trimpath -o  '+ srcdir + fullname + ' ' + sourceFile,
       ],
@@ -221,7 +221,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', 
 
 [
   Pipeline('timepill', sourceFile='./timepill/cmd/record.go',opts=['-t']),
-  Pipeline('hoper', workdir='server/go/mod', protoc=true,),
+  Pipeline('hoper', workdir='server/go/mod', protopath='/protobuf'),
   Pipeline('timepill', 'rbyorderid', mode='job',sourceFile='./timepill/cmd/recordby_orderid.go'),
   Pipeline('timepill', 'esload', mode='cronjob', sourceFile='./timepill/cmd/search_es.go',target='tot', schedule='00 10 * * *'),
   Pipeline('pro', sourceFile='./pro/cmd/record.go'),

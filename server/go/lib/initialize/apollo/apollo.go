@@ -1,8 +1,8 @@
 package apollo
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/initialize"
-	"github.com/actliboy/hoper/server/go/lib/utils/configor/apollo"
+	"github.com/liov/hoper/server/go/lib/initialize"
+	"github.com/liov/hoper/server/go/lib/utils/configor/apollo"
 )
 
 type ApolloConfig struct {

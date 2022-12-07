@@ -1,7 +1,7 @@
 package rect
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json/gjson"
+	"github.com/liov/hoper/server/go/lib/utils/encoding/json/gjson"
 	"strconv"
 	"strings"
 )

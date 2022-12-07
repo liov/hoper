@@ -2,6 +2,7 @@ package json
 
 import (
 	"encoding/json"
+	"github.com/liov/hoper/server/go/lib/utils/encoding/json/iterator"
 	"log"
 	"reflect"
 	"testing"
@@ -20,10 +21,10 @@ func TestJson(t *testing.T) {
 	t.Run("test", func(t *testing.T) {
 		extra.SupportPrivateFields()
 		foo := Foo{a: 1, b: "str"}
-		data, _ := Standard.Marshal(foo)
+		data, _ := iterator.Standard.Marshal(foo)
 		t.Log(string(data))
 		var f Foo
-		Standard.Unmarshal(data, &f)
+		iterator.Standard.Unmarshal(data, &f)
 		t.Log(f)
 		reflect.DeepEqual(string(data), `{"a":1,"b":"str","c":null}`)
 	})

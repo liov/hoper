@@ -8,12 +8,12 @@ import (
 	"encoding"
 	"errors"
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/utils/errors/multierr"
+	"github.com/liov/hoper/server/go/lib/utils/errors/multierr"
 
 	"reflect"
 	"strings"
 
-	reflecti "github.com/actliboy/hoper/server/go/lib/utils/reflect"
+	reflecti "github.com/liov/hoper/server/go/lib/utils/reflect"
 )
 
 // NewDecoder returns a new Decoder.

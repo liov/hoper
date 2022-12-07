@@ -2,9 +2,9 @@ package conctrl
 
 import (
 	"context"
-	"github.com/actliboy/hoper/server/go/lib/utils/generics/structure/heap"
-	"github.com/actliboy/hoper/server/go/lib/utils/generics/structure/list"
-	synci "github.com/actliboy/hoper/server/go/lib/utils/sync"
+	"github.com/liov/hoper/server/go/lib/utils/generics/structure/heap"
+	"github.com/liov/hoper/server/go/lib/utils/generics/structure/list"
+	synci "github.com/liov/hoper/server/go/lib/utils/sync"
 	"log"
 	"runtime/debug"
 	"sync"

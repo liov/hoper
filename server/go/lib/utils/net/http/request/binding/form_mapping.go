@@ -6,13 +6,13 @@ package binding
 
 import (
 	"errors"
+	"github.com/liov/hoper/server/go/lib/utils/encoding/json/iterator"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
-	stringsi "github.com/actliboy/hoper/server/go/lib/utils/strings"
+	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
 )
 
 var errUnknownType = errors.New("unknown type")
@@ -176,9 +176,9 @@ func setWithProperType(val string, value reflect.Value, field reflect.StructFiel
 		case time.Time:
 			return setTimeField(val, field, value)
 		}
-		return json.Unmarshal(stringsi.ToBytes(val), value.Addr().Interface())
+		return iterator.Unmarshal(stringsi.ToBytes(val), value.Addr().Interface())
 	case reflect.Map:
-		return json.Unmarshal(stringsi.ToBytes(val), value.Addr().Interface())
+		return iterator.Unmarshal(stringsi.ToBytes(val), value.Addr().Interface())
 	default:
 		return errUnknownType
 	}

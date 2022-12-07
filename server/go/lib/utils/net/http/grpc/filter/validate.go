@@ -3,8 +3,8 @@ package filter
 import (
 	"context"
 
-	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
-	"github.com/actliboy/hoper/server/go/lib/utils/verification/validator"
+	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
+	"github.com/liov/hoper/server/go/lib/utils/verification/validator"
 	"google.golang.org/grpc"
 )
 

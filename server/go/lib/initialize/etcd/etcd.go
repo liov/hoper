@@ -2,7 +2,7 @@ package etcd
 
 import (
 	"context"
-	initialize2 "github.com/actliboy/hoper/server/go/lib/initialize"
+	initialize2 "github.com/liov/hoper/server/go/lib/initialize"
 	clientv3 "go.etcd.io/etcd/client/v3"
 )
 

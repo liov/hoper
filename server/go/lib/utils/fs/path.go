@@ -1,7 +1,7 @@
 package fs
 
 import (
-	stringsi "github.com/actliboy/hoper/server/go/lib/utils/strings"
+	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
 	sdpath "path"
 	"runtime"
 	"strings"

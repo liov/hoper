@@ -3,11 +3,11 @@ package main
 import (
 	"encoding/binary"
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/utils/number"
+	"github.com/liov/hoper/server/go/lib/utils/number"
 	"strconv"
 )
 
-//int类型之间强转，短位转高位负数前面补1正数前面补0，高位转短位截取
+// int类型之间强转，短位转高位负数前面补1正数前面补0，高位转短位截取
 func main() {
 	var i int32 = 255
 	number.ViewBin(i)

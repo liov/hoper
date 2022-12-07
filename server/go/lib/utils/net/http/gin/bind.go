@@ -1,15 +1,15 @@
 package gini
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
-	"github.com/actliboy/hoper/server/go/lib/utils/net/http/request"
-	"github.com/actliboy/hoper/server/go/lib/utils/verification/validator"
+	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
+	"github.com/liov/hoper/server/go/lib/utils/net/http/request"
+	"github.com/liov/hoper/server/go/lib/utils/verification/validator"
 	"io/ioutil"
 	"net/http"
 
-	"github.com/actliboy/hoper/server/go/lib/utils/net/http/request/binding"
-	stringsi "github.com/actliboy/hoper/server/go/lib/utils/strings"
 	"github.com/gin-gonic/gin"
+	"github.com/liov/hoper/server/go/lib/utils/net/http/request/binding"
+	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
 )
 
 func Bind(c *gin.Context, obj interface{}) error {
@@ -53,8 +53,10 @@ func MustBindWith(c *gin.Context, obj interface{}, b binding.Binding) error {
 
 // ShouldBind checks the Content-Type to select a binding engine automatically,
 // Depending the "Content-Type" header different bindings are used:
-//     "application/json" --> JSON binding
-//     "application/xml"  --> XML binding
+//
+//	"application/json" --> JSON binding
+//	"application/xml"  --> XML binding
+//
 // otherwise --> returns an error
 // It parses the request's body as JSON if Content-Type == "application/json" using JSON or XML as a JSON input.
 // It decodes the json payload into the struct specified as a pointer.

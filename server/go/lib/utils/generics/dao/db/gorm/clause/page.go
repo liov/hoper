@@ -3,9 +3,9 @@
 package clausei
 
 import (
-	clause2 "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/clause"
-	"github.com/actliboy/hoper/server/go/lib/utils/def/request"
-	"github.com/actliboy/hoper/server/go/lib/utils/generics/dao/db/type"
+	clause2 "github.com/liov/hoper/server/go/lib/utils/dao/db/gorm/clause"
+	"github.com/liov/hoper/server/go/lib/utils/def/request"
+	"github.com/liov/hoper/server/go/lib/utils/generics/dao/db/type"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )

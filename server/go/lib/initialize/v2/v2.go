@@ -1,7 +1,7 @@
 package v2
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/initialize"
+	"github.com/liov/hoper/server/go/lib/initialize"
 	"reflect"
 )
 

@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
+	"github.com/liov/hoper/server/go/lib/utils/log"
 )
 
 func ContainType() {
 
 }
 
-//获取子类型的值
-//参数父类型，子类型的指针
+// 获取子类型的值
+// 参数父类型，子类型的指针
 func GetFieldValue(src interface{}, dst interface{}) bool {
 	srcValue := reflect.ValueOf(src).Elem()
 	for i := 0; i < srcValue.NumField(); i++ {

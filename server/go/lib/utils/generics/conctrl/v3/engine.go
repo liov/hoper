@@ -1,8 +1,8 @@
 package v3
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
-	"github.com/actliboy/hoper/server/go/lib/utils/generics/slices"
+	"github.com/liov/hoper/server/go/lib/utils/conctrl"
+	"github.com/liov/hoper/server/go/lib/utils/generics/slices"
 	"sync"
 	"time"
 )

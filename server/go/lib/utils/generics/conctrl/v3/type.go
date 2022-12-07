@@ -1,6 +1,6 @@
 package v3
 
-import "github.com/actliboy/hoper/server/go/lib/utils/conctrl"
+import "github.com/liov/hoper/server/go/lib/utils/conctrl"
 
 type Task interface {
 	GetId() uint

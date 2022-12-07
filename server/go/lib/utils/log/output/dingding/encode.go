@@ -2,8 +2,8 @@ package dingding
 
 import (
 	"encoding/base64"
-	bufferi "github.com/actliboy/hoper/server/go/lib/utils/io/buffer"
-	"github.com/actliboy/hoper/server/go/lib/utils/log/encode"
+	bufferi "github.com/liov/hoper/server/go/lib/utils/io/buffer"
+	"github.com/liov/hoper/server/go/lib/utils/log/encode"
 	"go.uber.org/zap/zapcore"
 	"math"
 	"sync"

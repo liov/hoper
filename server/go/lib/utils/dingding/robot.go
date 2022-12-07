@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/utils/net/http/client"
+	"github.com/liov/hoper/server/go/lib/utils/net/http/client"
 	"net/url"
 	"strconv"
 	"strings"
@@ -87,7 +87,7 @@ func SendRobotMessage(accessToken, secret, title, content string, contentType Co
 	}
 	body := strings.NewReader(contentType.Body(title, content))
 
-	return client.Post(ROOT+signUrl, body, nil)
+	return client.SimplePost(ROOT+signUrl, body, nil)
 }
 
 func RobotUrl(accessToken, secret string) (string, error) {

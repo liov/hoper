@@ -2,12 +2,12 @@ package db
 
 import (
 	"database/sql"
-	contexti "github.com/actliboy/hoper/server/go/lib/context"
-	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
-	clausei "github.com/actliboy/hoper/server/go/lib/utils/dao/db/gorm/clause"
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
-	"github.com/actliboy/hoper/server/go/mod/content/model"
-	"github.com/actliboy/hoper/server/go/mod/protobuf/content"
+	contexti "github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
+	clausei "github.com/liov/hoper/server/go/lib/utils/dao/db/gorm/clause"
+	"github.com/liov/hoper/server/go/lib/utils/log"
+	"github.com/liov/hoper/server/go/mod/content/model"
+	"github.com/liov/hoper/server/go/mod/protobuf/content"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )

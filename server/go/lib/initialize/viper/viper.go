@@ -1,9 +1,9 @@
 package viper
 
 import (
-	initialize2 "github.com/actliboy/hoper/server/go/lib/initialize"
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
-	"github.com/actliboy/hoper/server/go/lib/utils/reflect"
+	initialize2 "github.com/liov/hoper/server/go/lib/initialize"
+	"github.com/liov/hoper/server/go/lib/utils/log"
+	"github.com/liov/hoper/server/go/lib/utils/reflect"
 	"github.com/spf13/viper"
 	_ "github.com/spf13/viper/remote"
 )

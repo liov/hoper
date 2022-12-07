@@ -2,11 +2,11 @@ package oauth
 
 import (
 	"context"
-	"github.com/actliboy/hoper/server/go/lib/protobuf/oauth"
-	"github.com/actliboy/hoper/server/go/lib/protobuf/response"
-	httpi "github.com/actliboy/hoper/server/go/lib/utils/net/http"
-	"github.com/actliboy/hoper/server/go/lib/utils/net/http/request/binding"
 	"github.com/gin-gonic/gin"
+	"github.com/liov/hoper/server/go/lib/protobuf/oauth"
+	"github.com/liov/hoper/server/go/lib/protobuf/response"
+	httpi "github.com/liov/hoper/server/go/lib/utils/net/http"
+	"github.com/liov/hoper/server/go/lib/utils/net/http/request/binding"
 
 	"google.golang.org/grpc/metadata"
 )

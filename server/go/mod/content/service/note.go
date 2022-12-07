@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	"github.com/actliboy/hoper/server/go/lib/protobuf/response"
-	model "github.com/actliboy/hoper/server/go/mod/protobuf/content"
+	"github.com/liov/hoper/server/go/lib/protobuf/response"
+	model "github.com/liov/hoper/server/go/mod/protobuf/content"
 )
 
 type NoteService struct {

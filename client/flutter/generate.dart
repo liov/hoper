@@ -10,7 +10,7 @@ Future<void> main() async{
   var gopath = Platform.environment['GOPATH'];
 /*  await Process.run("go",["mod" "download","github.com/googleapis/googleapis"],workingDirectory: goprojectPath);
  */
- var result = await Process.run("go",[...arguments,"github.com/actliboy/hoper/server/go/lib"],workingDirectory: goprojectPath);
+ var result = await Process.run("go",[...arguments,"github.com/liov/hoper/server/go/lib"],workingDirectory: goprojectPath);
   var golibPath = (result.stdout as String).trimRight();
   var google = gopath! + "pkg/mod/" + googleapis;
   var googleexists = await Directory(google).exists();

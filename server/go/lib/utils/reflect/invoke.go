@@ -2,10 +2,9 @@ package reflecti
 
 import (
 	"errors"
+	"github.com/liov/hoper/server/go/lib/utils/encoding/json/iterator"
 	"reflect"
 	"strconv"
-
-	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
 )
 
 type Request struct {
@@ -67,7 +66,7 @@ func (r *ReflectInvoker) InvokeByInterfaceArgs(funcName string, Params []interfa
 func (r *ReflectInvoker) InvokeByJson(byteData []byte) []byte {
 
 	req := &Request{}
-	err := json.Standard.Unmarshal(byteData, req)
+	err := iterator.Standard.Unmarshal(byteData, req)
 
 	resultData := &Response{}
 
@@ -95,7 +94,7 @@ func (r *ReflectInvoker) InvokeByJson(byteData []byte) []byte {
 
 	}
 	resultData.ErrorMsg = NoError
-	data, _ := json.Standard.Marshal(resultData)
+	data, _ := iterator.Standard.Marshal(resultData)
 
 	return data
 }

@@ -2,13 +2,13 @@ package service
 
 import (
 	"context"
-	contexti "github.com/actliboy/hoper/server/go/lib/context"
-	"github.com/actliboy/hoper/server/go/lib/protobuf/empty"
-	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
-	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/postgres"
-	"github.com/actliboy/hoper/server/go/mod/protobuf/user"
-	"github.com/actliboy/hoper/server/go/mod/user/dao"
-	"github.com/actliboy/hoper/server/go/mod/user/model"
+	contexti "github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/protobuf/empty"
+	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
+	"github.com/liov/hoper/server/go/lib/utils/dao/db/postgres"
+	"github.com/liov/hoper/server/go/mod/protobuf/user"
+	"github.com/liov/hoper/server/go/mod/user/dao"
+	"github.com/liov/hoper/server/go/mod/user/model"
 )
 
 // 关注

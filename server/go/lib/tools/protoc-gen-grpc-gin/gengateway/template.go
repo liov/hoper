@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
+	"github.com/liov/hoper/server/go/lib/utils/log"
 	"strings"
 	"text/template"
 
-	"github.com/actliboy/hoper/server/go/lib/tools/protoc-gen-grpc-gin/descriptor"
-	"github.com/actliboy/hoper/server/go/lib/utils/strings"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/utilities"
+	"github.com/liov/hoper/server/go/lib/tools/clawer/protoc-gen-grpc-gin/descriptor"
+	"github.com/liov/hoper/server/go/lib/utils/strings"
 )
 
 type param struct {

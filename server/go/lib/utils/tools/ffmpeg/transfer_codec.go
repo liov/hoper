@@ -2,7 +2,7 @@ package ffmpeg
 
 import (
 	"fmt"
-	osi "github.com/actliboy/hoper/server/go/lib/utils/os"
+	osi "github.com/liov/hoper/server/go/lib/utils/os"
 	"log"
 )
 

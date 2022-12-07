@@ -3,7 +3,7 @@ package dbi
 import (
 	"database/sql/driver"
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/utils/dao/db/const"
+	"github.com/liov/hoper/server/go/lib/utils/dao/db/const"
 	"gorm.io/gorm"
 	"gorm.io/gorm/utils"
 	"reflect"

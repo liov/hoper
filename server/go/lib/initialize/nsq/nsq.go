@@ -1,7 +1,7 @@
 package nsq
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/initialize"
+	"github.com/liov/hoper/server/go/lib/initialize"
 	"log"
 
 	"github.com/nsqio/go-nsq"
@@ -57,23 +57,23 @@ type ConsumerConfig struct {
 
 func (conf *ConsumerConfig) Build() *nsq.Consumer {
 
-	customer, err := nsq.NewConsumer(conf.Topic, conf.Channel, conf.Config)
+	consumer, err := nsq.NewConsumer(conf.Topic, conf.Channel, conf.Config)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	/*	if len(conf.NSQLookupdAddrs) > 0 {
-			if err := customer.ConnectToNSQLookupds(conf.NSQLookupdAddrs); err != nil {
+			if err := consumer.ConnectToNSQLookupds(conf.NSQLookupdAddrs); err != nil {
 				log.Fatal(err)
 			}
 		}
 		if len(conf.NSQdAddrs) > 0 {
-			if err = customer.ConnectToNSQDs(conf.NSQdAddrs); err != nil {
+			if err = consumer.ConnectToNSQDs(conf.NSQdAddrs); err != nil {
 				log.Fatal(err)
 			}
 
 		}*/
-	return customer
+	return consumer
 
 }
 

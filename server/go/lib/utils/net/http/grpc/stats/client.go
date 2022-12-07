@@ -2,7 +2,7 @@ package stats
 
 import (
 	"context"
-	httpi "github.com/actliboy/hoper/server/go/lib/utils/net/http"
+	httpi "github.com/liov/hoper/server/go/lib/utils/net/http"
 	"go.opencensus.io/trace"
 	"go.opencensus.io/trace/propagation"
 	"google.golang.org/grpc/codes"

@@ -1,8 +1,8 @@
 package ristretto
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/initialize"
 	"github.com/dgraph-io/ristretto"
+	"github.com/liov/hoper/server/go/lib/initialize"
 )
 
 type CacheConfig struct {

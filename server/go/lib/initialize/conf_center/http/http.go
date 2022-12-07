@@ -1,8 +1,8 @@
 package http
 
 import (
-	http_fs "github.com/actliboy/hoper/server/go/lib/utils/net/http/fs"
-	http_fs_watch "github.com/actliboy/hoper/server/go/lib/utils/net/http/fs/watch"
+	http_fs "github.com/liov/hoper/server/go/lib/utils/net/http/fs"
+	http_fs_watch "github.com/liov/hoper/server/go/lib/utils/net/http/fs/watch"
 	"time"
 )
 

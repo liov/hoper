@@ -3,15 +3,15 @@ package tiga
 import (
 	"context"
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/context"
-	"github.com/actliboy/hoper/server/go/lib/protobuf/errorcode"
-	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
-	runtimei "github.com/actliboy/hoper/server/go/lib/utils/runtime"
-	stringsi "github.com/actliboy/hoper/server/go/lib/utils/strings"
-	"github.com/actliboy/hoper/server/go/lib/utils/verification/validator"
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+	"github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
+	"github.com/liov/hoper/server/go/lib/utils/encoding/json/iterator"
+	"github.com/liov/hoper/server/go/lib/utils/log"
+	runtimei "github.com/liov/hoper/server/go/lib/utils/runtime"
+	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
+	"github.com/liov/hoper/server/go/lib/utils/verification/validator"
 	"github.com/modern-go/reflect2"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -74,8 +74,8 @@ func UnaryAccess(
 		resp = reflect.New(reflect.TypeOf(resp).Elem()).Interface()
 	}
 
-	body, _ := json.Marshal(req)
-	result, _ := json.Marshal(resp)
+	body, _ := iterator.Marshal(req)
+	result, _ := iterator.Marshal(resp)
 	ctxi := contexti.CtxFromContext(ctx)
 	accessLog(ctxi, info.FullMethod, "grpc",
 		stringsi.ToString(body), stringsi.ToString(result),

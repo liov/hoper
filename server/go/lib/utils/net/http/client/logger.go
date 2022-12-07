@@ -1,8 +1,8 @@
 package client
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
-	stringsi "github.com/actliboy/hoper/server/go/lib/utils/strings"
+	"github.com/liov/hoper/server/go/lib/utils/log"
+	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
 	"go.uber.org/zap"
 	"time"
 )

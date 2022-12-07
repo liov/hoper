@@ -3,8 +3,8 @@ package gormi
 import (
 	"context"
 	"fmt"
-	contexti "github.com/actliboy/hoper/server/go/lib/utils/context"
-	logi "github.com/actliboy/hoper/server/go/lib/utils/log"
+	contexti "github.com/liov/hoper/server/go/lib/utils/context"
+	logi "github.com/liov/hoper/server/go/lib/utils/log"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gorm.io/gorm/logger"

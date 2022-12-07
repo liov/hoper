@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	httpi "github.com/actliboy/hoper/server/go/lib/utils/net/http"
+	httpi "github.com/liov/hoper/server/go/lib/utils/net/http"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-//鉴权过程大体和自定义的一致，就不用中间件的形式了
+// 鉴权过程大体和自定义的一致，就不用中间件的形式了
 func ensureValidToken(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
@@ -28,7 +28,7 @@ func ensureValidToken(ctx context.Context, req interface{}, info *grpc.UnaryServ
 	return handler(ctx, req)
 }
 
-//可自定义
+// 可自定义
 var Valid = func(authorization []string) bool {
 	if len(authorization) < 1 {
 		return false

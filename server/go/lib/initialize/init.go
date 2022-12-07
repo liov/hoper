@@ -2,15 +2,15 @@ package initialize
 
 import (
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/initialize/conf_center"
-	ilocal "github.com/actliboy/hoper/server/go/lib/initialize/conf_center/local"
-	"github.com/actliboy/hoper/server/go/lib/utils/configor/local"
-	"github.com/actliboy/hoper/server/go/lib/utils/errors/multierr"
+	"github.com/liov/hoper/server/go/lib/initialize/conf_center"
+	ilocal "github.com/liov/hoper/server/go/lib/initialize/conf_center/local"
+	"github.com/liov/hoper/server/go/lib/utils/configor/local"
+	"github.com/liov/hoper/server/go/lib/utils/errors/multierr"
 	"os"
 	"reflect"
 	"strings"
 
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
+	"github.com/liov/hoper/server/go/lib/utils/log"
 )
 
 // 约定大于配置

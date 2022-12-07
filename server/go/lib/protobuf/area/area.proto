@@ -2,7 +2,7 @@ syntax = "proto3";
 package area;
 
 option java_package = "xyz.hoper.protobuf.area";
-option go_package = "github.com/actliboy/hoper/server/go/lib/protobuf/area";
+option go_package = "github.com/liov/hoper/server/go/lib/protobuf/area";
 
 message Area {
     uint64 code = 1;

@@ -1,11 +1,11 @@
 package chat
 
 import (
-	contexti "github.com/actliboy/hoper/server/go/lib/context"
-	"github.com/actliboy/hoper/server/go/lib/utils/encoding/json"
-	"github.com/actliboy/hoper/server/go/mod/content/dao"
-	"github.com/actliboy/hoper/server/go/mod/protobuf/user"
 	"github.com/gorilla/websocket"
+	contexti "github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/utils/encoding/json/iterator"
+	"github.com/liov/hoper/server/go/mod/content/dao"
+	"github.com/liov/hoper/server/go/mod/protobuf/user"
 	"time"
 )
 
@@ -46,14 +46,14 @@ func (manager *ClientManager) start() {
 		case client := <-manager.register:
 			id := client.ctx.AuthInfo.(*user.AuthInfo).Id
 			manager.clients[id] = client
-			jsonMessage, _ := json.Marshal(&Message{Remark: "/A new conn has connected."})
+			jsonMessage, _ := iterator.Marshal(&Message{Remark: "/A new conn has connected."})
 			manager.send(jsonMessage, client)
 		case client := <-manager.unregister:
 			id := client.ctx.AuthInfo.(*user.AuthInfo).Id
 			if _, ok := manager.clients[id]; ok {
 				close(client.send)
 				delete(manager.clients, id)
-				jsonMessage, _ := json.Marshal(&Message{Remark: "/A conn has disconnected."})
+				jsonMessage, _ := iterator.Marshal(&Message{Remark: "/A conn has disconnected."})
 				manager.send(jsonMessage, client)
 			}
 		case message := <-manager.broadcast:
@@ -93,10 +93,10 @@ func (c *Client) read() {
 			break
 		}
 		var message Message
-		json.Unmarshal(msg, &message)
+		iterator.Unmarshal(msg, &message)
 		message.CreatedAt = time.Now()
 		message.SendUserID = c.ctx.AuthInfo.(*user.AuthInfo).Id
-		jsonMessage, _ := json.Marshal(&message)
+		jsonMessage, _ := iterator.Marshal(&message)
 		dao.Dao.Redis.Do(c.ctx, "RPUSH", "Chat", jsonMessage)
 		manager.broadcast <- jsonMessage
 	}

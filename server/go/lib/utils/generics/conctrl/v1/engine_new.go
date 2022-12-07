@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"github.com/actliboy/hoper/server/go/lib/utils/conctrl"
+	"github.com/liov/hoper/server/go/lib/utils/conctrl"
 )
 
 func NewTask[REQ, RES any, FUN TaskFunc[REQ, RES]](taskFun FUN) *Task[REQ, RES, FUN] {

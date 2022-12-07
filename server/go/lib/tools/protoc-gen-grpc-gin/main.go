@@ -3,7 +3,8 @@
 // HTTP/1 requests gRPC invocation.
 // You rarely need to run this program directly. Instead, put this program
 // into your $PATH with a name "protoc-gen-grpc-gateway" and run
-//   protoc --grpc-gateway_out=output_directory path/to/input.proto
+//
+//	protoc --grpc-gateway_out=output_directory path/to/input.proto
 //
 // See README.md for more details.
 package main
@@ -11,13 +12,13 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/actliboy/hoper/server/go/lib/utils/log"
+	"github.com/liov/hoper/server/go/lib/utils/log"
 	"go.uber.org/zap/zapcore"
 	"os"
 	"strings"
 
-	"github.com/actliboy/hoper/server/go/lib/tools/protoc-gen-grpc-gin/descriptor"
-	"github.com/actliboy/hoper/server/go/lib/tools/protoc-gen-grpc-gin/gengateway"
+	"github.com/liov/hoper/server/go/lib/tools/clawer/protoc-gen-grpc-gin/descriptor"
+	"github.com/liov/hoper/server/go/lib/tools/clawer/protoc-gen-grpc-gin/gengateway"
 	"google.golang.org/protobuf/compiler/protogen"
 )
 
