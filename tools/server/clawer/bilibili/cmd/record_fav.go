@@ -23,7 +23,7 @@ func main() {
 		req := append(req1, req2...)*/
 		engine := crawler.NewEngine(config.Conf.Bilibili.WorkCount).SkipKind(download.KindDownloadVideo).Timer(download.KindViewInfo, time.Second).Timer(download.KindGetPlayerUrl, time.Second)
 		engine.SpeedLimited(time.Second)
-		engine.Run(download.RecordFavTimer()...)
+		engine.Run(download.RecordFavTimer(time.Now())...)
 	}
 	conctrl.Timer(context.Background(), task, time.Minute*10)
 }

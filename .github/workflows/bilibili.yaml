@@ -3,7 +3,7 @@ run-name: ${{ github.actor }} is learning GitHub Actions
 on:
   push:
     tags:
-      - bilibili-v*
+      - workflow-v*
 jobs:
   build:
     runs-on: ubuntu-latest

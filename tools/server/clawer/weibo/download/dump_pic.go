@@ -15,12 +15,17 @@ import (
 )
 
 func GetUserAllFollowsReq(uid int) *crawler.Request {
-	return GetUserFollowReq(uid, 1)
+	return &crawler.Request{
+		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: strconv.Itoa(uid) + "GetUserAllFollowsReq"}, Kind: KindGetPhoto},
+		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
+			return []*crawler.Request{GetUserFollowReq(uid, 1)}, nil
+		},
+	}
 }
 
 func GetUserFollowReq(uid, page int) *crawler.Request {
 	return &crawler.Request{
-		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: strconv.Itoa(uid)}, Kind: KindGetPhoto},
+		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: strconv.Itoa(uid) + " " + strconv.Itoa(page) + "GetUserFollowReq"}, Kind: KindGetPhoto},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 			log.Infof("GetUserFollowReq 第%d页", page)
 			follow, err := rpc.GetFollows(config.Conf.Weibo.UserId, page)
@@ -47,12 +52,17 @@ func GetUserFollowReq(uid, page int) *crawler.Request {
 }
 
 func DownloadUserAllPhotoReq(uid int) *crawler.Request {
-	return DownloadUserPhotoReq(uid, 1)
+	return &crawler.Request{
+		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: strconv.Itoa(uid)}, Kind: KindGetPhoto},
+		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
+			return []*crawler.Request{DownloadUserPhotoReq(uid, 1)}, nil
+		},
+	}
 }
 
 func DownloadUserPhotoReq(uid, page int) *crawler.Request {
 	return &crawler.Request{
-		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: strconv.Itoa(uid)}, Kind: KindGetPhoto},
+		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: strconv.Itoa(uid) + " " + strconv.Itoa(page) + "DownloadUserPhotoReq"}, Kind: KindGetPhoto},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 			log.Infof("DownloadUserPhotoReq 第%d页", page)
 			piccards, err := rpc.GetPhotos(uid, page)
@@ -115,7 +125,8 @@ func DownloadPhoto(uid int, wid, url string) error {
 			return err
 		}
 		log.Info("下载图片成功：", filepath)
+	} else {
+		log.Info("图片已存在：", filepath)
 	}
-	log.Info("图片已存在：", filepath)
 	return nil
 }
