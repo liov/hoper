@@ -21,8 +21,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	engine := crawler.NewEngine(config.Conf.Weibo.WorkCount).Timer(download.KindGetPhoto, time.Second*2).StopAfter(time.Hour * time.Duration(config.Conf.Weibo.StopTime))
-	engine.SpeedLimited(time.Second)
+	engine := crawler.NewEngine(config.Conf.Weibo.WorkCount).Timer(download.KindGetFollow, time.Second).Timer(download.KindGetPhoto, time.Second)
 
 	engine.Run(download.GetUserAllFollowsReq(config.Conf.Weibo.UserId))
 }

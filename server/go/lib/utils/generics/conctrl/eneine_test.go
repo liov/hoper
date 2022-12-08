@@ -28,7 +28,7 @@ func taskGen(id string, engine *Engine[int, int, int]) *Task[int, int] {
 			//log.Println("rand", n)
 			if n < 3 {
 				for i := 0; i < n; i++ {
-					engine.AddTask(engine.NewTask(taskGen(id+"_"+strconv.Itoa(i), engine)))
+					engine.AddTask(engine.BaseTask(taskGen(id+"_"+strconv.Itoa(i), engine)))
 				}
 			}
 			if n == 3 {

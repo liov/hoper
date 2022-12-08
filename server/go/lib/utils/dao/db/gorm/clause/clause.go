@@ -14,9 +14,9 @@ func Page(pageNo, pageSize int) clause.Limit {
 		pageSize = 100
 	}
 	if pageNo > 1 {
-		return clause.Limit{Offset: (pageNo - 1) * pageSize, Limit: pageSize}
+		return clause.Limit{Offset: (pageNo - 1) * pageSize, Limit: &pageSize}
 	}
-	return clause.Limit{Limit: pageSize}
+	return clause.Limit{Limit: &pageSize}
 }
 
 func NewWhereClause(field string, op dbi.Operation, args ...any) clause.Expression {

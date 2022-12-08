@@ -158,7 +158,7 @@ func (d *userDao) GetBaseListDB(db *gorm.DB, ids []uint64, pageNo, pageSize int)
 	}
 	var clauses []clause.Expression
 	if pageNo != 0 && pageSize != 0 {
-		clauses = append(clauses, clause.Limit{Offset: (pageNo - 1) * pageSize, Limit: pageSize})
+		clauses = append(clauses, clause.Limit{Offset: (pageNo - 1) * pageSize, Limit: &pageSize})
 	}
 	var users []*user.UserBaseInfo
 	err = db.Clauses(clauses...).Scan(&users).Error
@@ -173,7 +173,7 @@ func (d *userDao) FollowExistsDB(db *gorm.DB, id, followId uint64) (bool, error)
 	sql := `SELECT EXISTS(SELECT * FROM "` + model.FollowTableName + `" 
 WHERE user_id = ?  AND follow_id = ? AND ` + postgres.NotDeleted + ` LIMIT 1)`
 	var exists bool
-	err := db.Raw(sql, id, followId).Row().Scan(&exists)
+	err := db.Raw(sql, id, followId).Scan(&exists).Error
 	if err != nil {
 		return false, ctxi.ErrorLog(errorcode.DBError, err, "ExistsByAuth")
 	}

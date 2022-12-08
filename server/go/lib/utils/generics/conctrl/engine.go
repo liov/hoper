@@ -81,7 +81,7 @@ func (e *Engine[KEY, T, W]) Timer(kind Kind, interval time.Duration) *Engine[KEY
 func (e *Engine[KEY, T, W]) Run(tasks ...*Task[KEY, T]) {
 	baseTasks := make([]*BaseTask[KEY, T], 0, len(tasks))
 	for _, task := range tasks {
-		baseTasks = append(baseTasks, e.NewTask(task))
+		baseTasks = append(baseTasks, e.BaseTask(task))
 	}
 	go func() {
 		for group := range e.errChan {
@@ -91,7 +91,7 @@ func (e *Engine[KEY, T, W]) Run(tasks ...*Task[KEY, T]) {
 	e.BaseEngine.Run(baseTasks...)
 }
 
-func (e *Engine[KEY, T, W]) NewTask(task *Task[KEY, T]) *BaseTask[KEY, T] {
+func (e *Engine[KEY, T, W]) BaseTask(task *Task[KEY, T]) *BaseTask[KEY, T] {
 
 	if task == nil {
 		return nil
@@ -149,8 +149,8 @@ func (e *Engine[KEY, T, W]) NewTask(task *Task[KEY, T]) *BaseTask[KEY, T] {
 func (e *Engine[KEY, T, W]) AddTasks(generation int, tasks ...*Task[KEY, T]) {
 	for _, req := range tasks {
 		if req != nil {
-			req.Priority = generation
-			e.BaseEngine.AddTask(e.NewTask(req))
+			req.Priority += generation
+			e.BaseEngine.AddTask(e.BaseTask(req))
 		}
 	}
 }
@@ -159,8 +159,8 @@ func (e *Engine[KEY, T, W]) AsyncAddTask(generation int, tasks ...*Task[KEY, T])
 	go func() {
 		for _, task := range tasks {
 			if task != nil {
-				task.Priority = generation
-				e.BaseEngine.AddTask(e.NewTask(task))
+				task.Priority += generation
+				e.BaseEngine.AddTask(e.BaseTask(task))
 			}
 		}
 	}()
@@ -181,4 +181,23 @@ func (e *Engine[KEY, T, W]) AddFixedTask(workerId int, task *Task[KEY, T]) {
 func (e *Engine[KEY, T, W]) RunSingleWorker(tasks ...*Task[KEY, T]) {
 	e.limitWorkerCount = 1
 	e.Run(tasks...)
+}
+
+func NewTask[KEY comparable, T any](baseTask *BaseTask[KEY, T]) *Task[KEY, T] {
+	return &Task[KEY, T]{
+		TaskMeta: TaskMeta[KEY]{BaseTaskMeta: baseTask.BaseTaskMeta},
+		TaskFunc: func(ctx context.Context) ([]*Task[KEY, T], error) {
+			baseTask.BaseTaskFunc(ctx)
+			return nil, nil
+		},
+	}
+}
+
+func AnonymousTask[KEY comparable, T any](fun BaseTaskFunc) *Task[KEY, T] {
+	return &Task[KEY, T]{
+		TaskFunc: func(ctx context.Context) ([]*Task[KEY, T], error) {
+			fun(ctx)
+			return nil, nil
+		},
+	}
 }

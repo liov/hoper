@@ -29,6 +29,10 @@ func (t *BaseTaskMeta[KEY]) CompareField() int {
 	return t.Priority
 }
 
+func (t *BaseTaskMeta[KEY]) SetPriority(priority int) {
+	t.Priority = priority
+}
+
 // TODO
 type TaskMeta[KEY comparable] struct {
 	BaseTaskMeta[KEY]

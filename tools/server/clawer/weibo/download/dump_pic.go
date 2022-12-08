@@ -16,7 +16,7 @@ import (
 
 func GetUserAllFollowsReq(uid int) *crawler.Request {
 	return &crawler.Request{
-		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: strconv.Itoa(uid) + "GetUserAllFollowsReq"}, Kind: KindGetPhoto},
+		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: strconv.Itoa(uid) + "GetUserAllFollowsReq"}, Kind: KindGetAllFollow},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 			return []*crawler.Request{GetUserFollowReq(uid, 1)}, nil
 		},
@@ -25,9 +25,9 @@ func GetUserAllFollowsReq(uid int) *crawler.Request {
 
 func GetUserFollowReq(uid, page int) *crawler.Request {
 	return &crawler.Request{
-		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: strconv.Itoa(uid) + " " + strconv.Itoa(page) + "GetUserFollowReq"}, Kind: KindGetPhoto},
+		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: strconv.Itoa(uid) + " " + strconv.Itoa(page) + "GetUserFollowReq"}, Kind: KindGetFollow},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
-			log.Infof("GetUserFollowReq 第%d页", page)
+			log.Infof("GetUserFollowReq %d 第%d页", uid, page)
 			follow, err := rpc.GetFollows(config.Conf.Weibo.UserId, page)
 			if err != nil {
 				if strings.HasPrefix(err.Error(), "status:403") {
@@ -44,7 +44,9 @@ func GetUserFollowReq(uid, page int) *crawler.Request {
 				}
 			}
 			if len(requests) != 0 {
-				requests = append(requests, DownloadUserPhotoReq(uid, page+1))
+				req := DownloadUserPhotoReq(uid, page+1)
+				req.SetPriority(-1)
+				requests = append(requests, req)
 			}
 			return requests, nil
 		},
@@ -53,7 +55,7 @@ func GetUserFollowReq(uid, page int) *crawler.Request {
 
 func DownloadUserAllPhotoReq(uid int) *crawler.Request {
 	return &crawler.Request{
-		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: strconv.Itoa(uid)}, Kind: KindGetPhoto},
+		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: strconv.Itoa(uid)}, Kind: KindGetAllPhoto},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 			return []*crawler.Request{DownloadUserPhotoReq(uid, 1)}, nil
 		},
@@ -64,7 +66,7 @@ func DownloadUserPhotoReq(uid, page int) *crawler.Request {
 	return &crawler.Request{
 		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: strconv.Itoa(uid) + " " + strconv.Itoa(page) + "DownloadUserPhotoReq"}, Kind: KindGetPhoto},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
-			log.Infof("DownloadUserPhotoReq 第%d页", page)
+			log.Infof("DownloadUserPhotoReq %d 第%d页", uid, page)
 			piccards, err := rpc.GetPhotos(uid, page)
 			if err != nil {
 				if strings.HasPrefix(err.Error(), "status:403") {
@@ -79,7 +81,9 @@ func DownloadUserPhotoReq(uid, page int) *crawler.Request {
 				}
 			}
 			if len(requests) != 0 {
-				requests = append(requests, DownloadUserPhotoReq(uid, page+1))
+				req := DownloadUserPhotoReq(uid, page+1)
+				req.SetPriority(-1)
+				requests = append(requests, req)
 			}
 			return requests, nil
 		},

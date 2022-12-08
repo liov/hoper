@@ -32,7 +32,7 @@ func ExistsByAuthWithDeletedAt(db *gorm.DB, tableName string, id, userId uint64)
 	sql := `SELECT EXISTS(SELECT * FROM ` + tableName + ` 
 WHERE id = ?  AND user_id = ?` + postgres.WithNotDeleted + ` LIMIT 1)`
 	var exists bool
-	err := db.Raw(sql, id, userId).Row().Scan(&exists)
+	err := db.Raw(sql, id, userId).Scan(&exists).Error
 	if err != nil {
 		return false, err
 	}
@@ -58,7 +58,7 @@ func ExistsSQL(tableName, column string, withDeletedAt bool) string {
 
 func ExistsBySQL(db *gorm.DB, sql string, value ...any) (bool, error) {
 	var exists bool
-	err := db.Raw(sql, value...).Row().Scan(&exists)
+	err := db.Raw(sql, value...).Scan(&exists).Error
 	if err != nil {
 		return false, err
 	}

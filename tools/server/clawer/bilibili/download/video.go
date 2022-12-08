@@ -165,10 +165,10 @@ WHERE b.record < 2  AND b.created_at < ? AND b.`+postgres.NotDeleted+`AND a.`+po
 		for _, video := range videos {
 			if video.Title == "" {
 				req := ViewRecordUpdateReqAfterRecordVideo(video.Aid)
-				engine.BaseEngine.AddTask(engine.NewTask(req))
+				engine.BaseEngine.AddTask(engine.BaseTask(req))
 			} else {
 				req := video.GetVideoReqAfterDownloadVideo()
-				engine.BaseEngine.AddTask(engine.NewTask(req))
+				engine.BaseEngine.AddTask(engine.BaseTask(req))
 			}
 		}
 		now = videos[len(videos)-1].CreatedAt

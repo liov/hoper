@@ -133,7 +133,6 @@ func (init *initConfig) LoadConfig(notinit ...string) *initConfig {
 		log.Fatalf("配置错误: %v", err)
 	}
 
-	log.Debugf("Configuration:  %#v", init.conf)
 	return init
 }
 

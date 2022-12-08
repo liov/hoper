@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"github.com/liov/hoper/server/go/lib/utils/conctrl"
 )
 
@@ -32,6 +33,9 @@ func NewEngineN[REQ, RES, V any, FUN TaskFunc[REQ, RES]](workerCount uint, props
 
 func (e *Engine[REQ, RES, V, FUN]) NewTaskA(task TaskFuncA) *conctrl.Task {
 	return &conctrl.Task{
-		Do: conctrl.BaseTaskFunc(task),
+		TaskFunc: func(ctx context.Context) ([]conctrl.TaskInterface, error) {
+			task(ctx)
+			return nil, nil
+		},
 	}
 }

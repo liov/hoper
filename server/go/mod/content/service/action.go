@@ -163,7 +163,7 @@ func (*ActionService) DelComment(ctx context.Context, req *request.Object) (*emp
 	if comment.UserId != auth.Id {
 		var userId uint64
 		err = db.Table(model.ContentTableName(comment.Type)).Select("user_id").
-			Where(`id = ?`, comment.RefId).Row().Scan(&userId)
+			Where(`id = ?`, comment.RefId).Scan(&userId).Error
 		if err != nil {
 			return nil, ctxi.ErrorLog(errorcode.DBError, err, "SelectUserId")
 		}
