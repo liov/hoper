@@ -98,7 +98,7 @@ func (d *ContentDBDao) ExistsByAuth(tableName string, id, userId uint64) (bool, 
 	sql := `SELECT EXISTS(SELECT * FROM "` + tableName + `" 
 WHERE id = ?  AND user_id = ? AND ` + postgres.NotDeleted + ` LIMIT 1)`
 	var exists bool
-	err := d.db.Raw(sql, id, userId).Row().Scan(&exists)
+	err := d.db.Raw(sql, id, userId).Scan(&exists).Error
 	if err != nil {
 		return false, ctxi.ErrorLog(errorcode.DBError, err, "ExistsByAuth")
 	}
@@ -110,7 +110,7 @@ func (d *ContentDBDao) ContainerExists(typ content.ContainerType, id, userId uin
 	sql := `SELECT EXISTS(SELECT * FROM "` + model.ContainerTableName + `" 
 WHERE id = ?  AND type = ? AND user_id = ? AND ` + postgres.NotDeleted + ` LIMIT 1)`
 	var exists bool
-	err := d.db.Raw(sql, id, typ, userId).Row().Scan(&exists)
+	err := d.db.Raw(sql, id, typ, userId).Scan(&exists).Error
 	if err != nil {
 		return false, ctxi.ErrorLog(errorcode.DBError, err, "ContainerExists")
 	}

@@ -7,7 +7,7 @@ const (
 	KindGetPhoto
 	KindDownloadPhoto
 	KindGetFollow
-	KindAllGetFollow
+	KindGetAllFollow
 )
 
 const (

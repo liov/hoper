@@ -84,11 +84,6 @@ type TaskInterface interface {
 	HasTask() *Task
 }
 
-type TaskInterfaces struct {
-	tasks      []TaskInterface
-	generation int
-}
-
 type TaskFunc func(ctx context.Context) ([]TaskInterface, error)
 
 type TaskFuncInterface interface {

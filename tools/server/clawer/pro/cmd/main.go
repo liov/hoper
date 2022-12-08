@@ -19,7 +19,7 @@ func normal(engine *crawler.Engine) {
 	end := 532535
 	for i := start; i <= end; i++ {
 		req := pro.GetFetchReq(i)
-		engine.BaseEngine.AddTask(engine.NewTask(req))
+		engine.BaseEngine.AddTask(engine.BaseTask(req))
 
 	}
 }

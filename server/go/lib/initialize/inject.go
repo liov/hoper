@@ -50,6 +50,7 @@ func (init *initConfig) UnmarshalAndSet(bytes []byte) {
 	}
 	init.closeDao()
 	init.inject()
+	log.Debugf("Configuration:  %#v", init.conf)
 }
 
 // Customize

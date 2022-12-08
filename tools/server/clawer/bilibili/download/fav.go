@@ -86,12 +86,12 @@ func RecordFavReq(favId, page int) *crawler.Request {
 func FixRecordFav(engine *crawler.Engine) {
 	for page := 1; page < 5; page++ {
 		log.Printf("第%d页", page)
-		engine.AddTask(engine.NewTask(RecordFavReq(63181530, page)))
+		engine.AddTask(engine.BaseTask(RecordFavReq(63181530, page)))
 		page++
 	}
 	for page := 1; page < 2; page++ {
 		log.Printf("第%d页", page)
-		engine.AddTask(engine.NewTask(RecordFavReq(62504730, page)))
+		engine.AddTask(engine.BaseTask(RecordFavReq(62504730, page)))
 		page++
 	}
 }
