@@ -197,7 +197,7 @@ func (e *Engine[KEY, T, W]) RunSingleWorker(tasks ...*Task[KEY, T]) {
 
 func (e *Engine[KEY, T, W]) Release() {
 	for _, kindHandler := range e.kindHandler {
-		if kindHandler.Ticker != nil {
+		if kindHandler != nil && kindHandler.Ticker != nil {
 			kindHandler.Ticker.Stop()
 		}
 	}
