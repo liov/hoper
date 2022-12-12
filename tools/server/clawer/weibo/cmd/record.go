@@ -22,7 +22,7 @@ func main() {
 
 		engine.Run(download.GetUserFollowWeiboReq(""))
 	}
-	go task1.Timer(context.Background(), time.Second*20)
+	go task1.Timer(context.Background(), time.Minute)
 
 	task := &conctrl.TimerTask{}
 	task.Do = func(ctx context.Context) {
