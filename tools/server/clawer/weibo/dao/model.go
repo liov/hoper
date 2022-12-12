@@ -12,7 +12,6 @@ type User struct {
 	Id          int    `json:"id"`
 	ScreenName  string `json:"screen_name"`
 	Gender      string `json:"gender"`
-	Sunshine    string `json:"sunshine"`
 	Description string `json:"description"`
 	AvatarHd    string `json:"avatar_hd"`
 }

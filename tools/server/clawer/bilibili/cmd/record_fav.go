@@ -25,5 +25,5 @@ func main() {
 		engine.SpeedLimited(time.Second)
 		engine.Run(download.RecordFavTimer(time.Now())...)
 	}
-	task.RandTimer(context.Background(), time.Minute*10, time.Minute*20)
+	task.Timer(context.Background(), time.Hour)
 }
