@@ -15,3 +15,5 @@ type WorkStatistics struct {
 	averageTimeCost               time.Duration
 	taskDoneCount, taskTotalCount uint64
 }
+
+type EngineStatistics = WorkStatistics

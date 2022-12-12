@@ -11,7 +11,7 @@ type TimerTask struct {
 	Do    BaseTaskFunc
 }
 
-func Timer(ctx context.Context, task *TimerTask, interval time.Duration) {
+func (task *TimerTask) Timer(ctx context.Context, interval time.Duration) {
 	timer := time.NewTicker(interval)
 	task.Times = 1
 	task.Do(ctx)
@@ -27,7 +27,7 @@ func Timer(ctx context.Context, task *TimerTask, interval time.Duration) {
 	}
 }
 
-func RandTimer(ctx context.Context, task *TimerTask, start, end time.Duration) {
+func (task *TimerTask) RandTimer(ctx context.Context, start, end time.Duration) {
 	range1 := end - start
 	timer := time.NewTimer(time.Duration(rand.Intn(int(range1))) + start)
 	task.Times = 1

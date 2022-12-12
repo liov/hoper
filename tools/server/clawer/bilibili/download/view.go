@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	gormpostgres "github.com/liov/hoper/server/go/lib/utils/dao/db/gorm/postgres"
 	"github.com/liov/hoper/server/go/lib/utils/dao/db/postgres"
+	"log"
 
 	"github.com/liov/hoper/server/go/lib/utils/generics/net/http/client/crawler"
 
@@ -18,6 +19,7 @@ func RecordViewInfoReqAfterRecordVideo(aid int) *crawler.Request {
 	return &crawler.Request{
 		TaskMeta: crawler.TaskMeta{Kind: KindViewInfo},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
+			log.Printf("获取视频: %d\n", aid)
 			view, err := RecordViewInfo(ctx, aid)
 			if err != nil {
 				return nil, err
@@ -119,7 +121,7 @@ func ViewRecordUpdate(ctx context.Context, aid int) (*rpc.ViewInfo, error) {
 		return RecordViewInfo(ctx, aid)
 	}
 
-	err = dao.Dao.Hoper.Exec(`INSERT INTO `+dao.TableNameViewBak+`(aid,data) (SELECT aid,data FROM `+dao.TableNameView+` WHERE aid = ?) `, aid).Error
+	dao.Dao.Hoper.Exec(`INSERT INTO `+dao.TableNameViewBak+`(aid,data) (SELECT aid,data FROM `+dao.TableNameView+` WHERE aid = ?) `, aid)
 	/*	if err != nil {
 		return nil, err
 	}*/

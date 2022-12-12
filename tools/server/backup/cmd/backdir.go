@@ -63,7 +63,7 @@ func back(wg *sync.WaitGroup, dir string, id, level int) {
 }
 
 func statistics(dir string) {
-	fs.RangeDir(dir, func(entry os.DirEntry) error {
+	fs.RangeDir(dir, func(subDir string, entry os.DirEntry) error {
 
 		return nil
 	})

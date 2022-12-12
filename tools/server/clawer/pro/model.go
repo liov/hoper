@@ -36,8 +36,8 @@ func (p *Post) TableName() string {
 func ErrorHandler() func(task *crawler.Request) {
 	file, _ := os.Create(Conf.Pro.CommonDir + "fail_" + time.Now().Format("2006_01_02_15_04_05") + Conf.Pro.Ext)
 	return func(task *crawler.Request) {
-
-		err := task.Errs[len(task.Errs)-1]
+		errs := task.Errs()
+		err := errs[len(errs)-1]
 		log.Println("任务5次错误：", err.Error())
 		switch err.(*errorsi.ErrRep).Code {
 		case DBError:

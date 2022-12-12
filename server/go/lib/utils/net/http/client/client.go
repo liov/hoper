@@ -403,7 +403,7 @@ func (req *RequestParams) Do(param, response interface{}) error {
 		if resp.StatusCode == http.StatusNotFound {
 			err = errors.New("not found")
 		} else {
-			err = errors.New("status:" + resp.Status + "" + stringsi.ToString(respBytes))
+			err = errors.New("status:" + resp.Status + " " + stringsi.ConvertUnicode(respBytes))
 		}
 		return err
 	}

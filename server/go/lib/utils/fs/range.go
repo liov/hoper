@@ -5,21 +5,20 @@ import (
 	"os"
 )
 
-func RangeDir(dir string, callback func(path string, entry os.DirEntry) error) error {
+func RangeDir(dir string, callback func(dir string, entry os.DirEntry) error) error {
 	entities, err := os.ReadDir(dir)
 	if err != nil {
 		return err
 	}
 	errs := &multierr.MultiError{}
 	for _, e := range entities {
-		path := dir + PathSeparator + e.Name()
 		if e.IsDir() {
-			err = RangeDir(path, callback)
+			err = RangeDir(dir+PathSeparator+e.Name(), callback)
 			if err != nil {
 				errs.Append(err)
 			}
 		}
-		err = callback(path, e)
+		err = callback(dir, e)
 		if err != nil {
 			errs.Append(err)
 		}

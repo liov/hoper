@@ -20,7 +20,7 @@ type BaseTask[KEY comparable, T any] struct {
 }
 
 type BaseTaskMeta[KEY comparable] struct {
-	Id       uint64
+	id       uint64
 	Key      KEY
 	Priority int
 }
@@ -48,8 +48,8 @@ func (r *TaskMeta[KEY]) SetKey(key KEY) {
 	r.Key = key
 }
 
-func (r *TaskMeta[KEY]) SetId(id uint64) {
-	r.Id = id
+func (r *TaskMeta[KEY]) Id() uint64 {
+	return r.id
 }
 
 type TaskStatistics struct {
@@ -61,8 +61,12 @@ type TaskStatistics struct {
 type Task[KEY comparable, P any] struct {
 	TaskMeta[KEY]
 	TaskFunc[KEY, P]
-	Errs  []error
+	errs  []error
 	Props P
+}
+
+func (t *Task[KEY, P]) Errs() []error {
+	return t.errs
 }
 
 func (t *Task[KEY, P]) BaseTask(handle func(tasks []*Task[KEY, P], err error)) *BaseTask[KEY, P] {
