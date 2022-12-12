@@ -28,7 +28,7 @@ func NewEngine[KEY comparable, T, W any](workerCount uint) *Engine[KEY, T, W] {
 	return &Engine[KEY, T, W]{
 		BaseEngine: NewBaseEngine[KEY, T, W](workerCount),
 		errHandler: func(task *Task[KEY, T]) {
-			log.Println("")
+			log.Println(task.errs)
 		},
 		errChan: make(chan *Task[KEY, T]),
 	}
@@ -63,6 +63,20 @@ func (e *Engine[KEY, T, W]) ErrHandler(errHandler func(task *Task[KEY, T])) *Eng
 }
 
 func (e *Engine[KEY, T, W]) Timer(kind Kind, interval time.Duration) *Engine[KEY, T, W] {
+	e.kindTimer(kind, time.NewTicker(interval))
+	return e
+}
+
+// 多个kind共用一个timer
+func (e *Engine[KEY, T, W]) KindGroupTimer(interval time.Duration, kinds ...Kind) *Engine[KEY, T, W] {
+	ticker := time.NewTicker(interval)
+	for _, kind := range kinds {
+		e.kindTimer(kind, ticker)
+	}
+	return e
+}
+
+func (e *Engine[KEY, T, W]) kindTimer(kind Kind, ticker *time.Ticker) {
 	if e.kindHandler == nil {
 		e.kindHandler = make([]*KindHandler[KEY, T], int(kind)+1)
 	}
@@ -70,11 +84,11 @@ func (e *Engine[KEY, T, W]) Timer(kind Kind, interval time.Duration) *Engine[KEY
 		e.kindHandler = append(e.kindHandler, make([]*KindHandler[KEY, T], int(kind)+1-len(e.kindHandler))...)
 	}
 	if e.kindHandler[kind] == nil {
-		e.kindHandler[kind] = &KindHandler[KEY, T]{Ticker: time.NewTicker(interval)}
+		e.kindHandler[kind] = &KindHandler[KEY, T]{Ticker: ticker}
 	} else {
-		e.kindHandler[kind].Ticker = time.NewTicker(interval)
+		e.kindHandler[kind].Ticker = ticker
 	}
-	return e
+
 }
 
 func (e *Engine[KEY, T, W]) Run(tasks ...*Task[KEY, T]) {
@@ -88,6 +102,7 @@ func (e *Engine[KEY, T, W]) Run(tasks ...*Task[KEY, T]) {
 		}
 	}()
 	e.BaseEngine.Run(baseTasks...)
+	e.Release()
 }
 
 func (e *Engine[KEY, T, W]) BaseTask(task *Task[KEY, T]) *BaseTask[KEY, T] {
@@ -178,6 +193,14 @@ func (e *Engine[KEY, T, W]) AddFixedTask(workerId int, task *Task[KEY, T]) {
 func (e *Engine[KEY, T, W]) RunSingleWorker(tasks ...*Task[KEY, T]) {
 	e.limitWorkerCount = 1
 	e.Run(tasks...)
+}
+
+func (e *Engine[KEY, T, W]) Release() {
+	for _, kindHandler := range e.kindHandler {
+		if kindHandler.Ticker != nil {
+			kindHandler.Ticker.Stop()
+		}
+	}
 }
 
 func NewTask[KEY comparable, T any](baseTask *BaseTask[KEY, T]) *Task[KEY, T] {

@@ -12,7 +12,7 @@ func GetUserFollowWeiboReq(maxId string) *crawler.Request {
 	return &crawler.Request{
 		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: "GetUserFollowWeiboReq " + maxId}, Kind: KindGet},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
-			log.Infof("GetUserFollowWeiboReq", maxId)
+			log.Info("GetUserFollowWeiboReq:", maxId)
 			list, err := rpc.GetFollowsWeibo(maxId)
 			if err != nil {
 				if strings.HasPrefix(err.Error(), "status:403") {

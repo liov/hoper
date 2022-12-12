@@ -137,6 +137,7 @@ func (e *BaseEngine[KEY, T, W]) Run(tasks ...*BaseTask[KEY, T]) {
 	}
 
 	e.wg.Wait()
+	e.Release()
 	log.Println("任务结束")
 }
 
@@ -269,5 +270,14 @@ func (e *BaseEngine[KEY, T, W]) RunSingleWorker(tasks ...*BaseTask[KEY, T]) {
 	e.NewFixedWorker(0)
 	for _, task := range tasks {
 		e.AddFixedTask(0, task)
+	}
+}
+
+func (e *BaseEngine[KEY, T, W]) Release() {
+	if e.speedLimit != nil {
+		e.speedLimit.Stop()
+	}
+	if e.monitor != nil {
+		e.monitor.Stop()
 	}
 }
