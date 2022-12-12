@@ -33,7 +33,7 @@ func (c *config) Init() {
 		c.Weibo.StopTime = 1
 	}
 	rpc.Cookie = c.Weibo.Cookie
-	c.Weibo.DownloadPath, _ = filepath.Abs(c.Weibo.DownloadPath + "/debug1")
+	c.Weibo.DownloadPath, _ = filepath.Abs(c.Weibo.DownloadPath)
 	c.Weibo.DownloadVideoPath = c.Weibo.DownloadPath + fs.PathSeparator + "video"
 	c.Weibo.DownloadPicPath = c.Weibo.DownloadPath + fs.PathSeparator + "pic"
 	c.Weibo.DownloadTmpPath = c.Weibo.DownloadPath + fs.PathSeparator + "tmp"
