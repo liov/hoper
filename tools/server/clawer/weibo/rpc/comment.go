@@ -7,7 +7,7 @@ type CommentList struct {
 }
 
 type Comment struct {
-	Id         int64     `json:"id"`
+	Id         int       `json:"id"`
 	CreatedAt  string    `json:"created_at"`
 	Source     string    `json:"source"`
 	User       *UserInfo `json:"user"`

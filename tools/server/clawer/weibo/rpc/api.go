@@ -57,31 +57,31 @@ func GetWithoutCookie[T any](url string) (*T, error) {
 	return res.Data, nil
 }
 
-func GetUserInfo(uid int) *User {
+func GetUserInfo(uid int) (*User, error) {
 	api := CommonCommonIndex + "100505" + strconv.Itoa(uid)
 	user, err := Get[User](api)
 	if err != nil {
-		log.Error(api, err)
+		return nil, err
 	}
-	return user
+	return user, nil
 }
 
-func GetUserInfoV2(uid int) *User {
+func GetUserInfoV2(uid int) (*User, error) {
 	api := CommonIndex + "type=uid&value=" + strconv.Itoa(uid)
 	user, err := Get[User](api)
 	if err != nil {
-		log.Error(api, err)
+		return nil, err
 	}
-	return user
+	return user, nil
 }
 
-func SearchUserWeibo(uid int, q string, page int) *User {
+func SearchUserWeibo(uid int, q string, page int) (*WeiboList, error) {
 	api := CommonCommonIndex + "100103type=401&q=" + q + "&container_ext=profile_uid:" + strconv.Itoa(uid) + "&page_type=searchall&page=" + strconv.Itoa(page)
-	user, err := Get[User](api)
+	user, err := Get[WeiboList](api)
 	if err != nil {
-		log.Error(err)
+		return nil, err
 	}
-	return user
+	return user, nil
 }
 
 func GetUserWeibo(uid int, page int) *WeiboList {
@@ -93,28 +93,32 @@ func GetUserWeibo(uid int, page int) *WeiboList {
 	return weibo
 }
 
-func GetLongWeibo(uid int) *User {
-	api := Host + "/detail/" + strconv.Itoa(uid)
-	user, err := Get[User](api)
+func GetLongWeibo(wid string) (*Mblog, error) {
+	api := Host + "/statuses/show?id=" + wid
+	mblog, err := Get[Mblog](api)
 	if err != nil {
-		log.Error(api, err)
+		return nil, err
 	}
-	return user
+	return mblog, nil
 }
 
 func GetLivePhoto() {
 	const prefix = "https://video.weibo.com/media/play?livephoto=//us.sinaimg.cn/"
 }
 
-func GetComments() {
-	const api = Host + "/api/comments/show?id="
+func GetComments(wid string, page int) (*CommentList, error) {
+	api := Host + "/api/comments/show?id=" + wid + "&page=" + strconv.Itoa(page)
+	comment, err := Get[CommentList](api)
+	if err != nil {
+		return nil, err
+	}
+	return comment, nil
 }
 
 func GetFollows(uid, page int) (*Follow, error) {
 	api := fmt.Sprintf(CommonCommonIndex+"231051_-_followers_-_%d&page=%d", uid, page)
 	follow, err := Get[Follow](api)
 	if err != nil {
-		log.Error(api, err)
 		return nil, err
 	}
 	return follow, nil
@@ -137,8 +141,61 @@ func GetPhotos(uid, page int) (*PicCards, error) {
 	api := fmt.Sprintf(CommonCommonSecond+"107803%d_-_photoall&page=%d&count=20", uid, page)
 	cards, err := Get[PicCards](api)
 	if err != nil {
-		log.Error(api, err)
 		return nil, err
 	}
 	return cards, nil
+}
+
+func GetVideos(uid, page int) (*Weibo, error) {
+	api := fmt.Sprintf(CommonCommonIndex+"230413%d_-_WEIBO_SECOND_PROFILE_WEIBO_VIDEO&page=%d&count=20", uid, page)
+	cards, err := Get[Weibo](api)
+	if err != nil {
+		return nil, err
+	}
+	return cards, nil
+}
+
+func GetChannels(channel ChannelType, uid, page int) (*Weibo, error) {
+	api := fmt.Sprintf(CommonCommonIndex+"230413%d_-_WEIBO_SECOND_PROFILE_WEIBO%s&page=%d&count=20", uid, channel, page)
+	cards, err := Get[Weibo](api)
+	if err != nil {
+		return nil, err
+	}
+	return cards, nil
+}
+
+// 部分图片返回格式不规范
+func GetChannelsV2(channel ChannelType, uid, page int) (*WeiboV2, error) {
+	api := fmt.Sprintf(CommonCommonIndex+"230413%d_-_WEIBO_SECOND_PROFILE_WEIBO%s&page=%d&count=20", uid, channel, page)
+	cards, err := Get[WeiboV2](api)
+	if err != nil {
+		return nil, err
+	}
+	return cards, nil
+}
+
+// 全部
+const ChannelApi = CommonCommonIndex + "230413%d_-_WEIBO_SECOND_PROFILE_WEIBO%s&page=%d&count=20"
+
+type ChannelType string
+
+const (
+	ALL     ChannelType = ""         // All
+	ORI     ChannelType = "_ORI"     // 原创
+	VIDEO   ChannelType = "_VIDEO"   // 视频
+	ARTICAL ChannelType = "_ARTICAL" // 文章
+	PIC     ChannelType = "_PIC"     // 图片
+)
+
+// 部分图片返回格式不规范
+func GetFollowsWeibo(maxId string) (*WeiboFollowsList, error) {
+	api := Host + "/feed/friends"
+	if maxId != "" {
+		api += "?max_id=" + maxId
+	}
+	list, err := Get[WeiboFollowsList](api)
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
 }

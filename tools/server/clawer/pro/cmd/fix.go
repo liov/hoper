@@ -29,7 +29,7 @@ func fix() {
 	}
 	for i := range fileInfos {
 		if !fileInfos[i].IsDir() && strings.HasPrefix(fileInfos[i].Name(), "fail_post") {
-			pro.FixWeb(fileInfos[i].Name(), pro.Fetch)
+			pro.FixWeb(fileInfos[i].Name(), pro.GetFetchReq)
 
 		}
 	}

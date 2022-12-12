@@ -5,10 +5,9 @@ import (
 	"github.com/liov/hoper/server/go/lib/utils/generics/net/http/client/crawler"
 	"os"
 	"time"
+	"tools/clawer/weibo/config"
 	"tools/clawer/weibo/dao"
 	"tools/clawer/weibo/download"
-
-	"tools/clawer/weibo/config"
 )
 
 func main() {

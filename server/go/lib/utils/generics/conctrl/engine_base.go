@@ -2,6 +2,7 @@ package conctrl
 
 import (
 	"context"
+	"github.com/liov/hoper/server/go/lib/utils/gen"
 	"github.com/liov/hoper/server/go/lib/utils/generics/structure/heap"
 	"github.com/liov/hoper/server/go/lib/utils/generics/structure/list"
 	synci "github.com/liov/hoper/server/go/lib/utils/sync"
@@ -19,18 +20,14 @@ type BaseEngine[KEY comparable, T, W any] struct {
 	workerChan                              chan *Worker[KEY, T, W]
 	taskChan                                chan *BaseTask[KEY, T]
 	ctx                                     context.Context
-	cancel                                  context.CancelFunc
-	wg                                      sync.WaitGroup
-	fixedWorker                             []chan *BaseTask[KEY, T]
+	cancel                                  context.CancelFunc       // 手动停止执行
+	wg                                      sync.WaitGroup           // 控制确保所有任务执行完
+	fixedWorker                             []chan *BaseTask[KEY, T] // 固定只执行一种任务的worker,避免并发问题
 	speedLimit                              *time.Timer
 	randSpeedLimitBase, randSpeedLimitRange time.Duration
 	//TODO
 	monitor *time.Ticker // 全局检测定时器，任务的卡住检测，worker panic recover都可以用这个检测
 	EngineStatistics
-}
-
-type EngineStatistics struct {
-	WorkStatistics
 }
 
 func NewBaseEngine[KEY comparable, T, W any](workerCount uint) *BaseEngine[KEY, T, W] {
@@ -135,6 +132,7 @@ func (e *BaseEngine[KEY, T, W]) Run(tasks ...*BaseTask[KEY, T]) {
 	e.taskTotalCount = uint64(len(tasks))
 	e.wg.Add(len(tasks) + 1)
 	for _, task := range tasks {
+		task.id = gen.GenOrderID()
 		e.taskChan <- task
 	}
 
@@ -215,12 +213,14 @@ func (e *BaseEngine[KEY, T, W]) AddTask(task *BaseTask[KEY, T]) {
 	}
 	atomic.AddUint64(&e.taskTotalCount, 1)
 	e.wg.Add(1)
+	task.id = gen.GenOrderID()
 	e.taskChan <- task
 }
 
 func (e *BaseEngine[KEY, T, W]) AddTasks(tasks ...*BaseTask[KEY, T]) {
 	e.wg.Add(len(tasks))
 	for _, task := range tasks {
+		task.id = gen.GenOrderID()
 		e.taskChan <- task
 	}
 }
@@ -255,6 +255,7 @@ func (e *BaseEngine[KEY, T, W]) AddFixedTask(workerId int, task *BaseTask[KEY, T
 	}
 	ch := e.fixedWorker[workerId]
 	e.wg.Add(1)
+	task.id = gen.GenOrderID()
 	go func() {
 		ch <- task
 	}()

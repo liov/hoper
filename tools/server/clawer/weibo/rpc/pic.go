@@ -1,7 +1,7 @@
 package rpc
 
 type PicCards struct {
-	CardlistInfo PicCardlistInfo `json:"cardlistInfo"`
+	CardlistInfo CardlistInfo    `json:"cardlistInfo"`
 	Cards        []*PicCardGroup `json:"cards"`
 	ShowAppTips  int             `json:"showAppTips"`
 }
@@ -14,16 +14,6 @@ type PicCard struct {
 	CardGroup    []*PicCardGroup `json:"card_group"`
 	Buttontitle  string          `json:"buttontitle,omitempty"`
 	DisplayArrow int             `json:"display_arrow"`
-}
-
-type PicCardlistInfo struct {
-	VP          int           `json:"v_p"`
-	Containerid string        `json:"containerid"`
-	TitleTop    string        `json:"title_top"`
-	ShowStyle   int           `json:"show_style"`
-	Total       int           `json:"total"`
-	FilterGroup []interface{} `json:"filter_group"`
-	Page        interface{}   `json:"page"`
 }
 
 type PicCardGroup struct {

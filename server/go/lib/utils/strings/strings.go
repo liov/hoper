@@ -338,3 +338,42 @@ func Rand(length int) string {
 	}
 	return ToString(randId)
 }
+
+func CountdownCutoff(s, key string) string {
+	keyLen := len(key)
+	sEndIndex := len(s) - 1
+	if sEndIndex < keyLen {
+		return s
+	}
+	for end := sEndIndex; end > 0; end-- {
+		begin := end - keyLen
+		if begin >= 0 && s[begin:end] == key {
+			return s[end:]
+		}
+	}
+	return s
+}
+
+func Cutoff(s, key string) string {
+	keyLen := len(key)
+	sEndIndex := len(s) - 1
+	for begin := 0; begin < sEndIndex; begin++ {
+		end := begin + keyLen
+		if begin <= sEndIndex && s[begin:end] == key {
+			return s[:begin]
+		}
+	}
+	return s
+}
+
+func CutoffContain(s, key string) string {
+	keyLen := len(key)
+	sEndIndex := len(s) - 1
+	for begin := 0; begin < sEndIndex; begin++ {
+		end := begin + keyLen
+		if begin <= sEndIndex && s[begin:end] == key {
+			return s[:begin] + key
+		}
+	}
+	return s
+}

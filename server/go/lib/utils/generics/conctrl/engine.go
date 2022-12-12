@@ -2,7 +2,6 @@ package conctrl
 
 import (
 	"context"
-	"github.com/liov/hoper/server/go/lib/utils/gen"
 	"github.com/liov/hoper/server/go/lib/utils/generics/slices"
 	"log"
 	"sync"
@@ -97,8 +96,6 @@ func (e *Engine[KEY, T, W]) BaseTask(task *Task[KEY, T]) *BaseTask[KEY, T] {
 		return nil
 	}
 
-	task.Id = gen.GenOrderID()
-
 	var kindHandler *KindHandler[KEY, T]
 	if e.kindHandler != nil && int(task.Kind) < len(e.kindHandler) {
 		kindHandler = e.kindHandler[task.Kind]
@@ -124,7 +121,7 @@ func (e *Engine[KEY, T, W]) BaseTask(task *Task[KEY, T]) *BaseTask[KEY, T] {
 			tasks, err := task.TaskFunc(ctx)
 			if err != nil {
 				task.ErrTimes++
-				task.Errs = append(task.Errs, err)
+				task.errs = append(task.errs, err)
 				log.Println("执行失败", err)
 				log.Println("重新执行,key :", task.Key)
 				if task.ErrTimes < 5 {

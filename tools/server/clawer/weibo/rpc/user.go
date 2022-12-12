@@ -28,7 +28,7 @@ type User struct {
 }
 
 type UserInfo struct {
-	Id                int64          `json:"id"`
+	Id                int            `json:"id"`
 	ScreenName        string         `json:"screen_name"`
 	ProfileImageUrl   string         `json:"profile_image_url"`
 	ProfileUrl        string         `json:"profile_url"`
@@ -49,10 +49,7 @@ type UserInfo struct {
 	FollowersCountStr string         `json:"followers_count_str"`
 	CoverImagePhone   string         `json:"cover_image_phone"`
 	AvatarHd          string         `json:"avatar_hd"`
-	Like              bool           `json:"like"`
-	LikeMe            bool           `json:"like_me"`
 	ToolbarMenus      []*ToolbarMenu `json:"toolbar_menus"`
-	Badge             map[string]int `json:"-" originjson:"badge"`
 }
 
 type ToolbarMenu struct {
