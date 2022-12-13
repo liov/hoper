@@ -114,8 +114,7 @@ func (e *BaseEngine[KEY, T, W]) Run(tasks ...*BaseTask[KEY, T]) {
 					if workerList.Size == uint(e.currentWorkerCount) && len(taskList) == 0 {
 						emptyTimes++
 						if emptyTimes > 2 {
-							log.Println("task is empty")
-							log.Println("任务即将结束")
+							log.Println("task is empty,任务即将结束")
 							e.wg.Done()
 							timer.Stop()
 							break loop
