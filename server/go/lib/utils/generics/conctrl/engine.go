@@ -137,8 +137,7 @@ func (e *Engine[KEY, T, W]) BaseTask(task *Task[KEY, T]) *BaseTask[KEY, T] {
 			if err != nil {
 				task.ErrTimes++
 				task.errs = append(task.errs, err)
-				log.Println("执行失败", err)
-				log.Println("重新执行,key :", task.Key)
+				log.Println(task.Key, "执行失败", err, "重新执行")
 				if task.ErrTimes < 5 {
 					e.AsyncAddTask(task.Priority+1, task)
 				}

@@ -126,8 +126,7 @@ func (e *Engine) NewTask(task TaskInterface) *BaseTask {
 			if err != nil {
 				taskInfo.ErrTimes++
 				taskInfo.Errs = append(taskInfo.Errs, err)
-				log.Println("执行失败", err)
-				log.Println("重新执行,key :", taskInfo.Key)
+				log.Println(taskInfo.Key, "执行失败", err, "重新执行")
 				if taskInfo.ErrTimes < 5 {
 					e.AsyncAddTask(taskInfo.Priority+1, task)
 				}
