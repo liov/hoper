@@ -36,9 +36,9 @@ func GetUserFollowWeiboReq(maxId string) *crawler.Request {
 					}
 				}
 			}
-			if list != nil {
-				requests = append(requests, GetUserFollowWeiboReq(list.MaxIdStr))
-			}
+			/*			if list != nil {
+						requests = append(requests, GetUserFollowWeiboReq(list.MaxIdStr))
+					}*/
 			return requests, nil
 		},
 	}
