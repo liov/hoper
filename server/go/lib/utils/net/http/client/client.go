@@ -102,7 +102,7 @@ type RequestParams struct {
 	contentType        ContentType
 	timeout            time.Duration
 	AuthUser, AuthPass string
-	header             http.Header
+	header             []string
 	cachedHeaderKey    string
 	logger             LogCallback
 	genlog             bool
@@ -120,7 +120,7 @@ func NewRequest(url, method string) *RequestParams {
 }
 
 func newRequest(url, method string) *RequestParams {
-	return &RequestParams{ctx: context.Background(), client: defaultClient, url: url, method: method, header: make(http.Header), logger: defaultLog}
+	return &RequestParams{ctx: context.Background(), client: defaultClient, url: url, method: method, header: make([]string, 0, 2), logger: defaultLog}
 }
 
 func NewGetRequest(url string) *RequestParams {
@@ -150,12 +150,7 @@ func (req *RequestParams) ContentType(contentType ContentType) *RequestParams {
 }
 
 func (req *RequestParams) AddHeader(k, v string) *RequestParams {
-	req.header.Set(k, v)
-	return req
-}
-
-func (req *RequestParams) SetHeader(header http.Header) *RequestParams {
-	req.header = header
+	req.header = append(req.header, k, v)
 	return req
 }
 
@@ -263,7 +258,9 @@ func (req *RequestParams) DoEmpty() error {
 }
 
 func (req *RequestParams) setHeader(request *http.Request) {
-	request.Header = req.header
+	for i := 0; i+1 < len(req.header); i += 2 {
+		request.Header.Set(req.header[i], req.header[i+1])
+	}
 	if req.AuthUser != "" && req.AuthPass != "" {
 		request.SetBasicAuth(req.AuthUser, req.AuthPass)
 	}
