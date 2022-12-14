@@ -226,5 +226,5 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server/cl
   Pipeline('timepill', 'esload', mode='cronjob', sourceFile='./timepill/cmd/search_es.go',target='tot', schedule='00 10 * * *'),
   Pipeline('pro', sourceFile='./pro/cmd/record.go'),
   Pipeline('bilibili',  sourceFile='./bilibili/cmd/record_fav.go'),
-  Pipeline('weibo',  sourceFile='./weibo/cmd/record.go'),
+  Pipeline('weibo',  sourceFile='./weibo/cmd/record_timer.go'),
 ]
