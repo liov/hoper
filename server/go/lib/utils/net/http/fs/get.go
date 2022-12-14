@@ -9,8 +9,8 @@ import (
 	"time"
 )
 
-func FetchFile(url string) (*FileInfo, error) {
-	resp, err := http.Get(url)
+func FetchFile(r *http.Request) (*FileInfo, error) {
+	resp, err := http.DefaultClient.Do(r)
 	if err != nil {
 		return nil, err
 	}

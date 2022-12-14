@@ -46,7 +46,7 @@ func (init *initConfig) UnmarshalAndSet(bytes []byte) {
 		log.Fatal(err)
 	}
 	for k, v := range tmp {
-		init.confM[strings.ToUpper(k)] = v
+		init.confMap[strings.ToUpper(k)] = v
 	}
 	init.closeDao()
 	init.inject()
@@ -56,12 +56,12 @@ func (init *initConfig) UnmarshalAndSet(bytes []byte) {
 // Customize
 func (init *initConfig) inject() {
 	if init.conf != nil {
-		setConfig(reflect.ValueOf(init.conf).Elem(), init.confM)
+		setConfig(reflect.ValueOf(init.conf).Elem(), init.confMap)
 		init.conf.Init()
 	}
 
 	if init.dao != nil {
-		setDao(reflect.ValueOf(init.dao).Elem(), init.confM)
+		setDao(reflect.ValueOf(init.dao).Elem(), init.confMap)
 		init.dao.Init()
 	}
 }
