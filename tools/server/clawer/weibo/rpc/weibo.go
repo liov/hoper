@@ -24,32 +24,30 @@ type Visible struct {
 }
 
 type Mblog struct {
-	Visible                  Visible   `json:"visible"`
-	CreatedAt                string    `json:"created_at"`
-	Id                       string    `json:"id"`
-	Mid                      string    `json:"mid"`
-	CanEdit                  bool      `json:"can_edit"`
-	ShowAdditionalIndication int       `json:"show_additional_indication"`
-	Text                     string    `json:"text"`
-	Source                   string    `json:"source"`
-	Favorited                bool      `json:"favorited"`
-	PicIds                   []string  `json:"pic_ids"`
-	IsPaid                   bool      `json:"is_paid"`
-	MblogVipType             int       `json:"mblog_vip_type"`
-	User                     *UserInfo `json:"user"`
-	PageInfo                 *PageInfo `json:"page_info,omitempty"`
-	Pid                      int64     `json:"pid,omitempty"`
-	Pidstr                   string    `json:"pidstr,omitempty"`
-	RetweetedStatus          *Mblog    `json:"retweeted_status,omitempty"`
-	RepostsCount             int       `json:"reposts_count"`
-	CommentsCount            int       `json:"comments_count"`
-	ReprintCmtCount          int       `json:"reprint_cmt_count"`
-	AttitudesCount           int       `json:"attitudes_count"`
-	PendingApprovalCount     int       `json:"pending_approval_count"`
-	IsLongText               bool      `json:"isLongText"`
-	Mlevel                   int       `json:"mlevel"`
-	ShowMlevel               int       `json:"show_mlevel"`
-	HotPage                  struct {
+	CreatedAt                string           `json:"created_at"`
+	Id                       string           `json:"id"`
+	Mid                      string           `json:"mid"`
+	ShowAdditionalIndication int              `json:"show_additional_indication"`
+	Text                     string           `json:"text"`
+	Source                   string           `json:"source"`
+	Favorited                bool             `json:"favorited"`
+	PicIds                   []string         `json:"pic_ids"`
+	IsPaid                   bool             `json:"is_paid"`
+	MblogVipType             int              `json:"mblog_vip_type"`
+	User                     *UserInfo        `json:"user"`
+	PageInfo                 *PageInfo        `json:"page_info,omitempty"`
+	Pid                      int64            `json:"pid,omitempty"`
+	Pidstr                   string           `json:"pidstr,omitempty"`
+	RetweetedStatus          *RetweetedStatus `json:"retweeted_status,omitempty"`
+	//RepostsCount             int       `json:"reposts_count"`
+	CommentsCount        int  `json:"comments_count"`
+	ReprintCmtCount      int  `json:"reprint_cmt_count"`
+	AttitudesCount       int  `json:"attitudes_count"`
+	PendingApprovalCount int  `json:"pending_approval_count"`
+	IsLongText           bool `json:"isLongText"`
+	Mlevel               int  `json:"mlevel"`
+	ShowMlevel           int  `json:"show_mlevel"`
+	HotPage              struct {
 		Fid            string `json:"fid"`
 		FeedDetailType int    `json:"feed_detail_type"`
 	} `json:"hot_page"`
@@ -82,6 +80,35 @@ type Mblog struct {
 	Mark              string   `json:"mark,omitempty"`
 	LivePhoto         []string `json:"live_photo,omitempty"`
 }
+
+type RetweetedStatus struct {
+	CreatedAt                string    `json:"created_at"`
+	Id                       string    `json:"id"`
+	Mid                      string    `json:"mid"`
+	ShowAdditionalIndication int       `json:"show_additional_indication"`
+	Text                     string    `json:"text"`
+	Source                   string    `json:"source"`
+	Favorited                bool      `json:"favorited"`
+	PicIds                   []string  `json:"pic_ids"`
+	IsPaid                   bool      `json:"is_paid"`
+	MblogVipType             int       `json:"mblog_vip_type"`
+	User                     *UserInfo `json:"user"`
+	PageInfo                 *PageInfo `json:"page_info,omitempty"`
+	Pid                      int64     `json:"pid,omitempty"`
+	Pidstr                   string    `json:"pidstr,omitempty"`
+	RetweetedStatus          *Mblog    `json:"retweeted_status,omitempty"`
+	IsLongText               bool      `json:"isLongText"`
+	Mblogtype                int       `json:"mblogtype"`
+	Rid                      string    `json:"rid"`
+	RepostType               int       `json:"repost_type,omitempty"`
+	PicNum                   int       `json:"pic_num"`
+	Pics                     []*Pic    `json:"pics"`
+	RawText                  string    `json:"raw_text,omitempty"`
+	Bid                      string    `json:"bid"`
+	TextLength               int       `json:"textLength,omitempty"`
+	LivePhoto                []string  `json:"live_photo,omitempty"`
+}
+
 type Pic struct {
 	Pid      string   `json:"pid"`
 	Url      string   `json:"url"`

@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"github.com/liov/hoper/server/go/lib/utils/log"
 	http_fs "github.com/liov/hoper/server/go/lib/utils/net/http/fs"
+	"net/http"
 	"time"
 )
 
@@ -14,6 +15,7 @@ type Watch struct {
 }
 
 type Callback struct {
+	req         *http.Request
 	lastModTime time.Time
 	callback    func(file *http_fs.FileInfo)
 	md5value    [16]byte
@@ -37,13 +39,14 @@ func New(interval time.Duration) *Watch {
 	return w
 }
 
-func (w *Watch) Add(url string, callback func(file *http_fs.FileInfo)) error {
+func (w *Watch) Add(req *http.Request, callback func(file *http_fs.FileInfo)) error {
 	c := &Callback{
+		req:      req,
 		callback: callback,
 	}
 
-	c.Do(url)
-	w.handler[url] = c
+	c.Do(req)
+	w.handler[req.RequestURI] = c
 	return nil
 }
 
@@ -58,8 +61,8 @@ OuterLoop:
 	for {
 		select {
 		case <-timer.C:
-			for url, callback := range w.handler {
-				callback.Do(url)
+			for _, callback := range w.handler {
+				callback.Do(callback.req)
 			}
 		case <-w.done:
 			break OuterLoop
@@ -73,8 +76,8 @@ func (w *Watch) Close() {
 	close(w.done)
 }
 
-func (c *Callback) Do(url string) {
-	file, err := http_fs.FetchFile(url)
+func (c *Callback) Do(r *http.Request) {
+	file, err := http_fs.FetchFile(r)
 	if err != nil {
 		log.Error(err)
 		return

@@ -46,9 +46,10 @@ type FileConfig struct {
 
 type initConfig struct {
 	Env, ConfUrl string
+	flag         FlagConfig
 	BasicConfig
 	ConfigCenterConfig *ConfigCenterConfig
-	confM              map[string]interface{}
+	confMap            map[string]interface{}
 	conf               NeedInit
 	dao                Dao
 	//closes     []interface{}
@@ -106,13 +107,15 @@ func (init *initConfig) LoadConfig(notinit ...string) *initConfig {
 				init.ConfigCenterConfig = &ConfigCenterConfig{
 					ConfigCenterConfig: conf_center.ConfigCenterConfig{
 						ConfigType: "local",
-						Watch:      true,
+						Watch:      init.flag.Watch,
 						Local: &ilocal.Local{
 							Config:     local.Config{},
 							ConfigPath: init.ConfUrl,
-							ReloadType: "fsnotify",
 						},
 					},
+				}
+				if init.flag.Watch {
+					init.ConfigCenterConfig.Local.ReloadType = "fsnotify"
 				}
 			}
 			break
@@ -139,8 +142,8 @@ func (init *initConfig) LoadConfig(notinit ...string) *initConfig {
 func NewInit(conf Config, dao Dao) *initConfig {
 	init := &initConfig{
 		Env: InitConfig.Env, ConfUrl: InitConfig.ConfUrl,
-		confM: map[string]interface{}{},
-		conf:  conf, dao: dao,
+		confMap: map[string]interface{}{},
+		conf:    conf, dao: dao,
 		deferf: []func(){
 			func() { closeDao(dao) },
 			log.Sync,

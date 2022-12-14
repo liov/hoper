@@ -30,7 +30,14 @@ func GetUserFollowWeiboReq(maxId string) *crawler.Request {
 					} else {
 						requests = append(requests, GetWeiboReq(mblog, false)...)
 					}
+
+					if mblog.RetweetedStatus != nil {
+
+					}
 				}
+			}
+			if list != nil {
+				requests = append(requests, GetUserFollowWeiboReq(list.MaxIdStr))
 			}
 			return requests, nil
 		},

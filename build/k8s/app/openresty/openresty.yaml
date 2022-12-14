@@ -29,6 +29,8 @@ spec:
               name: config
             - mountPath: /static
               name: static
+            - mountPath: /secret
+              name: secret
             - mountPath: /frontend
               name: frontend
             - mountPath: /lua
@@ -41,13 +43,17 @@ spec:
           hostPath:
             path: /data/static
             type: DirectoryOrCreate
+        - hostPath:
+            path: /data/secret
+            type: DirectoryOrCreate
+            name: secret
         - name: frontend
           hostPath:
             path: /data/frontend
             type: DirectoryOrCreate
         - name: lua
           hostPath:
-            path: /root/code/app/hoper/alg_lang/c_lua_python_shell/lua
+            path: /root/code/app/hoper/alg_lang/lua
             type: DirectoryOrCreate
 
 ---
