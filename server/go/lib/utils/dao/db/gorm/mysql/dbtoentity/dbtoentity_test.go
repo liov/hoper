@@ -3,7 +3,7 @@ package dbtoentity
 import (
 	"fmt"
 	"github.com/liov/hoper/server/go/lib/initialize"
-	initmysql "github.com/liov/hoper/server/go/lib/initialize/db/mysql"
+	initmysql "github.com/liov/hoper/server/go/lib/initialize/gormdb/mysql"
 	dbi "github.com/liov/hoper/server/go/lib/utils/dao/db"
 	"go/ast"
 	"go/format"

@@ -17,3 +17,6 @@ kubectl config set-credentials ${Username} --client-certificate=./${cluster}-${n
 kubectl config set-context ${cluster} --cluster=${cluster} --user=${Username}
 # 启用 ${context} 
 kubectl config use-context ${cluster}
+
+
+kubectl get pod --kubeconfig=kube/stage/config

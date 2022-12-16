@@ -169,3 +169,36 @@ systemd=true
 127.0.0.1	The emulated device's own loopback interface
 
 # go用channel控制批量任务的结束，要用close(ch) 不要用ch<-,只会停掉一个任务，其他会卡住
+
+# linux硬盘清理
+/var/log/journal 占用太大
+保留一周
+journalctl --vacuum-time=1w
+
+保留一月（推荐）
+journalctl --vacuum-time=1month
+
+保留一年
+journalctl --vacuum-time=1years
+
+保留500M
+journalctl --vacuum-size=500M
+
+保留1G
+journalctl --vacuum-size=1G
+
+# docker 清理
+docker system prune
+## 日志
+{
+"log-driver": "json-file",
+"log-opts": {"max-size": "10m", "max-file": "3"}
+}
+
+ls -lh $(find /var/lib/docker/containers/ -name *-json.log)
+
+docker run --rm -v /var/lib/docker:/var/lib/docker alpine sh -c "echo '' > $(docker inspect --format='{{.LogPath}}' CONTAINER_NAME)"
+
+
+truncate -s 0 /var/lib/docker/containers/*/*-json.log
+sudo truncate -s 0 `docker inspect --format='{{.LogPath}}' <container>`

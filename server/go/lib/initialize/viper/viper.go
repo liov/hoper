@@ -9,10 +9,12 @@ import (
 )
 
 type Config struct {
-	Remote   bool
-	Provider string
-	Endpoint string
-	Path     string
+	Remote     bool
+	Watch      bool
+	Provider   string
+	Endpoint   string
+	Path       string
+	ConfigType string
 }
 
 func (conf *Config) Init() {
@@ -30,7 +32,11 @@ func (conf *Config) Build() *viper.Viper {
 	}
 	var runtimeViper = viper.GetViper()
 
-	runtimeViper.SetConfigType("toml") // because there is no file extension in a stream of bytes, supported extensions are "json", "toml", "yaml", "yml", "properties", "props", "prop", "Env", "dotenv"
+	if conf.ConfigType == "" {
+		conf.ConfigType = "toml"
+	}
+
+	runtimeViper.SetConfigType(conf.ConfigType) // because there is no file extension in a stream of bytes, supported extensions are "json", "toml", "yaml", "yml", "properties", "props", "prop", "Env", "dotenv"
 	if conf.Remote {
 		runtimeViper.AddRemoteProvider(conf.Provider, conf.Endpoint, initialize2.InitKey)
 		// read from remote Config the first time.
@@ -38,11 +44,16 @@ func (conf *Config) Build() *viper.Viper {
 		if err != nil {
 			log.Error(err)
 		}
-		runtimeViper.WatchRemoteConfig()
+		if conf.Watch {
+			runtimeViper.WatchRemoteConfig()
+		}
+
 	} else {
 		runtimeViper.AddConfigPath(conf.Path)
 		runtimeViper.ReadInConfig()
-		runtimeViper.WatchConfig()
+		if conf.Watch {
+			runtimeViper.WatchConfig()
+		}
 	}
 
 	// unmarshal Config

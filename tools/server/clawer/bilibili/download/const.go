@@ -1,6 +1,6 @@
 package download
 
-import "github.com/liov/hoper/server/go/lib/utils/generics/conctrl"
+import "github.com/liov/hoper/server/go/lib_v2/utils/conctrl"
 
 const (
 	KindGetFavListUrl conctrl.Kind = iota

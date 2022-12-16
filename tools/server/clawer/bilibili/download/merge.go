@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/liov/hoper/server/go/lib/utils/fs"
-	"github.com/liov/hoper/server/go/lib/utils/generics/conctrl"
-	"github.com/liov/hoper/server/go/lib/utils/generics/net/http/client/crawler"
+	"github.com/liov/hoper/server/go/lib_v2/utils/conctrl"
+	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
 
 	osi "github.com/liov/hoper/server/go/lib/utils/os"
 	"log"

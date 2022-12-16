@@ -2,7 +2,7 @@ package pro
 
 import (
 	errorsi "github.com/liov/hoper/server/go/lib/utils/errors"
-	"github.com/liov/hoper/server/go/lib/utils/generics/net/http/client/crawler"
+	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
 	"log"
 	"os"
 	"time"
@@ -19,7 +19,8 @@ const (
 type Post struct {
 	ID        uint32
 	TId       int    `gorm:"uniqueIndex"`
-	Auth      string `gorm:"size:255;default:''"`
+	UserId    int    `gorm:"default:0;index"`
+	UserName  string `gorm:"size:255;default:''"`
 	Title     string `gorm:"size:255;default:''"`
 	Content   string `gorm:"type:text"`
 	CreatedAt string `gorm:"type:timestamptz(6);default:'0001-01-01 00:00:00'"`

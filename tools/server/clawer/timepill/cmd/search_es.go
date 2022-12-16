@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"github.com/liov/hoper/server/go/lib/initialize"
-	initpostgres "github.com/liov/hoper/server/go/lib/initialize/db/postgres"
 	"github.com/liov/hoper/server/go/lib/initialize/elastic/v8"
+	initpostgres "github.com/liov/hoper/server/go/lib/initialize/gormdb/postgres"
 	"tools/clawer/timepill"
 	"tools/clawer/timepill/es8"
 )

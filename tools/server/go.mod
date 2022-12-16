@@ -9,6 +9,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/jlaffaye/ftp v0.0.0-20220817234345-39592b91e4d6
 	github.com/liov/hoper/server/go/lib v1.0.0
+	github.com/liov/hoper/server/go/lib_v2 v1.0.0
 	github.com/nsqio/go-nsq v1.1.0
 	golang.org/x/image v0.0.0-20220601225756-64ec528b34cd
 	golang.org/x/net v0.0.0-20220722155237-a158d28d115b
@@ -25,6 +26,7 @@ require (
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/coreos/go-oidc v2.2.1+incompatible // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgraph-io/ristretto v0.1.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
@@ -112,4 +114,7 @@ require (
 	gorm.io/plugin/prometheus v0.0.0-20210820101226-2a49866f83ee // indirect
 )
 
-replace github.com/liov/hoper/server/go/lib => ../../server/go/lib
+replace (
+	github.com/liov/hoper/server/go/lib => ../../server/go/lib
+	github.com/liov/hoper/server/go/lib_v2 => ../../server/go/lib_v2
+)

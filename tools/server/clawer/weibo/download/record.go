@@ -3,9 +3,9 @@ package download
 import (
 	"context"
 	"encoding/json"
-	"github.com/liov/hoper/server/go/lib/utils/generics/net/http/client/crawler"
 	"github.com/liov/hoper/server/go/lib/utils/log"
 	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
+	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
 	"strconv"
 	"strings"
 	"time"

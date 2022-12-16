@@ -93,6 +93,15 @@ func Download(filepath string, reader io.Reader) error {
 	return os.Rename(filepath, filepath[:len(filepath)-len(DownloadKey)])
 }
 
+func DownloadIfNotExists(filepath string, reader io.Reader) error {
+	_, err := os.Stat(filepath)
+	if os.IsNotExist(err) {
+		return Download(filepath, reader)
+	}
+	log.Println("已存在:", filepath)
+	return err
+}
+
 func GetImage(url string) (io.ReadCloser, error) {
 	return GetFileWithReq(url, ImageOption)
 }

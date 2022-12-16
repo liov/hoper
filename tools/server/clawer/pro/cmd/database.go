@@ -85,7 +85,7 @@ func fetchHistory(id int, sd *pro.Speed) {
 	}
 
 	s := doc.Find(`img[src="images/common/none.gif"]`)
-	_, _, _, _, _, post := pro.ParseHtml(doc)
+	_, _, _, _, _, _, post := pro.ParseHtml(doc)
 	post.TId = id
 	post.PicNum = uint32(s.Length())
 	status := "0"
