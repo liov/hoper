@@ -14,7 +14,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.5.0
-	github.com/liov/hoper/server/go/lib v1.0.0
+	github.com/liov/hoper/server/go/lib latest
 	github.com/mwitkow/go-proto-validators v0.3.2
 	github.com/spf13/viper v1.12.0
 	go.opencensus.io v0.23.0

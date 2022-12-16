@@ -2,13 +2,13 @@ package download
 
 import (
 	"context"
-	"github.com/liov/hoper/server/go/lib/utils/generics/net/http/client/crawler"
+	"github.com/liov/hoper/server/go/lib/utils/fs"
+	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
 	"gorm.io/gorm"
 
 	"github.com/liov/hoper/server/go/lib/utils/net/http/client"
 
 	"log"
-	"os"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -76,9 +76,9 @@ func CoverDownload(ctx context.Context, url string, upId, id int) error {
 			return nil
 		}*/
 	filepath := filepath.Join(config.Conf.Bilibili.DownloadPicPath, strconv.Itoa(upId), strconv.Itoa(upId)+"_"+strconv.Itoa(id)+"_"+path.Base(url))
-	_, err := os.Stat(filepath)
-	if os.IsNotExist(err) {
-		err = client.DownloadImage(filepath, url)
+
+	if fs.NotExist(filepath) {
+		err := client.DownloadImage(filepath, url)
 		if err != nil {
 			log.Println("下载图片失败：", err)
 			return err

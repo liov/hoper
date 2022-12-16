@@ -2,7 +2,7 @@ package dao
 
 import (
 	"context"
-	initpostgres "github.com/liov/hoper/server/go/lib/initialize/db/postgres"
+	initpostgres "github.com/liov/hoper/server/go/lib/initialize/gormdb/postgres"
 	"github.com/liov/hoper/server/go/lib/utils/dao/db/gorm/postgres"
 	"time"
 

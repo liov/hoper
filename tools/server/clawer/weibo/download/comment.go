@@ -2,8 +2,8 @@ package download
 
 import (
 	"context"
-	"github.com/liov/hoper/server/go/lib/utils/generics/net/http/client/crawler"
 	timei "github.com/liov/hoper/server/go/lib/utils/time"
+	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
 	"strconv"
 	"tools/clawer/weibo/dao"
 	"tools/clawer/weibo/rpc"

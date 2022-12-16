@@ -2,12 +2,12 @@ package get_db
 
 import (
 	"github.com/liov/hoper/server/go/lib/initialize"
-	"github.com/liov/hoper/server/go/lib/initialize/db"
+	"github.com/liov/hoper/server/go/lib/initialize/gormdb"
 	"gorm.io/gorm"
 )
 
 type Dao struct {
-	Hoper db.DB
+	Hoper gormdb.DB
 }
 
 type Config struct {

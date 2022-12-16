@@ -1,7 +1,7 @@
 package tool
 
 import (
-	"github.com/liov/hoper/server/go/lib/utils/generics/slices"
+	"github.com/liov/hoper/server/go/lib_v2/utils/slices"
 	"strings"
 )
 

@@ -1,10 +1,10 @@
 package pro
 
 import (
-	"github.com/liov/hoper/server/go/lib/initialize/cache/ristretto"
-	initpostgres "github.com/liov/hoper/server/go/lib/initialize/db/postgres"
 	v8 "github.com/liov/hoper/server/go/lib/initialize/elastic/v8"
+	initpostgres "github.com/liov/hoper/server/go/lib/initialize/gormdb/postgres"
 	initializeredis "github.com/liov/hoper/server/go/lib/initialize/redis"
+	"github.com/liov/hoper/server/go/lib/initialize/ristretto"
 	"os"
 	"time"
 )

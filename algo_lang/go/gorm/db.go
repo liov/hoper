@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/liov/hoper/server/go/lib/initialize"
-	"github.com/liov/hoper/server/go/lib/initialize/db/mysql"
+	"github.com/liov/hoper/server/go/lib/initialize/gormdb/mysql"
 	"gorm.io/gorm"
 )
 

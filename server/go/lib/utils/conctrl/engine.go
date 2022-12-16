@@ -3,7 +3,7 @@ package conctrl
 import (
 	"context"
 	"github.com/liov/hoper/server/go/lib/utils/gen"
-	"github.com/liov/hoper/server/go/lib/utils/generics/slices"
+	"github.com/liov/hoper/server/go/lib_v2/utils/slices"
 	"log"
 	"strconv"
 	"sync"

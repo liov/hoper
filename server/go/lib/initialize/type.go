@@ -22,7 +22,7 @@ type DaoFieldCloser = io.Closer
 type DaoFieldCloser1 interface {
 	Close()
 }
-
+type DaoFieldCloser2 = DaoFieldCloser1
 type Generate interface {
 	Generate() any
 }

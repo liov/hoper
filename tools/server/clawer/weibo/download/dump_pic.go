@@ -2,11 +2,11 @@ package download
 
 import (
 	"context"
-	"github.com/liov/hoper/server/go/lib/utils/generics/net/http/client/crawler"
+	"github.com/liov/hoper/server/go/lib/utils/fs"
 	"github.com/liov/hoper/server/go/lib/utils/log"
 	"github.com/liov/hoper/server/go/lib/utils/net/http/client"
 	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
-	"os"
+	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -97,9 +97,9 @@ func DownloadPhoto(uid int, wid, url string) error {
 	}
 
 	filepath := filepath.Join(config.Conf.Weibo.DownloadPicPath, strconv.Itoa(uid), strconv.Itoa(uid)+"_"+wid+"_"+baseUrl)
-	_, err := os.Stat(filepath)
-	if os.IsNotExist(err) {
-		err = client.DownloadFileWithRefer(filepath, url, Referer)
+
+	if fs.NotExist(filepath) {
+		err := client.DownloadFileWithRefer(filepath, url, Referer)
 		if err != nil {
 			log.Info("下载图片失败：", err)
 			return err

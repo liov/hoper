@@ -4,9 +4,9 @@ import (
 	"bufio"
 	"bytes"
 	"context"
-	"github.com/liov/hoper/server/go/lib/utils/generics/net/http/client/crawler"
 	"github.com/liov/hoper/server/go/lib/utils/net/http/client"
 	py2 "github.com/liov/hoper/server/go/lib/utils/strings/pinyin"
+	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
 	"io"
 	"log"
 	"math/rand"
@@ -61,11 +61,6 @@ func Fetch(id int) (*goquery.Selection, string, error) {
 		if !strings.HasPrefix(err.Error(), "not found") {
 			return nil, "", ReqPostError.Message(err.Error())
 		}
-		invalidPost := &Post{TId: id, Status: 2}
-		err = Dao.DB.Save(invalidPost).Error
-		if err != nil && !strings.HasPrefix(err.Error(), "ERROR: duplicate key") {
-			log.Println(err)
-		}
 		return nil, "", nil
 	}
 
@@ -75,7 +70,7 @@ func Fetch(id int) (*goquery.Selection, string, error) {
 	}
 	s := doc.Find(`img[src="images/common/none.gif"]`)
 
-	auth, title, text, postTime, htl, post := ParseHtml(doc)
+	_, auth, title, text, postTime, htl, post := ParseHtml(doc)
 	post.TId = id
 	post.PicNum = uint32(s.Length())
 	status := "0"
@@ -87,10 +82,10 @@ func Fetch(id int) (*goquery.Selection, string, error) {
 	dir := Conf.Pro.CommonDir + "pic_" + strconv.Itoa(id/100000) + "/"
 
 	if auth != "" {
-		dir += py2.FistLetter(auth) + Sep + auth + Sep
+		dir += FixPath(py2.FistLetter(auth)) + Sep + auth + Sep
 	}
 	if title != "" {
-		dir += title + `_` + tid + Sep
+		dir += FixPath(title) + `_` + tid + Sep
 	}
 	dir = fs.PathClean(dir)
 
@@ -130,11 +125,19 @@ func Fetch(id int) (*goquery.Selection, string, error) {
 	return s, dir, nil
 }
 
-func ParseHtml(doc *goquery.Document) (string, string, string, string, *goquery.Selection, *Post) {
-	auth := doc.Find("#postlist .popuserinfo a").First().Text()
-	title := doc.Find("#threadtitle h1").Text()
+func ParseHtml(doc *goquery.Document) (authId int, auth string, title string, text string, postTime string, html *goquery.Selection, post *Post) {
+	authNode := doc.Find("#postlist .popuserinfo a").First()
+	auth = authNode.Text()
+
+	if href, exists := authNode.Attr("href"); exists {
+		authIds := strings.Split(href, "uid=")
+		if len(authIds) > 1 {
+			authId, _ = strconv.Atoi(authIds[1])
+		}
+	}
+	title = doc.Find("#threadtitle h1").Text()
 	timenode := doc.Find(".posterinfo .authorinfo em").First()
-	postTime := timenode.Text()
+	postTime = timenode.Text()
 	if strings.HasPrefix(postTime, "发表于") {
 		postTime = postTime[len(`发表于 `):]
 	}
@@ -172,18 +175,20 @@ func ParseHtml(doc *goquery.Document) (string, string, string, string, *goquery.
 		postTime = time.Now().Format("2006-01-02 15:04:05")
 	}
 
-	post := &Post{
-		TId:   0,
-		Auth:  auth,
-		Title: title,
+	post = &Post{
+		TId:       0,
+		UserId:    authId,
+		UserName:  auth,
+		Title:     title,
+		CreatedAt: postTime,
 	}
 
 	post.CreatedAt = postTime
 	content := doc.Find(".t_msgfont").First()
-	text := content.Contents().Not(".t_attach").Text()
-	html := content.Not(".t_attach").Not("span")
+	text = content.Contents().Not(".t_attach").Text()
+	html = content.Not(".t_attach").Not("span")
 	post.Content = text
-	return FixPath(auth), FixPath(title), text, postTime, html, post
+	return authId, auth, title, text, postTime, html, post
 }
 
 func FixPath(path string) string {
@@ -215,11 +220,17 @@ func Download(url, dir string) error {
 		s = strings.Split(url, "\\")
 		name = s[len(s)-1]
 	}
-	err := client.DownloadImage(dir+name, url)
-	if err != nil {
-		log.Println(err)
-		return DownloadError.Message(url).AppendErr(err)
+	filepath := dir + name
+	if fs.NotExist(filepath) {
+		err := client.DownloadImage(filepath, url)
+		if err != nil {
+			return DownloadError.Message(url).AppendErr(err)
+		}
+		log.Println("下载图片成功:", filepath)
+	} else {
+		log.Println("图片已存在:", filepath)
 	}
+
 	return nil
 }
 
