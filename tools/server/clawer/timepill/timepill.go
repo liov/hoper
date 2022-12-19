@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	claweri "tools/clawer"
 	"tools/clawer/timepill/model"
 	"tools/clawer/timepill/rpc"
 )
@@ -140,10 +141,21 @@ func DownloadPic(userId, diaryId int, url, created string) error {
 	if strings.Contains(date, "/") {
 		date = created[0:10]
 	}
-
-	filepath := strings.Join([]string{Conf.TimePill.PhotoPath, date[:4], date[:7], strconv.Itoa(userId), strconv.Itoa(diaryId), path.Base(suffixpath)}, "/")
-
-	return client.DownloadImage(filepath, url)
+	baseUrl := path.Base(suffixpath)
+	diaryIdStr := strconv.Itoa(diaryId)
+	filepath := strings.Join([]string{Conf.TimePill.PhotoPath, date[:4], date[:7], strconv.Itoa(userId), diaryIdStr, baseUrl}, "/")
+	err := client.DownloadImage(filepath, url)
+	if err != nil {
+		return err
+	}
+	return Dao.Hoper.Create(&claweri.Dir{
+		Type:     2,
+		Date:     date,
+		UserId:   userId,
+		KeyId:    diaryId,
+		KeyIdStr: diaryIdStr,
+		BaseUrl:  baseUrl,
+	}).Error
 
 }
 
@@ -170,11 +182,27 @@ func DownloadCover(date, typ string, userId, notebookId int, url string) error {
 	originFileName := path.Base(URL.Path)
 	originFileName = strings.TrimSuffix(originFileName, path.Ext(originFileName)) + "-v" + v + path.Ext(originFileName)
 	filepath += strings.Join([]string{filepath, typ, date[:4], date[:7], strconv.Itoa(userId)}, "/")
+	var keyIdStr string
+	dirtyp := 21
 	if typ == model.BookCoverType.String() {
-		filepath += "/" + strconv.Itoa(notebookId)
+		keyIdStr := strconv.Itoa(notebookId)
+		filepath += "/" + keyIdStr
+		dirtyp = 22
 	}
 	filepath += "/" + originFileName
-	return client.DownloadImage(filepath, url)
+
+	err := client.DownloadImage(filepath, url)
+	if err != nil {
+		return err
+	}
+	return Dao.Hoper.Create(&claweri.Dir{
+		Type:     dirtyp,
+		Date:     date,
+		UserId:   userId,
+		KeyId:    notebookId,
+		KeyIdStr: keyIdStr,
+		BaseUrl:  originFileName,
+	}).Error
 }
 
 func DiaryExists(diaryId int) bool {
