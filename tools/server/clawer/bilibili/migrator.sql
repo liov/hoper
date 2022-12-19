@@ -122,7 +122,7 @@ FROM bilibili.video  b
 INSERT INTO bilibili.video_v2 ( aid, CID, part, page, accept_format, video_codecid, duration, accept_quality, record, created_at, updated_at, deleted_at ) SELECT
                                                                                                                                                                b.aid,
                                                                                                                                                                b.CID,
-                                                                                                                                                               A.P -> 'part' part,
+                                                                                                                                                               A.P ->> 'part' part,
                                                                                                                                                                CAST ( A.P -> 'page' AS INT ) page,
                                                                                                                                                                b.DATA ->> 'accept_format' accept_format,
                                                                                                                                                                CAST ( b.DATA -> 'video_codecid' AS INT ) video_codecid,

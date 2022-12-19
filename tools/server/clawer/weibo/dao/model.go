@@ -3,7 +3,7 @@ package dao
 import "time"
 
 const (
-	Schema           = "weibo.."
+	Schema           = "weibo."
 	TableNameWeibo   = Schema + "weibo"
 	TableNameUser    = Schema + "user"
 	TableNameComment = Schema + "comment"

@@ -37,3 +37,10 @@ var result_headers = []string{
 	"认证信息",
 	"上次记录微博信息",
 }
+
+const (
+	picsmall  = "/thumb150/"
+	picMiddle = "/orj480/"
+	picGig    = "/woriginal/"
+	picMW2000 = "/mw2000/"
+)

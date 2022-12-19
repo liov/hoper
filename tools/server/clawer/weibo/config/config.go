@@ -8,16 +8,14 @@ import (
 )
 
 type Customize struct {
-	UserId            int
-	StopTime          int
-	WorkCount         uint
-	DownloadPath      string
-	DownloadVideoPath string
-	DownloadPicPath   string
-	DownloadTmpPath   string
-	Cookie            string
-	SkipKind          []conctrl.Kind
-	Users             []int
+	UserId          int
+	StopTime        int
+	WorkCount       uint
+	DownloadPath    string
+	DownloadTmpPath string
+	Cookie          string
+	SkipKind        []conctrl.Kind
+	Users           []int
 }
 
 type config struct {
@@ -34,8 +32,6 @@ func (c *config) Init() {
 	}
 	rpc.Cookie = c.Weibo.Cookie
 	c.Weibo.DownloadPath, _ = filepath.Abs(c.Weibo.DownloadPath)
-	c.Weibo.DownloadVideoPath = c.Weibo.DownloadPath + fs.PathSeparator + "video"
-	c.Weibo.DownloadPicPath = c.Weibo.DownloadPath + fs.PathSeparator + "pic"
 	c.Weibo.DownloadTmpPath = c.Weibo.DownloadPath + fs.PathSeparator + "tmp"
 
 }
