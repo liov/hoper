@@ -73,6 +73,7 @@ func (diary *Diary) IndexDiary() *IndexDiary {
 }
 
 type TinyDiary struct {
+	Id       int
 	UserId   int
 	PhotoUrl string
 	Created  string

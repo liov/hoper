@@ -28,7 +28,7 @@ func main() {
 		log.Info("定时任务：记录评论执行,times:", task.Times)
 		timepill.CronCommentRecord()
 	}
-	go conctrl.Timer(context.Background(), task, time.Hour)
+	go task.Timer(context.Background(), time.Hour)
 
 	//go timepill.RecordByOrderNoteBook()
 	recordtask := &conctrl.TimerTask{}
@@ -36,5 +36,5 @@ func main() {
 		log.Info("定时任务：记录评论执行,times:", task.Times)
 		timepill.RecordTask()
 	}
-	conctrl.Timer(context.Background(), recordtask, time.Second*timepill.Conf.TimePill.Timer)
+	recordtask.Timer(context.Background(), time.Second*timepill.Conf.TimePill.Timer)
 }

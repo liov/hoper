@@ -70,7 +70,7 @@ func RecordDiary(diary *model.Diary) {
 	}
 
 	if diary.PhotoUrl != "" {
-		err = DownloadPic(diary.UserId, diary.PhotoUrl, diary.Created)
+		err = DownloadPic(diary.UserId, diary.Id, diary.PhotoUrl, diary.Created)
 		//err = tnsq.PublishPic(Dao.NsqP.Producer, diary.UserId, diary.PhotoUrl, diary.Created)
 		if err != nil {
 			log.Error(err)
@@ -118,7 +118,7 @@ func TodayRecord() {
 	}
 }
 
-func DownloadPic(userId int, url, created string) error {
+func DownloadPic(userId, diaryId int, url, created string) error {
 	if url == "" {
 		return errors.New("url is empty")
 	}
@@ -140,15 +140,10 @@ func DownloadPic(userId int, url, created string) error {
 	if strings.Contains(date, "/") {
 		date = created[0:10]
 	}
-	num := userId / 10000
-	prepath := Conf.TimePill.PhotoPath + "/" + strconv.Itoa(num) + "-" + strconv.Itoa(num+1) + "/" + strconv.Itoa(userId) + "/"
-	filepath := prepath + date + "_" + path.Base(suffixpath)
 
-	err := client.DownloadImage(filepath, url)
-	if err != nil {
-		return err
-	}
-	return CopyDatePic(filepath, date, strconv.Itoa(userId), path.Base(suffixpath))
+	filepath := strings.Join([]string{Conf.TimePill.PhotoPath, date[:4], date[:7], strconv.Itoa(userId), strconv.Itoa(diaryId), path.Base(suffixpath)}, "/")
+
+	return client.DownloadImage(filepath, url)
 
 }
 
@@ -165,22 +160,20 @@ func CopyDatePic(filepath, date, userId, filename string) error {
 	return fs.CopyFile(filepath, dir+year+"/"+date+"/"+userId+"_"+filename)
 }
 
-func DownloadCover(typ, url string) error {
+func DownloadCover(date, typ string, userId, notebookId int, url string) error {
 	if url == "" || strings.HasSuffix(url, "default.jpg") {
 		return errors.New("url is empty")
 	}
 	URL, _ := surl.Parse(url)
 	v := URL.Query().Get("v")
 	filepath := Conf.TimePill.PhotoPath
-	filename := strings.Split(URL.Path, typ)
-	var originFileName string
-	if len(filename) > 1 {
-		originFileName = filename[1]
-	} else {
-		originFileName = path.Base(URL.Path)
-	}
+	originFileName := path.Base(URL.Path)
 	originFileName = strings.TrimSuffix(originFileName, path.Ext(originFileName)) + "-v" + v + path.Ext(originFileName)
-	filepath += typ + originFileName
+	filepath += strings.Join([]string{filepath, typ, date[:4], date[:7], strconv.Itoa(userId)}, "/")
+	if typ == model.BookCoverType.String() {
+		filepath += "/" + strconv.Itoa(notebookId)
+	}
+	filepath += "/" + originFileName
 	return client.DownloadImage(filepath, url)
 }
 
@@ -218,7 +211,7 @@ func RecordUserDiaries(user *model.User) {
 	for _, nodebook := range notebooks {
 		Dao.Hoper.Create(nodebook)
 		if nodebook.CoverUrl != "" {
-			err = DownloadCover(model.BookCoverType.String(), nodebook.CoverUrl)
+			err = DownloadCover(nodebook.Created, model.BookCoverType.String(), user.UserId, nodebook.Id, nodebook.CoverUrl)
 			//err = tnsq.PublishCover(Dao.NsqP.Producer, model.BookCoverType, nodebook.CoverUrl)
 			if err != nil {
 				log.Error(err)
@@ -296,7 +289,7 @@ func RecordUserById(userId int) *model.User {
 			}
 		}
 		if user.CoverUrl != "" {
-			err = DownloadCover(model.UserCoverType.String(), user.CoverUrl)
+			err = DownloadCover(user.Created, model.UserCoverType.String(), user.UserId, 0, user.CoverUrl)
 			//err = tnsq.PublishCover(Dao.NsqP.Producer, model.UserCoverType, user.CoverUrl)
 			if err != nil {
 				log.Error(err)
