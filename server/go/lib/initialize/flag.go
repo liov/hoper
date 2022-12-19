@@ -1,6 +1,7 @@
 package initialize
 
 import (
+	"flag"
 	"github.com/spf13/pflag"
 	"net"
 	"net/http"
@@ -24,6 +25,7 @@ type AfterSet struct {
 }
 
 func init() {
+	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
 	pflag.CommandLine.ParseErrorsWhitelist.UnknownFlags = true
 	pflag.StringVarP(&InitConfig.Env, "env", "e", DEVELOPMENT, "环境")
 
