@@ -134,4 +134,8 @@ INSERT INTO bilibili.video_v2 ( aid, CID, part, page, accept_format, video_codec
                                                                                                                                                                b.deleted_at
 FROM
     bilibili.video b
-        LEFT JOIN ( SELECT DATA -> 'title' title, DATA -> 'owner' OWNER, jsonb_path_query ( DATA, '$.pages[*]' ) P, deleted_at FROM bilibili.VIEW ) A ON ( A.P -> 'cid' ) :: INT8 = b.CID
+        LEFT JOIN ( SELECT DATA -> 'title' title, DATA -> 'owner' OWNER, jsonb_path_query ( DATA, '$.pages[*]' ) P, deleted_at FROM bilibili.VIEW ) A ON ( A.P -> 'cid' ) :: INT8 = b.CID;
+
+SELECT cid, ARRAY(SELECT jsonb_array_elements_text(accept_quality)) FROM  bilibili.video;
+UPDATE bilibili.video SET accept_quality_v2 = d.array FROM bilibili.video v
+LEFT JOIN ( SELECT CID, CAST(ARRAY ( SELECT jsonb_array_elements_text ( accept_quality ) ) AS int[])  FROM bilibili.video ) d ON v.CID = d.CID ;

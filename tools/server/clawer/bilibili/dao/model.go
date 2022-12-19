@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"github.com/liov/hoper/server/go/lib/utils/dao/db/postgres"
 	"time"
 )
 
@@ -9,6 +10,7 @@ const (
 	TableNameView    = Schema + "view"
 	TableNameViewBak = TableNameView + "_bak"
 	TableNameVideo   = Schema + "video"
+	TableNameVideoV2 = Schema + "video_v2"
 	TableNameUser    = Schema + "user"
 )
 
@@ -53,7 +55,7 @@ type Video struct {
 	AcceptFormat  string
 	VideoCodecid  int
 	Duration      int
-	AcceptQuality []int `gorm:"type:jsonb"`
+	AcceptQuality postgres.IntArray `gorm:"type:int2[]"`
 	Record        int
 	CreatedAt     time.Time `json:"created_at" gorm:"index;default:now()"`
 	UpdatedAt     time.Time `json:"updated_at"`
