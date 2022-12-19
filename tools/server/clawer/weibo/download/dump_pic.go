@@ -2,19 +2,21 @@ package download
 
 import (
 	"context"
-	"github.com/liov/hoper/server/go/lib/utils/fs"
 	"github.com/liov/hoper/server/go/lib/utils/log"
-	"github.com/liov/hoper/server/go/lib/utils/net/http/client"
 	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
+	timei "github.com/liov/hoper/server/go/lib/utils/time"
 	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
-	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
+	claweri "tools/clawer"
+	"tools/clawer/weibo/dao"
+
 	"tools/clawer/weibo/config"
 	"tools/clawer/weibo/rpc"
 )
 
-// 可下原图
+// 可下原图 Deprecated
 func DownloadUserAllPhotoReq(uid int) *crawler.Request {
 	return &crawler.Request{
 		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: strconv.Itoa(uid)}, Kind: KindNormal},
@@ -61,10 +63,10 @@ func DownloadPhotosReqs(uid int, cards []*rpc.PicCardGroup) []*crawler.Request {
 
 func DownloadPhotoReqs(uid int, card *rpc.PicCardGroup) []*crawler.Request {
 	var requests []*crawler.Request
-
+	date := time.Now().Format(timei.DateFormat)
 	for _, pic := range card.Pics {
 		if pic.Type == "livephoto" {
-			requests = append(requests, DownloadPhotoReq(uid, pic.Mblog.Id, pic.Video))
+			requests = append(requests, DownloadPhotoReq(date, uid, pic.Mblog.Id, pic.Video))
 		}
 		var url string
 		if pic.PicBig != "" {
@@ -72,23 +74,24 @@ func DownloadPhotoReqs(uid int, card *rpc.PicCardGroup) []*crawler.Request {
 		} else if pic.PicMiddle != "" {
 			url = pic.PicBig
 		}
-		requests = append(requests, DownloadPhotoReq(uid, pic.Mblog.Id, url))
+
+		requests = append(requests, DownloadPhotoReq(date, uid, pic.Mblog.Id, url))
 	}
 
 	return requests
 }
 
-func DownloadPhotoReq(uid int, wid, url string) *crawler.Request {
+func DownloadPhotoReq(date string, uid int, wid, url string) *crawler.Request {
 	return &crawler.Request{
 		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: url}, Kind: KindDownload},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 
-			return nil, DownloadPhoto(uid, wid, url)
+			return nil, DownloadPhoto(date, uid, wid, url)
 		},
 	}
 }
 
-func DownloadPhoto(uid int, wid, url string) error {
+func DownloadPhoto(date string, uid int, wid, url string) error {
 	var baseUrl string
 	if strings.HasSuffix(url, "mov") {
 		baseUrl = stringsi.CountdownCutoff(url, "%2F")
@@ -96,17 +99,17 @@ func DownloadPhoto(uid int, wid, url string) error {
 		baseUrl = stringsi.CountdownCutoff(url, "/")
 	}
 
-	filepath := filepath.Join(config.Conf.Weibo.DownloadPicPath, strconv.Itoa(uid), strconv.Itoa(uid)+"_"+wid+"_"+baseUrl)
+	return (&claweri.DownloadMeta{
+		Dir: claweri.Dir{
+			Date:     date,
+			Type:     4,
+			UserId:   uid,
+			KeyIdStr: wid,
+			BaseUrl:  baseUrl,
+		},
+		DownloadPath: config.Conf.Weibo.DownloadPath,
+		Url:          url,
+		Referer:      Referer,
+	}).Download(dao.Dao.Hoper.DB)
 
-	if fs.NotExist(filepath) {
-		err := client.DownloadFileWithRefer(filepath, url, Referer)
-		if err != nil {
-			log.Info("下载图片失败：", err)
-			return err
-		}
-		log.Info("下载图片成功：", filepath)
-	} else {
-		log.Info("图片已存在：", filepath)
-	}
-	return nil
 }

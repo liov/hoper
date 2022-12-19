@@ -2,15 +2,16 @@ package download
 
 import (
 	"context"
-	"github.com/liov/hoper/server/go/lib/utils/fs"
 	"github.com/liov/hoper/server/go/lib/utils/log"
-	"github.com/liov/hoper/server/go/lib/utils/net/http/client"
 	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
+	timei "github.com/liov/hoper/server/go/lib/utils/time"
 	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
-	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
+	claweri "tools/clawer"
 	"tools/clawer/weibo/config"
+	"tools/clawer/weibo/dao"
 	"tools/clawer/weibo/rpc"
 )
 
@@ -64,6 +65,8 @@ func DownloadVideosReq(cards []*rpc.CardGroup) []*crawler.Request {
 }
 
 func DownloadVideoReq(mblog *rpc.Mblog) *crawler.Request {
+	createdAt, _ := time.Parse(time.RubyDate, mblog.CreatedAt)
+	date := createdAt.Format(timei.DateFormat)
 
 	if mblog.PageInfo != nil {
 		var url string
@@ -75,34 +78,33 @@ func DownloadVideoReq(mblog *rpc.Mblog) *crawler.Request {
 			url = mblog.PageInfo.Urls.Mp4LdMp4
 		}
 		if url != "" {
-			return DownloadVideoWarpReq(int(mblog.User.Id), mblog.Id, url)
+			return DownloadVideoWarpReq(date, mblog.User.Id, mblog.Id, url)
 		}
 	}
 	return nil
 }
 
-func DownloadVideoWarpReq(uid int, wid, url string) *crawler.Request {
+func DownloadVideoWarpReq(date string, uid int, wid, url string) *crawler.Request {
 	return &crawler.Request{
 		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: url}, Kind: KindDownload},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
-			return nil, DownloadVideo(uid, wid, url)
+			return nil, DownloadVideo(date, uid, wid, url)
 		},
 	}
 }
 
-func DownloadVideo(uid int, wid, url string) error {
+func DownloadVideo(date string, uid int, wid, url string) error {
 	baseUrl := stringsi.CountdownCutoff(stringsi.CutoffContain(url, "mp4"), "/")
-	filepath := filepath.Join(config.Conf.Weibo.DownloadVideoPath, strconv.Itoa(uid), strconv.Itoa(uid)+"_"+wid+"_"+baseUrl)
-
-	if fs.NotExist(filepath) {
-		err := client.DownloadFileWithRefer(filepath, url, Referer)
-		if err != nil {
-			log.Info("下载视频失败：", err)
-			return err
-		}
-		log.Info("下载视频成功：", filepath)
-	} else {
-		log.Info("视频已存在：", filepath)
-	}
-	return nil
+	return (&claweri.DownloadMeta{
+		Dir: claweri.Dir{
+			Date:     date,
+			Type:     4,
+			UserId:   uid,
+			KeyIdStr: wid,
+			BaseUrl:  baseUrl,
+		},
+		DownloadPath: config.Conf.Weibo.DownloadPath,
+		Url:          url,
+		Referer:      Referer,
+	}).Download(dao.Dao.Hoper.DB)
 }
