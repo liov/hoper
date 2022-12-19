@@ -49,7 +49,7 @@ func DownloadFavCover(ctx context.Context, url string) ([]*crawler.Request, erro
 				requests = append(requests, req)
 			}
 		} else {
-			if view.CoverRecord == false {
+			if view.Record == 0 {
 				req := CoverDownloadReq(fav.Cover, fav.Upper.Mid, fav.Id)
 				requests = append(requests, req)
 			}

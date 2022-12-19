@@ -44,11 +44,11 @@ func (m *VideoMerge) Add(video *Video) {
 }
 
 func MergeVideo(video *Video, single bool) error {
-	src := fmt.Sprintf("%d_%d_%d", video.UpId, video.Aid, video.Cid)
+	src := fmt.Sprintf("%d_%d_%d", video.Uid, video.Aid, video.Cid)
 	dst := src + "_" + video.Title + "_" + video.Part + "_" + strconv.Itoa(video.Quality)
 
 	fpath := config.Conf.Bilibili.DownloadTmpPath + fs.PathSeparator + src
-	dir := config.Conf.Bilibili.DownloadVideoPath + fs.PathSeparator + strconv.Itoa(video.UpId)
+	dir := config.Conf.Bilibili.DownloadVideoPath + fs.PathSeparator + strconv.Itoa(video.Uid)
 	_, err := os.Stat(dir)
 	if os.IsNotExist(err) {
 		os.Mkdir(dir, 0666)

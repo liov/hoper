@@ -14,36 +14,10 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-	"time"
 	"tools/clawer/bilibili/config"
 	"tools/clawer/bilibili/dao"
 	"tools/clawer/bilibili/rpc"
 )
-
-type Video struct {
-	UpId      int
-	Title     string
-	Aid       int
-	Cid       int
-	Page      int
-	Part      string
-	Quality   int
-	CreatedAt time.Time
-	Record    int
-	CodecId   int
-}
-
-func NewVideo(upId int, title string, aid, cid, page int, part string, created time.Time) *Video {
-	return &Video{
-		UpId:      upId,
-		Title:     title,
-		Aid:       aid,
-		Cid:       cid,
-		Page:      page,
-		Part:      part,
-		CreatedAt: created,
-	}
-}
 
 func (video *Video) DownloadVideoReq(typ string, order int, url string) *crawler.Request {
 	return &crawler.Request{
@@ -65,10 +39,10 @@ func (video *Video) DownloadVideo(typ string, order int, url string) ([]*crawler
 	}
 
 	if video.CodecId == VideoTypeFlv {
-		filename = fmt.Sprintf("%d_%d_%d_%s_%s_%d_%d.flv.downloading", video.UpId, video.Aid, video.Cid, video.Title, video.Part, order, video.Quality)
-		filename = filepath.Join(config.Conf.Bilibili.DownloadVideoPath, strconv.Itoa(video.UpId), filename)
+		filename = fmt.Sprintf("%d_%d_%d_%s_%s_%d_%d.flv.downloading", video.Uid, video.Aid, video.Cid, video.Title, video.Part, order, video.Quality)
+		filename = filepath.Join(config.Conf.Bilibili.DownloadVideoPath, strconv.Itoa(video.Uid), filename)
 	} else {
-		filename = fmt.Sprintf("%d_%d_%d.m4s.%s.downloading", video.UpId, video.Aid, video.Cid, typ)
+		filename = fmt.Sprintf("%d_%d_%d.m4s.%s.downloading", video.Uid, video.Aid, video.Cid, typ)
 		filename = config.Conf.Bilibili.DownloadTmpPath + fs.PathSeparator + filename
 	}
 

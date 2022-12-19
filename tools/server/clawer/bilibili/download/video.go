@@ -2,7 +2,6 @@ package download
 
 import (
 	"context"
-	"encoding/json"
 	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
 
 	"github.com/liov/hoper/server/go/lib/utils/dao/db/postgres"
@@ -125,52 +124,22 @@ func (video *Video) RecordVideo(ctx context.Context) (*rpc.VideoInfo, error) {
 
 	video.Quality = res.Quality
 
-	durl := res.Durl
-	dash := res.Dash
-
 	bilibiliDao := dao.NewDao(ctx, dao.Dao.Hoper.DB)
 	if err == gorm.ErrRecordNotFound || dvideo.Cid == 0 {
-		res.JsonClean()
-		data, err := json.Marshal(res)
-		if err != nil {
-			return nil, err
-		}
 		err = bilibiliDao.CreateVideo(&dao.Video{
-			Aid:  video.Aid,
-			Cid:  video.Cid,
-			Data: data,
+			Aid:           video.Aid,
+			Cid:           video.Cid,
+			Part:          video.Part,
+			Page:          video.Page,
+			AcceptFormat:  res.AcceptFormat,
+			VideoCodecid:  res.VideoCodecid,
+			Duration:      res.Timelength,
+			AcceptQuality: res.AcceptQuality,
 		})
 		if err != nil && !postgres.IsDuplicate(err) {
 			return nil, err
 		}
 	}
 
-	res.Durl = durl
-	res.Dash = dash
-
 	return res, nil
-}
-
-func DownloadRecordVideo(engine *crawler.Engine) {
-	now := time.Now()
-	for {
-		var videos []*Video
-		dao.Dao.Hoper.DB.Raw(`SELECT a.owner->'mid' up_id,b.aid,b.cid,a.title,a.p->'page' page,a.p->'part' part, b.created_at,b.record
-FROM `+dao.TableNameVideo+` b 
-LEFT JOIN (SELECT data->'title' title, data->'owner' owner, jsonb_path_query(data,'$.pages[*]') p, deleted_at FROM `+dao.TableNameView+`)  a ON (a.p->'cid')::int8 = b.cid
-WHERE b.record < 2  AND b.created_at < ? AND b.`+postgres.NotDeleted+`AND a.`+postgres.NotDeleted+` ORDER BY b.created_at DESC LIMIT 100`, now).Find(&videos)
-		if len(videos) == 0 {
-			return
-		}
-		for _, video := range videos {
-			if video.Title == "" {
-				req := ViewRecordUpdateReqAfterRecordVideo(video.Aid)
-				engine.BaseEngine.AddTask(engine.BaseTask(req))
-			} else {
-				req := video.GetVideoReqAfterDownloadVideo()
-				engine.BaseEngine.AddTask(engine.BaseTask(req))
-			}
-		}
-		now = videos[len(videos)-1].CreatedAt
-	}
 }

@@ -3,9 +3,10 @@ package dao
 import "time"
 
 const (
-	TableNameWeibo   = "weibo.weibo"
-	TableNameUser    = "weibo.user"
-	TableNameComment = "weibo.comment"
+	Schema           = "weibo.."
+	TableNameWeibo   = Schema + "weibo"
+	TableNameUser    = Schema + "user"
+	TableNameComment = Schema + "comment"
 )
 
 type User struct {
