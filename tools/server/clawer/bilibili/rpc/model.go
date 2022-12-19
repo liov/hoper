@@ -6,27 +6,6 @@ type DescV2 struct {
 	BizId   int    `json:"biz_id"`
 }
 
-type Rights struct {
-	Bp            int `json:"bp"`
-	Elec          int `json:"elec"`
-	Download      int `json:"download"`
-	Movie         int `json:"movie"`
-	Pay           int `json:"pay"`
-	Hd5           int `json:"hd5"`
-	NoReprint     int `json:"no_reprint"`
-	Autoplay      int `json:"autoplay"`
-	UgcPay        int `json:"ugc_pay"`
-	IsCooperation int `json:"is_cooperation"`
-	UgcPayPreview int `json:"ugc_pay_preview"`
-	NoBackground  int `json:"no_background"`
-	CleanMode     int `json:"clean_mode"`
-	IsSteinGate   int `json:"is_stein_gate"`
-	Is360         int `json:"is_360"`
-	NoShare       int `json:"no_share"`
-	ArcPay        int `json:"arc_pay"`
-	FreeWatch     int `json:"free_watch"`
-}
-
 type Stat struct {
 	Aid        int    `json:"aid" gorm:"primaryKey"`
 	View       int    `json:"view"`
@@ -82,7 +61,6 @@ type ViewInfo struct {
 	DescV2             []*DescV2   `json:"desc_v2" gorm:"-"`
 	State              int         `json:"state"`
 	Duration           int         `json:"duration"`
-	Rights             *Rights     `json:"rights"`
 	Owner              *Owner      `json:"owner" gorm:"-"`
 	OwnerMid           int         `json:"-" gorm:"index"`
 	Stat               *Stat       `json:"stat"`

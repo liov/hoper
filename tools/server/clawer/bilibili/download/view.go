@@ -6,10 +6,10 @@ import (
 	gormpostgres "github.com/liov/hoper/server/go/lib/utils/dao/db/gorm/postgres"
 	"github.com/liov/hoper/server/go/lib/utils/dao/db/postgres"
 	"log"
+	"time"
 
 	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
 
-	"time"
 	"tools/clawer/bilibili/dao"
 	"tools/clawer/bilibili/rpc"
 	"tools/clawer/bilibili/tool"
@@ -38,7 +38,7 @@ func ViewGetRecordVideoReqs(view *rpc.ViewInfo) ([]*crawler.Request, error) {
 		if len(view.Pages) == 1 {
 			page.Part = PartEqTitle
 		}
-		video := NewVideo(view.Owner.Mid, view.Title, view.Aid, page.Cid, page.Page, page.Part, time.Now())
+		video := NewVideo(view.Owner.Mid, view.Title, view.Aid, page.Cid, page.Page, page.Part)
 
 		req := video.RecordVideoReqAfterDownloadVideo()
 		requests = append(requests, req)
@@ -71,15 +71,19 @@ func RecordViewInfo(ctx context.Context, aid int) (*rpc.ViewInfo, error) {
 		return nil, err
 	}
 	if !exists {
-		data, err := json.Marshal(view)
-		if err != nil {
-			return nil, err
-		}
 		err = bilibiliDao.CreateView(&dao.View{
-			Bvid:        view.Bvid,
-			Aid:         view.Aid,
-			Data:        data,
-			CoverRecord: false,
+			Bvid:    view.Bvid,
+			Aid:     view.Aid,
+			Uid:     view.OwnerMid,
+			Title:   view.Title,
+			Desc:    view.Desc,
+			Dynamic: view.Dynamic,
+			Tid:     view.Tid,
+			Pic:     view.Pic,
+			Ctime:   time.Unix(int64(view.Ctime), 0),
+			Tname:   view.Tname,
+			Videos:  view.Videos,
+			Pubdate: time.Unix(int64(view.PubDate), 0),
 		})
 		if err != nil && !postgres.IsDuplicate(err) {
 			return nil, err

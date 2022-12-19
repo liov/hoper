@@ -19,7 +19,8 @@ import (
 func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
 	//delete("F:\\B站\\video\\10139490\\10139490_207568591_395475557_～Alone～_alone_1_120.flv")
-	deduplication()
+	//deduplication()
+	dao.Dao.Hoper.Migrator().CreateTable(&dao.View{})
 }
 
 func fixRecord() {
