@@ -21,18 +21,29 @@ type User struct {
 }
 
 type Dir struct {
-	Platform  int       `json:"platform"`
+	Platform  int       `json:"platform" comment:"1-pro,2-timepill,3-bilibili,4-weibo"`
 	UserId    int       `json:"userId"`
 	KeyId     int       `json:"keyId"`
 	KeyIdStr  string    `json:"keyIdStr"`
 	BaseUrl   string    `json:"baseUrl"`
-	Type      int       `json:"type"`
+	Type      int       `json:"type" comment:"1-图片，2-live图片，3-视频，4-动图"`
 	PubAt     time.Time `json:"pubAt" gorm:"type:timestamptz(0);default:0001-01-01 00:00:00"`
 	CreatedAt time.Time `json:"createdAt"`
 }
 
 func (d *Dir) TableName() string {
 	return "dir"
+}
+
+func (d *Dir) Path() string {
+	if d.KeyId != 0 {
+		d.KeyIdStr = strconv.Itoa(d.KeyId)
+	}
+	date := d.PubAt.Format(timei.TimeFormatDisplay)
+	compactPubAt := stringsi.ReplaceRuneEmpty(date, '-', ' ', ':')
+	userIdStr := strconv.Itoa(d.UserId)
+	filepath := strings.Join([]string{date[:4], date[:7], date[:10], userIdStr + "_" + d.KeyIdStr + "_" + compactPubAt + "_" + d.BaseUrl}, "/")
+	return filepath
 }
 
 type DownloadMeta struct {
@@ -43,13 +54,7 @@ type DownloadMeta struct {
 }
 
 func (d *DownloadMeta) Download(db *gorm.DB) error {
-	if d.KeyId != 0 {
-		d.KeyIdStr = strconv.Itoa(d.KeyId)
-	}
-	date := d.PubAt.Format(timei.TimeFormatDisplay)
-	compactPubAt := stringsi.ReplaceRuneEmpty(date, '-', ' ', ':')
-	userIdStr := strconv.Itoa(d.UserId)
-	filepath := strings.Join([]string{d.DownloadPath, date[:4], date[:7], date[:10], userIdStr + "_" + d.KeyIdStr + "_" + compactPubAt + "_" + d.BaseUrl}, "/")
+	filepath := d.DownloadPath + "/" + d.Path()
 	var err error
 	if fs.NotExist(filepath) {
 		if d.Referer != "" {

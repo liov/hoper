@@ -56,7 +56,7 @@ func DownloadPhotoReqsV2(mblog *rpc.Mblog) []*crawler.Request {
 	var requests []*crawler.Request
 	createdAt, _ := time.Parse(time.RubyDate, mblog.CreatedAt)
 	for _, pic := range mblog.Pics {
-		if pic.Type == "livephotos" {
+		if pic.VideoSrc != "" {
 			requests = append(requests, DownloadPhotoReq(createdAt, mblog.User.Id, mblog.Id, pic.VideoSrc))
 		}
 		var url string

@@ -98,7 +98,7 @@ func DownloadPhoto(created time.Time, uid int, wid, url string) error {
 		baseUrl = stringsi.CountdownCutoff(url, "%2F")
 	} else {
 		baseUrl = stringsi.CountdownCutoff(url, "/")
-		baseUrl = stringsi.Cutoff(url, "?")
+		baseUrl = stringsi.Cutoff(baseUrl, "?")
 	}
 
 	return (&claweri.DownloadMeta{

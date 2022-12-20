@@ -4,11 +4,12 @@ import (
 	"github.com/liov/hoper/server/go/lib/initialize"
 	"github.com/liov/hoper/server/go/lib/utils/fs"
 	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
-	timei "github.com/liov/hoper/server/go/lib/utils/time"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 	"time"
+	claweri "tools/clawer"
 	"tools/clawer/weibo/config"
 	"tools/clawer/weibo/dao"
 	"tools/clawer/weibo/rpc"
@@ -47,13 +48,15 @@ func rename() {
 func rename2() {
 	commondir := "F:\\Pictures\\pron\\weibo\\pic"
 	subdirs, _ := os.ReadDir(commondir)
+	zeroTime := time.Time{}
 	timer := time.NewTicker(time.Second)
 	for _, subdir := range subdirs {
 		compsubdir := commondir + fs.PathSeparator + subdir.Name()
-		m := make(map[string]string)
+		m := make(map[string]time.Time)
 		files, _ := os.ReadDir(compsubdir)
 		for _, f := range files {
 			fname := f.Name()
+			info, _ := f.Info()
 			strs := strings.Split(fname, "_")
 
 			if len(strs) == 3 {
@@ -63,40 +66,258 @@ func rename2() {
 						<-timer.C
 						weibo, err := rpc.GetLongWeibo(strs[1])
 						if err == nil {
-							createdAt, _ := time.Parse(time.RubyDate, weibo.CreatedAt)
-							date = createdAt.Format(timei.DateFormat)
+							date, _ = time.Parse(time.RubyDate, weibo.CreatedAt)
+
 							m[strs[0]+"-"+strs[1]] = date
 							break
 						}
 						if strings.HasPrefix(err.Error(), "invalid character") {
-							info, _ := f.Info()
-							date = info.ModTime().Format(timei.DateFormat)
+							date = info.ModTime()
 							m[strs[0]+"-"+strs[1]] = date
 							break
 						}
 						log.Println(err)
 					}
 				}
-				if date == "" {
-					info, _ := f.Info()
-					date = info.ModTime().Format(timei.DateFormat)
+				if date == zeroTime {
+					date = info.ModTime()
 					m[strs[0]+"-"+strs[1]] = date
 				}
 
+				userId, _ := strconv.Atoi(strs[0])
+				dir := &claweri.Dir{
+					Platform:  4,
+					UserId:    userId,
+					KeyIdStr:  strs[1],
+					BaseUrl:   strs[2],
+					Type:      1,
+					PubAt:     date,
+					CreatedAt: info.ModTime(),
+				}
+				if strings.HasSuffix(strs[2], ".mov") {
+					dir.Type = 2
+				}
 				oldpath := compsubdir + fs.PathSeparator + fname
-				newdir := strings.Join([]string{config.Conf.Weibo.DownloadPath, date[:4], date[:7], date}, "/")
-				os.MkdirAll(newdir, 0666)
-				newpath := newdir + "/" + fname
+				newpath := config.Conf.Weibo.DownloadPath + "/" + dir.Path()
+				os.MkdirAll(fs.GetDir(newpath), 0666)
 				log.Println("rename:", oldpath, newpath)
 				err := os.Rename(oldpath, newpath)
 				if err != nil {
 					log.Println(err)
 				}
+				dao.Dao.Hoper.Create(dir)
 			}
 		}
 		files, _ = os.ReadDir(compsubdir)
 		if len(files) == 0 {
 			os.Remove(compsubdir)
+		}
+	}
+}
+
+func rename3() {
+	zeroTime := time.Time{}
+	commondir := "F:\\Pictures\\pron\\weibo\\debug"
+	subdirs, _ := os.ReadDir(commondir)
+	timer := time.NewTicker(time.Second)
+	for _, subdir := range subdirs {
+		compsubdir := commondir + fs.PathSeparator + subdir.Name()
+		subdir2s, _ := os.ReadDir(compsubdir)
+		for _, subdir2 := range subdir2s {
+			compsubdir2 := compsubdir + fs.PathSeparator + subdir2.Name()
+			subdir3s, _ := os.ReadDir(compsubdir2)
+
+			for _, subdir3 := range subdir3s {
+				compsubdir3 := compsubdir2 + fs.PathSeparator + subdir3.Name()
+
+				m := make(map[string]time.Time)
+				files, _ := os.ReadDir(compsubdir3)
+				if len(files) == 0 {
+					os.Remove(compsubdir3)
+				}
+				for _, f := range files {
+					fname := f.Name()
+					info, _ := f.Info()
+					strs := strings.Split(fname, "_")
+
+					if len(strs) == 3 {
+						date, ok := m[strs[0]+"-"+strs[1]]
+						if !ok {
+							for i := 0; i < 10; i++ {
+								<-timer.C
+								weibo, err := rpc.GetLongWeibo(strs[1])
+								if err == nil {
+									date, _ = time.Parse(time.RubyDate, weibo.CreatedAt)
+									m[strs[0]+"-"+strs[1]] = date
+									break
+								}
+								if strings.HasPrefix(err.Error(), "invalid character") {
+									date = info.ModTime()
+									m[strs[0]+"-"+strs[1]] = date
+									break
+								}
+								log.Println(err)
+							}
+						}
+						if date == zeroTime {
+							date = info.ModTime()
+							m[strs[0]+"-"+strs[1]] = date
+						}
+						userId, _ := strconv.Atoi(strs[0])
+						dir := &claweri.Dir{
+							Platform:  4,
+							UserId:    userId,
+							KeyIdStr:  strs[1],
+							BaseUrl:   strs[2],
+							Type:      1,
+							PubAt:     date,
+							CreatedAt: info.ModTime(),
+						}
+						if strings.HasSuffix(strs[2], ".mov") {
+							dir.Type = 2
+						}
+
+						oldpath := compsubdir3 + fs.PathSeparator + fname
+						newpath := config.Conf.Weibo.DownloadPath + "/" + dir.Path()
+						os.MkdirAll(fs.GetDir(newpath), 0666)
+						log.Println("rename:", oldpath, newpath)
+						err := os.Rename(oldpath, newpath)
+						if err != nil {
+							log.Println(err)
+						}
+						dao.Dao.Hoper.Create(dir)
+					}
+				}
+				files, _ = os.ReadDir(compsubdir3)
+				if len(files) == 0 {
+					os.Remove(compsubdir)
+				}
+			}
+
+		}
+
+	}
+}
+
+func rename4() {
+	commondir := "F:\\Pictures\\pron\\weibo\\2020"
+	subdirs, _ := os.ReadDir(commondir)
+	for _, subdir := range subdirs {
+		compsubdir := commondir + fs.PathSeparator + subdir.Name()
+		subdir2s, _ := os.ReadDir(compsubdir)
+		for _, subdir2 := range subdir2s {
+			compsubdir2 := compsubdir + fs.PathSeparator + subdir2.Name()
+
+			files, _ := os.ReadDir(compsubdir2)
+			for _, f := range files {
+				fname := f.Name()
+				info, _ := f.Info()
+				strs := strings.Split(fname, "_")
+
+				if len(strs) == 4 {
+					userId, _ := strconv.Atoi(strs[0])
+					date, _ := time.Parse("20060102150405", strs[2])
+					dir := &claweri.Dir{
+						Platform:  4,
+						UserId:    userId,
+						KeyIdStr:  strs[1],
+						BaseUrl:   strs[3],
+						Type:      1,
+						PubAt:     date,
+						CreatedAt: info.ModTime(),
+					}
+					if strings.HasSuffix(strs[3], ".mov") {
+						dir.Type = 2
+					}
+					dao.Dao.Hoper.Create(dir)
+				}
+			}
+
+		}
+
+	}
+}
+
+func rename5() {
+	commondir := "F:\\Pictures\\pron\\weibo\\2022\\2022-12\\2022-12-20"
+	files, _ := os.ReadDir(commondir)
+	timer := time.NewTicker(time.Second)
+	zeroTime := time.Time{}
+	m := make(map[string]time.Time)
+	for _, f := range files {
+		fname := f.Name()
+		info, _ := f.Info()
+		strs := strings.Split(fname, "_")
+		var dir claweri.Dir
+		err := dao.Dao.Hoper.Where(`platform = 4 AND user_id = ` + strs[0] + ` AND key_id_str = '` + strs[1] + `' AND base_url = '` + strs[len(strs)-1] + "'").Find(&dir).Error
+		if err != nil {
+			log.Println(err)
+		}
+		if strs[0] == "6537140514" && strs[1] == "4848747278245572" {
+			log.Println("到了")
+		}
+		if dir.Type == 0 || dir.CreatedAt.Sub(dir.PubAt) > time.Hour {
+			date, ok := m[strs[0]+"-"+strs[1]]
+			if !ok {
+				for i := 0; i < 10; i++ {
+					<-timer.C
+					weibo, err := rpc.GetLongWeibo(strs[1])
+					if err == nil {
+						date, _ = time.Parse(time.RubyDate, weibo.CreatedAt)
+						m[strs[0]+"-"+strs[1]] = date
+						if dir.Type == 0 {
+							dir.Platform = 4
+							dir.UserId, _ = strconv.Atoi(strs[0])
+							dir.KeyIdStr = strs[1]
+							dir.CreatedAt = info.ModTime()
+							dir.PubAt = date
+							dir.BaseUrl = strs[len(strs)-1]
+							dir.Type = 1
+							if strings.HasSuffix(dir.BaseUrl, ".mov") {
+								dir.Type = 2
+							}
+							if strings.HasSuffix(dir.BaseUrl, ".mp4") {
+								dir.Type = 3
+							}
+							dao.Dao.Hoper.Create(&dir)
+						} else {
+							dao.Dao.Hoper.Table("dir").Where(`platform = 4 AND user_id = `+strs[0]+` AND key_id_str = '`+strs[1]+`' `).Update("pub_at", date)
+						}
+
+						break
+					} else if strings.HasPrefix(err.Error(), "invalid") {
+						if len(strs) == 4 {
+							dir.Platform = 4
+							dir.UserId, _ = strconv.Atoi(strs[0])
+							dir.KeyIdStr = strs[1]
+							dir.CreatedAt = info.ModTime()
+							dir.PubAt, _ = time.Parse("20060102150405", strs[2])
+							dir.BaseUrl = strs[len(strs)-1]
+							dir.Type = 1
+							if strings.HasSuffix(dir.BaseUrl, ".mov") {
+								dir.Type = 2
+							}
+							if strings.HasSuffix(dir.BaseUrl, ".mp4") {
+								dir.Type = 3
+							}
+							dao.Dao.Hoper.Create(&dir)
+							break
+						}
+					}
+				}
+			}
+			if date == zeroTime {
+				date = dir.CreatedAt
+				m[strs[0]+"-"+strs[1]] = date
+				dao.Dao.Hoper.Table("dir").Where(`platform = 4 AND user_id = `+strs[0]+` AND key_id_str = '`+strs[1]+"'").Update("pub_at", date)
+			}
+			dir.PubAt = date
+
+		}
+		log.Println("rename:", commondir+fs.PathSeparator+fname, "F:\\Pictures\\pron\\weibo\\"+dir.Path())
+		err = os.Rename(commondir+fs.PathSeparator+fname, "F:\\Pictures\\pron\\weibo\\"+dir.Path())
+		if err != nil {
+			log.Println(err)
 		}
 	}
 }

@@ -15,31 +15,55 @@ import (
 
 func main() {
 	//pro.SetDB()
-	maxId()
+	rename()
 }
 
-func fixOne() {
-	fixPic(`fail_pic_2022_01_24_16_27_50`)
-}
+func rename() {
+	dir := "F:\\Pictures\\pron\\91\\pic_5"
+	log.Println(path.Dir(dir))
+	dirs, _ := os.ReadDir(dir)
+	for _, subdir := range dirs {
+		if subdir.IsDir() {
+			allSubDir := dir + fs.PathSeparator + subdir.Name()
+			subDirs, _ := os.ReadDir(allSubDir)
+			for _, subdir2 := range subDirs {
+				if subdir2.IsDir() {
+					allSubDir2 := allSubDir + fs.PathSeparator + subdir2.Name()
+					subDirs2, _ := os.ReadDir(allSubDir2)
+					for _, subdir3 := range subDirs2 {
+						if subdir3.IsDir() {
+							allSubDir3 := allSubDir2 + fs.PathSeparator + subdir3.Name()
 
-func fix() {
-	fileInfos, err := os.ReadDir(pro.Conf.Pro.CommonDir)
-	if err != nil {
-		log.Println(err)
-	}
-	for i := range fileInfos {
-		if !fileInfos[i].IsDir() && strings.HasPrefix(fileInfos[i].Name(), "fail_post") {
-			pro.FixWeb(fileInfos[i].Name(), pro.GetFetchReq)
+							files, _ := os.ReadDir(allSubDir3)
+							var has bool
+							for _, f := range files {
+								if strings.HasSuffix(f.Name(), ".txt") {
+									date := strings.Replace(f.Name()[:len(f.Name())-4], " ", "-", 1)
+									log.Println(allSubDir3+fs.PathSeparator+"index.html", allSubDir3+fs.PathSeparator+date+".html")
+									os.Rename(allSubDir3+fs.PathSeparator+"index.html", allSubDir3+fs.PathSeparator+date+".html")
+									os.Rename(allSubDir3+fs.PathSeparator+f.Name(), allSubDir3+fs.PathSeparator+date+".txt")
+									has = true
+									break
+								}
+							}
+							if !has {
+								opath := "E" + allSubDir3[1:]
+								files, _ := os.ReadDir(opath)
+								for _, f := range files {
+									if strings.Contains(f.Name(), " ") {
+										date := strings.Replace(f.Name(), " ", "-", 1)
+										log.Println(allSubDir3+fs.PathSeparator+"index.html", allSubDir3+fs.PathSeparator+date+".html")
+										os.Rename(allSubDir3+fs.PathSeparator+"index.html", allSubDir3+fs.PathSeparator+date+".html")
+										has = true
+										break
+									}
+								}
+							}
+						}
 
-		}
-	}
-	fileInfos, err = os.ReadDir(pro.Conf.Pro.CommonDir)
-	if err != nil {
-		log.Println(err)
-	}
-	for i := range fileInfos {
-		if !fileInfos[i].IsDir() && strings.HasPrefix(fileInfos[i].Name(), "fail_pic") {
-			fixPic(fileInfos[i].Name())
+					}
+				}
+			}
 		}
 	}
 }

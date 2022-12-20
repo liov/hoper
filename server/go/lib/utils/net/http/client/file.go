@@ -29,7 +29,7 @@ func GetFileWithReq(url string, setReq Option) (io.ReadCloser, error) {
 	}
 
 	var resp *http.Response
-	for i := 0; i < 20; i++ {
+	for i := 0; i < 3; i++ {
 		if i > 0 {
 			time.Sleep(time.Second)
 		}
