@@ -14,10 +14,10 @@ func TestFormatLen(t *testing.T) {
 
 func TestReplaceRuneEmpty(t *testing.T) {
 	s := "p我o爱s中t"
-	log.Println(ReplaceRuneEmpty(s, []rune{'o'}))
-	log.Println(ReplaceRuneEmpty(s, []rune{'o', 's'}))
-	log.Println(ReplaceRuneEmpty(s, []rune{'o', 't'}))
-	log.Println(ReplaceRuneEmpty(s, []rune{'中', 't'}))
+	log.Println(ReplaceRuneEmpty(s, 'o'))
+	log.Println(ReplaceRuneEmpty(s, 'o', 's'))
+	log.Println(ReplaceRuneEmpty(s, 'o', 't'))
+	log.Println(ReplaceRuneEmpty(s, '中', 't'))
 }
 
 func TestCountdownCutoff(t *testing.T) {
@@ -25,4 +25,5 @@ func TestCountdownCutoff(t *testing.T) {
 	log.Println(CountdownCutoff("https://wx1.sinaimg.cn/orj360/6ebedee6ly1h566bbzyc6j20n00cuabd.jpg", "/"))
 	log.Println(Cutoff("https://wx1.sinaimg.cn/orj360/6ebedee6ly1h566bbzyc6j20n00cuabd.jpg", "wx1"))
 	log.Println(CountdownCutoff(CutoffContain("https://f.video.weibocdn.com/o0/F9Nmm1ZJlx080UxqxlJK010412004rJS0E010.mp4?label=mp4_hd&template=540x960.24.0&ori=0&ps=1CwnkDw1GXwCQx&Expires=1670569613&ssig=fAQcBh4HGt&KID=unistore,video", "mp4"), "/"))
+	log.Println(Cutoff("6108162447_4848748796058856_20221220134741_006Fne59ly1h9a87sb8d7j52802yo4qr2.jpg", "?"))
 }
