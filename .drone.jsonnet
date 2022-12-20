@@ -135,9 +135,10 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server/cl
         },
       ],
       environment: {
-        GOPROXY: 'https://goproxy.io,https://goproxy.cn,direct',
+       // GOPROXY: 'https://goproxy.io,https://goproxy.cn,direct',
       },
       commands: [
+      'export GOPROXY=https://goproxy.io,https://goproxy.cn,direct',
       // git clone
       // "git config --global http.proxy 'socks5://proxy.tools:1080'",
       //"git config --global https.proxy 'socks5://proxy.tools:1080'",
