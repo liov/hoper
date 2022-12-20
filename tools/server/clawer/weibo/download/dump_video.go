@@ -66,7 +66,7 @@ func DownloadVideosReq(cards []*rpc.CardGroup) []*crawler.Request {
 
 func DownloadVideoReq(mblog *rpc.Mblog) *crawler.Request {
 	createdAt, _ := time.Parse(time.RubyDate, mblog.CreatedAt)
-	date := createdAt.Format(timei.DateFormat)
+	created := createdAt.Format(timei.TimeFormatDisplay)
 
 	if mblog.PageInfo != nil {
 		var url string
@@ -78,26 +78,26 @@ func DownloadVideoReq(mblog *rpc.Mblog) *crawler.Request {
 			url = mblog.PageInfo.Urls.Mp4LdMp4
 		}
 		if url != "" {
-			return DownloadVideoWarpReq(date, mblog.User.Id, mblog.Id, url)
+			return DownloadVideoWarpReq(created, mblog.User.Id, mblog.Id, url)
 		}
 	}
 	return nil
 }
 
-func DownloadVideoWarpReq(date string, uid int, wid, url string) *crawler.Request {
+func DownloadVideoWarpReq(created string, uid int, wid, url string) *crawler.Request {
 	return &crawler.Request{
 		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: url}, Kind: KindDownload},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
-			return nil, DownloadVideo(date, uid, wid, url)
+			return nil, DownloadVideo(created, uid, wid, url)
 		},
 	}
 }
 
-func DownloadVideo(date string, uid int, wid, url string) error {
+func DownloadVideo(created string, uid int, wid, url string) error {
 	baseUrl := stringsi.CountdownCutoff(stringsi.CutoffContain(url, "mp4"), "/")
 	return (&claweri.DownloadMeta{
 		Dir: claweri.Dir{
-			PubAt:    date,
+			PubAt:    created,
 			Platform: 3,
 			UserId:   uid,
 			KeyIdStr: wid,
