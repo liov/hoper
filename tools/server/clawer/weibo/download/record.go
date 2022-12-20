@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"github.com/liov/hoper/server/go/lib/utils/log"
 	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
-	timei "github.com/liov/hoper/server/go/lib/utils/time"
 	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
 	"strconv"
 	"strings"
@@ -154,7 +153,7 @@ func GetWeiboReq(mblog *rpc.Mblog, record bool) []*crawler.Request {
 func GetRetweetedStatus(mblog *rpc.RetweetedStatus, record bool) []*crawler.Request {
 	var requests []*crawler.Request
 	createdAt, _ := time.Parse(time.RubyDate, mblog.CreatedAt)
-	created := createdAt.Format(timei.TimeFormatDisplay)
+
 	if mblog.PageInfo != nil && mblog.PageInfo.Type == "video" {
 		var url string
 		if mblog.PageInfo.Urls.Mp4720PMp4 != "" {
@@ -165,7 +164,7 @@ func GetRetweetedStatus(mblog *rpc.RetweetedStatus, record bool) []*crawler.Requ
 			url = mblog.PageInfo.Urls.Mp4LdMp4
 		}
 		if url != "" {
-			requests = append(requests, DownloadVideoWarpReq(created, mblog.User.Id, mblog.Id, url))
+			requests = append(requests, DownloadVideoWarpReq(createdAt, mblog.User.Id, mblog.Id, url))
 		}
 	}
 
@@ -182,14 +181,14 @@ func GetRetweetedStatus(mblog *rpc.RetweetedStatus, record bool) []*crawler.Requ
 
 	for _, pic := range mblog.Pics {
 		if pic.Type == "livephotos" {
-			requests = append(requests, DownloadPhotoReq(created, mblog.User.Id, mblog.Id, pic.VideoSrc))
+			requests = append(requests, DownloadPhotoReq(createdAt, mblog.User.Id, mblog.Id, pic.VideoSrc))
 		}
 		var url string
 		if pic.Large.Url != "" {
 			url = pic.Large.Url
 		}
 		if url != "" {
-			requests = append(requests, DownloadPhotoReq(created, mblog.User.Id, mblog.Id, url))
+			requests = append(requests, DownloadPhotoReq(createdAt, mblog.User.Id, mblog.Id, url))
 		}
 	}
 	return requests
