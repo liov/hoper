@@ -6,6 +6,7 @@ import (
 	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
 	"strconv"
 	"strings"
+	"time"
 	"tools/clawer/weibo/config"
 	"tools/clawer/weibo/rpc"
 )
@@ -27,7 +28,7 @@ func GetUserFollowReq(uid, page int) *crawler.Request {
 			follow, err := rpc.GetFollows(config.Conf.Weibo.UserId, page)
 			if err != nil {
 				if strings.HasPrefix(err.Error(), "status:403") {
-
+					time.Sleep(time.Minute * 5)
 				}
 				return nil, err
 			}

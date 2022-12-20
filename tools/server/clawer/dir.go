@@ -10,13 +10,22 @@ import (
 	"time"
 )
 
+type User struct {
+	Platform int    `json:"platform"`
+	UserId   int    `json:"userId"`
+	UserName string `json:"userName"`
+	PicNums  int    `json:"picNums"`
+	Sort     int    `json:"sort"`
+}
+
 type Dir struct {
-	Type      int       `json:"type"`
-	Date      string    `json:"date" gorm:"type:date"`
+	Platform  int       `json:"platform"`
 	UserId    int       `json:"userId"`
 	KeyId     int       `json:"keyId"`
 	KeyIdStr  string    `json:"keyIdStr"`
 	BaseUrl   string    `json:"baseUrl"`
+	Type      int       `json:"type"`
+	PubAt     string    `json:"pubAt" gorm:"type:timestamptz(0);default:0001-01-01 00:00:00"`
 	CreatedAt time.Time `json:"createdAt"`
 }
 
@@ -35,12 +44,17 @@ func (d *DownloadMeta) Download(db *gorm.DB) error {
 	if d.KeyId != 0 {
 		d.KeyIdStr = strconv.Itoa(d.KeyId)
 	}
-	filepath := strings.Join([]string{d.DownloadPath, d.Date[:4], d.Date[:7], d.Date, strconv.Itoa(d.UserId) + "_" + d.KeyIdStr + "_" + d.BaseUrl}, "/")
-
+	userIdStr := strconv.Itoa(d.UserId)
+	filepath := strings.Join([]string{d.DownloadPath, userIdStr, d.PubAt[:7], userIdStr + "_" + d.KeyIdStr + "_" + d.PubAt[:10] + "-" + d.PubAt[11:] + "_" + d.BaseUrl}, "/")
+	var err error
 	if fs.NotExist(filepath) {
-		err := client.DownloadFileWithRefer(filepath, d.Url, d.Referer)
+		if d.Referer != "" {
+			err = client.DownloadFileWithRefer(filepath, d.Url, d.Referer)
+		} else {
+			err = client.DownloadFile(filepath, d.Url)
+		}
 		if err != nil {
-			log.Info("下载图片失败：", err)
+			log.Info("下载文件失败：", err)
 			return err
 		}
 		err = db.Create(&d.Dir).Error

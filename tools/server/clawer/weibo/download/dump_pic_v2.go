@@ -56,17 +56,17 @@ func DownloadPhotosReqsV2(uid int, cards []*rpc.CardGroup) []*crawler.Request {
 func DownloadPhotoReqsV2(mblog *rpc.Mblog) []*crawler.Request {
 	var requests []*crawler.Request
 	createdAt, _ := time.Parse(time.RubyDate, mblog.CreatedAt)
-	date := createdAt.Format(timei.DateFormat)
+	created := createdAt.Format(timei.TimeFormatDisplay)
 	for _, pic := range mblog.Pics {
 		if pic.Type == "livephotos" {
-			requests = append(requests, DownloadPhotoReq(date, mblog.User.Id, mblog.Id, pic.VideoSrc))
+			requests = append(requests, DownloadPhotoReq(created, mblog.User.Id, mblog.Id, pic.VideoSrc))
 		}
 		var url string
 		if pic.Large.Url != "" {
 			url = pic.Large.Url
 		}
 		if url != "" {
-			requests = append(requests, DownloadPhotoReq(date, mblog.User.Id, mblog.Id, url))
+			requests = append(requests, DownloadPhotoReq(created, mblog.User.Id, mblog.Id, url))
 		}
 	}
 
