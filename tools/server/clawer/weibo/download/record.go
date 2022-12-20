@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/liov/hoper/server/go/lib/utils/log"
 	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
+	timei "github.com/liov/hoper/server/go/lib/utils/time"
 	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
 	"strconv"
 	"strings"
@@ -92,22 +93,11 @@ func RecordUserWeiboReq(uid, page int, record bool) *crawler.Request {
 
 func GetWeiboReq(mblog *rpc.Mblog, record bool) []*crawler.Request {
 	var requests []*crawler.Request
-	id, _ := strconv.Atoi(mblog.Id)
+
 	createdAt, _ := time.Parse(time.RubyDate, mblog.CreatedAt)
-	var video string
+
 	if mblog.PageInfo != nil && mblog.PageInfo.Type == "video" {
 		requests = append(requests, DownloadVideoReq(mblog))
-		var url string
-		if mblog.PageInfo.Urls.Mp4720PMp4 != "" {
-			url = mblog.PageInfo.Urls.Mp4720PMp4
-		} else if mblog.PageInfo.Urls.Mp4HdMp4 != "" {
-			url = mblog.PageInfo.Urls.Mp4HdMp4
-		} else {
-			url = mblog.PageInfo.Urls.Mp4LdMp4
-		}
-		if url != "" {
-			video = stringsi.CountdownCutoff(stringsi.CutoffContain(url, "mp4"), "/")
-		}
 	}
 
 	exists, _ := dao.UserExists(mblog.User.Id)
@@ -122,9 +112,24 @@ func GetWeiboReq(mblog *rpc.Mblog, record bool) []*crawler.Request {
 	}
 
 	if record {
+		id, _ := strconv.Atoi(mblog.Id)
 		var retweetedId int
 		if mblog.RetweetedStatus != nil {
 			retweetedId, _ = strconv.Atoi(mblog.RetweetedStatus.Id)
+		}
+		var video string
+		if mblog.PageInfo != nil && mblog.PageInfo.Type == "video" {
+			var url string
+			if mblog.PageInfo.Urls.Mp4720PMp4 != "" {
+				url = mblog.PageInfo.Urls.Mp4720PMp4
+			} else if mblog.PageInfo.Urls.Mp4HdMp4 != "" {
+				url = mblog.PageInfo.Urls.Mp4HdMp4
+			} else {
+				url = mblog.PageInfo.Urls.Mp4LdMp4
+			}
+			if url != "" {
+				video = stringsi.CountdownCutoff(stringsi.CutoffContain(url, "mp4"), "/")
+			}
 		}
 		dao.Dao.Hoper.Create(&dao.Weibo{
 			Id:          id,
@@ -143,5 +148,49 @@ func GetWeiboReq(mblog *rpc.Mblog, record bool) []*crawler.Request {
 	}
 
 	requests = append(requests, DownloadPhotoReqsV2(mblog)...)
+	return requests
+}
+
+func GetRetweetedStatus(mblog *rpc.RetweetedStatus, record bool) []*crawler.Request {
+	var requests []*crawler.Request
+	createdAt, _ := time.Parse(time.RubyDate, mblog.CreatedAt)
+	created := createdAt.Format(timei.TimeFormatDisplay)
+	if mblog.PageInfo != nil && mblog.PageInfo.Type == "video" {
+		var url string
+		if mblog.PageInfo.Urls.Mp4720PMp4 != "" {
+			url = mblog.PageInfo.Urls.Mp4720PMp4
+		} else if mblog.PageInfo.Urls.Mp4HdMp4 != "" {
+			url = mblog.PageInfo.Urls.Mp4HdMp4
+		} else {
+			url = mblog.PageInfo.Urls.Mp4LdMp4
+		}
+		if url != "" {
+			requests = append(requests, DownloadVideoWarpReq(created, mblog.User.Id, mblog.Id, url))
+		}
+	}
+
+	exists, _ := dao.UserExists(mblog.User.Id)
+	if !exists {
+		dao.Dao.Hoper.Create(&dao.User{
+			Id:          mblog.User.Id,
+			ScreenName:  mblog.User.ScreenName,
+			Gender:      mblog.User.Gender,
+			Description: mblog.User.Description,
+			AvatarHd:    mblog.User.AvatarHd,
+		})
+	}
+
+	for _, pic := range mblog.Pics {
+		if pic.Type == "livephotos" {
+			requests = append(requests, DownloadPhotoReq(created, mblog.User.Id, mblog.Id, pic.VideoSrc))
+		}
+		var url string
+		if pic.Large.Url != "" {
+			url = pic.Large.Url
+		}
+		if url != "" {
+			requests = append(requests, DownloadPhotoReq(created, mblog.User.Id, mblog.Id, url))
+		}
+	}
 	return requests
 }

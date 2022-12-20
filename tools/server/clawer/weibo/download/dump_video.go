@@ -32,7 +32,7 @@ func DownloadUserVideoReq(uid, page int) *crawler.Request {
 			piccards, err := rpc.GetVideos(uid, page)
 			if err != nil {
 				if strings.HasPrefix(err.Error(), "status:403") {
-
+					time.Sleep(time.Minute * 5)
 				}
 				return nil, err
 			}

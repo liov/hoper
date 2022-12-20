@@ -63,10 +63,10 @@ func DownloadPhotosReqs(uid int, cards []*rpc.PicCardGroup) []*crawler.Request {
 
 func DownloadPhotoReqs(uid int, card *rpc.PicCardGroup) []*crawler.Request {
 	var requests []*crawler.Request
-	date := time.Now().Format(timei.DateFormat)
+	created := time.Now().Format(timei.TimeFormatDisplay)
 	for _, pic := range card.Pics {
 		if pic.Type == "livephoto" {
-			requests = append(requests, DownloadPhotoReq(date, uid, pic.Mblog.Id, pic.Video))
+			requests = append(requests, DownloadPhotoReq(created, uid, pic.Mblog.Id, pic.Video))
 		}
 		var url string
 		if pic.PicBig != "" {
@@ -75,25 +75,27 @@ func DownloadPhotoReqs(uid int, card *rpc.PicCardGroup) []*crawler.Request {
 			url = pic.PicBig
 		}
 
-		requests = append(requests, DownloadPhotoReq(date, uid, pic.Mblog.Id, url))
+		requests = append(requests, DownloadPhotoReq(created, uid, pic.Mblog.Id, url))
 	}
 
 	return requests
 }
 
-func DownloadPhotoReq(date string, uid int, wid, url string) *crawler.Request {
+func DownloadPhotoReq(created string, uid int, wid, url string) *crawler.Request {
 	return &crawler.Request{
 		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: url}, Kind: KindDownload},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 
-			return nil, DownloadPhoto(date, uid, wid, url)
+			return nil, DownloadPhoto(created, uid, wid, url)
 		},
 	}
 }
 
-func DownloadPhoto(date string, uid int, wid, url string) error {
+func DownloadPhoto(created string, uid int, wid, url string) error {
 	var baseUrl string
+	typ := 1
 	if strings.HasSuffix(url, "mov") {
+		typ = 2
 		baseUrl = stringsi.CountdownCutoff(url, "%2F")
 	} else {
 		baseUrl = stringsi.CountdownCutoff(url, "/")
@@ -101,8 +103,9 @@ func DownloadPhoto(date string, uid int, wid, url string) error {
 
 	return (&claweri.DownloadMeta{
 		Dir: claweri.Dir{
-			Date:     date,
-			Type:     4,
+			Platform: 4,
+			PubAt:    created,
+			Type:     typ,
 			UserId:   uid,
 			KeyIdStr: wid,
 			BaseUrl:  baseUrl,

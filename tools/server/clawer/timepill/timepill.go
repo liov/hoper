@@ -5,7 +5,6 @@ import (
 	postgres "github.com/liov/hoper/server/go/lib/utils/dao/db/gorm/postgres"
 	"github.com/liov/hoper/server/go/lib/utils/fs"
 	"github.com/liov/hoper/server/go/lib/utils/log"
-	"github.com/liov/hoper/server/go/lib/utils/net/http/client"
 	surl "net/url"
 	"os"
 	"path"
@@ -142,20 +141,20 @@ func DownloadPic(userId, diaryId int, url, created string) error {
 		date = created[0:10]
 	}
 	baseUrl := path.Base(suffixpath)
-	diaryIdStr := strconv.Itoa(diaryId)
-	filepath := strings.Join([]string{Conf.TimePill.PhotoPath, date[:4], date[:7], strconv.Itoa(userId), diaryIdStr, baseUrl}, "/")
-	err := client.DownloadImage(filepath, url)
-	if err != nil {
-		return err
-	}
-	return Dao.Hoper.Create(&claweri.Dir{
-		Type:     2,
-		Date:     date,
-		UserId:   userId,
-		KeyId:    diaryId,
-		KeyIdStr: diaryIdStr,
-		BaseUrl:  baseUrl,
-	}).Error
+
+	return (&claweri.DownloadMeta{
+		Dir: claweri.Dir{
+			Platform: 2,
+			UserId:   userId,
+			KeyId:    diaryId,
+			KeyIdStr: strconv.Itoa(diaryId),
+			BaseUrl:  baseUrl,
+			PubAt:    date,
+			Type:     1,
+		},
+		DownloadPath: Conf.TimePill.PhotoPath,
+		Url:          url,
+	}).Download(Dao.Hoper.DB)
 
 }
 
@@ -178,31 +177,27 @@ func DownloadCover(date, typ string, userId, notebookId int, url string) error {
 	}
 	URL, _ := surl.Parse(url)
 	v := URL.Query().Get("v")
-	filepath := Conf.TimePill.PhotoPath
 	originFileName := path.Base(URL.Path)
 	originFileName = strings.TrimSuffix(originFileName, path.Ext(originFileName)) + "-v" + v + path.Ext(originFileName)
-	filepath += strings.Join([]string{filepath, typ, date[:4], date[:7], strconv.Itoa(userId)}, "/")
 	var keyIdStr string
 	dirtyp := 21
 	if typ == model.BookCoverType.String() {
-		keyIdStr := strconv.Itoa(notebookId)
-		filepath += "/" + keyIdStr
+		keyIdStr = strconv.Itoa(notebookId)
 		dirtyp = 22
 	}
-	filepath += "/" + originFileName
-
-	err := client.DownloadImage(filepath, url)
-	if err != nil {
-		return err
-	}
-	return Dao.Hoper.Create(&claweri.Dir{
-		Type:     dirtyp,
-		Date:     date,
-		UserId:   userId,
-		KeyId:    notebookId,
-		KeyIdStr: keyIdStr,
-		BaseUrl:  originFileName,
-	}).Error
+	return (&claweri.DownloadMeta{
+		Dir: claweri.Dir{
+			Platform: dirtyp,
+			UserId:   userId,
+			KeyId:    notebookId,
+			KeyIdStr: keyIdStr,
+			BaseUrl:  originFileName,
+			PubAt:    date,
+			Type:     1,
+		},
+		DownloadPath: Conf.TimePill.PhotoPath + "/" + typ,
+		Url:          url,
+	}).Download(Dao.Hoper.DB)
 }
 
 func DiaryExists(diaryId int) bool {
