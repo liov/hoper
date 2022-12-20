@@ -192,7 +192,7 @@ func ParseHtml(doc *goquery.Document) (authId int, auth string, title string, te
 }
 
 func FixPath(path string) string {
-	path = stringsi.ReplaceRuneEmpty(path, []rune{'\\', '/', ':', ' '})
+	path = stringsi.ReplaceRuneEmpty(path, '\\', '/', ':', ' ')
 	if strings.HasSuffix(path, ".") {
 		path += "$"
 	}
