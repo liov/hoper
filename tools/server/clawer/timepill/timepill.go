@@ -136,10 +136,7 @@ func DownloadPic(userId, diaryId int, url, created string) error {
 		substr := strings.Split(suffixpath, ".")
 		suffixpath = substr[0] + ".jpg"
 	}
-	date := suffixpath[1:11]
-	if strings.Contains(date, "/") {
-		date = created[0:10]
-	}
+
 	baseUrl := path.Base(suffixpath)
 
 	return (&claweri.DownloadMeta{
@@ -149,7 +146,7 @@ func DownloadPic(userId, diaryId int, url, created string) error {
 			KeyId:    diaryId,
 			KeyIdStr: strconv.Itoa(diaryId),
 			BaseUrl:  baseUrl,
-			PubAt:    date,
+			PubAt:    created,
 			Type:     1,
 		},
 		DownloadPath: Conf.TimePill.PhotoPath,
