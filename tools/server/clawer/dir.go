@@ -45,7 +45,7 @@ func (d *DownloadMeta) Download(db *gorm.DB) error {
 		d.KeyIdStr = strconv.Itoa(d.KeyId)
 	}
 	userIdStr := strconv.Itoa(d.UserId)
-	filepath := strings.Join([]string{d.DownloadPath, userIdStr, d.PubAt[:7], userIdStr + "_" + d.KeyIdStr + "_" + d.PubAt[:10] + "-" + d.PubAt[11:] + "_" + d.BaseUrl}, "/")
+	filepath := strings.Join([]string{d.DownloadPath, userIdStr, d.PubAt[:4], d.PubAt[:7], d.PubAt[:10], userIdStr + "_" + d.KeyIdStr + "_" + d.PubAt[:10] + "-" + d.PubAt[11:] + "_" + d.BaseUrl}, "/")
 	var err error
 	if fs.NotExist(filepath) {
 		if d.Referer != "" {
