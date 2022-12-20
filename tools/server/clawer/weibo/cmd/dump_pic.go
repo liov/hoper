@@ -13,11 +13,8 @@ import (
 
 func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
-	err := os.MkdirAll(config.Conf.Weibo.DownloadVideoPath, 0777)
-	if err != nil {
-		panic(err)
-	}
-	err = os.MkdirAll(config.Conf.Weibo.DownloadTmpPath, 0777)
+
+	err := os.MkdirAll(config.Conf.Weibo.DownloadTmpPath, 0777)
 	if err != nil {
 		panic(err)
 	}
