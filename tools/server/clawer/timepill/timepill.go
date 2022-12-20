@@ -49,6 +49,8 @@ func RecordNoteBook(notebookId int) {
 		if notebook != nil && notebook.Id > 0 {
 			Dao.Hoper.Create(notebook)
 		}
+		created, _ := time.Parse(timei.TimeFormatDisplay, notebook.Created)
+		DownloadCover(created, model.BookCoverType.String(), notebook.UserId, notebook.Id, notebook.CoverUrl)
 	}
 
 }
@@ -230,11 +232,11 @@ func RecordUserDiaries(user *model.User) {
 		log.Error(err)
 		return
 	}
-	for _, nodebook := range notebooks {
-		Dao.Hoper.Create(nodebook)
-		if nodebook.CoverUrl != "" {
-			created, _ := time.Parse(timei.TimeFormatDisplay, nodebook.Created)
-			err = DownloadCover(created, model.BookCoverType.String(), user.UserId, nodebook.Id, nodebook.CoverUrl)
+	for _, notebook := range notebooks {
+		Dao.Hoper.Create(notebook)
+		if notebook.CoverUrl != "" {
+			created, _ := time.Parse(timei.TimeFormatDisplay, notebook.Created)
+			err = DownloadCover(created, model.BookCoverType.String(), user.UserId, notebook.Id, notebook.CoverUrl)
 			//err = tnsq.PublishCover(Dao.NsqP.Producer, model.BookCoverType, nodebook.CoverUrl)
 			if err != nil {
 				log.Error(err)
@@ -242,7 +244,7 @@ func RecordUserDiaries(user *model.User) {
 		}
 		var page = 1
 		for {
-			diaries, err := ApiService.GetNotebookDiaries(nodebook.Id, page, 20)
+			diaries, err := ApiService.GetNotebookDiaries(notebook.Id, page, 20)
 			if err != nil {
 				log.Error(err)
 				break
