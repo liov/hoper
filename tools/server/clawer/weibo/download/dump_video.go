@@ -97,8 +97,8 @@ func DownloadVideo(date string, uid int, wid, url string) error {
 	baseUrl := stringsi.CountdownCutoff(stringsi.CutoffContain(url, "mp4"), "/")
 	return (&claweri.DownloadMeta{
 		Dir: claweri.Dir{
-			Date:     date,
-			Type:     4,
+			PubAt:    date,
+			Platform: 3,
 			UserId:   uid,
 			KeyIdStr: wid,
 			BaseUrl:  baseUrl,
