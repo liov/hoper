@@ -155,7 +155,7 @@ func UpperCase(c byte) byte {
 	return c
 }
 
-func ReplaceRuneEmpty(s string, old []rune) string {
+func ReplaceRuneEmpty(s string, old ...rune) string {
 	if len(old) == 0 {
 		return s // avoid allocation
 	}

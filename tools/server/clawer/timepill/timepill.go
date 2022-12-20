@@ -5,6 +5,7 @@ import (
 	postgres "github.com/liov/hoper/server/go/lib/utils/dao/db/gorm/postgres"
 	"github.com/liov/hoper/server/go/lib/utils/fs"
 	"github.com/liov/hoper/server/go/lib/utils/log"
+	timei "github.com/liov/hoper/server/go/lib/utils/time"
 	surl "net/url"
 	"os"
 	"path"
@@ -70,7 +71,8 @@ func RecordDiary(diary *model.Diary) {
 	}
 
 	if diary.PhotoUrl != "" {
-		err = DownloadPic(diary.UserId, diary.Id, diary.PhotoUrl, diary.Created)
+		created, _ := time.Parse(timei.TimeFormatDisplay, diary.Created)
+		err = DownloadPic(diary.UserId, diary.Id, diary.PhotoUrl, created)
 		//err = tnsq.PublishPic(Dao.NsqP.Producer, diary.UserId, diary.PhotoUrl, diary.Created)
 		if err != nil {
 			log.Error(err)
@@ -118,7 +120,7 @@ func TodayRecord() {
 	}
 }
 
-func DownloadPic(userId, diaryId int, url, created string) error {
+func DownloadPic(userId, diaryId int, url string, created time.Time) error {
 	if url == "" {
 		return errors.New("url is empty")
 	}
@@ -168,7 +170,7 @@ func CopyDatePic(filepath, date, userId, filename string) error {
 	return fs.CopyFile(filepath, dir+year+"/"+date+"/"+userId+"_"+filename)
 }
 
-func DownloadCover(date, typ string, userId, notebookId int, url string) error {
+func DownloadCover(created time.Time, typ string, userId, notebookId int, url string) error {
 	if url == "" || strings.HasSuffix(url, "default.jpg") {
 		return errors.New("url is empty")
 	}
@@ -189,7 +191,7 @@ func DownloadCover(date, typ string, userId, notebookId int, url string) error {
 			KeyId:    notebookId,
 			KeyIdStr: keyIdStr,
 			BaseUrl:  originFileName,
-			PubAt:    date,
+			PubAt:    created,
 			Type:     1,
 		},
 		DownloadPath: Conf.TimePill.PhotoPath + "/" + typ,
@@ -231,7 +233,8 @@ func RecordUserDiaries(user *model.User) {
 	for _, nodebook := range notebooks {
 		Dao.Hoper.Create(nodebook)
 		if nodebook.CoverUrl != "" {
-			err = DownloadCover(nodebook.Created, model.BookCoverType.String(), user.UserId, nodebook.Id, nodebook.CoverUrl)
+			created, _ := time.Parse(timei.TimeFormatDisplay, nodebook.Created)
+			err = DownloadCover(created, model.BookCoverType.String(), user.UserId, nodebook.Id, nodebook.CoverUrl)
 			//err = tnsq.PublishCover(Dao.NsqP.Producer, model.BookCoverType, nodebook.CoverUrl)
 			if err != nil {
 				log.Error(err)
@@ -309,7 +312,8 @@ func RecordUserById(userId int) *model.User {
 			}
 		}
 		if user.CoverUrl != "" {
-			err = DownloadCover(user.Created, model.UserCoverType.String(), user.UserId, 0, user.CoverUrl)
+			created, _ := time.Parse(timei.TimeFormatDisplay, user.Created)
+			err = DownloadCover(created, model.UserCoverType.String(), user.UserId, 0, user.CoverUrl)
 			//err = tnsq.PublishCover(Dao.NsqP.Producer, model.UserCoverType, user.CoverUrl)
 			if err != nil {
 				log.Error(err)
