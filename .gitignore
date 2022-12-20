@@ -10,7 +10,6 @@ out
 gen
 target
 *.exe
-*.sum
 /python/pic/**
 wasm_exec.js
 *.lock
