@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/liov/hoper/server/go/lib/utils/log"
 	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
-	timei "github.com/liov/hoper/server/go/lib/utils/time"
 	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
 	"strconv"
 	"strings"
@@ -66,7 +65,6 @@ func DownloadVideosReq(cards []*rpc.CardGroup) []*crawler.Request {
 
 func DownloadVideoReq(mblog *rpc.Mblog) *crawler.Request {
 	createdAt, _ := time.Parse(time.RubyDate, mblog.CreatedAt)
-	created := createdAt.Format(timei.TimeFormatDisplay)
 
 	if mblog.PageInfo != nil {
 		var url string
@@ -78,13 +76,13 @@ func DownloadVideoReq(mblog *rpc.Mblog) *crawler.Request {
 			url = mblog.PageInfo.Urls.Mp4LdMp4
 		}
 		if url != "" {
-			return DownloadVideoWarpReq(created, mblog.User.Id, mblog.Id, url)
+			return DownloadVideoWarpReq(createdAt, mblog.User.Id, mblog.Id, url)
 		}
 	}
 	return nil
 }
 
-func DownloadVideoWarpReq(created string, uid int, wid, url string) *crawler.Request {
+func DownloadVideoWarpReq(created time.Time, uid int, wid, url string) *crawler.Request {
 	return &crawler.Request{
 		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: url}, Kind: KindDownload},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
@@ -93,7 +91,7 @@ func DownloadVideoWarpReq(created string, uid int, wid, url string) *crawler.Req
 	}
 }
 
-func DownloadVideo(created string, uid int, wid, url string) error {
+func DownloadVideo(created time.Time, uid int, wid, url string) error {
 	baseUrl := stringsi.CountdownCutoff(stringsi.CutoffContain(url, "mp4"), "/")
 	return (&claweri.DownloadMeta{
 		Dir: claweri.Dir{

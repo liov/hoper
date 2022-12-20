@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/liov/hoper/server/go/lib/utils/log"
 	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
-	timei "github.com/liov/hoper/server/go/lib/utils/time"
 	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
 	"strconv"
 	"strings"
@@ -63,7 +62,7 @@ func DownloadPhotosReqs(uid int, cards []*rpc.PicCardGroup) []*crawler.Request {
 
 func DownloadPhotoReqs(uid int, card *rpc.PicCardGroup) []*crawler.Request {
 	var requests []*crawler.Request
-	created := time.Now().Format(timei.TimeFormatDisplay)
+	created := time.Now()
 	for _, pic := range card.Pics {
 		if pic.Type == "livephoto" {
 			requests = append(requests, DownloadPhotoReq(created, uid, pic.Mblog.Id, pic.Video))
@@ -81,7 +80,7 @@ func DownloadPhotoReqs(uid int, card *rpc.PicCardGroup) []*crawler.Request {
 	return requests
 }
 
-func DownloadPhotoReq(created string, uid int, wid, url string) *crawler.Request {
+func DownloadPhotoReq(created time.Time, uid int, wid, url string) *crawler.Request {
 	return &crawler.Request{
 		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: url}, Kind: KindDownload},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
@@ -91,7 +90,7 @@ func DownloadPhotoReq(created string, uid int, wid, url string) *crawler.Request
 	}
 }
 
-func DownloadPhoto(created string, uid int, wid, url string) error {
+func DownloadPhoto(created time.Time, uid int, wid, url string) error {
 	var baseUrl string
 	typ := 1
 	if strings.HasSuffix(url, "mov") {

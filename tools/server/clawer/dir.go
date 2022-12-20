@@ -4,6 +4,8 @@ import (
 	"github.com/liov/hoper/server/go/lib/utils/fs"
 	"github.com/liov/hoper/server/go/lib/utils/log"
 	"github.com/liov/hoper/server/go/lib/utils/net/http/client"
+	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
+	timei "github.com/liov/hoper/server/go/lib/utils/time"
 	"gorm.io/gorm"
 	"strconv"
 	"strings"
@@ -25,7 +27,7 @@ type Dir struct {
 	KeyIdStr  string    `json:"keyIdStr"`
 	BaseUrl   string    `json:"baseUrl"`
 	Type      int       `json:"type"`
-	PubAt     string    `json:"pubAt" gorm:"type:timestamptz(0);default:0001-01-01 00:00:00"`
+	PubAt     time.Time `json:"pubAt" gorm:"type:timestamptz(0);default:0001-01-01 00:00:00"`
 	CreatedAt time.Time `json:"createdAt"`
 }
 
@@ -44,8 +46,10 @@ func (d *DownloadMeta) Download(db *gorm.DB) error {
 	if d.KeyId != 0 {
 		d.KeyIdStr = strconv.Itoa(d.KeyId)
 	}
+	date := d.PubAt.Format(timei.TimeFormatDisplay)
+	compactPubAt := stringsi.ReplaceRuneEmpty(date, '-', ' ', ':')
 	userIdStr := strconv.Itoa(d.UserId)
-	filepath := strings.Join([]string{d.DownloadPath, d.PubAt[:4], d.PubAt[:7], d.PubAt[:10], userIdStr + "_" + d.KeyIdStr + "_" + d.PubAt[:10] + "-" + d.PubAt[11:] + "_" + d.BaseUrl}, "/")
+	filepath := strings.Join([]string{d.DownloadPath, date[:4], date[:7], date[:10], userIdStr + "_" + d.KeyIdStr + "_" + compactPubAt + "_" + d.BaseUrl}, "/")
 	var err error
 	if fs.NotExist(filepath) {
 		if d.Referer != "" {
