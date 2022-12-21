@@ -12,6 +12,5 @@ import (
 func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
 	engine := crawler.NewEngine(config.Conf.Weibo.WorkCount).Timer(download.KindGet, time.Second)
-
-	engine.Run(download.GetUserFollowWeiboReq(""))
+	engine.Run(download.RecordUsersWeiboReq(config.Conf.Weibo.Users, true)...)
 }
