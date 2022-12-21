@@ -142,6 +142,8 @@ func DownloadPic(userId, diaryId int, url string, created time.Time) error {
 	}
 
 	baseUrl := path.Base(suffixpath)
+	num := userId / 10000
+	prepath := Conf.TimePill.PhotoPath + "/" + strconv.Itoa(num) + "-" + strconv.Itoa(num+1) + "/" + strconv.Itoa(userId)
 
 	return (&claweri.DownloadMeta{
 		Dir: claweri.Dir{
@@ -153,7 +155,7 @@ func DownloadPic(userId, diaryId int, url string, created time.Time) error {
 			PubAt:    created,
 			Type:     1,
 		},
-		DownloadPath: Conf.TimePill.PhotoPath,
+		DownloadPath: prepath,
 		Url:          url,
 	}).Download(Dao.Hoper.DB)
 
@@ -186,6 +188,9 @@ func DownloadCover(created time.Time, typ string, userId, notebookId int, url st
 		keyIdStr = strconv.Itoa(notebookId)
 		dirtyp = 22
 	}
+	num := userId / 10000
+	prepath := Conf.TimePill.PhotoPath + "/" + typ + "/" + strconv.Itoa(num) + "-" + strconv.Itoa(num+1) + "/" + strconv.Itoa(userId)
+
 	return (&claweri.DownloadMeta{
 		Dir: claweri.Dir{
 			Platform: dirtyp,
@@ -196,7 +201,7 @@ func DownloadCover(created time.Time, typ string, userId, notebookId int, url st
 			PubAt:    created,
 			Type:     1,
 		},
-		DownloadPath: Conf.TimePill.PhotoPath + "/" + typ,
+		DownloadPath: prepath,
 		Url:          url,
 	}).Download(Dao.Hoper.DB)
 }

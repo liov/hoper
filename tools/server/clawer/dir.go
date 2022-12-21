@@ -21,10 +21,11 @@ type User struct {
 }
 
 type Dir struct {
-	Platform  int       `json:"platform" comment:"1-pro,2-timepill,3-bilibili,4-weibo"`
-	UserId    int       `json:"userId"`
-	KeyId     int       `json:"keyId"`
-	KeyIdStr  string    `json:"keyIdStr"`
+	Platform int    `json:"platform" comment:"1-pro,2-timepill,3-bilibili,4-weibo"`
+	UserId   int    `json:"userId"`
+	KeyId    int    `json:"keyId"`
+	KeyIdStr string `json:"keyIdStr"`
+	//PrePath   string    `json:"prePath" comment:""`
 	BaseUrl   string    `json:"baseUrl"`
 	Type      int       `json:"type" comment:"1-图片，2-live图片，3-视频，4-动图"`
 	PubAt     time.Time `json:"pubAt" gorm:"type:timestamptz(0);default:0001-01-01 00:00:00"`
@@ -42,7 +43,7 @@ func (d *Dir) Path() string {
 	date := d.PubAt.Format(timei.TimeFormatDisplay)
 	compactPubAt := stringsi.ReplaceRuneEmpty(date, '-', ' ', ':')
 	userIdStr := strconv.Itoa(d.UserId)
-	filepath := strings.Join([]string{userIdStr, date[:7], userIdStr + "_" + d.KeyIdStr + "_" + compactPubAt + "_" + d.BaseUrl}, "/")
+	filepath := strings.Join([]string{userIdStr, date[:4], compactPubAt + "_" + userIdStr + "_" + d.KeyIdStr + "_" + d.BaseUrl}, "/")
 	return filepath
 }
 
