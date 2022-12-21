@@ -42,7 +42,7 @@ func (d *Dir) Path() string {
 	date := d.PubAt.Format(timei.TimeFormatDisplay)
 	compactPubAt := stringsi.ReplaceRuneEmpty(date, '-', ' ', ':')
 	userIdStr := strconv.Itoa(d.UserId)
-	filepath := strings.Join([]string{date[:4], date[:7], date[:10], userIdStr + "_" + d.KeyIdStr + "_" + compactPubAt + "_" + d.BaseUrl}, "/")
+	filepath := strings.Join([]string{userIdStr, date[:7], userIdStr + "_" + d.KeyIdStr + "_" + compactPubAt + "_" + d.BaseUrl}, "/")
 	return filepath
 }
 

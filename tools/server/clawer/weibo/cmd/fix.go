@@ -17,7 +17,7 @@ import (
 
 func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
-	rename2()
+	rename()
 }
 
 func rename() {
