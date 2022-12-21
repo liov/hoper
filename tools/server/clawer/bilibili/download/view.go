@@ -74,7 +74,7 @@ func RecordViewInfo(ctx context.Context, aid int) (*rpc.ViewInfo, error) {
 		err = bilibiliDao.CreateView(&dao.View{
 			Bvid:    view.Bvid,
 			Aid:     view.Aid,
-			Uid:     view.OwnerMid,
+			Uid:     view.Owner.Mid,
 			Title:   view.Title,
 			Desc:    view.Desc,
 			Dynamic: view.Dynamic,
