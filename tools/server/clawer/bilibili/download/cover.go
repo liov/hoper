@@ -81,7 +81,7 @@ func CoverDownload(ctx context.Context, pubAt int, url string, upId, id int) err
 			Type:     1,
 			PubAt:    pubTime,
 		},
-		DownloadPath: config.Conf.Bilibili.DownloadPicPath,
+		DownloadPath: config.Conf.Bilibili.DownloadPath,
 		Url:          url,
 		Referer:      "",
 	}

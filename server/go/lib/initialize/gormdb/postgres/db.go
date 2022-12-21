@@ -20,7 +20,7 @@ func (conf *DatabaseConfig) Init() {
 }
 
 func (conf *DatabaseConfig) Build() *gorm.DB {
-	url := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s TimeZone=%s",
+	url := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s timezone=%s",
 		conf.Host, conf.User, conf.Database, conf.Password, conf.TimeZone)
 	return (*pkdb.DatabaseConfig)(conf).Generate(postgres.Open(url))
 }

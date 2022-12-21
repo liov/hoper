@@ -50,7 +50,7 @@ func MergeVideo(video *Video, single bool) error {
 	src := fmt.Sprintf("%d_%d_%d", video.Uid, video.Aid, video.Cid)
 	dst := pubAt + "_" + src + "_" + video.Title + "_" + video.Part + "_" + strconv.Itoa(video.Quality)
 	fpath := config.Conf.Bilibili.DownloadTmpPath + fs.PathSeparator + src
-	dir := config.Conf.Bilibili.DownloadVideoPath + fs.PathSeparator + strconv.Itoa(video.Uid) + fs.PathSeparator + pubAt[:4]
+	dir := config.Conf.Bilibili.DownloadPath + fs.PathSeparator + strconv.Itoa(video.Uid) + fs.PathSeparator + pubAt[:4]
 	_, err := os.Stat(dir)
 	if os.IsNotExist(err) {
 		os.Mkdir(dir, 0666)

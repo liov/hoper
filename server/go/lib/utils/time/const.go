@@ -11,6 +11,7 @@ const (
 const (
 	TimeFormat            = "2006-01-02 15:04:05.999999"
 	TimeFormatDisplay     = "2006-01-02 15:04:05"
+	TimeFormatPostgresDB  = time.RFC3339
 	TimeFormatNoDate      = "15:04:05"
 	DayEndTime            = "23:59:59"
 	DayEndTimeWithSpace   = " 23:59:59"
