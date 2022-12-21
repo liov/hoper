@@ -200,7 +200,7 @@ func rename3() {
 }
 
 func rename4() {
-	commondir := "F:\\Pictures\\pron\\weibo\\2020"
+	commondir := "F:\\Pictures\\pron\\weibo\\2011"
 	subdirs, _ := os.ReadDir(commondir)
 	for _, subdir := range subdirs {
 		compsubdir := commondir + fs.PathSeparator + subdir.Name()
@@ -211,25 +211,14 @@ func rename4() {
 			files, _ := os.ReadDir(compsubdir2)
 			for _, f := range files {
 				fname := f.Name()
-				info, _ := f.Info()
 				strs := strings.Split(fname, "_")
 
 				if len(strs) == 4 {
-					userId, _ := strconv.Atoi(strs[0])
-					date, _ := time.Parse("20060102150405", strs[2])
-					dir := &claweri.Dir{
-						Platform:  4,
-						UserId:    userId,
-						KeyIdStr:  strs[1],
-						BaseUrl:   strs[3],
-						Type:      1,
-						PubAt:     date,
-						CreatedAt: info.ModTime(),
+					log.Println("rename:", compsubdir2+fs.PathSeparator+fname, newpath)
+					err := os.Rename(oldpath, newpath)
+					if err != nil {
+						log.Println(err)
 					}
-					if strings.HasSuffix(strs[3], ".mov") {
-						dir.Type = 2
-					}
-					dao.Dao.Hoper.Create(dir)
 				}
 			}
 
