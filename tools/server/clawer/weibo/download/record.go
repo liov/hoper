@@ -2,7 +2,6 @@ package download
 
 import (
 	"context"
-	"encoding/json"
 	"github.com/liov/hoper/server/go/lib/utils/log"
 	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
 	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
@@ -32,7 +31,7 @@ func RecordUserWeiboReq(uid, page int, record bool) *crawler.Request {
 				if strings.HasPrefix(err.Error(), "status:403") {
 
 				}
-				if _, ok := err.(*json.UnmarshalTypeError); ok {
+				if strings.HasPrefix(err.Error(), "json.Unmarshal error") {
 					ppiccards, err := rpc.GetChannelsV2(rpc.ALL, uid, page)
 					if err != nil {
 						return nil, err
