@@ -40,8 +40,9 @@ func (video *Video) DownloadVideo(typ string, order int, url string) ([]*crawler
 	}
 
 	if video.CodecId == VideoTypeFlv {
-		filename = fmt.Sprintf("%s_%d_%d_%d_%s_%s_%d_%d.flv.downloading", video.PubAt.Format(timei.TimeFormatCompact), video.Uid, video.Aid, video.Cid, video.Title, video.Part, order, video.Quality)
-		filename = filepath.Join(config.Conf.Bilibili.DownloadVideoPath, strconv.Itoa(video.Uid), filename)
+		pubAt := video.PubAt.Format(timei.TimeFormatCompact)
+		filename = fmt.Sprintf("%s_%d_%d_%d_%s_%s_%d_%d.flv.downloading", pubAt, video.Uid, video.Aid, video.Cid, video.Title, video.Part, order, video.Quality)
+		filename = filepath.Join(config.Conf.Bilibili.DownloadVideoPath, strconv.Itoa(video.Uid), pubAt[:4], filename)
 
 	} else {
 		filename = fmt.Sprintf("%d_%d_%d.m4s.%s.downloading", video.Uid, video.Aid, video.Cid, typ)
