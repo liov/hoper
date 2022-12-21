@@ -38,7 +38,7 @@ func ViewGetRecordVideoReqs(view *rpc.ViewInfo) ([]*crawler.Request, error) {
 		if len(view.Pages) == 1 {
 			page.Part = PartEqTitle
 		}
-		video := NewVideo(view.Owner.Mid, view.Title, view.Aid, page.Cid, page.Page, page.Part)
+		video := NewVideo(view.Owner.Mid, view.Title, view.Aid, page.Cid, page.Page, page.Part, view.PubDate)
 
 		req := video.RecordVideoReqAfterDownloadVideo()
 		requests = append(requests, req)
