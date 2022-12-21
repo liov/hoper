@@ -143,7 +143,7 @@ func DownloadPic(userId, diaryId int, url string, created time.Time) error {
 
 	baseUrl := path.Base(suffixpath)
 	num := userId / 10000
-	prepath := Conf.TimePill.PhotoPath + "/" + strconv.Itoa(num) + "-" + strconv.Itoa(num+1) + "/" + strconv.Itoa(userId)
+	prepath := Conf.TimePill.PhotoPath + "/" + strconv.Itoa(num) + "-" + strconv.Itoa(num+1)
 
 	return (&claweri.DownloadMeta{
 		Dir: claweri.Dir{
@@ -189,7 +189,7 @@ func DownloadCover(created time.Time, typ string, userId, notebookId int, url st
 		dirtyp = 22
 	}
 	num := userId / 10000
-	prepath := Conf.TimePill.PhotoPath + "/" + typ + "/" + strconv.Itoa(num) + "-" + strconv.Itoa(num+1) + "/" + strconv.Itoa(userId)
+	prepath := Conf.TimePill.PhotoPath + "/" + typ + "/" + strconv.Itoa(num) + "-" + strconv.Itoa(num+1)
 
 	return (&claweri.DownloadMeta{
 		Dir: claweri.Dir{
