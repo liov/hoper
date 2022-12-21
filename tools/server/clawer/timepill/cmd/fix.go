@@ -7,20 +7,33 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
-	claweri "tools/clawer"
 	"tools/clawer/timepill"
-	"tools/clawer/weibo/rpc"
 )
 
 func main() {
 	defer initialize.Start(&timepill.Conf, &timepill.Dao)()
+	rename()
 }
 
-func rename2() {
+func rename() {
+	commondir := "D:\\F\\timepill\\debug\\2022\\2022-12\\2022-12-21"
+	files, _ := os.ReadDir(commondir)
+	for _, f := range files {
+		strs := strings.Split(f.Name(), "_")
+		userId, _ := strconv.Atoi(strs[0])
+		num := userId / 10000
+		newdir := "D:\\F\\timepill\\debug\\" + strconv.Itoa(num) + "-" + strconv.Itoa(num+1) + fs.PathSeparator + strs[0] + fs.PathSeparator + "2022"
+		os.MkdirAll(newdir, 0666)
+		log.Println("rename:", commondir+fs.PathSeparator+f.Name(), newdir+fs.PathSeparator+strings.Join([]string{strs[2], strs[0], strs[1], strs[3]}, "_"))
+		os.Rename(commondir+fs.PathSeparator+f.Name(), newdir+fs.PathSeparator+strings.Join([]string{strs[2], strs[0], strs[1], strs[3]}, "_"))
+	}
+
+}
+
+/*func rename2() {
 	commondir := "D:\\F\\timepill\\2010_"
 	subdirs, _ := os.ReadDir(commondir)
-	zeroTime := time.Time{}
+
 	for _, subdir := range subdirs {
 		compsubdir := commondir + fs.PathSeparator + subdir.Name()
 		m := make(map[string]time.Time)
@@ -31,19 +44,7 @@ func rename2() {
 			strs := strings.Split(fname, "_")
 
 			for i := 0; i < 10; i++ {
-				weibo, err := rpc.GetLongWeibo(strs[1])
-				if err == nil {
-					date, _ = time.Parse(time.RubyDate, weibo.CreatedAt)
 
-					m[strs[0]+"-"+strs[1]] = date
-					break
-				}
-				if strings.HasPrefix(err.Error(), "json.Unmarshal error:invalid character") {
-					date = info.ModTime()
-					m[strs[0]+"-"+strs[1]] = date
-					break
-				}
-				log.Println(err)
 			}
 		}
 
@@ -70,9 +71,5 @@ func rename2() {
 		}
 		timepill.Dao.Hoper.Create(dir)
 	}
-	files, _ = os.ReadDir(compsubdir)
-	if len(files) == 0 {
-		os.Remove(compsubdir)
-	}
 }
-}
+*/

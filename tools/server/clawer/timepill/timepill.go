@@ -49,7 +49,7 @@ func RecordNoteBook(notebookId int) {
 		if notebook != nil && notebook.Id > 0 {
 			Dao.Hoper.Create(notebook)
 		}
-		created, _ := time.Parse(timei.TimeFormatDisplay, notebook.Created)
+		created, _ := time.Parse(timei.TimeFormatDisplay, notebook.Updated)
 		DownloadCover(created, model.BookCoverType.String(), notebook.UserId, notebook.Id, notebook.CoverUrl)
 	}
 
@@ -189,7 +189,7 @@ func DownloadCover(created time.Time, typ string, userId, notebookId int, url st
 		dirtyp = 22
 	}
 	num := userId / 10000
-	prepath := Conf.TimePill.PhotoPath + "/" + typ + "/" + strconv.Itoa(num) + "-" + strconv.Itoa(num+1)
+	prepath := Conf.TimePill.PhotoPath + typ + strconv.Itoa(num) + "-" + strconv.Itoa(num+1)
 
 	return (&claweri.DownloadMeta{
 		Dir: claweri.Dir{
@@ -240,7 +240,7 @@ func RecordUserDiaries(user *model.User) {
 	for _, notebook := range notebooks {
 		Dao.Hoper.Create(notebook)
 		if notebook.CoverUrl != "" {
-			created, _ := time.Parse(timei.TimeFormatDisplay, notebook.Created)
+			created, _ := time.Parse(timei.TimeFormatDisplay, notebook.Updated)
 			err = DownloadCover(created, model.BookCoverType.String(), user.UserId, notebook.Id, notebook.CoverUrl)
 			//err = tnsq.PublishCover(Dao.NsqP.Producer, model.BookCoverType, nodebook.CoverUrl)
 			if err != nil {
