@@ -25,12 +25,12 @@ func TestGetDiaryComments(t *testing.T) {
 }
 
 func TestTimeParse(f *testing.T) {
-	fmt.Println(time.ParseInLocation("2006-01-02T15:04:05+08:00", "2010-03-18T13:03:48+08:00", time.Local))
+	fmt.Println(time.Parse(time.RFC3339, "2010-03-18T13:03:48+08:00"))
 }
 
 func TestDownloadPic(t *testing.T) {
 	Conf.TimePill.PhotoPath = "D:/F/timepill"
-	DownloadPic(100774418, "http://s4.timepill.net/s/w640/photos/2022-08-24/b2s6hibqesmmq4opb8xbbgru8z4i3vwa.jpg", "2022-08-24 14:48:15")
+	DownloadPic(100774418, 1, "http://s4.timepill.net/s/w640/photos/2022-08-24/b2s6hibqesmmq4opb8xbbgru8z4i3vwa.jpg", time.Now())
 }
 
 func TestPicUrl(t *testing.T) {

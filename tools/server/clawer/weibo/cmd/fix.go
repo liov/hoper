@@ -4,6 +4,7 @@ import (
 	"github.com/liov/hoper/server/go/lib/initialize"
 	"github.com/liov/hoper/server/go/lib/utils/fs"
 	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
+	timei "github.com/liov/hoper/server/go/lib/utils/time"
 	"log"
 	"os"
 	"strconv"
@@ -66,7 +67,7 @@ func rename2() {
 						<-timer.C
 						weibo, err := rpc.GetLongWeibo(strs[1])
 						if err == nil {
-							date, _ = time.Parse(time.RubyDate, weibo.CreatedAt)
+							date, _ = timei.Parse(time.RubyDate, weibo.CreatedAt)
 
 							m[strs[0]+"-"+strs[1]] = date
 							break
@@ -147,7 +148,7 @@ func rename3() {
 								<-timer.C
 								weibo, err := rpc.GetLongWeibo(strs[1])
 								if err == nil {
-									date, _ = time.Parse(time.RubyDate, weibo.CreatedAt)
+									date, _ = timei.Parse(time.RubyDate, weibo.CreatedAt)
 									m[strs[0]+"-"+strs[1]] = date
 									break
 								}
@@ -283,7 +284,7 @@ func rename5() {
 							dir.UserId, _ = strconv.Atoi(strs[0])
 							dir.KeyIdStr = strs[1]
 							dir.CreatedAt = info.ModTime()
-							dir.PubAt, _ = time.Parse("20060102150405", strs[2])
+							dir.PubAt, _ = timei.Parse("20060102150405", strs[2])
 							dir.BaseUrl = strs[len(strs)-1]
 							dir.Type = 1
 							if strings.HasSuffix(dir.BaseUrl, ".mov") {

@@ -13,7 +13,7 @@ require (
 	github.com/nsqio/go-nsq v1.1.0
 	golang.org/x/image v0.0.0-20220601225756-64ec528b34cd
 	golang.org/x/net v0.0.0-20220722155237-a158d28d115b
-	gorm.io/gorm v1.24.0
+	gorm.io/gorm v1.24.2
 )
 
 require (

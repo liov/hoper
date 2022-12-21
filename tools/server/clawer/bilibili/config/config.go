@@ -10,18 +10,16 @@ import (
 )
 
 type Customize struct {
-	PageBegin         int `init:"flag:p"`
-	PageEnd           int
-	FavId             int
-	StopTime          int
-	WorkCount         uint
-	DownloadPath      string
-	DownloadVideoPath string
-	DownloadPicPath   string
-	DownloadTmpPath   string
-	Cookie            string
-	SkipKind          []conctrl.Kind
-	FFmpegPath        string
+	PageBegin       int `init:"flag:p"`
+	PageEnd         int
+	FavId           int
+	StopTime        int
+	WorkCount       uint
+	DownloadPath    string
+	DownloadTmpPath string
+	Cookie          string
+	SkipKind        []conctrl.Kind
+	FFmpegPath      string
 }
 
 type config struct {
@@ -44,8 +42,6 @@ func (c *config) Init() {
 	}
 	rpc.Cookie = c.Bilibili.Cookie
 	c.Bilibili.DownloadPath, _ = filepath.Abs(c.Bilibili.DownloadPath)
-	c.Bilibili.DownloadVideoPath = c.Bilibili.DownloadPath + fs.PathSeparator + "video"
-	c.Bilibili.DownloadPicPath = c.Bilibili.DownloadPath + fs.PathSeparator + "pic"
 	c.Bilibili.DownloadTmpPath = c.Bilibili.DownloadPath + fs.PathSeparator + "tmp"
 
 	path, err := exec.LookPath("ffmpeg")

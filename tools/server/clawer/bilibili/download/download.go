@@ -11,7 +11,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	claweri "tools/clawer"
@@ -41,8 +40,13 @@ func (video *Video) DownloadVideo(typ string, order int, url string) ([]*crawler
 
 	if video.CodecId == VideoTypeFlv {
 		pubAt := video.PubAt.Format(timei.TimeFormatCompact)
+		dir := config.Conf.Bilibili.DownloadPath + fs.PathSeparator + strconv.Itoa(video.Uid) + fs.PathSeparator + pubAt[:4]
+		_, err := os.Stat(dir)
+		if os.IsNotExist(err) {
+			os.Mkdir(dir, 0666)
+		}
 		filename = fmt.Sprintf("%s_%d_%d_%d_%s_%s_%d_%d.flv.downloading", pubAt, video.Uid, video.Aid, video.Cid, video.Title, video.Part, order, video.Quality)
-		filename = filepath.Join(config.Conf.Bilibili.DownloadVideoPath, strconv.Itoa(video.Uid), pubAt[:4], filename)
+		filename = dir + filename
 
 	} else {
 		filename = fmt.Sprintf("%d_%d_%d.m4s.%s.downloading", video.Uid, video.Aid, video.Cid, typ)

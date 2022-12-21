@@ -17,9 +17,13 @@ func WeiboParse(t string) time.Time {
 		return time.Now().Add(time.Duration(diff) * time.Minute)
 	} else if strings.HasPrefix(t, "昨天") {
 		hms := t[len("昨天"):]
-		tt, _ := time.Parse(TimeFormatDisplay, time.Now().Format(DateFormat)+hms)
+		tt, _ := Parse(TimeFormatDisplay, time.Now().Format(DateFormat)+hms)
 		return tt
 	}
-	tt, _ := time.Parse(DateFormat, t)
+	tt, _ := Parse(DateFormat, t)
 	return tt
+}
+
+func Parse(layout, value string) (time.Time, error) {
+	return time.ParseInLocation(layout, value, time.Local)
 }
