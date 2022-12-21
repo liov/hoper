@@ -2,16 +2,12 @@ package download
 
 import (
 	"context"
-	"github.com/liov/hoper/server/go/lib/utils/fs"
 	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
 	"gorm.io/gorm"
+	"time"
+	claweri "tools/clawer"
 
-	"github.com/liov/hoper/server/go/lib/utils/net/http/client"
-
-	"log"
 	"path"
-	"path/filepath"
-	"strconv"
 	"strings"
 	"tools/clawer/bilibili/config"
 	"tools/clawer/bilibili/dao"
@@ -20,13 +16,13 @@ import (
 )
 
 // 单个视频封面下载
-func CoverViewInfoHandleFun(ctx context.Context, url string) ([]*crawler.Request, error) {
+func CoverViewInfoHandleFun(ctx context.Context, pubAt int, url string) ([]*crawler.Request, error) {
 	res, err := rpc.Get[rpc.ViewInfo](url)
 	if err != nil && err.Error() != rpc.ErrorNotFound && err.Error() != rpc.ErrorNotPermission {
 		return nil, err
 	}
 
-	return []*crawler.Request{CoverDownloadReq(res.Pic, res.Owner.Mid, res.Aid)}, nil
+	return []*crawler.Request{CoverDownloadReq(pubAt, res.Pic, res.Owner.Mid, res.Aid)}, nil
 }
 
 // 收藏夹封面下载
@@ -45,12 +41,12 @@ func DownloadFavCover(ctx context.Context, url string) ([]*crawler.Request, erro
 		}
 		if err == gorm.ErrRecordNotFound {
 			if !strings.HasSuffix(fav.Cover, "be27fd62c99036dce67efface486fb0a88ffed06.jpg") {
-				req := CoverDownloadReq(fav.Cover, fav.Upper.Mid, fav.Id)
+				req := CoverDownloadReq(fav.Pubtime, fav.Cover, fav.Upper.Mid, fav.Id)
 				requests = append(requests, req)
 			}
 		} else {
 			if view.Record == 0 {
-				req := CoverDownloadReq(fav.Cover, fav.Upper.Mid, fav.Id)
+				req := CoverDownloadReq(fav.Pubtime, fav.Cover, fav.Upper.Mid, fav.Id)
 				requests = append(requests, req)
 			}
 		}
@@ -58,15 +54,15 @@ func DownloadFavCover(ctx context.Context, url string) ([]*crawler.Request, erro
 	return requests, nil
 }
 
-func CoverDownloadReq(url string, upId, id int) *crawler.Request {
+func CoverDownloadReq(pubAt int, url string, upId, id int) *crawler.Request {
 	return crawler.NewUrlKindRequest(url, KindDownloadCover, func(ctx context.Context, url string) ([]*crawler.Request, error) {
-		return nil, CoverDownload(ctx, url, upId, id)
+		return nil, CoverDownload(ctx, pubAt, url, upId, id)
 	})
 }
 
 const NULLCOVER = "be27fd62c99036dce67efface486fb0a88ffed06.jpg"
 
-func CoverDownload(ctx context.Context, url string, upId, id int) error {
+func CoverDownload(ctx context.Context, pubAt int, url string, upId, id int) error {
 	if strings.HasSuffix(url, NULLCOVER) {
 		return nil
 	}
@@ -75,18 +71,20 @@ func CoverDownload(ctx context.Context, url string, upId, id int) error {
 		if record {
 			return nil
 		}*/
-	filepath := filepath.Join(config.Conf.Bilibili.DownloadPicPath, strconv.Itoa(upId), strconv.Itoa(upId)+"_"+strconv.Itoa(id)+"_"+path.Base(url))
-
-	if fs.NotExist(filepath) {
-		err := client.DownloadImage(filepath, url)
-		if err != nil {
-			log.Println("下载图片失败：", err)
-			return err
-		}
-		dao.Dao.Hoper.Table(dao.TableNameView).Where("aid = ?", id).Update("cover_record", true)
-		log.Println("下载图片成功：", filepath)
-	} else {
-		log.Println("图片已存在：", filepath)
+	pubTime := time.Unix(int64(pubAt), 0)
+	meta := claweri.DownloadMeta{
+		Dir: claweri.Dir{
+			Platform: 3,
+			UserId:   upId,
+			KeyId:    id,
+			BaseUrl:  path.Base(url),
+			Type:     1,
+			PubAt:    pubTime,
+		},
+		DownloadPath: config.Conf.Bilibili.DownloadPicPath,
+		Url:          url,
+		Referer:      "",
 	}
-	return nil
+
+	return meta.Download(dao.Dao.Hoper.DB)
 }

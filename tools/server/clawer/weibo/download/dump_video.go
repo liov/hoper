@@ -96,7 +96,7 @@ func DownloadVideo(created time.Time, uid int, wid, url string) error {
 	return (&claweri.DownloadMeta{
 		Dir: claweri.Dir{
 			PubAt:    created,
-			Platform: 3,
+			Platform: 4,
 			UserId:   uid,
 			KeyIdStr: wid,
 			BaseUrl:  baseUrl,

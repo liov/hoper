@@ -5,15 +5,16 @@ import (
 	"fmt"
 	"github.com/liov/hoper/server/go/lib/utils/fs"
 	"github.com/liov/hoper/server/go/lib/utils/net/http/client"
+	timei "github.com/liov/hoper/server/go/lib/utils/time"
 	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
-	"strings"
-
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
+	claweri "tools/clawer"
 	"tools/clawer/bilibili/config"
 	"tools/clawer/bilibili/dao"
 	"tools/clawer/bilibili/rpc"
@@ -39,8 +40,9 @@ func (video *Video) DownloadVideo(typ string, order int, url string) ([]*crawler
 	}
 
 	if video.CodecId == VideoTypeFlv {
-		filename = fmt.Sprintf("%d_%d_%d_%s_%s_%d_%d.flv.downloading", video.Uid, video.Aid, video.Cid, video.Title, video.Part, order, video.Quality)
+		filename = fmt.Sprintf("%s_%d_%d_%d_%s_%s_%d_%d.flv.downloading", video.PubAt.Format(timei.TimeFormatCompact), video.Uid, video.Aid, video.Cid, video.Title, video.Part, order, video.Quality)
 		filename = filepath.Join(config.Conf.Bilibili.DownloadVideoPath, strconv.Itoa(video.Uid), filename)
+
 	} else {
 		filename = fmt.Sprintf("%d_%d_%d.m4s.%s.downloading", video.Uid, video.Aid, video.Cid, typ)
 		filename = config.Conf.Bilibili.DownloadTmpPath + fs.PathSeparator + filename
@@ -108,6 +110,16 @@ func (video *Video) DownloadVideo(typ string, order int, url string) ([]*crawler
 
 	if video.CodecId == VideoTypeFlv {
 		dao.Dao.Hoper.Table(dao.TableNameVideo).Where("cid = ?", video.Cid).Update("record", 3)
+		dir := claweri.Dir{
+			Platform: 3,
+			UserId:   video.Uid,
+			KeyId:    video.Cid,
+			KeyIdStr: fmt.Sprintf("%d_%d", video.Aid, video.Cid),
+			BaseUrl:  fmt.Sprintf("%s_%s_%d_%d.flv", video.Title, video.Part, order, video.Quality),
+			Type:     3,
+			PubAt:    video.PubAt,
+		}
+		dao.Dao.Hoper.Create(&dir)
 	}
 
 	if video.CodecId == VideoTypeM4sCodec12 || video.CodecId == VideoTypeM4sCodec7 {

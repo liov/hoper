@@ -12,10 +12,11 @@ type Video struct {
 	Quality   int
 	Record    int
 	CodecId   int
+	PubAt     time.Time
 	CreatedAt time.Time
 }
 
-func NewVideo(uid int, title string, aid, cid, page int, part string) *Video {
+func NewVideo(uid int, title string, aid, cid, page int, part string, pubdate int) *Video {
 	return &Video{
 		Uid:   uid,
 		Title: title,
@@ -23,5 +24,6 @@ func NewVideo(uid int, title string, aid, cid, page int, part string) *Video {
 		Cid:   cid,
 		Page:  page,
 		Part:  part,
+		PubAt: time.Unix(int64(pubdate), 0),
 	}
 }

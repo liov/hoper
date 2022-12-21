@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/liov/hoper/server/go/lib/utils/fs"
+	timei "github.com/liov/hoper/server/go/lib/utils/time"
 	"github.com/liov/hoper/server/go/lib_v2/utils/conctrl"
 	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
+	claweri "tools/clawer"
 
 	osi "github.com/liov/hoper/server/go/lib/utils/os"
 	"log"
@@ -44,11 +46,11 @@ func (m *VideoMerge) Add(video *Video) {
 }
 
 func MergeVideo(video *Video, single bool) error {
+	pubAt := video.PubAt.Format(timei.TimeFormatCompact)
 	src := fmt.Sprintf("%d_%d_%d", video.Uid, video.Aid, video.Cid)
-	dst := src + "_" + video.Title + "_" + video.Part + "_" + strconv.Itoa(video.Quality)
-
+	dst := pubAt + "_" + src + "_" + video.Title + "_" + video.Part + "_" + strconv.Itoa(video.Quality)
 	fpath := config.Conf.Bilibili.DownloadTmpPath + fs.PathSeparator + src
-	dir := config.Conf.Bilibili.DownloadVideoPath + fs.PathSeparator + strconv.Itoa(video.Uid)
+	dir := config.Conf.Bilibili.DownloadVideoPath + fs.PathSeparator + strconv.Itoa(video.Uid) + fs.PathSeparator + pubAt[:4]
 	_, err := os.Stat(dir)
 	if os.IsNotExist(err) {
 		os.Mkdir(dir, 0666)
@@ -104,6 +106,16 @@ func MergeVideo(video *Video, single bool) error {
 	}
 
 	dao.Dao.Hoper.Table(dao.TableNameVideo).Where("cid = ?", video.Cid).Update("record", record)
+	cdir := claweri.Dir{
+		Platform: 3,
+		UserId:   video.Uid,
+		KeyId:    video.Cid,
+		KeyIdStr: fmt.Sprintf("%d_%d", video.Aid, video.Cid),
+		BaseUrl:  fmt.Sprintf("%s_%s_%d", video.Title, video.Part, video.Quality) + ext,
+		Type:     3,
+		PubAt:    video.PubAt,
+	}
+	dao.Dao.Hoper.Create(&cdir)
 	log.Println("合并完成：" + dst)
 	return nil
 }

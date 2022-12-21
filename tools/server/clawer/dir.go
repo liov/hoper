@@ -37,10 +37,10 @@ func (d *Dir) TableName() string {
 }
 
 func (d *Dir) Path() string {
-	if d.KeyId != 0 {
+	if d.KeyId != 0 && d.KeyIdStr == "" {
 		d.KeyIdStr = strconv.Itoa(d.KeyId)
 	}
-	date := d.PubAt.Format(timei.TimeFormatDisplay)
+	date := d.PubAt.Format(timei.TimeFormatCompact)
 	compactPubAt := stringsi.ReplaceRuneEmpty(date, '-', ' ', ':')
 	userIdStr := strconv.Itoa(d.UserId)
 	filepath := strings.Join([]string{userIdStr, date[:4], compactPubAt + "_" + userIdStr + "_" + d.KeyIdStr + "_" + d.BaseUrl}, "/")

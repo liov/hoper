@@ -46,7 +46,7 @@ func GetFavListReqAfterRecordView(favId, page int, startTime time.Time) *crawler
 				if createdTime == zeroTime {
 					if !strings.HasSuffix(fav.Cover, NULLCOVER) {
 						req1 := RecordViewInfoReqAfterRecordVideo(aid)
-						req2 := CoverDownloadReq(fav.Cover, fav.Upper.Mid, fav.Id)
+						req2 := CoverDownloadReq(fav.Pubtime, fav.Cover, fav.Upper.Mid, fav.Id)
 						requests = append(requests, req1, req2)
 					}
 				} else if createdTime.Before(startTime) {
@@ -73,7 +73,7 @@ func RecordFavReq(favId, page int) *crawler.Request {
 				aid := tool.Bv2av(fav.Bvid)
 				if !strings.HasSuffix(fav.Cover, NULLCOVER) {
 					req1 := RecordViewInfoReqAfterRecordVideo(aid)
-					req2 := CoverDownloadReq(fav.Cover, fav.Upper.Mid, fav.Id)
+					req2 := CoverDownloadReq(fav.Pubtime, fav.Cover, fav.Upper.Mid, fav.Id)
 					requests = append(requests, req1, req2)
 				}
 
