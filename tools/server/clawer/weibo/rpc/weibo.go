@@ -187,9 +187,8 @@ type PageInfo struct {
 }
 
 type MediaInfo struct {
-	StreamUrl   string  `json:"stream_url"`
-	StreamUrlHd string  `json:"stream_url_hd"`
-	Duration    float64 `json:"duration"`
+	StreamUrl   string `json:"stream_url"`
+	StreamUrlHd string `json:"stream_url_hd"`
 }
 
 type VideoUrl struct {

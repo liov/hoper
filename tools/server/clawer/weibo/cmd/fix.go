@@ -17,7 +17,7 @@ import (
 
 func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
-	rename()
+	rename2()
 }
 
 func rename() {
@@ -71,7 +71,7 @@ func rename2() {
 							m[strs[0]+"-"+strs[1]] = date
 							break
 						}
-						if strings.HasPrefix(err.Error(), "invalid character") {
+						if strings.HasPrefix(err.Error(), "json.Unmarshal error:invalid character") {
 							date = info.ModTime()
 							m[strs[0]+"-"+strs[1]] = date
 							break
@@ -200,7 +200,7 @@ func rename3() {
 }
 
 func rename4() {
-	commondir := "F:\\Pictures\\pron\\weibo\\2011"
+	commondir := "F:\\Pictures\\pron\\weibo\\debug\\2022"
 	subdirs, _ := os.ReadDir(commondir)
 	for _, subdir := range subdirs {
 		compsubdir := commondir + fs.PathSeparator + subdir.Name()
@@ -214,8 +214,11 @@ func rename4() {
 				strs := strings.Split(fname, "_")
 
 				if len(strs) == 4 {
+					newDir := "F:\\Pictures\\pron\\weibo\\" + strs[0] + fs.PathSeparator + strs[2][:4]
+					os.MkdirAll(newDir, 0666)
+					newpath := newDir + fs.PathSeparator + strings.Join([]string{strs[2], strs[0], strs[1], strs[3]}, "_")
 					log.Println("rename:", compsubdir2+fs.PathSeparator+fname, newpath)
-					err := os.Rename(oldpath, newpath)
+					err := os.Rename(compsubdir2+fs.PathSeparator+fname, newpath)
 					if err != nil {
 						log.Println(err)
 					}
