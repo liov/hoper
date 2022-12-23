@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/liov/hoper/server/go/lib/tools/clawer/protoc-gen-graphql/plugin"
+	"github.com/liov/hoper/server/go/lib/tools/protoc-gen-graphql/plugin"
 
 	"google.golang.org/protobuf/compiler/protogen"
 )

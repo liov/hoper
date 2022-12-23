@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/liov/hoper/server/go/lib/tools/clawer/protoc-gen-enum/plugin"
+	"github.com/liov/hoper/server/go/lib/tools/protoc-gen-enum/plugin"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/pluginpb"

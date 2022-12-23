@@ -5,7 +5,6 @@ import (
 	"github.com/liov/hoper/server/go/lib/utils/os"
 	execi "github.com/liov/hoper/server/go/lib/utils/os/exec"
 	"github.com/spf13/cobra"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -173,7 +172,7 @@ func single(path string) {
 
 func gengql() {
 	gqldir := genpath + "/gql"
-	fileInfos, err := ioutil.ReadDir(gqldir)
+	fileInfos, err := os.ReadDir(gqldir)
 	if err != nil {
 		log.Panicln(err)
 	}

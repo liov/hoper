@@ -123,7 +123,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server/cl
   steps: [
     {
       name: 'clone && build',
-      image: if protopath != '' then 'jybl/goprotoc' else 'golang:1.19.2',
+      image: if protopath != '' then 'jybl/goprotoc' else 'golang:1.19.4',
       volumes: [
         {
             name: 'codedir',

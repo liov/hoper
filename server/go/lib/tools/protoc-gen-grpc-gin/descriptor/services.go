@@ -5,7 +5,7 @@ import (
 	"github.com/liov/hoper/server/go/lib/utils/log"
 	"strings"
 
-	"github.com/liov/hoper/server/go/lib/tools/clawer/protoc-gen-grpc-gin/httprule"
+	"github.com/liov/hoper/server/go/lib/tools/protoc-gen-grpc-gin/httprule"
 
 	options "google.golang.org/genproto/googleapis/api/annotations"
 	"google.golang.org/protobuf/proto"
