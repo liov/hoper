@@ -1,12 +1,12 @@
 package postgres
 
 import (
-	"github.com/liov/hoper/server/go/lib/utils/dao/db/postgres"
+	dbi "github.com/liov/hoper/server/go/lib/utils/dao/db/const"
 	"gorm.io/gorm"
 )
 
-const existsSQL = `SELECT EXISTS(SELECT * FROM %s WHERE %s = ?` + postgres.WithNotDeleted + ` LIMIT 1)`
-const deleteSQL = `Update %s SET deleted_at = now() WHERE %s = ?` + postgres.WithNotDeleted
+const existsSQL = `SELECT EXISTS(SELECT * FROM %s WHERE %s = ?` + dbi.WithNotDeleted + ` LIMIT 1)`
+const deleteSQL = `Update %s SET deleted_at = now() WHERE %s = ?` + dbi.WithNotDeleted
 
 func Delete(db *gorm.DB, tableName string, id uint64) error {
 	return DeleteSQL(db, tableName, "id", id)
@@ -14,13 +14,13 @@ func Delete(db *gorm.DB, tableName string, id uint64) error {
 
 func DeleteSQL(db *gorm.DB, tableName, column string, value any) error {
 	sql := `Update ` + tableName + ` SET deleted_at = now()
-WHERE ` + column + ` = ?` + postgres.WithNotDeleted
+WHERE ` + column + ` = ?` + dbi.WithNotDeleted
 	return db.Exec(sql, value).Error
 }
 
 func DeleteByAuth(db *gorm.DB, tableName string, id, userId uint64) error {
 	sql := `Update ` + tableName + ` SET deleted_at = now()
-WHERE id = ?  AND user_id = ?` + postgres.WithNotDeleted
+WHERE id = ?  AND user_id = ?` + dbi.WithNotDeleted
 	return db.Exec(sql, id, userId).Error
 }
 
@@ -30,7 +30,7 @@ func ExistsByIdWithDeletedAt(db *gorm.DB, tableName string, id uint64) (bool, er
 
 func ExistsByAuthWithDeletedAt(db *gorm.DB, tableName string, id, userId uint64) (bool, error) {
 	sql := `SELECT EXISTS(SELECT * FROM ` + tableName + ` 
-WHERE id = ?  AND user_id = ?` + postgres.WithNotDeleted + ` LIMIT 1)`
+WHERE id = ?  AND user_id = ?` + dbi.WithNotDeleted + ` LIMIT 1)`
 	var exists bool
 	err := db.Raw(sql, id, userId).Scan(&exists).Error
 	if err != nil {
@@ -50,7 +50,7 @@ func ExistsByColumn(db *gorm.DB, tableName, column string, value any) (bool, err
 func ExistsSQL(tableName, column string, withDeletedAt bool) string {
 	sql := `SELECT EXISTS(SELECT * FROM ` + tableName + ` WHERE ` + column + ` = ?`
 	if withDeletedAt {
-		sql += postgres.WithNotDeleted
+		sql += dbi.WithNotDeleted
 	}
 	sql += ` LIMIT 1)`
 	return sql

@@ -8,11 +8,15 @@ import (
 	contexti "github.com/liov/hoper/server/go/lib/context"
 	"github.com/liov/hoper/server/go/lib/pick"
 	"github.com/liov/hoper/server/go/lib/protobuf/request"
-	"github.com/liov/hoper/server/go/lib/utils/dao/db/postgres"
+	dbi "github.com/liov/hoper/server/go/lib/utils/dao/db/const"
 	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/go-redis/redis/v8"
+	"github.com/gofiber/fiber/v2"
+	"github.com/golang/protobuf/ptypes/wrappers"
+	"github.com/google/uuid"
 	"github.com/liov/hoper/server/go/lib/protobuf/empty"
 	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
 	"github.com/liov/hoper/server/go/lib/protobuf/response"
@@ -25,10 +29,6 @@ import (
 	"github.com/liov/hoper/server/go/mod/user/dao"
 	"github.com/liov/hoper/server/go/mod/user/middle"
 	modelconst "github.com/liov/hoper/server/go/mod/user/model"
-	"github.com/go-redis/redis/v8"
-	"github.com/gofiber/fiber/v2"
-	"github.com/golang/protobuf/ptypes/wrappers"
-	"github.com/google/uuid"
 
 	"github.com/liov/hoper/server/go/lib/utils/net/mail"
 	"github.com/liov/hoper/server/go/lib/utils/strings"
@@ -310,7 +310,7 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
 	var user model.User
 	if err := db.Table(modelconst.UserTableName).
-		Where(sql+` AND status != ? AND `+postgres.NotDeleted, req.Input, model.UserStatusDeleted).Find(&user).Error; err != nil {
+		Where(sql+` AND status != ?`+dbi.WithNotDeleted, req.Input, model.UserStatusDeleted).Find(&user).Error; err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError.Message("账号不存在"), err, "Find")
 	}
 

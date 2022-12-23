@@ -75,7 +75,7 @@ type Model struct {
 
 	CreatedAt string `protobuf:"bytes,1,opt,name=createdAt,proto3" json:"createdAt,omitempty" gorm:"type:timestamptz(6);default:now();index"`
 	UpdateAt  string `protobuf:"bytes,2,opt,name=updateAt,proto3" json:"updateAt,omitempty" gorm:"type:timestamptz(6);default:now();index"`
-	DeletedAt string `protobuf:"bytes,3,opt,name=deletedAt,proto3" json:"deletedAt,omitempty" gorm:"type:timestamptz(6);default:0001-01-01 00:00:00;index"`
+	DeletedAt string `protobuf:"bytes,3,opt,name=deletedAt,proto3" json:"deletedAt,omitempty" gorm:"<-:false;type:timestamptz(6);index"`
 }
 
 func (x *Model) Reset() {

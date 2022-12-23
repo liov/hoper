@@ -17,7 +17,7 @@ message Dict{
   string val = 5 [(go.field) = {tags:'annotation:"值"'}];
   uint32 seq = 6[(go.field) = {tags:'annotation:"顺序"'}];
   string cAt = 16 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  string dAt = 28 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00;index"'}];
+  string dAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
   uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];

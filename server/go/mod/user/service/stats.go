@@ -5,7 +5,7 @@ import (
 	contexti "github.com/liov/hoper/server/go/lib/context"
 	"github.com/liov/hoper/server/go/lib/protobuf/empty"
 	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
-	"github.com/liov/hoper/server/go/lib/utils/dao/db/postgres"
+	dbi "github.com/liov/hoper/server/go/lib/utils/dao/db/const"
 	"github.com/liov/hoper/server/go/mod/protobuf/user"
 	"github.com/liov/hoper/server/go/mod/user/dao"
 	"github.com/liov/hoper/server/go/mod/user/model"
@@ -57,7 +57,7 @@ func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user
 	if !exists {
 		return nil, nil
 	}
-	err = db.Table(model.FollowTableName).Where("user_id = ? AND follow_id = ? AND "+postgres.NotDeleted, req.Id, auth.Id).
+	err = db.Table(model.FollowTableName).Where("user_id = ? AND follow_id = ?"+dbi.WithNotDeleted, req.Id, auth.Id).
 		UpdateColumn("deleted_at", ctxi.RequestAt.TimeString).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "Create")

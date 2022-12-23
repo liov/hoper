@@ -145,7 +145,7 @@ message MomentRep {
   uint32 anonymous = 20 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"是否匿名,0-是,1否"'}];
   ViewPermission permission = 21 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"查看权限"'}];
   string createdAt = 22 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  string deletedAt = 23 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00;index"'}];
+  string deletedAt = 23 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
   uint32 status = 24 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];

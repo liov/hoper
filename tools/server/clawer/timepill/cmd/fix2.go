@@ -36,11 +36,11 @@ func rename3() {
 					strs := strings.Split(fname, "_")
 
 					userId, _ := strconv.Atoi(subdir2.Name())
-					date, _ := timei.Parse(timei.DateFormat, strs[0])
+					date, _ := timei.Parse(timei.DateFormat, strings.TrimSpace(strs[0]))
 
 					var baseUrl string
 					if len(strs) == 3 {
-						baseUrl = strs[2]
+						continue
 					} else if len(strs) == 2 {
 						baseUrl = strs[1]
 					}
@@ -69,6 +69,9 @@ func rename3() {
 						Type:      1,
 						PubAt:     pubAt,
 						CreatedAt: info.ModTime(),
+					}
+					if err != nil {
+						dir.KeyIdStr = "unknown"
 					}
 					if fs.NotExist(newdir + fs.PathSeparator + dir.Path()) {
 						os.MkdirAll(newdir+fs.PathSeparator+subdir2.Name()+fs.PathSeparator+diary.Created[:4], 0666)

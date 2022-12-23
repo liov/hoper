@@ -2,7 +2,7 @@ package db
 
 import (
 	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
-	"github.com/liov/hoper/server/go/lib/utils/dao/db/postgres"
+	dbi "github.com/liov/hoper/server/go/lib/utils/dao/db/const"
 	"github.com/liov/hoper/server/go/mod/content/model"
 	"github.com/liov/hoper/server/go/mod/protobuf/content"
 )
@@ -14,7 +14,7 @@ func (d *ContentDBDao) GetContentTag(typ content.ContentType, refIds []uint64) (
 	var tags []model.ContentTagRel
 	err := d.db.Select("b.ref_id,a.id,a.name").Table(TagTableNameAlias).
 		Joins(`LEFT JOIN `+model.ContentTagTableName+` b ON a.id = b.tag_id`).
-		Where("b.type = ? AND b.ref_id IN (?) AND "+postgres.NotDeleted,
+		Where("b.type = ? AND b.ref_id IN (?)"+dbi.WithNotDeleted,
 			typ, refIds).Find(&tags).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "GetContentTag")
@@ -26,7 +26,7 @@ func (d *ContentDBDao) GetTags(names []string) ([]model.TinyTag, error) {
 	ctxi := d.Ctx
 	var tags []model.TinyTag
 	err := d.db.Table(model.TagTableName).Select("id,name").
-		Where("name IN (?) AND "+postgres.NotDeleted, names).
+		Where("name IN (?)"+dbi.WithNotDeleted, names).
 		Find(&tags).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "GetTags")
@@ -39,7 +39,7 @@ func (d *ContentDBDao) GetTagsByRefId(typ content.ContentType, refId uint64) ([]
 	var tags []*content.TinyTag
 	err := d.db.Select("a.id,a.name").Table(TagTableNameAlias).
 		Joins(`LEFT JOIN `+model.ContentTagTableName+` b ON a.id = b.tag_id`).
-		Where("b.type = ? AND b.ref_id = ? AND "+postgres.NotDeleted,
+		Where("b.type = ? AND b.ref_id = ?"+dbi.WithNotDeleted,
 			typ, refId).Scan(&tags).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "GetTagsByRefId")
