@@ -20,6 +20,10 @@ func CMD(s string) (string, error) {
 	if len(buf) == 0 {
 		return "", nil
 	}
+	lastIndex := len(buf) - 1
+	if buf[lastIndex] == '\n' {
+		buf = buf[:lastIndex]
+	}
 	return stringsi.ToString(buf), nil
 }
 

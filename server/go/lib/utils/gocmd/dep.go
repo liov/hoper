@@ -34,8 +34,8 @@ func GetDepDir(dep string) string {
 }
 
 func modDepDir(dep string) string {
-	depPath, _ := osi.CMD(goListDir + dep)
-	if depPath == "" {
+	depPath, err := osi.CMD(goListDir + dep)
+	if err != nil || depPath == "" {
 		osi.CMD("go get " + dep)
 		depPath, _ = osi.CMD(goListDir + dep)
 	}
