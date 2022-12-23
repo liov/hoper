@@ -168,8 +168,8 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server/cl
       'go mod download',
       local genpath = srcdir + workdir + protopath;
       local buildfile = genpath + '/build';
-      if protopath != '' then 'if [ ! -f ' + buildfile + ' ]; then generate go --proto='+srcdir+'/proto --genpath='+genpath+'; fi' else 'echo',
-      //'go mod tidy',
+      if protopath != '' then 'if [ ! -f ' + buildfile + ' ]; then generate go --proto='+srcdir+'proto --genpath='+genpath+'; fi' else 'echo',
+      'go mod tidy',
       'go build -trimpath -o  '+ srcdir + fullname + ' ' + sourceFile,
       ],
     },
