@@ -9,3 +9,8 @@ const (
 	RIGHTJOIN = "RIGHT JOIN"
 	INNERJOIN = "INNER JOIN"
 )
+
+const (
+	NotDeleted     = ColumnDeletedAt + " IS " + NullStr
+	WithNotDeleted = ` AND ` + NotDeleted
+)

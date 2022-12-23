@@ -2,7 +2,7 @@ package dao
 
 import (
 	"encoding/json"
-	"github.com/liov/hoper/server/go/lib/utils/dao/db/postgres"
+	dbi "github.com/liov/hoper/server/go/lib/utils/dao/db/const"
 	"gorm.io/gorm/clause"
 	"strconv"
 	"time"
@@ -24,7 +24,7 @@ func DBNotNil(db **gorm.DB) {
 func (d *userDao) ExitsCheck(db *gorm.DB, field, value string) (bool, error) {
 	DBNotNil(&db)
 	ctxi := d
-	sql := `SELECT EXISTS(SELECT id FROM "` + model.UserTableName + `" WHERE ` + postgres.NotDeleted + ` AND `
+	sql := `SELECT EXISTS(SELECT id FROM "` + model.UserTableName + `" WHERE ` + dbi.NotDeleted + ` AND `
 	var exists bool
 	err := db.Raw(sql+field+` = ? AND status != ?  LIMIT 1)`, value, user.UserStatusDeleted).Row().Scan(&exists)
 
@@ -43,9 +43,9 @@ func (d *userDao) GetByEmailORPhone(db *gorm.DB, email, phone string, fields ...
 		db = db.Table(model.UserTableName).Select(fields)
 	}
 	if email != "" {
-		err = db.Where("email = ? AND status != ? AND "+postgres.NotDeleted, email, user.UserStatusDeleted).Find(&u).Error
+		err = db.Where("email = ? AND status != ?"+dbi.WithNotDeleted, email, user.UserStatusDeleted).Find(&u).Error
 	} else {
-		err = db.Where("phone = ? AND status != ? AND "+postgres.NotDeleted, phone, user.UserStatusDeleted).Find(&u).Error
+		err = db.Where("phone = ? AND status != ?"+dbi.WithNotDeleted, phone, user.UserStatusDeleted).Find(&u).Error
 	}
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "GetByEmailORPhone")
@@ -171,7 +171,7 @@ func (d *userDao) GetBaseListDB(db *gorm.DB, ids []uint64, pageNo, pageSize int)
 func (d *userDao) FollowExistsDB(db *gorm.DB, id, followId uint64) (bool, error) {
 	ctxi := d
 	sql := `SELECT EXISTS(SELECT * FROM "` + model.FollowTableName + `" 
-WHERE user_id = ?  AND follow_id = ? AND ` + postgres.NotDeleted + ` LIMIT 1)`
+WHERE user_id = ?  AND follow_id = ?` + dbi.WithNotDeleted + ` LIMIT 1)`
 	var exists bool
 	err := db.Raw(sql, id, followId).Scan(&exists).Error
 	if err != nil {

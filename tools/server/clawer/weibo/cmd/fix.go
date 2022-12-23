@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/liov/hoper/server/go/lib/initialize"
 	"github.com/liov/hoper/server/go/lib/utils/fs"
-	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
 	timei "github.com/liov/hoper/server/go/lib/utils/time"
 	"log"
 	"os"
@@ -18,36 +17,30 @@ import (
 
 func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
-	rename2()
+	rename()
 }
 
+const weibodir = "F:\\Pictures\\pron\\weibo"
+
 func rename() {
-	commondir := "F:\\Pictures\\pron\\weibo\\pic"
+	commondir := weibodir + "\\video\\2022\\2022-12\\2022-12-21"
 	fs.RangeDir(commondir, func(subDir string, entry os.DirEntry) error {
 		fileName := entry.Name()
-		if strings.HasSuffix(fileName, "mov") {
-			parts := strings.Split(fileName, "_")
-			for _, part := range parts {
-				if strings.HasSuffix(part, "mov") {
-					parts[2] = stringsi.CountdownCutoff(part, "%2F")
-					break
-				}
-			}
-			parts[2] = stringsi.CountdownCutoff(parts[2], "%2F")
-			path := subDir + fs.PathSeparator + fileName
-			newPath := subDir + fs.PathSeparator + strings.Join(parts[:3], "_")
-			log.Println("rename:", path, newPath)
-			err := os.Rename(path, newPath)
-			if err != nil {
-				log.Println(err)
-			}
+		parts := strings.Split(fileName, "_")
+		os.MkdirAll(weibodir+fs.PathSeparator+parts[0]+fs.PathSeparator+"2022", 0666)
+		path := commondir + fs.PathSeparator + fileName
+		newPath := weibodir + fs.PathSeparator + parts[0] + fs.PathSeparator + "2022" + fs.PathSeparator + strings.Join([]string{parts[2], parts[0], parts[1], parts[3]}, "_")
+		log.Println("rename:", path, newPath)
+		err := os.Rename(path, newPath)
+		if err != nil {
+			log.Println(err)
 		}
 		return nil
 	})
 }
 
 func rename2() {
-	commondir := "F:\\Pictures\\pron\\weibo\\pic"
+	commondir := weibodir + "\\video"
 	subdirs, _ := os.ReadDir(commondir)
 	zeroTime := time.Time{}
 	timer := time.NewTicker(time.Second)
@@ -68,7 +61,6 @@ func rename2() {
 						weibo, err := rpc.GetLongWeibo(strs[1])
 						if err == nil {
 							date, _ = timei.Parse(time.RubyDate, weibo.CreatedAt)
-
 							m[strs[0]+"-"+strs[1]] = date
 							break
 						}
@@ -78,6 +70,7 @@ func rename2() {
 							break
 						}
 						log.Println(err)
+						continue
 					}
 				}
 				if date == zeroTime {
@@ -91,13 +84,11 @@ func rename2() {
 					UserId:    userId,
 					KeyIdStr:  strs[1],
 					BaseUrl:   strs[2],
-					Type:      1,
+					Type:      3,
 					PubAt:     date,
 					CreatedAt: info.ModTime(),
 				}
-				if strings.HasSuffix(strs[2], ".mov") {
-					dir.Type = 2
-				}
+
 				oldpath := compsubdir + fs.PathSeparator + fname
 				newpath := config.Conf.Weibo.DownloadPath + "/" + dir.Path()
 				os.MkdirAll(fs.GetDir(newpath), 0666)
@@ -118,7 +109,7 @@ func rename2() {
 
 func rename3() {
 	zeroTime := time.Time{}
-	commondir := "F:\\Pictures\\pron\\weibo\\debug"
+	commondir := weibodir + "\\debug"
 	subdirs, _ := os.ReadDir(commondir)
 	timer := time.NewTicker(time.Second)
 	for _, subdir := range subdirs {
@@ -201,7 +192,7 @@ func rename3() {
 }
 
 func rename4() {
-	commondir := "F:\\Pictures\\pron\\weibo\\debug\\2022"
+	commondir := weibodir + "\\debug\\2022"
 	subdirs, _ := os.ReadDir(commondir)
 	for _, subdir := range subdirs {
 		compsubdir := commondir + fs.PathSeparator + subdir.Name()
@@ -215,7 +206,7 @@ func rename4() {
 				strs := strings.Split(fname, "_")
 
 				if len(strs) == 4 {
-					newDir := "F:\\Pictures\\pron\\weibo\\" + strs[0] + fs.PathSeparator + strs[2][:4]
+					newDir := weibodir + fs.PathSeparator + strs[0] + fs.PathSeparator + strs[2][:4]
 					os.MkdirAll(newDir, 0666)
 					newpath := newDir + fs.PathSeparator + strings.Join([]string{strs[2], strs[0], strs[1], strs[3]}, "_")
 					log.Println("rename:", compsubdir2+fs.PathSeparator+fname, newpath)
@@ -232,7 +223,7 @@ func rename4() {
 }
 
 func rename5() {
-	commondir := "F:\\Pictures\\pron\\weibo\\2022\\2022-12\\2022-12-20"
+	commondir := weibodir + "\\2022\\2022-12\\2022-12-20"
 	files, _ := os.ReadDir(commondir)
 	timer := time.NewTicker(time.Second)
 	zeroTime := time.Time{}
@@ -307,8 +298,8 @@ func rename5() {
 			dir.PubAt = date
 
 		}
-		log.Println("rename:", commondir+fs.PathSeparator+fname, "F:\\Pictures\\pron\\weibo\\"+dir.Path())
-		err = os.Rename(commondir+fs.PathSeparator+fname, "F:\\Pictures\\pron\\weibo\\"+dir.Path())
+		log.Println("rename:", commondir+fs.PathSeparator+fname, weibodir+fs.PathSeparator+dir.Path())
+		err = os.Rename(commondir+fs.PathSeparator+fname, weibodir+fs.PathSeparator+dir.Path())
 		if err != nil {
 			log.Println(err)
 		}

@@ -144,18 +144,10 @@ func ConvertParams(v interface{}, escaper string) string {
 	case bool:
 		return strconv.FormatBool(v)
 	case time.Time:
-		if v.IsZero() {
-			return escaper + _const.TmFmtZero + escaper
-		} else {
-			return escaper + v.Format(_const.TmFmtWithMS) + escaper
-		}
+		return escaper + v.Format(_const.TmFmtWithMS) + escaper
 	case *time.Time:
 		if v != nil {
-			if v.IsZero() {
-				return escaper + _const.TmFmtZero + escaper
-			} else {
-				return escaper + v.Format(_const.TmFmtWithMS) + escaper
-			}
+			return escaper + v.Format(_const.TmFmtWithMS) + escaper
 		} else {
 			return _const.NullStr
 		}

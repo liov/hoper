@@ -14,5 +14,5 @@ message Time {
 message Model{
     string createdAt = 1 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
     string updateAt = 2 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-    string deletedAt = 3 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:0001-01-01 00:00:00;index"'}];
+    string deletedAt = 3 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
 }

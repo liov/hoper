@@ -13,11 +13,7 @@ import (
 
 func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
-	err := os.MkdirAll(config.Conf.Bilibili.DownloadVideoPath, 0777)
-	if err != nil {
-		panic(err)
-	}
-	err = os.MkdirAll(config.Conf.Bilibili.DownloadTmpPath, 0777)
+	err := os.MkdirAll(config.Conf.Bilibili.DownloadTmpPath, 0777)
 	if err != nil {
 		panic(err)
 	}

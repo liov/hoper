@@ -5,9 +5,10 @@ import (
 )
 
 const (
-	ZeroTime = "0000-00-00 00:00:00"
+	DateTimeZero  = "0001-01-01 00:00:00"
+	TimeStampZero = "0000-00-00 00:00:00"
 )
 
 const (
-	NotDeleted = dbi.ColumnDeletedAt + " = '" + ZeroTime + "'"
+	NotDeleted = dbi.ColumnDeletedAt + " = '" + DateTimeZero + "'"
 )

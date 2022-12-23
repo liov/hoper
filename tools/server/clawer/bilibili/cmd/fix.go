@@ -2,17 +2,21 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"github.com/liov/hoper/server/go/lib/initialize"
-	"github.com/liov/hoper/server/go/lib/utils/dao/db/postgres"
+	dbi "github.com/liov/hoper/server/go/lib/utils/dao/db/const"
 	"github.com/liov/hoper/server/go/lib/utils/fs"
 	"log"
 	"os"
 	"path"
 	"strconv"
 	"strings"
+	"time"
+	claweri "tools/clawer"
 	"tools/clawer/bilibili/config"
 	"tools/clawer/bilibili/dao"
+	"tools/clawer/bilibili/download"
 	"tools/clawer/bilibili/rpc"
 )
 
@@ -20,7 +24,7 @@ func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
 	//delete("F:\\B站\\video\\10139490\\10139490_207568591_395475557_～Alone～_alone_1_120.flv")
 	//deduplication()
-	dao.Dao.Hoper.Migrator().CreateTable(&dao.Video{})
+	fixName()
 }
 
 func fixRecord() {
@@ -29,7 +33,7 @@ func fixRecord() {
 	dao.Dao.Hoper.DB.Raw(`SELECT a.owner->'mid' up_id,b.aid,b.cid,a.title,a.p->'page' page,a.p->'part' part
 FROM ` + dao.TableNameVideo + ` b 
 LEFT JOIN (SELECT data->'title' title, data->'owner' owner, jsonb_path_query(data,'$.pages[*]') p FROM ` + dao.TableNameView + `)  a ON (a.p->'cid')::int8 = b.cid
-WHERE b.created_at > '2022-09-28 11:33:26' AND b.record = 0 AND b.` + postgres.NotDeleted + ` ORDER BY created_at`).Find(&videos)
+WHERE b.created_at > '2022-09-28 11:33:26' AND b.record = 0 AND b.` + dbi.NotDeleted + ` ORDER BY created_at`).Find(&videos)
 
 	for _, video := range videos {
 		if video.Part != video.Title {
@@ -154,90 +158,87 @@ type VideoName struct {
 
 func fixName() {
 
-	commondir := "D:\\F\\B站\\"
-
-	videoPath := make(map[int]*VideoName)
-	picPath := make(map[int]string)
-	vdir := commondir + "video_bak"
-	var cids []int
-	files, _ := os.ReadDir(vdir)
+	commondir := "F:\\B站\\0\\0001"
+	timer := time.NewTicker(time.Second)
+	files, _ := os.ReadDir(commondir)
+	uid := 0
+	m := make(map[int]time.Time)
+	ctx := context.Background()
 	for _, file := range files {
 		if file.IsDir() {
 			continue
 		}
+		info, _ := file.Info()
 		strs := strings.Split(file.Name(), "_")
 		aid, _ := strconv.Atoi(strs[0])
-		cid, _ := strconv.Atoi(strs[1])
-		cids = append(cids, cid)
-		videoPath[cid] = &VideoName{aid, file.Name(), strs}
-		if len(cids) == 100 {
-			fixNameVideoHelper(vdir, cids, videoPath)
-			cids = cids[:0]
-			videoPath = make(map[int]*VideoName)
-		}
-	}
-	if len(cids) > 0 {
-		fixNameVideoHelper(vdir, cids, videoPath)
-		cids = cids[:0]
-		videoPath = make(map[int]*VideoName)
-	}
-	fmt.Println(len(videoPath))
-	pdir := commondir + "pic_bak"
-	files, _ = os.ReadDir(pdir)
-	var aids []int
-	for _, file := range files {
-		if file.IsDir() {
-			continue
-		}
-		aidStr := strings.Split(file.Name(), "_")[0]
-		aid, _ := strconv.Atoi(aidStr)
-		aids = append(aids, aid)
-		picPath[aid] = file.Name()
-		if len(aids) == 100 {
-			fixNamePicHelper(pdir, aids, picPath)
-			aids = aids[:0]
-			picPath = make(map[int]string)
-		}
-	}
-	fmt.Println(len(picPath))
-	if len(aids) > 0 {
-		fixNamePicHelper(pdir, aids, picPath)
-		aids = aids[:0]
-		picPath = make(map[int]string)
-	}
-
-}
-
-func fixNameVideoHelper(vdir string, cids []int, videoPath map[int]*VideoName) {
-	var videos []*Video
-	dao.Dao.Hoper.DB.Raw(`SELECT a.owner->'mid' up_id,b.aid,b.cid,a.title,a.p->'page' page,a.p->'part' part
-FROM `+dao.TableNameVideo+` b 
-LEFT JOIN (SELECT data->'title' title, data->'owner' owner, jsonb_path_query(data,'$.pages[*]') p FROM `+dao.TableNameView+`)  a ON (a.p->'cid')::int8 = b.cid
-WHERE b.cid IN (?) `, cids).Scan(&videos)
-	for _, v := range videos {
-		cv, ok := videoPath[v.Cid]
-		if ok {
-			dir := vdir + fs.PathSeparator + strconv.Itoa(v.UpId)
-			_, err := os.Stat(dir)
-			if os.IsNotExist(err) {
-				err = os.Mkdir(dir, 0666)
-				if err != nil {
-					log.Println(err)
-				}
-			}
-			part := fs.PathClean(v.Part)
-
-			if strings.HasSuffix(cv.strs[2], part) {
-				part = "!part=title!"
-			}
-			newpath := dir + fs.PathSeparator + fmt.Sprintf("%d_%s_%s_%s_%s_%s_%s", v.UpId, cv.strs[0], cv.strs[1], cv.strs[2], part, cv.strs[3], cv.strs[4])
-			fmt.Println("rename:", newpath)
-			err = os.Rename(vdir+fs.PathSeparator+cv.VideoFileName, newpath)
+		pubAt, ok := m[aid]
+		if !ok {
+			var view dao.View
+			err := dao.Dao.Hoper.Where(`aid = ` + strs[0]).First(&view).Error
 			if err != nil {
 				log.Println(err)
+				<-timer.C
+				view2, err := download.RecordViewInfo(ctx, aid)
+				if view2 == nil {
+					log.Println(err)
+					continue
+				}
+				for _, page := range view2.Pages {
+					if len(view2.Pages) == 1 {
+						page.Part = download.PartEqTitle
+					}
+					video := download.NewVideo(view2.Owner.Mid, view2.Title, view2.Aid, page.Cid, page.Page, page.Part, view2.PubDate)
+					_, err := video.RecordVideo(ctx)
+					if err != nil {
+						log.Println(err)
+						continue
+					}
+				}
+				view = dao.View{
+					Bvid:    view2.Bvid,
+					Aid:     view2.Aid,
+					Uid:     view2.Owner.Mid,
+					Title:   view2.Title,
+					Desc:    view2.Desc,
+					Dynamic: view2.Dynamic,
+					Tid:     view2.Tid,
+					Pic:     view2.Pic,
+					Ctime:   time.Unix(int64(view2.Ctime), 0),
+					Tname:   view2.Tname,
+					Videos:  view2.Videos,
+					Pubdate: time.Unix(int64(view2.PubDate), 0),
+				}
 			}
+			pubAt = view.Pubdate
+			m[aid] = pubAt
+			uid = view.Uid
+		}
+
+		dir := claweri.Dir{
+			Platform:  3,
+			UserId:    uid,
+			KeyId:     aid,
+			BaseUrl:   file.Name()[len(strs[0])+1:],
+			Type:      1,
+			PubAt:     pubAt,
+			CreatedAt: info.ModTime(),
+		}
+
+		newpath := "F:\\B站\\" + dir.Path()
+		log.Println("rename:", commondir+fs.PathSeparator+file.Name(), newpath)
+		os.MkdirAll(fs.GetDir(newpath), 0666)
+		os.Rename(commondir+fs.PathSeparator+file.Name(), newpath)
+		dao.Dao.Hoper.Create(&dir)
+
+	}
+	files, _ = os.ReadDir(commondir)
+	if len(files) == 0 {
+		err := os.Remove(commondir)
+		if err != nil {
+			log.Println(err)
 		}
 	}
+
 }
 
 type PicName struct {
@@ -263,73 +264,6 @@ FROM  (SELECT  data->'owner' owner, aid FROM `+dao.TableNameView+` WHERE aid IN 
 			newpath := dir + fs.PathSeparator + strconv.Itoa(v.UpId) + "_" + cp
 			fmt.Println("rename:", newpath)
 			err = os.Rename(pdir+fs.PathSeparator+cp, newpath)
-			if err != nil {
-				log.Println(err)
-			}
-		}
-	}
-}
-
-func rename() {
-	commondir := "F:\\B站\\"
-	dirs, _ := os.ReadDir(commondir)
-	for _, dir := range dirs {
-		if dir.IsDir() {
-			newpicDir := commondir + "pic\\" + dir.Name() + "\\"
-			_, err := os.Stat(newpicDir)
-			if os.IsNotExist(err) {
-				err = os.Mkdir(newpicDir, 0666)
-				if err != nil {
-					log.Println(err)
-				}
-			}
-			newvidDir := commondir + "video\\" + dir.Name() + "\\"
-			_, err = os.Stat(newvidDir)
-			if os.IsNotExist(err) {
-				err = os.Mkdir(newvidDir, 0666)
-				if err != nil {
-					log.Println(err)
-				}
-			}
-			subpicdir := commondir + dir.Name() + "\\pic\\"
-			files, _ := os.ReadDir(subpicdir)
-			for _, file := range files {
-				fileName := file.Name()
-				filePath := subpicdir + file.Name()
-				err = os.Rename(filePath, newpicDir+fileName)
-				if err != nil {
-					log.Println(err)
-				}
-			}
-			files, _ = os.ReadDir(subpicdir)
-			if len(files) == 0 {
-				err = os.Remove(subpicdir)
-				if err != nil {
-					log.Println(err)
-				}
-			}
-			subviddir := commondir + dir.Name() + "\\video\\"
-			files, _ = os.ReadDir(subviddir)
-			for _, file := range files {
-				fileName := file.Name()
-				filePath := subviddir + file.Name()
-				err = os.Rename(filePath, newvidDir+fileName)
-				if err != nil {
-					log.Println(err)
-				}
-			}
-			files, _ = os.ReadDir(subviddir)
-			if len(files) == 0 {
-				err = os.Remove(subviddir)
-				if err != nil {
-					log.Println(err)
-				}
-			}
-		}
-
-		files, _ := os.ReadDir(commondir + dir.Name())
-		if len(files) == 0 {
-			err := os.Remove(commondir + dir.Name())
 			if err != nil {
 				log.Println(err)
 			}
