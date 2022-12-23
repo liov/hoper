@@ -27,7 +27,7 @@ var pdao PDao
 
 type Test struct {
 	Id        int
-	DeletedAt time.Time `gorm:"<-:false"`
+	DeletedAt time.Time
 }
 
 func main() {
@@ -39,6 +39,7 @@ func main() {
 	for _, test := range tests {
 		log.Println(test.DeletedAt == zeroTime)
 		log.Println(test.DeletedAt == zeroTime.Local())
+		log.Println(test.DeletedAt.UTC() == zeroTime)
 	}
-	pdao.Hoper.Create(&Test{Id: 6})
+	pdao.Hoper.Create(&Test{Id: 7})
 }

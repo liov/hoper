@@ -33,14 +33,14 @@ type View struct {
 	Dynamic   string `json:"dynamic"`
 	Tid       int
 	Pic       string
-	Ctime     time.Time `gorm:"type:timestamptz(6);default:'0001-01-01 00:00:00'"`
+	Ctime     time.Time
 	Tname     string
 	Videos    int
-	Pubdate   time.Time `gorm:"type:timestamptz(6);default:'0001-01-01 00:00:00'"`
+	Pubdate   time.Time
 	Record    int
 	CreatedAt time.Time `json:"created_at" gorm:"index;default:now()"`
 	UpdatedAt time.Time `json:"updated_at"`
-	DeletedAt time.Time `json:"deleted_at" gorm:"index;default:0001-01-01 00:00:00"`
+	DeletedAt time.Time `json:"deleted_at" gorm:"<-:false;index;"`
 }
 
 func (v *View) TableName() string {
@@ -59,7 +59,7 @@ type Video struct {
 	Record        int
 	CreatedAt     time.Time `json:"created_at" gorm:"index;default:now()"`
 	UpdatedAt     time.Time `json:"updated_at"`
-	DeletedAt     time.Time `json:"deleted_at" gorm:"index;default:0001-01-01 00:00:00"`
+	DeletedAt     time.Time `json:"deleted_at" gorm:"<-:false;index"`
 }
 
 func (v *Video) TableName() string {
@@ -73,13 +73,13 @@ type ViewBak struct {
 	Dynamic   string `json:"dynamic"`
 	Tid       string
 	Pic       string
-	Ctime     time.Time `gorm:"type:timestamptz(6);default:'0001-01-01 00:00:00'"`
+	Ctime     time.Time `gorm:"type:timestamptz(6)"`
 	Tname     string
 	Videos    int
-	Pubdate   time.Time `gorm:"type:timestamptz(6);default:'0001-01-01 00:00:00'"`
+	Pubdate   time.Time `gorm:"type:timestamptz(6)"`
 	CreatedAt time.Time `json:"created_at" gorm:"index;default:now()"`
 	UpdatedAt time.Time `json:"updated_at"`
-	DeletedAt time.Time `json:"deleted_at" gorm:"index;default:0001-01-01 00:00:00"`
+	DeletedAt time.Time `json:"deleted_at" gorm:"<-:false;index"`
 }
 
 func (v *ViewBak) TableName() string {
