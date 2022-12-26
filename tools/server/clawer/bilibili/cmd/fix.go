@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/liov/hoper/server/go/lib/initialize"
 	dbi "github.com/liov/hoper/server/go/lib/utils/dao/db/const"
+	"github.com/liov/hoper/server/go/lib/utils/dao/db/gorm/postgres"
 	"github.com/liov/hoper/server/go/lib/utils/fs"
 	"log"
 	"os"
@@ -24,7 +25,24 @@ func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
 	//delete("F:\\B站\\video\\10139490\\10139490_207568591_395475557_～Alone～_alone_1_120.flv")
 	//deduplication()
-	fixName()
+	//fixName()
+	fs.RangeDir("F:\\B站\\杂集", func(dir string, entry os.DirEntry) error {
+		var cid string
+		if strings.Contains(entry.Name(), "-") {
+			cid = strings.Split(entry.Name(), "-")[0]
+		}
+		if strings.Contains(entry.Name(), "_") {
+			cid = strings.Split(entry.Name(), "_")[0]
+		}
+		exists, err := postgres.Exists(dao.Dao.Hoper.DB, dao.TableNameVideo, "cid", cid, false)
+		if err != nil {
+			log.Println(err)
+		}
+		if exists {
+			log.Println(cid)
+		}
+		return nil
+	})
 }
 
 func fixRecord() {
@@ -244,31 +262,6 @@ func fixName() {
 type PicName struct {
 	Aid  int
 	UpId int
-}
-
-func fixNamePicHelper(pdir string, aids []int, picPath map[int]string) {
-	var pics []*PicName
-	dao.Dao.Hoper.DB.Raw(`SELECT a.owner->'mid' up_id,a.aid
-FROM  (SELECT  data->'owner' owner, aid FROM `+dao.TableNameView+` WHERE aid IN (?))  a`, aids).Scan(&pics)
-	for _, v := range pics {
-		cp, ok := picPath[v.Aid]
-		if ok {
-			dir := pdir + fs.PathSeparator + strconv.Itoa(v.UpId)
-			_, err := os.Stat(dir)
-			if os.IsNotExist(err) {
-				err = os.Mkdir(dir, 0666)
-				if err != nil {
-					log.Println(err)
-				}
-			}
-			newpath := dir + fs.PathSeparator + strconv.Itoa(v.UpId) + "_" + cp
-			fmt.Println("rename:", newpath)
-			err = os.Rename(pdir+fs.PathSeparator+cp, newpath)
-			if err != nil {
-				log.Println(err)
-			}
-		}
-	}
 }
 
 func delete(name string) {

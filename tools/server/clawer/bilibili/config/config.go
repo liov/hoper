@@ -42,7 +42,7 @@ func (c *config) Init() {
 	}
 	rpc.Cookie = c.Bilibili.Cookie
 	c.Bilibili.DownloadPath, _ = filepath.Abs(c.Bilibili.DownloadPath)
-	c.Bilibili.DownloadTmpPath = c.Bilibili.DownloadPath + fs.PathSeparator + "tmp"
+	c.Bilibili.DownloadTmpPath = c.Bilibili.DownloadTmpPath + fs.PathSeparator + "tmp"
 
 	path, err := exec.LookPath("ffmpeg")
 	if err != nil {

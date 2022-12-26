@@ -66,7 +66,22 @@ func RecordViewInfo(ctx context.Context, aid int) (*rpc.ViewInfo, error) {
 	}
 
 	bilibiliDao := dao.NewDao(ctx, dao.Dao.Hoper.DB)
-	exists, err := bilibiliDao.ViewExists(view.Aid)
+	exists, err := bilibiliDao.UserExists(view.Owner.Mid)
+	if err != nil {
+		return nil, err
+	}
+	if !exists {
+		err = dao.Dao.Hoper.DB.Create(&dao.User{
+			Id:   view.Owner.Mid,
+			Name: view.Owner.Name,
+			Face: view.Owner.Face,
+		}).Error
+		if err != nil && !postgres.IsDuplicate(err) {
+			return nil, err
+		}
+	}
+
+	exists, err = bilibiliDao.ViewExists(view.Aid)
 	if err != nil {
 		return nil, err
 	}
