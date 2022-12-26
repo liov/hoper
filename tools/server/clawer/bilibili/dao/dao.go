@@ -35,6 +35,10 @@ func (d *dao) ViewExists(aid int) (bool, error) {
 	return postgres.Exists(d.db, TableNameView, "aid", aid, false)
 }
 
+func (d *dao) UserExists(id int) (bool, error) {
+	return postgres.Exists(d.db, TableNameUser, "id", id, false)
+}
+
 func (d *dao) ViewInfo(aid int) (*View, error) {
 	var view View
 	err := d.db.Table(TableNameView).Where(`aid = ?`, aid).First(&view).Error
