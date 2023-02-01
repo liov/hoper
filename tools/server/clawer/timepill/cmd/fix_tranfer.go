@@ -65,7 +65,7 @@ func transfer(year string) {
 			oldpath, newpath := getDir(diary.UserId, diary.PhotoUrl, diary.Created)
 			_, err := os.Stat(oldpath)
 			if os.IsNotExist(err) {
-				err = timepill.DownloadPic(diary.UserId, diary.UserId, diary.Id, diary.PhotoUrl, diary.Created)
+				err = timepill.DownloadPic(diary.UserId, diary.Id, diary.PhotoUrl, diary.Created)
 				if err != nil {
 					log.Error(err)
 				}

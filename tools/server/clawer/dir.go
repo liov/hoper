@@ -67,9 +67,11 @@ func (d *DownloadMeta) Download(db *gorm.DB) error {
 			log.Info("下载文件失败：", err)
 			return err
 		}
-		err = db.Create(&d.Dir).Error
-		if err != nil {
-			return err
+		if db != nil {
+			err = db.Create(&d.Dir).Error
+			if err != nil {
+				return err
+			}
 		}
 		log.Info("下载文件成功：", filepath)
 	} else {
