@@ -64,7 +64,7 @@
     "spark-md5": "^3.0.1",
     "sr-sdk-wxapp": "^1.8.8-dev.0",
     "taro-plugin-pinia": "^1.0.0",
-    "tinymce": "^6.1.0",
+    "tinymce": "^6.3.1",
     "vue": "^3.2.39"
   },
   "devDependencies": {
