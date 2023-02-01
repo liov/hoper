@@ -49,8 +49,8 @@ func RecordNoteBook(notebookId int) {
 		if notebook != nil && notebook.Id > 0 {
 			Dao.Hoper.Create(notebook)
 		}
-		created, _ := timei.Parse(timei.TimeFormatDisplay, notebook.Updated)
-		DownloadCover(created, model.BookCoverType.String(), notebook.UserId, notebook.Id, notebook.CoverUrl)
+		/*created, _ := timei.Parse(timei.TimeFormatDisplay, notebook.Updated)
+		DownloadCover(created, model.BookCoverType.String(), notebook.UserId, notebook.Id, notebook.CoverUrl)*/
 	}
 
 }
@@ -203,7 +203,7 @@ func DownloadCover(created time.Time, typ string, userId, notebookId int, url st
 		},
 		DownloadPath: prepath,
 		Url:          url,
-	}).Download(Dao.Hoper.DB)
+	}).Download(nil)
 }
 
 func DiaryExists(diaryId int) bool {
@@ -240,12 +240,12 @@ func RecordUserDiaries(user *model.User) {
 	for _, notebook := range notebooks {
 		Dao.Hoper.Create(notebook)
 		if notebook.CoverUrl != "" {
-			created, _ := timei.Parse(timei.TimeFormatDisplay, notebook.Updated)
-			err = DownloadCover(created, model.BookCoverType.String(), user.UserId, notebook.Id, notebook.CoverUrl)
+			//created, _ := timei.Parse(timei.TimeFormatDisplay, notebook.Updated)
+			//err = DownloadCover(created, model.BookCoverType.String(), user.UserId, notebook.Id, notebook.CoverUrl)
 			//err = tnsq.PublishCover(Dao.NsqP.Producer, model.BookCoverType, nodebook.CoverUrl)
-			if err != nil {
-				log.Error(err)
-			}
+			//if err != nil {
+			//	log.Error(err)
+			//}
 		}
 		var page = 1
 		for {
@@ -319,12 +319,12 @@ func RecordUserById(userId int) *model.User {
 			}
 		}
 		if user.CoverUrl != "" {
-			created, _ := timei.Parse(timei.TimeFormatDisplay, user.Created)
-			err = DownloadCover(created, model.UserCoverType.String(), user.UserId, 0, user.CoverUrl)
-			//err = tnsq.PublishCover(Dao.NsqP.Producer, model.UserCoverType, user.CoverUrl)
-			if err != nil {
-				log.Error(err)
-			}
+			//created, _ := timei.Parse(timei.TimeFormatDisplay, user.Created)
+			//err = DownloadCover(created, model.UserCoverType.String(), user.UserId, 0, user.CoverUrl)
+			////err = tnsq.PublishCover(Dao.NsqP.Producer, model.UserCoverType, user.CoverUrl)
+			//if err != nil {
+			//	log.Error(err)
+			//}
 		}
 	}
 	return user
