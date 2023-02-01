@@ -78,8 +78,6 @@ type ViewBak struct {
 	Videos    int
 	Pubdate   time.Time `gorm:"type:timestamptz(6)"`
 	CreatedAt time.Time `json:"created_at" gorm:"index;default:now()"`
-	UpdatedAt time.Time `json:"updated_at"`
-	DeletedAt time.Time `json:"deleted_at" gorm:"<-:false;index"`
 }
 
 func (v *ViewBak) TableName() string {

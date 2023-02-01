@@ -71,6 +71,7 @@ export default defineConfig({
           "group-chat": ["./src/views/chat/index.vue"],
         },
       },
+      plugins: [],
     },
     minify: "terser",
     terserOptions: {

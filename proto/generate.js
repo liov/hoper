@@ -24,15 +24,20 @@ const protopath = __dirname;
 const libproto = libpath + "/protobuf";
 const third = libpath + "/protobuf/third";
 
-
+function include(isThird){
+  if (isThird) return `-I${third}`;
+  return  `-I${gateway} -I${googleapis} -I${protopath} -I${libproto} -I${third}`;
+}
 
 const dartConfig = {
   output: "D:/code/hoper\\client\\flutter\\lib\\generated\\protobuf",
   cwd: "D:/code/hoper\\client\\flutter",
-  getCmd(filepath) { `protoc -I${gateway} -I${googleapis} -I${protopath} -I${libproto} -I${third} ${path.join(filepath, "*.proto")} --dart_out=grpc:${this.output}`},
+  getCmd(filepath,isThird) {
+   return `protoc ${include(isThird)} ${path.join(filepath, "*.proto")} --dart_out=grpc:${this.output}`
+  },
 };
 
-function dartgenerate(dir, exclude, config) {
+function dartgenerate(dir, exclude, config,isThird=false) {
   fs.readdir(dir, function(err, files) {
     files.forEach(function(filename) {
       //获取当前文件的绝对路径
@@ -47,13 +52,13 @@ function dartgenerate(dir, exclude, config) {
               return;
             }
             try {
-              process.execSync(config.getCmd(filepath), {
+              process.execSync(config.getCmd(filepath,isThird), {
                 cwd: config.cwd
               });
             } catch (e) {
               console.log(e);
             }
-            dartgenerate(filepath, [],config);
+            dartgenerate(filepath, [],config,isThird);
           }
         }
       });

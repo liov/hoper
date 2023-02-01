@@ -1597,3 +1597,32 @@ https://www.timeanddate.com/time/zone/china/shanghai
 不过在我的chrome版本上，却直接返回 Sun Dec 31 1899 00:00:00 GMT+0800，估计和chrome版本有关。
 
 mysql是timestamp可以为0000-00-00 00:00:00,datetime 也是0001-01-01 00:00:00
+
+# sql两种时间
+```sql
+-- 22.5秒
+SELECT 
+	`opi`.`id` 
+FROM
+	order_package_info opi 
+WHERE
+	opi.id < 7113538  AND opi.collect_time = '00-00-00 00:00:00' AND opi.created_at > '2022-12-20 09:15:55' 
+	AND opi.STATUS = 0 
+ORDER BY
+	opi.id DESC 
+	LIMIT 100
+```
+```sql
+-- 0.5秒
+SELECT
+    `opi`.`id`
+FROM
+    order_package_info opi
+WHERE
+    opi.id < 7113638  AND opi.collect_time = '00-00-00 00:00:00' AND opi.created_at > '2022-12-20 09:15:55'
+  AND opi.STATUS = 0
+ORDER BY
+    opi.id DESC
+LIMIT 100
+```
+当<id范围内满足的行数不满100条时，会变得奇慢，原因是不足100，会在所有id小于指定id的数据里遍历查找

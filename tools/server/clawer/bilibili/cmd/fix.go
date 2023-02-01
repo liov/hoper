@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/liov/hoper/server/go/lib/initialize"
 	dbi "github.com/liov/hoper/server/go/lib/utils/dao/db/const"
-	"github.com/liov/hoper/server/go/lib/utils/dao/db/gorm/postgres"
 	"github.com/liov/hoper/server/go/lib/utils/fs"
 	"log"
 	"os"
@@ -26,20 +25,10 @@ func main() {
 	//delete("F:\\B站\\video\\10139490\\10139490_207568591_395475557_～Alone～_alone_1_120.flv")
 	//deduplication()
 	//fixName()
-	fs.RangeDir("F:\\B站\\杂集", func(dir string, entry os.DirEntry) error {
-		var cid string
-		if strings.Contains(entry.Name(), "-") {
-			cid = strings.Split(entry.Name(), "-")[0]
-		}
-		if strings.Contains(entry.Name(), "_") {
-			cid = strings.Split(entry.Name(), "_")[0]
-		}
-		exists, err := postgres.Exists(dao.Dao.Hoper.DB, dao.TableNameVideo, "cid", cid, false)
-		if err != nil {
-			log.Println(err)
-		}
-		if exists {
-			log.Println(cid)
+	fs.RangeDir("F:\\debug\\B站", func(dir string, entry os.DirEntry) error {
+		if strings.HasSuffix(entry.Name(), "64.flv") {
+			log.Println(entry.Name())
+			os.Remove(dir + fs.PathSeparator + entry.Name())
 		}
 		return nil
 	})

@@ -16,7 +16,7 @@ import 'package:app/generated/protobuf/request/param.pb.dart' as $1;
 class MomentDetailView extends StatelessWidget {
   final CommentController commentController = Get.find();
 
-  MomentDetailView() : super() {
+  MomentDetailView({super.key}){
     if (Get.arguments != null) {
       moment = Get.arguments;
       commentController.refId = moment.id;
@@ -67,14 +67,14 @@ class MomentDetailView extends StatelessWidget {
             child: Scaffold(
               appBar: AppBar(
                 centerTitle: true,
-                title: Text('瞬间'),
+                title: const Text('瞬间'),
               ),
               body: Center(
                 child: Column(
                   children: [
                     MomentItem(moment: moment),
                     Expanded(flex: 10, child: CommentListViewV2(moment.ext)),
-                    Expanded(flex: 1, child: const Text('')),
+                    const Expanded(flex: 1, child: Text('')),
                   ],
                 ),
               ),

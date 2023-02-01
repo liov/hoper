@@ -30,7 +30,7 @@ export default {
       withCredentials,
       classify,
     }) => {
-      const res = await upload(classify, file);
+      const res = await upload(file);
       onSuccess({ data: res, status: 200 }, file);
       file.status = "done";
     };

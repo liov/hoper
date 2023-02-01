@@ -49,7 +49,8 @@ export const app = createApp(App)
   .use(Vant.DatetimePicker)
   .use(Vant.Checkbox)
   .use(Vant.CheckboxGroup)
-  .use(Vant.Popover);
+  .use(Vant.Popover)
+  .use(Vant.ConfigProvider);
 
 app.mount("#app");
 
