@@ -1,0 +1,85 @@
+<template>
+  <a-row>
+    <a-col :span="3" />
+    <a-col :span="18">
+      <div
+        style="
+          height: 60px;
+          line-height: 60px;
+          margin: 10px;
+          text-align: center;
+          font-size: 26px;
+          color: rgba(0, 0, 0, 0.65);
+        "
+      >
+        {{ article.title }}
+      </div>
+      <a-divider />
+      <div v-if="article.html_content !== ''" v-html="article.html_content" />
+      <div v-else v-html="md.render(article.content)" />
+      <a-divider />
+      <div style="margin: 0 auto">
+        <span @click="star">
+          <star-outlined style="margin-right: 8px" />
+          {{ article.collect_count }}
+        </span>
+        <span @click="like">
+          <like-outlined style="margin-right: 8px" />
+          {{ article.like_count }}
+        </span>
+        <span @click="comment">
+          <message-outlined style="margin-right: 8px" />
+          {{ article.comment_count }}
+        </span>
+        <a-divider type="vertical" />
+        <a-tag
+          v-for="(subitem, subindex) in article.categories"
+          :key="subindex"
+        >
+          {{ subitem.name }}
+        </a-tag>
+        <a-divider type="vertical" />
+        <a-checkable-tag
+          v-for="(subitem, subindex) in article.tags"
+          :key="subindex"
+          :color="color[subindex]"
+        >
+          {{ subitem.name }}
+        </a-checkable-tag>
+        <a-divider type="vertical" />
+        <a-rate :default-value="2.5" allow-half />
+      </div>
+    </a-col>
+    <a-col :span="3" />
+  </a-row>
+</template>
+
+<script setup lang="ts">
+import { onBeforeUpdate, onMounted, onUpdated, reactive, ref, Ref } from "vue";
+import { tagColor } from "@/views/article/const";
+import ArticleClient from "@/service/article";
+import { useRoute, useRouter } from "vue-router";
+import {
+  StarOutlined,
+  LikeOutlined,
+  MessageOutlined,
+  EditOutlined,
+} from "@ant-design/icons-vue";
+import axios from "axios";
+import { message } from "ant-design-vue";
+import MarkdownIt from "markdown-it";
+const md = new MarkdownIt();
+const route = useRoute();
+const color: Ref<string[]> = ref(tagColor);
+const article: Ref<any> = ref({});
+article.value = await ArticleClient.info(route.params.id);
+onBeforeUpdate(async () => {
+  article.value = await ArticleClient.info(route.params.id);
+});
+
+async function star() {}
+function like() {}
+function comment() {}
+</script>
+
+<style scoped lang="less"></style>

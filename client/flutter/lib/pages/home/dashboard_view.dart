@@ -6,6 +6,8 @@ import 'package:app/global/global_service.dart';
 import 'home_controller.dart';
 
 class DashboardView extends GetView<HomeController> {
+  const DashboardView({super.key});
+
   @override
   Widget build(BuildContext context) {
     globalService.logger.d('DashboardView重绘');

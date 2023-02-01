@@ -8,11 +8,16 @@ const libpath = "D:/code/hoper/server/go/lib";
 const libproto = libpath + "/protobuf";
 const third = libpath + "/protobuf/third";
 
+function include(isThird) {
+  if (isThird) return `-I${third}`;
+  return `-I${protopath} -I${libproto} -I${third}`;
+}
+
 const grpcWebConfig = {
   output: "D:/code/hoper\\client\\h5\\generated\\grpc-web",
   cwd: "D:/code/hoper\\client\\h5",
-  getCmd(filepath) {
-    return `protoc -I${protopath} -I${libproto} -I${third}  ${path.join(
+  getCmd(filepath, isThird) {
+    return `protoc ${include(isThird)}  ${path.join(
       filepath,
       "*.proto"
     )} --js_out=import_style=commonjs,binary:${
@@ -24,15 +29,15 @@ const grpcWebConfig = {
 const protobufTsConfig = {
   output: "D:/code/hoper\\client\\h5\\generated\\protobuf-ts",
   cwd: "D:/code/hoper\\client\\h5",
-  getCmd(filepath) {
-    return `npx protoc -I${protopath} -I${libproto} -I${third}  ${path.join(
+  getCmd(filepath, isThird) {
+    return `npx protoc ${include(isThird)}  ${path.join(
       filepath,
       "*.proto"
     )} --ts_out ${this.output}`;
   },
 };
 
-function generate(dir, exclude, config) {
+function generate(dir, exclude, config, isThird = false) {
   fs.readdir(dir, function (err, files) {
     files.forEach(function (filename) {
       //获取当前文件的绝对路径
@@ -47,13 +52,13 @@ function generate(dir, exclude, config) {
               return;
             }
             try {
-              process.execSync(config.getCmd(filepath), {
+              process.execSync(config.getCmd(filepath, isThird), {
                 cwd: config.cwd,
               });
             } catch (e) {
               console.log(e);
             }
-            generate(filepath, [], config);
+            generate(filepath, [], config, isThird);
           }
         }
       });
@@ -63,4 +68,4 @@ function generate(dir, exclude, config) {
 
 generate(protopath, [], protobufTsConfig);
 generate(libproto, ["third"], protobufTsConfig);
-generate(third, [], protobufTsConfig);
+generate(third, [], protobufTsConfig, true);

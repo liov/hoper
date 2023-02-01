@@ -140,7 +140,7 @@ func ViewRecordUpdate(ctx context.Context, aid int) (*rpc.ViewInfo, error) {
 		return RecordViewInfo(ctx, aid)
 	}
 
-	dao.Dao.Hoper.Exec(`INSERT INTO `+dao.TableNameViewBak+`(aid,data) (SELECT aid,data FROM `+dao.TableNameView+` WHERE aid = ?) `, aid)
+	dao.Dao.Hoper.Exec(`INSERT INTO `+dao.TableNameViewBak+`(aid,title,desc,dynamic,tid,pic,ctime,tname,videos,pubdate) (SELECT aid,title,desc,dynamic,tid,pic,ctime,tname,videos,pubdate FROM `+dao.TableNameView+` WHERE aid = ?) `, aid)
 	/*	if err != nil {
 		return nil, err
 	}*/

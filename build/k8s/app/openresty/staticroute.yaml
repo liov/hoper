@@ -9,6 +9,7 @@ spec:
       match:
         hosts:
           - static.hoper.xyz
+          - m.hoper.xyz
           - hoper.xyz
         paths:
           - /*
@@ -17,7 +18,13 @@ spec:
           servicePort: 80
           resolveGranularity: service
       plugins:
+        - name: real-ip
+          enable: true
+          config:
+            source: http_x_forwarded_for
         - name: redirect
           enable: true
           config:
             http_to_https: true
+        - name: gzip
+          enable: true

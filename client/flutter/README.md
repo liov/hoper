@@ -84,3 +84,5 @@ E:\protoc\bin\protoc.exe -IE:\gopath\pkg\mod\github.com\grpc-ecosystem\grpc-gate
 
 
 E:\protoc\bin\protoc.exe -ID:\hoper\server\go\lib\protobuf -ID:\hoper\server\go\lib\protobuf/third/google/protobuf/wrappers.proto --dart_out=grpc:D:\hoper\client\flutter\lib\generated\protobuf
+
+flutter create --platforms=windows .

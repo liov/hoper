@@ -7,7 +7,7 @@ typedef OnBuildNode = Widget Function(
     );
 
 class JsonViewerRoot extends StatefulWidget {
-  JsonViewerRoot({
+  JsonViewerRoot({super.key,
     /// json object
     required this.jsonObj,
 

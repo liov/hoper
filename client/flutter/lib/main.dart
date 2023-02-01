@@ -17,7 +17,6 @@ import 'package:app/global/state/app.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Isolate.spawn(serve, 3000);
   ErrorWidget.builder = (FlutterErrorDetails flutterErrorDetails) {
     globalService.logger.d(flutterErrorDetails.toString());
     return const Center(
@@ -47,7 +46,7 @@ Future<void> main() async {
             ),
           ),
       //home: HomeView(),
-      initialRoute: Routes.HOME,
+      initialRoute: Routes.PICTURE,
       initialBinding: BindingsBuilder.put(() => globalState),
       getPages: AppPages.routes,
       localeListResolutionCallback:

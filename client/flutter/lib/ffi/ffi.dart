@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:isolate';
 import 'package:ffi/ffi.dart';
 import 'dart:io'; // For Platform.isX
 import 'dart:math'; // For Platform.isX
@@ -68,7 +69,7 @@ nativeRustLib
     .asFunction();
 
 void serve(int port){
-  funServe(port);
+  Isolate.spawn(funServe, 3000);
 }
 
 final int Function(int x) test =

@@ -237,7 +237,7 @@ message TagGroupListReq{
 
 message TagGroupListRep{
   int64 total = 1;
-  map<int32, TagListRep> data = 2;
+  map<int32, TagListRep> data = 2 [js_type = ""];
 }
 
 message AddAttrReq {
