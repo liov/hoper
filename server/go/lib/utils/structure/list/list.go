@@ -8,7 +8,7 @@ import (
 
 // 链表结点
 type Node struct {
-	data       interface{}
+	Data       interface{}
 	next, prev *Node
 }
 
@@ -33,7 +33,7 @@ func (l *LinkList) IsEmpty() bool {
 }
 
 // 获取链表长度
-func (l *LinkList) GetLength() int {
+func (l *LinkList) Length() int {
 	return l.size
 }
 
@@ -55,7 +55,7 @@ func (l *LinkList) GetNode(e interface{}) *Node {
 	var p *Node = l.head
 	for p != nil {
 		//找到该数据所在结点
-		if e == p.data {
+		if e == p.Data {
 			return p
 		} else {
 			p = p.next
@@ -64,11 +64,19 @@ func (l *LinkList) GetNode(e interface{}) *Node {
 	return nil
 }
 
+// 弹出并返回第一个结点
+func (l *LinkList) Pop() *Node {
+	var p *Node = l.head
+	l.head = p.next
+	l.head.prev = nil
+	return p
+}
+
 // 在链表尾部添加数据
 func (l *LinkList) Append(e interface{}) {
 	//为数据创建新结点
 	newNode := Node{}
-	newNode.data = e
+	newNode.Data = e
 	newNode.next = nil
 
 	if l.size == 0 {
@@ -84,7 +92,7 @@ func (l *LinkList) Append(e interface{}) {
 // 在链表头部插入数据
 func (l *LinkList) InsertHead(e interface{}) {
 	newNode := Node{}
-	newNode.data = e
+	newNode.Data = e
 	newNode.next = l.head
 	l.head = &newNode
 	if l.size == 0 {
@@ -98,7 +106,7 @@ func (l *LinkList) InsertAfterNode(pre *Node, e interface{}) {
 	//如果链表中存在该结点，才进行插入
 	if l.Exist(pre) {
 		newNode := Node{}
-		newNode.data = e
+		newNode.Data = e
 		if pre.next == nil {
 			l.Append(e)
 		} else {
@@ -116,7 +124,7 @@ func (l *LinkList) InsertAfterData(preData interface{}, e interface{}) bool {
 	var p *Node = l.head
 	for p != nil {
 		//找到该数据所在结点
-		if p.data == preData {
+		if p.Data == preData {
 			l.InsertAfterNode(p, e)
 			return true
 		} else {
@@ -205,8 +213,8 @@ func (l *LinkList) Traverse(f func(interface{})) {
 		log.Error("LinkList is empty")
 	} else {
 		for p != nil {
-			if p.data != nil {
-				f(p.data)
+			if p.Data != nil {
+				f(p.Data)
 			}
 			p = p.next
 		}
@@ -216,7 +224,7 @@ func (l *LinkList) Traverse(f func(interface{})) {
 // 打印链表信息
 func (l *LinkList) PrintInfo() {
 	fmt.Println("###############################################")
-	fmt.Println("链表长度为：", l.GetLength())
+	fmt.Println("链表长度为：", l.Length())
 	fmt.Println("链表是否为空:", l.IsEmpty())
 	fmt.Print("遍历链表：")
 	l.Traverse(func(data interface{}) { log.Info(data, " ") })

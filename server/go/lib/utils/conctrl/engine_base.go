@@ -2,9 +2,8 @@ package conctrl
 
 import (
 	"context"
+	"github.com/liov/hoper/server/go/lib/utils/structure/list"
 	synci "github.com/liov/hoper/server/go/lib/utils/sync"
-	"github.com/liov/hoper/server/go/lib_v2/utils/structure/heap"
-	"github.com/liov/hoper/server/go/lib_v2/utils/structure/list"
 	"log"
 	"runtime/debug"
 	"sync"
@@ -61,26 +60,26 @@ func (e *BaseEngine) Run(tasks ...*BaseTask) {
 
 	go func() {
 		timer := time.NewTimer(time.Second * 5)
-		workerList := list.NewSimpleList[*Worker]()
-		taskList := heap.Heap[*BaseTask]{}
+		workerList := list.CreateLinkList()
+		taskHeap := BaseTaskHeap{}
 		var emptyTimes uint
 		var readyWorkerCh chan *BaseTask
 		var readyTask *BaseTask
 	loop:
 		for {
-			if workerList.Size > 0 && len(taskList) > 0 {
+			if workerList.Length() > 0 && len(taskHeap) > 0 {
 				if readyWorkerCh == nil {
-					readyWorkerCh = workerList.Pop().taskCh
+					readyWorkerCh = workerList.Pop().Data.(*Worker).taskCh
 				}
 				if readyTask == nil {
-					readyTask = taskList.Pop()
+					readyTask = taskHeap.Pop().(*BaseTask)
 				}
 			}
 
-			if len(taskList) > int(e.limitWaitTaskCount) {
+			if len(taskHeap) > int(e.limitWaitTaskCount) {
 				select {
 				case readyWorker := <-e.workerChan:
-					workerList.Push(readyWorker)
+					workerList.Append(readyWorker)
 				case readyWorkerCh <- readyTask:
 					readyWorkerCh = nil
 					readyTask = nil
@@ -91,15 +90,15 @@ func (e *BaseEngine) Run(tasks ...*BaseTask) {
 			} else {
 				select {
 				case readyTaskTmp := <-e.taskChan:
-					taskList.Push(readyTaskTmp)
+					taskHeap.Push(readyTaskTmp)
 				case readyWorker := <-e.workerChan:
-					workerList.Push(readyWorker)
+					workerList.Append(readyWorker)
 				case readyWorkerCh <- readyTask:
 					readyWorkerCh = nil
 					readyTask = nil
 				case <-timer.C:
 					//检测任务是否已空
-					if workerList.Size == uint(e.currentWorkerCount) && len(taskList) == 0 {
+					if uint(workerList.Length()) == uint(e.currentWorkerCount) && len(taskHeap) == 0 {
 						emptyTimes++
 						if emptyTimes > 2 {
 							log.Println("task is empty")

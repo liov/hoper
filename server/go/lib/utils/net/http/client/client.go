@@ -379,6 +379,7 @@ func (req *RequestParams) Do(param, response interface{}) error {
 			if resp != nil {
 				resp.Body.Close()
 			}
+			return err
 		}
 	} else {
 		reader = resp.Body

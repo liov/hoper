@@ -12,7 +12,7 @@ func New(l int) MaxHeap {
 	return maxHeap
 }
 
-func NewMaxHeapFromArr(arr []int) MaxHeap {
+func NewMaxHeapFromArray(arr []int) MaxHeap {
 	heap := MaxHeap(arr)
 	for i := 1; i < len(arr); i++ {
 		heap.adjustUp(i)

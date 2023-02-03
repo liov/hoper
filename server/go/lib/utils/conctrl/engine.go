@@ -3,7 +3,7 @@ package conctrl
 import (
 	"context"
 	"github.com/liov/hoper/server/go/lib/utils/gen"
-	"github.com/liov/hoper/server/go/lib_v2/utils/slices"
+	"github.com/liov/hoper/server/go/lib/utils/slices"
 	"log"
 	"strconv"
 	"sync"
@@ -36,7 +36,7 @@ func NewEngine(workerCount uint) *Engine {
 }
 
 func (e *Engine) SkipKind(kinds ...Kind) *Engine {
-	length := slices.Max(kinds) + 1
+	length := slices.Uint8Max(kinds) + 1
 	if e.kindHandler == nil {
 		e.kindHandler = make([]*KindHandler, length)
 	}
