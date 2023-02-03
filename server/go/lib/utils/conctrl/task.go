@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Kind uint8
+type Kind = uint8
 
 const (
 	KindNormal = iota
@@ -16,6 +16,30 @@ type BaseTaskFunc func(context.Context)
 type BaseTask struct {
 	BaseTaskMeta
 	BaseTaskFunc
+}
+
+type BaseTaskHeap []*BaseTask
+
+func (b *BaseTaskHeap) Less(i, j int) bool {
+	return (*b)[i].Priority < (*b)[j].Priority
+}
+
+func (b *BaseTaskHeap) Swap(i, j int) {
+	(*b)[i], (*b)[j] = (*b)[j], (*b)[i]
+}
+
+func (b *BaseTaskHeap) Push(x any) {
+	*b = append(*b, x.(*BaseTask))
+}
+
+func (b *BaseTaskHeap) Pop() any {
+	v := (*b)[b.Len()-1]
+	*b = (*b)[:b.Len()-1]
+	return v
+}
+
+func (b *BaseTaskHeap) Len() int {
+	return len(*b)
 }
 
 type BaseTaskMeta struct {

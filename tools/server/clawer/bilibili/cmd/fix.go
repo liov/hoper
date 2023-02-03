@@ -23,15 +23,15 @@ import (
 func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
 	//delete("F:\\B站\\video\\10139490\\10139490_207568591_395475557_～Alone～_alone_1_120.flv")
-	//deduplication()
+	deduplication()
 	//fixName()
-	fs.RangeDir("F:\\debug\\B站", func(dir string, entry os.DirEntry) error {
+	/*fs.RangeDir("F:\\debug\\B站", func(dir string, entry os.DirEntry) error {
 		if strings.HasSuffix(entry.Name(), "64.flv") {
 			log.Println(entry.Name())
 			os.Remove(dir + fs.PathSeparator + entry.Name())
 		}
 		return nil
-	})
+	})*/
 }
 
 func fixRecord() {
@@ -262,38 +262,46 @@ func delete(name string) {
 var apiservice = &rpc.API{}
 
 func deduplication() {
-	dir := "F:\\B站\\video"
+	dir := "G:\\B站"
 	log.Println(path.Dir(dir))
-	dirs, _ := os.ReadDir(dir)
+	userDirs, _ := os.ReadDir(dir)
 
-	for _, subdir := range dirs {
-		if subdir.IsDir() {
-			m := make(map[string]string)
-			files, _ := os.ReadDir(dir + fs.PathSeparator + subdir.Name())
-			for _, file := range files {
-				if strings.HasSuffix(file.Name(), "downloading") {
-					os.Remove(dir + fs.PathSeparator + subdir.Name() + fs.PathSeparator + file.Name())
-					continue
-				}
-				cid := strings.Split(file.Name(), "_")[2]
-				if path, ok := m[cid]; ok {
-					remove := file.Name()
-					if strings.HasSuffix(path, ".flv") {
-						if strings.HasSuffix(remove, ".flv") {
-							if strings.Contains(path, "_1_") {
+	for _, userDir := range userDirs {
+		if userDir.IsDir() {
+			subDir := dir + fs.PathSeparator + userDir.Name()
+			yearDirs, _ := os.ReadDir(subDir)
+			for _, yearDir := range yearDirs {
+				subDir1 := subDir + fs.PathSeparator + yearDir.Name()
+				m := make(map[string]string)
+				files, _ := os.ReadDir(subDir1)
+				for _, file := range files {
+					if !strings.HasSuffix(file.Name(), ".flv") && !strings.HasSuffix(file.Name(), ".mp4") {
+						continue
+					}
+					if strings.HasSuffix(file.Name(), "downloading") {
+						os.Remove(subDir1 + fs.PathSeparator + file.Name())
+						continue
+					}
+					cid := strings.Split(file.Name(), "_")[3]
+					if path, ok := m[cid]; ok {
+						remove := file.Name()
+						if strings.HasSuffix(path, ".flv") {
+							if strings.HasSuffix(remove, ".flv") {
+								if strings.Contains(path, "_1_") {
+									remove = path
+								}
+							} else {
 								remove = path
 							}
-						} else {
-							remove = path
+
 						}
-
+						log.Println(remove)
+						os.Remove(subDir1 + fs.PathSeparator + remove)
+					} else {
+						m[cid] = file.Name()
 					}
-					log.Println(remove)
-					os.Remove(dir + fs.PathSeparator + subdir.Name() + fs.PathSeparator + remove)
-				} else {
-					m[cid] = file.Name()
-				}
 
+				}
 			}
 		}
 	}

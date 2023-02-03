@@ -57,7 +57,6 @@ func (e *BaseEngine[KEY, T, W]) SpeedLimited(interval time.Duration) {
 }
 
 func (e *BaseEngine[KEY, T, W]) RandSpeedLimited(start, stop time.Duration) {
-	rand.Seed(time.Now().UnixNano())
 	e.randSpeedLimitBase, e.randSpeedLimitRange = start, stop-start
 	e.speedLimit = time.NewTimer(time.Duration(rand.Intn(int(e.randSpeedLimitBase))) + e.randSpeedLimitRange)
 }

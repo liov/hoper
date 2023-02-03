@@ -9,8 +9,8 @@ import (
 	"strings"
 )
 
-const BackUpDisk = "F:\\Pictures\\"
-const BackUpDiskPron = "F:\\Pictures\\pron\\"
+const BackUpDisk = "G:\\Pictures\\"
+const BackUpDiskPron = "G:\\Pictures\\pron\\"
 
 const sep = string(os.PathSeparator)
 

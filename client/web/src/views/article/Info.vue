@@ -15,8 +15,7 @@
         {{ article.title }}
       </div>
       <a-divider />
-      <div v-if="article.html_content !== ''" v-html="article.html_content" />
-      <div v-else v-html="md.render(article.content)" />
+      <div v-html="article.html_content" />
       <a-divider />
       <div style="margin: 0 auto">
         <span @click="star">
@@ -67,14 +66,26 @@ import {
 } from "@ant-design/icons-vue";
 import axios from "axios";
 import { message } from "ant-design-vue";
-import MarkdownIt from "markdown-it";
-const md = new MarkdownIt();
+let md = undefined;
 const route = useRoute();
 const color: Ref<string[]> = ref(tagColor);
 const article: Ref<any> = ref({});
 article.value = await ArticleClient.info(route.params.id);
+const content = ref(article.value.html_content);
+
+if (article.value.content_type == 0) {
+  const MarkDownIt = await import("markdown-it");
+  md = MarkDownIt.default();
+  article.value.html_content = md.render(article.value.content);
+}
+
 onBeforeUpdate(async () => {
   article.value = await ArticleClient.info(route.params.id);
+  if (!md && article.value.content_type == 0) {
+    const MarkDownIt = await import("markdown-it");
+    md = MarkDownIt.default();
+  }
+  article.value.html_content = md.render(article.value.content);
 });
 
 async function star() {}

@@ -2,15 +2,16 @@ package conctrl
 
 import (
 	"context"
+	"github.com/dgraph-io/ristretto"
 	"github.com/liov/hoper/server/go/lib_v2/utils/slices"
+	"golang.org/x/time/rate"
 	"log"
-	"sync"
 	"time"
 )
 
 type Engine[KEY comparable, T, W any] struct {
 	*BaseEngine[KEY, T, W]
-	done        sync.Map
+	done        *ristretto.Cache
 	TasksChan   chan []*Task[KEY, T]
 	kindHandler []*KindHandler[KEY, T]
 	errHandler  func(task *Task[KEY, T])
@@ -18,15 +19,24 @@ type Engine[KEY comparable, T, W any] struct {
 }
 
 type KindHandler[KEY comparable, T any] struct {
-	Skip   bool
-	Ticker *time.Ticker
+	Skip    bool
+	Ticker  *time.Ticker
+	Limiter *rate.Limiter
 	// TODO 指定Kind的Handler
 	HandleFun TaskFunc[KEY, T]
 }
 
 func NewEngine[KEY comparable, T, W any](workerCount uint) *Engine[KEY, T, W] {
+	cache, _ := ristretto.NewCache(&ristretto.Config{
+		NumCounters:        1e7,     // number of keys to track frequency of (10M).
+		MaxCost:            1 << 30, // maximum cost of cache (MaxCost * 1MB).
+		BufferItems:        64,      // number of keys per Get buffer.
+		Metrics:            false,   // number of keys per Get buffer.
+		IgnoreInternalCost: true,
+	})
 	return &Engine[KEY, T, W]{
 		BaseEngine: NewBaseEngine[KEY, T, W](workerCount),
+		done:       cache,
 		errHandler: func(task *Task[KEY, T]) {
 			log.Println(task.errs)
 		},
@@ -67,6 +77,11 @@ func (e *Engine[KEY, T, W]) Timer(kind Kind, interval time.Duration) *Engine[KEY
 	return e
 }
 
+func (e *Engine[KEY, T, W]) Limiter(kind Kind, r rate.Limit, b int) *Engine[KEY, T, W] {
+	e.kindLimiter(kind, r, b)
+	return e
+}
+
 // 多个kind共用一个timer
 func (e *Engine[KEY, T, W]) KindGroupTimer(interval time.Duration, kinds ...Kind) *Engine[KEY, T, W] {
 	ticker := time.NewTicker(interval)
@@ -87,6 +102,21 @@ func (e *Engine[KEY, T, W]) kindTimer(kind Kind, ticker *time.Ticker) {
 		e.kindHandler[kind] = &KindHandler[KEY, T]{Ticker: ticker}
 	} else {
 		e.kindHandler[kind].Ticker = ticker
+	}
+
+}
+
+func (e *Engine[KEY, T, W]) kindLimiter(kind Kind, r rate.Limit, b int) {
+	if e.kindHandler == nil {
+		e.kindHandler = make([]*KindHandler[KEY, T], int(kind)+1)
+	}
+	if int(kind)+1 > len(e.kindHandler) {
+		e.kindHandler = append(e.kindHandler, make([]*KindHandler[KEY, T], int(kind)+1-len(e.kindHandler))...)
+	}
+	if e.kindHandler[kind] == nil {
+		e.kindHandler[kind] = &KindHandler[KEY, T]{Limiter: rate.NewLimiter(r, b)}
+	} else {
+		e.kindHandler[kind].Limiter = rate.NewLimiter(r, b)
 	}
 
 }
@@ -123,7 +153,7 @@ func (e *Engine[KEY, T, W]) BaseTask(task *Task[KEY, T]) *BaseTask[KEY, T] {
 	zeroKey := *new(KEY)
 
 	if task.Key != zeroKey {
-		if _, ok := e.done.Load(task.Key); ok {
+		if _, ok := e.done.Get(task.Key); ok {
 			return nil
 		}
 	}
@@ -147,7 +177,7 @@ func (e *Engine[KEY, T, W]) BaseTask(task *Task[KEY, T]) *BaseTask[KEY, T] {
 				return
 			}
 			if task.Key != zeroKey {
-				e.done.Store(task.Key, struct{}{})
+				e.done.SetWithTTL(task.Key, struct{}{}, 1, time.Hour)
 			}
 			if len(tasks) > 0 {
 				e.AsyncAddTask(task.Priority+1, tasks...)

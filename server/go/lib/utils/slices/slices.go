@@ -52,3 +52,31 @@ func Sort(s []int) {
 	slice := IntSlice{s: s}
 	slice.Sort()
 }
+
+func IntMax(slices []int) int {
+	if len(slices) == 0 {
+		return 0
+	}
+	max := slices[0]
+	n := len(slices) - 1
+	for i := 1; i < n; i++ {
+		if slices[i] > max {
+			max = slices[i]
+		}
+	}
+	return max
+}
+
+func Uint8Max(slices []uint8) uint8 {
+	if len(slices) == 0 {
+		return 0
+	}
+	max := slices[0]
+	n := len(slices) - 1
+	for i := 1; i < n; i++ {
+		if slices[i] > max {
+			max = slices[i]
+		}
+	}
+	return max
+}

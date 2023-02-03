@@ -155,7 +155,15 @@
 //不要tinymce的content.css的body属性
 import { SaveOutlined, UploadOutlined } from "@ant-design/icons-vue";
 import { upload } from "@/plugin/utils/upload";
-import { nextTick, onBeforeUnmount, onMounted, reactive, Ref, ref } from "vue";
+import {
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  onUpdated,
+  reactive,
+  Ref,
+  ref,
+} from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import { message } from "ant-design-vue";
@@ -186,6 +194,7 @@ const tags: Ref<any[]> = ref([]);
 const loading = ref(false);
 const useDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
 const isSmallScreen = window.matchMedia("(max-width: 1023.5px)").matches;
+let vditor = undefined;
 const tinymceConfig = {
   selector: "textarea#default",
   base_url: "/node_modules/tinymce/",
@@ -297,7 +306,7 @@ onMounted(() => {
     if (editorType.value == "markdown") {
       const Vditor = await import("vditor/dist/index.min.js");
       import("vditor/dist/index.css");
-      const vditor = new Vditor("id", {});
+      vditor = new Vditor.default("vditor", {});
     } else {
       await import("../../plugin/tinymce/tinymce.js");
       window.tinymce.init(tinymceConfig).then((resolve) => {
@@ -314,9 +323,14 @@ onBeforeUnmount(() => {
   }
 });
 
-function handleChange(e) {
+async function handleChange(e) {
   editorType.value = e.target.value;
-
+  if (!vditor && editorType.value == "markdown") {
+    const Vditor = await import("vditor/dist/index.min.js");
+    import("vditor/dist/index.css");
+    console.log(Vditor);
+    vditor = new Vditor.default("vditor", {});
+  }
   // 手动创建有bug，切换路由回来不渲染了,得destroy()了,另一个组件测试可以用show，无语
   // 两种方式，1.插件客户端渲染，2.有window后引入
   /*      if (typeof window !== 'undefined') {
