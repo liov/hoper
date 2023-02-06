@@ -28,10 +28,10 @@ type KindHandler[KEY comparable, T any] struct {
 
 func NewEngine[KEY comparable, T, W any](workerCount uint) *Engine[KEY, T, W] {
 	cache, _ := ristretto.NewCache(&ristretto.Config{
-		NumCounters:        1e7,     // number of keys to track frequency of (10M).
-		MaxCost:            1 << 30, // maximum cost of cache (MaxCost * 1MB).
-		BufferItems:        64,      // number of keys per Get buffer.
-		Metrics:            false,   // number of keys per Get buffer.
+		NumCounters:        1e4,   // number of keys to track frequency of (10M).
+		MaxCost:            1e3,   // maximum cost of cache (MaxCost * 1MB).
+		BufferItems:        64,    // number of keys per Get buffer.
+		Metrics:            false, // number of keys per Get buffer.
 		IgnoreInternalCost: true,
 	})
 	return &Engine[KEY, T, W]{

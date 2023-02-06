@@ -62,7 +62,7 @@ func Pietures(c *ftp.ServerConn) {
 	if err != nil {
 		log.Println(err)
 	}
-	err = Copy(c, "/DCIM/Screenshots", BackUpDiskPron+"pic\\weibo_sq", false)
+	err = Copy(c, "/DCIM/Screenshots", BackUpDiskPron+"pic\\weibo", false)
 	if err != nil {
 		log.Println(err)
 	}
@@ -125,7 +125,7 @@ func Copy(c *ftp.ServerConn, src, dst string, date bool) error {
 		if err != nil {
 			return err
 		}
-		log.Println("copy file: ", dst+sep+item.Name)
+		log.Println("copy file: ", filename)
 		resp.Close()
 	}
 	return nil

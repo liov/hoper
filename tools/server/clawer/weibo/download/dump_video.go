@@ -10,7 +10,6 @@ import (
 	"time"
 	claweri "tools/clawer"
 	"tools/clawer/weibo/config"
-	"tools/clawer/weibo/dao"
 	"tools/clawer/weibo/rpc"
 )
 
@@ -104,5 +103,5 @@ func DownloadVideo(created time.Time, uid int, wid, url string) error {
 		DownloadPath: config.Conf.Weibo.DownloadPath,
 		Url:          url,
 		Referer:      Referer,
-	}).Download(dao.Dao.Hoper.DB)
+	}).Download()
 }

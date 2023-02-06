@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
-    val kotlinVersion = "1.7.21"
+    val kotlinVersion = "1.8.0"
     id("org.springframework.boot") version "3.0.0"
     id("io.spring.dependency-management") version "1.1.0"
     id("org.graalvm.buildtools.native") version "0.9.17"
@@ -73,7 +73,7 @@ subprojects {
         implementation("org.slf4j:slf4j-api:2.0.4")
         implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
         implementation(kotlin("reflect"))
-        implementation(kotlin("stdlib-jdk8"))
+        implementation(kotlin("stdlib"))
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
         implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
         //implementation("org.springframework.boot:spring-boot-starter-data-jdbc")

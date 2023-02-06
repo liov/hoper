@@ -86,5 +86,5 @@ func CoverDownload(ctx context.Context, pubAt int, url string, upId, id int) err
 		Referer:      "",
 	}
 
-	return meta.Download(dao.Dao.Hoper.DB)
+	return meta.Download()
 }
