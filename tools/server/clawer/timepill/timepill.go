@@ -157,7 +157,7 @@ func DownloadPic(userId, diaryId int, url string, created time.Time) error {
 		},
 		DownloadPath: prepath,
 		Url:          url,
-	}).Download(Dao.Hoper.DB)
+	}).Download()
 
 }
 
@@ -203,7 +203,7 @@ func DownloadCover(created time.Time, typ string, userId, notebookId int, url st
 		},
 		DownloadPath: prepath,
 		Url:          url,
-	}).Download(nil)
+	}).Download()
 }
 
 func DiaryExists(diaryId int) bool {

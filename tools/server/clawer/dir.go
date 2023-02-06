@@ -6,7 +6,6 @@ import (
 	"github.com/liov/hoper/server/go/lib/utils/net/http/client"
 	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
 	timei "github.com/liov/hoper/server/go/lib/utils/time"
-	"gorm.io/gorm"
 	"strconv"
 	"strings"
 	"time"
@@ -54,7 +53,7 @@ type DownloadMeta struct {
 	Referer      string `json:"referer"`
 }
 
-func (d *DownloadMeta) Download(db *gorm.DB) error {
+func (d *DownloadMeta) Download() error {
 	filepath := d.DownloadPath + "/" + d.Path()
 	var err error
 	if fs.NotExist(filepath) {
@@ -66,12 +65,6 @@ func (d *DownloadMeta) Download(db *gorm.DB) error {
 		if err != nil {
 			log.Info("下载文件失败：", err)
 			return err
-		}
-		if db != nil {
-			err = db.Create(&d.Dir).Error
-			if err != nil {
-				return err
-			}
 		}
 		log.Info("下载文件成功：", filepath)
 	} else {
