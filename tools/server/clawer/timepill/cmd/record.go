@@ -4,7 +4,7 @@ import (
 	"context"
 	"flag"
 	"github.com/liov/hoper/server/go/lib/initialize"
-	"github.com/liov/hoper/server/go/lib/utils/conctrl"
+	"github.com/liov/hoper/server/go/lib/utils/conctrl/listener"
 	"github.com/liov/hoper/server/go/lib/utils/log"
 	"time"
 	"tools/clawer/timepill"
@@ -23,7 +23,7 @@ func main() {
 		log.Info("todayRecord")
 		timepill.TodayRecord()
 	}
-	task := &conctrl.TimerTask{}
+	task := &listener.TimerTask{}
 	task.Do = func(ctx context.Context) {
 		log.Info("定时任务：记录评论执行,times:", task.Times)
 		timepill.CronCommentRecord()
@@ -31,7 +31,7 @@ func main() {
 	go task.Timer(context.Background(), time.Hour)
 
 	//go timepill.RecordByOrderNoteBook()
-	recordtask := &conctrl.TimerTask{}
+	recordtask := &listener.TimerTask{}
 	recordtask.Do = func(ctx context.Context) {
 		log.Info("定时任务：记录评论执行,times:", task.Times)
 		timepill.RecordTask()
