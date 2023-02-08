@@ -2,17 +2,17 @@ package conctrl
 
 import (
 	"context"
+	"github.com/dgraph-io/ristretto"
 	"github.com/liov/hoper/server/go/lib/utils/gen"
 	"github.com/liov/hoper/server/go/lib/utils/slices"
 	"log"
 	"strconv"
-	"sync"
 	"time"
 )
 
 type Engine struct {
 	*BaseEngine
-	done        sync.Map
+	done        *ristretto.Cache
 	kindHandler []*KindHandler
 	errHandler  func(task *Task)
 	errChan     chan *Task
@@ -26,8 +26,16 @@ type KindHandler struct {
 }
 
 func NewEngine(workerCount uint) *Engine {
+	cache, _ := ristretto.NewCache(&ristretto.Config{
+		NumCounters:        1000,
+		MaxCost:            100,
+		BufferItems:        64,
+		Metrics:            false,
+		IgnoreInternalCost: true,
+	})
 	return &Engine{
 		BaseEngine: NewBaseEngine(workerCount),
+		done:       cache,
 		errHandler: func(task *Task) {
 			log.Println("错误次数达到"+strconv.Itoa(task.ErrTimes)+"次,放弃执行:", task.Errs)
 		},
@@ -112,7 +120,7 @@ func (e *Engine) NewTask(task TaskInterface) *BaseTask {
 		return nil
 	}
 	if taskInfo.Key != "" {
-		if _, ok := e.done.Load(taskInfo.Key); ok {
+		if _, ok := e.done.Get(taskInfo.Key); ok {
 			return nil
 		}
 	}
@@ -136,7 +144,7 @@ func (e *Engine) NewTask(task TaskInterface) *BaseTask {
 				return
 			}
 			if taskInfo.Key != "" {
-				e.done.Store(taskInfo.Key, struct{}{})
+				e.done.SetWithTTL(taskInfo.Key, struct{}{}, 1, time.Hour)
 			}
 			if len(tasks) > 0 {
 				e.AsyncAddTask(taskInfo.Priority+1, tasks...)

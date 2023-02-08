@@ -16,14 +16,15 @@ import (
 func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
 	task := &conctrl.TimerTask{}
+	engine := crawler.NewEngine(config.Conf.Bilibili.WorkCount).SkipKind(download.KindDownloadVideo).Timer(download.KindViewInfo, time.Second).Timer(download.KindGetPlayerUrl, time.Second)
+	engine.SpeedLimited(time.Second)
 	task.Do = func(ctx context.Context) {
 		log.Println("times", task.Times)
 		/*req1 := download.FavReqs(63181530, 1, 5, download.GetFavList)
 		req2 := download.FavReqs(62504730, 1, 1, download.GetFavList)
 		req := append(req1, req2...)*/
-		engine := crawler.NewEngine(config.Conf.Bilibili.WorkCount).SkipKind(download.KindDownloadVideo).Timer(download.KindViewInfo, time.Second).Timer(download.KindGetPlayerUrl, time.Second)
-		engine.SpeedLimited(time.Second)
-		engine.Run(download.RecordFavTimer(time.Now())...)
+		engine.ReRun(download.RecordFavTimer(time.Now())...)
 	}
-	task.Timer(context.Background(), time.Minute)
+	task.FirstExec = true
+	task.Timer(context.Background(), time.Second*5)
 }

@@ -7,8 +7,8 @@ import (
 	synci "github.com/liov/hoper/server/go/lib/utils/sync"
 	"github.com/liov/hoper/server/go/lib_v2/utils/structure/heap"
 	"github.com/liov/hoper/server/go/lib_v2/utils/structure/list"
+	"golang.org/x/time/rate"
 	"log"
-	"math/rand"
 	"runtime/debug"
 	"sync"
 	"sync/atomic"
@@ -16,19 +16,23 @@ import (
 )
 
 type BaseEngine[KEY comparable, T, W any] struct {
-	limitWorkerCount, currentWorkerCount    uint64
-	limitWaitTaskCount                      uint
-	workerChan                              chan *Worker[KEY, T, W]
-	taskChan                                chan *BaseTask[KEY, T]
-	ctx                                     context.Context
-	cancel                                  context.CancelFunc       // 手动停止执行
-	wg                                      sync.WaitGroup           // 控制确保所有任务执行完
-	fixedWorker                             []chan *BaseTask[KEY, T] // 固定只执行一种任务的worker,避免并发问题
-	speedLimit                              *time.Timer
-	randSpeedLimitBase, randSpeedLimitRange time.Duration
+	limitWorkerCount, currentWorkerCount uint64
+	limitWaitTaskCount                   uint
+	workerChan                           chan *Worker[KEY, T, W]
+	workers                              []*Worker[KEY, T, W]
+	workerList                           list.SimpleList[*Worker[KEY, T, W]]
+	taskChan                             chan *BaseTask[KEY, T]
+	taskList                             heap.Heap[*BaseTask[KEY, T]]
+	ctx                                  context.Context
+	cancel                               context.CancelFunc       // 手动停止执行
+	wg                                   sync.WaitGroup           // 控制确保所有任务执行完
+	fixedWorker                          []chan *BaseTask[KEY, T] // 固定只执行一种任务的worker,避免并发问题
+	speedLimit                           *SpeedLimiter
+	rateLimiter                          *rate.Limiter
 	//TODO
 	monitor *time.Ticker // 全局检测定时器，任务的卡住检测，worker panic recover都可以用这个检测
 	EngineStatistics
+	isRunning, isFinished bool
 }
 
 func NewBaseEngine[KEY comparable, T, W any](workerCount uint) *BaseEngine[KEY, T, W] {
@@ -44,6 +48,8 @@ func NewBaseEngineWithContext[KEY comparable, T, W any](workerCount uint, ctx co
 		cancel:             cancel,
 		workerChan:         make(chan *Worker[KEY, T, W]),
 		taskChan:           make(chan *BaseTask[KEY, T]),
+		workerList:         list.NewSimpleList[*Worker[KEY, T, W]](),
+		taskList:           heap.Heap[*BaseTask[KEY, T]]{},
 	}
 }
 
@@ -52,13 +58,11 @@ func (e *BaseEngine[KEY, T, W]) Context() context.Context {
 }
 
 func (e *BaseEngine[KEY, T, W]) SpeedLimited(interval time.Duration) {
-	e.speedLimit = time.NewTimer(interval)
-	e.randSpeedLimitBase, e.randSpeedLimitRange = interval, 0
+	e.speedLimit = NewSpeedLimiter(interval)
 }
 
 func (e *BaseEngine[KEY, T, W]) RandSpeedLimited(start, stop time.Duration) {
-	e.randSpeedLimitBase, e.randSpeedLimitRange = start, stop-start
-	e.speedLimit = time.NewTimer(time.Duration(rand.Intn(int(e.randSpeedLimitBase))) + e.randSpeedLimitRange)
+	e.speedLimit = NewRandSpeedLimiter(start, stop)
 }
 
 func (e *BaseEngine[KEY, T, W]) Cancel() {
@@ -70,53 +74,50 @@ func (e *BaseEngine[KEY, T, W]) Cancel() {
 
 func (e *BaseEngine[KEY, T, W]) Run(tasks ...*BaseTask[KEY, T]) {
 	e.addWorker()
-
+	e.isRunning = true
 	go func() {
 		timer := time.NewTimer(time.Second * 5)
-		workerList := list.NewSimpleList[*Worker[KEY, T, W]]()
-		taskList := heap.Heap[*BaseTask[KEY, T]]{}
+		defer timer.Stop()
 		var emptyTimes uint
 		var readyWorkerCh chan *BaseTask[KEY, T]
 		var readyTask *BaseTask[KEY, T]
 	loop:
 		for {
-			if workerList.Size > 0 && len(taskList) > 0 {
+			if e.workerList.Size > 0 && len(e.taskList) > 0 {
 				if readyWorkerCh == nil {
-					readyWorkerCh = workerList.Pop().taskCh
+					readyWorkerCh = e.workerList.Pop().taskCh
 				}
 				if readyTask == nil {
-					readyTask = taskList.Pop()
+					readyTask = e.taskList.Pop()
 				}
 			}
 
-			if len(taskList) > int(e.limitWaitTaskCount) {
+			if len(e.taskList) >= int(e.limitWaitTaskCount) {
 				select {
 				case readyWorker := <-e.workerChan:
-					workerList.Push(readyWorker)
+					e.workerList.Push(readyWorker)
 				case readyWorkerCh <- readyTask:
 					readyWorkerCh = nil
 					readyTask = nil
 				case <-e.ctx.Done():
-					timer.Stop()
 					break loop
 				}
 			} else {
 				select {
 				case readyTaskTmp := <-e.taskChan:
-					taskList.Push(readyTaskTmp)
+					e.taskList.Push(readyTaskTmp)
 				case readyWorker := <-e.workerChan:
-					workerList.Push(readyWorker)
+					e.workerList.Push(readyWorker)
 				case readyWorkerCh <- readyTask:
 					readyWorkerCh = nil
 					readyTask = nil
 				case <-timer.C:
 					//检测任务是否已空
-					if workerList.Size == uint(e.currentWorkerCount) && len(taskList) == 0 {
+					if e.workerList.Size == uint(e.currentWorkerCount) && len(e.taskList) == 0 {
 						emptyTimes++
 						if emptyTimes > 2 {
 							log.Println("task is empty,任务即将结束")
 							e.wg.Done()
-							timer.Stop()
 							break loop
 						}
 					}
@@ -128,7 +129,7 @@ func (e *BaseEngine[KEY, T, W]) Run(tasks ...*BaseTask[KEY, T]) {
 		}
 	}()
 
-	e.taskTotalCount = uint64(len(tasks))
+	e.taskTotalCount += uint64(len(tasks))
 	e.wg.Add(len(tasks) + 1)
 	for _, task := range tasks {
 		task.id = gen.GenOrderID()
@@ -136,7 +137,8 @@ func (e *BaseEngine[KEY, T, W]) Run(tasks ...*BaseTask[KEY, T]) {
 	}
 
 	e.wg.Wait()
-	e.Release()
+	e.isRunning = false
+	e.isFinished = true
 	log.Println("任务结束")
 }
 
@@ -168,11 +170,7 @@ func (e *BaseEngine[KEY, T, W]) newWorker(readyTask *BaseTask[KEY, T]) {
 				if readyTask != nil && readyTask.BaseTaskFunc != nil {
 					if e.speedLimit != nil {
 						<-e.speedLimit.C
-						if e.randSpeedLimitRange == 0 {
-							e.speedLimit.Reset(e.randSpeedLimitBase)
-						} else {
-							e.speedLimit.Reset(time.Duration(rand.Intn(int(e.randSpeedLimitBase))) + e.randSpeedLimitRange)
-						}
+						e.speedLimit.Reset()
 					}
 					readyTask.BaseTaskFunc(e.ctx)
 					atomic.AddUint64(&e.taskDoneCount, 1)
@@ -183,13 +181,14 @@ func (e *BaseEngine[KEY, T, W]) newWorker(readyTask *BaseTask[KEY, T]) {
 			}
 		}
 	}()
+	e.workers = append(e.workers, worker)
 }
 
 func (e *BaseEngine[KEY, T, W]) addWorker() {
-	if e.currentWorkerCount == 0 {
-		e.newWorker(nil)
+	if e.currentWorkerCount != 0 {
+		return
 	}
-
+	e.newWorker(nil)
 	go func() {
 		for {
 			select {
@@ -206,6 +205,7 @@ func (e *BaseEngine[KEY, T, W]) addWorker() {
 			}
 		}
 	}()
+
 }
 
 func (e *BaseEngine[KEY, T, W]) AddTask(task *BaseTask[KEY, T]) {
@@ -228,7 +228,6 @@ func (e *BaseEngine[KEY, T, W]) AddTasks(tasks ...*BaseTask[KEY, T]) {
 
 func (e *BaseEngine[KEY, T, W]) AddWorker(num int) {
 	atomic.AddUint64(&e.limitWorkerCount, uint64(num))
-	e.addWorker()
 }
 
 func (e *BaseEngine[KEY, T, W]) NewFixedWorker(interval time.Duration) int {
@@ -274,6 +273,12 @@ func (e *BaseEngine[KEY, T, W]) RunSingleWorker(tasks ...*BaseTask[KEY, T]) {
 }
 
 func (e *BaseEngine[KEY, T, W]) Release() {
+	e.cancel()
+	close(e.workerChan)
+	close(e.taskChan)
+	for _, ch := range e.fixedWorker {
+		close(ch)
+	}
 	if e.speedLimit != nil {
 		e.speedLimit.Stop()
 	}

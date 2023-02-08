@@ -13,7 +13,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	claweri "tools/clawer"
 	"tools/clawer/bilibili/config"
 	"tools/clawer/bilibili/dao"
 	"tools/clawer/bilibili/rpc"
@@ -111,16 +110,15 @@ func (video *Video) DownloadVideo(typ string, order int, url string) ([]*crawler
 
 	if video.CodecId == VideoTypeFlv {
 		dao.Dao.Hoper.Table(dao.TableNameVideo).Where("cid = ?", video.Cid).Update("record", 3)
-		dir := claweri.Dir{
-			Platform: 3,
-			UserId:   video.Uid,
-			KeyId:    video.Cid,
-			KeyIdStr: fmt.Sprintf("%d_%d", video.Aid, video.Cid),
-			BaseUrl:  fmt.Sprintf("%s_%s_%d_%d.flv", video.Title, video.Part, order, video.Quality),
-			Type:     3,
-			PubAt:    video.PubAt,
-		}
-		dao.Dao.Hoper.Create(&dir)
+		/*		dir := claweri.Dir{
+				Platform: 3,
+				UserId:   video.Uid,
+				KeyId:    video.Cid,
+				KeyIdStr: fmt.Sprintf("%d_%d", video.Aid, video.Cid),
+				BaseUrl:  fmt.Sprintf("%s_%s_%d_%d.flv", video.Title, video.Part, order, video.Quality),
+				Type:     3,
+				PubAt:    video.PubAt,
+			}*/
 	}
 
 	if video.CodecId == VideoTypeM4sCodec12 || video.CodecId == VideoTypeM4sCodec7 {

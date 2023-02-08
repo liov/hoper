@@ -22,6 +22,7 @@ type BaseTask[KEY comparable, T any] struct {
 type BaseTaskMeta[KEY comparable] struct {
 	id       uint64
 	Key      KEY
+	Describe string
 	Priority int
 }
 

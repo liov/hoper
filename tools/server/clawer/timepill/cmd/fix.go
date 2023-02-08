@@ -65,7 +65,7 @@ func rename2() {
 					log.Println(err)
 				}
 
-				timepill.Dao.Hoper.Create(dir)
+				//timepill.Dao.Hoper.Create(dir)
 			}
 			files, _ = os.ReadDir(compsubdir2)
 			if len(files) == 0 {

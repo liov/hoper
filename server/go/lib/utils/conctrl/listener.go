@@ -7,14 +7,17 @@ import (
 )
 
 type TimerTask struct {
-	Times uint
-	Do    BaseTaskFunc
+	Times     uint
+	FirstExec bool
+	Do        BaseTaskFunc
 }
 
 func (task *TimerTask) Timer(ctx context.Context, interval time.Duration) {
 	timer := time.NewTicker(interval)
-	task.Times = 1
-	task.Do(ctx)
+	if task.FirstExec {
+		task.Times = 1
+		task.Do(ctx)
+	}
 	for {
 		select {
 		case <-ctx.Done():
