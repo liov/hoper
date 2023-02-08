@@ -1626,3 +1626,11 @@ ORDER BY
 LIMIT 100
 ```
 当<id范围内满足的行数不满100条时，会变得奇慢，原因是不足100，会在所有id小于指定id的数据里遍历查找
+
+# IDEA go断点无效
+undefined behavior - version of Delve is too old for Go version 1.20.0 
+
+go install github.com/go-delve/delve/cmd/dlv@latest
+# 可选
+help  -> Edit Custom Properties
+dlv.path=你的GOPATH路径\\bin\\dlv.exe

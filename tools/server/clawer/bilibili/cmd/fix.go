@@ -235,8 +235,7 @@ func fixName() {
 		log.Println("rename:", commondir+fs.PathSeparator+file.Name(), newpath)
 		os.MkdirAll(fs.GetDir(newpath), 0666)
 		os.Rename(commondir+fs.PathSeparator+file.Name(), newpath)
-		dao.Dao.Hoper.Create(&dir)
-
+		//dao.Dao.Hoper.Create(&dir)
 	}
 	files, _ = os.ReadDir(commondir)
 	if len(files) == 0 {

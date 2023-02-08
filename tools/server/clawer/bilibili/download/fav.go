@@ -27,7 +27,7 @@ var zeroTime = time.Time{}
 
 func GetFavListReqAfterRecordView(favId, page int, startTime time.Time) *crawler.Request {
 	return &crawler.Request{
-		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: strconv.Itoa(favId) + strconv.Itoa(page)}, Kind: KindRecordFavList},
+		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Describe: strconv.Itoa(favId) + strconv.Itoa(page)}, Kind: KindRecordFavList},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 			log.Printf("获取收藏夹%d,第%d页\n", favId, page)
 			res, err := apiservice.GetFavLResourceList(favId, page)

@@ -11,8 +11,8 @@ import (
 
 type Engine[KEY comparable, T, W any] struct {
 	*BaseEngine[KEY, T, W]
-	done        *ristretto.Cache
-	TasksChan   chan []*Task[KEY, T]
+	done *ristretto.Cache
+	//TasksChan   chan []*Task[KEY, T]
 	kindHandler []*KindHandler[KEY, T]
 	errHandler  func(task *Task[KEY, T])
 	errChan     chan *Task[KEY, T]
@@ -132,7 +132,19 @@ func (e *Engine[KEY, T, W]) Run(tasks ...*Task[KEY, T]) {
 		}
 	}()
 	e.BaseEngine.Run(baseTasks...)
-	e.Release()
+}
+
+func (e *Engine[KEY, T, W]) ReRun(tasks ...*Task[KEY, T]) {
+	if e.isRunning {
+		e.AddTasks(0, tasks...)
+		return
+	}
+
+	baseTasks := make([]*BaseTask[KEY, T], 0, len(tasks))
+	for _, task := range tasks {
+		baseTasks = append(baseTasks, e.BaseTask(task))
+	}
+	e.BaseEngine.Run(baseTasks...)
 }
 
 func (e *Engine[KEY, T, W]) BaseTask(task *Task[KEY, T]) *BaseTask[KEY, T] {
@@ -225,9 +237,16 @@ func (e *Engine[KEY, T, W]) RunSingleWorker(tasks ...*Task[KEY, T]) {
 }
 
 func (e *Engine[KEY, T, W]) Release() {
+	e.BaseEngine.Release()
+	e.done.Close()
 	for _, kindHandler := range e.kindHandler {
-		if kindHandler != nil && kindHandler.Ticker != nil {
-			kindHandler.Ticker.Stop()
+		if kindHandler != nil {
+			if kindHandler.Ticker != nil {
+				kindHandler.Ticker.Stop()
+			}
+			if kindHandler.Limiter != nil {
+				kindHandler.Limiter = nil
+			}
 		}
 	}
 }

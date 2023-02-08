@@ -237,9 +237,6 @@ func rename5() {
 		if err != nil {
 			log.Println(err)
 		}
-		if strs[0] == "6537140514" && strs[1] == "4848747278245572" {
-			log.Println("到了")
-		}
 		if dir.Type == 0 || dir.CreatedAt.Sub(dir.PubAt) > time.Hour {
 			date, ok := m[strs[0]+"-"+strs[1]]
 			if !ok {
@@ -263,9 +260,9 @@ func rename5() {
 							if strings.HasSuffix(dir.BaseUrl, ".mp4") {
 								dir.Type = 3
 							}
-							dao.Dao.Hoper.Create(&dir)
+							//dao.Dao.Hoper.Create(&dir)
 						} else {
-							dao.Dao.Hoper.Table("dir").Where(`platform = 4 AND user_id = `+strs[0]+` AND key_id_str = '`+strs[1]+`' `).Update("pub_at", date)
+							//dao.Dao.Hoper.Table("dir").Where(`platform = 4 AND user_id = `+strs[0]+` AND key_id_str = '`+strs[1]+`' `).Update("pub_at", date)
 						}
 
 						break
@@ -284,7 +281,7 @@ func rename5() {
 							if strings.HasSuffix(dir.BaseUrl, ".mp4") {
 								dir.Type = 3
 							}
-							dao.Dao.Hoper.Create(&dir)
+							//dao.Dao.Hoper.Create(&dir)
 							break
 						}
 					}
@@ -293,7 +290,7 @@ func rename5() {
 			if date == zeroTime {
 				date = dir.CreatedAt
 				m[strs[0]+"-"+strs[1]] = date
-				dao.Dao.Hoper.Table("dir").Where(`platform = 4 AND user_id = `+strs[0]+` AND key_id_str = '`+strs[1]+"'").Update("pub_at", date)
+				//dao.Dao.Hoper.Table("dir").Where(`platform = 4 AND user_id = `+strs[0]+` AND key_id_str = '`+strs[1]+"'").Update("pub_at", date)
 			}
 			dir.PubAt = date
 

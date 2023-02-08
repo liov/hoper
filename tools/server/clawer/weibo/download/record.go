@@ -22,7 +22,7 @@ func RecordUsersWeiboReq(userIds []int, record bool) []*crawler.Request {
 
 func RecordUserWeiboReq(uid, page int, record bool) *crawler.Request {
 	return &crawler.Request{
-		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: strconv.Itoa(uid) + " " + strconv.Itoa(page) + "RecordUserWeiboReq"}, Kind: KindGet},
+		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Describe: strconv.Itoa(uid) + " " + strconv.Itoa(page) + "RecordUserWeiboReq"}, Kind: KindGet},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 			log.Infof("RecordUserWeiboReq %d 第%d页", uid, page)
 			piccards, err := rpc.GetChannels(rpc.ALL, uid, page)

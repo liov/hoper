@@ -9,6 +9,10 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
+func StartPprof() {
+	http.ListenAndServe("0.0.0.0:8080", nil)
+}
+
 func Debug() http.Handler {
 	http.Handle("/debug/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write(debug.Stack())

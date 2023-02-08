@@ -23,12 +23,12 @@ func main() {
 		engine.Run(download.GetUserFollowWeiboReq(""))
 	}
 	go task1.Timer(context.Background(), time.Minute)
-
+	engine := crawler.NewEngine(config.Conf.Weibo.WorkCount).Timer(download.KindGet, time.Second)
+	engine.Run(download.RecordUsersWeiboReq(config.Conf.Weibo.Users, true)...)
 	task := &conctrl.TimerTask{}
 	task.Do = func(ctx context.Context) {
 		log.Println("task times", task.Times)
-		engine := crawler.NewEngine(config.Conf.Weibo.WorkCount).Timer(download.KindGet, time.Second)
-		engine.Run(download.RecordUsersWeiboReq(config.Conf.Weibo.Users, true)...)
+		engine.ReRun(download.RecordUsersWeiboReq(config.Conf.Weibo.Users, true)...)
 	}
 	task.RandTimer(context.Background(), time.Minute*10, time.Minute*20)
 }

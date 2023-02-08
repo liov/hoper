@@ -4,12 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/liov/hoper/server/go/lib/utils/fs"
+	osi "github.com/liov/hoper/server/go/lib/utils/os"
 	timei "github.com/liov/hoper/server/go/lib/utils/time"
 	"github.com/liov/hoper/server/go/lib_v2/utils/conctrl"
 	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
-	claweri "tools/clawer"
-
-	osi "github.com/liov/hoper/server/go/lib/utils/os"
 	"log"
 	"os"
 	"strconv"
@@ -102,16 +100,16 @@ func MergeVideo(video *Video, single bool) error {
 	}
 
 	dao.Dao.Hoper.Table(dao.TableNameVideo).Where("cid = ?", video.Cid).Update("record", record)
-	cdir := claweri.Dir{
-		Platform: 3,
-		UserId:   video.Uid,
-		KeyId:    video.Cid,
-		KeyIdStr: fmt.Sprintf("%d_%d", video.Aid, video.Cid),
-		BaseUrl:  fmt.Sprintf("%s_%s_%d", video.Title, video.Part, video.Quality) + ext,
-		Type:     3,
-		PubAt:    video.PubAt,
-	}
-	dao.Dao.Hoper.Create(&cdir)
+	/*	cdir := claweri.Dir{
+			Platform: 3,
+			UserId:   video.Uid,
+			KeyId:    video.Cid,
+			KeyIdStr: fmt.Sprintf("%d_%d", video.Aid, video.Cid),
+			BaseUrl:  fmt.Sprintf("%s_%s_%d", video.Title, video.Part, video.Quality) + ext,
+			Type:     3,
+			PubAt:    video.PubAt,
+		}
+		dao.Dao.Hoper.Create(&cdir)*/
 	log.Println("合并完成：" + dst)
 	return nil
 }
