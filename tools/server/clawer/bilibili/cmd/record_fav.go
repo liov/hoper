@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"github.com/liov/hoper/server/go/lib/initialize"
-	"github.com/liov/hoper/server/go/lib/utils/conctrl"
+	"github.com/liov/hoper/server/go/lib/utils/conctrl/listener"
 	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
 	"log"
 	"time"
@@ -15,7 +15,7 @@ import (
 
 func main() {
 	defer initialize.Start(config.Conf, &dao.Dao)()
-	task := &conctrl.TimerTask{}
+	task := &listener.TimerTask{}
 	engine := crawler.NewEngine(config.Conf.Bilibili.WorkCount).SkipKind(download.KindDownloadVideo).Timer(download.KindViewInfo, time.Second).Timer(download.KindGetPlayerUrl, time.Second)
 	engine.SpeedLimited(time.Second)
 	task.Do = func(ctx context.Context) {
@@ -26,5 +26,5 @@ func main() {
 		engine.ReRun(download.RecordFavTimer(time.Now())...)
 	}
 	task.FirstExec = true
-	task.Timer(context.Background(), time.Second*5)
+	task.Timer(context.Background(), time.Minute)
 }

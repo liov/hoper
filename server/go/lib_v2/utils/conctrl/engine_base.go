@@ -3,6 +3,7 @@ package conctrl
 import (
 	"context"
 	"github.com/davecgh/go-spew/spew"
+	rate2 "github.com/liov/hoper/server/go/lib/utils/conctrl/rate"
 	"github.com/liov/hoper/server/go/lib/utils/gen"
 	synci "github.com/liov/hoper/server/go/lib/utils/sync"
 	"github.com/liov/hoper/server/go/lib_v2/utils/structure/heap"
@@ -27,7 +28,7 @@ type BaseEngine[KEY comparable, T, W any] struct {
 	cancel                               context.CancelFunc       // 手动停止执行
 	wg                                   sync.WaitGroup           // 控制确保所有任务执行完
 	fixedWorker                          []chan *BaseTask[KEY, T] // 固定只执行一种任务的worker,避免并发问题
-	speedLimit                           *SpeedLimiter
+	speedLimit                           *rate2.SpeedLimiter
 	rateLimiter                          *rate.Limiter
 	//TODO
 	monitor *time.Ticker // 全局检测定时器，任务的卡住检测，worker panic recover都可以用这个检测
@@ -58,11 +59,11 @@ func (e *BaseEngine[KEY, T, W]) Context() context.Context {
 }
 
 func (e *BaseEngine[KEY, T, W]) SpeedLimited(interval time.Duration) {
-	e.speedLimit = NewSpeedLimiter(interval)
+	e.speedLimit = rate2.NewSpeedLimiter(interval)
 }
 
 func (e *BaseEngine[KEY, T, W]) RandSpeedLimited(start, stop time.Duration) {
-	e.speedLimit = NewRandSpeedLimiter(start, stop)
+	e.speedLimit = rate2.NewRandSpeedLimiter(start, stop)
 }
 
 func (e *BaseEngine[KEY, T, W]) Cancel() {

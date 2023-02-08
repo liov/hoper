@@ -1,15 +1,16 @@
-package conctrl
+package listener
 
 import (
 	"context"
-	"math/rand"
+	"github.com/liov/hoper/server/go/lib/utils/conctrl"
+	"github.com/liov/hoper/server/go/lib/utils/conctrl/rate"
 	"time"
 )
 
 type TimerTask struct {
 	Times     uint
 	FirstExec bool
-	Do        BaseTaskFunc
+	Do        conctrl.BaseTaskFunc
 }
 
 func (task *TimerTask) Timer(ctx context.Context, interval time.Duration) {
@@ -30,9 +31,8 @@ func (task *TimerTask) Timer(ctx context.Context, interval time.Duration) {
 	}
 }
 
-func (task *TimerTask) RandTimer(ctx context.Context, start, end time.Duration) {
-	range1 := end - start
-	timer := time.NewTimer(time.Duration(rand.Intn(int(range1))) + start)
+func (task *TimerTask) RandTimer(ctx context.Context, start, stop time.Duration) {
+	timer := rate.NewRandSpeedLimiter(start, stop)
 	task.Times = 1
 	task.Do(ctx)
 	for {
@@ -43,7 +43,7 @@ func (task *TimerTask) RandTimer(ctx context.Context, start, end time.Duration) 
 		case <-timer.C:
 			task.Times++
 			task.Do(ctx)
-			timer.Reset(time.Duration(rand.Intn(int(range1))) + start)
+			timer.Reset()
 		}
 	}
 }

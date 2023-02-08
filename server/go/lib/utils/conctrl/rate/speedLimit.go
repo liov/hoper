@@ -1,4 +1,4 @@
-package conctrl
+package rate
 
 import (
 	"math/rand"
