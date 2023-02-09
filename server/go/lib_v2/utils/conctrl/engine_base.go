@@ -133,8 +133,10 @@ func (e *BaseEngine[KEY, T, W]) Run(tasks ...*BaseTask[KEY, T]) {
 	e.taskTotalCount += uint64(len(tasks))
 	e.wg.Add(len(tasks) + 1)
 	for _, task := range tasks {
-		task.id = gen.GenOrderID()
-		e.taskChan <- task
+		if task != nil {
+			task.id = gen.GenOrderID()
+			e.taskChan <- task
+		}
 	}
 
 	e.wg.Wait()

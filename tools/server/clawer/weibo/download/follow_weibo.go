@@ -11,7 +11,7 @@ import (
 
 func GetUserFollowWeiboReq(maxId string) *crawler.Request {
 	return &crawler.Request{
-		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Key: "GetUserFollowWeiboReq " + maxId}, Kind: KindGet},
+		TaskMeta: crawler.TaskMeta{BaseTaskMeta: crawler.BaseTaskMeta{Describe: "GetUserFollowWeiboReq " + maxId}, Kind: KindGet},
 		TaskFunc: func(ctx context.Context) ([]*crawler.Request, error) {
 			log.Info("GetUserFollowWeiboReq:", maxId)
 			list, err := rpc.GetFollowsWeibo(maxId)
