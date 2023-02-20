@@ -12,7 +12,7 @@ func Delete(db *gorm.DB, tableName string, id uint64) error {
 	return DeleteSQL(db, tableName, "id", id)
 }
 
-func DeleteSQL(db *gorm.DB, tableName, column string, value any) error {
+func DeleteSQL(db *gorm.DB, tableName, column string, value interface{}) error {
 	sql := `Update ` + tableName + ` SET deleted_at = now()
 WHERE ` + column + ` = ?` + dbi.WithNotDeleted
 	return db.Exec(sql, value).Error
@@ -43,7 +43,7 @@ func ExistsById(db *gorm.DB, tableName string, id uint64) (bool, error) {
 	return ExistsBySQL(db, ExistsSQL(tableName, "id", false), id)
 }
 
-func ExistsByColumn(db *gorm.DB, tableName, column string, value any) (bool, error) {
+func ExistsByColumn(db *gorm.DB, tableName, column string, value interface{}) (bool, error) {
 	return ExistsBySQL(db, ExistsSQL(tableName, column, false), value)
 }
 

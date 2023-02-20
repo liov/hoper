@@ -20,7 +20,7 @@ func (db *DB) Config() initialize.Generate {
 	return &db.Conf
 }
 
-func (db *DB) SetEntity(entity interface{}) {
+func (db *DB) SetEntity(entity any) {
 	if gormdb, ok := entity.(*gorm.DB); ok {
 		db.DB = gormdb
 	}
@@ -40,7 +40,7 @@ type dao struct {
 */
 
 func (init *initConfig) UnmarshalAndSet(bytes []byte) {
-	tmp := map[string]interface{}{}
+	tmp := map[string]any{}
 	err := toml.Unmarshal(bytes, &tmp)
 	if err != nil {
 		log.Fatal(err)
@@ -66,7 +66,7 @@ func (init *initConfig) inject() {
 	}
 }
 
-func setConfig(v reflect.Value, confM map[string]interface{}) {
+func setConfig(v reflect.Value, confM map[string]any) {
 	for i := 0; i < v.NumField(); i++ {
 		filed := v.Field(i)
 		switch filed.Kind() {

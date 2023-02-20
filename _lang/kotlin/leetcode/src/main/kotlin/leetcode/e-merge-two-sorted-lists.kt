@@ -35,7 +35,6 @@ fun mergeTwoLists(l1: ListNode?, l2: ListNode?): ListNode? {
   var node1 = l1
   var node2 = l2
   var headNode: ListNode
-  val ans: ListNode
   if (l1.`val` < l2.`val`) {
     headNode = ListNode(l1.`val`)
     node1 = l1.next
@@ -43,7 +42,7 @@ fun mergeTwoLists(l1: ListNode?, l2: ListNode?): ListNode? {
     headNode = ListNode(l2.`val`)
     node2 = l2.next
   }
-  ans = headNode
+  val ans: ListNode = headNode
   while (true) {
     if (node1 == null) {
       headNode.next = node2

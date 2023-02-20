@@ -1,9 +1,9 @@
 package main
 
 import (
-	_go "github.com/liov/hoper/server/go/lib/utils/gocmd"
 	"github.com/liov/hoper/server/go/lib/utils/os"
 	execi "github.com/liov/hoper/server/go/lib/utils/os/exec"
+	_go "github.com/liov/hoper/server/go/lib/utils/tools/gocmd"
 	"github.com/spf13/cobra"
 	"log"
 	"os"

@@ -49,10 +49,10 @@ type initConfig struct {
 	flag         FlagConfig
 	BasicConfig
 	ConfigCenterConfig *ConfigCenterConfig
-	confMap            map[string]interface{}
+	confMap            map[string]any
 	conf               NeedInit
 	dao                Dao
-	//closes     []interface{}
+	//closes     []any
 	deferf      []func()
 	initialized bool
 }
@@ -176,7 +176,7 @@ func (init *initConfig) closeDao() {
 	}
 }
 
-func closeDao(dao any) error {
+func closeDao(dao interface{}) error {
 	if dao == nil {
 		return nil
 	}
@@ -205,7 +205,7 @@ func closeDao(dao any) error {
 	return nil
 }
 
-func closeDaoHelper(dao any) (error, bool) {
+func closeDaoHelper(dao interface{}) (error, bool) {
 	if dao == nil {
 		return nil, true
 	}

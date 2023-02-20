@@ -1,5 +1,7 @@
 package leetcode
 
+import kotlin.math.min
+
 /**
 350. 两个数组的交集 II
 
@@ -34,6 +36,6 @@ fun intersect(nums1: IntArray, nums2: IntArray): IntArray {
   for (i in nums1.indices)  m1[nums1[i]] = (m1[nums1[i]] ?: 0) + 1
   for (i in nums2.indices)  m2[nums2[i]] = (m2[nums2[i]] ?: 0) + 1
   val list = ArrayList<Int>()
-  for ((k, v) in m1) for (i in 1..kotlin.math.min(v,(m2[k] ?: 0))) list.add(k)
+  for ((k, v) in m1) for (i in 1 .. min(v,(m2[k] ?: 0))) list.add(k)
   return IntArray(list.size) { i -> list[i] }
 }

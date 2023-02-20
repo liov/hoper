@@ -13,7 +13,7 @@ private fun rightChild(pos: Int): Int = pos * 2 + 2
  * 按树结构打印
  */
 fun printHeap(heap: IntArray, size: Int) {
-  println(heap.joinToString(prefix = "[", postfix = "]", limit = size - 1, truncated = heap[size - 1].toString()))
+  println(heap.joinToString(prefix = "[", postfix = "]"))
 }
 
 fun topN(less: (Int, Int) -> Boolean) {
@@ -35,7 +35,7 @@ fun topN(less: (Int, Int) -> Boolean) {
  * 最小堆
  */
 
-fun topMaxN() = topN(Comp::Less)
+fun topMaxN() = topN(Comp::Lt)
 
 
 /***
@@ -43,7 +43,7 @@ fun topMaxN() = topN(Comp::Less)
  * 最大堆
  */
 
-fun topMinN() = topN(Comp::More)
+fun topMinN() = topN(Comp::Gt)
 
 fun <T : Comparable<T>> createHeapUp(heap: MutableList<T>) {
   for (i in 1 until heap.size) adjustUp(heap, i)
@@ -102,11 +102,11 @@ private fun findTopNInPlace(heap: IntArray, topN: Int, comp: CompLambda) {
 
 private fun adjustDown(heap: IntArray, i: Int, comp: CompLambda) = adjustDownInPlace(heap, heap.size, i, comp)
 
-private fun adjustDownTop(heap: IntArray, v: Int, less: CompLambda) {
+private fun adjustDownTop(heap: IntArray, v: Int, comp: CompLambda) {
   //比topN中最小的还要小直接返回
-  if (less(v, heap[0])) return
+  if (comp(v, heap[0])) return
   heap[0] = v
-  adjustDown(heap, 0, less)
+  adjustDown(heap, 0, comp)
 }
 
 private fun adjustDownInPlace(heap: IntArray, topN: Int, i: Int, comp: CompLambda) {
@@ -137,36 +137,36 @@ private fun adjustDownTopInPlace(heap: IntArray, topN: Int, pos: Int, comp: Comp
 /***
  * 向下调整新加入节点位置，并维护最小堆
  */
-private fun adjustDownTopMaxNInPlace(heap: IntArray, topN: Int, pos: Int) = adjustDownTopInPlace(heap, topN, pos, Comp::Less)
+private fun adjustDownTopMaxNInPlace(heap: IntArray, topN: Int, pos: Int) = adjustDownTopInPlace(heap, topN, pos, Comp::Lt)
 
 /***
  * 向下调整新加入节点位置，并维护最大堆
  */
-private fun adjustDownTopMinNInPlace(heap: IntArray, topN: Int, pos: Int) = adjustDownTopInPlace(heap, topN, pos, Comp::More)
+private fun adjustDownTopMinNInPlace(heap: IntArray, topN: Int, pos: Int) = adjustDownTopInPlace(heap, topN, pos, Comp::Gt)
 
 /***
  * 遍历数据组，并维护最小堆
  */
-fun findTopMaxNInPlace(heap: IntArray, topN: Int) = findTopNInPlace(heap, topN, Comp::Less)
+fun findTopMaxNInPlace(heap: IntArray, topN: Int) = findTopNInPlace(heap, topN, Comp::Lt)
 
 /***
  * 遍历数据组，并维护最大堆
  */
-fun findTopMinNInPlace(heap: IntArray, topN: Int) = findTopNInPlace(heap, topN, Comp::More)
+fun findTopMinNInPlace(heap: IntArray, topN: Int) = findTopNInPlace(heap, topN, Comp::Gt)
 
-fun adjustDownTopMaxN(heap: IntArray, v: Int) = adjustDownTop(heap, v, Comp::Less)
+fun adjustDownTopMaxN(heap: IntArray, v: Int) = adjustDownTop(heap, v, Comp::Lt)
 
 typealias CompLambda = (Int, Int) -> Boolean
 
 object Comp {
   @JvmStatic
-  fun Less(x: Int, y: Int) = x < y
+  fun Lt(x: Int, y: Int) = x < y
 
   @JvmStatic
-  fun More(x: Int, y: Int) = x > y
+  fun Gt(x: Int, y: Int) = x > y
 
   @JvmStatic
-  fun Equal(x: Int, y: Int) = x == y
+  fun Eq(x: Int, y: Int) = x == y
 }
 
 
