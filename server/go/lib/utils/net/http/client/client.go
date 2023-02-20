@@ -366,6 +366,9 @@ func (req *RequestParams) Do(param, response interface{}) error {
 				}
 			}
 		}
+		if err != nil {
+			return err
+		}
 	}
 	if httpresp, ok := response.(**http.Response); ok {
 		*httpresp = resp

@@ -19,7 +19,7 @@ func Page(pageNo, pageSize int) clause.Limit {
 	return clause.Limit{Limit: &pageSize}
 }
 
-func NewWhereClause(field string, op dbi.Operation, args ...any) clause.Expression {
+func NewWhereClause(field string, op dbi.Operation, args ...interface{}) clause.Expression {
 	switch op {
 	case dbi.Equal:
 		return clause.Eq{

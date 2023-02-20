@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/liov/hoper/server/go/lib/utils/dingding"
+	"github.com/liov/hoper/server/go/lib/utils/sdk/dingding"
 	"time"
 )
 

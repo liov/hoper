@@ -2,8 +2,8 @@ package main
 
 import (
 	"flag"
-	_go "github.com/liov/hoper/server/go/lib/utils/gocmd"
 	execi "github.com/liov/hoper/server/go/lib/utils/os/exec"
+	_go "github.com/liov/hoper/server/go/lib/utils/tools/gocmd"
 	"log"
 	"os"
 	"strings"

@@ -172,8 +172,13 @@ func (e *Engine[KEY, T, W]) BaseTask(task *Task[KEY, T]) *BaseTask[KEY, T] {
 	return &BaseTask[KEY, T]{
 		BaseTaskMeta: task.BaseTaskMeta,
 		BaseTaskFunc: func(ctx context.Context) {
-			if kindHandler != nil && kindHandler.Ticker != nil {
-				<-kindHandler.Ticker.C
+			if kindHandler != nil {
+				if kindHandler.Ticker != nil {
+					<-kindHandler.Ticker.C
+				}
+				if kindHandler.Limiter != nil {
+					kindHandler.Limiter.Wait(ctx)
+				}
 			}
 			tasks, err := task.TaskFunc(ctx)
 			if err != nil {

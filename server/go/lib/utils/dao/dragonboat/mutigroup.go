@@ -1,13 +1,10 @@
-package tdragonboat
+package dragonboat
 
 import (
 	"bufio"
 	"context"
 	"flag"
 	"fmt"
-	"github.com/lni/dragonboat/v4"
-	"github.com/lni/dragonboat/v4/config"
-	"github.com/lni/dragonboat/v4/logger"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -15,13 +12,18 @@ import (
 	"strings"
 	"syscall"
 	"time"
+
+	"github.com/lni/dragonboat/v4"
+	"github.com/lni/dragonboat/v4/config"
+	"github.com/lni/dragonboat/v4/logger"
+	"github.com/lni/goutils/syncutil"
 )
 
 const (
 	// we use two raft groups in this example, they are identified by the cluster
 	// ID values below
-	clusterID1 uint64 = 100
-	clusterID2 uint64 = 101
+	shardID1 uint64 = 100
+	shardID2 uint64 = 101
 )
 
 var (
@@ -34,24 +36,24 @@ var (
 	}
 )
 
-func Dragonboat() {
-	nodeID := flag.Int("nodeid", 1, "NodeID to use")
+func main() {
+	replicaID := flag.Int("nodeid", 1, "ReplicaID to use")
 	flag.Parse()
-	if *nodeID > 3 || *nodeID < 1 {
-		fmt.Fprintf(os.Stderr, "invalid nodeid %d, it must be 1, 2 or 3", *nodeID)
+	if *replicaID > 3 || *replicaID < 1 {
+		fmt.Fprintf(os.Stderr, "invalid nodeid %d, it must be 1, 2 or 3", *replicaID)
 		os.Exit(1)
 	}
 	// https://github.com/golang/go/issues/17393
 	if runtime.GOOS == "darwin" {
 		signal.Ignore(syscall.Signal(0xd))
 	}
-	peers := make(map[uint64]string)
+	initialMembers := make(map[uint64]string)
 	for idx, v := range addresses {
-		// key is the NodeID, NodeID is not allowed to be 0
+		// key is the ReplicaID, ReplicaID is not allowed to be 0
 		// value is the raft address
-		peers[uint64(idx+1)] = v
+		initialMembers[uint64(idx+1)] = v
 	}
-	nodeAddr := peers[uint64(*nodeID)]
+	nodeAddr := initialMembers[uint64(*replicaID)]
 	fmt.Fprintf(os.Stdout, "node address: %s\n", nodeAddr)
 	// change the log verbosity
 	logger.GetLogger("raft").SetLevel(logger.ERROR)
@@ -59,9 +61,9 @@ func Dragonboat() {
 	logger.GetLogger("transport").SetLevel(logger.WARNING)
 	logger.GetLogger("grpc").SetLevel(logger.WARNING)
 	// config for raft
-	// note the ClusterID value is not specified here
+	// note the ShardID value is not specified here
 	rc := config.Config{
-		NodeID:             uint64(*nodeID),
+		ReplicaID:          uint64(*replicaID),
 		ElectionRTT:        5,
 		HeartbeatRTT:       1,
 		CheckQuorum:        true,
@@ -71,7 +73,7 @@ func Dragonboat() {
 	datadir := filepath.Join(
 		"example-data",
 		"multigroup-data",
-		fmt.Sprintf("node%d", *nodeID))
+		fmt.Sprintf("node%d", *replicaID))
 	// config for the nodehost
 	// by default, insecure transport is used, you can choose to use Mutual TLS
 	// Authentication to authenticate both servers and clients. To use Mutual
@@ -94,25 +96,28 @@ func Dragonboat() {
 	}
 	// create a NodeHost instance. it is a facade interface allowing access to
 	// all functionalities provided by dragonboat.
-	nh, _ := dragonboat.NewNodeHost(nhc)
-	defer nh.Stop()
+	nh, err := dragonboat.NewNodeHost(nhc)
+	if err != nil {
+		panic(err)
+	}
+	defer nh.Close()
 	// start the first cluster
-	// we use ExampleStateMachine as the IStateMachine for this cluster, its
+	// we use StateMachine as the IStateMachine for this cluster, its
 	// behaviour is identical to the one used in the Hello World example.
-	rc.ClusterID = clusterID1
-	if err := nh.StartCluster(peers, false, NewExampleStateMachine, rc); err != nil {
+	rc.ShardID = shardID1
+	if err := nh.StartReplica(initialMembers, false, NewStateMachine, rc); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to add cluster, %v\n", err)
 		os.Exit(1)
 	}
 	// start the second cluster
 	// we use SecondStateMachine as the IStateMachine for the second cluster
-	rc.ClusterID = clusterID2
-	if err := nh.StartCluster(peers, false, NewSecondStateMachine, rc); err != nil {
+	rc.ShardID = shardID2
+	if err := nh.StartReplica(initialMembers, false, NewStateMachine, rc); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to add cluster, %v\n", err)
 		os.Exit(1)
 	}
-	raftStopper := NewStopper()
-	consoleStopper := NewStopper()
+	raftStopper := syncutil.NewStopper()
+	consoleStopper := syncutil.NewStopper()
 	ch := make(chan string, 16)
 	consoleStopper.RunWorker(func() {
 		reader := bufio.NewReader(os.Stdin)
@@ -125,7 +130,7 @@ func Dragonboat() {
 			if s == "exit\n" {
 				raftStopper.Stop()
 				// no data will be lost/corrupted if nodehost.Stop() is not called
-				nh.Stop()
+				nh.Close()
 				return
 			}
 			ch <- s
@@ -134,8 +139,8 @@ func Dragonboat() {
 	raftStopper.RunWorker(func() {
 		// use NO-OP client session here
 		// check the example in godoc to see how to use a regular client session
-		cs1 := nh.GetNoOPSession(clusterID1)
-		cs2 := nh.GetNoOPSession(clusterID2)
+		cs1 := nh.GetNoOPSession(shardID1)
+		cs2 := nh.GetNoOPSession(shardID2)
 		for {
 			select {
 			case v, ok := <-ch:

@@ -27,3 +27,6 @@ docker run --rm -v $GOPATH:/go -v $Code:/work -w /work/lib/tools/generate -e GOP
 # test notify
 docker run --rm -e PLUGIN_DING_TOKEN=xxx -e PLUGIN_DING_SECRET=xxx jybl/notify
 
+# node
+docker run --rm --privileged=true -v /home/ghoper:/work -w /work/website/vhoper node:16-alpine3.16 npm run build
+docker run -v /home/ghoper/static:/static --net=host --restart=always --cpus=0.2 -d --name vhoper  vhoper:1.2

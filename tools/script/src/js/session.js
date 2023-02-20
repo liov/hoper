@@ -67,3 +67,5 @@ const all  = "e30="
 
 console.log(Buffer.from('{}').toString('base64'));
 escape()
+console.log(btoa("TY1lPZZPBVuX8h4Rij8QIg=="))
+console.log(atob("TY1lPZZPBVuX8h4Rij8QIg=="))

@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func IsEqual[T comparable](a T, b T) bool {
 	return a == b
@@ -20,4 +22,24 @@ func keys[K comparable, V any](m map[K]V) []K {
 		keys = append(keys, k)
 	}
 	return keys
+}
+
+// 泛型似乎比以前智能点，还是以前就可以
+func GetOption[T any](t T) T {
+	return t
+}
+
+func SetOption[T any](t T) {
+
+}
+func Go119() bool {
+	return GetOption[bool](true)
+}
+
+func TurnOffEnumGqlGen() {
+	SetOption(false)
+}
+
+func Go120() bool {
+	return GetOption(true)
 }
