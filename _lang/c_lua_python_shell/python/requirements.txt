@@ -8,5 +8,5 @@ numpy==1.22.0
 paddleocr==2.3.0.2
 Pillow==9.2.0
 requests==2.26.0
-setuptools==58.0.4
+setuptools==65.5.1
 taichi==1.0.3
