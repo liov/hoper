@@ -1,0 +1,22 @@
+{
+  "layer": [
+    {
+      "name": "default",
+      "value": 1
+    }
+  ],
+  "general": {
+    "designResolution": {
+      "fitHeight": false,
+      "fitWidth": true,
+      "width": 630,
+      "height": 1120
+    }
+  },
+  "__version__": "1.0.4",
+  "fbx": {
+    "legacyFbxImporter": {
+      "visible": true
+    }
+  }
+}

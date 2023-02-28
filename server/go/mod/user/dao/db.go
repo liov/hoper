@@ -26,7 +26,7 @@ func (d *userDao) ExitsCheck(db *gorm.DB, field, value string) (bool, error) {
 	ctxi := d
 	sql := `SELECT EXISTS(SELECT id FROM "` + model.UserTableName + `" WHERE ` + dbi.NotDeleted + ` AND `
 	var exists bool
-	err := db.Raw(sql+field+` = ? AND status != ?  LIMIT 1)`, value, user.UserStatusDeleted).Row().Scan(&exists)
+	err := db.Raw(sql+field+` = ? AND status != ?  LIMIT 1)`, value, user.UserStatusDeleted).Scan(&exists).Error
 
 	if err != nil {
 		return true, ctxi.ErrorLog(errorcode.DBError, err, "ExitsCheck")

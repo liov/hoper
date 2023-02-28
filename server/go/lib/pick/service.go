@@ -3,12 +3,12 @@ package pick
 import (
 	"context"
 	"encoding/json"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/liov/hoper/server/go/lib/context"
 	"io"
 	"net/http"
 	"reflect"
 
-	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
 	"github.com/liov/hoper/server/go/lib/utils/log"
 	httpi "github.com/liov/hoper/server/go/lib/utils/net/http"

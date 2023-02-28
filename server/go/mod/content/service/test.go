@@ -6,7 +6,6 @@ import (
 	"unsafe"
 
 	"github.com/liov/hoper/server/go/lib/protobuf/empty"
-	"github.com/liov/hoper/server/go/lib/tiga"
 	model "github.com/liov/hoper/server/go/mod/protobuf/content"
 )
 
@@ -22,6 +21,5 @@ func (*TestService) GC(ctx context.Context, req *model.GCReq) (*empty.Empty, err
 }
 
 func (*TestService) Restart(ctx context.Context, req *empty.Empty) (*empty.Empty, error) {
-	tiga.ReStart()
 	return &empty.Empty{}, nil
 }

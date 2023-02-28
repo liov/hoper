@@ -1,11 +1,9 @@
-package jwt
+package jwti
 
 import (
 	"errors"
+	"github.com/golang-jwt/jwt/v5"
 	"time"
-
-	"github.com/dgrijalva/jwt-go/v4"
-	"github.com/liov/hoper/server/go/lib/utils/strings"
 )
 
 var (
@@ -19,28 +17,20 @@ var (
 // 有泛型这里多好写
 type Claims struct {
 	UserId uint64 `json:"userId"`
-	*jwt.StandardClaims
-}
-
-func (claims *Claims) Valid(helper *jwt.ValidationHelper) error {
-	return helper.ValidateExpiresAt(claims.ExpiresAt)
+	*jwt.RegisteredClaims
 }
 
 type CustomClaims struct {
 	CustomInfo interface{} `json:"customInfo"`
-	*jwt.StandardClaims
+	*jwt.RegisteredClaims
 }
 
-func (claims *CustomClaims) Valid(helper *jwt.ValidationHelper) error {
-	return helper.ValidateExpiresAt(claims.ExpiresAt)
-}
-
-func NewStandardClaims(maxAge int64, sign string) *jwt.StandardClaims {
+func NewStandardClaims(maxAge int64, sign string) *jwt.RegisteredClaims {
 	now := time.Now()
 	exp := now.Add(time.Duration(maxAge))
-	return &jwt.StandardClaims{
-		ExpiresAt: &jwt.Time{Time: exp},
-		IssuedAt:  &jwt.Time{Time: now},
+	return &jwt.RegisteredClaims{
+		ExpiresAt: &jwt.NumericDate{Time: exp},
+		IssuedAt:  &jwt.NumericDate{Time: now},
 		Issuer:    sign,
 	}
 }
@@ -51,29 +41,13 @@ func GenerateToken(claims jwt.Claims, secret interface{}) (string, error) {
 	return token, err
 }
 
-func ParseToken(claims jwt.Claims, token, secret string) error {
-	if token == "" {
-		return err
-	}
-	tokenClaims, err := Parser.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
-		return stringsi.ToBytes(secret), nil
+func ParseToken(claims jwt.Claims, token string, secret []byte) (*jwt.Token, error) {
+	return Parser.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		return secret, nil
 	})
-	if err != nil {
-		return err
-	}
-	if tokenClaims != nil && tokenClaims.Valid {
-		return tokenClaims.Claims.Valid(jwt.DefaultValidationHelper)
-	}
-
-	return err
 }
 
-func ParseTokenWithKeyFunc(claims jwt.Claims, token string, f func(token *jwt.Token) (interface{}, error)) error {
-	tokenClaims, _ := Parser.ParseWithClaims(token, claims, f)
+func ParseTokenWithKeyFunc(claims jwt.Claims, token string, f func(token *jwt.Token) (interface{}, error)) (*jwt.Token, error) {
 
-	if tokenClaims != nil && tokenClaims.Valid {
-		return tokenClaims.Claims.Valid(Parser.ValidationHelper)
-	}
-
-	return err
+	return Parser.ParseWithClaims(token, claims, f)
 }

@@ -2,7 +2,10 @@ package pick
 
 import (
 	"github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
+	"github.com/liov/hoper/server/go/lib/utils/net/http/request"
 	"log"
+	"net/http"
 	"reflect"
 
 	"github.com/gin-gonic/gin"
@@ -41,7 +44,11 @@ func Gin(engine *gin.Engine, genApi bool, modName string, tracing bool) {
 				}
 				in1 := reflect.ValueOf(ctxi)
 				in2 := reflect.New(in2Type.Elem())
-				gin_build.Bind(ctx, in2.Interface())
+				err := gin_build.Bind(ctx, in2.Interface())
+				if err != nil {
+					ctx.JSON(http.StatusBadRequest, errorcode.InvalidArgument.Message(request.Error(err)))
+					return
+				}
 				result := methodValue.Call([]reflect.Value{value, in1, in2})
 				resHandler(ctxi, ctx.Writer, result)
 			})

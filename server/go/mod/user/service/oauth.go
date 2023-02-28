@@ -2,26 +2,24 @@ package service
 
 import (
 	"context"
-	"log"
-	"strconv"
-	"time"
-
-	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/go-oauth2/oauth2/v4"
 	"github.com/go-oauth2/oauth2/v4/errors"
 	"github.com/go-oauth2/oauth2/v4/generates"
 	"github.com/go-oauth2/oauth2/v4/manage"
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/go-oauth2/oauth2/v4/store"
+	"github.com/golang-jwt/jwt/v5"
 	goauth "github.com/liov/hoper/server/go/lib/protobuf/oauth"
 	"github.com/liov/hoper/server/go/lib/protobuf/response"
-	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
 	jwti "github.com/liov/hoper/server/go/lib/utils/verification/auth/jwt"
 	"github.com/liov/hoper/server/go/lib/utils/verification/auth/oauth"
 	"github.com/liov/hoper/server/go/mod/protobuf/user"
 	"github.com/liov/hoper/server/go/mod/user/conf"
 	"github.com/liov/hoper/server/go/mod/user/dao"
 	"google.golang.org/grpc/metadata"
+	"log"
+	"strconv"
+	"time"
 )
 
 func GetOauthService() *OauthService {
@@ -35,7 +33,7 @@ func GetOauthService() *OauthService {
 	manager.MustTokenStorage(store.NewMemoryTokenStore())
 
 	// generate jwt access token
-	manager.MapAccessGenerate(generates.NewJWTAccessGenerate("", stringsi.ToBytes(conf.Conf.Customize.TokenSecret), jwt.SigningMethodHS512))
+	manager.MapAccessGenerate(generates.NewJWTAccessGenerate("", conf.Conf.Customize.TokenSecret, jwt.SigningMethodHS512))
 
 	clientStore := oauth.NewClientStore(dao.Dao.GORMDB.DB)
 
@@ -48,7 +46,7 @@ func GetOauthService() *OauthService {
 			return "", errors.ErrInvalidAccessToken
 		}
 		claims := new(jwti.Claims)
-		if err := jwti.ParseToken(claims, token, conf.Conf.Customize.TokenSecret); err != nil {
+		if _, err := jwti.ParseToken(claims, token, conf.Conf.Customize.TokenSecret); err != nil {
 			return "", err
 		}
 		return strconv.FormatUint(claims.UserId, 10), nil

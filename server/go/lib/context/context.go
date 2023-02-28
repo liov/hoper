@@ -2,17 +2,15 @@ package contexti
 
 import (
 	"context"
-	"errors"
-	"github.com/dgrijalva/jwt-go/v4"
+	"encoding/json"
+	"github.com/golang-jwt/jwt/v5"
 	contexti "github.com/liov/hoper/server/go/lib/utils/context"
-	"github.com/liov/hoper/server/go/lib/utils/encoding/json/iterator"
 	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
 	jwti "github.com/liov/hoper/server/go/lib/utils/verification/auth/jwt"
 	"go.opencensus.io/trace"
 	"google.golang.org/grpc"
 	"net/http"
 	"sync"
-	"time"
 )
 
 var (
@@ -26,17 +24,12 @@ type AuthInfo interface {
 }
 
 type Authorization struct {
-	AuthInfo    `json:"auth"`
+	AuthInfo `json:"auth"`
+	jwt.RegisteredClaims
 	AuthInfoRaw string `json:"-"`
-	IdStr       string `json:"-" gorm:"-"`
-	ExpiredAt   int64  `json:"exp,omitempty"`
-	LoginAt     int64  `json:"iat,omitempty"`
 }
 
-func (x *Authorization) Valid(helper *jwt.ValidationHelper) error {
-	if x.ExpiredAt != 0 && time.Now().Unix() > x.ExpiredAt {
-		return errors.New("登录过期")
-	}
+func (x *Authorization) Validate() error {
 	return nil
 }
 
@@ -46,11 +39,14 @@ func (x *Authorization) GenerateToken(secret []byte) (string, error) {
 	return token, err
 }
 
-func (x *Authorization) ParseToken(token, secret string) error {
-	if err := jwti.ParseToken(x, token, secret); err != nil {
+func (x *Authorization) ParseToken(token string, secret []byte) error {
+	_, err := jwti.ParseToken(x, token, secret)
+	if err != nil {
 		return err
 	}
-	x.IdStr = x.AuthInfo.IdStr()
+	x.ID = x.AuthInfo.IdStr()
+	authBytes, _ := json.Marshal(x.AuthInfo)
+	x.AuthInfoRaw = stringsi.ToString(authBytes)
 	return nil
 }
 
@@ -86,18 +82,4 @@ func CtxFromContext(ctx context.Context) *Ctx {
 		c.ServerTransportStream = grpc.ServerTransportStreamFromContext(ctx)
 	}
 	return c
-}
-
-func init() {
-	jwt.WithUnmarshaller(jwtUnmarshaller)(jwti.Parser)
-}
-
-func jwtUnmarshaller(ctx jwt.CodingContext, data []byte, v interface{}) error {
-	if ctx.FieldDescriptor == jwt.ClaimsFieldDescriptor {
-		if c, ok := (*v.(*jwt.Claims)).(*Authorization); ok {
-			c.AuthInfoRaw = stringsi.ToString(data)
-			return iterator.Unmarshal(data, c)
-		}
-	}
-	return iterator.Unmarshal(data, v)
 }
