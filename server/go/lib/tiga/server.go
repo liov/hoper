@@ -52,7 +52,7 @@ func (s *Server) Serve() {
 		)*/
 		//trace.ApplyConfig(trace.Config{DefaultSampler: trace.AlwaysSample()})
 		//trace.RegisterExporter(&exporter.PrintExporter{})
-		zpages.Handle(http.DefaultServeMux, "/api/debug")
+		zpages.Handle(http.DefaultServeMux, "/debug")
 	}
 	handle := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
@@ -105,17 +105,11 @@ func (s *Server) Serve() {
 		}
 	}
 	go func() {
-		<-signals
+		<-stop
 		log.Debug("关闭服务")
 		cs()
-		signals <- syscall.SIGINT
 	}()
 
-	go func() {
-		<-stop
-		log.Debug("重启服务")
-		cs()
-	}()
 	fmt.Println("listening: " + s.Config.Domain + s.Config.Port)
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("failed to serve: %v", err)
@@ -131,14 +125,13 @@ type Server struct {
 	GraphqlResolve graphql.ExecutableSchema
 }
 
-var signals = make(chan os.Signal, 1)
-var stop = make(chan struct{}, 1)
+var stop = make(chan os.Signal, 1)
 
 func (s *Server) Start() {
 	if s.Config == nil {
 		s.Config = defaultServerConfig()
 	}
-	signal.Notify(signals,
+	signal.Notify(stop,
 		// kill -SIGINT XXXX 或 Ctrl+c
 		syscall.SIGINT, // register that too, it should be ok
 		// os.Kill等同于syscall.Kill
@@ -146,20 +139,7 @@ func (s *Server) Start() {
 		// kill -SIGTERM XXXX
 		syscall.SIGTERM,
 	)
-	// 控制服务重启
-Loop:
-	for {
-		select {
-		case <-signals:
-			break Loop
-		default:
-			s.Serve()
-		}
-	}
-}
-
-func ReStart() {
-	stop <- struct{}{}
+	s.Serve()
 }
 
 func NewServer(config *ServerConfig, ginhandle func(*gin.Engine), grpchandle func(*grpc.Server), grpcoptions []grpc.ServerOption, gatewayregist gateway.GatewayHandle, graphqlresolve graphql.ExecutableSchema) *Server {

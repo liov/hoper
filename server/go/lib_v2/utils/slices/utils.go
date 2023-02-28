@@ -43,3 +43,12 @@ func Min[T constraints.Number](s []T) T {
 
 	return min
 }
+
+func SlicesToMap[T any, K comparable, V any](slices []T, getKV func(T) (K, V)) map[K]V {
+	m := make(map[K]V)
+	for _, s := range slices {
+		k, v := getKV(s)
+		m[k] = v
+	}
+	return m
+}

@@ -12,7 +12,7 @@ type serverConfig struct {
 	PassSalt string
 	// 天数
 	TokenMaxAge time.Duration
-	TokenSecret string
+	TokenSecret []byte
 	PageSize    int8
 
 	LuosimaoSuperPW   string

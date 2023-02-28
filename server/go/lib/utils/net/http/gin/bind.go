@@ -1,15 +1,12 @@
 package gini
 
 import (
-	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
-	"github.com/liov/hoper/server/go/lib/utils/net/http/request"
-	"github.com/liov/hoper/server/go/lib/utils/verification/validator"
-	"io/ioutil"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
 	"github.com/liov/hoper/server/go/lib/utils/net/http/request/binding"
 	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
+	"github.com/liov/hoper/server/go/lib/utils/verification/validator"
+	"io/ioutil"
 )
 
 func Bind(c *gin.Context, obj interface{}) error {
@@ -42,7 +39,6 @@ func BindYAML(c *gin.Context, obj interface{}) error {
 // See the binding package.
 func MustBindWith(c *gin.Context, obj interface{}, b binding.Binding) error {
 	if err := ShouldBindWith(c, obj, b); err != nil {
-		c.JSON(http.StatusBadRequest, errorcode.InvalidArgument.Message(request.Error(err)))
 		return err
 	}
 	if err := validator.Validator.Struct(obj); err != nil {

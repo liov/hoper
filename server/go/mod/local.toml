@@ -32,6 +32,7 @@ UploadDir = "/static/"
 UploadMaxSize = 10
 UploadAllowExt = [".jpg",".jpeg",".png",".gif"]
 
+LuosimaoSuperPW = "5678"
 LuosimaoVerifyURL ="https://captcha.luosimao.com/api/site_verify"
 LuosimaoAPIKey ="xxxx"
 
@@ -49,8 +50,8 @@ DayLimitCount = 10000
 [GORMDB]
 Type = "postgres"
 User = "postgres"
-Password = "123456"
-Host = "192.168.1.212"
+Password = "lby604"
+Host = "hoper.xyz"
 Port = 5432
 Charset = "utf8mb4"
 Database = "hoper"
@@ -81,7 +82,7 @@ Metrics = true
 
 #日志
 [log]
-Level = "debug"
+Level = -1
 Caller = true
 OutputPaths = {console = ["stderr"],json = []}
 

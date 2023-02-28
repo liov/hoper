@@ -9,10 +9,10 @@ import (
 	httpi "github.com/liov/hoper/server/go/lib/utils/net/http"
 	gin_build "github.com/liov/hoper/server/go/lib/utils/net/http/gin"
 	"github.com/liov/hoper/server/go/lib/utils/net/http/grpc/gateway"
+	"io"
 
 	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
 	"go.uber.org/zap"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -53,8 +53,8 @@ func (s *Server) httpHandler(conf *ServerConfig) http.HandlerFunc {
 
 		var body []byte
 		if r.Method != http.MethodGet {
-			body, _ = ioutil.ReadAll(r.Body)
-			r.Body = ioutil.NopCloser(bytes.NewReader(body))
+			body, _ = io.ReadAll(r.Body)
+			r.Body = io.NopCloser(bytes.NewReader(body))
 		}
 		recorder := httpi.NewRecorder(w.Header())
 

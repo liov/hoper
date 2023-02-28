@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/md5"
 	"fmt"
+	"github.com/golang-jwt/jwt/v5"
 	contexti "github.com/liov/hoper/server/go/lib/context"
 	"github.com/liov/hoper/server/go/lib/pick"
 	"github.com/liov/hoper/server/go/lib/protobuf/request"
@@ -310,7 +311,7 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
 	var user model.User
 	if err := db.Table(modelconst.UserTableName).
-		Where(sql+` AND status != ?`+dbi.WithNotDeleted, req.Input, model.UserStatusDeleted).Find(&user).Error; err != nil {
+		Where(sql+` AND status != ?`+dbi.WithNotDeleted, req.Input, model.UserStatusDeleted).First(&user).Error; err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError.Message("账号不存在"), err, "Find")
 	}
 
@@ -342,10 +343,10 @@ func (*UserService) login(ctxi *contexti.Ctx, user *model.User) (*model.LoginRep
 	}
 
 	ctxi.AuthInfo = auth
-	ctxi.LoginAt = ctxi.TimeStamp
-	ctxi.ExpiredAt = ctxi.TimeStamp + int64(conf.Conf.Customize.TokenMaxAge)
+	ctxi.IssuedAt = &jwt.NumericDate{Time: ctxi.Time}
+	ctxi.ExpiresAt = &jwt.NumericDate{Time: ctxi.Time.Add(conf.Conf.Customize.TokenMaxAge)}
 
-	tokenString, err := ctxi.GenerateToken(stringsi.ToBytes(conf.Conf.Customize.TokenSecret))
+	tokenString, err := ctxi.GenerateToken(conf.Conf.Customize.TokenSecret)
 	if err != nil {
 		return nil, errorcode.Internal
 	}

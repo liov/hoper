@@ -1,6 +1,7 @@
 package jsonpb
 
 import (
+	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/liov/hoper/server/go/lib/utils/encoding/json/iterator"
 	"io"
 
@@ -23,6 +24,9 @@ func (*JSONPb) ContentType(_ interface{}) string {
 func (j *JSONPb) Marshal(v interface{}) ([]byte, error) {
 	if _, ok := v.(error); ok {
 		return j.API.Marshal(v)
+	}
+	if msg, ok := v.(*wrappers.StringValue); ok {
+		v = msg.Value
 	}
 	return j.API.Marshal(&httpi.ResData{
 		Code:    0,

@@ -3,9 +3,11 @@ package pick
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
 	"github.com/liov/hoper/server/go/lib/utils/net/http/api/apidoc"
 	gin_build "github.com/liov/hoper/server/go/lib/utils/net/http/gin"
 	"github.com/liov/hoper/server/go/lib/utils/net/http/gin/handler"
+	"github.com/liov/hoper/server/go/lib/utils/net/http/request"
 	"log"
 	"net/http"
 	"reflect"
@@ -60,7 +62,11 @@ func GenGinAPI(genApi bool, modName string, engine *gin.Engine) {
 				}
 				in1 := reflect.ValueOf(ctxi)
 				in2 := reflect.New(in2Type.Elem())
-				gin_build.Bind(ctx, in2.Interface())
+				err := gin_build.Bind(ctx, in2.Interface())
+				if err != nil {
+					ctx.JSON(http.StatusBadRequest, errorcode.InvalidArgument.Message(request.Error(err)))
+					return
+				}
 				result := methodValue.Call([]reflect.Value{value, in1, in2})
 				resHandler(ctxi, ctx.Writer, result)
 			})

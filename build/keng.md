@@ -1633,4 +1633,4 @@ undefined behavior - version of Delve is too old for Go version 1.20.0
 go install github.com/go-delve/delve/cmd/dlv@latest
 # 可选
 help  -> Edit Custom Properties
-dlv.path=你的GOPATH路径\\bin\\dlv.exe
+dlv.path=你的GOPATH路径\\bin\\dlv.ex
