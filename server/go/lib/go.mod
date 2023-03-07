@@ -88,7 +88,7 @@ require (
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/pflag v1.0.5
 	github.com/urfave/cli/v2 v2.11.0
-	golang.org/x/image v0.0.0-20220601225756-64ec528b34cd
+	golang.org/x/image v0.5.0
 	golang.org/x/text v0.7.0
 )
 
