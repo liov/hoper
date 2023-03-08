@@ -30,11 +30,11 @@ func Pietures(c *ftp.ServerConn) {
 	if err != nil {
 		log.Println(err)
 	}
-	err = Copy(c, "/Pictures/weibo", BackUpDiskPron+"weibo", true)
+	err = Copy(c, "/Pictures/weibo", BackUpDiskPron+"weibo/杂集", true)
 	if err != nil {
 		log.Println(err)
 	}
-	err = Copy(c, "/Pictures/微博动图", BackUpDiskPron+"微博动图", true)
+	err = Copy(c, "/Pictures/微博动图", BackUpDiskPron+"weibo/微博动图", true)
 	if err != nil {
 		log.Println(err)
 	}
@@ -77,7 +77,7 @@ func Copy(c *ftp.ServerConn, src, dst string, date bool) error {
 	if err != nil {
 		return err
 	}
-	log.Println(lastFile.Name())
+	log.Println(dst, lastFile.Name())
 
 	list, err := c.List(src)
 	if err != nil {

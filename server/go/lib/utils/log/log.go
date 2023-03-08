@@ -113,6 +113,7 @@ func (lf *Config) initLogger(cores ...zapcore.Core) *zap.Logger {
 		EncodeCaller: func(caller zapcore.EntryCaller, encoder zapcore.PrimitiveArrayEncoder) {
 			encoder.AppendString(caller.TrimmedPath())
 		},
+		ConsoleSeparator: "\t",
 	}
 	if lf.ModuleName != "" {
 		encoderConfig.NameKey = "module"
