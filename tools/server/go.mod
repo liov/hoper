@@ -11,7 +11,7 @@ require (
 	github.com/liov/hoper/server/go/lib v1.0.0
 	github.com/liov/hoper/server/go/lib_v2 v1.0.0
 	github.com/nsqio/go-nsq v1.1.0
-	golang.org/x/image v0.0.0-20220601225756-64ec528b34cd
+	golang.org/x/image v0.5.0
 	golang.org/x/net v0.7.0
 	gorm.io/gorm v1.24.5
 )
