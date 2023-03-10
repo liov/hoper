@@ -64,8 +64,8 @@ func (video *Video) DownloadVideo(typ string, order int, url string) ([]*crawler
 		request.Header.Set("User-Agent", client.UserAgent1)
 		request.Header.Set("Accept", "*/*")
 		request.Header.Set("Accept-Language", "en-US,en;q=0.5")
-		request.Header.Set("Accept-Encoding", "gzip, deflate, br")
-		request.Header.Set("Range", "bytes=0-")
+		/*		request.Header.Set("Accept-Encoding", "gzip, deflate, br")
+				request.Header.Set("Range", "bytes=0-")*/
 		request.Header.Set("Referer", referer)
 		request.Header.Set("Origin", "https://www.bilibili.com")
 		request.Header.Set("Connection", "keep-alive")
@@ -77,7 +77,7 @@ func (video *Video) DownloadVideo(typ string, order int, url string) ([]*crawler
 			return nil, err
 		}
 
-		if resp.StatusCode != http.StatusPartialContent {
+		if resp.StatusCode != http.StatusOK {
 			log.Printf("下载 %d 时出错, 错误码：%d", video.Cid, resp.StatusCode)
 			return nil, fmt.Errorf("错误码： %d", resp.StatusCode)
 		}

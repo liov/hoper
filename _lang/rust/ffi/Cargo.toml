@@ -13,12 +13,6 @@ crate-type = ["staticlib","cdylib","lib"]
 [dependencies]
 libc="0.2"
 libloading = "0.7"
-cpp = "0.5"
 
 [build-dependencies]
-cpp_build = "0.5"
 cc = { version = "1.0.38", features = ["parallel"] }
-
-[[bin]]
-name = "cpp"
-path = "src/bin/cpp/cpp.rs"

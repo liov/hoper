@@ -6,6 +6,7 @@ ReadTimeout = 60
 WriteTimeout = 60
 OpenTracing = true
 GrpcWeb = true
+StaticPath = ""
 
 [server.gin]
 RedirectTrailingSlash = false
@@ -13,6 +14,14 @@ RedirectFixedPath = true
 HandleMethodNotAllowed = false
 MaxMultipartMemory = 20971520
 
+[server.http3]
+Address = "hoper.xyz:8081"
+CertFile = "D:/certs/hoper/fullchain.cer"
+KeyFile = "D:/certs/hoper/hoper.xyz.key"
+
+[server.staticFS]
+Prefix = "/static/test"
+Root = "D:/certs/test"
 
 [customize]
 GrpcService = {user = "localhost:8080", note = "localhost:8090"}
@@ -26,7 +35,7 @@ JwtSecret = "233"
 
 UploadUrlPrefix = "/static/"
 #文件
-UploadDir = "/static/"
+UploadDir = "D:/code/html"
 
 # MB
 UploadMaxSize = 10
