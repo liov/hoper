@@ -18,8 +18,8 @@ func GetFileWithReq(url string, setReq Option) (io.ReadCloser, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	req.Header.Set("Accept-Encoding", "gzip, deflate")
+	// 如果自己设置了接受编码，http库不会自动gzip解压，需要自己处理，不加Accept-Encoding和Range头会自动设置gzip
+	//req.Header.Set("Accept-Encoding", "gzip, deflate")
 	req.Header.Set("Accept-Language", "zh-CN,zh;q=0.9;charset=utf-8")
 	req.Header.Set("Connection", "keep-alive")
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36")

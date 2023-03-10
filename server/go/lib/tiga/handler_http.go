@@ -20,6 +20,12 @@ func (s *Server) httpHandler(conf *ServerConfig) http.HandlerFunc {
 	// 默认使用gin
 	ginServer := gin_build.Http(conf.Gin, s.GinHandle)
 
+	if len(s.Config.StaticFs) > 0 {
+		for _, fs := range s.Config.StaticFs {
+			ginServer.Static(fs.Prefix, fs.Root)
+		}
+	}
+
 	if s.GraphqlResolve != nil {
 		graphqlServer := handler.NewDefaultServer(s.GraphqlResolve)
 		ginServer.Handle(http.MethodPost, "/api/graphql", func(ctx *gin.Context) {

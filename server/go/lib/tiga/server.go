@@ -6,6 +6,7 @@ import (
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"github.com/liov/hoper/server/go/lib/context"
 	"github.com/liov/hoper/server/go/lib/initialize"
+	"github.com/quic-go/quic-go/http3"
 	"github.com/rs/cors"
 	"go.opencensus.io/zpages"
 	"net/http"
@@ -109,6 +110,10 @@ func (s *Server) Serve() {
 		log.Debug("关闭服务")
 		cs()
 	}()
+
+	if s.Config.Http3 != nil {
+		go http3.ListenAndServe(s.Config.Http3.Address, s.Config.Http3.CertFile, s.Config.Http3.KeyFile, handle)
+	}
 
 	fmt.Println("listening: " + s.Config.Domain + s.Config.Port)
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
