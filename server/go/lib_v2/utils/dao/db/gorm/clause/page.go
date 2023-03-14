@@ -4,8 +4,9 @@ package clausei
 
 import (
 	clause2 "github.com/liov/hoper/server/go/lib/utils/dao/db/gorm/clause"
-	"github.com/liov/hoper/server/go/lib/utils/def/request"
-	"github.com/liov/hoper/server/go/lib_v2/utils/dao/db/type"
+	request2 "github.com/liov/hoper/server/go/lib/utils/def/request"
+	"github.com/liov/hoper/server/go/lib/v2/utils/dao/db/type"
+	"github.com/liov/hoper/server/go/lib/v2/utils/def/request"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -37,7 +38,7 @@ func (req *PageSortReq) Clause() []clause.Expression {
 		return []clause.Expression{clause2.Page(req.PageNo, req.PageSize)}
 	}
 
-	return []clause.Expression{clause2.Sort(req.SortField, req.SortType), clause2.Page(req.PageNo, req.PageSize)}
+	return []clause.Expression{clause2.Sort(req.SortField, request2.SortType(req.SortType)), clause2.Page(req.PageNo, req.PageSize)}
 }
 
 type ListReq[T _type.Ordered] _type.ListReq[T]

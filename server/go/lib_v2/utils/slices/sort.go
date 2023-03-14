@@ -1,6 +1,6 @@
 package slices
 
-import "github.com/liov/hoper/server/go/lib_v2/utils/def/constraints"
+import "github.com/liov/hoper/server/go/lib/v2/utils/def/constraints"
 
 // TODO
 func Sort[T comparable](slices []T) {

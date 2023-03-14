@@ -1,4 +1,4 @@
-module github.com/liov/hoper/server/go/lib_v2
+module github.com/liov/hoper/server/go/lib/v2
 
 go 1.19
 

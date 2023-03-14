@@ -3,8 +3,8 @@ package clausei
 import (
 	dbi "github.com/liov/hoper/server/go/lib/utils/dao/db"
 	clause2 "github.com/liov/hoper/server/go/lib/utils/dao/db/gorm/clause"
-	"github.com/liov/hoper/server/go/lib/utils/def/request"
-	_type "github.com/liov/hoper/server/go/lib_v2/utils/dao/db/type"
+	_type "github.com/liov/hoper/server/go/lib/v2/utils/dao/db/type"
+	"github.com/liov/hoper/server/go/lib/v2/utils/def/request"
 	"gorm.io/gorm/clause"
 )
 

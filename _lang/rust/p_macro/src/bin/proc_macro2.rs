@@ -14,12 +14,13 @@ const IGNORE: &str = stringify! {
  #[proc_macro_derive(HelloMacro)]
 };
 
-#[cfg(wrap_proc_macro)]
+#[proc_macro_derive(MyDerive)]
 pub fn my_derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    let input = proc_macro::TokenStream::from(input);
-    let ast :&syn::DeriveInput= syn::parse(input).unwrap();
+    let input = proc_macro2::TokenStream::from(input);
+    let ast :&syn::DeriveInput= syn::parse2(input).unwrap();
     let name = &ast.ident;
-    let gen = quote! {
+
+    let output = quote! {
         impl HelloMacro for #name {
             fn foo() {
                 println!("Hello, Macro! My name is {}", stringify!(#name));

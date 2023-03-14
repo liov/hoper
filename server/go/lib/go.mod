@@ -79,7 +79,6 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.0.0-rc.1
 	github.com/golang/protobuf v1.5.2
 	github.com/improbable-eng/grpc-web v0.15.0
-	github.com/liov/hoper/server/go/lib_v2 v0.0.0-20230220030308-5d9482f05f92
 	github.com/lni/dragonboat/v4 v4.0.0-20221130050056-ae87d79f5488
 	github.com/lni/goutils v1.3.1-0.20220604063047-388d67b4dbc4
 	github.com/nacos-group/nacos-sdk-go v1.1.1

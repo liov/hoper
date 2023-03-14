@@ -3,9 +3,9 @@ package es7
 import (
 	"context"
 	v7 "github.com/liov/hoper/server/go/lib/initialize/elastic/v7"
-	"github.com/liov/hoper/server/go/lib/utils/def/request"
 	"github.com/liov/hoper/server/go/lib/utils/log"
-	_type "github.com/liov/hoper/server/go/lib_v2/utils/dao/db/type"
+	_type "github.com/liov/hoper/server/go/lib/v2/utils/dao/db/type"
+	"github.com/liov/hoper/server/go/lib/v2/utils/def/request"
 	"strconv"
 	"tools/clawer/timepill"
 	"tools/clawer/timepill/es8"

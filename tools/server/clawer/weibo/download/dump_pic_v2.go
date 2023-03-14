@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/liov/hoper/server/go/lib/utils/log"
-	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
+	"github.com/liov/hoper/server/go/lib/v2/utils/net/http/client/crawler"
 	"strconv"
 	"strings"
 	"time"

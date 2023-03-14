@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/liov/hoper/server/go/lib/initialize"
-	_type "github.com/liov/hoper/server/go/lib_v2/utils/dao/db/type"
+	_type "github.com/liov/hoper/server/go/lib/v2/utils/dao/db/type"
 	"testing"
 )
 
