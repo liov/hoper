@@ -2,7 +2,7 @@ package plugin
 
 import (
 	"github.com/liov/hoper/server/go/lib/protobuf/utils/enum"
-	protogeni "github.com/liov/hoper/server/go/lib_v2/utils/protogen"
+	protogeni "github.com/liov/hoper/server/go/lib/v2/utils/protogen"
 	"google.golang.org/protobuf/compiler/protogen"
 )
 

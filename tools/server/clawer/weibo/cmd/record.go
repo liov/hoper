@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/liov/hoper/server/go/lib/initialize"
-	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
+	"github.com/liov/hoper/server/go/lib/v2/utils/net/http/client/crawler"
 	"time"
 	"tools/clawer/weibo/config"
 	"tools/clawer/weibo/dao"

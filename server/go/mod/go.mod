@@ -15,6 +15,7 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.5.0
 	github.com/liov/hoper/server/go/lib v1.0.0
+	github.com/liov/hoper/server/go/lib/v2 v2.0.0
 	github.com/mwitkow/go-proto-validators v0.3.2
 	github.com/spf13/viper v1.12.0
 	go.opencensus.io v0.24.0
@@ -103,7 +104,6 @@ require (
 	github.com/kr/pretty v0.3.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
-	github.com/liov/hoper/server/go/lib_v2 v0.0.0-20230220030308-5d9482f05f92 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/markbates/going v1.0.0 // indirect
@@ -171,4 +171,7 @@ require (
 	nhooyr.io/websocket v1.8.6 // indirect
 )
 
-replace github.com/liov/hoper/server/go/lib => ../lib
+replace (
+	github.com/liov/hoper/server/go/lib => ../lib
+	github.com/liov/hoper/server/go/lib/v2 => ../lib_v2
+)

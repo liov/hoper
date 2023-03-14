@@ -6,7 +6,7 @@ import (
 	"github.com/liov/hoper/server/go/lib/utils/fs"
 	"github.com/liov/hoper/server/go/lib/utils/net/http/client"
 	timei "github.com/liov/hoper/server/go/lib/utils/time"
-	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
+	"github.com/liov/hoper/server/go/lib/v2/utils/net/http/client/crawler"
 	"io"
 	"log"
 	"net/http"

@@ -2,7 +2,7 @@ package context
 
 import (
 	contexti2 "github.com/liov/hoper/server/go/lib/context"
-	contexti "github.com/liov/hoper/server/go/lib_v2/utils/context"
+	contexti "github.com/liov/hoper/server/go/lib/v2/utils/context"
 	"net/http"
 )
 

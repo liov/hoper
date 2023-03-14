@@ -6,7 +6,7 @@ import (
 	"context"
 	"github.com/liov/hoper/server/go/lib/utils/net/http/client"
 	py2 "github.com/liov/hoper/server/go/lib/utils/strings/pinyin"
-	"github.com/liov/hoper/server/go/lib_v2/utils/net/http/client/crawler"
+	"github.com/liov/hoper/server/go/lib/v2/utils/net/http/client/crawler"
 	"io"
 	"log"
 	"math/rand"

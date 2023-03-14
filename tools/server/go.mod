@@ -9,7 +9,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/jlaffaye/ftp v0.0.0-20220817234345-39592b91e4d6
 	github.com/liov/hoper/server/go/lib v1.0.0
-	github.com/liov/hoper/server/go/lib_v2 v1.0.0
+	github.com/liov/hoper/server/go/lib/v2 v2.0.0
 	github.com/nsqio/go-nsq v1.1.0
 	golang.org/x/image v0.0.0-20220601225756-64ec528b34cd
 	golang.org/x/net v0.7.0
@@ -121,5 +121,5 @@ require (
 
 replace (
 	github.com/liov/hoper/server/go/lib => ../../server/go/lib
-	github.com/liov/hoper/server/go/lib_v2 => ../../server/go/lib_v2
+	github.com/liov/hoper/server/go/lib/v2 => ../../server/go/lib_v2
 )

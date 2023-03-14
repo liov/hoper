@@ -3,7 +3,7 @@ package conctrl
 import (
 	"context"
 	"github.com/dgraph-io/ristretto"
-	"github.com/liov/hoper/server/go/lib_v2/utils/slices"
+	"github.com/liov/hoper/server/go/lib/v2/utils/slices"
 	"golang.org/x/time/rate"
 	"log"
 	"time"
