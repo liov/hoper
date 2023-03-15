@@ -1,7 +1,6 @@
 package apollo
 
 import (
-	"github.com/liov/hoper/server/go/lib/initialize"
 	"github.com/liov/hoper/server/go/lib/utils/configor/apollo"
 )
 
@@ -29,21 +28,19 @@ func (conf *ApolloConfig) Build() *apollo.Client {
 	return apollo.New(conf.Addr, conf.AppId, conf.Cluster, conf.IP, conf.NameSpace, conf.InitConfig)
 }
 
-func (conf *ApolloConfig) Generate() interface{} {
-	return conf.Build()
-}
-
 type ApolloClient struct {
 	*apollo.Client
 	Conf ApolloConfig
 }
 
-func (a *ApolloClient) Config() initialize.Generate {
+func (a *ApolloClient) Config() any {
 	return &a.Conf
 }
 
-func (a *ApolloClient) SetEntity(entity interface{}) {
-	if client, ok := entity.(*apollo.Client); ok {
-		a.Client = client
-	}
+func (a *ApolloClient) SetEntity() {
+	a.Client = a.Conf.Build()
+}
+
+func (c *ApolloClient) Close() error {
+	return c.Client.Close()
 }

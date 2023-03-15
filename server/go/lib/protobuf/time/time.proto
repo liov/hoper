@@ -11,6 +11,10 @@ message Time {
     int64 t = 1;
 }
 
+message Date {
+    int64 t = 1;
+}
+
 message Model{
     string createdAt = 1 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
     string updateAt = 2 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];

@@ -3,18 +3,18 @@ package pick
 import (
 	"context"
 	"encoding/json"
-	"github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/context/fasthttp_context"
 	http_fs "github.com/liov/hoper/server/go/lib/utils/net/http/fs"
 	"io"
 	"net/http"
 	"reflect"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
 	"github.com/liov/hoper/server/go/lib/utils/log"
 	httpi "github.com/liov/hoper/server/go/lib/utils/net/http"
 	"github.com/liov/hoper/server/go/lib/utils/net/http/api/apidoc"
 	fiber_build "github.com/liov/hoper/server/go/lib/utils/net/http/fasthttp/fiber"
-	"github.com/gofiber/fiber/v2"
 )
 
 type FiberService interface {
@@ -56,7 +56,7 @@ func fiberResHandler(ctx *fiber.Ctx, result []reflect.Value) error {
 		}
 		return info.File.Close()
 	}
-	return ctx.JSON(httpi.ResData{
+	return ctx.JSON(httpi.ResAnyData{
 		Code:    0,
 		Message: "success",
 		Details: result[0].Interface(),
@@ -86,7 +86,7 @@ func FiberWithCtx(engine *fiber.App, genApi bool, modName string) {
 			methodValue := method.Func
 			in2Type := methodType.In(2)
 			engine.Add(methodInfo.method, methodInfo.path, func(ctx *fiber.Ctx) error {
-				in1 := reflect.ValueOf(contexti.CtxWithFastRequest(context.Background(), ctx.Request()))
+				in1 := reflect.ValueOf(fasthttp_context.CtxWithFastRequest(context.Background(), ctx.Request()))
 				in2 := reflect.New(in2Type.Elem())
 				if err := fiber_build.Bind(ctx, in2.Interface()); err != nil {
 					return ctx.Status(http.StatusBadRequest).JSON(errorcode.InvalidArgument.ErrRep())

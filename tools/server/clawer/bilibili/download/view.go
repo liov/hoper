@@ -8,7 +8,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/liov/hoper/server/go/lib/v2/utils/net/http/client/crawler"
+	"github.com/liov/hoper/server/go/lib/utils/net/http/client/crawler"
 
 	"tools/clawer/bilibili/dao"
 	"tools/clawer/bilibili/rpc"

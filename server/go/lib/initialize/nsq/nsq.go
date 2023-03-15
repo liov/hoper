@@ -1,7 +1,6 @@
 package nsq
 
 import (
-	"github.com/liov/hoper/server/go/lib/initialize"
 	"log"
 
 	"github.com/nsqio/go-nsq"
@@ -17,15 +16,13 @@ type Producer struct {
 	Conf          ProducerConfig `init:"config"`
 }
 
-func (p *Producer) Config() initialize.Generate {
+func (p *Producer) Config() any {
 	p.Conf.Config = nsq.NewConfig()
 	return &p.Conf
 }
 
 func (p *Producer) SetEntity(entity interface{}) {
-	if client, ok := entity.(*nsq.Producer); ok {
-		p.Producer = client
-	}
+	p.Producer = p.Conf.Build()
 }
 
 func (p *Producer) Close() error {
@@ -41,10 +38,6 @@ func (conf *ProducerConfig) Build() *nsq.Producer {
 	}
 	//closes = append(closes,producer.Stop)
 	return producer
-}
-
-func (conf *ProducerConfig) Generate() interface{} {
-	return conf.Build()
 }
 
 type ConsumerConfig struct {
@@ -77,24 +70,18 @@ func (conf *ConsumerConfig) Build() *nsq.Consumer {
 
 }
 
-func (conf *ConsumerConfig) Generate() interface{} {
-	return conf.Build()
-}
-
 type Consumer struct {
 	*nsq.Consumer `init:"entity"`
 	Conf          ConsumerConfig `init:"config"`
 }
 
-func (c *Consumer) Config() initialize.Generate {
+func (c *Consumer) Config() any {
 	c.Conf.Config = nsq.NewConfig()
 	return &c.Conf
 }
 
-func (c *Consumer) SetEntity(entity interface{}) {
-	if client, ok := entity.(*nsq.Consumer); ok {
-		c.Consumer = client
-	}
+func (c *Consumer) SetEntity() {
+	c.Consumer = c.Conf.Build()
 }
 
 func (c *Consumer) Close() error {

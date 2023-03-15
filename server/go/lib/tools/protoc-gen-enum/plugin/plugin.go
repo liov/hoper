@@ -113,7 +113,7 @@ func (b *Builder) generate(f *protogen.File, e *protogen.Enum, g *protogen.Gener
 		b.generateString(f, e, g)
 	}
 	if EnabledEnumJsonMarshal(e) {
-		b.generateJsonMarshal(f, e, g)
+		//b.generateJsonMarshal(f, e, g)
 	}
 	if EnabledEnumErrorCode(e) {
 		b.generateErrorCode(f, e, g)
@@ -171,17 +171,15 @@ func (b *Builder) generateGQLMarshal(f *protogen.File, e *protogen.Enum, g *prot
 }
 
 func (b *Builder) generateJsonMarshal(f *protogen.File, e *protogen.Enum, g *protogen.GeneratedFile) {
-	/*ccTypeName := stringsi.CamelCase(e.Desc.Name())
+	ccTypeName := stringsi.CamelCase(e.Desc.Name())
 	if EnabledGoEnumValueMap(e) {
 		g.P("func (x ", ccTypeName, ") MarshalJSON() ([]byte, error) {")
 		g.P("return ", generateImport("QuoteToBytes", "github.com/liov/hoper/server/go/lib/utils/strings", g), "(x.String())", ", nil")
 		g.P("}")
 		g.P()
-	}
-
 		g.P("func (x *", ccTypeName, ") UnmarshalJSON(data []byte) error {")
 
-		g.P("value, ok := ", ccTypeName, `_name[string(data)]`)
+		g.P("value, ok := ", ccTypeName, `_value[string(data)]`)
 		g.P("if ok {")
 
 		g.P("*x = ", ccTypeName, "(value)")
@@ -192,7 +190,7 @@ func (b *Builder) generateJsonMarshal(f *protogen.File, e *protogen.Enum, g *pro
 
 		g.P("}")
 		g.P()
-	}*/
+	}
 }
 
 func (b *Builder) generateErrorCode(f *protogen.File, e *protogen.Enum, g *protogen.GeneratedFile) {

@@ -5,7 +5,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-func (c *RequestContext) SetHeader(md metadata.MD) error {
+func (c *HttpContext[P]) SetHeader(md metadata.MD) error {
 	for k, v := range md {
 		c.Request.Header[k] = v
 	}
@@ -18,7 +18,7 @@ func (c *RequestContext) SetHeader(md metadata.MD) error {
 	return nil
 }
 
-func (c *RequestContext) SendHeader(md metadata.MD) error {
+func (c *HttpContext[P]) SendHeader(md metadata.MD) error {
 	for k, v := range md {
 		c.Request.Header[k] = v
 	}
@@ -31,7 +31,7 @@ func (c *RequestContext) SendHeader(md metadata.MD) error {
 	return nil
 }
 
-func (c *RequestContext) WriteHeader(k, v string) error {
+func (c *HttpContext[P]) WriteHeader(k, v string) error {
 	c.Request.Header[k] = []string{v}
 
 	if c.ServerTransportStream != nil {
@@ -43,7 +43,7 @@ func (c *RequestContext) WriteHeader(k, v string) error {
 	return nil
 }
 
-func (c *RequestContext) SetCookie(v string) error {
+func (c *HttpContext[P]) SetCookie(v string) error {
 	c.Request.Header[httpi.HeaderSetCookie] = []string{v}
 
 	if c.ServerTransportStream != nil {
@@ -55,7 +55,7 @@ func (c *RequestContext) SetCookie(v string) error {
 	return nil
 }
 
-func (c *RequestContext) SetTrailer(md metadata.MD) error {
+func (c *HttpContext[P]) SetTrailer(md metadata.MD) error {
 	for k, v := range md {
 		c.Request.Header[k] = v
 	}
@@ -68,7 +68,7 @@ func (c *RequestContext) SetTrailer(md metadata.MD) error {
 	return nil
 }
 
-func (c *RequestContext) Method() string {
+func (c *RequestContext[REQ, P]) Method() string {
 	if c.ServerTransportStream != nil {
 		return c.ServerTransportStream.Method()
 	}

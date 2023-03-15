@@ -1,10 +1,9 @@
 package v8
 
 import (
-	"github.com/liov/hoper/server/go/lib/initialize"
+	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/liov/hoper/server/go/lib/utils/log"
 	"github.com/liov/hoper/server/go/lib/utils/net/http/auth"
-	"github.com/elastic/go-elasticsearch/v8"
 	"net/http"
 )
 
@@ -23,16 +22,12 @@ func (conf *ElasticConfig) Build() *elasticsearch.Client {
 	return client
 }
 
-func (conf *ElasticConfig) Generate() interface{} {
-	return conf.Build()
-}
-
 type Es struct {
 	*elasticsearch.Client
 	Conf ElasticConfig
 }
 
-func (es *Es) Config() initialize.Generate {
+func (es *Es) Config() any {
 	return &es.Conf
 }
 

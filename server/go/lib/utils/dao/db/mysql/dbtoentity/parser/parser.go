@@ -1,9 +1,9 @@
 package parser
 
 import (
+	"github.com/blastrain/vitess-sqlparser/sqlparser"
 	dbi "github.com/liov/hoper/server/go/lib/utils/dao/db"
 	"github.com/liov/hoper/server/go/lib/utils/dao/db/mysql"
-	"github.com/blastrain/vitess-sqlparser/sqlparser"
 )
 
 func MysqlConvertByTable(sql string) {

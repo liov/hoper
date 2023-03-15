@@ -1,12 +1,10 @@
 package slices
 
-import "github.com/liov/hoper/server/go/lib/utils/def"
-
 // 没有泛型，范例，实际需根据不同类型各写一遍,用CmpKey，基本类型又用不了，go需要能给基本类型实现方法不能给外部类型实现方法
-func IsCoincide(s1, s2 []def.CmpKey) bool {
+func IsCoincide[T comparable](s1, s2 []T) bool {
 	for i := range s1 {
 		for j := range s2 {
-			if s1[i].CmpKey() == s2[j].CmpKey() {
+			if s1[i] == s2[j] {
 				return true
 			}
 		}
@@ -14,8 +12,8 @@ func IsCoincide(s1, s2 []def.CmpKey) bool {
 	return false
 }
 
-func RemoveDuplicates(s []int) []int {
-	var m = make(map[int]struct{})
+func RemoveDuplicates[T comparable](s []T) []T {
+	var m = make(map[T]struct{})
 	for _, i := range s {
 		m[i] = struct{}{}
 	}
@@ -26,8 +24,8 @@ func RemoveDuplicates(s []int) []int {
 	return s
 }
 
-func DiffUint64(a, b []uint64) []uint64 {
-	var diff []uint64
+func Diff[T comparable](a, b []T) []T {
+	var diff []T
 Loop:
 	for _, i := range b {
 		for _, j := range a {

@@ -4,8 +4,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/liov/hoper/server/go/lib/utils/log"
 	"github.com/fsnotify/fsnotify"
+	"github.com/liov/hoper/server/go/lib/utils/log"
 )
 
 type Watch struct {

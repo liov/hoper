@@ -1,9 +1,9 @@
 package pebble
 
 import (
+	"github.com/cockroachdb/pebble"
 	"github.com/liov/hoper/server/go/lib/initialize"
 	"github.com/liov/hoper/server/go/lib/utils/log"
-	"github.com/cockroachdb/pebble"
 )
 
 type Config struct {

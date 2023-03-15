@@ -2,7 +2,7 @@ package dao
 
 import (
 	"database/sql"
-	contexti "github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/context/http_context"
 	"github.com/liov/hoper/server/go/lib/initialize/gormdb/postgres"
 	"github.com/liov/hoper/server/go/lib/initialize/mail"
 	"github.com/liov/hoper/server/go/lib/initialize/pebble"
@@ -16,10 +16,10 @@ import (
 var Dao *dao = &dao{}
 
 type userDao struct {
-	*contexti.Ctx
+	*http_context.Ctx
 }
 
-func GetDao(ctx *contexti.Ctx) *userDao {
+func GetDao(ctx *http_context.Ctx) *userDao {
 	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}

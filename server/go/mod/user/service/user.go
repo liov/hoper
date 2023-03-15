@@ -6,9 +6,10 @@ import (
 	"crypto/md5"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
-	contexti "github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/context/http_context"
 	"github.com/liov/hoper/server/go/lib/pick"
 	"github.com/liov/hoper/server/go/lib/protobuf/request"
+	contexti2 "github.com/liov/hoper/server/go/lib/utils/context"
 	dbi "github.com/liov/hoper/server/go/lib/utils/dao/db/const"
 	"net/http"
 	"strconv"
@@ -42,7 +43,7 @@ type UserService struct {
 }
 
 func (u *UserService) VerifyCode(ctx context.Context, req *empty.Empty) (*wrappers.StringValue, error) {
-	device := contexti.CtxFromContext(ctx).DeviceInfo
+	device := http_context.CtxFromContext(ctx).DeviceInfo
 	log.Debug(device)
 	var rep = &wrappers.StringValue{}
 	vcode := verification.GenerateCode()
@@ -57,7 +58,7 @@ func (u *UserService) SendVerifyCode(ctx context.Context, req *model.SendVerifyC
 }
 
 func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*wrappers.StringValue, error) {
-	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := http_context.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
 	if req.Mail == "" && req.Phone == "" {
@@ -85,7 +86,7 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 }
 
 func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*wrappers.StringValue, error) {
-	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := http_context.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
 
@@ -157,7 +158,7 @@ func encryptPassword(password string) string {
 	return fmt.Sprintf("%x", md5.Sum(stringsi.ToBytes(hash)))
 }
 
-func sendMail(ctxi *contexti.Ctx, action model.Action, curTime int64, user *model.User) {
+func sendMail(ctxi *http_context.Ctx, action model.Action, curTime int64, user *model.User) {
 	siteURL := "https://" + conf.Conf.Server.Domain
 	title := action.String()
 	secretStr := strconv.FormatInt(curTime, 10) + user.Mail + user.Password
@@ -207,7 +208,7 @@ func checkPassword(password string, user *model.User) bool {
 }
 
 func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.LoginRep, error) {
-	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("Active")
+	ctxi, span := http_context.CtxFromContext(ctx).StartSpan("Active")
 	defer span.End()
 	ctx = ctxi.Context
 	redisKey := modelconst.ActiveTimeKey + strconv.FormatUint(req.Id, 10)
@@ -245,7 +246,7 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 }
 
 func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*empty.Empty, error) {
-	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("Edit")
+	ctxi, span := http_context.CtxFromContext(ctx).StartSpan("Edit")
 	defer span.End()
 	ctx = ctxi.Context
 	user, err := auth(ctxi, true)
@@ -285,7 +286,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*empty.Empt
 }
 
 func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginRep, error) {
-	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("Login")
+	ctxi, span := http_context.CtxFromContext(ctx).StartSpan("Login")
 	defer span.End()
 	ctx = ctxi.Context
 
@@ -334,7 +335,7 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 	return u.login(ctxi, &user)
 }
 
-func (*UserService) login(ctxi *contexti.Ctx, user *model.User) (*model.LoginRep, error) {
+func (*UserService) login(ctxi *http_context.Ctx, user *model.User) (*model.LoginRep, error) {
 	auth := &model.AuthInfo{
 		Id:     user.Id,
 		Name:   user.Name,
@@ -373,7 +374,7 @@ func (*UserService) login(ctxi *contexti.Ctx, user *model.User) (*model.LoginRep
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
-	err = ctxi.SetCookie(cookie)
+	err = (*contexti2.HttpContext[uint8])(ctxi.RequestContext).SetCookie(cookie)
 	if err != nil {
 		return nil, errorcode.Unavailable
 	}
@@ -381,7 +382,7 @@ func (*UserService) login(ctxi *contexti.Ctx, user *model.User) (*model.LoginRep
 }
 
 func (u *UserService) Logout(ctx context.Context, req *empty.Empty) (*empty.Empty, error) {
-	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("Logout")
+	ctxi, span := http_context.CtxFromContext(ctx).StartSpan("Logout")
 	defer span.End()
 	ctx = ctxi.Context
 	user, err := auth(ctxi, true)
@@ -403,12 +404,12 @@ func (u *UserService) Logout(ctx context.Context, req *empty.Empty) (*empty.Empt
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
-	ctxi.SetCookie(cookie)
+	(*contexti2.HttpContext[uint8])(ctxi.RequestContext).SetCookie(cookie)
 	return new(empty.Empty), nil
 }
 
 func (u *UserService) AuthInfo(ctx context.Context, req *empty.Empty) (*model.UserAuthInfo, error) {
-	ctxi := contexti.CtxFromContext(ctx)
+	ctxi := http_context.CtxFromContext(ctx)
 	user, err := auth(ctxi, true)
 	if err != nil {
 		return nil, nil
@@ -417,7 +418,7 @@ func (u *UserService) AuthInfo(ctx context.Context, req *empty.Empty) (*model.Us
 }
 
 func (u *UserService) Info(ctx context.Context, req *request.Object) (*model.UserRep, error) {
-	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := http_context.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
 	auth, err := auth(ctxi, true)
@@ -441,7 +442,7 @@ func (u *UserService) Info(ctx context.Context, req *request.Object) (*model.Use
 }
 
 func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (*wrappers.StringValue, error) {
-	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := http_context.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
 	if verifyErr := verification.LuosimaoVerify(conf.Conf.Customize.LuosimaoVerifyURL, conf.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
@@ -479,7 +480,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 }
 
 func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswordReq) (*wrappers.StringValue, error) {
-	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("Logout")
+	ctxi, span := http_context.CtxFromContext(ctx).StartSpan("Logout")
 	defer span.End()
 	ctx = ctxi.Context
 	redisKey := modelconst.ResetTimeKey + strconv.FormatUint(req.Id, 10)
@@ -526,7 +527,7 @@ func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListR
 }
 
 func (*UserService) BaseList(ctx context.Context, req *model.BaseListReq) (*model.BaseListRep, error) {
-	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := http_context.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	if ctxi.Internal == "" {
 		return nil, errorcode.PermissionDenied
@@ -552,7 +553,7 @@ func (*UserService) Service() (string, string, []http.HandlerFunc) {
 	return "用户相关", "/api/user", []http.HandlerFunc{middle.Log}
 }
 
-func (*UserService) Add(ctx *contexti.Ctx, req *model.SignupReq) (*wrappers.StringValue, error) {
+func (*UserService) Add(ctx *http_context.Ctx, req *model.SignupReq) (*wrappers.StringValue, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() {
 		pick.Get("/add").
@@ -575,7 +576,7 @@ func (*UserService) FiberService() (string, string, []fiber.Handler) {
 	return "用户相关", "/api/user", []fiber.Handler{middle.FiberLog}
 }
 
-func (*UserService) Addv(ctx *contexti.Ctx, req *response.TinyRep) (*response.TinyRep, error) {
+func (*UserService) Addv(ctx *http_context.Ctx, req *response.TinyRep) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.FiberApi(func() {
 		pick.Post("/add").
@@ -588,7 +589,7 @@ func (*UserService) Addv(ctx *contexti.Ctx, req *response.TinyRep) (*response.Ti
 }
 
 func (u *UserService) EasySignup(ctx context.Context, req *model.SignupReq) (*model.LoginRep, error) {
-	ctxi, span := contexti.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := http_context.CtxFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
 

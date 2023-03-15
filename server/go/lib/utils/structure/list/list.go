@@ -7,20 +7,20 @@ import (
 )
 
 // 链表结点
-type Node struct {
-	Data       interface{}
-	next, prev *Node
+type Node[T any] struct {
+	data       T
+	next, prev *Node[T]
 }
 
 // 链表
-type LinkList struct {
-	head, tail *Node
+type LinkList[T comparable] struct {
+	head, tail *Node[T]
 	size       int
 }
 
 // 新建空链表，即创建Node指针head，用来指向链表第一个结点，初始为空
-func CreateLinkList() LinkList {
-	l := LinkList{}
+func CreateLinkList[T comparable]() LinkList[T] {
+	l := LinkList[T]{}
 	l.head = nil //head指向头部结点
 	l.tail = nil //tail指向尾部结点
 	l.size = 0
@@ -28,18 +28,18 @@ func CreateLinkList() LinkList {
 }
 
 // 是否为空链表
-func (l *LinkList) IsEmpty() bool {
+func (l *LinkList[T]) IsEmpty() bool {
 	return l.size == 0
 }
 
 // 获取链表长度
-func (l *LinkList) Length() int {
+func (l *LinkList[T]) GetLength() int {
 	return l.size
 }
 
 // 是否含有指定结点
-func (l *LinkList) Exist(node *Node) bool {
-	var p *Node = l.head
+func (l *LinkList[T]) Exist(node *Node[T]) bool {
+	var p = l.head
 	for p != nil {
 		if p == node {
 			return true
@@ -51,11 +51,11 @@ func (l *LinkList) Exist(node *Node) bool {
 }
 
 // 获取含有指定数据的第一个结点
-func (l *LinkList) GetNode(e interface{}) *Node {
-	var p *Node = l.head
+func (l *LinkList[T]) GetNode(e T) *Node[T] {
+	var p = l.head
 	for p != nil {
 		//找到该数据所在结点
-		if e == p.Data {
+		if e == p.data {
 			return p
 		} else {
 			p = p.next
@@ -64,19 +64,11 @@ func (l *LinkList) GetNode(e interface{}) *Node {
 	return nil
 }
 
-// 弹出并返回第一个结点
-func (l *LinkList) Pop() *Node {
-	var p *Node = l.head
-	l.head = p.next
-	l.head.prev = nil
-	return p
-}
-
 // 在链表尾部添加数据
-func (l *LinkList) Append(e interface{}) {
+func (l *LinkList[T]) Append(e T) {
 	//为数据创建新结点
-	newNode := Node{}
-	newNode.Data = e
+	newNode := Node[T]{}
+	newNode.data = e
 	newNode.next = nil
 
 	if l.size == 0 {
@@ -90,9 +82,9 @@ func (l *LinkList) Append(e interface{}) {
 }
 
 // 在链表头部插入数据
-func (l *LinkList) InsertHead(e interface{}) {
-	newNode := Node{}
-	newNode.Data = e
+func (l *LinkList[T]) InsertHead(e T) {
+	newNode := Node[T]{}
+	newNode.data = e
 	newNode.next = l.head
 	l.head = &newNode
 	if l.size == 0 {
@@ -102,11 +94,11 @@ func (l *LinkList) InsertHead(e interface{}) {
 }
 
 // 在指定结点后面插入数据
-func (l *LinkList) InsertAfterNode(pre *Node, e interface{}) {
+func (l *LinkList[T]) InsertAfterNode(pre *Node[T], e T) {
 	//如果链表中存在该结点，才进行插入
 	if l.Exist(pre) {
-		newNode := Node{}
-		newNode.Data = e
+		newNode := Node[T]{}
+		newNode.data = e
 		if pre.next == nil {
 			l.Append(e)
 		} else {
@@ -120,11 +112,11 @@ func (l *LinkList) InsertAfterNode(pre *Node, e interface{}) {
 }
 
 // 在第一次出现指定数据的结点后插入数据,若链表中无该数据，返回false
-func (l *LinkList) InsertAfterData(preData interface{}, e interface{}) bool {
-	var p *Node = l.head
+func (l *LinkList[T]) InsertAfterData(preData T, e T) bool {
+	var p = l.head
 	for p != nil {
 		//找到该数据所在结点
-		if p.Data == preData {
+		if p.data == preData {
 			l.InsertAfterNode(p, e)
 			return true
 		} else {
@@ -137,7 +129,7 @@ func (l *LinkList) InsertAfterData(preData interface{}, e interface{}) bool {
 }
 
 // 在指定下标处插入数据
-func (l *LinkList) Insert(position int, e interface{}) bool {
+func (l *LinkList[T]) Insert(position int, e T) bool {
 	if position < 0 {
 		log.Error("指定下标不合法")
 		return false
@@ -155,7 +147,7 @@ func (l *LinkList) Insert(position int, e interface{}) bool {
 	} else {
 		//在中间插入
 		var index int
-		var p *Node = l.head
+		var p = l.head
 		//逐个移动指针
 		//position是插入后新结点的下标，position-1时需要定位到的其前一个结点的下标
 		for index = 0; index < position-1; index++ {
@@ -169,7 +161,7 @@ func (l *LinkList) Insert(position int, e interface{}) bool {
 }
 
 // 删除指定结点
-func (l *LinkList) DeleteNode(node *Node) {
+func (l *LinkList[T]) DeleteNode(node *Node[T]) {
 	//存在该结点
 	if l.Exist(node) {
 		//如果是头部结点
@@ -178,7 +170,7 @@ func (l *LinkList) DeleteNode(node *Node) {
 			//如果是尾部结点
 		} else if node == l.tail {
 			//寻找指向其前一个结点的指针
-			var p *Node = l.head
+			var p = l.head
 			for p.next != l.tail {
 				p = p.next
 			}
@@ -186,7 +178,7 @@ func (l *LinkList) DeleteNode(node *Node) {
 			l.tail = p
 			//中间结点
 		} else {
-			var p *Node = l.head
+			var p = l.head
 			for p.next != node {
 				p = p.next
 			}
@@ -197,7 +189,7 @@ func (l *LinkList) DeleteNode(node *Node) {
 }
 
 // 删除第一个含指定数据的结点
-func (l *LinkList) Delete(e interface{}) {
+func (l *LinkList[T]) Delete(e T) {
 	p := l.GetNode(e)
 	if p == nil {
 		log.Error("链表中无该数据，删除失败")
@@ -207,14 +199,14 @@ func (l *LinkList) Delete(e interface{}) {
 }
 
 // 遍历链表
-func (l *LinkList) Traverse(f func(interface{})) {
-	var p *Node = l.head
+func (l *LinkList[T]) traverse(f func(T)) {
+	var p = l.head
 	if l.IsEmpty() {
 		log.Error("LinkList is empty")
 	} else {
 		for p != nil {
-			if p.Data != nil {
-				f(p.Data)
+			if f != nil {
+				f(p.data)
 			}
 			p = p.next
 		}
@@ -222,11 +214,11 @@ func (l *LinkList) Traverse(f func(interface{})) {
 }
 
 // 打印链表信息
-func (l *LinkList) PrintInfo() {
+func (l *LinkList[T]) PrintInfo() {
 	fmt.Println("###############################################")
-	fmt.Println("链表长度为：", l.Length())
+	fmt.Println("链表长度为：", l.GetLength())
 	fmt.Println("链表是否为空:", l.IsEmpty())
 	fmt.Print("遍历链表：")
-	l.Traverse(func(data interface{}) { log.Info(data, " ") })
+	l.traverse(func(data T) { log.Info(data, " ") })
 	fmt.Println("###############################################")
 }

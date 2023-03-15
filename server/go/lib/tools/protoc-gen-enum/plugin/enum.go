@@ -7,24 +7,24 @@ import (
 )
 
 func FileEnabledExtGen(f *protogen.File) bool {
-	return protogeni.GetOption(f.Desc, enum.E_EnumExtGenAll, true).(bool)
+	return protogeni.GetOption[bool](f.Desc, enum.E_EnumExtGenAll, true)
 }
 
 func EnabledExtGen(e *protogen.Enum) bool {
-	return protogeni.GetOption(e.Desc, enum.E_EnumExtGen, true).(bool)
+	return protogeni.GetOption[bool](e.Desc, enum.E_EnumExtGen, true)
 }
 
 func GetEnumValueCN(ev *protogen.EnumValue) string {
-	return protogeni.GetOption(ev.Desc, enum.E_EnumvalueCn, "").(string)
+	return protogeni.GetOption[string](ev.Desc, enum.E_EnumvalueCn, "")
 }
 
 func GetEnumType(e *protogen.Enum) string {
 
-	return protogeni.GetOption(e.Desc, enum.E_EnumCustomtype, "int32").(string)
+	return protogeni.GetOption[string](e.Desc, enum.E_EnumCustomtype, "int32")
 }
 
 func EnabledGoEnumValueMap(e *protogen.Enum) bool {
-	return protogeni.GetOption(e.Desc, enum.E_EnumGenvaluemap, true).(bool)
+	return protogeni.GetOption[bool](e.Desc, enum.E_EnumGenvaluemap, true)
 }
 
 func TurnOffGoEnumValueMap(e *protogen.Enum) {
@@ -32,7 +32,7 @@ func TurnOffGoEnumValueMap(e *protogen.Enum) {
 }
 
 func EnabledEnumNumOrder(e *protogen.Enum) bool {
-	return protogeni.GetOption(e.Desc, enum.E_EnumNumorder, false).(bool)
+	return protogeni.GetOption[bool](e.Desc, enum.E_EnumNumorder, false)
 }
 
 func TurnOffEnumNumOrder(e *protogen.Enum) {
@@ -40,7 +40,7 @@ func TurnOffEnumNumOrder(e *protogen.Enum) {
 }
 
 func EnabledEnumJsonMarshal(e *protogen.Enum) bool {
-	return protogeni.GetOption(e.Desc, enum.E_EnumJsonmarshal, true).(bool)
+	return protogeni.GetOption[bool](e.Desc, enum.E_EnumJsonmarshal, true)
 }
 
 func TurnOffEnumJsonMarshal(e *protogen.Enum) {
@@ -48,7 +48,7 @@ func TurnOffEnumJsonMarshal(e *protogen.Enum) {
 }
 
 func EnabledEnumErrorCode(e *protogen.Enum) bool {
-	return protogeni.GetOption(e.Desc, enum.E_EnumErrorcode, false).(bool)
+	return protogeni.GetOption[bool](e.Desc, enum.E_EnumErrorcode, false)
 }
 
 func TurnOffEnumErrorCode(e *protogen.Enum) {
@@ -56,7 +56,7 @@ func TurnOffEnumErrorCode(e *protogen.Enum) {
 }
 
 func EnabledEnumGqlGen(e *protogen.Enum) bool {
-	return protogeni.GetOption(e.Desc, enum.E_EnumGqlgen, true).(bool)
+	return protogeni.GetOption[bool](e.Desc, enum.E_EnumGqlgen, true)
 }
 
 func TurnOffEnumGqlGen(e *protogen.Enum) {
@@ -64,7 +64,7 @@ func TurnOffEnumGqlGen(e *protogen.Enum) {
 }
 
 func EnabledFileEnumGqlGen(f *protogen.File) bool {
-	return protogeni.GetOption(f.Desc, enum.E_EnumGqlgenAll, false).(bool)
+	return protogeni.GetOption[bool](f.Desc, enum.E_EnumGqlgenAll, false)
 }
 
 func TurnOffFileEnumGqlGen(f *protogen.File) {
@@ -72,12 +72,12 @@ func TurnOffFileEnumGqlGen(f *protogen.File) {
 }
 
 func EnabledGoEnumPrefix(f *protogen.File, e *protogen.Enum) bool {
-	if protogeni.GetOption(f.Desc, enum.E_EnumPrefixAll, false).(bool) {
+	if protogeni.GetOption[bool](f.Desc, enum.E_EnumPrefixAll, false) {
 		return true
 	}
-	return protogeni.GetOption(e.Desc, enum.E_EnumPrefix, true).(bool)
+	return protogeni.GetOption[bool](e.Desc, enum.E_EnumPrefix, true)
 }
 
 func EnabledEnumStringer(e *protogen.Enum) bool {
-	return protogeni.GetOption(e.Desc, enum.E_EnumStringer, true).(bool)
+	return protogeni.GetOption[bool](e.Desc, enum.E_EnumStringer, true)
 }

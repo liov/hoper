@@ -1,4 +1,4 @@
-package protogeni
+package protogen
 
 import (
 	"google.golang.org/protobuf/compiler/protogen"
@@ -13,7 +13,7 @@ import (
 type BaseType interface {
 }
 
-func GetOption(desc protoreflect.Descriptor, xt protoreflect.ExtensionType, def any) any {
+func GetOption[T any](desc protoreflect.Descriptor, xt protoreflect.ExtensionType, def T) T {
 	if desc == nil {
 		log.Println("desc is nil")
 		return def
@@ -22,33 +22,44 @@ func GetOption(desc protoreflect.Descriptor, xt protoreflect.ExtensionType, def 
 		return def
 	}
 
-	v := proto.GetExtension(desc.Options(), xt)
+	v, ok := proto.GetExtension(desc.Options(), xt).(T)
 
+	if !ok {
+		return def
+	}
 	rv := reflect.ValueOf(v)
 
 	if rv.IsValid() {
 		return v
 	}
-
 	return def
 }
 
-func GetBaseTypeOption(desc protoreflect.Descriptor, xt protoreflect.ExtensionType, def any) any {
-	if desc == nil {
-		return def
-	}
-	return proto.GetExtension(desc.Options(), xt)
-}
-
-func GetStructTypeOption(desc protoreflect.Descriptor, xt protoreflect.ExtensionType, def any) any {
+func GetBaseTypeOption[T any](desc protoreflect.Descriptor, xt protoreflect.ExtensionType, def T) T {
 	if desc == nil {
 		return def
 	}
 
-	return proto.GetExtension(desc.Options(), xt)
+	v, ok := proto.GetExtension(desc.Options(), xt).(T)
+	if !ok {
+		return def
+	}
+	return v
 }
 
-func SetExtension(desc protoreflect.Descriptor, extension *protoimpl.ExtensionInfo, value any) {
+func GetStructTypeOption[T any](desc protoreflect.Descriptor, xt protoreflect.ExtensionType, def *T) *T {
+	if desc == nil {
+		return def
+	}
+
+	v, ok := proto.GetExtension(desc.Options(), xt).(*T)
+	if !ok && v != nil {
+		return def
+	}
+	return v
+}
+
+func SetExtension[T any](desc protoreflect.Descriptor, extension *protoimpl.ExtensionInfo, value T) {
 	if !proto.HasExtension(desc.Options(), extension) {
 		return
 	}

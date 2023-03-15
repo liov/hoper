@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/liov/hoper/server/go/lib/utils/net"
 	"github.com/liov/hoper/server/go/lib/utils/net/http"
 )
 

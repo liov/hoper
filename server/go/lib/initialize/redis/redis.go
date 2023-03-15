@@ -1,7 +1,6 @@
 package redis
 
 import (
-	"github.com/liov/hoper/server/go/lib/initialize"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -29,23 +28,17 @@ func (conf *Config) Build() *redis.Client {
 	return client
 }
 
-func (conf *Config) Generate() interface{} {
-	return conf.Build()
-}
-
 type Redis struct {
 	*redis.Client
 	Conf Config
 }
 
-func (db *Redis) Config() initialize.Generate {
+func (db *Redis) Config() any {
 	return &db.Conf
 }
 
-func (db *Redis) SetEntity(entity interface{}) {
-	if client, ok := entity.(*redis.Client); ok {
-		db.Client = client
-	}
+func (db *Redis) SetEntity() {
+	db.Client = db.Conf.Build()
 }
 
 func (db *Redis) Close() error {

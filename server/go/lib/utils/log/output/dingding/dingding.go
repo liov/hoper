@@ -3,7 +3,6 @@ package dingding
 import (
 	"fmt"
 	"github.com/liov/hoper/server/go/lib/utils/encoding/json/iterator"
-	"github.com/liov/hoper/server/go/lib/utils/strings"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"

@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/context/http_context"
 	"io"
 	"net/http"
 	"reflect"
@@ -107,7 +107,7 @@ func commonHandler(w http.ResponseWriter, req *http.Request, handle *reflect.Val
 	handleNumIn := handleTyp.NumIn()
 	if handleNumIn != 0 {
 		params := make([]reflect.Value, handleNumIn)
-		ctxi, s := contexti.CtxFromRequest(req, tracing)
+		ctxi, s := http_context.CtxFromRequest(req, tracing)
 		if s != nil {
 			defer s.End()
 		}
@@ -138,7 +138,7 @@ func commonHandler(w http.ResponseWriter, req *http.Request, handle *reflect.Val
 	}
 }
 
-func resHandler(c *contexti.Ctx, w http.ResponseWriter, result []reflect.Value) {
+func resHandler(c *http_context.Ctx, w http.ResponseWriter, result []reflect.Value) {
 	if !result[1].IsNil() {
 		err := errorcode.ErrHandle(result[1].Interface())
 		c.HandleError(err)
@@ -156,7 +156,7 @@ func resHandler(c *contexti.Ctx, w http.ResponseWriter, result []reflect.Value) 
 		info.File.Close()
 		return
 	}
-	json.NewEncoder(w).Encode(httpi.ResData{
+	json.NewEncoder(w).Encode(httpi.ResAnyData{
 		Message: "OK",
 		Details: result[0].Interface(),
 	})

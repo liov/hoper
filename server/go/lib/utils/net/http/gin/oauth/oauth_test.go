@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/liov/hoper/server/go/lib/utils/net/http/gin/handler"
 	"github.com/gin-gonic/gin"
+	"github.com/liov/hoper/server/go/lib/utils/net/http/gin/handler"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
 )

@@ -218,3 +218,14 @@ func closeDaoHelper(dao interface{}) (error, bool) {
 	}
 	return nil, false
 }
+
+func GetConfig[T any]() *T {
+	iconf := InitConfig.Config()
+	value := reflect.ValueOf(iconf).Elem()
+	for i := 0; i < value.NumField(); i++ {
+		if conf, ok := value.Field(i).Interface().(T); ok {
+			return &conf
+		}
+	}
+	return new(T)
+}

@@ -1,82 +1,62 @@
 package slices
 
-import (
-	"errors"
-	"reflect"
-	"sort"
-)
+type Slices[T any] []T
 
-func Contains(arr interface{}, sub interface{}) (bool, error) {
-	valueOf := reflect.ValueOf(arr)
-	if valueOf.Kind() != reflect.Slice {
-		return false, errors.New("错误的参数，第一个参数必须为切片类型")
+func (slices Slices[T]) Len() int { return len(slices) }
+
+func (slices Slices[T]) ForEach(fn func(T)) {
+	for _, t := range slices {
+		fn(t)
 	}
-	subValue := reflect.ValueOf(sub)
-	for i := 0; i < valueOf.Len(); i++ {
-		if valueOf.Index(i) == subValue {
-			return true, nil
+}
+
+func (slices Slices[T]) Filter(fn func(T) bool) []T {
+	var newSlices []T
+	for _, t := range slices {
+		if fn(t) {
+			newSlices = append(newSlices, t)
 		}
 	}
-	return false, nil
+	return newSlices
 }
 
-func StringContains(arr []string, sub string) bool {
-	for _, v := range arr {
-		if v == sub {
-			return true
+func (slices Slices[T]) Every(fn func(T) bool) {
+	for _, t := range slices {
+		if !fn(t) {
+			return
 		}
 	}
-	return false
 }
 
-type Equal interface {
-	IsEqual(interface{}) bool
-}
-
-type Less interface {
-	Less(interface{}) bool
-}
-
-type IntSlice struct {
-	s []int
-}
-
-func (p *IntSlice) Len() int           { return len(p.s) }
-func (p *IntSlice) Less(i, j int) bool { return p.s[i] < p.s[j] }
-func (p *IntSlice) Swap(i, j int)      { p.s[i], p.s[j] = p.s[j], p.s[i] }
-
-// Sort is a convenience method.
-func (p *IntSlice) Sort() { sort.Sort(p) }
-
-func Sort(s []int) {
-	slice := IntSlice{s: s}
-	slice.Sort()
-}
-
-func IntMax(slices []int) int {
-	if len(slices) == 0 {
-		return 0
-	}
-	max := slices[0]
-	n := len(slices) - 1
-	for i := 1; i < n; i++ {
-		if slices[i] > max {
-			max = slices[i]
+func (slices Slices[T]) Some(fn func(T) bool) {
+	for _, t := range slices {
+		if fn(t) {
+			return
 		}
 	}
-	return max
 }
 
-func Uint8Max(slices []uint8) uint8 {
-	if len(slices) == 0 {
-		return 0
+func (slices Slices[T]) Zip(s []T) [][2]T {
+	var newSlices [][2]T
+	for i := range slices {
+		newSlices = append(newSlices, [2]T{slices[i], s[i]})
 	}
-	max := slices[0]
-	n := len(slices) - 1
-	for i := 1; i < n; i++ {
-		if slices[i] > max {
-			max = slices[i]
-		}
+	return newSlices
+}
+
+func (slices Slices[T]) Reduce(fn func(T, T) T) T {
+	ret := fn(slices[0], slices[1])
+	for i := 2; i < len(slices); i++ {
+		ret = fn(ret, slices[i])
 	}
-	return max
+	return ret
+}
+
+func Map[T, V any](slices []T, fn func(T) V) []V {
+	ret := make([]V, 0, len(slices))
+
+	for _, t := range slices {
+		ret = append(ret, fn(t))
+	}
+	return ret
 }

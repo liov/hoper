@@ -3,7 +3,7 @@ package dao
 import (
 	"database/sql"
 	"github.com/go-redis/redis/v8"
-	contexti "github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/context/http_context"
 	"github.com/liov/hoper/server/go/lib/initialize/gormdb/postgres"
 	"github.com/liov/hoper/server/go/lib/initialize/mail"
 	"github.com/liov/hoper/server/go/lib/initialize/pebble"
@@ -42,10 +42,10 @@ func (d *dao) Init() {
 	d.StdDB, _ = db.DB.DB()
 }
 
-func GetDBDao(ctx *contexti.Ctx, d *gorm.DB) *db.ContentDBDao {
+func GetDBDao(ctx *http_context.Ctx, d *gorm.DB) *db.ContentDBDao {
 	return db.GetDao(ctx, d)
 }
 
-func GetRedisDao(ctx *contexti.Ctx, r redis.Cmdable) *rdao.ContentRedisDao {
+func GetRedisDao(ctx *http_context.Ctx, r redis.Cmdable) *rdao.ContentRedisDao {
 	return rdao.GetDao(ctx, r)
 }

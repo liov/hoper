@@ -1,7 +1,6 @@
 package service
 
 import (
-	"github.com/liov/hoper/server/go/lib/context"
 	pick2 "github.com/liov/hoper/server/go/lib/pick"
 	"github.com/liov/hoper/server/go/lib/pick/_example/middle"
 	"net/http"

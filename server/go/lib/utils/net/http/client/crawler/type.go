@@ -5,34 +5,37 @@ import (
 	"github.com/liov/hoper/server/go/lib/utils/conctrl"
 )
 
-type FetchFunc func(ctx context.Context, url string) ([]byte, error)
-type ParseFunc func(ctx context.Context, content []byte) ([]conctrl.TaskInterface, error)
-
-type HandleFunc func(ctx context.Context, url string) ([]conctrl.TaskInterface, error)
-
-type Request = conctrl.Task
-
-func NewRequest(key string, taskFunc conctrl.TaskFunc) *Request {
-	if taskFunc == nil {
-		return nil
-	}
-	return &Request{TaskMeta: conctrl.TaskMeta{BaseTaskMeta: conctrl.BaseTaskMeta{Key: key}}, TaskFunc: taskFunc}
+type Prop struct {
 }
 
-func NewKindRequest(key string, kind conctrl.Kind, taskFunc conctrl.TaskFunc) *Request {
-	if taskFunc == nil {
-		return nil
+type Request = conctrl.Task[string, Prop]
+type BaseTaskMeta = conctrl.BaseTaskMeta[string]
+type TaskMeta = conctrl.TaskMeta[string]
+type TaskFunc = conctrl.TaskFunc[string, Prop]
+
+func NewRequest(key string, kind conctrl.Kind, taskFunc TaskFunc) *Request {
+	return &Request{
+		TaskMeta: TaskMeta{
+			BaseTaskMeta: BaseTaskMeta{Key: key},
+			Kind:         kind,
+		},
+		TaskFunc: taskFunc,
 	}
-	req := NewRequest(key, taskFunc)
-	req.SetKind(kind)
-	return req
 }
+
+type Engine = conctrl.Engine[string, Prop, Prop]
+
+func NewEngine(workerCount uint) *conctrl.Engine[string, Prop, Prop] {
+	return conctrl.NewEngine[string, Prop, Prop](workerCount)
+}
+
+type HandleFunc func(ctx context.Context, url string) ([]*Request, error)
 
 func NewUrlRequest(url string, handleFunc HandleFunc) *Request {
 	if handleFunc == nil {
 		return nil
 	}
-	return &Request{TaskMeta: conctrl.TaskMeta{BaseTaskMeta: conctrl.BaseTaskMeta{Key: url}}, TaskFunc: func(ctx context.Context) ([]conctrl.TaskInterface, error) {
+	return &Request{TaskMeta: TaskMeta{BaseTaskMeta: BaseTaskMeta{Key: url}}, TaskFunc: func(ctx context.Context) ([]*Request, error) {
 		return handleFunc(ctx, url)
 	}}
 }
@@ -46,39 +49,6 @@ func NewUrlKindRequest(url string, kind conctrl.Kind, handleFunc HandleFunc) *Re
 	return req
 }
 
-func NewHandleFun(f FetchFunc, p ParseFunc) HandleFunc {
-	return func(ctx context.Context, url string) ([]conctrl.TaskInterface, error) {
-		content, err := f(ctx, url)
-		if err != nil {
-			return nil, err
-		}
-		return p(ctx, content)
-	}
+func NewTaskMeta(key string) TaskMeta {
+	return TaskMeta{BaseTaskMeta: BaseTaskMeta{Key: key}}
 }
-
-func NewUrlRequest2(url string, fetchFunc FetchFunc, parseFunc ParseFunc) *Request {
-	return NewUrlRequest(url, NewHandleFun(fetchFunc, parseFunc))
-}
-
-type RequestInterface interface {
-	HandleFunc
-}
-
-type HandleFuncs []HandleFunc
-
-func (h HandleFunc) Append(handleFunc HandleFunc) *HandleFuncs {
-	newh := append(HandleFuncs{h}, handleFunc)
-	return &newh
-}
-
-func (h *HandleFuncs) Append(handleFunc HandleFunc) *HandleFuncs {
-	newh := append(*h, handleFunc)
-	return &newh
-}
-
-type Requests struct {
-	reqs       []*Request
-	generation int
-}
-
-type Engine = conctrl.Engine

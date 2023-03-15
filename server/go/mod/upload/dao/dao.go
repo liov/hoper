@@ -1,7 +1,7 @@
 package dao
 
 import (
-	contexti "github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/context/http_context"
 	"github.com/liov/hoper/server/go/lib/initialize/gormdb/postgres"
 	"github.com/liov/hoper/server/go/lib/initialize/pebble"
 	initredis "github.com/liov/hoper/server/go/lib/initialize/redis"
@@ -12,10 +12,10 @@ import (
 var Dao *dao = &dao{}
 
 type uploadDao struct {
-	*contexti.Ctx
+	*http_context.Ctx
 }
 
-func GetDao(ctx *contexti.Ctx) *uploadDao {
+func GetDao(ctx *http_context.Ctx) *uploadDao {
 	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}

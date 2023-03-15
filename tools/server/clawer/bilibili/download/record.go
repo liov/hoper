@@ -2,7 +2,7 @@ package download
 
 import (
 	dbi "github.com/liov/hoper/server/go/lib/utils/dao/db/const"
-	"github.com/liov/hoper/server/go/lib/v2/utils/net/http/client/crawler"
+	"github.com/liov/hoper/server/go/lib/utils/net/http/client/crawler"
 	"time"
 	"tools/clawer/bilibili/dao"
 )

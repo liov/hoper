@@ -21,14 +21,14 @@ func (*JSONPb) ContentType(_ interface{}) string {
 	return "application/json"
 }
 
-func (j *JSONPb) Marshal(v interface{}) ([]byte, error) {
+func (j *JSONPb) Marshal(v any) ([]byte, error) {
 	if _, ok := v.(error); ok {
 		return j.API.Marshal(v)
 	}
 	if msg, ok := v.(*wrappers.StringValue); ok {
 		v = msg.Value
 	}
-	return j.API.Marshal(&httpi.ResData{
+	return j.API.Marshal(&httpi.ResAnyData{
 		Code:    0,
 		Message: "OK",
 		Details: v,

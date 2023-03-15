@@ -3,7 +3,7 @@ package chat
 import (
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
-	contexti "github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/context/http_context"
 	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
 	httpi "github.com/liov/hoper/server/go/lib/utils/net/http"
 	"github.com/liov/hoper/server/go/mod/protobuf/user"
@@ -33,10 +33,10 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 		} else {
 			dviceName = "PC"
 		}*/
-	ctxi := contexti.CtxFromContext(r.Context())
+	ctxi := http_context.CtxFromContext(r.Context())
 	_, err := auth(ctxi, false)
 	if err != nil {
-		(&httpi.ResData{
+		(&httpi.ResAnyData{
 			Code:    errorcode.ErrCode(user.UserErrNoLogin),
 			Message: errRep,
 		}).Response(w, http.StatusOK)

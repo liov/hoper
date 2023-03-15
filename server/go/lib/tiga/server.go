@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
-	"github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/context/http_context"
 	"github.com/liov/hoper/server/go/lib/initialize"
 	"github.com/quic-go/quic-go/http3"
 	"github.com/rs/cors"
@@ -29,7 +29,7 @@ import (
 )
 
 type CustomContext func(c context.Context, r *http.Request) context.Context
-type ConvertContext func(r *http.Request) *contexti.Ctx
+type ConvertContext func(r *http.Request) *http_context.Ctx
 
 func (s *Server) Serve() {
 	grpcServer := s.grpcHandler(s.Config)
@@ -70,7 +70,7 @@ func (s *Server) Serve() {
 			return
 		}
 
-		ctx, span := contexti.CtxFromRequest(r, openTracing)
+		ctx, span := http_context.CtxFromRequest(r, openTracing)
 		if span != nil {
 			defer span.End()
 		}

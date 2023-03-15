@@ -35,8 +35,8 @@ func (r *fasthttpRequest) GetToken() string {
 }
 
 // TODO
-func NewCtx(source ContextSource) *Ctx {
-	return &Ctx{
-		RequestContext: contexti.NewCtx(source.GetContext()),
+func NewCtx[REQ any, P any](source ContextSource) *Ctx[REQ, P] {
+	return &Ctx[REQ, P]{
+		RequestContext: contexti.NewCtx[REQ, P](source.GetContext()),
 	}
 }

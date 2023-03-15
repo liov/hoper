@@ -3,7 +3,7 @@ package download
 import (
 	"context"
 	"github.com/liov/hoper/server/go/lib/utils/log"
-	"github.com/liov/hoper/server/go/lib/v2/utils/net/http/client/crawler"
+	"github.com/liov/hoper/server/go/lib/utils/net/http/client/crawler"
 	"strings"
 	"time"
 	"tools/clawer/weibo/rpc"
