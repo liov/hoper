@@ -2,7 +2,7 @@ package db
 
 import (
 	"database/sql"
-	contexti "github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/context/http_context"
 	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
 	clausei "github.com/liov/hoper/server/go/lib/utils/dao/db/gorm/clause"
 	"github.com/liov/hoper/server/go/lib/utils/log"
@@ -13,11 +13,11 @@ import (
 )
 
 type ContentDBDao struct {
-	*contexti.Ctx
+	*http_context.Ctx
 	ChainDao
 }
 
-func GetDao(ctx *contexti.Ctx, db *gorm.DB) *ContentDBDao {
+func GetDao(ctx *http_context.Ctx, db *gorm.DB) *ContentDBDao {
 	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}

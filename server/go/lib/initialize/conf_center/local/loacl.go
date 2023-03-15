@@ -2,9 +2,9 @@ package local
 
 import (
 	"fmt"
+	"github.com/fsnotify/fsnotify"
 	"github.com/liov/hoper/server/go/lib/utils/configor/local"
 	"github.com/liov/hoper/server/go/lib/utils/log"
-	"github.com/fsnotify/fsnotify"
 	"os"
 	"time"
 )

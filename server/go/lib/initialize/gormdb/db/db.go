@@ -2,7 +2,6 @@ package db
 
 import (
 	"fmt"
-	"github.com/liov/hoper/server/go/lib/initialize"
 	pkdb "github.com/liov/hoper/server/go/lib/initialize/gormdb"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -34,23 +33,17 @@ func (conf *DatabaseConfig) Build() *gorm.DB {
 		dialector = sqlite.Open(url)
 	}
 
-	return (*pkdb.DatabaseConfig)(conf).Generate(dialector)
-}
-
-func (conf *DatabaseConfig) Generate() interface{} {
-	return conf.Build()
+	return (*pkdb.DatabaseConfig)(conf).Build(dialector)
 }
 
 type DB pkdb.DB
 
-func (db *DB) Config() initialize.Generate {
+func (db *DB) Config() any {
 	return (*DatabaseConfig)(&db.Conf)
 }
 
-func (db *DB) SetEntity(entity interface{}) {
-	if gormdb, ok := entity.(*gorm.DB); ok {
-		db.DB = gormdb
-	}
+func (db *DB) SetEntity() {
+	db.DB = (*DatabaseConfig)(&db.Conf).Build()
 }
 
 func (db *DB) Close() error {

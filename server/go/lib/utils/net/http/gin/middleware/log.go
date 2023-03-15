@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/liov/hoper/server/go/lib/utils/log"
 	"github.com/gin-gonic/gin"
+	"github.com/liov/hoper/server/go/lib/utils/log"
 )
 
 func SetLog(app *gin.Engine, logger2 *log.Logger, errHandle bool) {

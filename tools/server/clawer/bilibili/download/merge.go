@@ -3,11 +3,11 @@ package download
 import (
 	"context"
 	"fmt"
+	"github.com/liov/hoper/server/go/lib/utils/conctrl"
 	"github.com/liov/hoper/server/go/lib/utils/fs"
+	"github.com/liov/hoper/server/go/lib/utils/net/http/client/crawler"
 	osi "github.com/liov/hoper/server/go/lib/utils/os"
 	timei "github.com/liov/hoper/server/go/lib/utils/time"
-	"github.com/liov/hoper/server/go/lib/v2/utils/conctrl"
-	"github.com/liov/hoper/server/go/lib/v2/utils/net/http/client/crawler"
 	"log"
 	"os"
 	"strconv"

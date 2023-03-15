@@ -1,7 +1,7 @@
 package pick
 
 import (
-	"github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/context/http_context"
 	"net/http"
 	"path/filepath"
 	"reflect"
@@ -47,7 +47,7 @@ func GrpcServiceToRestfulApi(engine *gin.Engine, genApi bool, modName string, tr
 
 			in2Type := methodType.In(2)
 			group.Handle(methodInfo.method, methodInfo.path, func(ctx *gin.Context) {
-				ctxi, s := contexti.CtxFromRequest(ctx.Request, tracing)
+				ctxi, s := http_context.CtxFromRequest(ctx.Request, tracing)
 				if s != nil {
 					defer s.End()
 				}

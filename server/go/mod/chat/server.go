@@ -2,7 +2,7 @@ package chat
 
 import (
 	"github.com/gorilla/websocket"
-	contexti "github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/context/http_context"
 	"github.com/liov/hoper/server/go/lib/utils/encoding/json/iterator"
 	"github.com/liov/hoper/server/go/mod/content/dao"
 	"github.com/liov/hoper/server/go/mod/protobuf/user"
@@ -20,7 +20,7 @@ type Client struct {
 	uuid string
 	conn *websocket.Conn
 	send chan []byte
-	ctx  *contexti.Ctx
+	ctx  *http_context.Ctx
 }
 
 type Message struct {

@@ -3,7 +3,6 @@ package viper
 import (
 	initialize2 "github.com/liov/hoper/server/go/lib/initialize"
 	"github.com/liov/hoper/server/go/lib/utils/log"
-	"github.com/liov/hoper/server/go/lib/utils/reflect"
 	"github.com/spf13/viper"
 	_ "github.com/spf13/viper/remote"
 )
@@ -19,10 +18,6 @@ type Config struct {
 
 func (conf *Config) Init() {
 
-}
-
-func (conf *Config) Generate() interface{} {
-	return conf.Build()
 }
 
 func (conf *Config) Build() *viper.Viper {
@@ -90,12 +85,14 @@ type Viper struct {
 	Conf Config
 }
 
-func (v *Viper) Config() initialize2.Generate {
+func (v *Viper) Config() any {
 	return &v.Conf
 }
 
-func (v *Viper) SetEntity(entity interface{}) {
-	if client, ok := entity.(*viper.Viper); ok {
-		v.Viper = client
-	}
+func (v *Viper) SetEntity() {
+	v.Viper = v.Conf.Build()
+}
+
+func (v *Viper) Close() error {
+	return nil
 }

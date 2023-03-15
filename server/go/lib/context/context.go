@@ -9,15 +9,14 @@ import (
 	jwti "github.com/liov/hoper/server/go/lib/utils/verification/auth/jwt"
 	"go.opencensus.io/trace"
 	"google.golang.org/grpc"
-	"net/http"
 	"sync"
 )
 
-var (
-	ctxPool = sync.Pool{New: func() interface{} {
-		return new(Ctx)
+func GetPool[REQ any, P any]() sync.Pool {
+	return sync.Pool{New: func() any {
+		return new(Ctx[REQ, P])
 	}}
-)
+}
 
 type AuthInfo interface {
 	IdStr() string
@@ -50,33 +49,28 @@ func (x *Authorization) ParseToken(token string, secret []byte) error {
 	return nil
 }
 
-type Ctx struct {
+type Ctx[REQ any, P any] struct {
 	LastActiveAt int64
 	*Authorization
-	*contexti.RequestContext
+	*contexti.RequestContext[REQ, P]
 }
 
-func (c *Ctx) StartSpan(name string, o ...trace.StartOption) (*Ctx, *trace.Span) {
+func (c *Ctx[REQ, P]) StartSpan(name string, o ...trace.StartOption) (*Ctx[REQ, P], *trace.Span) {
 	_, span := c.RequestContext.StartSpan(name, o...)
 	return c, span
 }
 
-func CtxFromRequest(r *http.Request, tracing bool) (*Ctx, *trace.Span) {
-	ctxi, span := contexti.CtxWithRequest(r, tracing)
-	return &Ctx{Authorization: &Authorization{}, RequestContext: ctxi}, span
-}
-
 type ctxKey struct{}
 
-func (ctxi *Ctx) ContextWrapper() context.Context {
+func (ctxi *Ctx[REQ, P]) ContextWrapper() context.Context {
 	return context.WithValue(context.Background(), ctxKey{}, ctxi)
 }
 
-func CtxFromContext(ctx context.Context) *Ctx {
+func CtxFromContext[REQ any, P any](ctx context.Context) *Ctx[REQ, P] {
 	ctxi := ctx.Value(ctxKey{})
-	c, ok := ctxi.(*Ctx)
+	c, ok := ctxi.(*Ctx[REQ, P])
 	if !ok {
-		return &Ctx{Authorization: &Authorization{}, RequestContext: contexti.NewCtx(ctx)}
+		return &Ctx[REQ, P]{Authorization: &Authorization{}, RequestContext: contexti.NewCtx[REQ, P](ctx)}
 	}
 	if c.ServerTransportStream == nil {
 		c.ServerTransportStream = grpc.ServerTransportStreamFromContext(ctx)

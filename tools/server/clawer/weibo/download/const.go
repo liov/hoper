@@ -1,7 +1,7 @@
 package download
 
 import (
-	"github.com/liov/hoper/server/go/lib/v2/utils/conctrl"
+	"github.com/liov/hoper/server/go/lib/utils/conctrl"
 	"time"
 )
 

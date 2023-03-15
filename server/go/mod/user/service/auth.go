@@ -2,6 +2,7 @@ package service
 
 import (
 	contexti "github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/context/http_context"
 	"github.com/liov/hoper/server/go/mod/protobuf/user"
 	"strings"
 	"time"
@@ -12,7 +13,7 @@ import (
 
 var ExportAuth = auth
 
-func auth(ctx *contexti.Ctx, update bool) (*user.AuthInfo, error) {
+func auth(ctx *http_context.Ctx, update bool) (*user.AuthInfo, error) {
 	signature := ctx.Token[strings.LastIndexByte(ctx.Token, '.')+1:]
 	cacheTmp, ok := dao.Dao.Cache.Get(signature)
 	if ok {

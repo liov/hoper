@@ -4,7 +4,7 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/hex"
-	contexti "github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/context/http_context"
 	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
 	"github.com/liov/hoper/server/go/lib/utils/fs"
 	httpi "github.com/liov/hoper/server/go/lib/utils/net/http"
@@ -52,10 +52,10 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		info = fhs[0]
 	}
 
-	ctxi := contexti.CtxFromContext(r.Context())
+	ctxi := http_context.CtxFromContext(r.Context())
 	_, err = auth(ctxi, false)
 	if err != nil {
-		(&httpi.ResData{
+		(&httpi.ResAnyData{
 			Code:    errorcode.ErrCode(user.UserErrLogin),
 			Message: errRep,
 		}).Response(w, http.StatusOK)
@@ -66,7 +66,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		errorcode.UploadFail.OriErrRep().Response(w)
 		return
 	}
-	(&httpi.ResData{Details: model.Rep{Id: upload.Id, URL: upload.Path}}).Response(w, http.StatusOK)
+	(&httpi.ResAnyData{Details: model.Rep{Id: upload.Id, URL: upload.Path}}).Response(w, http.StatusOK)
 
 }
 
@@ -77,7 +77,7 @@ func Exists(w http.ResponseWriter, req *http.Request) {
 }
 
 func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
-	ctxi := contexti.CtxFromContext(ctx)
+	ctxi := http_context.CtxFromContext(ctx)
 	auth, err := auth(ctxi, false)
 	uploadDao := dao.GetDao(ctxi)
 	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
@@ -95,17 +95,17 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 		if err := db.Table(model.UploadExtTableName).Create(&uploadExt).Error; err != nil {
 			ctxi.ErrorLog(errorcode.DBError, err, "Create")
 		}
-		(&httpi.ResData{
+		(&httpi.ResAnyData{
 			Code:    1,
 			Message: "已存在",
 			Details: model.Rep{Id: upload.Id, URL: upload.Path},
 		}).Response(w, http.StatusOK)
 		return
 	}
-	(&httpi.ResData{Message: "不存在"}).Response(w, http.StatusOK)
+	(&httpi.ResAnyData{Message: "不存在"}).Response(w, http.StatusOK)
 }
 
-func save(ctx *contexti.Ctx, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
+func save(ctx *http_context.Ctx, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
 	uploadDao := dao.GetDao(ctx)
 	db := ctx.NewDB(dao.Dao.GORMDB.DB)
 	auth := ctx.AuthInfo.(*user.AuthInfo)
@@ -204,10 +204,10 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 		errorcode.ParamInvalid.OriMessage(errRep).Response(w)
 		return
 	}
-	ctxi := contexti.CtxFromContext(r.Context())
+	ctxi := http_context.CtxFromContext(r.Context())
 	_, err = auth(ctxi, false)
 	if err != nil {
-		(&httpi.ResData{
+		(&httpi.ResAnyData{
 			Code:    errorcode.ErrCode(user.UserErrLogin),
 			Message: errRep,
 		}).Response(w, http.StatusOK)
@@ -236,7 +236,7 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 		urls[i].URL = upload.Path
 		urls[i].Success = true
 	}
-	(&httpi.ResData{
+	(&httpi.ResAnyData{
 		Message: strings.Join(failures, ",") + errRep,
 		Details: urls,
 	}).Response(w, http.StatusOK)

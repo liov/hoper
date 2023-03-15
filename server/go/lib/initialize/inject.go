@@ -138,7 +138,7 @@ func setDao(v reflect.Value, confM map[string]any) {
 					}*/
 
 			confName := strings.ToUpper(typ.Field(i).Name)
-			if slices.StringContains(InitConfig.ConfigCenterConfig.NoInject, confName) {
+			if slices.Contains(InitConfig.ConfigCenterConfig.NoInject, confName) {
 				continue
 			}
 			// 根据标签获取配置和要注入的类型
@@ -214,7 +214,7 @@ func setDao(v reflect.Value, confM map[string]any) {
 				if conf1, ok := conf.(NeedInit); ok {
 					conf1.Init()
 				}
-				daofield.SetEntity(conf.Generate())
+				daofield.SetEntity()
 			}
 		}
 	}

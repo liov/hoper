@@ -54,7 +54,7 @@ func (c *DatabaseConfig) Init() {
 	}
 }
 
-func (conf *DatabaseConfig) Generate(dialector gorm.Dialector) *gorm.DB {
+func (conf *DatabaseConfig) Build(dialector gorm.Dialector) *gorm.DB {
 
 	var db *gorm.DB
 	var err error

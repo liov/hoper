@@ -7,7 +7,6 @@ import (
 	httpi "github.com/liov/hoper/server/go/lib/utils/net/http"
 	"github.com/liov/hoper/server/go/lib/utils/net/http/request"
 	timei "github.com/liov/hoper/server/go/lib/utils/time"
-	"github.com/valyala/fasthttp"
 	"go.opencensus.io/trace"
 	"go.opencensus.io/trace/propagation"
 	"google.golang.org/grpc"
@@ -19,16 +18,16 @@ import (
 	"time"
 )
 
-var (
-	ctxPool = sync.Pool{New: func() interface{} {
-		return new(RequestContext)
+func GetPool[REQ any, P any]() sync.Pool {
+	return sync.Pool{New: func() any {
+		return new(RequestContext[REQ, P])
 	}}
-)
+}
 
-type AuthContext interface {
+type AuthContext[REQ any, P any] interface {
 	Authorization() error
 	ParseRequest(r *http.Request) error
-	RequestContext() *RequestContext
+	RequestContext() *RequestContext[REQ, P]
 }
 
 type DeviceInfo struct {
@@ -111,20 +110,20 @@ func Device(infoHeader, area, localHeader, userAgent, ip string) *DeviceInfo {
 	return &info
 }
 
-type RequestContext struct {
+type RequestContext[REQ any, P any] struct {
 	context.Context
 	TraceID string
 	Token   string
 	*DeviceInfo
 	request.RequestAt
-	Request     *http.Request
-	FastRequest *fasthttp.Request
+	Request *REQ
 	grpc.ServerTransportStream
 	Internal string
-	Values   map[string]interface{}
+	Values   map[string]any
+	Props    P
 }
 
-func (c *RequestContext) StartSpan(name string, o ...trace.StartOption) (*RequestContext, *trace.Span) {
+func (c *RequestContext[REQ, P]) StartSpan(name string, o ...trace.StartOption) (*RequestContext[REQ, P], *trace.Span) {
 	ctx, span := trace.StartSpan(c.Context, name, append(o, trace.WithSampler(trace.AlwaysSample()),
 		trace.WithSpanKind(trace.SpanKindServer))...)
 	c.Context = ctx
@@ -134,7 +133,7 @@ func (c *RequestContext) StartSpan(name string, o ...trace.StartOption) (*Reques
 	return c, span
 }
 
-func CtxWithRequest(r *http.Request, tracing bool) (*RequestContext, *trace.Span) {
+func CtxWithRequest[P any](r *http.Request, tracing bool) (*RequestContext[http.Request, P], *trace.Span) {
 	var span *trace.Span
 	ctx := context.Background()
 	if r != nil {
@@ -183,8 +182,8 @@ func CtxWithRequest(r *http.Request, tracing bool) (*RequestContext, *trace.Span
 		}
 	}
 
-	ctxi := NewCtx(ctx)
-	ctxi.setWithReq(r)
+	ctxi := NewCtx[http.Request, P](ctx)
+	setWithHttpReq(ctxi, r)
 	return ctxi, span
 }
 
@@ -198,15 +197,15 @@ func methodFamily(m string) string {
 
 type ctxKey struct{}
 
-func (c *RequestContext) ContextWrapper() context.Context {
+func (c *RequestContext[REQ, P]) ContextWrapper() context.Context {
 	return context.WithValue(context.Background(), ctxKey{}, c)
 }
 
-func CtxFromContext(ctx context.Context) *RequestContext {
+func CtxFromContext[REQ any, P any](ctx context.Context) *RequestContext[REQ, P] {
 	ctxi := ctx.Value(ctxKey{})
-	c, ok := ctxi.(*RequestContext)
+	c, ok := ctxi.(*RequestContext[REQ, P])
 	if !ok {
-		c = NewCtx(ctx)
+		c = NewCtx[REQ, P](ctx)
 	}
 	if c.ServerTransportStream == nil {
 		c.ServerTransportStream = grpc.ServerTransportStreamFromContext(ctx)
@@ -214,18 +213,18 @@ func CtxFromContext(ctx context.Context) *RequestContext {
 	return c
 }
 
-func (c *RequestContext) WithContext(ctx context.Context) {
+func (c *RequestContext[REQ, P]) WithContext(ctx context.Context) {
 	c.Context = ctx
 }
 
-func NewCtx(ctx context.Context) *RequestContext {
+func NewCtx[REQ any, P any](ctx context.Context) *RequestContext[REQ, P] {
 	span := trace.FromContext(ctx)
 	now := time.Now()
 	traceId := span.SpanContext().TraceID.String()
 	if traceId == "" {
 		traceId = uuid.New().String()
 	}
-	return &RequestContext{
+	return &RequestContext[REQ, P]{
 		Context: ctx,
 		TraceID: traceId,
 		RequestAt: request.RequestAt{
@@ -237,7 +236,7 @@ func NewCtx(ctx context.Context) *RequestContext {
 	}
 }
 
-func (c *RequestContext) setWithReq(r *http.Request) {
+func setWithHttpReq[P any](c *RequestContext[http.Request, P], r *http.Request) {
 	if r == nil {
 		return
 	}
@@ -247,7 +246,7 @@ func (c *RequestContext) setWithReq(r *http.Request) {
 	c.Token = httpi.GetToken(r)
 }
 
-func (c *RequestContext) reset(ctx context.Context) *RequestContext {
+func (c *RequestContext[REQ, P]) reset(ctx context.Context) *RequestContext[REQ, P] {
 	span := trace.FromContext(ctx)
 	now := time.Now()
 	traceId := span.SpanContext().TraceID.String()
@@ -260,3 +259,5 @@ func (c *RequestContext) reset(ctx context.Context) *RequestContext {
 	c.RequestAt.TimeStamp = now.Unix()
 	return c
 }
+
+type HttpContext[P any] RequestContext[http.Request, P]

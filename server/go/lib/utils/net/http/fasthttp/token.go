@@ -1,9 +1,9 @@
 package fasthttpi
 
 import (
+	httpi "github.com/liov/hoper/server/go/lib/utils/net/http"
 	"net/url"
 
-	"github.com/liov/hoper/server/go/lib/utils/net/http"
 	stringsi "github.com/liov/hoper/server/go/lib/utils/strings"
 	"github.com/valyala/fasthttp"
 )

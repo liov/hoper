@@ -2,7 +2,7 @@ package pick
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/context/http_context"
 	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
 	"github.com/liov/hoper/server/go/lib/utils/net/http/api/apidoc"
 	gin_build "github.com/liov/hoper/server/go/lib/utils/net/http/gin"
@@ -56,7 +56,7 @@ func GenGinAPI(genApi bool, modName string, engine *gin.Engine) {
 	},
 		func(method, path string, in2Type reflect.Type, methodValue, value reflect.Value) {
 			engine.Handle(method, path, func(ctx *gin.Context) {
-				ctxi, span := contexti.CtxFromRequest(ctx.Request, true)
+				ctxi, span := http_context.CtxFromRequest(ctx.Request, true)
 				if span != nil {
 					defer span.End()
 				}

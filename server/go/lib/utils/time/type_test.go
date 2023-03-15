@@ -52,3 +52,30 @@ func TestUnionTime(t *testing.T) {
 type UnionTimeInit interface {
 	UnionTimeInit()
 }
+
+func TestTimeScan(t *testing.T) {
+	var d interface{}
+	d = Date(time.Now())
+	switch s := d.(type) {
+	case time.Time:
+		t.Log(s)
+	case Date:
+		t.Log(s)
+	}
+	d = UnixTimeStamp(1)
+	switch s := d.(type) {
+	case int64:
+		t.Log(s)
+	case UnixTimeStamp:
+		t.Log(s)
+	}
+}
+
+func TestTimeStampScan(t *testing.T) {
+	tm := time.Now()
+	t.Log(tm)
+	ts := tm.Unix()
+	t.Log(ts)
+	t.Log(time.Unix(ts, 0))
+	t.Log(time.Unix(ts, 0).Local())
+}

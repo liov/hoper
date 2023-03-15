@@ -1,5 +1,10 @@
 package request
 
+import (
+	"github.com/liov/hoper/server/go/lib/utils/def/constraints"
+	"time"
+)
+
 type SortType int
 
 const (
@@ -46,9 +51,11 @@ type SortReqInter interface {
 	Type() SortType
 }
 
-type RangeReq struct {
-	RangeField string      `json:"dateField,omitempty"`
-	RangeStart interface{} `json:"dateStart,omitempty"`
-	RangeEnd   interface{} `json:"dateEnd,omitempty"`
-	Include    bool        `json:"include,omitempty"`
+type DateRangeReq[T ~string | time.Time] RangeReq[T]
+
+type RangeReq[T constraints.Ordered] struct {
+	RangeField string `json:"dateField,omitempty"`
+	RangeStart T      `json:"dateStart,omitempty"`
+	RangeEnd   T      `json:"dateEnd,omitempty"`
+	Include    bool   `json:"include,omitempty"`
 }

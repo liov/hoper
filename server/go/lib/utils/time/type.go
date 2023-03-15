@@ -27,16 +27,25 @@ func (date Date) Format(foramt string) string {
 }
 
 // GormDataType gorm common data type
-func (date Date) GormDataType() string {
+func (date *Date) GormDataType() string {
 	return "date"
 }
 
-func (date Date) GobEncode() ([]byte, error) {
-	return time.Time(date).GobEncode()
+func (date Date) MarshalBinary() ([]byte, error) {
+	return time.Time(date).MarshalBinary()
 }
 
-func (date *Date) GobDecode(b []byte) error {
-	return (*time.Time)(date).GobDecode(b)
+// UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
+func (date *Date) UnmarshalBinary(data []byte) error {
+	return (*time.Time)(date).UnmarshalBinary(data)
+}
+
+func (date Date) GobEncode() ([]byte, error) {
+	return date.MarshalBinary()
+}
+
+func (date *Date) GobDecode(data []byte) error {
+	return date.UnmarshalBinary(data)
 }
 
 func (date Date) MarshalJSON() ([]byte, error) {
@@ -84,16 +93,25 @@ func (dt Time) Format(foramt string) string {
 }
 
 // GormDataType gorm common data type
-func (dt Time) GormDataType() string {
+func (dt *Time) GormDataType() string {
 	return "datetime"
 }
 
-func (dt Time) GobEncode() ([]byte, error) {
-	return time.Time(dt).GobEncode()
+func (dt Time) MarshalBinary() ([]byte, error) {
+	return time.Time(dt).MarshalBinary()
 }
 
-func (dt *Time) GobDecode(b []byte) error {
-	return (*time.Time)(dt).GobDecode(b)
+// UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
+func (dt *Time) UnmarshalBinary(data []byte) error {
+	return (*time.Time)(dt).UnmarshalBinary(data)
+}
+
+func (dt Time) GobEncode() ([]byte, error) {
+	return dt.MarshalBinary()
+}
+
+func (dt *Time) GobDecode(data []byte) error {
+	return dt.UnmarshalBinary(data)
 }
 
 func (dt Time) MarshalJSON() ([]byte, error) {
@@ -123,20 +141,6 @@ func (dt *Time) UnmarshalJSON(data []byte) error {
 	return err
 }
 
-type StdTime time.Time
-
-func (t StdTime) Origin() time.Time {
-	return (time.Time)(t)
-}
-
-func (t StdTime) TimeStamp() int64 {
-	return t.Origin().Unix()
-}
-
-func (t StdTime) TimeString() string {
-	return t.Origin().Format(TimeFormatDisplay)
-}
-
 type UnixTime time.Time
 
 func (ut *UnixTime) Scan(value interface{}) (err error) {
@@ -155,16 +159,25 @@ func (ut UnixTime) Format(foramt string) string {
 }
 
 // GormDataType gorm common data type
-func (ut UnixTime) GormDataType() string {
+func (ut *UnixTime) GormDataType() string {
 	return "datetime"
 }
 
-func (ut UnixTime) GobEncode() ([]byte, error) {
-	return time.Time(ut).GobEncode()
+func (ut UnixTime) MarshalBinary() ([]byte, error) {
+	return time.Time(ut).MarshalBinary()
 }
 
-func (ut *UnixTime) GobDecode(b []byte) error {
-	return (*time.Time)(ut).GobDecode(b)
+// UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
+func (ut *UnixTime) UnmarshalBinary(data []byte) error {
+	return (*time.Time)(ut).UnmarshalBinary(data)
+}
+
+func (ut UnixTime) GobEncode() ([]byte, error) {
+	return ut.MarshalBinary()
+}
+
+func (ut *UnixTime) GobDecode(data []byte) error {
+	return ut.UnmarshalBinary(data)
 }
 
 func (ut UnixTime) MarshalJSON() ([]byte, error) {
@@ -210,16 +223,25 @@ func (unt UnixNanoTime) Format(foramt string) string {
 }
 
 // GormDataType gorm common data type
-func (unt UnixNanoTime) GormDataType() string {
+func (unt *UnixNanoTime) GormDataType() string {
 	return "datetime"
 }
 
-func (unt UnixNanoTime) GobEncode() ([]byte, error) {
-	return time.Time(unt).GobEncode()
+func (unt UnixNanoTime) MarshalBinary() ([]byte, error) {
+	return time.Time(unt).MarshalBinary()
 }
 
-func (unt *UnixNanoTime) GobDecode(b []byte) error {
-	return (*time.Time)(unt).GobDecode(b)
+// UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
+func (unt *UnixNanoTime) UnmarshalBinary(data []byte) error {
+	return (*time.Time)(unt).UnmarshalBinary(data)
+}
+
+func (unt UnixNanoTime) GobEncode() ([]byte, error) {
+	return unt.MarshalBinary()
+}
+
+func (unt *UnixNanoTime) GobDecode(data []byte) error {
+	return unt.UnmarshalBinary(data)
 }
 
 func (unt UnixNanoTime) MarshalJSON() ([]byte, error) {
@@ -248,19 +270,19 @@ func (unt *UnixNanoTime) UnmarshalJSON(data []byte) error {
 }
 
 // 对应数据库datetime或timestamp,或date
-// typ 0 序列化为 "2006-01-02 15:04:05",typ 1序列化为"2006-01-02",typ 2 序列化为秒时间戳, typ 3序列化为毫秒时间戳
+// jsonType 0 序列化为 "2006-01-02 15:04:05",jsonType 1序列化为"2006-01-02",jsonType 2 序列化为秒时间戳, jsonType 3序列化为毫秒时间戳
 // 序列化,反序列化前需设置typ
 type UnionTime struct {
 	time.Time
-	typ uint8
+	jsonType uint8
 }
 
 func NewUnionTime(t time.Time, typ uint8) UnionTime {
-	return UnionTime{Time: t, typ: typ}
+	return UnionTime{Time: t, jsonType: typ}
 }
 
 func ZeroUnionTime(typ uint8) UnionTime {
-	return UnionTime{typ: typ}
+	return UnionTime{jsonType: typ}
 }
 func (ut *UnionTime) Scan(value interface{}) (err error) {
 	nullTime := &sql.NullTime{}
@@ -270,22 +292,36 @@ func (ut *UnionTime) Scan(value interface{}) (err error) {
 }
 
 func (ut UnionTime) Value() (driver.Value, error) {
-	if ut.typ == 1 {
+	if ut.jsonType == 1 {
 		return ut.Format(DateFormat), nil
 	}
 	return ut.Time, nil
+}
+
+// GormDataType gorm common data type
+func (ut *UnionTime) GormDataType() string {
+	return "datetime"
 }
 
 func (ut UnionTime) Format(foramt string) string {
 	return ut.Time.Format(foramt)
 }
 
-func (ut UnionTime) GobEncode() ([]byte, error) {
-	return ut.Time.GobEncode()
+func (ut UnionTime) MarshalBinary() ([]byte, error) {
+	return ut.Time.MarshalBinary()
 }
 
-func (ut *UnionTime) GobDecode(b []byte) error {
-	return ut.Time.GobDecode(b)
+// UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
+func (ut *UnionTime) UnmarshalBinary(data []byte) error {
+	return ut.Time.UnmarshalBinary(data)
+}
+
+func (ut UnionTime) GobEncode() ([]byte, error) {
+	return ut.MarshalBinary()
+}
+
+func (ut *UnionTime) GobDecode(data []byte) error {
+	return ut.UnmarshalBinary(data)
 }
 
 func (ut UnionTime) MarshalJSON() ([]byte, error) {
@@ -296,7 +332,7 @@ func (ut UnionTime) MarshalJSON() ([]byte, error) {
 		return nil, errors.New("Time.MarshalJSON: year outside of range [0,9999]")
 	}
 
-	switch ut.typ {
+	switch ut.jsonType {
 	case 0:
 		b := make([]byte, 0, len(TimeFormatDisplay)+2)
 		b = append(b, '"')
@@ -325,7 +361,7 @@ func (ut *UnionTime) UnmarshalJSON(data []byte) error {
 	}
 	var err error
 	var t time.Time
-	switch ut.typ {
+	switch ut.jsonType {
 	case 0:
 		t, err = time.ParseInLocation(`"`+TimeFormatDisplay+`"`, string(data), time.Local)
 	case 1:
@@ -343,11 +379,56 @@ func (ut *UnionTime) UnmarshalJSON(data []byte) error {
 		}
 		t = time.Unix(0, int64(str))
 	}
-	*ut = UnionTime{Time: t, typ: ut.typ}
+	*ut = UnionTime{Time: t, jsonType: ut.jsonType}
 	return err
 }
 
 func (ut *UnionTime) Type(typ uint8) UnionTime {
-	ut.typ = typ
+	ut.jsonType = typ
 	return *ut
+}
+
+type TimeStamp int64
+type UnixTimeStamp int64
+
+func (ts *UnixTimeStamp) Scan(value interface{}) (err error) {
+	nullTime := &sql.NullTime{}
+	err = nullTime.Scan(value)
+	*ts = UnixTimeStamp(nullTime.Time.Unix())
+	return
+}
+
+func (ts UnixTimeStamp) Value() (driver.Value, error) {
+	return time.Unix(int64(ts), 0), nil
+}
+
+func (ts UnixTimeStamp) Format(foramt string) string {
+	return time.Unix(int64(ts), 0).Format(foramt)
+}
+
+// GormDataType gorm common data type
+func (ts UnixTimeStamp) GormDataType() string {
+	return "datetime"
+}
+
+type UnixNanoTimeStamp int64
+
+func (ts *UnixNanoTimeStamp) Scan(value interface{}) (err error) {
+	nullTime := &sql.NullTime{}
+	err = nullTime.Scan(value)
+	*ts = UnixNanoTimeStamp(nullTime.Time.UnixNano())
+	return
+}
+
+func (ts UnixNanoTimeStamp) Value() (driver.Value, error) {
+	return time.Unix(0, int64(ts)), nil
+}
+
+func (ts UnixNanoTimeStamp) Format(foramt string) string {
+	return time.Unix(0, int64(ts)).Format(foramt)
+}
+
+// GormDataType gorm common data type
+func (ts UnixNanoTimeStamp) GormDataType() string {
+	return "datetime"
 }

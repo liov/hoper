@@ -2,7 +2,6 @@ package badger
 
 import (
 	"github.com/dgraph-io/badger/v3"
-	"github.com/liov/hoper/server/go/lib/initialize"
 	"github.com/liov/hoper/server/go/lib/utils/log"
 )
 
@@ -19,23 +18,17 @@ func (conf *BadgerDBConfig) Build() *badger.DB {
 	return db
 }
 
-func (conf *BadgerDBConfig) Generate() interface{} {
-	return conf.Build()
-}
-
 type Consumer struct {
 	*badger.DB
 	Conf BadgerDBConfig
 }
 
-func (c *Consumer) Config() initialize.Generate {
+func (c *Consumer) Config() any {
 	return &c.Conf
 }
 
-func (c *Consumer) SetEntity(entity interface{}) {
-	if client, ok := entity.(*badger.DB); ok {
-		c.DB = client
-	}
+func (c *Consumer) SetEntity() {
+	c.DB = c.Conf.Build()
 }
 
 func (c *Consumer) Close() error {

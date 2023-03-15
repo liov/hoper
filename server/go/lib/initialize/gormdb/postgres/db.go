@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"fmt"
-	"github.com/liov/hoper/server/go/lib/initialize"
 	pkdb "github.com/liov/hoper/server/go/lib/initialize/gormdb"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -11,10 +10,6 @@ import (
 
 type DatabaseConfig pkdb.DatabaseConfig
 
-func (conf *DatabaseConfig) Generate() any {
-	return conf.Build()
-}
-
 func (conf *DatabaseConfig) Init() {
 	(*pkdb.DatabaseConfig)(conf).Init()
 }
@@ -22,19 +17,17 @@ func (conf *DatabaseConfig) Init() {
 func (conf *DatabaseConfig) Build() *gorm.DB {
 	url := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s timezone=%s",
 		conf.Host, conf.User, conf.Database, conf.Password, conf.TimeZone)
-	return (*pkdb.DatabaseConfig)(conf).Generate(postgres.Open(url))
+	return (*pkdb.DatabaseConfig)(conf).Build(postgres.Open(url))
 }
 
 type DB pkdb.DB
 
-func (db *DB) Config() initialize.Generate {
+func (db *DB) Config() any {
 	return (*DatabaseConfig)(&db.Conf)
 }
 
-func (db *DB) SetEntity(entity interface{}) {
-	if gormdb, ok := entity.(*gorm.DB); ok {
-		db.DB = gormdb
-	}
+func (db *DB) SetEntity() {
+	db.DB = (*DatabaseConfig)(&db.Conf).Build()
 }
 
 func (db *DB) Close() error {

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/gin-gonic/gin"
-	"github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/context/http_context"
 	"github.com/liov/hoper/server/go/lib/utils/log"
 	httpi "github.com/liov/hoper/server/go/lib/utils/net/http"
 	gin_build "github.com/liov/hoper/server/go/lib/utils/net/http/gin"
@@ -77,13 +77,13 @@ func (s *Server) httpHandler(conf *ServerConfig) http.HandlerFunc {
 			w.Write(recorder.Body.Bytes())
 		}
 
-		accessLog(contexti.CtxFromContext(r.Context()), r.RequestURI, r.Method,
+		accessLog(http_context.CtxFromContext(r.Context()), r.RequestURI, r.Method,
 			stringsi.ToString(body), stringsi.ToString(recorder.Body.Bytes()),
 			recorder.Code)
 	}
 }
 
-func accessLog(ctxi *contexti.Ctx, iface, method, body, result string, code int) {
+func accessLog(ctxi *http_context.Ctx, iface, method, body, result string, code int) {
 	// log 里time now 浪费性能
 	if ce := log.Default.Logger.Check(zap.InfoLevel, "access"); ce != nil {
 		ce.Write(zap.String("interface", iface),

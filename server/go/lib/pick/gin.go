@@ -1,7 +1,7 @@
 package pick
 
 import (
-	"github.com/liov/hoper/server/go/lib/context"
+	"github.com/liov/hoper/server/go/lib/context/http_context"
 	"github.com/liov/hoper/server/go/lib/protobuf/errorcode"
 	"github.com/liov/hoper/server/go/lib/utils/net/http/request"
 	"log"
@@ -38,7 +38,7 @@ func Gin(engine *gin.Engine, genApi bool, modName string, tracing bool) {
 			methodValue := method.Func
 			in2Type := methodType.In(2)
 			engine.Handle(methodInfo.method, methodInfo.path, func(ctx *gin.Context) {
-				ctxi, span := contexti.CtxFromRequest(ctx.Request, tracing)
+				ctxi, span := http_context.CtxFromRequest(ctx.Request, tracing)
 				if span != nil {
 					defer span.End()
 				}
