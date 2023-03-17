@@ -10,16 +10,16 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-type Ctx = contexti.Ctx[fasthttp.Request, uint8]
+type Context = contexti.Context[fasthttp.Request]
 
-func CtxWithRequest(ctx context.Context, r *fasthttp.Request) *Ctx {
-	ctxi := contexti2.NewCtx[fasthttp.Request, uint8](ctx)
-	c := &Ctx{RequestContext: ctxi}
+func ContextWithRequest(ctx context.Context, r *fasthttp.Request) *Context {
+	ctxi := contexti2.NewCtx[fasthttp.Request](ctx)
+	c := &Context{RequestContext: ctxi}
 	setWithReq(c, r)
 	return c
 }
 
-func setWithReq(c *Ctx, r *fasthttp.Request) {
+func setWithReq(c *Context, r *fasthttp.Request) {
 	c.Request = r
 	c.Token = fasthttpi.GetToken(r)
 	c.DeviceInfo = Device(&r.Header)

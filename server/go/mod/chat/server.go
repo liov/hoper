@@ -44,12 +44,12 @@ func (manager *ClientManager) start() {
 	for {
 		select {
 		case client := <-manager.register:
-			id := client.ctx.Props.AuthInfo.(*user.AuthInfo).Id
+			id := client.ctx.AuthInfo.(*user.AuthInfo).Id
 			manager.clients[id] = client
 			jsonMessage, _ := iterator.Marshal(&Message{Remark: "/A new conn has connected."})
 			manager.send(jsonMessage, client)
 		case client := <-manager.unregister:
-			id := client.ctx.Props.AuthInfo.(*user.AuthInfo).Id
+			id := client.ctx.AuthInfo.(*user.AuthInfo).Id
 			if _, ok := manager.clients[id]; ok {
 				close(client.send)
 				delete(manager.clients, id)
@@ -63,7 +63,7 @@ func (manager *ClientManager) start() {
 				case client.send <- message:
 				default:
 					close(client.send)
-					id := client.ctx.Props.AuthInfo.(*user.AuthInfo).Id
+					id := client.ctx.AuthInfo.(*user.AuthInfo).Id
 					delete(manager.clients, id)
 				}
 			}
@@ -95,7 +95,7 @@ func (c *Client) read() {
 		var message Message
 		iterator.Unmarshal(msg, &message)
 		message.CreatedAt = time.Now()
-		message.SendUserID = c.ctx.Props.AuthInfo.(*user.AuthInfo).Id
+		message.SendUserID = c.ctx.AuthInfo.(*user.AuthInfo).Id
 		jsonMessage, _ := iterator.Marshal(&message)
 		dao.Dao.Redis.Do(c.ctx, "RPUSH", "Chat", jsonMessage)
 		manager.broadcast <- jsonMessage

@@ -14,7 +14,7 @@ import (
 )
 
 const Template = `
-func (*UserService) Add(ctx *model.Ctx, req *model.SignupReq) (*response.TinyRep, error) {
+func (*UserService) Add(ctx *model.Context, req *model.SignupReq) (*response.TinyRep, error) {
 	pick.Api(func() {
 		pick.Post("/add").
 			Title("用户注册").

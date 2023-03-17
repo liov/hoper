@@ -18,17 +18,17 @@ func auth(ctx *http_context.Context, update bool) (*user.AuthInfo, error) {
 	cacheTmp, ok := dao.Dao.Cache.Get(signature)
 	if ok {
 		cache := cacheTmp.(*contexti.Authorization)
-		ctx.Props.LastActiveAt = ctx.TimeStamp
-		ctx.Props.Authorization = cache
+		ctx.LastActiveAt = ctx.TimeStamp
+		ctx.Authorization = cache
 		auth := cache.AuthInfo.(*user.AuthInfo)
 		return auth, nil
 	}
 	auth := &user.AuthInfo{}
-	ctx.Props.AuthInfo = auth
-	if err := ctx.Props.ParseToken(ctx.Token, conf.Conf.Customize.TokenSecret); err != nil {
+	ctx.AuthInfo = auth
+	if err := ctx.ParseToken(ctx.Token, conf.Conf.Customize.TokenSecret); err != nil {
 		return nil, user.UserErrLoginTimeout
 	}
-	ctx.Props.LastActiveAt = ctx.TimeStamp
+	ctx.LastActiveAt = ctx.TimeStamp
 	if update {
 		userDao := dao.GetDao(ctx)
 		err := userDao.EfficientUserHashFromRedis()
@@ -37,7 +37,7 @@ func auth(ctx *http_context.Context, update bool) (*user.AuthInfo, error) {
 		}
 	}
 	if !ok {
-		dao.Dao.Cache.SetWithTTL(signature, ctx.Props.Authorization, 0, 5*time.Second)
+		dao.Dao.Cache.SetWithTTL(signature, ctx.Authorization, 0, 5*time.Second)
 	}
 	return auth, nil
 }

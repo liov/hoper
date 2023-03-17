@@ -56,7 +56,7 @@ func GenGinAPI(genApi bool, modName string, engine *gin.Engine) {
 	},
 		func(method, path string, in2Type reflect.Type, methodValue, value reflect.Value) {
 			engine.Handle(method, path, func(ctx *gin.Context) {
-				ctxi, span := http_context.CtxContextFromRequest(ctx.Request, true)
+				ctxi, span := http_context.ContextFromRequest(ctx.Request, true)
 				if span != nil {
 					defer span.End()
 				}

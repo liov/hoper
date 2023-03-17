@@ -18,9 +18,9 @@ import (
 	"time"
 )
 
-func GetPool[REQ any, P any]() sync.Pool {
+func GetPool[REQ any]() sync.Pool {
 	return sync.Pool{New: func() any {
-		return new(RequestContext[REQ, P])
+		return new(RequestContext[REQ])
 	}}
 }
 
@@ -104,7 +104,7 @@ func Device(infoHeader, area, localHeader, userAgent, ip string) *DeviceInfo {
 	return &info
 }
 
-type RequestContext[REQ any, P any] struct {
+type RequestContext[REQ any] struct {
 	context.Context
 	TraceID string
 	Token   string
@@ -114,10 +114,9 @@ type RequestContext[REQ any, P any] struct {
 	grpc.ServerTransportStream
 	Internal string
 	Values   map[string]any
-	Props    P
 }
 
-func (c *RequestContext[REQ, P]) StartSpan(name string, o ...trace.StartOption) (*RequestContext[REQ, P], *trace.Span) {
+func (c *RequestContext[REQ]) StartSpan(name string, o ...trace.StartOption) (*RequestContext[REQ], *trace.Span) {
 	ctx, span := trace.StartSpan(c.Context, name, append(o, trace.WithSampler(trace.AlwaysSample()),
 		trace.WithSpanKind(trace.SpanKindServer))...)
 	c.Context = ctx
@@ -127,7 +126,7 @@ func (c *RequestContext[REQ, P]) StartSpan(name string, o ...trace.StartOption) 
 	return c, span
 }
 
-func CtxWithRequest[P any](r *http.Request, tracing bool) (*RequestContext[http.Request, P], *trace.Span) {
+func CtxWithRequest(r *http.Request, tracing bool) (*RequestContext[http.Request], *trace.Span) {
 	var span *trace.Span
 	ctx := context.Background()
 	if r != nil {
@@ -176,7 +175,7 @@ func CtxWithRequest[P any](r *http.Request, tracing bool) (*RequestContext[http.
 		}
 	}
 
-	ctxi := NewCtx[http.Request, P](ctx)
+	ctxi := NewCtx[http.Request](ctx)
 	setWithHttpReq(ctxi, r)
 	return ctxi, span
 }
@@ -191,15 +190,15 @@ func methodFamily(m string) string {
 
 type ctxKey struct{}
 
-func (c *RequestContext[REQ, P]) ContextWrapper() context.Context {
+func (c *RequestContext[REQ]) ContextWrapper() context.Context {
 	return context.WithValue(context.Background(), ctxKey{}, c)
 }
 
-func CtxFromContext[REQ any, P any](ctx context.Context) *RequestContext[REQ, P] {
+func CtxFromContext[REQ any](ctx context.Context) *RequestContext[REQ] {
 	ctxi := ctx.Value(ctxKey{})
-	c, ok := ctxi.(*RequestContext[REQ, P])
+	c, ok := ctxi.(*RequestContext[REQ])
 	if !ok {
-		c = NewCtx[REQ, P](ctx)
+		c = NewCtx[REQ](ctx)
 	}
 	if c.ServerTransportStream == nil {
 		c.ServerTransportStream = grpc.ServerTransportStreamFromContext(ctx)
@@ -207,18 +206,18 @@ func CtxFromContext[REQ any, P any](ctx context.Context) *RequestContext[REQ, P]
 	return c
 }
 
-func (c *RequestContext[REQ, P]) WithContext(ctx context.Context) {
+func (c *RequestContext[REQ]) WithContext(ctx context.Context) {
 	c.Context = ctx
 }
 
-func NewCtx[REQ any, P any](ctx context.Context) *RequestContext[REQ, P] {
+func NewCtx[REQ any](ctx context.Context) *RequestContext[REQ] {
 	span := trace.FromContext(ctx)
 	now := time.Now()
 	traceId := span.SpanContext().TraceID.String()
 	if traceId == "" {
 		traceId = uuid.New().String()
 	}
-	return &RequestContext[REQ, P]{
+	return &RequestContext[REQ]{
 		Context: ctx,
 		TraceID: traceId,
 		RequestAt: request.RequestAt{
@@ -230,7 +229,7 @@ func NewCtx[REQ any, P any](ctx context.Context) *RequestContext[REQ, P] {
 	}
 }
 
-func setWithHttpReq[P any](c *RequestContext[http.Request, P], r *http.Request) {
+func setWithHttpReq(c *RequestContext[http.Request], r *http.Request) {
 	if r == nil {
 		return
 	}
@@ -240,7 +239,7 @@ func setWithHttpReq[P any](c *RequestContext[http.Request, P], r *http.Request) 
 	c.Token = httpi.GetToken(r)
 }
 
-func (c *RequestContext[REQ, P]) reset(ctx context.Context) *RequestContext[REQ, P] {
+func (c *RequestContext[REQ]) reset(ctx context.Context) *RequestContext[REQ] {
 	span := trace.FromContext(ctx)
 	now := time.Now()
 	traceId := span.SpanContext().TraceID.String()

@@ -14,8 +14,8 @@ var limitErr = errorcode.TimeTooMuch.Message("您的操作过于频繁，请先�
 func (d *ContentRedisDao) Limit(l *conf.Limit) error {
 	ctxi := d
 	ctx := ctxi.Context
-	minuteKey := l.MinuteLimitKey + ctxi.Props.ID
-	dayKey := l.DayLimitKey + ctxi.Props.ID
+	minuteKey := l.MinuteLimitKey + ctxi.ID
+	dayKey := l.DayLimitKey + ctxi.ID
 
 	var minuteIntCmd, dayIntCmd *redis.IntCmd
 	_, err := d.conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
