@@ -1,6 +1,6 @@
 # lib
 
-一个集合了各种工具的库
+一个集合了各种工具的库(基于goroutine池的任务调度,)
 
 ## protobuf
 库中用到的protobuf定义及生成文件

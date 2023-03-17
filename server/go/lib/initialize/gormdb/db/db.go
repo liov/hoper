@@ -10,6 +10,7 @@ import (
 	"runtime"
 )
 
+// Deprecated 每个驱动分开，不然每次都要编译所有驱动
 type DatabaseConfig pkdb.DatabaseConfig
 
 func (conf *DatabaseConfig) Build() *gorm.DB {
