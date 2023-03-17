@@ -1,3 +1,5 @@
+pub mod config;
+
 pub mod empty {
     tonic::include_proto!("empty");
 }
