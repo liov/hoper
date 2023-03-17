@@ -10,11 +10,11 @@ import (
 
 type Context = contexti.Context[http.Request]
 
-func CtxFromRequest(r *http.Request, tracing bool) (*Context, *trace.Span) {
+func ContextFromRequest(r *http.Request, tracing bool) (*Context, *trace.Span) {
 	ctxi, span := contexti2.CtxWithRequest(r, tracing)
 	return &Context{Authorization: &contexti.Authorization{}, RequestContext: ctxi}, span
 }
 
-func CtxFromContext(ctx context.Context) *Context {
+func ContextFromContext(ctx context.Context) *Context {
 	return contexti.CtxFromContext[http.Request](ctx)
 }
