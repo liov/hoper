@@ -1,15 +1,14 @@
 package contexti
 
 import (
-	"github.com/liov/hoper/server/go/lib/utils/def"
 	httpi "github.com/liov/hoper/server/go/lib/utils/net/http"
 	"google.golang.org/grpc/metadata"
 	"net/http"
 )
 
-type HttpContext[P def.Init] RequestContext[http.Request, P]
+type HttpContext RequestContext[http.Request]
 
-func (c *HttpContext[P]) SetHeader(md metadata.MD) error {
+func (c *HttpContext) SetHeader(md metadata.MD) error {
 	for k, v := range md {
 		c.Request.Header[k] = v
 	}
@@ -22,7 +21,7 @@ func (c *HttpContext[P]) SetHeader(md metadata.MD) error {
 	return nil
 }
 
-func (c *HttpContext[P]) SendHeader(md metadata.MD) error {
+func (c *HttpContext) SendHeader(md metadata.MD) error {
 	for k, v := range md {
 		c.Request.Header[k] = v
 	}
@@ -35,7 +34,7 @@ func (c *HttpContext[P]) SendHeader(md metadata.MD) error {
 	return nil
 }
 
-func (c *HttpContext[P]) WriteHeader(k, v string) error {
+func (c *HttpContext) WriteHeader(k, v string) error {
 	c.Request.Header[k] = []string{v}
 
 	if c.ServerTransportStream != nil {
@@ -47,7 +46,7 @@ func (c *HttpContext[P]) WriteHeader(k, v string) error {
 	return nil
 }
 
-func (c *HttpContext[P]) SetCookie(v string) error {
+func (c *HttpContext) SetCookie(v string) error {
 	c.Request.Header[httpi.HeaderSetCookie] = []string{v}
 
 	if c.ServerTransportStream != nil {
@@ -59,7 +58,7 @@ func (c *HttpContext[P]) SetCookie(v string) error {
 	return nil
 }
 
-func (c *HttpContext[P]) SetTrailer(md metadata.MD) error {
+func (c *HttpContext) SetTrailer(md metadata.MD) error {
 	for k, v := range md {
 		c.Request.Header[k] = v
 	}
@@ -72,7 +71,7 @@ func (c *HttpContext[P]) SetTrailer(md metadata.MD) error {
 	return nil
 }
 
-func (c *RequestContext[REQ, P]) Method() string {
+func (c *RequestContext[REQ]) Method() string {
 	if c.ServerTransportStream != nil {
 		return c.ServerTransportStream.Method()
 	}

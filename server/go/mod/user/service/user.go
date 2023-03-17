@@ -343,11 +343,11 @@ func (*UserService) login(ctxi *http_context.Context, user *model.User) (*model.
 		Status: user.Status,
 	}
 
-	ctxi.Props.AuthInfo = auth
-	ctxi.Props.IssuedAt = &jwt.NumericDate{Time: ctxi.Time}
-	ctxi.Props.ExpiresAt = &jwt.NumericDate{Time: ctxi.Time.Add(conf.Conf.Customize.TokenMaxAge)}
+	ctxi.AuthInfo = auth
+	ctxi.IssuedAt = &jwt.NumericDate{Time: ctxi.Time}
+	ctxi.ExpiresAt = &jwt.NumericDate{Time: ctxi.Time.Add(conf.Conf.Customize.TokenMaxAge)}
 
-	tokenString, err := ctxi.Props.GenerateToken(conf.Conf.Customize.TokenSecret)
+	tokenString, err := ctxi.GenerateToken(conf.Conf.Customize.TokenSecret)
 	if err != nil {
 		return nil, errorcode.Internal
 	}
@@ -374,7 +374,7 @@ func (*UserService) login(ctxi *http_context.Context, user *model.User) (*model.
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
-	err = (*contexti2.HttpContext[*http_context.ExtProp])(ctxi).SetCookie(cookie)
+	err = (*contexti2.HttpContext)(ctxi.RequestContext).SetCookie(cookie)
 	if err != nil {
 		return nil, errorcode.Unavailable
 	}
@@ -404,7 +404,7 @@ func (u *UserService) Logout(ctx context.Context, req *empty.Empty) (*empty.Empt
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
-	(*contexti2.HttpContext[*http_context.ExtProp])(ctxi).SetCookie(cookie)
+	(*contexti2.HttpContext)(ctxi.RequestContext).SetCookie(cookie)
 	return new(empty.Empty), nil
 }
 

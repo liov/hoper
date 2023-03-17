@@ -12,9 +12,15 @@ import (
 	"sync"
 )
 
-func GetPool[REQ any, P any]() sync.Pool {
+type AuthInterface interface {
+	Validate() error
+	GenerateToken(secret []byte) (string, error)
+	ParseToken(token string, secret []byte) error
+}
+
+func GetPool[REQ any]() sync.Pool {
 	return sync.Pool{New: func() any {
-		return new(Ctx[REQ, P])
+		return new(Context[REQ])
 	}}
 }
 
@@ -49,28 +55,28 @@ func (x *Authorization) ParseToken(token string, secret []byte) error {
 	return nil
 }
 
-type Ctx[REQ any, P any] struct {
+type Context[REQ any] struct {
 	LastActiveAt int64
 	*Authorization
-	*contexti.RequestContext[REQ, P]
+	*contexti.RequestContext[REQ]
 }
 
-func (c *Ctx[REQ, P]) StartSpan(name string, o ...trace.StartOption) (*Ctx[REQ, P], *trace.Span) {
+func (c *Context[REQ]) StartSpan(name string, o ...trace.StartOption) (*Context[REQ], *trace.Span) {
 	_, span := c.RequestContext.StartSpan(name, o...)
 	return c, span
 }
 
 type ctxKey struct{}
 
-func (ctxi *Ctx[REQ, P]) ContextWrapper() context.Context {
+func (ctxi *Context[REQ]) ContextWrapper() context.Context {
 	return context.WithValue(context.Background(), ctxKey{}, ctxi)
 }
 
-func CtxFromContext[REQ any, P any](ctx context.Context) *Ctx[REQ, P] {
+func CtxFromContext[REQ any](ctx context.Context) *Context[REQ] {
 	ctxi := ctx.Value(ctxKey{})
-	c, ok := ctxi.(*Ctx[REQ, P])
+	c, ok := ctxi.(*Context[REQ])
 	if !ok {
-		return &Ctx[REQ, P]{Authorization: &Authorization{}, RequestContext: contexti.NewCtx[REQ, P](ctx)}
+		return &Context[REQ]{Authorization: &Authorization{}, RequestContext: contexti.NewCtx[REQ](ctx)}
 	}
 	if c.ServerTransportStream == nil {
 		c.ServerTransportStream = grpc.ServerTransportStreamFromContext(ctx)

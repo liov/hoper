@@ -108,7 +108,7 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 func save(ctx *http_context.Context, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
 	uploadDao := dao.GetDao(ctx)
 	db := ctx.NewDB(dao.Dao.GORMDB.DB)
-	auth := ctx.Props.AuthInfo.(*user.AuthInfo)
+	auth := ctx.AuthInfo.(*user.AuthInfo)
 	if md5Str != "" {
 		upload, err = uploadDao.UploadDB(db, md5Str, strconv.FormatInt(info.Size, 10))
 		if err != nil {

@@ -47,7 +47,7 @@ func GrpcServiceToRestfulApi(engine *gin.Engine, genApi bool, modName string, tr
 
 			in2Type := methodType.In(2)
 			group.Handle(methodInfo.method, methodInfo.path, func(ctx *gin.Context) {
-				ctxi, s := http_context.CtxContextFromRequest(ctx.Request, tracing)
+				ctxi, s := http_context.ContextFromRequest(ctx.Request, tracing)
 				if s != nil {
 					defer s.End()
 				}

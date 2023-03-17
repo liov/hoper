@@ -12,10 +12,10 @@ import (
 var Dao *dao = &dao{}
 
 type uploadDao struct {
-	*contexti.Ctx
+	*contexti.Context
 }
 
-func GetDao(ctx *contexti.Ctx) *uploadDao {
+func GetDao(ctx *contexti.Context) *uploadDao {
 	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}
