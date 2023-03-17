@@ -10,7 +10,7 @@ import (
 )
 
 func (d *ContentDBDao) GetMomentListDB(req *content.MomentListReq) (int64, []*content.Moment, error) {
-	ctxi := d.Ctx
+	ctxi := d.Context
 	var moments []*content.Moment
 	db := d.db.Table(model.MomentTableName).Where(dbi.NotDeleted)
 	var count int64

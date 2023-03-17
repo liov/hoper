@@ -16,10 +16,10 @@ import (
 var Dao *dao = &dao{}
 
 type userDao struct {
-	*http_context.Ctx
+	*http_context.Context
 }
 
-func GetDao(ctx *http_context.Ctx) *userDao {
+func GetDao(ctx *http_context.Context) *userDao {
 	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}

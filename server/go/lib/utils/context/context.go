@@ -24,12 +24,6 @@ func GetPool[REQ any, P any]() sync.Pool {
 	}}
 }
 
-type AuthContext[REQ any, P any] interface {
-	Authorization() error
-	ParseRequest(r *http.Request) error
-	RequestContext() *RequestContext[REQ, P]
-}
-
 type DeviceInfo struct {
 	//设备
 	Device     string `json:"device" gorm:"size:255"`
@@ -259,5 +253,3 @@ func (c *RequestContext[REQ, P]) reset(ctx context.Context) *RequestContext[REQ,
 	c.RequestAt.TimeStamp = now.Unix()
 	return c
 }
-
-type HttpContext[P any] RequestContext[http.Request, P]

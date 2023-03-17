@@ -7,7 +7,7 @@ import (
 )
 
 func (d *ContentRedisDao) GetTopMoments(key string, pageNo int, PageSize int) ([]content.Moment, error) {
-	ctxi := d.Ctx
+	ctxi := d.Context
 	var moments []content.Moment
 	exist, err := d.conn.Exists(ctxi.Context, key).Result()
 	if err != nil {

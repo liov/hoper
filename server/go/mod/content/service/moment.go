@@ -30,7 +30,7 @@ func (*MomentService) Service() (describe, prefix string, middleware []http.Hand
 }
 
 func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.Moment, error) {
-	ctxi, span := http_context.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, _ := auth(ctxi, true)
 	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
@@ -132,7 +132,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		return nil, errorcode.InvalidArgument.Message(fmt.Sprintf("文章内容不能小于%d个字", conf.Conf.Customize.Moment.MaxContentLen))
 	}
 
-	ctxi, span := http_context.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -221,7 +221,7 @@ func (*MomentService) Edit(context.Context, *content.AddMomentReq) (*empty.Empty
 }
 
 func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*content.MomentListRep, error) {
-	ctxi, span := http_context.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, _ := auth(ctxi, true)
 	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
@@ -320,7 +320,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 }
 
 func (*MomentService) Delete(ctx context.Context, req *request.Object) (*empty.Empty, error) {
-	ctxi, span := http_context.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {

@@ -52,7 +52,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		info = fhs[0]
 	}
 
-	ctxi := http_context.CtxFromContext(r.Context())
+	ctxi := http_context.ContextFromContext(r.Context())
 	_, err = auth(ctxi, false)
 	if err != nil {
 		(&httpi.ResAnyData{
@@ -77,7 +77,7 @@ func Exists(w http.ResponseWriter, req *http.Request) {
 }
 
 func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
-	ctxi := http_context.CtxFromContext(ctx)
+	ctxi := http_context.ContextFromContext(ctx)
 	auth, err := auth(ctxi, false)
 	uploadDao := dao.GetDao(ctxi)
 	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
@@ -105,10 +105,10 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 	(&httpi.ResAnyData{Message: "不存在"}).Response(w, http.StatusOK)
 }
 
-func save(ctx *http_context.Ctx, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
+func save(ctx *http_context.Context, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
 	uploadDao := dao.GetDao(ctx)
 	db := ctx.NewDB(dao.Dao.GORMDB.DB)
-	auth := ctx.AuthInfo.(*user.AuthInfo)
+	auth := ctx.Props.AuthInfo.(*user.AuthInfo)
 	if md5Str != "" {
 		upload, err = uploadDao.UploadDB(db, md5Str, strconv.FormatInt(info.Size, 10))
 		if err != nil {
@@ -204,7 +204,7 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 		errorcode.ParamInvalid.OriMessage(errRep).Response(w)
 		return
 	}
-	ctxi := http_context.CtxFromContext(r.Context())
+	ctxi := http_context.ContextFromContext(r.Context())
 	_, err = auth(ctxi, false)
 	if err != nil {
 		(&httpi.ResAnyData{

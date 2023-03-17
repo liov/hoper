@@ -37,7 +37,7 @@
     "parcel": "^2.6.2",
     "rollup": "^2.77.0",
     "ts-node": "^10.8.1",
-    "typescript": "^4.7.4"
+    "typescript": "^5.0.2"
   },
   "dependencies": {
    "@tensorflow/tfjs-node": "^3.19.0",

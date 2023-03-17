@@ -33,7 +33,7 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 		} else {
 			dviceName = "PC"
 		}*/
-	ctxi := http_context.CtxFromContext(r.Context())
+	ctxi := http_context.ContextFromContext(r.Context())
 	_, err := auth(ctxi, false)
 	if err != nil {
 		(&httpi.ResAnyData{

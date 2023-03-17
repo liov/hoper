@@ -12,21 +12,21 @@ import (
 
 type Ctx = contexti.Ctx[fasthttp.Request, uint8]
 
-func CtxWithFastRequest(ctx context.Context, r *fasthttp.Request) *Ctx {
+func CtxWithRequest(ctx context.Context, r *fasthttp.Request) *Ctx {
 	ctxi := contexti2.NewCtx[fasthttp.Request, uint8](ctx)
 	c := &Ctx{RequestContext: ctxi}
-	setWithFastReq(c, r)
+	setWithReq(c, r)
 	return c
 }
 
-func setWithFastReq(c *Ctx, r *fasthttp.Request) {
+func setWithReq(c *Ctx, r *fasthttp.Request) {
 	c.Request = r
 	c.Token = fasthttpi.GetToken(r)
-	c.DeviceInfo = DeviceFast(&r.Header)
+	c.DeviceInfo = Device(&r.Header)
 	c.Internal = stringsi.ToString(r.Header.Peek(httpi.GrpcInternal))
 }
 
-func DeviceFast(r *fasthttp.RequestHeader) *contexti2.DeviceInfo {
+func Device(r *fasthttp.RequestHeader) *contexti2.DeviceInfo {
 	return contexti2.Device(stringsi.ToString(r.Peek(httpi.HeaderDeviceInfo)),
 		stringsi.ToString(r.Peek(httpi.HeaderArea)),
 		stringsi.ToString(r.Peek(httpi.HeaderLocation)),
