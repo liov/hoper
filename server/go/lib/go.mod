@@ -75,6 +75,7 @@ require (
 require (
 	github.com/blastrain/vitess-sqlparser v0.0.0-20201030050434-a139afbb1aba
 	github.com/bytedance/sonic v1.8.2
+	github.com/davecgh/go-spew v1.1.1
 	github.com/elastic/go-elasticsearch/v8 v8.2.0
 	github.com/golang-jwt/jwt/v5 v5.0.0-rc.1
 	github.com/golang/protobuf v1.5.2
@@ -83,12 +84,15 @@ require (
 	github.com/lni/goutils v1.3.1-0.20220604063047-388d67b4dbc4
 	github.com/nacos-group/nacos-sdk-go v1.1.1
 	github.com/nacos-group/nacos-sdk-go/v2 v2.0.3-0.20220529114605-94b1977cde05
+	github.com/quic-go/quic-go v0.33.0
 	github.com/rs/cors v1.7.0
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/pflag v1.0.5
 	github.com/urfave/cli/v2 v2.11.0
+	golang.org/x/exp v0.0.0-20230315142452-642cacee5cc0
 	golang.org/x/image v0.0.0-20220601225756-64ec528b34cd
 	golang.org/x/text v0.7.0
+	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324
 )
 
 require (
@@ -116,7 +120,6 @@ require (
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.3.2 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
@@ -213,9 +216,9 @@ require (
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.32.1 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
+	github.com/quic-go/qpack v0.4.0 // indirect
 	github.com/quic-go/qtls-go1-19 v0.2.1 // indirect
 	github.com/quic-go/qtls-go1-20 v0.1.1 // indirect
-	github.com/quic-go/quic-go v0.33.0 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/richardlehane/mscfb v1.0.3 // indirect
 	github.com/richardlehane/msoleps v1.0.1 // indirect
@@ -223,6 +226,7 @@ require (
 	github.com/rogpeppe/go-internal v1.8.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sagikazarmark/crypt v0.6.0 // indirect
+	github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529 // indirect
 	github.com/shabbyrobe/xmlwriter v0.0.0-20200208144257-9fca06d00ffa // indirect
 	github.com/spf13/afero v1.8.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
@@ -239,9 +243,9 @@ require (
 	go.etcd.io/etcd/api/v3 v3.5.6 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.5.6 // indirect
 	go.etcd.io/etcd/client/v2 v2.305.4 // indirect
+	go.mongodb.org/mongo-driver v1.4.6 // indirect
 	golang.org/x/arch v0.0.0-20210923205945-b76863e36670 // indirect
 	golang.org/x/crypto v0.5.0 // indirect
-	golang.org/x/exp v0.0.0-20230315142452-642cacee5cc0 // indirect
 	golang.org/x/mod v0.6.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect

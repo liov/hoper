@@ -77,13 +77,13 @@ func (s *Server) httpHandler(conf *ServerConfig) http.HandlerFunc {
 			w.Write(recorder.Body.Bytes())
 		}
 
-		accessLog(http_context.CtxFromContext(r.Context()), r.RequestURI, r.Method,
+		accessLog(http_context.ContextFromContext(r.Context()), r.RequestURI, r.Method,
 			stringsi.ToString(body), stringsi.ToString(recorder.Body.Bytes()),
 			recorder.Code)
 	}
 }
 
-func accessLog(ctxi *http_context.Ctx, iface, method, body, result string, code int) {
+func accessLog(ctxi *http_context.Context, iface, method, body, result string, code int) {
 	// log 里time now 浪费性能
 	if ce := log.Default.Logger.Check(zap.InfoLevel, "access"); ce != nil {
 		ce.Write(zap.String("interface", iface),
@@ -93,7 +93,7 @@ func accessLog(ctxi *http_context.Ctx, iface, method, body, result string, code 
 			// 性能
 			zap.Duration("processTime", ce.Time.Sub(ctxi.RequestAt.Time)),
 			zap.String("result", result),
-			zap.String("auth", ctxi.AuthInfoRaw),
+			zap.String("auth", ctxi.Props.AuthInfoRaw),
 			zap.Int("status", code))
 	}
 }

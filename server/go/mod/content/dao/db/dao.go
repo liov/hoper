@@ -13,15 +13,15 @@ import (
 )
 
 type ContentDBDao struct {
-	*http_context.Ctx
+	*http_context.Context
 	ChainDao
 }
 
-func GetDao(ctx *http_context.Ctx, db *gorm.DB) *ContentDBDao {
+func GetDao(ctx *http_context.Context, db *gorm.DB) *ContentDBDao {
 	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}
-	return &ContentDBDao{Ctx: ctx, ChainDao: ChainDao{db: db}}
+	return &ContentDBDao{Context: ctx, ChainDao: ChainDao{db: db}}
 }
 
 func (d *ContentDBDao) SetDB(db *gorm.DB) {
@@ -29,7 +29,7 @@ func (d *ContentDBDao) SetDB(db *gorm.DB) {
 }
 
 func (d *ContentDBDao) Begin() *ContentDBDao {
-	return GetDao(d.Ctx, d.db.Begin())
+	return GetDao(d.Context, d.db.Begin())
 }
 
 type ChainDao struct {
@@ -40,7 +40,7 @@ type ChainDao struct {
 func (d *ContentDBDao) CreateContextExt(typ content.ContentType, refId uint64) error {
 	err := d.db.Exec(`INSERT INTO `+model.ContentExtTableName+`(type,ref_id) Values(?,?)`, typ, refId).Error
 	if err != nil {
-		return d.Ctx.ErrorLog(errorcode.DBError, err, "CreateContextExt")
+		return d.Context.ErrorLog(errorcode.DBError, err, "CreateContextExt")
 	}
 	return nil
 }
@@ -48,7 +48,7 @@ func (d *ContentDBDao) CreateContextExt(typ content.ContentType, refId uint64) e
 func (d *ContentDBDao) Transaction(fc func(tx *gorm.DB) error, opts ...*sql.TxOptions) error {
 	err := d.db.Transaction(fc, opts...)
 	if err != nil && err != errorcode.DBError {
-		d.Ctx.Error(err.Error(), zap.String(log.Position, "Transaction"))
+		d.Context.Error(err.Error(), zap.String(log.Position, "Transaction"))
 		return err
 	}
 	return err

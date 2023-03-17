@@ -29,7 +29,7 @@ func (*ContentService) TagInfo(context.Context, *request.Object) (*content.Tag, 
 	return nil, status.Errorf(codes.Unimplemented, "method Info not implemented")
 }
 func (*ContentService) AddTag(ctx context.Context, req *content.AddTagReq) (*empty.Empty, error) {
-	ctxi, span := http_context.CtxFromContext(ctx).StartSpan("Edit")
+	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("Edit")
 	defer span.End()
 	ctx = ctxi.Context
 	user, err := auth(ctxi, false)
@@ -45,7 +45,7 @@ func (*ContentService) AddTag(ctx context.Context, req *content.AddTagReq) (*emp
 	return nil, nil
 }
 func (*ContentService) EditTag(ctx context.Context, req *content.EditTagReq) (*empty.Empty, error) {
-	ctxi, span := http_context.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -63,7 +63,7 @@ func (*ContentService) EditTag(ctx context.Context, req *content.EditTagReq) (*e
 	return nil, nil
 }
 func (*ContentService) TagList(ctx context.Context, req *content.TagListReq) (*content.TagListRep, error) {
-	ctxi := http_context.CtxFromContext(ctx)
+	ctxi := http_context.ContextFromContext(ctx)
 	var tags []*content.Tag
 
 	user, err := auth(ctxi, true)
@@ -87,7 +87,7 @@ func (*ContentService) TagList(ctx context.Context, req *content.TagListReq) (*c
 }
 
 func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*request.Object, error) {
-	ctxi, span := http_context.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -123,7 +123,7 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*req
 	return &request.Object{Id: req.Id}, nil
 }
 func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*empty.Empty, error) {
-	ctxi, span := http_context.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -150,7 +150,7 @@ func (*ContentService) FavList(ctx context.Context, req *content.FavListReq) (*c
 
 // 收藏夹列表
 func (*ContentService) TinyFavList(ctx context.Context, req *content.FavListReq) (*content.TinyFavListRep, error) {
-	ctxi, span := http_context.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -169,7 +169,7 @@ func (*ContentService) TinyFavList(ctx context.Context, req *content.FavListReq)
 
 // 创建合集
 func (*ContentService) AddContainer(ctx context.Context, req *content.AddContainerReq) (*empty.Empty, error) {
-	ctxi, span := http_context.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -191,7 +191,7 @@ func (*ContentService) AddContainer(ctx context.Context, req *content.AddContain
 
 // 修改合集
 func (*ContentService) EditDiaryContainer(ctx context.Context, req *content.AddContainerReq) (*empty.Empty, error) {
-	ctxi, span := http_context.CtxFromContext(ctx).StartSpan("")
+	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {

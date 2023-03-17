@@ -1,9 +1,13 @@
 package contexti
 
 import (
+	"github.com/liov/hoper/server/go/lib/utils/def"
 	httpi "github.com/liov/hoper/server/go/lib/utils/net/http"
 	"google.golang.org/grpc/metadata"
+	"net/http"
 )
+
+type HttpContext[P def.Init] RequestContext[http.Request, P]
 
 func (c *HttpContext[P]) SetHeader(md metadata.MD) error {
 	for k, v := range md {

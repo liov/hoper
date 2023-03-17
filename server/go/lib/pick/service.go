@@ -107,7 +107,7 @@ func commonHandler(w http.ResponseWriter, req *http.Request, handle *reflect.Val
 	handleNumIn := handleTyp.NumIn()
 	if handleNumIn != 0 {
 		params := make([]reflect.Value, handleNumIn)
-		ctxi, s := http_context.CtxFromRequest(req, tracing)
+		ctxi, s := http_context.CtxContextFromRequest(req, tracing)
 		if s != nil {
 			defer s.End()
 		}
@@ -138,7 +138,7 @@ func commonHandler(w http.ResponseWriter, req *http.Request, handle *reflect.Val
 	}
 }
 
-func resHandler(c *http_context.Ctx, w http.ResponseWriter, result []reflect.Value) {
+func resHandler(c *http_context.Context, w http.ResponseWriter, result []reflect.Value) {
 	if !result[1].IsNil() {
 		err := errorcode.ErrHandle(result[1].Interface())
 		c.HandleError(err)

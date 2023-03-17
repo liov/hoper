@@ -38,7 +38,7 @@ func Gin(engine *gin.Engine, genApi bool, modName string, tracing bool) {
 			methodValue := method.Func
 			in2Type := methodType.In(2)
 			engine.Handle(methodInfo.method, methodInfo.path, func(ctx *gin.Context) {
-				ctxi, span := http_context.CtxFromRequest(ctx.Request, tracing)
+				ctxi, span := http_context.CtxContextFromRequest(ctx.Request, tracing)
 				if span != nil {
 					defer span.End()
 				}

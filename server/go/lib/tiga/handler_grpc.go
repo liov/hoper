@@ -76,7 +76,7 @@ func UnaryAccess(
 
 	body, _ := iterator.Marshal(req)
 	result, _ := iterator.Marshal(resp)
-	ctxi := http_context.CtxFromContext(ctx)
+	ctxi := http_context.ContextFromContext(ctx)
 	accessLog(ctxi, info.FullMethod, "grpc",
 		stringsi.ToString(body), stringsi.ToString(result),
 		code)

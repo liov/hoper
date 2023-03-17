@@ -29,7 +29,7 @@ import (
 )
 
 type CustomContext func(c context.Context, r *http.Request) context.Context
-type ConvertContext func(r *http.Request) *http_context.Ctx
+type ConvertContext func(r *http.Request) *http_context.Context
 
 func (s *Server) Serve() {
 	grpcServer := s.grpcHandler(s.Config)
@@ -70,7 +70,7 @@ func (s *Server) Serve() {
 			return
 		}
 
-		ctx, span := http_context.CtxFromRequest(r, openTracing)
+		ctx, span := http_context.CtxContextFromRequest(r, openTracing)
 		if span != nil {
 			defer span.End()
 		}

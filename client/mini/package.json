@@ -64,7 +64,7 @@
     "spark-md5": "^3.0.1",
     "sr-sdk-wxapp": "^1.8.8-dev.0",
     "taro-plugin-pinia": "^1.0.0",
-    "tinymce": "^6.1.0",
+    "tinymce": "^6.3.1",
     "vue": "^3.2.39"
   },
   "devDependencies": {
@@ -89,7 +89,7 @@
     "style-loader": "3.3.1",
     "stylelint": "14.12.1",
     "taro-plugin-dynamic-import-weapp": "^0.3.0",
-    "typescript": "^4.8.3",
+    "typescript": "^5.0.2",
     "unplugin-vue-components": "^0.21.1",
     "vue-loader": "^17.0.0",
     "vue-tsc": "^0.39.0",

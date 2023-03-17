@@ -13,22 +13,22 @@ import (
 
 var ExportAuth = auth
 
-func auth(ctx *http_context.Ctx, update bool) (*user.AuthInfo, error) {
+func auth(ctx *http_context.Context, update bool) (*user.AuthInfo, error) {
 	signature := ctx.Token[strings.LastIndexByte(ctx.Token, '.')+1:]
 	cacheTmp, ok := dao.Dao.Cache.Get(signature)
 	if ok {
 		cache := cacheTmp.(*contexti.Authorization)
-		ctx.LastActiveAt = ctx.TimeStamp
-		ctx.Authorization = cache
+		ctx.Props.LastActiveAt = ctx.TimeStamp
+		ctx.Props.Authorization = cache
 		auth := cache.AuthInfo.(*user.AuthInfo)
 		return auth, nil
 	}
 	auth := &user.AuthInfo{}
-	ctx.AuthInfo = auth
-	if err := ctx.ParseToken(ctx.Token, conf.Conf.Customize.TokenSecret); err != nil {
+	ctx.Props.AuthInfo = auth
+	if err := ctx.Props.ParseToken(ctx.Token, conf.Conf.Customize.TokenSecret); err != nil {
 		return nil, user.UserErrLoginTimeout
 	}
-	ctx.LastActiveAt = ctx.TimeStamp
+	ctx.Props.LastActiveAt = ctx.TimeStamp
 	if update {
 		userDao := dao.GetDao(ctx)
 		err := userDao.EfficientUserHashFromRedis()
@@ -37,7 +37,7 @@ func auth(ctx *http_context.Ctx, update bool) (*user.AuthInfo, error) {
 		}
 	}
 	if !ok {
-		dao.Dao.Cache.SetWithTTL(signature, ctx.Authorization, 0, 5*time.Second)
+		dao.Dao.Cache.SetWithTTL(signature, ctx.Props.Authorization, 0, 5*time.Second)
 	}
 	return auth, nil
 }

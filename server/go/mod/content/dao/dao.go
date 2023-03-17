@@ -42,10 +42,10 @@ func (d *dao) Init() {
 	d.StdDB, _ = db.DB.DB()
 }
 
-func GetDBDao(ctx *http_context.Ctx, d *gorm.DB) *db.ContentDBDao {
+func GetDBDao(ctx *http_context.Context, d *gorm.DB) *db.ContentDBDao {
 	return db.GetDao(ctx, d)
 }
 
-func GetRedisDao(ctx *http_context.Ctx, r redis.Cmdable) *rdao.ContentRedisDao {
+func GetRedisDao(ctx *http_context.Context, r redis.Cmdable) *rdao.ContentRedisDao {
 	return rdao.GetDao(ctx, r)
 }
