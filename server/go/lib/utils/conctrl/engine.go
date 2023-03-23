@@ -204,6 +204,15 @@ func (e *Engine[KEY, T, W]) BaseTask(task *Task[KEY, T]) *BaseTask[KEY, T] {
 	}
 }
 
+func (e *Engine[KEY, T, W]) AddTask(task *Task[KEY, T]) {
+	e.BaseEngine.AddTask(e.BaseTask(task))
+}
+
+// IDEA的bug,可以编译过去，但是报错，提示方法是嵌套结构体的方法,为了跳转写的包装方法
+func (e *Engine[KEY, T, W]) AddTasksWrapper(generation int, tasks ...*Task[KEY, T]) {
+	e.AddTasks(generation, tasks...)
+}
+
 func (e *Engine[KEY, T, W]) AddTasks(generation int, tasks ...*Task[KEY, T]) {
 	for _, req := range tasks {
 		if req != nil {

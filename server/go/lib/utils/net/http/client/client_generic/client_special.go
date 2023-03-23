@@ -1,24 +1,38 @@
 package client_generic
 
+import "github.com/liov/hoper/server/go/lib/utils/net/http/client"
+
 type GetDataInterface[T any] interface {
 	GetData() *T
 }
 
-type SubDataRequestParams[RES GetDataInterface[T], T any] RequestParams[RES]
+type SubDataRequest[RES GetDataInterface[T], T any] RequestWrapper[RES]
 
-func NewSubDataRequestParams[RES GetDataInterface[T], T any](url, method string) *SubDataRequestParams[RES, T] {
-	return (*SubDataRequestParams[RES, T])(NewRequest(url, method))
+func NewSubDataRequestParams[RES GetDataInterface[T], T any](url, method string) *SubDataRequest[RES, T] {
+	return (*SubDataRequest[RES, T])(NewRequest[RES](url, method))
 }
 
-func (req *SubDataRequestParams[RES, T]) Origin() *RequestParams[GetDataInterface[T]] {
-	return (*RequestParams[GetDataInterface[T]])(req)
+func (req *SubDataRequest[RES, T]) Origin() *client.Request {
+	return (*client.Request)(req)
 }
 
-func (req *SubDataRequestParams[RES, T]) GetSubData() (*T, error) {
-	res, err := req.Origin().Do(nil)
+func (req *SubDataRequest[RES, T]) OriginWrapper() *RequestWrapper[GetDataInterface[T]] {
+	return (*RequestWrapper[GetDataInterface[T]])(req)
+}
+
+// Do create a HTTP request
+func (r *SubDataRequest[RES, T]) Do(req any) (*RES, error) {
+	response := new(RES)
+	err := (*client.Request)(r).Do(req, response)
+	return response, err
+}
+
+func (req *SubDataRequest[RES, T]) Get(url string) (*T, error) {
+	var response RES
+	err := (*client.Request)(req).Url(url).Do(req, &response)
 	if err != nil {
 		return nil, err
 	}
-	// 这种实现...,RES实现了GetData, &RES不应该判断为自动实现吗
-	return (*res).GetData(), nil
+
+	return response.GetData(), nil
 }

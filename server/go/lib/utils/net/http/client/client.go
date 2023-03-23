@@ -94,115 +94,117 @@ const (
 	ContentTypeImage
 )
 
-// RequestParams ...
-type RequestParams struct {
+// Request ...
+type Request struct {
 	ctx                context.Context
 	client             *http.Client
 	url, method        string
 	contentType        ContentType
 	timeout            time.Duration
 	AuthUser, AuthPass string
-	header             []string
+	header             Header
 	cachedHeaderKey    string
 	logger             LogCallback
-	genlog             bool
+	disableLog         bool
 	responseHandler    func(response []byte) ([]byte, error)
 	retryTimes         int
-	retryHandle        func(*RequestParams)
+	retryHandle        func(*Request)
 }
 
-func New(url string) *RequestParams {
+func New(url string) *Request {
 	return newRequest(url, "")
 }
 
-func NewRequest(url, method string) *RequestParams {
+func NewRequest(url, method string) *Request {
 	return newRequest(url, strings.ToUpper(method))
 }
 
-func newRequest(url, method string) *RequestParams {
-	return &RequestParams{ctx: context.Background(), client: defaultClient, url: url, method: method, header: make([]string, 0, 2), logger: defaultLog}
+func newRequest(url, method string) *Request {
+	return &Request{ctx: context.Background(), client: defaultClient, url: url, method: method, header: make([]string, 0, 2), logger: defaultLog}
 }
 
-func NewGetRequest(url string) *RequestParams {
+func NewGetRequest(url string) *Request {
 	return newRequest(url, http.MethodGet)
 }
 
-func NewPostRequest(url string) *RequestParams {
+func NewPostRequest(url string) *Request {
 	return newRequest(url, http.MethodPost)
 }
 
-func NewPutRequest(url string) *RequestParams {
+func NewPutRequest(url string) *Request {
 	return newRequest(url, http.MethodPut)
 }
 
-func NewDeleteRequest(url string) *RequestParams {
+func NewDeleteRequest(url string) *Request {
 	return newRequest(url, http.MethodDelete)
 }
 
-func (req *RequestParams) Method(method string) *RequestParams {
+func (req *Request) Url(url string) *Request {
+	req.url = url
+	return req
+}
+
+func (req *Request) Method(method string) *Request {
 	req.method = strings.ToUpper(method)
 	return req
 }
 
-func (req *RequestParams) ContentType(contentType ContentType) *RequestParams {
+func (req *Request) ContentType(contentType ContentType) *Request {
 	req.contentType = contentType
 	return req
 }
 
-func (req *RequestParams) AddHeader(k, v string) *RequestParams {
+func (req *Request) SetHeader(header Header) *Request {
+	req.header = header
+	return req
+}
+
+func (req *Request) AddHeader(k, v string) *Request {
 	req.header = append(req.header, k, v)
 	return req
 }
 
-func (req *RequestParams) CachedHeader(key string) *RequestParams {
+func (req *Request) CachedHeader(key string) *Request {
 	req.cachedHeaderKey = key
 	return req
 }
 
-func (req *RequestParams) WithLogger(logger LogCallback) *RequestParams {
+func (req *Request) WithLogger(logger LogCallback) *Request {
 	req.logger = logger
 	return req
 }
 
-func (req *RequestParams) DisableLog() *RequestParams {
-	req.logger = nil
+func (req *Request) DisableLog() *Request {
+	req.disableLog = true
 	return req
 }
 
-func (req *RequestParams) GenLog() *RequestParams {
-	if req.logger == nil {
-		req.logger = DefaultLogger
-	}
-	req.genlog = true
-	return req
-}
-
-func (req *RequestParams) ResponseHandler(handler func([]byte) ([]byte, error)) *RequestParams {
+func (req *Request) ResponseHandler(handler func([]byte) ([]byte, error)) *Request {
 	req.responseHandler = handler
 	return req
 }
 
-func (req *RequestParams) Timeout(timeout time.Duration) *RequestParams {
+func (req *Request) Timeout(timeout time.Duration) *Request {
 	req.timeout = timeout
 	return req
 }
 
-func (req *RequestParams) WithClient(client *http.Client) *RequestParams {
+func (req *Request) WithClient(client *http.Client) *Request {
 	req.client = client
 	return req
 }
 
-func (req *RequestParams) RetryTimes(retryTimes int) *RequestParams {
+func (req *Request) RetryTimes(retryTimes int) *Request {
 	req.retryTimes = retryTimes
 	return req
 }
 
-func (req *RequestParams) RetryHandle(handle func(*RequestParams)) *RequestParams {
+func (req *Request) RetryHandle(handle func(*Request)) *Request {
 	req.retryHandle = handle
 	return req
 }
 
-func (req *RequestParams) UrlParam(param interface{}) *RequestParams {
+func (req *Request) UrlParam(param interface{}) *Request {
 	if param == nil {
 		return req
 	}
@@ -245,19 +247,19 @@ func (res *ResponseBody) CheckError() error {
 
 type RawResponse = []byte
 
-func (req *RequestParams) DoWithNoParam(response interface{}) error {
+func (req *Request) DoWithNoParam(response interface{}) error {
 	return req.Do(nil, response)
 }
 
-func (req *RequestParams) DoWithNoResponse(param interface{}) error {
+func (req *Request) DoWithNoResponse(param interface{}) error {
 	return req.Do(param, nil)
 }
 
-func (req *RequestParams) DoEmpty() error {
+func (req *Request) DoEmpty() error {
 	return req.Do(nil, nil)
 }
 
-func (req *RequestParams) setHeader(request *http.Request) {
+func (req *Request) setHeader(request *http.Request) {
 	for i := 0; i+1 < len(req.header); i += 2 {
 		request.Header.Set(req.header[i], req.header[i+1])
 	}
@@ -274,7 +276,7 @@ func (req *RequestParams) setHeader(request *http.Request) {
 }
 
 // Do create a HTTP request
-func (req *RequestParams) Do(param, response interface{}) error {
+func (req *Request) Do(param, response interface{}) error {
 	method := req.method
 	url := req.url
 	if req.timeout != 0 {
@@ -288,7 +290,7 @@ func (req *RequestParams) Do(param, response interface{}) error {
 	reqTime := time.Now()
 	// 日志记录
 	defer func(now time.Time) {
-		if req.genlog || (req.logger != nil && genlog) {
+		if !req.disableLog {
 			req.logger(url, method, req.AuthUser, reqBody, respBody, statusCode, time.Since(now), err)
 		}
 	}(reqTime)
@@ -356,14 +358,14 @@ func (req *RequestParams) Do(param, response interface{}) error {
 			if req.retryHandle != nil {
 				req.retryHandle(req)
 			}
+			time.Sleep(time.Millisecond * 200)
 			reqTime = time.Now()
+			request.Body = io.NopCloser(bytes.NewReader(reqBody.Data))
 			resp, err = req.client.Do(request)
 			if err == nil {
 				break
-			} else {
-				if req.genlog || (req.logger != nil && genlog) {
-					req.logger(url, method, req.AuthUser, reqBody, respBody, statusCode, time.Since(reqTime), errors.New(err.Error()+";will retry"))
-				}
+			} else if !req.disableLog {
+				req.logger(url, method, req.AuthUser, reqBody, respBody, statusCode, time.Since(reqTime), errors.New(err.Error()+";will retry"))
 			}
 		}
 		if err != nil {
@@ -452,7 +454,7 @@ func (req *RequestParams) Do(param, response interface{}) error {
 	return err
 }
 
-func (req *RequestParams) DoRaw(param interface{}) (RawResponse, error) {
+func (req *Request) DoRaw(param interface{}) (RawResponse, error) {
 	var raw RawResponse
 	err := req.Do(param, &raw)
 	if err != nil {
@@ -461,7 +463,7 @@ func (req *RequestParams) DoRaw(param interface{}) (RawResponse, error) {
 	return raw, nil
 }
 
-func (req *RequestParams) DoStream(param interface{}) (io.ReadCloser, error) {
+func (req *Request) DoStream(param interface{}) (io.ReadCloser, error) {
 	var resp *http.Response
 	err := req.Do(param, &resp)
 	if err != nil {
@@ -470,37 +472,37 @@ func (req *RequestParams) DoStream(param interface{}) (io.ReadCloser, error) {
 	return resp.Body, nil
 }
 
-func (req *RequestParams) Get(url string, response interface{}) error {
+func (req *Request) Get(url string, response interface{}) error {
 	req.url = url
 	req.method = http.MethodGet
 	return req.Do(nil, response)
 }
 
-func (req *RequestParams) Post(url string, param, response interface{}) error {
+func (req *Request) Post(url string, param, response interface{}) error {
 	req.url = url
 	req.method = http.MethodPost
 	return (req).Do(param, response)
 }
 
-func (req *RequestParams) Put(url string, param, response interface{}) error {
+func (req *Request) Put(url string, param, response interface{}) error {
 	req.url = url
 	req.method = http.MethodPut
 	return req.Do(param, response)
 }
 
-func (req *RequestParams) Delete(url string, param, response interface{}) error {
+func (req *Request) Delete(url string, param, response interface{}) error {
 	req.url = url
 	req.method = http.MethodDelete
 	return req.Do(param, response)
 }
 
-func (req *RequestParams) CompleteDo(url, method string, param, response interface{}) error {
+func (req *Request) CompleteDo(url, method string, param, response interface{}) error {
 	req.url = url
 	req.method = method
 	return req.Do(param, response)
 }
 
-func (req *RequestParams) Download(url, path string) error {
+func (req *Request) Download(url, path string) error {
 	req.url = url
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -527,34 +529,34 @@ func (req *RequestParams) Download(url, path string) error {
 	return nil
 }
 
-func (req *RequestParams) CacheDo(url, method string, param, response interface{}) error {
+func (req *Request) CacheDo(url, method string, param, response interface{}) error {
 	req.url = url
 	req.method = method
 	return req.Do(param, response)
 }
 
-func (req *RequestParams) CacheGet(url string, response interface{}) error {
+func (req *Request) CacheGet(url string, response interface{}) error {
 	req.url = url
 	req.method = http.MethodGet
 	return req.Do(nil, response)
 }
 
-func (req *RequestParams) CachePost(url string, param, response interface{}) error {
+func (req *Request) CachePost(url string, param, response interface{}) error {
 	req.url = url
 	req.method = http.MethodPost
 	return req.Do(param, response)
 }
 
-func (req *RequestParams) CachePut(url string, param, response interface{}) error {
+func (req *Request) CachePut(url string, param, response interface{}) error {
 	req.url = url
 	req.method = http.MethodPut
 	return req.Do(param, response)
 }
 
-func (req *RequestParams) CacheDelete(url string, param, response interface{}) error {
+func (req *Request) CacheDelete(url string, param, response interface{}) error {
 	req.url = url
 	req.method = http.MethodDelete
 	return req.Do(param, response)
 }
 
-type SetParams func(req *RequestParams) *RequestParams
+type SetParams func(req *Request) *Request

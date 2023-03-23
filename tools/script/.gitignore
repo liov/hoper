@@ -119,3 +119,5 @@ dist
 dist
 
 package-lock.json
+
+src/douyin/signer.cjs

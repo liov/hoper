@@ -52,11 +52,31 @@ func (slices Slices[T]) Reduce(fn func(T, T) T) T {
 	return ret
 }
 
-func Map[T, V any](slices []T, fn func(T) V) []V {
+func Map[S ~[]T, T any, V any](slices S, fn func(T) V) []V {
 	ret := make([]V, 0, len(slices))
+	for _, s := range slices {
+		ret = append(ret, fn(s))
+	}
+	return ret
+}
 
-	for _, t := range slices {
-		ret = append(ret, fn(t))
+func Reduce[S ~[]T, T any](slices S, fn func(T, T) T) T {
+	ret := fn(slices[0], slices[1])
+	for i := 2; i < len(slices); i++ {
+		ret = fn(ret, slices[i])
+	}
+	return ret
+}
+
+// 学学kotlin的定义
+type Array[S, T any] []S
+
+//type Function[T any] func[T]()
+
+func (a Array[S, T]) Map(fn func(S) T) []T {
+	ret := make([]T, 0, len(a))
+	for _, s := range a {
+		ret = append(ret, fn(s))
 	}
 	return ret
 }

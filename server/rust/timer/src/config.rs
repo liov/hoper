@@ -4,7 +4,7 @@ use std::io::Read;
 use std::sync::{Arc,Mutex};
 use lazy_static::lazy_static;
 use once_cell::sync::Lazy;
-use serde_derive::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
 static CONFIG1: Lazy<Mutex<Config>> = Lazy::new(|| {
     Mutex::new(Config::new())

@@ -284,7 +284,7 @@ func (n *NumLetterSlice[T]) Set(b byte, v T) {
 	n[b-'0'] = v
 }
 
-func ReplaceBytesEmpty(s string, old []byte) string {
+func ReplaceBytesEmpty(s string, old ...byte) string {
 	if len(old) == 0 {
 		return s // avoid allocation
 	}
@@ -339,6 +339,10 @@ func Rand(length int) string {
 	return ToString(randId)
 }
 
+/*
+CountdownCutoff("https://video.weibo.com/media/play?livephoto=https%3A%2F%2Flivephoto.us.sinaimg.cn%2F002OnXdGgx07YpcajtkH0f0f0100gv8Q0k01.mov", "%2F")
+002OnXdGgx07YpcajtkH0f0f0100gv8Q0k01.mov
+*/
 func CountdownCutoff(s, key string) string {
 	keyLen := len(key)
 	sEndIndex := len(s) - 1
@@ -354,6 +358,10 @@ func CountdownCutoff(s, key string) string {
 	return s
 }
 
+/*
+Cutoff("https://wx1.sinaimg.cn/orj360/6ebedee6ly1h566bbzyc6j20n00cuabd.jpg", "wx1")
+https://
+*/
 func Cutoff(s, key string) string {
 	keyLen := len(key)
 	sEndIndex := len(s) - 1
@@ -366,6 +374,10 @@ func Cutoff(s, key string) string {
 	return s
 }
 
+/*
+CutoffContain("https://f.video.weibocdn.com/o0/F9Nmm1ZJlx080UxqxlJK010412004rJS0E010.mp4?label=mp4_hd&template=540x960.24.0&ori=0&ps=1CwnkDw1GXwCQx&Expires=1670569613&ssig=fAQcBh4HGt&KID=unistore,video", "mp4")
+https://f.video.weibocdn.com/o0/F9Nmm1ZJlx080UxqxlJK010412004rJS0E010.mp4
+*/
 func CutoffContain(s, key string) string {
 	keyLen := len(key)
 	sEndIndex := len(s) - 1
