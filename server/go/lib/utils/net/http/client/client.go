@@ -442,7 +442,7 @@ func (req *Request) Do(param, response interface{}) error {
 			// 默认json
 			err = json.Unmarshal(respBytes, response)
 			if err != nil {
-				return errors.New("json.Unmarshal error:" + err.Error() + " status:" + resp.Status + " " + stringsi.ConvertUnicode(respBytes))
+				return errors.New("json.Unmarshal error:" + err.Error())
 			}
 		}
 
