@@ -61,7 +61,7 @@ local kubectl(compile,target, cmd) = if compile == target then {
 };
 
 
-local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server/clawer', sourceFile='', protopath='', opts=[], compile='localhost',target = 'tx', schedule='') = {
+local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server/crawler', sourceFile='', protopath='', opts=[], compile='localhost',target = 'tx', schedule='') = {
 
   local cconfig = compileHost[compile],
   local tconfig = targetHost[target],
@@ -220,11 +220,5 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server/cl
 };
 
 [
-  Pipeline('timepill', sourceFile='./timepill/cmd/record.go',opts=['-t']),
   Pipeline('hoper', workdir='server/go/mod', protopath='/protobuf'),
-  Pipeline('timepill', 'rbyorderid', mode='job',sourceFile='./timepill/cmd/recordby_orderid.go'),
-  Pipeline('timepill', 'esload', mode='cronjob', sourceFile='./timepill/cmd/search_es.go',target='tot', schedule='00 10 * * *'),
-  Pipeline('pro', sourceFile='./pro/cmd/record.go'),
-  Pipeline('bilibili',  sourceFile='./bilibili/cmd/record_fav.go'),
-  Pipeline('weibo',  sourceFile='./weibo/cmd/record_timer.go'),
 ]

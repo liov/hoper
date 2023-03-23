@@ -8,40 +8,54 @@ import (
 	"time"
 )
 
-// RequestParams ...
-type RequestParams[RES any] client.RequestParams
+// RequestWrapper ...
+type RequestWrapper[RES any] client.Request
 
-func NewRequest[RES any](url, method string) *RequestParams[RES] {
-	return (*RequestParams[RES])(client.NewRequest(url, method))
+func NewRequest[RES any](url, method string) *RequestWrapper[RES] {
+	return (*RequestWrapper[RES])(client.NewRequest(url, method))
 }
 
-func (req *RequestParams[RES]) ContentType(contentType client.ContentType) *RequestParams[RES] {
-	(*client.RequestParams)(req).ContentType(contentType)
+func (req *RequestWrapper[RES]) ContentType(contentType client.ContentType) *RequestWrapper[RES] {
+	(*client.Request)(req).ContentType(contentType)
 	return req
 }
 
-func (req *RequestParams[RES]) AddHeader(k, v string) *RequestParams[RES] {
-	(*client.RequestParams)(req).AddHeader(k, v)
+func (req *RequestWrapper[RES]) SetHeader(header client.Header) *RequestWrapper[RES] {
+	(*client.Request)(req).SetHeader(header)
 	return req
 }
 
-func (req *RequestParams[RES]) SetLogger(logger client.LogCallback) *RequestParams[RES] {
-	(*client.RequestParams)(req).WithLogger(logger)
+func (req *RequestWrapper[RES]) AddHeader(k, v string) *RequestWrapper[RES] {
+	(*client.Request)(req).AddHeader(k, v)
 	return req
 }
 
-func (req *RequestParams[RES]) ResponseHandler(handler func([]byte) ([]byte, error)) *RequestParams[RES] {
-	(*client.RequestParams)(req).ResponseHandler(handler)
+func (req *RequestWrapper[RES]) SetLogger(logger client.LogCallback) *RequestWrapper[RES] {
+	(*client.Request)(req).WithLogger(logger)
 	return req
 }
 
-func (req *RequestParams[RES]) Timeout(timeout time.Duration) *RequestParams[RES] {
-	(*client.RequestParams)(req).Timeout(timeout)
+func (req *RequestWrapper[RES]) ResponseHandler(handler func([]byte) ([]byte, error)) *RequestWrapper[RES] {
+	(*client.Request)(req).ResponseHandler(handler)
 	return req
 }
 
-func (req *RequestParams[RES]) WithClient(c *http.Client) *RequestParams[RES] {
-	(*client.RequestParams)(req).WithClient(c)
+func (req *RequestWrapper[RES]) Timeout(timeout time.Duration) *RequestWrapper[RES] {
+	(*client.Request)(req).Timeout(timeout)
+	return req
+}
+
+func (req *RequestWrapper[RES]) WithClient(c *http.Client) *RequestWrapper[RES] {
+	(*client.Request)(req).WithClient(c)
+	return req
+}
+
+func (req *RequestWrapper[RES]) RetryTimes(times int) *RequestWrapper[RES] {
+	(*client.Request)(req).RetryTimes(times)
+	return req
+}
+func (req *RequestWrapper[RES]) DisableLog() *RequestWrapper[RES] {
+	(*client.Request)(req).DisableLog()
 	return req
 }
 
@@ -63,14 +77,26 @@ func (res *ResponseBody[RES]) CheckError() error {
 }
 
 // Do create a HTTP request
-func (r *RequestParams[RES]) Do(req any) (*RES, error) {
+func (r *RequestWrapper[RES]) Do(req any) (*RES, error) {
 	response := new(RES)
-	err := (*client.RequestParams)(r).Do(req, response)
+	err := (*client.Request)(r).Do(req, response)
 	return response, err
 }
 
-func NewGetRequest[RES any](url string) *RequestParams[RES] {
+func (r *RequestWrapper[RES]) Get(url string) (*RES, error) {
+	response := new(RES)
+	err := (*client.Request)(r).Get(url, response)
+	return response, err
+}
+
+func (r *RequestWrapper[RES]) Post(url string, param any) (*RES, error) {
+	response := new(RES)
+	err := (*client.Request)(r).Post(url, param, response)
+	return response, err
+}
+
+func NewGetRequest[RES any](url string) *RequestWrapper[RES] {
 	return NewRequest[RES](url, http.MethodGet)
 }
 
-type SetParams[RES any] func(req *RequestParams[RES]) *RequestParams[RES]
+type SetParams[RES any] func(req *RequestWrapper[RES]) *RequestWrapper[RES]

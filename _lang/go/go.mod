@@ -4,7 +4,6 @@ go 1.19
 
 require (
 	bou.ke/monkey v1.0.2
-	github.com/bcongdon/corral v0.0.0-20190319213343-1f4ad49dee34
 	github.com/brahma-adshonor/gohook v1.1.9
 	github.com/davecgh/go-spew v1.1.1
 	github.com/google/flatbuffers v2.0.0+incompatible
@@ -23,17 +22,19 @@ require (
 require (
 	dmitri.shuralyov.com/gpu/mtl v0.0.0-20201218220906-28db891af037 // indirect
 	github.com/aliyun/alibaba-cloud-sdk-go v1.61.18 // indirect
-	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/aws/aws-lambda-go v1.30.0 // indirect
 	github.com/aws/aws-sdk-go v1.43.21 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
+	github.com/bytedance/sonic v1.8.2 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
+	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/gin-gonic/gin v1.9.0 // indirect
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20200222043503-6f7a984d4dc4 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
+	github.com/goccy/go-json v0.10.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
@@ -53,7 +54,8 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/klauspost/compress v1.16.3 // indirect
+	github.com/klauspost/cpuid/v2 v2.0.9 // indirect
+	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mattetti/filebuffer v1.0.0 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
@@ -79,9 +81,8 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.12.0 // indirect
 	github.com/subosito/gotenv v1.3.0 // indirect
+	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.9 // indirect
-	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.45.0 // indirect
 	github.com/xuri/efp v0.0.0-20210322160811-ab561f5b45e3 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect

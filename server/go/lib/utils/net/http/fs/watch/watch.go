@@ -50,6 +50,14 @@ func (w *Watch) Add(req *http.Request, callback func(file *http_fs.FileInfo)) er
 	return nil
 }
 
+func (w *Watch) AddGet(url string, callback func(file *http_fs.FileInfo)) error {
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return err
+	}
+	return w.Add(req, callback)
+}
+
 func (w *Watch) Remove(url string) error {
 	delete(w.handler, url)
 	return nil

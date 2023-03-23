@@ -21,18 +21,18 @@ func FileNameEdit(filename string) string {
 }
 
 func FileNameClean(filename string) string {
-	return stringsi.ReplaceBytesEmpty(filename, []byte{'<', '>', '"', '|', '?', '*', '/', ':', ' ', '\\'})
+	return stringsi.ReplaceBytesEmpty(filename, '<', '>', '"', '|', '?', '*', '/', ':', ' ', '\\')
 }
 
 func DirClean(dir string) string { // will be used when save the dir or the part
 	// remove special symbol
 	// :unix允许存在，windows需要
-	return stringsi.ReplaceBytesEmpty(dir, []byte{':', '\\', '*', '?', '"', '<', '>', '|', ' ', '.'})
+	return stringsi.ReplaceBytesEmpty(dir, ':', '\\', '*', '?', '"', '<', '>', '|', ' ', '.')
 }
 
 func PathClean(dir string) string { // will be used when save the dir or the part
 	// remove special symbol
-	return stringsi.ReplaceBytesEmpty(dir, []byte{'*', '?', '"', '<', '>', '|', ' '})
+	return stringsi.ReplaceBytesEmpty(dir, '*', '?', '"', '<', '>', '|', ' ')
 }
 
 func GetDir(path string) string {

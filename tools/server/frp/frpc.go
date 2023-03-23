@@ -59,12 +59,12 @@ func main() {
 			cfg.HeartbeatInterval = 30
 		}
 	}
-	watch.Add(conf.Url, callback)
+	watch.AddGet(conf.Url, callback)
 	go func() {
 		for newconf := range cfgchan {
 			if newconf.Url != conf.Url {
 				log.Info("url: %s", newconf.Url)
-				watch.Add(newconf.Url, callback)
+				watch.AddGet(newconf.Url, callback)
 				watch.Remove(conf.Url)
 				conf.Url = newconf.Url
 			}

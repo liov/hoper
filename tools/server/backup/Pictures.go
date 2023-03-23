@@ -50,7 +50,7 @@ func Pietures(c *ftp.ServerConn) {
 	if err != nil {
 		log.Println(err)
 	}
-	err = Copy(c, "/Download/IDMP/Videos", BackUpDiskPron+"Videos", false)
+	err = Copy(c, "/Download/1DMP/Videos", BackUpDiskPron+"Videos", false)
 	if err != nil {
 		log.Println(err)
 	}
@@ -88,6 +88,9 @@ func Copy(c *ftp.ServerConn, src, dst string, date bool) error {
 	var lastIdx int
 	var findLast bool
 	for i, item := range list {
+		if item.Type != ftp.EntryTypeFile {
+			continue
+		}
 		if item.Name == lastFile.Name() {
 			lastIdx = i
 			findLast = true
@@ -97,7 +100,9 @@ func Copy(c *ftp.ServerConn, src, dst string, date bool) error {
 	if lastIdx == 0 && !findLast {
 		for i := 0; i < len(list); i++ {
 			item := list[i]
-
+			if item.Type != ftp.EntryTypeFile {
+				continue
+			}
 			if _, ok := m[item.Name]; ok {
 				lastIdx = i
 				findLast = true
