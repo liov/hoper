@@ -4,20 +4,22 @@ package xyz.hoper.test.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author ：lbyi
  * @date ：Created in 2019/6/6
  * @description：handle
  */
-public class ClientHandler extends ChannelHandlerAdapter {
+public class ClientHandler extends ChannelInboundHandlerAdapter {
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(@NotNull ChannelHandlerContext ctx) throws Exception {
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public void channelRead(@NotNull ChannelHandlerContext ctx, @NotNull Object msg) throws Exception {
         try {
             ByteBuf buf = (ByteBuf) msg;
             byte[] req = new byte[buf.readableBytes()];

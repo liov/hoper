@@ -127,8 +127,8 @@ func (e *Engine[KEY, T, W]) Run(tasks ...*Task[KEY, T]) {
 		baseTasks = append(baseTasks, e.BaseTask(task))
 	}
 	go func() {
-		for group := range e.errChan {
-			e.errHandler(group)
+		for task := range e.errChan {
+			e.errHandler(task)
 		}
 	}()
 	e.BaseEngine.Run(baseTasks...)

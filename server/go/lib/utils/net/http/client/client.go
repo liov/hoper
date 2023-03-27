@@ -22,35 +22,32 @@ import (
 // 不是并发安全的
 
 var (
-	defaultClient = &http.Client{}
-	genlog        = true
-	headerMap     = sync.Map{}
+	defaultClient = &http.Client{
+		//Timeout: timeout * 2,
+		Transport: &http.Transport{
+			Proxy:             http.ProxyFromEnvironment, // 代理使用
+			ForceAttemptHTTP2: true,
+			DialContext: (&net.Dialer{
+				Timeout:   timeout,
+				KeepAlive: 30 * time.Second,
+				DualStack: true,
+			}).DialContext,
+			//DisableKeepAlives: true,
+			TLSHandshakeTimeout: timeout,
+		},
+	}
+	disableLog = false
+	headerMap  = sync.Map{}
 )
 
 const timeout = time.Minute
-
-func init() {
-	defaultClient.Transport = &http.Transport{
-		Proxy:             http.ProxyFromEnvironment, // 代理使用
-		ForceAttemptHTTP2: true,
-		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-			c, err := net.DialTimeout(network, addr, timeout)
-			if err != nil {
-				return nil, err
-			}
-			err = c.SetDeadline(time.Now().Add(timeout))
-			return c, err
-		},
-		//DisableKeepAlives: true,
-	}
-}
 
 func SetTimeout(timeout time.Duration) {
 	setTimeout(defaultClient, timeout)
 }
 
 func DisableLog() {
-	genlog = false
+	disableLog = true
 }
 
 func SetDefaultLogger(logger LogCallback) {
@@ -68,15 +65,7 @@ func setTimeout(client *http.Client, timeout time.Duration) {
 	if timeout < time.Second {
 		timeout = timeout * time.Second
 	}
-	client.Transport.(*http.Transport).DialContext = func(ctx context.Context, network, addr string) (net.Conn, error) {
-		c, err := net.DialTimeout(network, addr, timeout)
-		if err != nil {
-			return nil, err
-		}
-		err = c.SetDeadline(time.Now().Add(timeout))
-		return c, err
-	}
-
+	client.Timeout = timeout
 }
 
 type Pair struct {
@@ -120,7 +109,7 @@ func NewRequest(url, method string) *Request {
 }
 
 func newRequest(url, method string) *Request {
-	return &Request{ctx: context.Background(), client: defaultClient, url: url, method: method, header: make([]string, 0, 2), logger: defaultLog}
+	return &Request{ctx: context.Background(), client: defaultClient, url: url, method: method, header: make([]string, 0, 2), logger: defaultLog, disableLog: disableLog}
 }
 
 func NewGetRequest(url string) *Request {
@@ -176,6 +165,11 @@ func (req *Request) WithLogger(logger LogCallback) *Request {
 
 func (req *Request) DisableLog() *Request {
 	req.disableLog = true
+	return req
+}
+
+func (req *Request) AbleLog() *Request {
+	req.disableLog = false
 	return req
 }
 
@@ -280,7 +274,7 @@ func (req *Request) Do(param, response interface{}) error {
 	method := req.method
 	url := req.url
 	if req.timeout != 0 {
-		defer setTimeout(req.client, timeout)
+		defer setTimeout(req.client, 0)
 		setTimeout(req.client, req.timeout)
 	}
 	var body io.Reader
@@ -360,7 +354,9 @@ func (req *Request) Do(param, response interface{}) error {
 			}
 			time.Sleep(time.Millisecond * 200)
 			reqTime = time.Now()
-			request.Body = io.NopCloser(bytes.NewReader(reqBody.Data))
+			if reqBody != nil {
+				request.Body = io.NopCloser(bytes.NewReader(reqBody.Data))
+			}
 			resp, err = req.client.Do(request)
 			if err == nil {
 				break

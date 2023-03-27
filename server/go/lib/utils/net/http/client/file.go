@@ -6,9 +6,29 @@ import (
 	httpi "github.com/liov/hoper/server/go/lib/utils/net/http"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"time"
+)
+
+var (
+	fileDownloadClient = &http.Client{
+		Transport: &http.Transport{
+			Proxy:             http.ProxyFromEnvironment, // 代理使用
+			ForceAttemptHTTP2: true,
+			DialContext: (&net.Dialer{
+				Timeout:   timeout,
+				KeepAlive: 30 * time.Second,
+				DualStack: true,
+			}).DialContext,
+			TLSHandshakeTimeout: timeout,
+			//IdleConnTimeout:       timeout,
+			//ExpectContinueTimeout: timeout,
+			//ResponseHeaderTimeout: timeout,
+			//DisableKeepAlives: true,
+		},
+	}
 )
 
 const DownloadKey = ".downloading"

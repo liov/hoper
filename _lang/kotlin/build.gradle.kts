@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
-  val kotlinVersion = "1.8.0"
+  val kotlinVersion = "1.8.10"
   java
   kotlin("jvm") version kotlinVersion
   kotlin("plugin.serialization") version kotlinVersion
@@ -29,19 +29,19 @@ allprojects {
 subprojects {
   apply(plugin = "org.jetbrains.kotlin.jvm")
 
-  val junitJupiterEngineVersion = "5.4.0"
+  val junitJupiterEngineVersion = "5.9.2"
   dependencies {
     implementation(kotlin("stdlib", KotlinCompilerVersion.VERSION))
     implementation(kotlin("reflect", KotlinCompilerVersion.VERSION))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.4")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
     implementation("org.objenesis:objenesis:3.2")
     implementation("org.apache.commons:commons-lang3:3.12.0")
-    implementation("io.netty:netty-all:5.0.0.Alpha2")
+    implementation("io.netty:netty-all:4.1.90.Final")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterEngineVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterEngineVersion")
-    implementation(kotlin("script-runtime"))
+    implementation(kotlin("script-runtime", KotlinCompilerVersion.VERSION))
   }
 
   configure<JavaPluginExtension> {
