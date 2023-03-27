@@ -31,7 +31,7 @@ type BaseEngine[KEY comparable, T, W any] struct {
 	speedLimit                           *rate2.SpeedLimiter
 	rateLimiter                          *rate.Limiter
 	//TODO
-	monitor *time.Ticker // 全局检测定时器，任务的卡住检测，worker panic recover都可以用这个检测
+	monitorInterval time.Duration // 全局检测定时器间隔时间，任务的卡住检测，worker panic recover都可以用这个检测
 	EngineStatistics
 	isRunning, isFinished bool
 }
@@ -51,6 +51,7 @@ func NewBaseEngineWithContext[KEY comparable, T, W any](workerCount uint, ctx co
 		taskChan:           make(chan *BaseTask[KEY, T]),
 		workerList:         list.NewSimpleList[*Worker[KEY, T, W]](),
 		taskList:           heap.Heap[*BaseTask[KEY, T]]{},
+		monitorInterval:    time.Second,
 	}
 }
 
@@ -66,6 +67,10 @@ func (e *BaseEngine[KEY, T, W]) RandSpeedLimited(start, stop time.Duration) {
 	e.speedLimit = rate2.NewRandSpeedLimiter(start, stop)
 }
 
+func (e *BaseEngine[KEY, T, W]) MonitorInterval(interval time.Duration) {
+	e.monitorInterval = interval
+}
+
 func (e *BaseEngine[KEY, T, W]) Cancel() {
 	log.Println("任务取消")
 	e.cancel()
@@ -77,7 +82,7 @@ func (e *BaseEngine[KEY, T, W]) Run(tasks ...*BaseTask[KEY, T]) {
 	e.addWorker()
 	e.isRunning = true
 	go func() {
-		timer := time.NewTimer(time.Second * 5)
+		timer := time.NewTimer(5 * time.Second)
 		defer timer.Stop()
 		var emptyTimes uint
 		var readyWorkerCh chan *BaseTask[KEY, T]
@@ -122,7 +127,7 @@ func (e *BaseEngine[KEY, T, W]) Run(tasks ...*BaseTask[KEY, T]) {
 							break loop
 						}
 					}
-					timer.Reset(time.Second)
+					timer.Reset(e.monitorInterval)
 				case <-e.ctx.Done():
 					break loop
 				}
@@ -284,8 +289,5 @@ func (e *BaseEngine[KEY, T, W]) Release() {
 	}
 	if e.speedLimit != nil {
 		e.speedLimit.Stop()
-	}
-	if e.monitor != nil {
-		e.monitor.Stop()
 	}
 }
