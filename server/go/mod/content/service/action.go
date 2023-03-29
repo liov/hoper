@@ -207,7 +207,7 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*em
 	for _, collect := range collects {
 		origin = append(origin, collect.FavId)
 	}
-	diff := slices.Diff(origin, req.FavIds)
+	diff := slices.Difference2(origin, req.FavIds)
 	collect := model.Collect{
 		Type:   req.Type,
 		RefId:  req.RefId,

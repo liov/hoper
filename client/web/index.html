@@ -6,6 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta content-type="text/x-component" http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <title>Hoper</title>
+    <script>
+        function browserRedirect() {//只读的字符串，声明了浏览器用于 HTTP 请求的用户代理头的值
+            const userAgent = navigator.userAgent.toLowerCase();
+            const isPhone = userAgent.match(/(iphone|ios|Android|ipad)/i);
+            if(isPhone) {
+                const location =  window.location
+                let host = "m."+location.host;
+                if(location.host.startsWith("www.")){
+                    host = "m"+location.host.slice(3)
+                }
+                console.log("跳转到手机版");
+                location.replace( location.protocol+"//"+host+location.pathname+location.search);
+            }
+        }
+
+        browserRedirect();
+
+    </script>
 </head>
 <body>
 <div id="app"></div>

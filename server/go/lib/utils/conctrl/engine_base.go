@@ -5,8 +5,8 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	rate2 "github.com/liov/hoper/server/go/lib/utils/conctrl/rate"
 	"github.com/liov/hoper/server/go/lib/utils/gen"
-	"github.com/liov/hoper/server/go/lib/utils/structure/heap"
-	"github.com/liov/hoper/server/go/lib/utils/structure/list"
+	"github.com/liov/hoper/server/go/lib/utils/struct/heap/heap"
+	"github.com/liov/hoper/server/go/lib/utils/struct/list/list"
 	synci "github.com/liov/hoper/server/go/lib/utils/sync"
 	"golang.org/x/time/rate"
 	"log"
@@ -21,7 +21,7 @@ type BaseEngine[KEY comparable, T, W any] struct {
 	limitWaitTaskCount                   uint
 	workerChan                           chan *Worker[KEY, T, W]
 	workers                              []*Worker[KEY, T, W]
-	workerList                           list.SimpleList[*Worker[KEY, T, W]]
+	workerList                           list.List[*Worker[KEY, T, W]]
 	taskChan                             chan *BaseTask[KEY, T]
 	taskList                             heap.Heap[*BaseTask[KEY, T]]
 	ctx                                  context.Context
@@ -49,7 +49,7 @@ func NewBaseEngineWithContext[KEY comparable, T, W any](workerCount uint, ctx co
 		cancel:             cancel,
 		workerChan:         make(chan *Worker[KEY, T, W]),
 		taskChan:           make(chan *BaseTask[KEY, T]),
-		workerList:         list.NewSimpleList[*Worker[KEY, T, W]](),
+		workerList:         list.New[*Worker[KEY, T, W]](),
 		taskList:           heap.Heap[*BaseTask[KEY, T]]{},
 		monitorInterval:    time.Second,
 	}
