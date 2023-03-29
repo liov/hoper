@@ -1,7 +1,7 @@
 package slices
 
 import (
-	"github.com/liov/hoper/server/go/lib/utils/def"
+	"github.com/liov/hoper/server/go/lib/utils/def/interface"
 	"log"
 	"testing"
 )
@@ -26,12 +26,12 @@ func (f *Foo) CmpKey() uint64 {
 var _ Equal = &Foo{}
 
 func TestIsEqu(t *testing.T) {
-	s1 := []def.CmpKey{
+	s1 := []_interface.CmpKey{
 		&Foo{1, "1"},
 		&Foo{2, "2"},
 		&Foo{3, "3"},
 	}
-	s2 := []def.CmpKey{
+	s2 := []_interface.CmpKey{
 		&Foo{4, "1"},
 		&Foo{5, "1"},
 		&Foo{6, "1"},

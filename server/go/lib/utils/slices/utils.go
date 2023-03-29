@@ -13,6 +13,15 @@ func Contains[T comparable](arr []T, sub T) bool {
 	return false
 }
 
+func In[T comparable](a T, b []T) bool {
+	for _, x := range b {
+		if x == a {
+			return true
+		}
+	}
+	return false
+}
+
 func ReverseRunes[T any](runes []T) []T {
 	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
 		runes[i], runes[j] = runes[j], runes[i]
@@ -62,4 +71,8 @@ func SlicesToMap[T any, K comparable, V any](slices []T, getKV func(T) (K, V)) m
 		m[k] = v
 	}
 	return m
+}
+
+func Swap[T any](heap []T, i, j int) {
+	heap[i], heap[j] = heap[j], heap[i]
 }

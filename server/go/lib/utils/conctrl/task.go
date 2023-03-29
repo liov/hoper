@@ -26,7 +26,7 @@ type BaseTaskMeta[KEY comparable] struct {
 	Priority int
 }
 
-func (t *BaseTaskMeta[KEY]) CompareField() int {
+func (t *BaseTaskMeta[KEY]) CmpKey() int {
 	return t.Priority
 }
 

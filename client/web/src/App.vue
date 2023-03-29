@@ -150,6 +150,7 @@ import {
   HomeOutlined,
   AppstoreOutlined,
 } from "@ant-design/icons-vue";
+import beian from "*.png";
 
 const store = useGlobalStore();
 const userStore = useUserStore();

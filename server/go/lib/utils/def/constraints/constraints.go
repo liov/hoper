@@ -2,7 +2,6 @@ package constraints
 
 import (
 	"golang.org/x/exp/constraints"
-	"time"
 )
 
 type Integer interface {
@@ -10,10 +9,6 @@ type Integer interface {
 
 type Number interface {
 	constraints.Integer | constraints.Float
-}
-
-type Ordered interface {
-	constraints.Ordered | time.Time
 }
 
 type Callback[T any] interface {
