@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/liov/hoper/server/go/lib/initialize"
-	"github.com/liov/hoper/server/go/lib/initialize/gormdb/mysql"
-	"github.com/liov/hoper/server/go/lib/utils/dao/db/gorm/mysql/dbtoentity"
+	"github.com/hopeio/pandora/initialize"
+	"github.com/hopeio/pandora/initialize/gormdb/mysql"
+	"github.com/hopeio/pandora/utils/dao/db/gorm/mysql/dbtoentity"
 )
 
 type config struct {

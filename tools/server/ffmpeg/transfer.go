@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/liov/hoper/server/go/lib/utils/fs"
-	"github.com/liov/hoper/server/go/lib/utils/tools/ffmpeg"
+	"github.com/hopeio/pandora/utils/fs"
+	"github.com/hopeio/pandora/utils/tools/ffmpeg"
 	"log"
 	"os"
 	"strings"

@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/liov/hoper/server/go/lib/utils/number"
-	reflecti "github.com/liov/hoper/server/go/lib/utils/reflect"
+	"github.com/hopeio/pandora/utils/number"
+	reflecti "github.com/hopeio/pandora/utils/reflect"
 	"unsafe"
 )
 

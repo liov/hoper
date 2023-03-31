@@ -6,12 +6,12 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt
 
 # acme
 docker run --rm  -it  \
-  -v "$(pwd)/acme":/acme.sh  \
+  -v $PWD/acme:/acme.sh  \
   --net=host \
   neilpang/acme.sh --issue --dns -d hoper.xyz -d *.hoper.xyz  --yes-I-know-dns-manual-mode-enough-go-ahead-please
 
 docker run --rm  -it  \
-  -v "$(pwd)/acme":/acme.sh  \
+  -v $PWD/acme:/acme.sh  \
   --net=host  \
   neilpang/acme.sh --renew  -d hoper.xyz -d *.hoper.xyz \
     --yes-I-know-dns-manual-mode-enough-go-ahead-please

@@ -4,8 +4,8 @@ go 1.18
 
 require (
 	github.com/fatedier/frp v0.43.0
+	github.com/hopeio/pandora v1.0.0
 	github.com/jlaffaye/ftp v0.0.0-20220817234345-39592b91e4d6
-	github.com/liov/hoper/server/go/lib v1.1.0
 	golang.org/x/image v0.0.0-20220601225756-64ec528b34cd
 )
 
@@ -99,4 +99,4 @@ require (
 	gorm.io/plugin/prometheus v0.0.0-20210820101226-2a49866f83ee // indirect
 )
 
-replace github.com/liov/hoper/server/go/lib => ../../server/go/lib
+replace github.com/hopeio/pandora => ../../../pandora

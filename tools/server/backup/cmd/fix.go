@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/liov/hoper/server/go/lib/initialize"
-	"github.com/liov/hoper/server/go/lib/utils/fs"
-	"github.com/liov/hoper/server/go/lib/utils/log"
+	"github.com/hopeio/pandora/initialize"
+	"github.com/hopeio/pandora/utils/fs"
+	"github.com/hopeio/pandora/utils/log"
 	"os"
 	"strings"
 	"syscall"

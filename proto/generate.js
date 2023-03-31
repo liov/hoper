@@ -15,7 +15,7 @@ function getDepPath(mod){
   }).toString().trimEnd()
 }
 const googleapis = getDepPath("github.com/googleapis/googleapis");
-const libpath = getDepPath("github.com/liov/hoper/server/go/lib");
+const libpath = getDepPath("github.com/hopeio/pandora");
 console.log(libpath);
 const gateway = getDepPath("github.com/grpc-ecosystem/grpc-gateway/v2");
 console.log(gateway);

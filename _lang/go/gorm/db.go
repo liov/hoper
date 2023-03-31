@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/liov/hoper/server/go/lib/initialize"
-	"github.com/liov/hoper/server/go/lib/initialize/gormdb/mysql"
+	"github.com/hopeio/pandora/initialize"
+	"github.com/hopeio/pandora/initialize/gormdb/mysql"
 	"gorm.io/gorm"
 )
 

@@ -1,8 +1,0 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
-
-go_library(
-    name = "go_default_library",
-    srcs = ["mail.go"],
-    importpath = "github.com/liov/hoper/server/go/lib/utils/mail",
-    visibility = ["//visibility:public"],
-)

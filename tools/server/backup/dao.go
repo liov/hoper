@@ -1,7 +1,7 @@
 package backup
 
 import (
-	initpostgres "github.com/liov/hoper/server/go/lib/initialize/gormdb/postgres"
+	initpostgres "github.com/hopeio/pandora/initialize/gormdb/postgres"
 	"time"
 )
 

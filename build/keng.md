@@ -335,7 +335,7 @@ See https://developers.google.com/protocol-buffers/docs/reference/go-generated#p
 Before
 option go_package = ".;openapiconfig";
 After
-option go_package = "github.com/liov/hoper/server/go/lib/protobuf/utils/proto/openapiconfig";
+option go_package = "github.com/hopeio/pandora/protobuf/utils/proto/openapiconfig";
 
 # node_modules\deasync: Command failed
 Exit code: 1
@@ -454,7 +454,7 @@ command 下添加 --service-node-port-range=1-65535 参数
 kill 掉 kube-apiserver
 
 
-# go.info.runtime.firstmoduledata: relocation target go.info.github.com/liov/hoper/server/go/lib/utils/reflect.moduledata not defined
+# go.info.runtime.firstmoduledata: relocation target go.info.github.com/hopeio/pandora/utils/reflect.moduledata not defined
 https://github.com/golang/go/issues/46777
 这是个从不被有意支持的功能，不建议使用
 //go 1.17报错，要带完整包名让编译器找的到
