@@ -1,9 +1,0 @@
-syntax = "proto3";
-import "google/protobuf/descriptor.proto";
-
-option go_package = "github.com/liov/hoper/server/go/lib/protobuf/utils/policy";
-
-package policy;
-extend google.protobuf.FieldOptions {
-    bool non_sensitive = 50000;
-}

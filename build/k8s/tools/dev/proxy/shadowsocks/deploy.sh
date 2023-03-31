@@ -14,18 +14,6 @@ cat > ssconfig.json <<- EOF
 }
 EOF
 
-#curl https://get.acme.sh | sh -s email=liovx@qq.com
-#~/.acme.sh/acme.sh --issue --dns dns_cf -d ${host}
-#~/.acme.sh/acme.sh --issue --dns -d ${host} --yes-I-know-dns-manual-mode-enough-go-ahead-please
-#~/.acme.sh/acme.sh --renew -d ${host} --yes-I-know-dns-manual-mode-enough-go-ahead-please
-#~/.acme.sh/acme.sh --issue -d ${host} --standalone --httpport 88
-docker run --rm  -it  \
-  -v "$(pwd)/.acme.sh":/acme.sh  \
-  --net=host \
-  neilpang/acme.sh  --issue -d ${host}  --standalone --httpport 88
-# zerossl连接失败更改letsencrypt
-#~/.acme.sh/acme.sh --set-default-ca --server letsencrypt
-
 cd ..
 git clone https://github.com/shadowsocks/v2ray-plugin.git
 docker pull golang
@@ -62,12 +50,10 @@ docker run --name ssserver-rust-v2ray \
 -p 66:8388/tcp \
 -p 66:8388/udp \
 -v /root/ss/ssconfig.json:/etc/shadowsocks-rust/config.json \
--v /root/ss/cert":"/cert \
+-v $PWD/acme/$host:/cert \
 -dit ssserver-rust-v2ray:latest \
 && docker logs ssserver-rust-v2ray
 
-# 如果用acme生成
--v "/root/.acme.sh/${host}":"//.acme.sh/${host}" \
 
 cat > ssudpconfig.json <<- EOF
 {
@@ -86,6 +72,6 @@ docker run --name ssserver-rust-quic \
 -p 8390:8388/tcp \
 -p 8390:8388/udp \
 -v /root/ss/ssudpconfig.json:/etc/shadowsocks-rust/config.json \
--v "/root/.acme.sh/${host}":"//.acme.sh/${host}" \
+-v $PWD/acme/$host:/.acme.sh/$host \
 -dit ssserver-rust-v2ray:latest \
 && docker logs ssserver-rust-quic

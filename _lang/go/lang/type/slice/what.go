@@ -31,4 +31,8 @@ func main() {
 	fmt.Printf("%v", s)
 	s = s[0:0]
 	fmt.Printf("%v", s)
+
+	s1 := make([]int, 0, 1)
+	s1[0] = 1
+	fmt.Printf("%v", s1)
 }

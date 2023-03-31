@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/liov/hoper/server/go/lib/initialize"
-	"github.com/liov/hoper/server/go/lib/utils/fs"
+	"github.com/hopeio/pandora/initialize"
+	"github.com/hopeio/pandora/utils/fs"
 	"log"
 	"os"
 	"sync"

@@ -25,4 +25,10 @@ func main() {
 	fmt.Println("d: ", d)
 	d[0] = 100
 	fmt.Println("a: ", a)
+
+	// []
+	s := make([]int, 0, 5)
+	buf := []int{1, 2, 3, 4, 5}
+	copy(s, buf)
+	fmt.Println("s: ", s)
 }
