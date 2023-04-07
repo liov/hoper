@@ -123,7 +123,7 @@ git filter-branch -f --env-filter "GIT_COMMITTER_EMAIL=liovx@qq.com;GIT_AUTHOR_E
 # 代理
 git config --global http.proxy 'socks5://127.0.0.1:1080'
 
-git config --global https.proxy 'socks5://127.0.0.1:1080'
+git config --global https.proxy 'socks5://127.0.0.1:1080'd
 
 git config --global --unset http.proxy
 

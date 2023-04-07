@@ -1,4 +1,4 @@
-package chat
+package service
 
 import (
 	"github.com/gorilla/websocket"

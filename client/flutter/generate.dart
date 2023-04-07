@@ -4,7 +4,7 @@ import 'dart:io';
 var include = [];
 Future<void> main() async{
   var protoPath = "../../proto";
-  var goprojectPath = "../../server/go/mod";
+  var goprojectPath = "../../server/go";
   const arguments = ["list", "-m","-f","{{.Dir}}"];
   const googleapis = "github.com/googleapis/googleapis@v0.0.0-20220520010701-4c6f5836a32f";
   var gopath = Platform.environment['GOPATH'];

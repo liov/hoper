@@ -47,8 +47,7 @@ chown -R nobody ~/.acme.sh/$host/$host.key
 docker rm -f ssserver-rust-v2ray && \
 docker run --name ssserver-rust-v2ray \
 --restart always \
--p 66:8388/tcp \
--p 66:8388/udp \
+-p 66:8388 \
 -v /root/ss/ssconfig.json:/etc/shadowsocks-rust/config.json \
 -v $PWD/acme/$host:/cert \
 -dit ssserver-rust-v2ray:latest \

@@ -169,5 +169,3 @@ require (
 	gorm.io/plugin/prometheus v0.0.0-20210820101226-2a49866f83ee // indirect
 	nhooyr.io/websocket v1.8.6 // indirect
 )
-
-replace github.com/hopeio/pandora => ../../../pandora

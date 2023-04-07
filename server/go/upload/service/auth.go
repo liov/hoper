@@ -1,4 +1,4 @@
-package upload
+package service
 
 import (
 	"github.com/hopeio/pandora/context/http_context"

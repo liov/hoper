@@ -1,4 +1,4 @@
-package chat
+package service
 
 import (
 	"github.com/hopeio/pandora/context/http_context"

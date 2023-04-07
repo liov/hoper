@@ -93,7 +93,8 @@ Metrics = true
 [log]
 Level = -1
 Caller = true
-OutputPaths = {console = ["stderr"],json = []}
+[log.outputpaths]
+console = ["stdout"]
 
 
 #邮件
