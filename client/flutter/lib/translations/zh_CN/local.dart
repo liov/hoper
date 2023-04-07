@@ -56,13 +56,13 @@ class ZhCupertinoLocalizations implements CupertinoLocalizations {
   String datePickerMonth(int monthIndex) => _months[monthIndex - 1];
 
   @override
-  String datePickerDayOfMonth(int dayIndex) => dayIndex.toString();
+  String datePickerDayOfMonth(int dayIndex, [int? weekDay]) => dayIndex.toString();
 
   @override
   String datePickerHour(int hour) => hour.toString();
 
   @override
-  String datePickerHourSemanticsLabel(int hour) => hour.toString() + " o'clock";
+  String datePickerHourSemanticsLabel(int hour) => "$hour o'clock";
 
   @override
   String datePickerMinute(int minute) => minute.toString().padLeft(2, '0');
@@ -70,7 +70,7 @@ class ZhCupertinoLocalizations implements CupertinoLocalizations {
   @override
   String datePickerMinuteSemanticsLabel(int minute) {
     if (minute == 1) return '1 分';
-    return minute.toString() + ' 分';
+    return '$minute 分';
   }
 
   @override

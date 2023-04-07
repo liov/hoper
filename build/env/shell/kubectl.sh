@@ -11,13 +11,13 @@ kubectl create configmap my-config-3 --from-file=test
 
 # log
 # shellcheck disable=SC2006
-kubectl config use-context stage -n namespace&& pod=`kubectl get pods |grep -oE podname[a-zA-Z0-9-]*` && kubectl logs -f $pod
+kubectl config use-context stage -n namespace && kubectl logs -f $(kubectl get pods |grep -oE podname[a-zA-Z0-9-]+)
 
-pods=$(kubectl get pods --selector=job-name=pi --output=jsonpath={.items..metadata.name}) && kubectl logs $pods
+kubectl logs $(kubectl get pods --selector=job-name=pi --output=jsonpath={.items..metadata.name})
 
 kubectl describe deployment data-center
 
-pods=$(kubectl get pods --selector=app=${PWD##*/} --output=jsonpath={.items..metadata.name}) && kubectl logs -f $pods
+kubectl logs -f $(kubectl get pods --selector=app=${PWD##*/} --output=jsonpath={.items..metadata.name})
 
 # deploy
 ../deploy/main -flow all -env dev -name ${PWD##*/} -ns ${USER} -path . -ver v1.1.0-$(date "+%Y%m%d%H%M%S")

@@ -29,3 +29,25 @@ spec:
             backend:
               serviceName: service2
               servicePort: 8080
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  generation: 1
+  name: $mod
+  namespace: $namespace
+spec:
+  rules:
+    - host: $mod.$namespace
+      http:
+        paths:
+          - backend:
+              serviceName: $mod
+              servicePort: 80
+            path: /
+
+status:
+  loadBalancer: {}

@@ -2,7 +2,7 @@ const process = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
-const projectpath = "D:/code/hoper/server/go/mod";
+const projectpath = "D:/code/hoper/server/go";
 
 const goList = "go list -m -f {{.Dir}}";
 process.execSync(`go mod download github.com/googleapis/googleapis`, {

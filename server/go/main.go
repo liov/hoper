@@ -2,10 +2,8 @@ package main
 
 import (
 	"github.com/hopeio/pandora/pick"
-	"github.com/hopeio/pandora/utils/net/http/gin/handler"
 	"github.com/liov/hoper/server/go/mod/chat"
 	"github.com/liov/hoper/server/go/mod/upload"
-	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -42,7 +40,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	(&tiga.Server{
+	tiga.Start(&tiga.Server{
 		Config: uconf.Conf.Server.Origin(),
 		//为了可以自定义中间件
 		GRPCOptions: []grpc.ServerOption{
@@ -63,15 +61,11 @@ func main() {
 			_ = content.RegisterMomentServiceHandlerServer(app, contentService.GetMomentService())
 			_ = content.RegisterContentServiceHandlerServer(app, contentService.GetContentService())
 			_ = content.RegisterActionServiceHandlerServer(app, contentService.GetActionService())
-			app.StaticFS("/static", http.Dir(upconf.Conf.Customize.UploadDir))
 			app.Static("/oauth/login", "./static/login.html")
-			app.GET("/api/v1/exists", handler.Convert(upload.Exists))
-			app.GET("/api/v1/exists/:md5/:size", upload.ExistsGin)
-			app.POST("/api/v1/upload/:md5", handler.Convert(upload.Upload))
-			app.POST("/api/v1/multiUpload", handler.Convert(upload.MultiUpload))
-			app.GET("/api/ws/chat", handler.Convert(chat.Chat))
+			upload.Register(app)
+			chat.Register(app)
 			pick.RegisterService(userService.GetUserService(), contentService.GetMomentService())
 			pick.Gin(app, uconf.Conf.Server.GenDoc, initialize.InitConfig.Module, uconf.Conf.Server.OpenTracing)
 		},
-	}).Start()
+	})
 }
