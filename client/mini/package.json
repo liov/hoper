@@ -38,8 +38,8 @@
   "dependencies": {
     "@babel/runtime": "^7.19.0",
     "@material-design-icons/font": "^0.12.1",
-    "@nutui/nutui": "^3.2.2",
-    "@nutui/nutui-taro": "^3.2.2",
+    "@nutui/nutui": "^3.3.7",
+    "@nutui/nutui-taro": "^3.3.7",
     "@tarojs/components": "3.5.6",
     "@tarojs/helper": "3.5.6",
     "@tarojs/plugin-framework-vue3": "3.5.6",
@@ -69,7 +69,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.19.1",
-    "@tarojs/cli": "3.5.6",
+    "@tarojs/cli": "3.6.4",
     "@tarojs/webpack5-runner": "3.5.6",
     "@types/jsdom": "^16.2.14",
     "@types/node": "^18.0.3",
