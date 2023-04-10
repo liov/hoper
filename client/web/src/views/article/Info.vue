@@ -54,7 +54,8 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUpdate, onMounted, onUpdated, reactive, ref, Ref } from "vue";
+import { onBeforeUpdate, onMounted, onUpdated, reactive, ref } from "vue";
+import type { Ref } from "vue";
 import { tagColor } from "@/views/article/const";
 import ArticleClient from "@/service/article";
 import { useRoute, useRouter } from "vue-router";
@@ -66,7 +67,8 @@ import {
 } from "@ant-design/icons-vue";
 import axios from "axios";
 import { message } from "ant-design-vue";
-let md = undefined;
+import type MarkdownIt from "markdown-it";
+let  md:MarkdownIt;
 const route = useRoute();
 const color: Ref<string[]> = ref(tagColor);
 const article: Ref<any> = ref({});

@@ -36,7 +36,16 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ["esm-dep > cjs-dep"],
+    include: [
+      "qs",
+      "mitt",
+      "xlsx",
+      "dayjs",
+      "axios",
+      "pinia",
+      "echarts",
+      "esm-dep > cjs-dep",
+    ],
   },
   plugins: [
     vue(),

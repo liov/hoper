@@ -61,7 +61,7 @@ local kubectl(compile,target, cmd) = if compile == target then {
 };
 
 
-local Pipeline(group, name='', mode='app', type='bin' , workdir='tools/server', sourceFile='', protopath='', opts=[], compile='localhost',target = 'tx', schedule='') = {
+local Pipeline(group, name='', mode='app', type='bin' , workdir='', sourceFile='', protopath='', opts=[], compile='localhost',target = 'tx', schedule='') = {
 
   local cconfig = compileHost[compile],
   local tconfig = targetHost[target],
