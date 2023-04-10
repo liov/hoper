@@ -24,7 +24,7 @@ import (
 	"github.com/hopeio/pandora/protobuf/errorcode"
 	"github.com/hopeio/pandora/protobuf/response"
 	redisi "github.com/hopeio/pandora/utils/dao/redis"
-	templatei "github.com/hopeio/pandora/utils/def/template"
+	templatei "github.com/hopeio/pandora/utils/definition/template"
 	"github.com/hopeio/pandora/utils/log"
 	httpi "github.com/hopeio/pandora/utils/net/http"
 	model "github.com/liov/hoper/server/go/mod/protobuf/user"

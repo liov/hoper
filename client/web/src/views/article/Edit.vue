@@ -161,9 +161,9 @@ import {
   onMounted,
   onUpdated,
   reactive,
-  Ref,
   ref,
 } from "vue";
+import type { Ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import { message } from "ant-design-vue";

@@ -1,7 +1,7 @@
 package model
 
 import (
-	templatei "github.com/hopeio/pandora/utils/def/template"
+	templatei "github.com/hopeio/pandora/utils/definition/template"
 )
 
 const (
