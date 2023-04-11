@@ -10,7 +10,7 @@ import (
 	httpi "github.com/hopeio/pandora/utils/net/http"
 	timei "github.com/hopeio/pandora/utils/time"
 	"github.com/liov/hoper/server/go/mod/protobuf/user"
-	"github.com/liov/hoper/server/go/mod/upload/conf"
+	"github.com/liov/hoper/server/go/mod/upload/confdao"
 	"github.com/liov/hoper/server/go/mod/upload/dao"
 	"github.com/liov/hoper/server/go/mod/upload/model"
 	"io"
@@ -32,7 +32,7 @@ const (
 
 // Upload 文件上传
 func Upload(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseMultipartForm(conf.Conf.Customize.UploadMaxSize)
+	err := r.ParseMultipartForm(confdao.Conf.Customize.UploadMaxSize)
 	if err != nil {
 		errorcode.ParamInvalid.OriMessage(errRep).Response(w)
 		return
@@ -80,7 +80,7 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 	ctxi := http_context.ContextFromContext(ctx)
 	auth, err := auth(ctxi, false)
 	uploadDao := dao.GetDao(ctxi)
-	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
+	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
 	upload, err := uploadDao.UploadDB(db, md5, size)
 	if err != nil {
 		errorcode.DBError.OriErrRep().Response(w)
@@ -107,7 +107,7 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 
 func save(ctx *http_context.Context, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
 	uploadDao := dao.GetDao(ctx)
-	db := ctx.NewDB(dao.Dao.GORMDB.DB)
+	db := ctx.NewDB(confdao.Dao.GORMDB.DB)
 	auth := ctx.AuthInfo.(*user.AuthInfo)
 	if md5Str != "" {
 		upload, err = uploadDao.UploadDB(db, md5Str, strconv.FormatInt(info.Size, 10))
@@ -163,7 +163,7 @@ func save(ctx *http_context.Context, info *multipart.FileHeader, md5Str string) 
 	}
 
 	uploadDir := dirType + sep + ymdStr + sep
-	dir := string(conf.Conf.Customize.UploadDir) + uploadDir
+	dir := string(confdao.Conf.Customize.UploadDir) + uploadDir
 	if err := os.MkdirAll(dir, 0777); err != nil {
 		return nil, err
 	}
@@ -199,7 +199,7 @@ func save(ctx *http_context.Context, info *multipart.FileHeader, md5Str string) 
 }
 
 func MultiUpload(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseMultipartForm(conf.Conf.Customize.UploadMaxSize)
+	err := r.ParseMultipartForm(confdao.Conf.Customize.UploadMaxSize)
 	if err != nil {
 		errorcode.ParamInvalid.OriMessage(errRep).Response(w)
 		return

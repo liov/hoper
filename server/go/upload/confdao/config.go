@@ -1,4 +1,4 @@
-package conf
+package confdao
 
 import (
 	"github.com/hopeio/pandora/initialize/gormdb"
@@ -6,6 +6,7 @@ import (
 	"github.com/hopeio/pandora/initialize/redis"
 	"github.com/hopeio/pandora/initialize/ristretto"
 	"github.com/hopeio/pandora/initialize/server"
+	"github.com/hopeio/pandora/utils/fs"
 	"runtime"
 )
 
@@ -25,8 +26,19 @@ func (c *config) Init() {
 	if runtime.GOOS == "windows" {
 	}
 
+	c.Customize.UploadMaxSize = c.Customize.UploadMaxSize * 1024 * 1024
 }
 
 type serverConfig struct {
-	Host string
+	Volume fs.Dir
+
+	UploadDir      fs.Dir
+	UploadMaxSize  int64
+	UploadAllowExt []string
+
+	LuosimaoVerifyURL string
+	LuosimaoAPIKey    string
+
+	QrCodeSaveDir fs.Dir //二维码保存路径
+	FontSaveDir   fs.Dir //字体保存路径
 }

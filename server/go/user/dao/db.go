@@ -3,6 +3,7 @@ package dao
 import (
 	"encoding/json"
 	dbi "github.com/hopeio/pandora/utils/dao/db/const"
+	"github.com/liov/hoper/server/go/mod/user/confdao"
 	"gorm.io/gorm/clause"
 	"strconv"
 	"time"
@@ -17,7 +18,7 @@ import (
 
 func DBNotNil(db **gorm.DB) {
 	if *db == nil {
-		*db = Dao.GORMDB.DB
+		*db = confdao.Dao.GORMDB.DB
 	}
 }
 

@@ -10,15 +10,12 @@ import (
 	"github.com/hopeio/pandora/initialize"
 	"github.com/hopeio/pandora/tiga"
 	"github.com/hopeio/pandora/utils/log"
-	cconf "github.com/liov/hoper/server/go/mod/content/conf"
-	cdao "github.com/liov/hoper/server/go/mod/content/dao"
+	cconf "github.com/liov/hoper/server/go/mod/content/confdao"
 	contentService "github.com/liov/hoper/server/go/mod/content/service"
 	"github.com/liov/hoper/server/go/mod/protobuf/content"
 	"github.com/liov/hoper/server/go/mod/protobuf/user"
-	upconf "github.com/liov/hoper/server/go/mod/upload/conf"
-	updao "github.com/liov/hoper/server/go/mod/upload/dao"
-	uconf "github.com/liov/hoper/server/go/mod/user/conf"
-	udao "github.com/liov/hoper/server/go/mod/user/dao"
+	upconf "github.com/liov/hoper/server/go/mod/upload/confdao"
+	uconf "github.com/liov/hoper/server/go/mod/user/confdao"
 	userService "github.com/liov/hoper/server/go/mod/user/service"
 
 	"go.opencensus.io/examples/exporter"
@@ -30,9 +27,9 @@ import (
 func main() {
 	//配置初始化应该在第一位
 	// initialize.Start是提供给单服务的，这样写有问题，其他模块的配置不会更新
-	defer initialize.Start(uconf.Conf, udao.Dao)()
-	defer initialize.Start(cconf.Conf, cdao.Dao)()
-	defer initialize.Start(upconf.Conf, updao.Dao)()
+	defer initialize.Start(uconf.Conf, uconf.Dao)()
+	defer initialize.Start(cconf.Conf, cconf.Dao)()
+	defer initialize.Start(upconf.Conf, upconf.Dao)()
 	view.RegisterExporter(&exporter.PrintExporter{})
 	view.SetReportingPeriod(time.Second)
 	// Register the view to collect gRPC client stats.

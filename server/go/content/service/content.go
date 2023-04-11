@@ -9,7 +9,7 @@ import (
 
 	"github.com/hopeio/pandora/protobuf/empty"
 	"github.com/hopeio/pandora/protobuf/errorcode"
-	"github.com/liov/hoper/server/go/mod/content/conf"
+	"github.com/liov/hoper/server/go/mod/content/confdao"
 	"github.com/liov/hoper/server/go/mod/content/dao"
 	"github.com/liov/hoper/server/go/mod/content/model"
 	"github.com/liov/hoper/server/go/mod/protobuf/content"
@@ -36,7 +36,7 @@ func (*ContentService) AddTag(ctx context.Context, req *content.AddTagReq) (*emp
 	if err != nil {
 		return nil, err
 	}
-	db := dao.Dao.GORMDB.DB
+	db := confdao.Dao.GORMDB.DB
 	req.UserId = user.Id
 	err = db.Create(req).Error
 	if err != nil {
@@ -52,7 +52,7 @@ func (*ContentService) EditTag(ctx context.Context, req *content.EditTagReq) (*e
 		return nil, err
 	}
 	ctx = ctxi.Context
-	db := dao.Dao.GORMDB.DB
+	db := confdao.Dao.GORMDB.DB
 	err = db.Updates(&content.Tag{
 		Description:   req.Description,
 		ExpressionURL: req.ExpressionURL,
@@ -70,7 +70,7 @@ func (*ContentService) TagList(ctx context.Context, req *content.TagListReq) (*c
 	if err != nil {
 		return nil, err
 	}
-	db := dao.Dao.GORMDB.DB
+	db := confdao.Dao.GORMDB.DB
 
 	if req.Name != "" {
 		db = db.Where(`name LIKE ?` + "%" + req.Name + "%")
@@ -93,7 +93,7 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*req
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
+	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
 	contentDBDao := dao.GetDBDao(ctxi, db)
 
 	req.UserId = auth.Id
@@ -129,12 +129,12 @@ func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*em
 	if err != nil {
 		return nil, err
 	}
-	contentRedisDao := dao.GetRedisDao(ctxi, dao.Dao.Redis)
-	err = contentRedisDao.Limit(&conf.Conf.Customize.Moment.Limit)
+	contentRedisDao := dao.GetRedisDao(ctxi, confdao.Dao.Redis)
+	err = contentRedisDao.Limit(&confdao.Conf.Customize.Moment.Limit)
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
+	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
 	err = db.Table(model.FavoritesTableName).Where(`id =? AND user_id =?`, req.Id, auth.Id).
 		Updates(req).Error
 	if err != nil {
@@ -156,7 +156,7 @@ func (*ContentService) TinyFavList(ctx context.Context, req *content.FavListReq)
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
+	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
 	var favs []*content.TinyFavorites
 	if req.UserId == 0 {
 		err = db.Table(model.FavoritesTableName).Select("id,title").Where(`user_id = ?`, auth.Id).Find(&favs).Error
@@ -175,12 +175,12 @@ func (*ContentService) AddContainer(ctx context.Context, req *content.AddContain
 	if err != nil {
 		return nil, err
 	}
-	contentRedisDao := dao.GetRedisDao(ctxi, dao.Dao.Redis)
-	err = contentRedisDao.Limit(&conf.Conf.Customize.Moment.Limit)
+	contentRedisDao := dao.GetRedisDao(ctxi, confdao.Dao.Redis)
+	err = contentRedisDao.Limit(&confdao.Conf.Customize.Moment.Limit)
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
+	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
 	req.UserId = auth.Id
 	err = db.Table(model.ContainerTableName).Create(req).Error
 	if err != nil {
@@ -197,12 +197,12 @@ func (*ContentService) EditDiaryContainer(ctx context.Context, req *content.AddC
 	if err != nil {
 		return nil, err
 	}
-	contentRedisDao := dao.GetRedisDao(ctxi, dao.Dao.Redis)
-	err = contentRedisDao.Limit(&conf.Conf.Customize.Moment.Limit)
+	contentRedisDao := dao.GetRedisDao(ctxi, confdao.Dao.Redis)
+	err = contentRedisDao.Limit(&confdao.Conf.Customize.Moment.Limit)
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
+	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
 	err = db.Table(model.ContainerTableName).Where(`id =? AND user_id =?`, req.Id, auth.Id).
 		Updates(req).Error
 	if err != nil {

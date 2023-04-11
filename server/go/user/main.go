@@ -12,7 +12,7 @@ import (
 	tailmon "github.com/hopeio/pandora/tiga"
 	"github.com/hopeio/pandora/utils/net/http/gin/oauth"
 	model "github.com/liov/hoper/server/go/mod/protobuf/user"
-	"github.com/liov/hoper/server/go/mod/user/conf"
+	"github.com/liov/hoper/server/go/mod/user/confdao"
 	"github.com/liov/hoper/server/go/mod/user/service"
 
 	"google.golang.org/grpc"
@@ -38,7 +38,7 @@ func main() {
 			oauth.RegisterOauthServiceHandlerServer(app, service.GetOauthService())
 			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
 			pick.RegisterService(service.GetUserService())
-			pick.Gin(app, conf.Conf.Server.GenDoc, initialize.InitConfig.Module, conf.Conf.Server.OpenTracing)
+			pick.Gin(app, confdao.Conf.Server.GenDoc, initialize.InitConfig.Module, confdao.Conf.Server.OpenTracing)
 		},
 
 		/*		GraphqlResolve: model.NewExecutableSchema(model.Config{

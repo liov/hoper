@@ -1,4 +1,4 @@
-package conf
+package confdao
 
 import (
 	"github.com/hopeio/pandora/initialize/gormdb"

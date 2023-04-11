@@ -4,7 +4,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/hopeio/pandora/context/http_context"
 	"github.com/hopeio/pandora/utils/encoding/json/iterator"
-	"github.com/liov/hoper/server/go/mod/content/dao"
+	"github.com/liov/hoper/server/go/mod/content/confdao"
 	"github.com/liov/hoper/server/go/mod/protobuf/user"
 	"time"
 )
@@ -97,7 +97,7 @@ func (c *Client) read() {
 		message.CreatedAt = time.Now()
 		message.SendUserID = c.ctx.AuthInfo.(*user.AuthInfo).Id
 		jsonMessage, _ := iterator.Marshal(&message)
-		dao.Dao.Redis.Do(c.ctx, "RPUSH", "Chat", jsonMessage)
+		confdao.Dao.Redis.Do(c.ctx, "RPUSH", "Chat", jsonMessage)
 		manager.broadcast <- jsonMessage
 	}
 }
