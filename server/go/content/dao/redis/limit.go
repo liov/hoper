@@ -6,12 +6,12 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/hopeio/pandora/protobuf/errorcode"
 	timei "github.com/hopeio/pandora/utils/time"
-	"github.com/liov/hoper/server/go/mod/content/conf"
+	"github.com/liov/hoper/server/go/mod/content/confdao"
 )
 
 var limitErr = errorcode.TimeTooMuch.Message("您的操作过于频繁，请先休息一会儿。")
 
-func (d *ContentRedisDao) Limit(l *conf.Limit) error {
+func (d *ContentRedisDao) Limit(l *confdao.Limit) error {
 	ctxi := d
 	ctx := ctxi.Context
 	minuteKey := l.MinuteLimitKey + ctxi.ID

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/liov/hoper/server/go/mod/user/conf"
+	"github.com/liov/hoper/server/go/mod/user/confdao"
 	"github.com/liov/hoper/server/go/mod/user/dao"
 )
 
@@ -15,7 +15,7 @@ var ExportAuth = auth
 
 func auth(ctx *http_context.Context, update bool) (*user.AuthInfo, error) {
 	signature := ctx.Token[strings.LastIndexByte(ctx.Token, '.')+1:]
-	cacheTmp, ok := dao.Dao.Cache.Get(signature)
+	cacheTmp, ok := confdao.Dao.Cache.Get(signature)
 	if ok {
 		cache := cacheTmp.(*contexti.Authorization)
 		ctx.LastActiveAt = ctx.TimeStamp
@@ -25,7 +25,7 @@ func auth(ctx *http_context.Context, update bool) (*user.AuthInfo, error) {
 	}
 	auth := &user.AuthInfo{}
 	ctx.AuthInfo = auth
-	if err := ctx.ParseToken(ctx.Token, conf.Conf.Customize.TokenSecret); err != nil {
+	if err := ctx.ParseToken(ctx.Token, confdao.Conf.Customize.TokenSecret); err != nil {
 		return nil, user.UserErrLoginTimeout
 	}
 	ctx.LastActiveAt = ctx.TimeStamp
@@ -37,7 +37,7 @@ func auth(ctx *http_context.Context, update bool) (*user.AuthInfo, error) {
 		}
 	}
 	if !ok {
-		dao.Dao.Cache.SetWithTTL(signature, ctx.Authorization, 0, 5*time.Second)
+		confdao.Dao.Cache.SetWithTTL(signature, ctx.Authorization, 0, 5*time.Second)
 	}
 	return auth, nil
 }

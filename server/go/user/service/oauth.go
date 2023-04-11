@@ -14,8 +14,7 @@ import (
 	jwti "github.com/hopeio/pandora/utils/verification/auth/jwt"
 	"github.com/hopeio/pandora/utils/verification/auth/oauth"
 	"github.com/liov/hoper/server/go/mod/protobuf/user"
-	"github.com/liov/hoper/server/go/mod/user/conf"
-	"github.com/liov/hoper/server/go/mod/user/dao"
+	"github.com/liov/hoper/server/go/mod/user/confdao"
 	"google.golang.org/grpc/metadata"
 	"log"
 	"strconv"
@@ -33,9 +32,9 @@ func GetOauthService() *OauthService {
 	manager.MustTokenStorage(store.NewMemoryTokenStore())
 
 	// generate jwt access token
-	manager.MapAccessGenerate(generates.NewJWTAccessGenerate("", conf.Conf.Customize.TokenSecret, jwt.SigningMethodHS512))
+	manager.MapAccessGenerate(generates.NewJWTAccessGenerate("", confdao.Conf.Customize.TokenSecret, jwt.SigningMethodHS512))
 
-	clientStore := oauth.NewClientStore(dao.Dao.GORMDB.DB)
+	clientStore := oauth.NewClientStore(confdao.Dao.GORMDB.DB)
 
 	manager.MapClientStorage(clientStore)
 
@@ -46,7 +45,7 @@ func GetOauthService() *OauthService {
 			return "", errors.ErrInvalidAccessToken
 		}
 		claims := new(jwti.Claims)
-		if _, err := jwti.ParseToken(claims, token, conf.Conf.Customize.TokenSecret); err != nil {
+		if _, err := jwti.ParseToken(claims, token, confdao.Conf.Customize.TokenSecret); err != nil {
 			return "", err
 		}
 		return strconv.FormatUint(claims.UserId, 10), nil

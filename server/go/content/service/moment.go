@@ -11,7 +11,7 @@ import (
 
 	"github.com/hopeio/pandora/protobuf/empty"
 	"github.com/hopeio/pandora/protobuf/errorcode"
-	"github.com/liov/hoper/server/go/mod/content/conf"
+	"github.com/liov/hoper/server/go/mod/content/confdao"
 	"github.com/liov/hoper/server/go/mod/content/dao"
 	"github.com/liov/hoper/server/go/mod/content/model"
 	"github.com/liov/hoper/server/go/mod/protobuf/content"
@@ -33,7 +33,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.M
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, _ := auth(ctxi, true)
-	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
+	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
 	contentDBDao := dao.GetDBDao(ctxi, db)
 
 	var moment content.Moment
@@ -128,8 +128,8 @@ func momentMaskField(moment *content.Moment) {
 
 func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*request.Object, error) {
 
-	if utf8.RuneCountInString(req.Content) < conf.Conf.Customize.Moment.MaxContentLen {
-		return nil, errorcode.InvalidArgument.Message(fmt.Sprintf("文章内容不能小于%d个字", conf.Conf.Customize.Moment.MaxContentLen))
+	if utf8.RuneCountInString(req.Content) < confdao.Conf.Customize.Moment.MaxContentLen {
+		return nil, errorcode.InvalidArgument.Message(fmt.Sprintf("文章内容不能小于%d个字", confdao.Conf.Customize.Moment.MaxContentLen))
 	}
 
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
@@ -138,7 +138,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
+	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
 	contentDBDao := dao.GetDBDao(ctxi, db)
 
 	req.UserId = auth.Id
@@ -224,7 +224,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, _ := auth(ctxi, true)
-	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
+	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
 	contentDBDao := dao.GetDBDao(ctxi, db)
 
 	total, moments, err := contentDBDao.GetMomentListDB(req)
@@ -326,7 +326,7 @@ func (*MomentService) Delete(ctx context.Context, req *request.Object) (*empty.E
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(dao.Dao.GORMDB.DB)
+	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
 	contentDBDao := dao.GetDBDao(ctxi, db)
 
 	err = contentDBDao.DelByAuth(model.MomentTableName, req.Id, auth.Id)
