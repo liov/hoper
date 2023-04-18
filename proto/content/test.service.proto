@@ -4,9 +4,9 @@ import "content/content.model.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
-import "empty/empty.proto";
-import "response/response.proto";
-import "utils/patch/go.proto";
+import "pandora/protobuf/empty/empty.proto";
+import "pandora/protobuf/response/response.proto";
+import "pandora/protobuf/utils/patch/go.proto";
 
 option go_package = "github.com/liov/hoper/server/go/mod/protobuf/content";
 

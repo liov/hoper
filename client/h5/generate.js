@@ -4,7 +4,7 @@ const path = require("path");
 
 const protopath = "D:/code/hoper/proto";
 
-const libpath = "D:/code/hoper/server/go/lib";
+const libpath = "D:/code/pandora";
 const libproto = libpath + "/protobuf";
 const third = libpath + "/protobuf/third";
 

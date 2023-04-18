@@ -9,12 +9,12 @@ import "user/user.model.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
-import "empty/empty.proto";
-import "request/param.proto";
-import "response/response.proto";
-import "utils/graphql/graphql.proto";
-import "oauth/oauth.proto";
-import "utils/patch/go.proto";
+import "pandora/protobuf/empty/empty.proto";
+import "pandora/protobuf/request/param.proto";
+import "pandora/protobuf/response/response.proto";
+import "pandora/protobuf/utils/graphql/graphql.proto";
+import "pandora/protobuf/oauth/oauth.proto";
+import "pandora/protobuf/utils/patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
 option go_package = "github.com/liov/hoper/server/go/mod/protobuf/content";
