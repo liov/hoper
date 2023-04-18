@@ -2,9 +2,9 @@
 cluster=$1
 if [[ $1 == tx ]];then
 	server=https://hoper.xyz:6443
-	echo $CA |base64 -d > ca.crt
-    echo $CACRT |base64 -d > dev.crt
-    echo $CAKEY |base64 -d > dev.key
+	echo $CACRT |base64 -d > ca.crt
+    echo $DEVCRT |base64 -d > dev.crt
+    echo $DEVKEY |base64 -d > dev.key
 elif [[ $1 == tot ]]; then
 	server=https://192.168.1.212:6443
 	cd certs/$cluster
