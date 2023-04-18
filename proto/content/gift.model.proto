@@ -1,7 +1,7 @@
 syntax = "proto3";
 package content;
 import "content/content.enum.proto";
-import "utils/patch/go.proto";
+import "pandora/protobuf/utils/patch/go.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "user/user.model.proto";
 import "utils/area/area.proto";

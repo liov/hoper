@@ -1,0 +1,1 @@
+https://milvus.io/docs/install_standalone-operator.md
