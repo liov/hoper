@@ -202,3 +202,16 @@ docker run --rm -v /var/lib/docker:/var/lib/docker alpine sh -c "echo '' > $(doc
 
 truncate -s 0 /var/lib/docker/containers/*/*-json.log
 sudo truncate -s 0 `docker inspect --format='{{.LogPath}}' <container>`
+
+# k8s hosts
+hostAliases
+```yaml
+apiVersion: v1
+kind: Pod
+spec:
+  hoostAliases:
+    ip: "4.1.2.3"
+    hostnames:
+    - "a.com"
+    - "b.com"
+```

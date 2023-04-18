@@ -44,14 +44,14 @@ local kubectl(compile,target, cmd) = if compile == target then {
   image: 'bitnami/kubectl',
   user: 0,  //文档说是string类型，结果"root"不行 k8s runAsUser: 0
   environment: {
-    CA: {
-      from_secret: 'ca',
-    },
     CACRT: {
       from_secret: 'ca_crt',
     },
-    CAKEY: {
-      from_secret: 'ca_key',
+    DEVCRT: {
+      from_secret: 'dev_crt',
+    },
+    DEVKEY: {
+      from_secret: 'dev_key',
     },
   },
   commands: [
@@ -146,7 +146,8 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='', sourceFile='
       //  'git tag -l | xargs git tag -d',
       //'git fetch --all && git reset --hard origin/master && git pull',
       'cd ' + srcdir,
-      'git clone /code .',
+      //'git clone /code .',
+      'cp -r /code .'
       'git checkout -b deploy $DRONE_COMMIT_REF',
       'cp -r /code/'+tpldir + 'certs '+ srcdir +tpldir,
        // edit Dockerfile && deploy file
@@ -195,7 +196,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='', sourceFile='
     commands: [
         //'docker version',
         'docker login -u $USERNAME -p $PASSWORD',
-        'docker build --rm=true -f build/k8s/app/Dockerfile-bin -t $USERNAME/' + fullname+':'+tag+' .',
+        'docker build -f build/k8s/app/Dockerfile-bin -t $USERNAME/' + fullname+':'+tag+' .',
         if compile != target then 'docker push $USERNAME/'+ fullname+':'+ tag,
     ],
 
