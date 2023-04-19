@@ -30,7 +30,7 @@ docker tag dyrnq/kube-webhook-certgen:v1.1.1 k8s.gcr.io/ingress-nginx/kube-webho
 docker pull rancher/curlimages-curl:7.73.0
 
 kubectl get secret kube-prometheus-grafana -n monitoring -o yaml
-echo 'cHJvbS1vcGVyYXRvcg==' | base64 --decode
+echo 'cHJvbS1vcGVyYXRvcg==' | base64 -d
 prom-operator
 
 

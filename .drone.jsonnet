@@ -146,8 +146,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='', sourceFile='
       //  'git tag -l | xargs git tag -d',
       //'git fetch --all && git reset --hard origin/master && git pull',
       'cd ' + srcdir,
-      //'git clone /code .',
-      'cp -r /code .'
+      'git clone /code .',
       'git checkout -b deploy $DRONE_COMMIT_REF',
       'cp -r /code/'+tpldir + 'certs '+ srcdir +tpldir,
        // edit Dockerfile && deploy file

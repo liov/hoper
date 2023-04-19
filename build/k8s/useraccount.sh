@@ -10,3 +10,7 @@ openssl req -new -key dev.key -out dev.csr -subj "/O=k8s/CN=dev"
 openssl  x509 -req -in dev.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out dev.crt -days 365
 
 rm ca.key ca.srl dev.csr
+
+base64 -w 0 ca.crt
+base64 -w 0 dev.crt
+base64 -w 0 dev.key
