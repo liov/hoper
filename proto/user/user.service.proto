@@ -208,7 +208,7 @@ service UserService {
   }
 
   //获取用户信息
-  rpc Info (request.Object) returns (UserRep) {
+  rpc Info (request.Id) returns (UserRep) {
     option (google.api.http) = {
       get: "/api/v1/user/{id}"
     };

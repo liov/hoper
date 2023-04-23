@@ -26,7 +26,7 @@ service MomentService {
   };
 
   // 详情
-  rpc Info (request.Object) returns (Moment) {
+  rpc Info (request.Id) returns (Moment) {
     option (google.api.http) = {
       get: "/api/v1/moment/{id}"
     };
@@ -37,7 +37,7 @@ service MomentService {
   }
 
   // 新建
-  rpc Add (AddMomentReq) returns (request.Object) {
+  rpc Add (AddMomentReq) returns (request.Id) {
     option (google.api.http) = {
       post: "/api/v1/moment"
       body: "*"
@@ -72,7 +72,7 @@ service MomentService {
   }
 
   // 删除
-  rpc Delete (request.Object) returns (empty.Empty) {
+  rpc Delete (request.Id) returns (empty.Empty) {
     option (google.api.http) = {
       delete: "/api/v1/moment/{id}"
     };

@@ -25,7 +25,7 @@ service ActionService {
   };
 
   // 动作  Like Unlike
-  rpc Like (LikeReq) returns (request.Object) {
+  rpc Like (LikeReq) returns (request.Id) {
     option (google.api.http) = {
       post: "/api/v1/action/like"
     };
@@ -35,7 +35,7 @@ service ActionService {
     option (graphql.graphql_operation) = Mutation;
   }
   // 动作  Like Unlike
-  rpc DelLike (request.Object) returns (empty.Empty) {
+  rpc DelLike (request.Id) returns (empty.Empty) {
     option (google.api.http) = {
       delete: "/api/v1/action/like/{id}"
     };
@@ -45,7 +45,7 @@ service ActionService {
     option (graphql.graphql_operation) = Mutation;
   }
   // 评论
-  rpc Comment (CommentReq) returns (request.Object) {
+  rpc Comment (CommentReq) returns (request.Id) {
     option (google.api.http) = {
       post: "/api/v1/action/comment"
     };
@@ -65,7 +65,7 @@ service ActionService {
     option (graphql.graphql_operation) = Query;
   }
   // 评论
-  rpc DelComment (request.Object) returns (empty.Empty) {
+  rpc DelComment (request.Id) returns (empty.Empty) {
     option (google.api.http) = {
       delete: "/api/v1/action/comment/{id}"
     };

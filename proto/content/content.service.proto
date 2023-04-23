@@ -23,7 +23,7 @@ service ContentService {
   };
 
   // 详情
-  rpc TagInfo (request.Object) returns (Tag) {
+  rpc TagInfo (request.Id) returns (Tag) {
     option (google.api.http) = {
       get: "/api/v1/content/tag/{id}"
     };
@@ -81,7 +81,7 @@ service ContentService {
 
 
   // 详情
-  rpc AttrInfo (request.Object) returns (Attributes) {
+  rpc AttrInfo (request.Id) returns (Attributes) {
     option (google.api.http) = {
       get: "/api/v1/content/attr/{id}"
     };
@@ -92,7 +92,7 @@ service ContentService {
   }
 
   // 新建
-  rpc AddAttr (AddAttrReq) returns (request.Object) {
+  rpc AddAttr (AddAttrReq) returns (request.Id) {
     option (google.api.http) = {
       post: "/api/v1/content/attr"
       body: "*"
@@ -146,7 +146,7 @@ service ContentService {
     option (graphql.graphql_operation) = Query;
   }
   // 创建收藏夹
-  rpc AddFav (AddFavReq) returns (request.Object) {
+  rpc AddFav (AddFavReq) returns (request.Id) {
     option (google.api.http) = {
       post: "/api/v1/content/fav"
     };
@@ -186,7 +186,7 @@ service ContentService {
     option (graphql.graphql_operation) = Mutation;
   }
   // 用户内容数量
-  rpc UserContentCount (request.Object) returns (user.UserContent) {
+  rpc UserContentCount (request.Id) returns (user.UserContent) {
     option (google.api.http) = {
       get: "/api/v1/content/count/{id}"
     };
