@@ -138,7 +138,7 @@ import { RouterView, useRoute, useRouter } from "vue-router";
 import { useGlobalStore } from "@/store/global";
 import { useUserStore } from "@/store/user";
 import { parseQueryString } from "@/plugin/location";
-import "@/service/grpc_custom_status";
+import "/src/grpc_custom_status";
 import zh_CN from "ant-design-vue/lib/locale-provider/zh_CN";
 import { onDeactivated, onUnmounted, ref } from "vue";
 import {
