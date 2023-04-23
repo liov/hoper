@@ -29,3 +29,4 @@ lerna-debug.log*
 *.sw?
 /public/img/icons/
 /generated
+components.d.ts
