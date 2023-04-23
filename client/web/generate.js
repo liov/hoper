@@ -5,17 +5,16 @@ const path = require("path");
 const protopath = "D:/code/hoper/proto";
 
 const libpath = "D:/code/pandora";
-const libproto = libpath + "/protobuf";
-const third = libpath + "/protobuf/third";
+const libproto = libpath + "/protobuf/_proto";
 
 function include(isThird) {
-  if (isThird) return `-I${third}`;
-  return `-I${protopath} -I${libproto} -I${third}`;
+  if (isThird) return `-I${libproto}`;
+  return `-I${protopath} -I${libproto}`;
 }
 
 const grpcWebConfig = {
-  output: "D:/code/hoper\\client\\h5\\generated\\grpc-web",
-  cwd: "D:/code/hoper\\client\\h5",
+  output: "D:/code/hoper\\client\\web\\generated\\grpc-web",
+  cwd: "D:/code/hoper\\client\\web",
   getCmd(filepath, isThird) {
     return `protoc ${include(isThird)}  ${path.join(
       filepath,
@@ -27,8 +26,8 @@ const grpcWebConfig = {
 };
 
 const protobufTsConfig = {
-  output: "D:/code/hoper\\client\\h5\\generated\\protobuf-ts",
-  cwd: "D:/code/hoper\\client\\h5",
+  output: "D:/code/hoper\\client\\web\\generated\\protobuf-ts",
+  cwd: "D:/code/hoper\\client\\web",
   getCmd(filepath, isThird) {
     return `npx protoc ${include(isThird)}  ${path.join(
       filepath,
@@ -67,5 +66,4 @@ function generate(dir, exclude, config, isThird = false) {
 }
 
 generate(protopath, [], protobufTsConfig);
-generate(libproto, ["third"], protobufTsConfig);
-generate(third, [], protobufTsConfig, true);
+generate(libproto, [], protobufTsConfig, true);

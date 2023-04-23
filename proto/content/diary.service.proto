@@ -43,7 +43,7 @@ service DiaryService {
     option (graphql.graphql_operation) = Query;
   }
   // 创建日记本
-  rpc AddDiaryBook (AddDiaryBookReq) returns (request.Object) {
+  rpc AddDiaryBook (AddDiaryBookReq) returns (request.Id) {
     option (google.api.http) = {
       post: "/api/v1/diaryBook"
     };
@@ -64,7 +64,7 @@ service DiaryService {
   }
 
   // 详情
-  rpc Info (request.Object) returns (Diary) {
+  rpc Info (request.Id) returns (Diary) {
     option (google.api.http) = {
       get: "/api/v1/diary/{id}"
     };
@@ -75,7 +75,7 @@ service DiaryService {
   }
 
   // 新建
-  rpc Add (AddDiaryReq) returns (request.Object) {
+  rpc Add (AddDiaryReq) returns (request.Id) {
     option (google.api.http) = {
       post: "/api/v1/diary"
       body: "*"
@@ -110,7 +110,7 @@ service DiaryService {
   }
 
   // 删除
-  rpc Delete (request.Object) returns (empty.Empty) {
+  rpc Delete (request.Id) returns (empty.Empty) {
     option (google.api.http) = {
       delete: "/api/v1/diary/{id}"
     };
