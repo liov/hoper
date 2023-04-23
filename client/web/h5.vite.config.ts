@@ -4,7 +4,7 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import Components from "unplugin-vue-components/vite";
-import { AntDesignVueResolver } from "unplugin-vue-components/resolvers";
+import { VantResolver } from "unplugin-vue-components/resolvers";
 import dynamicImportVars from "@rollup/plugin-dynamic-import-vars";
 import { VitePWA } from "vite-plugin-pwa";
 
@@ -12,11 +12,11 @@ import path from "path";
 import wasm from "vite-plugin-wasm";
 import { viteCommonjs } from "@originjs/vite-plugin-commonjs";
 
-const lessVar = path.resolve(__dirname, "src/assets/antd.less");
+const lessVar = path.resolve(__dirname, "src/h5/assets/var_vant.less");
 console.log(process.env);
 // https://vitejs.dev/config/
 export default defineConfig({
-  envDir: "./env",
+  envDir: "./src/h5/env",
   envPrefix: "HOPRE_",
   server: {
     port: 80,
@@ -52,11 +52,11 @@ export default defineConfig({
     vueJsx(),
     viteCommonjs(),
     Components({
-      resolvers: [AntDesignVueResolver()],
+      resolvers: [VantResolver()],
     }),
     dynamicImportVars({
       // options
-      include: ["./src/**/*.ts"],
+      include: ["./src/h5/**/*.ts"],
     }),
     VitePWA({ registerType: "autoUpdate" }),
     //wasm(),
@@ -68,12 +68,13 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "@": fileURLToPath(new URL("./src/h5", import.meta.url)),
       "@generated": fileURLToPath(new URL("./generated", import.meta.url)),
     },
   },
   build: {
     rollupOptions: {
+      input: "/src/h5/index.html",
       // https://rollupjs.org/guide/en/#outputmanualchunks
       output: {
         manualChunks: {

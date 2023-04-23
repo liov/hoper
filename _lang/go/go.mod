@@ -1,6 +1,6 @@
 module test
 
-go 1.19
+go 1.18
 
 require (
 	bou.ke/monkey v1.0.2

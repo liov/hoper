@@ -4,7 +4,7 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import Components from "unplugin-vue-components/vite";
-import { VantResolver } from "unplugin-vue-components/resolvers";
+import { AntDesignVueResolver } from "unplugin-vue-components/resolvers";
 import dynamicImportVars from "@rollup/plugin-dynamic-import-vars";
 import { VitePWA } from "vite-plugin-pwa";
 
@@ -12,11 +12,11 @@ import path from "path";
 import wasm from "vite-plugin-wasm";
 import { viteCommonjs } from "@originjs/vite-plugin-commonjs";
 
-const lessVar = path.resolve(__dirname, "src/assets/var_vant.less");
+const lessVar = path.resolve(__dirname, "src/pc/assets/antd.less");
 console.log(process.env);
 // https://vitejs.dev/config/
 export default defineConfig({
-  envDir: "./env",
+  envDir: "./src/pc/env",
   envPrefix: "HOPRE_",
   server: {
     port: 80,
@@ -36,18 +36,27 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ["esm-dep > cjs-dep"],
+    include: [
+      "qs",
+      "mitt",
+      "xlsx",
+      "dayjs",
+      "axios",
+      "pinia",
+      "echarts",
+      "esm-dep > cjs-dep",
+    ],
   },
   plugins: [
-    vue(),
+    vue({}),
     vueJsx(),
     viteCommonjs(),
     Components({
-      resolvers: [VantResolver()],
+      resolvers: [AntDesignVueResolver()],
     }),
     dynamicImportVars({
       // options
-      include: ["./src/**/*.ts"],
+      include: ["./src/pc/**/*.ts"],
     }),
     VitePWA({ registerType: "autoUpdate" }),
     //wasm(),
@@ -59,16 +68,17 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "@": fileURLToPath(new URL("./src/pc", import.meta.url)),
       "@generated": fileURLToPath(new URL("./generated", import.meta.url)),
     },
   },
   build: {
     rollupOptions: {
+      input: "/src/pc/index.html",
       // https://rollupjs.org/guide/en/#outputmanualchunks
       output: {
         manualChunks: {
-          "group-chat": ["./src/views/chat/index.vue"],
+          "group-chat": ["./src/pc/views/chat/index.vue"],
         },
       },
       plugins: [],

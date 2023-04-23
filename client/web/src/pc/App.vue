@@ -114,7 +114,7 @@
               height: 20px;
               line-height: 20px;
             "
-            ><img src="/src/assets/beian.png" style="float: left" />
+            ><img src="@/assets/beian.png" style="float: left" />
             <p
               style="
                 float: left;
@@ -150,7 +150,6 @@ import {
   HomeOutlined,
   AppstoreOutlined,
 } from "@ant-design/icons-vue";
-import beian from "*.png";
 
 const store = useGlobalStore();
 const userStore = useUserStore();
