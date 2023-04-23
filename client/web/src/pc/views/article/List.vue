@@ -173,7 +173,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUpdated, reactive, Ref, ref } from "vue";
+import { onMounted, onUpdated, reactive, ref } from "vue";
+import type { Ref } from "vue";
 import axios from "axios";
 import { message } from "ant-design-vue";
 import {
