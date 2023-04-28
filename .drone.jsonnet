@@ -55,7 +55,7 @@ local kubectl(compile,target, cmd) = if compile == target then {
     },
   },
   commands: [
-    'cd '+ tpldir + '/cmd && chmod +x account.sh && ./account.sh ' + target,
+    'cd '+ tpldir + 'cmd && chmod +x account.sh && ./account.sh ' + target,
     'cd ' + workspace,
   ] + cmd,
 };

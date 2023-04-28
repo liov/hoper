@@ -1,10 +1,11 @@
 #!/bin/bash
 cluster=$1
-if [[ $1 == tx ]];then
+if [[ $cluster == tx ]];then
 	server=https://hoper.xyz:6443
-	echo $CACRT |base64 -d > ../certs/$1/ca.crt
-    echo $DEVCRT |base64 -d > ../certs/$1/dev.crt
-    echo $DEVKEY |base64 -d > ../certs/$1/dev.key
+	mkdir ../certs/$cluster
+	echo $CACRT |base64 -d > ../certs/$cluster/ca.crt
+    echo $DEVCRT |base64 -d > ../certs/$cluster/dev.crt
+    echo $DEVKEY |base64 -d > ../certs/$cluster/dev.key
 elif [[ $1 == tot ]]; then
 	server=https://192.168.1.212:6443
 	cd certs/$cluster
