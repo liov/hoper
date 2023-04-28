@@ -55,7 +55,7 @@ local kubectl(compile,target, cmd) = if compile == target then {
     },
   },
   commands: [
-    'cd '+ tpldir + ' && chmod +x account.sh && ./account.sh ' + target,
+    'cd '+ tpldir + '/cmd && chmod +x account.sh && ./account.sh ' + target,
     'cd ' + workspace,
   ] + cmd,
 };
@@ -101,7 +101,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='', sourceFile='
     {
       name: 'pandora',
       host: {
-        path: '/pandora/',
+        path: cconfig.dirprefix + 'code/pandora/',
       },
     },
     {
@@ -137,7 +137,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='', sourceFile='
         },
         {
           name: 'pandora',
-            path: cconfig.dirprefix + 'code/pandora/',
+          path: '/pandora/',
         },
         {
           name: 'gopath',
