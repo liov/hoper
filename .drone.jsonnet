@@ -99,6 +99,12 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='', sourceFile='
       },
     },
     {
+      name: 'pandora',
+      host: {
+        path: '/pandora/',
+      },
+    },
+    {
       name: 'gopath',
       host: {
         path: cconfig.gopath,
@@ -128,6 +134,10 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='', sourceFile='
         {
             name: 'codedir',
             path: '/code/',
+        },
+        {
+          name: 'pandora',
+            path: cconfig.dirprefix + 'code/pandora/',
         },
         {
           name: 'gopath',
