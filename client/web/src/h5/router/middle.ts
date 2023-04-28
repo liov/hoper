@@ -2,7 +2,7 @@
 import type { NavigationGuard } from "vue-router";
 
 import axios from "axios";
-import { userStore } from "@/store";
+import { userStore } from "@h5/store";
 
 export const authenticated: NavigationGuard = (_to, _from, next) => {
   if (userStore.auth) next();

@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
 import { message } from "ant-design-vue";
-import router from "@/router/index";
-import { ObjMap } from "@/plugin/utils/user";
+import router from "@pc/router/index";
+import { ObjMap } from "@pc/plugin/utils/user";
 import { defineStore } from "pinia";
 
 export interface UserState {

@@ -1,8 +1,8 @@
 import axios from "axios";
 import { message } from "ant-design-vue";
-import router from "@/router/index";
-import { API_HOST } from "@/plugin/config";
-import { useUserStore } from "@/store/user";
+import router from "@pc/router/index";
+import { API_HOST } from "@pc/plugin/config";
+import { useUserStore } from "@pc/store/user";
 
 export function init() {
   axios.defaults.baseURL = API_HOST;

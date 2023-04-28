@@ -1,6 +1,6 @@
 import type { RouteRecordRaw } from "vue-router";
-import { completedAuthenticated } from "@/router/middle";
-import AsyncComponent from "@/components/async";
+import { completedAuthenticated } from "@h5/router/middle";
+import AsyncComponent from "@h5/components/async";
 
 export const userRoute: Array<RouteRecordRaw> = [
   {

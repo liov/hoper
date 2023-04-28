@@ -4,13 +4,15 @@
     "@vue/tsconfig/tsconfig.json",
     "@vue/tsconfig/tsconfig.dom.json",
   ],
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue","generated/**/*.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue","generated/**/*.ts","types/**/*.ts"],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/pc/*","./src/h5/*"],
+      "@/*": ["./src/*"],
+      "@pc/*": ["./src/pc/*"],
+      "@h5/*": ["./src/h5/*"],
       "@generated/*": ["./generated/*"]
     },
     "target": "esnext",
@@ -24,7 +26,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "allowJs": true,
-    "sourceMap": true,
+    //"sourceMap": true,
     "noImplicitAny": false,
     "types": [
       "node"

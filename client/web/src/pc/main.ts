@@ -1,11 +1,11 @@
-import HoperPlugin from "@/plugin/plugin";
+import HoperPlugin from "@pc/plugin/plugin";
 import Antd from "ant-design-vue";
 import "ant-design-vue/es/message/style/css";
-import router from "@/router";
+import router from "@pc/router";
 import { createApp } from "vue";
-import App from "@/App.vue";
+import App from "@pc/App.vue";
 import { createPinia } from "pinia";
-import { init as axiosInit } from "@/plugin/axios";
+import { init as axiosInit } from "@pc/plugin/axios";
 
 import { init as globalInit } from "./store";
 

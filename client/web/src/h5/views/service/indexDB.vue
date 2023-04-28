@@ -35,17 +35,17 @@ onMounted(async () => {
   addData(DB.db, "moments", momentList);
 });
 
-function openDB(name, version = 1) {
+function openDB(name, version = 1): Promise<IDBOpenDBRequest> {
   return new Promise(function (resolve, reject) {
     const request = window.indexedDB.open(name);
     request.onerror = function (e) {
       reject(e);
     };
     request.onsuccess = function (e) {
-      resolve(e.target!.result);
+      resolve(request.result);
     };
     request.onupgradeneeded = function (e) {
-      const db = e.target!.result;
+      const db = request.result;
       if (!db.objectStoreNames.contains("moments")) {
         db.createObjectStore("moments", { keyPath: "id" });
       }

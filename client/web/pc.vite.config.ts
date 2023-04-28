@@ -5,15 +5,17 @@ import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import Components from "unplugin-vue-components/vite";
 import { AntDesignVueResolver } from "unplugin-vue-components/resolvers";
-import dynamicImportVars from "@rollup/plugin-dynamic-import-vars";
 import { VitePWA } from "vite-plugin-pwa";
-
-import path from "path";
+// TS1259: Module '"path"' can only be default-imported using the 'esModuleInterop' flag
+import * as path from "path";
+import fs from "fs";
 import wasm from "vite-plugin-wasm";
 import { viteCommonjs } from "@originjs/vite-plugin-commonjs";
 
 const lessVar = path.resolve(__dirname, "src/pc/assets/antd.less");
-console.log(process.env);
+
+fs.copyFileSync("src/pc/index.html", "index.html");
+
 // https://vitejs.dev/config/
 export default defineConfig({
   envDir: "./src/pc/env",
@@ -48,17 +50,13 @@ export default defineConfig({
     ],
   },
   plugins: [
-    vue({}),
+    vue(),
     vueJsx(),
     viteCommonjs(),
     Components({
       resolvers: [AntDesignVueResolver()],
     }),
-    dynamicImportVars({
-      // options
-      include: ["./src/pc/**/*.ts"],
-    }),
-    VitePWA({ registerType: "autoUpdate" }),
+    ...VitePWA({ registerType: "autoUpdate" }),
     //wasm(),
     //ViteRsw(),
   ],
@@ -68,18 +66,16 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src/pc", import.meta.url)),
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "@pc": fileURLToPath(new URL("./src/pc", import.meta.url)),
       "@generated": fileURLToPath(new URL("./generated", import.meta.url)),
     },
   },
   build: {
     rollupOptions: {
-      input: "/src/pc/index.html",
       // https://rollupjs.org/guide/en/#outputmanualchunks
       output: {
-        manualChunks: {
-          "group-chat": ["./src/pc/views/chat/index.vue"],
-        },
+        manualChunks: {},
       },
       plugins: [],
     },
@@ -89,6 +85,9 @@ export default defineConfig({
         drop_console: true,
         drop_debugger: true,
       },
+    },
+    dynamicImportVarsOptions: {
+      include: ["./src/pc/**/*.ts"],
     },
   },
   css: {

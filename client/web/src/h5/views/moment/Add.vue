@@ -53,12 +53,12 @@
 
 <script setup lang="ts">
 import axios from "axios";
-import { upload } from "@/plugin/utils/upload";
-import { Toast } from "vant";
+import { upload } from "@h5/plugin/utils/upload";
+import { showToast } from "vant";
 import { useRouter } from "vue-router";
 import { reactive, ref } from "vue";
-import { useGlobalStore } from "@/store/global";
-import { Platform } from "@/model/const";
+import { useGlobalStore } from "@h5/store/global";
+import { Platform } from "@h5/model/const";
 
 const globalState = useGlobalStore();
 
@@ -67,12 +67,16 @@ const router = useRouter();
 const message = ref("");
 const permission = ref(0);
 const permissionVal = ref("全部");
-const columns = ["全部", "自己可见", "陌生人可见"];
+const columns = [
+  { text: "全部" },
+  { text: "自己可见" },
+  { text: "陌生人可见" },
+];
 const showPicker = ref(false);
 const uploader: any = reactive([]);
 
 function onOversize(file: any) {
-  if (file.file.size > 5 * 1e5) Toast("文件大小不能超过 500kB");
+  if (file.file.size > 5 * 1e5) showToast("文件大小不能超过 500kB");
 }
 async function afterRead(file: any) {
   file.url = await upload(file.file);

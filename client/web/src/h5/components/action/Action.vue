@@ -31,8 +31,8 @@
 
 <script setup lang="ts">
 import axios from "axios";
-import emitter from "@/plugin/emitter";
-import { jump } from "@/router/utils";
+import emitter from "@h5/plugin/emitter";
+import { jump } from "@h5/router/utils";
 import { reactive } from "vue";
 import { useRoute } from "vue-router";
 

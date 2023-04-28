@@ -8,4 +8,4 @@ declare module "@protobuf-ts/grpcweb-transport" {
 
 console.log("扩展grpc status");
 const myEnumValues = GrpcStatusCode as any;
-myEnumValues[21000] = "DBError";
+myEnumValues[GrpcStatusCode.DBError] = "DBError";

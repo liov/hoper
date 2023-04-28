@@ -30,14 +30,17 @@
 
 <script setup lang="ts">
 import { RouterView, useRouter } from "vue-router";
-import { useGlobalStore } from "@/store/global";
-import { Platform } from "@/model/const";
-import wxenv from "@/plugin/platform/weixin";
-import { parseQueryString } from "@/plugin/location";
-import "@/service/grpc_custom_status";
+import { useGlobalStore } from "@h5/store/global";
+import { Platform } from "@h5/model/const";
+import wxenv from "@h5/plugin/platform/weixin";
+import { parseQueryString } from "@h5/plugin/location";
+import "../../types/grpc_custom_status";
 import { ref } from "vue";
-
-const theme = ref("light");
+import type { Ref } from "vue";
+import type { ConfigProviderTheme } from "vant";
+//  Type 'string' is not assignable to type 'ConfigProviderTheme | undefined'
+const light: ConfigProviderTheme = "light";
+const theme = ref(light);
 
 const store = useGlobalStore();
 console.log("url:", window.location.href);

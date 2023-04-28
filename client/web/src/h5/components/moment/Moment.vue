@@ -37,12 +37,12 @@
 </template>
 
 <script setup lang="ts">
-import { ImagePreview } from "vant";
-import Action from "@/components/action/Action.vue";
-import { jump } from "@/router/utils";
-import { STATIC_DIR as staticDir } from "@/plugin/config";
+import { showImagePreview } from "vant";
+import Action from "@h5/components/action/Action.vue";
+import { jump } from "@h5/router/utils";
+import { STATIC_DIR as staticDir } from "@h5/plugin/config";
 import { useRoute } from "vue-router";
-import { date2s } from "@/plugin/utils/time";
+import { date2s } from "@h5/plugin/utils/time";
 import { reactive } from "vue";
 
 const props = defineProps<{
@@ -59,7 +59,7 @@ const images = props.moment.images
   .map((image) => staticDir + image);
 
 function preview(idx: number) {
-  ImagePreview({
+  showImagePreview({
     images,
     startPosition: idx,
     closeable: true,

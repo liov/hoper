@@ -13,13 +13,13 @@
 
 <script setup lang="ts">
 import { reactive, ref } from "vue";
-import Moment from "@/components/moment/Moment.vue";
-import CommentList from "@/components/comment/List.vue";
-import AddComment from "@/components/comment/Add.vue";
+import Moment from "@h5/components/moment/Moment.vue";
+import CommentList from "@h5/components/comment/List.vue";
+import AddComment from "@h5/components/comment/Add.vue";
 import axios from "axios";
-import { useContentStore } from "@/store/content";
+import { useContentStore } from "@h5/store/content";
 import { useRoute } from "vue-router";
-import { useUserStore } from "@/store/user";
+import { useUserStore } from "@h5/store/user";
 
 const store = useContentStore();
 const userStore = useUserStore();

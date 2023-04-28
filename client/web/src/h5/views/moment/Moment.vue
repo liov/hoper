@@ -31,13 +31,13 @@
 </template>
 
 <script setup lang="ts">
-import { Toast } from "vant";
+import { showToast } from "vant";
 import { defineAsyncComponent, ref } from "vue";
-import MomentList from "@/views/moment/List.vue";
+import MomentList from "@h5/views/moment/List.vue";
 const active = ref(2);
 
 function onChange(index: number) {
-  Toast({ message: index });
+  showToast({ message: index });
 }
 </script>
 

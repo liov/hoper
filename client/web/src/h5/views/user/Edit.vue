@@ -30,8 +30,8 @@
         <van-field label-width="50" name="radio" label="性别">
           <template #input>
             <van-radio-group v-model="user.gender" direction="horizontal">
-              <van-radio :name="1">男</van-radio>
-              <van-radio :name="2">女</van-radio>
+              <van-radio name="1">男</van-radio>
+              <van-radio name="2">女</van-radio>
             </van-radio-group>
           </template>
         </van-field>
@@ -75,13 +75,13 @@
 
 <script setup lang="ts">
 import axios from "axios";
-import { upload } from "@/plugin/utils/upload";
-import dataTool from "@/plugin/utils/date";
-import dayjs from "dayjs";
+import { upload } from "@h5/plugin/utils/upload";
+import dataTool from "@h5/plugin/utils/date";
+import * as dayjs from "dayjs";
 
-import { STATIC_DIR } from "@/plugin/config";
+import { STATIC_DIR } from "@h5/plugin/config";
 import { ref, reactive } from "vue";
-import { useUserStore } from "@/store/user";
+import { useUserStore } from "@h5/store/user";
 import { useRouter } from "vue-router";
 
 const store = useUserStore();
@@ -107,7 +107,7 @@ async function afterRead(file: any) {
   loading.value = false;
 }
 async function confirm() {
-  user.birthday = birthday.value.format(dataTool.formatYMD);
+  user.birthday = dayjs(birthday.value).format(dataTool.formatYMD);
   const res = await axios.put(`/api/v1/user/${user.id}`, {
     id: user.id,
     details: {

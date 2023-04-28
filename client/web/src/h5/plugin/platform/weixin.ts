@@ -1,4 +1,4 @@
-import { dynamicLoadJs } from "@/plugin/utils/script";
+import { dynamicLoadJs } from "@h5/plugin/utils/script";
 
 let active = false;
 

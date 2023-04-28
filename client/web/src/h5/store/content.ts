@@ -1,4 +1,4 @@
-import { ObjMap } from "@/plugin/utils/user";
+import { ObjMap } from "@h5/plugin/utils/user";
 import { defineStore } from "pinia";
 
 export interface ContentStore {

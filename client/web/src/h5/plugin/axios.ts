@@ -1,8 +1,8 @@
 import axios from "axios";
-import { Toast } from "vant";
-import router from "@/router/index";
-import { API_HOST } from "@/plugin/config";
-import { useUserStore } from "@/store/user";
+import { showToast, showFailToast } from "vant";
+import router from "@h5/router/index";
+import { API_HOST } from "@h5/plugin/config";
+import { useUserStore } from "@h5/store/user";
 
 export function init() {
   axios.defaults.baseURL = API_HOST;
@@ -28,13 +28,13 @@ export function init() {
       // 对响应数据做点什么
       if (response.status == 200) {
         if (response.data.code >= 1003 && response.data.code <= 1005) {
-          Toast("请登录");
+          showToast("请登录");
           router.push({
             name: "Login",
             query: { back: router.currentRoute.value.path },
           });
         } else if (response.data.code !== 0) {
-          Toast.fail(response.data.message);
+          showFailToast(response.data.message);
           return Promise.reject({ response: response });
         }
       }
@@ -42,7 +42,7 @@ export function init() {
     },
     function (error) {
       // 对响应错误做点什么
-      Toast.fail(error);
+      showFailToast(error);
       return Promise.reject(error);
     }
   );
