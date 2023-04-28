@@ -55,7 +55,7 @@ local kubectl(compile,target, cmd) = if compile == target then {
     },
   },
   commands: [
-    'cd '+ tpldir + ' && chmod +x account.sh && ./account.sh ' + target,
+    'cd '+ tpldir + '/cmd && chmod +x account.sh && ./account.sh ' + target,
     'cd ' + workspace,
   ] + cmd,
 };
@@ -99,6 +99,12 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='', sourceFile='
       },
     },
     {
+      name: 'pandora',
+      host: {
+        path: cconfig.dirprefix + 'code/pandora/',
+      },
+    },
+    {
       name: 'gopath',
       host: {
         path: cconfig.gopath,
@@ -130,6 +136,10 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='', sourceFile='
             path: '/code/',
         },
         {
+          name: 'pandora',
+          path: '/pandora/',
+        },
+        {
           name: 'gopath',
           path: '/go/',
         },
@@ -151,7 +161,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='', sourceFile='
       'cp -r /code/'+tpldir + 'certs '+ srcdir +tpldir,
        // edit Dockerfile && deploy file
       local buildfile =  '/code/' + workdir + protopath + '/build';
-      if protopath != '' then 'if [ -f ' + buildfile + ' ]; then cp -r ' + protopath + ' '+ srcdir + workdir + '; fi' else 'echo',
+      if protopath != '' then 'if [ -f ' + buildfile + ' ]; then cp -r /code/' + workdir + protopath + ' '+ srcdir + workdir + '; fi' else 'echo',
       "sed -i 's/$${app}/" + fullname + "/g' " + dockerfilepath,
       local cmd = ['./' + fullname , '-c','./config/'+group+'.toml'] + opts;
       "sed -i 's#$${cmd}#" + std.join('", "', [opt for opt in cmd]) + "#g' " + dockerfilepath,
