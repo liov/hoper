@@ -1,7 +1,7 @@
 syntax = "proto3";
 package utils.time;
 
-import "utils/patch/go.proto";
+import "pandora/protobuf/utils/patch/go.proto";
 
 option go_package = "github.com/hopeio/pandora/protobuf/time;time";
 option java_package = "xyz.hoper.protobuf.utils.time";

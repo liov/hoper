@@ -123,7 +123,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='', sourceFile='
   steps: [
     {
       name: 'clone && build',
-      image: if protopath != '' then 'jybl/goprotoc' else 'golang:1.19.4',
+      image: if protopath != '' then 'jybl/goprotoc' else 'golang:1.20',
       volumes: [
         {
             name: 'codedir',
@@ -168,7 +168,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='', sourceFile='
       'go mod download',
       local genpath = srcdir + workdir + protopath;
       local buildfile = genpath + '/build';
-      if protopath != '' then 'if [ ! -f ' + buildfile + ' ]; then generate go --proto='+srcdir+'proto --genpath='+genpath+'; fi' else 'echo',
+      if protopath != '' then 'if [ ! -f ' + buildfile + ' ]; then protobuf-generate go --proto='+srcdir+'proto --genpath='+genpath+'; fi' else 'echo',
       'go mod tidy',
       'go build -trimpath -o  '+ srcdir + fullname + ' ' + sourceFile,
       ],
@@ -220,5 +220,5 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='', sourceFile='
 };
 
 [
-  Pipeline('hoper', workdir='server/go/mod', protopath='/protobuf'),
+  Pipeline('hoper', workdir='server/go', protopath='/protobuf'),
 ]
