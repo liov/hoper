@@ -25,7 +25,7 @@ func (m *ContentService) Service() (describe, prefix string, middleware []http.H
 	return "内容相关", "/api/content", nil
 }
 
-func (*ContentService) TagInfo(context.Context, *request.Object) (*content.Tag, error) {
+func (*ContentService) TagInfo(context.Context, *request.Id) (*content.Tag, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Info not implemented")
 }
 func (*ContentService) AddTag(ctx context.Context, req *content.AddTagReq) (*empty.Empty, error) {
@@ -86,7 +86,7 @@ func (*ContentService) TagList(ctx context.Context, req *content.TagListReq) (*c
 	return &content.TagListRep{List: tags, Total: uint32(count)}, nil
 }
 
-func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*request.Object, error) {
+func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*request.Id, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
@@ -102,7 +102,7 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*req
 		return nil, err
 	}
 	if id != 0 {
-		return &request.Object{Id: id}, nil
+		return &request.Id{Id: id}, nil
 	}
 
 	err = contentDBDao.Transaction(func(tx *gorm.DB) error {
@@ -120,7 +120,7 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*req
 	if err != nil {
 		return nil, err
 	}
-	return &request.Object{Id: req.Id}, nil
+	return &request.Id{Id: req.Id}, nil
 }
 func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*empty.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")

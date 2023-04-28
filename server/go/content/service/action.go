@@ -23,7 +23,7 @@ type ActionService struct {
 	content.UnimplementedActionServiceServer
 }
 
-func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.Object, error) {
+func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.Id, error) {
 	if req.Action != content.ActionLike && req.Action != content.ActionUnlike && req.Action != content.ActionBrowse {
 		return nil, nil
 	}
@@ -41,10 +41,10 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 
 	id, err := contentDBDao.LikeId(req.Type, req.Action, req.RefId, req.UserId)
 	if err != nil {
-		return &request.Object{Id: id}, err
+		return &request.Id{Id: id}, err
 	}
 	if id > 0 {
-		return &request.Object{Id: id}, nil
+		return &request.Id{Id: id}, nil
 	}
 
 	err = contentDBDao.Transaction(func(tx *gorm.DB) error {
@@ -69,10 +69,10 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.RedisErr, err, "HotCountRedis")
 	}
-	return &request.Object{Id: req.Id}, nil
+	return &request.Id{Id: req.Id}, nil
 }
 
-func (*ActionService) DelLike(ctx context.Context, req *request.Object) (*empty.Empty, error) {
+func (*ActionService) DelLike(ctx context.Context, req *request.Id) (*empty.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
@@ -105,7 +105,7 @@ func (*ActionService) DelLike(ctx context.Context, req *request.Object) (*empty.
 	return new(empty.Empty), err
 }
 
-func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*request.Object, error) {
+func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*request.Id, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
@@ -142,10 +142,10 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*re
 	if err != nil {
 		return nil, err
 	}
-	return &request.Object{Id: req.Id}, nil
+	return &request.Id{Id: req.Id}, nil
 }
 
-func (*ActionService) DelComment(ctx context.Context, req *request.Object) (*empty.Empty, error) {
+func (*ActionService) DelComment(ctx context.Context, req *request.Id) (*empty.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)

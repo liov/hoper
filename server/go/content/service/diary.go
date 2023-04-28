@@ -36,7 +36,7 @@ func (*DiaryService) DiaryBookList(ctx context.Context, req *content.DiaryBookLi
 
 	return nil, status.Errorf(codes.Unimplemented, "method DiaryBookList not implemented")
 }
-func (*DiaryService) AddDiaryBook(ctx context.Context, req *content.AddDiaryBookReq) (*request.Object, error) {
+func (*DiaryService) AddDiaryBook(ctx context.Context, req *content.AddDiaryBookReq) (*request.Id, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
@@ -50,7 +50,7 @@ func (*DiaryService) AddDiaryBook(ctx context.Context, req *content.AddDiaryBook
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "Create")
 	}
-	return &request.Object{Id: req.Id}, nil
+	return &request.Id{Id: req.Id}, nil
 }
 func (*DiaryService) EditDiaryBook(ctx context.Context, req *content.AddDiaryBookReq) (*empty.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
@@ -68,7 +68,7 @@ func (*DiaryService) EditDiaryBook(ctx context.Context, req *content.AddDiaryBoo
 	}
 	return nil, nil
 }
-func (*DiaryService) Info(ctx context.Context, req *request.Object) (*content.Diary, error) {
+func (*DiaryService) Info(ctx context.Context, req *request.Id) (*content.Diary, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
@@ -109,7 +109,7 @@ func (*DiaryService) Edit(context.Context, *content.AddDiaryReq) (*empty.Empty, 
 func (*DiaryService) List(context.Context, *content.DiaryListReq) (*content.DiaryListRep, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
-func (*DiaryService) Delete(ctx context.Context, req *request.Object) (*empty.Empty, error) {
+func (*DiaryService) Delete(ctx context.Context, req *request.Id) (*empty.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)

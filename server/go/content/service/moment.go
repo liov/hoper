@@ -29,7 +29,7 @@ func (*MomentService) Service() (describe, prefix string, middleware []http.Hand
 	return "瞬间相关", "/api/moment", nil
 }
 
-func (*MomentService) Info(ctx context.Context, req *request.Object) (*content.Moment, error) {
+func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Moment, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, _ := auth(ctxi, true)
@@ -126,7 +126,7 @@ func momentMaskField(moment *content.Moment) {
 	moment.Anonymous = 0
 }
 
-func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*request.Object, error) {
+func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*request.Id, error) {
 
 	if utf8.RuneCountInString(req.Content) < confdao.Conf.Customize.Moment.MaxContentLen {
 		return nil, errorcode.InvalidArgument.Message(fmt.Sprintf("文章内容不能小于%d个字", confdao.Conf.Customize.Moment.MaxContentLen))
@@ -214,7 +214,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 	if err != nil {
 		return nil, err
 	}
-	return &request.Object{Id: req.Id}, nil
+	return &request.Id{Id: req.Id}, nil
 }
 func (*MomentService) Edit(context.Context, *content.AddMomentReq) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Edit not implemented")
@@ -319,7 +319,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	}, nil
 }
 
-func (*MomentService) Delete(ctx context.Context, req *request.Object) (*empty.Empty, error) {
+func (*MomentService) Delete(ctx context.Context, req *request.Id) (*empty.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)

@@ -417,7 +417,7 @@ func (u *UserService) AuthInfo(ctx context.Context, req *empty.Empty) (*model.Us
 	return user.UserAuthInfo(), nil
 }
 
-func (u *UserService) Info(ctx context.Context, req *request.Object) (*model.UserRep, error) {
+func (u *UserService) Info(ctx context.Context, req *request.Id) (*model.UserRep, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
@@ -545,7 +545,7 @@ func (*UserService) BaseList(ctx context.Context, req *model.BaseListReq) (*mode
 	}, nil
 }
 
-func (*UserService) GetTest(ctx context.Context, req *request.Object) (*model.User, error) {
+func (*UserService) GetTest(ctx context.Context, req *request.Id) (*model.User, error) {
 	return &model.User{Id: req.Id, Name: "测试"}, nil
 }
 
