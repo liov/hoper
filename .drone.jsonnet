@@ -28,7 +28,7 @@ local targetHost = {
     }
 };
 
-local kubectl(compile,target, cmd) = if compile == target then {
+local kubectl(compile, target, cmd) = if compile == target then {
   name: 'deploy',
   image: 'bitnami/kubectl',
   user: 0,  //文档说是string类型，结果"root"不行 k8s runAsUser: 0
@@ -158,7 +158,7 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='', sourceFile='
       'cd ' + srcdir,
       'git clone /code .',
       'git checkout -b deploy $DRONE_COMMIT_REF',
-      'cp -r /code/'+tpldir + 'certs '+ srcdir +tpldir,
+      'cp -r /code/'+tpldir + 'certs '+ srcdir +tpldir+ 'certs',
        // edit Dockerfile && deploy file
       local buildfile =  '/code/' + workdir + protopath + '/build';
       if protopath != '' then 'if [ -f ' + buildfile + ' ]; then cp -r /code/' + workdir + protopath + ' '+ srcdir + workdir + '; fi' else 'echo',
@@ -208,7 +208,6 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='', sourceFile='
         'docker build -f build/k8s/app/Dockerfile-bin -t $USERNAME/' + fullname+':'+tag+' .',
         if compile != target then 'docker push $USERNAME/'+ fullname+':'+ tag,
     ],
-
     },
     kubectl(compile,target, [
       if mode == 'job' || mode == 'cronjob' then 'kubectl --kubeconfig=/root/.kube/config delete --ignore-not-found -f ' + deppath else 'echo',
