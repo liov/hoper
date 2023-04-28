@@ -6,8 +6,8 @@
 <script setup lang="ts">
 import axios from "axios";
 import { reactive, ref, onMounted } from "vue";
-import Moment from "@/components/moment/Moment.vue";
-import ActionMore from "@/components/action/More.vue";
+import Moment from "@h5/components/moment/Moment.vue";
+import ActionMore from "@h5/components/action/More.vue";
 
 const props = defineProps<{
   url: string | URL;

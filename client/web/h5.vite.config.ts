@@ -8,12 +8,14 @@ import { VantResolver } from "unplugin-vue-components/resolvers";
 import dynamicImportVars from "@rollup/plugin-dynamic-import-vars";
 import { VitePWA } from "vite-plugin-pwa";
 
-import path from "path";
+import * as path from "path";
 import wasm from "vite-plugin-wasm";
 import { viteCommonjs } from "@originjs/vite-plugin-commonjs";
+import fs from "fs";
+
+fs.copyFileSync("src/h5/index.html", "index.html");
 
 const lessVar = path.resolve(__dirname, "src/h5/assets/var_vant.less");
-console.log(process.env);
 // https://vitejs.dev/config/
 export default defineConfig({
   envDir: "./src/h5/env",
@@ -54,10 +56,6 @@ export default defineConfig({
     Components({
       resolvers: [VantResolver()],
     }),
-    dynamicImportVars({
-      // options
-      include: ["./src/h5/**/*.ts"],
-    }),
     VitePWA({ registerType: "autoUpdate" }),
     //wasm(),
     //ViteRsw(),
@@ -68,13 +66,13 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src/h5", import.meta.url)),
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "@h5": fileURLToPath(new URL("./src/h5", import.meta.url)),
       "@generated": fileURLToPath(new URL("./generated", import.meta.url)),
     },
   },
   build: {
     rollupOptions: {
-      input: "/src/h5/index.html",
       // https://rollupjs.org/guide/en/#outputmanualchunks
       output: {
         manualChunks: {
@@ -89,6 +87,9 @@ export default defineConfig({
         drop_console: true,
         drop_debugger: true,
       },
+    },
+    dynamicImportVarsOptions: {
+      include: ["./src/h5/**/*.ts"],
     },
   },
   css: {

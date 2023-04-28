@@ -1,8 +1,8 @@
-import { contentRoute } from "@/router/enum";
-import router from "@/router/index";
-import emitter from "@/plugin/emitter";
+import { contentRoute } from "@h5/router/enum";
+import router from "@h5/router/index";
+import emitter from "@h5/plugin/emitter";
 
-import { contentMutations } from "@/store/content";
+import { contentMutations } from "@h5/store/content";
 import { defineAsyncComponent } from "vue";
 
 export const jump = (path: string, type: number, content: any) => {

@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
 import { Toast } from "vant";
-import router from "@/router/index";
-import { ObjMap } from "@/plugin/utils/user";
+import router from "@h5/router/index";
+import { ObjMap } from "@h5/plugin/utils/user";
 import { defineStore } from "pinia";
 
 export interface UserState {

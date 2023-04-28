@@ -40,11 +40,11 @@
 </template>
 
 <script setup lang="ts">
-import { ImagePreview } from "vant";
-import { date2s } from "@/plugin/utils/time";
+import { showImagePreview } from "vant";
+import { date2s } from "@h5/plugin/utils/time";
 import axios from "axios";
-import emitter from "@/plugin/emitter";
-import { STATIC_DIR as staticDir } from "@/plugin/config";
+import emitter from "@h5/plugin/emitter";
+import { STATIC_DIR as staticDir } from "@h5/plugin/config";
 import { reactive } from "vue";
 
 const props = defineProps<{
@@ -60,7 +60,7 @@ let timer;
 const timeout = 500;
 
 function preview() {
-  ImagePreview({
+  showImagePreview({
     images: [comment.image],
     startPosition: 0,
     closeable: true,

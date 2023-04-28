@@ -43,13 +43,13 @@
 </template>
 
 <script setup lang="ts">
-import Action from "@/components/action/Action.vue";
+import Action from "@h5/components/action/Action.vue";
 import axios from "axios";
-import { upload } from "@/plugin/utils/upload";
+import { upload } from "@h5/plugin/utils/upload";
 import { reactive, ref } from "vue";
 import { Toast } from "vant";
 import type { UnwrapNestedRefs, Ref, UnwrapRef } from "vue";
-import { useUserStore } from "@/store/user";
+import { useUserStore } from "@h5/store/user";
 
 const userStore = useUserStore();
 

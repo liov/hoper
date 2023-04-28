@@ -22,10 +22,10 @@
 <script setup lang="ts">
 import axios from "axios";
 import { reactive, type Ref, ref, type UnwrapNestedRefs } from "vue";
-import Comment from "@/components/comment/Comment.vue";
-import ActionMore from "@/components/action/More.vue";
-import { useUserStore } from "@/store/user";
-import { useContentStore } from "@/store/content";
+import Comment from "@h5/components/comment/Comment.vue";
+import ActionMore from "@h5/components/action/More.vue";
+import { useUserStore } from "@h5/store/user";
+import { useContentStore } from "@h5/store/content";
 import type { UnwrapRef } from "vue";
 
 const props = withDefaults(

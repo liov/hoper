@@ -1,14 +1,14 @@
-import HoperPlugin from "@/plugin/plugin";
+import HoperPlugin from "@h5/plugin/plugin";
 import * as Vant from "vant";
 import "vant/es/toast/style";
 import "vant/es/dialog/style";
 import "vant/es/notify/style";
 import "vant/es/image-preview/style";
-import router from "@/router/index";
+import router from "@h5/router/index";
 import { createApp } from "vue";
-import App from "@/App.vue";
+import App from "@h5/App.vue";
 import { createPinia } from "pinia";
-import { init as axiosInit } from "@/plugin/axios";
+import { init as axiosInit } from "@h5/plugin/axios";
 
 import { init as globalInit } from "./store/index";
 
@@ -46,7 +46,7 @@ export const app = createApp(App)
   .use(Vant.Overlay)
   .use(Vant.Loading)
   .use(Vant.Calendar)
-  .use(Vant.DatetimePicker)
+  .use(Vant.DatePicker)
   .use(Vant.Checkbox)
   .use(Vant.CheckboxGroup)
   .use(Vant.Popover)

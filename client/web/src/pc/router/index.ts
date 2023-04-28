@@ -1,10 +1,10 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import type { RouteRecordRaw } from "vue-router";
-import { completedAuthenticated } from "@/router/middle";
+import { completedAuthenticated } from "@pc/router/middle";
 
 import { defineAsyncComponent } from "vue";
-import articleRoute from "@/router/article";
-import userRoute from "@/router/user";
+import articleRoute from "@pc/router/article";
+import userRoute from "@pc/router/user";
 
 const routes: Array<RouteRecordRaw> = [
   {

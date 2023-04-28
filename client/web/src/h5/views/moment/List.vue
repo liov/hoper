@@ -28,12 +28,12 @@
 <script setup lang="ts">
 import axios from "axios";
 import { onMounted, reactive, ref } from "vue";
-import Moment from "@/components/moment/Moment.vue";
-import ActionMore from "@/components/action/More.vue";
-import { useUserStore } from "@/store/user";
-import { useContentStore } from "@/store/content";
+import Moment from "@h5/components/moment/Moment.vue";
+import ActionMore from "@h5/components/action/More.vue";
+import { useUserStore } from "@h5/store/user";
+import { useContentStore } from "@h5/store/content";
 import type { Ref, UnwrapRef } from "vue";
-import { momentList } from "@/service/moment";
+import { momentList } from "@h5/service/moment";
 
 const store = useContentStore();
 const userStore = useUserStore();

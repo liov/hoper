@@ -54,8 +54,8 @@
 <script setup lang="ts">
 import axios from "axios";
 import { onMounted, onUnmounted, reactive, ref } from "vue";
-import emitter from "@/plugin/emitter";
-import AddCollect from "@/components/action/Collect.vue";
+import emitter from "@h5/plugin/emitter";
+import AddCollect from "@h5/components/action/Collect.vue";
 import { Dialog } from "vant";
 
 const VanDialog = Dialog.Component;

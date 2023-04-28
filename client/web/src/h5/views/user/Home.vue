@@ -83,7 +83,7 @@ import axios from "axios";
 import { STATIC_DIR as staticDir } from "@/plugin/config";
 
 import { useUserStore } from "@/store/user";
-import { Toast } from "vant";
+import { showToast } from "vant";
 import { reactive } from "vue";
 import { useRouter } from "vue-router";
 
@@ -95,7 +95,7 @@ if (!user.signature) user.signature = "太个性签名签不下";
 
 async function logout() {
   const res = await axios.get("/api/v1/user/logout");
-  Toast(res.data.message);
+  showToast(res.data.message);
   store.auth = null;
   router.push("/");
 }

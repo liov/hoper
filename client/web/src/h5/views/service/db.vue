@@ -32,7 +32,7 @@ const user_action =
       });
 
 onMounted(() => {
-  db = openDatabase("hoper", "1.0", "hoper DB", 2 * 1024 * 1024);
+  db = window.openDatabase("hoper", "1.0", "hoper DB", 2 * 1024 * 1024);
   db.transaction(function (tx) {
     tx.executeSql("CREATE TABLE IF NOT EXISTS Moments (id unique, content)");
   });

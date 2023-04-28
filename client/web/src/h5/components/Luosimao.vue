@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { dynamicLoadJs } from "@/plugin/utils/script";
+import { dynamicLoadJs } from "@h5/plugin/utils/script";
 import { ref, onMounted } from "vue";
 
 let value = "";

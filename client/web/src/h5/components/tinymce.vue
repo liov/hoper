@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { upload } from "@/plugin/utils/upload";
+import { upload } from "@h5/plugin/utils/upload";
 import tinymce from "tinymce/tinymce";
 import "tinymce/skins/ui/oxide/skin.min.css";
 import "tinymce/skins/ui/oxide/content.min.css";

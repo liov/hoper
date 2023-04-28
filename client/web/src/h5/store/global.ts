@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { Platform } from "@/model/const";
+import { Platform } from "@h5/model/const";
 
 interface GlobalState {
   counter: number;

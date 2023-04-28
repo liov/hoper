@@ -1,8 +1,8 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import type { RouteRecordRaw } from "vue-router";
-import { completedAuthenticated } from "@/router/middle";
-import { userRoute } from "@/router/user";
-import { momentRoute } from "@/router/moment";
+import { completedAuthenticated } from "@h5/router/middle";
+import { userRoute } from "@h5/router/user";
+import { momentRoute } from "@h5/router/moment";
 import { defineAsyncComponent } from "vue";
 
 const routes: Array<RouteRecordRaw> = [

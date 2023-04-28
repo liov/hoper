@@ -32,9 +32,9 @@
 
 <script setup lang="ts">
 import axios from "axios";
-import { upload } from "@/plugin/utils/upload";
-import emitter from "@/plugin/emitter";
-import dateTool from "@/plugin/utils/date";
+import { upload } from "@h5/plugin/utils/upload";
+import emitter from "@h5/plugin/emitter";
+import dateTool from "@h5/plugin/utils/date";
 import {
   ref,
   onMounted,
