@@ -1,4 +1,5 @@
 import HoperPlugin from "@h5/plugin/plugin";
+import "uno.css";
 import * as Vant from "vant";
 import "vant/es/toast/style";
 import "vant/es/dialog/style";

@@ -5,8 +5,9 @@ import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import Components from "unplugin-vue-components/vite";
 import { VantResolver } from "unplugin-vue-components/resolvers";
-import dynamicImportVars from "@rollup/plugin-dynamic-import-vars";
 import { VitePWA } from "vite-plugin-pwa";
+import Unocss from "unocss/vite";
+import { presetUno, presetAttributify, presetIcons } from "unocss";
 
 import * as path from "path";
 import wasm from "vite-plugin-wasm";
@@ -59,6 +60,10 @@ export default defineConfig({
     VitePWA({ registerType: "autoUpdate" }),
     //wasm(),
     //ViteRsw(),
+    Unocss({
+      // 使用Unocss
+      presets: [presetUno(), presetAttributify(), presetIcons()],
+    }),
   ],
   worker: {
     format: "es",

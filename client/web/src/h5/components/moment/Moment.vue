@@ -75,6 +75,7 @@ function detail() {
 .moment {
   @20px: 20px;
   @avatar: 30px;
+  text-align: left;
 
   .name {
     left: 60px;

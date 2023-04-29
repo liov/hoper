@@ -8,6 +8,7 @@ import (
 	"github.com/hopeio/pandora/protobuf/request"
 	"github.com/hopeio/pandora/utils/log"
 	"github.com/hopeio/pandora/utils/slices"
+	"github.com/hopeio/pandora/utils/struct/set"
 	"github.com/liov/hoper/server/go/mod/content/client"
 	"github.com/liov/hoper/server/go/mod/content/confdao"
 	"github.com/liov/hoper/server/go/mod/content/dao"
@@ -299,13 +300,14 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 	if err != nil {
 		return nil, err
 	}
-	var ids, userIds []uint64
+	var ids []uint64
+	userIds := set.New[uint64]()
 	var m = make(map[uint64]*content.Comment)
 	for i := range comments {
 		ids = append(ids, comments[i].Id)
 		m[comments[i].Id] = comments[i]
-		userIds = append(userIds, comments[i].UserId)
-		userIds = append(userIds, comments[i].RecvId)
+		userIds.Add(comments[i].UserId)
+		userIds.Add(comments[i].RecvId)
 		// 屏蔽字段
 		commentMaskField(comments[i])
 	}
@@ -354,7 +356,7 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 	}
 	var users []*user.UserBaseInfo
 	if len(userIds) > 0 {
-		userList, err := client.UserClient.BaseList(ctxi, &user.BaseListReq{Ids: userIds})
+		userList, err := client.UserClient.BaseList(ctxi, &user.BaseListReq{Ids: userIds.ToArray()})
 		if err != nil {
 			return nil, err
 		}

@@ -151,20 +151,30 @@ func (d *userDao) ResumesIds(db *gorm.DB, userId uint64) ([]uint64, error) {
 
 func (d *userDao) GetBaseListDB(db *gorm.DB, ids []uint64, pageNo, pageSize int) (int64, []*user.UserBaseInfo, error) {
 	ctxi := d
+
+	db = db.Table(model.UserTableName)
 	var count int64
-	db = db.Table(model.UserTableName).Where("id IN (?)", ids)
-	err := db.Count(&count).Error
-	if err != nil {
-		return 0, nil, ctxi.ErrorLog(errorcode.DBError, err, "Count")
+	if len(ids) > 0 {
+		db = db.Where("id IN (?)", ids)
+	} else {
+		err := db.Count(&count).Error
+		if err != nil {
+			return 0, nil, ctxi.ErrorLog(errorcode.DBError, err, "Count")
+		}
 	}
+
 	var clauses []clause.Expression
 	if pageNo != 0 && pageSize != 0 {
 		clauses = append(clauses, clause.Limit{Offset: (pageNo - 1) * pageSize, Limit: &pageSize})
 	}
 	var users []*user.UserBaseInfo
-	err = db.Clauses(clauses...).Scan(&users).Error
+	err := db.Clauses(clauses...).Scan(&users).Error
 	if err != nil {
 		return 0, nil, ctxi.ErrorLog(errorcode.DBError, err, "Scan")
+	}
+
+	if len(ids) > 0 {
+		count = int64(len(users))
 	}
 	return count, users, nil
 }

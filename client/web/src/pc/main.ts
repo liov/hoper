@@ -1,4 +1,5 @@
 import HoperPlugin from "@pc/plugin/plugin";
+import "uno.css";
 import Antd from "ant-design-vue";
 import "ant-design-vue/es/message/style/css";
 import router from "@pc/router";

@@ -1,7 +1,7 @@
 [server]
 Protocol = "https"
 Domain =  "hoper.xyz"
-Port = ":8090"
+Port = "8090"
 ReadTimeout = 60
 WriteTimeout = 60
 OpenTracing = true
@@ -100,7 +100,7 @@ console = ["stdout"]
 #邮件
 [mail]
 Host = "smtp.qq.com"
-Port = ":465"
+Port = "465"
 From =  "liovx@qq.com"
 Password = "xxx"
 

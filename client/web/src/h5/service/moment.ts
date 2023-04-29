@@ -6,7 +6,7 @@ import type { RpcError } from "@protobuf-ts/runtime-rpc";
 
 const momentClient = new MomentServiceClient(
   new GrpcWebFetchTransport({
-    baseUrl: "https://grpc.hoper.xyz",
+    baseUrl: "https://api.hoper.xyz",
   })
 );
 

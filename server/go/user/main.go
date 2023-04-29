@@ -23,7 +23,7 @@ func main() {
 	app := fiber.New()
 	pick.FiberWithCtx(app, true, initialize.InitConfig.Module)
 	go app.Listen(":3000")
-	(&tailmon.Server{
+	tailmon.Start(&tailmon.Server{
 		GRPCHandle: func(gs *grpc.Server) {
 			//grpc.OpenTracing = true
 			model.RegisterUserServiceServer(gs, service.GetUserService())
@@ -46,5 +46,5 @@ func main() {
 					UserService:  service.GetUserService(),
 					OauthService: service.GetOauthService(),
 				}}),*/
-	}).Start()
+	})
 }
