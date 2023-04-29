@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/hopeio/pandora/context/http_context"
 	"github.com/hopeio/pandora/protobuf/request"
+	"github.com/hopeio/pandora/utils/struct/set"
 	"github.com/liov/hoper/server/go/mod/content/client"
 	"net/http"
 	"unicode/utf8"
@@ -87,16 +88,16 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 	}
 	moment.Ext = exts[0]
 
-	var userIds []uint64
+	userIds := set.New[uint64]()
 
 	// 匿名
 	if moment.Anonymous == 1 {
 		moment.UserId = 0
 	} else {
-		userIds = append(userIds, moment.UserId)
+		userIds.Add(moment.UserId)
 	}
 	if len(userIds) > 0 {
-		userList, err := client.UserClient.BaseList(ctxi, &user.BaseListReq{Ids: userIds})
+		userList, err := client.UserClient.BaseList(ctxi, &user.BaseListReq{Ids: userIds.ToArray()})
 		if err != nil {
 			return nil, err
 		}
@@ -241,12 +242,12 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	}
 
 	var m = make(map[uint64]*content.Moment)
-	var ids, userIds []uint64
-
+	var ids []uint64
+	userIds := set.New[uint64]()
 	for i := range moments {
 		ids = append(ids, moments[i].Id)
 		m[moments[i].Id] = moments[i]
-		userIds = append(userIds, moments[i].UserId)
+		userIds.Add(moments[i].UserId)
 		// 屏蔽字段
 		momentMaskField(moments[i])
 	}
@@ -306,7 +307,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	}
 	var users []*user.UserBaseInfo
 	if len(userIds) > 0 {
-		userList, err := client.UserClient.BaseList(ctxi, &user.BaseListReq{Ids: userIds})
+		userList, err := client.UserClient.BaseList(ctxi, &user.BaseListReq{Ids: userIds.ToArray()})
 		if err != nil {
 			return nil, err
 		}

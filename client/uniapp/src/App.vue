@@ -10,4 +10,6 @@ onHide(() => {
   console.log("App Hide");
 });
 </script>
-<style></style>
+<style lang="scss">
+@import '@dcloudio/uni-ui/lib/uni-scss/index.scss';
+</style>

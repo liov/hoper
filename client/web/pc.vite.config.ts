@@ -6,6 +6,9 @@ import vueJsx from "@vitejs/plugin-vue-jsx";
 import Components from "unplugin-vue-components/vite";
 import { AntDesignVueResolver } from "unplugin-vue-components/resolvers";
 import { VitePWA } from "vite-plugin-pwa";
+import Unocss from "unocss/vite";
+import { presetUno, presetAttributify, presetIcons } from "unocss";
+
 // TS1259: Module '"path"' can only be default-imported using the 'esModuleInterop' flag
 import * as path from "path";
 import fs from "fs";
@@ -59,6 +62,23 @@ export default defineConfig({
     ...VitePWA({ registerType: "autoUpdate" }),
     //wasm(),
     //ViteRsw(),
+    Unocss({
+      // 使用Unocss
+      presets: [presetUno(), presetAttributify(), presetIcons()],
+      rules: [
+        // 在这个可以增加预设规则, 也可以使用正则表达式
+        [
+          "p-c", // 使用时只需要写 p-c 即可应用该组样式
+          {
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: `translate(-50%, -50%)`,
+          },
+        ],
+        [/^m-(\d+)$/, ([, d]) => ({ margin: `${parseInt(d) / 4}rem` })],
+      ],
+    }),
   ],
   worker: {
     format: "es",

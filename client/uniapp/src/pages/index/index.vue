@@ -1,6 +1,8 @@
 <template>
   <view class="content">
+      <navigator url="/pages/moment/moment?title=navigate" hover-class="navigator-hover">
     <image class="logo" src="/static/logo.png" />
+      </navigator>
     <view class="text-area">
       <text class="title">{{ title }}</text>
     </view>
