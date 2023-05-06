@@ -12,6 +12,9 @@
  * 如果你的项目同样使用了scss预处理，你也可以直接在你的 scss 代码中使用如下变量，同时无需 import 这个文件
  */
 
+/* 需要放到文件最上面 */
+@import '@dcloudio/uni-ui/lib/uni-scss/variables.scss';
+
 /* 颜色变量 */
 
 /* 行为相关颜色 */
@@ -73,10 +76,9 @@ $uni-font-size-title: 20px;
 $uni-color-subtitle: #555; // 二级标题颜色
 $uni-font-size-subtitle: 18px;
 $uni-color-paragraph: #3f536e; // 文章段落颜色
-$uni-font-size-paragraph: 15px;d
+$uni-font-size-paragraph: 15px;
 
-/* 需要放到文件最上面 */
-@import '@dcloudio/uni-ui/lib/uni-scss/variables.scss';
+
 
 /*
  以下变量是默认值，如不需要修改可以不用给下面的变量重新赋值

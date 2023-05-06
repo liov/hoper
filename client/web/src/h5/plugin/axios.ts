@@ -35,7 +35,7 @@ export function init() {
           });
         } else if (response.data.code !== 0) {
           showFailToast(response.data.message);
-          return Promise.reject({ response: response });
+          return Promise.reject(response);
         }
       }
       return Promise.resolve(response);

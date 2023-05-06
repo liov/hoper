@@ -17,9 +17,7 @@ export const state: UserState = {
 };
 
 const getters = {
-  getUser: (state) => (id) => {
-    return state.userCache.get(id);
-  },
+  getUser: (state) => (id) => state.userCache.get(id),
 };
 
 const actions = {
