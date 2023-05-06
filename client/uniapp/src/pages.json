@@ -16,7 +16,16 @@
 		{
 			"path": "pages/moment/moment",
 			"style": {
-				"navigationBarTitleText": "moment"
+				"navigationBarTitleText": "moment",
+				"enablePullDownRefresh": true,
+				"onReachBottomDistance": "50"
+			}
+		},
+		{
+			"path": "pages/moment/momentv2",
+			"style": {
+				"navigationBarTitleText": "momentv2",
+				"enablePullDownRefresh": true
 			}
 		}
 	],
