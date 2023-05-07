@@ -10,13 +10,13 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "index"
+				"navigationBarTitleText": "首页"
 			}
 		},
 		{
 			"path": "pages/moment/moment",
 			"style": {
-				"navigationBarTitleText": "moment",
+				"navigationBarTitleText": "瞬间",
 				"enablePullDownRefresh": true,
 				"onReachBottomDistance": "50"
 			}
