@@ -2,21 +2,21 @@ package main
 
 import (
 	"github.com/hopeio/pandora/pick"
-	"github.com/liov/hoper/server/go/mod/chat"
-	"github.com/liov/hoper/server/go/mod/upload"
+	"github.com/hopeio/pandora/server"
+	"github.com/liov/hoper/server/go/chat"
+	"github.com/liov/hoper/server/go/upload"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/hopeio/pandora/initialize"
-	"github.com/hopeio/pandora/tiga"
 	"github.com/hopeio/pandora/utils/log"
-	cconf "github.com/liov/hoper/server/go/mod/content/confdao"
-	contentService "github.com/liov/hoper/server/go/mod/content/service"
-	"github.com/liov/hoper/server/go/mod/protobuf/content"
-	"github.com/liov/hoper/server/go/mod/protobuf/user"
-	upconf "github.com/liov/hoper/server/go/mod/upload/confdao"
-	uconf "github.com/liov/hoper/server/go/mod/user/confdao"
-	userService "github.com/liov/hoper/server/go/mod/user/service"
+	cconf "github.com/liov/hoper/server/go/content/confdao"
+	contentService "github.com/liov/hoper/server/go/content/service"
+	"github.com/liov/hoper/server/go/protobuf/content"
+	"github.com/liov/hoper/server/go/protobuf/user"
+	upconf "github.com/liov/hoper/server/go/upload/confdao"
+	uconf "github.com/liov/hoper/server/go/user/confdao"
+	userService "github.com/liov/hoper/server/go/user/service"
 
 	"go.opencensus.io/examples/exporter"
 	"go.opencensus.io/plugin/ocgrpc"
@@ -37,7 +37,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	tiga.Start(&tiga.Server{
+	server.Start(&server.Server{
 		Config: uconf.Conf.Server.Origin(),
 		//为了可以自定义中间件
 		GRPCOptions: []grpc.ServerOption{

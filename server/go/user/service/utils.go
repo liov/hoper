@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/hopeio/pandora/protobuf/errorcode"
 	"github.com/hopeio/pandora/utils/verification"
-	"github.com/liov/hoper/server/go/mod/user/confdao"
+	"github.com/liov/hoper/server/go/user/confdao"
 )
 
 func LuosimaoVerify(vCode string) error {

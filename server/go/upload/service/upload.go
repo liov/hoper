@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 	"github.com/hopeio/pandora/context/http_context"
-	"github.com/liov/hoper/server/go/mod/protobuf/upload"
-	"github.com/liov/hoper/server/go/mod/upload/confdao"
-	"github.com/liov/hoper/server/go/mod/upload/dao"
+	"github.com/liov/hoper/server/go/protobuf/upload"
+	"github.com/liov/hoper/server/go/upload/confdao"
+	"github.com/liov/hoper/server/go/upload/dao"
 )
 
 type UploadService struct {

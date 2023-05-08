@@ -6,7 +6,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/hopeio/pandora/protobuf/errorcode"
 	timei "github.com/hopeio/pandora/utils/time"
-	"github.com/liov/hoper/server/go/mod/content/confdao"
+	"github.com/liov/hoper/server/go/content/confdao"
 )
 
 var limitErr = errorcode.TimeTooMuch.Message("您的操作过于频繁，请先休息一会儿。")

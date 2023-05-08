@@ -3,7 +3,7 @@ package redis
 import (
 	"github.com/hopeio/pandora/protobuf/errorcode"
 	redisi "github.com/hopeio/pandora/utils/dao/redis"
-	"github.com/liov/hoper/server/go/mod/protobuf/content"
+	"github.com/liov/hoper/server/go/protobuf/content"
 	"strconv"
 )
 

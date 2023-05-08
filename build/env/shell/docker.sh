@@ -97,7 +97,7 @@ BLOCK_SUSPEND |开启可以阻止系统挂起的功能
 如果想与系统的网络堆栈进行交互，应该使用`--cap-add=NET_ADMIN`来修改网络接口
 
 
-docker run --rm -v /mnt/d/SDK/gopath:/go -v $PWD:/work -w /work/server/go/mod golang go run /work/server/go/mod/tools/install.go
+docker run --rm -v /mnt/d/SDK/gopath:/go -v $PWD:/work -w /work/server/go golang go run /work/server/go/tools/install.go
 
 # 使用宿主机网络
 docker run --net=host

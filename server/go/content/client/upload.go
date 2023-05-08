@@ -3,7 +3,7 @@ package client
 import (
 	"github.com/hopeio/pandora/utils/log"
 	grpci "github.com/hopeio/pandora/utils/net/http/grpc"
-	"github.com/liov/hoper/server/go/mod/protobuf/upload"
+	"github.com/liov/hoper/server/go/protobuf/upload"
 )
 
 func GetUploadClient() upload.UploadServiceClient {

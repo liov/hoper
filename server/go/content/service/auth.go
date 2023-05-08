@@ -2,8 +2,8 @@ package service
 
 import (
 	"github.com/hopeio/pandora/context/http_context"
-	"github.com/liov/hoper/server/go/mod/protobuf/user"
-	"github.com/liov/hoper/server/go/mod/user/service"
+	"github.com/liov/hoper/server/go/protobuf/user"
+	"github.com/liov/hoper/server/go/user/service"
 )
 
 func auth(ctx *http_context.Context, update bool) (*user.AuthInfo, error) {

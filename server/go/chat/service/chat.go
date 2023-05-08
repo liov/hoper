@@ -6,7 +6,7 @@ import (
 	"github.com/hopeio/pandora/context/http_context"
 	"github.com/hopeio/pandora/protobuf/errorcode"
 	httpi "github.com/hopeio/pandora/utils/net/http"
-	"github.com/liov/hoper/server/go/mod/protobuf/user"
+	"github.com/liov/hoper/server/go/protobuf/user"
 	"net/http"
 )
 

@@ -6,7 +6,7 @@ import "pandora/protobuf/utils/patch/go.proto";
 option (enum.enum_gqlgen_all) = true;
 // 写在这里必然要暴露出去
 option java_package = "xyz.hoper.protobuf.user";
-option go_package = "github.com/liov/hoper/server/go/mod/protobuf/user";
+option go_package = "github.com/liov/hoper/server/go/protobuf/user";
 
 option (enum.enum_prefix_all) = false;
 option (go.file) = {no_enum_prefix:true};

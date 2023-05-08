@@ -9,11 +9,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/hopeio/pandora/initialize"
-	tailmon "github.com/hopeio/pandora/tiga"
+	"github.com/hopeio/pandora/server"
 	"github.com/hopeio/pandora/utils/net/http/gin/oauth"
-	model "github.com/liov/hoper/server/go/mod/protobuf/user"
-	"github.com/liov/hoper/server/go/mod/user/confdao"
-	"github.com/liov/hoper/server/go/mod/user/service"
+	model "github.com/liov/hoper/server/go/protobuf/user"
+	"github.com/liov/hoper/server/go/user/confdao"
+	"github.com/liov/hoper/server/go/user/service"
 
 	"google.golang.org/grpc"
 )
@@ -23,7 +23,7 @@ func main() {
 	app := fiber.New()
 	pick.FiberWithCtx(app, true, initialize.InitConfig.Module)
 	go app.Listen(":3000")
-	tailmon.Start(&tailmon.Server{
+	server.Start(&server.Server{
 		GRPCHandle: func(gs *grpc.Server) {
 			//grpc.OpenTracing = true
 			model.RegisterUserServiceServer(gs, service.GetUserService())
