@@ -3,7 +3,7 @@ package client
 import (
 	"github.com/hopeio/pandora/utils/log"
 	grpci "github.com/hopeio/pandora/utils/net/http/grpc"
-	"github.com/liov/hoper/server/go/mod/protobuf/user"
+	"github.com/liov/hoper/server/go/protobuf/user"
 )
 
 func GetUserClient() user.UserServiceClient {

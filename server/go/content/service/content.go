@@ -9,10 +9,10 @@ import (
 
 	"github.com/hopeio/pandora/protobuf/empty"
 	"github.com/hopeio/pandora/protobuf/errorcode"
-	"github.com/liov/hoper/server/go/mod/content/confdao"
-	"github.com/liov/hoper/server/go/mod/content/dao"
-	"github.com/liov/hoper/server/go/mod/content/model"
-	"github.com/liov/hoper/server/go/mod/protobuf/content"
+	"github.com/liov/hoper/server/go/content/confdao"
+	"github.com/liov/hoper/server/go/content/dao"
+	"github.com/liov/hoper/server/go/content/model"
+	"github.com/liov/hoper/server/go/protobuf/content"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

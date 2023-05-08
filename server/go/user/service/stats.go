@@ -6,10 +6,10 @@ import (
 	"github.com/hopeio/pandora/protobuf/empty"
 	"github.com/hopeio/pandora/protobuf/errorcode"
 	dbi "github.com/hopeio/pandora/utils/dao/db/const"
-	"github.com/liov/hoper/server/go/mod/protobuf/user"
-	"github.com/liov/hoper/server/go/mod/user/confdao"
-	"github.com/liov/hoper/server/go/mod/user/dao"
-	"github.com/liov/hoper/server/go/mod/user/model"
+	"github.com/liov/hoper/server/go/protobuf/user"
+	"github.com/liov/hoper/server/go/user/confdao"
+	"github.com/liov/hoper/server/go/user/dao"
+	"github.com/liov/hoper/server/go/user/model"
 )
 
 // 关注

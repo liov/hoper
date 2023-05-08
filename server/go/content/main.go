@@ -6,9 +6,9 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/hopeio/pandora/initialize"
 	"github.com/hopeio/pandora/tiga"
-	"github.com/liov/hoper/server/go/mod/content/confdao"
-	"github.com/liov/hoper/server/go/mod/content/service"
-	model "github.com/liov/hoper/server/go/mod/protobuf/content"
+	"github.com/liov/hoper/server/go/content/confdao"
+	"github.com/liov/hoper/server/go/content/service"
+	model "github.com/liov/hoper/server/go/protobuf/content"
 	"google.golang.org/grpc"
 )
 

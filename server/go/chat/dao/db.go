@@ -2,7 +2,7 @@ package dao
 
 import (
 	"github.com/hopeio/pandora/protobuf/errorcode"
-	"github.com/liov/hoper/server/go/mod/upload/model"
+	"github.com/liov/hoper/server/go/upload/model"
 	"gorm.io/gorm"
 )
 

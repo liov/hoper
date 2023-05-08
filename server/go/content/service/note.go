@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/hopeio/pandora/protobuf/response"
-	model "github.com/liov/hoper/server/go/mod/protobuf/content"
+	model "github.com/liov/hoper/server/go/protobuf/content"
 )
 
 type NoteService struct {

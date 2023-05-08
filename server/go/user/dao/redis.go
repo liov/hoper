@@ -9,10 +9,10 @@ import (
 	redisi "github.com/hopeio/pandora/utils/dao/redis"
 	"github.com/hopeio/pandora/utils/encoding/hash"
 	"github.com/hopeio/pandora/utils/log"
-	"github.com/liov/hoper/server/go/mod/protobuf/common"
-	model "github.com/liov/hoper/server/go/mod/protobuf/user"
-	"github.com/liov/hoper/server/go/mod/user/confdao"
-	modelconst "github.com/liov/hoper/server/go/mod/user/model"
+	"github.com/liov/hoper/server/go/protobuf/common"
+	model "github.com/liov/hoper/server/go/protobuf/user"
+	"github.com/liov/hoper/server/go/user/confdao"
+	modelconst "github.com/liov/hoper/server/go/user/model"
 )
 
 // UserToRedis 将用户信息存到redis

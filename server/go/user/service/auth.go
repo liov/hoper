@@ -3,12 +3,12 @@ package service
 import (
 	contexti "github.com/hopeio/pandora/context"
 	"github.com/hopeio/pandora/context/http_context"
-	"github.com/liov/hoper/server/go/mod/protobuf/user"
+	"github.com/liov/hoper/server/go/protobuf/user"
 	"strings"
 	"time"
 
-	"github.com/liov/hoper/server/go/mod/user/confdao"
-	"github.com/liov/hoper/server/go/mod/user/dao"
+	"github.com/liov/hoper/server/go/user/confdao"
+	"github.com/liov/hoper/server/go/user/dao"
 )
 
 var ExportAuth = auth
