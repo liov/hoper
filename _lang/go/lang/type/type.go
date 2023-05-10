@@ -6,10 +6,10 @@ import (
 	"reflect"
 )
 
-type Foo uint32
+type Foo1 uint32
 
 func main() {
-	var foo Foo
+	var foo Foo1
 	t := reflect.TypeOf(&foo).Elem()
 	println(t.Kind())
 	v := reflect.ValueOf(&foo).Elem()
@@ -25,7 +25,7 @@ func Tpy(v interface{}) {
 	switch v.(type) {
 	case uint32:
 		println("uint32")
-	case Foo:
+	case Foo1:
 		println("Foo")
 	}
 }

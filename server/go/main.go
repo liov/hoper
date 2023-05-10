@@ -62,7 +62,7 @@ func main() {
 			upload.Register(app)
 			chat.Register(app)
 			pick.RegisterService(userService.GetUserService(), contentService.GetMomentService())
-			pick.Gin(app, uconf.Conf.Server.GenDoc, initialize.InitConfig.Module, uconf.Conf.Server.OpenTracing)
+			pick.Gin(app, uconf.Conf.Server.GenDoc, initialize.GlobalConfig.Module, uconf.Conf.Server.OpenTracing)
 		},
 	})
 }

@@ -21,7 +21,7 @@ import (
 func main() {
 	pick.RegisterFiberService(service.GetUserService())
 	app := fiber.New()
-	pick.FiberWithCtx(app, true, initialize.InitConfig.Module)
+	pick.FiberWithCtx(app, true, initialize.GlobalConfig.Module)
 	go app.Listen(":3000")
 	server.Start(&server.Server{
 		GRPCHandle: func(gs *grpc.Server) {
@@ -38,7 +38,7 @@ func main() {
 			oauth.RegisterOauthServiceHandlerServer(app, service.GetOauthService())
 			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
 			pick.RegisterService(service.GetUserService())
-			pick.Gin(app, confdao.Conf.Server.GenDoc, initialize.InitConfig.Module, confdao.Conf.Server.OpenTracing)
+			pick.Gin(app, confdao.Conf.Server.GenDoc, initialize.GlobalConfig.Module, confdao.Conf.Server.OpenTracing)
 		},
 
 		/*		GraphqlResolve: model.NewExecutableSchema(model.Config{
