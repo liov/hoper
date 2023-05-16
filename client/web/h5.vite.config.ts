@@ -81,7 +81,7 @@ export default defineConfig({
       // https://rollupjs.org/guide/en/#outputmanualchunks
       output: {
         manualChunks: {
-          "group-chat": ["./src/views/chat/index.vue"],
+          "group-chat": ["./src/h5/views/chat/index.vue"],
         },
       },
       plugins: [],
