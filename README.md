@@ -1,17 +1,12 @@
 # hoper
 
 # algo_lang
-各个语言的语法学习,总结的坑和黑魔法,刷LeetCode的解答
-## lua
- 专注于openresty开发和apisix插件
-## python
-一些gui samples
+go kotlin rust ts lua(openresty) python的语法学习,总结的坑和黑魔法,刷LeetCode的解答
+
 # build
 开发及部署需要的操作总结脚本汇总，开发过程中遇到的坑总结
 ## config
-- nginx的配置
-- rust cargo的配置
-- gradle 配置
+nginx/ rust cargo/ gradle的配置
 ## env
 ### dev
 开发所需工具的安装步骤，及安装过程中的问题解决方法，及使用方法

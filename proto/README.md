@@ -20,4 +20,4 @@ E:\protoc\bin\protoc.exe -ID:\hoper\server\go/../../proto
 -IE:\gopath\pkg\mod\google.golang.org\protobuf@v1.26.0  
 -ID:\hoper\server\go/../../proto/utils/proto
 -IE:\gopath/src D:\hoper\server\go/../../proto/user/*model.proto
---dart_out=plugin=go,paths=source_relative:D:\hoper\client\flutter\generated\protobuf
+--dart_out=plugin=go,paths=source_relative:D:\hoper\client\app\generated\protobuf

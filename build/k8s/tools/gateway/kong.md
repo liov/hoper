@@ -1,7 +1,7 @@
 kong.conf
 ```properties
 database = postgres
-pg_host = postgre.miz.hk
+pg_host = postgre.tools
 pg_port = 5432
 pg_user = web
 pg_password = 123456
