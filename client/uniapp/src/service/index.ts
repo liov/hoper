@@ -4,7 +4,7 @@ import {userStore} from "@/store";
 
 export function init() {
     uniHttp.defaults.baseUrl = API_HOST;
-    const token = localStorage.getItem("token");
+    const token = uni.getStorageSync("token");
 
     uniHttp.defaults.header["Authorization"] = token ? token : userStore.token;
 
