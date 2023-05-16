@@ -18,7 +18,7 @@
 			"style": {
 				"navigationBarTitleText": "瞬间",
 				"enablePullDownRefresh": true,
-				"onReachBottomDistance": "50"
+				"onReachBottomDistance": 50
 			}
 		},
 		{

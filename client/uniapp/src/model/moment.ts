@@ -4,8 +4,10 @@ export interface Moment {
     id: number;
     content: string;
     images: string;
+    imagesUrls:string[];
     type: number;
     userId: number;
+    user:User;
     ext: ContentExt;
     permission: number;
     createdAt: string;

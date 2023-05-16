@@ -25,7 +25,7 @@ const getters = {
 const actions = {
     async getAuth() {
         if (state.auth) return;
-        const token = localStorage.getItem("token");
+        const token = uni.getStorageSync("token");
         if (token) {
             state.token = token;
             const {data} = await uniHttp.get(API_HOST + `/api/v1/auth`);
@@ -47,7 +47,7 @@ const actions = {
 
             state.auth = details.user;
             state.token = details.token;
-            localStorage.setItem("token", details.token);
+            uni.setStorageSync("token", details.token);
             uniHttp.defaults.header["Authorization"] = details.token;
             await uni.navigateTo({url: "/"});
         } catch (error: any) {
@@ -67,7 +67,7 @@ const actions = {
                 }});
             state.auth = details.user;
             state.token = details.token;
-            localStorage.setItem("token", details.token);
+            uni.setStorageSync("token", details.token);
             uniHttp.defaults.header["Authorization"] = details.token;
             await uni.navigateTo({url: "/"});
         } catch (error: any) {

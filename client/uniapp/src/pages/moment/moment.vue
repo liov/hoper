@@ -1,35 +1,34 @@
 <template>
     <view>
     <uni-list :border="false">
-        <view v-for="(moment,midx) in momentList" :key="midx"
-              :set=" users[midx] = userStore.getUser(moment.userId)">
+        <view v-for="(moment,midx) in momentList" :key="midx">
 
             <uni-card margin="2px 5px" padding="0">
                 <uni-list-item direction="column">
                     <!-- 自定义 header -->
                     <template v-slot:header>
-                        <uni-list-chat :avatar-circle="true" :title="users[midx].name" :avatar="staticDir+users[midx].avatarUrl"
+                        <uni-list-chat :avatar-circle="true" :title="moment.user.name" :avatar="staticDir+moment.user.avatarUrl"
                                        note="来自iPhone15 Pro Max" :time="moment.createdAt.slice(0,10)+' '+ moment.createdAt.slice(11)"></uni-list-chat>
                     </template>
                     <!-- 自定义 body -->
                     <template v-slot:body>
                         <text class="slot-text">{{ moment.content }}</text>
-                        <view v-if="moment.images" class="uni-title-sub uni-ellipsis-2" :let="images = moment.images.split(',')">
-                            <view v-if="images.length == 1">
-                                <image :src="staticDir+images[0]" style="width: 60%;max-height: 500px" mode="aspectFill" />
+                        <view v-if="moment.images" class="uni-title-sub uni-ellipsis-2" >
+                            <view v-if="moment.imagesUrls.length == 1">
+                                <image :src="staticDir+moment.imagesUrls[0]" style="width: 60%;max-height: 500px" mode="aspectFill" />
                             </view>
-                            <view v-else-if="(images.length = 2) || (images.length = 4)">
+                            <view v-else-if="(moment.imagesUrls.length = 2) || (moment.imagesUrls.length = 4)">
                                 <uni-grid :column="2" :show-border="false" :square="false">
-                                    <uni-grid-item v-for="(img, iidx) in images" :index="iidx" :key="iidx">
+                                    <uni-grid-item v-for="(img, iidx) in moment.imagesUrls" :index="iidx" :key="iidx">
                                         <view class="grid-item-box">
-                                            <image :src="staticDir+img" :style="{width: '100%',height: 360/images.length+'px'}" mode="aspectFill" @click="preview(midx,iidx)"/>
+                                            <image :src="staticDir+img" :style="{width: '100%',height: 360/moment.imagesUrls.length+'px'}" mode="aspectFill" @click="preview(midx,iidx)"/>
                                         </view>
                                     </uni-grid-item>
                                 </uni-grid>
                             </view>
-                            <view v-else-if="images.length < 10">
+                            <view v-else-if="moment.imagesUrls.length < 10">
                             <uni-grid :column="3" :show-border="false" :square="false">
-                                <uni-grid-item v-for="(img, iidx) in images" :index="iidx" :key="iidx">
+                                <uni-grid-item v-for="(img, iidx) in moment.imagesUrls" :index="iidx" :key="iidx">
                                     <view class="grid-item-box">
                                         <image :src="staticDir+img" style="width: 100%;height: 90px" mode="aspectFill" />
                                     </view>
@@ -38,9 +37,9 @@
                             </view>
                             <view v-else>
                                 <swiper class="swiper" :indicator-dots="true">
-                                    <swiper-item v-for="sidx in Math.ceil(images.length/9)">
+                                    <swiper-item v-for="sidx in Math.ceil(moment.imagesUrls.length/9)">
                                         <uni-grid :column="3" :show-border="false" :square="false">
-                                            <uni-grid-item v-for="(img, iidx) in images.slice(9*(sidx-1),9*sidx)" :index="iidx" :key="iidx">
+                                            <uni-grid-item v-for="(img, iidx) in moment.imagesUrls.slice(9*(sidx-1),9*sidx)" :index="iidx" :key="iidx">
                                                 <view class="grid-item-box">
                                                     <image :src="staticDir+img" style="width: 100%;height: 90px" mode="aspectFill" />
                                                 </view>
@@ -95,7 +94,6 @@ const listReq:PageRequest = {
     PageNo: 1, PageSize: 10
 }
 
-const users: User[] = [];
 const momentList: Ref<Moment[]> = ref([]);
 const loadMoreStatus = ref('more');
 
@@ -145,7 +143,7 @@ const previewImgs:Ref<string[]> = ref([]);
 const current = ref(0);
 function preview(midx:number,iidx:number){
     console.log(midx,iidx);
-    previewImgs.value = momentList.value[midx].images.split(',');
+    previewImgs.value = momentList.value[midx].imagesUrls;
     console.log(previewImgs.value);
     current.value = iidx;
     popup.value.open('center');
