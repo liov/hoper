@@ -46,7 +46,7 @@ Future<void> main() async {
             ),
           ),
       //home: HomeView(),
-      initialRoute: Routes.PICTURE,
+      initialRoute: Routes.HOME,
       initialBinding: BindingsBuilder.put(() => globalState),
       getPages: AppPages.routes,
       localeListResolutionCallback:

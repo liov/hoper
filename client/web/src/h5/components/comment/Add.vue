@@ -46,8 +46,8 @@ import {
 } from "vue";
 import { Toast } from "vant";
 import { useRoute, useRouter } from "vue-router";
-import { useUserStore } from "@/store/user";
-import { useContentStore } from "@/store/content";
+import { useUserStore } from "@h5/store/user";
+import { useContentStore } from "@h5/store/content";
 
 const props = defineProps<{
   comment: any;

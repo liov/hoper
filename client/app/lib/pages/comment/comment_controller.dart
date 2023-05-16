@@ -8,6 +8,7 @@ import 'package:app/components/media/media.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:fixnum/fixnum.dart' as $fixnum;
+import 'package:grpc/grpc.dart';
 
 import '../../utils/dialog.dart';
 
@@ -38,7 +39,8 @@ class CommentController extends GetxController with MediaController {
       req.pageNo++;
       update(["list"]);
     } catch (e) {
-      toast(e.toString());
+      final grpce = e as GrpcError;
+      toast(grpce.message!);
     }
   }
 

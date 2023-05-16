@@ -58,7 +58,7 @@
     />
   </van-cell-group>
   <van-popup v-if="show" v-model:show="show" position="bottom" teleport="#app">
-    <van-datetime-picker
+    <van-date-picker
       v-model="birthday"
       type="date"
       :min-date="minDate"
@@ -66,7 +66,7 @@
       @confirm="onConfirm"
       @cancel="show = false"
     >
-    </van-datetime-picker>
+    </van-date-picker>
   </van-popup>
   <van-button class="button" round type="primary" size="large" @click="confirm"
     >确认</van-button
