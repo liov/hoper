@@ -1,8 +1,8 @@
 package client
 
 import (
-	"github.com/liov/hoper/server/go/protobuf/upload"
-	"github.com/liov/hoper/server/go/protobuf/user"
+	"github.com/actliboy/hoper/server/go/protobuf/upload"
+	"github.com/actliboy/hoper/server/go/protobuf/user"
 	"google.golang.org/grpc"
 )
 

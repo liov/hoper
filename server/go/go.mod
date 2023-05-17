@@ -1,4 +1,4 @@
-module github.com/liov/hoper/server/go
+module github.com/actliboy/hoper/server/go
 
 go 1.18
 

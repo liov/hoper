@@ -2,14 +2,14 @@ package service
 
 import (
 	"context"
+	"github.com/actliboy/hoper/server/go/protobuf/user"
+	"github.com/actliboy/hoper/server/go/user/confdao"
+	"github.com/actliboy/hoper/server/go/user/dao"
+	"github.com/actliboy/hoper/server/go/user/model"
 	"github.com/hopeio/pandora/context/http_context"
 	"github.com/hopeio/pandora/protobuf/empty"
 	"github.com/hopeio/pandora/protobuf/errorcode"
 	dbi "github.com/hopeio/pandora/utils/dao/db/const"
-	"github.com/liov/hoper/server/go/protobuf/user"
-	"github.com/liov/hoper/server/go/user/confdao"
-	"github.com/liov/hoper/server/go/user/dao"
-	"github.com/liov/hoper/server/go/user/model"
 )
 
 // 关注

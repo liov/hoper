@@ -26,7 +26,7 @@ grpc调用服务端接口
 ![app](build/assets/app.webp)
 
 ## web
-主要是hoper的h5版本，整合vue3+vite+typescript，实现一套环境开发pc和h5 web，开发了登录注册功能，动态列表，动态详情，发布动态，点赞收藏评论等
+主要是hoper的h5版本，整合vue3+vite+typescript+wasm，实现一套环境开发pc和h5 web，开发了登录注册功能，动态列表，动态详情，发布动态，点赞收藏评论等
 
 ![web](build/assets/h5.webp)
 

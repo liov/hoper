@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"github.com/actliboy/hoper/server/go/protobuf/user"
+	"github.com/actliboy/hoper/server/go/user/confdao"
 	"github.com/go-oauth2/oauth2/v4"
 	"github.com/go-oauth2/oauth2/v4/errors"
 	"github.com/go-oauth2/oauth2/v4/generates"
@@ -13,8 +15,6 @@ import (
 	"github.com/hopeio/pandora/protobuf/response"
 	jwti "github.com/hopeio/pandora/utils/verification/auth/jwt"
 	"github.com/hopeio/pandora/utils/verification/auth/oauth"
-	"github.com/liov/hoper/server/go/protobuf/user"
-	"github.com/liov/hoper/server/go/user/confdao"
 	"google.golang.org/grpc/metadata"
 	"log"
 	"strconv"

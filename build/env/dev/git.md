@@ -134,6 +134,8 @@ proxy = socks5://127.0.0.1:2080
 [https]
 proxy = socks5://127.0.0.1:2080
 
+# 设置远程仓库地址
+git remote set-url origin git@github.com:keithnull/keithnull.github.io.git
 # 多个远程仓库
 方法 1：每次push、pull时需分开操作
 首先，查看本地仓库所关联的远程仓库：（假定最初仅关联了一个远程仓库）

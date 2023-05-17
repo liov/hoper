@@ -2,11 +2,11 @@ package db
 
 import (
 	sqlstd "database/sql"
+	"github.com/actliboy/hoper/server/go/content/model"
+	"github.com/actliboy/hoper/server/go/protobuf/content"
 	"github.com/hopeio/pandora/protobuf/errorcode"
 	dbi "github.com/hopeio/pandora/utils/dao/db/const"
 	clausei "github.com/hopeio/pandora/utils/dao/db/gorm/clause"
-	"github.com/liov/hoper/server/go/content/model"
-	"github.com/liov/hoper/server/go/protobuf/content"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"strconv"

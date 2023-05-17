@@ -16,6 +16,11 @@ import (
 	"strconv"
 	"time"
 
+	model "github.com/actliboy/hoper/server/go/protobuf/user"
+	"github.com/actliboy/hoper/server/go/user/confdao"
+	"github.com/actliboy/hoper/server/go/user/dao"
+	"github.com/actliboy/hoper/server/go/user/middle"
+	modelconst "github.com/actliboy/hoper/server/go/user/model"
 	"github.com/go-redis/redis/v8"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang/protobuf/ptypes/wrappers"
@@ -27,11 +32,6 @@ import (
 	templatei "github.com/hopeio/pandora/utils/definition/template"
 	"github.com/hopeio/pandora/utils/log"
 	httpi "github.com/hopeio/pandora/utils/net/http"
-	model "github.com/liov/hoper/server/go/protobuf/user"
-	"github.com/liov/hoper/server/go/user/confdao"
-	"github.com/liov/hoper/server/go/user/dao"
-	"github.com/liov/hoper/server/go/user/middle"
-	modelconst "github.com/liov/hoper/server/go/user/model"
 
 	"github.com/hopeio/pandora/utils/net/mail"
 	"github.com/hopeio/pandora/utils/verification"

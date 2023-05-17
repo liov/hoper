@@ -1,12 +1,12 @@
 package service
 
 import (
+	"github.com/actliboy/hoper/server/go/protobuf/user"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/hopeio/pandora/context/http_context"
 	"github.com/hopeio/pandora/protobuf/errorcode"
 	httpi "github.com/hopeio/pandora/utils/net/http"
-	"github.com/liov/hoper/server/go/protobuf/user"
 	"net/http"
 )
 
