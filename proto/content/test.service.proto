@@ -8,7 +8,7 @@ import "pandora/protobuf/empty/empty.proto";
 import "pandora/protobuf/response/response.proto";
 import "pandora/protobuf/utils/patch/go.proto";
 
-option go_package = "github.com/liov/hoper/server/go/protobuf/content";
+option go_package = "github.com/actliboy/hoper/server/go/protobuf/content";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {

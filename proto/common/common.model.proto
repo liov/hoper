@@ -6,7 +6,7 @@ import "utils/area/area.proto";
 
 
 option java_package = "xyz.hoper.protobuf.common";
-option go_package = "github.com/liov/hoper/server/go/protobuf/common";
+option go_package = "github.com/actliboy/hoper/server/go/protobuf/common";
 
 
 message Attr {

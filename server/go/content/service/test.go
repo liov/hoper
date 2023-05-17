@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"unsafe"
 
+	model "github.com/actliboy/hoper/server/go/protobuf/content"
 	"github.com/hopeio/pandora/protobuf/empty"
-	model "github.com/liov/hoper/server/go/protobuf/content"
 )
 
 type TestService struct {

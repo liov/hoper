@@ -10,7 +10,7 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/liov/hoper/server/go/content/model"
+	"github.com/actliboy/hoper/server/go/content/model"
 	"github.com/spf13/viper"
 )
 

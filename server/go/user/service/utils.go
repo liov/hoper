@@ -1,9 +1,9 @@
 package service
 
 import (
+	"github.com/actliboy/hoper/server/go/user/confdao"
 	"github.com/hopeio/pandora/protobuf/errorcode"
 	"github.com/hopeio/pandora/utils/verification"
-	"github.com/liov/hoper/server/go/user/confdao"
 )
 
 func LuosimaoVerify(vCode string) error {

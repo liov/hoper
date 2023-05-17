@@ -3,12 +3,12 @@ package main
 import (
 	"context"
 
+	"github.com/actliboy/hoper/server/go/content/confdao"
+	"github.com/actliboy/hoper/server/go/content/service"
+	model "github.com/actliboy/hoper/server/go/protobuf/content"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/hopeio/pandora/initialize"
 	"github.com/hopeio/pandora/tiga"
-	"github.com/liov/hoper/server/go/content/confdao"
-	"github.com/liov/hoper/server/go/content/service"
-	model "github.com/liov/hoper/server/go/protobuf/content"
 	"google.golang.org/grpc"
 )
 

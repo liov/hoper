@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/liov/hoper/server/go/protobuf/content"
+	"github.com/actliboy/hoper/server/go/protobuf/content"
 )
 
 func (c *ChainDao) MomentList() ([]*content.Moment, error) {

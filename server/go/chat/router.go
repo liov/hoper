@@ -1,9 +1,9 @@
 package chat
 
 import (
+	"github.com/actliboy/hoper/server/go/chat/service"
 	"github.com/gin-gonic/gin"
 	"github.com/hopeio/pandora/utils/net/http/gin/handler"
-	"github.com/liov/hoper/server/go/chat/service"
 )
 
 func Register(app *gin.Engine) {
