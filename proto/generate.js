@@ -1,43 +1,65 @@
-const process = require("child_process");
+const childProcess = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
-const projectpath = "D:/code/hoper/server/go";
+const goProjectPath = "D:/code/hoper/server/go";
 
 const goList = "go list -m -f {{.Dir}}";
-process.execSync(`go mod download github.com/googleapis/googleapis`, {
-  cwd: projectpath
-});
 
 function getDepPath(mod){
-  return process.execSync(`${goList} ${mod}`, {
-    cwd: projectpath
+  return childProcess.execSync(`${goList} ${mod}`, {
+    cwd: goProjectPath
   }).toString().trimEnd()
 }
-const googleapis = getDepPath("github.com/googleapis/googleapis");
-const libpath = getDepPath("github.com/hopeio/pandora");
-console.log(libpath);
-const gateway = getDepPath("github.com/grpc-ecosystem/grpc-gateway/v2");
-console.log(gateway);
+
+const pandoraPath = getDepPath("github.com/hopeio/pandora");
+console.log(pandoraPath);
+
 
 const protopath = __dirname;
-const libproto = libpath + "/protobuf";
-const third = libpath + "/protobuf/third";
+const pandoraProto = pandoraPath + "/protobuf/_proto";
 
-function include(isThird){
-  if (isThird) return `-I${third}`;
-  return  `-I${gateway} -I${googleapis} -I${protopath} -I${libproto} -I${third}`;
-}
+const baseCmd = `protoc -I${protopath} -I${pandoraProto}`
 
-const dartConfig = {
-  output: "D:/code/hoper\\client\\flutter\\lib\\generated\\protobuf",
-  cwd: "D:/code/hoper\\client\\flutter",
-  getCmd(filepath,isThird) {
-   return `protoc ${include(isThird)} ${path.join(filepath, "*.proto")} --dart_out=grpc:${this.output}`
+const goConfig = {
+  output: "D:/code/hoper\\server\\go\\protobuf",
+  getCmd(filepath) {
+    return [
+       `${baseCmd} ${path.join(filepath, "*.proto")} --go-patch_out=plugin=go,paths=source_relative:${this.output}`,
+      `${baseCmd} ${path.join(filepath, "*.service.proto")} --go-patch_out=plugin=go-grpc,paths=source_relative:${this.output}`,
+      `${baseCmd} ${path.join(filepath, "*.enum.proto")} --enum_out=paths=source_relative:${this.output}`,
+      `${baseCmd} ${path.join(filepath, "*.service.proto")} --grpc-gin_out=paths=source_relative:${this.output}`,
+      `${baseCmd} ${path.join(filepath, "*.service.proto")} --openapiv2_out=logtostderr=true:${this.output}/api`,
+      `${baseCmd} ${path.join(filepath, "*.service.proto")} --govalidators_out=paths=source_relative:${this.output}`,
+      `${baseCmd} ${path.join(filepath, "*.service.proto")} --gqlgen_out=paths=source_relative:${this.output}`,
+      `${baseCmd} ${path.join(filepath, "*.service.proto")} --graphql_out=paths=source_relative:${this.output}`,
+    ]
   },
 };
 
-function dartgenerate(dir, exclude, config,isThird=false) {
+const dartConfig = {
+  output: "D:/code/hoper\\client\\app\\lib\\generated\\protobuf",
+  getCmd(filepath) {
+   return `${baseCmd} ${path.join(filepath, "*.proto")} --dart_out=grpc:${this.output}`
+  },
+};
+
+const grpcWebConfig = {
+  output: "D:/code/hoper\\client\\web\\generated\\grpc-web",
+  getCmd(filepath) {
+    return `${baseCmd}  ${path.join(filepath, "*.proto")} --js_out=import_style=commonjs,binary:${this.output} --grpc-web_out=import_style=typescript,mode=grpcwebtext:${this.output}`;
+  },
+};
+
+const protobufTsConfig = {
+  output: "D:/code/hoper\\client\\web\\generated\\protobuf-ts",
+  cwd: "D:/code/hoper\\client\\web",
+  getCmd(filepath) {
+    return `npx ${baseCmd}  ${path.join(filepath, "*.proto")} --ts_out ${this.output}`;
+  },
+};
+
+function generate(dir, exclude, config) {
   fs.readdir(dir, function(err, files) {
     files.forEach(function(filename) {
       //获取当前文件的绝对路径
@@ -52,13 +74,18 @@ function dartgenerate(dir, exclude, config,isThird=false) {
               return;
             }
             try {
-              process.execSync(config.getCmd(filepath,isThird), {
-                cwd: config.cwd
-              });
+              const cmd = config.getCmd(filepath);
+              if (Array.isArray(cmd)) {
+                cmd.forEach(function(subCmd){
+                  childProcess.execSync(subCmd,{ cwd: config.cwd,encoding: 'utf-8' });
+                })
+              }else {
+                childProcess.execSync(cmd,{ cwd: config.cwd,encoding: 'utf-8' });
+              }
             } catch (e) {
-              console.log(e);
+              console.log(e.output.stderr);
             }
-            dartgenerate(filepath, [],config,isThird);
+            generate(filepath, [],config);
           }
         }
       });
@@ -66,6 +93,26 @@ function dartgenerate(dir, exclude, config,isThird=false) {
   });
 }
 
-dartgenerate(protopath, [], dartConfig);
-dartgenerate(libproto, ["third"], dartConfig);
-dartgenerate(third, [], dartConfig);
+process.argv.slice(2).forEach(function(val,index,array){
+  switch (val) {
+    case 'go':
+      generate(protopath, [], goConfig);
+      break;
+    case 'dart':
+    generate(protopath, [], dartConfig);
+    generate(pandoraProto, [], dartConfig);
+    break;
+    case 'grpc-web':
+      generate(protopath, [], grpcWebConfig);
+      generate(pandoraProto, [], grpcWebConfig);
+      break;
+    case 'protobuf-ts':
+      generate(protopath, [], protobufTsConfig);
+      generate(pandoraProto, [], protobufTsConfig);
+      break;
+  }
+})
+
+
+
+
