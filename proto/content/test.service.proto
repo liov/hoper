@@ -6,7 +6,9 @@ import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
 import "pandora/protobuf/empty/empty.proto";
 import "pandora/protobuf/response/response.proto";
+import "pandora/protobuf/request/param.proto";
 import "pandora/protobuf/utils/patch/go.proto";
+import "danielvladco/protobuf/graphql.proto";
 
 option go_package = "github.com/actliboy/hoper/server/go/protobuf/content";
 
@@ -32,6 +34,7 @@ service TestService {
             summary : "测试接口"
             description : "根据地址取值测试该值是否被回收"
         };
+        option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
     }
 
     rpc Register(empty.Empty) returns(empty.Empty){
@@ -43,6 +46,7 @@ service TestService {
             summary : "服务注册"
             description : "服务注册测试接口"
         };
+        option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
     }
 
     rpc Restart(empty.Empty) returns(empty.Empty) {
@@ -54,9 +58,10 @@ service TestService {
             summary : "重启"
             description : "重启测试接口"
         };
+        option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
     }
 
-    rpc Array(ArrayReq) returns(empty.Empty) {
+    rpc Array(Ids) returns(empty.Empty) {
         option (google.api.http) = {
             post: "/api/v1/array"
             body: "*"
@@ -66,6 +71,7 @@ service TestService {
             summary : "数组参数测试"
             description : "数组参数测试接口"
         };
+        option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
     }
 
 }
@@ -74,11 +80,7 @@ message GCReq {
     int64 address = 1;
 }
 
-message ArrayReq {
-    repeated ID Ids = 1;
-}
-
-message ID {
+message Ids {
     repeated uint64 Ids = 1;
 }
 

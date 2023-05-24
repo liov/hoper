@@ -7,7 +7,7 @@ option go_package = "github.com/hopeio/pandora/protobuf/time;time";
 option java_package = "xyz.hoper.protobuf.utils.time";
 
 
-message Time {
+message TimeStamp {
     int64 t = 1;
 }
 

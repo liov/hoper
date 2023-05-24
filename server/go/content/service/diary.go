@@ -88,7 +88,7 @@ func (*DiaryService) Info(ctx context.Context, req *request.Id) (*content.Diary,
 	}
 	return nil, nil
 }
-func (*DiaryService) Add(ctx context.Context, req *content.AddDiaryReq) (*empty.Empty, error) {
+func (*DiaryService) Add(ctx context.Context, req *content.AddDiaryReq) (*request.Id, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
@@ -103,12 +103,15 @@ func (*DiaryService) Add(ctx context.Context, req *content.AddDiaryReq) (*empty.
 	}
 	return nil, nil
 }
+
 func (*DiaryService) Edit(context.Context, *content.AddDiaryReq) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Edit not implemented")
 }
+
 func (*DiaryService) List(context.Context, *content.DiaryListReq) (*content.DiaryListRep, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
+
 func (*DiaryService) Delete(ctx context.Context, req *request.Id) (*empty.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()

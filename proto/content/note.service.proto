@@ -9,6 +9,7 @@ import "google/protobuf/wrappers.proto";
 import "pandora/protobuf/empty/empty.proto";
 import "pandora/protobuf/response/response.proto";
 import "pandora/protobuf/utils/patch/go.proto";
+import "danielvladco/protobuf/graphql.proto";
 
 option go_package = "github.com/actliboy/hoper/server/go/protobuf/content";
 
@@ -34,6 +35,7 @@ service NoteService {
             summary : "创建笔记"
             description : "创建笔记接口"
         };
+        option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
     }
 
 }

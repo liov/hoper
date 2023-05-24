@@ -3,7 +3,9 @@ module github.com/actliboy/hoper/server/go
 go 1.18
 
 require (
+	github.com/99designs/gqlgen v0.17.31
 	github.com/cockroachdb/pebble v0.0.0-20220719144226-63d552794411
+	github.com/danielvladco/go-proto-gql v0.10.1-0.20221227181908-22fca0a9469c
 	github.com/dgraph-io/ristretto v0.1.1
 	github.com/gin-gonic/gin v1.9.0
 	github.com/go-oauth2/oauth2/v4 v4.4.1
@@ -17,18 +19,18 @@ require (
 	github.com/hopeio/pandora v1.0.0
 	github.com/mwitkow/go-proto-validators v0.3.2
 	github.com/spf13/viper v1.12.0
+	github.com/vektah/gqlparser/v2 v2.5.1
 	go.opencensus.io v0.24.0
 	go.uber.org/zap v1.23.0
 	golang.org/x/net v0.9.0
 	google.golang.org/genproto v0.0.0-20220519153652-3a47de7e79bd
-	google.golang.org/grpc v1.46.2
+	google.golang.org/grpc v1.51.0
 	google.golang.org/protobuf v1.28.1
 	gorm.io/gorm v1.24.0
 )
 
 require (
 	cloud.google.com/go/compute v1.6.1 // indirect
-	github.com/99designs/gqlgen v0.17.13 // indirect
 	github.com/DataDog/zstd v1.4.5 // indirect
 	github.com/HdrHistogram/hdrhistogram-go v1.1.2 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
@@ -83,6 +85,7 @@ require (
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
+	github.com/hashicorp/golang-lru/v2 v2.0.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/improbable-eng/grpc-web v0.15.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
@@ -147,7 +150,6 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.38.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
-	github.com/vektah/gqlparser/v2 v2.4.6 // indirect
 	go.mongodb.org/mongo-driver v1.4.6 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
