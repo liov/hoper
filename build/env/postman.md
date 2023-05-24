@@ -21,7 +21,7 @@ if (!raw) {
 }
 
 pm.request.addHeader({
-    key: "erp_user_para",
+    key: "header",
     value: erpHeaderBase64,
 })
 
@@ -38,11 +38,11 @@ case "local" :{
 ```
 
 ## 二级目录
-`pm.collectionVariables.set("namespace", "openmng");`
+`pm.collectionVariables.set("namespace", "xxx");`
 
 ### 三级目录
 ```javascript
-const serviceName = "order-center";
+const serviceName = "xxx-center";
 const namespace = pm.collectionVariables.get("namespace");
 const proxyHost = pm.collectionVariables.get("proxyHost");
 
@@ -65,7 +65,7 @@ const scmHeader = {
 };
 
 pm.request.addHeader({
-    key: "X-Token-Data",
+    key: "header",
     value: btoa(JSON.stringify(scmHeader)),
 },)
 ```
