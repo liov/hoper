@@ -12,7 +12,7 @@ import "google/api/annotations.proto";
 import "pandora/protobuf/empty/empty.proto";
 import "pandora/protobuf/request/param.proto";
 import "pandora/protobuf/response/response.proto";
-import "pandora/protobuf/utils/graphql/graphql.proto";
+import "danielvladco/protobuf/graphql.proto";
 import "pandora/protobuf/oauth/oauth.proto";
 import "pandora/protobuf/utils/patch/go.proto";
 
@@ -32,7 +32,7 @@ service ActionService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (graphql.graphql_operation) = Mutation;
+    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   // 动作  Like Unlike
   rpc DelLike (request.Id) returns (empty.Empty) {
@@ -42,7 +42,7 @@ service ActionService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (graphql.graphql_operation) = Mutation;
+    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   // 评论
   rpc Comment (CommentReq) returns (request.Id) {
@@ -52,7 +52,7 @@ service ActionService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (graphql.graphql_operation) = Mutation;
+    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   // 评论列表
   rpc CommentList (CommentListReq) returns (CommentListRep) {
@@ -62,7 +62,7 @@ service ActionService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (graphql.graphql_operation) = Query;
+    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
   // 评论
   rpc DelComment (request.Id) returns (empty.Empty) {
@@ -72,7 +72,7 @@ service ActionService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (graphql.graphql_operation) = Mutation;
+    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   // 收藏
   rpc Collect (CollectReq) returns (empty.Empty) {
@@ -82,7 +82,7 @@ service ActionService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (graphql.graphql_operation) = Mutation;
+    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   // 举报
   rpc Report (ReportReq) returns (empty.Empty) {
@@ -92,7 +92,7 @@ service ActionService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (graphql.graphql_operation) = Mutation;
+    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   // 用户的操作
   rpc GetUserAction (ContentReq) returns (UserAction) {
@@ -102,7 +102,7 @@ service ActionService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (graphql.graphql_operation) = Query;
+    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
 }
 

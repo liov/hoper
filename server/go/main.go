@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/actliboy/hoper/server/go/chat"
+	"github.com/actliboy/hoper/server/go/content/graphql"
 	"github.com/actliboy/hoper/server/go/upload"
 	"github.com/hopeio/pandora/pick"
 	"github.com/hopeio/pandora/server"
@@ -64,5 +65,6 @@ func main() {
 			pick.RegisterService(userService.GetUserService(), contentService.GetMomentService())
 			pick.Gin(app, uconf.Conf.Server.GenDoc, initialize.GlobalConfig.Module, uconf.Conf.Server.OpenTracing)
 		},
+		GraphqlResolve: graphql.NewExecutableSchema(),
 	})
 }

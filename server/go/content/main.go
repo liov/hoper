@@ -8,14 +8,14 @@ import (
 	model "github.com/actliboy/hoper/server/go/protobuf/content"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/hopeio/pandora/initialize"
-	"github.com/hopeio/pandora/tiga"
+	"github.com/hopeio/pandora/server"
 	"google.golang.org/grpc"
 )
 
 func main() {
 	defer initialize.Start(confdao.Conf, confdao.Dao)()
 
-	s := tiga.Server{
+	s := server.Server{
 		Config: confdao.Conf.Server.Origin(),
 		GRPCHandle: func(gs *grpc.Server) {
 			model.RegisterMomentServiceServer(gs, service.GetMomentService())

@@ -8,7 +8,7 @@ import "google/api/annotations.proto";
 import "pandora/protobuf/empty/empty.proto";
 import "pandora/protobuf/response/response.proto";
 import "pandora/protobuf/request/param.proto";
-import "pandora/protobuf/utils/graphql/graphql.proto";
+import "danielvladco/protobuf/graphql.proto";
 import "pandora/protobuf/oauth/oauth.proto";
 import "pandora/protobuf/utils/patch/go.proto";
 import "google/protobuf/wrappers.proto";
@@ -37,7 +37,7 @@ service UserService {
       summary : "验证码"
       description : "验证码生成接口"
     };
-    option (graphql.graphql_operation) = Query;
+    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
 
   // 验证码
@@ -50,7 +50,7 @@ service UserService {
       summary : "发送验证码"
       description : "发送验证码"
     };
-    option (graphql.graphql_operation) = Query;
+    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
 
   //注册验证
@@ -64,7 +64,7 @@ service UserService {
       summary : "发送验证码"
       description : "发送验证码"
     };
-    option (graphql.graphql_operation) = Mutation;
+    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
 
   //注册
@@ -78,7 +78,7 @@ service UserService {
       summary : "注册"
       description : "注册接口"
     };
-    option (graphql.graphql_operation) = Mutation;
+    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
 
   //注册
@@ -91,7 +91,7 @@ service UserService {
       tags:["用户相关接口", "v1.0.0"]
       summary : "简单注册"
     };
-    option (graphql.graphql_operation) = Mutation;
+    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
 
   //激活
@@ -104,7 +104,7 @@ service UserService {
       summary : "激活"
       description : "激活接口"
     };
-    option (graphql.graphql_operation) = Mutation;
+    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   //编辑
   rpc Edit (EditReq) returns (empty.Empty) {
@@ -125,7 +125,7 @@ service UserService {
         }
       }
     };
-    option (graphql.graphql_operation) = Mutation;
+    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   //登录
   rpc Login (LoginReq) returns (LoginRep) {
@@ -138,7 +138,7 @@ service UserService {
       summary : "登录"
       description : "登录接口"
     };
-    option (graphql.graphql_operation) = Query;
+    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
   //退出
   rpc Logout (empty.Empty) returns (empty.Empty) {
@@ -150,7 +150,7 @@ service UserService {
       summary : "退出"
       description : "退出接口"
     };
-    option (graphql.graphql_operation) = Query;
+    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
 
   //鉴权
@@ -178,7 +178,7 @@ service UserService {
 
       }
     };
-    option (graphql.graphql_operation) = Query;
+    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
 
   //重置密码
@@ -191,7 +191,7 @@ service UserService {
       summary : "忘记密码"
       description : "忘记密码接口"
     };
-    option (graphql.graphql_operation) = Mutation;
+    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
 
   rpc ResetPassword (ResetPasswordReq) returns (google.protobuf.StringValue) {
@@ -204,7 +204,7 @@ service UserService {
       summary : "重置密码"
       description : "重置密码接口"
     };
-    option (graphql.graphql_operation) = Mutation;
+    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
 
   //获取用户信息
@@ -217,7 +217,7 @@ service UserService {
       summary : "获取用户信息"
       description : "根据Id获取用户信息接口"
     };
-    option (graphql.graphql_operation) = Query;
+    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
 
   rpc ActionLogList (ActionLogListReq) returns (ActionLogListRep) {
@@ -229,7 +229,7 @@ service UserService {
       summary : "操作日志"
       description : "操作日志接口"
     };
-    option (graphql.graphql_operation) = Query;
+    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
 
   //获取基础用户信息
@@ -243,7 +243,7 @@ service UserService {
       summary : "获取用户信息"
       description : "根据Id获取用户信息接口"
     };
-    option (graphql.graphql_operation) = Query;
+    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
 
   // 关注
@@ -255,7 +255,7 @@ service UserService {
       tags:["用户相关接口", "v1.0.0"]
       summary : "关注"
     };
-    option (graphql.graphql_operation) = Mutation;
+    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   // 取消关注
   rpc delFollow (FollowReq) returns (BaseListRep) {
@@ -266,7 +266,7 @@ service UserService {
       tags:["用户相关接口", "v1.0.0"]
       summary : "取消关注"
     };
-    option (graphql.graphql_operation) = Mutation;
+    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
 }
 
@@ -283,7 +283,7 @@ service OauthService{
       summary : "oauth验证"
       description : "oauth验证"
     };
-    option (graphql.graphql_operation) = Query;
+    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
 
   rpc OauthToken (oauth.OauthReq) returns (response.HttpResponse) {
@@ -296,7 +296,7 @@ service OauthService{
       summary : "签发token"
       description : "签发token"
     };
-    option (graphql.graphql_operation) = Query;
+    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
 }
 
