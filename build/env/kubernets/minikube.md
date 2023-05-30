@@ -36,14 +36,17 @@ minikube start --driver=none --image-repository=registry.cn-hangzhou.aliyuncs.co
 --listen-address=0.0.0.0
 外网通过代理访问docker中的服务
 --url只打印url不自动打开浏览器
-//通过代理暴露集群内ip
+## 通过代理暴露集群内ip
 kubectl proxy --port=8001 --address='0.0.0.0' --accept-hosts='^.*' &
 curl http://[k8s-proxy-ip]:8001/api/v1/namespaces/[namespace-name]/services/[service-name]:80/proxy
 curl http://[k8s-proxy-ip]:8001/api/v1/namespaces/[namespace-name]/pods/[pod-name]:8080/proxy
 & 号将命令放到后台运行
 http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/#/overview?namespace=default
 
-// 挂载目录
+## 端口转发到本地
+kubectl port-forward --address 0.0.0.0 service/${svcname} 8080:${svcport} -n ${namespace} --kubeconfig=stage/config
+
+# 挂载目录
 9P Mounts
 9P mounts are flexible and work across all hypervisors, but suffers from performance and reliability issues when used with large folders (>600 files). See Driver Mounts as an alternative.
 
