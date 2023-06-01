@@ -7,11 +7,12 @@ metadata:
     app: mysql
 data:
   # 这三个是配套的，这个用户有这个数据库的超级用户访问权限，不需要设置
-  MYSQL_DATABASE: mysql
-  MYSQL_USER: mysql
+  MYSQL_DATABASE: "mysql"
+  MYSQL_USER: "mysql"
   MYSQL_PASSWORD: "123456"
+
   MYSQL_ROOT_PASSWORD: "123456"
-  TZ: Asia/Shanghai
+  TZ: "Asia/Shanghai"
 
 ---
 apiVersion: apps/v1

@@ -5,10 +5,10 @@ metadata:
   labels:
     app: postgres
 data:
-  POSTGRES_DB: postgres
-  POSTGRES_USER: postgres
+  POSTGRES_DB: "postgres"
+  POSTGRES_USER: "postgres"
   POSTGRES_PASSWORD: "123456"
-  PGDATA: /data
+  PGDATA: "/data"
 ---
 apiVersion: apps/v1
 kind: Deployment

@@ -6,13 +6,13 @@ metadata:
   labels:
     app: postgres
 data:
-  POSTGRES_DB: postgres
-  POSTGRES_USER: postgres
+  POSTGRES_DB: "postgres"
+  POSTGRES_USER: "postgres"
   POSTGRES_PASSWORD: "123456"
-  PGDATA: /data
-  TZ: Asia/Shanghai
-  PGTZ: Asia/Shanghai
-  POSTGRES_HOST_AUTH_METHOD: trust
+  PGDATA: "/data"
+  TZ: "Asia/Shanghai"
+  PGTZ: "Asia/Shanghai"
+  POSTGRES_HOST_AUTH_METHOD: "trust"
   POSTGRES_INITDB_ARGS: "--data-checksums"
 ---
 apiVersion: apps/v1

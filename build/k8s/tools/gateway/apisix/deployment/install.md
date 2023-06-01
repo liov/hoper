@@ -16,11 +16,14 @@ kubectl create secret generic ssl --from-file=/root/certs/acme/hoper.xyz/ca.cer 
 
 ```bash
 helm install apisix apisix/apisix -f helm.yaml -n ingress-apisix
+kubectl get pod -n ingress-apisix
 ```
+# upgrade
 ```bash
 helm upgrade apisix apisix/apisix -f helm.yaml -n ingress-apisix --install
 ```
 
+# 如果设置了serviceMonitor
 `kubectl edit cm apisix -n ingress-apisix`
 ```yaml
 node_listen:       # APISIX listening port

@@ -27,3 +27,4 @@ secret.txt
 /build/logs
 /build/k8s/app/certs
 *.lock.json
+deploy

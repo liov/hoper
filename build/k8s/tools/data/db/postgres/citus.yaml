@@ -6,13 +6,13 @@ metadata:
   labels:
     app: citus
 data:
-  POSTGRES_DB: citus
-  POSTGRES_USER: citus
+  POSTGRES_DB: "citus"
+  POSTGRES_USER: "citus"
   POSTGRES_PASSWORD: "123456"
-  PGDATA: /data
-  TZ: Asia/Shanghai
-  PGTZ: Asia/Shanghai
-  POSTGRES_HOST_AUTH_METHOD: trust
+  PGDATA: "/data"
+  TZ: "Asia/Shanghai"
+  PGTZ: "Asia/Shanghai"
+  POSTGRES_HOST_AUTH_METHOD: "trust"
   POSTGRES_INITDB_ARGS: "--data-checksums"
 ---
 apiVersion: apps/v1
