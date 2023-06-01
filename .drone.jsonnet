@@ -73,6 +73,7 @@ local Pipeline(group, name='', mode='app', type='bin' , buildDir='', sourceFile=
   local datadir = tconfig.datadir,
   local dockerfilepath = deploydir + '/tpl/Dockerfile-' + type,
   local deppath = deploydir + '/tpl/deploy-' + mode +'.yaml',
+  local protoGenpath = workspace + '/' + protopath,
   kind: 'pipeline',
   type: 'docker',
   name: fullname + '-' + target,
@@ -176,7 +177,6 @@ local Pipeline(group, name='', mode='app', type='bin' , buildDir='', sourceFile=
 
        // edit Dockerfile && deploy file
       local buildfile =  '/code/' + protopath + '/build';
-      local protoGenpath = workspace + '/' + protopath;
       if protopath != '' then 'if [ -f ' + buildfile + ' ]; then cp -r /code/' + protopath + ' '+ protoGenpath + '; fi' else 'echo',
 
       'if [ ! -d ' + deploytpl + ' ];then mkdir -p ' + deploytpl + '; fi',
@@ -189,7 +189,7 @@ local Pipeline(group, name='', mode='app', type='bin' , buildDir='', sourceFile=
       // go build
       'cd ' + buildDir,
 
-      local buildfile = workspace + '/' + protopath + '/build';
+      local buildfile = protoGenpath + '/build';
       if protopath != '' then 'if [ ! -f ' + buildfile + ' ]; then protogen go -p '+ workspace+'/proto -g '+protoGenpath+'; fi' else 'echo',
       'go mod tidy',
       'go build -trimpath -o  '+ workspace +'/deploy/'+ fullname + ' ' + sourceFile,
