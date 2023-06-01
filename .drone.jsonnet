@@ -189,7 +189,7 @@ local Pipeline(group, name='', mode='app', type='bin' , buildDir='', sourceFile=
       // go build
       'cd ' + buildDir,
 
-      local buildfile = protoGenpath + '/build';
+      local buildfile = workspace + '/' + protopath + '/build';
       if protopath != '' then 'if [ ! -f ' + buildfile + ' ]; then protogen go -p '+ workspace+'/proto -g '+protoGenpath+'; fi' else 'echo',
       'go mod tidy',
       'go build -trimpath -o  '+ workspace +'/deploy/'+ fullname + ' ' + sourceFile,
