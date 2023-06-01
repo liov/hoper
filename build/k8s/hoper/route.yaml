@@ -1,5 +1,5 @@
 # 单域名做转发，rewrite
-apiVersion: apisix.apache.org/v2beta3
+apiVersion: apisix.apache.org/v2
 kind: ApisixRoute
 metadata:
   name: hoper-api

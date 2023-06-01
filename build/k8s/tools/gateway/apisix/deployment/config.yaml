@@ -128,7 +128,7 @@ nginx_config:                     # config for render the template to genarate n
     gzip: on
 etcd:
   host:                                 # it's possible to define multiple etcd hosts addresses of the same etcd cluster.
-    - "https://kube-prometheus-kube-prome-kube-etcd.kube-system:2379"
+    - https://10.0.20.12:2379
   prefix: "/apisix"     # apisix configurations prefix
   timeout: 30   # 30 seconds
   tls:

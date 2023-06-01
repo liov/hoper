@@ -1,18 +1,19 @@
 // local mode(mode="app") = if mode == "app" then "app" else "node";
-local tpldir = 'build/k8s/app/';
+local deployrepo = 'https://github.com/hopeio/deploy';
 local workspace = '/src';
-local srcdir = workspace + '/';
+local deploydir = '/deploy';
+local deploytpl = '/code/deploy/';
 
 local compileHost = {
     localhost : {
-        dirprefix : '/mnt/d/',
-        codedir: self.dirprefix + 'code/hoper/',
-        gopath: self.dirprefix +'SDK/gopath',
+        dirprefix : '/mnt/d',
+        codedir: self.dirprefix + '/code/hoper/',
+        gopath: self.dirprefix +'/SDK/gopath',
     },
      tot: {
-         dirprefix : '/home/new/data/',
-         codedir: self.dirprefix +'code/hoper',
-         gopath: self.dirprefix + 'gopath',
+         dirprefix : '/home/new/data',
+         codedir: self.dirprefix +'/code/hoper',
+         gopath: self.dirprefix + '/gopath',
      }
 };
 
@@ -22,9 +23,9 @@ local targetHost = {
        confdir:'/root/config',
     },
     tot: {
-     dirprefix : '/home/new/',
-     datadir: self.dirprefix + 'data',
-     confdir: self.dirprefix + 'config',
+     dirprefix : '/home/new',
+     datadir: self.dirprefix + '/data',
+     confdir: self.dirprefix + '/config',
     }
 };
 
@@ -55,24 +56,23 @@ local kubectl(compile, target, cmd) = if compile == target then {
     },
   },
   commands: [
-    'cd '+ tpldir + 'cmd && chmod +x account.sh && ./account.sh ' + target,
+    'cd deploy/cmd && chmod +x account.sh && ./account.sh ' + target,
     'cd ' + workspace,
   ] + cmd,
 };
 
 
-local Pipeline(group, name='', mode='app', type='bin' , workdir='', sourceFile='', protopath='', opts=[], compile='localhost',target = 'tx', schedule='') = {
+local Pipeline(group, name='', mode='app', type='bin' , buildDir='', sourceFile='', protopath='', opts=[], compile='localhost',target = 'tx', schedule='') = {
 
   local cconfig = compileHost[compile],
   local tconfig = targetHost[target],
-
 
   local fullname = if name == '' then group else group + '-' + name,
   local committag = fullname + '-v',
   local tag = '${DRONE_TAG##' + committag + '}',
   local datadir = tconfig.datadir,
-  local dockerfilepath = tpldir + 'Dockerfile-' + type,
-  local deppath = tpldir + 'deploy-' + mode +'.yaml',
+  local dockerfilepath = deploydir + '/tpl/Dockerfile-' + type,
+  local deppath = deploydir + '/tpl/deploy-' + mode +'.yaml',
   kind: 'pipeline',
   type: 'docker',
   name: fullname + '-' + target,
@@ -101,7 +101,13 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='', sourceFile='
     {
       name: 'pandora',
       host: {
-        path: cconfig.dirprefix + 'code/pandora/',
+        path: cconfig.dirprefix + '/code/pandora/',
+      },
+    },
+     {
+      name: 'deploy',
+      host: {
+        path: cconfig.dirprefix + deploytpl,
       },
     },
     {
@@ -139,6 +145,10 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='', sourceFile='
           name: 'pandora',
           path: '/pandora/',
         },
+         {
+          name: 'deploy',
+          path: '/deploy/',
+        },
         {
           name: 'gopath',
           path: '/go/',
@@ -155,32 +165,34 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='', sourceFile='
       'cd /code',
       //  'git tag -l | xargs git tag -d',
       //'git fetch --all && git reset --hard origin/master && git pull',
-      'cd ' + srcdir,
-      'git clone /code .',
+      'git clone /code ' + workspace,
+      'cd ' + workspace,
       'git checkout -b deploy $DRONE_COMMIT_REF',
-      'cp -r /code/'+tpldir + 'certs '+ srcdir +tpldir+ 'certs',
+      'if [ ! -d /deploy/.git ]; then git clone '+ deployrepo + ' ' + deploydir + '; fi',
+      'mkdir deploy',
+      'cp  -r  /code/deploy/certs deploy/certs',
+      'cp  -r  /deploy/cmd deploy/cmd',
+      'cp  -r  /deploy/tz deploy/tz',
+
        // edit Dockerfile && deploy file
-      local buildfile =  '/code/' + workdir + protopath + '/build';
-      if protopath != '' then 'if [ -f ' + buildfile + ' ]; then cp -r /code/' + workdir + protopath + ' '+ srcdir + workdir + '; fi' else 'echo',
-      "sed -i 's/$${app}/" + fullname + "/g' " + dockerfilepath,
+      local buildfile =  '/code/' + protopath + '/build';
+      local protoGenpath = workspace + '/' + protopath;
+      if protopath != '' then 'if [ -f ' + buildfile + ' ]; then cp -r /code/' + protopath + ' '+ protoGenpath + '; fi' else 'echo',
+
+      'if [ ! -d ' + deploytpl + ' ];then mkdir -p ' + deploytpl + '; fi',
+
       local cmd = ['./' + fullname , '-c','./config/'+group+'.toml'] + opts;
-      "sed -i 's#$${cmd}#" + std.join('", "', [opt for opt in cmd]) + "#g' " + dockerfilepath,
-      "sed -i 's/$${app}/" + fullname + "/g' " + deppath,
-      "sed -i 's/$${group}/" + group + "/g' " + deppath,
-      "sed -i 's#$${datadir}#" + datadir + "#g' " + deppath,
-      "sed -i 's#$${confdir}#" + tconfig.confdir + "#g' " + deppath,
-      "sed -i 's#$${image}#jybl/" + fullname + ':' + tag + "#g' " + deppath,
-      if mode == 'cronjob' then "sed -i 's#$${schedule}#" + schedule + "#g' " + deppath else 'echo',
-      local bakdir = '/code/'+ tpldir + 'deploy/';
-      'if [ ! -d ' + bakdir + ' ];then mkdir -p ' + bakdir + '; fi && cp -r ' + deppath + ' ' + bakdir + fullname + '.yaml && cp -r ' + dockerfilepath + ' ' + bakdir + fullname  + '-Dockerfile',
+      "sed -e 's/$${app}/" + fullname + "/g;s#$${cmd}#" + std.join('", "', [opt for opt in cmd]) + "#g' " + dockerfilepath + '> '+ deploytpl + fullname + '-Dockerfile',
+      "sed -e 's/$${app}/" + fullname + "/g;s/$${group}/" + group + "/g;s#$${datadir}#" + datadir + "#g;s#$${confdir}#" + tconfig.confdir + "#g;s#$${image}#jybl/" + fullname + ':' + tag + "#g;s#$${schedule}#" + schedule + "#g' " + deppath + '> '+ deploytpl + fullname + '.yaml',
+      'cp ' + deploytpl + fullname + '-Dockerfile deploy/Dockerfile',
+      'cp ' + deploytpl + fullname + '.yaml deploy/deploy.yaml',
       // go build
-      'cd ' + workdir,
-      'go mod download',
-      local genpath = srcdir + workdir + protopath;
-      local buildfile = genpath + '/build';
-      if protopath != '' then 'if [ ! -f ' + buildfile + ' ]; then protobuf-generate go --proto='+srcdir+'proto --genpath='+genpath+'; fi' else 'echo',
+      'cd ' + buildDir,
+
+      local buildfile = protoGenpath + '/build';
+      if protopath != '' then 'if [ ! -f ' + buildfile + ' ]; then protogen go -p '+ workspace+'/proto -g '+protoGenpath+'; fi' else 'echo',
       'go mod tidy',
-      'go build -trimpath -o  '+ srcdir + fullname + ' ' + sourceFile,
+      'go build -trimpath -o  '+ workspace +'/deploy/'+ fullname + ' ' + sourceFile,
       ],
     },
     {
@@ -205,13 +217,13 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='', sourceFile='
     commands: [
         //'docker version',
         'docker login -u $USERNAME -p $PASSWORD',
-        'docker build -f build/k8s/app/Dockerfile-bin -t $USERNAME/' + fullname+':'+tag+' .',
+        'docker build -f deploy/Dockerfile -t $USERNAME/' + fullname+':'+tag+' deploy',
         if compile != target then 'docker push $USERNAME/'+ fullname+':'+ tag,
     ],
     },
     kubectl(compile,target, [
       if mode == 'job' || mode == 'cronjob' then 'kubectl --kubeconfig=/root/.kube/config delete --ignore-not-found -f ' + deppath else 'echo',
-      'kubectl --kubeconfig=/root/.kube/config apply -f ' + deppath,
+      'kubectl --kubeconfig=/root/.kube/config apply -f deploy/deploy.yaml',
     ]),
     {
       name: 'dingtalk',
@@ -229,5 +241,5 @@ local Pipeline(group, name='', mode='app', type='bin' , workdir='', sourceFile='
 };
 
 [
-  Pipeline('hoper', workdir='server/go', protopath='/protobuf'),
+  Pipeline('hoper', buildDir='server/go', protopath='server/go/protobuf'),
 ]

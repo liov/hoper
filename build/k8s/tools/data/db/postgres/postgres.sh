@@ -20,3 +20,6 @@ timezone = 'Asia/Shanghai'
 
 # upgrade
 pg_dumpall -U postgres -h postgres.tools -p 5432 | psql -U postgres
+
+vim /home/postgres/data/pg_hba.conf
+host    all     all     0.0.0.0/0        md5
