@@ -163,11 +163,9 @@ local Pipeline(group, name='', mode='app', type='bin' , buildDir='', sourceFile=
       // "git config --global http.proxy 'socks5://proxy.tools:1080'",
       //"git config --global https.proxy 'socks5://proxy.tools:1080'",
       //"git clone ${DRONE_GIT_HTTP_URL} .",
-      'cd /code',
       //  'git tag -l | xargs git tag -d',
       //'git fetch --all && git reset --hard origin/master && git pull',
       'git clone /code ' + workspace,
-      'cd ' + workspace,
       'git checkout -b deploy $DRONE_COMMIT_REF',
       'if [ ! -d /deploy/.git ]; then git clone '+ deployrepo + ' ' + deploydir + '; fi',
       'mkdir deploy',
@@ -177,21 +175,21 @@ local Pipeline(group, name='', mode='app', type='bin' , buildDir='', sourceFile=
 
        // edit Dockerfile && deploy file
       local buildfile =  '/code/' + protopath + '/build';
-      if protopath != '' then 'if [ -f ' + buildfile + ' ]; then cp -r /code/' + protopath + ' '+ protoGenpath + '; fi' else 'echo',
+      if protopath != '' then 'if [ -f ' + buildfile + ' ]; then cp -r /code/' + protopath + '/* '+ protoGenpath + '; fi' else 'echo',
 
       'if [ ! -d ' + deploytpl + ' ];then mkdir -p ' + deploytpl + '; fi',
 
       local cmd = ['./' + fullname , '-c','./config/'+group+'.toml'] + opts;
-      "sed -e 's/$${app}/" + fullname + "/g;s#$${cmd}#" + std.join('", "', [opt for opt in cmd]) + "#g' " + dockerfilepath + '> '+ deploytpl + fullname + '-Dockerfile',
-      "sed -e 's/$${app}/" + fullname + "/g;s/$${group}/" + group + "/g;s#$${datadir}#" + datadir + "#g;s#$${confdir}#" + tconfig.confdir + "#g;s#$${image}#jybl/" + fullname + ':' + tag + "#g;s#$${schedule}#" + schedule + "#g' " + deppath + '> '+ deploytpl + fullname + '.yaml',
+      "sed -e 's/$${app}/" + fullname + "/g;s#$${cmd}#" + std.join('", "', [opt for opt in cmd]) + "#g' " + dockerfilepath + ' > '+ deploytpl + fullname + '-Dockerfile',
+      "sed -e 's/$${app}/" + fullname + "/g;s/$${group}/" + group + "/g;s#$${datadir}#" + datadir + "#g;s#$${confdir}#" + tconfig.confdir + "#g;s#$${image}#jybl/" + fullname + ':' + tag + "#g;s#$${schedule}#" + schedule + "#g' " + deppath + ' > '+ deploytpl + fullname + '.yaml',
       'cp ' + deploytpl + fullname + '-Dockerfile deploy/Dockerfile',
       'cp ' + deploytpl + fullname + '.yaml deploy/deploy.yaml',
       // go build
       'cd ' + buildDir,
 
       local buildfile = protoGenpath + '/build';
-      if protopath != '' then 'if [ ! -f ' + buildfile + ' ]; then protogen go -p '+ workspace+'/proto -g '+protoGenpath+'; fi' else 'echo',
-      'go mod tidy',
+      if protopath != '' then 'if [ ! -f ' + buildfile + ' ]; then protogen go -e -w -q -p '+ workspace+'/proto -g '+protoGenpath+'; fi' else 'echo',
+      //'go mod tidy',
       'go build -trimpath -o  '+ workspace +'/deploy/'+ fullname + ' ' + sourceFile,
       ],
     },
