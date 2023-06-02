@@ -1,7 +1,7 @@
 [server]
 Protocol = "https"
 Domain =  "hoper.xyz"
-Port = "8090"
+Port = 8090
 ReadTimeout = 60
 WriteTimeout = 60
 OpenTracing = true

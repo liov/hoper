@@ -169,9 +169,9 @@ local Pipeline(group, name='', mode='app', type='bin' , buildDir='', sourceFile=
       'git checkout -b deploy $DRONE_COMMIT_REF',
       'if [ ! -d /deploy/.git ]; then git clone '+ deployrepo + ' ' + deploydir + '; fi',
       'mkdir deploy',
-      'cp  -r  /code/deploy/certs deploy/certs',
-      'cp  -r  /deploy/cmd deploy/cmd',
-      'cp  -r  /deploy/tz deploy/tz',
+      'cp -r '+ deploytpl +'certs deploy/certs',
+      'cp -r /deploy/cmd deploy/cmd',
+      'cp -r /deploy/tz deploy/tz',
 
        // edit Dockerfile && deploy file
       local buildfile =  '/code/' + protopath + '/build';
@@ -220,7 +220,7 @@ local Pipeline(group, name='', mode='app', type='bin' , buildDir='', sourceFile=
     ],
     },
     kubectl(compile,target, [
-      if mode == 'job' || mode == 'cronjob' then 'kubectl --kubeconfig=/root/.kube/config delete --ignore-not-found -f ' + deppath else 'echo',
+      if mode == 'job' || mode == 'cronjob' then 'kubectl --kubeconfig=/root/.kube/config delete --ignore-not-found -f deploy/deploy.yaml' else 'echo',
       'kubectl --kubeconfig=/root/.kube/config apply -f deploy/deploy.yaml',
     ]),
     {
