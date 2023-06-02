@@ -27,7 +27,7 @@ spec:
           regex_uri: ["^/hoper.default/(.*)","/$1"]
 ---
 # 多域名区分，与grpc一致，grpc没法主动在uri加前缀
-apiVersion: apisix.apache.org/v2beta3
+apiVersion: apisix.apache.org/v2
 kind: ApisixRoute
 metadata:
   name: hoper-api
@@ -51,7 +51,7 @@ spec:
           config:
             http_to_https: true
 ---
-apiVersion: apisix.apache.org/v2beta3
+apiVersion: apisix.apache.org/v2
 kind: ApisixRoute
 metadata:
   name: hoper-grpc

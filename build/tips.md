@@ -209,9 +209,10 @@ hostAliases
 apiVersion: v1
 kind: Pod
 spec:
-  hoostAliases:
-    ip: "4.1.2.3"
-    hostnames:
-    - "a.com"
-    - "b.com"
+  restartPolicy: Never
+  hostAliases:
+    - ip: "4.1.2.3"
+      hostnames:
+      - "a.com"
+      - "b.com"
 ```
