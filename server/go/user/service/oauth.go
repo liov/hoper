@@ -10,7 +10,7 @@ import (
 	"github.com/go-oauth2/oauth2/v4/manage"
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/go-oauth2/oauth2/v4/store"
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt"
 	goauth "github.com/hopeio/pandora/protobuf/oauth"
 	"github.com/hopeio/pandora/protobuf/response"
 	jwti "github.com/hopeio/pandora/utils/verification/auth/jwt"
