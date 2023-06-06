@@ -1,21 +1,14 @@
 package main
 
 import (
-	"context"
-	"github.com/hopeio/pandora/pick"
-	"net/http"
-
-	model "github.com/actliboy/hoper/server/go/protobuf/user"
+	"github.com/actliboy/hoper/server/go/user/api"
 	"github.com/actliboy/hoper/server/go/user/confdao"
 	"github.com/actliboy/hoper/server/go/user/service"
 	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/hopeio/pandora/initialize"
+	"github.com/hopeio/pandora/pick"
 	"github.com/hopeio/pandora/server"
-	"github.com/hopeio/pandora/utils/net/http/gin/oauth"
-
-	"google.golang.org/grpc"
 )
 
 func main() {
@@ -24,20 +17,10 @@ func main() {
 	pick.FiberWithCtx(app, true, initialize.GlobalConfig.Module)
 	go app.Listen(":3000")
 	server.Start(&server.Server{
-		GRPCHandle: func(gs *grpc.Server) {
-			//grpc.OpenTracing = true
-			model.RegisterUserServiceServer(gs, service.GetUserService())
-			model.RegisterOauthServiceServer(gs, service.GetOauthService())
-		},
-		GatewayRegistr: func(ctx context.Context, mux *runtime.ServeMux) {
+		GRPCHandle: api.GrpcRegister,
 
-		},
 		GinHandle: func(app *gin.Engine) {
-			_ = model.RegisterUserServiceHandlerServer(app, service.GetUserService())
-			_ = model.RegisterOauthServiceHandlerServer(app, service.GetOauthService())
-			oauth.RegisterOauthServiceHandlerServer(app, service.GetOauthService())
-			app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
-			pick.RegisterService(service.GetUserService())
+			api.GinRegister(app)
 			pick.Gin(app, confdao.Conf.Server.GenDoc, initialize.GlobalConfig.Module, confdao.Conf.Server.OpenTracing)
 		},
 

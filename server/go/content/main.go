@@ -1,12 +1,11 @@
 package main
 
 import (
-	"context"
+	"github.com/gin-gonic/gin"
 
 	"github.com/actliboy/hoper/server/go/content/confdao"
 	"github.com/actliboy/hoper/server/go/content/service"
 	model "github.com/actliboy/hoper/server/go/protobuf/content"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/hopeio/pandora/initialize"
 	"github.com/hopeio/pandora/server"
 	"google.golang.org/grpc"
@@ -20,9 +19,8 @@ func main() {
 		GRPCHandle: func(gs *grpc.Server) {
 			model.RegisterMomentServiceServer(gs, service.GetMomentService())
 		},
-		GatewayRegistr: func(ctx context.Context, mux *runtime.ServeMux) {
-			_ = model.RegisterMomentServiceHandlerServer(ctx, mux, service.GetMomentService())
-
+		GinHandle: func(engine *gin.Engine) {
+			_ = model.RegisterMomentServiceHandlerServer(engine, service.GetMomentService())
 		},
 	}
 	s.Start()

@@ -1,4 +1,4 @@
-package upload
+package api
 
 import (
 	"github.com/actliboy/hoper/server/go/upload/confdao"
@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func Register(app *gin.Engine) {
+func GinRegister(app *gin.Engine) {
 	app.StaticFS("/static", http.Dir(confdao.Conf.Customize.UploadDir))
 	app.GET("/api/v1/exists", handler.Convert(service.Exists))
 	app.GET("/api/v1/exists/:md5/:size", service.ExistsGin)
