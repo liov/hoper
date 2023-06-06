@@ -1,6 +1,3 @@
-helm repo add apisix https://charts.apiseven.com
-helm repo update
-helm install apisix-dashboard apisix/apisix-dashboard -f dhelm.yaml -n ingress-apisix
 
 kubectl edit cm apisix-dashboard -n ingress-apisix
 
@@ -24,25 +21,5 @@ volumes:
 
 name: etcd-certs
 
-
-
-vim apisix-dashboard.yaml - |
-apiVersion: apisix.apache.org/v2
-kind: ApisixRoute
-metadata:
-  name: apisix-dashboard
-  namespace: ingress-apisix
-spec:
-  http:
-    - name: apisix-dashboard
-      match:
-        hosts:
-          - apisix.hoper.xyz
-        paths:
-          - /*
-      backends:
-        - serviceName: apisix-dashboard
-          servicePort: 80
-          resolveGranularity: service
 
 kubectl apply -f apisix-dashboard.yaml

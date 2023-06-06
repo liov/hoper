@@ -1,20 +1,17 @@
 package main
 
 import (
-	"github.com/actliboy/hoper/server/go/chat"
-	"github.com/actliboy/hoper/server/go/content/graphql"
-	"github.com/actliboy/hoper/server/go/upload"
+	chatapi "github.com/actliboy/hoper/server/go/chat/api"
+	contentapi "github.com/actliboy/hoper/server/go/content/api"
+	uploadapi "github.com/actliboy/hoper/server/go/upload/api"
+	userapi "github.com/actliboy/hoper/server/go/user/api"
 	"github.com/hopeio/pandora/pick"
 	"github.com/hopeio/pandora/server"
 	"time"
 
 	cconf "github.com/actliboy/hoper/server/go/content/confdao"
-	contentService "github.com/actliboy/hoper/server/go/content/service"
-	"github.com/actliboy/hoper/server/go/protobuf/content"
-	"github.com/actliboy/hoper/server/go/protobuf/user"
 	upconf "github.com/actliboy/hoper/server/go/upload/confdao"
 	uconf "github.com/actliboy/hoper/server/go/user/confdao"
-	userService "github.com/actliboy/hoper/server/go/user/service"
 	"github.com/gin-gonic/gin"
 	"github.com/hopeio/pandora/initialize"
 	"github.com/hopeio/pandora/utils/log"
@@ -33,7 +30,7 @@ func main() {
 	defer initialize.Start(upconf.Conf, upconf.Dao)()
 	view.RegisterExporter(&exporter.PrintExporter{})
 	view.SetReportingPeriod(time.Second)
-	// Register the view to collect gRPC client stats.
+	// GinRegister the view to collect gRPC client stats.
 	if err := view.Register(ocgrpc.DefaultClientViews...); err != nil {
 		log.Fatal(err)
 	}
@@ -47,24 +44,16 @@ func main() {
 			//grpc.StatsHandler(&ocgrpc.ServerHandler{})
 		},
 		GRPCHandle: func(gs *grpc.Server) {
-			user.RegisterUserServiceServer(gs, userService.GetUserService())
-			user.RegisterOauthServiceServer(gs, userService.GetOauthService())
-			content.RegisterMomentServiceServer(gs, contentService.GetMomentService())
-			content.RegisterContentServiceServer(gs, contentService.GetContentService())
-			content.RegisterActionServiceServer(gs, contentService.GetActionService())
+			userapi.GrpcRegister(gs)
+			contentapi.GrpcRegister(gs)
 		},
 		GinHandle: func(app *gin.Engine) {
-			_ = user.RegisterUserServiceHandlerServer(app, userService.GetUserService())
-			_ = user.RegisterOauthServiceHandlerServer(app, userService.GetOauthService())
-			_ = content.RegisterMomentServiceHandlerServer(app, contentService.GetMomentService())
-			_ = content.RegisterContentServiceHandlerServer(app, contentService.GetContentService())
-			_ = content.RegisterActionServiceHandlerServer(app, contentService.GetActionService())
-			app.Static("/oauth/login", "./static/login.html")
-			upload.Register(app)
-			chat.Register(app)
-			pick.RegisterService(userService.GetUserService(), contentService.GetMomentService())
+			userapi.GinRegister(app)
+			uploadapi.GinRegister(app)
+			chatapi.GinRegister(app)
+			contentapi.GinRegister(app)
 			pick.Gin(app, uconf.Conf.Server.GenDoc, initialize.GlobalConfig.Module, uconf.Conf.Server.OpenTracing)
 		},
-		GraphqlResolve: graphql.NewExecutableSchema(),
+		GraphqlResolve: contentapi.NewExecutableSchema(),
 	})
 }

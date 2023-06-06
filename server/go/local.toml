@@ -23,6 +23,9 @@ KeyFile = "D:/certs/hoper/hoper.xyz.key"
 Prefix = "/static/test"
 Root = "D:/certs/test"
 
+[server.cors]
+AllowCredentials = true
+
 [customize]
 GrpcService = {user = "localhost:8080", note = "localhost:8090"}
 Volume = "/data"

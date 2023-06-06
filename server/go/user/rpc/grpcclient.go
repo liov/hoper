@@ -1,17 +1,25 @@
-package client
+package rpc
 
 import (
 	"github.com/actliboy/hoper/server/go/protobuf/user"
-	"github.com/hopeio/pandora/utils/log"
 	grpci "github.com/hopeio/pandora/utils/net/http/grpc"
+	"log"
 )
 
+var (
+	UserClient user.UserServiceClient
+)
+
+func init() {
+	UserClient = GetUserClient()
+}
+
 func GetUserClient() user.UserServiceClient {
+
 	// Set up a connection to the server.
-	conn, err := grpci.GetDefaultClient("localhost:8090")
+	conn, err := grpci.GetTlsClient("grpc.hoper.xyz:443")
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
-	Connes = append(Connes, conn)
 	return user.NewUserServiceClient(conn)
 }

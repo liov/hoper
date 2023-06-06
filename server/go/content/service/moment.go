@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/actliboy/hoper/server/go/content/client"
+	"github.com/actliboy/hoper/server/go/content/rpc"
 	"github.com/hopeio/pandora/context/http_context"
 	"github.com/hopeio/pandora/protobuf/request"
 	"github.com/hopeio/pandora/utils/struct/set"
@@ -97,7 +97,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 		userIds.Add(moment.UserId)
 	}
 	if len(userIds) > 0 {
-		userList, err := client.UserClient.BaseList(ctxi, &user.BaseListReq{Ids: userIds.ToArray()})
+		userList, err := rpc.UserClient.BaseList(ctxi, &user.BaseListReq{Ids: userIds.ToArray()})
 		if err != nil {
 			return nil, err
 		}
@@ -307,7 +307,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	}
 	var users []*user.UserBaseInfo
 	if len(userIds) > 0 {
-		userList, err := client.UserClient.BaseList(ctxi, &user.BaseListReq{Ids: userIds.ToArray()})
+		userList, err := rpc.UserClient.BaseList(ctxi, &user.BaseListReq{Ids: userIds.ToArray()})
 		if err != nil {
 			return nil, err
 		}

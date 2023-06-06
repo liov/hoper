@@ -1,4 +1,4 @@
-package chat
+package api
 
 import (
 	"github.com/actliboy/hoper/server/go/chat/service"
@@ -6,6 +6,6 @@ import (
 	"github.com/hopeio/pandora/utils/net/http/gin/handler"
 )
 
-func Register(app *gin.Engine) {
+func GinRegister(app *gin.Engine) {
 	app.GET("/api/ws/chat", handler.Convert(service.Chat))
 }

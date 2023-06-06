@@ -16,7 +16,9 @@ spec:
           env:
             - name: SECRET_KEY
               value: bea26a2221fd8090ea38720fc445eca6
-
+  selector:
+    matchLabels:
+      app: drone
 # runner environment
 # DRONE_SECRET_PLUGIN_ENDPOINT=http://...:3000
 # DRONE_SECRET_PLUGIN_TOKEN=bea26a2221fd8090ea38720fc445eca6

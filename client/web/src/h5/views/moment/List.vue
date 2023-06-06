@@ -63,8 +63,6 @@ function user(id: number) {
 
 async function onLoad() {
   listConfig.finished = false;
-  const ml = await momentList(listConfig.pageNo, listConfig.pageSize);
-  console.log(ml);
   // 异步更新数据
   const res = await axios.get(
     `/api/v1/moment?pageNo=${listConfig.pageNo}&pageSize=${listConfig.pageSize}`

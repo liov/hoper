@@ -2,11 +2,11 @@ package service
 
 import (
 	"context"
-	"github.com/actliboy/hoper/server/go/content/client"
 	"github.com/actliboy/hoper/server/go/content/confdao"
 	"github.com/actliboy/hoper/server/go/content/dao"
 	dbdao "github.com/actliboy/hoper/server/go/content/dao/db"
 	"github.com/actliboy/hoper/server/go/content/model"
+	"github.com/actliboy/hoper/server/go/content/rpc"
 	"github.com/actliboy/hoper/server/go/protobuf/content"
 	"github.com/actliboy/hoper/server/go/protobuf/user"
 	"github.com/hopeio/pandora/context/http_context"
@@ -356,7 +356,7 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 	}
 	var users []*user.UserBaseInfo
 	if len(userIds) > 0 {
-		userList, err := client.UserClient.BaseList(ctxi, &user.BaseListReq{Ids: userIds.ToArray()})
+		userList, err := rpc.UserClient.BaseList(ctxi, &user.BaseListReq{Ids: userIds.ToArray()})
 		if err != nil {
 			return nil, err
 		}
