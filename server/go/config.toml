@@ -28,14 +28,14 @@ Group = "DEFAULT_GROUP"
 
 [[test.nacos.ServerConfigs]]
 Scheme = "http"
-IpAddr = "nacos.liov.xyz"
+IpAddr = "localhost"
 Port = 9000
 GrpcPort = 10000
 
 [test.nacos.ClientConfig]
 NamespaceId = ""
 username = "nacos"
-password = "225567"
+password = "123456"
 LogLevel = "debug"
 
 [prod]
