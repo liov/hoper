@@ -13,3 +13,5 @@
 !/protobuf/ent/schema/
 /protobuf/api
 /protobuf/build
+config.toml
+local.toml
