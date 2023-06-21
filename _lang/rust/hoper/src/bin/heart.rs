@@ -1,11 +1,14 @@
+#![feature(write_all_vectored)]
+
 use std::thread;
 use std::time::Duration;
-use windows::{Win32::System::Console::*};
+use std::io::{self, BufWriter, Write};
+use console::{Term};
 
 fn main() {
-    unsafe {
-        let o = GetStdHandle(STD_OUTPUT_HANDLE).unwrap();
 
+        let mut term = Term::stdout();
+        let mut sw = BufWriter::new(io::stdout());
         let mut buffer = [[' ' as u8; 80]; 25];
         let ramp = ".:-=+*#%@".as_bytes();
         let mut t = 0.0f32;
@@ -40,14 +43,14 @@ fn main() {
             }
 
             for sy in 0..25 {
-                SetConsoleCursorPosition(o, COORD { X: 0, Y: sy });
-                WriteConsoleA(o, &buffer[sy as usize], None, None);
+                term.move_cursor_to(0,sy as usize);
+                term.write(&buffer[sy as usize]);
             }
+
 
             thread::sleep(Duration::from_millis(16));
             t += 0.1f32;
         }
-    }
 }
 
 // IDEA bug x * x 这里会报错Use of moved value
