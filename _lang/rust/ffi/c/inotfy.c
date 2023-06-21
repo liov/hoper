@@ -20,7 +20,8 @@ char *event_str[EVENT_NUM] =
 "IN_DELETE_SELF",  
 "IN_MOVE_SELF"  
 };  
-  
+
+// TODO:转成abi调用
 int main(int argc, char *argv[])  
 {  
     int fd;  

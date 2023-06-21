@@ -16,16 +16,16 @@ import 'package:app/global/state/app.dart';
 
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  ErrorWidget.builder = (FlutterErrorDetails flutterErrorDetails) {
-    globalService.logger.d(flutterErrorDetails.toString());
-    return const Center(
-      child: Text("找不到页面"),
-    );
-  };
-  assert(AppState.isDebug = true);
-  globalService.logger.d("${AppState.isDebug}");
   runZonedGuarded(() {
+    WidgetsFlutterBinding.ensureInitialized();
+    ErrorWidget.builder = (FlutterErrorDetails flutterErrorDetails) {
+      globalService.logger.d(flutterErrorDetails.toString());
+      return const Center(
+        child: Text("找不到页面"),
+      );
+    };
+    assert(AppState.isDebug = true);
+    globalService.logger.d("${AppState.isDebug}");
     runApp(GetMaterialApp(
       title: 'hoper',
       themeMode: globalState.isDarkMode.value ? ThemeMode.dark : ThemeMode

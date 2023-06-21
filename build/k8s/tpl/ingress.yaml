@@ -48,6 +48,3 @@ spec:
               serviceName: $mod
               servicePort: 80
             path: /
-
-status:
-  loadBalancer: {}

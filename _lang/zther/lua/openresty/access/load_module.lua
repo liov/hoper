@@ -1,7 +1,6 @@
 local need_module = router_filter:route_verify()
 
 local function load_module()
-
     package.loaded[ngx.var.lua_path] = dofile(work_dir .."handler/"..ngx.var.lua_path..".lua")
 end
 
