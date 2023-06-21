@@ -7,6 +7,6 @@ lxml==4.9.1
 numpy==1.22.0
 paddleocr==2.3.0.2
 Pillow==9.3.0
-requests==2.26.0
+requests==2.31.0
 setuptools==65.5.1
 taichi==1.4.1
