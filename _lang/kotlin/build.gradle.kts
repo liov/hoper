@@ -2,14 +2,16 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
-  val kotlinVersion = "1.8.10"
-  java
+  val kotlinVersion = "1.8.21"
   kotlin("jvm") version kotlinVersion
   kotlin("plugin.serialization") version kotlinVersion
+  java
+  idea
 }
 
 allprojects {
   apply<JavaPlugin>()
+  apply<IdeaPlugin>()
   group = "xyz.hoper"
   version = "0.0.1-SNAPSHOT"
   java.sourceCompatibility = JavaVersion.VERSION_11
