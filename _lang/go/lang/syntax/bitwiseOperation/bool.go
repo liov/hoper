@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/hopeio/pandora/utils/number"
+	"github.com/hopeio/tailmon/utils/number"
 )
 
 const (

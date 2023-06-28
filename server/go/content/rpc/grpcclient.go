@@ -3,8 +3,8 @@ package rpc
 import (
 	"github.com/actliboy/hoper/server/go/protobuf/upload"
 	"github.com/actliboy/hoper/server/go/protobuf/user"
-	"github.com/hopeio/pandora/utils/log"
-	grpci "github.com/hopeio/pandora/utils/net/http/grpc"
+	"github.com/hopeio/tailmon/utils/log"
+	grpci "github.com/hopeio/tailmon/utils/net/http/grpc"
 )
 
 var (

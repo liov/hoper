@@ -9,13 +9,13 @@ Future<void> main() async{
   var gopath = Platform.environment['GOPATH'];
 /*  await Process.run("go",["mod" "download","github.com/googleapis/googleapis"],workingDirectory: goprojectPath);
  */
- var result = await Process.run("go",[...arguments,"github.com/hopeio/pandora"],workingDirectory: goprojectPath);
- var pandoraPath = (result.stdout as String).trimRight()+'/protobuf/_proto';
+ var result = await Process.run("go",[...arguments,"github.com/hopeio/tailmon"],workingDirectory: goprojectPath);
+ var tailmonPath = (result.stdout as String).trimRight()+'/protobuf/_proto';
 
-  include = ["-I${protoPath}","-I${pandoraPath}"];
+  include = ["-I${protoPath}","-I${tailmonPath}"];
   Directory('${Directory.current.path}/lib/generated/protobuf').create();
   await generate(protoPath,[]);
-  await generate(pandoraPath,[]);
+  await generate(tailmonPath,[]);
 }
 
 Future<void> generate(String dir,List<String> exludes) async {

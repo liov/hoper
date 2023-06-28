@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/binary"
 	"fmt"
-	"github.com/hopeio/pandora/utils/number"
+	"github.com/hopeio/tailmon/utils/number"
 	"strconv"
 )
 

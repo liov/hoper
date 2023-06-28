@@ -1,12 +1,12 @@
 package confdao
 
 import (
-	"github.com/hopeio/pandora/initialize/gormdb"
-	"github.com/hopeio/pandora/initialize/log"
-	"github.com/hopeio/pandora/initialize/redis"
-	"github.com/hopeio/pandora/initialize/ristretto"
-	"github.com/hopeio/pandora/initialize/server"
-	"github.com/hopeio/pandora/utils/fs"
+	"github.com/hopeio/tailmon/initialize/gormdb"
+	"github.com/hopeio/tailmon/initialize/log"
+	"github.com/hopeio/tailmon/initialize/redis"
+	"github.com/hopeio/tailmon/initialize/ristretto"
+	"github.com/hopeio/tailmon/initialize/server"
+	"github.com/hopeio/tailmon/utils/fs"
 	"runtime"
 )
 

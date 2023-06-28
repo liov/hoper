@@ -6,10 +6,10 @@ import (
 	"github.com/actliboy/hoper/server/go/user/confdao"
 	"github.com/actliboy/hoper/server/go/user/dao"
 	"github.com/actliboy/hoper/server/go/user/model"
-	"github.com/hopeio/pandora/context/http_context"
-	"github.com/hopeio/pandora/protobuf/empty"
-	"github.com/hopeio/pandora/protobuf/errorcode"
-	dbi "github.com/hopeio/pandora/utils/dao/db/const"
+	"github.com/hopeio/tailmon/context/http_context"
+	"github.com/hopeio/tailmon/protobuf/empty"
+	"github.com/hopeio/tailmon/protobuf/errorcode"
+	dbi "github.com/hopeio/tailmon/utils/dao/db/const"
 )
 
 // 关注

@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"github.com/hopeio/pandora/utils/encoding/json/iterator"
+	"github.com/hopeio/tailmon/utils/encoding/json/iterator"
 	"strconv"
 
 	"github.com/actliboy/hoper/server/go/protobuf/common"
@@ -9,10 +9,10 @@ import (
 	"github.com/actliboy/hoper/server/go/user/confdao"
 	modelconst "github.com/actliboy/hoper/server/go/user/model"
 	"github.com/go-redis/redis/v8"
-	"github.com/hopeio/pandora/protobuf/errorcode"
-	redisi "github.com/hopeio/pandora/utils/dao/redis"
-	"github.com/hopeio/pandora/utils/encoding/hash"
-	"github.com/hopeio/pandora/utils/log"
+	"github.com/hopeio/tailmon/protobuf/errorcode"
+	redisi "github.com/hopeio/tailmon/utils/dao/redis"
+	"github.com/hopeio/tailmon/utils/encoding/hash"
+	"github.com/hopeio/tailmon/utils/log"
 )
 
 // UserToRedis 将用户信息存到redis

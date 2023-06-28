@@ -1,8 +1,8 @@
 package confdao
 
 import (
-	"github.com/hopeio/pandora/initialize/log"
-	"github.com/hopeio/pandora/initialize/server"
+	"github.com/hopeio/tailmon/initialize/log"
+	"github.com/hopeio/tailmon/initialize/server"
 	"runtime"
 	"time"
 

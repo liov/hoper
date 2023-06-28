@@ -4,7 +4,7 @@ import (
 	model "github.com/actliboy/hoper/server/go/protobuf/user"
 	"github.com/actliboy/hoper/server/go/user/service"
 	"github.com/gin-gonic/gin"
-	"github.com/hopeio/pandora/pick"
+	"github.com/hopeio/tailmon/pick"
 	"net/http"
 )
 

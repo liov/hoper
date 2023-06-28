@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"github.com/hopeio/pandora/context/http_context"
+	"github.com/hopeio/tailmon/context/http_context"
 	"log"
 )
 

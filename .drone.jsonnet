@@ -100,9 +100,9 @@ local Pipeline(group, name='', mode='app', type='bin' , buildDir='', sourceFile=
       },
     },
     {
-      name: 'pandora',
+      name: 'tailmon',
       host: {
-        path: cconfig.dirprefix + '/code/pandora/',
+        path: cconfig.dirprefix + '/code/tailmon/',
       },
     },
      {
@@ -143,8 +143,8 @@ local Pipeline(group, name='', mode='app', type='bin' , buildDir='', sourceFile=
             path: '/code/',
         },
         {
-          name: 'pandora',
-          path: '/pandora/',
+          name: 'tailmon',
+          path: '/tailmon/',
         },
          {
           name: 'deploy',

@@ -3,7 +3,7 @@ package confdao
 import (
 	"time"
 
-	"github.com/hopeio/pandora/utils/fs"
+	"github.com/hopeio/tailmon/utils/fs"
 )
 
 type serverConfig struct {

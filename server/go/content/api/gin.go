@@ -4,7 +4,7 @@ import (
 	contentService "github.com/actliboy/hoper/server/go/content/service"
 	"github.com/actliboy/hoper/server/go/protobuf/content"
 	"github.com/gin-gonic/gin"
-	"github.com/hopeio/pandora/pick"
+	"github.com/hopeio/tailmon/pick"
 )
 
 func GinRegister(app *gin.Engine) {

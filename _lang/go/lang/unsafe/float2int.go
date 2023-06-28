@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/hopeio/pandora/utils/number"
-	reflecti "github.com/hopeio/pandora/utils/reflect"
+	"github.com/hopeio/tailmon/utils/number"
+	reflecti "github.com/hopeio/tailmon/utils/reflect"
 	"unsafe"
 )
 

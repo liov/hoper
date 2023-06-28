@@ -6,9 +6,9 @@ import (
 	"github.com/actliboy/hoper/server/go/user/service"
 	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
-	"github.com/hopeio/pandora/initialize"
-	"github.com/hopeio/pandora/pick"
-	"github.com/hopeio/pandora/server"
+	"github.com/hopeio/tailmon/initialize"
+	"github.com/hopeio/tailmon/pick"
+	"github.com/hopeio/tailmon/server"
 )
 
 func main() {

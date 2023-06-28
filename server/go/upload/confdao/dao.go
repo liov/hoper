@@ -1,10 +1,10 @@
 package confdao
 
 import (
-	"github.com/hopeio/pandora/initialize/gormdb/postgres"
-	"github.com/hopeio/pandora/initialize/pebble"
-	initredis "github.com/hopeio/pandora/initialize/redis"
-	"github.com/hopeio/pandora/initialize/ristretto"
+	"github.com/hopeio/tailmon/initialize/gormdb/postgres"
+	"github.com/hopeio/tailmon/initialize/pebble"
+	initredis "github.com/hopeio/tailmon/initialize/redis"
+	"github.com/hopeio/tailmon/initialize/ristretto"
 )
 
 var Dao *dao = &dao{}

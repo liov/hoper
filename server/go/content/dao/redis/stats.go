@@ -2,7 +2,7 @@ package redis
 
 import (
 	"github.com/actliboy/hoper/server/go/content/model"
-	"github.com/hopeio/pandora/protobuf/errorcode"
+	"github.com/hopeio/tailmon/protobuf/errorcode"
 )
 
 func (d *ContentRedisDao) UserContentEdit(field string, value interface{}) error {

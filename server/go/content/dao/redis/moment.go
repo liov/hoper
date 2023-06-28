@@ -3,7 +3,7 @@ package redis
 import (
 	"github.com/actliboy/hoper/server/go/protobuf/content"
 	"github.com/go-redis/redis/v8"
-	"github.com/hopeio/pandora/protobuf/errorcode"
+	"github.com/hopeio/tailmon/protobuf/errorcode"
 )
 
 func (d *ContentRedisDao) GetTopMoments(key string, pageNo int, PageSize int) ([]content.Moment, error) {

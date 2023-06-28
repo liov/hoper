@@ -12,14 +12,14 @@ function getDepPath(mod){
   }).toString().trimEnd()
 }
 
-const pandoraPath = getDepPath("github.com/hopeio/pandora");
-console.log(pandoraPath);
+const tailmonPath = getDepPath("github.com/hopeio/tailmon");
+console.log(tailmonPath);
 
 
 const protopath = __dirname;
-const pandoraProto = pandoraPath + "/protobuf/_proto";
+const tailmonProto = tailmonPath + "/protobuf/_proto";
 
-const baseCmd = `protoc -I${protopath} -I${pandoraProto}`
+const baseCmd = `protoc -I${protopath} -I${tailmonProto}`
 
 const goConfig = {
   output: "D:/code/hoper\\server\\go\\protobuf",
@@ -100,15 +100,15 @@ process.argv.slice(2).forEach(function(val,index,array){
       break;
     case 'dart':
     generate(protopath, [], dartConfig);
-    generate(pandoraProto, [], dartConfig);
+    generate(tailmonProto, [], dartConfig);
     break;
     case 'grpc-web':
       generate(protopath, [], grpcWebConfig);
-      generate(pandoraProto, [], grpcWebConfig);
+      generate(tailmonProto, [], grpcWebConfig);
       break;
     case 'protobuf-ts':
       generate(protopath, [], protobufTsConfig);
-      generate(pandoraProto, [], protobufTsConfig);
+      generate(tailmonProto, [], protobufTsConfig);
       break;
   }
 })

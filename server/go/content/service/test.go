@@ -6,7 +6,7 @@ import (
 	"unsafe"
 
 	model "github.com/actliboy/hoper/server/go/protobuf/content"
-	"github.com/hopeio/pandora/protobuf/empty"
+	"github.com/hopeio/tailmon/protobuf/empty"
 )
 
 type TestService struct {

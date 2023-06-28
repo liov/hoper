@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:app/generated/protobuf/content/content.model.pb.dart' as $pb;
 import 'package:fixnum/fixnum.dart';
-import 'package:app/generated/protobuf/pandora/protobuf/request/param.pb.dart' as $1;
+import 'package:app/generated/protobuf/tailmon/protobuf/request/param.pb.dart' as $1;
 
 class MomentDetailView extends StatelessWidget {
   final CommentController commentController = Get.find();

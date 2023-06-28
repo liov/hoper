@@ -4,7 +4,7 @@ import (
 	"github.com/actliboy/hoper/server/go/upload/confdao"
 	"github.com/actliboy/hoper/server/go/upload/service"
 	"github.com/gin-gonic/gin"
-	"github.com/hopeio/pandora/utils/net/http/gin/handler"
+	"github.com/hopeio/tailmon/utils/net/http/gin/handler"
 	"net/http"
 )
 

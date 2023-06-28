@@ -3,7 +3,7 @@ package dao
 import (
 	"github.com/actliboy/hoper/server/go/protobuf/upload"
 	"github.com/actliboy/hoper/server/go/upload/model"
-	"github.com/hopeio/pandora/protobuf/errorcode"
+	"github.com/hopeio/tailmon/protobuf/errorcode"
 	"gorm.io/gorm"
 )
 
