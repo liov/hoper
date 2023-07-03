@@ -6,7 +6,7 @@ import (
 	"github.com/hopeio/tailmon/initialize/redis"
 	"github.com/hopeio/tailmon/initialize/ristretto"
 	"github.com/hopeio/tailmon/initialize/server"
-	"github.com/hopeio/tailmon/utils/fs"
+	"github.com/hopeio/tailmon/utils/io/fs"
 	"runtime"
 )
 
