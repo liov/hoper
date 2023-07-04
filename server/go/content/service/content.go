@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"github.com/hopeio/tailmon/context/http_context"
-	"github.com/hopeio/tailmon/protobuf/request"
+	"github.com/hopeio/zeta/context/http_context"
+	"github.com/hopeio/zeta/protobuf/request"
 	"gorm.io/gorm"
 	"net/http"
 
@@ -11,8 +11,8 @@ import (
 	"github.com/actliboy/hoper/server/go/content/dao"
 	"github.com/actliboy/hoper/server/go/content/model"
 	"github.com/actliboy/hoper/server/go/protobuf/content"
-	"github.com/hopeio/tailmon/protobuf/empty"
-	"github.com/hopeio/tailmon/protobuf/errorcode"
+	"github.com/hopeio/zeta/protobuf/empty"
+	"github.com/hopeio/zeta/protobuf/errorcode"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

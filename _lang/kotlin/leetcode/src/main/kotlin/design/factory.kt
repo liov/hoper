@@ -71,7 +71,7 @@ class ShapeFactory {
 //使用该工厂，通过传递类型信息来获取实体类的对象。
 
 
-fun main(args: Array<String>) {
+fun main() {
   val shapeFactory = ShapeFactory()
 
   //获取 Circle 的对象，并调用它的 draw 方法

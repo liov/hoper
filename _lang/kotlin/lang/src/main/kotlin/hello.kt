@@ -1,4 +1,4 @@
-fun main(args: Array<String>) {
+fun main() {
     for(i in 1..10000){
         aaa(i.toFloat())
     }

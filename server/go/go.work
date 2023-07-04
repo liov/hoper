@@ -2,4 +2,4 @@ go 1.18
 
 use .
 
-replace github.com/hopeio/tailmon => ../../../tailmon
+replace github.com/hopeio/zeta => ../../../zeta

@@ -64,7 +64,7 @@ cat > ssudpconfig.json <<- EOF
     "plugin_opts": "server;mode=quic;host=${host};cert=/cert/fullchain.cer;key=/cert/${host}.key",
     "method": "aes-256-gcm"
 }
-EOF
+EOF 
 
 docker run --name ssserver-rust-quic \
 --restart always \

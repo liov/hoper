@@ -2,11 +2,33 @@ import com.google.protobuf.gradle.*
 import java.io.ByteArrayOutputStream
 
 plugins {
+    val kotlinVersion = "1.9.0"
+    kotlin("jvm") version kotlinVersion
     //id("com.squareup.wire") version "3.1.0"
     id("com.google.protobuf") version "0.9.1"
     //kotlin("kapt")
+    java
+    idea
 }
 
+apply<JavaPlugin>()
+apply<IdeaPlugin>()
+
+group = "xyz.hoper"
+version = "0.0.1-SNAPSHOT"
+
+repositories {
+    //maven("https://maven.aliyun.com/repository/public")
+    mavenCentral()
+    gradlePluginPortal()
+    google()
+    mavenLocal()
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
 
 //wire {
 //    sourcePath {
@@ -23,7 +45,7 @@ plugins {
 val grpcKotlinVersion:String by project
 
 val protopath: String = file("${rootDir}/../../../proto").absolutePath
-val projectpath: String = file("${rootDir}/../../../../tailmon").absolutePath
+val projectpath: String = file("${rootDir}/../../../../zeta").absolutePath
 
 
 sourceSets {
@@ -100,8 +122,6 @@ dependencies {
     api("io.grpc:grpc-stub:$grpcVersion")
     //api("io.grpc:grpc-kotlin-stub:$grpcKotlinVersion")
     protobuf(files("$projectpath/protobuf/_proto"))
-    //protobuf(files(protolib("github.com/grpc-ecosystem/grpc-gateway/v2")))
-    //protobuf(files(protolib("github.com/googleapis/googleapis")))
     //api("com.squareup.wire:wire-runtime:${rootProject.ext["wire_version"]}")
     //api("com.squareup.wire:wire-schema-multiplatform:${rootProject.ext["wire_version"]}")
     if (JavaVersion.current().isJava9Compatible) {

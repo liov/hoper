@@ -29,8 +29,8 @@ class Person(val name: String) {
 }
 
 @ExperimentalUnsignedTypes
-fun main(args: Array<String>){
-  var p = Person("test", 5u)
+fun main(){
+  val p = Person("test", 5u)
   print(p.age)
 }
 

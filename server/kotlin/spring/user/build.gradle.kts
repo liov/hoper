@@ -1,12 +1,10 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.gradle.api.tasks.testing.logging.TestLogEvent.*
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
     application
-    id("com.github.johnrengelman.shadow") version "7.0.0"
-    id("org.springframework.boot")
+    id("org.graalvm.buildtools.native") apply true
 }
+
 
 
 repositories {
@@ -19,28 +17,12 @@ repositories {
     mavenCentral()
 }
 
-val mainVerticleName = "xyz.hoper.user.UserApplication"
-
-val watchForChange = "src/**/*"
-val doOnChange = "${projectDir}/gradlew classes"
-
-application {
-    mainClass.set(mainVerticleName)
-}
-
-
 dependencies {
     implementation(project(":protobuf"))
-    implementation("org.springframework.boot:spring-boot-starter-graphql")
-    implementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("org.postgresql:r2dbc-postgresql")
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-    testImplementation("org.springframework.boot:spring-boot-starter-test") {
-        exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
-    }
+    implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
 }
 
 
@@ -58,10 +40,8 @@ tasks.withType<Test> {
     )
 }*/
 
-tasks.withType<ShadowJar> {
-    archiveClassifier.set("fat")
-    manifest {
-        attributes(mapOf("Main-Verticle" to mainVerticleName))
-    }
-    mergeServiceFiles()
+
+tasks.withType<BootBuildImage> {
+    //builder = "paketobuildpacks/builder:tiny"
+    //environment = mapOf("BP_NATIVE_IMAGE" to "true")
 }

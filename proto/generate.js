@@ -12,14 +12,14 @@ function getDepPath(mod){
   }).toString().trimEnd()
 }
 
-const tailmonPath = getDepPath("github.com/hopeio/tailmon");
-console.log(tailmonPath);
+const zetaPath = getDepPath("github.com/hopeio/zeta");
+console.log(zetaPath);
 
 
 const protopath = __dirname;
-const tailmonProto = tailmonPath + "/protobuf/_proto";
+const zetaProto = zetaPath + "/protobuf/_proto";
 
-const baseCmd = `protoc -I${protopath} -I${tailmonProto}`
+const baseCmd = `protoc -I${protopath} -I${zetaProto}`
 
 const goConfig = {
   output: "D:/code/hoper\\server\\go\\protobuf",
@@ -100,15 +100,15 @@ process.argv.slice(2).forEach(function(val,index,array){
       break;
     case 'dart':
     generate(protopath, [], dartConfig);
-    generate(tailmonProto, [], dartConfig);
+    generate(zetaProto, [], dartConfig);
     break;
     case 'grpc-web':
       generate(protopath, [], grpcWebConfig);
-      generate(tailmonProto, [], grpcWebConfig);
+      generate(zetaProto, [], grpcWebConfig);
       break;
     case 'protobuf-ts':
       generate(protopath, [], protobufTsConfig);
-      generate(tailmonProto, [], protobufTsConfig);
+      generate(zetaProto, [], protobufTsConfig);
       break;
   }
 })

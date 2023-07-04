@@ -1,8 +1,8 @@
 package confdao
 
 import (
-	"github.com/hopeio/tailmon/initialize/log"
-	"github.com/hopeio/tailmon/initialize/server"
+	"github.com/hopeio/zeta/initialize/log"
+	"github.com/hopeio/zeta/initialize/server"
 	"runtime"
 	"time"
 

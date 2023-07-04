@@ -56,7 +56,8 @@ fun longestValidParenthesesV1(s: String): Int {
 
 class CharAndIndex(val value: Char, val index: Int)
 
-inline class CharIndex(val value: Int)
+@JvmInline
+value class CharIndex(val value: Int)
 
 /**
 在这种方法中，我们利用两个计数器 left 和 right 。

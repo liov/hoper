@@ -1,6 +1,6 @@
 package test.collection
 
-fun main(args: Array<String>) {
+fun main() {
   val oddNumbers1 = generateSequence(1) { it + 2 } // `it` 是上一个元素
   println(oddNumbers1.take(5).toList())
 

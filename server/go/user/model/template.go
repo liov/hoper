@@ -1,7 +1,7 @@
 package model
 
 import (
-	templatei "github.com/hopeio/tailmon/utils/definition/template"
+	templatei "github.com/hopeio/zeta/utils/definition/template"
 )
 
 const (

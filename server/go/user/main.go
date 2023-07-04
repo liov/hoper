@@ -5,10 +5,9 @@ import (
 	"github.com/actliboy/hoper/server/go/user/confdao"
 	"github.com/actliboy/hoper/server/go/user/service"
 	"github.com/gin-gonic/gin"
-	"github.com/gofiber/fiber/v2"
-	"github.com/hopeio/tailmon/initialize"
-	"github.com/hopeio/tailmon/pick"
-	"github.com/hopeio/tailmon/server"
+	"github.com/hopeio/zeta/initialize"
+	"github.com/hopeio/zeta/pick"
+	"github.com/hopeio/zeta/server"
 )
 
 func main() {

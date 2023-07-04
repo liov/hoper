@@ -2,8 +2,8 @@
 
 import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/generated/protobuf/user/user.service.pb.dart';
-import 'package:app/generated/protobuf/tailmon/protobuf/empty/empty.pb.dart';
-import 'package:app/generated/protobuf/tailmon/protobuf/request/param.pb.dart' as request;
+import 'package:app/generated/protobuf/zeta/protobuf/empty/empty.pb.dart';
+import 'package:app/generated/protobuf/zeta/protobuf/request/param.pb.dart' as request;
 import 'package:app/global/global_state.dart';
 import 'package:app/global/const.dart';
 import 'package:app/pages/home/home_controller.dart';

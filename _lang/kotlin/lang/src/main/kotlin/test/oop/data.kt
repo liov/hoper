@@ -6,7 +6,7 @@ data class DPerson(val name: String) {
   var age: Int = 0
 }
 
-fun main(args: Array<String>) {
+fun main() {
   val jack = User(name = "Jack", age = 1)
   val olderJack = jack.copy(age = 2)
   val (name, age) = jack

@@ -87,7 +87,7 @@ operator fun <T:Comparable<T>> Int.compareTo(other:T):Int{
   return 0
 }
 
-fun main(args: Array<String>) {
-  var i = 1
+fun main() {
+  val i = 1
   demo(i as Comparable<Number>)
 }

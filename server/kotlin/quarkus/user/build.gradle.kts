@@ -5,6 +5,9 @@ plugins{
     id("io.quarkus")
 }
 
+dependencies {
+    implementation(project(":protobuf"))
+}
 
 tasks.withType<Test> {
     systemProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager")

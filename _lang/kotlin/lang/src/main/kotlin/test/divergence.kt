@@ -6,7 +6,7 @@ fun fail(message: String): Nothing {
 
 class Div(val name: String?)
 
-fun main(args: Array<String>) {
+fun main() {
   test()
   println("done")
 }

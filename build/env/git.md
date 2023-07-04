@@ -65,7 +65,7 @@ fi
 ' -- --all
 
 ### windows下必须双引号
-git filter-branch -f --env-filter "GIT_COMMITTER_EMAIL=liovx@qq.com;GIT_AUTHOR_EMAIL=liovx@qq.com" 1cd75a677457d08c803e40e7d4f317c957cc8562..HEAD
+git filter-branch -f --env-filter 'GIT_COMMITTER_NAME="liovx";GIT_AUTHOR_NAME="liovx";GIT_COMMITTER_EMAIL=liovx@qq.com;GIT_AUTHOR_EMAIL=liovx@qq.com' 1cd75a677457d08c803e40e7d4f317c957cc8562..HEAD
 
 
 如果要同步你的工作，运行 git fetch origin 命令。 这个命令查找 “origin” 是哪一个服务器（在本例中，它是 git.ourcompany.com），从中抓取本地没有的数据，并且更新本地数据库，移动 origin/master 指针指向新的、更新后的位置。

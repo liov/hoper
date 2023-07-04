@@ -3,8 +3,7 @@ package middle
 import (
 	"net/http"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/hopeio/tailmon/utils/log"
+	"github.com/hopeio/zeta/utils/log"
 )
 
 func Log(w http.ResponseWriter, r *http.Request) {

@@ -1,6 +1,6 @@
 package test.inner
 
-fun main(args: Array<String>) {
+fun main() {
   val s = StringBuilder()
   s.append('H')
   s.append('e')

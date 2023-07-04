@@ -1,9 +1,9 @@
 syntax = "proto3";
 package utils.time;
 
-import "tailmon/protobuf/utils/patch/go.proto";
+import "zeta/protobuf/utils/patch/go.proto";
 
-option go_package = "github.com/hopeio/tailmon/protobuf/time;time";
+option go_package = "github.com/hopeio/zeta/protobuf/time;time";
 option java_package = "xyz.hoper.protobuf.utils.time";
 
 

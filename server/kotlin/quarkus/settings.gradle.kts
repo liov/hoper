@@ -1,9 +1,9 @@
 rootProject.name = "quarkus"
 
 
-include("protobuf")
 include("user")
-
+include("protobuf")
+project(":protobuf").projectDir = file("../protobuf")
 
 pluginManagement {
     val quarkusPluginVersion: String by settings

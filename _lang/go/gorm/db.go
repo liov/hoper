@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/hopeio/tailmon/initialize"
-	"github.com/hopeio/tailmon/initialize/gormdb/mysql"
+	"github.com/hopeio/zeta/initialize"
+	"github.com/hopeio/zeta/initialize/gormdb/mysql"
 	"gorm.io/gorm"
 )
 

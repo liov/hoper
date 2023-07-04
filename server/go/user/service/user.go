@@ -5,13 +5,13 @@ import (
 	"context"
 	"crypto/md5"
 	"fmt"
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/hopeio/tailmon/context/http_context"
-	"github.com/hopeio/tailmon/pick"
-	"github.com/hopeio/tailmon/protobuf/request"
-	contexti2 "github.com/hopeio/tailmon/utils/context"
-	dbi "github.com/hopeio/tailmon/utils/dao/db/const"
-	stringsi "github.com/hopeio/tailmon/utils/strings"
+	"github.com/hopeio/zeta/context/http_context"
+	"github.com/hopeio/zeta/pick"
+	"github.com/hopeio/zeta/protobuf/request"
+	contexti2 "github.com/hopeio/zeta/utils/context"
+	dbi "github.com/hopeio/zeta/utils/dao/db/const"
+	"github.com/hopeio/zeta/utils/sdk/luosimao"
+	stringsi "github.com/hopeio/zeta/utils/strings"
 	"net/http"
 	"strconv"
 	"time"
@@ -21,20 +21,18 @@ import (
 	"github.com/actliboy/hoper/server/go/user/dao"
 	"github.com/actliboy/hoper/server/go/user/middle"
 	modelconst "github.com/actliboy/hoper/server/go/user/model"
-	"github.com/go-redis/redis/v8"
-	"github.com/gofiber/fiber/v2"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/uuid"
-	"github.com/hopeio/tailmon/protobuf/empty"
-	"github.com/hopeio/tailmon/protobuf/errorcode"
-	"github.com/hopeio/tailmon/protobuf/response"
-	redisi "github.com/hopeio/tailmon/utils/dao/redis"
-	templatei "github.com/hopeio/tailmon/utils/definition/template"
-	"github.com/hopeio/tailmon/utils/log"
-	httpi "github.com/hopeio/tailmon/utils/net/http"
+	"github.com/hopeio/zeta/protobuf/empty"
+	"github.com/hopeio/zeta/protobuf/errorcode"
+	"github.com/hopeio/zeta/protobuf/response"
+	redisi "github.com/hopeio/zeta/utils/dao/redis"
+	templatei "github.com/hopeio/zeta/utils/definition/template"
+	"github.com/hopeio/zeta/utils/log"
+	httpi "github.com/hopeio/zeta/utils/net/http"
 
-	"github.com/hopeio/tailmon/utils/net/mail"
-	"github.com/hopeio/tailmon/utils/verification"
+	"github.com/hopeio/zeta/utils/net/mail"
+	"github.com/hopeio/zeta/utils/verification"
 	"gorm.io/gorm"
 )
 
@@ -445,7 +443,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
-	if verifyErr := verification.LuosimaoVerify(confdao.Conf.Customize.LuosimaoVerifyURL, confdao.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
+	if verifyErr := luosimao.Verify(confdao.Conf.Customize.LuosimaoVerifyURL, confdao.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
 		return nil, errorcode.InvalidArgument.Warp(verifyErr)
 	}
 

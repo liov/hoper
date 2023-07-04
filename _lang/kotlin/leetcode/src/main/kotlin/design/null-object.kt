@@ -42,7 +42,7 @@ object CustomerFactory {
 }
 
 
-fun main(args: Array<String>) {
+fun main() {
   val customer1 = getCustomer("Rob")
   val customer2 = getCustomer("Bob")
   val customer3 = getCustomer("Julie")

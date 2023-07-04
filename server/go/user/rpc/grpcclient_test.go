@@ -2,7 +2,7 @@ package rpc
 
 import (
 	"github.com/actliboy/hoper/server/go/protobuf/user"
-	"github.com/hopeio/tailmon/protobuf/empty"
+	"github.com/hopeio/zeta/protobuf/empty"
 	"testing"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"

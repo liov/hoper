@@ -19,27 +19,13 @@ repositories {
     mavenCentral()
 }
 
-val mainVerticleName = "xyz.hoper.content.ContentApplication"
-
-val watchForChange = "src/**/*"
-val doOnChange = "${projectDir}/gradlew classes"
-
-application {
-    mainClass.set(mainVerticleName)
-}
-
 
 dependencies {
     implementation(project(":protobuf"))
-    implementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-graphql")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-    testImplementation("org.springframework.boot:spring-boot-starter-test") {
-        exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
-    }
+    runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("org.postgresql:r2dbc-postgresql")
+    implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
 }
 
 
@@ -54,7 +40,7 @@ tasks.withType<Test> {
 tasks.withType<ShadowJar> {
     archiveClassifier.set("fat")
     manifest {
-        attributes(mapOf("Main-Verticle" to mainVerticleName))
+        attributes(mapOf("Main-Verticle" to "xyz.hoper.content.ContentApplication"))
     }
     mergeServiceFiles()
 }
