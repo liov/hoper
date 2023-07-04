@@ -1,8 +1,6 @@
 // local mode(mode="app") = if mode == "app" then "app" else "node";
 local deployrepo = 'https://github.com/hopeio/deploy';
 local workspace = '/src';
-local deploydir = '/deploy';
-local deploytpl = '/code/deploy/';
 
 local compileHost = {
     localhost : {
@@ -17,7 +15,7 @@ local compileHost = {
      }
 };
 
-local targetHost = {
+local deploytHost = {
     tx : {
        datadir:'/data',
        confdir:'/root/config',
@@ -29,50 +27,15 @@ local targetHost = {
     }
 };
 
-local kubectl(compile, target, cmd) = if compile == target then {
-  name: 'deploy',
-  image: 'bitnami/kubectl',
-  user: 0,  //文档说是string类型，结果"root"不行 k8s runAsUser: 0
-  volumes: [
-    {
-      name: 'kube',
-      path: '/root/.kube/',
-    },
-  ],
-  commands: cmd,
-} else {
-  name: 'deploy',
-  image: 'bitnami/kubectl',
-  user: 0,  //文档说是string类型，结果"root"不行 k8s runAsUser: 0
-  environment: {
-    CACRT: {
-      from_secret: 'ca_crt',
-    },
-    DEVCRT: {
-      from_secret: 'dev_crt',
-    },
-    DEVKEY: {
-      from_secret: 'dev_key',
-    },
-  },
-  commands: [
-    'cd deploy/cmd && chmod +x account.sh && ./account.sh ' + target,
-    'cd ' + workspace,
-  ] + cmd,
-};
 
-
-local Pipeline(group, name='', mode='app', type='bin' , buildDir='', sourceFile='', protopath='', opts=[], compile='localhost',target = 'tx', schedule='') = {
+local Pipeline(group, name='', deploy_kind='deployment', build_type='bin' , buildDir='', sourceFile='', protopath='', opts=[], compile='localhost',target = 'tx', schedule='') = {
 
   local cconfig = compileHost[compile],
-  local tconfig = targetHost[target],
+  local tconfig = deploytHost[target],
 
   local fullname = if name == '' then group else group + '-' + name,
   local committag = fullname + '-v',
   local tag = '${DRONE_TAG##' + committag + '}',
-  local datadir = tconfig.datadir,
-  local dockerfilepath = deploydir + '/tpl/Dockerfile-' + type,
-  local deppath = deploydir + '/tpl/deploy-' + mode +'.yaml',
   local protoGenpath = workspace + '/' + protopath,
   kind: 'pipeline',
   type: 'docker',
@@ -103,12 +66,6 @@ local Pipeline(group, name='', mode='app', type='bin' , buildDir='', sourceFile=
       name: 'tailmon',
       host: {
         path: cconfig.dirprefix + '/code/tailmon/',
-      },
-    },
-     {
-      name: 'deploy',
-      host: {
-        path: cconfig.dirprefix + deploytpl,
       },
     },
     {
@@ -146,10 +103,6 @@ local Pipeline(group, name='', mode='app', type='bin' , buildDir='', sourceFile=
           name: 'tailmon',
           path: '/tailmon/',
         },
-         {
-          name: 'deploy',
-          path: '/deploy/',
-        },
         {
           name: 'gopath',
           path: '/go/',
@@ -167,73 +120,67 @@ local Pipeline(group, name='', mode='app', type='bin' , buildDir='', sourceFile=
       //'git fetch --all && git reset --hard origin/master && git pull',
       'git clone /code ' + workspace,
       'git checkout -b deploy $DRONE_COMMIT_REF',
-      'if [ ! -d /deploy/.git ]; then git clone '+ deployrepo + ' ' + deploydir + '; fi',
-      'mkdir deploy',
-      'cp -r '+ deploytpl +'certs deploy/certs',
-      'cp -r /deploy/cmd deploy/cmd',
-      'cp -r /deploy/tz deploy/tz',
-
        // edit Dockerfile && deploy file
-      local buildfile =  '/code/' + protopath + '/build';
-      if protopath != '' then 'if [ -f ' + buildfile + ' ]; then cp -r /code/' + protopath + '/* '+ protoGenpath + '; fi' else 'echo',
-
-      'if [ ! -d ' + deploytpl + ' ];then mkdir -p ' + deploytpl + '; fi',
-
-      local cmd = ['./' + fullname , '-c','./config/'+group+'.toml'] + opts;
-      "sed -e 's/$${app}/" + fullname + "/g;s#$${cmd}#" + std.join('", "', [opt for opt in cmd]) + "#g' " + dockerfilepath + ' > '+ deploytpl + fullname + '-Dockerfile',
-      "sed -e 's/$${app}/" + fullname + "/g;s/$${group}/" + group + "/g;s#$${datadir}#" + datadir + "#g;s#$${confdir}#" + tconfig.confdir + "#g;s#$${image}#jybl/" + fullname + ':' + tag + "#g;s#$${schedule}#" + schedule + "#g' " + deppath + ' > '+ deploytpl + fullname + '.yaml',
-      'cp ' + deploytpl + fullname + '-Dockerfile deploy/Dockerfile',
-      'cp ' + deploytpl + fullname + '.yaml deploy/deploy.yaml',
-      // go build
-      'cd ' + buildDir,
+      'cp -r /code/' + protopath + '/* '+ protoGenpath,
 
       local buildfile = protoGenpath + '/build';
       if protopath != '' then 'if [ ! -f ' + buildfile + ' ]; then protogen go -e -w -q -p '+ workspace+'/proto -g '+protoGenpath+'; fi' else 'echo',
+       // go build
+      'cd ' + buildDir,
       //'go mod tidy',
-      'go build -trimpath -o  '+ workspace +'/deploy/'+ fullname + ' ' + sourceFile,
+      'go build -trimpath -o  /code/deploy/'+ fullname + ' ' + sourceFile,
       ],
     },
-    {
-      name: 'docker build',
-      image: 'docker:20.10.19-cli-alpine3.16',
+     {
+      name: 'deploy',
+      image: 'jybl/deploy',
       privileged: true,
+      user: 0,
       volumes: [
         {
-          name: 'dockersock',
-          path: '/var/run/',
+          name: 'codedir',
+          path: '/code/',
         },
+        {
+         name: 'dockersock',
+         path: '/var/run/',
+       },
       ],
-      environment: {
-          USERNAME: {
+      settings: {
+          group: group,
+          name: name,
+          setp: "all",
+          deploy_dir: "/code/deploy",
+          deploy_kind: deploy_kind,
+          build_type: build_type,
+          docker_cmd: './' + fullname + ',-c,./config/'+group+'.toml' + std.join(',', [opt for opt in opts]),
+          docker_username: {
             from_secret: 'docker_username',
           },
-          PASSWORD: {
+          docker_password: {
             from_secret: 'docker_password',
           },
-
-      },
-    commands: [
-        //'docker version',
-        'docker login -u $USERNAME -p $PASSWORD',
-        'docker build -f deploy/Dockerfile -t $USERNAME/' + fullname+':'+tag+' deploy',
-        if compile != target then 'docker push $USERNAME/'+ fullname+':'+ tag,
-    ],
-    },
-    kubectl(compile,target, [
-      if mode == 'job' || mode == 'cronjob' then 'kubectl --kubeconfig=/root/.kube/config delete --ignore-not-found -f deploy/deploy.yaml' else 'echo',
-      'kubectl --kubeconfig=/root/.kube/config apply -f deploy/deploy.yaml',
-    ]),
-    {
-      name: 'dingtalk',
-      image: 'jybl/notify',
-      settings: {
-        ding_token: {
-          from_secret: 'ding_token',
-        },
-        ding_secret: {
-          from_secret: 'ding_secret',
+          config_dir: tconfig.confdir,
+          data_dir: tconfig.datadir,
+          schedule: schedule,
+          cluster: target,
+          ca_crt: {
+            from_secret: 'ca_crt',
+          },
+          dev_crt: {
+            from_secret: 'dev_crt',
+          },
+          dev_key: {
+            from_secret: 'dev_key',
+          },
+          ding_token: {
+            from_secret: 'ding_token',
+          },
+          ding_secret: {
+            from_secret: 'ding_secret',
          },
       },
+
     },
   ],
 };
