@@ -11,6 +11,7 @@ import (
 	"github.com/hopeio/tailmon/protobuf/request"
 	contexti2 "github.com/hopeio/tailmon/utils/context"
 	dbi "github.com/hopeio/tailmon/utils/dao/db/const"
+	"github.com/hopeio/tailmon/utils/sdk/luosimao"
 	stringsi "github.com/hopeio/tailmon/utils/strings"
 	"net/http"
 	"strconv"
@@ -445,7 +446,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
-	if verifyErr := verification.LuosimaoVerify(confdao.Conf.Customize.LuosimaoVerifyURL, confdao.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
+	if verifyErr := luosimao.Verify(confdao.Conf.Customize.LuosimaoVerifyURL, confdao.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
 		return nil, errorcode.InvalidArgument.Warp(verifyErr)
 	}
 
