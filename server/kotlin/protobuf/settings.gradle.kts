@@ -1,9 +1,4 @@
-rootProject.name = "spring"
-
-include("user")
-include("content")
-include("protobuf")
-project(":protobuf").projectDir = file("../protobuf")
+rootProject.name = "protobuf"
 
 pluginManagement {
     repositories {

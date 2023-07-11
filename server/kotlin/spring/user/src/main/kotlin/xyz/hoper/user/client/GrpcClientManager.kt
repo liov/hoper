@@ -1,9 +1,10 @@
 package xyz.hoper.user.client
 
-import org.springframework.stereotype.Component
+
 import java.util.concurrent.TimeUnit
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
+import org.springframework.stereotype.Component
 
 @Component
 class GrpcClientManager {

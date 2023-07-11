@@ -173,7 +173,7 @@ object Comp {
 /*首先，我们需要构建一个大小为N的小顶堆，小顶堆的性质如下：
 每一个父节点的值都小于左右孩子节点，然后依次从文件中读取10亿个整数，如果元素比堆顶小，则跳过不进行任何操作，
 如果比堆顶大，则把堆顶元素替换掉，并重新构建小顶堆。当10亿个整数遍历完成后，堆内元素就是TopN的结果。*/
-fun main(args: Array<String>) {
+fun main() {
   topMaxN()
   //topMinN()
   val toN = TopN(MutableList(9) { it * 2 + 1 })

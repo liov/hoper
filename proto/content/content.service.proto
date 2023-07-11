@@ -7,12 +7,12 @@ import "user/user.model.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
-import "tailmon/protobuf/empty/empty.proto";
-import "tailmon/protobuf/request/param.proto";
-import "tailmon/protobuf/response/response.proto";
+import "dora/protobuf/empty/empty.proto";
+import "dora/protobuf/request/param.proto";
+import "dora/protobuf/response/response.proto";
 import "danielvladco/protobuf/graphql.proto";
-import "tailmon/protobuf/oauth/oauth.proto";
-import "tailmon/protobuf/utils/patch/go.proto";
+import "dora/protobuf/oauth/oauth.proto";
+import "dora/protobuf/utils/patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
 option go_package = "github.com/actliboy/hoper/server/go/protobuf/content";

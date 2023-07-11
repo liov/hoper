@@ -4,9 +4,8 @@ import (
 	"time"
 
 	"github.com/actliboy/hoper/server/go/content/confdao"
-	"github.com/go-redis/redis/v8"
-	"github.com/hopeio/tailmon/protobuf/errorcode"
-	timei "github.com/hopeio/tailmon/utils/time"
+	"github.com/hopeio/dora/protobuf/errorcode"
+	timei "github.com/hopeio/dora/utils/time"
 )
 
 var limitErr = errorcode.TimeTooMuch.Message("您的操作过于频繁，请先休息一会儿。")

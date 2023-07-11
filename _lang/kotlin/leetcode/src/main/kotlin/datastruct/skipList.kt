@@ -77,7 +77,7 @@ class SkipArrayList<T : Comparable<T>>(init: T) {
   }
 }
 
-fun main(args: Array<String>) {
+fun main() {
   val srl = SkipArrayList(Int.MIN_VALUE)
   srl.add(2)
   srl.add(6)

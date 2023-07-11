@@ -1,6 +1,6 @@
 package test
 
-fun main(args: Array<String>) {
+fun main() {
   val result = html {                                            // 1
     head {                                                     // 2
       title { +"HTML encoding with Kotlin" }

@@ -1,6 +1,6 @@
 syntax = "proto3";
 package common;
-import "tailmon/protobuf/utils/patch/go.proto";
+import "dora/protobuf/utils/patch/go.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "utils/area/area.proto";
 

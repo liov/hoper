@@ -39,7 +39,7 @@ inline fun <reified T : Enum<T>> printAllValues() {
 }
 
 
-fun main(args: Array<String>){
+fun main(){
     printAllValues<RGB>()
   println(enumValueOf<RGB>("RED"))
 }

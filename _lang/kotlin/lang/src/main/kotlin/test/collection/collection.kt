@@ -1,7 +1,7 @@
 package test.collection
 
 //集合的基本操作，rust中是对实现迭代器类型的操作map,filter,reduce,take,zip,
-fun main(args: Array<String>) {
+fun main() {
   val numbers1 = listOf("one", "two", "three", "four")
   val filterResults = mutableListOf<String>()  // 目标对象
   numbers1.filterTo(filterResults) { it.length > 3 }

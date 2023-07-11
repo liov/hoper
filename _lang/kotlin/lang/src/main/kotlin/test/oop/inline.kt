@@ -1,12 +1,14 @@
 package test.oop
 
-inline class Password(val value: String)
+@JvmInline
+value class Password(val value: String)
 
 interface Printable {
   fun prettyPrint(): String
 }
 
-inline class Name(val s: String): Printable {
+@JvmInline
+value class Name(val s: String): Printable {
   val length: Int
     get() = s.length
 
@@ -18,7 +20,8 @@ inline class Name(val s: String): Printable {
 
 interface I
 
-inline class Foo(val i: Int) : I
+@JvmInline
+value class Foo(val i: Int) : I
 
 fun asInline(f: Foo) {}
 fun <T> asGeneric(x: T) {}
@@ -29,7 +32,8 @@ fun <T> id(x: T): T = x
 
 
 typealias NameTypeAlias = String
-inline class NameInlineClass(val s: String)
+@JvmInline
+value class NameInlineClass(val s: String)
 
 fun acceptString(s: String) {}
 fun acceptNameTypeAlias(n: NameTypeAlias) {}

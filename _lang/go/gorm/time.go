@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/davecgh/go-spew/spew"
-	"github.com/hopeio/tailmon/initialize"
-	"github.com/hopeio/tailmon/initialize/gormdb/postgres"
+	"github.com/hopeio/dora/initialize"
+	"github.com/hopeio/dora/initialize/gormdb/postgres"
 	"log"
 	"time"
 )
