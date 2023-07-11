@@ -24,7 +24,7 @@ val grpcKotlinVersion:String by project
 val vertxGrpcVersion:String by project
 
 val protopath: String = file("${rootDir}/../../../proto").absolutePath
-val projectpath: String = file("${rootDir}/../../../../tailmon").absolutePath
+val projectpath: String = file("${rootDir}/../../../../dora").absolutePath
 
 
 sourceSets {

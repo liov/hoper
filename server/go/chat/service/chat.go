@@ -4,9 +4,9 @@ import (
 	"github.com/actliboy/hoper/server/go/protobuf/user"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
-	"github.com/hopeio/tailmon/context/http_context"
-	"github.com/hopeio/tailmon/protobuf/errorcode"
-	httpi "github.com/hopeio/tailmon/utils/net/http"
+	"github.com/hopeio/dora/context/http_context"
+	"github.com/hopeio/dora/protobuf/errorcode"
+	httpi "github.com/hopeio/dora/utils/net/http"
 	"net/http"
 )
 

@@ -63,9 +63,9 @@ local Pipeline(group, name='', deploy_kind='deployment', build_type='bin' , buil
       },
     },
     {
-      name: 'tailmon',
+      name: 'dora',
       host: {
-        path: cconfig.dirprefix + '/code/tailmon/',
+        path: cconfig.dirprefix + '/code/dora/',
       },
     },
     {
@@ -100,8 +100,8 @@ local Pipeline(group, name='', deploy_kind='deployment', build_type='bin' , buil
             path: '/code/',
         },
         {
-          name: 'tailmon',
-          path: '/tailmon/',
+          name: 'dora',
+          path: '/dora/',
         },
         {
           name: 'gopath',

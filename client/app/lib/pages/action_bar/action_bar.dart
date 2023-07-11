@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:fixnum/fixnum.dart';
-import 'package:app/generated/protobuf/tailmon/protobuf/request/param.pb.dart' as $param;
+import 'package:app/generated/protobuf/dora/protobuf/request/param.pb.dart' as $param;
 
 class ActionBar extends StatefulWidget {
   ActionBar(this.content) : super();

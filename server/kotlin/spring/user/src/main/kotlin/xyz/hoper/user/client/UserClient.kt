@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import xyz.hoper.tailmon.protobuf.empty.EmptyOuterClass
+import xyz.hoper.dora.protobuf.empty.EmptyOuterClass
 import javax.annotation.PostConstruct
 import xyz.hoper.protobuf.user.UserServiceGrpc
 

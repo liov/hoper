@@ -1,7 +1,7 @@
 syntax = "proto3";
 package common;
-import "tailmon/protobuf/utils/enum/enum.proto";
-import "tailmon/protobuf/utils/patch/go.proto";
+import "dora/protobuf/utils/enum/enum.proto";
+import "dora/protobuf/utils/patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.common";
 option go_package = "github.com/actliboy/hoper/server/go/protobuf/common";
