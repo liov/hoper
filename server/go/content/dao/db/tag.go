@@ -3,8 +3,8 @@ package db
 import (
 	"github.com/actliboy/hoper/server/go/content/model"
 	"github.com/actliboy/hoper/server/go/protobuf/content"
-	"github.com/hopeio/dora/protobuf/errorcode"
-	dbi "github.com/hopeio/dora/utils/dao/db/const"
+	"github.com/hopeio/zeta/protobuf/errorcode"
+	dbi "github.com/hopeio/zeta/utils/dao/db/const"
 )
 
 const TagTableNameAlias = model.TagTableName + " a"

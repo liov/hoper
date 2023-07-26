@@ -3,7 +3,7 @@ package dao
 import (
 	"github.com/actliboy/hoper/server/go/content/dao/db"
 	rdao "github.com/actliboy/hoper/server/go/content/dao/redis"
-	"github.com/hopeio/dora/context/http_context"
+	"github.com/hopeio/zeta/context/http_context"
 	"gorm.io/gorm"
 )
 

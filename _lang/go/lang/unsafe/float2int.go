@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/hopeio/dora/utils/number"
-	reflecti "github.com/hopeio/dora/utils/reflect"
+	"github.com/hopeio/zeta/utils/number"
+	reflecti "github.com/hopeio/zeta/utils/reflect"
 	"unsafe"
 )
 

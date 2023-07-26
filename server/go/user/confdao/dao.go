@@ -2,11 +2,11 @@ package confdao
 
 import (
 	"database/sql"
-	"github.com/hopeio/dora/initialize/gormdb/postgres"
-	"github.com/hopeio/dora/initialize/mail"
-	"github.com/hopeio/dora/initialize/pebble"
-	"github.com/hopeio/dora/initialize/redis"
-	"github.com/hopeio/dora/initialize/ristretto"
+	"github.com/hopeio/zeta/initialize/gormdb/postgres"
+	"github.com/hopeio/zeta/initialize/mail"
+	"github.com/hopeio/zeta/initialize/pebble"
+	"github.com/hopeio/zeta/initialize/redis"
+	"github.com/hopeio/zeta/initialize/ristretto"
 )
 
 // 原本是个单独模块，但是考虑到数据库必须初始化，所以合进来了

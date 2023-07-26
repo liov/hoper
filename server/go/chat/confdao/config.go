@@ -1,11 +1,11 @@
 package confdao
 
 import (
-	"github.com/hopeio/dora/initialize/gormdb"
-	"github.com/hopeio/dora/initialize/log"
-	"github.com/hopeio/dora/initialize/redis"
-	"github.com/hopeio/dora/initialize/ristretto"
-	"github.com/hopeio/dora/initialize/server"
+	"github.com/hopeio/zeta/initialize/gormdb"
+	"github.com/hopeio/zeta/initialize/log"
+	"github.com/hopeio/zeta/initialize/redis"
+	"github.com/hopeio/zeta/initialize/ristretto"
+	"github.com/hopeio/zeta/initialize/server"
 	"runtime"
 )
 

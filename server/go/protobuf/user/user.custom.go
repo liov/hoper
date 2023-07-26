@@ -1,7 +1,7 @@
 package user
 
 import (
-	contexti "github.com/hopeio/dora/utils/context"
+	contexti "github.com/hopeio/zeta/utils/context"
 	"strconv"
 )
 

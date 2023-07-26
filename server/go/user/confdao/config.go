@@ -1,8 +1,8 @@
 package confdao
 
 import (
-	"github.com/hopeio/dora/initialize/log"
-	"github.com/hopeio/dora/initialize/server"
+	"github.com/hopeio/zeta/initialize/log"
+	"github.com/hopeio/zeta/initialize/server"
 	"runtime"
 	"time"
 

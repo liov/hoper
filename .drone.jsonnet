@@ -63,9 +63,9 @@ local Pipeline(group, name='', deploy_kind='deployment', build_type='bin' , buil
       },
     },
     {
-      name: 'dora',
+      name: 'zeta',
       host: {
-        path: cconfig.dirprefix + '/code/dora/',
+        path: cconfig.dirprefix + '/code/zeta/',
       },
     },
     {
@@ -100,8 +100,8 @@ local Pipeline(group, name='', deploy_kind='deployment', build_type='bin' , buil
             path: '/code/',
         },
         {
-          name: 'dora',
-          path: '/dora/',
+          name: 'zeta',
+          path: '/zeta/',
         },
         {
           name: 'gopath',

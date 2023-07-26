@@ -1,17 +1,17 @@
 package dao
 
 import (
-	"github.com/hopeio/dora/utils/encoding/json/iterator"
+	"github.com/hopeio/zeta/utils/encoding/json/iterator"
 	"strconv"
 
 	"github.com/actliboy/hoper/server/go/protobuf/common"
 	model "github.com/actliboy/hoper/server/go/protobuf/user"
 	"github.com/actliboy/hoper/server/go/user/confdao"
 	modelconst "github.com/actliboy/hoper/server/go/user/model"
-	"github.com/hopeio/dora/protobuf/errorcode"
-	redisi "github.com/hopeio/dora/utils/dao/redis"
-	"github.com/hopeio/dora/utils/encoding/hash"
-	"github.com/hopeio/dora/utils/log"
+	"github.com/hopeio/zeta/protobuf/errorcode"
+	redisi "github.com/hopeio/zeta/utils/dao/redis"
+	"github.com/hopeio/zeta/utils/encoding/hash"
+	"github.com/hopeio/zeta/utils/log"
 )
 
 // UserToRedis 将用户信息存到redis

@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/hopeio/dora/utils/log"
+	"github.com/hopeio/zeta/utils/log"
 )
 
 func TestUserService_Signup(t *testing.T) {

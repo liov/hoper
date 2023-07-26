@@ -1,8 +1,8 @@
 package redis
 
 import (
-	"github.com/hopeio/dora/context/http_context"
-	"github.com/hopeio/dora/utils/log"
+	"github.com/hopeio/zeta/context/http_context"
+	"github.com/hopeio/zeta/utils/log"
 )
 
 type ContentRedisDao struct {
