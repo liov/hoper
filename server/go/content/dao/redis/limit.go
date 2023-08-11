@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"github.com/go-redis/redis/v8"
 	"time"
 
 	"github.com/actliboy/hoper/server/go/content/confdao"

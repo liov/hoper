@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"github.com/go-redis/redis/v8"
 	"github.com/hopeio/zeta/utils/encoding/json/iterator"
 	"strconv"
 

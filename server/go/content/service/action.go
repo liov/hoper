@@ -10,7 +10,8 @@ import (
 	"github.com/actliboy/hoper/server/go/protobuf/content"
 	"github.com/actliboy/hoper/server/go/protobuf/user"
 	"github.com/hopeio/zeta/context/http_context"
-	"github.com/hopeio/zeta/protobuf/empty"
+	"google.golang.org/protobuf/types/known/emptypb"
+
 	"github.com/hopeio/zeta/protobuf/errorcode"
 	"github.com/hopeio/zeta/protobuf/request"
 	"github.com/hopeio/zeta/utils/log"
@@ -73,7 +74,7 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 	return &request.Id{Id: req.Id}, nil
 }
 
-func (*ActionService) DelLike(ctx context.Context, req *request.Id) (*empty.Empty, error) {
+func (*ActionService) DelLike(ctx context.Context, req *request.Id) (*emptypb.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
@@ -103,7 +104,7 @@ func (*ActionService) DelLike(ctx context.Context, req *request.Id) (*empty.Empt
 	if err != nil {
 		return nil, err
 	}
-	return new(empty.Empty), err
+	return new(emptypb.Empty), err
 }
 
 func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*request.Id, error) {
@@ -146,7 +147,7 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*re
 	return &request.Id{Id: req.Id}, nil
 }
 
-func (*ActionService) DelComment(ctx context.Context, req *request.Id) (*empty.Empty, error) {
+func (*ActionService) DelComment(ctx context.Context, req *request.Id) (*emptypb.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
@@ -186,10 +187,10 @@ func (*ActionService) DelComment(ctx context.Context, req *request.Id) (*empty.E
 	if err != nil {
 		return nil, err
 	}
-	return new(empty.Empty), nil
+	return new(emptypb.Empty), nil
 }
 
-func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*empty.Empty, error) {
+func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*emptypb.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
@@ -208,7 +209,7 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*em
 	for _, collect := range collects {
 		origin = append(origin, collect.FavId)
 	}
-	diff := slices.Difference2(origin, req.FavIds)
+	diff := slices.DifferenceByLoop(origin, req.FavIds)
 	collect := model.Collect{
 		Type:   req.Type,
 		RefId:  req.RefId,
@@ -248,10 +249,10 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*em
 		}
 	}
 
-	return new(empty.Empty), nil
+	return new(emptypb.Empty), nil
 }
 
-func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*empty.Empty, error) {
+func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*emptypb.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
@@ -283,7 +284,7 @@ func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*empt
 		}
 		return nil, errorcode.DBError
 	}
-	return new(empty.Empty), nil
+	return new(emptypb.Empty), nil
 }
 
 func (*ActionService) CommentList(ctx context.Context, req *content.CommentListReq) (*content.CommentListRep, error) {

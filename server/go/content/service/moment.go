@@ -7,6 +7,7 @@ import (
 	"github.com/hopeio/zeta/context/http_context"
 	"github.com/hopeio/zeta/protobuf/request"
 	"github.com/hopeio/zeta/utils/struct/set"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"net/http"
 	"unicode/utf8"
 
@@ -15,7 +16,7 @@ import (
 	"github.com/actliboy/hoper/server/go/content/model"
 	"github.com/actliboy/hoper/server/go/protobuf/content"
 	"github.com/actliboy/hoper/server/go/protobuf/user"
-	"github.com/hopeio/zeta/protobuf/empty"
+
 	"github.com/hopeio/zeta/protobuf/errorcode"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -217,7 +218,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 	}
 	return &request.Id{Id: req.Id}, nil
 }
-func (*MomentService) Edit(context.Context, *content.AddMomentReq) (*empty.Empty, error) {
+func (*MomentService) Edit(context.Context, *content.AddMomentReq) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Edit not implemented")
 }
 
@@ -320,7 +321,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	}, nil
 }
 
-func (*MomentService) Delete(ctx context.Context, req *request.Id) (*empty.Empty, error) {
+func (*MomentService) Delete(ctx context.Context, req *request.Id) (*emptypb.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)

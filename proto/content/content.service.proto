@@ -7,7 +7,7 @@ import "user/user.model.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
-import "zeta/protobuf/empty/empty.proto";
+import "google/protobuf/empty.proto";
 import "zeta/protobuf/request/param.proto";
 import "zeta/protobuf/response/response.proto";
 import "danielvladco/protobuf/graphql.proto";
@@ -34,7 +34,7 @@ service ContentService {
   }
 
   // 新建
-  rpc AddTag (AddTagReq) returns (empty.Empty) {
+  rpc AddTag (AddTagReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/api/v1/content/tag"
       body: "*"
@@ -46,7 +46,7 @@ service ContentService {
   }
 
   // 修改
-  rpc EditTag (EditTagReq) returns (empty.Empty) {
+  rpc EditTag (EditTagReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/api/v1/content/tag/{id}"
       body: "*"
@@ -104,7 +104,7 @@ service ContentService {
   }
 
   // 修改
-  rpc EditAttr (EditAttrReq) returns (empty.Empty) {
+  rpc EditAttr (EditAttrReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/api/v1/content/attr/{id}"
       body: "*"
@@ -156,7 +156,7 @@ service ContentService {
     option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   // 修改收藏夹
-  rpc EditFav (AddFavReq) returns (empty.Empty) {
+  rpc EditFav (AddFavReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/api/v1/content/fav/{id}"
     };
@@ -166,7 +166,7 @@ service ContentService {
     option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   // 创建合集
-  rpc AddContainer (AddContainerReq) returns (empty.Empty) {
+  rpc AddContainer (AddContainerReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/api/v1/content/container"
     };
@@ -176,7 +176,7 @@ service ContentService {
     option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   // 修改合集
-  rpc EditDiaryContainer (AddContainerReq) returns (empty.Empty) {
+  rpc EditDiaryContainer (AddContainerReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/api/v1/content/container/{id}"
     };

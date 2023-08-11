@@ -7,13 +7,14 @@ import (
 	"github.com/actliboy/hoper/server/go/user/dao"
 	"github.com/actliboy/hoper/server/go/user/model"
 	"github.com/hopeio/zeta/context/http_context"
-	"github.com/hopeio/zeta/protobuf/empty"
+	"google.golang.org/protobuf/types/known/emptypb"
+
 	"github.com/hopeio/zeta/protobuf/errorcode"
 	dbi "github.com/hopeio/zeta/utils/dao/db/const"
 )
 
 // 关注
-func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*empty.Empty, error) {
+func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*emptypb.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context
@@ -37,7 +38,7 @@ func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*empty.E
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "Create")
 	}
-	return new(empty.Empty), nil
+	return new(emptypb.Empty), nil
 }
 
 // 取消关注

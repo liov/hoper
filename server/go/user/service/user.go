@@ -5,6 +5,9 @@ import (
 	"context"
 	"crypto/md5"
 	"fmt"
+	"github.com/go-redis/redis/v8"
+	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/hopeio/zeta/context/http_context"
 	"github.com/hopeio/zeta/pick"
 	"github.com/hopeio/zeta/protobuf/request"
@@ -12,6 +15,7 @@ import (
 	dbi "github.com/hopeio/zeta/utils/dao/db/const"
 	"github.com/hopeio/zeta/utils/sdk/luosimao"
 	stringsi "github.com/hopeio/zeta/utils/strings"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"net/http"
 	"strconv"
 	"time"
@@ -23,7 +27,7 @@ import (
 	modelconst "github.com/actliboy/hoper/server/go/user/model"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/uuid"
-	"github.com/hopeio/zeta/protobuf/empty"
+
 	"github.com/hopeio/zeta/protobuf/errorcode"
 	"github.com/hopeio/zeta/protobuf/response"
 	redisi "github.com/hopeio/zeta/utils/dao/redis"
@@ -40,7 +44,7 @@ type UserService struct {
 	model.UnimplementedUserServiceServer
 }
 
-func (u *UserService) VerifyCode(ctx context.Context, req *empty.Empty) (*wrappers.StringValue, error) {
+func (u *UserService) VerifyCode(ctx context.Context, req *emptypb.Empty) (*wrappers.StringValue, error) {
 	device := http_context.ContextFromContext(ctx).DeviceInfo
 	log.Debug(device)
 	var rep = &wrappers.StringValue{}
@@ -51,7 +55,7 @@ func (u *UserService) VerifyCode(ctx context.Context, req *empty.Empty) (*wrappe
 }
 
 // 验证码
-func (u *UserService) SendVerifyCode(ctx context.Context, req *model.SendVerifyCodeReq) (*empty.Empty, error) {
+func (u *UserService) SendVerifyCode(ctx context.Context, req *model.SendVerifyCodeReq) (*emptypb.Empty, error) {
 	return nil, nil
 }
 
@@ -243,7 +247,7 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 	return u.login(ctxi, user)
 }
 
-func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*empty.Empty, error) {
+func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*emptypb.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("Edit")
 	defer span.End()
 	ctx = ctxi.Context
@@ -280,7 +284,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*empty.Empt
 		}
 		tx.Commit()
 	}
-	return new(empty.Empty), nil
+	return new(emptypb.Empty), nil
 }
 
 func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginRep, error) {
@@ -379,7 +383,7 @@ func (*UserService) login(ctxi *http_context.Context, user *model.User) (*model.
 	return resp, nil
 }
 
-func (u *UserService) Logout(ctx context.Context, req *empty.Empty) (*empty.Empty, error) {
+func (u *UserService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("Logout")
 	defer span.End()
 	ctx = ctxi.Context
@@ -403,10 +407,10 @@ func (u *UserService) Logout(ctx context.Context, req *empty.Empty) (*empty.Empt
 		HttpOnly: true,
 	}).String()
 	(*contexti2.HttpContext)(ctxi.RequestContext).SetCookie(cookie)
-	return new(empty.Empty), nil
+	return new(emptypb.Empty), nil
 }
 
-func (u *UserService) AuthInfo(ctx context.Context, req *empty.Empty) (*model.UserAuthInfo, error) {
+func (u *UserService) AuthInfo(ctx context.Context, req *emptypb.Empty) (*model.UserAuthInfo, error) {
 	ctxi := http_context.ContextFromContext(ctx)
 	user, err := auth(ctxi, true)
 	if err != nil {

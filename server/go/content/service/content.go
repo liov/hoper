@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/hopeio/zeta/context/http_context"
 	"github.com/hopeio/zeta/protobuf/request"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"gorm.io/gorm"
 	"net/http"
 
@@ -11,7 +12,7 @@ import (
 	"github.com/actliboy/hoper/server/go/content/dao"
 	"github.com/actliboy/hoper/server/go/content/model"
 	"github.com/actliboy/hoper/server/go/protobuf/content"
-	"github.com/hopeio/zeta/protobuf/empty"
+
 	"github.com/hopeio/zeta/protobuf/errorcode"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -28,7 +29,7 @@ func (m *ContentService) Service() (describe, prefix string, middleware []http.H
 func (*ContentService) TagInfo(context.Context, *request.Id) (*content.Tag, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Info not implemented")
 }
-func (*ContentService) AddTag(ctx context.Context, req *content.AddTagReq) (*empty.Empty, error) {
+func (*ContentService) AddTag(ctx context.Context, req *content.AddTagReq) (*emptypb.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("Edit")
 	defer span.End()
 	ctx = ctxi.Context
@@ -44,7 +45,7 @@ func (*ContentService) AddTag(ctx context.Context, req *content.AddTagReq) (*emp
 	}
 	return nil, nil
 }
-func (*ContentService) EditTag(ctx context.Context, req *content.EditTagReq) (*empty.Empty, error) {
+func (*ContentService) EditTag(ctx context.Context, req *content.EditTagReq) (*emptypb.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
@@ -122,7 +123,7 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*req
 	}
 	return &request.Id{Id: req.Id}, nil
 }
-func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*empty.Empty, error) {
+func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*emptypb.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
@@ -168,7 +169,7 @@ func (*ContentService) TinyFavList(ctx context.Context, req *content.FavListReq)
 }
 
 // 创建合集
-func (*ContentService) AddContainer(ctx context.Context, req *content.AddContainerReq) (*empty.Empty, error) {
+func (*ContentService) AddContainer(ctx context.Context, req *content.AddContainerReq) (*emptypb.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
@@ -190,7 +191,7 @@ func (*ContentService) AddContainer(ctx context.Context, req *content.AddContain
 }
 
 // 修改合集
-func (*ContentService) EditDiaryContainer(ctx context.Context, req *content.AddContainerReq) (*empty.Empty, error) {
+func (*ContentService) EditDiaryContainer(ctx context.Context, req *content.AddContainerReq) (*emptypb.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)

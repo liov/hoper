@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "protoc": "node generate.js",
+    "protoc": "node generate.js grpc-web",
     "wasm:build": "wasm-pack build ./wasm --target web",
     "wasm:link": "npm link ./wasm/pkg",
     "pc:dev": "vite --config pc.vite.config.ts --mode dev",

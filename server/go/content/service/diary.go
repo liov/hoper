@@ -7,7 +7,8 @@ import (
 	"github.com/actliboy/hoper/server/go/content/model"
 	"github.com/actliboy/hoper/server/go/protobuf/content"
 	"github.com/hopeio/zeta/context/http_context"
-	"github.com/hopeio/zeta/protobuf/empty"
+	"google.golang.org/protobuf/types/known/emptypb"
+
 	"github.com/hopeio/zeta/protobuf/errorcode"
 	"github.com/hopeio/zeta/protobuf/request"
 	"google.golang.org/grpc/codes"
@@ -52,7 +53,7 @@ func (*DiaryService) AddDiaryBook(ctx context.Context, req *content.AddDiaryBook
 	}
 	return &request.Id{Id: req.Id}, nil
 }
-func (*DiaryService) EditDiaryBook(ctx context.Context, req *content.AddDiaryBookReq) (*empty.Empty, error) {
+func (*DiaryService) EditDiaryBook(ctx context.Context, req *content.AddDiaryBookReq) (*emptypb.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
@@ -104,7 +105,7 @@ func (*DiaryService) Add(ctx context.Context, req *content.AddDiaryReq) (*reques
 	return nil, nil
 }
 
-func (*DiaryService) Edit(context.Context, *content.AddDiaryReq) (*empty.Empty, error) {
+func (*DiaryService) Edit(context.Context, *content.AddDiaryReq) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Edit not implemented")
 }
 
@@ -112,7 +113,7 @@ func (*DiaryService) List(context.Context, *content.DiaryListReq) (*content.Diar
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
 
-func (*DiaryService) Delete(ctx context.Context, req *request.Id) (*empty.Empty, error) {
+func (*DiaryService) Delete(ctx context.Context, req *request.Id) (*emptypb.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)

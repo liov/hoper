@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/actliboy/hoper/server/go/protobuf/user"
 	"github.com/actliboy/hoper/server/go/user/confdao"
+	"github.com/go-oauth2/oauth2/v4"
 	"github.com/go-oauth2/oauth2/v4/errors"
 	"github.com/go-oauth2/oauth2/v4/generates"
 	"github.com/go-oauth2/oauth2/v4/manage"

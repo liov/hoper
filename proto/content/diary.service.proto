@@ -6,7 +6,7 @@ import "common/common.model.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
-import "zeta/protobuf/empty/empty.proto";
+import "google/protobuf/empty.proto";
 import "zeta/protobuf/response/response.proto";
 import "zeta/protobuf/request/param.proto";
 import "danielvladco/protobuf/graphql.proto";
@@ -53,7 +53,7 @@ service DiaryService {
     option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
   // 修改日记本
-  rpc EditDiaryBook (AddDiaryBookReq) returns (empty.Empty) {
+  rpc EditDiaryBook (AddDiaryBookReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/api/v1/diaryBook/{id}"
     };
@@ -87,7 +87,7 @@ service DiaryService {
   }
 
   // 修改
-  rpc Edit (AddDiaryReq) returns (empty.Empty) {
+  rpc Edit (AddDiaryReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/api/v1/diary/{id}"
       body: "*"
@@ -110,7 +110,7 @@ service DiaryService {
   }
 
   // 删除
-  rpc Delete (request.Id) returns (empty.Empty) {
+  rpc Delete (request.Id) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       delete: "/api/v1/diary/{id}"
     };

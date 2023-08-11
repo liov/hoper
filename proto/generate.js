@@ -1,8 +1,8 @@
 const childProcess = require("child_process");
 const fs = require("fs");
 const path = require("path");
-
-const goProjectPath = "D:/code/hoper/server/go";
+const repo = "D:/code/hopeio/hoper"
+const goProjectPath = repo+"/server/go";
 
 const goList = "go list -m -f {{.Dir}}";
 
@@ -22,7 +22,7 @@ const zetaProto = zetaPath + "/protobuf/_proto";
 const baseCmd = `protoc -I${protopath} -I${zetaProto}`
 
 const goConfig = {
-  output: "D:/code/hoper\\server\\go\\protobuf",
+  output: repo+"\\server\\go\\protobuf",
   getCmd(filepath) {
     return [
        `${baseCmd} ${path.join(filepath, "*.proto")} --go-patch_out=plugin=go,paths=source_relative:${this.output}`,
@@ -31,29 +31,30 @@ const goConfig = {
       `${baseCmd} ${path.join(filepath, "*.service.proto")} --grpc-gin_out=paths=source_relative:${this.output}`,
       `${baseCmd} ${path.join(filepath, "*.service.proto")} --openapiv2_out=logtostderr=true:${this.output}/api`,
       `${baseCmd} ${path.join(filepath, "*.service.proto")} --govalidators_out=paths=source_relative:${this.output}`,
-      `${baseCmd} ${path.join(filepath, "*.service.proto")} --gqlgen_out=paths=source_relative:${this.output}`,
-      `${baseCmd} ${path.join(filepath, "*.service.proto")} --graphql_out=paths=source_relative:${this.output}`,
+      `${baseCmd} ${path.join(filepath, "*.service.proto")} --gql_out=svc=true,merge=true,paths=source_relative:${this.output}`,
+      `${baseCmd} ${path.join(filepath, "*.service.proto")} --gogql_out=svc=true,merge=true,paths=source_relative:${this.output}`,
     ]
   },
 };
 
+
 const dartConfig = {
-  output: "D:/code/hoper\\client\\app\\lib\\generated\\protobuf",
+  output: repo+"\\client\\app\\lib\\generated\\protobuf",
   getCmd(filepath) {
    return `${baseCmd} ${path.join(filepath, "*.proto")} --dart_out=grpc:${this.output}`
   },
 };
 
 const grpcWebConfig = {
-  output: "D:/code/hoper\\client\\web\\generated\\grpc-web",
+  output: repo+"\\client\\web\\generated\\grpc-web",
   getCmd(filepath) {
     return `${baseCmd}  ${path.join(filepath, "*.proto")} --js_out=import_style=commonjs,binary:${this.output} --grpc-web_out=import_style=typescript,mode=grpcwebtext:${this.output}`;
   },
 };
 
 const protobufTsConfig = {
-  output: "D:/code/hoper\\client\\web\\generated\\protobuf-ts",
-  cwd: "D:/code/hoper\\client\\web",
+  output: repo+"\\client\\web\\generated\\protobuf-ts",
+  cwd: repo+"\\client\\web",
   getCmd(filepath) {
     return `npx ${baseCmd}  ${path.join(filepath, "*.proto")} --ts_out ${this.output}`;
   },
@@ -96,12 +97,13 @@ function generate(dir, exclude, config) {
 process.argv.slice(2).forEach(function(val,index,array){
   switch (val) {
     case 'go':
-      generate(protopath, [], goConfig);
+      //generate(protopath, [], goConfig);
+      childProcess.execSync(`protogen.exe go -e -w -q -p ${protopath} -g ${goConfig.output}`,{ cwd: goConfig.output,encoding: 'utf-8' });
       break;
     case 'dart':
-    generate(protopath, [], dartConfig);
-    generate(zetaProto, [], dartConfig);
-    break;
+      generate(protopath, [], dartConfig);
+      generate(zetaProto, [], dartConfig);
+      break;
     case 'grpc-web':
       generate(protopath, [], grpcWebConfig);
       generate(zetaProto, [], grpcWebConfig);

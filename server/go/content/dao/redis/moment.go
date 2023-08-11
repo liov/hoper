@@ -2,6 +2,7 @@ package redis
 
 import (
 	"github.com/actliboy/hoper/server/go/protobuf/content"
+	"github.com/go-redis/redis/v8"
 	"github.com/hopeio/zeta/protobuf/errorcode"
 )
 

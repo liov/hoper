@@ -5,7 +5,7 @@ import "user/user.enum.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
-import "zeta/protobuf/empty/empty.proto";
+import "google/protobuf/empty.proto";
 import "zeta/protobuf/response/response.proto";
 import "zeta/protobuf/request/param.proto";
 import "danielvladco/protobuf/graphql.proto";
@@ -28,7 +28,7 @@ service UserService {
     description: "用户相关接口"
   };
   // 验证码
-  rpc VerifyCode (empty.Empty) returns (google.protobuf.StringValue) {
+  rpc VerifyCode (google.protobuf.Empty) returns (google.protobuf.StringValue) {
     option (google.api.http) = {
       get: "/api/v1/verifyCode"
     };
@@ -41,7 +41,7 @@ service UserService {
   }
 
   // 验证码
-  rpc SendVerifyCode (SendVerifyCodeReq) returns (empty.Empty) {
+  rpc SendVerifyCode (SendVerifyCodeReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       get: "/api/v1/SendVerifyCode"
     };
@@ -107,7 +107,7 @@ service UserService {
     option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   //编辑
-  rpc Edit (EditReq) returns (empty.Empty) {
+  rpc Edit (EditReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/api/v1/user/{id}"
       body: "details"
@@ -141,7 +141,7 @@ service UserService {
     option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
   //退出
-  rpc Logout (empty.Empty) returns (empty.Empty) {
+  rpc Logout (google.protobuf.Empty) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       get: "/api/v1/user/logout"
     };
@@ -154,7 +154,7 @@ service UserService {
   }
 
   //鉴权
-  rpc AuthInfo (empty.Empty) returns (UserAuthInfo) {
+  rpc AuthInfo (google.protobuf.Empty) returns (UserAuthInfo) {
     option (google.api.http) = {
       get: "/api/v1/auth"
     };
@@ -247,7 +247,7 @@ service UserService {
   }
 
   // 关注
-  rpc Follow (FollowReq) returns (empty.Empty) {
+  rpc Follow (FollowReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       get: "/api/v1/user/follow"
     };
