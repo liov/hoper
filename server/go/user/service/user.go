@@ -580,7 +580,7 @@ func (*UserService) FiberService() (string, string, []fiber.Handler) {
 
 func (*UserService) Addv(ctx *http_context.Context, req *response.TinyRep) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
-	pick.FiberApi(func() {
+	pick.Api(func() {
 		pick.Post("/add").
 			Title("用户注册").
 			Version(1).
