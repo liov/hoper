@@ -5,7 +5,7 @@ import (
 	contentapi "github.com/actliboy/hoper/server/go/content/api"
 	uploadapi "github.com/actliboy/hoper/server/go/upload/api"
 	userapi "github.com/actliboy/hoper/server/go/user/api"
-	"github.com/hopeio/zeta/pick"
+	pickgin "github.com/hopeio/zeta/pick/gin"
 	"github.com/hopeio/zeta/server"
 	"time"
 
@@ -52,7 +52,7 @@ func main() {
 			uploadapi.GinRegister(app)
 			chatapi.GinRegister(app)
 			contentapi.GinRegister(app)
-			pick.Gin(app, uconf.Conf.Server.GenDoc, initialize.GlobalConfig.Module, uconf.Conf.Server.OpenTracing)
+			pickgin.Register(app, uconf.Conf.Server.GenDoc, initialize.GlobalConfig.Module, uconf.Conf.Server.OpenTracing)
 		},
 		GraphqlResolve: contentapi.NewExecutableSchema(),
 	})

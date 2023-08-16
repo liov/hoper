@@ -6,7 +6,6 @@ import (
 	"crypto/md5"
 	"fmt"
 	"github.com/go-redis/redis/v8"
-	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/hopeio/zeta/context/http_context"
 	"github.com/hopeio/zeta/pick"
@@ -572,10 +571,6 @@ func (*UserService) Add(ctx *http_context.Context, req *model.SignupReq) (*wrapp
 	log.Debug(cmd)
 
 	return &wrappers.StringValue{Value: req.Name}, nil
-}
-
-func (*UserService) FiberService() (string, string, []fiber.Handler) {
-	return "用户相关", "/api/user", []fiber.Handler{middle.FiberLog}
 }
 
 func (*UserService) Addv(ctx *http_context.Context, req *response.TinyRep) (*response.TinyRep, error) {
