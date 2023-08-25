@@ -2,7 +2,7 @@ package rpc
 
 import (
 	"github.com/actliboy/hoper/server/go/protobuf/user"
-	grpci "github.com/hopeio/zeta/utils/net/http/grpc"
+	grpci "github.com/hopeio/lemon/utils/net/http/grpc"
 	"log"
 )
 

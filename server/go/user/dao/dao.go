@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"github.com/hopeio/zeta/context/http_context"
+	"github.com/hopeio/lemon/context/http_context"
 	"log"
 )
 

@@ -4,8 +4,8 @@ import (
 	"github.com/actliboy/hoper/server/go/content/confdao"
 	"github.com/actliboy/hoper/server/go/protobuf/user"
 	"github.com/gorilla/websocket"
-	"github.com/hopeio/zeta/context/http_context"
-	"github.com/hopeio/zeta/utils/encoding/json/iterator"
+	"github.com/hopeio/lemon/context/http_context"
+	"github.com/hopeio/lemon/utils/encoding/json/iterator"
 	"time"
 )
 

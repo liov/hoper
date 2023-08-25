@@ -1,7 +1,7 @@
 syntax = "proto3";
 package user;
-import "zeta/protobuf/utils/enum/enum.proto";
-import "zeta/protobuf/utils/patch/go.proto";
+import "lemon/protobuf/utils/enum/enum.proto";
+import "lemon/protobuf/utils/patch/go.proto";
 
 option (enum.enum_gqlgen_all) = true;
 // 写在这里必然要暴露出去

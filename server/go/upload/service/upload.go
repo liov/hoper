@@ -5,7 +5,7 @@ import (
 	"github.com/actliboy/hoper/server/go/protobuf/upload"
 	"github.com/actliboy/hoper/server/go/upload/confdao"
 	"github.com/actliboy/hoper/server/go/upload/dao"
-	"github.com/hopeio/zeta/context/http_context"
+	"github.com/hopeio/lemon/context/http_context"
 )
 
 type UploadService struct {

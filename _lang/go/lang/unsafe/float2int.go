@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/hopeio/zeta/utils/number"
-	reflecti "github.com/hopeio/zeta/utils/reflect"
+	"github.com/hopeio/lemon/utils/number"
+	reflecti "github.com/hopeio/lemon/utils/reflect"
 	"unsafe"
 )
 

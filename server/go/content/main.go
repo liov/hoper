@@ -6,8 +6,8 @@ import (
 	"github.com/actliboy/hoper/server/go/content/confdao"
 	"github.com/actliboy/hoper/server/go/content/service"
 	model "github.com/actliboy/hoper/server/go/protobuf/content"
-	"github.com/hopeio/zeta/initialize"
-	"github.com/hopeio/zeta/server"
+	"github.com/hopeio/lemon/initialize"
+	"github.com/hopeio/lemon/server"
 	"google.golang.org/grpc"
 )
 

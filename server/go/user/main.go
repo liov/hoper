@@ -4,9 +4,9 @@ import (
 	"github.com/actliboy/hoper/server/go/user/api"
 	"github.com/actliboy/hoper/server/go/user/confdao"
 	"github.com/gin-gonic/gin"
-	"github.com/hopeio/zeta/initialize"
-	pickgin "github.com/hopeio/zeta/pick/gin"
-	"github.com/hopeio/zeta/server"
+	"github.com/hopeio/lemon/initialize"
+	pickgin "github.com/hopeio/lemon/pick/gin"
+	"github.com/hopeio/lemon/server"
 )
 
 func main() {

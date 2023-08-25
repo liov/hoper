@@ -3,9 +3,9 @@ package db
 import (
 	"github.com/actliboy/hoper/server/go/content/model"
 	"github.com/actliboy/hoper/server/go/protobuf/content"
-	"github.com/hopeio/zeta/protobuf/errorcode"
-	dbi "github.com/hopeio/zeta/utils/dao/db/const"
-	clausei "github.com/hopeio/zeta/utils/dao/db/gorm/clause"
+	"github.com/hopeio/lemon/protobuf/errorcode"
+	dbi "github.com/hopeio/lemon/utils/dao/db/const"
+	clausei "github.com/hopeio/lemon/utils/dao/db/gorm/clause"
 	"gorm.io/gorm/clause"
 )
 

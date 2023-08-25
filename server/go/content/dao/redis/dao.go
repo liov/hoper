@@ -2,8 +2,8 @@ package redis
 
 import (
 	"github.com/go-redis/redis/v8"
-	"github.com/hopeio/zeta/context/http_context"
-	"github.com/hopeio/zeta/utils/log"
+	"github.com/hopeio/lemon/context/http_context"
+	"github.com/hopeio/lemon/utils/log"
 )
 
 type ContentRedisDao struct {

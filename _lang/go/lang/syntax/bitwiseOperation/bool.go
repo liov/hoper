@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/hopeio/zeta/utils/number"
+	"github.com/hopeio/lemon/utils/number"
 )
 
 const (

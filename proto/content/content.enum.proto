@@ -1,7 +1,7 @@
 syntax = "proto3";
 package content;
-import "zeta/protobuf/utils/enum/enum.proto";
-import "zeta/protobuf/utils/patch/go.proto";
+import "lemon/protobuf/utils/enum/enum.proto";
+import "lemon/protobuf/utils/patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
 option go_package = "github.com/actliboy/hoper/server/go/protobuf/content";

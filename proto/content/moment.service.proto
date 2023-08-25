@@ -10,11 +10,11 @@ import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "utils/area/area.proto";
-import "zeta/protobuf/response/response.proto";
-import "zeta/protobuf/request/param.proto";
+import "lemon/protobuf/response/response.proto";
+import "lemon/protobuf/request/param.proto";
 import "danielvladco/protobuf/graphql.proto";
-import "zeta/protobuf/oauth/oauth.proto";
-import "zeta/protobuf/utils/patch/go.proto";
+import "lemon/protobuf/oauth/oauth.proto";
+import "lemon/protobuf/utils/patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
 option go_package = "github.com/actliboy/hoper/server/go/protobuf/content";

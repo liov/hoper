@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"github.com/hopeio/zeta/context/http_context"
-	"github.com/hopeio/zeta/protobuf/request"
+	"github.com/hopeio/lemon/context/http_context"
+	"github.com/hopeio/lemon/protobuf/request"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"gorm.io/gorm"
 	"net/http"
@@ -13,7 +13,7 @@ import (
 	"github.com/actliboy/hoper/server/go/content/model"
 	"github.com/actliboy/hoper/server/go/protobuf/content"
 
-	"github.com/hopeio/zeta/protobuf/errorcode"
+	"github.com/hopeio/lemon/protobuf/errorcode"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

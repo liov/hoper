@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/hopeio/zeta/initialize"
-	"github.com/hopeio/zeta/initialize/gormdb/mysql"
+	"github.com/hopeio/lemon/initialize"
+	"github.com/hopeio/lemon/initialize/gormdb/mysql"
 	"gorm.io/gorm"
 )
 

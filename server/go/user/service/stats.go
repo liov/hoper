@@ -6,11 +6,11 @@ import (
 	"github.com/actliboy/hoper/server/go/user/confdao"
 	"github.com/actliboy/hoper/server/go/user/dao"
 	"github.com/actliboy/hoper/server/go/user/model"
-	"github.com/hopeio/zeta/context/http_context"
+	"github.com/hopeio/lemon/context/http_context"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/hopeio/zeta/protobuf/errorcode"
-	dbi "github.com/hopeio/zeta/utils/dao/db/const"
+	"github.com/hopeio/lemon/protobuf/errorcode"
+	dbi "github.com/hopeio/lemon/utils/dao/db/const"
 )
 
 // 关注

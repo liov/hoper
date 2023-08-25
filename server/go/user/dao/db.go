@@ -3,16 +3,16 @@ package dao
 import (
 	"encoding/json"
 	"github.com/actliboy/hoper/server/go/user/confdao"
-	dbi "github.com/hopeio/zeta/utils/dao/db/const"
+	dbi "github.com/hopeio/lemon/utils/dao/db/const"
 	"gorm.io/gorm/clause"
 	"strconv"
 	"time"
 
 	"github.com/actliboy/hoper/server/go/protobuf/user"
 	"github.com/actliboy/hoper/server/go/user/model"
-	"github.com/hopeio/zeta/protobuf/errorcode"
-	"github.com/hopeio/zeta/utils/log"
-	"github.com/hopeio/zeta/utils/slices"
+	"github.com/hopeio/lemon/protobuf/errorcode"
+	"github.com/hopeio/lemon/utils/log"
+	"github.com/hopeio/lemon/utils/slices"
 	"gorm.io/gorm"
 )
 
