@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/hopeio/lemon/initialize"
-	"github.com/hopeio/lemon/initialize/gormdb/postgres"
+	"github.com/hopeio/lemon/initialize/basic_dao/gormdb/postgres"
 	"log"
 	"time"
 )

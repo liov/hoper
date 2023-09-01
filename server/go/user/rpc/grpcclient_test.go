@@ -2,7 +2,8 @@ package rpc
 
 import (
 	"github.com/actliboy/hoper/server/go/protobuf/user"
-	"github.com/hopeio/lemon/protobuf/empty"
+	"google.golang.org/protobuf/types/known/emptypb"
+
 	"testing"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -16,7 +17,7 @@ func TestVerifyCode(t *testing.T) {
 	md := runtime.ServerMetadata{}
 	u, err := UserClient.VerifyCode(metadata.NewOutgoingContext(context.Background(),
 		metadata.MD{"key": []string{"value"}}),
-		&empty.Empty{},
+		&emptypb.Empty{},
 		grpc.Header(&md.HeaderMD),
 		grpc.Trailer(&md.TrailerMD),
 	)

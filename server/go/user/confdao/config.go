@@ -1,8 +1,8 @@
 package confdao
 
 import (
-	"github.com/hopeio/lemon/initialize/log"
-	"github.com/hopeio/lemon/initialize/server"
+	"github.com/hopeio/lemon/initialize/basic_conf/log"
+	"github.com/hopeio/lemon/initialize/basic_conf/server"
 	"runtime"
 	"time"
 

@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/hopeio/lemon/initialize"
-	"github.com/hopeio/lemon/initialize/gormdb/mysql"
+	"github.com/hopeio/lemon/initialize/basic_dao/gormdb/mysql"
 	"gorm.io/gorm"
 )
 

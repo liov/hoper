@@ -1,11 +1,6 @@
 package confdao
 
 import (
-	"github.com/hopeio/lemon/initialize/gormdb"
-	"github.com/hopeio/lemon/initialize/log"
-	"github.com/hopeio/lemon/initialize/redis"
-	"github.com/hopeio/lemon/initialize/ristretto"
-	"github.com/hopeio/lemon/initialize/server"
 	"runtime"
 )
 

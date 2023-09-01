@@ -1,17 +1,12 @@
 package confdao
 
 import (
-	"github.com/hopeio/lemon/initialize/gormdb"
-	"github.com/hopeio/lemon/initialize/log"
-	"github.com/hopeio/lemon/initialize/mail"
-	"github.com/hopeio/lemon/initialize/redis"
-	"github.com/hopeio/lemon/initialize/ristretto"
-	"github.com/hopeio/lemon/initialize/server"
+	"github.com/hopeio/lemon/initialize/basic_conf/log"
+	"github.com/hopeio/lemon/initialize/basic_conf/server"
 	"runtime"
 	"time"
 
 	"github.com/actliboy/hoper/server/go/content/model"
-	"github.com/spf13/viper"
 )
 
 /*var ServerSettings = &ServerConfig{}
@@ -23,12 +18,7 @@ type config struct {
 	//自定义的配置
 	Customize serverConfig
 	Server    server.ServerConfig
-	Mail      mail.MailConfig
-	GORMDB    gormdb.DatabaseConfig
-	Redis     redis.Config
-	Cache     ristretto.CacheConfig
 	Log       log.LogConfig
-	Viper     *viper.Viper
 }
 
 var Conf = &config{
