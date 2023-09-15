@@ -41,7 +41,7 @@ enum Gender{
     GenderFemale = 3 [(enum.enumvalue_cn)= "女"];
 }
 
-// 用户角色
+// 用户状态
 enum UserStatus {
     option (go.enum) = {stringer_name: 'OrigString'};
     option (enum.enum_jsonmarshal) = false;
