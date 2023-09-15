@@ -1,11 +1,11 @@
 package db
 
 import (
-	"github.com/actliboy/hoper/server/go/content/model"
-	"github.com/actliboy/hoper/server/go/protobuf/content"
 	"github.com/hopeio/lemon/protobuf/errorcode"
 	dbi "github.com/hopeio/lemon/utils/dao/db/const"
 	clausei "github.com/hopeio/lemon/utils/dao/db/gorm/clause"
+	"github.com/liovx/hoper/server/go/content/model"
+	"github.com/liovx/hoper/server/go/protobuf/content"
 	"gorm.io/gorm/clause"
 )
 

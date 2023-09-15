@@ -3,11 +3,11 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/actliboy/hoper/server/go/content/confdao"
-	"github.com/actliboy/hoper/server/go/content/service"
-	model "github.com/actliboy/hoper/server/go/protobuf/content"
 	"github.com/hopeio/lemon/initialize"
 	"github.com/hopeio/lemon/server"
+	"github.com/liovx/hoper/server/go/content/confdao"
+	"github.com/liovx/hoper/server/go/content/service"
+	model "github.com/liovx/hoper/server/go/protobuf/content"
 	"google.golang.org/grpc"
 )
 

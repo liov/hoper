@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/actliboy/hoper/server/go/protobuf/content"
+	"github.com/liovx/hoper/server/go/protobuf/content"
 )
 
 type TinyTag struct {

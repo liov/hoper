@@ -2,9 +2,9 @@ package db
 
 import (
 	sqlib "database/sql"
-	"github.com/actliboy/hoper/server/go/content/model"
 	"github.com/hopeio/lemon/protobuf/errorcode"
 	dbi "github.com/hopeio/lemon/utils/dao/db/const"
+	"github.com/liovx/hoper/server/go/content/model"
 )
 
 func (d *ContentDBDao) FavExists(title string) (uint64, error) {

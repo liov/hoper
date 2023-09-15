@@ -1,10 +1,10 @@
 package api
 
 import (
-	model "github.com/actliboy/hoper/server/go/protobuf/user"
-	"github.com/actliboy/hoper/server/go/user/service"
 	"github.com/gin-gonic/gin"
 	"github.com/hopeio/lemon/pick"
+	model "github.com/liovx/hoper/server/go/protobuf/user"
+	"github.com/liovx/hoper/server/go/user/service"
 	"net/http"
 )
 

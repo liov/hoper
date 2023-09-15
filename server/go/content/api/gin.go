@@ -1,10 +1,10 @@
 package route
 
 import (
-	contentService "github.com/actliboy/hoper/server/go/content/service"
-	"github.com/actliboy/hoper/server/go/protobuf/content"
 	"github.com/gin-gonic/gin"
 	"github.com/hopeio/lemon/pick"
+	contentService "github.com/liovx/hoper/server/go/content/service"
+	"github.com/liovx/hoper/server/go/protobuf/content"
 )
 
 func GinRegister(app *gin.Engine) {

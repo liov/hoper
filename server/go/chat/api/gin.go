@@ -1,9 +1,9 @@
 package api
 
 import (
-	"github.com/actliboy/hoper/server/go/chat/service"
 	"github.com/gin-gonic/gin"
 	"github.com/hopeio/lemon/utils/net/http/gin/handler"
+	"github.com/liovx/hoper/server/go/chat/service"
 )
 
 func GinRegister(app *gin.Engine) {

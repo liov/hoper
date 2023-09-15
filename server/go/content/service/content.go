@@ -8,10 +8,10 @@ import (
 	"gorm.io/gorm"
 	"net/http"
 
-	"github.com/actliboy/hoper/server/go/content/confdao"
-	"github.com/actliboy/hoper/server/go/content/dao"
-	"github.com/actliboy/hoper/server/go/content/model"
-	"github.com/actliboy/hoper/server/go/protobuf/content"
+	"github.com/liovx/hoper/server/go/content/confdao"
+	"github.com/liovx/hoper/server/go/content/dao"
+	"github.com/liovx/hoper/server/go/content/model"
+	"github.com/liovx/hoper/server/go/protobuf/content"
 
 	"github.com/hopeio/lemon/protobuf/errorcode"
 	"google.golang.org/grpc/codes"

@@ -1,8 +1,8 @@
 package redis
 
 import (
-	"github.com/actliboy/hoper/server/go/content/model"
 	"github.com/hopeio/lemon/protobuf/errorcode"
+	"github.com/liovx/hoper/server/go/content/model"
 )
 
 func (d *ContentRedisDao) UserContentEdit(field string, value interface{}) error {

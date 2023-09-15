@@ -17,7 +17,7 @@ import "lemon/protobuf/oauth/oauth.proto";
 import "lemon/protobuf/utils/patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
-option go_package = "github.com/actliboy/hoper/server/go/protobuf/content";
+option go_package = "github.com/liovx/hoper/server/go/protobuf/content";
 
 service MomentService {
 

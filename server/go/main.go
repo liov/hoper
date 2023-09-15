@@ -1,20 +1,20 @@
 package main
 
 import (
-	chatapi "github.com/actliboy/hoper/server/go/chat/api"
-	contentapi "github.com/actliboy/hoper/server/go/content/api"
-	uploadapi "github.com/actliboy/hoper/server/go/upload/api"
-	userapi "github.com/actliboy/hoper/server/go/user/api"
 	pickgin "github.com/hopeio/lemon/pick/gin"
 	"github.com/hopeio/lemon/server"
+	chatapi "github.com/liovx/hoper/server/go/chat/api"
+	contentapi "github.com/liovx/hoper/server/go/content/api"
+	uploadapi "github.com/liovx/hoper/server/go/upload/api"
+	userapi "github.com/liovx/hoper/server/go/user/api"
 	"time"
 
-	cconf "github.com/actliboy/hoper/server/go/content/confdao"
-	upconf "github.com/actliboy/hoper/server/go/upload/confdao"
-	uconf "github.com/actliboy/hoper/server/go/user/confdao"
 	"github.com/gin-gonic/gin"
 	"github.com/hopeio/lemon/initialize"
 	"github.com/hopeio/lemon/utils/log"
+	cconf "github.com/liovx/hoper/server/go/content/confdao"
+	upconf "github.com/liovx/hoper/server/go/upload/confdao"
+	uconf "github.com/liovx/hoper/server/go/user/confdao"
 
 	"go.opencensus.io/examples/exporter"
 	"go.opencensus.io/plugin/ocgrpc"

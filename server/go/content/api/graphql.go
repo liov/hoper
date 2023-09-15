@@ -3,8 +3,8 @@ package route
 import (
 	"context"
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/actliboy/hoper/server/go/content/service"
-	"github.com/actliboy/hoper/server/go/protobuf/content"
+	"github.com/liovx/hoper/server/go/content/service"
+	"github.com/liovx/hoper/server/go/protobuf/content"
 )
 
 type Resolver struct{}

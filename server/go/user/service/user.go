@@ -19,13 +19,13 @@ import (
 	"strconv"
 	"time"
 
-	model "github.com/actliboy/hoper/server/go/protobuf/user"
-	"github.com/actliboy/hoper/server/go/user/confdao"
-	"github.com/actliboy/hoper/server/go/user/dao"
-	"github.com/actliboy/hoper/server/go/user/middle"
-	modelconst "github.com/actliboy/hoper/server/go/user/model"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/uuid"
+	model "github.com/liovx/hoper/server/go/protobuf/user"
+	"github.com/liovx/hoper/server/go/user/confdao"
+	"github.com/liovx/hoper/server/go/user/dao"
+	"github.com/liovx/hoper/server/go/user/middle"
+	modelconst "github.com/liovx/hoper/server/go/user/model"
 
 	"github.com/hopeio/lemon/protobuf/errorcode"
 	"github.com/hopeio/lemon/protobuf/response"

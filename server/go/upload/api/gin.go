@@ -1,10 +1,10 @@
 package api
 
 import (
-	"github.com/actliboy/hoper/server/go/upload/confdao"
-	"github.com/actliboy/hoper/server/go/upload/service"
 	"github.com/gin-gonic/gin"
 	"github.com/hopeio/lemon/utils/net/http/gin/handler"
+	"github.com/liovx/hoper/server/go/upload/confdao"
+	"github.com/liovx/hoper/server/go/upload/service"
 	"net/http"
 )
 
