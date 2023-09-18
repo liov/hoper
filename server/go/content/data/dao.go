@@ -1,10 +1,10 @@
-package dao
+package data
 
 import (
 	"github.com/go-redis/redis/v8"
 	"github.com/hopeio/lemon/context/http_context"
-	"github.com/liovx/hoper/server/go/content/dao/db"
-	rdao "github.com/liovx/hoper/server/go/content/dao/redis"
+	"github.com/liovx/hoper/server/go/content/data/db"
+	rdao "github.com/liovx/hoper/server/go/content/data/redis"
 	"gorm.io/gorm"
 )
 

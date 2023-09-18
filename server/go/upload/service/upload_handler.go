@@ -11,7 +11,7 @@ import (
 	timei "github.com/hopeio/lemon/utils/time"
 	"github.com/liovx/hoper/server/go/protobuf/user"
 	"github.com/liovx/hoper/server/go/upload/confdao"
-	"github.com/liovx/hoper/server/go/upload/dao"
+	"github.com/liovx/hoper/server/go/upload/data"
 	"github.com/liovx/hoper/server/go/upload/model"
 	"io"
 	"mime"
@@ -79,7 +79,7 @@ func Exists(w http.ResponseWriter, req *http.Request) {
 func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 	ctxi := http_context.ContextFromContext(ctx)
 	auth, err := auth(ctxi, false)
-	uploadDao := dao.GetDao(ctxi)
+	uploadDao := data.GetDao(ctxi)
 	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
 	upload, err := uploadDao.UploadDB(db, md5, size)
 	if err != nil {
@@ -106,7 +106,7 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 }
 
 func save(ctx *http_context.Context, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
-	uploadDao := dao.GetDao(ctx)
+	uploadDao := data.GetDao(ctx)
 	db := ctx.NewDB(confdao.Dao.GORMDB.DB)
 	auth := ctx.AuthInfo.(*user.AuthInfo)
 	if md5Str != "" {

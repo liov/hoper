@@ -12,7 +12,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/liovx/hoper/server/go/content/confdao"
-	"github.com/liovx/hoper/server/go/content/dao"
+	"github.com/liovx/hoper/server/go/content/data"
 	"github.com/liovx/hoper/server/go/content/model"
 	"github.com/liovx/hoper/server/go/protobuf/content"
 	"github.com/liovx/hoper/server/go/protobuf/user"
@@ -36,7 +36,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 	defer span.End()
 	auth, _ := auth(ctxi, true)
 	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
-	contentDBDao := dao.GetDBDao(ctxi, db)
+	contentDBDao := data.GetDBDao(ctxi, db)
 
 	var moment content.Moment
 	err := db.Table(model.MomentTableName).
@@ -141,7 +141,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		return nil, err
 	}
 	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
-	contentDBDao := dao.GetDBDao(ctxi, db)
+	contentDBDao := data.GetDBDao(ctxi, db)
 
 	req.UserId = auth.Id
 
@@ -163,7 +163,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		if req.Permission == 0 {
 			req.Permission = content.ViewPermissionAll
 		}
-		contenttxDBDao := dao.GetDBDao(ctxi, tx)
+		contenttxDBDao := data.GetDBDao(ctxi, tx)
 		err = tx.Table(model.MomentTableName).Create(req).Error
 		if err != nil {
 			return ctxi.ErrorLog(errorcode.DBError, err, "tx.CreateReq")
@@ -227,7 +227,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	defer span.End()
 	auth, _ := auth(ctxi, true)
 	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
-	contentDBDao := dao.GetDBDao(ctxi, db)
+	contentDBDao := data.GetDBDao(ctxi, db)
 
 	total, moments, err := contentDBDao.GetMomentListDB(req)
 	if err != nil {
@@ -329,7 +329,7 @@ func (*MomentService) Delete(ctx context.Context, req *request.Id) (*emptypb.Emp
 		return nil, err
 	}
 	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
-	contentDBDao := dao.GetDBDao(ctxi, db)
+	contentDBDao := data.GetDBDao(ctxi, db)
 
 	err = contentDBDao.DelByAuth(model.MomentTableName, req.Id, auth.Id)
 	if err != nil {

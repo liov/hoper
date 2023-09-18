@@ -9,7 +9,7 @@ import (
 	"net/http"
 
 	"github.com/liovx/hoper/server/go/content/confdao"
-	"github.com/liovx/hoper/server/go/content/dao"
+	"github.com/liovx/hoper/server/go/content/data"
 	"github.com/liovx/hoper/server/go/content/model"
 	"github.com/liovx/hoper/server/go/protobuf/content"
 
@@ -95,7 +95,7 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*req
 		return nil, err
 	}
 	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
-	contentDBDao := dao.GetDBDao(ctxi, db)
+	contentDBDao := data.GetDBDao(ctxi, db)
 
 	req.UserId = auth.Id
 	id, err := contentDBDao.FavExists(req.Title)
@@ -107,7 +107,7 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*req
 	}
 
 	err = contentDBDao.Transaction(func(tx *gorm.DB) error {
-		contenttxDBDao := dao.GetDBDao(ctxi, tx)
+		contenttxDBDao := data.GetDBDao(ctxi, tx)
 		err = tx.Table(model.FavoritesTableName).Create(req).Error
 		if err != nil {
 			return ctxi.ErrorLog(errorcode.DBError, err, "CreateFav")
@@ -130,7 +130,7 @@ func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*em
 	if err != nil {
 		return nil, err
 	}
-	contentRedisDao := dao.GetRedisDao(ctxi, confdao.Dao.Redis)
+	contentRedisDao := data.GetRedisDao(ctxi, confdao.Dao.Redis)
 	err = contentRedisDao.Limit(&confdao.Conf.Customize.Moment.Limit)
 	if err != nil {
 		return nil, err
@@ -176,7 +176,7 @@ func (*ContentService) AddContainer(ctx context.Context, req *content.AddContain
 	if err != nil {
 		return nil, err
 	}
-	contentRedisDao := dao.GetRedisDao(ctxi, confdao.Dao.Redis)
+	contentRedisDao := data.GetRedisDao(ctxi, confdao.Dao.Redis)
 	err = contentRedisDao.Limit(&confdao.Conf.Customize.Moment.Limit)
 	if err != nil {
 		return nil, err
@@ -198,7 +198,7 @@ func (*ContentService) EditDiaryContainer(ctx context.Context, req *content.AddC
 	if err != nil {
 		return nil, err
 	}
-	contentRedisDao := dao.GetRedisDao(ctxi, confdao.Dao.Redis)
+	contentRedisDao := data.GetRedisDao(ctxi, confdao.Dao.Redis)
 	err = contentRedisDao.Limit(&confdao.Conf.Customize.Moment.Limit)
 	if err != nil {
 		return nil, err

@@ -1,4 +1,4 @@
-package dao
+package data
 
 import (
 	"github.com/go-redis/redis/v8"

@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/hopeio/lemon/context/http_context"
 	"github.com/liovx/hoper/server/go/content/confdao"
-	"github.com/liovx/hoper/server/go/content/dao"
+	"github.com/liovx/hoper/server/go/content/data"
 	"github.com/liovx/hoper/server/go/content/model"
 	"github.com/liovx/hoper/server/go/protobuf/content"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -76,7 +76,7 @@ func (*DiaryService) Info(ctx context.Context, req *request.Id) (*content.Diary,
 	if err != nil {
 		return nil, err
 	}
-	contentRedisDao := dao.GetRedisDao(ctxi, confdao.Dao.Redis)
+	contentRedisDao := data.GetRedisDao(ctxi, confdao.Dao.Redis)
 	err = contentRedisDao.Limit(&confdao.Conf.Customize.Moment.Limit)
 	if err != nil {
 		return nil, err
@@ -121,7 +121,7 @@ func (*DiaryService) Delete(ctx context.Context, req *request.Id) (*emptypb.Empt
 		return nil, err
 	}
 	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
-	contentDBDao := dao.GetDBDao(ctxi, db)
+	contentDBDao := data.GetDBDao(ctxi, db)
 	err = contentDBDao.DelByAuth(model.DiaryTableName, req.Id, auth.Id)
 	if err != nil {
 		return nil, err

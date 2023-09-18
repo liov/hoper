@@ -1,4 +1,4 @@
-package dao
+package data
 
 import (
 	"github.com/hopeio/lemon/protobuf/errorcode"

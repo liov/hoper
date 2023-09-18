@@ -5,7 +5,7 @@ import (
 	"github.com/hopeio/lemon/context/http_context"
 	"github.com/liovx/hoper/server/go/protobuf/upload"
 	"github.com/liovx/hoper/server/go/upload/confdao"
-	"github.com/liovx/hoper/server/go/upload/dao"
+	"github.com/liovx/hoper/server/go/upload/data"
 )
 
 type UploadService struct {
@@ -15,7 +15,7 @@ type UploadService struct {
 func (*UploadService) GetUrls(ctx context.Context, req *upload.GetUrlsReq) (*upload.GetUrlsRep, error) {
 	ctxi := http_context.ContextFromContext(ctx)
 
-	uploadDao := dao.GetDao(ctxi)
+	uploadDao := data.GetDao(ctxi)
 
 	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
 	uploadInfos, err := uploadDao.GetUrls(db, req.Ids)
@@ -27,7 +27,7 @@ func (*UploadService) GetUrls(ctx context.Context, req *upload.GetUrlsReq) (*upl
 func (*UploadService) GetUrlsByStrId(ctx context.Context, req *upload.GetUrlsByStrIdReq) (*upload.GetUrlsRep, error) {
 	ctxi := http_context.ContextFromContext(ctx)
 
-	uploadDao := dao.GetDao(ctxi)
+	uploadDao := data.GetDao(ctxi)
 
 	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
 	uploadInfos, err := uploadDao.GetUrlsByStrId(db, req.Ids)

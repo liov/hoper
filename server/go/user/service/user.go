@@ -23,7 +23,7 @@ import (
 	"github.com/google/uuid"
 	model "github.com/liovx/hoper/server/go/protobuf/user"
 	"github.com/liovx/hoper/server/go/user/confdao"
-	"github.com/liovx/hoper/server/go/user/dao"
+	"github.com/liovx/hoper/server/go/user/data"
 	"github.com/liovx/hoper/server/go/user/middle"
 	modelconst "github.com/liovx/hoper/server/go/user/model"
 
@@ -65,7 +65,7 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 	if req.Mail == "" && req.Phone == "" {
 		return nil, errorcode.InvalidArgument.Message("请填写邮箱或手机号")
 	}
-	userDao := dao.GetDao(ctxi)
+	userDao := data.GetDao(ctxi)
 	db := userDao.NewDB(confdao.Dao.GORMDB.DB)
 	if req.Mail != "" {
 		if exist, _ := userDao.ExitsCheck(db, "mail", req.Phone); exist {
@@ -100,7 +100,7 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*wrappe
 		}
 	}
 
-	userDao := dao.GetDao(ctxi)
+	userDao := data.GetDao(ctxi)
 	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
 	if exist, _ := userDao.ExitsCheck(db, "name", req.Name); exist {
 		return nil, errorcode.InvalidArgument.Message("用户名已被注册")
@@ -215,7 +215,7 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 	redisKey := modelconst.ActiveTimeKey + strconv.FormatUint(req.Id, 10)
 	emailTime, err := confdao.Dao.Redis.Get(ctx, redisKey).Int64()
 	if err != nil {
-		userDao := dao.GetDao(ctxi)
+		userDao := data.GetDao(ctxi)
 		db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
 		user, err := userDao.GetByPrimaryKey(db, req.Id)
 		if err != nil {
@@ -224,7 +224,7 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 		go sendMail(ctxi, model.ActionActive, ctxi.RequestAt.TimeStamp, user)
 		return nil, ctxi.ErrorLog(errorcode.InvalidArgument.Message("已过激活期限"), err, "Get")
 	}
-	userDao := dao.GetDao(ctxi)
+	userDao := data.GetDao(ctxi)
 	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
 	user, err := userDao.GetByPrimaryKey(db, req.Id)
 	if err != nil {
@@ -260,7 +260,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*emptypb.Em
 	device := ctxi.DeviceInfo
 
 	if req.Details != nil {
-		userDao := dao.GetDao(ctxi)
+		userDao := data.GetDao(ctxi)
 		db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
 		originalIds, err := userDao.ResumesIds(db, user.Id)
 		if err != nil {
@@ -356,7 +356,7 @@ func (*UserService) login(ctxi *http_context.Context, user *model.User) (*model.
 
 	db.Table(modelconst.UserExtTableName).Where(`id = ?`, user.Id).
 		UpdateColumn("last_activated_at", ctxi.RequestAt.TimeString)
-	userDao := dao.GetDao(ctxi)
+	userDao := data.GetDao(ctxi)
 	if err := userDao.EfficientUserHashToRedis(); err != nil {
 		return nil, errorcode.RedisErr
 	}
@@ -430,7 +430,7 @@ func (u *UserService) Info(ctx context.Context, req *request.Id) (*model.UserRep
 		req.Id = auth.Id
 	}
 	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
-	userDao := dao.GetDao(ctxi)
+	userDao := data.GetDao(ctxi)
 	var user1 model.User
 	if err = db.Find(&user1, req.Id).Error; err != nil {
 		return nil, errorcode.DBError.Message("账号不存在")
@@ -454,7 +454,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 		return nil, errorcode.InvalidArgument.Message("账号错误")
 	}
 	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
-	userDao := dao.GetDao(ctxi)
+	userDao := data.GetDao(ctxi)
 	user, err := userDao.GetByEmailORPhone(db, req.Input, req.Input, "id", "name", "password")
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -490,7 +490,7 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 		return nil, ctxi.ErrorLog(errorcode.InvalidArgument.Message("无效的链接"), err, "Redis.Get")
 	}
 	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
-	userDao := dao.GetDao(ctxi)
+	userDao := data.GetDao(ctxi)
 	user, err := userDao.GetByPrimaryKey(db, req.Id)
 	if err != nil {
 		return nil, err
@@ -535,7 +535,7 @@ func (*UserService) BaseList(ctx context.Context, req *model.BaseListReq) (*mode
 	}
 	ctx = ctxi.Context
 	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
-	userDao := dao.GetDao(ctxi)
+	userDao := data.GetDao(ctxi)
 	count, users, err := userDao.GetBaseListDB(db, req.Ids, int(req.PageNo), int(req.PageSize))
 	if err != nil {
 		return nil, err
@@ -594,7 +594,7 @@ func (u *UserService) EasySignup(ctx context.Context, req *model.SignupReq) (*mo
 		return nil, errorcode.InvalidArgument.Message("请填写邮箱或手机号")
 	}
 
-	userDao := dao.GetDao(ctxi)
+	userDao := data.GetDao(ctxi)
 	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
 	if exist, _ := userDao.ExitsCheck(db, "name", req.Name); exist {
 		return nil, errorcode.InvalidArgument.Message("用户名已被注册")

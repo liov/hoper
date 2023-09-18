@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/liovx/hoper/server/go/user/confdao"
-	"github.com/liovx/hoper/server/go/user/dao"
+	"github.com/liovx/hoper/server/go/user/data"
 )
 
 var ExportAuth = auth
@@ -30,7 +30,7 @@ func auth(ctx *http_context.Context, update bool) (*user.AuthInfo, error) {
 	}
 	ctx.LastActiveAt = ctx.TimeStamp
 	if update {
-		userDao := dao.GetDao(ctx)
+		userDao := data.GetDao(ctx)
 		err := userDao.EfficientUserHashFromRedis()
 		if err != nil {
 			return nil, err
