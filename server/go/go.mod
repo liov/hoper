@@ -6,7 +6,7 @@ toolchain go1.21.0
 
 require (
 	github.com/99designs/gqlgen v0.17.37
-	github.com/cockroachdb/pebble v0.0.0-20230917032534-be1586403c9b
+	github.com/cockroachdb/pebble v0.0.0-20230918232457-75bc026cf2cf
 	github.com/danielvladco/go-proto-gql v0.10.1-0.20221227181908-22fca0a9469c
 	github.com/dgraph-io/ristretto v0.1.1
 	github.com/gin-gonic/gin v1.9.1
@@ -35,11 +35,11 @@ require (
 	cloud.google.com/go v0.110.8 // indirect
 	cloud.google.com/go/compute v1.23.0 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
-	cloud.google.com/go/firestore v1.12.0 // indirect
+	cloud.google.com/go/firestore v1.13.0 // indirect
 	cloud.google.com/go/longrunning v0.5.1 // indirect
 	github.com/DataDog/zstd v1.5.5 // indirect
 	github.com/agnivade/levenshtein v1.1.1 // indirect
-	github.com/aliyun/alibaba-cloud-sdk-go v1.62.557 // indirect
+	github.com/aliyun/alibaba-cloud-sdk-go v1.62.563 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/armon/go-metrics v0.4.1 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
@@ -91,7 +91,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.12.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0 // indirect
-	github.com/hashicorp/consul/api v1.24.0 // indirect
+	github.com/hashicorp/consul/api v1.25.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-hclog v1.5.0 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
@@ -126,7 +126,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/nacos-group/nacos-sdk-go/v2 v2.2.3 // indirect
 	github.com/nats-io/nats.go v1.29.0 // indirect
-	github.com/nats-io/nkeys v0.4.4 // indirect
+	github.com/nats-io/nkeys v0.4.5 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/onsi/ginkgo/v2 v2.12.0 // indirect

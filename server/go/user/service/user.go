@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/go-redis/redis/v8"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/hopeio/lemon/context/http_context"
 	"github.com/hopeio/lemon/pick"
 	"github.com/hopeio/lemon/protobuf/request"
@@ -15,11 +16,11 @@ import (
 	"github.com/hopeio/lemon/utils/sdk/luosimao"
 	stringsi "github.com/hopeio/lemon/utils/strings"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 	"net/http"
 	"strconv"
 	"time"
 
-	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/uuid"
 	model "github.com/liovx/hoper/server/go/protobuf/user"
 	"github.com/liovx/hoper/server/go/user/confdao"
@@ -43,7 +44,7 @@ type UserService struct {
 	model.UnimplementedUserServiceServer
 }
 
-func (u *UserService) VerifyCode(ctx context.Context, req *emptypb.Empty) (*wrappers.StringValue, error) {
+func (u *UserService) VerifyCode(ctx context.Context, req *emptypb.Empty) (*wrapperspb.StringValue, error) {
 	device := http_context.ContextFromContext(ctx).DeviceInfo
 	log.Debug(device)
 	var rep = &wrappers.StringValue{}
