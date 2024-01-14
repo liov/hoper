@@ -48,7 +48,7 @@ import axios from "axios";
 import { upload } from "@h5/plugin/utils/upload";
 import { reactive, ref } from "vue";
 import { Toast } from "vant";
-import type { UnwrapNestedRefs, Ref, UnwrapRef } from "vue";
+import type { Ref } from "vue";
 import { useUserStore } from "@h5/store/user";
 
 const userStore = useUserStore();
@@ -58,10 +58,10 @@ const addShow = ref(false);
 
 let refId = 0;
 let type = 0;
-const collects: Ref<UnwrapRef<any[]>> = ref([]);
+const collects: Ref<any[]> = ref([]);
 
 const loading = ref(false);
-const uploader: UnwrapNestedRefs<any[]> = reactive([]);
+const uploader: Ref<any[]> = ref([]);
 const title = ref("");
 function setCollect(param) {
   type = param.type;
@@ -108,7 +108,7 @@ async function onConfirm() {
   }
   const fav: any = {
     title: title.value,
-    cover: uploader.length > 0 ? uploader[0].url : "",
+    cover: uploader.value.length > 0 ? uploader.value[0].url : "",
   };
   const res = await axios.post("/api/v1/content/fav", fav);
   fav.id = res.data.details.id;

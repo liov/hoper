@@ -56,7 +56,7 @@ import axios from "axios";
 import { upload } from "@h5/plugin/utils/upload";
 import { showToast } from "vant";
 import { useRouter } from "vue-router";
-import { reactive, ref } from "vue";
+import { reactive, type Ref, ref } from "vue";
 import { useGlobalStore } from "@h5/store/global";
 import { Platform } from "@h5/model/const";
 
@@ -73,7 +73,7 @@ const columns = [
   { text: "陌生人可见" },
 ];
 const showPicker = ref(false);
-const uploader: any = reactive([]);
+const uploader: Ref<any[]> = ref([]);
 
 function onOversize(file: any) {
   if (file.file.size > 5 * 1e5) showToast("文件大小不能超过 500kB");
@@ -83,7 +83,7 @@ async function afterRead(file: any) {
 }
 async function submit() {
   let images = "";
-  for (const up of uploader) {
+  for (const up of uploader.value) {
     images += up.url + ",";
   }
   if (images !== "") images = images.slice(0, images.length - 1);
@@ -108,7 +108,7 @@ function onConfirm(value: string, index: number) {
 function notH5Upload() {
   if (globalState.platform == Platform.App) {
     window.Flutter.postMessage(
-      JSON.stringify({ method: "pickPhoto", params: [] })
+      JSON.stringify({ method: "pickPhoto", params: [] }),
     );
   }
 }

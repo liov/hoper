@@ -183,11 +183,11 @@ import {
   MessageOutlined,
   EditOutlined,
 } from "@ant-design/icons-vue";
-import { useUserStore } from "@/store/user";
-import ArticleClient from "@/service/article";
-import { date2s, s2date } from "@/plugin/utils/time";
-import { STATIC_DIR } from "@/plugin/config";
-import { tagColor } from "@/views/article/const";
+import { useUserStore } from "@pc/store/user";
+import ArticleClient from "@pc/service/article";
+import { date2s, s2date } from "@pc/plugin/utils/time";
+import { STATIC_DIR } from "@pc/plugin/config";
+import { tagColor } from "@pc/views/article/const";
 
 const userStore = useUserStore();
 
@@ -220,7 +220,7 @@ async function list(current: number, pageSize: number) {
   listState.pageSize = pageSize;
   const { articleList, total } = await ArticleClient.list(
     current - 1,
-    listState.pageSize
+    listState.pageSize,
   );
   listState.articleList = articleList;
   listState.total = total;

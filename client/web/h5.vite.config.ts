@@ -57,7 +57,7 @@ export default defineConfig({
     Components({
       resolvers: [VantResolver()],
     }),
-    VitePWA({ registerType: "autoUpdate" }),
+    VitePWA({ registerType: "autoUpdate", outDir: "dist/h5" }),
     //wasm(),
     //ViteRsw(),
     Unocss({
@@ -71,15 +71,18 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      // "@": fileURLToPath(new URL("./src", import.meta.url)),
       "@h5": fileURLToPath(new URL("./src/h5", import.meta.url)),
       "@generated": fileURLToPath(new URL("./generated", import.meta.url)),
+      "@types": fileURLToPath(new URL("./types", import.meta.url)),
     },
   },
   build: {
     rollupOptions: {
       // https://rollupjs.org/guide/en/#outputmanualchunks
+      external: ["/src/pc/"],
       output: {
+        dir: "dist/h5",
         manualChunks: {
           "group-chat": ["./src/h5/views/chat/index.vue"],
         },

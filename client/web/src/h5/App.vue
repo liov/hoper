@@ -34,7 +34,7 @@ import { useGlobalStore } from "@h5/store/global";
 import { Platform } from "@h5/model/const";
 import wxenv from "@h5/plugin/platform/weixin";
 import { parseQueryString } from "@h5/plugin/location";
-import "../../types/grpc_custom_status";
+import "@types/grpc_custom_status";
 import { ref } from "vue";
 import type { Ref } from "vue";
 import type { ConfigProviderTheme } from "vant";

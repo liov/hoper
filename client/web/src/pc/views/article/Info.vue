@@ -56,8 +56,8 @@
 <script setup lang="ts">
 import { onBeforeUpdate, onMounted, onUpdated, reactive, ref } from "vue";
 import type { Ref } from "vue";
-import { tagColor } from "@/views/article/const";
-import ArticleClient from "@/service/article";
+import { tagColor } from "@pc/views/article/const";
+import ArticleClient from "@pc/service/article";
 import { useRoute, useRouter } from "vue-router";
 import {
   StarOutlined,
@@ -68,7 +68,7 @@ import {
 import axios from "axios";
 import { message } from "ant-design-vue";
 import type MarkdownIt from "markdown-it";
-let  md:MarkdownIt;
+let md: MarkdownIt;
 const route = useRoute();
 const color: Ref<string[]> = ref(tagColor);
 const article: Ref<any> = ref({});

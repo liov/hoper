@@ -2,7 +2,7 @@
 import type { NavigationGuard } from "vue-router";
 
 import axios from "axios";
-import { userStore } from "@/store";
+import { userStore } from "@pc/store";
 
 export const authenticated: NavigationGuard = (_to, _from, next) => {
   if (userStore.auth) next();
@@ -12,7 +12,7 @@ export const authenticated: NavigationGuard = (_to, _from, next) => {
 export const completedAuthenticated: NavigationGuard = async (
   _to,
   _from,
-  next
+  next,
 ) => {
   if (userStore.auth && userStore.auth.avatarUrl) next();
   else {

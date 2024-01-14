@@ -35,15 +35,7 @@ import axios from "axios";
 import { upload } from "@h5/plugin/utils/upload";
 import emitter from "@h5/plugin/emitter";
 import dateTool from "@h5/plugin/utils/date";
-import {
-  ref,
-  onMounted,
-  onUnmounted,
-  reactive,
-  toRefs,
-  type UnwrapNestedRefs,
-  type Ref,
-} from "vue";
+import { ref, onMounted, onUnmounted, reactive, toRefs, type Ref } from "vue";
 import { Toast } from "vant";
 import { useRoute, useRouter } from "vue-router";
 import { useUserStore } from "@h5/store/user";
@@ -59,7 +51,7 @@ const userStore = useUserStore();
 const store = useContentStore();
 const message = ref("");
 const loading = ref(false);
-const uploader: UnwrapNestedRefs<any[]> = reactive([]);
+const uploader: Ref<any[]> = ref([]);
 const focus = ref(false);
 const commentRef = ref();
 const comment = reactive(props.comment);
@@ -88,7 +80,7 @@ async function onComment() {
     type: props.comment.type,
     refId: props.comment.refId,
     content: message.value,
-    image: uploader.length > 0 ? uploader[0].url : "",
+    image: uploader.value.length > 0 ? uploader.value[0].url : "",
     replyId: props.comment.replyId,
     rootId: props.comment.rootId ? props.comment.rootId : 0,
     recvId: props.comment.recvId,

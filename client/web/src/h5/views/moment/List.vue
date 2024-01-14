@@ -32,7 +32,7 @@ import Moment from "@h5/components/moment/Moment.vue";
 import ActionMore from "@h5/components/action/More.vue";
 import { useUserStore } from "@h5/store/user";
 import { useContentStore } from "@h5/store/content";
-import type { Ref, UnwrapRef } from "vue";
+import type { Ref } from "vue";
 import { momentList } from "@h5/service/moment";
 
 const store = useContentStore();
@@ -45,10 +45,10 @@ const listConfig = reactive({
   finished: false,
 });
 
-const list: Ref<UnwrapRef<any[]>> = ref(
+const list: Ref<any[]> = ref(
   Array.from(new Array(listConfig.pageSize), () => {
     return {};
-  })
+  }),
 );
 
 const pullDown = reactive({
@@ -65,7 +65,7 @@ async function onLoad() {
   listConfig.finished = false;
   // 异步更新数据
   const res = await axios.get(
-    `/api/v1/moment?pageNo=${listConfig.pageNo}&pageSize=${listConfig.pageSize}`
+    `/api/v1/moment?pageNo=${listConfig.pageNo}&pageSize=${listConfig.pageSize}`,
   );
   listConfig.loading = false;
   const data = res.data.details;

@@ -11,7 +11,7 @@ import App from "@h5/App.vue";
 import { createPinia } from "pinia";
 import { init as axiosInit } from "@h5/plugin/axios";
 
-import { init as globalInit } from "./store/index";
+import { init as globalInit } from "@h5/store/index";
 
 export const app = createApp(App)
   .use(createPinia())

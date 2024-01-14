@@ -154,7 +154,7 @@
 //import '../../assets/css/content.css'
 //不要tinymce的content.css的body属性
 import { SaveOutlined, UploadOutlined } from "@ant-design/icons-vue";
-import { upload } from "@/plugin/utils/upload";
+import { upload } from "@pc/plugin/utils/upload";
 import {
   nextTick,
   onBeforeUnmount,
@@ -308,7 +308,7 @@ onMounted(() => {
       import("vditor/dist/index.css");
       vditor = new Vditor.default("vditor", {});
     } else {
-      await import("../../plugin/tinymce/tinymce.js");
+      await import("@pc/plugin/tinymce/tinymce.js");
       window.tinymce.init(tinymceConfig).then((resolve) => {
         if (route.query.id && article.value.content_type === 1) {
           window.tinymce.activeEditor.setContent(article.value.html_content);

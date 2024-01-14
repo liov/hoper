@@ -77,7 +77,7 @@
 import axios from "axios";
 import { upload } from "@h5/plugin/utils/upload";
 import dataTool from "@h5/plugin/utils/date";
-import * as dayjs from "dayjs";
+import dayjs from "dayjs";
 
 import { STATIC_DIR } from "@h5/plugin/config";
 import { ref, reactive } from "vue";
@@ -89,7 +89,7 @@ const router = useRouter();
 
 const show = ref(false);
 const loading = ref(false);
-const birthday = ref(new Date(2000, 0, 1));
+const birthday = ref(["2000", "0", "1"]);
 const minDate = new Date(1900, 0, 1);
 const maxDate = new Date();
 const staticDir = STATIC_DIR;
@@ -99,7 +99,7 @@ if (!user.intro) user.intro = "我不想介绍自己";
 if (!user.signature) user.signature = "太个性签名签不下";
 user.birthday = dayjs(user.birthday).format(dataTool.formatYMD);
 if (user.birthday !== dataTool.zeroTime)
-  birthday.value = dayjs(user.birthday).toDate();
+  birthday.value = dayjs(user.birthday).format(dataTool.formatYMD).split("-");
 
 async function afterRead(file: any) {
   loading.value = true;
@@ -107,7 +107,7 @@ async function afterRead(file: any) {
   loading.value = false;
 }
 async function confirm() {
-  user.birthday = dayjs(birthday.value).format(dataTool.formatYMD);
+  user.birthday = birthday.value.join("-");
   const res = await axios.put(`/api/v1/user/${user.id}`, {
     id: user.id,
     details: {
@@ -124,7 +124,7 @@ async function confirm() {
 }
 function onConfirm(value) {
   show.value = false;
-  user.birthday = dayjs(birthday.value).format(dataTool.formatYMD);
+  user.birthday = birthday.value.join("-");
 }
 </script>
 

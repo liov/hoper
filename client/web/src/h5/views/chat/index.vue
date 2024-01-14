@@ -55,7 +55,7 @@ import {
 } from "vue";
 import { useUserStore } from "@h5/store/user";
 import { useRouter, useRoute } from "vue-router";
-import type { Ref, UnwrapRef, UnwrapNestedRefs } from "vue";
+import type { Ref } from "vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -64,7 +64,7 @@ const message = ref("");
 let ws: WebSocket; // Our websocket
 const newMsg = ref(""); // Holds new messages to be sent to the server
 const recv = 0; // Email address used for grabbing an avatar
-const msgs: Ref<UnwrapRef<any[]>> = ref([]);
+const msgs: Ref<any[]> = ref([]);
 const focus = ref(false);
 
 const user = ref(userStore.auth);

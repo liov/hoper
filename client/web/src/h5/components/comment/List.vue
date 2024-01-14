@@ -26,7 +26,6 @@ import Comment from "@h5/components/comment/Comment.vue";
 import ActionMore from "@h5/components/action/More.vue";
 import { useUserStore } from "@h5/store/user";
 import { useContentStore } from "@h5/store/content";
-import type { UnwrapRef } from "vue";
 
 const props = withDefaults(
   defineProps<{
@@ -34,7 +33,7 @@ const props = withDefaults(
     refId: string;
     rootId?: number;
   }>(),
-  { rootId: 0 }
+  { rootId: 0 },
 );
 
 const userStore = useUserStore();
@@ -45,7 +44,7 @@ const loading = ref(false);
 const finished = ref(false);
 const pageNo = ref(1);
 const pageSize = ref(10);
-const list: Ref<UnwrapRef<any[]>> = ref([]);
+const list: Ref<any[]> = ref([]);
 
 const pullDown = reactive({
   refreshing: false,
@@ -63,7 +62,7 @@ async function onLoad() {
   finished.value = false;
   // 异步更新数据
   const res = await axios.get(
-    `/api/v1/action/comment?type=${props.type}&refId=${props.refId}&rootId=${props.rootId}&pageNo=${pageNo.value}&pageSize=${pageSize.value}`
+    `/api/v1/action/comment?type=${props.type}&refId=${props.refId}&rootId=${props.rootId}&pageNo=${pageNo.value}&pageSize=${pageSize.value}`,
   );
   loading.value = false;
   const data = res.data.details;

@@ -15,7 +15,7 @@ import fs from "fs";
 import wasm from "vite-plugin-wasm";
 import { viteCommonjs } from "@originjs/vite-plugin-commonjs";
 
-const lessVar = path.resolve(__dirname, "src/pc/assets/antd.less");
+const lessVar = path.resolve(__dirname, "src/pc/assets/var.less");
 
 fs.copyFileSync("src/pc/index.html", "index.html");
 
@@ -57,9 +57,13 @@ export default defineConfig({
     vueJsx(),
     viteCommonjs(),
     Components({
-      resolvers: [AntDesignVueResolver()],
+      resolvers: [
+        AntDesignVueResolver({
+          importStyle: false, // css in js
+        }),
+      ],
     }),
-    ...VitePWA({ registerType: "autoUpdate" }),
+    ...VitePWA({ registerType: "autoUpdate", outDir: "dist/pc" }),
     //wasm(),
     //ViteRsw(),
     Unocss({
@@ -86,15 +90,17 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      // "@": fileURLToPath(new URL("./src", import.meta.url)),
       "@pc": fileURLToPath(new URL("./src/pc", import.meta.url)),
       "@generated": fileURLToPath(new URL("./generated", import.meta.url)),
+      "@types": fileURLToPath(new URL("./types", import.meta.url)),
     },
   },
   build: {
     rollupOptions: {
       // https://rollupjs.org/guide/en/#outputmanualchunks
       output: {
+        dir: "dist/pc",
         manualChunks: {},
       },
       plugins: [],

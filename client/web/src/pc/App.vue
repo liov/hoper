@@ -82,7 +82,7 @@
           </a-menu>
         </div>
       </a-layout-header>
-      <a-layout-content style="padding: 0 50px">
+      <a-layout-content>
         <RouterView v-slot="{ Component }">
           <template v-if="Component">
             <Transition name="fade">
@@ -138,8 +138,8 @@ import { RouterView, useRoute, useRouter } from "vue-router";
 import { useGlobalStore } from "@pc/store/global";
 import { useUserStore } from "@pc/store/user";
 import { parseQueryString } from "@pc/plugin/location";
-import "/types/grpc_custom_status";
-import zh_CN from "ant-design-vue/lib/locale-provider/zh_CN";
+import "@types/grpc_custom_status";
+import zh_CN from "ant-design-vue/es/locale/zh_CN";
 import { onDeactivated, onUnmounted, ref } from "vue";
 import {
   FileTextOutlined,
@@ -172,7 +172,7 @@ const theme = ref("light");
 const style: any = ref({ backgroundColor: "#fff" });
 
 onUnmounted(() => sessionStorage.setItem("back_url", route.path));
-function changeTheme(checked) {
+function changeTheme(checked: boolean) {
   theme.value = checked ? "dark" : "light";
   style.value = checked
     ? { height: "48px" }
@@ -184,7 +184,6 @@ function changeTheme(checked) {
 .menu {
   width: 100%;
   text-align: center;
-  position: fixed;
   top: 0;
   z-index: 1;
 }

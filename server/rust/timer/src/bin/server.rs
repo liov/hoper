@@ -1,3 +1,6 @@
+use std::cell::{Cell, RefCell};
+use std::rc::Rc;
+use std::sync::RwLock;
 use tonic::{transport::Server, Request, Response, Status};
 
 
@@ -13,35 +16,33 @@ use user::{
     BaseListReq
 };
 
-pub use timer::{empty,response,request,any,oauth};
+pub use timer::{response,request,any,oauth};
 
 
 #[derive(Default)]
 pub struct MyUserService {
-    data: u64,
+    data:   RwLock<u64>,
 }
 
 #[tonic::async_trait]
 impl UserService for MyUserService {
     async fn verify_code(
         &self,
-        request: Request<empty::Empty>,
+        request: Request<()>,
     ) -> Result<Response<String>, Status> {
         println!("Got a request: {:?}", request);
+        {
+            let mut data = self.data.write().unwrap();
+            *data += 1;
 
-        unsafe{
-            let ptr = &self.data as *const u64 as *mut u64;
-            *ptr = self.data+1
+            println!("My data: {:?}", *data);
         }
-
-        println!("My data: {:?}", self.data);
-
         Ok(Response::new( "Zomg, it works!".into()))
     }
     async fn send_verify_code(
         &self,
         request: Request<SendVerifyCodeReq>,
-    ) -> Result<Response<empty::Empty>, Status>{
+    ) -> Result<Response<()>, Status>{
         Ok(Response::new(Default::default()))
     }
     async fn signup_verify(
@@ -71,7 +72,7 @@ impl UserService for MyUserService {
     async fn edit(
         &self,
         request: Request<EditReq>,
-    ) -> Result<Response<empty::Empty>, Status>{
+    ) -> Result<Response<()>, Status>{
         Ok(Response::new(Default::default()))
     }
     async fn login(
@@ -82,13 +83,13 @@ impl UserService for MyUserService {
     }
     async fn logout(
         &self,
-        request: Request<empty::Empty>,
-    ) -> Result<Response<empty::Empty>, Status>{
+        request: Request<()>,
+    ) -> Result<Response<()>, Status>{
         Ok(Response::new(Default::default()))
     }
     async fn auth_info(
         &self,
-        request: Request<empty::Empty>,
+        request: Request<()>,
     ) -> Result<Response<UserAuthInfo>, Status>{
         Ok(Response::new(Default::default()))
     }
@@ -106,7 +107,7 @@ impl UserService for MyUserService {
     }
     async fn info(
         &self,
-        request: Request<request::Object>,
+        request: Request<request::Id>,
     ) -> Result<Response<UserRep>, Status>{
         Ok(Response::new(Default::default()))
     }
@@ -125,7 +126,7 @@ impl UserService for MyUserService {
     async fn follow(
         &self,
         request: Request<FollowReq>,
-    ) -> Result<Response<empty::Empty>, Status>{
+    ) -> Result<Response<()>, Status>{
         Ok(Response::new(Default::default()))
     }
     async fn del_follow(
