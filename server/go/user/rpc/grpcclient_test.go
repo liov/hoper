@@ -1,7 +1,7 @@
 package rpc
 
 import (
-	"github.com/liovx/hoper/server/go/protobuf/user"
+	"github.com/liov/hoper/server/go/protobuf/user"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"testing"

@@ -1,6 +1,6 @@
 
 
-#curl https://get.acme.sh | sh -s email=liovx@qq.com
+#curl https://get.acme.sh | sh -s email=lby.i@qq.com
 #~/.acme.sh/acme.sh --issue -d ${host} -d *.${host} --standalone --httpport 88
 
 

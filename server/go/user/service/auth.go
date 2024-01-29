@@ -3,12 +3,12 @@ package service
 import (
 	contexti "github.com/hopeio/lemon/context"
 	"github.com/hopeio/lemon/context/http_context"
-	"github.com/liovx/hoper/server/go/protobuf/user"
+	"github.com/liov/hoper/server/go/protobuf/user"
 	"strings"
 	"time"
 
-	"github.com/liovx/hoper/server/go/user/confdao"
-	"github.com/liovx/hoper/server/go/user/data"
+	"github.com/liov/hoper/server/go/user/confdao"
+	"github.com/liov/hoper/server/go/user/data"
 )
 
 var ExportAuth = auth

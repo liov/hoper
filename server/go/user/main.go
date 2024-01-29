@@ -5,8 +5,8 @@ import (
 	"github.com/hopeio/lemon/initialize"
 	pickgin "github.com/hopeio/lemon/pick/gin"
 	"github.com/hopeio/lemon/server"
-	"github.com/liovx/hoper/server/go/user/api"
-	"github.com/liovx/hoper/server/go/user/confdao"
+	"github.com/liov/hoper/server/go/user/api"
+	"github.com/liov/hoper/server/go/user/confdao"
 )
 
 func main() {

@@ -1,8 +1,8 @@
 package api
 
 import (
-	"github.com/liovx/hoper/server/go/protobuf/user"
-	userService "github.com/liovx/hoper/server/go/user/service"
+	"github.com/liov/hoper/server/go/protobuf/user"
+	userService "github.com/liov/hoper/server/go/user/service"
 	"google.golang.org/grpc"
 )
 

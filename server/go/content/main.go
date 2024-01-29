@@ -5,9 +5,9 @@ import (
 
 	"github.com/hopeio/lemon/initialize"
 	"github.com/hopeio/lemon/server"
-	"github.com/liovx/hoper/server/go/content/confdao"
-	"github.com/liovx/hoper/server/go/content/service"
-	model "github.com/liovx/hoper/server/go/protobuf/content"
+	"github.com/liov/hoper/server/go/content/confdao"
+	"github.com/liov/hoper/server/go/content/service"
+	model "github.com/liov/hoper/server/go/protobuf/content"
 	"google.golang.org/grpc"
 )
 

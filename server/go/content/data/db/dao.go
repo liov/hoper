@@ -6,8 +6,8 @@ import (
 	"github.com/hopeio/lemon/protobuf/errorcode"
 	clausei "github.com/hopeio/lemon/utils/dao/db/gorm/clause"
 	"github.com/hopeio/lemon/utils/log"
-	"github.com/liovx/hoper/server/go/content/model"
-	"github.com/liovx/hoper/server/go/protobuf/content"
+	"github.com/liov/hoper/server/go/content/model"
+	"github.com/liov/hoper/server/go/protobuf/content"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )

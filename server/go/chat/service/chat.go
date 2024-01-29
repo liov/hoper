@@ -6,7 +6,7 @@ import (
 	"github.com/hopeio/lemon/context/http_context"
 	"github.com/hopeio/lemon/protobuf/errorcode"
 	httpi "github.com/hopeio/lemon/utils/net/http"
-	"github.com/liovx/hoper/server/go/protobuf/user"
+	"github.com/liov/hoper/server/go/protobuf/user"
 	"net/http"
 )
 

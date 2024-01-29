@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/liovx/hoper/server/go/content/model"
+	"github.com/liov/hoper/server/go/content/model"
 )
 
 /*var ServerSettings = &ServerConfig{}

@@ -6,7 +6,7 @@ import (
 
 	"github.com/hopeio/lemon/protobuf/errorcode"
 	timei "github.com/hopeio/lemon/utils/time"
-	"github.com/liovx/hoper/server/go/content/confdao"
+	"github.com/liov/hoper/server/go/content/confdao"
 )
 
 var limitErr = errorcode.TimeTooMuch.Message("您的操作过于频繁，请先休息一会儿。")

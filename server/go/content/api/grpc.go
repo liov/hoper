@@ -1,8 +1,8 @@
 package route
 
 import (
-	contentService "github.com/liovx/hoper/server/go/content/service"
-	"github.com/liovx/hoper/server/go/protobuf/content"
+	contentService "github.com/liov/hoper/server/go/content/service"
+	"github.com/liov/hoper/server/go/protobuf/content"
 	"google.golang.org/grpc"
 )
 

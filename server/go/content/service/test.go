@@ -6,7 +6,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"unsafe"
 
-	model "github.com/liovx/hoper/server/go/protobuf/content"
+	model "github.com/liov/hoper/server/go/protobuf/content"
 )
 
 type TestService struct {

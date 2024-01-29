@@ -3,7 +3,7 @@ package redis
 import (
 	"github.com/hopeio/lemon/protobuf/errorcode"
 	redisi "github.com/hopeio/lemon/utils/dao/redis"
-	"github.com/liovx/hoper/server/go/protobuf/content"
+	"github.com/liov/hoper/server/go/protobuf/content"
 	"strconv"
 )
 

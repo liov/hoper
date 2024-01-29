@@ -22,11 +22,11 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	model "github.com/liovx/hoper/server/go/protobuf/user"
-	"github.com/liovx/hoper/server/go/user/confdao"
-	"github.com/liovx/hoper/server/go/user/data"
-	"github.com/liovx/hoper/server/go/user/middle"
-	modelconst "github.com/liovx/hoper/server/go/user/model"
+	model "github.com/liov/hoper/server/go/protobuf/user"
+	"github.com/liov/hoper/server/go/user/confdao"
+	"github.com/liov/hoper/server/go/user/data"
+	"github.com/liov/hoper/server/go/user/middle"
+	modelconst "github.com/liov/hoper/server/go/user/model"
 
 	"github.com/hopeio/lemon/protobuf/errorcode"
 	"github.com/hopeio/lemon/protobuf/response"

@@ -2,7 +2,7 @@ package data
 
 import (
 	"github.com/hopeio/lemon/protobuf/errorcode"
-	"github.com/liovx/hoper/server/go/upload/model"
+	"github.com/liov/hoper/server/go/upload/model"
 	"gorm.io/gorm"
 )
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 
-	model "github.com/liovx/hoper/server/go/protobuf/content"
+	model "github.com/liov/hoper/server/go/protobuf/content"
 )
 
 type NoteService struct {
