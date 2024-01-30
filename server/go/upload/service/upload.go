@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"github.com/hopeio/lemon/context/http_context"
+	"github.com/hopeio/tiga/context/http_context"
 	"github.com/liov/hoper/server/go/protobuf/upload"
 	"github.com/liov/hoper/server/go/upload/confdao"
 	"github.com/liov/hoper/server/go/upload/data"

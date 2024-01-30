@@ -2,9 +2,9 @@ package db
 
 import (
 	sqlstd "database/sql"
-	"github.com/hopeio/lemon/protobuf/errorcode"
-	dbi "github.com/hopeio/lemon/utils/dao/db/const"
-	clausei "github.com/hopeio/lemon/utils/dao/db/gorm/clause"
+	"github.com/hopeio/tiga/protobuf/errorcode"
+	dbi "github.com/hopeio/tiga/utils/dao/db/const"
+	clausei "github.com/hopeio/tiga/utils/dao/db/gorm/clause"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"
 	"gorm.io/gorm"

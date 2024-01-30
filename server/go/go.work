@@ -4,4 +4,4 @@ toolchain go1.21.0
 
 use .
 
-replace github.com/hopeio/lemon => ../../../lemon
+replace github.com/hopeio/tiga => ../../../tiga

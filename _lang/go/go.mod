@@ -9,7 +9,7 @@ require (
 	github.com/brahma-adshonor/gohook v1.1.9
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
 	github.com/google/flatbuffers v23.5.26+incompatible
-	github.com/hopeio/lemon v1.0.0
+	github.com/hopeio/tiga v1.0.0
 	github.com/lucasb-eyer/go-colorful v1.0.2
 	github.com/spf13/pflag v1.0.5
 	github.com/unicorn-engine/unicorn v0.0.0-20191119163456-3cea38bff7bf
@@ -91,4 +91,4 @@ require (
 	gorm.io/plugin/prometheus v0.0.0-20231026031148-436184e80556 // indirect
 )
 
-replace github.com/hopeio/lemon => ../../../lemon
+replace github.com/hopeio/tiga => ../../../tiga

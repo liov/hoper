@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hopeio/lemon/utils/net/http/gin/handler"
+	"github.com/hopeio/tiga/utils/net/http/gin/handler"
 	"github.com/liov/hoper/server/go/chat/service"
 )
 

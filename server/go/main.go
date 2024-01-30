@@ -1,8 +1,8 @@
 package main
 
 import (
-	pickgin "github.com/hopeio/lemon/pick/gin"
-	"github.com/hopeio/lemon/server"
+	pickgin "github.com/hopeio/tiga/pick/gin"
+	"github.com/hopeio/tiga/server"
 	chatapi "github.com/liov/hoper/server/go/chat/api"
 	contentapi "github.com/liov/hoper/server/go/content/api"
 	uploadapi "github.com/liov/hoper/server/go/upload/api"
@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hopeio/lemon/initialize"
-	"github.com/hopeio/lemon/utils/log"
+	"github.com/hopeio/tiga/initialize"
+	"github.com/hopeio/tiga/utils/log"
 	cconf "github.com/liov/hoper/server/go/content/confdao"
 	upconf "github.com/liov/hoper/server/go/upload/confdao"
 	uconf "github.com/liov/hoper/server/go/user/confdao"

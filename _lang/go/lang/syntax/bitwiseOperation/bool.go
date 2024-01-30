@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/hopeio/lemon/utils/number"
+	"github.com/hopeio/tiga/utils/number"
 )
 
 const (

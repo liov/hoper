@@ -7,8 +7,8 @@ import "github.com/mwitkow/go-proto-validators/validator.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/empty.proto";
-import "lemon/protobuf/response/response.proto";
-import "lemon/protobuf/utils/patch/go.proto";
+import "tiga/protobuf/response/response.proto";
+import "tiga/protobuf/utils/patch/go.proto";
 import "danielvladco/protobuf/graphql.proto";
 
 option go_package = "github.com/liov/hoper/server/go/protobuf/content";

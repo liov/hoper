@@ -3,7 +3,7 @@
 import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/generated/protobuf/user/user.service.pb.dart';
 import 'package:app/generated/protobuf/google/protobuf/empty.pb.dart';
-import 'package:app/generated/protobuf/lemon/protobuf/request/param.pb.dart' as request;
+import 'package:app/generated/protobuf/tiga/protobuf/request/param.pb.dart' as request;
 import 'package:app/global/global_state.dart';
 import 'package:app/global/const.dart';
 import 'package:app/pages/home/home_controller.dart';

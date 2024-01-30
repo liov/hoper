@@ -2,10 +2,10 @@ package db
 
 import (
 	"database/sql"
-	"github.com/hopeio/lemon/context/http_context"
-	"github.com/hopeio/lemon/protobuf/errorcode"
-	clausei "github.com/hopeio/lemon/utils/dao/db/gorm/clause"
-	"github.com/hopeio/lemon/utils/log"
+	"github.com/hopeio/tiga/context/http_context"
+	"github.com/hopeio/tiga/protobuf/errorcode"
+	clausei "github.com/hopeio/tiga/utils/dao/db/gorm/clause"
+	"github.com/hopeio/tiga/utils/log"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"
 	"go.uber.org/zap"

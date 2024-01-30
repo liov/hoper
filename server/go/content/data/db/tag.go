@@ -1,8 +1,8 @@
 package db
 
 import (
-	"github.com/hopeio/lemon/protobuf/errorcode"
-	dbi "github.com/hopeio/lemon/utils/dao/db/const"
+	"github.com/hopeio/tiga/protobuf/errorcode"
+	dbi "github.com/hopeio/tiga/utils/dao/db/const"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"
 )

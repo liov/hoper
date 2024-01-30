@@ -1,8 +1,8 @@
 package service
 
 import (
-	contexti "github.com/hopeio/lemon/context"
-	"github.com/hopeio/lemon/context/http_context"
+	contexti "github.com/hopeio/tiga/context"
+	"github.com/hopeio/tiga/context/http_context"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"strings"
 	"time"

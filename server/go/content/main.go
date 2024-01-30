@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/hopeio/lemon/initialize"
-	"github.com/hopeio/lemon/server"
+	"github.com/hopeio/tiga/initialize"
+	"github.com/hopeio/tiga/server"
 	"github.com/liov/hoper/server/go/content/confdao"
 	"github.com/liov/hoper/server/go/content/service"
 	model "github.com/liov/hoper/server/go/protobuf/content"

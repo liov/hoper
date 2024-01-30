@@ -2,15 +2,15 @@ package service
 
 import (
 	"context"
-	"github.com/hopeio/lemon/context/http_context"
+	"github.com/hopeio/tiga/context/http_context"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/confdao"
 	"github.com/liov/hoper/server/go/user/data"
 	"github.com/liov/hoper/server/go/user/model"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/hopeio/lemon/protobuf/errorcode"
-	dbi "github.com/hopeio/lemon/utils/dao/db/const"
+	"github.com/hopeio/tiga/protobuf/errorcode"
+	dbi "github.com/hopeio/tiga/utils/dao/db/const"
 )
 
 // 关注

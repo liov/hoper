@@ -1,11 +1,10 @@
 package redis
 
 import (
-	"github.com/go-redis/redis/v8"
 	"time"
 
-	"github.com/hopeio/lemon/protobuf/errorcode"
-	timei "github.com/hopeio/lemon/utils/time"
+	"github.com/hopeio/tiga/protobuf/errorcode"
+	timei "github.com/hopeio/tiga/utils/time"
 	"github.com/liov/hoper/server/go/content/confdao"
 )
 

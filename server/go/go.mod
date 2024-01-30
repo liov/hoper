@@ -18,7 +18,7 @@ require (
 	github.com/google/uuid v1.3.1
 	github.com/gorilla/websocket v1.5.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.18.0
-	github.com/hopeio/lemon v1.0.0
+	github.com/hopeio/tiga v1.0.0
 	github.com/mwitkow/go-proto-validators v0.3.2
 	github.com/spf13/viper v1.16.0
 	github.com/vektah/gqlparser/v2 v2.5.9
@@ -193,4 +193,4 @@ require (
 	nhooyr.io/websocket v1.8.7 // indirect
 )
 
-replace github.com/hopeio/lemon => ../../../lemon
+replace github.com/hopeio/tiga => ../../../tiga

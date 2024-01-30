@@ -3,9 +3,9 @@ package service
 import (
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
-	"github.com/hopeio/lemon/context/http_context"
-	"github.com/hopeio/lemon/protobuf/errorcode"
-	httpi "github.com/hopeio/lemon/utils/net/http"
+	"github.com/hopeio/tiga/context/http_context"
+	"github.com/hopeio/tiga/protobuf/errorcode"
+	httpi "github.com/hopeio/tiga/utils/net/http"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"net/http"
 )

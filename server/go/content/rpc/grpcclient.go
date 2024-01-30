@@ -1,8 +1,8 @@
 package rpc
 
 import (
-	"github.com/hopeio/lemon/utils/log"
-	grpci "github.com/hopeio/lemon/utils/net/http/grpc"
+	"github.com/hopeio/tiga/utils/log"
+	grpci "github.com/hopeio/tiga/utils/net/http/grpc"
 	"github.com/liov/hoper/server/go/protobuf/upload"
 	"github.com/liov/hoper/server/go/protobuf/user"
 )

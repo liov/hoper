@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hopeio/lemon/initialize"
-	pickgin "github.com/hopeio/lemon/pick/gin"
-	"github.com/hopeio/lemon/server"
+	"github.com/hopeio/tiga/initialize"
+	pickgin "github.com/hopeio/tiga/pick/gin"
+	"github.com/hopeio/tiga/server"
 	"github.com/liov/hoper/server/go/user/api"
 	"github.com/liov/hoper/server/go/user/confdao"
 )
