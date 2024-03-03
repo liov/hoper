@@ -17,11 +17,11 @@ func init() {
 }
 
 func Chat(w http.ResponseWriter, r *http.Request) {
-	conn, error := (&websocket.Upgrader{
+	conn, err := (&websocket.Upgrader{
 		CheckOrigin:     func(r *http.Request) bool { return true },
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024}).Upgrade(w, r, nil)
-	if error != nil {
+	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
@@ -34,7 +34,7 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 			dviceName = "PC"
 		}*/
 	ctxi := http_context.ContextFromContext(r.Context())
-	_, err := auth(ctxi, false)
+	_, err = auth(ctxi, false)
 	if err != nil {
 		(&httpi.ResAnyData{
 			Code:    errorcode.ErrCode(user.UserErrNoLogin),

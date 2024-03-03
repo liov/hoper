@@ -2,11 +2,8 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hopeio/tiga/initialize"
-	pickgin "github.com/hopeio/tiga/pick/gin"
 	"github.com/hopeio/tiga/server"
 	"github.com/liov/hoper/server/go/user/api"
-	"github.com/liov/hoper/server/go/user/confdao"
 )
 
 func main() {
@@ -15,7 +12,6 @@ func main() {
 
 		GinHandle: func(app *gin.Engine) {
 			api.GinRegister(app)
-			pickgin.Register(app, confdao.Conf.Server.GenDoc, initialize.GlobalConfig.Module, confdao.Conf.Server.OpenTracing)
 		},
 
 		/*		GraphqlResolve: model.NewExecutableSchema(model.Config{
