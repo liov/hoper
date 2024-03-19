@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"github.com/hopeio/tiga/context/http_context"
+	gormi "github.com/hopeio/tiga/utils/dao/db/gorm"
 	"github.com/liov/hoper/server/go/content/confdao"
 	"github.com/liov/hoper/server/go/content/data"
 	dbdao "github.com/liov/hoper/server/go/content/data/db"
@@ -35,7 +36,7 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.TraceID)
 
 	contentDBDao := dbdao.GetDao(ctxi, db)
 
@@ -81,7 +82,7 @@ func (*ActionService) DelLike(ctx context.Context, req *request.Id) (*emptypb.Em
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.TraceID)
 	contentDBDao := data.GetDBDao(ctxi, db)
 
 	like, err := contentDBDao.GetLike(req.Id, auth.Id)
@@ -114,7 +115,7 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*re
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.TraceID)
 
 	req.UserId = auth.Id
 	err = db.Transaction(func(tx *gorm.DB) error {
@@ -154,7 +155,7 @@ func (*ActionService) DelComment(ctx context.Context, req *request.Id) (*emptypb
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.TraceID)
 	contentDBDao := data.GetDBDao(ctxi, db)
 
 	var comment content.Comment
@@ -197,7 +198,7 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*em
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.TraceID)
 	contentDBDao := data.GetDBDao(ctxi, db)
 
 	req.UserId = auth.Id
@@ -209,7 +210,7 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*em
 	for _, collect := range collects {
 		origin = append(origin, collect.FavId)
 	}
-	diff := slices.DifferenceByLoop(origin, req.FavIds)
+	diff := slices.DifferenceSet(origin, req.FavIds)
 	collect := model.Collect{
 		Type:   req.Type,
 		RefId:  req.RefId,
@@ -264,7 +265,7 @@ func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*empt
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.TraceID)
 	req.UserId = auth.Id
 	err = db.Transaction(func(tx *gorm.DB) error {
 		contenttxDBDao := data.GetDBDao(ctxi, tx)
@@ -294,7 +295,7 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.TraceID)
 	contentDBDao := data.GetDBDao(ctxi, db)
 
 	total, comments, err := contentDBDao.GetComments(content.ContentMoment, req.RefId, req.RootId, int(req.PageNo), int(req.PageSize))
@@ -384,7 +385,7 @@ func (*ActionService) GetUserAction(ctx context.Context, req *content.ContentReq
 		return nil, err
 	}
 
-	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.TraceID)
 	contentDBDao := dbdao.GetDao(ctxi, db)
 
 	action := &content.UserAction{}

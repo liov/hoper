@@ -99,8 +99,8 @@ func findMinMoves2(machines []int) int {
 	for i := 0; i < len(machines); i++ {
 		right := machines[i] - average
 		left += right
-		times = leetcode.max(times, leetcode.abs(left))
-		times = leetcode.max(times, right)
+		times = max(times, leetcode.Abs(left))
+		times = max(times, right)
 	}
 	return times
 }

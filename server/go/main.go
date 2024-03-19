@@ -1,7 +1,7 @@
 package main
 
 import (
-	pickgin "github.com/hopeio/tiga/pick/gin"
+	pickgin "github.com/hopeio/pick/gin"
 	"github.com/hopeio/tiga/server"
 	chatapi "github.com/liov/hoper/server/go/chat/api"
 	contentapi "github.com/liov/hoper/server/go/content/api"

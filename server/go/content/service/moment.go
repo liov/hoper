@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/hopeio/tiga/context/http_context"
 	"github.com/hopeio/tiga/protobuf/request"
+	gormi "github.com/hopeio/tiga/utils/dao/db/gorm"
 	"github.com/hopeio/tiga/utils/struct/set"
 	"github.com/liov/hoper/server/go/content/rpc"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -35,7 +36,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, _ := auth(ctxi, true)
-	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.TraceID)
 	contentDBDao := data.GetDBDao(ctxi, db)
 
 	var moment content.Moment
@@ -140,7 +141,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.TraceID)
 	contentDBDao := data.GetDBDao(ctxi, db)
 
 	req.UserId = auth.Id
@@ -226,7 +227,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, _ := auth(ctxi, true)
-	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.TraceID)
 	contentDBDao := data.GetDBDao(ctxi, db)
 
 	total, moments, err := contentDBDao.GetMomentListDB(req)
@@ -328,7 +329,7 @@ func (*MomentService) Delete(ctx context.Context, req *request.Id) (*emptypb.Emp
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.TraceID)
 	contentDBDao := data.GetDBDao(ctxi, db)
 
 	err = contentDBDao.DelByAuth(model.MomentTableName, req.Id, auth.Id)

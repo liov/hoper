@@ -23,7 +23,7 @@ func adjustUp(heap []int, pos int) {
 	//比父节点大就上移
 	var p = parent(pos)
 	for p >= 0 && heap[pos] > heap[p] {
-		swap(heap, p, pos)
+		Swap(heap, p, pos)
 		pos = p
 		p = parent(pos)
 	}
@@ -33,7 +33,7 @@ func adjustDown(heap []int, pos, k int) {
 	if heap[pos] >= heap[0] {
 		return
 	}
-	swap(heap, pos, 0)
+	Swap(heap, pos, 0)
 
 	p := 0
 	var child = leftChild(p)
@@ -44,7 +44,7 @@ func adjustDown(heap []int, pos, k int) {
 		if heap[p] >= heap[child] {
 			break
 		}
-		swap(heap, p, child)
+		Swap(heap, p, child)
 		p = child
 		child = leftChild(p)
 	}

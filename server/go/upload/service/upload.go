@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"github.com/hopeio/tiga/context/http_context"
+	gormi "github.com/hopeio/tiga/utils/dao/db/gorm"
 	"github.com/liov/hoper/server/go/protobuf/upload"
 	"github.com/liov/hoper/server/go/upload/confdao"
 	"github.com/liov/hoper/server/go/upload/data"
@@ -17,7 +18,7 @@ func (*UploadService) GetUrls(ctx context.Context, req *upload.GetUrlsReq) (*upl
 
 	uploadDao := data.GetDao(ctxi)
 
-	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.TraceID)
 	uploadInfos, err := uploadDao.GetUrls(db, req.Ids)
 	if err != nil {
 		return nil, err
@@ -29,7 +30,7 @@ func (*UploadService) GetUrlsByStrId(ctx context.Context, req *upload.GetUrlsByS
 
 	uploadDao := data.GetDao(ctxi)
 
-	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.TraceID)
 	uploadInfos, err := uploadDao.GetUrlsByStrId(db, req.Ids)
 	if err != nil {
 		return nil, err

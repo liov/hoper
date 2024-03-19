@@ -115,7 +115,7 @@ func (d *userDao) SaveResumes(db *gorm.DB, userId uint64, resumes []*user.Resume
 	//差集
 	var differenceIds []uint64
 	if len(originalIds) > 0 {
-		differenceIds = slices.Difference(editIds, originalIds)
+		differenceIds = slices.DifferenceSet(editIds, originalIds)
 	}
 	db.Model(&user.Resume{}).Where("id in (?)", differenceIds).Update("status", 0)
 	for _, id := range differenceIds {

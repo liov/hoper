@@ -4,21 +4,6 @@ import (
 	"math"
 )
 
-func swap(heap []int, i, j int) {
-	heap[i], heap[j] = heap[j], heap[i]
-}
-
-func parent(i int) int {
-	return (i - 1) / 2
-}
-func leftChild(i int) int {
-	return i*2 + 1
-}
-
-func rightChild(i int) int {
-	return i*2 + 2
-}
-
 type MaxHeap []int
 
 func NewMaxHeap(l int) MaxHeap {
@@ -56,7 +41,7 @@ func (heap MaxHeap) Put(val int) {
 func (heap MaxHeap) adjustUp(i int) {
 	p := parent(i)
 	for p >= 0 && heap[i] > heap[p] {
-		swap(heap, i, p)
+		Swap(heap, i, p)
 		i = p
 		p = parent(i)
 	}
@@ -72,7 +57,7 @@ func (heap MaxHeap) adjustDown(i int) {
 		if heap[i] >= heap[child] {
 			break
 		}
-		swap(heap, i, child)
+		Swap(heap, i, child)
 		i = child
 		child = leftChild(i)
 	}

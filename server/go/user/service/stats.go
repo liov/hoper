@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"github.com/hopeio/tiga/context/http_context"
+	gormi "github.com/hopeio/tiga/utils/dao/db/gorm"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/confdao"
 	"github.com/liov/hoper/server/go/user/data"
@@ -22,7 +23,7 @@ func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*emptypb
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.TraceID)
 	userDao := data.GetDao(ctxi)
 	exists, err := userDao.FollowExistsDB(db, req.Id, auth.Id)
 	if err != nil {
@@ -50,7 +51,7 @@ func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user
 	if err != nil {
 		return nil, err
 	}
-	db := ctxi.NewDB(confdao.Dao.GORMDB.DB)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.TraceID)
 	userDao := data.GetDao(ctxi)
 	exists, err := userDao.FollowExistsDB(db, req.Id, auth.Id)
 	if err != nil {

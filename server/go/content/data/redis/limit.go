@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"github.com/go-redis/redis/v8"
 	"time"
 
 	"github.com/hopeio/tiga/protobuf/errorcode"
@@ -13,8 +14,8 @@ var limitErr = errorcode.TimeTooMuch.Message("您的操作过于频繁，请先�
 func (d *ContentRedisDao) Limit(l *confdao.Limit) error {
 	ctxi := d
 	ctx := ctxi.Context
-	minuteKey := l.MinuteLimitKey + ctxi.ID
-	dayKey := l.DayLimitKey + ctxi.ID
+	minuteKey := l.MinuteLimitKey + ctxi.AuthID
+	dayKey := l.DayLimitKey + ctxi.AuthID
 
 	var minuteIntCmd, dayIntCmd *redis.IntCmd
 	_, err := d.conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {

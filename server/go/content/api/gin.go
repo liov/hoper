@@ -2,7 +2,7 @@ package route
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hopeio/tiga/pick"
+	"github.com/hopeio/pick"
 	contentService "github.com/liov/hoper/server/go/content/service"
 	"github.com/liov/hoper/server/go/protobuf/content"
 )

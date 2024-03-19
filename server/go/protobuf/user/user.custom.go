@@ -1,7 +1,7 @@
 package user
 
 import (
-	contexti "github.com/hopeio/tiga/utils/context"
+	contexti "github.com/hopeio/tiga/context"
 	"strconv"
 )
 

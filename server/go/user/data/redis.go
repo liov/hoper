@@ -1,6 +1,7 @@
 package data
 
 import (
+	"github.com/go-redis/redis/v8"
 	"github.com/hopeio/tiga/utils/encoding/json/iterator"
 	"strconv"
 
@@ -23,7 +24,7 @@ func (d *userDao) UserToRedis() error {
 		return d.ErrorLog(errorcode.RedisErr, err, "UserToRedis.MarshalToString")
 	}
 
-	loginUserKey := modelconst.LoginUserKey + ctxi.ID
+	loginUserKey := modelconst.LoginUserKey + ctxi.AuthID
 	if redisErr := confdao.Dao.Redis.SetEX(ctx, loginUserKey, UserString, confdao.Conf.Customize.TokenMaxAge).Err(); redisErr != nil {
 		return d.ErrorLog(errorcode.RedisErr, err, "UserToRedis.SetEX")
 	}
@@ -34,7 +35,7 @@ func (d *userDao) UserToRedis() error {
 func (d *userDao) UserFromRedis() (*model.AuthInfo, error) {
 	ctxi := d
 	ctx := ctxi.Context
-	loginUser := modelconst.LoginUserKey + ctxi.ID
+	loginUser := modelconst.LoginUserKey + ctxi.AuthID
 
 	userString, err := redisi.String(confdao.Dao.Redis.Get(ctx, loginUser).Result())
 	if err != nil {
@@ -54,7 +55,7 @@ func (d *userDao) EditRedisUser() error {
 	if err != nil {
 		return d.ErrorLog(errorcode.RedisErr, err, "EditRedisUser.MarshalToString")
 	}
-	loginUserKey := modelconst.LoginUserKey + d.ID
+	loginUserKey := modelconst.LoginUserKey + d.AuthID
 	err = confdao.Dao.Redis.Set(ctx, loginUserKey, UserString, 0).Err()
 	if err != nil {
 		return d.ErrorLog(errorcode.RedisErr, err, "EditRedisUser.MarshalToString")
@@ -67,7 +68,7 @@ func (d *userDao) UserHashToRedis() error {
 	ctxi := d
 	ctx := d.Context
 	var redisArgs []interface{}
-	loginUserKey := modelconst.LoginUserKey + ctxi.ID
+	loginUserKey := modelconst.LoginUserKey + ctxi.AuthID
 	redisArgs = append(redisArgs, redisi.HMSET, loginUserKey)
 	redisArgs = append(redisArgs, hash.Marshal(ctxi.AuthInfo)...)
 	if _, err := confdao.Dao.Redis.Pipelined(ctx, func(pipe redis.Pipeliner) error {
@@ -84,7 +85,7 @@ func (d *userDao) UserHashToRedis() error {
 func (d *userDao) UserHashFromRedis() error {
 	ctxi := d
 	ctx := ctxi.Context
-	loginUser := modelconst.LoginUserKey + ctxi.ID
+	loginUser := modelconst.LoginUserKey + ctxi.AuthID
 
 	userArgs, err := redisi.Strings(confdao.Dao.Redis.Do(ctx, redisi.HGETALL, loginUser).Result())
 	if err != nil {
@@ -107,7 +108,7 @@ func (d *userDao) EfficientUserHashToRedis() error {
 		pipe.HMSet(ctx, loginUserKey, "Name", user.Name,
 			"Role", uint32(user.Role),
 			"Status", uint8(user.Status),
-			"LastActiveAt", ctxi.LastActiveAt)
+			"LastActiveAt", ctxi.TimeStamp)
 		pipe.Expire(ctx, loginUserKey, confdao.Conf.Customize.TokenMaxAge)
 		return nil
 	}); err != nil {
@@ -123,10 +124,10 @@ func (d *userDao) EfficientUserHashToRedis() error {
 压缩列表中的节点数量大于 server.hash_max_ziplist_entries （默认值为 512 ）。
 */
 func (d *userDao) EfficientUserHashFromRedis() error {
-	defer d.StartSpan("EfficientUserHashFromRedis")
-	ctxi := d
+	ctxi, span := d.StartSpan("EfficientUserHashFromRedis")
+	defer span.End()
 	ctx := ctxi.Context
-	loginUser := modelconst.LoginUserKey + ctxi.ID
+	loginUser := modelconst.LoginUserKey + ctxi.AuthID
 
 	userArgs, err := redisi.Strings(confdao.Dao.Redis.Do(ctx, redisi.HGETALL, loginUser).Result())
 	log.Debug(userArgs)
@@ -148,12 +149,12 @@ func (d *userDao) EfficientUserHashFromRedis() error {
 func (d *userDao) UserLastActiveTime() error {
 	ctxi := d
 	ctx := ctxi.Context
-	loginUser := modelconst.LoginUserKey + ctxi.ID
+	loginUser := modelconst.LoginUserKey + ctxi.AuthID
 	if _, err := confdao.Dao.Redis.Pipelined(ctx, func(pipe redis.Pipeliner) error {
 		pipe.Select(ctx, common.CronIndex)
 		//有序集合存一份，遍历长时间未活跃用户用
 		pipe.ZAdd(ctx, modelconst.LoginUserKey+"ActiveTime",
-			&redis.Z{Score: float64(ctxi.TimeStamp), Member: ctxi.ID})
+			&redis.Z{Score: float64(ctxi.TimeStamp), Member: ctxi.AuthID})
 		pipe.HSet(ctx, loginUser, "LastActiveAt")
 		return nil
 	}); err != nil {
@@ -165,7 +166,7 @@ func (d *userDao) UserLastActiveTime() error {
 func (d *userDao) RedisUserInfoEdit(field string, value interface{}) error {
 	ctxi := d
 	ctx := ctxi.Context
-	key := modelconst.LoginUserKey + ctxi.ID
+	key := modelconst.LoginUserKey + ctxi.AuthID
 
 	err := confdao.Dao.Redis.HSet(ctx, key, field, value).Err()
 	if err != nil {
@@ -177,7 +178,7 @@ func (d *userDao) RedisUserInfoEdit(field string, value interface{}) error {
 func (d *userDao) GetUserExtRedis() (*model.UserExt, error) {
 	ctxi := d
 	ctx := ctxi.Context
-	key := modelconst.UserExtKey + ctxi.ID
+	key := modelconst.UserExtKey + ctxi.AuthID
 
 	userExt, err := redisi.Strings(confdao.Dao.Redis.Do(ctx, redisi.HGETALL, key).Result())
 	if err != nil {
