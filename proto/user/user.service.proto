@@ -43,7 +43,7 @@ service UserService {
   // 验证码
   rpc SendVerifyCode (SendVerifyCodeReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      get: "/api/v1/SendVerifyCode"
+      get: "/api/v1/sendVerifyCode"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "util", "v1.0.0"]
