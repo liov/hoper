@@ -25,10 +25,10 @@ require (
 	github.com/vektah/gqlparser/v2 v2.5.11
 	go.opencensus.io v0.24.0
 	go.uber.org/zap v1.26.0
-	golang.org/x/net v0.17.0
+	golang.org/x/net v0.21.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20231106174013-bbf56f31fb17
 	google.golang.org/grpc v1.59.0
-	google.golang.org/protobuf v1.31.0
+	google.golang.org/protobuf v1.33.0
 	gorm.io/gorm v1.25.5
 )
 
@@ -104,7 +104,7 @@ require (
 	github.com/hashicorp/serf v0.10.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
-	github.com/jackc/pgx/v5 v5.5.0 // indirect
+	github.com/jackc/pgx/v5 v5.5.5 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
@@ -140,8 +140,7 @@ require (
 	github.com/prometheus/common v0.45.0 // indirect
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/quic-go/qpack v0.4.0 // indirect
-	github.com/quic-go/qtls-go1-20 v0.4.1 // indirect
-	github.com/quic-go/quic-go v0.40.0 // indirect
+	github.com/quic-go/quic-go v0.42.0 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/rs/cors v1.10.1 // indirect
 	github.com/sagikazarmark/crypt v0.15.0 // indirect
@@ -169,17 +168,17 @@ require (
 	go.etcd.io/etcd/client/v3 v3.5.10 // indirect
 	go.mongodb.org/mongo-driver v1.14.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
-	go.uber.org/mock v0.3.0 // indirect
+	go.uber.org/mock v0.4.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/arch v0.6.0 // indirect
-	golang.org/x/crypto v0.18.0 // indirect
+	golang.org/x/crypto v0.21.0 // indirect
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d // indirect
 	golang.org/x/mod v0.14.0 // indirect
 	golang.org/x/oauth2 v0.13.0 // indirect
 	golang.org/x/sync v0.5.0 // indirect
-	golang.org/x/sys v0.16.0 // indirect
+	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
-	golang.org/x/time v0.4.0 // indirect
+	golang.org/x/time v0.5.0 // indirect
 	golang.org/x/tools v0.14.0 // indirect
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
 	google.golang.org/api v0.150.0 // indirect

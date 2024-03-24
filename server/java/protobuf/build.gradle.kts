@@ -2,8 +2,7 @@ import com.google.protobuf.gradle.*
 import java.io.ByteArrayOutputStream
 
 plugins {
-    val kotlinVersion = "1.9.0"
-    kotlin("jvm") version kotlinVersion
+    kotlin("jvm") version "1.9.0"
     //id("com.squareup.wire") version "3.1.0"
     id("com.google.protobuf") version "0.9.1"
     //kotlin("kapt")
@@ -73,9 +72,9 @@ protobuf {
         id("grpc") {
             artifact = "io.grpc:protoc-gen-grpc-java:$grpcVersion"
         }
-        id("grpckt") {
-            artifact = "io.grpc:protoc-gen-grpc-kotlin:$grpcKotlinVersion"
-        }
+//        id("grpckt") {
+//            artifact = "io.grpc:protoc-gen-grpc-kotlin:$grpcKotlinVersion"
+//        }
 //        id("reactor") {
 //            artifact = "com.salesforce.servicelibs:reactor-grpc:1.0.0"
 //        }
