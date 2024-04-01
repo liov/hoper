@@ -42,14 +42,11 @@ hoper项目客户端，服务端通用的proto定义，用来生成go，rust，j
 
 #### utils
 各种工具类
-## kotlin
+## java
 ### protobuf
 protoc生成的源码单独成一个模块
-### quarkus
-quarkus框架
 ### user
-- spring+vertx
-- spring+grpc
+- springboot+grpc
 ## rust
  基于tonic的grpc
 ## 架构设想

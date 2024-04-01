@@ -1,4 +1,5 @@
 package leetcode;
+import java.lang.Math;
 
 public class LengthOfLongestSubstring {
   public static int lengthOfLongestSubstring(String s) {
@@ -12,9 +13,9 @@ public class LengthOfLongestSubstring {
     var idx = 0;
     for (var i = 0; i < len; i++) {
       idx = s.charAt(i);
-      left = java.lang.Math.max(left, intArray[idx] - 1);
+      left = Math.max(left, intArray[idx] - 1);
       intArray[idx] = i + 1;
-      maxLength = java.lang.Math.max(maxLength, i - left);
+      maxLength = Math.max(maxLength, i - left);
     }
     return maxLength;
   }

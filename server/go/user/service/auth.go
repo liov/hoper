@@ -58,7 +58,7 @@ func auth(ctx *http_context.Context, update bool) (*user.AuthInfo, error) {
 
 	authorization := Authorization{AuthInfo: &user.AuthInfo{}}
 	if err := authorization.ParseToken(ctx.Token, confdao.Conf.Customize.TokenSecret); err != nil {
-		return nil, user.UserErrLoginTimeout
+		return nil, user.UserErrNoLogin
 	}
 
 	authInfo := authorization.AuthInfo
