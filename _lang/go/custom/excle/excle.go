@@ -32,10 +32,14 @@ func main() {
 	inTwoForLoop(datas)
 }
 
+var style = excelize.Style{
+	Alignment: &excelize.Alignment{Horizontal: "center", Vertical: "center"},
+}
+
 func inOneForLoop(datas []Foo) {
 	defer func(t time.Time) { log.Println("inOneForLoop", time.Now().Sub(t)) }(time.Now())
 	f := excelize.NewFile()
-	style, err := f.NewStyle(`{"alignment":{"horizontal":"center","vertical":"center"}}`)
+	style, err := f.NewStyle(&style)
 	f.SetColStyle("Sheet1", "A:D", style)
 	if err != nil {
 		log.Println(err)
@@ -67,7 +71,7 @@ func inOneForLoop(datas []Foo) {
 func inTwoForLoop(datas []Foo) {
 	defer func(t time.Time) { log.Println("inTwoForLoop", time.Now().Sub(t)) }(time.Now())
 	f := excelize.NewFile()
-	style, err := f.NewStyle(`{"alignment":{"horizontal":"center","vertical":"center"}}`)
+	style, err := f.NewStyle(&style)
 	f.SetColStyle("Sheet1", "A:D", style)
 	if err != nil {
 		log.Println(err)
