@@ -3,36 +3,39 @@ Module = "hoper"
 Env = "dev"
 
 [dev]
+Debug = true
+[dev.configCenter]
 configType = "local"
 Watch  = true
 NoInject = ["Apollo","Etcd", "Es"]
 
-[dev.local]
+[dev.configCenter.local]
 Debug = true
 ConfigPath = "local.toml"
 ReloadType = "fsnotify"
 
-[dev.http]
+[dev.configCenter.http]
 Interval = 100
 Url = "http://localhost:6666/local.toml"
 
-
 [test]
+
+[test.configCenter]
 configType = "nacos"
 Watch  = true
 NoInject = ["Apollo","Etcd", "Es"]
 
-[test.nacos]
+[test.configCenter.nacos]
 DataId = "pro"
 Group = "DEFAULT_GROUP"
 
-[[test.nacos.ServerConfigs]]
+[[test.configCenter.nacos.ServerConfigs]]
 Scheme = "http"
 IpAddr = "localhost"
 Port = 9000
 GrpcPort = 10000
 
-[test.nacos.ClientConfig]
+[test.configCenter.nacos.ClientConfig]
 NamespaceId = ""
 username = "nacos"
 password = "123456"

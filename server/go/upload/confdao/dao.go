@@ -1,10 +1,10 @@
 package confdao
 
 import (
-	"github.com/hopeio/tiga/initialize/basic_dao/gormdb/postgres"
-	"github.com/hopeio/tiga/initialize/basic_dao/pebble"
-	initredis "github.com/hopeio/tiga/initialize/basic_dao/redis"
-	"github.com/hopeio/tiga/initialize/basic_dao/ristretto"
+	"github.com/hopeio/tiga/initialize/conf_dao/gormdb/postgres"
+	"github.com/hopeio/tiga/initialize/conf_dao/pebble"
+	initredis "github.com/hopeio/tiga/initialize/conf_dao/redis"
+	"github.com/hopeio/tiga/initialize/conf_dao/ristretto"
 )
 
 var Dao *dao = &dao{}

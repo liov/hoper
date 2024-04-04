@@ -1,8 +1,8 @@
 package confdao
 
 import (
-	"github.com/hopeio/tiga/initialize/basic_conf/log"
-	"github.com/hopeio/tiga/initialize/basic_conf/server"
+	"github.com/hopeio/tiga/initialize/conf_dao/log"
+	"github.com/hopeio/tiga/initialize/conf_dao/server"
 	"runtime"
 	"time"
 
@@ -17,8 +17,8 @@ var MongoSettings = &MongoConfig{}*/
 type config struct {
 	//自定义的配置
 	Customize serverConfig
-	Server    server.ServerConfig
-	Log       log.LogConfig
+	Server    server.Config
+	Log       log.Config
 	Viper     *viper.Viper
 }
 

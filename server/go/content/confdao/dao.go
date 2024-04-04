@@ -2,12 +2,11 @@ package confdao
 
 import (
 	"database/sql"
-	"github.com/hopeio/tiga/initialize/basic_dao/gormdb/postgres"
-	"github.com/hopeio/tiga/initialize/basic_dao/mail"
-	"github.com/hopeio/tiga/initialize/basic_dao/pebble"
-	initredis "github.com/hopeio/tiga/initialize/basic_dao/redis"
-	"github.com/hopeio/tiga/initialize/basic_dao/ristretto"
-	"github.com/hopeio/tiga/initialize/basic_dao/viper"
+	"github.com/hopeio/tiga/initialize/conf_dao/gormdb/postgres"
+	"github.com/hopeio/tiga/initialize/conf_dao/mail"
+	"github.com/hopeio/tiga/initialize/conf_dao/pebble"
+	initredis "github.com/hopeio/tiga/initialize/conf_dao/redis"
+	"github.com/hopeio/tiga/initialize/conf_dao/ristretto"
 )
 
 // 原本是个单独模块，但是考虑到数据库必须初始化，所以合进来了
@@ -25,7 +24,6 @@ type dao struct {
 	Cache ristretto.Cache
 	//elastic
 	MailAuth mail.Mail `init:"config:mail"`
-	Viper    viper.Viper
 }
 
 func (d *dao) Init() {

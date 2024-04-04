@@ -136,7 +136,7 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*re
 	})
 	if err != nil {
 		if err != errorcode.DBError {
-			ctxi.Error(err.Error(), zap.String(log.Position, "Transaction"))
+			ctxi.Error(err.Error(), zap.String(log.FieldPosition, "Transaction"))
 		}
 		return nil, err
 	}
@@ -281,7 +281,7 @@ func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*empt
 	})
 	if err != nil {
 		if err != errorcode.DBError {
-			ctxi.Error(err.Error(), zap.String(log.Position, "Transaction"))
+			ctxi.Error(err.Error(), zap.String(log.FieldPosition, "Transaction"))
 		}
 		return nil, errorcode.DBError
 	}

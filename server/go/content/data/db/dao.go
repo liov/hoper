@@ -48,7 +48,7 @@ func (d *ContentDBDao) CreateContextExt(typ content.ContentType, refId uint64) e
 func (d *ContentDBDao) Transaction(fc func(tx *gorm.DB) error, opts ...*sql.TxOptions) error {
 	err := d.db.Transaction(fc, opts...)
 	if err != nil && err != errorcode.DBError {
-		d.Context.Error(err.Error(), zap.String(log.Position, "Transaction"))
+		d.Context.Error(err.Error(), zap.String(log.FieldPosition, "Transaction"))
 		return err
 	}
 	return err
