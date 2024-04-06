@@ -32,7 +32,7 @@ func GetOauthService() *OauthService {
 	manager.MustTokenStorage(store.NewMemoryTokenStore())
 
 	// generate jwt access token
-	manager.MapAccessGenerate(generates.NewJWTAccessGenerate("", confdao.Conf.Customize.TokenSecret, jwt.SigningMethodHS512))
+	manager.MapAccessGenerate(generates.NewJWTAccessGenerate("", confdao.Conf.Customize.TokenSecretBytes, jwt.SigningMethodHS512))
 
 	clientStore := oauth.NewClientStore(confdao.Dao.GORMDB.DB)
 
@@ -45,7 +45,7 @@ func GetOauthService() *OauthService {
 			return "", errors.ErrInvalidAccessToken
 		}
 		claims := new(jwti.Claims)
-		if _, err := jwti.ParseToken(claims, token, confdao.Conf.Customize.TokenSecret); err != nil {
+		if _, err := jwti.ParseToken(claims, token, confdao.Conf.Customize.TokenSecretBytes); err != nil {
 			return "", err
 		}
 		return strconv.FormatUint(claims.UserId, 10), nil

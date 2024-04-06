@@ -160,7 +160,7 @@ func encryptPassword(password string) string {
 }
 
 func sendMail(ctxi *http_context.Context, action model.Action, curTime int64, user *model.User) {
-	siteURL := "https://" + confdao.Conf.Server.Domain
+	siteURL := "https://" + confdao.Conf.Customize.Domain
 	title := action.String()
 	secretStr := strconv.FormatInt(curTime, 10) + user.Mail + user.Password
 	secretStr = fmt.Sprintf("%x", md5.Sum(stringsi.ToBytes(secretStr)))
@@ -185,10 +185,10 @@ func sendMail(ctxi *http_context.Context, action model.Action, curTime int64, us
 	//content += "<p><img src=\"" + siteURL + "/images/logo.png\" style=\"height: 42px;\"/></p>"
 	//fmt.Println(content)
 	content := buf.String()
-	addr := confdao.Dao.Mail.Conf.Host + confdao.Dao.Mail.Conf.Port
+	addr := confdao.Conf.SendMail.Host + confdao.Conf.SendMail.Port
 	m := &mail.Mail{
 		FromName: ctiveOrRestPasswdValues.SiteName,
-		From:     confdao.Dao.Mail.Conf.From,
+		From:     confdao.Conf.SendMail.From,
 		Subject:  title,
 		Content:  content,
 		To:       []string{user.Mail},
@@ -348,7 +348,7 @@ func (*UserService) login(ctxi *http_context.Context, user *model.User) (*model.
 	authorization.IssuedAt = &jwt.NumericDate{Time: ctxi.Time}
 	authorization.ExpiresAt = &jwt.NumericDate{Time: ctxi.Time.Add(confdao.Conf.Customize.TokenMaxAge)}
 
-	tokenString, err := authorization.GenerateToken(confdao.Conf.Customize.TokenSecret)
+	tokenString, err := authorization.GenerateToken(confdao.Conf.Customize.TokenSecretBytes)
 	if err != nil {
 		return nil, errorcode.Internal
 	}

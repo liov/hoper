@@ -7,13 +7,15 @@ import (
 )
 
 type serverConfig struct {
-	Volume fs.Dir
-
+	Volume   fs.Dir
+	Protocal string
+	Domain   string
 	PassSalt string
 	// 天数
-	TokenMaxAge time.Duration
-	TokenSecret []byte
-	PageSize    int8
+	TokenMaxAge      time.Duration
+	TokenSecret      string
+	TokenSecretBytes []byte
+	PageSize         int8
 
 	LuosimaoSuperPW   string
 	LuosimaoVerifyURL string
@@ -24,6 +26,12 @@ type serverConfig struct {
 	FontSaveDir   fs.Dir //字体保存路径
 
 	Limit Limit
+}
+
+type SendMailConfig struct {
+	Host string
+	Port string
+	From string
 }
 
 type Limit struct {

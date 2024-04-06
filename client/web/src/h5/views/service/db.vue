@@ -16,7 +16,7 @@ const params = {
   pageNo: 0,
   pageSize: 5,
 };
-const { data } = await axios.get(`/api/moment`, { params });
+const { data } = await axios.get(`/api/v1/moment`, { params });
 const momentList = reactive(data.data);
 const total = ref(data.count);
 const topCount = ref(data.top_count);
@@ -41,7 +41,7 @@ onMounted(() => {
     for (const item of momentList) {
       tx.executeSql(
         `INSERT INTO Moments (id, content)
-         VALUES (${item.id}, '${item.content}')`
+         VALUES (${item.id}, '${item.content}')`,
       );
     }
   });
@@ -61,7 +61,7 @@ onMounted(() => {
           document.querySelector("#status")!.innerHTML += msg;
         }
       },
-      null
+      null,
     );
   });
 });

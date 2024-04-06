@@ -7,6 +7,7 @@ import (
 	"github.com/hopeio/tiga/initialize/conf_dao/pebble"
 	"github.com/hopeio/tiga/initialize/conf_dao/redis"
 	"github.com/hopeio/tiga/initialize/conf_dao/ristretto"
+	"github.com/hopeio/tiga/utils/log"
 )
 
 // 原本是个单独模块，但是考虑到数据库必须初始化，所以合进来了
@@ -26,7 +27,15 @@ type dao struct {
 	Mail mail.Mail `init:"config:mail"`
 }
 
-func (d *dao) Init() {
+func (d *dao) InitBeforeInject() {
+
+}
+
+func (d *dao) InitAfterInjectConfig() {
+	log.Info("zhelihouzhixing")
+}
+
+func (d *dao) InitAfterInject() {
 	db := d.GORMDB
 	db.Callback().Create().Remove("gorm:save_before_associations")
 	db.Callback().Create().Remove("gorm:save_after_associations")

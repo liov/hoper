@@ -4,7 +4,6 @@ import (
 	"github.com/hopeio/tiga/initialize/conf_dao/log"
 	"github.com/hopeio/tiga/initialize/conf_dao/server"
 	"github.com/hopeio/tiga/utils/io/fs"
-	"runtime"
 )
 
 var Conf = &config{}
@@ -16,10 +15,11 @@ type config struct {
 	Log       log.Config
 }
 
-func (c *config) Init() {
-	if runtime.GOOS == "windows" {
-	}
+func (c *config) InitBeforeInject() {
+	c.Customize.UploadMaxSize = 1024 * 1024 * 1024
+}
 
+func (c *config) InitAfterInject() {
 	c.Customize.UploadMaxSize = c.Customize.UploadMaxSize * 1024 * 1024
 }
 

@@ -18,7 +18,15 @@ type dao struct {
 	Cache ristretto.Cache
 }
 
-func (d *dao) Init() {
+func (d *dao) InitBeforeInject() {
+
+}
+
+func (d *dao) InitAfterInjectConfig() {
+
+}
+
+func (d *dao) InitAfterInject() {
 	db := d.GORMDB
 	db.Callback().Create().Remove("gorm:save_before_associations")
 	db.Callback().Create().Remove("gorm:save_after_associations")

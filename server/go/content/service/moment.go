@@ -29,7 +29,7 @@ type MomentService struct {
 }
 
 func (*MomentService) Service() (describe, prefix string, middleware []http.HandlerFunc) {
-	return "瞬间相关", "/api/moment", nil
+	return "瞬间相关", "/api/v1/moment", nil
 }
 
 func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Moment, error) {

@@ -7,6 +7,7 @@ import (
 	contentapi "github.com/liov/hoper/server/go/content/api"
 	uploadapi "github.com/liov/hoper/server/go/upload/api"
 	userapi "github.com/liov/hoper/server/go/user/api"
+	"go.opencensus.io/zpages"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -28,6 +29,7 @@ func main() {
 	defer initialize.Start(uconf.Conf, uconf.Dao)()
 	defer initialize.Start(cconf.Conf, cconf.Dao)()
 	defer initialize.Start(upconf.Conf, upconf.Dao)()
+	zpages.Handle(nil, "/")
 	view.RegisterExporter(&exporter.PrintExporter{})
 	view.SetReportingPeriod(time.Second)
 	// GinRegister the view to collect gRPC client stats.
@@ -35,14 +37,12 @@ func main() {
 		log.Fatal(err)
 	}
 
+	config := uconf.Conf.Server.Origin()
+	config.GRPCOptions = []grpc.ServerOption{grpc.StatsHandler(&ocgrpc.ServerHandler{})}
 	server.Start(&server.Server{
-		Config: uconf.Conf.Server.Origin(),
+		Config: config,
 		//为了可以自定义中间件
-		GRPCOptions: []grpc.ServerOption{
-			grpc.ChainUnaryInterceptor(),
-			grpc.ChainStreamInterceptor(),
-			//grpc.StatsHandler(&ocgrpc.ServerHandler{})
-		},
+
 		GRPCHandle: func(gs *grpc.Server) {
 			userapi.GrpcRegister(gs)
 			contentapi.GrpcRegister(gs)
@@ -52,8 +52,8 @@ func main() {
 			uploadapi.GinRegister(app)
 			chatapi.GinRegister(app)
 			contentapi.GinRegister(app)
-			pickgin.Register(app, uconf.Conf.Server.GenDoc, initialize.GlobalConfig.Module, uconf.Conf.Server.OpenTracing)
+			pickgin.Register(app, uconf.Conf.Server.GenDoc, initialize.GlobalConfig.Module, uconf.Conf.Server.Trace)
 		},
-		GraphqlResolve: contentapi.NewExecutableSchema(),
+		GraphqlHandle: contentapi.NewExecutableSchema(),
 	})
 }

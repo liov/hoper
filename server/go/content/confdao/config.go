@@ -3,9 +3,6 @@ package confdao
 import (
 	"github.com/hopeio/tiga/initialize/conf_dao/log"
 	"github.com/hopeio/tiga/initialize/conf_dao/server"
-	"runtime"
-	"time"
-
 	"github.com/liov/hoper/server/go/content/model"
 )
 
@@ -33,11 +30,10 @@ var Conf = &config{
 	},
 }
 
-func (c *config) Init() {
-	if runtime.GOOS == "windows" {
-		c.Customize.LuosimaoAPIKey = ""
-	}
+func (c *config) InitBeforeInject() {
 
-	c.Server.ReadTimeout = c.Server.ReadTimeout * time.Second
-	c.Server.WriteTimeout = c.Server.WriteTimeout * time.Second
+}
+
+func (c *config) InitAfterInject() {
+
 }
