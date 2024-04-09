@@ -3,13 +3,13 @@ package service
 import (
 	"context"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/hopeio/tiga/context/http_context"
 	"github.com/hopeio/tiga/protobuf/request"
 	gormi "github.com/hopeio/tiga/utils/dao/db/gorm"
-	"github.com/hopeio/tiga/utils/struct/set"
+	"github.com/hopeio/tiga/utils/datastructure/set"
 	"github.com/liov/hoper/server/go/content/rpc"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"net/http"
 	"unicode/utf8"
 
 	"github.com/liov/hoper/server/go/content/confdao"
@@ -28,7 +28,7 @@ type MomentService struct {
 	content.UnimplementedMomentServiceServer
 }
 
-func (*MomentService) Service() (describe, prefix string, middleware []http.HandlerFunc) {
+func (*MomentService) Service() (describe, prefix string, middleware []gin.HandlerFunc) {
 	return "瞬间相关", "/api/v1/moment", nil
 }
 

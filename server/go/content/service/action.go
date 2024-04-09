@@ -15,9 +15,9 @@ import (
 
 	"github.com/hopeio/tiga/protobuf/errorcode"
 	"github.com/hopeio/tiga/protobuf/request"
+	"github.com/hopeio/tiga/utils/datastructure/set"
 	"github.com/hopeio/tiga/utils/log"
 	"github.com/hopeio/tiga/utils/slices"
-	"github.com/hopeio/tiga/utils/struct/set"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )

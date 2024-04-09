@@ -52,7 +52,7 @@ func main() {
 			uploadapi.GinRegister(app)
 			chatapi.GinRegister(app)
 			contentapi.GinRegister(app)
-			pickgin.Register(app, uconf.Conf.Server.GenDoc, initialize.GlobalConfig.Module, uconf.Conf.Server.Trace)
+			pickgin.Start(app, uconf.Conf.Server.GenDoc, initialize.GlobalConfig.Module, uconf.Conf.Server.Trace)
 		},
 		GraphqlHandle: contentapi.NewExecutableSchema(),
 	})

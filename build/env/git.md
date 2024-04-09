@@ -221,3 +221,17 @@ branch=`git rev-parse --abbrev-ref HEAD` && git checkout dev && git merge $branc
 ## git统计所有人代码提交数量
 `git log --format='%an' | sort -u | while read name; do echo -en "$name\t"; git log --author="$name" --since=2022-02-07 --until=2023-01-30 --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2 } END { printf "added lines: %s, removed lines: %s, total lines: %s\n", add, subs, loc }' -; done`
 
+## git改提交时间
+git commit --amend --date="2024-04-07 19:00:00"
+### 固定减去10小时
+git commit --amend --date="$(date -d '-10 hours' '+%Y-%m-%d %H:%M:%S')"
+
+### 合并分支
+- 从HEAD版本开始往过去数3个版本
+$ git rebase -i HEAD~3
+
+- 合并指定版本号（不包含此版本）
+$ git rebase -i [commitid]
+
+-i（--interactive）：弹出交互式的界面进行编辑合并
+[commitid]：要合并多个版本之前的版本号，注意：[commitid] 本身不参与合并

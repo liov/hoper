@@ -5,11 +5,13 @@ import (
 	"context"
 	"crypto/md5"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/uuid"
 	"github.com/hopeio/pick"
+	"github.com/hopeio/tiga/context/gin_context"
 	"github.com/hopeio/tiga/context/http_context"
 	"github.com/hopeio/tiga/protobuf/request"
 	"github.com/hopeio/tiga/protobuf/response"
@@ -550,11 +552,11 @@ func (*UserService) GetTest(ctx context.Context, req *request.Id) (*model.User, 
 	return &model.User{Id: req.Id, Name: "测试"}, nil
 }
 
-func (*UserService) Service() (string, string, []http.HandlerFunc) {
-	return "用户相关", "/api/user", []http.HandlerFunc{middle.Log}
+func (*UserService) Service() (string, string, []gin.HandlerFunc) {
+	return "用户相关", "/api/user", []gin.HandlerFunc{middle.GinLog}
 }
 
-func (*UserService) Add(ctx *http_context.Context, req *model.SignupReq) (*wrappers.StringValue, error) {
+func (*UserService) Add(ctx *gin_context.Context, req *model.SignupReq) (*wrappers.StringValue, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() {
 		pick.Get("/add").
@@ -573,7 +575,7 @@ func (*UserService) Add(ctx *http_context.Context, req *model.SignupReq) (*wrapp
 	return &wrappers.StringValue{Value: req.Name}, nil
 }
 
-func (*UserService) Addv(ctx *http_context.Context, req *response.TinyRep) (*response.TinyRep, error) {
+func (*UserService) Addv(ctx *gin_context.Context, req *response.TinyRep) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() {
 		pick.Post("/add").
