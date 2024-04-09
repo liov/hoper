@@ -3,7 +3,8 @@ Module = "hoper"
 Env = "dev"
 
 [dev]
-Debug = true
+debug = true
+ConfigTemplateDir = "."
 [dev.configCenter]
 configType = "local"
 Watch  = true

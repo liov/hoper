@@ -5,7 +5,7 @@
   "scripts": {
     "protoc": "node generate.js grpc-web",
     "wasm:build": "wasm-pack build ./wasm --target web",
-    "wasm:link": "npm link ./wasm/pkg",
+    "wasm:link": "pnpm link ./wasm/pkg",
     "pc:dev": "vite --config pc.vite.config.ts --mode dev",
     "pc:build": "run-p type-check pc:build-only",
     "pc:preview": "vite preview --config pc.vite.config.ts --port 4173",
