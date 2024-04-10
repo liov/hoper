@@ -16,11 +16,8 @@ func (c *PConfig) Init() {
 }
 
 type PDao struct {
+	initialize.EmbeddedPresets
 	Hoper postgres.DB
-}
-
-func (d *PDao) Init() {
-
 }
 
 var pdao PDao

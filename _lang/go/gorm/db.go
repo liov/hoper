@@ -7,17 +7,15 @@ import (
 )
 
 type Config struct {
-}
-
-func (c *Config) Init() {
-
+	initialize.EmbeddedPresets
 }
 
 type Dao struct {
+	initialize.EmbeddedPresets
 	DB mysql.DB `init:"config:MysqlTest"`
 }
 
-func (d *Dao) Init() {
+func (d *Dao) InitAfterInject() {
 	db = d.DB.DB
 }
 

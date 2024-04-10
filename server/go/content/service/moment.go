@@ -224,7 +224,7 @@ func (*MomentService) Edit(context.Context, *content.AddMomentReq) (*emptypb.Emp
 }
 
 func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*content.MomentListRep, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("List")
 	defer span.End()
 	auth, _ := auth(ctxi, true)
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.TraceID)
