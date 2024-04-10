@@ -11,7 +11,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/hopeio/tiga/protobuf/errorcode"
-	dbi "github.com/hopeio/tiga/utils/dao/db/const"
+	dbi "github.com/hopeio/tiga/utils/dao/db"
 )
 
 // 关注

@@ -5,6 +5,8 @@ import (
 	grpci "github.com/hopeio/tiga/utils/net/http/grpc"
 	"github.com/liov/hoper/server/go/protobuf/upload"
 	"github.com/liov/hoper/server/go/protobuf/user"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	"google.golang.org/grpc"
 )
 
 var (
@@ -19,7 +21,7 @@ func init() {
 
 func GetUserClient() user.UserServiceClient {
 	// Set up a connection to the server.
-	conn, err := grpci.GetDefaultClient("localhost:8090")
+	conn, err := grpci.GetDefaultClient("localhost:8090", grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
@@ -28,7 +30,7 @@ func GetUserClient() user.UserServiceClient {
 
 func GetUploadClient() upload.UploadServiceClient {
 	// Set up a connection to the server.
-	conn, err := grpci.GetDefaultClient("localhost:8090")
+	conn, err := grpci.GetDefaultClient("localhost:8090", grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
 
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)

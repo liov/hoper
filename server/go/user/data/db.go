@@ -2,7 +2,7 @@ package data
 
 import (
 	"encoding/json"
-	dbi "github.com/hopeio/tiga/utils/dao/db/const"
+	dbi "github.com/hopeio/tiga/utils/dao/db"
 	"github.com/liov/hoper/server/go/user/confdao"
 	"gorm.io/gorm/clause"
 	"strconv"

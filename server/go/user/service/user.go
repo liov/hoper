@@ -15,7 +15,7 @@ import (
 	"github.com/hopeio/tiga/context/http_context"
 	"github.com/hopeio/tiga/protobuf/request"
 	"github.com/hopeio/tiga/protobuf/response"
-	dbi "github.com/hopeio/tiga/utils/dao/db/const"
+	dbi "github.com/hopeio/tiga/utils/dao/db"
 	gormi "github.com/hopeio/tiga/utils/dao/db/gorm"
 	"github.com/hopeio/tiga/utils/sdk/luosimao"
 	stringsi "github.com/hopeio/tiga/utils/strings"

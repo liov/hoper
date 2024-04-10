@@ -3,7 +3,7 @@ package db
 import (
 	sqlstd "database/sql"
 	"github.com/hopeio/tiga/protobuf/errorcode"
-	dbi "github.com/hopeio/tiga/utils/dao/db/const"
+	dbi "github.com/hopeio/tiga/utils/dao/db"
 	clausei "github.com/hopeio/tiga/utils/dao/db/gorm/clause"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"

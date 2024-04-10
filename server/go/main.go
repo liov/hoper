@@ -7,7 +7,7 @@ import (
 	contentapi "github.com/liov/hoper/server/go/content/api"
 	uploadapi "github.com/liov/hoper/server/go/upload/api"
 	userapi "github.com/liov/hoper/server/go/user/api"
-	"go.opencensus.io/zpages"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -17,7 +17,6 @@ import (
 	upconf "github.com/liov/hoper/server/go/upload/confdao"
 	uconf "github.com/liov/hoper/server/go/user/confdao"
 
-	"go.opencensus.io/examples/exporter"
 	"go.opencensus.io/plugin/ocgrpc"
 	"go.opencensus.io/stats/view"
 	"google.golang.org/grpc"
@@ -29,8 +28,7 @@ func main() {
 	defer initialize.Start(uconf.Conf, uconf.Dao)()
 	defer initialize.Start(cconf.Conf, cconf.Dao)()
 	defer initialize.Start(upconf.Conf, upconf.Dao)()
-	zpages.Handle(nil, "/")
-	view.RegisterExporter(&exporter.PrintExporter{})
+
 	view.SetReportingPeriod(time.Second)
 	// GinRegister the view to collect gRPC client stats.
 	if err := view.Register(ocgrpc.DefaultClientViews...); err != nil {
@@ -38,22 +36,22 @@ func main() {
 	}
 
 	config := uconf.Conf.Server.Origin()
-	config.GRPCOptions = []grpc.ServerOption{grpc.StatsHandler(&ocgrpc.ServerHandler{})}
+	config.GRPCOptions = []grpc.ServerOption{grpc.StatsHandler(otelgrpc.NewServerHandler())}
 	server.Start(&server.Server{
 		Config: config,
 		//为了可以自定义中间件
 
-		GRPCHandle: func(gs *grpc.Server) {
+		GRPCHandler: func(gs *grpc.Server) {
 			userapi.GrpcRegister(gs)
 			contentapi.GrpcRegister(gs)
 		},
-		GinHandle: func(app *gin.Engine) {
+		GinHandler: func(app *gin.Engine) {
 			userapi.GinRegister(app)
 			uploadapi.GinRegister(app)
 			chatapi.GinRegister(app)
 			contentapi.GinRegister(app)
 			pickgin.Start(app, uconf.Conf.Server.GenDoc, initialize.GlobalConfig.Module, uconf.Conf.Server.Trace)
 		},
-		GraphqlHandle: contentapi.NewExecutableSchema(),
+		GraphqlHandler: contentapi.NewExecutableSchema(),
 	})
 }
