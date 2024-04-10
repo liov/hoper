@@ -28,3 +28,4 @@ secret.txt
 /build/k8s/app/certs
 *.lock.json
 deploy
+**/local.toml
