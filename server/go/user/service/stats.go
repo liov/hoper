@@ -23,7 +23,7 @@ func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*emptypb
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.TraceID)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
 	userDao := data.GetDao(ctxi)
 	exists, err := userDao.FollowExistsDB(db, req.Id, auth.Id)
 	if err != nil {
@@ -51,7 +51,7 @@ func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.TraceID)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
 	userDao := data.GetDao(ctxi)
 	exists, err := userDao.FollowExistsDB(db, req.Id, auth.Id)
 	if err != nil {

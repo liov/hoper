@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	pickgin "github.com/hopeio/pick/gin"
 	"github.com/hopeio/tiga/initialize"
@@ -41,9 +42,9 @@ func main() {
 			pickgin.Start(app, uconf.Conf.Server.GenDoc, initialize.GlobalConfig.Module, uconf.Conf.Server.Trace)
 		},
 		GraphqlHandler: contentapi.NewExecutableSchema(),
-		BeforeStartCall: func() {
+		OnBeforeStart: func(ctx context.Context) {
 		},
-		AfterStartCall: func() {
+		OnAfterStart: func(ctx context.Context) {
 
 		},
 	})
