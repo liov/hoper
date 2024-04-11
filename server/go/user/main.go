@@ -7,9 +7,9 @@ import (
 
 func main() {
 	server.Start(&server.Server{
-		GRPCHandle: api.GrpcRegister,
+		GRPCHandler: api.GrpcRegister,
 
-		GinHandle: api.GinRegister,
+		GinHandler: api.GinRegister,
 
 		/*		GraphqlResolve: model.NewExecutableSchema(model.Config{
 				Resolvers: &model.GQLServer{
