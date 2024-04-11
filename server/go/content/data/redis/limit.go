@@ -13,7 +13,7 @@ var limitErr = errorcode.TimeTooMuch.Message("您的操作过于频繁，请先�
 
 func (d *ContentRedisDao) Limit(l *confdao.Limit) error {
 	ctxi := d
-	ctx := ctxi.Context
+	ctx := ctxi.Context.Context()
 	minuteKey := l.MinuteLimitKey + ctxi.AuthID
 	dayKey := l.DayLimitKey + ctxi.AuthID
 

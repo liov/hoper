@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"github.com/hopeio/tiga/context/http_context"
 	"github.com/hopeio/tiga/protobuf/errorcode"
-	contexti "github.com/hopeio/tiga/utils/context"
 	gormi "github.com/hopeio/tiga/utils/dao/db/gorm"
 	httpi "github.com/hopeio/tiga/utils/net/http"
 	"github.com/hopeio/tiga/utils/net/http/fs"
@@ -109,7 +108,7 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 
 func save(ctx *http_context.Context, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
 	uploadDao := data.GetDao(ctx)
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, contexti.TraceId(ctx))
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx.TraceID)
 	auth := ctx.AuthInfo.(*user.AuthInfo)
 	if md5Str != "" {
 		upload, err = uploadDao.UploadDB(db, md5Str, strconv.FormatInt(info.Size, 10))

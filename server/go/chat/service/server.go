@@ -97,7 +97,7 @@ func (c *Client) read() {
 		message.CreatedAt = time.Now()
 		message.SendUserID = c.ctx.AuthInfo.(*user.AuthInfo).Id
 		jsonMessage, _ := iterator.Marshal(&message)
-		confdao.Dao.Redis.Do(c.ctx, "RPUSH", "Chat", jsonMessage)
+		confdao.Dao.Redis.Do(c.ctx.Context(), "RPUSH", "Chat", jsonMessage)
 		manager.broadcast <- jsonMessage
 	}
 }

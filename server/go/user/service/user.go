@@ -63,7 +63,7 @@ func (u *UserService) SendVerifyCode(ctx context.Context, req *model.SendVerifyC
 func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*wrappers.StringValue, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
-	ctx = ctxi.Context
+	ctx = ctxi.Context()
 	if req.Mail == "" && req.Phone == "" {
 		return nil, errorcode.InvalidArgument.Message("请填写邮箱或手机号")
 	}
@@ -91,7 +91,7 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*wrappers.StringValue, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
-	ctx = ctxi.Context
+	ctx = ctxi.Context()
 
 	if req.Mail == "" && req.Phone == "" {
 		return nil, errorcode.InvalidArgument.Message("请填写邮箱或手机号")
@@ -213,7 +213,7 @@ func checkPassword(password string, user *model.User) bool {
 func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.LoginRep, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("Active")
 	defer span.End()
-	ctx = ctxi.Context
+	ctx = ctxi.Context()
 	redisKey := modelconst.ActiveTimeKey + strconv.FormatUint(req.Id, 10)
 	emailTime, err := confdao.Dao.Redis.Get(ctx, redisKey).Int64()
 	if err != nil {
@@ -251,7 +251,7 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*emptypb.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("Edit")
 	defer span.End()
-	ctx = ctxi.Context
+	ctx = ctxi.Context()
 	user, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
@@ -291,7 +291,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*emptypb.Em
 func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginRep, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("Login")
 	defer span.End()
-	ctx = ctxi.Context
+	ctx = ctxi.Context()
 
 	if req.VCode != confdao.Conf.Customize.LuosimaoSuperPW {
 		if err := LuosimaoVerify(req.VCode); err != nil {
@@ -387,7 +387,7 @@ func (*UserService) login(ctxi *http_context.Context, user *model.User) (*model.
 func (u *UserService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("Logout")
 	defer span.End()
-	ctx = ctxi.Context
+	ctx = ctxi.Context()
 	user, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
@@ -423,7 +423,7 @@ func (u *UserService) AuthInfo(ctx context.Context, req *emptypb.Empty) (*model.
 func (u *UserService) Info(ctx context.Context, req *request.Id) (*model.UserRep, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
-	ctx = ctxi.Context
+	ctx = ctxi.Context()
 	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
@@ -447,7 +447,7 @@ func (u *UserService) Info(ctx context.Context, req *request.Id) (*model.UserRep
 func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (*wrappers.StringValue, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
-	ctx = ctxi.Context
+	ctx = ctxi.Context()
 	if verifyErr := luosimao.Verify(confdao.Conf.Customize.LuosimaoVerifyURL, confdao.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
 		return nil, errorcode.InvalidArgument.Warp(verifyErr)
 	}
@@ -485,7 +485,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswordReq) (*wrappers.StringValue, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("Logout")
 	defer span.End()
-	ctx = ctxi.Context
+	ctx = ctxi.Context()
 	redisKey := modelconst.ResetTimeKey + strconv.FormatUint(req.Id, 10)
 	emailTime, err := confdao.Dao.Redis.Get(ctx, redisKey).Int64()
 	if err != nil {
@@ -535,7 +535,7 @@ func (*UserService) BaseList(ctx context.Context, req *model.BaseListReq) (*mode
 	if ctxi.Internal == "" {
 		return nil, errorcode.PermissionDenied
 	}
-	ctx = ctxi.Context
+	ctx = ctxi.Context()
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.TraceID)
 	userDao := data.GetDao(ctxi)
 	count, users, err := userDao.GetBaseListDB(db, req.Ids, int(req.PageNo), int(req.PageSize))
@@ -569,7 +569,7 @@ func (*UserService) Add(ctx *gin_context.Context, req *model.SignupReq) (*wrappe
 		Addr:     confdao.Dao.Redis.Conf.Addr,
 		Password: confdao.Dao.Redis.Conf.Password,
 	})
-	cmd, _ := client.Do(ctx, "HGETALL", modelconst.LoginUserKey+"1").Result()
+	cmd, _ := client.Do(ctx.Context(), "HGETALL", modelconst.LoginUserKey+"1").Result()
 	log.Debug(cmd)
 
 	return &wrappers.StringValue{Value: req.Name}, nil
@@ -590,7 +590,7 @@ func (*UserService) Addv(ctx *gin_context.Context, req *response.TinyRep) (*resp
 func (u *UserService) EasySignup(ctx context.Context, req *model.SignupReq) (*model.LoginRep, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
-	ctx = ctxi.Context
+	ctx = ctxi.Context()
 
 	if req.Mail == "" && req.Phone == "" {
 		return nil, errorcode.InvalidArgument.Message("请填写邮箱或手机号")

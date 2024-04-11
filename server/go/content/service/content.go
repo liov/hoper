@@ -33,7 +33,7 @@ func (*ContentService) TagInfo(context.Context, *request.Id) (*content.Tag, erro
 func (*ContentService) AddTag(ctx context.Context, req *content.AddTagReq) (*emptypb.Empty, error) {
 	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("Edit")
 	defer span.End()
-	ctx = ctxi.Context
+	ctx = ctxi.Context()
 	user, err := auth(ctxi, false)
 	if err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func (*ContentService) EditTag(ctx context.Context, req *content.EditTagReq) (*e
 	if err != nil {
 		return nil, err
 	}
-	ctx = ctxi.Context
+	ctx = ctxi.Context()
 	db := confdao.Dao.GORMDB.DB
 	err = db.Updates(&content.Tag{
 		Description:   req.Description,
