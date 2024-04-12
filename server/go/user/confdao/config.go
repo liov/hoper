@@ -1,10 +1,10 @@
 package confdao
 
 import (
-	"github.com/hopeio/tiga/initialize/conf_dao/log"
-	"github.com/hopeio/tiga/initialize/conf_dao/server"
-	"github.com/hopeio/tiga/initialize/conf_dao/viper"
-	timei "github.com/hopeio/tiga/utils/time"
+	"github.com/hopeio/cherry/initialize/conf_dao/log"
+	"github.com/hopeio/cherry/initialize/conf_dao/server"
+	"github.com/hopeio/cherry/initialize/conf_dao/viper"
+	timei "github.com/hopeio/cherry/utils/time"
 	"time"
 )
 

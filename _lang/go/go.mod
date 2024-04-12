@@ -8,7 +8,7 @@ require (
 	bou.ke/monkey v1.0.2
 	github.com/brahma-adshonor/gohook v1.1.9
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
-	github.com/hopeio/tiga v1.0.0
+	github.com/hopeio/cherry v1.0.0
 	github.com/lucasb-eyer/go-colorful v1.0.2
 	github.com/spf13/pflag v1.0.5
 	github.com/unicorn-engine/unicorn v0.0.0-20191119163456-3cea38bff7bf
@@ -68,4 +68,4 @@ require (
 	gorm.io/plugin/prometheus v0.1.0 // indirect
 )
 
-replace github.com/hopeio/tiga => ../../../tiga
+replace github.com/hopeio/cherry => ../../../cherry

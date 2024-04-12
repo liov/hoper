@@ -1,7 +1,7 @@
 package model
 
 import (
-	templatei "github.com/hopeio/tiga/utils/definition/template"
+	templatei "github.com/hopeio/cherry/utils/definition/template"
 )
 
 const (

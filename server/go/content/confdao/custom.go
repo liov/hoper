@@ -1,6 +1,6 @@
 package confdao
 
-import "github.com/hopeio/tiga/utils/io/fs"
+import "github.com/hopeio/cherry/utils/io/fs"
 
 type serverConfig struct {
 	PassSalt    string

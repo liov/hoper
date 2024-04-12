@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/hopeio/cherry/initialize"
+	"github.com/hopeio/cherry/server"
 	pickgin "github.com/hopeio/pick/gin"
-	"github.com/hopeio/tiga/initialize"
-	"github.com/hopeio/tiga/server"
 	chatapi "github.com/liov/hoper/server/go/chat/api"
 	contentapi "github.com/liov/hoper/server/go/content/api"
 	cconf "github.com/liov/hoper/server/go/content/confdao"

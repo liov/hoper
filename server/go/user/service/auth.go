@@ -3,9 +3,9 @@ package service
 import (
 	"encoding/json"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/hopeio/tiga/context/http_context"
-	stringsi "github.com/hopeio/tiga/utils/strings"
-	jwti "github.com/hopeio/tiga/utils/verification/auth/jwt"
+	"github.com/hopeio/cherry/context/http_context"
+	stringsi "github.com/hopeio/cherry/utils/strings"
+	jwti "github.com/hopeio/cherry/utils/verification/auth/jwt"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"strings"
 	"time"

@@ -2,13 +2,13 @@ package data
 
 import (
 	"github.com/go-redis/redis/v8"
-	"github.com/hopeio/tiga/utils/encoding/json/iterator"
+	"github.com/hopeio/cherry/utils/encoding/json/iterator"
 	"strconv"
 
-	"github.com/hopeio/tiga/protobuf/errorcode"
-	redisi "github.com/hopeio/tiga/utils/dao/redis"
-	"github.com/hopeio/tiga/utils/encoding/hash"
-	"github.com/hopeio/tiga/utils/log"
+	"github.com/hopeio/cherry/protobuf/errorcode"
+	redisi "github.com/hopeio/cherry/utils/dao/redis"
+	"github.com/hopeio/cherry/utils/encoding/hash"
+	"github.com/hopeio/cherry/utils/log"
 	"github.com/liov/hoper/server/go/protobuf/common"
 	model "github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/confdao"

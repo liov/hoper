@@ -63,9 +63,9 @@ local Pipeline(group, name='', deploy_kind='deployment', build_type='bin' , buil
       },
     },
     {
-      name: 'tiga',
+      name: 'cherry',
       host: {
-        path: cconfig.dirprefix + '/code/tiga/',
+        path: cconfig.dirprefix + '/code/cherry/',
       },
     },
     {
@@ -100,8 +100,8 @@ local Pipeline(group, name='', deploy_kind='deployment', build_type='bin' , buil
             path: '/code/',
         },
         {
-          name: 'tiga',
-          path: '/tiga/',
+          name: 'cherry',
+          path: '/cherry/',
         },
         {
           name: 'gopath',

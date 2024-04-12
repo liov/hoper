@@ -2,15 +2,15 @@ package data
 
 import (
 	"encoding/json"
-	dbi "github.com/hopeio/tiga/utils/dao/db"
+	dbi "github.com/hopeio/cherry/utils/dao/db"
 	"github.com/liov/hoper/server/go/user/confdao"
 	"gorm.io/gorm/clause"
 	"strconv"
 	"time"
 
-	"github.com/hopeio/tiga/protobuf/errorcode"
-	"github.com/hopeio/tiga/utils/log"
-	"github.com/hopeio/tiga/utils/slices"
+	"github.com/hopeio/cherry/protobuf/errorcode"
+	"github.com/hopeio/cherry/utils/log"
+	"github.com/hopeio/cherry/utils/slices"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/model"
 	"gorm.io/gorm"

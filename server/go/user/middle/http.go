@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 
-	"github.com/hopeio/tiga/utils/log"
+	"github.com/hopeio/cherry/utils/log"
 )
 
 func Log(w http.ResponseWriter, r *http.Request) {

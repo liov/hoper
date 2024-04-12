@@ -2,12 +2,12 @@ package confdao
 
 import (
 	"database/sql"
-	"github.com/hopeio/tiga/initialize/conf_dao/gormdb/postgres"
-	"github.com/hopeio/tiga/initialize/conf_dao/mail"
-	"github.com/hopeio/tiga/initialize/conf_dao/pebble"
-	"github.com/hopeio/tiga/initialize/conf_dao/redis"
-	"github.com/hopeio/tiga/initialize/conf_dao/ristretto"
-	"github.com/hopeio/tiga/utils/log"
+	"github.com/hopeio/cherry/initialize/conf_dao/gormdb/postgres"
+	"github.com/hopeio/cherry/initialize/conf_dao/mail"
+	"github.com/hopeio/cherry/initialize/conf_dao/pebble"
+	"github.com/hopeio/cherry/initialize/conf_dao/redis"
+	"github.com/hopeio/cherry/initialize/conf_dao/ristretto"
+	"github.com/hopeio/cherry/utils/log"
 )
 
 // 原本是个单独模块，但是考虑到数据库必须初始化，所以合进来了

@@ -6,8 +6,8 @@ const PROTOPATH: &str = r"D:\code\hopeio\hoper\proto";
 const PROJECTPATH: &str = r"D:\code\hopeio\hoper\server\go";
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let tiga = get_include_path("github.com/hopeio/tiga");
-    println!("tiga：{}", tiga);
+    let cherry = get_include_path("github.com/hopeio/cherry");
+    println!("cherry：{}", cherry);
     let gopath = env::var("GOPATH").unwrap() + r"\src";
     println!("gopath：{}", gopath);
     tonic_build::configure()
@@ -23,7 +23,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ].map(|v| PROTOPATH.to_owned() + v),
             &[
                 PROTOPATH.to_owned(),
-                tiga + "/protobuf/_proto",
+                cherry + "/protobuf/_proto",
             ],
         )?;
     Ok(())

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/hopeio/tiga/initialize"
-	"github.com/hopeio/tiga/initialize/conf_dao/gormdb/mysql"
+	"github.com/hopeio/cherry/initialize"
+	"github.com/hopeio/cherry/initialize/conf_dao/gormdb/mysql"
 	"gorm.io/gorm"
 )
 

@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/hopeio/tiga/utils/number"
-	reflecti "github.com/hopeio/tiga/utils/reflect"
+	"github.com/hopeio/cherry/utils/number"
+	reflecti "github.com/hopeio/cherry/utils/reflect"
 	"unsafe"
 )
 

@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/hopeio/tiga/utils/log"
+	"github.com/hopeio/cherry/utils/log"
 )
 
 func TestUserService_Signup(t *testing.T) {

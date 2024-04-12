@@ -12,14 +12,14 @@ function getDepPath(mod){
   }).toString().trimEnd()
 }
 
-const tigaPath = getDepPath("github.com/hopeio/tiga");
-console.log(tigaPath);
+const cherryPath = getDepPath("github.com/hopeio/cherry");
+console.log(cherryPath);
 
 
 const protopath = __dirname;
-const tigaProto = tigaPath + "/protobuf/_proto";
+const cherryProto = cherryPath + "/protobuf/_proto";
 
-const baseCmd = `protoc -I${protopath} -I${tigaProto}`
+const baseCmd = `protoc -I${protopath} -I${cherryProto}`
 
 const goConfig = {
   output: repo+"\\server\\go\\protobuf",
@@ -102,15 +102,15 @@ process.argv.slice(2).forEach(function(val,index,array){
       break;
     case 'dart':
       generate(protopath, [], dartConfig);
-      generate(tigaProto, [], dartConfig);
+      generate(cherryProto, [], dartConfig);
       break;
     case 'grpc-web':
       generate(protopath, [], grpcWebConfig);
-      generate(tigaProto, [], grpcWebConfig);
+      generate(cherryProto, [], grpcWebConfig);
       break;
     case 'protobuf-ts':
       generate(protopath, [], protobufTsConfig);
-      generate(tigaProto, [], protobufTsConfig);
+      generate(cherryProto, [], protobufTsConfig);
       break;
   }
 })

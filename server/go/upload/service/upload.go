@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"github.com/hopeio/tiga/context/http_context"
-	gormi "github.com/hopeio/tiga/utils/dao/db/gorm"
+	"github.com/hopeio/cherry/context/http_context"
+	gormi "github.com/hopeio/cherry/utils/dao/db/gorm"
 	"github.com/liov/hoper/server/go/protobuf/upload"
 	"github.com/liov/hoper/server/go/upload/confdao"
 	"github.com/liov/hoper/server/go/upload/data"

@@ -1,8 +1,8 @@
 package redis
 
 import (
-	"github.com/hopeio/tiga/protobuf/errorcode"
-	redisi "github.com/hopeio/tiga/utils/dao/redis"
+	"github.com/hopeio/cherry/protobuf/errorcode"
+	redisi "github.com/hopeio/cherry/utils/dao/redis"
 	"github.com/liov/hoper/server/go/protobuf/content"
 	"strconv"
 )

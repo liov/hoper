@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/hopeio/tiga/server"
+	"github.com/hopeio/cherry/server"
 	"github.com/liov/hoper/server/go/user/api"
 )
 

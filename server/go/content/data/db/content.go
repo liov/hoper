@@ -2,8 +2,8 @@ package db
 
 import (
 	sqlib "database/sql"
-	"github.com/hopeio/tiga/protobuf/errorcode"
-	dbi "github.com/hopeio/tiga/utils/dao/db"
+	"github.com/hopeio/cherry/protobuf/errorcode"
+	dbi "github.com/hopeio/cherry/utils/dao/db"
 	"github.com/liov/hoper/server/go/content/model"
 )
 

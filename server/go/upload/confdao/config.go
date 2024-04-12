@@ -1,9 +1,9 @@
 package confdao
 
 import (
-	"github.com/hopeio/tiga/initialize/conf_dao/log"
-	"github.com/hopeio/tiga/initialize/conf_dao/server"
-	"github.com/hopeio/tiga/utils/io/fs"
+	"github.com/hopeio/cherry/initialize/conf_dao/log"
+	"github.com/hopeio/cherry/initialize/conf_dao/server"
+	"github.com/hopeio/cherry/utils/io/fs"
 )
 
 var Conf = &config{}

@@ -18,8 +18,8 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.19.1
+	github.com/hopeio/cherry v1.8.0
 	github.com/hopeio/pick v1.0.0
-	github.com/hopeio/tiga v1.8.0
 	github.com/mwitkow/go-proto-validators v0.3.2
 	github.com/vektah/gqlparser/v2 v2.5.11
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.50.0
@@ -165,6 +165,7 @@ require (
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.50.0 // indirect
 	go.opentelemetry.io/otel v1.25.0 // indirect
+	go.opentelemetry.io/otel/exporters/prometheus v0.47.0 // indirect
 	go.opentelemetry.io/otel/exporters/stdout/stdoutmetric v1.25.0 // indirect
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.25.0 // indirect
 	go.opentelemetry.io/otel/metric v1.25.0 // indirect
@@ -195,6 +196,6 @@ require (
 )
 
 replace (
+	github.com/hopeio/cherry => ../../../cherry
 	github.com/hopeio/pick => ../../../pick
-	github.com/hopeio/tiga => ../../../tiga
 )
