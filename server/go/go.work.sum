@@ -1579,6 +1579,8 @@ github.com/hashicorp/logutils v1.0.0 h1:dLEQVugN8vlakKOUE3ihGLTZJRB4j+M2cdTm/ORI
 github.com/hashicorp/mdns v1.0.4 h1:sY0CMhFmjIPDMlTB+HfymFHCaYLhgifZ0QhjaYKD/UQ=
 github.com/hnakamur/w32syscall v0.0.0-20150329104255-b8b99ed86a56 h1:kZ0/GrJre7uciw/jlR6x0CDZ5MQe9ppRuiW8qq+e694=
 github.com/hnakamur/w32syscall v0.0.0-20150329104255-b8b99ed86a56/go.mod h1:PGikIopDgEZKXlRJJSymAXwWiQu1w6+gblg4WkaiFew=
+github.com/hopeio/tiga v1.8.2 h1:XGtC8ckpO0EkLq3y5dMsfGgwxDP2l7ZeB7G+ShYU8+4=
+github.com/hopeio/tiga v1.8.2/go.mod h1:y1JYvPqo47yLBrrUe7BDBwBgxVGfIPUmmO7gJlzHSts=
 github.com/hpcloud/tail v1.0.0 h1:nfCOvKYfkgYP8hkirhJocXT2+zOD8yUNjXaWfTlyFKI=
 github.com/huandu/xstrings v1.3.1/go.mod h1:y5/lhBue+AyNmUVz9RLU9xbLR0o4KIIExikq4ovT0aE=
 github.com/huandu/xstrings v1.3.2 h1:L18LIDzqlW6xN2rEkpdV8+oL/IXWJ1APd+vsdYy4Wdw=
@@ -2296,8 +2298,6 @@ go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.25.0 h1:vOL89
 go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.25.0/go.mod h1:8GlBGcDk8KKi7n+2S4BT/CPZQYH3erLu0/k64r1MYgo=
 go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.25.0 h1:Mbi5PKN7u322woPa85d7ebZ+SOvEoPvoiBu+ryHWgfA=
 go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.25.0/go.mod h1:e7ciERRhZaOZXVjx5MiL8TK5+Xv7G5Gv5PA2ZDEJdL8=
-go.opentelemetry.io/otel/exporters/prometheus v0.47.0 h1:OL6yk1Z/pEGdDnrBbxSsH+t4FY1zXfBRGd7bjwhlMLU=
-go.opentelemetry.io/otel/exporters/prometheus v0.47.0/go.mod h1:xF3N4OSICZDVbbYZydz9MHFro1RjmkPUKEvar2utG+Q=
 go.opentelemetry.io/otel/metric v1.21.0/go.mod h1:o1p3CA8nNHW8j5yuQLdc1eeqEaPfzug24uvsyIEJRWM=
 go.opentelemetry.io/otel/metric v1.22.0/go.mod h1:evJGjVpZv0mQ5QBRJoBF64yMuOf4xCWdXjK8pzFvliY=
 go.opentelemetry.io/otel/metric v1.23.0/go.mod h1:MqUW2X2a6Q8RN96E2/nqNoT+z9BSms20Jb7Bbp+HiTo=

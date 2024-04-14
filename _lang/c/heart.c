@@ -25,11 +25,23 @@ int main() {
 			*p++ = '\x1b';
 			*p++ = '[';
 			*p++ = '3';
-			*p++ = '1'+i%8;
+			//*p++ = '1';
+			*p++ = '1' + i%7;
 			*p++ = 'm';
 	}
+	int times = 0;
 	_TCHAR ramp[] = _T(".:-=+*#%@");
 	for (float t = 0.0f;; t += 0.1f) {
+		times++;
+		if (times == 10){
+			for(int i = 0; i < 25; i++){
+			buffer[i][3] = (buffer[i][3] + 1);	
+			if(buffer[i][3] > '7'){
+				buffer[i][3] = '1';
+			}
+			times = 0;
+			}
+		}
 		int sy = 0;
 		float s = sinf(t);
 		float a = s * s * s * s * 0.2f;
