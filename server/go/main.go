@@ -26,7 +26,7 @@ func main() {
 	defer initialize.Start(upconf.Conf, upconf.Dao)()
 
 	config := uconf.Conf.Server.Origin()
-	config.GRPCOptions = []grpc.ServerOption{grpc.StatsHandler(otelgrpc.NewServerHandler())}
+	config.GrpcOptions = []grpc.ServerOption{grpc.StatsHandler(otelgrpc.NewServerHandler())}
 	server.Start(&server.Server{
 		Config: config,
 		//为了可以自定义中间件
@@ -39,7 +39,7 @@ func main() {
 			uploadapi.GinRegister(app)
 			chatapi.GinRegister(app)
 			contentapi.GinRegister(app)
-			pickgin.Start(app, uconf.Conf.Server.GenDoc, initialize.GlobalConfig.Module, uconf.Conf.Server.Trace)
+			pickgin.Start(app, uconf.Conf.Server.GenDoc, initialize.GlobalConfig.Module, uconf.Conf.Server.Tracing)
 		},
 		GraphqlHandler: contentapi.NewExecutableSchema(),
 		OnBeforeStart: func(ctx context.Context) {
