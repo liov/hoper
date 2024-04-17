@@ -95,7 +95,7 @@ func (d *userDao) UserHashFromRedis() error {
 	if len(userArgs) == 0 {
 		return model.UserErrInvalidToken
 	}
-	hash.UnMarshal(ctxi.AuthInfo, userArgs)
+	hash.Unmarshal(ctxi.AuthInfo, userArgs)
 	return nil
 }
 

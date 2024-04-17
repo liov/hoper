@@ -7,7 +7,6 @@ import (
 	"github.com/hopeio/cherry/initialize/conf_dao/pebble"
 	"github.com/hopeio/cherry/initialize/conf_dao/redis"
 	"github.com/hopeio/cherry/initialize/conf_dao/ristretto"
-	"github.com/hopeio/cherry/utils/log"
 )
 
 // 原本是个单独模块，但是考虑到数据库必须初始化，所以合进来了
@@ -22,7 +21,7 @@ type dao struct {
 	PebbleDB pebble.DB
 	// RedisPool Redis连接池
 	Redis redis.Redis
-	Cache ristretto.Cache
+	Cache ristretto.Cache[string, any]
 	//elastic
 	Mail mail.Mail `init:"config:mail"`
 }
@@ -32,7 +31,6 @@ func (d *dao) InitBeforeInject() {
 }
 
 func (d *dao) InitAfterInjectConfig() {
-	log.Info("zhelihouzhixing")
 }
 
 func (d *dao) InitAfterInject() {

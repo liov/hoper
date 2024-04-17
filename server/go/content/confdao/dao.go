@@ -3,10 +3,7 @@ package confdao
 import (
 	"database/sql"
 	"github.com/hopeio/cherry/initialize/conf_dao/gormdb/postgres"
-	"github.com/hopeio/cherry/initialize/conf_dao/mail"
-	"github.com/hopeio/cherry/initialize/conf_dao/pebble"
 	initredis "github.com/hopeio/cherry/initialize/conf_dao/redis"
-	"github.com/hopeio/cherry/initialize/conf_dao/ristretto"
 )
 
 // 原本是个单独模块，但是考虑到数据库必须初始化，所以合进来了
@@ -16,14 +13,11 @@ var Dao *dao = &dao{}
 // dao dao.
 type dao struct {
 	// GORMDB 数据库连接
-	GORMDB   postgres.DB
-	StdDB    *sql.DB
-	PebbleDB pebble.DB
+	GORMDB postgres.DB
+	StdDB  *sql.DB
 	// RedisPool Redis连接池
 	Redis initredis.Redis
-	Cache ristretto.Cache
 	//elastic
-	MailAuth mail.Mail `init:"config:mail"`
 }
 
 func (d *dao) InitBeforeInject() {
