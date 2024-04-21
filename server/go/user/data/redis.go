@@ -69,7 +69,7 @@ func (d *userDao) UserHashToRedis() error {
 	ctx := d.Context.Context()
 	var redisArgs []interface{}
 	loginUserKey := modelconst.LoginUserKey + ctxi.AuthID
-	redisArgs = append(redisArgs, redisi.HMSET, loginUserKey)
+	redisArgs = append(redisArgs, redisi.CommandHMSET, loginUserKey)
 	redisArgs = append(redisArgs, hash.Marshal(ctxi.AuthInfo)...)
 	if _, err := confdao.Dao.Redis.Pipelined(ctx, func(pipe redis.Pipeliner) error {
 		pipe.Do(ctx, redisArgs...)
@@ -87,7 +87,7 @@ func (d *userDao) UserHashFromRedis() error {
 	ctx := ctxi.Context.Context()
 	loginUser := modelconst.LoginUserKey + ctxi.AuthID
 
-	userArgs, err := redisi.Strings(confdao.Dao.Redis.Do(ctx, redisi.HGETALL, loginUser).Result())
+	userArgs, err := redisi.Strings(confdao.Dao.Redis.Do(ctx, redisi.CommandHGETALL, loginUser).Result())
 	if err != nil {
 		return ctxi.ErrorLog(errorcode.RedisErr, err, "HGETALL")
 	}
@@ -129,7 +129,7 @@ func (d *userDao) EfficientUserHashFromRedis() error {
 	ctx := ctxi.Context()
 	loginUser := modelconst.LoginUserKey + ctxi.AuthID
 
-	userArgs, err := redisi.Strings(confdao.Dao.Redis.Do(ctx, redisi.HGETALL, loginUser).Result())
+	userArgs, err := redisi.Strings(confdao.Dao.Redis.Do(ctx, redisi.CommandHGETALL, loginUser).Result())
 	log.Debug(userArgs)
 	if err != nil {
 		return ctxi.ErrorLog(errorcode.RedisErr, err, "EfficientUserHashFromRedis")
@@ -180,7 +180,7 @@ func (d *userDao) GetUserExtRedis() (*model.UserExt, error) {
 	ctx := ctxi.Context.Context()
 	key := modelconst.UserExtKey + ctxi.AuthID
 
-	userExt, err := redisi.Strings(confdao.Dao.Redis.Do(ctx, redisi.HGETALL, key).Result())
+	userExt, err := redisi.Strings(confdao.Dao.Redis.Do(ctx, redisi.CommandHGETALL, key).Result())
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.RedisErr, err, "GetUserExtRedis")
 	}
