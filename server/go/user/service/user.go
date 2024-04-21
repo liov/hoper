@@ -31,9 +31,9 @@ import (
 
 	"github.com/hopeio/cherry/protobuf/errorcode"
 	redisi "github.com/hopeio/cherry/utils/dao/redis"
-	templatei "github.com/hopeio/cherry/utils/definition/vars/template"
 	"github.com/hopeio/cherry/utils/log"
 	httpi "github.com/hopeio/cherry/utils/net/http"
+	templatei "github.com/hopeio/cherry/utils/text/template"
 
 	"github.com/hopeio/cherry/utils/net/mail"
 	"github.com/hopeio/cherry/utils/verification"
