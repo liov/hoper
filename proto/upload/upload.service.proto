@@ -53,18 +53,18 @@ service UploadService {
 }
 
 message GetUrlsReq {
-  repeated uint64 ids = 1 [(go.field) = {tags:'validate:"required" annotation:"ids"'}];
+  repeated uint64 ids = 1 [(go.field) = {tags:'validate:"required" comment:"ids"'}];
 }
 
 message GetUrlsByStrIdReq {
-  string ids = 1 [(go.field) = {tags:'validate:"required" annotation:"ids"'}];
+  string ids = 1 [(go.field) = {tags:'validate:"required" comment:"ids"'}];
 }
 
 message UploadInfo {
-  uint64 id = 1 [(go.field) = {tags:'annotation:"id"'}];
-  string url = 2 [(go.field) = {tags:'annotation:"url"'}];
+  uint64 id = 1 [(go.field) = {tags:'comment:"id"'}];
+  string url = 2 [(go.field) = {tags:'comment:"url"'}];
 }
 
 message GetUrlsRep {
-  repeated UploadInfo UploadInfos = 1[(go.field) = {tags:'annotation:"上传文件信息"'}];
+  repeated UploadInfo UploadInfos = 1[(go.field) = {tags:'comment:"上传文件信息"'}];
 }

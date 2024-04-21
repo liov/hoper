@@ -200,25 +200,25 @@ service ContentService {
 
 
 message AddTagReq {
-  string name = 1[(go.field) = {tags:'annotation:"名称"'}];
-  string description = 3 [(go.field) = {tags:'annotation:"描述"'}];
-  string expressionURL = 4 [(go.field) = {tags:'annotation:"表情url"'}];
-  uint64 userId = 5 [(go.field) = {tags:'annotation:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  string name = 1[(go.field) = {tags:'comment:"名称"'}];
+  string description = 3 [(go.field) = {tags:'comment:"描述"'}];
+  string expressionURL = 4 [(go.field) = {tags:'comment:"表情url"'}];
+  uint64 userId = 5 [(go.field) = {tags:'comment:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
 }
 
 message EditTagReq {
   uint64 id = 1 [(go.field) = {tags:'validate:"required"'}];
-  string name = 2[(go.field) = {tags:'annotation:"名称"'}];
-  string description = 3 [(go.field) = {tags:'annotation:"描述"'}];
-  string expressionURL = 4 [(go.field) = {tags:'annotation:"表情url"'}];
+  string name = 2[(go.field) = {tags:'comment:"名称"'}];
+  string description = 3 [(go.field) = {tags:'comment:"描述"'}];
+  string expressionURL = 4 [(go.field) = {tags:'comment:"表情url"'}];
 }
 
 
 message TagListReq{
-  string name = 1[(go.field) = {tags:'annotation:"名称"'}];
-  TagType type = 2 [(go.field) = {tags:'validate:"required" annotation:"标签类型"'}];
-  uint64 groupId = 5 [(go.field) = {tags:'annotation:"groupId"'}];
+  string name = 1[(go.field) = {tags:'comment:"名称"'}];
+  TagType type = 2 [(go.field) = {tags:'validate:"required" comment:"标签类型"'}];
+  uint64 groupId = 5 [(go.field) = {tags:'comment:"groupId"'}];
   uint32 pageNo = 3;
   uint32 pageSize = 4;
 }
@@ -229,8 +229,8 @@ message TagListRep{
 }
 
 message TagGroupListReq{
-  TagType type = 1 [(go.field) = {tags:'validate:"required" annotation:"标签类型"'}];
-  string name = 3[(go.field) = {tags:'annotation:"组名称"'}];
+  TagType type = 1 [(go.field) = {tags:'validate:"required" comment:"标签类型"'}];
+  string name = 3[(go.field) = {tags:'comment:"组名称"'}];
   uint32 pageNo = 4;
   uint32 pageSize = 5;
 }
@@ -241,22 +241,22 @@ message TagGroupListRep {
 }
 
 message AddAttrReq {
-  AttrType type = 4 [(go.field) = {tags:'annotation:"属性相关类型"'}];
-  string name = 1[(go.field) = {tags:'annotation:"名称"'}];
-  string description = 2 [(go.field) = {tags:'annotation:"描述"'}];
-  string expressionURL = 3 [(go.field) = {tags:'annotation:"表情url"'}];
+  AttrType type = 4 [(go.field) = {tags:'comment:"属性相关类型"'}];
+  string name = 1[(go.field) = {tags:'comment:"名称"'}];
+  string description = 2 [(go.field) = {tags:'comment:"描述"'}];
+  string expressionURL = 3 [(go.field) = {tags:'comment:"表情url"'}];
 }
 
 message EditAttrReq {
   uint64 id = 1 [(go.field) = {tags:'validate:"required"'}];
-  string name = 2[(go.field) = {tags:'annotation:"名称"'}];
-  string description = 3 [(go.field) = {tags:'annotation:"描述"'}];
-  string expressionURL = 4 [(go.field) = {tags:'annotation:"表情url"'}];
+  string name = 2[(go.field) = {tags:'comment:"名称"'}];
+  string description = 3 [(go.field) = {tags:'comment:"描述"'}];
+  string expressionURL = 4 [(go.field) = {tags:'comment:"表情url"'}];
 }
 
 message AttrListReq{
-  AttrType type = 2 [(go.field) = {tags:'annotation:"属性相关类型"'}];
-  string name = 1[(go.field) = {tags:'annotation:"名称"'}];
+  AttrType type = 2 [(go.field) = {tags:'comment:"属性相关类型"'}];
+  string name = 1[(go.field) = {tags:'comment:"名称"'}];
 }
 
 message AttrListRep{
@@ -266,29 +266,29 @@ message AttrListRep{
 
 message AddFavReq{
   uint64 id = 1;
-  uint64 userId = 17 [(go.field) = {tags:'annotation:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  uint64 userId = 17 [(go.field) = {tags:'comment:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
-  string title = 3 [(go.field) = {tags:'gorm:"size:10;not null" annotation:"标题"'}];
-  string description = 5 [(go.field) = {tags:'gorm:"type:text;not null" annotation:"描述"'}];
-  string cover = 4 [(go.field) = {tags:'gorm:"size:255;not null" annotation:"封面"'}];
-  uint32 sequence = 12 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"同级别的分类可根据sequence的值来排序，置顶"'}];
-  uint32 anonymous = 15 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"是否匿名,0-是,1否"'}];
+  string title = 3 [(go.field) = {tags:'gorm:"size:10;not null" comment:"标题"'}];
+  string description = 5 [(go.field) = {tags:'gorm:"type:text;not null" comment:"描述"'}];
+  string cover = 4 [(go.field) = {tags:'gorm:"size:255;not null" comment:"封面"'}];
+  uint32 sequence = 12 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
+  uint32 anonymous = 15 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"是否匿名,0-是,1否"'}];
 }
 
 message AddContainerReq{
   uint64 id = 1;
-  uint64 userId = 17 [(go.field) = {tags:'annotation:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  uint64 userId = 17 [(go.field) = {tags:'comment:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
-  ContainerType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null" annotation:"类型"'}];
-  string title = 3 [(go.field) = {tags:'gorm:"size:10;not null" annotation:"标题"'}];
-  string description = 5 [(go.field) = {tags:'gorm:"type:text;not null" annotation:"描述"'}];
-  string cover = 4 [(go.field) = {tags:'gorm:"size:255;not null" annotation:"封面"'}];
-  uint32 sequence = 12 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"同级别的分类可根据sequence的值来排序，置顶"'}];
-  uint32 anonymous = 15 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"是否匿名,0-是,1否"'}];
+  ContainerType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null" comment:"类型"'}];
+  string title = 3 [(go.field) = {tags:'gorm:"size:10;not null" comment:"标题"'}];
+  string description = 5 [(go.field) = {tags:'gorm:"type:text;not null" comment:"描述"'}];
+  string cover = 4 [(go.field) = {tags:'gorm:"size:255;not null" comment:"封面"'}];
+  uint32 sequence = 12 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
+  uint32 anonymous = 15 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"是否匿名,0-是,1否"'}];
 }
 
 message FavListReq{
-  uint32 userId  = 1 [(go.field) = {tags:'annotation:"权限,0-自己可写的，1-可读写"'}];
+  uint32 userId  = 1 [(go.field) = {tags:'comment:"权限,0-自己可写的，1-可读写"'}];
 }
 
 message FavListRep{
@@ -303,10 +303,10 @@ message TinyFavListRep{
 
 message TinyFavorites{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  string title = 3 [(go.field) = {tags:'gorm:"size:10;not null" annotation:"标题"'}];
+  string title = 3 [(go.field) = {tags:'gorm:"size:10;not null" comment:"标题"'}];
 }
 
 message ContentReq{
-  ContentType type = 12 [(go.field) = {tags:'gorm:"type:int2;not null" validate:"required" annotation:"相关类型"'}];
-  uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"相关id"'}];
+  ContentType type = 12 [(go.field) = {tags:'gorm:"type:int2;not null" validate:"required" comment:"相关类型"'}];
+  uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"相关id"'}];
 }

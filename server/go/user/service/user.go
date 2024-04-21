@@ -414,7 +414,7 @@ func (u *UserService) AuthInfo(ctx context.Context, req *emptypb.Empty) (*model.
 	ctxi := http_context.ContextFromContext(ctx)
 	user, err := auth(ctxi, true)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 	return user.UserAuthInfo(), nil
 }

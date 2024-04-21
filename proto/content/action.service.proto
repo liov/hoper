@@ -110,34 +110,34 @@ service ActionService {
 message LikeReq{
   uint64 id = 4 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
-  ContentType type = 1 [(go.field) = {tags:'annotation:"内容类型"'}];
-  uint64 refId = 2 [(go.field) = {tags:'annotation:"相关id"'}];
-  ActionType action = 3 [(go.field) = {tags:'annotation:"动作类型"'}];
-  uint64 userId = 5 [(go.field) = {tags:'annotation:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  ContentType type = 1 [(go.field) = {tags:'comment:"内容类型"'}];
+  uint64 refId = 2 [(go.field) = {tags:'comment:"相关id"'}];
+  ActionType action = 3 [(go.field) = {tags:'comment:"动作类型"'}];
+  uint64 userId = 5 [(go.field) = {tags:'comment:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
 }
 
 message CommentReq{
   uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
-  ContentType type = 12 [(go.field) = {tags:'validate:"required" annotation:"相关类型"'}];
-  uint64 refId = 6 [(go.field) = {tags:' validate:"required" annotation:"相关id"'}];
-  user.UserBaseInfo user = 2 [(go.field) = {tags:'annotation:"用户"'}];
-  uint64 userId = 5 [(go.field) = {tags:'annotation:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  ContentType type = 12 [(go.field) = {tags:'validate:"required" comment:"相关类型"'}];
+  uint64 refId = 6 [(go.field) = {tags:' validate:"required" comment:"相关id"'}];
+  user.UserBaseInfo user = 2 [(go.field) = {tags:'comment:"用户"'}];
+  uint64 userId = 5 [(go.field) = {tags:'comment:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
-  string content = 3 [(go.field) = {tags:'annotation:"内容"'}];
-  string image = 9 [(go.field) = {tags:'annotation:"图片"'}];
-  uint64 replyId = 7 [(go.field) = {tags:'annotation:"回复id"'}];
-  uint64 rootId = 8 [(go.field) = {tags:'annotation:"评论根id"'}];
-  uint64 recvId = 10 [(go.field) = {tags:'validate:"required" annotation:"接收人id"'}];
-  uint32 sequence = 4 [(go.field) = {tags:'annotation:"同级别的分类可根据sequence的值来排序，置顶"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  string content = 3 [(go.field) = {tags:'comment:"内容"'}];
+  string image = 9 [(go.field) = {tags:'comment:"图片"'}];
+  uint64 replyId = 7 [(go.field) = {tags:'comment:"回复id"'}];
+  uint64 rootId = 8 [(go.field) = {tags:'comment:"评论根id"'}];
+  uint64 recvId = 10 [(go.field) = {tags:'validate:"required" comment:"接收人id"'}];
+  uint32 sequence = 4 [(go.field) = {tags:'comment:"同级别的分类可根据sequence的值来排序，置顶"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
 }
 
 message CommentListReq{
-  ContentType type = 1 [(go.field) = {tags:'annotation:"内容类型"'}];
-  uint64 refId = 2 [(go.field) = {tags:'annotation:"相关id"'}];
-  uint64 rootId = 3 [(go.field) = {tags:'annotation:"评论根节点"'}];
+  ContentType type = 1 [(go.field) = {tags:'comment:"内容类型"'}];
+  uint64 refId = 2 [(go.field) = {tags:'comment:"相关id"'}];
+  uint64 rootId = 3 [(go.field) = {tags:'comment:"评论根节点"'}];
   uint32 pageNo = 4;
   uint32 pageSize = 5;
 }
@@ -151,19 +151,19 @@ message CommentListRep{
 message CollectReq{
   uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
-  ContentType type = 12 [(go.field) = {tags:'gorm:"type:int2;not null" validate:"required" annotation:"相关类型"'}];
-  uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"相关id"'}];
-  uint64 userId = 5 [(go.field) = {tags:'annotation:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  ContentType type = 12 [(go.field) = {tags:'gorm:"type:int2;not null" validate:"required" comment:"相关类型"'}];
+  uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"相关id"'}];
+  uint64 userId = 5 [(go.field) = {tags:'comment:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
-  repeated uint64 favIds = 3 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"用户id"'}];
+  repeated uint64 favIds = 3 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
 }
 
 message ReportReq{
   uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
-  ContentType type = 12 [(go.field) = {tags:'gorm:"type:int2;not null" validate:"required" annotation:"相关类型"'}];
-  uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" annotation:"相关id"'}];
-  uint64 userId = 5 [(go.field) = {tags:'annotation:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  ContentType type = 12 [(go.field) = {tags:'gorm:"type:int2;not null" validate:"required" comment:"相关类型"'}];
+  uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"相关id"'}];
+  uint64 userId = 5 [(go.field) = {tags:'comment:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
-  DelReason delReason = 3[(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"举报原因"'}];
+  DelReason delReason = 3[(go.field) = {tags:'gorm:"type:int2;default:0" comment:"举报原因"'}];
 }

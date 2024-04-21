@@ -33,9 +33,9 @@ int main() {
 	_TCHAR ramp[] = _T(".:-=+*#%@");
 	for (float t = 0.0f;; t += 0.1f) {
 		times++;
-		if (times == 10){
+		if (times == 5){
 			for(int i = 0; i < 25; i++){
-			buffer[i][3] = (buffer[i][3] + 1);	
+			buffer[i][3] = (buffer[i][3] + 1);
 			if(buffer[i][3] > '7'){
 				buffer[i][3] = '1';
 			}
@@ -65,13 +65,11 @@ int main() {
 			}
 		}
 		for (sy = 0; sy < 25; sy++) {
-			for(int i = 0; i < 25; i++){
-			_TCHAR* p = &buffer[i][80];
+			_TCHAR* p = &buffer[sy][80];
 				*p++ = '\x1b';
 				*p++ = '[';
 				*p++ = '0';
 				*p++ = 'm';
-			}
 			COORD coord = { 0, sy };
 			SetConsoleCursorPosition(o, coord);
 			WriteConsole(o, buffer[sy], 85, NULL, 0);

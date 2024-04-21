@@ -11,11 +11,11 @@ option go_package = "github.com/liov/hoper/server/go/protobuf/utils/dict";
 
 message Dict{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  uint32 typ = 2 [(go.field) = {tags:'annotation:"类型'}];
+  uint32 typ = 2 [(go.field) = {tags:'comment:"类型'}];
   uint64 pId = 3 [(go.field) = {tags:'gorm:"size:20"'}];
   string key = 4 [(go.field) = {tags:'gorm:"index"'}];
-  string val = 5 [(go.field) = {tags:'annotation:"值"'}];
-  uint32 seq = 6[(go.field) = {tags:'annotation:"顺序"'}];
+  string val = 5 [(go.field) = {tags:'comment:"值"'}];
+  uint32 seq = 6[(go.field) = {tags:'comment:"顺序"'}];
   string cAt = 16 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
   string dAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
   uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {

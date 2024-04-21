@@ -309,26 +309,26 @@ message SingUpVerifyReq {
     example: '{"mail": "123@qq.com", "phone": "12345678901"}'
   };
   // 邮箱
-  string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" annotation:"邮箱"'}];
+  string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" comment:"邮箱"'}];
   // 手机号
-  string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" annotation:"手机号"'}];
+  string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" comment:"手机号"'}];
 }
 
 message SignupReq {
   // 密码
-  string password = 4 [(go.field) = {tags:'validate:"required,gte=6,lte=15" annotation:"密码"'}, (validator.field) = {
+  string password = 4 [(go.field) = {tags:'validate:"required,gte=6,lte=15" comment:"密码"'}, (validator.field) = {
     length_gt: 5
     human_error: "密码最短6位"
   }, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {title: "密码"
     min_length: 6}];
-  string name = 1 [(go.field) = {tags:'validate:"required,gte=3,lte=10" annotation:"昵称"'}];
-  Gender gender = 3 [(go.field) = {tags:'validate:"required" annotation:"性别"'}];
+  string name = 1 [(go.field) = {tags:'validate:"required,gte=3,lte=10" comment:"昵称"'}];
+  Gender gender = 3 [(go.field) = {tags:'validate:"required" comment:"性别"'}];
   // 邮箱
-  string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" annotation:"邮箱"'}];
+  string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" comment:"邮箱"'}];
   // 手机号
-  string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" annotation:"手机号"'}];
+  string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" comment:"手机号"'}];
   // 验证码
-  string vCode = 8 [(go.field) = {tags:'validate:"required" annotation:"验证码"'}];
+  string vCode = 8 [(go.field) = {tags:'validate:"required" comment:"验证码"'}];
 }
 
 message ActiveReq {
@@ -346,7 +346,7 @@ message EditReq {
     type: INTEGER}];
   EditDetails details = 2 [(go.field) = {tags:'gorm:"embedded"'}];
   message EditDetails {
-    string name = 2 [(go.field) = {tags:'validate:"gte=3,lte=10" annotation:"名字"'}];
+    string name = 2 [(go.field) = {tags:'validate:"gte=3,lte=10" comment:"名字"'}];
     // 性别，0未填写，1男，2女
     Gender gender = 8 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
       type:INTEGER
@@ -364,7 +364,7 @@ message EditReq {
 // 登录请求
 message LoginReq {
   string input = 1;
-  string password = 2 [(go.field) = {tags:'validate:"required,gt=5,lt=15" annotation:"密码"'},(validator.field) = {
+  string password = 2 [(go.field) = {tags:'validate:"required,gt=5,lt=15" comment:"密码"'},(validator.field) = {
     length_gt: 5
     human_error: "密码错误"
   }];
@@ -400,10 +400,10 @@ message ActionLogListRep {
 
 message SendVerifyCodeReq{
   // 邮箱
-  string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" annotation:"邮箱"'}];
+  string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" comment:"邮箱"'}];
   // 手机号
-  string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" annotation:"手机号"'}];
-  Action type = 2 [(go.field) = {tags:'annotation:"操作类型"'}];
+  string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" comment:"手机号"'}];
+  Action type = 2 [(go.field) = {tags:'comment:"操作类型"'}];
 }
 
 message BaseListReq{

@@ -142,31 +142,31 @@ message DiaryBookRep{
 
 message AddDiaryBookReq{
   uint64 id = 1 [(go.field) = {tags:'validate:"required"'}];
-  uint64 userId = 17 [(go.field) = {tags:'annotation:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  uint64 userId = 17 [(go.field) = {tags:'comment:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
-  string title = 3 [(go.field) = {tags:'gorm:"size:10;not null" annotation:"标题"'}];
-  string description = 5 [(go.field) = {tags:'gorm:"type:text;not null" annotation:"描述"'}];
-  string cover = 4 [(go.field) = {tags:'gorm:"size:255;not null" annotation:"封面"'}];
-  uint32 sequence = 12 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"同级别的分类可根据sequence的值来排序，置顶"'}];
-  uint32 anonymous = 15 [(go.field) = {tags:'gorm:"type:int2;default:0" annotation:"是否匿名,0-是,1否"'}];
+  string title = 3 [(go.field) = {tags:'gorm:"size:10;not null" comment:"标题"'}];
+  string description = 5 [(go.field) = {tags:'gorm:"type:text;not null" comment:"描述"'}];
+  string cover = 4 [(go.field) = {tags:'gorm:"size:255;not null" comment:"封面"'}];
+  uint32 sequence = 12 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
+  uint32 anonymous = 15 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"是否匿名,0-是,1否"'}];
 }
 
 
 message AddDiaryReq{
   uint64 id = 1 [(go.field) = {tags:'validate:"required"'}];
-  string content = 2 [(go.field) = {tags:'annotation:"内容"'}];
-  uint64 bookId = 4 [(go.field) = {tags:'annotation:"日记本Id"'}];
-  string mood = 5 [(go.field) = {tags:'gorm:"-" annotation:"心情"'}];
-  string weather = 7 [(go.field) = {tags:'gorm:"-" annotation:"心情"'}];
-  uint64 areaId = 10 [(go.field) = {tags:'annotation:"地区"'}];
-  uint32 areaVisibility = 11 [(go.field) = {tags:'annotation:"地区可见性，1-可见"'}];
-  string location = 12 [(go.field) = {tags:'annotation:"位置"'}];
-  repeated string tags = 13 [(go.field) = {tags:'gorm:"-" annotation:"标签"'}];
-  uint64 userId = 17 [(go.field) = {tags:'annotation:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  string content = 2 [(go.field) = {tags:'comment:"内容"'}];
+  uint64 bookId = 4 [(go.field) = {tags:'comment:"日记本Id"'}];
+  string mood = 5 [(go.field) = {tags:'gorm:"-" comment:"心情"'}];
+  string weather = 7 [(go.field) = {tags:'gorm:"-" comment:"心情"'}];
+  uint64 areaId = 10 [(go.field) = {tags:'comment:"地区"'}];
+  uint32 areaVisibility = 11 [(go.field) = {tags:'comment:"地区可见性，1-可见"'}];
+  string location = 12 [(go.field) = {tags:'comment:"位置"'}];
+  repeated string tags = 13 [(go.field) = {tags:'gorm:"-" comment:"标签"'}];
+  uint64 userId = 17 [(go.field) = {tags:'comment:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
-  uint32 sequence = 19 [(go.field) = {tags:'annotation:"同级别的分类可根据sequence的值来排序，置顶"'}];
-  uint32 anonymous = 20 [(go.field) = {tags:'annotation:"是否匿名,0-是,1否"'}];
-  ViewPermission permission = 21 [(go.field) = {tags:'annotation:"查看权限"'}];
+  uint32 sequence = 19 [(go.field) = {tags:'comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
+  uint32 anonymous = 20 [(go.field) = {tags:'comment:"是否匿名,0-是,1否"'}];
+  ViewPermission permission = 21 [(go.field) = {tags:'comment:"查看权限"'}];
 }
 
 
