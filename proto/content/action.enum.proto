@@ -7,7 +7,6 @@ option java_package = "xyz.hoper.protobuf.content";
 option go_package = "github.com/liov/hoper/server/go/protobuf/content";
 
 option (enum.enum_gqlgen_all) = true;
-option (enum.enum_prefix_all) = false;
 option (go.file) = {no_enum_prefix:true};
 
 // 操作类型
