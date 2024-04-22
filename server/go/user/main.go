@@ -7,7 +7,7 @@ import (
 
 func main() {
 	server.Start(&server.Server{
-		GRPCHandler: api.GrpcRegister,
+		GrpcHandler: api.GrpcRegister,
 
 		GinHandler: api.GinRegister,
 

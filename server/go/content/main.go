@@ -16,7 +16,7 @@ func main() {
 
 	s := server.Server{
 		Config: confdao.Conf.Server.Origin(),
-		GRPCHandler: func(gs *grpc.Server) {
+		GrpcHandler: func(gs *grpc.Server) {
 			model.RegisterMomentServiceServer(gs, service.GetMomentService())
 		},
 		GinHandler: func(engine *gin.Engine) {

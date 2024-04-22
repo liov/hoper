@@ -30,7 +30,7 @@ func main() {
 	server.Start(&server.Server{
 		Config: config,
 		//为了可以自定义中间件
-		GRPCHandler: func(gs *grpc.Server) {
+		GrpcHandler: func(gs *grpc.Server) {
 			userapi.GrpcRegister(gs)
 			contentapi.GrpcRegister(gs)
 		},
