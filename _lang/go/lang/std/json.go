@@ -10,6 +10,11 @@ type Foo struct {
 	B string
 }
 
+type Foo1 struct {
+	Foo
+	B string
+}
+
 func main() {
 	var f *Foo
 	fmt.Println(json.Marshal(f))
@@ -22,5 +27,17 @@ func main() {
 	fm := map[string]any{}
 	fmt.Println(json.Unmarshal([]byte(`[{"A":1,"B":"1"},{"A":2,"B":"2"}]`), &fm))
 	fmt.Println(fm)
-
+	fmt.Println("---------------------------------------------")
+	foo1 := Foo1{
+		Foo: Foo{
+			A: 1,
+			B: "1",
+		},
+		B: "2",
+	}
+	data, err := json.Marshal(foo1)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(data))
 }
