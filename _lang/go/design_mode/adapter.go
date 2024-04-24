@@ -22,7 +22,7 @@ type Adapter struct {
 	Player
 }
 
-func (a *Adapter) get(name string, typ string) {
+func (a *Adapter) get(typ string) {
 	if typ == "vlc" {
 		a.Player = &VLC{}
 	} else {
@@ -31,7 +31,7 @@ func (a *Adapter) get(name string, typ string) {
 }
 
 func (a *Adapter) play(name string, typ string) {
-	a.get(name, typ)
+	a.get(typ)
 	a.Player.play(name)
 }
 

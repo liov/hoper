@@ -1,0 +1,12 @@
+[submodule "thirdparty/cherry"]
+	path = thirdparty/cherry
+	url = https://github.com/hopeio/cherry
+	branch = main
+[submodule "thirdparty/pick"]
+	path = thirdparty/pick
+	url = https://github.com/hopeio/pick
+	branch = master
+[submodule "thirdparty/diamond"]
+	path = thirdparty/diamond
+	url = https://github.com/hopeio/diamond
+	branch = main

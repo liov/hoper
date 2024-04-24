@@ -1,9 +1,12 @@
 # hoper
 ![hoper](./build/assets/hoper.webp)
+git submodule init
+git submodule update
 
 # _lang
 go kotlin rust ts lua(openresty) python的语法学习,总结的坑和黑魔法,刷LeetCode的解答
-
+# _note
+笔记
 # build
 开发及部署需要的操作总结脚本汇总，开发过程中遇到的坑总结
 - **config:** nginx/ rust cargo/ gradle的配置
@@ -40,11 +43,12 @@ uniapp+vue3 开发的hoper小程序，编译的h5版本将取代h5版本
 hoper项目客户端，服务端通用的proto定义，用来生成go，rust，java，dart，js grpc源文件
 
 
-#### utils
-各种工具类
+# server
+各种语言服务
+## go
+主要的后端服务,采用cherry
+protogen go -e -w -q -p ../../proto -g protobuf
 ## java
-### protobuf
-protoc生成的源码单独成一个模块
 ### user
 - springboot+grpc
 ## rust

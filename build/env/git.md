@@ -1,5 +1,6 @@
 [TOC]
 
+git.md
 # 一般用法
 ```bash
 git checkout -b xxx= git branch xxx && git checkout xxx
@@ -240,3 +241,11 @@ $ git rebase -i [commitid]
 ## git config git设置
 git config --global user.name "xxx"
 git config --global user.email "xxx"
+
+# git submodule
+1. git submodule deinit [<submodule-path>]
+2. git submodule add -b <branch> <repository> [<submodule-path>]
+3. git submodule update --remote
+
+1.3即可
+git submodule foreach -q --recursive 'git checkout $(git config -f $toplevel/.gitmodules submodule.$name.branch || echo master)'

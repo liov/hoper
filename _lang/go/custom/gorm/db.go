@@ -23,7 +23,7 @@ var dao Dao
 var db *gorm.DB
 
 func main() {
-	defer initialize.Start(nil, &dao)()
+	defer initialize.Start(&Config{}, &dao)()
 	Scan()
 	RawScan()
 }
