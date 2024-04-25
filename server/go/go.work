@@ -4,4 +4,4 @@ toolchain go1.21.0
 
 use .
 
-replace github.com/hopeio/cherry => ../../../cherry
+replace github.com/hopeio/cherry => ../../thirdparty/cherry

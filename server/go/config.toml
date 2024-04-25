@@ -9,6 +9,7 @@ ConfigTemplateDir = "."
 configType = "local"
 Watch  = true
 NoInject = ["Apollo","Etcd", "Es"]
+Format = 'toml'
 
 [dev.configCenter.local]
 Debug = true
