@@ -81,5 +81,5 @@ func main() {
 		log.Error(err)
 	}
 	fmt.Println(foo)
-	v.AutomaticEnv()
+	v.BindEnv()
 }
