@@ -4,7 +4,9 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/hopeio/cherry/initialize"
+	"github.com/hopeio/cherry/initialize/conf_center/nacos"
 	"github.com/hopeio/cherry/server"
+	"github.com/hopeio/cherry/utils/log"
 	pickgin "github.com/hopeio/pick/gin"
 	chatapi "github.com/liov/hoper/server/go/chat/api"
 	contentapi "github.com/liov/hoper/server/go/content/api"
@@ -21,10 +23,12 @@ import (
 func main() {
 	//配置初始化应该在第一位
 	// initialize.Start是提供给单服务的，这样写有问题，其他模块的配置不会更新
-	defer initialize.Start(uconf.Conf, uconf.Dao)()
+	defer initialize.Start(uconf.Conf, uconf.Dao, &nacos.Nacos{})()
 	defer initialize.Start(cconf.Conf, cconf.Dao)()
 	defer initialize.Start(upconf.Conf, upconf.Dao)()
-
+	log.Info("proxy:", initialize.GlobalConfig().Get("proxy"))
+	log.Info("proxy:", initialize.GlobalConfig().Proxy)
+	log.Info("proxy:", initialize.GlobalConfig().Get("http_proxy"))
 	config := uconf.Conf.Server.Origin()
 	config.GrpcOptions = []grpc.ServerOption{grpc.StatsHandler(otelgrpc.NewServerHandler())}
 	server.Start(&server.Server{

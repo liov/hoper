@@ -1,25 +1,17 @@
 package confdao
 
 import (
-	"runtime"
+	"github.com/hopeio/cherry/initialize"
+	"github.com/hopeio/cherry/initialize/conf_dao/server"
 )
 
 var Conf = &config{}
 
 type config struct {
+	initialize.EmbeddedPresets
 	//自定义的配置
 	Customize serverConfig
-	Server    server.ServerConfig
-	GORMDB    gormdb.DatabaseConfig
-	Redis     redis.Config
-	Cache     ristretto.CacheConfig
-	Log       log.LogConfig
-}
-
-func (c *config) Init() {
-	if runtime.GOOS == "windows" {
-	}
-
+	Server    server.Config
 }
 
 type serverConfig struct {

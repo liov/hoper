@@ -9,10 +9,7 @@ import (
 )
 
 type PConfig struct {
-}
-
-func (c *PConfig) Init() {
-
+	initialize.EmbeddedPresets
 }
 
 type PDao struct {

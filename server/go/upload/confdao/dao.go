@@ -11,7 +11,7 @@ var Dao *dao = &dao{}
 type dao struct {
 	GORMDB postgres.DB
 	// RedisPool Redis连接池
-	Redis initredis.Redis
+	Redis initredis.Client
 }
 
 func (d *dao) InitBeforeInject() {

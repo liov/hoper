@@ -16,7 +16,7 @@ type dao struct {
 	GORMDB postgres.DB
 	StdDB  *sql.DB
 	// RedisPool Redis连接池
-	Redis initredis.Redis
+	Redis initredis.Client
 	//elastic
 }
 
