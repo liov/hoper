@@ -8,7 +8,7 @@ import (
 
 type serverConfig struct {
 	Volume   fs.Dir
-	Protocal string
+	Protocol string
 	Domain   string
 	PassSalt string
 	// 天数
