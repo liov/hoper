@@ -15,7 +15,7 @@ import (
 
 func TestVerifyCode(t *testing.T) {
 	md := runtime.ServerMetadata{}
-	u, err := UserClient.VerifyCode(metadata.NewOutgoingContext(context.Background(),
+	u, err := UserClient().VerifyCode(metadata.NewOutgoingContext(context.Background(),
 		metadata.MD{"key": []string{"value"}}),
 		&emptypb.Empty{},
 		grpc.Header(&md.HeaderMD),
@@ -29,7 +29,7 @@ func TestVerifyCode(t *testing.T) {
 
 func TestSendVerifyCode(t *testing.T) {
 	md := runtime.ServerMetadata{}
-	_, err := UserClient.SendVerifyCode(metadata.NewOutgoingContext(context.Background(),
+	_, err := UserClient().SendVerifyCode(metadata.NewOutgoingContext(context.Background(),
 		metadata.MD{"key": []string{"value"}}),
 		&user.SendVerifyCodeReq{},
 		grpc.Header(&md.HeaderMD),

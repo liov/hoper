@@ -358,7 +358,7 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 	}
 	var users []*user.UserBaseInfo
 	if len(userIds) > 0 {
-		userList, err := rpc.UserClient.BaseList(ctxi.Context(), &user.BaseListReq{Ids: userIds.ToArray()})
+		userList, err := rpc.UserClient().BaseList(ctxi.Context(), &user.BaseListReq{Ids: userIds.ToArray()})
 		if err != nil {
 			return nil, err
 		}
