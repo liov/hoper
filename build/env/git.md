@@ -228,15 +228,26 @@ git commit --amend --date="2024-04-07 19:00:00"
 git commit --amend --date="$(date -d '-10 hours' '+%Y-%m-%d %H:%M:%S')"
 ### 改提交人
 git commit --amend --author="贾一饼 <xxx@.xxx>"
-### 合并分支
-- 从HEAD版本开始往过去数3个版本
+### 修改提交
+从HEAD版本开始往过去数3个版本
 $ git rebase -i HEAD~3
 
-- 合并指定版本号（不包含此版本）
-$ git rebase -i [commitid]
-
+git rebase -i [commitid]
 -i（--interactive）：弹出交互式的界面进行编辑合并
 [commitid]：要合并多个版本之前的版本号，注意：[commitid] 本身不参与合并
+#### 修改提交
+编辑提交前pick->e
+git commit --amend xxx
+git rebase --continue
+#### 合并分支
+合并指定版本号（不包含此版本）
+$ git rebase -i [commitid]
+编辑要合并的提交前pick->s
+
+##### 直接合并?
+git commit --fixup=[commitid]
+git rebase --autosquash -i
+
 
 ## git config git设置
 git config --global user.name "xxx"

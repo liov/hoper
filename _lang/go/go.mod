@@ -82,4 +82,4 @@ require (
 	gorm.io/plugin/prometheus v0.1.0 // indirect
 )
 
-replace github.com/hopeio/cherry => ../../../cherry
+replace github.com/hopeio/cherry => ../../thirdparty/cherry
