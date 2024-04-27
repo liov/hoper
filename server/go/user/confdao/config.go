@@ -1,7 +1,6 @@
 package confdao
 
 import (
-	"github.com/hopeio/cherry/initialize/conf_dao/log"
 	"github.com/hopeio/cherry/initialize/conf_dao/server"
 	"github.com/hopeio/cherry/initialize/conf_dao/viper"
 	timei "github.com/hopeio/cherry/utils/time"
@@ -18,7 +17,6 @@ type config struct {
 	Customize serverConfig
 	SendMail  SendMailConfig
 	Server    server.Config
-	Log       log.Config
 	Viper     viper.Config
 }
 

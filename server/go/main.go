@@ -27,7 +27,7 @@ func main() {
 	defer initialize.Start(cconf.Conf, cconf.Dao)()
 	defer initialize.Start(upconf.Conf, upconf.Dao)()
 	log.Info("proxy:", initialize.GlobalConfig().Get("proxy"))
-	log.Info("proxy:", initialize.GlobalConfig().Proxy)
+	log.Info("proxy:", initialize.GlobalConfig().InitConfig.Proxy)
 	log.Info("proxy:", initialize.GlobalConfig().Get("http_proxy"))
 	config := uconf.Conf.Server.Origin()
 	config.GrpcOptions = []grpc.ServerOption{grpc.StatsHandler(otelgrpc.NewServerHandler())}
@@ -43,7 +43,7 @@ func main() {
 			uploadapi.GinRegister(app)
 			chatapi.GinRegister(app)
 			contentapi.GinRegister(app)
-			pickgin.Start(app, uconf.Conf.Server.GenDoc, initialize.GlobalConfig().Module, uconf.Conf.Server.Tracing)
+			pickgin.Start(app, uconf.Conf.Server.GenDoc, initialize.GlobalConfig().InitConfig.Module, uconf.Conf.Server.Tracing)
 		},
 		GraphqlHandler: contentapi.NewExecutableSchema(),
 		OnBeforeStart: func(ctx context.Context) {

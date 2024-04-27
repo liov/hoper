@@ -1,7 +1,6 @@
 package confdao
 
 import (
-	"github.com/hopeio/cherry/initialize/conf_dao/log"
 	"github.com/hopeio/cherry/initialize/conf_dao/server"
 	"github.com/liov/hoper/server/go/content/model"
 )
@@ -15,7 +14,6 @@ type config struct {
 	//自定义的配置
 	Customize serverConfig
 	Server    server.Config
-	Log       log.Config
 }
 
 var Conf = &config{
