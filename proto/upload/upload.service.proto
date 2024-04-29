@@ -1,7 +1,7 @@
 syntax = "proto3";
 package upload;
 import "protoc-gen-openapiv2/options/annotations.proto";
-import "github.com/mwitkow/go-proto-validators/validator.proto";
+import "cherry/protobuf/utils/validator/validator.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "cherry/protobuf/response/response.proto";

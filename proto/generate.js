@@ -30,7 +30,7 @@ const goConfig = {
       `${baseCmd} ${path.join(filepath, "*.enum.proto")} --enum_out=paths=source_relative:${this.output}`,
       `${baseCmd} ${path.join(filepath, "*.service.proto")} --grpc-gin_out=paths=source_relative:${this.output}`,
       `${baseCmd} ${path.join(filepath, "*.service.proto")} --openapiv2_out=logtostderr=true:${this.output}/api`,
-      `${baseCmd} ${path.join(filepath, "*.service.proto")} --govalidators_out=paths=source_relative:${this.output}`,
+      `${baseCmd} ${path.join(filepath, "*.service.proto")} --validator_out=paths=source_relative:${this.output}`,
       `${baseCmd} ${path.join(filepath, "*.service.proto")} --gql_out=svc=true,merge=true,paths=source_relative:${this.output}`,
       `${baseCmd} ${path.join(filepath, "*.service.proto")} --gogql_out=svc=true,merge=true,paths=source_relative:${this.output}`,
     ]

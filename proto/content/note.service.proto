@@ -3,7 +3,7 @@ package content;
 import "content/content.model.proto";
 
 import "protoc-gen-openapiv2/options/annotations.proto";
-import "github.com/mwitkow/go-proto-validators/validator.proto";
+import "cherry/protobuf/utils/validator/validator.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/empty.proto";
