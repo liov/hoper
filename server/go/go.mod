@@ -1,8 +1,8 @@
 module github.com/liov/hoper/server/go
 
-go 1.21
+go 1.22
 
-toolchain go1.21.0
+toolchain go1.22.1
 
 require (
 	github.com/99designs/gqlgen v0.17.45
@@ -173,9 +173,4 @@ require (
 	gorm.io/driver/postgres v1.5.7 // indirect
 	gorm.io/plugin/prometheus v0.1.0 // indirect
 	nhooyr.io/websocket v1.8.11 // indirect
-)
-
-replace (
-	github.com/hopeio/cherry => ../../thirdparty/cherry
-	github.com/hopeio/pick => ../../thirdparty/pick
 )
