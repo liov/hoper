@@ -1,3 +1,6 @@
+# ubuntu 阿里云镜像
+deb https://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
+
 # 腾讯云镜像站
 
 deb http://mirrors.cloud.tencent.com/debian/ buster main non-free contrib

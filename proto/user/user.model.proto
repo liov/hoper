@@ -160,7 +160,7 @@ message UserOAuthInfo {
 message UserDeviceInfo {
   //设备
   string device = 1 [(go.field) = {tags:'gorm:"size:255"'}];
-  string os = 4 [(go.field) = {tags:'gorm:"size:255"'}];
+  string OS = 4 [(go.field) = {tags:'gorm:"size:255"'}];
   string appCode = 6 [(go.field) = {tags:'gorm:"size:255"'}];
   string appVersion = 7 [(go.field) = {tags:'gorm:"size:255"'}];
   string IP = 3 [(go.field) = {tags:'gorm:"size:255"'}];
@@ -168,13 +168,6 @@ message UserDeviceInfo {
   string lat = 9 [(go.field) = {tags:'gorm:"type:numeric(10,6)"'}];
   string area = 2 [(go.field) = {tags:'gorm:"size:255"'}];
   string userAgent = 5 [(go.field) = {tags:'gorm:"size:255"'}];
-}
-
-message Response{
-  oneof res {
-    uint32 code = 1;
-    string msg = 2;
-  }
 }
 
 message UserContent{

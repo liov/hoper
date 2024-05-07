@@ -250,8 +250,9 @@ git rebase --autosquash -i
 
 
 ## git config git设置
-git config --global user.name "xxx"
+git config --global user.name "xxx"  --global可选
 git config --global user.email "xxx"
+git config --global credential.helper store
 
 # git submodule
 1. git submodule deinit [<submodule-path>]

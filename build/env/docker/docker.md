@@ -690,7 +690,7 @@ docker info : 显示 Docker 系统信息，包括镜像和容器数。。
 docker version :显示 Docker 版本信息。
 ------------------------------------------------------------------------------------------------
 
-删除所有镜像
+# docker rmi:删除所有镜像
 docker rmi `docker images -q`
 docker rmi $(docker images -q) 
 
@@ -699,3 +699,19 @@ docker run -d -v /data/timepill:/data/timepill -p port:port $image_id
 
 要获取所有容器名称及其IP地址只需一个命令。
 docker inspect -f '{{.Name}} - {{.NetworkSettings.IPAddress }}' $(docker ps -aq)
+
+# docker system prune:清理
+docker system prune
+## 日志
+{
+"log-driver": "json-file",
+"log-opts": {"max-size": "10m", "max-file": "3"}
+}
+
+ls -lh $(find /var/lib/docker/containers/ -name *-json.log)
+
+docker run --rm -v /var/lib/docker:/var/lib/docker alpine sh -c "echo '' > $(docker inspect --format='{{.LogPath}}' CONTAINER_NAME)"
+
+
+truncate -s 0 /var/lib/docker/containers/*/*-json.log
+sudo truncate -s 0 `docker inspect --format='{{.LogPath}}' <container>`

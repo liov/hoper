@@ -7,6 +7,8 @@ import (
 	"github.com/hopeio/cherry/initialize/conf_dao/pebble"
 	"github.com/hopeio/cherry/initialize/conf_dao/redis"
 	"github.com/hopeio/cherry/initialize/conf_dao/ristretto"
+	"github.com/liov/hoper/server/go/protobuf/user"
+	"gorm.io/gorm"
 )
 
 // 原本是个单独模块，但是考虑到数据库必须初始化，所以合进来了
@@ -41,4 +43,8 @@ func (d *dao) InitAfterInject() {
 	db.Callback().Update().Remove("gorm:save_after_associations")
 
 	d.StdDB, _ = db.DB.DB()
+}
+
+func Migrator(db *gorm.DB) {
+	db.Migrator().AutoMigrate(&user.User{}, &user.Resume{}, &user.UserActionLog{}, &user.UserBannedLog{}, &user.UserDeviceInfo{}, &user.UserScoreLog{}, &user.UserExt{})
 }

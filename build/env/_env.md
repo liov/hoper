@@ -40,20 +40,6 @@ minikube start --registry-mirror= --vm-driver=hyperv --hyperv-virtual-switch "De
 ```
 
 
-# bazel[bazel](https://bazel.build,https://github.com/bazelbuild/bazel/releases)
-
-
-# yarn
-wget https://yarnpkg.com/latest.tar.gz
-
-tar -zvxf latest.tar.gz
-
-
-# git
-git config --global user.name ${username}
-git config --global user.email ${email}
---global credential.helper store
-
 # ssh
 
 powershell ssh
@@ -66,16 +52,6 @@ ssh  -fNg -L <本地端口>:<服务器数据库地址>  <用户名>@<服务器�
 exit
 ```
 
-# sublimet text
-```json
-{
-    "default_line_ending": "unix",
-    "hot_exit": false,
-    "remember_open_files": false,
-    "theme": "Adaptive.sublime-theme",
-    "enable_tab_scrolling": false
-}
-```
 
 # [go](https://golang.google.cn/doc/)
 wget https://dl.google.com/go/go1.xx.x.linux-amd64.tar.gz
@@ -125,45 +101,6 @@ source /etc/profile
 # netcat
 https://eternallybored.org/misc/netcat/
 
-# gcc
-wget https://ftp.gnu.org/gnu/gcc/gcc-8.2.0/gcc-8.2.0.tar.gz
-wget https://ftp.gnu.org/gnu/gmp/gmp-4.3.2.tar.gz
-wget https://ftp.gnu.org/gnu/mpfr/mpfr-2.4.2.tar.gz
-wget https://ftp.gnu.org/gnu/mpc/mpc-1.0.1.tar.gz
-```bash
-mkdir ~/local/gcc
-
-tar xf gmp-4.3.2.tar.gz
-cd gmp-4.3.2
-sudo yum install -y m4
-./configure --prefix=$HOME/local/gcc
-make && make install
-ls ~/local/gcc/lib/
-
-cd ..
-tar xf mpfr-2.4.2.tar.gz
-cd mpfr-2.4.2
-./configure --prefix=$HOME/local/gcc --with-gmp=$HOME/local/gcc
-make && make install
-ls ~/local/gcc/lib/
-
-cd ..
-tar xf mpc-1.0.1.tar.gz
-cd mpc-1.0.1
-./configure --prefix=$HOME/local/gcc --with-gmp=$HOME/local/gcc --with-mpfr=$HOME/local/gcc
-make && make install
-ls ~/local/gcc/lib/
-
-cd ..
-tar xf gcc-8.2.0.tar.gz
-cd gcc-8.2.0
-
-./configure --prefix=$HOME/local/gcc --with-gmp=$HOME/local/gcc --with-mpfr=$HOME/local/gcc --with-mpc=$HOME/local/gcc --disable-multilib
-export LD_LIBRARY_PATH=$HOME/local/gcc/lib:$LD_LIBRARY_PATH
-make && make install
-
-export PATH=$HOME/local/gcc/bin:$PATH
-```
 
 # vsftp 
 
