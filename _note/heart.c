@@ -1,5 +1,5 @@
-// Myheart.cpp: 定义控制台应用程序的入口点。
-//
+
+
 #include <stdio.h>
 #include <math.h>
 #include <windows.h>
@@ -18,6 +18,7 @@ float h(float x, float z) {
 }
 
 int main() {
+    // 定义控制台应用程序的入口点。
 	HANDLE o = GetStdHandle(STD_OUTPUT_HANDLE);
 	_TCHAR buffer[25][85] = { _T(' ') };
 	for(int i = 0; i < 25; i++){

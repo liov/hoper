@@ -11,7 +11,7 @@ extern crate quote;
 use proc_macro::TokenStream;
 
 use quote::quote;
-use syn::NestedMeta;
+use syn::{parse_macro_input, DeriveInput,LitStr};
 
 
 
@@ -25,7 +25,7 @@ pub fn foo_derive(input: TokenStream) -> TokenStream {
     impl_foo(&ast)
 }
 
-fn impl_foo(ast: &syn::DeriveInput) -> TokenStream {
+fn impl_foo(ast: &DeriveInput) -> TokenStream {
     let name = &ast.ident;
     let gen = quote! {
         impl Foo for #name {
@@ -39,14 +39,10 @@ fn impl_foo(ast: &syn::DeriveInput) -> TokenStream {
 
 
 #[proc_macro_attribute]
-pub fn inject(attr: TokenStream, body: TokenStream) -> TokenStream {
-    let attr = syn::parse_macro_input!(attr as syn::AttributeArgs);
-    if attr.is_empty(){
+pub fn inject(args: TokenStream, body: TokenStream) -> TokenStream {
+    let mut param = parse_macro_input!(args as LitStr).value();
+    if param.is_empty(){
         panic!("填写属性!")
-    }
-    let mut param= "".to_string();
-    if let NestedMeta::Lit(syn::Lit::Str(lit)) = attr.get(0).unwrap(){
-        param = lit.value()
     }
     match syn::parse::<syn::Item>(body).unwrap() {
         syn::Item::Fn(ref func) => {
