@@ -31,12 +31,12 @@ import (
 
 	"github.com/hopeio/cherry/protobuf/errorcode"
 	redisi "github.com/hopeio/cherry/utils/dao/redis"
+	templatei "github.com/hopeio/cherry/utils/encoding/text/template"
 	"github.com/hopeio/cherry/utils/log"
 	httpi "github.com/hopeio/cherry/utils/net/http"
-	templatei "github.com/hopeio/cherry/utils/text/template"
 
 	"github.com/hopeio/cherry/utils/net/mail"
-	"github.com/hopeio/cherry/utils/verification"
+	"github.com/hopeio/cherry/utils/validation"
 	"gorm.io/gorm"
 )
 
@@ -48,7 +48,7 @@ func (u *UserService) VerifyCode(ctx context.Context, req *emptypb.Empty) (*wrap
 	device := http_context.ContextFromContext(ctx).DeviceInfo
 	log.Debug(device)
 	var rep = &wrappers.StringValue{}
-	vcode := verification.GenerateCode()
+	vcode := validation.GenerateCode()
 	log.Info(vcode)
 	rep.Value = vcode
 	return rep, nil
@@ -78,7 +78,7 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 			return nil, errorcode.InvalidArgument.Message("手机号已被注册")
 		}
 	}
-	vcode := verification.GenerateCode()
+	vcode := validation.GenerateCode()
 	log.Debug(vcode)
 	key := modelconst.VerificationCodeKey + req.Mail + req.Phone
 	if err := confdao.Dao.Redis.SetEX(ctx, key, vcode, modelconst.VerificationCodeDuration).Err(); err != nil {
@@ -303,10 +303,10 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 	}
 	var sql string
 
-	switch verification.PhoneOrMail(req.Input) {
-	case verification.Mail:
+	switch validation.PhoneOrMail(req.Input) {
+	case validation.Mail:
 		sql = "mail = ?"
-	case verification.Phone:
+	case validation.Phone:
 		sql = "phone = ?"
 	default:
 		sql = "account = ?"
@@ -459,7 +459,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 	user, err := userDao.GetByEmailORPhone(db, req.Input, req.Input, "id", "name", "password")
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			if verification.PhoneOrMail(req.Input) != verification.Phone {
+			if validation.PhoneOrMail(req.Input) != validation.Phone {
 				return nil, errorcode.InvalidArgument.Message("邮箱不存在")
 			} else {
 				return nil, errorcode.InvalidArgument.Message("手机号不存在")

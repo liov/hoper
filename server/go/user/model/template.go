@@ -1,7 +1,7 @@
 package model
 
 import (
-	templatei "github.com/hopeio/cherry/utils/text/template"
+	templatei "github.com/hopeio/cherry/utils/encoding/text/template"
 )
 
 const (
