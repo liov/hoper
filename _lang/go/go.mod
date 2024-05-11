@@ -12,6 +12,7 @@ require (
 	github.com/hopeio/cherry v1.0.0
 	github.com/lucasb-eyer/go-colorful v1.0.2
 	github.com/spf13/pflag v1.0.5
+	github.com/spf13/viper v1.18.2
 	github.com/unicorn-engine/unicorn v0.0.0-20191119163456-3cea38bff7bf
 	github.com/xuri/excelize/v2 v2.8.1
 	go.uber.org/fx v1.21.0
@@ -20,6 +21,8 @@ require (
 	golang.org/x/exp/shiny v0.0.0-20220414153411-bcd21879b8fd
 	golang.org/x/mobile v0.0.0-20201217150744-e6ae53a27f4f
 	golang.org/x/sys v0.19.0
+	gopkg.in/yaml.v2 v2.4.0
+	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/gorm v1.25.10
 )
 
@@ -59,7 +62,6 @@ require (
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/spf13/cast v1.6.0 // indirect
-	github.com/spf13/viper v1.18.2 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/xuri/efp v0.0.0-20240408161823-9ad904a10d6d // indirect
 	github.com/xuri/nfp v0.0.0-20240318013403-ab9948c2c4a7 // indirect
@@ -75,8 +77,6 @@ require (
 	golang.org/x/time v0.5.0 // indirect
 	google.golang.org/protobuf v1.33.1-0.20240408130810-98873a205002 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/driver/mysql v1.5.6 // indirect
 	gorm.io/driver/postgres v1.5.7 // indirect
 	gorm.io/plugin/prometheus v0.1.0 // indirect

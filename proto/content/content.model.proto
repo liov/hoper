@@ -8,6 +8,7 @@ import "utils/area/area.proto";
 import "content/action.model.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
+option java_multiple_files = true;
 option go_package = "github.com/liov/hoper/server/go/protobuf/content";
 
 
@@ -116,7 +117,7 @@ message Content{
   utils.area.Area area = 19 [(go.field) = {tags:'comment:"地区"'}];
   uint64 areaId = 20 [(go.field) = {tags:'gorm:"size:10;not null" comment:"地区"'}];
   string location = 14 [(go.field) = {tags:'gorm:"size:20;not null" comment:"位置"'}];
-  repeated Tag tags = 6 [(go.field) = {tags:'gorm:"many2many:moment_tag;foreignkey:Id;association_foreignkey:Name" comment:"标签"'}];
+  repeated Tag tags = 6 [(go.field) = {tags:'gorm:"many2many:moment_tag;foreignkey:Id;references:Name" comment:"标签"'}];
   user.UserBaseInfo user = 8 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" comment:"用户id"'}];
   repeated user.UserBaseInfo approveUsers = 9 [(go.field) = {tags:'gorm:"many2many:moment_approve_user" comment:"点赞用户"'}];

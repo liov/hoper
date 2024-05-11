@@ -15,6 +15,7 @@ import "cherry/protobuf/oauth/oauth.proto";
 import "cherry/protobuf/utils/patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
+option java_multiple_files = true;
 option go_package = "github.com/liov/hoper/server/go/protobuf/content";
 
 service ContentService {

@@ -14,6 +14,7 @@ import "cherry/protobuf/utils/patch/go.proto";
 import "google/protobuf/wrappers.proto";
 
 option java_package = "xyz.hoper.protobuf.user";
+option java_multiple_files = true;
 option go_package = "github.com/liov/hoper/server/go/protobuf/user";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {

@@ -4,7 +4,9 @@ import "user/user.enum.proto";
 import "cherry/protobuf/utils/patch/go.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
+
 option java_package = "xyz.hoper.protobuf.user";
+option java_multiple_files = true;
 option go_package = "github.com/liov/hoper/server/go/protobuf/user";
 
 
@@ -32,6 +34,7 @@ message User {
   UserStatus status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
+
   string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
   string activatedAt = 3 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
   string deletedAt = 27 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];

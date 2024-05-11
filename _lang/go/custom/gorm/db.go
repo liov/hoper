@@ -24,6 +24,7 @@ var db *gorm.DB
 
 func main() {
 	defer initialize.Start(&Config{}, &dao)()
+
 	Scan()
 	RawScan()
 }

@@ -8,6 +8,7 @@ import "utils/area/area.proto";
 import "content/action.model.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
+option java_multiple_files = true;
 option go_package = "github.com/liov/hoper/server/go/protobuf/content";
 
 message Gift{

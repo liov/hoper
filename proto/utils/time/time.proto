@@ -5,6 +5,7 @@ import "cherry/protobuf/utils/patch/go.proto";
 
 option go_package = "github.com/hopeio/cherry/protobuf/time;time";
 option java_package = "xyz.hoper.protobuf.utils.time";
+option java_multiple_files = true;
 
 
 message TimeStamp {
