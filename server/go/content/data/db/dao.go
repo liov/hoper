@@ -33,7 +33,7 @@ func (d *ContentDBDao) Begin() *ContentDBDao {
 }
 
 type ChainDao struct {
-	clausei.Clause2
+	clausei.ChainClause
 	db *gorm.DB
 }
 

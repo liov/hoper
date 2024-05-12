@@ -5,6 +5,7 @@ opt-level = 0
 opt-level = 3
 
 [workspace]
+resolver = "2"
 members = [
     "lang",
     "p_macro",
