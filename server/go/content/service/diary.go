@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"github.com/hopeio/cherry/context/http_context"
+	"github.com/hopeio/cherry/context/httpctx"
 	gormi "github.com/hopeio/cherry/utils/dao/db/gorm"
 	"github.com/liov/hoper/server/go/content/confdao"
 	"github.com/liov/hoper/server/go/content/data"
@@ -30,7 +30,7 @@ func (*DiaryService) DiaryBook(ctx context.Context, req *content.DiaryBookReq) (
 	return nil, status.Errorf(codes.Unimplemented, "method DiaryBook not implemented")
 }
 func (*DiaryService) DiaryBookList(ctx context.Context, req *content.DiaryBookListReq) (*content.DiaryBookListRep, error) {
-	ctxi := http_context.ContextFromContext(ctx)
+	ctxi := httpctx.ContextFromContext(ctx)
 	_, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func (*DiaryService) DiaryBookList(ctx context.Context, req *content.DiaryBookLi
 	return nil, status.Errorf(codes.Unimplemented, "method DiaryBookList not implemented")
 }
 func (*DiaryService) AddDiaryBook(ctx context.Context, req *content.AddDiaryBookReq) (*request.Id, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -55,7 +55,7 @@ func (*DiaryService) AddDiaryBook(ctx context.Context, req *content.AddDiaryBook
 	return &request.Id{Id: req.Id}, nil
 }
 func (*DiaryService) EditDiaryBook(ctx context.Context, req *content.AddDiaryBookReq) (*emptypb.Empty, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -71,7 +71,7 @@ func (*DiaryService) EditDiaryBook(ctx context.Context, req *content.AddDiaryBoo
 	return nil, nil
 }
 func (*DiaryService) Info(ctx context.Context, req *request.Id) (*content.Diary, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -91,7 +91,7 @@ func (*DiaryService) Info(ctx context.Context, req *request.Id) (*content.Diary,
 	return nil, nil
 }
 func (*DiaryService) Add(ctx context.Context, req *content.AddDiaryReq) (*request.Id, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -115,7 +115,7 @@ func (*DiaryService) List(context.Context, *content.DiaryListReq) (*content.Diar
 }
 
 func (*DiaryService) Delete(ctx context.Context, req *request.Id) (*emptypb.Empty, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {

@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"github.com/hopeio/cherry/context/http_context"
+	"github.com/hopeio/cherry/context/httpctx"
 	gormi "github.com/hopeio/cherry/utils/dao/db/gorm"
 	"github.com/liov/hoper/server/go/content/confdao"
 	"github.com/liov/hoper/server/go/content/data"
@@ -30,7 +30,7 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 	if req.Action != content.ActionLike && req.Action != content.ActionUnlike && req.Action != content.ActionBrowse {
 		return nil, nil
 	}
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("Like")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("Like")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -76,7 +76,7 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 }
 
 func (*ActionService) DelLike(ctx context.Context, req *request.Id) (*emptypb.Empty, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -109,7 +109,7 @@ func (*ActionService) DelLike(ctx context.Context, req *request.Id) (*emptypb.Em
 }
 
 func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*request.Id, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -149,7 +149,7 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*re
 }
 
 func (*ActionService) DelComment(ctx context.Context, req *request.Id) (*emptypb.Empty, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -192,7 +192,7 @@ func (*ActionService) DelComment(ctx context.Context, req *request.Id) (*emptypb
 }
 
 func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*emptypb.Empty, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -254,7 +254,7 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*em
 }
 
 func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*emptypb.Empty, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -289,7 +289,7 @@ func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*empt
 }
 
 func (*ActionService) CommentList(ctx context.Context, req *content.CommentListReq) (*content.CommentListRep, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -378,7 +378,7 @@ func commentMaskField(comment *content.Comment) {
 }
 
 func (*ActionService) GetUserAction(ctx context.Context, req *content.ContentReq) (*content.UserAction, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {

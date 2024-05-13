@@ -9,8 +9,8 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/uuid"
-	"github.com/hopeio/cherry/context/gin_context"
-	"github.com/hopeio/cherry/context/http_context"
+	"github.com/hopeio/cherry/context/ginctx"
+	"github.com/hopeio/cherry/context/httpctx"
 	"github.com/hopeio/cherry/protobuf/request"
 	"github.com/hopeio/cherry/protobuf/response"
 	dbi "github.com/hopeio/cherry/utils/dao/db"
@@ -45,7 +45,7 @@ type UserService struct {
 }
 
 func (u *UserService) VerifyCode(ctx context.Context, req *emptypb.Empty) (*wrapperspb.StringValue, error) {
-	device := http_context.ContextFromContext(ctx).DeviceInfo
+	device := httpctx.ContextFromContext(ctx).DeviceInfo
 	log.Debug(device)
 	var rep = &wrappers.StringValue{}
 	vcode := validation.GenerateCode()
@@ -60,7 +60,7 @@ func (u *UserService) SendVerifyCode(ctx context.Context, req *model.SendVerifyC
 }
 
 func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*wrappers.StringValue, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context()
 	if req.Mail == "" && req.Phone == "" {
@@ -88,7 +88,7 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 }
 
 func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*wrappers.StringValue, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context()
 
@@ -160,7 +160,7 @@ func encryptPassword(password string) string {
 	return fmt.Sprintf("%x", md5.Sum(stringsi.ToBytes(hash)))
 }
 
-func sendMail(ctxi *http_context.Context, action model.Action, curTime int64, user *model.User) {
+func sendMail(ctxi *httpctx.Context, action model.Action, curTime int64, user *model.User) {
 	siteURL := "https://" + confdao.Conf.Customize.Domain
 	title := action.String()
 	secretStr := strconv.FormatInt(curTime, 10) + user.Mail + user.Password
@@ -210,7 +210,7 @@ func checkPassword(password string, user *model.User) bool {
 }
 
 func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.LoginRep, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("Active")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("Active")
 	defer span.End()
 	ctx = ctxi.Context()
 	redisKey := modelconst.ActiveTimeKey + strconv.FormatUint(req.Id, 10)
@@ -248,7 +248,7 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 }
 
 func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*emptypb.Empty, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("Edit")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("Edit")
 	defer span.End()
 	ctx = ctxi.Context()
 	user, err := auth(ctxi, true)
@@ -288,7 +288,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*emptypb.Em
 }
 
 func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginRep, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("Login")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("Login")
 	defer span.End()
 	ctx = ctxi.Context()
 
@@ -337,7 +337,7 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 	return u.login(ctxi, &user)
 }
 
-func (*UserService) login(ctxi *http_context.Context, user *model.User) (*model.LoginRep, error) {
+func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.LoginRep, error) {
 	authorization := Authorization{AuthInfo: &model.AuthInfo{
 		Id:     user.Id,
 		Name:   user.Name,
@@ -376,7 +376,7 @@ func (*UserService) login(ctxi *http_context.Context, user *model.User) (*model.
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
-	err = (*http_context.HttpContext)(ctxi).SetCookie(cookie)
+	err = (*httpctx.HttpContext)(ctxi).SetCookie(cookie)
 	if err != nil {
 		return nil, errorcode.Unavailable
 	}
@@ -384,7 +384,7 @@ func (*UserService) login(ctxi *http_context.Context, user *model.User) (*model.
 }
 
 func (u *UserService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.Empty, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("Logout")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("Logout")
 	defer span.End()
 	ctx = ctxi.Context()
 	user, err := auth(ctxi, true)
@@ -406,12 +406,12 @@ func (u *UserService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
-	(*http_context.HttpContext)(ctxi).SetCookie(cookie)
+	(*httpctx.HttpContext)(ctxi).SetCookie(cookie)
 	return new(emptypb.Empty), nil
 }
 
 func (u *UserService) AuthInfo(ctx context.Context, req *emptypb.Empty) (*model.UserAuthInfo, error) {
-	ctxi := http_context.ContextFromContext(ctx)
+	ctxi := httpctx.ContextFromContext(ctx)
 	user, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
@@ -420,7 +420,7 @@ func (u *UserService) AuthInfo(ctx context.Context, req *emptypb.Empty) (*model.
 }
 
 func (u *UserService) Info(ctx context.Context, req *request.Id) (*model.UserRep, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context()
 	auth, err := auth(ctxi, true)
@@ -444,7 +444,7 @@ func (u *UserService) Info(ctx context.Context, req *request.Id) (*model.UserRep
 }
 
 func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (*wrappers.StringValue, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context()
 	if verifyErr := luosimao.Verify(confdao.Conf.Customize.LuosimaoVerifyURL, confdao.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
@@ -482,7 +482,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 }
 
 func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswordReq) (*wrappers.StringValue, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("Logout")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("Logout")
 	defer span.End()
 	ctx = ctxi.Context()
 	redisKey := modelconst.ResetTimeKey + strconv.FormatUint(req.Id, 10)
@@ -529,7 +529,7 @@ func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListR
 }
 
 func (*UserService) BaseList(ctx context.Context, req *model.BaseListReq) (*model.BaseListRep, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	if ctxi.Internal == "" {
 		return nil, errorcode.PermissionDenied
@@ -555,7 +555,7 @@ func (*UserService) Service() (string, string, []gin.HandlerFunc) {
 	return "用户相关", "/api/user", []gin.HandlerFunc{middle.GinLog}
 }
 
-func (*UserService) Add(ctx *gin_context.Context, req *model.SignupReq) (*wrappers.StringValue, error) {
+func (*UserService) Add(ctx *ginctx.Context, req *model.SignupReq) (*wrappers.StringValue, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() {
 		pick.Get("/add").
@@ -571,7 +571,7 @@ func (*UserService) Add(ctx *gin_context.Context, req *model.SignupReq) (*wrappe
 	return &wrappers.StringValue{Value: req.Name}, nil
 }
 
-func (*UserService) Addv(ctx *gin_context.Context, req *response.TinyRep) (*response.TinyRep, error) {
+func (*UserService) Addv(ctx *ginctx.Context, req *response.TinyRep) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() {
 		pick.Post("/add").
@@ -584,7 +584,7 @@ func (*UserService) Addv(ctx *gin_context.Context, req *response.TinyRep) (*resp
 }
 
 func (u *UserService) EasySignup(ctx context.Context, req *model.SignupReq) (*model.LoginRep, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context()
 

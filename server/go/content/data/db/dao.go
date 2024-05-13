@@ -2,9 +2,8 @@ package db
 
 import (
 	"database/sql"
-	"github.com/hopeio/cherry/context/http_context"
+	"github.com/hopeio/cherry/context/httpctx"
 	"github.com/hopeio/cherry/protobuf/errorcode"
-	clausei "github.com/hopeio/cherry/utils/dao/db/gorm/clause"
 	"github.com/hopeio/cherry/utils/log"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"
@@ -13,11 +12,11 @@ import (
 )
 
 type ContentDBDao struct {
-	*http_context.Context
+	*httpctx.Context
 	ChainDao
 }
 
-func GetDao(ctx *http_context.Context, db *gorm.DB) *ContentDBDao {
+func GetDao(ctx *httpctx.Context, db *gorm.DB) *ContentDBDao {
 	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}
@@ -30,11 +29,6 @@ func (d *ContentDBDao) SetDB(db *gorm.DB) {
 
 func (d *ContentDBDao) Begin() *ContentDBDao {
 	return GetDao(d.Context, d.db.Begin())
-}
-
-type ChainDao struct {
-	clausei.Clause2
-	db *gorm.DB
 }
 
 func (d *ContentDBDao) CreateContextExt(typ content.ContentType, refId uint64) error {

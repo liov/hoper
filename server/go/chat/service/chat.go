@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
-	"github.com/hopeio/cherry/context/http_context"
+	"github.com/hopeio/cherry/context/httpctx"
 	"github.com/hopeio/cherry/protobuf/errorcode"
 	httpi "github.com/hopeio/cherry/utils/net/http"
 	"github.com/liov/hoper/server/go/protobuf/user"
@@ -33,7 +33,7 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 		} else {
 			dviceName = "PC"
 		}*/
-	ctxi := http_context.ContextFromContext(r.Context())
+	ctxi := httpctx.ContextFromContext(r.Context())
 	_, err = auth(ctxi, false)
 	if err != nil {
 		(&httpi.ResAnyData{

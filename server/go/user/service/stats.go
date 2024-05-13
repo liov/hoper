@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"github.com/hopeio/cherry/context/http_context"
+	"github.com/hopeio/cherry/context/httpctx"
 	gormi "github.com/hopeio/cherry/utils/dao/db/gorm"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/confdao"
@@ -16,7 +16,7 @@ import (
 
 // 关注
 func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*emptypb.Empty, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context()
 	auth, err := auth(ctxi, true)
@@ -44,7 +44,7 @@ func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*emptypb
 
 // 取消关注
 func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user.BaseListRep, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	ctx = ctxi.Context()
 	auth, err := auth(ctxi, true)

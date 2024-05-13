@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/hopeio/cherry/context/http_context"
+	"github.com/hopeio/cherry/context/httpctx"
 	"github.com/hopeio/cherry/protobuf/request"
 	gormi "github.com/hopeio/cherry/utils/dao/db/gorm"
 	"github.com/hopeio/cherry/utils/datastructure/set"
@@ -33,7 +33,7 @@ func (*MomentService) Service() (describe, prefix string, middleware []gin.Handl
 }
 
 func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Moment, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, _ := auth(ctxi, true)
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
@@ -135,7 +135,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		return nil, errorcode.InvalidArgument.Message(fmt.Sprintf("文章内容不能小于%d个字", confdao.Conf.Customize.Moment.MaxContentLen))
 	}
 
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -224,7 +224,7 @@ func (*MomentService) Edit(context.Context, *content.AddMomentReq) (*emptypb.Emp
 }
 
 func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*content.MomentListRep, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("List")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("List")
 	defer span.End()
 	auth, _ := auth(ctxi, true)
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
@@ -323,7 +323,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 }
 
 func (*MomentService) Delete(ctx context.Context, req *request.Id) (*emptypb.Empty, error) {
-	ctxi, span := http_context.ContextFromContext(ctx).StartSpan("")
+	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {

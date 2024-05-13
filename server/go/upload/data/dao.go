@@ -1,15 +1,15 @@
 package data
 
 import (
-	"github.com/hopeio/cherry/context/http_context"
+	"github.com/hopeio/cherry/context/httpctx"
 	"log"
 )
 
 type uploadDao struct {
-	*http_context.Context
+	*httpctx.Context
 }
 
-func GetDao(ctx *http_context.Context) *uploadDao {
+func GetDao(ctx *httpctx.Context) *uploadDao {
 	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}

@@ -3,7 +3,7 @@ package service
 import (
 	"encoding/json"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/hopeio/cherry/context/http_context"
+	"github.com/hopeio/cherry/context/httpctx"
 	stringsi "github.com/hopeio/cherry/utils/strings"
 	jwti "github.com/hopeio/cherry/utils/validation/auth/jwt"
 	"github.com/liov/hoper/server/go/protobuf/user"
@@ -43,7 +43,7 @@ func (x *Authorization) ParseToken(token string, secret []byte) error {
 	return nil
 }
 
-func auth(ctx *http_context.Context, update bool) (*user.AuthInfo, error) {
+func auth(ctx *httpctx.Context, update bool) (*user.AuthInfo, error) {
 	signature := ctx.Token[strings.LastIndexByte(ctx.Token, '.')+1:]
 	cacheTmp, ok := confdao.Dao.Cache.Get(signature)
 	if ok {

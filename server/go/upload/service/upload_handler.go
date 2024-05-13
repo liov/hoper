@@ -4,7 +4,7 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/hex"
-	"github.com/hopeio/cherry/context/http_context"
+	"github.com/hopeio/cherry/context/httpctx"
 	"github.com/hopeio/cherry/protobuf/errorcode"
 	gormi "github.com/hopeio/cherry/utils/dao/db/gorm"
 	httpi "github.com/hopeio/cherry/utils/net/http"
@@ -53,7 +53,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		info = fhs[0]
 	}
 
-	ctxi := http_context.ContextFromContext(r.Context())
+	ctxi := httpctx.ContextFromContext(r.Context())
 	_, err = auth(ctxi, false)
 	if err != nil {
 		(&httpi.ResAnyData{
@@ -78,7 +78,7 @@ func Exists(w http.ResponseWriter, req *http.Request) {
 }
 
 func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
-	ctxi := http_context.ContextFromContext(ctx)
+	ctxi := httpctx.ContextFromContext(ctx)
 	auth, err := auth(ctxi, false)
 	uploadDao := data.GetDao(ctxi)
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
@@ -106,7 +106,7 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 	(&httpi.ResAnyData{Message: "不存在"}).Response(w, http.StatusOK)
 }
 
-func save(ctx *http_context.Context, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
+func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
 	uploadDao := data.GetDao(ctx)
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx.Context(), ctx.TraceID)
 	auth := ctx.AuthInfo.(*user.AuthInfo)
@@ -205,7 +205,7 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 		errorcode.ParamInvalid.OriMessage(errRep).Response(w)
 		return
 	}
-	ctxi := http_context.ContextFromContext(r.Context())
+	ctxi := httpctx.ContextFromContext(r.Context())
 	_, err = auth(ctxi, false)
 	if err != nil {
 		(&httpi.ResAnyData{
