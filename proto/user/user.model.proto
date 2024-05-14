@@ -2,6 +2,9 @@ syntax = "proto3";
 package user;
 import "user/user.enum.proto";
 import "cherry/protobuf/utils/patch/go.proto";
+import "cherry/protobuf/time/time.proto";
+import "cherry/protobuf/time/timestamp/timestamp.proto";
+import "cherry/protobuf/time/deletedAt/deletedAt.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 
@@ -12,7 +15,7 @@ option go_package = "github.com/liov/hoper/server/go/protobuf/user";
 
 // 用户
 message User {
-  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" comment:"昵称"'}];
   string account = 17 [(go.field) = {tags:'gorm:"size:36;not null;unique" validate:"required,gte=6,lte=20" comment:"账号"'}];
   string password = 5 [(go.field) = {tags:'json:"-" gorm:"size:32;not null" validate:"gte=8,lte=15" comment:"密码"'}];
@@ -22,7 +25,9 @@ message User {
   Gender gender = 8 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type:INTEGER
   }];
-  string birthday = 9 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  time.Date birthday = 9 [(go.field) = {tags:'gorm:"<-:false;type:date;index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    default:"2018-08-08",
+    type: STRING}];
   string address = 14 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
   string intro = 10 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
   string signature = 11 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
@@ -35,15 +40,18 @@ message User {
     read_only:true
   }];
 
-  string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  string activatedAt = 3 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
-  string deletedAt = 27 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
-  // uint32 isDeleted = 29 [(go.field) = {tags:'gorm:"default:0"'}];
+  timestamp.Timestamp createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    type: STRING}];
+  timestamp.Timestamp activatedAt = 3 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    type: STRING}];
+  deletedAt.DeletedAt deletedAt = 27 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    type: STRING}];
 }
 
 message UserExt {
-  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
-  string lastActivatedAt = 23 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index" comment:"上次操作时间"'}];
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
+  timestamp.Timestamp lastActivatedAt = 23 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index" comment:"上次操作时间"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    type: STRING}];
   uint64 score = 15 [(go.field) = {tags:'gorm:"default:0" comment:"分数"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"分数"
     type: INTEGER}];
@@ -61,8 +69,10 @@ message UserExt {
 message UserFollow {
   uint64 userId = 1 [(go.field) = {tags:'gorm:"index"'}];
   uint64 followId = 2 [(go.field) = {tags:'gorm:"default:0"'}];
-  string createdAt = 3 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  string deletedAt = 4 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  timestamp.Timestamp createdAt = 3 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    type: STRING}];
+  deletedAt.DeletedAt deletedAt = 4 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    type: STRING}];
   uint32 status = 5 [(go.field) = {tags:'gorm:"type:int2;"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }]; //状态：0无效，1有效
@@ -74,7 +84,8 @@ message UserScoreLog {
   uint64 userId = 2 [(go.field) = {tags:'gorm:"index"'}];
   sint64 score = 3 [(go.field) = {tags: 'json:"score" gorm:""'}];
   string reason = 5 [(go.field) = {tags:'gorm:"size:255"'}];
-  string createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  timestamp.Timestamp createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    type: STRING}];
   string remark = 7 [(go.field) = {tags:'gorm:"size:255"'}];
 }
 //用户封禁日志
@@ -84,7 +95,8 @@ message UserBannedLog {
   uint64 duration = 3 [(go.field) = {tags:'gorm:""'}];
   string reason = 4 [(go.field) = {tags:'gorm:"size:255"'}];
   BannedType type = 5 ;
-  string bannedAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  timestamp.Timestamp bannedAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    type: STRING}];
   string remark = 7 [(go.field) = {tags:'gorm:"size:255"'}];
 }
 
@@ -97,7 +109,8 @@ message UserActionLog {
   //相关id
   string relatedId = 4[(go.field) = {tags:'gorm:"size:255"'}];
   bytes lastValue = 5 [(go.field) = {tags:'gorm:"size:255"'}];
-  string createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  timestamp.Timestamp createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    type: STRING}];
   string remark = 7 [(go.field) = {tags:'gorm:"size:255"'}];
   //设备
   UserDeviceInfo deviceInfo = 8 [(go.field) = {tags:'gorm:"embedded"'}];
@@ -119,8 +132,10 @@ message Resume {
   string title = 4 [(go.field) = {tags:'gorm:"size:255"'}];
   // 部门或专业
   string department = 5 [(go.field) = {tags:'gorm:"size:255"'}];
-  string startTime = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-  string endTime = 7 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
+  timestamp.Timestamp startTime = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    type: STRING}];
+  timestamp.Timestamp endTime = 7 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    type: STRING}];
   string remark = 11 [(go.field) = {tags:'gorm:"size:255"'}];
   // 0-Education 教育经历,1- Work 职业生涯
   uint32 type = 12 [(go.field) = {tags:'gorm:"type:int2;default:0"'}];
@@ -156,7 +171,7 @@ message UserOAuthInfo {
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" comment:\"名字\"'}];
   string mail = 6 [(go.field) = {tags:'gorm:"size:16;default:\'\'" validate:"email" comment:"邮箱"'}];
   string location = 16[(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
-  string introduction = 10 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
+  string intro = 10 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
   string avatarURL = 12 [(go.field) = {tags:'gorm:"size:255;default:\'\'"'}];
 }
 

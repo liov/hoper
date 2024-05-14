@@ -57,7 +57,7 @@ func (x *AuthInfo) UserAuthInfo() *UserAuthInfo {
 func ConvDeviceInfo(x *contexti.DeviceInfo) *UserDeviceInfo {
 	return &UserDeviceInfo{
 		Device:     x.Device,
-		Os:         x.Os,
+		OS:         x.OS,
 		AppCode:    x.AppCode,
 		AppVersion: x.AppVersion,
 		IP:         x.IP,

@@ -6,6 +6,7 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 import "cherry/protobuf/utils/validator/validator.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
+import "cherry/protobuf/time/timestamp/timestamp.proto";
 import "cherry/protobuf/response/response.proto";
 import "cherry/protobuf/request/param.proto";
 import "danielvladco/protobuf/graphql.proto";
@@ -390,8 +391,10 @@ message ResetPasswordReq {
 }
 
 message ActionLogListReq {
-  string startTime = 1;
-  string endTime = 2;
+  timestamp.Timestamp startTime = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    type: STRING}];
+  timestamp.Timestamp endTime = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    type: STRING}];
 }
 
 message ActionLogListRep {

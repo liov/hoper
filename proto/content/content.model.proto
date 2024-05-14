@@ -2,6 +2,8 @@ syntax = "proto3";
 package content;
 import "content/content.enum.proto";
 import "cherry/protobuf/utils/patch/go.proto";
+import "cherry/protobuf/time/timestamp/timestamp.proto";
+import "cherry/protobuf/time/deletedAt/deletedAt.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "user/user.model.proto";
 import "utils/area/area.proto";
@@ -19,8 +21,8 @@ message Tag {
   string description = 3 [(go.field) = {tags:'gorm:"size:100"  comment:"描述"'}];
   string expressionURL = 17 [(go.field) = {tags:'gorm:"size:255"  comment:"表情url"'}];
   uint64 userId = 4 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
-  string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  string deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  timestamp.Timestamp createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  deletedAt.DeletedAt deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
   uint32 status = 29 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
@@ -31,7 +33,7 @@ message TagGroup{
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" validate:"required,gte=2,lte=10" comment:"名称"'}];
   uint64 parentId = 3 [(go.field) = {tags:'gorm:"default:0;index" comment:"直接父分类的ID"'}];
   string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  string deletedAt = 26 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  deletedAt.DeletedAt deletedAt = 26 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
   uint32 status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
@@ -41,7 +43,7 @@ message TagGroup{
 message TagGroupRel{
   uint64 tagId = 1 [(go.field) = {tags:'gorm:"index:idx_rel"'}];
   uint64 groupId = 2 [(go.field) = {tags:'gorm:"index:idx_rel"'}];
-  string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  deletedAt.DeletedAt createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
   uint32 status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
@@ -60,7 +62,7 @@ message Category{
   uint64 parentId = 3 [(go.field) = {tags:'gorm:"default:0;index" comment:"直接父分类的ID"'}];
   uint32 sequence = 4 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
   uint64 userId = 5 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
-  string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  deletedAt.DeletedAt createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
   uint32 status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
@@ -72,7 +74,7 @@ message Attributes{
   string describe = 3 [(go.field) = {tags:'gorm:"size:255;default:\'\'"  comment:"描述"'}];
   uint32 range = 4 [(go.field) = {tags:'gorm:"type:int2" comment:"属性使用范围"'}];
   uint32 style = 5 [(go.field) = {tags:'gorm:"type:int2" comment:"属性的值输入风格"'}];
-  string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  timestamp.Timestamp createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
   uint32 status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
@@ -83,7 +85,7 @@ message AttrGroup{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" validate:"required,gte=2,lte=10" comment:"名称"'}];
   uint64 parentId = 3 [(go.field) = {tags:'gorm:"default:0;index" comment:"直接父分类的ID"'}];
-  string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  timestamp.Timestamp createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
   uint32 status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
@@ -127,7 +129,7 @@ message Content{
   uint32 sequence = 12 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
   uint32 anonymous = 15 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"是否匿名,0-是,1否"'}];
   ViewPermission permission = 13 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"查看权限"'}];
-  string createdAt = 16 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  timestamp.Timestamp createdAt = 16 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
   uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
@@ -166,8 +168,8 @@ message Moment {
   uint32 sequence = 19 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
   uint32 anonymous = 20 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"是否匿名,0-是,1否"'}];
   ViewPermission permission = 21 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"查看权限"'}];
-  string createdAt = 22 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  string deletedAt = 23 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  timestamp.Timestamp createdAt = 22 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  deletedAt.DeletedAt deletedAt = 23 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
   uint32 status = 24 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
@@ -201,8 +203,8 @@ message Article{
   uint32 sequence = 12 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
   uint32 anonymous = 15 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"是否匿名,0-是,1否"'}];
   ViewPermission permission = 13 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"查看权限"'}];
-  string createdAt = 16 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  string deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  timestamp.Timestamp createdAt = 16 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  deletedAt.DeletedAt deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
   uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
@@ -217,8 +219,8 @@ message Note {
   uint64 id = 1 [(go.field) = {tags:'json:"id" gorm:"primaryKey;"'}];
   string title = 2 [(go.field) = {tags:'gorm:"type:varchar(10)" json:"title" validate:"gte=3,lte=10" comment:"标题"'}];
   string content = 3 [(go.field) = {tags:'gorm:"type:text" json:"content"'}];
-  string createdAt = 16 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  string deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  timestamp.Timestamp createdAt = 16 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  deletedAt.DeletedAt deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
   uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
@@ -233,8 +235,8 @@ message DiaryBook{
   uint32 anonymous = 15 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"是否匿名,0-是,1否"'}];
   ViewPermission permission = 13 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"查看权限"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" comment:"用户id"'}];
-  string createdAt = 16 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  string deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  timestamp.Timestamp createdAt = 16 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  deletedAt.DeletedAt deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
   uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
@@ -250,8 +252,8 @@ message Container{
   uint32 anonymous = 15 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"是否匿名,0-是,1否"'}];
   ViewPermission permission = 13 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"查看权限"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" comment:"用户id"'}];
-  string createdAt = 16 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  string deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  timestamp.Timestamp createdAt = 16 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  deletedAt.DeletedAt deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
   uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
@@ -278,8 +280,8 @@ message Diary {
   uint32 sequence = 19 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
   uint32 anonymous = 20 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"是否匿名,0-是,1否"'}];
   ViewPermission permission = 21 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"查看权限"'}];
-  string createdAt = 22 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  string deletedAt = 23 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  timestamp.Timestamp createdAt = 22 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  deletedAt.DeletedAt deletedAt = 23 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
   uint32 status = 24 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
@@ -296,13 +298,13 @@ message Favorites{
   uint32 anonymous = 15 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"是否匿名,0-是,1否"'}];
   repeated  user.UserBaseInfo followUsers = 7 [(go.field) = {tags:'gorm:"-" comment:"关注人"'}];
   repeated Collection collections = 6 [(go.field) = {tags:'gorm:"-" comment:"收藏"'}];
-  string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  string deletedAt = 26 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  timestamp.Timestamp createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  deletedAt.DeletedAt deletedAt = 26 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
 }
 
 message FavFollow{
   uint64 favId = 1 [(go.field) = {tags:'gorm:"not null;index:idx_fav_user"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_fav_user"  comment:"用户id"'}];
-  string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  string deletedAt = 26 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  timestamp.Timestamp createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  deletedAt.DeletedAt deletedAt = 26 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
 }

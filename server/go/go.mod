@@ -16,7 +16,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.19.1
-	github.com/hopeio/cherry v1.8.0
+	github.com/hopeio/cherry v1.7.0
 	github.com/hopeio/pick v1.0.0
 	github.com/vektah/gqlparser/v2 v2.5.11
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.50.0
@@ -57,7 +57,6 @@ require (
 	github.com/cockroachdb/pebble v1.1.0 // indirect
 	github.com/cockroachdb/redact v1.1.5 // indirect
 	github.com/cockroachdb/tokenbucket v0.0.0-20230807174530-cc333fc44b06 // indirect
-	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dgraph-io/ristretto v0.1.2-0.20240116140435-c67e07994f91 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
@@ -173,4 +172,9 @@ require (
 	gorm.io/driver/postgres v1.5.7 // indirect
 	gorm.io/plugin/prometheus v0.1.0 // indirect
 	nhooyr.io/websocket v1.8.11 // indirect
+)
+
+replace (
+	github.com/hopeio/cherry => ../../thirdparty/cherry
+	github.com/hopeio/pick => ../../thirdparty/pick
 )
