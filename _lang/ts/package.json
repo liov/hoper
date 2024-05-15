@@ -1,8 +1,0 @@
-{
-  "name": "tsjs",
-  "version": "1.0.0",
-  "type": "commonjs",
-  "dependencies": {
-    "reflect-metadata": "^0.1.13"
-  }
-}

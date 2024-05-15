@@ -1,1 +1,0 @@
-declare var foo1:any;

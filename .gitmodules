@@ -10,3 +10,7 @@
 	path = thirdparty/diamond
 	url = https://github.com/hopeio/diamond
 	branch = main
+[submodule "awesome"]
+	path = awesome
+	url = https://github.com/liov/awesome
+	branch = main

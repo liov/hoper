@@ -1,1 +1,0 @@
-helm upgrade -i kafdrop chart -f helm.yaml -n tools

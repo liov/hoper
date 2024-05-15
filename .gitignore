@@ -22,10 +22,7 @@ gradle
 /tools/server/local.toml
 secret.txt
 /tools/server/config.toml
-/build/tmp
-/build/k8s/app/deploy
-/build/logs
-/build/k8s/app/certs
+
 *.lock.json
 deploy
 **/local.toml
