@@ -32,7 +32,7 @@ message Report{
   ContentType type = 12 [(go.field) = {tags:'gorm:"type:int2;not null;index:idx_report_type_id" validate:"required" comment:"相关类型"'}];
   user.UserBaseInfo user = 2 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   DelReason delReason = 3[(go.field) = {tags:'gorm:"type:int2;default:0" comment:"举报原因"'}];
-  string remark = 4[(go.field) = {tags:'gorm:"size:255;default:\'\'" comment:"备注"'}];
+  string remark = 4[(go.field) = {tags:'gorm:"size:255" comment:"备注"'}];
   timestamp.Timestamp createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
 }
 
@@ -65,7 +65,7 @@ message ContentDel{
   uint64 refId = 2 [(go.field) = {tags:'json:"-" gorm:"size:20;default:0;primaryKey;autoIncrement:false" comment:"相关id"'}];
   ContentType type = 1 [(go.field) = {tags:'json:"-" gorm:"type:int2;default:0;primaryKey;autoIncrement:false" comment:"类型"'}];
   DelReason delReason = 3[(go.field) = {tags:'gorm:"type:int2;default:0" comment:"删除原因"'}];
-  string remark = 4[(go.field) = {tags:'gorm:"size:255;default:\'\'" comment:"备注"'}];
+  string remark = 4[(go.field) = {tags:'gorm:"size:255" comment:"备注"'}];
   timestamp.Timestamp createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
 }
 // 评论

@@ -373,8 +373,7 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 
 // 屏蔽字段
 func commentMaskField(comment *content.Comment) {
-	comment.DeletedAt = ""
-	comment.CreatedAt = comment.CreatedAt[:19]
+	comment.DeletedAt = nil
 }
 
 func (*ActionService) GetUserAction(ctx context.Context, req *content.ContentReq) (*content.UserAction, error) {

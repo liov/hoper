@@ -124,8 +124,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 // 屏蔽字段
 func momentMaskField(moment *content.Moment) {
 	moment.AreaVisibility = 0
-	moment.DeletedAt = ""
-	moment.CreatedAt = moment.CreatedAt[:19]
+	moment.DeletedAt = nil
 	moment.Anonymous = 0
 }
 

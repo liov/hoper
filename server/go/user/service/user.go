@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/md5"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -13,6 +14,7 @@ import (
 	"github.com/hopeio/cherry/context/httpctx"
 	"github.com/hopeio/cherry/protobuf/request"
 	"github.com/hopeio/cherry/protobuf/response"
+	"github.com/hopeio/cherry/protobuf/time/timestamp"
 	dbi "github.com/hopeio/cherry/utils/dao/db"
 	gormi "github.com/hopeio/cherry/utils/dao/db/gorm"
 	"github.com/hopeio/cherry/utils/sdk/luosimao"
@@ -68,13 +70,19 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 	}
 	userDao := data.GetDao(ctxi)
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
-	if req.Mail != "" {
-		if exist, _ := userDao.ExitsCheck(db, "mail", req.Phone); exist {
+	input := req.Mail
+	if input == "" {
+		input = req.Phone
+	}
+	checkUser, err := userDao.GetByEmailOrPhone(db, input)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, errorcode.DBError
+	}
+	if err == nil {
+		if checkUser.Mail == req.Mail {
 			return nil, errorcode.InvalidArgument.Message("邮箱已被注册")
 		}
-	}
-	if req.Phone != "" {
-		if exist, _ := userDao.ExitsCheck(db, "phone", req.Phone); exist {
+		if checkUser.Phone == req.Phone {
 			return nil, errorcode.InvalidArgument.Message("手机号已被注册")
 		}
 	}
@@ -103,20 +111,23 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*wrappe
 
 	userDao := data.GetDao(ctxi)
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
-	if exist, _ := userDao.ExitsCheck(db, "name", req.Name); exist {
-		return nil, errorcode.InvalidArgument.Message("用户名已被注册")
+
+	checkUser, err := userDao.GetByNameOrEmailOrPhone(db, req.Name, req.Mail, req.Phone)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, ctxi.ErrorLog(errorcode.DBError.Message("查询出错"), err, "userDao.GetByNameOrEmailOrPhone")
 	}
-	if req.Mail != "" {
-		if exist, _ := userDao.ExitsCheck(db, "mail", req.Mail); exist {
+	if err == nil {
+		if checkUser.Name == req.Name {
+			return nil, errorcode.InvalidArgument.Message("用户名已被注册")
+		}
+		if checkUser.Mail == req.Mail {
 			return nil, errorcode.InvalidArgument.Message("邮箱已被注册")
 		}
-	}
-	if req.Phone != "" {
-		if exist, _ := userDao.ExitsCheck(db, "phone", req.Phone); exist {
+		if checkUser.Phone == req.Phone {
 			return nil, errorcode.InvalidArgument.Message("手机号已被注册")
 		}
 	}
-	formatNow := ctxi.TimeString
+
 	var user = &model.User{
 		Name:      req.Name,
 		Account:   uuid.New().String(),
@@ -125,7 +136,6 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*wrappe
 		Gender:    req.Gender,
 		AvatarUrl: modelconst.DefaultAvatar,
 		Role:      model.RoleNormal,
-		CreatedAt: formatNow,
 		Status:    model.UserStatusInActive,
 	}
 
@@ -456,7 +466,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 	}
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
 	userDao := data.GetDao(ctxi)
-	user, err := userDao.GetByEmailORPhone(db, req.Input, req.Input, "id", "name", "password")
+	user, err := userDao.GetByEmailOrPhone(db, req.Input, req.Input, "id", "name", "password")
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			if validation.PhoneOrMail(req.Input) != validation.Phone {
@@ -594,20 +604,23 @@ func (u *UserService) EasySignup(ctx context.Context, req *model.SignupReq) (*mo
 
 	userDao := data.GetDao(ctxi)
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
-	if exist, _ := userDao.ExitsCheck(db, "name", req.Name); exist {
-		return nil, errorcode.InvalidArgument.Message("用户名已被注册")
+
+	checkUser, err := userDao.GetByNameOrEmailOrPhone(db, req.Name, req.Mail, req.Phone)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, errorcode.DBError
 	}
-	if req.Mail != "" {
-		if exist, _ := userDao.ExitsCheck(db, "mail", req.Phone); exist {
+	if err == nil {
+		if checkUser.Name == req.Name {
+			return nil, errorcode.InvalidArgument.Message("用户名已被注册")
+		}
+		if checkUser.Mail == req.Mail {
 			return nil, errorcode.InvalidArgument.Message("邮箱已被注册")
 		}
-	}
-	if req.Phone != "" {
-		if exist, _ := userDao.ExitsCheck(db, "phone", req.Phone); exist {
+		if checkUser.Phone == req.Phone {
 			return nil, errorcode.InvalidArgument.Message("手机号已被注册")
 		}
 	}
-	formatNow := ctxi.TimeString
+
 	var user = &model.User{
 		Name:        req.Name,
 		Account:     uuid.New().String(),
@@ -616,8 +629,7 @@ func (u *UserService) EasySignup(ctx context.Context, req *model.SignupReq) (*mo
 		Gender:      req.Gender,
 		AvatarUrl:   modelconst.DefaultAvatar,
 		Role:        model.RoleNormal,
-		CreatedAt:   formatNow,
-		ActivatedAt: ctxi.RequestAt.TimeString,
+		ActivatedAt: timestamp.New(ctxi.RequestAt.Time),
 		Status:      model.UserStatusActivated,
 	}
 
