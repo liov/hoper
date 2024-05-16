@@ -31,7 +31,7 @@ service ActionService {
       post: "/api/v1/action/like"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags:["v1.0.0"]
+      tags:["动作相关接口","v1.0.0"]
     };
     option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
@@ -41,7 +41,7 @@ service ActionService {
       delete: "/api/v1/action/like/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags:["v1.0.0"]
+      tags:["动作相关接口","v1.0.0"]
     };
     option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
