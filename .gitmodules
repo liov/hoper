@@ -14,3 +14,7 @@
 	path = awesome
 	url = https://github.com/liov/awesome
 	branch = main
+[submodule "deploy"]
+	path = deploy
+	url = https://github.com/hopeio/deploy
+	branch = main
