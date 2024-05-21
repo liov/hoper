@@ -1,13 +1,13 @@
 package db
 
 import (
-	clausei "github.com/hopeio/cherry/utils/dao/db/gorm/clause"
+	clausei "github.com/hopeio/cherry/utils/dao/db/gorm"
 	"github.com/liov/hoper/server/go/protobuf/content"
 	"gorm.io/gorm"
 )
 
 type ChainDao struct {
-	clausei.ChainClause
+	clausei.ChainScope
 	db *gorm.DB
 }
 
