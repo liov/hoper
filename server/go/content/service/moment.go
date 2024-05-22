@@ -99,7 +99,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 		userIds.Add(moment.UserId)
 	}
 	if len(userIds) > 0 {
-		userList, err := rpc.UserClient().BaseList(ctxi.Context(), &user.BaseListReq{Ids: userIds.ToArray()})
+		userList, err := rpc.UserClient().BaseList(ctxi.Context(), &user.BaseListReq{Ids: userIds.ToSlice()})
 		if err != nil {
 			return nil, err
 		}
@@ -308,7 +308,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	}
 	var users []*user.UserBaseInfo
 	if len(userIds) > 0 {
-		userList, err := rpc.UserClient().BaseList(ctxi.Context(), &user.BaseListReq{Ids: userIds.ToArray()})
+		userList, err := rpc.UserClient().BaseList(ctxi.Context(), &user.BaseListReq{Ids: userIds.ToSlice()})
 		if err != nil {
 			return nil, err
 		}
