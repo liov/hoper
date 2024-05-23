@@ -15,15 +15,15 @@ import (
 	"github.com/hopeio/cherry/protobuf/request"
 	"github.com/hopeio/cherry/protobuf/response"
 	"github.com/hopeio/cherry/protobuf/time/timestamp"
-	dbi "github.com/hopeio/cherry/utils/dao/db"
 	gormi "github.com/hopeio/cherry/utils/dao/db/gorm"
 	"github.com/hopeio/cherry/utils/sdk/luosimao"
 	stringsi "github.com/hopeio/cherry/utils/strings"
 	"github.com/hopeio/pick"
 	model "github.com/liov/hoper/server/go/protobuf/user"
+	"github.com/liov/hoper/server/go/user/api/middle"
 	"github.com/liov/hoper/server/go/user/confdao"
 	"github.com/liov/hoper/server/go/user/data"
-	"github.com/liov/hoper/server/go/user/middle"
+	"github.com/liov/hoper/server/go/user/data/redis"
 	modelconst "github.com/liov/hoper/server/go/user/model"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
@@ -68,13 +68,13 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 	if req.Mail == "" && req.Phone == "" {
 		return nil, errorcode.InvalidArgument.Message("请填写邮箱或手机号")
 	}
-	userDao := data.GetDao(ctxi)
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
+
+	userDao := data.GetDBDao(ctxi, confdao.Dao.GORMDB.DB)
 	input := req.Mail
 	if input == "" {
 		input = req.Phone
 	}
-	checkUser, err := userDao.GetByEmailOrPhone(db, input)
+	checkUser, err := userDao.GetByEmailOrPhone(input)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errorcode.DBError
 	}
@@ -109,10 +109,9 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*wrappe
 		}
 	}
 
-	userDao := data.GetDao(ctxi)
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
+	userDao := data.GetDBDao(ctxi, confdao.Dao.GORMDB.DB)
 
-	checkUser, err := userDao.GetByNameOrEmailOrPhone(db, req.Name, req.Mail, req.Phone)
+	checkUser, err := userDao.GetByNameOrEmailOrPhone(req.Name, req.Mail, req.Phone)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, ctxi.ErrorLog(errorcode.DBError.Message("查询出错"), err, "userDao.GetByNameOrEmailOrPhone")
 	}
@@ -140,7 +139,7 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*wrappe
 	}
 
 	user.Password = encryptPassword(req.Password)
-	if err := userDao.Creat(db, user); err != nil {
+	if err := userDao.Creat(user); err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError.Message("新建出错"), err, "UserService.Creat")
 	}
 
@@ -223,23 +222,17 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("Active")
 	defer span.End()
 	ctx = ctxi.Context()
+	userDBDao := data.GetDBDao(ctxi, confdao.Dao.GORMDB.DB)
+
+	user, err := userDBDao.GetByPrimaryKey(req.Id)
+	if err != nil {
+		return nil, errorcode.DBError
+	}
 	redisKey := modelconst.ActiveTimeKey + strconv.FormatUint(req.Id, 10)
 	emailTime, err := confdao.Dao.Redis.Get(ctx, redisKey).Int64()
 	if err != nil {
-		userDao := data.GetDao(ctxi)
-		db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
-		user, err := userDao.GetByPrimaryKey(db, req.Id)
-		if err != nil {
-			return nil, errorcode.DBError
-		}
 		go sendMail(ctxi, model.ActionActive, ctxi.RequestAt.TimeStamp, user)
 		return nil, ctxi.ErrorLog(errorcode.InvalidArgument.Message("已过激活期限"), err, "Get")
-	}
-	userDao := data.GetDao(ctxi)
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
-	user, err := userDao.GetByPrimaryKey(db, req.Id)
-	if err != nil {
-		return nil, errorcode.DBError
 	}
 	if user.Status != model.UserStatusInActive {
 		return nil, errorcode.AlreadyExists.Message("已激活")
@@ -251,8 +244,10 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 	if req.Secret != secretStr {
 		return nil, errorcode.InvalidArgument.Message("无效的链接")
 	}
-
-	db.Model(user).Updates(map[string]interface{}{"activated_at": time.Now(), "status": model.UserStatusActivated})
+	err = userDBDao.Active(user)
+	if err != nil {
+		return nil, errorcode.DBError
+	}
 	confdao.Dao.Redis.Del(ctx, redisKey)
 	return u.login(ctxi, user)
 }
@@ -271,25 +266,25 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*emptypb.Em
 	device := ctxi.DeviceInfo
 
 	if req.Details != nil {
-		userDao := data.GetDao(ctxi)
-		db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
-		originalIds, err := userDao.ResumesIds(db, user.Id)
+		userDBDao := data.GetDBDao(ctxi, confdao.Dao.GORMDB.DB)
+
+		originalIds, err := userDBDao.ResumesIds(user.Id)
 		if err != nil {
 			return nil, errorcode.DBError.Message("更新失败")
 		}
 		var resumes []*model.Resume
 		resumes = append(req.Details.EduExps, req.Details.WorkExps...)
-		tx := confdao.Dao.GORMDB.Begin()
+		tx := userDBDao.Begin()
+		defer tx.Rollback()
+		userDBDao = data.GetDBDao(ctxi, tx)
 		if len(resumes) > 0 {
-			err = userDao.SaveResumes(tx, req.Id, resumes, originalIds, model.ConvDeviceInfo(device))
+			err = userDBDao.SaveResumes(req.Id, resumes, originalIds, model.ConvDeviceInfo(device))
 			if err != nil {
-				tx.Rollback()
 				return nil, errorcode.DBError.Message("更新失败")
 			}
 		}
-		err = tx.Table(modelconst.UserTableName).Where(`id = ?`, req.Id).UpdateColumns(req.Details).Error
+		err = userDBDao.Update(req)
 		if err != nil {
-			tx.Rollback()
 			return nil, errorcode.DBError.Message("更新失败")
 		}
 		tx.Commit()
@@ -311,24 +306,14 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 	if req.Input == "" {
 		return nil, errorcode.InvalidArgument.Message("账号错误")
 	}
-	var sql string
 
-	switch validation.PhoneOrMail(req.Input) {
-	case validation.Mail:
-		sql = "mail = ?"
-	case validation.Phone:
-		sql = "phone = ?"
-	default:
-		sql = "account = ?"
-	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
-	var user model.User
-	if err := db.Table(modelconst.UserTableName).
-		Where(sql+` AND status != ?`+dbi.WithNotDeleted, req.Input, model.UserStatusDeleted).First(&user).Error; err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError.Message("账号不存在"), err, "Find")
+	userDBDao := data.GetDBDao(ctxi, confdao.Dao.GORMDB.DB)
+	user, err := userDBDao.UserInfoByAccount(req.Input)
+	if err != nil {
+		return nil, ctxi.ErrorLog(errorcode.DBError.Message("账号不存在"), err, "Login")
 	}
 
-	if !checkPassword(req.Password, &user) {
+	if !checkPassword(req.Password, user) {
 		return nil, errorcode.InvalidArgument.Message("密码错误")
 	}
 	if user.Status == model.UserStatusInActive {
@@ -340,11 +325,11 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 		if err := confdao.Dao.Redis.SetEX(ctx, activeUser, curTime, modelconst.ActiveDuration).Err(); err != nil {
 			return nil, ctxi.ErrorLog(errorcode.RedisErr, err, "SetEX")
 		}
-		go sendMail(ctxi, model.ActionActive, curTime, &user)
+		go sendMail(ctxi, model.ActionActive, curTime, user)
 		return nil, model.UserErrNoActive.Message("账号未激活,请进入邮箱点击激活")
 	}
 
-	return u.login(ctxi, &user)
+	return u.login(ctxi, user)
 }
 
 func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.LoginRep, error) {
@@ -367,8 +352,8 @@ func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.Login
 
 	db.Table(modelconst.UserExtTableName).Where(`id = ?`, user.Id).
 		UpdateColumn("last_activated_at", ctxi.RequestAt.TimeString)
-	userDao := data.GetDao(ctxi)
-	if err := userDao.EfficientUserHashToRedis(); err != nil {
+	userRedisDao := redis.GetUserDao(ctxi, confdao.Dao.Redis.Client)
+	if err := userRedisDao.EfficientUserHashToRedis(); err != nil {
 		return nil, errorcode.RedisErr
 	}
 	resp := &model.LoginRep{
@@ -416,7 +401,11 @@ func (u *UserService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
-	(*httpctx.HttpContext)(ctxi).SetCookie(cookie)
+	err = (*httpctx.HttpContext)(ctxi).SetCookie(cookie)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
 	return new(emptypb.Empty), nil
 }
 
@@ -440,13 +429,13 @@ func (u *UserService) Info(ctx context.Context, req *request.Id) (*model.UserRep
 	if req.Id == 0 {
 		req.Id = auth.Id
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
-	userDao := data.GetDao(ctxi)
+	userRedisDao := redis.GetUserDao(ctxi, confdao.Dao.Redis.Client)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.Context(), ctxi.TraceID)
 	var user1 model.User
-	if err = db.Find(&user1, req.Id).Error; err != nil {
+	if err = db.First(&user1, req.Id).Error; err != nil {
 		return nil, errorcode.DBError.Message("账号不存在")
 	}
-	userExt, err := userDao.GetUserExtRedis()
+	userExt, err := userRedisDao.GetUserExtRedis()
 	if err != nil {
 		return nil, err
 	}
@@ -464,11 +453,11 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 	if req.Input == "" {
 		return nil, errorcode.InvalidArgument.Message("账号错误")
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
-	userDao := data.GetDao(ctxi)
-	user, err := userDao.GetByEmailOrPhone(db, req.Input, req.Input, "id", "name", "password")
+	userDBDao := data.GetDBDao(ctxi, confdao.Dao.GORMDB.DB)
+
+	user, err := userDBDao.GetByEmailOrPhone(req.Input, req.Input, "id", "name", "password")
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			if validation.PhoneOrMail(req.Input) != validation.Phone {
 				return nil, errorcode.InvalidArgument.Message("邮箱不存在")
 			} else {
@@ -500,9 +489,9 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.InvalidArgument.Message("无效的链接"), err, "Redis.Get")
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
-	userDao := data.GetDao(ctxi)
-	user, err := userDao.GetByPrimaryKey(db, req.Id)
+	userDBDao := data.GetDBDao(ctxi, confdao.Dao.GORMDB.DB)
+
+	user, err := userDBDao.GetByPrimaryKey(req.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -516,7 +505,7 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 	if req.Secret != secretStr {
 		return nil, errorcode.InvalidArgument.Message("无效的链接")
 	}
-
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.Context(), ctxi.TraceID)
 	if err := db.Table(modelconst.UserTableName).
 		Where(`id = ?`, user.Id).Update("password", req.Password).Error; err != nil {
 		log.Error("UserService.ResetPassword,DB.Update", err)
@@ -545,9 +534,9 @@ func (*UserService) BaseList(ctx context.Context, req *model.BaseListReq) (*mode
 		return nil, errorcode.PermissionDenied
 	}
 	ctx = ctxi.Context()
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
-	userDao := data.GetDao(ctxi)
-	count, users, err := userDao.GetBaseListDB(db, req.Ids, int(req.PageNo), int(req.PageSize))
+	userDBDao := data.GetDBDao(ctxi, confdao.Dao.GORMDB.DB)
+
+	count, users, err := userDBDao.GetBaseListDB(req.Ids, int(req.PageNo), int(req.PageSize))
 	if err != nil {
 		return nil, err
 	}
@@ -602,10 +591,8 @@ func (u *UserService) EasySignup(ctx context.Context, req *model.SignupReq) (*mo
 		return nil, errorcode.InvalidArgument.Message("请填写邮箱或手机号")
 	}
 
-	userDao := data.GetDao(ctxi)
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
-
-	checkUser, err := userDao.GetByNameOrEmailOrPhone(db, req.Name, req.Mail, req.Phone)
+	userDBDao := data.GetDBDao(ctxi, confdao.Dao.GORMDB.DB)
+	checkUser, err := userDBDao.GetByNameOrEmailOrPhone(req.Name, req.Mail, req.Phone)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errorcode.DBError
 	}
@@ -634,7 +621,7 @@ func (u *UserService) EasySignup(ctx context.Context, req *model.SignupReq) (*mo
 	}
 
 	user.Password = encryptPassword(req.Password)
-	if err := userDao.Creat(db, user); err != nil {
+	if err := userDBDao.Creat(user); err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError.Message("新建出错"), err, "UserService.Creat")
 	}
 	return u.login(ctxi, user)

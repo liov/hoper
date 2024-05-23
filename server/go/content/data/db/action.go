@@ -12,7 +12,7 @@ import (
 	"strconv"
 )
 
-func (d *ContentDBDao) ActionCount(typ content.ContentType, action content.ActionType, refId uint64, changeCount int) error {
+func (d *ContentDao) ActionCount(typ content.ContentType, action content.ActionType, refId uint64, changeCount int) error {
 	ctxi := d.Context
 	var expr clause.Expr
 	var column string
@@ -47,7 +47,7 @@ func (d *ContentDBDao) ActionCount(typ content.ContentType, action content.Actio
 	return nil
 }
 
-func (d *ContentDBDao) LikeId(typ content.ContentType, action content.ActionType, refId, userId uint64) (uint64, error) {
+func (d *ContentDao) LikeId(typ content.ContentType, action content.ActionType, refId, userId uint64) (uint64, error) {
 	ctxi := d.Context
 	// 性能优化之分开写
 	sql := `SELECT id FROM "` + model.ActionTableName(action) + `" 
@@ -60,7 +60,7 @@ WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ?` + dbi.WithNotDelet
 	return id, nil
 }
 
-func (d *ContentDBDao) DelAction(typ content.ContentType, action content.ActionType, refId, userId uint64) error {
+func (d *ContentDao) DelAction(typ content.ContentType, action content.ActionType, refId, userId uint64) error {
 	ctxi := d.Context
 	sql := `Update "` + model.ActionTableName(action) + `" SET deleted_at = ?
 WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ?` + dbi.WithNotDeleted
@@ -71,7 +71,7 @@ WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ?` + dbi.WithNotDelet
 	return nil
 }
 
-func (d *ContentDBDao) Del(tableName string, id uint64) error {
+func (d *ContentDao) Del(tableName string, id uint64) error {
 	ctxi := d.Context
 	sql := `Update "` + tableName + `" SET deleted_at = ?
 WHERE id = ?` + dbi.WithNotDeleted
@@ -82,7 +82,7 @@ WHERE id = ?` + dbi.WithNotDeleted
 	return nil
 }
 
-func (d *ContentDBDao) DelByAuth(tableName string, id, userId uint64) error {
+func (d *ContentDao) DelByAuth(tableName string, id, userId uint64) error {
 	ctxi := d.Context
 	sql := `Update "` + tableName + `" SET deleted_at = ?
 WHERE id = ?  AND user_id = ?` + dbi.WithNotDeleted
@@ -93,7 +93,7 @@ WHERE id = ?  AND user_id = ?` + dbi.WithNotDeleted
 	return nil
 }
 
-func (d *ContentDBDao) ExistsByAuth(tableName string, id, userId uint64) (bool, error) {
+func (d *ContentDao) ExistsByAuth(tableName string, id, userId uint64) (bool, error) {
 	ctxi := d.Context
 	sql := `SELECT EXISTS(SELECT * FROM "` + tableName + `" 
 WHERE id = ?  AND user_id = ?` + dbi.WithNotDeleted + ` LIMIT 1)`
@@ -105,7 +105,7 @@ WHERE id = ?  AND user_id = ?` + dbi.WithNotDeleted + ` LIMIT 1)`
 	return exists, nil
 }
 
-func (d *ContentDBDao) ContainerExists(typ content.ContainerType, id, userId uint64) (bool, error) {
+func (d *ContentDao) ContainerExists(typ content.ContainerType, id, userId uint64) (bool, error) {
 	ctxi := d.Context
 	sql := `SELECT EXISTS(SELECT * FROM "` + model.ContainerTableName + `" 
 WHERE id = ?  AND type = ? AND user_id = ?` + dbi.WithNotDeleted + ` LIMIT 1)`
@@ -117,7 +117,7 @@ WHERE id = ?  AND type = ? AND user_id = ?` + dbi.WithNotDeleted + ` LIMIT 1)`
 	return exists, nil
 }
 
-func (d *ContentDBDao) GetContentActions(action content.ActionType, typ content.ContentType, refIds []uint64, userId uint64) ([]model.ContentAction, error) {
+func (d *ContentDao) GetContentActions(action content.ActionType, typ content.ContentType, refIds []uint64, userId uint64) ([]model.ContentAction, error) {
 	ctxi := d.Context
 	var actions []model.ContentAction
 	err := d.db.Select("id,ref_id,action").Table(model.ActionTableName(action)).
@@ -129,7 +129,7 @@ func (d *ContentDBDao) GetContentActions(action content.ActionType, typ content.
 	return actions, nil
 }
 
-func (d *ContentDBDao) GetLike(likeId, userId uint64) (*model.ContentAction, error) {
+func (d *ContentDao) GetLike(likeId, userId uint64) (*model.ContentAction, error) {
 	ctxi := d.Context
 	var action model.ContentAction
 	err := d.db.Select("id,ref_id,action,type").Table(model.LikeTableName).
@@ -141,7 +141,7 @@ func (d *ContentDBDao) GetLike(likeId, userId uint64) (*model.ContentAction, err
 	return &action, nil
 }
 
-func (d *ContentDBDao) GetCollects(typ content.ContentType, refIds []uint64, userId uint64) ([]model.ContentCollect, error) {
+func (d *ContentDao) GetCollects(typ content.ContentType, refIds []uint64, userId uint64) ([]model.ContentCollect, error) {
 	ctxi := d.Context
 	var collects []model.ContentCollect
 	err := d.db.Select("id,ref_id,fav_id").Table(model.CollectTableName).
@@ -153,7 +153,7 @@ func (d *ContentDBDao) GetCollects(typ content.ContentType, refIds []uint64, use
 	return collects, nil
 }
 
-func (d *ContentDBDao) GetComments(typ content.ContentType, refId, rootId uint64, pageNo, pageSize int) (int64, []*content.Comment, error) {
+func (d *ContentDao) GetComments(typ content.ContentType, refId, rootId uint64, pageNo, pageSize int) (int64, []*content.Comment, error) {
 	ctxi := d.Context
 	db := d.db.Table(model.CommentTableName).Where(`type = ? AND ref_id = ? AND root_id = ?`+dbi.WithNotDeleted, typ, refId, rootId)
 	var count int64

@@ -7,7 +7,7 @@ import (
 	"github.com/liov/hoper/server/go/content/model"
 )
 
-func (d *ContentDBDao) FavExists(title string) (uint64, error) {
+func (d *ContentDao) FavExists(title string) (uint64, error) {
 	ctxi := d
 	sql := `SELECT id FROM "` + model.FavoritesTableName + `" 
 WHERE title = ? AND user_id = ?` + dbi.WithNotDeleted

@@ -6,7 +6,7 @@ import (
 	"github.com/liov/hoper/server/go/protobuf/content"
 )
 
-func (d *ContentRedisDao) GetTopMoments(key string, pageNo int, PageSize int) ([]content.Moment, error) {
+func (d *ContentDao) GetTopMoments(key string, pageNo int, PageSize int) ([]content.Moment, error) {
 	ctxi := d.Context
 	var moments []content.Moment
 	exist, err := d.conn.Exists(ctxi.Context(), key).Result()

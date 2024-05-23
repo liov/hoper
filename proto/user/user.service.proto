@@ -177,7 +177,6 @@ service UserService {
             scope: ["read", "write"]
           }
         }
-
       }
     };
     option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
@@ -308,7 +307,7 @@ message SingUpVerifyReq {
     json_schema: {
       title: "注册验证请求"  // 和message前注释一样的效果
     }
-    example: '{"mail": "123@qq.com", "phone": "12345678901"}'
+    example: '{"mail":"123@qq.com", "phone":"12345678901"}'
   };
   // 邮箱
   string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" comment:"邮箱"'}];
@@ -318,11 +317,9 @@ message SingUpVerifyReq {
 
 message SignupReq {
   // 密码
-  string password = 4 [(go.field) = {tags:'validate:"required,gte=6,lte=15" comment:"密码"'}, (validator.field) = {
-    length_gt: 5
-    human_error: "密码最短6位"
-  }, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {title: "密码"
-    min_length: 6}];
+  string password = 4 [(go.field) = {tags:'validate:"required,gte=6,lte=15" comment:"密码"'},
+    (validator.field) = {length_gt: 5,custom_error: "密码最短6位"},
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {title: "密码",min_length: 6}];
   string name = 1 [(go.field) = {tags:'validate:"required,gte=3,lte=10" comment:"昵称"'}];
   Gender gender = 3 [(go.field) = {tags:'validate:"required" comment:"性别"'}];
   // 邮箱
@@ -368,7 +365,7 @@ message LoginReq {
   string input = 1;
   string password = 2 [(go.field) = {tags:'validate:"required,gt=5,lt=15" comment:"密码"'},(validator.field) = {
     length_gt: 5
-    human_error: "密码错误"
+    custom_error: "密码错误"
   }];
   string vCode = 3;
 }

@@ -1,4 +1,4 @@
-package rpc
+package data
 
 import (
 	"github.com/hopeio/cherry/utils/log"
@@ -21,7 +21,7 @@ func UserClient() user.UserServiceClient {
 	}
 	userClient = sync.OnceValue[user.UserServiceClient](func() user.UserServiceClient {
 		// Set up a connection to the server.
-		conn, err := grpci.GetDefaultClient("localhost:8090", grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
+		conn, err := grpci.NewClient("localhost:8090", grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
@@ -36,7 +36,7 @@ func UploadClient() upload.UploadServiceClient {
 	}
 	uploadClient = sync.OnceValue[upload.UploadServiceClient](func() upload.UploadServiceClient {
 		// Set up a connection to the server.
-		conn, err := grpci.GetDefaultClient("localhost:8090", grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
+		conn, err := grpci.NewClient("localhost:8090", grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
 
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)

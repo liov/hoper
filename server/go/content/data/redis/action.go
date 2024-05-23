@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func (d *ContentRedisDao) HotCount(typ content.ContentType, refId uint64, changeCount float64) error {
+func (d *ContentDao) HotCount(typ content.ContentType, refId uint64, changeCount float64) error {
 	ctxi := d.Context
 	key := content.ContentType_name[int32(typ)][7:] + redisi.KeySortSet
 	err := d.conn.ZIncrBy(ctxi.Context(), key, changeCount, strconv.FormatUint(refId, 10)).Err()
@@ -17,7 +17,7 @@ func (d *ContentRedisDao) HotCount(typ content.ContentType, refId uint64, change
 	return nil
 }
 
-func (d *ContentRedisDao) ActionCount(typ content.ContentType, action content.ActionType, refId uint64, changeCount float64) error {
+func (d *ContentDao) ActionCount(typ content.ContentType, action content.ActionType, refId uint64, changeCount float64) error {
 	ctxi := d.Context
 	key := content.ContentType_name[int32(typ)][7:] + content.ActionType_name[int32(action)][6:] + redisi.KeySortSet
 	err := d.conn.ZIncrBy(ctxi.Context(), key, changeCount, strconv.FormatUint(refId, 10)).Err()

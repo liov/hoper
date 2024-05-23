@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func (d *ContentDBDao) GetMomentListDB(req *content.MomentListReq) (int64, []*content.Moment, error) {
+func (d *ContentDao) GetMomentListDB(req *content.MomentListReq) (int64, []*content.Moment, error) {
 	ctxi := d.Context
 	var moments []*content.Moment
 	db := d.db.Table(model.MomentTableName).Where(dbi.NotDeleted)

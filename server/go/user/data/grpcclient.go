@@ -1,4 +1,4 @@
-package rpc
+package data
 
 import (
 	grpci "github.com/hopeio/cherry/utils/net/http/grpc"
@@ -21,7 +21,7 @@ func UserClient() user.UserServiceClient {
 	lock.Lock()
 
 	// Set up a connection to the server.
-	conn, err := grpci.GetTlsClient("grpc.hoper.xyz:443", grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
+	conn, err := grpci.NewTLSClient("grpc.hoper.xyz:443", grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}

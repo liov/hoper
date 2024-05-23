@@ -8,10 +8,10 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetDBDao(ctx *httpctx.Context, d *gorm.DB) *db.ContentDBDao {
+func GetDBDao(ctx *httpctx.Context, d *gorm.DB) *db.ContentDao {
 	return db.GetDao(ctx, d)
 }
 
-func GetRedisDao(ctx *httpctx.Context, r redis.Cmdable) *rdao.ContentRedisDao {
+func GetRedisDao(ctx *httpctx.Context, r redis.Cmdable) *rdao.ContentDao {
 	return rdao.GetDao(ctx, r)
 }

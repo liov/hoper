@@ -22,7 +22,7 @@ enum Action {
     ActionEditPassword = 4 [(enum.enumvalue_cn)= "修改密码"];
     ActionCreateResume = 5 [(enum.enumvalue_cn)= "新建简历"];
     ActionEditResume = 6 [(enum.enumvalue_cn)= "编辑简历"];
-    ActionDELETEResume = 7 [(enum.enumvalue_cn)= "删除简历"];
+    ActionDeleteResume = 7 [(enum.enumvalue_cn)= "删除简历"];
 }
 // 用户角色
 enum Role {

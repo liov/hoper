@@ -8,7 +8,6 @@ import (
 	"github.com/liov/hoper/server/go/content/data"
 	dbdao "github.com/liov/hoper/server/go/content/data/db"
 	"github.com/liov/hoper/server/go/content/model"
-	"github.com/liov/hoper/server/go/content/rpc"
 	"github.com/liov/hoper/server/go/protobuf/content"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -358,7 +357,7 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 	}
 	var users []*user.UserBaseInfo
 	if len(userIds) > 0 {
-		userList, err := rpc.UserClient().BaseList(ctxi.Context(), &user.BaseListReq{Ids: userIds.ToSlice()})
+		userList, err := data.UserClient().BaseList(ctxi.Context(), &user.BaseListReq{Ids: userIds.ToSlice()})
 		if err != nil {
 			return nil, err
 		}

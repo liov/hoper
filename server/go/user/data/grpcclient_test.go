@@ -1,4 +1,4 @@
-package rpc
+package data
 
 import (
 	"github.com/liov/hoper/server/go/protobuf/user"

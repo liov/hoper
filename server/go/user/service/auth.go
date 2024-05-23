@@ -67,7 +67,7 @@ func auth(ctx *httpctx.Context, update bool) (*user.AuthInfo, error) {
 	ctx.AuthInfoRaw = authorization.AuthInfoRaw
 
 	if update {
-		userDao := data.GetDao(ctx)
+		userDao := data.GetRedisDao(ctx, confdao.Dao.Redis.Client)
 		err := userDao.EfficientUserHashFromRedis()
 		if err != nil {
 			return nil, err

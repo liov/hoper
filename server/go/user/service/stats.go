@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"github.com/hopeio/cherry/context/httpctx"
-	gormi "github.com/hopeio/cherry/utils/dao/db/gorm"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/confdao"
 	"github.com/liov/hoper/server/go/user/data"
@@ -23,16 +22,16 @@ func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*emptypb
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
-	userDao := data.GetDao(ctxi)
-	exists, err := userDao.FollowExistsDB(db, req.Id, auth.Id)
+
+	userDao := data.GetDBDao(ctxi, confdao.Dao.GORMDB.DB)
+	exists, err := userDao.FollowExistsDB(req.Id, auth.Id)
 	if err != nil {
 		return nil, err
 	}
 	if exists {
 		return nil, nil
 	}
-	err = db.Table(model.FollowTableName).Create(&user.UserFollow{
+	err = userDao.Table(model.FollowTableName).Create(&user.UserFollow{
 		UserId:   req.Id,
 		FollowId: auth.Id,
 	}).Error
@@ -51,16 +50,16 @@ func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
-	userDao := data.GetDao(ctxi)
-	exists, err := userDao.FollowExistsDB(db, req.Id, auth.Id)
+
+	userDao := data.GetDBDao(ctxi, confdao.Dao.GORMDB.DB)
+	exists, err := userDao.FollowExistsDB(req.Id, auth.Id)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, nil
 	}
-	err = db.Table(model.FollowTableName).Where("user_id = ? AND follow_id = ?"+dbi.WithNotDeleted, req.Id, auth.Id).
+	err = userDao.Table(model.FollowTableName).Where("user_id = ? AND follow_id = ?"+dbi.WithNotDeleted, req.Id, auth.Id).
 		UpdateColumn("deleted_at", ctxi.RequestAt.TimeString).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errorcode.DBError, err, "Create")

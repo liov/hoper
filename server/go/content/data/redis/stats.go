@@ -5,7 +5,7 @@ import (
 	"github.com/liov/hoper/server/go/content/model"
 )
 
-func (d *ContentRedisDao) UserContentEdit(field string, value interface{}) error {
+func (d *ContentDao) UserContentEdit(field string, value interface{}) error {
 	ctxi := d
 	ctx := ctxi.Context.Context()
 	key := model.UserContentCountKey + ctxi.AuthID

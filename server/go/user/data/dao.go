@@ -1,17 +1,17 @@
 package data
 
 import (
+	"github.com/go-redis/redis/v8"
 	"github.com/hopeio/cherry/context/httpctx"
-	"log"
+	"github.com/liov/hoper/server/go/user/data/db"
+	rdao "github.com/liov/hoper/server/go/user/data/redis"
+	"gorm.io/gorm"
 )
 
-type userDao struct {
-	*httpctx.Context
+func GetDBDao(ctx *httpctx.Context, d *gorm.DB) *db.UserDao {
+	return db.GetUserDao(ctx, d)
 }
 
-func GetDao(ctx *httpctx.Context) *userDao {
-	if ctx == nil {
-		log.Fatal("ctx can't nil")
-	}
-	return &userDao{ctx}
+func GetRedisDao(ctx *httpctx.Context, c *redis.Client) *rdao.UserDao {
+	return rdao.GetUserDao(ctx, c)
 }

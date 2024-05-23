@@ -6,7 +6,7 @@ Env = "dev"
 Debug = true
 ConfigTemplateDir = "."
 [dev.configCenter]
-configType = "local"
+Type = "local"
 Watch  = true
 NoInject = ["Apollo","Etcd", "Es"]
 Format = 'toml'

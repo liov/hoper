@@ -8,7 +8,6 @@ import (
 	"github.com/hopeio/cherry/protobuf/request"
 	gormi "github.com/hopeio/cherry/utils/dao/db/gorm"
 	"github.com/hopeio/cherry/utils/datastructure/set"
-	"github.com/liov/hoper/server/go/content/rpc"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"unicode/utf8"
 
@@ -99,7 +98,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 		userIds.Add(moment.UserId)
 	}
 	if len(userIds) > 0 {
-		userList, err := rpc.UserClient().BaseList(ctxi.Context(), &user.BaseListReq{Ids: userIds.ToSlice()})
+		userList, err := data.UserClient().BaseList(ctxi.Context(), &user.BaseListReq{Ids: userIds.ToSlice()})
 		if err != nil {
 			return nil, err
 		}
@@ -308,7 +307,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	}
 	var users []*user.UserBaseInfo
 	if len(userIds) > 0 {
-		userList, err := rpc.UserClient().BaseList(ctxi.Context(), &user.BaseListReq{Ids: userIds.ToSlice()})
+		userList, err := data.UserClient().BaseList(ctxi.Context(), &user.BaseListReq{Ids: userIds.ToSlice()})
 		if err != nil {
 			return nil, err
 		}

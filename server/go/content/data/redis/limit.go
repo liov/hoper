@@ -11,7 +11,7 @@ import (
 
 var limitErr = errorcode.TimeTooMuch.Message("您的操作过于频繁，请先休息一会儿。")
 
-func (d *ContentRedisDao) Limit(l *confdao.Limit) error {
+func (d *ContentDao) Limit(l *confdao.Limit) error {
 	ctxi := d
 	ctx := ctxi.Context.Context()
 	minuteKey := l.MinuteLimitKey + ctxi.AuthID
