@@ -3,7 +3,7 @@ package db
 import (
 	sqlib "database/sql"
 	"github.com/hopeio/cherry/protobuf/errorcode"
-	dbi "github.com/hopeio/cherry/utils/dao/db"
+	dbi "github.com/hopeio/cherry/utils/dao/database"
 	"github.com/liov/hoper/server/go/content/model"
 )
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/hopeio/cherry/context/httpctx"
 	"github.com/hopeio/cherry/protobuf/request"
-	gormi "github.com/hopeio/cherry/utils/dao/db/gorm"
+	gormi "github.com/hopeio/cherry/utils/dao/database/gorm"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"gorm.io/gorm"
 	"net/http"

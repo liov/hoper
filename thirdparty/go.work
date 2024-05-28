@@ -1,0 +1,9 @@
+go 1.22
+
+use (
+	./pick
+)
+
+replace (
+	github.com/hopeio/cherry  => ./cherry
+)

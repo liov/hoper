@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"github.com/hopeio/cherry/context/httpctx"
-	gormi "github.com/hopeio/cherry/utils/dao/db/gorm"
+	gormi "github.com/hopeio/cherry/utils/dao/database/gorm"
 	"github.com/liov/hoper/server/go/protobuf/upload"
 	"github.com/liov/hoper/server/go/upload/confdao"
 	"github.com/liov/hoper/server/go/upload/data"

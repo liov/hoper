@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 	"github.com/hopeio/cherry/context/httpctx"
 	"github.com/hopeio/cherry/protobuf/errorcode"
-	gormi "github.com/hopeio/cherry/utils/dao/db/gorm"
+	gormi "github.com/hopeio/cherry/utils/dao/database/gorm"
 	httpi "github.com/hopeio/cherry/utils/net/http"
 	"github.com/hopeio/cherry/utils/net/http/fs"
 	timei "github.com/hopeio/cherry/utils/time"

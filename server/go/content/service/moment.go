@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hopeio/cherry/context/httpctx"
 	"github.com/hopeio/cherry/protobuf/request"
-	gormi "github.com/hopeio/cherry/utils/dao/db/gorm"
+	gormi "github.com/hopeio/cherry/utils/dao/database/gorm"
 	"github.com/hopeio/cherry/utils/datastructure/set"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"unicode/utf8"

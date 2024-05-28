@@ -2,7 +2,7 @@ package db
 
 import (
 	"github.com/hopeio/cherry/protobuf/errorcode"
-	dbi "github.com/hopeio/cherry/utils/dao/db"
+	dbi "github.com/hopeio/cherry/utils/dao/database"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"
 )

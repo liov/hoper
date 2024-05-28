@@ -10,7 +10,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/hopeio/cherry/protobuf/errorcode"
-	dbi "github.com/hopeio/cherry/utils/dao/db"
+	dbi "github.com/hopeio/cherry/utils/dao/database"
 )
 
 // 关注

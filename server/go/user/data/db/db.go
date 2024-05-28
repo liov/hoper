@@ -3,8 +3,8 @@ package db
 import (
 	"encoding/json"
 	"github.com/hopeio/cherry/context/httpctx"
-	dbi "github.com/hopeio/cherry/utils/dao/db"
-	gormi "github.com/hopeio/cherry/utils/dao/db/gorm"
+	dbi "github.com/hopeio/cherry/utils/dao/database"
+	gormi "github.com/hopeio/cherry/utils/dao/database/gorm"
 	"github.com/hopeio/cherry/utils/log"
 	"github.com/hopeio/cherry/utils/slices"
 	"github.com/hopeio/cherry/utils/validation"

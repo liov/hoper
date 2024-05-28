@@ -15,7 +15,7 @@ import (
 	"github.com/hopeio/cherry/protobuf/request"
 	"github.com/hopeio/cherry/protobuf/response"
 	"github.com/hopeio/cherry/protobuf/time/timestamp"
-	gormi "github.com/hopeio/cherry/utils/dao/db/gorm"
+	gormi "github.com/hopeio/cherry/utils/dao/database/gorm"
 	"github.com/hopeio/cherry/utils/sdk/luosimao"
 	stringsi "github.com/hopeio/cherry/utils/strings"
 	"github.com/hopeio/pick"
