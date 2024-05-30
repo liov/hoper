@@ -1,3 +1,4 @@
+//package.json "wasm": "file:./wasm/pkg"
 import init, { Universe, Cell } from "wasm";
 
 const CELL_SIZE = 5; // px

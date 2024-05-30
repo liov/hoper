@@ -1,9 +1,9 @@
 {
   "extends": [
-    "@tsconfig/node18/tsconfig.json",
     "@vue/tsconfig/tsconfig.json",
     "@vue/tsconfig/tsconfig.dom.json",
   ],
+  "references": [{ "path": "./tsconfig.node.json" }],
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue","generated/**/*.ts","types/**/*.ts"],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
