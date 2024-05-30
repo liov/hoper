@@ -1,0 +1,9 @@
+{
+  "tabbar.home": "首页",
+  "tabbar.about": "关于",
+  "tabbar.moment": "瞬间",
+  "app.name": "中文标题",
+  "weight": "{heavy}公斤",
+  "introduction": "我是 {name},身高:{detail.height},体重:{detail.weight}",
+  "weight2": "{0}公斤"
+}

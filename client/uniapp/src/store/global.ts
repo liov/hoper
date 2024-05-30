@@ -1,28 +1,28 @@
-import { defineStore } from "pinia";
-import { Platform } from "@/env/platform";
+import { defineStore } from 'pinia'
+import { Platform } from '@/env/platform'
 
 interface GlobalState {
-  counter: number;
-  platform: Platform;
+  counter: number
+  platform: Platform
 }
 
 const state: GlobalState = {
   counter: 0,
   platform: Platform.H5,
-};
+}
 
 export const useGlobalStore = defineStore({
-  id: "global",
+  id: 'global',
   state: () => state,
   getters: {
     doubleCount: (state) => state.counter * 2,
   },
   actions: {
     increment() {
-      this.counter++;
+      this.counter++
     },
     setPlatform(platform: Platform) {
-      this.platform = platform;
+      this.platform = platform
     },
   },
-});
+})

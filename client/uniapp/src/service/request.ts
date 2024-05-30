@@ -1,7 +1,7 @@
-import {API_HOST} from "@/env/config";
-import {Platform} from "@/env/platform";
+import { API_HOST } from '@/env/config'
+import { Platform } from '@/env/platform'
 
 export interface PageRequest {
-    PageNo:number
-    PageSize:number
+  PageNo: number
+  PageSize: number
 }
