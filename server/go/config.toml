@@ -7,7 +7,6 @@ Debug = true
 ConfigTemplateDir = "."
 [dev.configCenter]
 Type = "local"
-Watch  = true
 NoInject = ["Apollo","Etcd", "Es"]
 Format = 'toml'
 

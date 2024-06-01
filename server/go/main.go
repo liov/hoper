@@ -24,8 +24,8 @@ func main() {
 	//配置初始化应该在第一位
 	// initialize.Start是提供给单服务的，这样写有问题，其他模块的配置不会更新
 	defer initialize.Start(uconf.Conf, uconf.Dao, &nacos.Nacos{})()
-	defer initialize.Start(cconf.Conf, cconf.Dao)()
-	defer initialize.Start(upconf.Conf, upconf.Dao)()
+	initialize.GlobalConfig().Inject(cconf.Conf, cconf.Dao)
+	initialize.GlobalConfig().Inject(upconf.Conf, upconf.Dao)
 	log.Info("proxy:", initialize.GlobalConfig().Get("proxy"))
 	log.Info("proxy:", initialize.GlobalConfig().InitConfig.Proxy)
 	log.Info("proxy:", initialize.GlobalConfig().Get("http_proxy"))

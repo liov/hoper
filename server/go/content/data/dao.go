@@ -1,8 +1,8 @@
 package data
 
 import (
-	"github.com/go-redis/redis/v8"
 	"github.com/hopeio/cherry/context/httpctx"
+	"github.com/hopeio/cherry/initialize/conf_dao/redis"
 	"github.com/liov/hoper/server/go/content/data/db"
 	rdao "github.com/liov/hoper/server/go/content/data/redis"
 	"gorm.io/gorm"
@@ -12,6 +12,6 @@ func GetDBDao(ctx *httpctx.Context, d *gorm.DB) *db.ContentDao {
 	return db.GetDao(ctx, d)
 }
 
-func GetRedisDao(ctx *httpctx.Context, r redis.Cmdable) *rdao.ContentDao {
+func GetRedisDao(ctx *httpctx.Context, r redis.Client) *rdao.ContentDao {
 	return rdao.GetDao(ctx, r)
 }

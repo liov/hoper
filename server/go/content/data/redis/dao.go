@@ -3,6 +3,7 @@ package redis
 import (
 	"github.com/go-redis/redis/v8"
 	"github.com/hopeio/cherry/context/httpctx"
+	redisi "github.com/hopeio/cherry/initialize/conf_dao/redis"
 	"github.com/hopeio/cherry/utils/log"
 )
 
@@ -11,9 +12,9 @@ type ContentDao struct {
 	conn redis.Cmdable
 }
 
-func GetDao(ctx *httpctx.Context, redis redis.Cmdable) *ContentDao {
+func GetDao(ctx *httpctx.Context, redis redisi.Client) *ContentDao {
 	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}
-	return &ContentDao{ctx, redis}
+	return &ContentDao{ctx, redis.Client}
 }

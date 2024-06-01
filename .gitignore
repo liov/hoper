@@ -25,4 +25,6 @@ secret.txt
 
 *.lock.json
 tmp
+build
 **/local.toml
+*.apidoc.md
