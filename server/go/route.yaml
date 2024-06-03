@@ -1,31 +1,3 @@
-# 单域名做转发，rewrite
-apiVersion: apisix.apache.org/v2
-kind: ApisixRoute
-metadata:
-  name: hoper-api
-  namespace: default
-spec:
-  http:
-    - name: hoper
-      match:
-        hosts:
-          - api.hoper.xyz
-        paths:
-          - /hoper.default/*
-      backends:
-        - serviceName: hoper
-          servicePort: 80
-          resolveGranularity: service
-      websocket: true
-      plugins:
-        - name: redirect
-          enable: true
-          config:
-            http_to_https: true
-        - name: proxy-rewrite
-          enable: true
-          regex_uri: ["^/hoper.default/(.*)","/$1"]
----
 # 多域名区分，与grpc一致，grpc没法主动在uri加前缀
 apiVersion: apisix.apache.org/v2
 kind: ApisixRoute
@@ -62,7 +34,6 @@ spec:
       match:
         hosts:
           - grpc.hoper.xyz
-          - grpc.liov.xyz
         paths:
           - /*
       backends:

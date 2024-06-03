@@ -18,38 +18,22 @@ export async function request<
 export async function get<D, T extends UniNamespace.RequestOptions = UniNamespace.RequestOptions>(
   options: T,
 ): Promise<D> {
-  return new Promise(function (resolve, reject) {
-    uni.request({
-      ...options,
-      success: (res) => {
-        resolve(res.data as D)
-      },
-      fail: (e) => {
-        reject(e)
-      },
-      method: 'GET',
-    })
+  return request({
+    ...options,
+    method: 'GET',
   })
 }
 
 export async function post<D, T extends UniNamespace.RequestOptions = UniNamespace.RequestOptions>(
   options: T,
 ): Promise<D> {
-  return new Promise(function (resolve, reject) {
-    uni.request({
-      ...options,
-      success: (res) => {
-        resolve(res.data as D)
-      },
-      fail: (e) => {
-        reject(e)
-      },
-      method: 'POST',
-    })
+  return request({
+    ...options,
+    method: 'POST',
   })
 }
 
-interface UniRespone<T extends string | AnyObject | ArrayBuffer>
+interface UniResponse<T extends string | AnyObject | ArrayBuffer>
   extends UniApp.RequestSuccessCallbackResult {
   data: T
 }
@@ -162,9 +146,9 @@ type UniResponseErrorInterceptor = (
 ) => UniApp.GeneralCallbackResult
 
 class UniRequest {
-  constructor(deaultConfig?: UniRequestConfig) {
-    if (deaultConfig) {
-      this.defaults = Object.assign(this.defaults, deaultConfig)
+  constructor(defaultConfig?: UniRequestConfig) {
+    if (defaultConfig) {
+      this.defaults = Object.assign(this.defaults, defaultConfig)
     }
   }
 
@@ -200,11 +184,11 @@ class UniRequest {
     T extends string | AnyObject | ArrayBuffer = any,
     D extends string | AnyObject | ArrayBuffer | undefined = any,
   >(
-    method: 'GET' | 'POST',
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     url: string,
     data?: D,
     config?: UniRequestConfig,
-  ): Promise<UniRespone<T>> {
+  ): Promise<UniResponse<T>> {
     return new Promise((resolve, reject) => {
       url = (config?.baseUrl || this.defaults.baseUrl) + url
       const header = config?.header
@@ -223,7 +207,7 @@ class UniRequest {
           for (const ri of this.responseInterceptors) {
             res = ri(res)
           }
-          resolve(res as UniRespone<T>)
+          resolve(res as UniResponse<T>)
         },
         fail: (err) => {
           // 执行响应错误拦截
