@@ -25,7 +25,8 @@ module.exports = {
         'revert', // 回退
         'style', // 代码风格（不影响代码含义）
         'test', // 测试
-
+        'optimize',// 优化
+        'depend',// 依赖升级
         // 下面几个是自定义新增的
         'wip', // 开发中
         'refine', // 小优化，没有到 refactor 的程度
