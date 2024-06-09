@@ -28,3 +28,4 @@ tmp
 build
 **/local.toml
 *.apidoc.md
+*.swagger.json
