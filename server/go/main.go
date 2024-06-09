@@ -15,6 +15,7 @@ import (
 	upconf "github.com/liov/hoper/server/go/upload/confdao"
 	userapi "github.com/liov/hoper/server/go/user/api"
 	uconf "github.com/liov/hoper/server/go/user/confdao"
+	"github.com/liov/hoper/server/go/user/service"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 
 	"google.golang.org/grpc"
@@ -43,7 +44,7 @@ func main() {
 			uploadapi.GinRegister(app)
 			chatapi.GinRegister(app)
 			contentapi.GinRegister(app)
-			pickgin.Start(app, uconf.Conf.Server.GenDoc, initialize.GlobalConfig().InitConfig.Module, uconf.Conf.Server.EnableTrace)
+			pickgin.Register(app, uconf.Conf.Server.EnableTracing, &service.UserService{})
 		},
 		GraphqlHandler: contentapi.NewExecutableSchema(),
 		OnBeforeStart: func(ctx context.Context) {

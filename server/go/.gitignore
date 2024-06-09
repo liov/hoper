@@ -15,3 +15,4 @@
 /protobuf/build
 config.toml
 local.toml
+apidoc
