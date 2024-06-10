@@ -392,8 +392,8 @@ func (u *UserService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.
 		return nil, ctxi.ErrorLog(errorcode.RedisErr, err, "redisi.Del")
 	}
 	cookie := (&http.Cookie{
-		Name:  httpi.HeaderCookieToken,
-		Value: httpi.HeaderCookieDel,
+		Name:  httpi.HeaderCookieValueToken,
+		Value: httpi.HeaderCookieValueDel,
 		Path:  "/",
 		//Domain:   "hoper.xyz",
 		Expires:  time.Now().Add(-1),
