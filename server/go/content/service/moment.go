@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/hopeio/cherry/context/httpctx"
+	"github.com/hopeio/cherry/protobuf/errcode"
 	"github.com/hopeio/cherry/protobuf/request"
 	gormi "github.com/hopeio/cherry/utils/dao/database/gorm"
-	"github.com/hopeio/cherry/utils/datastructure/set"
+	"github.com/hopeio/cherry/utils/structure/set"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"unicode/utf8"
 
@@ -17,7 +18,6 @@ import (
 	"github.com/liov/hoper/server/go/protobuf/content"
 	"github.com/liov/hoper/server/go/protobuf/user"
 
-	"github.com/hopeio/cherry/protobuf/errorcode"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
@@ -42,7 +42,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 	err := db.Table(model.MomentTableName).
 		Where(`id = ?`, req.Id).First(&moment).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "First")
+		return nil, ctxi.ErrorLog(errcode.DBError, err, "First")
 	}
 	// tags
 	contentTags, err := contentDBDao.GetContentTag(content.ContentMoment, []uint64{moment.Id})
@@ -130,7 +130,7 @@ func momentMaskField(moment *content.Moment) {
 func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*request.Id, error) {
 
 	if utf8.RuneCountInString(req.Content) < confdao.Conf.Customize.Moment.MaxContentLen {
-		return nil, errorcode.InvalidArgument.Message(fmt.Sprintf("文章内容不能小于%d个字", confdao.Conf.Customize.Moment.MaxContentLen))
+		return nil, errcode.InvalidArgument.Message(fmt.Sprintf("文章内容不能小于%d个字", confdao.Conf.Customize.Moment.MaxContentLen))
 	}
 
 	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
@@ -147,7 +147,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 	/*	var count int64
 		db.Table(`mood`).Where(`name = ?`, req.MoodName).Count(&count)
 		if count == 0 {
-			return nil, errorcode.ParamInvalid.Message("心情不存在")
+			return nil, errcode.ParamInvalid.Message("心情不存在")
 		}*/
 	var tags []model.TinyTag
 	if len(req.Tags) > 0 {
@@ -165,7 +165,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		contenttxDBDao := data.GetDBDao(ctxi, tx)
 		err = tx.Table(model.MomentTableName).Create(req).Error
 		if err != nil {
-			return ctxi.ErrorLog(errorcode.DBError, err, "tx.CreateReq")
+			return ctxi.ErrorLog(errcode.DBError, err, "tx.CreateReq")
 		}
 		err = contenttxDBDao.CreateContextExt(content.ContentMoment, req.Id)
 		if err != nil {
@@ -190,12 +190,12 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		}
 		if len(noExist) == 1 {
 			if err = tx.Create(&noExist[1]).Error; err != nil {
-				return ctxi.ErrorLog(errorcode.DBError, err, "db.CreateNoExist")
+				return ctxi.ErrorLog(errcode.DBError, err, "db.CreateNoExist")
 			}
 		}
 		if len(noExist) > 1 {
 			if err = tx.Create(&noExist).Error; err != nil {
-				return ctxi.ErrorLog(errorcode.DBError, err, "db.CreateNoExist")
+				return ctxi.ErrorLog(errcode.DBError, err, "db.CreateNoExist")
 			}
 		}
 		for i := range noExist {
@@ -207,7 +207,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		}
 		if len(contentTags) > 0 {
 			if err = tx.Create(&contentTags).Error; err != nil {
-				return ctxi.ErrorLog(errorcode.DBError, err, "db.CreateContentTags")
+				return ctxi.ErrorLog(errcode.DBError, err, "db.CreateContentTags")
 			}
 		}
 		return nil

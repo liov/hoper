@@ -4,12 +4,12 @@ import (
 	"github.com/go-redis/redis/v8"
 	"time"
 
-	"github.com/hopeio/cherry/protobuf/errorcode"
+	"github.com/hopeio/cherry/protobuf/errcode"
 	timei "github.com/hopeio/cherry/utils/time"
 	"github.com/liov/hoper/server/go/content/confdao"
 )
 
-var limitErr = errorcode.TimeTooMuch.Message("您的操作过于频繁，请先休息一会儿。")
+var limitErr = errcode.TimeTooMuch.Message("您的操作过于频繁，请先休息一会儿。")
 
 func (d *ContentDao) Limit(l *confdao.Limit) error {
 	ctxi := d
@@ -24,7 +24,7 @@ func (d *ContentDao) Limit(l *confdao.Limit) error {
 		return nil
 	})
 	if err != nil {
-		return ctxi.ErrorLog(errorcode.RedisErr, err, "Incr")
+		return ctxi.ErrorLog(errcode.RedisErr, err, "Incr")
 	}
 
 	if minuteIntCmd.Val() > l.MinuteLimitCount || dayIntCmd.Val() > l.DayLimitCount {
@@ -37,7 +37,7 @@ func (d *ContentDao) Limit(l *confdao.Limit) error {
 		return nil
 	})
 	if err != nil {
-		return ctxi.ErrorLog(errorcode.RedisErr, err, "PTTL")
+		return ctxi.ErrorLog(errcode.RedisErr, err, "PTTL")
 	}
 
 	_, err = d.conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
@@ -50,7 +50,7 @@ func (d *ContentDao) Limit(l *confdao.Limit) error {
 		return nil
 	})
 	if err != nil {
-		return ctxi.ErrorLog(errorcode.RedisErr, err, "Expire")
+		return ctxi.ErrorLog(errcode.RedisErr, err, "Expire")
 	}
 	return nil
 }

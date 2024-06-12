@@ -1,7 +1,7 @@
 package redis
 
 import (
-	"github.com/hopeio/cherry/protobuf/errorcode"
+	"github.com/hopeio/cherry/protobuf/errcode"
 	"github.com/liov/hoper/server/go/content/model"
 )
 
@@ -12,7 +12,7 @@ func (d *ContentDao) UserContentEdit(field string, value interface{}) error {
 
 	err := d.conn.HSet(ctx, key, field, value).Err()
 	if err != nil {
-		return ctxi.ErrorLog(errorcode.RedisErr, err, "RedisUserInfoEdit")
+		return ctxi.ErrorLog(errcode.RedisErr, err, "RedisUserInfoEdit")
 	}
 	return nil
 }

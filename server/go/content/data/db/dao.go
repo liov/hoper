@@ -3,7 +3,7 @@ package db
 import (
 	"database/sql"
 	"github.com/hopeio/cherry/context/httpctx"
-	"github.com/hopeio/cherry/protobuf/errorcode"
+	"github.com/hopeio/cherry/protobuf/errcode"
 	"github.com/hopeio/cherry/utils/log"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"
@@ -34,14 +34,14 @@ func (d *ContentDao) Begin() *ContentDao {
 func (d *ContentDao) CreateContextExt(typ content.ContentType, refId uint64) error {
 	err := d.db.Exec(`INSERT INTO `+model.ContentExtTableName+`(type,ref_id) Values(?,?)`, typ, refId).Error
 	if err != nil {
-		return d.Context.ErrorLog(errorcode.DBError, err, "CreateContextExt")
+		return d.Context.ErrorLog(errcode.DBError, err, "CreateContextExt")
 	}
 	return nil
 }
 
 func (d *ContentDao) Transaction(fc func(tx *gorm.DB) error, opts ...*sql.TxOptions) error {
 	err := d.db.Transaction(fc, opts...)
-	if err != nil && err != errorcode.DBError {
+	if err != nil && err != errcode.DBError {
 		d.Context.Error(err.Error(), zap.String(log.FieldPosition, "Transaction"))
 		return err
 	}

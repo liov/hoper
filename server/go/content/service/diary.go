@@ -10,7 +10,7 @@ import (
 	"github.com/liov/hoper/server/go/protobuf/content"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/hopeio/cherry/protobuf/errorcode"
+	"github.com/hopeio/cherry/protobuf/errcode"
 	"github.com/hopeio/cherry/protobuf/request"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -50,7 +50,7 @@ func (*DiaryService) AddDiaryBook(ctx context.Context, req *content.AddDiaryBook
 	req.UserId = auth.Id
 	err = db.Table(model.DiaryBookTableName).Create(req).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "Create")
+		return nil, ctxi.ErrorLog(errcode.DBError, err, "Create")
 	}
 	return &request.Id{Id: req.Id}, nil
 }
@@ -66,7 +66,7 @@ func (*DiaryService) EditDiaryBook(ctx context.Context, req *content.AddDiaryBoo
 	err = db.Table(model.DiaryBookTableName).Where(`id =? AND user_id =?`, req.Id, auth.Id).
 		Updates(req).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "Create")
+		return nil, ctxi.ErrorLog(errcode.DBError, err, "Create")
 	}
 	return nil, nil
 }
@@ -86,7 +86,7 @@ func (*DiaryService) Info(ctx context.Context, req *request.Id) (*content.Diary,
 	var diary content.Diary
 	err = db.Where(`id = ? AND user_id = ?`, req.Id, auth.Id).First(&diary).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "First")
+		return nil, ctxi.ErrorLog(errcode.DBError, err, "First")
 	}
 	return nil, nil
 }
@@ -101,7 +101,7 @@ func (*DiaryService) Add(ctx context.Context, req *content.AddDiaryReq) (*reques
 	req.UserId = auth.Id
 	err = db.Table(model.DiaryTableName).Create(req).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "Create")
+		return nil, ctxi.ErrorLog(errcode.DBError, err, "Create")
 	}
 	return nil, nil
 }

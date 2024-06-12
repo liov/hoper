@@ -14,7 +14,7 @@ import (
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"
 
-	"github.com/hopeio/cherry/protobuf/errorcode"
+	"github.com/hopeio/cherry/protobuf/errcode"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -42,7 +42,7 @@ func (*ContentService) AddTag(ctx context.Context, req *content.AddTagReq) (*emp
 	req.UserId = user.Id
 	err = db.Create(req).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "db.Create")
+		return nil, ctxi.ErrorLog(errcode.DBError, err, "db.Create")
 	}
 	return nil, nil
 }
@@ -60,7 +60,7 @@ func (*ContentService) EditTag(ctx context.Context, req *content.EditTagReq) (*e
 		ExpressionURL: req.ExpressionURL,
 	}).Where(`id = ? AND user_id = ? AND status = 0`, req.Id, auth.Id).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "db.Updates")
+		return nil, ctxi.ErrorLog(errcode.DBError, err, "db.Updates")
 	}
 	return nil, nil
 }
@@ -83,7 +83,7 @@ func (*ContentService) TagList(ctx context.Context, req *content.TagListReq) (*c
 	var count int64
 	err = db.Table(`tag`).Where("user_id = ?", user.Id).Find(&tags).Count(&count).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "db.Find")
+		return nil, ctxi.ErrorLog(errcode.DBError, err, "db.Find")
 	}
 	return &content.TagListRep{List: tags, Total: uint32(count)}, nil
 }
@@ -111,7 +111,7 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*req
 		contenttxDBDao := data.GetDBDao(ctxi, tx)
 		err = tx.Table(model.FavoritesTableName).Create(req).Error
 		if err != nil {
-			return ctxi.ErrorLog(errorcode.DBError, err, "CreateFav")
+			return ctxi.ErrorLog(errcode.DBError, err, "CreateFav")
 		}
 		err = contenttxDBDao.CreateContextExt(content.ContentFavorites, req.Id)
 		if err != nil {
@@ -140,7 +140,7 @@ func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*em
 	err = db.Table(model.FavoritesTableName).Where(`id =? AND user_id =?`, req.Id, auth.Id).
 		Updates(req).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "UpdateColumn")
+		return nil, ctxi.ErrorLog(errcode.DBError, err, "UpdateColumn")
 	}
 	return nil, nil
 }
@@ -164,7 +164,7 @@ func (*ContentService) TinyFavList(ctx context.Context, req *content.FavListReq)
 		err = db.Table(model.FavoritesTableName).Select("id,title").Where(`user_id = ?`, auth.Id).Find(&favs).Error
 	}
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "CreateFav")
+		return nil, ctxi.ErrorLog(errcode.DBError, err, "CreateFav")
 	}
 	return &content.TinyFavListRep{List: favs}, nil
 }
@@ -186,7 +186,7 @@ func (*ContentService) AddContainer(ctx context.Context, req *content.AddContain
 	req.UserId = auth.Id
 	err = db.Table(model.ContainerTableName).Create(req).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "CreateFav")
+		return nil, ctxi.ErrorLog(errcode.DBError, err, "CreateFav")
 	}
 	return nil, nil
 }
@@ -208,7 +208,7 @@ func (*ContentService) EditDiaryContainer(ctx context.Context, req *content.AddC
 	err = db.Table(model.ContainerTableName).Where(`id =? AND user_id =?`, req.Id, auth.Id).
 		Updates(req).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "CreateFav")
+		return nil, ctxi.ErrorLog(errcode.DBError, err, "CreateFav")
 	}
 	return nil, nil
 }

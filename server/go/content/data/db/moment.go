@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/hopeio/cherry/protobuf/errorcode"
+	"github.com/hopeio/cherry/protobuf/errcode"
 	dbi "github.com/hopeio/cherry/utils/dao/database"
 	clausei "github.com/hopeio/cherry/utils/dao/database/gorm/clause"
 	"github.com/liov/hoper/server/go/content/model"
@@ -16,13 +16,13 @@ func (d *ContentDao) GetMomentListDB(req *content.MomentListReq) (int64, []*cont
 	var count int64
 	err := db.Count(&count).Error
 	if err != nil {
-		return 0, nil, ctxi.ErrorLog(errorcode.DBError, err, "Count")
+		return 0, nil, ctxi.ErrorLog(errcode.DBError, err, "Count")
 	}
 	var clauses []clause.Expression
 	clauses = append(clauses, clausei.Page(int(req.PageNo), int(req.PageSize)))
 	err = db.Clauses(clauses...).Order("created_at desc").Find(&moments).Error
 	if err != nil {
-		return 0, nil, ctxi.ErrorLog(errorcode.DBError, err, "GetMomentListDB")
+		return 0, nil, ctxi.ErrorLog(errcode.DBError, err, "GetMomentListDB")
 	}
 	return count, moments, nil
 }

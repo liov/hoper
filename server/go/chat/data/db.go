@@ -1,7 +1,7 @@
 package data
 
 import (
-	"github.com/hopeio/cherry/protobuf/errorcode"
+	"github.com/hopeio/cherry/protobuf/errcode"
 	"github.com/liov/hoper/server/go/upload/model"
 	"gorm.io/gorm"
 )
@@ -11,7 +11,7 @@ func (d *uploadDao) UploadDB(db *gorm.DB, md5, size string) (*model.UploadInfo, 
 	raw := `SELECT * FROM ` + model.UploadTableName + ` WHERE md5 = ? AND size = ? LIMIT 1`
 	err := db.Raw(raw, md5, size).Scan(&upload).Error
 	if err != nil {
-		return nil, d.ErrorLog(errorcode.DBError, err, "FileExistsDB")
+		return nil, d.ErrorLog(errcode.DBError, err, "FileExistsDB")
 	}
 	if upload.Id == 0 {
 		return nil, nil

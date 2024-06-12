@@ -64,7 +64,7 @@ enum BannedType{
 
 enum UserErr {
     option (go.enum) = {stringer_name: 'OrigString'};
-    option (enum.enum_errorcode) = true;
+    option (enum.enum_errcode) = true;
     option (enum.enum_jsonmarshal) = false;
     UserErrPlaceholder = 0 [(enum.enumvalue_cn)= "占位"];
     UserErrLogin = 1000 [(enum.enumvalue_cn)= "用户名或密码错误"];

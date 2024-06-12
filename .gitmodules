@@ -5,7 +5,7 @@
 [submodule "thirdparty/pick"]
 	path = thirdparty/pick
 	url = https://github.com/hopeio/pick
-	branch = master
+	branch = main
 [submodule "thirdparty/diamond"]
 	path = thirdparty/diamond
 	url = https://github.com/hopeio/diamond

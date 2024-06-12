@@ -6,7 +6,7 @@ import (
 	"github.com/hopeio/cherry/context/httpctx"
 	"strconv"
 
-	"github.com/hopeio/cherry/protobuf/errorcode"
+	"github.com/hopeio/cherry/protobuf/errcode"
 	redisi "github.com/hopeio/cherry/utils/dao/redis"
 	"github.com/hopeio/cherry/utils/encoding/hash"
 	"github.com/hopeio/cherry/utils/log"
@@ -34,12 +34,12 @@ func (d *UserDao) UserToRedis() error {
 	ctx := ctxi.Context.Context()
 	UserString, err := sonic.MarshalString(ctxi.AuthInfo)
 	if err != nil {
-		return d.ErrorLog(errorcode.RedisErr, err, "UserToRedis.MarshalToString")
+		return d.ErrorLog(errcode.RedisErr, err, "UserToRedis.MarshalToString")
 	}
 
 	loginUserKey := modelconst.LoginUserKey + ctxi.AuthID
 	if redisErr := d.SetEX(ctx, loginUserKey, UserString, confdao.Conf.Customize.TokenMaxAge).Err(); redisErr != nil {
-		return d.ErrorLog(errorcode.RedisErr, err, "UserToRedis.SetEX")
+		return d.ErrorLog(errcode.RedisErr, err, "UserToRedis.SetEX")
 	}
 	return nil
 }
@@ -52,13 +52,13 @@ func (d *UserDao) UserFromRedis() (*model.AuthInfo, error) {
 
 	userString, err := redisi.String(d.Get(ctx, loginUser).Result())
 	if err != nil {
-		return nil, d.ErrorLog(errorcode.RedisErr, err, "UserFromRedis.Get")
+		return nil, d.ErrorLog(errcode.RedisErr, err, "UserFromRedis.Get")
 	}
 
 	var user model.AuthInfo
 	err = sonic.UnmarshalString(userString, &user)
 	if err != nil {
-		return nil, d.ErrorLog(errorcode.RedisErr, err, "UserFromRedis.UnmarshalFromString")
+		return nil, d.ErrorLog(errcode.RedisErr, err, "UserFromRedis.UnmarshalFromString")
 	}
 	return &user, nil
 }
@@ -67,12 +67,12 @@ func (d *UserDao) EditRedisUser() error {
 	ctx := d.Context.Context()
 	UserString, err := sonic.MarshalString(d.AuthInfo)
 	if err != nil {
-		return d.ErrorLog(errorcode.RedisErr, err, "EditRedisUser.MarshalToString")
+		return d.ErrorLog(errcode.RedisErr, err, "EditRedisUser.MarshalToString")
 	}
 	loginUserKey := modelconst.LoginUserKey + d.AuthID
 	err = d.Set(ctx, loginUserKey, UserString, 0).Err()
 	if err != nil {
-		return d.ErrorLog(errorcode.RedisErr, err, "EditRedisUser.MarshalToString")
+		return d.ErrorLog(errcode.RedisErr, err, "EditRedisUser.MarshalToString")
 	}
 	return nil
 }
@@ -90,7 +90,7 @@ func (d *UserDao) UserHashToRedis() error {
 		pipe.Expire(ctx, loginUserKey, confdao.Conf.Customize.TokenMaxAge)
 		return nil
 	}); err != nil {
-		return ctxi.ErrorLog(errorcode.RedisErr, err, "UserHashToRedis")
+		return ctxi.ErrorLog(errcode.RedisErr, err, "UserHashToRedis")
 	}
 	return nil
 }
@@ -103,7 +103,7 @@ func (d *UserDao) UserHashFromRedis() error {
 
 	userArgs, err := redisi.Strings(d.Do(ctx, redisi.CommandHGETALL, loginUser).Result())
 	if err != nil {
-		return ctxi.ErrorLog(errorcode.RedisErr, err, redisi.CommandHGETALL)
+		return ctxi.ErrorLog(errcode.RedisErr, err, redisi.CommandHGETALL)
 	}
 	log.Debug(userArgs)
 	if len(userArgs) == 0 {
@@ -126,7 +126,7 @@ func (d *UserDao) EfficientUserHashToRedis() error {
 		pipe.Expire(ctx.Context(), loginUserKey, confdao.Conf.Customize.TokenMaxAge)
 		return nil
 	}); err != nil {
-		return ctxi.ErrorLog(errorcode.RedisErr, err, "EfficientUserHashToRedis")
+		return ctxi.ErrorLog(errcode.RedisErr, err, "EfficientUserHashToRedis")
 	}
 	return nil
 }
@@ -146,7 +146,7 @@ func (d *UserDao) EfficientUserHashFromRedis() error {
 	userArgs, err := redisi.Strings(d.Do(ctx, redisi.CommandHGETALL, loginUser).Result())
 	log.Debug(userArgs)
 	if err != nil {
-		return ctxi.ErrorLog(errorcode.RedisErr, err, "EfficientUserHashFromRedis")
+		return ctxi.ErrorLog(errcode.RedisErr, err, "EfficientUserHashFromRedis")
 	}
 	if len(userArgs) == 0 {
 		return model.UserErrLoginTimeout
@@ -172,7 +172,7 @@ func (d *UserDao) UserLastActiveTime() error {
 		pipe.HSet(ctx, loginUser, "LastActiveAt")
 		return nil
 	}); err != nil {
-		return ctxi.ErrorLog(errorcode.RedisErr, err, "UserLastActiveTime")
+		return ctxi.ErrorLog(errcode.RedisErr, err, "UserLastActiveTime")
 	}
 	return nil
 }
@@ -184,7 +184,7 @@ func (d *UserDao) RedisUserInfoEdit(field string, value interface{}) error {
 
 	err := d.HSet(ctx, key, field, value).Err()
 	if err != nil {
-		return ctxi.ErrorLog(errorcode.RedisErr, err, "RedisUserInfoEdit")
+		return ctxi.ErrorLog(errcode.RedisErr, err, "RedisUserInfoEdit")
 	}
 	return nil
 }
@@ -196,7 +196,7 @@ func (d *UserDao) GetUserExtRedis() (*model.UserExt, error) {
 
 	userExt, err := redisi.Strings(d.Do(ctx, redisi.CommandHGETALL, key).Result())
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.RedisErr, err, "GetUserExtRedis")
+		return nil, ctxi.ErrorLog(errcode.RedisErr, err, "GetUserExtRedis")
 	}
 	if len(userExt) > 3 {
 		followCount, _ := strconv.ParseUint(userExt[1], 10, 64)

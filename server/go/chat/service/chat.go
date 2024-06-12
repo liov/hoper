@@ -4,7 +4,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/hopeio/cherry/context/httpctx"
-	"github.com/hopeio/cherry/protobuf/errorcode"
+	"github.com/hopeio/cherry/protobuf/errcode"
 	httpi "github.com/hopeio/cherry/utils/net/http"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"net/http"
@@ -37,7 +37,7 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 	_, err = auth(ctxi, false)
 	if err != nil {
 		(&httpi.ResAnyData{
-			Code:    errorcode.ErrCode(user.UserErrNoLogin),
+			Code:    errcode.ErrCode(user.UserErrNoLogin),
 			Message: errRep,
 		}).Response(w, http.StatusOK)
 		return

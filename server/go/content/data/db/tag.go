@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/hopeio/cherry/protobuf/errorcode"
+	"github.com/hopeio/cherry/protobuf/errcode"
 	dbi "github.com/hopeio/cherry/utils/dao/database"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"
@@ -17,7 +17,7 @@ func (d *ContentDao) GetContentTag(typ content.ContentType, refIds []uint64) ([]
 		Where("b.type = ? AND b.ref_id IN (?)"+dbi.WithNotDeleted,
 			typ, refIds).Find(&tags).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "GetContentTag")
+		return nil, ctxi.ErrorLog(errcode.DBError, err, "GetContentTag")
 	}
 	return tags, nil
 }
@@ -29,7 +29,7 @@ func (d *ContentDao) GetTags(names []string) ([]model.TinyTag, error) {
 		Where("name IN (?)"+dbi.WithNotDeleted, names).
 		Find(&tags).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "GetTags")
+		return nil, ctxi.ErrorLog(errcode.DBError, err, "GetTags")
 	}
 	return tags, nil
 }
@@ -42,7 +42,7 @@ func (d *ContentDao) GetTagsByRefId(typ content.ContentType, refId uint64) ([]*c
 		Where("b.type = ? AND b.ref_id = ?"+dbi.WithNotDeleted,
 			typ, refId).Scan(&tags).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "GetTagsByRefId")
+		return nil, ctxi.ErrorLog(errcode.DBError, err, "GetTagsByRefId")
 	}
 	return tags, nil
 }
@@ -53,7 +53,7 @@ func (d *ContentDao) GetContentExt(typ content.ContentType, refIds []uint64) ([]
 	err := d.db.Table(model.ContentExtTableName).
 		Where("type = ? AND ref_id IN (?)", typ, refIds).Find(&exts).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "GetContentTag")
+		return nil, ctxi.ErrorLog(errcode.DBError, err, "GetContentTag")
 	}
 	return exts, nil
 }

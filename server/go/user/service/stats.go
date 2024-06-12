@@ -9,7 +9,7 @@ import (
 	"github.com/liov/hoper/server/go/user/model"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/hopeio/cherry/protobuf/errorcode"
+	"github.com/hopeio/cherry/protobuf/errcode"
 	dbi "github.com/hopeio/cherry/utils/dao/database"
 )
 
@@ -36,7 +36,7 @@ func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*emptypb
 		FollowId: auth.Id,
 	}).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "Create")
+		return nil, ctxi.ErrorLog(errcode.DBError, err, "Create")
 	}
 	return new(emptypb.Empty), nil
 }
@@ -62,7 +62,7 @@ func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user
 	err = userDao.Table(model.FollowTableName).Where("user_id = ? AND follow_id = ?"+dbi.WithNotDeleted, req.Id, auth.Id).
 		UpdateColumn("deleted_at", ctxi.RequestAt.TimeString).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errorcode.DBError, err, "Create")
+		return nil, ctxi.ErrorLog(errcode.DBError, err, "Create")
 	}
 	return nil, nil
 }
