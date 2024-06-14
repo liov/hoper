@@ -3,7 +3,6 @@ package confdao
 import (
 	"github.com/hopeio/cherry/initialize"
 	"github.com/hopeio/cherry/initialize/conf_dao/gormdb/postgres"
-	"github.com/hopeio/cherry/initialize/conf_dao/pebble"
 	"github.com/hopeio/cherry/initialize/conf_dao/redis"
 	"github.com/hopeio/cherry/initialize/conf_dao/ristretto"
 )
@@ -14,8 +13,7 @@ var Dao *dao = &dao{}
 type dao struct {
 	initialize.EmbeddedPresets
 	// GORMDB 数据库连接
-	GORMDB   postgres.DB
-	PebbleDB pebble.DB
+	GORMDB postgres.DB
 	// RedisPool Redis连接池
 	Redis redis.Client
 	Cache ristretto.Cache[int, any]
