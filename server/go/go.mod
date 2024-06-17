@@ -17,7 +17,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.20.0
-	github.com/hopeio/cherry v1.13.0
+	github.com/hopeio/cherry v1.13.4
 	github.com/hopeio/pick v1.0.0
 	github.com/vektah/gqlparser/v2 v2.5.12
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.51.0
