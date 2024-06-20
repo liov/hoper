@@ -162,7 +162,7 @@ func (d *ContentDao) GetComments(typ content.ContentType, refId, rootId uint64, 
 		return 0, nil, ctxi.ErrorLog(errcode.DBError, err, "Find")
 	}
 	var clauses []clause.Expression
-	clauses = append(clauses, clausei.Page(pageNo, pageSize))
+	clauses = append(clauses, clausei.PageExpr(pageNo, pageSize))
 	var comments []*content.Comment
 	err = db.Clauses(clauses...).Find(&comments).Error
 	if err != nil {
