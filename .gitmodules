@@ -18,3 +18,7 @@
 	path = deploy
 	url = https://github.com/hopeio/deploy
 	branch = main
+[submodule "thirdparty/collection"]
+	path = thirdparty/collection
+	url = https://github.com/hopeio/collection
+	branch = main
