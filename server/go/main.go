@@ -46,7 +46,7 @@ func main() {
 			contentapi.GinRegister(app)
 			pickgin.Register(app, uconf.Conf.Server.EnableTracing, &service.UserService{})
 		},
-		GraphqlHandler: contentapi.NewExecutableSchema(),
+		//GraphqlHandler: graphql.NewExecutableSchema(),
 		OnBeforeStart: func(ctx context.Context) {
 		},
 		OnAfterStart: func(ctx context.Context) {

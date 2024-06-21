@@ -1,4 +1,4 @@
-package route
+package graphql
 
 import (
 	"context"
