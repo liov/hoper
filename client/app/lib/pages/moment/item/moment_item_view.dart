@@ -12,6 +12,8 @@ import 'package:get/get.dart';
 
 import 'package:app/pages/action_bar/action_bar.dart';
 
+import 'package:app/utils/time.dart';
+
 class MomentItem extends StatelessWidget {
   MomentItem({Key? key, required this.moment}) : super(key: key) {
     if (moment.images != "") {
@@ -58,7 +60,7 @@ class MomentItem extends StatelessWidget {
                   )),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [Text(user.name), Text(moment.createdAt)],
+                children: [Text(user.name), Text(getDateTime(moment.createdAt.seconds.toInt(),moment.createdAt.nanos.toInt()).toString())],
               ),
             ])),
         Expanded(
@@ -69,9 +71,9 @@ class MomentItem extends StatelessWidget {
                     padding: const EdgeInsets.all(10.0),
                     child: ElevatedButton(
                       style: ButtonStyle(
-                          fixedSize:MaterialStateProperty.all(Size.fromHeight(5.0)),
-                          backgroundColor:MaterialStateProperty.resolveWith((states)=>Colors.transparent),
-                          shape: MaterialStateProperty.resolveWith((states)=>const StadiumBorder(
+                          fixedSize:WidgetStateProperty.all(Size.fromHeight(5.0)),
+                          backgroundColor:WidgetStateProperty.resolveWith((states)=>Colors.transparent),
+                          shape: WidgetStateProperty.resolveWith((states)=>const StadiumBorder(
                               side: BorderSide(color: Colors.blue)))),
                       child: const Text('+关注'),
                       onPressed: () {},

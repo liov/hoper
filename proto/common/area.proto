@@ -1,9 +1,9 @@
 syntax = "proto3";
-package utils.area;
+package common;
 
-option java_package = "xyz.hoper.protobuf.utils.area";
+option java_package = "xyz.hoper.protobuf.common";
 option java_multiple_files = true;
-option go_package = "github.com/liov/hoper/server/go/protobuf/utils/area";
+option go_package = "github.com/liov/hoper/server/go/protobuf/common";
 
 message Area {
     uint64 code = 1;

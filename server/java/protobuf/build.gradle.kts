@@ -44,7 +44,7 @@ java {
 val grpcKotlinVersion:String by project
 
 val protopath: String = file("${rootDir}/../../proto").absolutePath
-val projectpath: String = file("${rootDir}/../../../thirdparty/cherry").absolutePath
+val projectpath: String = file("${rootDir}/../../thirdparty/cherry").absolutePath
 
 
 sourceSets {

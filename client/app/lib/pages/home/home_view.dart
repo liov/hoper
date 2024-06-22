@@ -89,6 +89,8 @@ class App extends StatelessWidget with WidgetsBindingObserver {
         break;
       case AppLifecycleState.detached: // 申请将暂时暂停
         break;
+      case AppLifecycleState.hidden:
+        // TODO: Handle this case.
     }
   }
 

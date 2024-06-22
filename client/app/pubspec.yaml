@@ -86,7 +86,6 @@ dependencies:
   feedback: ^3.0.1
   flex_color_scheme: ^7.3.1
   equatable: ^2.0.5
-  freezed_comment: ^2.4.1
   logging: ^1.2.0
   flutter_slidable: ^3.1.0
   package_info_plus: ^7.0.0
@@ -96,7 +95,6 @@ dependencies:
   infinite_scroll_pagination: ^4.0.0
   convex_bottom_bar: ^3.2.0
   logger: ^2.2.0
-  fair: ^3.4.0
  # flame: ^1.7.1 游戏引擎
 # provider: ^5.0.0
 
@@ -114,7 +112,6 @@ dev_dependencies:
   flutter_launcher_icons: ^0.13.1
   freezed: ^2.5.1
   flutter_lints: ^3.0.2
-  fair_compiler: ^1.9.0
 
 dependency_overrides:
 

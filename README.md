@@ -8,10 +8,14 @@
 ![hoper](assets/hoper.webp)
 
 ## [quick start]
+
+`install protoc`[https://github.com/protocolbuffers/protobuf/releases](https://github.com/protocolbuffers/protobuf/releases)
+
 ```sh
 git submodule init
 git submodule update
 cd server/go
+go run $(go list -m -f {{.Dir}}  github.com/hopeio/cherry)/tools/protoc/install_tools.go
 protogen go -e -w -q -v -p ../../proto -g protobuf
 go run main.go -c config.toml
 ```

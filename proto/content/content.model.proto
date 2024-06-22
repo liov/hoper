@@ -6,7 +6,7 @@ import "cherry/protobuf/time/timestamp/timestamp.proto";
 import "cherry/protobuf/time/deletedAt/deletedAt.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "user/user.model.proto";
-import "utils/area/area.proto";
+import "common/area.proto";
 import "content/action.model.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
@@ -116,7 +116,7 @@ message Content{
   string content = 2 [(go.field) = {tags:'gorm:"text;not null" comment:"内容"'}];
   Tag mood = 4 [(go.field) = {tags:'comment:"心情"'}];
   Tag weather = 21 [(go.field) = {tags:'comment:"天气"'}];
-  utils.area.Area area = 19 [(go.field) = {tags:'comment:"地区"'}];
+  common.Area area = 19 [(go.field) = {tags:'comment:"地区"'}];
   uint64 areaId = 20 [(go.field) = {tags:'gorm:"size:10;not null" comment:"地区"'}];
   string location = 14 [(go.field) = {tags:'gorm:"size:20;not null" comment:"位置"'}];
   repeated Tag tags = 6 [(go.field) = {tags:'gorm:"many2many:moment_tag;foreignkey:Id;references:Name" comment:"标签"'}];
@@ -151,7 +151,7 @@ message Moment {
   MomentType type = 3[(go.field) = {tags:'gorm:"type:int2;default:0" comment:"瞬间类型"'}];
   TinyTag mood = 5 [(go.field) = {tags:'gorm:"-" comment:"心情"'}];
   TinyTag weather = 7 [(go.field) = {tags:'gorm:"-" comment:"天气"'}];
-  utils.area.Area area = 9 [(go.field) = {tags:'gorm:"-" comment:"地区"'}];
+  common.Area area = 9 [(go.field) = {tags:'gorm:"-" comment:"地区"'}];
   uint64 areaId = 10 [(go.field) = {tags:'gorm:"size:10;default:0" comment:"地区"'}];
   uint32 areaVisibility = 11 [(go.field) = {tags:'gorm:"type:int2;default:2" comment:"地区可见性，1-可见"'}];
   string location = 12 [(go.field) = {tags:'gorm:"size:20" comment:"位置"'}];
@@ -190,7 +190,7 @@ message Article{
   uint32 contentType = 27 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"文本类型"'}];
   TinyTag mood = 4 [(go.field) = {tags:'gorm:"-" comment:"心情"'}];
   TinyTag weather = 21 [(go.field) = {tags:'gorm:"-" comment:"天气"'}];
-  utils.area.Area area = 19 [(go.field) = {tags:'gorm:"-" comment:"地区"'}];
+  common.Area area = 19 [(go.field) = {tags:'gorm:"-" comment:"地区"'}];
   uint64 areaId = 20 [(go.field) = {tags:'gorm:"size:10;default:0" comment:"地区"'}];
   string location = 14 [(go.field) = {tags:'gorm:"size:20" comment:"位置"'}];
   repeated Tag tags = 6 [(go.field) = {tags:'gorm:"-" comment:"标签"'}];
@@ -266,7 +266,7 @@ message Diary {
   DiaryBook book = 26 [(go.field) = {tags:'gorm:"-" comment:"日记本"'}];
   TinyTag mood = 5 [(go.field) = {tags:'gorm:"-" comment:"心情"'}];
   TinyTag weather = 7 [(go.field) = {tags:'gorm:"-" comment:"天气"'}];
-  utils.area.Area area = 9 [(go.field) = {tags:'gorm:"-" comment:"地区"'}];
+  common.Area area = 9 [(go.field) = {tags:'gorm:"-" comment:"地区"'}];
   uint64 areaId = 10 [(go.field) = {tags:'gorm:"size:10;default:0" comment:"地区"'}];
   uint32 areaVisibility = 11 [(go.field) = {tags:'gorm:"type:int2;default:2" comment:"地区可见性，1-可见"'}];
   string location = 12 [(go.field) = {tags:'gorm:"size:20" comment:"位置"'}];

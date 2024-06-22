@@ -1,10 +1,10 @@
 syntax = "proto3";
-package utils.time;
+package common;
 
 import "cherry/protobuf/utils/patch/go.proto";
 
-option go_package = "github.com/hopeio/cherry/protobuf/time;time";
-option java_package = "xyz.hoper.protobuf.utils.time";
+option go_package = "github.com/liov/hoper/server/go/protobuf/common";
+option java_package = "xyz.hoper.protobuf.common";
 option java_multiple_files = true;
 
 

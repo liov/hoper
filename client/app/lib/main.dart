@@ -68,6 +68,6 @@ Future<void> main() async {
       ],
     ));
   }, (dynamic error, StackTrace stack) {
-    globalService.logger.e("Something went wrong!", error,  stack);
+    globalService.logger.e("Something went wrong!", error: error,  stackTrace: stack);
   });
 }

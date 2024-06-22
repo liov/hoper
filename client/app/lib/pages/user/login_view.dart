@@ -216,7 +216,7 @@ class LoginView extends StatelessWidget {
 
   Widget _birthdayPicker() {
     return Row(children: <Widget>[
-      Flexible(flex: 1, child: const Text('生日:')),
+      const Flexible(flex: 1, child: Text('生日:')),
       Flexible(
           flex: 5,
           child: GestureDetector(
@@ -234,7 +234,7 @@ class LoginView extends StatelessWidget {
                         onDateTimeChanged: (DateTime value) {
                           loginController.birthDate = value;
                         },
-                        backgroundColor: Get.theme.backgroundColor,
+                        backgroundColor: Get.theme.scaffoldBackgroundColor,
                       ),
                     ),
                     Expanded(

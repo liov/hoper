@@ -10,9 +10,9 @@ Future<void> main() async{
 /*  await Process.run("go",["mod" "download","github.com/googleapis/googleapis"],workingDirectory: goprojectPath);
  */
  var result = await Process.run("go",[...arguments,"github.com/hopeio/cherry"],workingDirectory: goprojectPath);
- var cherryPath = (result.stdout as String).trimRight()+'/protobuf/_proto';
+ var cherryPath = '${(result.stdout as String).trimRight()}/protobuf/_proto';
 
-  include = ["-I${protoPath}","-I${cherryPath}"];
+  include = ["-I$protoPath","-I$cherryPath"];
   Directory('${Directory.current.path}/lib/generated/protobuf').create();
   await generate(protoPath,[]);
   await generate(cherryPath,[]);

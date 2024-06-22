@@ -36,7 +36,6 @@ final ThemeData darkThemeData = ThemeData(
   primarySwatch: Colors.grey,
   primaryColor: Colors.grey.shade900,
   scaffoldBackgroundColor: Colors.grey.shade700,
-  backgroundColor:Colors.grey.shade700,
   // This makes the visual density adapt to the platform that you run
   // the app on. For desktop platforms, the controls will be smaller and
   // closer together (more dense) than on mobile platforms.
