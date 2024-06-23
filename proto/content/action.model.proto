@@ -3,7 +3,7 @@ package content;
 import "content/action.enum.proto";
 import "content/content.enum.proto";
 import "user/user.model.proto";
-import "cherry/protobuf/time/timestamp/timestamp.proto";
+import "cherry/protobuf/time/time.proto";
 import "cherry/protobuf/time/deletedAt/deletedAt.proto";
 import "cherry/protobuf/utils/patch/go.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
@@ -20,7 +20,7 @@ message Like{
   ContentType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null;index:idx_like_type_id" validate:"required" comment:"相关类型"'}];
   ActionType action = 3 [(go.field) = {tags:'gorm:"type:int2;default:1" validate:"required" comment:"动作"'}];
   user.UserBaseInfo user = 4 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
-  timestamp.Timestamp createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
   deletedAt.DeletedAt deletedAt = 26 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
 }
 
@@ -33,7 +33,7 @@ message Report{
   user.UserBaseInfo user = 2 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   DelReason delReason = 3[(go.field) = {tags:'gorm:"type:int2;default:0" comment:"举报原因"'}];
   string remark = 4[(go.field) = {tags:'gorm:"size:255" comment:"备注"'}];
-  timestamp.Timestamp createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
 }
 
 // 收藏
@@ -44,7 +44,7 @@ message Collection{
   ContentType type = 12 [(go.field) = {tags:'json:"-" gorm:"type:int2;not null;index:idx_collect_type_id" validate:"required" comment:"相关类型"'}];
   user.UserBaseInfo user = 2 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   uint64 favId = 3 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
-  timestamp.Timestamp createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
   deletedAt.DeletedAt deletedAt = 26 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
 }
 
@@ -56,7 +56,7 @@ message Share{
   ContentType type = 12 [(go.field) = {tags:'json:"-" gorm:"type:int2;not null;index:idx_share_type_id" validate:"required" comment:"相关类型"'}];
   user.UserBaseInfo user = 2 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   Platform platform = 3 [(go.field) = {tags:'gorm:"size:20;not null" validate:"required" comment:"用户id"'}];
-  timestamp.Timestamp createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
   deletedAt.DeletedAt deletedAt = 26 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
 }
 
@@ -66,7 +66,7 @@ message ContentDel{
   ContentType type = 1 [(go.field) = {tags:'json:"-" gorm:"type:int2;default:0;primaryKey;autoIncrement:false" comment:"类型"'}];
   DelReason delReason = 3[(go.field) = {tags:'gorm:"type:int2;default:0" comment:"删除原因"'}];
   string remark = 4[(go.field) = {tags:'gorm:"size:255" comment:"备注"'}];
-  timestamp.Timestamp createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
 }
 // 评论
 message Comment{
@@ -85,7 +85,7 @@ message Comment{
   UserAction action = 26[(go.field) = {tags:'gorm:"-" comment:"用户动作"'}];
   repeated Comment subComments = 11 [(go.field) = {tags:'gorm:"-" comment:"子评论"'}];
   uint32 sequence = 4 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
-  timestamp.Timestamp createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
   deletedAt.DeletedAt deletedAt = 27 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
   uint32 status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true

@@ -2,7 +2,6 @@ package db
 
 import (
 	"github.com/hopeio/cherry/protobuf/errcode"
-	dbi "github.com/hopeio/cherry/utils/dao/database"
 	clausei "github.com/hopeio/cherry/utils/dao/database/gorm/clause"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"
@@ -12,7 +11,7 @@ import (
 func (d *ContentDao) GetMomentListDB(req *content.MomentListReq) (int64, []*content.Moment, error) {
 	ctxi := d.Context
 	var moments []*content.Moment
-	db := d.db.Table(model.MomentTableName).Where(dbi.NotDeleted)
+	db := d.db.Table(model.MomentTableName)
 	var count int64
 	err := db.Count(&count).Error
 	if err != nil {

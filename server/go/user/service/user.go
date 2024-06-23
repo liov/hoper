@@ -14,7 +14,7 @@ import (
 	"github.com/hopeio/cherry/context/httpctx"
 	"github.com/hopeio/cherry/protobuf/request"
 	"github.com/hopeio/cherry/protobuf/response"
-	"github.com/hopeio/cherry/protobuf/time/timestamp"
+	timepb "github.com/hopeio/cherry/protobuf/time"
 	gormi "github.com/hopeio/cherry/utils/dao/database/gorm"
 	"github.com/hopeio/cherry/utils/sdk/luosimao"
 	stringsi "github.com/hopeio/cherry/utils/strings"
@@ -616,7 +616,7 @@ func (u *UserService) EasySignup(ctx context.Context, req *model.SignupReq) (*mo
 		Gender:      req.Gender,
 		AvatarUrl:   modelconst.DefaultAvatar,
 		Role:        model.RoleNormal,
-		ActivatedAt: timestamp.New(ctxi.RequestAt.Time),
+		ActivatedAt: timepb.NewTime(ctxi.RequestAt.Time),
 		Status:      model.UserStatusActivated,
 	}
 

@@ -55,7 +55,7 @@ const props = defineProps<{
 const comment = reactive(props.comment);
 const images = reactive([]);
 let startTime = 0;
-let endTime = 0;
+let stopTime = 0;
 let timer;
 const timeout = 500;
 
@@ -94,9 +94,9 @@ function onTouchStart() {
   timer = setTimeout(longPress, timeout);
 }
 function onTouchEnd(e: Event) {
-  endTime = Date.now();
+  stopTime = Date.now();
   clearTimeout(timer);
-  if (endTime - startTime < timeout) {
+  if (stopTime - startTime < timeout) {
     onComment();
     e.preventDefault();
   }

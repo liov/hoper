@@ -13,35 +13,21 @@ import (
 var (
 	userClient   user.UserServiceClient
 	uploadClient upload.UploadServiceClient
-)
-
-func UserClient() user.UserServiceClient {
-	if userClient != nil {
-		return userClient
-	}
-	userClient = sync.OnceValue[user.UserServiceClient](func() user.UserServiceClient {
+	UserClient   = sync.OnceValue[user.UserServiceClient](func() user.UserServiceClient {
 		// Set up a connection to the server.
-		conn, err := grpci.NewClient("localhost:8090", grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
+		conn, err := grpci.NewClient("127.0.0.1:8090", grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
 		return user.NewUserServiceClient(conn)
-	})()
-	return userClient
-}
-
-func UploadClient() upload.UploadServiceClient {
-	if uploadClient != nil {
-		return uploadClient
-	}
-	uploadClient = sync.OnceValue[upload.UploadServiceClient](func() upload.UploadServiceClient {
+	})
+	UploadClient = sync.OnceValue[upload.UploadServiceClient](func() upload.UploadServiceClient {
 		// Set up a connection to the server.
-		conn, err := grpci.NewClient("localhost:8090", grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
+		conn, err := grpci.NewClient("127.0.0.1:8090", grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
 
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
 		return upload.NewUploadServiceClient(conn)
-	})()
-	return uploadClient
-}
+	})
+)
