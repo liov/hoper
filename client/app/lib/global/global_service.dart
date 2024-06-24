@@ -13,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:app/utils/dio.dart' as $dio;
 import 'package:path/path.dart' as $path;
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 final globalService = GlobalService.instance;
 
@@ -54,6 +55,7 @@ class GlobalService{
     }
 
     dbfuture() async {
+      databaseFactory = databaseFactoryFfi;
       db = await openDatabase(
           $path.join(appDocDir.path,'database', 'hoper.db'),
           version: 1, onCreate: (Database db, int version) async {

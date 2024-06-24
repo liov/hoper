@@ -26,7 +26,7 @@ class MomentClient extends Observer<CallOptions> {
   }
 
   Future<MomentListResponse$?> getMomentList(int pageNo, pageSize) async {
-    print(pageNo);
+
     var api = '/v1/moment?pageNo=$pageNo&pageSize=$pageSize';
 
     try {
