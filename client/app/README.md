@@ -7,22 +7,11 @@
 A new Flutter project.
 
 ## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full 
-
-# dev step
-choco install dart-sdk
+安装flutter
+打开项目目录下执行：
 pub get
-dart xxx
+
+### dev step(2020年开始跳过这一步)
 
 export PUB_HOSTED_URL=https://pub.flutter-io.cn
 export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
@@ -50,18 +39,19 @@ flutter/packages/flutter_tools/gradle/flutter.gradle
 https://storage.flutter-io.cn/download.flutter.io
 
 
-## protobuf
+### protobuf
 dart pub global activate protoc_plugin
-export PATH="$PATH:$HOME/.pub-cache/bin" //$HOME\AppData\Local\Pub\Cache\bin
-export PATH="$PATH:$flutterSDK/bin/cache\dart-sdk\bin"
+export PATH="$PATH:$HOME/.pub-cache/bin" (win:%USERPROFILE%\AppData\Local\Pub\Cache\bin)
+export PATH="$PATH:$flutterSDK/bin/cache/dart-sdk/bin"
 dart run generate.dart
 
+### lua(废弃)
 怪不得[flutter_lua](https://github.com/drydart/flutter_lua)插件有libgojni.so 且只支持lua5.2,
 原来用的是[go实现的lua虚拟机](https://github.com/Shopify/go-lua),比clua慢6倍
 这有个[支持lua5.4的的clua](https://github.com/tgarm/flutter-luavm)
 
 ### pigeon
-flutter pub run pigeon --input lib/pigeons/route.dart \
+dart run pigeon --input lib/pigeons/route.dart \
   --dart_out lib/pigeons/pigeon.dart \
   --objc_header_out ios/Runner/route.h \
   --objc_source_out ios/Runner/route.m \
@@ -76,10 +66,10 @@ rustup target add x86_64-linux-android armv7-linux-androideabi aarch64-linux-and
 cargo build --release --target=armv7-linux-androideabi
 
 ### 图标和开屏
-flutter pub run flutter_native_splash:create // 天坑，不看源码还不知道，flutter_native_splash是根据build.gradle判断编译SKD版本的，判断方法简单粗暴截取转整型，后面有注释识别不了
-flutter pub run flutter_launcher_icons:main
+dart run flutter_native_splash:create // 天坑，不看源码还不知道，flutter_native_splash是根据build.gradle判断编译SKD版本的，判断方法简单粗暴截取转整型，后面有注释识别不了
+dart run flutter_launcher_icons:main
 ### json
-flutter pub run build_runner build --delete-conflicting-outputs
+dart run build_runner build --delete-conflicting-outputs
 
 Get太灵活了，写法太多反而不好
 

@@ -14,7 +14,7 @@ MomentListResponse$ _$MomentListResponse$FromJson(Map<String, dynamic> json) =>
       ..list = (json['list'] as List<dynamic>)
           .map((e) => Moment$.fromJson(e as Map<String, dynamic>))
           .toList()
-      ..total = json['total'] as int;
+      ..total = (json['total'] as num).toInt();
 
 Map<String, dynamic> _$MomentListResponse$ToJson(
         MomentListResponse$ instance) =>

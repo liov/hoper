@@ -159,7 +159,7 @@ function Pipeline({group, buildDir = '',name = '', deploy_kind = 'deployment', b
                     deploy_dir: "/code/build",
                     deploy_kind: deploy_kind,
                     build_type: build_type,
-                    docker_cmd: `./${fullname},-c,./config/${group}.toml${opts.join(",")}`,
+                    docker_cmd: `./${fullname},-c,./config/${group}.toml${opts?"":","+opts.join(",")}`,
                     docker_username: {
                         from_secret: 'docker_username',
                     },

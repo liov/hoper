@@ -10,22 +10,11 @@ import (
 )
 
 var (
-	lock       sync.Mutex
-	userClient user.UserServiceClient
+	UserClient = sync.OnceValue(func() user.UserServiceClient {
+		conn, err := grpci.NewTLSClient("grpc.hoper.xyz:443", grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
+		if err != nil {
+			log.Fatalf("did not connect: %v", err)
+		}
+		return user.NewUserServiceClient(conn)
+	})
 )
-
-func UserClient() user.UserServiceClient {
-	if userClient != nil {
-		return userClient
-	}
-	lock.Lock()
-
-	// Set up a connection to the server.
-	conn, err := grpci.NewTLSClient("grpc.hoper.xyz:443", grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
-	userClient = user.NewUserServiceClient(conn)
-	lock.Unlock()
-	return userClient
-}

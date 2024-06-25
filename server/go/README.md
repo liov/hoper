@@ -4,3 +4,6 @@ go run $(go list -m -f {{.Dir}}  github.com/hopeio/cherry)/tools/protoc/install_
 protogen.exe go -e -w -v -p ../../proto 
 
 protogen.exe go -e -w -v -q -p ../../proto  (graphql)
+
+# docker
+GOOS=linux go build -o ../../build/hoper
