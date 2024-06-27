@@ -6,4 +6,4 @@ protogen.exe go -e -w -v -p ../../proto
 protogen.exe go -e -w -v -q -p ../../proto  (graphql)
 
 # docker
-GOOS=linux go build -o ../../build/hoper
+GOOS=linux go build -tags go-json -o ../../build/hoper

@@ -1,9 +1,9 @@
 package redis
 
 import (
-	"github.com/bytedance/sonic"
 	"github.com/go-redis/redis/v8"
 	"github.com/hopeio/cherry/context/httpctx"
+	"github.com/hopeio/cherry/utils/encoding/json"
 	"strconv"
 
 	"github.com/hopeio/cherry/protobuf/errcode"
@@ -32,7 +32,7 @@ func GetUserDao(ctx *httpctx.Context, client *redis.Client) *UserDao {
 func (d *UserDao) UserToRedis() error {
 	ctxi := d
 	ctx := ctxi.Context.Context()
-	UserString, err := sonic.MarshalString(ctxi.AuthInfo)
+	UserString, err := json.MarshalToString(ctxi.AuthInfo)
 	if err != nil {
 		return d.ErrorLog(errcode.RedisErr, err, "UserToRedis.MarshalToString")
 	}
@@ -56,7 +56,7 @@ func (d *UserDao) UserFromRedis() (*model.AuthInfo, error) {
 	}
 
 	var user model.AuthInfo
-	err = sonic.UnmarshalString(userString, &user)
+	err = json.UnmarshalFromString(userString, &user)
 	if err != nil {
 		return nil, d.ErrorLog(errcode.RedisErr, err, "UserFromRedis.UnmarshalFromString")
 	}
@@ -65,7 +65,7 @@ func (d *UserDao) UserFromRedis() (*model.AuthInfo, error) {
 
 func (d *UserDao) EditRedisUser() error {
 	ctx := d.Context.Context()
-	UserString, err := sonic.MarshalString(d.AuthInfo)
+	UserString, err := json.MarshalToString(d.AuthInfo)
 	if err != nil {
 		return d.ErrorLog(errcode.RedisErr, err, "EditRedisUser.MarshalToString")
 	}

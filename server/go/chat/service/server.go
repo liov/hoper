@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/gorilla/websocket"
 	"github.com/hopeio/cherry/context/httpctx"
-	"github.com/hopeio/cherry/utils/encoding/json/iterator"
+	"github.com/hopeio/cherry/utils/encoding/json"
 	"github.com/liov/hoper/server/go/content/confdao"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"time"
@@ -46,14 +46,14 @@ func (manager *ClientManager) start() {
 		case client := <-manager.register:
 			id := client.ctx.AuthInfo.(*user.AuthInfo).Id
 			manager.clients[id] = client
-			jsonMessage, _ := iterator.Marshal(&Message{Remark: "/A new conn has connected."})
+			jsonMessage, _ := json.Marshal(&Message{Remark: "/A new conn has connected."})
 			manager.send(jsonMessage, client)
 		case client := <-manager.unregister:
 			id := client.ctx.AuthInfo.(*user.AuthInfo).Id
 			if _, ok := manager.clients[id]; ok {
 				close(client.send)
 				delete(manager.clients, id)
-				jsonMessage, _ := iterator.Marshal(&Message{Remark: "/A conn has disconnected."})
+				jsonMessage, _ := json.Marshal(&Message{Remark: "/A conn has disconnected."})
 				manager.send(jsonMessage, client)
 			}
 		case message := <-manager.broadcast:
@@ -93,10 +93,10 @@ func (c *Client) read() {
 			break
 		}
 		var message Message
-		iterator.Unmarshal(msg, &message)
+		json.Unmarshal(msg, &message)
 		message.CreatedAt = time.Now()
 		message.SendUserID = c.ctx.AuthInfo.(*user.AuthInfo).Id
-		jsonMessage, _ := iterator.Marshal(&message)
+		jsonMessage, _ := json.Marshal(&message)
 		confdao.Dao.Redis.Do(c.ctx.Context(), "RPUSH", "Chat", jsonMessage)
 		manager.broadcast <- jsonMessage
 	}
