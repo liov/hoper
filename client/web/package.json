@@ -7,8 +7,8 @@
   "packageManager": "pnpm@9.1.0",
   "scripts": {
     "protoc": "node ../../proto/generate.js grpc-web",
-    "wasm:build": "wasm-pack build ./wasm --target web",
-    "wasm:link": "pnpm link ./wasm/pkg",
+    "wasm:build": "wasm-pack build ../rust/wasm --target web",
+    "wasm:link": "pnpm link ../rust/wasm/pkg",
     "pc:dev": "vite --config pc.vite.config.ts --mode dev",
     "pc:build": "run-p type-check pc:build-only",
     "pc:preview": "vite preview --config pc.vite.config.ts --port 4173",
