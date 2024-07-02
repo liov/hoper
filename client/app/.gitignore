@@ -56,3 +56,6 @@ dynLibs
 !dynLibs/android/x86_64/up
 
 *.g.dart
+/android/app/src/main/res/**/*.png
+/ios/**/*.png
+/web/**/*.png

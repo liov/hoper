@@ -73,8 +73,30 @@ dart run build_runner build --delete-conflicting-outputs
 
 Get太灵活了，写法太多反而不好
 
+## platforms
+### windows
+https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
 flutter create --platforms=windows .
+Should work as is in debug mode (sqlite3.dll is bundled).
+
+In release mode, add sqlite3.dll in same folder as your executable.
+
+sqfliteFfiInit is provided as an implementation reference for loading the sqlite library. Please look at sqlite3 if you want to override the behavior.
+# Linux
+libsqlite3 and libsqlite3-dev linux packages are required.
+
+One time setup for Ubuntu (to run as root):
+
+dart tool/linux_setup.dart
+or
+
+sudo apt-get -y install libsqlite3-0 libsqlite3-dev
+# MacOS
+Should work as is.
+
+### web
 flutter create --platforms=web .
+Look at package sqflite_common_ffi_web for experimental Web support.
 
 ### 打包
 
