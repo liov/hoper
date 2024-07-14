@@ -44,7 +44,7 @@ func main() {
 			uploadapi.GinRegister(app)
 			chatapi.GinRegister(app)
 			contentapi.GinRegister(app)
-			pickgin.Register(app, uconf.Conf.Server.EnableTracing, &service.UserService{})
+			pickgin.Register(app, uconf.Conf.Server.EnableTelemetry, &service.UserService{})
 		},
 		//GraphqlHandler: graphql.NewExecutableSchema(),
 		OnBeforeStart: func(ctx context.Context) {

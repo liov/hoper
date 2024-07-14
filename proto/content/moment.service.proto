@@ -61,7 +61,7 @@ service MomentService {
     option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
 
-  // 修改
+  // 列表
   rpc List (MomentListReq) returns (MomentListRep) {
     option (google.api.http) = {
       get: "/api/v1/moment"

@@ -218,7 +218,7 @@ service UserService {
       summary : "获取用户信息"
       description : "根据Id获取用户信息接口"
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
 
   rpc ActionLogList (ActionLogListReq) returns (ActionLogListRep) {
