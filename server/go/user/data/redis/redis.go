@@ -31,7 +31,7 @@ func GetUserDao(ctx *httpctx.Context, client *redis.Client) *UserDao {
 // UserToRedis 将用户信息存到redis
 func (d *UserDao) UserToRedis() error {
 	ctxi := d
-	ctx := ctxi.Context.Context()
+	ctx := ctxi.BaseContext()
 	UserString, err := json.MarshalToString(ctxi.AuthInfo)
 	if err != nil {
 		return d.ErrorLog(errcode.RedisErr, err, "UserToRedis.MarshalToString")
@@ -47,7 +47,7 @@ func (d *UserDao) UserToRedis() error {
 // UserFromRedis 从redis中取出用户信息
 func (d *UserDao) UserFromRedis() (*model.AuthInfo, error) {
 	ctxi := d
-	ctx := ctxi.Context.Context()
+	ctx := ctxi.BaseContext()
 	loginUser := modelconst.LoginUserKey + ctxi.AuthID
 
 	userString, err := redisi.String(d.Get(ctx, loginUser).Result())
@@ -64,7 +64,7 @@ func (d *UserDao) UserFromRedis() (*model.AuthInfo, error) {
 }
 
 func (d *UserDao) EditRedisUser() error {
-	ctx := d.Context.Context()
+	ctx := d.BaseContext()
 	UserString, err := json.MarshalToString(d.AuthInfo)
 	if err != nil {
 		return d.ErrorLog(errcode.RedisErr, err, "EditRedisUser.MarshalToString")
@@ -80,7 +80,7 @@ func (d *UserDao) EditRedisUser() error {
 // UserToRedis 将用户信息存到redis
 func (d *UserDao) UserHashToRedis() error {
 	ctxi := d
-	ctx := d.Context.Context()
+	ctx := d.BaseContext()
 	var redisArgs []interface{}
 	loginUserKey := modelconst.LoginUserKey + ctxi.AuthID
 	redisArgs = append(redisArgs, redisi.CommandHMSET, loginUserKey)
@@ -98,7 +98,7 @@ func (d *UserDao) UserHashToRedis() error {
 // UserFromRedis 从redis中取出用户信息
 func (d *UserDao) UserHashFromRedis() error {
 	ctxi := d
-	ctx := ctxi.Context.Context()
+	ctx := ctxi.BaseContext()
 	loginUser := modelconst.LoginUserKey + ctxi.AuthID
 
 	userArgs, err := redisi.Strings(d.Do(ctx, redisi.CommandHGETALL, loginUser).Result())
@@ -118,12 +118,12 @@ func (d *UserDao) EfficientUserHashToRedis() error {
 	ctx := ctxi.Context
 	user := ctxi.AuthInfo.(*model.AuthInfo)
 	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
-	if _, err := d.Pipelined(ctx.Context(), func(pipe redis.Pipeliner) error {
-		pipe.HMSet(ctx.Context(), loginUserKey, "Name", user.Name,
+	if _, err := d.Pipelined(ctx.BaseContext(), func(pipe redis.Pipeliner) error {
+		pipe.HMSet(ctx.BaseContext(), loginUserKey, "Name", user.Name,
 			"Role", uint32(user.Role),
 			"Status", uint8(user.Status),
 			"LastActiveAt", ctxi.TimeStamp)
-		pipe.Expire(ctx.Context(), loginUserKey, confdao.Conf.Customize.TokenMaxAge)
+		pipe.Expire(ctx.BaseContext(), loginUserKey, confdao.Conf.Customize.TokenMaxAge)
 		return nil
 	}); err != nil {
 		return ctxi.ErrorLog(errcode.RedisErr, err, "EfficientUserHashToRedis")
@@ -138,9 +138,9 @@ func (d *UserDao) EfficientUserHashToRedis() error {
 压缩列表中的节点数量大于 server.hash_max_ziplist_entries （默认值为 512 ）。
 */
 func (d *UserDao) EfficientUserHashFromRedis() error {
-	ctxi, span := d.StartSpan("EfficientUserHashFromRedis")
-	defer span.End()
-	ctx := ctxi.Context()
+	defer d.StartSpanEnd("EfficientUserHashFromRedis")
+	ctxi := d
+	ctx := ctxi.BaseContext()
 	loginUser := modelconst.LoginUserKey + ctxi.AuthID
 
 	userArgs, err := redisi.Strings(d.Do(ctx, redisi.CommandHGETALL, loginUser).Result())
@@ -162,7 +162,7 @@ func (d *UserDao) EfficientUserHashFromRedis() error {
 
 func (d *UserDao) UserLastActiveTime() error {
 	ctxi := d
-	ctx := ctxi.Context.Context()
+	ctx := ctxi.BaseContext()
 	loginUser := modelconst.LoginUserKey + ctxi.AuthID
 	if _, err := d.Pipelined(ctx, func(pipe redis.Pipeliner) error {
 		pipe.Select(ctx, common.CronIndex)
@@ -179,7 +179,7 @@ func (d *UserDao) UserLastActiveTime() error {
 
 func (d *UserDao) RedisUserInfoEdit(field string, value interface{}) error {
 	ctxi := d
-	ctx := ctxi.Context.Context()
+	ctx := ctxi.BaseContext()
 	key := modelconst.LoginUserKey + ctxi.AuthID
 
 	err := d.HSet(ctx, key, field, value).Err()
@@ -191,7 +191,7 @@ func (d *UserDao) RedisUserInfoEdit(field string, value interface{}) error {
 
 func (d *UserDao) GetUserExtRedis() (*model.UserExt, error) {
 	ctxi := d
-	ctx := ctxi.Context.Context()
+	ctx := ctxi.BaseContext()
 	key := modelconst.UserExtKey + ctxi.AuthID
 
 	userExt, err := redisi.Strings(d.Do(ctx, redisi.CommandHGETALL, key).Result())

@@ -32,8 +32,8 @@ func (*MomentService) Service() (describe, prefix string, middleware []gin.Handl
 }
 
 func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Moment, error) {
-	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
-	defer span.End()
+	ctxi := httpctx.FromContextValue(ctx)
+	defer ctxi.StartSpanEnd("")()
 	auth, _ := auth(ctxi, true)
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
 	contentDBDao := data.GetDBDao(ctxi, db)
@@ -98,7 +98,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 		userIds.Add(moment.UserId)
 	}
 	if len(userIds) > 0 {
-		userList, err := data.UserClient().BaseList(ctxi.Context(), &user.BaseListReq{Ids: userIds.ToSlice()})
+		userList, err := data.UserClient().BaseList(ctxi.BaseContext(), &user.BaseListReq{Ids: userIds.ToSlice()})
 		if err != nil {
 			return nil, err
 		}
@@ -133,8 +133,8 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		return nil, errcode.InvalidArgument.Message(fmt.Sprintf("文章内容不能小于%d个字", confdao.Conf.Customize.Moment.MaxContentLen))
 	}
 
-	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
-	defer span.End()
+	ctxi := httpctx.FromContextValue(ctx)
+	defer ctxi.StartSpanEnd("")()
 	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
@@ -222,8 +222,8 @@ func (*MomentService) Edit(context.Context, *content.AddMomentReq) (*emptypb.Emp
 }
 
 func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*content.MomentListRep, error) {
-	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("List")
-	defer span.End()
+	ctxi := httpctx.FromContextValue(ctx)
+	defer ctxi.StartSpanEnd("")()
 	auth, _ := auth(ctxi, true)
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
 	contentDBDao := data.GetDBDao(ctxi, db)
@@ -307,7 +307,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	}
 	var users []*user.UserBaseInfo
 	if len(userIds) > 0 {
-		userList, err := data.UserClient().BaseList(ctxi.Context(), &user.BaseListReq{Ids: userIds.ToSlice()})
+		userList, err := data.UserClient().BaseList(ctxi.BaseContext(), &user.BaseListReq{Ids: userIds.ToSlice()})
 		if err != nil {
 			return nil, err
 		}
@@ -321,8 +321,8 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 }
 
 func (*MomentService) Delete(ctx context.Context, req *request.Id) (*emptypb.Empty, error) {
-	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
-	defer span.End()
+	ctxi := httpctx.FromContextValue(ctx)
+	defer ctxi.StartSpanEnd("")()
 	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err

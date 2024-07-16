@@ -1,7 +1,7 @@
 package user
 
 import (
-	contexti "github.com/hopeio/cherry/context"
+	contexti "github.com/hopeio/cherry/context/reqctx"
 	"strconv"
 )
 

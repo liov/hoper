@@ -15,9 +15,9 @@ import (
 
 // 关注
 func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*emptypb.Empty, error) {
-	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
-	defer span.End()
-	ctx = ctxi.Context()
+	ctxi := httpctx.FromContextValue(ctx)
+	defer ctxi.StartSpanEnd("")()
+
 	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
@@ -43,9 +43,9 @@ func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*emptypb
 
 // 取消关注
 func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user.BaseListRep, error) {
-	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
-	defer span.End()
-	ctx = ctxi.Context()
+	ctxi := httpctx.FromContextValue(ctx)
+	defer ctxi.StartSpanEnd("")()
+
 	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err

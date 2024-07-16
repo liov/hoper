@@ -29,7 +29,8 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 	if req.Action != content.ActionLike && req.Action != content.ActionUnlike && req.Action != content.ActionBrowse {
 		return nil, nil
 	}
-	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("Like")
+	ctxi := httpctx.FromContextValue(ctx)
+	span := ctxi.StartSpan("Like")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -75,7 +76,8 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 }
 
 func (*ActionService) DelLike(ctx context.Context, req *request.Id) (*emptypb.Empty, error) {
-	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
+	ctxi := httpctx.FromContextValue(ctx)
+	span := ctxi.StartSpan("")
 	defer span.End()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -108,8 +110,8 @@ func (*ActionService) DelLike(ctx context.Context, req *request.Id) (*emptypb.Em
 }
 
 func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*request.Id, error) {
-	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
-	defer span.End()
+	ctxi := httpctx.FromContextValue(ctx)
+	defer ctxi.StartSpanEnd("")()
 	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
@@ -148,8 +150,8 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*re
 }
 
 func (*ActionService) DelComment(ctx context.Context, req *request.Id) (*emptypb.Empty, error) {
-	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
-	defer span.End()
+	ctxi := httpctx.FromContextValue(ctx)
+	defer ctxi.StartSpanEnd("")()
 	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
@@ -191,8 +193,8 @@ func (*ActionService) DelComment(ctx context.Context, req *request.Id) (*emptypb
 }
 
 func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*emptypb.Empty, error) {
-	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
-	defer span.End()
+	ctxi := httpctx.FromContextValue(ctx)
+	defer ctxi.StartSpanEnd("")()
 	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
@@ -253,8 +255,8 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*em
 }
 
 func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*emptypb.Empty, error) {
-	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
-	defer span.End()
+	ctxi := httpctx.FromContextValue(ctx)
+	defer ctxi.StartSpanEnd("")()
 	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
@@ -288,8 +290,8 @@ func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*empt
 }
 
 func (*ActionService) CommentList(ctx context.Context, req *content.CommentListReq) (*content.CommentListRep, error) {
-	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
-	defer span.End()
+	ctxi := httpctx.FromContextValue(ctx)
+	defer ctxi.StartSpanEnd("")()
 	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
@@ -357,7 +359,7 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 	}
 	var users []*user.UserBaseInfo
 	if len(userIds) > 0 {
-		userList, err := data.UserClient().BaseList(ctxi.Context(), &user.BaseListReq{Ids: userIds.ToSlice()})
+		userList, err := data.UserClient().BaseList(ctxi.BaseContext(), &user.BaseListReq{Ids: userIds.ToSlice()})
 		if err != nil {
 			return nil, err
 		}
@@ -376,8 +378,8 @@ func commentMaskField(comment *content.Comment) {
 }
 
 func (*ActionService) GetUserAction(ctx context.Context, req *content.ContentReq) (*content.UserAction, error) {
-	ctxi, span := httpctx.ContextFromContext(ctx).StartSpan("")
-	defer span.End()
+	ctxi := httpctx.FromContextValue(ctx)
+	defer ctxi.StartSpanEnd("")()
 	auth, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
