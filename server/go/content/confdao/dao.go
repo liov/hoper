@@ -2,8 +2,8 @@ package confdao
 
 import (
 	"database/sql"
-	"github.com/hopeio/cherry/initialize/conf_dao/gormdb/postgres"
-	initredis "github.com/hopeio/cherry/initialize/conf_dao/redis"
+	"github.com/hopeio/initialize/conf_dao/gormdb/postgres"
+	initredis "github.com/hopeio/initialize/conf_dao/redis"
 )
 
 // 原本是个单独模块，但是考虑到数据库必须初始化，所以合进来了

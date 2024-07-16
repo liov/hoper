@@ -1,7 +1,7 @@
 package db
 
 import (
-	clausei "github.com/hopeio/cherry/utils/dao/database/gorm"
+	clausei "github.com/hopeio/utils/dao/database/gorm"
 	"github.com/liov/hoper/server/go/protobuf/content"
 	"gorm.io/gorm"
 )

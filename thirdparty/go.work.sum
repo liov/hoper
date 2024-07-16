@@ -1395,6 +1395,14 @@ github.com/hashicorp/serf v0.10.1 h1:Z1H2J60yRKvfDYAOZLd2MU0ND4AH/WDz7xYHDWQsIPY
 github.com/hashicorp/serf v0.10.1/go.mod h1:yL2t6BqATOLGc5HF7qbFkTfXoPIY0WZdWHfEvMqbG+4=
 github.com/hetznercloud/hcloud-go v1.33.1 h1:W1HdO2bRLTKU4WsyqAasDSpt54fYO4WNckWYfH5AuCQ=
 github.com/hetznercloud/hcloud-go v1.33.1/go.mod h1:XX/TQub3ge0yWR2yHWmnDVIrB+MQbda1pHxkUmDlUME=
+github.com/hopeio/context v0.0.0-20240718075653-393bb05f2ba5 h1:oB9Wzn/VpWjhIJJyoC/I9N86Go6z/Z1u6O7xji0D6g4=
+github.com/hopeio/context v0.0.0-20240718075653-393bb05f2ba5/go.mod h1:9hGF5MzTimOct2vWgREj5AfVxmKbpKIlAu8MLeebKJE=
+github.com/hopeio/context v0.0.5 h1:+BruRpP19juo/rSjSQUa2YbgyMyILmZOsA6zNlZqiD8=
+github.com/hopeio/context v0.0.5/go.mod h1:pJCLYFTcGIt+9nfrZRuMEBksm6tZd4sr3wwfJPf4uME=
+github.com/hopeio/initialize v0.0.6 h1:Iw0KspYsMFcV3ifD2CWVYeGgSmS/6srlMyqc30D1+QQ=
+github.com/hopeio/initialize v0.0.6/go.mod h1:9I8YqQIm9BnT4zUtSzN2a2EOsiN/34nlE2A2FDnhqqg=
+github.com/hopeio/protobuf v0.0.4 h1:7I36qxY9c7EtlK1bmlZlJeQkxkLM8O/5NI93vKhulPY=
+github.com/hopeio/protobuf v0.0.4/go.mod h1:mdNTpOStqNYIuRigDbDHRvI2QYkMSoibNYHUiq94HL4=
 github.com/hpcloud/tail v1.0.0 h1:nfCOvKYfkgYP8hkirhJocXT2+zOD8yUNjXaWfTlyFKI=
 github.com/hpcloud/tail v1.0.0/go.mod h1:ab1qPbhIpdTxEkNHXyeSf5vhxWSCs/tWer42PpOxQnU=
 github.com/huandu/xstrings v1.3.2 h1:L18LIDzqlW6xN2rEkpdV8+oL/IXWJ1APd+vsdYy4Wdw=

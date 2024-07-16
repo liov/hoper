@@ -2,9 +2,9 @@ package redis
 
 import (
 	"github.com/go-redis/redis/v8"
-	"github.com/hopeio/cherry/context/httpctx"
-	redisi "github.com/hopeio/cherry/initialize/conf_dao/redis"
-	"github.com/hopeio/cherry/utils/log"
+	"github.com/hopeio/context/httpctx"
+	redisi "github.com/hopeio/initialize/conf_dao/redis"
+	"github.com/hopeio/utils/log"
 )
 
 type ContentDao struct {

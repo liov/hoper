@@ -1,7 +1,7 @@
 package data
 
 import (
-	"github.com/hopeio/cherry/protobuf/errcode"
+	"github.com/hopeio/protobuf/errcode"
 	"github.com/liov/hoper/server/go/upload/model"
 	"gorm.io/gorm"
 )

@@ -2,9 +2,9 @@ package db
 
 import (
 	"database/sql"
-	"github.com/hopeio/cherry/context/httpctx"
-	"github.com/hopeio/cherry/protobuf/errcode"
-	"github.com/hopeio/cherry/utils/log"
+	"github.com/hopeio/context/httpctx"
+	"github.com/hopeio/protobuf/errcode"
+	"github.com/hopeio/utils/log"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"
 	"go.uber.org/zap"

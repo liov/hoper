@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"github.com/gin-gonic/gin"
-	"github.com/hopeio/cherry/initialize"
-	"github.com/hopeio/cherry/initialize/conf_center/nacos"
-	"github.com/hopeio/cherry/server"
-	"github.com/hopeio/cherry/utils/log"
+	"github.com/hopeio/cherry"
+	"github.com/hopeio/initialize"
+	"github.com/hopeio/initialize/conf_center/nacos"
 	pickgin "github.com/hopeio/pick/gin"
+	"github.com/hopeio/utils/log"
 	chatapi "github.com/liov/hoper/server/go/chat/api"
 	contentapi "github.com/liov/hoper/server/go/content/api"
 	cconf "github.com/liov/hoper/server/go/content/confdao"
@@ -32,7 +32,7 @@ func main() {
 	log.Info("proxy:", initialize.GlobalConfig().Get("http_proxy"))
 	config := uconf.Conf.Server.Origin()
 	config.GrpcOptions = []grpc.ServerOption{grpc.StatsHandler(otelgrpc.NewServerHandler())}
-	server.Start(&server.Server{
+	cherry.Start(&cherry.Server{
 		Config: config,
 		//为了可以自定义中间件
 		GrpcHandler: func(gs *grpc.Server) {

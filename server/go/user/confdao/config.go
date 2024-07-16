@@ -1,8 +1,8 @@
 package confdao
 
 import (
-	"github.com/hopeio/cherry/initialize/conf_dao/server"
-	timei "github.com/hopeio/cherry/utils/time"
+	"github.com/hopeio/initialize/conf_dao/server"
+	timei "github.com/hopeio/utils/time"
 	"time"
 )
 

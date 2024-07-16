@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/hopeio/cherry/protobuf/errcode"
-	"github.com/hopeio/cherry/utils/sdk/luosimao"
+	"github.com/hopeio/protobuf/errcode"
+	"github.com/hopeio/utils/sdk/luosimao"
 	"github.com/liov/hoper/server/go/user/confdao"
 )
 

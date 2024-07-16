@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/hopeio/cherry/utils/log"
+	"github.com/hopeio/utils/log"
 )
 
 var addr = flag.String("addr", "localhost:12345", "http service address")

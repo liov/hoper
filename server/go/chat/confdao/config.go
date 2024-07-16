@@ -1,8 +1,8 @@
 package confdao
 
 import (
-	"github.com/hopeio/cherry/initialize"
-	"github.com/hopeio/cherry/initialize/conf_dao/server"
+	"github.com/hopeio/initialize"
+	"github.com/hopeio/initialize/conf_dao/server"
 )
 
 var Conf = &config{}

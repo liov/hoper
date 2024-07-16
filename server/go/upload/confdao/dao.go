@@ -1,8 +1,8 @@
 package confdao
 
 import (
-	"github.com/hopeio/cherry/initialize/conf_dao/gormdb/postgres"
-	initredis "github.com/hopeio/cherry/initialize/conf_dao/redis"
+	"github.com/hopeio/initialize/conf_dao/gormdb/postgres"
+	initredis "github.com/hopeio/initialize/conf_dao/redis"
 )
 
 var Dao *dao = &dao{}

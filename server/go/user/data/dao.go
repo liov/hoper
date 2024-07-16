@@ -2,7 +2,7 @@ package data
 
 import (
 	"github.com/go-redis/redis/v8"
-	"github.com/hopeio/cherry/context/httpctx"
+	"github.com/hopeio/context/httpctx"
 	"github.com/liov/hoper/server/go/user/data/db"
 	rdao "github.com/liov/hoper/server/go/user/data/redis"
 	"gorm.io/gorm"

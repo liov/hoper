@@ -1,7 +1,7 @@
 package confdao
 
 import (
-	"github.com/hopeio/cherry/initialize/conf_dao/server"
+	"github.com/hopeio/initialize/conf_dao/server"
 	"github.com/liov/hoper/server/go/content/model"
 )
 

@@ -2,10 +2,10 @@ package confdao
 
 import (
 	"database/sql"
-	"github.com/hopeio/cherry/initialize/conf_dao/gormdb/postgres"
-	"github.com/hopeio/cherry/initialize/conf_dao/mail"
-	"github.com/hopeio/cherry/initialize/conf_dao/redis"
-	"github.com/hopeio/cherry/initialize/conf_dao/ristretto"
+	"github.com/hopeio/initialize/conf_dao/gormdb/postgres"
+	"github.com/hopeio/initialize/conf_dao/mail"
+	"github.com/hopeio/initialize/conf_dao/redis"
+	"github.com/hopeio/initialize/conf_dao/ristretto"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"gorm.io/gorm"
 )

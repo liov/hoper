@@ -4,8 +4,8 @@ import (
 	"github.com/go-redis/redis/v8"
 	"time"
 
-	"github.com/hopeio/cherry/protobuf/errcode"
-	timei "github.com/hopeio/cherry/utils/time"
+	"github.com/hopeio/protobuf/errcode"
+	timei "github.com/hopeio/utils/time"
 	"github.com/liov/hoper/server/go/content/confdao"
 )
 

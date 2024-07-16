@@ -1,8 +1,8 @@
 package db
 
 import (
-	"github.com/hopeio/cherry/protobuf/errcode"
-	clausei "github.com/hopeio/cherry/utils/dao/database/gorm/clause"
+	"github.com/hopeio/protobuf/errcode"
+	clausei "github.com/hopeio/utils/dao/database/gorm/clause"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"
 	"gorm.io/gorm/clause"

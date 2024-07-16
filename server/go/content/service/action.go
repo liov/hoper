@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
-	"github.com/hopeio/cherry/context/httpctx"
-	"github.com/hopeio/cherry/protobuf/errcode"
-	gormi "github.com/hopeio/cherry/utils/dao/database/gorm"
+	"github.com/hopeio/context/httpctx"
+	"github.com/hopeio/protobuf/errcode"
+	gormi "github.com/hopeio/utils/dao/database/gorm"
 	"github.com/liov/hoper/server/go/content/confdao"
 	"github.com/liov/hoper/server/go/content/data"
 	dbdao "github.com/liov/hoper/server/go/content/data/db"
@@ -13,10 +13,10 @@ import (
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/hopeio/cherry/protobuf/request"
-	"github.com/hopeio/cherry/utils/log"
-	"github.com/hopeio/cherry/utils/slices"
-	"github.com/hopeio/cherry/utils/structure/set"
+	"github.com/hopeio/protobuf/request"
+	"github.com/hopeio/utils/log"
+	"github.com/hopeio/utils/slices"
+	"github.com/hopeio/utils/structure/set"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
