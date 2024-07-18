@@ -22,3 +22,23 @@
 	path = thirdparty/collection
 	url = https://github.com/hopeio/collection
 	branch = main
+[submodule "thirdparty/context"]
+	path = thirdparty/collection
+	url = https://github.com/hopeio/context
+	branch = main
+[submodule "thirdparty/diamond"]
+	path = thirdparty/collection
+	url = https://github.com/hopeio/diamond
+	branch = main
+[submodule "thirdparty/initialize"]
+	path = thirdparty/collection
+	url = https://github.com/hopeio/initialize
+	branch = main
+[submodule "thirdparty/protobuf"]
+	path = thirdparty/collection
+	url = https://github.com/hopeio/protobuf
+	branch = main
+[submodule "thirdparty/utils"]
+	path = thirdparty/collection
+	url = https://github.com/hopeio/utils
+	branch = main
