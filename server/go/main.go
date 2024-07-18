@@ -30,10 +30,9 @@ func main() {
 	log.Info("proxy:", initialize.GlobalConfig().Get("proxy"))
 	log.Info("proxy:", initialize.GlobalConfig().InitConfig.Proxy)
 	log.Info("proxy:", initialize.GlobalConfig().Get("http_proxy"))
-	config := uconf.Conf.Server.Origin()
-	config.GrpcOptions = []grpc.ServerOption{grpc.StatsHandler(otelgrpc.NewServerHandler())}
+	uconf.Conf.Server.GrpcOptions = []grpc.ServerOption{grpc.StatsHandler(otelgrpc.NewServerHandler())}
 	cherry.Start(&cherry.Server{
-		Config: config,
+		Config: &uconf.Conf.Server,
 		//为了可以自定义中间件
 		GrpcHandler: func(gs *grpc.Server) {
 			userapi.GrpcRegister(gs)

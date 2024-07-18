@@ -29,7 +29,7 @@ function update_commit_time_if_needed() {
   fi
 }
 
-dir=$(pwd)
+dir=$(cd $(dirname $0);pwd)
 echo "当前目录: $dir"
 update_commit_time_if_needed
 echo "当前目录: $dir/awesome"

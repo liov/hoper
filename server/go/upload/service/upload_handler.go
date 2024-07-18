@@ -6,7 +6,9 @@ import (
 	"encoding/hex"
 	"github.com/hopeio/context/httpctx"
 	"github.com/hopeio/protobuf/errcode"
+
 	gormi "github.com/hopeio/utils/dao/database/gorm"
+	errcode2 "github.com/hopeio/utils/errors/errcode"
 	httpi "github.com/hopeio/utils/net/http"
 	"github.com/hopeio/utils/net/http/fs"
 	timei "github.com/hopeio/utils/time"
@@ -57,7 +59,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	_, err = auth(ctxi, false)
 	if err != nil {
 		(&httpi.ResAnyData{
-			Code:    errcode.ErrCode(user.UserErrLogin),
+			Code:    errcode2.ErrCode(user.UserErrLogin),
 			Message: errRep,
 		}).Response(w, http.StatusOK)
 		return
@@ -209,7 +211,7 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 	_, err = auth(ctxi, false)
 	if err != nil {
 		(&httpi.ResAnyData{
-			Code:    errcode.ErrCode(user.UserErrLogin),
+			Code:    errcode2.ErrCode(user.UserErrLogin),
 			Message: errRep,
 		}).Response(w, http.StatusOK)
 		return

@@ -4,7 +4,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/hopeio/context/httpctx"
-	"github.com/hopeio/protobuf/errcode"
+	"github.com/hopeio/utils/errors/errcode"
 	httpi "github.com/hopeio/utils/net/http"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"net/http"

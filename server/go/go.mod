@@ -17,12 +17,12 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.20.0
-	github.com/hopeio/cherry v1.16.0
+	github.com/hopeio/cherry v1.16.3
 	github.com/hopeio/context v1.0.0
-	github.com/hopeio/utils v1.0.0
 	github.com/hopeio/initialize v1.0.0
-	github.com/hopeio/protobuf v1.0.0
 	github.com/hopeio/pick v1.0.0
+	github.com/hopeio/protobuf v1.0.0
+	github.com/hopeio/utils v1.0.0
 	github.com/vektah/gqlparser/v2 v2.5.12
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.51.0
 	go.uber.org/zap v1.27.0
@@ -168,9 +168,9 @@ require (
 
 replace (
 	github.com/hopeio/cherry => ../../thirdparty/cherry
-	github.com/hopeio/pick => ../../thirdparty/pick
 	github.com/hopeio/context => ../../thirdparty/context
-	github.com/hopeio/utils => ../../thirdparty/utils
-	github.com/hopeio/protobuf => ../../thirdparty/protobuf
 	github.com/hopeio/initialize => ../../thirdparty/initialize
+	github.com/hopeio/pick => ../../thirdparty/pick
+	github.com/hopeio/protobuf => ../../thirdparty/protobuf
+	github.com/hopeio/utils => ../../thirdparty/utils
 )

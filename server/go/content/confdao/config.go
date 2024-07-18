@@ -1,7 +1,7 @@
 package confdao
 
 import (
-	"github.com/hopeio/initialize/conf_dao/server"
+	"github.com/hopeio/cherry"
 	"github.com/liov/hoper/server/go/content/model"
 )
 
@@ -13,7 +13,7 @@ var MongoSettings = &MongoConfig{}*/
 type config struct {
 	//自定义的配置
 	Customize serverConfig
-	Server    server.Config
+	Server    cherry.Config
 }
 
 var Conf = &config{

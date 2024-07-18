@@ -1,7 +1,7 @@
 package confdao
 
 import (
-	"github.com/hopeio/initialize/conf_dao/server"
+	"github.com/hopeio/cherry"
 	"github.com/hopeio/utils/io/fs"
 )
 
@@ -10,7 +10,7 @@ var Conf = &config{}
 type config struct {
 	//自定义的配置
 	Customize serverConfig
-	Server    server.Config
+	Server    cherry.Config
 }
 
 func (c *config) InitBeforeInject() {

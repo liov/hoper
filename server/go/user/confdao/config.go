@@ -1,7 +1,7 @@
 package confdao
 
 import (
-	"github.com/hopeio/initialize/conf_dao/server"
+	"github.com/hopeio/cherry"
 	timei "github.com/hopeio/utils/time"
 	"time"
 )
@@ -15,7 +15,7 @@ type config struct {
 	//自定义的配置
 	Customize serverConfig
 	SendMail  SendMailConfig
-	Server    server.Config
+	Server    cherry.Config
 }
 
 var Conf = &config{}
