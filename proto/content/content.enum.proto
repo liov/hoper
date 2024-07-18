@@ -1,7 +1,7 @@
 syntax = "proto3";
 package content;
-import "cherry/protobuf/utils/enum/enum.proto";
-import "cherry/protobuf/utils/patch/go.proto";
+import "hopeio/utils/enum/enum.proto";
+import "hopeio/utils/patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
 option java_multiple_files = true;

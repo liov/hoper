@@ -2,12 +2,12 @@ syntax = "proto3";
 package content;
 import "content/content.model.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
-import "cherry/protobuf/utils/validator/validator.proto";
+import "hopeio/utils/validator/validator.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
-import "cherry/protobuf/response/response.proto";
-import "cherry/protobuf/request/param.proto";
-import "cherry/protobuf/utils/patch/go.proto";
+import "hopeio/response/response.proto";
+import "hopeio/request/param.proto";
+import "hopeio/utils/patch/go.proto";
 import "danielvladco/protobuf/graphql.proto";
 
 option go_package = "github.com/liov/hoper/server/go/protobuf/content";

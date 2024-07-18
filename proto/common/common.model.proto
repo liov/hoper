@@ -1,7 +1,7 @@
 syntax = "proto3";
 package common;
-import "cherry/protobuf/utils/patch/go.proto";
-import "cherry/protobuf/time/timestamp/timestamp.proto";
+import "hopeio/utils/patch/go.proto";
+import "hopeio/time/timestamp/timestamp.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 

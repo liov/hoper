@@ -1,7 +1,7 @@
 syntax = "proto3";
 package common;
 
-import "cherry/protobuf/utils/patch/go.proto";
+import "hopeio/utils/patch/go.proto";
 
 option go_package = "github.com/liov/hoper/server/go/protobuf/common";
 option java_package = "xyz.hoper.protobuf.common";

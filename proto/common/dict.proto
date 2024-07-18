@@ -1,7 +1,7 @@
 syntax = "proto3";
 package common;
 
-import "cherry/protobuf/utils/patch/go.proto";
+import "hopeio/utils/patch/go.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 

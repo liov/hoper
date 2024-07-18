@@ -12,12 +12,12 @@ function getDepPath(mod){
   }).toString().trimEnd()
 }
 
-const cherryPath = getDepPath("github.com/hopeio/cherry");
-console.log(cherryPath);
+const protobufPath = getDepPath("github.com/hopeio/protobuf");
+console.log(protobufPath);
 
 
 const protopath = __dirname;
-const cherryProto = cherryPath + "/protobuf/_proto";
+const cherryProto = protobufPath + "/_proto";
 
 const baseCmd = `protoc -I${protopath} -I${cherryProto}`
 
