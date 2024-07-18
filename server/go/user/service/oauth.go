@@ -6,16 +6,19 @@ import (
 	"github.com/go-oauth2/oauth2/v4/errors"
 	"github.com/go-oauth2/oauth2/v4/generates"
 	"github.com/go-oauth2/oauth2/v4/manage"
+	"github.com/go-oauth2/oauth2/v4/models"
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/go-oauth2/oauth2/v4/store"
 	"github.com/golang-jwt/jwt"
+	oauth3 "github.com/hopeio/cherry/oauth"
 	goauth "github.com/hopeio/protobuf/oauth"
 	"github.com/hopeio/protobuf/response"
+	"github.com/hopeio/utils/net/http/oauth"
 	jwti "github.com/hopeio/utils/validation/auth/jwt"
-	"github.com/hopeio/utils/validation/auth/oauth"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/confdao"
 	"google.golang.org/grpc/metadata"
+	"gorm.io/gorm"
 	"log"
 	"strconv"
 	"time"
@@ -34,11 +37,11 @@ func GetOauthService() *OauthService {
 	// generate jwt access token
 	manager.MapAccessGenerate(generates.NewJWTAccessGenerate("", confdao.Conf.Customize.TokenSecretBytes, jwt.SigningMethodHS512))
 
-	clientStore := oauth.NewClientStore(confdao.Dao.GORMDB.DB)
+	clientStore := NewClientStore(confdao.Dao.GORMDB.DB)
 
 	manager.MapClientStorage(clientStore)
 
-	srv := oauth.NewServer(server.NewConfig(), manager)
+	srv := oauth3.NewServer(server.NewConfig(), manager)
 
 	srv.UserAuthorizationHandler = func(token string) (userID string, err error) {
 		if token == "" {
@@ -64,9 +67,34 @@ func GetOauthService() *OauthService {
 }
 
 type OauthService struct {
-	Server      *oauth.Server
-	ClientStore *oauth.ClientStore
+	Server      *oauth3.Server
+	ClientStore oauth.ClientStore
 	user.UnimplementedOauthServiceServer
+}
+
+// NewClientStore create client store
+func NewClientStore(db *gorm.DB) *ClientStore {
+	return (*ClientStore)(db)
+}
+
+// ClientStore client information store
+type ClientStore gorm.DB
+
+// GetByID according to the ID for the client information
+func (cs *ClientStore) GetByID(ctx context.Context, id string) (oauth2.ClientInfo, error) {
+	db := (*gorm.DB)(cs)
+	var client models.Client
+	if err := db.Table("oauth_client").Find(&client, id).Error; err != nil {
+		return nil, err
+	}
+	return &client, nil
+}
+
+// Set set client information
+func (cs *ClientStore) Set(cli oauth2.ClientInfo) (err error) {
+	db := (*gorm.DB)(cs)
+	db.Table("oauth_client").Create(cli)
+	return
 }
 
 func (u *OauthService) OauthAuthorize(ctx context.Context, req *goauth.OauthReq) (*response.HttpResponse, error) {
