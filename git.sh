@@ -1,1 +1,0 @@
-cd $1 && git commit --amend --date="$(date -d '-10 hours' '+%Y-%m-%d %H:%M:%S')" --no-edit

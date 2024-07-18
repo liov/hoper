@@ -1,8 +1,12 @@
 go 1.22.0
 
 use (
-	./collection
-	./pick
+cherry
+initialize
+protobuf
+utils
+context
+collection
+pick
 )
 
-replace github.com/hopeio/cherry => ./cherry

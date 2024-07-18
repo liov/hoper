@@ -1,11 +1,12 @@
 package main
 
 import (
+	"github.com/hopeio/cherry"
 	"github.com/liov/hoper/server/go/user/api"
 )
 
 func main() {
-	server.Start(&server.Server{
+	cherry.Start(&cherry.Server{
 		GrpcHandler: api.GrpcRegister,
 
 		GinHandler: api.GinRegister,
