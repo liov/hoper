@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/hopeio/cherry"
 	"github.com/hopeio/initialize"
@@ -16,8 +15,6 @@ import (
 	userapi "github.com/liov/hoper/server/go/user/api"
 	uconf "github.com/liov/hoper/server/go/user/confdao"
 	"github.com/liov/hoper/server/go/user/service"
-	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
-
 	"google.golang.org/grpc"
 )
 
@@ -30,26 +27,19 @@ func main() {
 	log.Info("proxy:", initialize.GlobalConfig().Get("proxy"))
 	log.Info("proxy:", initialize.GlobalConfig().InitConfig.Proxy)
 	log.Info("proxy:", initialize.GlobalConfig().Get("http_proxy"))
-	uconf.Conf.Server.GrpcOptions = []grpc.ServerOption{grpc.StatsHandler(otelgrpc.NewServerHandler())}
-	cherry.Start(&cherry.Server{
-		Config: &uconf.Conf.Server,
-		//为了可以自定义中间件
-		GrpcHandler: func(gs *grpc.Server) {
+	uconf.Conf.Server.WithOptions(func(s *cherry.Server) {
+		s.GrpcHandler = func(gs *grpc.Server) {
 			userapi.GrpcRegister(gs)
 			contentapi.GrpcRegister(gs)
-		},
-		GinHandler: func(app *gin.Engine) {
+		}
+		s.GinHandler = func(app *gin.Engine) {
 			userapi.GinRegister(app)
 			uploadapi.GinRegister(app)
 			chatapi.GinRegister(app)
 			contentapi.GinRegister(app)
 			pickgin.Register(app, uconf.Conf.Server.EnableTelemetry, &service.UserService{})
-		},
-		//GraphqlHandler: graphql.NewExecutableSchema(),
-		OnBeforeStart: func(ctx context.Context) {
-		},
-		OnAfterStart: func(ctx context.Context) {
+		}
+		//s.GraphqlHandler= graphql.NewExecutableSchema(),
+	}).Run()
 
-		},
-	})
 }

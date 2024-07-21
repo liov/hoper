@@ -10,7 +10,7 @@ var Conf = &config{}
 type config struct {
 	//自定义的配置
 	Customize serverConfig
-	Server    cherry.Config
+	Server    cherry.Server
 }
 
 func (c *config) InitBeforeInject() {
