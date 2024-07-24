@@ -1,12 +1,13 @@
 go 1.22.0
 
 use (
-cherry
-initialize
-protobuf
-utils
-context
-collection
-pick
+	cherry
+	initialize
+	protobuf
+	utils
+	context
+	collection
+	pick
+	deploy/plugin/go
 )
 
