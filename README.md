@@ -56,5 +56,8 @@ hoper项目客户端，服务端通用的proto定义，用来生成go，rust，j
 [changelog]
 - remove rust
 - remove kotlin
-## 架构设想
+
+# friend
+friend立项,前端驱动后端
+# 架构设想
 istio+k8s

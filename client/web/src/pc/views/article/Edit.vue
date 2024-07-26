@@ -390,7 +390,7 @@ function addTag() {
     message.error("标签为空");
     return;
   }
-  for (const v of existTags) {
+  for (const v of existTags.value) {
     if (v.name === tag.value) {
       message.error("标签重复");
       return;
