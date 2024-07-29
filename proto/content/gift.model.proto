@@ -14,7 +14,7 @@ option go_package = "github.com/liov/hoper/server/go/protobuf/content";
 message Gift{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null;uniqueIndex" validate:"required,gte=2,lte=10" comment:"名称"'}];
-  uint64 Price = 4;
+  uint64 price = 4;
   string description = 3 [(go.field) = {tags:'gorm:"size:100"  comment:"描述"'}];
   string expressionURL = 17 [(go.field) = {tags:'gorm:"size:255"  comment:"表情url"'}];
 }

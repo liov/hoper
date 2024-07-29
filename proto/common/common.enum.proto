@@ -26,3 +26,11 @@ enum ObjectType{
   ObjectPlaceholder = 0 [(enum.enumvalue_cn) = "占位"];
   ObjectContent = 1 [(enum.enumvalue_cn) = "内容"];
 }
+
+enum MediaType{
+  option (go.enum) = {stringer_name: 'OrigString'};
+  MediaTypePlaceholder = 0 [(enum.enumvalue_cn) = "占位"];
+  MediaTypeImage = 1 [(enum.enumvalue_cn) = "图片"];
+  MediaTypeVideo = 2 [(enum.enumvalue_cn) = "视频"];
+  MediaTypeAudio = 3 [(enum.enumvalue_cn) = "音频"];
+}

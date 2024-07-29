@@ -6,8 +6,8 @@ import (
 	"github.com/hopeio/initialize/conf_dao/mail"
 	"github.com/hopeio/initialize/conf_dao/redis"
 	"github.com/hopeio/initialize/conf_dao/ristretto"
+	"github.com/hopeio/utils/log"
 	"github.com/liov/hoper/server/go/protobuf/user"
-	"gorm.io/gorm"
 )
 
 // 原本是个单独模块，但是考虑到数据库必须初始化，所以合进来了
@@ -27,22 +27,20 @@ type dao struct {
 }
 
 func (d *dao) InitBeforeInject() {
-
 }
 
 func (d *dao) InitAfterInjectConfig() {
-}
 
+}
 func (d *dao) InitAfterInject() {
-	db := d.GORMDB
-	db.Callback().Create().Remove("gorm:save_before_associations")
-	db.Callback().Create().Remove("gorm:save_after_associations")
-	db.Callback().Update().Remove("gorm:save_before_associations")
-	db.Callback().Update().Remove("gorm:save_after_associations")
-
-	d.StdDB, _ = db.DB.DB()
-}
-
-func Migrator(db *gorm.DB) {
-	db.Migrator().AutoMigrate(&user.User{}, &user.Resume{}, &user.UserActionLog{}, &user.UserBannedLog{}, &user.UserDeviceInfo{}, &user.UserScoreLog{}, &user.UserExt{})
+	d.GORMDB.Conf.NamingStrategy.TablePrefix = "user."
+	d.GORMDB.NamingStrategy = d.GORMDB.Conf.NamingStrategy
+	err := d.GORMDB.Exec(`CREATE SCHEMA IF NOT EXISTS "user"`).Error
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = d.GORMDB.Migrator().AutoMigrate(&user.User{}, &user.Resume{}, &user.ActionLog{}, &user.BannedLog{}, &user.Device{}, &user.ScoreLog{}, &user.UserExt{}, user.Oauth{})
+	if err != nil {
+		log.Fatal(err)
+	}
 }

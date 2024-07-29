@@ -76,7 +76,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 			return nil, err
 		}
 		for i := range collects {
-			action.Collects = append(action.Collects, collects[i].FavId)
+			action.CollectIds = append(action.CollectIds, collects[i].RefId)
 		}
 		if len(likes) != 0 && len(collects) != 0 {
 			moment.Action = action
@@ -301,11 +301,11 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 				if moment.Action == nil {
 					moment.Action = &content.UserAction{}
 				}
-				moment.Action.Collects = append(moment.Action.Collects, collects[i].FavId)
+				moment.Action.CollectIds = append(moment.Action.CollectIds, collects[i].RefId)
 			}
 		}
 	}
-	var users []*user.UserBaseInfo
+	var users []*user.UserBase
 	if len(userIds) > 0 {
 		userList, err := data.UserClient().BaseList(ctxi.BaseContext(), &user.BaseListReq{Ids: userIds.ToSlice()})
 		if err != nil {

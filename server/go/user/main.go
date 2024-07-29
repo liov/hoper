@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	cherry.Start(&cherry.Server{
+	server := cherry.Server{
 		GrpcHandler: api.GrpcRegister,
 
 		GinHandler: api.GinRegister,
@@ -16,5 +16,6 @@ func main() {
 					UserService:  service.GetUserService(),
 					OauthService: service.GetOauthService(),
 				}}),*/
-	})
+	}
+	server.Run()
 }

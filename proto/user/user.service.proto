@@ -156,7 +156,7 @@ service UserService {
   }
 
   //鉴权
-  rpc AuthInfo (google.protobuf.Empty) returns (UserAuthInfo) {
+  rpc AuthInfo (google.protobuf.Empty) returns (AuthInfoRep) {
     option (google.api.http) = {
       get: "/api/v1/auth"
     };
@@ -396,7 +396,7 @@ message ActionLogListReq {
 
 message ActionLogListRep {
   uint32 count = 1;
-  repeated UserActionLog list = 2;
+  repeated ActionLog list = 2;
 }
 
 message SendVerifyCodeReq{
@@ -415,7 +415,7 @@ message BaseListReq{
 
 message BaseListRep{
   int64 total = 1;
-  repeated UserBaseInfo list = 2;
+  repeated UserBase list = 2;
 }
 
 message UserRep{
@@ -425,4 +425,14 @@ message UserRep{
 
 message FollowReq{
   uint64 id = 1;
+}
+
+// 用户授权信息
+message AuthInfoRep {
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
+  string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" comment:\"名字\"'}];
+  Role role = 24 [(go.field) = {tags:'gorm:"type:int2;default:0"'}];
+  UserStatus status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    read_only:true
+  }];
 }

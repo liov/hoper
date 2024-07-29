@@ -18,7 +18,7 @@
                 :title="moment.user.name"
                 :avatar="staticDir + moment.user.avatarUrl"
                 note="来自iPhone15 Pro Max"
-                :time="moment.createdAt.slice(0, 10) + ' ' + moment.createdAt.slice(11)"
+                :time="moment.createdAt.slice(0, 10) + ' ' + moment.createdAt.slice(11, 19)"
               ></uni-list-chat>
             </template>
             <!-- 自定义 body -->

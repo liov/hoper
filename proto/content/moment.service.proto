@@ -112,7 +112,7 @@ message MomentListReq{
 message MomentListRep{
   int64 total = 1;
   repeated Moment list = 2;
-  repeated user.UserBaseInfo users = 3;
+  repeated user.UserBase users = 3;
 }
 // 瞬间
 message MomentRep {
@@ -131,13 +131,13 @@ message MomentRep {
   uint32 areaVisibility = 11 [(go.field) = {tags:'gorm:"type:int2;default:2" comment:"地区可见性，1-可见"'}];
   string location = 12 [(go.field) = {tags:'gorm:"size:20" comment:"位置"'}];
   repeated TinyTag tags = 13 [(go.field) = {tags:'gorm:"-" comment:"标签"'}];
-  user.UserBaseInfo user = 14 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
+  user.UserBase user = 14 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" comment:"用户id"'}];
   repeated uint64 approveUsers = 15 [(go.field) = {tags:'gorm:"-" comment:"点赞用户"'}];
   repeated uint64 collectUsers = 16 [(go.field) = {tags:'gorm:"-" comment:"收藏用户"'}];
   repeated uint64 likeUsers = 25 [(go.field) = {tags:'gorm:"-" comment:"喜欢用户"'}];
   repeated Comment comments = 18 [(go.field) = {tags:'gorm:"-" comment:"评论"'}];
-  repeated user.UserBaseInfo users = 31 [(go.field) = {tags:'gorm:"-" comment:"评论"'}];
+  repeated user.UserBase users = 31 [(go.field) = {tags:'gorm:"-" comment:"评论"'}];
   ContentExt ext = 30[(go.field) = {tags:'gorm:"-" comment:"统计数据"'}];
   uint64 likeId = 27 [(go.field) = {tags:'gorm:"-" comment:"喜欢id,为0代表用户没有点喜欢"'}];
   uint64 unlikeId = 29 [(go.field) = {tags:'gorm:"-" comment:"不喜欢id,为0代表用户没有点喜欢"'}];

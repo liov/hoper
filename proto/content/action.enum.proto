@@ -25,6 +25,7 @@ enum ActionType{
   ActionApprove = 9 [(enum.enumvalue_cn) = "赞同"];
   ActionDelete = 10 [(enum.enumvalue_cn) = "删除"];
 }
+
 // 删除原因
 enum DelReason{
   option (go.enum) = {stringer_name: 'OrigString'};

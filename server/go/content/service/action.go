@@ -353,11 +353,11 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 				if comment.Action == nil {
 					comment.Action = &content.UserAction{}
 				}
-				comment.Action.Collects = append(comment.Action.Collects, collects[i].FavId)
+				comment.Action.CollectIds = append(comment.Action.CollectIds, collects[i].RefId)
 			}
 		}
 	}
-	var users []*user.UserBaseInfo
+	var users []*user.UserBase
 	if len(userIds) > 0 {
 		userList, err := data.UserClient().BaseList(ctxi.BaseContext(), &user.BaseListReq{Ids: userIds.ToSlice()})
 		if err != nil {
@@ -407,7 +407,7 @@ func (*ActionService) GetUserAction(ctx context.Context, req *content.ContentReq
 		return nil, err
 	}
 	for i := range collects {
-		action.Collects = append(action.Collects, collects[i].FavId)
+		action.CollectIds = append(action.CollectIds, collects[i].RefId)
 	}
 	return action, nil
 }

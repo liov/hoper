@@ -123,7 +123,7 @@ message CommentReq{
     read_only: true}];
   ContentType type = 12 [(go.field) = {tags:'validate:"required" comment:"相关类型"'}];
   uint64 refId = 6 [(go.field) = {tags:' validate:"required" comment:"相关id"'}];
-  user.UserBaseInfo user = 2 [(go.field) = {tags:'comment:"用户"'}];
+  user.UserBase user = 2 [(go.field) = {tags:'comment:"用户"'}];
   uint64 userId = 5 [(go.field) = {tags:'comment:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
   string content = 3 [(go.field) = {tags:'comment:"内容"'}];
@@ -146,7 +146,7 @@ message CommentListReq{
 message CommentListRep{
   int64 total = 1;
   repeated Comment list = 2;
-  repeated user.UserBaseInfo users = 3;
+  repeated user.UserBase users = 3;
 }
 
 message CollectReq{

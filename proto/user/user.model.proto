@@ -62,7 +62,7 @@ message UserExt {
 }
 
 //关注表
-message UserFollow {
+message Follow {
   uint64 userId = 1 [(go.field) = {tags:'gorm:"index"'}];
   uint64 followId = 2 [(go.field) = {tags:'gorm:"default:0"'}];
   time.Time createdAt = 3 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
@@ -75,7 +75,7 @@ message UserFollow {
 }
 
 //用户分数变化日志
-message UserScoreLog {
+message ScoreLog {
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   uint64 userId = 2 [(go.field) = {tags:'gorm:"index"'}];
   sint64 score = 3 [(go.field) = {tags: 'json:"score" gorm:""'}];
@@ -85,7 +85,7 @@ message UserScoreLog {
   string remark = 7 [(go.field) = {tags:'gorm:"size:255"'}];
 }
 //用户封禁日志
-message UserBannedLog {
+message BannedLog {
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   uint64 userId = 2 [(go.field) = {tags:'gorm:"index"'}];
   uint64 duration = 3 [(go.field) = {tags:'gorm:""'}];
@@ -97,7 +97,7 @@ message UserBannedLog {
 }
 
 //用户操作日志
-message UserActionLog {
+message ActionLog {
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   uint64 userId = 2 [(go.field) = {tags:'gorm:"index"'}];
   //类型
@@ -109,8 +109,8 @@ message UserActionLog {
     type: STRING}];
   string remark = 7 [(go.field) = {tags:'gorm:"size:255"'}];
   //设备
-  UserDeviceInfo deviceInfo = 8 [(go.field) = {tags:'gorm:"embedded"'}];
-  uint32 device = 9;
+  AccessDevice device = 8 [(go.field) = {tags:'gorm:"embedded"'}];
+  uint32 deviceId = 9;
 
 }
 
@@ -140,7 +140,7 @@ message Resume {
   }];
 }
 
-message UserBaseInfo {
+message UserBase {
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" comment:\"名字\"'}];
   uint64 score = 3 [(go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
@@ -152,17 +152,8 @@ message UserBaseInfo {
   string avatarUrl = 12 [(go.field) = {tags:'gorm:"size:255"'}];
 }
 
-// 用户授权信息
-message UserAuthInfo {
-  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
-  string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" comment:\"名字\"'}];
-  Role role = 24 [(go.field) = {tags:'gorm:"type:int2;default:0"'}];
-  UserStatus status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-    read_only:true
-  }];
-}
 
-message UserOAuthInfo {
+message Oauth {
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" comment:\"名字\"'}];
   string mail = 6 [(go.field) = {tags:'gorm:"size:16" validate:"email" comment:"邮箱"'}];
@@ -171,22 +162,38 @@ message UserOAuthInfo {
   string avatarURL = 12 [(go.field) = {tags:'gorm:"size:255"'}];
 }
 
-message UserDeviceInfo {
+// 每次
+message AccessDevice {
   //设备
   string device = 1 [(go.field) = {tags:'gorm:"size:255"'}];
-  string OS = 4 [(go.field) = {tags:'gorm:"size:255"'}];
-  string appCode = 6 [(go.field) = {tags:'gorm:"size:255"'}];
-  string appVersion = 7 [(go.field) = {tags:'gorm:"size:255"'}];
-  string IP = 3 [(go.field) = {tags:'gorm:"size:255"'}];
-  string lng = 8 [(go.field) = {tags:'gorm:"type:numeric(10,6)"'}];
-  string lat = 9 [(go.field) = {tags:'gorm:"type:numeric(10,6)"'}];
-  string area = 2 [(go.field) = {tags:'gorm:"size:255"'}];
-  string userAgent = 5 [(go.field) = {tags:'gorm:"size:255"'}];
+  string deviceNo = 2 [(go.field) = {tags:'gorm:"size:255"'}];
+  string OS = 3 [(go.field) = {tags:'gorm:"size:255"'}];
+  string appCode = 4 [(go.field) = {tags:'gorm:"size:255"'}];
+  string appVer = 5 [(go.field) = {tags:'gorm:"size:255"'}];
+  string IP = 6 [(go.field) = {tags:'gorm:"size:255"'}];
+  double lng = 7 [(go.field) = {tags:'gorm:"type:numeric(10,6)"'}];
+  double lat = 8 [(go.field) = {tags:'gorm:"type:numeric(10,6)"'}];
+  string area = 9 [(go.field) = {tags:'gorm:"size:255"'}];
+  string userAgent = 10 [(go.field) = {tags:'gorm:"size:255"'}];
 }
 
-message UserContent{
-  uint64 momentCount = 1;
-  uint64 diaryCount = 2;
-  uint64 articleCount = 3;
-  uint64 favCount = 4;
+
+message Device {
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
+  string name = 2 [(go.field) = {tags:'gorm:"size:255"'}];
+  DeviceType deviceType = 3[(go.field) = {tags:'gorm:"type:int2;default:0"'}];
+  string manufacturer  = 4 [(go.field) = {tags:'gorm:"size:255" comment:"制造商"'}];
+  string model   = 5 [(go.field) = {tags:'gorm:"size:255" comment:"型号"'}];
+  string serialNo   = 6 [(go.field) = {tags:'gorm:"size:255" comment:"序列号"'}];
+  string OS = 7 [(go.field) = {tags:'gorm:"size:255"'}];
+  uint32 cpu = 8 [(go.field) = {tags:'gorm:"type:int2;default:0"'}];
+  uint32 ram = 9 [(go.field) = {tags:'gorm:"type:int8;default:0"'}];
+  uint32 storage = 10 [(go.field) = {tags:'gorm:"type:int8;default:0"'}];
+  double screenSize = 11 [(go.field) = {tags:'gorm:"type:int8;default:0"'}];
+}
+
+
+message Statistic{
+  uint64 follow = 1;
+  uint64 followed = 2;
 }

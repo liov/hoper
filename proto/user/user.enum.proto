@@ -74,3 +74,15 @@ enum UserErr {
     UserErrInvalidToken = 1004 [(enum.enumvalue_cn)= "Token错误"];
     UserErrNoLogin = 1005 [(enum.enumvalue_cn)= "未登录"];
 }
+
+enum DeviceType {
+    option (go.enum) = {stringer_name: 'OrigString'};
+    option (enum.enum_errcode) = true;
+    option (enum.enum_jsonmarshal) = false;
+    DeviceTypePlaceholder = 0 [(enum.enumvalue_cn)= "占位"];
+    DeviceTypePhone = 1 [(enum.enumvalue_cn)= "手机"];
+    DeviceTypePC = 2 [(enum.enumvalue_cn)= "电脑"];
+    DeviceTypePad = 3 [(enum.enumvalue_cn)= "平板"];
+    DeviceTypeWatch = 4 [(enum.enumvalue_cn)= "手表"];
+
+}

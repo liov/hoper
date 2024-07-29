@@ -80,6 +80,13 @@
       "style": {
         "navigationBarTitleText": "瞬间详情"
       }
+    },
+    {
+      "path": "pages/user/login",
+      "type": "page",
+      "style": {
+        "navigationBarTitleText": "登录"
+      }
     }
   ],
   "subPackages": []

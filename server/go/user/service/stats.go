@@ -31,7 +31,7 @@ func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*emptypb
 	if exists {
 		return nil, nil
 	}
-	err = userDao.Table(model.FollowTableName).Create(&user.UserFollow{
+	err = userDao.Table(model.FollowTableName).Create(&user.Follow{
 		UserId:   req.Id,
 		FollowId: auth.Id,
 	}).Error

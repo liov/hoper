@@ -75,16 +75,16 @@ func (d *UserDao) GetByPrimaryKey(id uint64) (*puser.User, error) {
 	return &user, nil
 }
 
-func (d *UserDao) SaveResumes(userId uint64, resumes []*puser.Resume, originalIds []uint64, device *puser.UserDeviceInfo) error {
+func (d *UserDao) SaveResumes(userId uint64, resumes []*puser.Resume, originalIds []uint64, device *puser.AccessDevice) error {
 
 	if len(resumes) == 0 {
 		return nil
 	}
 	var err error
-	var actionLog puser.UserActionLog
+	var actionLog puser.ActionLog
 	//actionLog.CreatedAt = timestamp.New(time.Now())
 	actionLog.UserId = userId
-	actionLog.DeviceInfo = device
+	actionLog.Device = device
 	actionLog.Action = puser.ActionEditResume
 	tableName := model.ResumeTableName + "."
 
@@ -130,7 +130,7 @@ func (d *UserDao) SaveResumes(userId uint64, resumes []*puser.Resume, originalId
 	return nil
 }
 
-func (d *UserDao) ActionLog(log *puser.UserActionLog) error {
+func (d *UserDao) ActionLog(log *puser.ActionLog) error {
 
 	err := d.Table(model.UserActionLogTableName).Create(&log).Error
 	if err != nil {
@@ -149,7 +149,7 @@ func (d *UserDao) ResumesIds(userId uint64) ([]uint64, error) {
 	return resumeIds, nil
 }
 
-func (d *UserDao) GetBaseListDB(ids []uint64, pageNo, pageSize int) (int64, []*puser.UserBaseInfo, error) {
+func (d *UserDao) GetBaseListDB(ids []uint64, pageNo, pageSize int) (int64, []*puser.UserBase, error) {
 
 	db := d.Table(model.UserTableName)
 	var count int64
@@ -166,7 +166,7 @@ func (d *UserDao) GetBaseListDB(ids []uint64, pageNo, pageSize int) (int64, []*p
 	if pageNo != 0 && pageSize != 0 {
 		clauses = append(clauses, clause.Limit{Offset: (pageNo - 1) * pageSize, Limit: &pageSize})
 	}
-	var users []*puser.UserBaseInfo
+	var users []*puser.UserBase
 	err := db.Clauses(clauses...).Scan(&users).Error
 	if err != nil {
 		return 0, nil, err

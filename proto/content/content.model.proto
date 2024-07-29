@@ -40,7 +40,7 @@ message TagGroup{
 }
 
 
-message TagGroupRel{
+message TagTagGroup{
   uint64 tagId = 1 [(go.field) = {tags:'gorm:"index:idx_rel"'}];
   uint64 groupId = 2 [(go.field) = {tags:'gorm:"index:idx_rel"'}];
   deletedAt.DeletedAt createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
@@ -68,7 +68,7 @@ message Category{
   }];
 }
 
-message Attributes{
+message Attribute{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" validate:"required,gte=2,lte=10" comment:"名称"'}];
   string describe = 3 [(go.field) = {tags:'gorm:"size:255"  comment:"描述"'}];
@@ -91,12 +91,20 @@ message AttrGroup{
   }];
 }
 
+message AttrAttrGroup{
+  uint64 attrId = 1 [(go.field) = {tags:'gorm:"index:idx_rel"'}];
+  uint64 groupId = 2 [(go.field) = {tags:'gorm:"index:idx_rel"'}];
+  deletedAt.DeletedAt createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  uint32 status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    read_only:true
+  }];
+}
+
+
 // 这种方式占空间，每条都要额外记录type，不如拆表moment_tag,moment_area
 message ContentAttr{
-  ContentType contentType = 7 [(go.field) = {tags:'gorm:"type:int2;not null;index:idx_content" validate:"required" comment:"相关类型"'}];
-  uint64 contentId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_content" validate:"required" comment:"相关id"'}];
-  AttrType type = 5 [(go.field) = {tags:'gorm:"type:int2;not null;index:idx_attr" validate:"required" comment:"类型"'}];
-  uint64 refId = 3 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_attr" validate:"required" comment:"相关id"'}];
+  uint64 contentId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_content" validate:"required" comment:"content id"'}];
+  uint64 attrId = 3 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_attr" validate:"required" comment:"attr id"'}];
   string attrValue = 4[(go.field) = {tags:'gorm:"type:text" validate:"required" comment:"属性值"'}];
   uint64 userId = 9 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
   uint32 sequence = 1 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
@@ -107,6 +115,7 @@ message ContentAttr{
   }];
 }
 
+// Deprecated 类型拆分
 message Content{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   string title = 24 [(go.field) = {tags:'gorm:"size:50;not null" comment:"标题"'}];
@@ -120,11 +129,11 @@ message Content{
   uint64 areaId = 20 [(go.field) = {tags:'gorm:"size:10;not null" comment:"地区"'}];
   string location = 14 [(go.field) = {tags:'gorm:"size:20;not null" comment:"位置"'}];
   repeated Tag tags = 6 [(go.field) = {tags:'gorm:"many2many:moment_tag;foreignkey:Id;references:Name" comment:"标签"'}];
-  user.UserBaseInfo user = 8 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
+  user.UserBase user = 8 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" comment:"用户id"'}];
-  repeated user.UserBaseInfo approveUsers = 9 [(go.field) = {tags:'gorm:"many2many:moment_approve_user" comment:"点赞用户"'}];
-  repeated user.UserBaseInfo collectUsers = 10 [(go.field) = {tags:'gorm:"many2many:moment_collect" comment:"收藏用户"'}];
-  repeated user.UserBaseInfo likeUsers = 11 [(go.field) = {tags:'gorm:"many2many:moment_like" comment:"喜欢用户"'}];
+  repeated user.UserBase approveUsers = 9 [(go.field) = {tags:'gorm:"many2many:moment_approve_user" comment:"点赞用户"'}];
+  repeated user.UserBase collectUsers = 10 [(go.field) = {tags:'gorm:"many2many:moment_collect" comment:"收藏用户"'}];
+  repeated user.UserBase likeUsers = 11 [(go.field) = {tags:'gorm:"many2many:moment_like" comment:"喜欢用户"'}];
   repeated Comment comments = 7 [(go.field) = {tags:'gorm:"-" comment:"评论"'}];
   uint32 sequence = 12 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
   uint32 anonymous = 15 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"是否匿名,0-是,1否"'}];
@@ -137,6 +146,7 @@ message Content{
 
 message Media{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
+  string url = 2 [(go.field) = {tags:'gorm:"size:255;not null" comment:"url"'}];
 }
 
 // 瞬间
@@ -156,13 +166,13 @@ message Moment {
   uint32 areaVisibility = 11 [(go.field) = {tags:'gorm:"type:int2;default:2" comment:"地区可见性，1-可见"'}];
   string location = 12 [(go.field) = {tags:'gorm:"size:20" comment:"位置"'}];
   repeated TinyTag tags = 13 [(go.field) = {tags:'gorm:"-" comment:"标签"'}];
-  user.UserBaseInfo user = 14 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
+  user.UserBase user = 14 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" comment:"用户id"'}];
   repeated uint64 approveUsers = 15 [(go.field) = {tags:'gorm:"-" comment:"点赞用户"'}];
   repeated uint64 collectUsers = 16 [(go.field) = {tags:'gorm:"-" comment:"收藏用户"'}];
   repeated uint64 likeUsers = 25 [(go.field) = {tags:'gorm:"-" comment:"喜欢用户"'}];
   repeated Comment comments = 18 [(go.field) = {tags:'gorm:"-" comment:"评论"'}];
-  repeated user.UserBaseInfo users = 31 [(go.field) = {tags:'gorm:"-" comment:"评论"'}];
+  repeated user.UserBase users = 31 [(go.field) = {tags:'gorm:"-" comment:"评论"'}];
   ContentExt ext = 30[(go.field) = {tags:'gorm:"-" comment:"统计数据"'}];
   UserAction action = 28[(go.field) = {tags:'gorm:"-" comment:"用户动作"'}];
   uint32 sequence = 19 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
@@ -194,11 +204,11 @@ message Article{
   uint64 areaId = 20 [(go.field) = {tags:'gorm:"size:10;default:0" comment:"地区"'}];
   string location = 14 [(go.field) = {tags:'gorm:"size:20" comment:"位置"'}];
   repeated Tag tags = 6 [(go.field) = {tags:'gorm:"-" comment:"标签"'}];
-  user.UserBaseInfo user = 8 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
+  user.UserBase user = 8 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;default:0;index" comment:"用户id"'}];
-  repeated user.UserBaseInfo approveUsers = 9 [(go.field) = {tags:'gorm:"-" comment:"点赞用户"'}];
-  repeated user.UserBaseInfo collectUsers = 10 [(go.field) = {tags:'gorm:"-" comment:"收藏用户"'}];
-  repeated user.UserBaseInfo likeUsers = 11 [(go.field) = {tags:'gorm:"-" comment:"喜欢用户"'}];
+  repeated user.UserBase approveUsers = 9 [(go.field) = {tags:'gorm:"-" comment:"点赞用户"'}];
+  repeated user.UserBase collectUsers = 10 [(go.field) = {tags:'gorm:"-" comment:"收藏用户"'}];
+  repeated user.UserBase likeUsers = 11 [(go.field) = {tags:'gorm:"-" comment:"喜欢用户"'}];
   repeated Comment comments = 7 [(go.field) = {tags:'gorm:"-" comment:"评论"'}];
   uint32 sequence = 12 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
   uint32 anonymous = 15 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"是否匿名,0-是,1否"'}];
@@ -241,7 +251,7 @@ message DiaryBook{
     read_only:true
   }];
 }
-
+// Deprecated 类型拆分
 message Container{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   ContainerType type = 5 [(go.field) = {tags:'gorm:"type:int2;not null" comment:"类型"'}];
@@ -271,11 +281,11 @@ message Diary {
   uint32 areaVisibility = 11 [(go.field) = {tags:'gorm:"type:int2;default:2" comment:"地区可见性，1-可见"'}];
   string location = 12 [(go.field) = {tags:'gorm:"size:20" comment:"位置"'}];
   repeated TinyTag tags = 13 [(go.field) = {tags:'gorm:"-" comment:"标签"'}];
-  user.UserBaseInfo user = 14 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
+  user.UserBase user = 14 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" comment:"用户id"'}];
-  repeated user.UserBaseInfo approveUsers = 15 [(go.field) = {tags:'gorm:"-" comment:"点赞用户"'}];
-  repeated user.UserBaseInfo collectUsers = 16 [(go.field) = {tags:'gorm:"-" comment:"收藏用户"'}];
-  repeated user.UserBaseInfo likeUsers = 25 [(go.field) = {tags:'gorm:"-" comment:"喜欢用户"'}];
+  repeated user.UserBase approveUsers = 15 [(go.field) = {tags:'gorm:"-" comment:"点赞用户"'}];
+  repeated user.UserBase collectUsers = 16 [(go.field) = {tags:'gorm:"-" comment:"收藏用户"'}];
+  repeated user.UserBase likeUsers = 25 [(go.field) = {tags:'gorm:"-" comment:"喜欢用户"'}];
   repeated Comment comments = 18 [(go.field) = {tags:'gorm:"-" comment:"评论"'}];
   uint32 sequence = 19 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
   uint32 anonymous = 20 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"是否匿名,0-是,1否"'}];
@@ -287,17 +297,17 @@ message Diary {
   }];
 }
 
-message Favorites{
+message Favorite{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  user.UserBaseInfo user = 2 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
+  user.UserBase user = 2 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
   string title = 3 [(go.field) = {tags:'gorm:"size:10;not null" comment:"标题"'}];
   string description = 5 [(go.field) = {tags:'gorm:"type:text;not null" comment:"描述"'}];
   string cover = 4 [(go.field) = {tags:'gorm:"size:255;not null" comment:"封面"'}];
   uint32 sequence = 12 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
   uint32 anonymous = 15 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"是否匿名,0-是,1否"'}];
-  repeated  user.UserBaseInfo followUsers = 7 [(go.field) = {tags:'gorm:"-" comment:"关注人"'}];
-  repeated Collection collections = 6 [(go.field) = {tags:'gorm:"-" comment:"收藏"'}];
+  repeated  user.UserBase followUsers = 7 [(go.field) = {tags:'gorm:"-" comment:"关注人"'}];
+  repeated Collect collects = 6 [(go.field) = {tags:'gorm:"-" comment:"收藏"'}];
   time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
   deletedAt.DeletedAt deletedAt = 26 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
 }
@@ -307,4 +317,17 @@ message FavFollow{
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_fav_user"  comment:"用户id"'}];
   time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
   deletedAt.DeletedAt deletedAt = 26 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+}
+
+message UserStatics{
+  uint64 userId = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
+  uint32 diary = 2 [(go.field) = {tags:'gorm:"type:int8'}];
+  uint32 moment = 3 [(go.field) = {tags:'gorm:"type:int8"'}];
+  uint32 article = 4 [(go.field) = {tags:'gorm:"type:int8"'}];
+  uint32 note = 5 [(go.field) = {tags:'gorm:"type:int8"'}];
+  uint32 favorite = 6 [(go.field) = {tags:'gorm:"type:int8"'}];
+  uint32 diaryBook = 7 [(go.field) = {tags:'gorm:"type:int8"'}];
+  uint32 comment = 8 [(go.field) = {tags:'gorm:"type:int8"'}];
+  uint32 like = 9 [(go.field) = {tags:'gorm:"type:int8"'}];
+  uint32 collect = 10 [(go.field) = {tags:'gorm:"type:int8"'}];
 }

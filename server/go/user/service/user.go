@@ -404,7 +404,7 @@ func (u *UserService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.
 	return new(emptypb.Empty), nil
 }
 
-func (u *UserService) AuthInfo(ctx context.Context, req *emptypb.Empty) (*model.UserAuthInfo, error) {
+func (u *UserService) AuthInfo(ctx context.Context, req *emptypb.Empty) (*model.AuthInfoRep, error) {
 	ctxi := httpctx.FromContextValue(ctx)
 	user, err := auth(ctxi, true)
 	if err != nil {
@@ -510,7 +510,7 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 
 func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListReq) (*model.ActionLogListRep, error) {
 	rep := &model.ActionLogListRep{}
-	var logs []*model.UserActionLog
+	var logs []*model.ActionLog
 	err := confdao.Dao.GORMDB.Table(modelconst.UserActionLogTableName).
 		Offset(0).Limit(10).Find(&logs).Error
 	if err != nil {

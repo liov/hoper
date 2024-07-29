@@ -22,7 +22,8 @@ enum ContentType{
   ContentComment = 7 [(enum.enumvalue_cn) = "评论"];
 }
 
-enum AttrType{
+// Deprecated 使用数据库表
+/*enum AttrType{
   option (go.enum) = {stringer_name: 'OrigString'};
   AttrPlaceholder = 0 [(enum.enumvalue_cn) = "占位"];
   AttrImage = 1 [(enum.enumvalue_cn) = "图片"];
@@ -35,9 +36,10 @@ enum AttrType{
   AttrIntro = 8 [(enum.enumvalue_cn) = "介绍"];
   AttrContentType = 9 [(enum.enumvalue_cn) = "文本类型"];
   AttrModifyTimes = 10 [(enum.enumvalue_cn) = "修改次数"];
-}
+}*/
 
-enum TagType{
+// Deprecated 使用数据库表TagGroup
+/*enum TagType{
   option (go.enum) = {stringer_name: 'OrigString'};
   TagPlaceholder = 0 [(enum.enumvalue_cn) = "占位"];
   TagContent = 1[(enum.enumvalue_cn) = "内容"];
@@ -46,7 +48,7 @@ enum TagType{
   TagLocation = 4 [(enum.enumvalue_cn) = "地点"];
   TagCategory = 5 [(enum.enumvalue_cn) = "分类"];
   TagNotice = 6 [(enum.enumvalue_cn) = "提示"];
-}
+}*/
 
 // 可见范围
 enum ViewPermission{
@@ -69,6 +71,7 @@ enum MomentType{
   MomentTypeAudio = 4 [(enum.enumvalue_cn) = "音频"];
 }
 
+// Deprecated 类型拆分
 enum ContainerType{
   option (go.enum) = {stringer_name: 'OrigString'};
   ContainerTypePlaceholder = 0 [(enum.enumvalue_cn) = "占位"];

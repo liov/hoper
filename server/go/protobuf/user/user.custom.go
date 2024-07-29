@@ -11,7 +11,7 @@ import (
 // var test []array.CmpKey
 // test = append(test,resumes[0]) 可行
 // test = append(test,resumes...) 不可行，可笑
-func (x *Resume) CmpKey() uint64 {
+func (x *Resume) CompareKey() uint64 {
 	return x.Id
 }
 
@@ -45,8 +45,8 @@ func (x *AuthInfo) IdStr() string {
 	return strconv.FormatUint(x.Id, 10)
 }
 
-func (x *AuthInfo) UserAuthInfo() *UserAuthInfo {
-	return &UserAuthInfo{
+func (x *AuthInfo) UserAuthInfo() *AuthInfoRep {
+	return &AuthInfoRep{
 		Id:     x.Id,
 		Name:   x.Name,
 		Role:   x.Role,
@@ -54,16 +54,16 @@ func (x *AuthInfo) UserAuthInfo() *UserAuthInfo {
 	}
 }
 
-func ConvDeviceInfo(x *contexti.DeviceInfo) *UserDeviceInfo {
-	return &UserDeviceInfo{
-		Device:     x.Device,
-		OS:         x.OS,
-		AppCode:    x.AppCode,
-		AppVersion: x.AppVersion,
-		IP:         x.IP,
-		Lng:        x.Lng,
-		Lat:        x.Lat,
-		Area:       x.Area,
-		UserAgent:  x.UserAgent,
+func ConvDeviceInfo(x *contexti.DeviceInfo) *AccessDevice {
+	return &AccessDevice{
+		Device:    x.Device,
+		OS:        x.OS,
+		AppCode:   x.AppCode,
+		AppVer:    x.AppVer,
+		IP:        x.IP,
+		Lng:       x.Lng,
+		Lat:       x.Lat,
+		Area:      x.Area,
+		UserAgent: x.UserAgent,
 	}
 }
