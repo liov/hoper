@@ -52,7 +52,7 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 
 	err = contentDBDao.Transaction(func(tx *gorm.DB) error {
 		contenttxDBDao := dbdao.GetDao(ctxi, tx)
-		err = tx.Table(model.LikeTableName).Create(req).Error
+		err = tx.Table(model.TableNameLike).Create(req).Error
 		if err != nil {
 			return ctxi.ErrorLog(errcode.DBError, err, "Create")
 		}
@@ -93,7 +93,7 @@ func (*ActionService) DelLike(ctx context.Context, req *request.Id) (*emptypb.Em
 	if like.Id == 0 {
 		return nil, errcode.ParamInvalid
 	}
-	err = contentDBDao.DelByAuth(model.LikeTableName, req.Id, auth.Id)
+	err = contentDBDao.DelByAuth(model.TableNameLike, req.Id, auth.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +121,7 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*re
 	req.UserId = auth.Id
 	err = db.Transaction(func(tx *gorm.DB) error {
 		contenttxDBDao := dbdao.GetDao(ctxi, tx)
-		err = tx.Table(model.CommentTableName).Create(req).Error
+		err = tx.Table(model.TableNameComment).Create(req).Error
 		if err != nil {
 			return ctxi.ErrorLog(errcode.DBError, err, "Create")
 		}
@@ -160,7 +160,7 @@ func (*ActionService) DelComment(ctx context.Context, req *request.Id) (*emptypb
 	contentDBDao := data.GetDBDao(ctxi, db)
 
 	var comment content.Comment
-	err = db.Table(model.CommentTableName).First(&comment, "id = ?", req.Id).Error
+	err = db.Table(model.TableNameComment).First(&comment, "id = ?", req.Id).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errcode.DBError, err, "Find")
 	}
@@ -176,7 +176,7 @@ func (*ActionService) DelComment(ctx context.Context, req *request.Id) (*emptypb
 		}
 	}
 
-	err = contentDBDao.Del(model.CommentTableName, req.Id)
+	err = contentDBDao.Del(model.TableNameComment, req.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -220,7 +220,7 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*em
 	}
 	for _, id := range diff {
 		collect.FavId = id
-		err = db.Table(model.CollectTableName).Create(&collect).Error
+		err = db.Table(model.TableNameCollect).Create(&collect).Error
 		if err != nil {
 			return nil, ctxi.ErrorLog(errcode.DBError, err, "Create")
 		}
@@ -231,7 +231,7 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*em
 			return nil, ctxi.ErrorLog(errcode.DBError, err, "ActionCount")
 		}
 	}
-	err = db.Table(model.CollectTableName).Where(`type = ? AND ref_id = ? AND fav_id NOT IN (?)`, req.Type, req.RefId, req.FavIds).
+	err = db.Table(model.TableNameCollect).Where(`type = ? AND ref_id = ? AND fav_id NOT IN (?)`, req.Type, req.RefId, req.FavIds).
 		Update(`deleted_at`, ctxi.RequestAt.TimeString).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errcode.DBError, err, "DELETE")
@@ -270,7 +270,7 @@ func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*empt
 	req.UserId = auth.Id
 	err = db.Transaction(func(tx *gorm.DB) error {
 		contenttxDBDao := data.GetDBDao(ctxi, tx)
-		err = tx.Table(model.ReportTableName).Create(req).Error
+		err = tx.Table(model.TableNameReport).Create(req).Error
 		if err != nil {
 			return ctxi.ErrorLog(errcode.DBError, err, "Create")
 		}
@@ -315,13 +315,13 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 		commentMaskField(comments[i])
 	}
 	// ext
-	exts, err := contentDBDao.GetContentExt(content.ContentComment, ids)
+	statistics, err := contentDBDao.GetStatistics(content.ContentComment, ids)
 	if err != nil {
 		return nil, err
 	}
-	for i := range exts {
-		if comment, ok := m[exts[i].RefId]; ok {
-			comment.Ext = exts[i]
+	for i := range statistics {
+		if comment, ok := m[statistics[i].RefId]; ok {
+			comment.Statistics = statistics[i]
 		}
 	}
 

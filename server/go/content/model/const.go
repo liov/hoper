@@ -3,23 +3,25 @@ package model
 import "github.com/liov/hoper/server/go/protobuf/content"
 
 const (
-	LikeTableName       = "like"
-	BrowserTableName    = "browser"
-	CommentTableName    = "comment"
-	CollectTableName    = "collection"
-	ContainerTableName  = "container"
-	ReportTableName     = "report"
-	GiveTableName       = "give"
-	ApproveTableName    = "approve"
-	MomentTableName     = "moment"
-	NoteTableName       = "note"
-	DiaryTableName      = "diary"
-	ArticleTableName    = "article"
-	DiaryBookTableName  = "diary_book"
-	FavoritesTableName  = "favorites"
-	TagTableName        = "tag"
-	ContentExtTableName = "content_ext"
-	ContentTagTableName = "content_tag"
+	Schema              = "content."
+	TableNameLike       = Schema + "like"
+	TableNameBrowser    = Schema + "browser"
+	TableNameComment    = Schema + "comment"
+	TableNameCollect    = Schema + "collection"
+	TableNameContainer  = Schema + "container"
+	TableNameReport     = Schema + "report"
+	TableNameGive       = Schema + "give"
+	TableNameApprove    = Schema + "approve"
+	TableNameMoment     = Schema + "moment"
+	TableNameNote       = Schema + "note"
+	TableNameDiary      = Schema + "diary"
+	TableNameArticle    = Schema + "article"
+	TableNameDiaryBook  = Schema + "diary_book"
+	TableNameFavorite   = Schema + "favorite"
+	TableNameTag        = Schema + "tag"
+	TableNameTagGroup   = Schema + "tag"
+	TableNameStatistics = Schema + "statistics"
+	TableNameContentTag = Schema + "content_tag"
 )
 
 const (
@@ -29,19 +31,19 @@ const (
 func ActionTableName(action content.ActionType) string {
 	switch action {
 	case content.ActionBrowse:
-		return BrowserTableName
+		return TableNameBrowser
 	case content.ActionLike, content.ActionUnlike:
-		return LikeTableName
+		return TableNameLike
 	case content.ActionComment:
-		return CommentTableName
+		return TableNameComment
 	case content.ActionCollect:
-		return CollectTableName
+		return TableNameCollect
 	case content.ActionReport:
-		return ReportTableName
+		return TableNameReport
 	case content.ActionGive:
-		return GiveTableName
+		return TableNameGive
 	case content.ActionApprove:
-		return ApproveTableName
+		return TableNameApprove
 	}
 	return ""
 }
@@ -49,19 +51,19 @@ func ActionTableName(action content.ActionType) string {
 func ContentTableName(typ content.ContentType) string {
 	switch typ {
 	case content.ContentMoment:
-		return MomentTableName
+		return TableNameMoment
 	case content.ContentNote:
-		return NoteTableName
+		return TableNameNote
 	case content.ContentDairy:
-		return DiaryTableName
+		return TableNameDiary
 	case content.ContentDairyBook:
-		return DiaryBookTableName
+		return TableNameDiaryBook
 	case content.ContentFavorites:
-		return FavoritesTableName
+		return TableNameFavorite
 	case content.ContentCollection:
-		return CollectTableName
+		return TableNameCollect
 	case content.ContentComment:
-		return CommentTableName
+		return TableNameComment
 	}
 	return ""
 }

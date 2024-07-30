@@ -15,19 +15,17 @@ import { dynamicLoadJs } from '@/utils/h5'
 
 const turnstile = window.turnstile
 const onloadTurnstileCallback = function () {
-  turnstile.ready(function () {
-    turnstile.render('#cf-turnstile', {
-      sitekey: '0x4AAAAAAAgC9s4WZMlljGRg',
-      callback: function (token) {
-        console.log(`Challenge Success ${token}`)
-      },
-    })
+  turnstile.render('#cf-turnstile', {
+    sitekey: '0x4AAAAAAAgC9s4WZMlljGRg',
+    callback: function (token: string) {
+      console.log(`Challenge Success ${token}`)
+    },
   })
 
   if (!turnstile) {
     dynamicLoadJs(
       '//challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"',
-      onloadTurnstileCallback,
+      turnstile.ready(onloadTurnstileCallback),
     )
   } else {
     onloadTurnstileCallback()

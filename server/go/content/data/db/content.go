@@ -9,7 +9,7 @@ import (
 
 func (d *ContentDao) FavExists(title string) (uint64, error) {
 	ctxi := d
-	sql := `SELECT id FROM "` + model.FavoritesTableName + `" 
+	sql := `SELECT id FROM "` + model.TableNameFavorite + `" 
 WHERE title = ? AND user_id = ?` + dbi.WithNotDeleted
 	var id uint64
 

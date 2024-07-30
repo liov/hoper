@@ -14,7 +14,6 @@ var MongoSettings = &MongoConfig{}*/
 type config struct {
 	//自定义的配置
 	Customize serverConfig
-	SendMail  SendMailConfig
 	Server    cherry.Server
 }
 

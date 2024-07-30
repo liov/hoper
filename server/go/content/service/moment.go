@@ -39,7 +39,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 	contentDBDao := data.GetDBDao(ctxi, db)
 
 	var moment content.Moment
-	err := db.Table(model.MomentTableName).
+	err := db.Table(model.TableNameMoment).
 		Where(`id = ?`, req.Id).First(&moment).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errcode.DBError, err, "First")
@@ -83,11 +83,11 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 		}
 	}
 	// ext
-	exts, err := contentDBDao.GetContentExt(content.ContentMoment, []uint64{moment.Id})
+	statistics, err := contentDBDao.GetStatistics(content.ContentMoment, []uint64{moment.Id})
 	if err != nil {
 		return nil, err
 	}
-	moment.Ext = exts[0]
+	moment.Statistics = statistics[0]
 
 	userIds := set.New[uint64]()
 
@@ -163,7 +163,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 			req.Permission = content.ViewPermissionAll
 		}
 		contenttxDBDao := data.GetDBDao(ctxi, tx)
-		err = tx.Table(model.MomentTableName).Create(req).Error
+		err = tx.Table(model.TableNameMoment).Create(req).Error
 		if err != nil {
 			return ctxi.ErrorLog(errcode.DBError, err, "tx.CreateReq")
 		}
@@ -264,13 +264,13 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 		}
 	}
 	// ext
-	exts, err := contentDBDao.GetContentExt(content.ContentMoment, ids)
+	statistics, err := contentDBDao.GetStatistics(content.ContentMoment, ids)
 	if err != nil {
 		return nil, err
 	}
-	for i := range exts {
-		if moment, ok := m[exts[i].RefId]; ok {
-			moment.Ext = exts[i]
+	for i := range statistics {
+		if moment, ok := m[statistics[i].RefId]; ok {
+			moment.Statistics = statistics[i]
 		}
 	}
 	//like
@@ -330,7 +330,7 @@ func (*MomentService) Delete(ctx context.Context, req *request.Id) (*emptypb.Emp
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
 	contentDBDao := data.GetDBDao(ctxi, db)
 
-	err = contentDBDao.DelByAuth(model.MomentTableName, req.Id, auth.Id)
+	err = contentDBDao.DelByAuth(model.TableNameMoment, req.Id, auth.Id)
 	if err != nil {
 		return nil, err
 	}

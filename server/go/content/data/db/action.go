@@ -39,7 +39,7 @@ func (d *ContentDao) ActionCount(typ content.ContentType, action content.ActionT
 	}
 	expr = gorm.Expr(column + symbol + strconv.Itoa(changeCount))
 
-	err := d.db.Table(model.ContentExtTableName).Where(`type = ? AND ref_id = ?`, typ, refId).
+	err := d.db.Table(model.TableNameStatistics).Where(`type = ? AND ref_id = ?`, typ, refId).
 		Update(column, expr).Error
 	if err != nil {
 		return ctxi.ErrorLog(errcode.DBError, err, "ActionCount")
@@ -107,7 +107,7 @@ WHERE id = ?  AND user_id = ?` + dbi.WithNotDeleted + ` LIMIT 1)`
 
 func (d *ContentDao) ContainerExists(typ content.ContainerType, id, userId uint64) (bool, error) {
 	ctxi := d.Context
-	sql := `SELECT EXISTS(SELECT * FROM "` + model.ContainerTableName + `" 
+	sql := `SELECT EXISTS(SELECT * FROM "` + model.TableNameContainer + `" 
 WHERE id = ?  AND type = ? AND user_id = ?` + dbi.WithNotDeleted + ` LIMIT 1)`
 	var exists bool
 	err := d.db.Raw(sql, id, typ, userId).Scan(&exists).Error
@@ -132,7 +132,7 @@ func (d *ContentDao) GetContentActions(action content.ActionType, typ content.Co
 func (d *ContentDao) GetLike(likeId, userId uint64) (*model.ContentAction, error) {
 	ctxi := d.Context
 	var action model.ContentAction
-	err := d.db.Select("id,ref_id,action,type").Table(model.LikeTableName).
+	err := d.db.Select("id,ref_id,action,type").Table(model.TableNameLike).
 		Where("id = ? AND user_id = ?"+dbi.WithNotDeleted,
 			likeId, userId).Scan(&action).Error
 	if err != nil {
@@ -144,7 +144,7 @@ func (d *ContentDao) GetLike(likeId, userId uint64) (*model.ContentAction, error
 func (d *ContentDao) GetCollects(typ content.ContentType, refIds []uint64, userId uint64) ([]model.ContentCollect, error) {
 	ctxi := d.Context
 	var collects []model.ContentCollect
-	err := d.db.Select("id,ref_id,fav_id").Table(model.CollectTableName).
+	err := d.db.Select("id,ref_id,fav_id").Table(model.TableNameCollect).
 		Where("type = ? AND ref_id IN (?) AND user_id = ?"+dbi.WithNotDeleted,
 			typ, refIds, userId).Scan(&collects).Error
 	if err != nil {
@@ -155,7 +155,7 @@ func (d *ContentDao) GetCollects(typ content.ContentType, refIds []uint64, userI
 
 func (d *ContentDao) GetComments(typ content.ContentType, refId, rootId uint64, pageNo, pageSize int) (int64, []*content.Comment, error) {
 	ctxi := d.Context
-	db := d.db.Table(model.CommentTableName).Where(`type = ? AND ref_id = ? AND root_id = ?`+dbi.WithNotDeleted, typ, refId, rootId)
+	db := d.db.Table(model.TableNameComment).Where(`type = ? AND ref_id = ? AND root_id = ?`+dbi.WithNotDeleted, typ, refId, rootId)
 	var count int64
 	err := db.Count(&count).Error
 	if err != nil {

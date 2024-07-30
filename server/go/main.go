@@ -17,6 +17,7 @@ import (
 	"google.golang.org/grpc"
 )
 
+//go:generate protogen.exe go -e -w -v -p ../../proto
 func main() {
 	//配置初始化应该在第一位
 	// initialize.Start是提供给单服务的，这样写有问题，其他模块的配置不会更新
@@ -36,7 +37,7 @@ func main() {
 			uploadapi.GinRegister(app)
 			chatapi.GinRegister(app)
 			contentapi.GinRegister(app)
-			pickgin.Register(app, uconf.Conf.Server.EnableTelemetry, &service.UserService{})
+			pickgin.Register(app, &service.UserService{})
 		}
 		//s.GraphqlHandler= graphql.NewExecutableSchema(),
 	}).Run()

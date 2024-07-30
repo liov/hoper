@@ -7,11 +7,12 @@ const (
 )
 
 const (
-	UserTableName          = `user`
-	UserExtTableName       = "user_ext"
-	ResumeTableName        = "resume"
-	UserActionLogTableName = "user_action_log"
-	FollowTableName        = "user_follow"
+	Schema             = "user."
+	TableNameUser      = Schema + `user`
+	TableNameUserExt   = Schema + "user_ext"
+	TableNameResume    = Schema + "resume"
+	TableNameActionLog = Schema + "action_log"
+	TableNameFollow    = Schema + "follow"
 )
 
 const (

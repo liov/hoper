@@ -8,8 +8,7 @@ import (
 
 type serverConfig struct {
 	Volume   fs.Dir
-	Protocol string
-	Domain   string
+	SiteURL  string
 	PassSalt string
 	// 天数
 	TokenMaxAge      time.Duration
@@ -22,16 +21,9 @@ type serverConfig struct {
 	LuosimaoAPIKey    string
 
 	QrCodeSaveDir fs.Dir //二维码保存路径
-	PrefixUrl     string
 	FontSaveDir   fs.Dir //字体保存路径
 
 	Limit Limit
-}
-
-type SendMailConfig struct {
-	Host string
-	Port string
-	From string
 }
 
 type Limit struct {

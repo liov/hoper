@@ -39,7 +39,7 @@
       {
         "iconPath": "static/tabbar/IcBaselineCropOriginal.svg",
         "selectedIconPath": "static/tabbar/IcBaselineCropOriginalHL.svg",
-        "pagePath": "pages/moment/moment",
+        "pagePath": "pages/moment/moment_list",
         "text": "%tabbar.moment%"
       }
     ]
@@ -68,17 +68,24 @@
       }
     },
     {
-      "path": "pages/moment/moment",
+      "path": "pages/moment/moment_detail",
+      "type": "page",
+      "style": {
+        "navigationBarTitleText": "瞬间详情"
+      }
+    },
+    {
+      "path": "pages/moment/moment_list",
       "type": "page",
       "style": {
         "navigationBarTitleText": "瞬间"
       }
     },
     {
-      "path": "pages/moment/momentv2",
+      "path": "pages/user/active",
       "type": "page",
       "style": {
-        "navigationBarTitleText": "瞬间详情"
+        "navigationBarTitleText": "激活"
       }
     },
     {

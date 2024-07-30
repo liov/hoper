@@ -2,15 +2,15 @@ import 'package:flutter/cupertino.dart';
 
 import 'moment_list_view.dart';
 
-class MomentListViewWarp extends StatefulWidget {
-  MomentListViewWarp({this.tag = "default"}) : super();
+class MomentListViewWrap extends StatefulWidget {
+  MomentListViewWrap({this.tag = "default"}) : super();
 
   final String tag;
   @override
-  _MomentListViewWarpState createState() => _MomentListViewWarpState();
+  _MomentListViewWrapState createState() => _MomentListViewWrapState();
 }
 
-class _MomentListViewWarpState extends State<MomentListViewWarp> with AutomaticKeepAliveClientMixin {
+class _MomentListViewWrapState extends State<MomentListViewWrap> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);

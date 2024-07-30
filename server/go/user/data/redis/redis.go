@@ -202,8 +202,8 @@ func (d *UserDao) GetUserExtRedis() (*model.UserExt, error) {
 		followCount, _ := strconv.ParseUint(userExt[1], 10, 64)
 		followedCount, _ := strconv.ParseUint(userExt[3], 10, 64)
 		return &model.UserExt{
-			FollowCount:   followCount,
-			FollowedCount: followedCount,
+			Follow:   followCount,
+			Followed: followedCount,
 		}, nil
 	}
 	return nil, nil

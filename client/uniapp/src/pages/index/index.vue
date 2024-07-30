@@ -19,7 +19,7 @@
     <view class="text-center text-2xl mt-2 mb-8">hoper with record</view>
 
     <view class="text-justify max-w-100 m-auto text-4 indent mb-2">{{ description }}</view>
-    <navigator url="/pages/moment/moment?title=navigate" hover-class="navigator-hover">
+    <navigator url="/pages/moment/moment_list?title=navigate" hover-class="navigator-hover">
       <image class="logo" src="/static/logo.svg" />
     </navigator>
     <view class="text-area">

@@ -7,14 +7,15 @@ interface NavigateToOptions {
   url: "/pages/index/index" |
        "/pages/about/about" |
        "/pages/about/i18n" |
-       "/pages/moment/moment" |
-       "/pages/moment/momentv2" |
+       "/pages/moment/moment_detail" |
+       "/pages/moment/moment_list" |
+       "/pages/user/active" |
        "/pages/user/login";
 }
 interface RedirectToOptions extends NavigateToOptions {}
 
 interface SwitchTabOptions {
-  url: "/pages/index/index" | "/pages/about/about" | "/pages/moment/moment"
+  url: "/pages/index/index" | "/pages/about/about" | "/pages/moment/moment_list"
 }
 
 type ReLaunchOptions = NavigateToOptions | SwitchTabOptions;

@@ -39,8 +39,8 @@ func (d *dao) InitAfterInject() {
 	}
 	err = d.GORMDB.Migrator().AutoMigrate(&content.Moment{}, &content.Diary{}, &content.Attribute{}, &content.Tag{},
 		&content.UserAction{}, &content.Article{}, &content.Category{}, &content.ContentAttr{}, &content.Comment{}, &content.AttrGroup{},
-		&content.Favorite{}, &content.FavFollow{}, &content.DiaryBook{}, &content.UserStatics{}, &content.Note{}, &content.TagGroup{},
-		&content.ContentExt{}, &content.TagTagGroup{}, &content.AttrAttrGroup{},
+		&content.Favorite{}, &content.FavFollow{}, &content.DiaryBook{}, &content.UserStatistics{}, &content.Note{}, &content.TagGroup{},
+		&content.Statistics{}, &content.TagTagGroup{}, &content.AttrAttrGroup{},
 	)
 	if err != nil {
 		log.Fatal(err)

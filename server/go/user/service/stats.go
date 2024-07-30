@@ -31,7 +31,7 @@ func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*emptypb
 	if exists {
 		return nil, nil
 	}
-	err = userDao.Table(model.FollowTableName).Create(&user.Follow{
+	err = userDao.Table(model.TableNameFollow).Create(&user.Follow{
 		UserId:   req.Id,
 		FollowId: auth.Id,
 	}).Error
@@ -59,7 +59,7 @@ func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user
 	if !exists {
 		return nil, nil
 	}
-	err = userDao.Table(model.FollowTableName).Where("user_id = ? AND follow_id = ?"+dbi.WithNotDeleted, req.Id, auth.Id).
+	err = userDao.Table(model.TableNameFollow).Where("user_id = ? AND follow_id = ?"+dbi.WithNotDeleted, req.Id, auth.Id).
 		UpdateColumn("deleted_at", ctxi.RequestAt.TimeString).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errcode.DBError, err, "Create")

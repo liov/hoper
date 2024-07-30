@@ -56,8 +56,8 @@ func (*ContentService) EditTag(ctx context.Context, req *content.EditTagReq) (*e
 
 	db := confdao.Dao.GORMDB.DB
 	err = db.Updates(&content.Tag{
-		Description:   req.Description,
-		ExpressionURL: req.ExpressionURL,
+		Description: req.Description,
+		ImgURL:      req.ExpressionURL,
 	}).Where(`id = ? AND user_id = ? AND status = 0`, req.Id, auth.Id).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errcode.DBError, err, "db.Updates")
@@ -77,8 +77,8 @@ func (*ContentService) TagList(ctx context.Context, req *content.TagListReq) (*c
 	if req.Name != "" {
 		db = db.Where(`name LIKE ?` + "%" + req.Name + "%")
 	}
-	if req.Type != content.TagPlaceholder {
-		db = db.Where(`type = ?`, req.Type)
+	if req.GroupId != 0 {
+		db = db.Where(`id IN ?`, db.Table(model.TableNameTagGroup).Select("tag_id").Where("group_id = ?", req.GroupId))
 	}
 	var count int64
 	err = db.Table(`tag`).Where("user_id = ?", user.Id).Find(&tags).Count(&count).Error
@@ -109,7 +109,7 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*req
 
 	err = contentDBDao.Transaction(func(tx *gorm.DB) error {
 		contenttxDBDao := data.GetDBDao(ctxi, tx)
-		err = tx.Table(model.FavoritesTableName).Create(req).Error
+		err = tx.Table(model.TableNameFavorite).Create(req).Error
 		if err != nil {
 			return ctxi.ErrorLog(errcode.DBError, err, "CreateFav")
 		}
@@ -137,7 +137,7 @@ func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*em
 		return nil, err
 	}
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
-	err = db.Table(model.FavoritesTableName).Where(`id =? AND user_id =?`, req.Id, auth.Id).
+	err = db.Table(model.TableNameFavorite).Where(`id =? AND user_id =?`, req.Id, auth.Id).
 		Updates(req).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errcode.DBError, err, "UpdateColumn")
@@ -161,7 +161,7 @@ func (*ContentService) TinyFavList(ctx context.Context, req *content.FavListReq)
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
 	var favs []*content.TinyFavorites
 	if req.UserId == 0 {
-		err = db.Table(model.FavoritesTableName).Select("id,title").Where(`user_id = ?`, auth.Id).Find(&favs).Error
+		err = db.Table(model.TableNameFavorite).Select("id,title").Where(`user_id = ?`, auth.Id).Find(&favs).Error
 	}
 	if err != nil {
 		return nil, ctxi.ErrorLog(errcode.DBError, err, "CreateFav")
@@ -184,7 +184,7 @@ func (*ContentService) AddContainer(ctx context.Context, req *content.AddContain
 	}
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
 	req.UserId = auth.Id
-	err = db.Table(model.ContainerTableName).Create(req).Error
+	err = db.Table(model.TableNameContainer).Create(req).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errcode.DBError, err, "CreateFav")
 	}
@@ -205,7 +205,7 @@ func (*ContentService) EditDiaryContainer(ctx context.Context, req *content.AddC
 		return nil, err
 	}
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
-	err = db.Table(model.ContainerTableName).Where(`id =? AND user_id =?`, req.Id, auth.Id).
+	err = db.Table(model.TableNameContainer).Where(`id =? AND user_id =?`, req.Id, auth.Id).
 		Updates(req).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errcode.DBError, err, "CreateFav")

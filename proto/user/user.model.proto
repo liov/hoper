@@ -38,9 +38,9 @@ message User {
   UserStatus status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
-
-  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
   time.Time activatedAt = 3 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  time.Time updateAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
   deletedAt.DeletedAt deletedAt = 27 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
 }
 
@@ -51,14 +51,8 @@ message UserExt {
   uint64 score = 15 [(go.field) = {tags:'gorm:"default:0" comment:"分数"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"分数"
     type: INTEGER}];
-  uint64 followCount = 2 [(go.field) = {tags:'gorm:"default:0" comment:"关注数"'}];
-  uint64 followedCount = 17 [(go.field) = {tags:'gorm:"default:0" comment:"被关注数"'}];
-  uint64 articleCount = 18 [(go.field) = {tags:'gorm:"default:0" comment:"文章数"'}];
-  uint64 momentCount = 19 [(go.field) = {tags:'gorm:"default:0" comment:"瞬间数"'}];
-  uint64 diaryBookCount = 20 [(go.field) = {tags:'gorm:"default:0" comment:"日记本数"'}];
-  uint64 diaryCount = 21 [(go.field) = {tags:'gorm:"default:0" comment:"日记数"'}];
-  uint64 favoritesCount = 5 [(go.field) = {tags:'gorm:"default:0" comment:"收藏夹数"'}];
-  uint64 collectCount = 3 [(go.field) = {tags:'gorm:"default:0" comment:"收藏数"'}];
+  uint64 follow = 2 [(go.field) = {tags:'gorm:"default:0" comment:"关注数"'}];
+  uint64 followed = 17 [(go.field) = {tags:'gorm:"default:0" comment:"被关注数"'}];
 }
 
 //关注表
@@ -67,6 +61,7 @@ message Follow {
   uint64 followId = 2 [(go.field) = {tags:'gorm:"default:0"'}];
   time.Time createdAt = 3 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type: STRING}];
+  time.Time updateAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
   deletedAt.DeletedAt deletedAt = 4 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type: STRING}];
   uint32 status = 5 [(go.field) = {tags:'gorm:"type:int2;"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
@@ -91,7 +86,7 @@ message BannedLog {
   uint64 duration = 3 [(go.field) = {tags:'gorm:""'}];
   string reason = 4 [(go.field) = {tags:'gorm:"size:255"'}];
   BannedType type = 5 ;
-  time.Time bannedAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  time.Time createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type: STRING}];
   string remark = 7 [(go.field) = {tags:'gorm:"size:255"'}];
 }
@@ -138,11 +133,16 @@ message Resume {
   uint32 status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
+  time.Time createdAt = 29 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    type: STRING}];
+  time.Time updateAt = 30 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
+  deletedAt.DeletedAt deletedAt = 31 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    type: STRING}];
 }
 
 message UserBase {
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
-  string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" comment:\"名字\"'}];
+  string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" comment:"名字"'}];
   uint64 score = 3 [(go.field) = {tags:'gorm:"default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"分数"
     type: INTEGER}];
@@ -190,10 +190,9 @@ message Device {
   uint32 ram = 9 [(go.field) = {tags:'gorm:"type:int8;default:0"'}];
   uint32 storage = 10 [(go.field) = {tags:'gorm:"type:int8;default:0"'}];
   double screenSize = 11 [(go.field) = {tags:'gorm:"type:int8;default:0"'}];
-}
-
-
-message Statistic{
-  uint64 follow = 1;
-  uint64 followed = 2;
+  time.Time createdAt = 29 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    type: STRING}];
+  time.Time updateAt = 30 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
+  deletedAt.DeletedAt deletedAt = 31 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    type: STRING}];
 }

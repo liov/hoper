@@ -46,7 +46,7 @@ func (d *UserDao) GetByEmailOrPhone(input string, fields ...string) (*puser.User
 	var err error
 	db := d.DB
 	if len(fields) > 0 {
-		db = d.Table(model.UserTableName).Select(fields)
+		db = d.Table(model.TableNameUser).Select(fields)
 	}
 	if strings.Contains(input, "@") {
 		err = db.Where("mail = ? AND status != ?"+dbi.WithNotDeleted, input, puser.UserStatusDeleted).First(&u).Error
@@ -60,7 +60,7 @@ func (d *UserDao) GetByEmailOrPhone(input string, fields ...string) (*puser.User
 }
 
 func (d *UserDao) Creat(user *puser.User) error {
-	if err := d.Table(model.UserTableName).Create(user).Error; err != nil {
+	if err := d.Table(model.TableNameUser).Create(user).Error; err != nil {
 		return err
 	}
 	return nil
@@ -69,7 +69,7 @@ func (d *UserDao) Creat(user *puser.User) error {
 func (d *UserDao) GetByPrimaryKey(id uint64) (*puser.User, error) {
 
 	var user puser.User
-	if err := d.Table(model.UserTableName).First(&user, id).Error; err != nil {
+	if err := d.Table(model.TableNameUser).First(&user, id).Error; err != nil {
 		return nil, err
 	}
 	return &user, nil
@@ -86,7 +86,7 @@ func (d *UserDao) SaveResumes(userId uint64, resumes []*puser.Resume, originalId
 	actionLog.UserId = userId
 	actionLog.Device = device
 	actionLog.Action = puser.ActionEditResume
-	tableName := model.ResumeTableName + "."
+	tableName := model.TableNameResume + "."
 
 	var editIds []uint64
 
@@ -107,7 +107,7 @@ func (d *UserDao) SaveResumes(userId uint64, resumes []*puser.Resume, originalId
 		}
 		actionLog.Id = 0
 		actionLog.RelatedId = tableName + strconv.FormatUint(resumes[i].Id, 10)
-		if err = d.Table(model.UserActionLogTableName).Create(&actionLog).Error; err != nil {
+		if err = d.Table(model.TableNameActionLog).Create(&actionLog).Error; err != nil {
 			log.Error(err)
 		}
 
@@ -123,7 +123,7 @@ func (d *UserDao) SaveResumes(userId uint64, resumes []*puser.Resume, originalId
 		actionLog.Id = 0
 		actionLog.Action = puser.ActionDeleteResume
 		actionLog.RelatedId = tableName + strconv.FormatUint(id, 10)
-		if err = d.Table(model.UserActionLogTableName).Create(&actionLog).Error; err != nil {
+		if err = d.Table(model.TableNameActionLog).Create(&actionLog).Error; err != nil {
 			return err
 		}
 	}
@@ -132,7 +132,7 @@ func (d *UserDao) SaveResumes(userId uint64, resumes []*puser.Resume, originalId
 
 func (d *UserDao) ActionLog(log *puser.ActionLog) error {
 
-	err := d.Table(model.UserActionLogTableName).Create(&log).Error
+	err := d.Table(model.TableNameActionLog).Create(&log).Error
 	if err != nil {
 		return err
 	}
@@ -142,7 +142,7 @@ func (d *UserDao) ActionLog(log *puser.ActionLog) error {
 func (d *UserDao) ResumesIds(userId uint64) ([]uint64, error) {
 
 	var resumeIds []uint64
-	err := d.Table(model.ResumeTableName).Where("user_id = ? AND status > 0", userId).Pluck("id", &resumeIds).Error
+	err := d.Table(model.TableNameResume).Where("user_id = ? AND status > 0", userId).Pluck("id", &resumeIds).Error
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +151,7 @@ func (d *UserDao) ResumesIds(userId uint64) ([]uint64, error) {
 
 func (d *UserDao) GetBaseListDB(ids []uint64, pageNo, pageSize int) (int64, []*puser.UserBase, error) {
 
-	db := d.Table(model.UserTableName)
+	db := d.Table(model.TableNameUser)
 	var count int64
 	if len(ids) > 0 {
 		db = db.Where("id IN (?)", ids)
@@ -179,7 +179,7 @@ func (d *UserDao) GetBaseListDB(ids []uint64, pageNo, pageSize int) (int64, []*p
 }
 
 func (d *UserDao) FollowExistsDB(id, followId uint64) (bool, error) {
-	sql := `SELECT EXISTS(SELECT * FROM "` + model.FollowTableName + `" 
+	sql := `SELECT EXISTS(SELECT * FROM "` + model.TableNameFollow + `" 
 WHERE user_id = ?  AND follow_id = ?` + dbi.WithNotDeleted + ` LIMIT 1)`
 	var exists bool
 	err := d.Raw(sql, id, followId).Scan(&exists).Error
@@ -194,7 +194,7 @@ func (d *UserDao) Active(u *puser.User) error {
 }
 
 func (d *UserDao) Update(req *puser.EditReq) error {
-	return d.Table(model.UserTableName).Where(`id = ?`, req.Id).UpdateColumns(req.Details).Error
+	return d.Table(model.TableNameUser).Where(`id = ?`, req.Id).UpdateColumns(req.Details).Error
 }
 
 func (d *UserDao) UserInfoByAccount(account string) (*puser.User, error) {
@@ -208,6 +208,6 @@ func (d *UserDao) UserInfoByAccount(account string) (*puser.User, error) {
 	default:
 		sql = "account = ?"
 	}
-	return &user, d.Table(model.UserTableName).
+	return &user, d.Table(model.TableNameUser).
 		Where(sql+` AND status != ?`+dbi.WithNotDeleted, account, puser.UserStatusDeleted).First(&user).Error
 }

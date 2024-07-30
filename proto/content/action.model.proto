@@ -15,23 +15,24 @@ option go_package = "github.com/liov/hoper/server/go/protobuf/content";
 
 message Like{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_like_type_id" validate:"required" comment:"相关id"'}];
   ContentType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null;index:idx_like_type_id" validate:"required" comment:"相关类型"'}];
+  uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_like_type_id" validate:"required" comment:"相关id"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
   ActionType action = 3 [(go.field) = {tags:'gorm:"type:int2;default:1" validate:"required" comment:"动作"'}];
   user.UserBase user = 4 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  time.Time updateAt = 30 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
   deletedAt.DeletedAt deletedAt = 26 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
 }
 
 // 举报
 message Report{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_report_type_id" validate:"required" comment:"相关id"'}];
   ContentType type = 12 [(go.field) = {tags:'gorm:"type:int2;not null;index:idx_report_type_id" validate:"required" comment:"相关类型"'}];
+  uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_report_type_id" validate:"required" comment:"相关id"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
   user.UserBase user = 2 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
-  DelReason delReason = 3[(go.field) = {tags:'gorm:"type:int2;default:0" comment:"举报原因"'}];
+  DelReason reason = 3[(go.field) = {tags:'gorm:"type:int2;default:0" comment:"举报原因"'}];
   string remark = 4[(go.field) = {tags:'gorm:"size:255" comment:"备注"'}];
   time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
 }
@@ -39,8 +40,8 @@ message Report{
 // 收藏
 message Collect{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  uint64 refId = 6 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index:idx_collect_type_id" validate:"required" comment:"相关id"'}];
   ContentType type = 12 [(go.field) = {tags:'json:"-" gorm:"type:int2;not null;index:idx_collect_type_id" validate:"required" comment:"相关类型"'}];
+  uint64 refId = 6 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index:idx_collect_type_id" validate:"required" comment:"相关id"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
   user.UserBase user = 2 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   uint64 favId = 3 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
@@ -51,8 +52,8 @@ message Collect{
 // 分享
 message Share{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  uint64 refId = 6 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index:idx_share_type_id" validate:"required" comment:"相关id"'}];
   ContentType type = 12 [(go.field) = {tags:'json:"-" gorm:"type:int2;not null;index:idx_share_type_id" validate:"required" comment:"相关类型"'}];
+  uint64 refId = 6 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index:idx_share_type_id" validate:"required" comment:"相关id"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
   user.UserBase user = 2 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   Platform platform = 3 [(go.field) = {tags:'gorm:"size:20;not null" validate:"required" comment:"用户id"'}];
@@ -62,9 +63,9 @@ message Share{
 
 // 系统删除内容记录
 message ContentDel{
-  uint64 refId = 2 [(go.field) = {tags:'json:"-" gorm:"size:20;default:0;primaryKey;autoIncrement:false" comment:"相关id"'}];
   ContentType type = 1 [(go.field) = {tags:'json:"-" gorm:"type:int2;default:0;primaryKey;autoIncrement:false" comment:"类型"'}];
-  DelReason delReason = 3[(go.field) = {tags:'gorm:"type:int2;default:0" comment:"删除原因"'}];
+  uint64 refId = 2 [(go.field) = {tags:'json:"-" gorm:"size:20;default:0;primaryKey;autoIncrement:false" comment:"相关id"'}];
+  DelReason reason = 3[(go.field) = {tags:'gorm:"type:int2;default:0" comment:"删除原因"'}];
   string remark = 4[(go.field) = {tags:'gorm:"size:255" comment:"备注"'}];
   time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
 }
@@ -81,7 +82,7 @@ message Comment{
   uint64 rootId = 8 [(go.field) = {tags:'gorm:"size:20;default:0" comment:"评论根id"'}];
   user.UserBase recvUser = 9 [(go.field) = {tags:'gorm:"-" comment:"接收人"'}];
   uint64 recvId = 10 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"接收人id"'}];
-  ContentExt ext = 30[(go.field) = {tags:'gorm:"-" comment:"统计数据"'}];
+  Statistics statistics = 30[(go.field) = {tags:'gorm:"-" comment:"统计数据"'}];
   UserAction action = 26[(go.field) = {tags:'gorm:"-" comment:"用户动作"'}];
   repeated Comment subComments = 11 [(go.field) = {tags:'gorm:"-" comment:"子评论"'}];
   uint32 sequence = 4 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
@@ -92,7 +93,7 @@ message Comment{
   }];
 }
 
-message ContentExt{
+message Statistics{
   ContentType type = 2 [(go.field) = {tags:'json:"-" gorm:"type:int2;not null;index:idx_content_type_id" validate:"required" comment:"相关类型"'}];
   uint64 refId = 1 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index:idx_content_type_id" validate:"required" comment:"相关id"'}];
   uint64 likeCount = 3 [(go.field) = {tags:'gorm:"size:20;default:0" comment:"点赞数"'}];

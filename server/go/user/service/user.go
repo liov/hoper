@@ -169,41 +169,43 @@ func encryptPassword(password string) string {
 }
 
 func sendMail(ctxi *httpctx.Context, action model.Action, curTime int64, user *model.User) {
-	siteURL := "https://" + confdao.Conf.Customize.Domain
+	siteURL := confdao.Conf.Customize.SiteURL
 	title := action.String()
 	secretStr := strconv.FormatInt(curTime, 10) + user.Mail + user.Password
 	secretStr = fmt.Sprintf("%x", md5.Sum(stringsi.ToBytes(secretStr)))
-	var ctiveOrRestPasswdValues = struct {
+	var activeOrRestPasswdValues = struct {
 		UserName, SiteName, SiteURL, ActionURL, SecretStr string
 	}{user.Name, "hoper", siteURL, "", secretStr}
 	var templ string
 	switch action {
 	case model.ActionActive:
-		ctiveOrRestPasswdValues.ActionURL = siteURL + "/#/user/active/" + strconv.FormatUint(user.Id, 10) + "/" + secretStr
+		activeOrRestPasswdValues.ActionURL = siteURL + "/api/v1/user/active/" + strconv.FormatUint(user.Id, 10) + "/" + secretStr
 		templ = modelconst.ActionActiveContent
 	case model.ActionRestPassword:
-		ctiveOrRestPasswdValues.ActionURL = siteURL + "/#/user/resetPassword/" + strconv.FormatUint(user.Id, 10) + "/" + secretStr
+		activeOrRestPasswdValues.ActionURL = siteURL + "/api/v1/user/resetPassword/" + strconv.FormatUint(user.Id, 10) + "/" + secretStr
 		templ = modelconst.ActionRestPasswordContent
 	}
-	log.Debug(ctiveOrRestPasswdValues.ActionURL)
+	log.Debug(activeOrRestPasswdValues.ActionURL)
 	var buf = new(bytes.Buffer)
-	err := templatei.Execute(buf, templ, &ctiveOrRestPasswdValues)
+	err := templatei.Execute(buf, templ, &activeOrRestPasswdValues)
 	if err != nil {
 		log.Error("executing template:", err)
 	}
 	//content += "<p><img src=\"" + siteURL + "/images/logo.png\" style=\"height: 42px;\"/></p>"
 	//fmt.Println(content)
 	content := buf.String()
-	addr := confdao.Conf.SendMail.Host + confdao.Conf.SendMail.Port
+
 	m := &mail.Mail{
-		FromName: ctiveOrRestPasswdValues.SiteName,
-		From:     confdao.Conf.SendMail.From,
+		Addr:     confdao.Dao.Mail.Conf.Host + confdao.Dao.Mail.Conf.Port,
+		FromName: activeOrRestPasswdValues.SiteName,
+		From:     confdao.Dao.Mail.Conf.UserName,
 		Subject:  title,
 		Content:  content,
 		To:       []string{user.Mail},
+		Auth:     confdao.Dao.Mail.Auth,
 	}
 	log.Debug(content)
-	err = m.SendMailTLS(addr, confdao.Dao.Mail.Auth)
+	err = m.SendMailTLS()
 	if err != nil {
 		log.Error("sendMail:", err)
 	}
@@ -226,14 +228,15 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 	if err != nil {
 		return nil, errcode.DBError
 	}
+
+	if user.Status != model.UserStatusInActive {
+		return nil, errcode.AlreadyExists.Message("已激活")
+	}
 	redisKey := modelconst.ActiveTimeKey + strconv.FormatUint(req.Id, 10)
 	emailTime, err := confdao.Dao.Redis.Get(ctx, redisKey).Int64()
 	if err != nil {
 		go sendMail(ctxi, model.ActionActive, ctxi.RequestAt.TimeStamp, user)
 		return nil, ctxi.ErrorLog(errcode.InvalidArgument.Message("已过激活期限"), err, "Get")
-	}
-	if user.Status != model.UserStatusInActive {
-		return nil, errcode.AlreadyExists.Message("已激活")
 	}
 	secretStr := strconv.Itoa((int)(emailTime)) + user.Mail + user.Password
 
@@ -346,7 +349,7 @@ func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.Login
 	}
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.BaseContext(), ctxi.TraceID)
 
-	db.Table(modelconst.UserExtTableName).Where(`id = ?`, user.Id).
+	db.Table(modelconst.TableNameUserExt).Where(`id = ?`, user.Id).
 		UpdateColumn("last_activated_at", ctxi.RequestAt.TimeString)
 	userRedisDao := redis.GetUserDao(ctxi, confdao.Dao.Redis.Client)
 	if err := userRedisDao.EfficientUserHashToRedis(); err != nil {
@@ -381,7 +384,7 @@ func (u *UserService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.
 	if err != nil {
 		return nil, err
 	}
-	confdao.Dao.GORMDB.Table(modelconst.UserExtTableName).Where(`id = ?`, user.Id).UpdateColumn("last_activated_at", time.Now())
+	confdao.Dao.GORMDB.Table(modelconst.TableNameUserExt).Where(`id = ?`, user.Id).UpdateColumn("last_activated_at", time.Now())
 
 	if err := confdao.Dao.Redis.Del(ctx, redisi.CommandDEL, modelconst.LoginUserKey+strconv.FormatUint(user.Id, 10)).Err(); err != nil {
 		return nil, ctxi.ErrorLog(errcode.RedisErr, err, "redisi.Del")
@@ -440,7 +443,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 	ctxi := httpctx.FromContextValue(ctx)
 	defer ctxi.StartSpanEnd("")()
 	if verifyErr := luosimao.Verify(confdao.Conf.Customize.LuosimaoVerifyURL, confdao.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
-		return nil, errcode.InvalidArgument.Warp(verifyErr)
+		return nil, errcode.InvalidArgument.Wrap(verifyErr)
 	}
 
 	if req.Input == "" {
@@ -499,7 +502,7 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 		return nil, errcode.InvalidArgument.Message("无效的链接")
 	}
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctxi.BaseContext(), ctxi.TraceID)
-	if err := db.Table(modelconst.UserTableName).
+	if err := db.Table(modelconst.TableNameUser).
 		Where(`id = ?`, user.Id).Update("password", req.Password).Error; err != nil {
 		log.Error("UserService.ResetPassword,DB.Update", err)
 		return nil, errcode.DBError
@@ -511,10 +514,10 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListReq) (*model.ActionLogListRep, error) {
 	rep := &model.ActionLogListRep{}
 	var logs []*model.ActionLog
-	err := confdao.Dao.GORMDB.Table(modelconst.UserActionLogTableName).
+	err := confdao.Dao.GORMDB.Table(modelconst.TableNameActionLog).
 		Offset(0).Limit(10).Find(&logs).Error
 	if err != nil {
-		return nil, errcode.DBError.Warp(err)
+		return nil, errcode.DBError.Wrap(err)
 	}
 	rep.List = logs
 	return rep, nil

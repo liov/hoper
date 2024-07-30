@@ -32,7 +32,7 @@ func (d *ContentDao) Begin() *ContentDao {
 }
 
 func (d *ContentDao) CreateContextExt(typ content.ContentType, refId uint64) error {
-	err := d.db.Exec(`INSERT INTO `+model.ContentExtTableName+`(type,ref_id) Values(?,?)`, typ, refId).Error
+	err := d.db.Exec(`INSERT INTO `+model.TableNameStatistics+`(type,ref_id) Values(?,?)`, typ, refId).Error
 	if err != nil {
 		return d.Context.ErrorLog(errcode.DBError, err, "CreateContextExt")
 	}

@@ -138,7 +138,7 @@ message MomentRep {
   repeated uint64 likeUsers = 25 [(go.field) = {tags:'gorm:"-" comment:"喜欢用户"'}];
   repeated Comment comments = 18 [(go.field) = {tags:'gorm:"-" comment:"评论"'}];
   repeated user.UserBase users = 31 [(go.field) = {tags:'gorm:"-" comment:"评论"'}];
-  ContentExt ext = 30[(go.field) = {tags:'gorm:"-" comment:"统计数据"'}];
+  Statistics statistics = 30[(go.field) = {tags:'gorm:"-" comment:"统计数据"'}];
   uint64 likeId = 27 [(go.field) = {tags:'gorm:"-" comment:"喜欢id,为0代表用户没有点喜欢"'}];
   uint64 unlikeId = 29 [(go.field) = {tags:'gorm:"-" comment:"不喜欢id,为0代表用户没有点喜欢"'}];
   bool collect = 28 [(go.field) = {tags:'gorm:"-" comment:"是否收藏"'}];

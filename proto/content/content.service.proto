@@ -187,9 +187,9 @@ service ContentService {
     option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   // 用户内容数量
-  rpc GetUserContentStatics (request.Id) returns (UserStatics) {
+  rpc GetUserContentStatistics (request.Id) returns (UserStatistics) {
     option (google.api.http) = {
-      get: "/api/v1/content/count/{id}"
+      get: "/api/v1/content/statistics/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]

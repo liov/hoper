@@ -42,7 +42,7 @@ export default defineUniPages({
       {
         iconPath: 'static/tabbar/IcBaselineCropOriginal.svg',
         selectedIconPath: 'static/tabbar/IcBaselineCropOriginalHL.svg',
-        pagePath: 'pages/moment/moment',
+        pagePath: 'pages/moment/moment_list',
         text: '%tabbar.moment%',
       },
     ],

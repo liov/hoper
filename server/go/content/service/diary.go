@@ -48,7 +48,7 @@ func (*DiaryService) AddDiaryBook(ctx context.Context, req *content.AddDiaryBook
 
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
 	req.UserId = auth.Id
-	err = db.Table(model.DiaryBookTableName).Create(req).Error
+	err = db.Table(model.TableNameDiaryBook).Create(req).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errcode.DBError, err, "Create")
 	}
@@ -63,7 +63,7 @@ func (*DiaryService) EditDiaryBook(ctx context.Context, req *content.AddDiaryBoo
 	}
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
 	req.UserId = auth.Id
-	err = db.Table(model.DiaryBookTableName).Where(`id =? AND user_id =?`, req.Id, auth.Id).
+	err = db.Table(model.TableNameDiaryBook).Where(`id =? AND user_id =?`, req.Id, auth.Id).
 		Updates(req).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errcode.DBError, err, "Create")
@@ -99,7 +99,7 @@ func (*DiaryService) Add(ctx context.Context, req *content.AddDiaryReq) (*reques
 	}
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
 	req.UserId = auth.Id
-	err = db.Table(model.DiaryTableName).Create(req).Error
+	err = db.Table(model.TableNameDiary).Create(req).Error
 	if err != nil {
 		return nil, ctxi.ErrorLog(errcode.DBError, err, "Create")
 	}
@@ -123,7 +123,7 @@ func (*DiaryService) Delete(ctx context.Context, req *request.Id) (*emptypb.Empt
 	}
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
 	contentDBDao := data.GetDBDao(ctxi, db)
-	err = contentDBDao.DelByAuth(model.DiaryTableName, req.Id, auth.Id)
+	err = contentDBDao.DelByAuth(model.TableNameDiary, req.Id, auth.Id)
 	if err != nil {
 		return nil, err
 	}

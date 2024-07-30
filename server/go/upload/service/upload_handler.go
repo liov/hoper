@@ -37,12 +37,12 @@ const (
 func Upload(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(confdao.Conf.Customize.UploadMaxSize)
 	if err != nil {
-		errcode.ParamInvalid.OriMessage(errRep).Response(w)
+		errcode.ParamInvalid.Origin().Message(errRep).Response(w)
 		return
 	}
 
 	if r.MultipartForm == nil || (r.MultipartForm.Value == nil && r.MultipartForm.File == nil) {
-		errcode.ParamInvalid.OriMessage(errRep).Response(w)
+		errcode.ParamInvalid.Origin().Message(errRep).Response(w)
 		return
 	}
 	md5Str := r.RequestURI[len(ApiUpload):]
@@ -66,7 +66,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	}
 	upload, err := save(ctxi, info, md5Str)
 	if err != nil {
-		errcode.UploadFail.OriErrRep().Response(w)
+		errcode.UploadFail.Origin().Rep().Response(w)
 		return
 	}
 	(&httpi.ResAnyData{Details: model.Rep{Id: upload.Id, URL: upload.Path}}).Response(w, http.StatusOK)
@@ -86,7 +86,7 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
 	upload, err := uploadDao.UploadDB(db, md5, size)
 	if err != nil {
-		errcode.DBError.OriErrRep().Response(w)
+		errcode.DBError.Origin().Response(w)
 		return
 	}
 	if upload != nil {
@@ -204,7 +204,7 @@ func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (uplo
 func MultiUpload(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(confdao.Conf.Customize.UploadMaxSize)
 	if err != nil {
-		errcode.ParamInvalid.OriMessage(errRep).Response(w)
+		errcode.ParamInvalid.Origin().Message(errRep).Response(w)
 		return
 	}
 	ctxi := httpctx.FromContextValue(r.Context())
@@ -217,14 +217,14 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if r.MultipartForm == nil || (r.MultipartForm.Value == nil && r.MultipartForm.File == nil) {
-		errcode.ParamInvalid.OriMessage(errRep).Response(w)
+		errcode.ParamInvalid.Origin().Message(errRep).Response(w)
 		return
 	}
 	md5s := r.MultipartForm.Value["md5[]"]
 	files := r.MultipartForm.File["file[]"]
 	// 如果有md5
 	if len(md5s) != 0 && len(md5s) != len(files) {
-		errcode.ParamInvalid.OriMessage(errRep).Response(w)
+		errcode.ParamInvalid.Origin().Message(errRep).Response(w)
 		return
 	}
 	var urls = make([]model.MultiRep, len(files))
@@ -233,7 +233,7 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 		upload, err := save(ctxi, file, md5s[i])
 		if err != nil {
 			failures = append(failures, file.Filename)
-			errcode.UploadFail.OriErrRep().Response(w)
+			errcode.UploadFail.Origin().Rep().Response(w)
 			return
 		}
 		urls[i].URL = upload.Path

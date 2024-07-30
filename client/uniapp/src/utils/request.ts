@@ -207,6 +207,13 @@ class UniRequest {
           for (const ri of this.responseInterceptors) {
             res = ri(res)
           }
+          if (res.statusCode < 200 || res.statusCode > 399 || res.data.code !== 0) {
+            uni.showToast({
+              title: res.data.message,
+              icon: 'error',
+              duration: 1000,
+            })
+          }
           resolve(res as UniResponse<T>)
         },
         fail: (err) => {
@@ -214,6 +221,12 @@ class UniRequest {
           for (const ei of this.responseErrorInterceptors) {
             err = ei(err)
           }
+          uni.showToast({
+            title: decodeURI(err.errMsg),
+            icon: 'error',
+            duration: 1000,
+          })
+          console.error(err)
           reject(err)
         },
       }
