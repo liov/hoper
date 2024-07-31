@@ -21,8 +21,8 @@ extension StringExtension on $dio.Response {
   Map<String, dynamic> getData() {
     if (this.statusCode == HttpStatus.ok) {
       final data = ResponseData.fromJson(this.data);
-      if (data.code!=0) Get.rawSnackbar(message:data.message!);
-      return data.details ?? Map();
+      if (data.code!=0) Get.rawSnackbar(message:data.msg!);
+      return data.data ?? Map();
     }
     Get.rawSnackbar(message:'请求出错');
     return Map() ;
@@ -31,8 +31,8 @@ extension StringExtension on $dio.Response {
   Map<String, dynamic> getData2() {
     if (this.statusCode == HttpStatus.ok) {
       final data = _$ResponseDataFromJson2(this.data);
-      if (data.code!=200) Get.rawSnackbar(message:data.message!);
-      return data.details ?? Map();
+      if (data.code!=200) Get.rawSnackbar(message:data.msg!);
+      return data.data ?? Map();
     }
     Get.rawSnackbar(message:'请求出错');
     return Map() ;

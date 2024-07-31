@@ -65,7 +65,7 @@ async function onLoad() {
     `/api/v1/action/comment?type=${props.type}&refId=${props.refId}&rootId=${props.rootId}&pageNo=${pageNo.value}&pageSize=${pageSize.value}`,
   );
   loading.value = false;
-  const data = res.data.details;
+  const data = res.data.data;
   if (!data || !data.list) {
     store.commentCache.set(props.rootId, list.value);
     finished.value = true;

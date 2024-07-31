@@ -79,7 +79,7 @@ async function like() {
       type: 7,
       action: 2,
     });
-    comment.likeId = res.data.details.id;
+    comment.likeId = res.data.data.id;
   }
 }
 function onComment() {

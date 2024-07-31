@@ -112,7 +112,7 @@ service UserService {
   rpc Edit (EditReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/api/v1/user/{id}"
-      body: "details"
+      body: "detail"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]
@@ -343,8 +343,8 @@ message EditReq {
   uint64 id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"ID"
     type: INTEGER}];
-  EditDetails details = 2 [(go.field) = {tags:'gorm:"embedded"'}];
-  message EditDetails {
+  EditDetail detail = 2 [(go.field) = {tags:'gorm:"embedded"'}];
+  message EditDetail {
     string name = 2 [(go.field) = {tags:'validate:"gte=3,lte=10" comment:"名字"'}];
     // 性别，0未填写，1男，2女
     Gender gender = 8 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {

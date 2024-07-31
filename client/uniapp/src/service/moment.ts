@@ -19,14 +19,14 @@ class MomentService {
         },
       },
     )
-    console.log(data.details)
-    if (data.details.users) userStore.appendUsers(data.details.users)
-    if (data.details.list)
-      data.details.list.forEach((moment) => {
+    console.log(data.data)
+    if (data.data.users) userStore.appendUsers(data.data.users)
+    if (data.data.list)
+      data.data.list.forEach((moment) => {
         moment.user = userStore.getUser(moment.userId)
         if (moment.images && moment.images !== '') moment.imagesUrls = moment.images.split(',')
       })
-    return data.details
+    return data.data
   }
 }
 export default MomentService

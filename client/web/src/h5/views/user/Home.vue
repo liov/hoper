@@ -95,7 +95,7 @@ if (!user.signature) user.signature = "太个性签名签不下";
 
 async function logout() {
   const res = await axios.get("/api/v1/user/logout");
-  showToast(res.data.message);
+  showToast(res.data.msg);
   store.auth = null;
   router.push("/");
 }

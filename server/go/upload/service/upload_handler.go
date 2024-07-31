@@ -37,12 +37,12 @@ const (
 func Upload(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(confdao.Conf.Customize.UploadMaxSize)
 	if err != nil {
-		errcode.ParamInvalid.Origin().Message(errRep).Response(w)
+		httpi.RespErrRep(w, errcode.ParamInvalid.Origin().Msg(errRep))
 		return
 	}
 
 	if r.MultipartForm == nil || (r.MultipartForm.Value == nil && r.MultipartForm.File == nil) {
-		errcode.ParamInvalid.Origin().Message(errRep).Response(w)
+		httpi.RespErrRep(w, errcode.ParamInvalid.Origin().Msg(errRep))
 		return
 	}
 	md5Str := r.RequestURI[len(ApiUpload):]
@@ -59,17 +59,17 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	_, err = auth(ctxi, false)
 	if err != nil {
 		(&httpi.ResAnyData{
-			Code:    errcode2.ErrCode(user.UserErrLogin),
-			Message: errRep,
+			Code: errcode2.ErrCode(user.UserErrLogin),
+			Msg:  errRep,
 		}).Response(w, http.StatusOK)
 		return
 	}
 	upload, err := save(ctxi, info, md5Str)
 	if err != nil {
-		errcode.UploadFail.Origin().Rep().Response(w)
+		httpi.RespErrRep(w, errcode.UploadFail.Origin().ErrRep())
 		return
 	}
-	(&httpi.ResAnyData{Details: model.Rep{Id: upload.Id, URL: upload.Path}}).Response(w, http.StatusOK)
+	(&httpi.ResAnyData{Data: model.Rep{Id: upload.Id, URL: upload.Path}}).Response(w, http.StatusOK)
 
 }
 
@@ -86,7 +86,7 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
 	upload, err := uploadDao.UploadDB(db, md5, size)
 	if err != nil {
-		errcode.DBError.Origin().Response(w)
+		httpi.RespErrRep(w, errcode.DBError.Origin().ErrRep())
 		return
 	}
 	if upload != nil {
@@ -99,13 +99,13 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 			ctxi.ErrorLog(errcode.DBError, err, "Create")
 		}
 		(&httpi.ResAnyData{
-			Code:    1,
-			Message: "已存在",
-			Details: model.Rep{Id: upload.Id, URL: upload.Path},
+			Code: 1,
+			Msg:  "已存在",
+			Data: model.Rep{Id: upload.Id, URL: upload.Path},
 		}).Response(w, http.StatusOK)
 		return
 	}
-	(&httpi.ResAnyData{Message: "不存在"}).Response(w, http.StatusOK)
+	(&httpi.ResAnyData{Msg: "不存在"}).Response(w, http.StatusOK)
 }
 
 func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
@@ -204,27 +204,27 @@ func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (uplo
 func MultiUpload(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(confdao.Conf.Customize.UploadMaxSize)
 	if err != nil {
-		errcode.ParamInvalid.Origin().Message(errRep).Response(w)
+		httpi.RespErrRep(w, errcode.ParamInvalid.Origin().Msg(errRep))
 		return
 	}
 	ctxi := httpctx.FromContextValue(r.Context())
 	_, err = auth(ctxi, false)
 	if err != nil {
 		(&httpi.ResAnyData{
-			Code:    errcode2.ErrCode(user.UserErrLogin),
-			Message: errRep,
+			Code: errcode2.ErrCode(user.UserErrLogin),
+			Msg:  errRep,
 		}).Response(w, http.StatusOK)
 		return
 	}
 	if r.MultipartForm == nil || (r.MultipartForm.Value == nil && r.MultipartForm.File == nil) {
-		errcode.ParamInvalid.Origin().Message(errRep).Response(w)
+		httpi.RespErrRep(w, errcode.ParamInvalid.Origin().Msg(errRep))
 		return
 	}
 	md5s := r.MultipartForm.Value["md5[]"]
 	files := r.MultipartForm.File["file[]"]
 	// 如果有md5
 	if len(md5s) != 0 && len(md5s) != len(files) {
-		errcode.ParamInvalid.Origin().Message(errRep).Response(w)
+		httpi.RespErrRep(w, errcode.ParamInvalid.Origin().Msg(errRep))
 		return
 	}
 	var urls = make([]model.MultiRep, len(files))
@@ -233,14 +233,14 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 		upload, err := save(ctxi, file, md5s[i])
 		if err != nil {
 			failures = append(failures, file.Filename)
-			errcode.UploadFail.Origin().Rep().Response(w)
+			httpi.RespErrRep(w, errcode.UploadFail.Origin().ErrRep())
 			return
 		}
 		urls[i].URL = upload.Path
 		urls[i].Success = true
 	}
 	(&httpi.ResAnyData{
-		Message: strings.Join(failures, ",") + errRep,
-		Details: urls,
+		Msg:  strings.Join(failures, ",") + errRep,
+		Data: urls,
 	}).Response(w, http.StatusOK)
 }

@@ -86,7 +86,7 @@ async function onComment() {
     recvId: props.comment.recvId,
   };
   const res = await axios.post("/api/v1/action/comment", comment);
-  comment.id = res.data.details.id;
+  comment.id = res.data.data.id;
   comment.userId = userStore.auth.id;
   const comments = store.commentCache.get(comment.rootId);
   comments?.push(comment);

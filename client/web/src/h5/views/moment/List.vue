@@ -68,7 +68,7 @@ async function onLoad() {
     `/api/v1/moment?pageNo=${listConfig.pageNo}&pageSize=${listConfig.pageSize}`,
   );
   listConfig.loading = false;
-  const data = res.data.details;
+  const data = res.data.data;
   if (!data || !data.list) {
     listConfig.finished = true;
     return;

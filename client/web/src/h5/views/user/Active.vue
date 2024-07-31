@@ -18,9 +18,9 @@ onMounted(() => {
     .get(`/api/v1/user/active/${route.params.id}/${route.params.secret}`)
     .then((res) => {
       if (!res.data.code || res.data.code === 0) {
-        Toast.success(res.data.message);
+        Toast.success(res.data.msg);
         router.push({ path: "/" });
-      } else Toast.fail(res.data.message);
+      } else Toast.fail(res.data.msg);
     });
 });
 </script>

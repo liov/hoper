@@ -75,7 +75,7 @@ async function like() {
       type: props.type,
       action: 2,
     });
-    content.likeId = data.details.id;
+    content.likeId = data.data.id;
   }
 }
 </script>

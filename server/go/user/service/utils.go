@@ -9,7 +9,7 @@ import (
 func LuosimaoVerify(vCode string) error {
 	if err := luosimao.Verify(confdao.Conf.Customize.LuosimaoVerifyURL,
 		confdao.Conf.Customize.LuosimaoAPIKey, vCode); err != nil {
-		return errcode.InvalidArgument.Message(err.Error())
+		return errcode.InvalidArgument.Msg(err.Error())
 	}
 	return nil
 }

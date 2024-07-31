@@ -30,7 +30,7 @@ const actions = {
       state.token = token
       const { data } = await uniHttp.get(API_HOST + `/api/v1/auth`)
       // 跟后端的初始化配合
-      if (data.code === 0) state.info = data.details
+      if (data.code === 0) state.info = data.data
     }
   },
   async login(params) {
@@ -84,8 +84,8 @@ const actions = {
         ids: noExistsId,
       })
       if (data.code && data.code !== 0)
-        await uni.showToast({ title: data.message, icon: 'error', duration: 1000 })
-      else this.appendUsers(data.details.list)
+        await uni.showToast({ title: data.msg, icon: 'error', duration: 1000 })
+      else this.appendUsers(data.data.list)
     }
   },
   appendUsers(users) {

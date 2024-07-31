@@ -34,7 +34,7 @@ export function init() {
             query: { back: router.currentRoute.value.path },
           });
         } else if (response.data.code !== 200) {
-          message.error(response.data.message);
+          message.error(response.data.msg);
           return Promise.reject(response);
         }
       }

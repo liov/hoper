@@ -4,7 +4,7 @@ import SparkMD5 from "spark-md5";
 const exist = async function (md5, size) {
   const res = await axios.get(`/api/v1/exists/${md5}/${size}`);
   if (res.data.code === 0) {
-    return res.data.details;
+    return res.data.data;
   } else {
     return null;
   }
@@ -73,7 +73,7 @@ const upload = async function ($file) {
     headers: { "Content-Type": "multipart/form-data" },
   });
   if (res.data.code === 0) {
-    return res.data.details;
+    return res.data.data;
   } else {
     return null;
   }

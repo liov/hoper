@@ -1,6 +1,7 @@
 <route lang="json5">
 {
   style: {
+    navigationStyle: 'custom',
     navigationBarTitleText: '激活',
   },
 }

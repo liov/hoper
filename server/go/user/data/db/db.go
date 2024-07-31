@@ -194,7 +194,7 @@ func (d *UserDao) Active(u *puser.User) error {
 }
 
 func (d *UserDao) Update(req *puser.EditReq) error {
-	return d.Table(model.TableNameUser).Where(`id = ?`, req.Id).UpdateColumns(req.Details).Error
+	return d.Table(model.TableNameUser).Where(`id = ?`, req.Id).UpdateColumns(req.Detail).Error
 }
 
 func (d *UserDao) UserInfoByAccount(account string) (*puser.User, error) {

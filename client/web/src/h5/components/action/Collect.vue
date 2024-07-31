@@ -83,8 +83,8 @@ defineExpose({
 
 const res = await axios.get("/api/v1/content/tinyFav/0");
 console.log(res);
-const favs: UnwrapNestedRefs<any[]> = res.data.details.list
-  ? reactive(res.data.details.list)
+const favs: UnwrapNestedRefs<any[]> = res.data.data.list
+  ? reactive(res.data.data.list)
   : reactive([]);
 
 async function onCollect() {
@@ -111,7 +111,7 @@ async function onConfirm() {
     cover: uploader.value.length > 0 ? uploader.value[0].url : "",
   };
   const res = await axios.post("/api/v1/content/fav", fav);
-  fav.id = res.data.details.id;
+  fav.id = res.data.data.id;
   fav.userId = userStore.auth.id;
   favs.push(fav);
   Toast.success("新建成功");

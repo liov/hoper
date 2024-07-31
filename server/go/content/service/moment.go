@@ -130,7 +130,7 @@ func momentMaskField(moment *content.Moment) {
 func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*request.Id, error) {
 
 	if utf8.RuneCountInString(req.Content) < confdao.Conf.Customize.Moment.MaxContentLen {
-		return nil, errcode.InvalidArgument.Message(fmt.Sprintf("文章内容不能小于%d个字", confdao.Conf.Customize.Moment.MaxContentLen))
+		return nil, errcode.InvalidArgument.Msg(fmt.Sprintf("文章内容不能小于%d个字", confdao.Conf.Customize.Moment.MaxContentLen))
 	}
 
 	ctxi := httpctx.FromContextValue(ctx)
@@ -147,7 +147,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 	/*	var count int64
 		db.Table(`mood`).Where(`name = ?`, req.MoodName).Count(&count)
 		if count == 0 {
-			return nil, errcode.ParamInvalid.Message("心情不存在")
+			return nil, errcode.ParamInvalid.Msg("心情不存在")
 		}*/
 	var tags []model.TinyTag
 	if len(req.Tags) > 0 {

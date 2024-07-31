@@ -28,7 +28,7 @@ const actions = {
       state.token = token;
       const res = await axios.get(`/api/v1/auth`);
       // 跟后端的初始化配合
-      if (res.data.code === 0) state.auth = res.data.details;
+      if (res.data.code === 0) state.auth = res.data.data;
     }
   },
   async login(params) {
@@ -74,8 +74,8 @@ const actions = {
       const { data } = await axios.post(`/api/v1/user/baseUserList`, {
         ids: noExistsId,
       });
-      if (data.code && data.code !== 0) Toast.fail(data.message);
-      else this.appendUsers(data.details.list);
+      if (data.code && data.code !== 0) Toast.fail(data.msg);
+      else this.appendUsers(data.data.list);
     }
   },
   appendUsers(users) {

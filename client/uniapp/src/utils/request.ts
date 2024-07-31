@@ -209,7 +209,7 @@ class UniRequest {
           }
           if (res.statusCode < 200 || res.statusCode > 399 || res.data.code !== 0) {
             uni.showToast({
-              title: res.data.message,
+              title: res.data.msg,
               icon: 'error',
               duration: 1000,
             })

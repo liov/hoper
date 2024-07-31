@@ -1,7 +1,7 @@
 {
   "globalStyle": {
     "navigationStyle": "default",
-    "navigationBarTitleText": "unibest",
+    "navigationBarTitleText": "hoper",
     "navigationBarBackgroundColor": "#f8f8f8",
     "navigationBarTextStyle": "black",
     "backgroundColor": "#FFFFFF"
@@ -85,6 +85,7 @@
       "path": "pages/user/active",
       "type": "page",
       "style": {
+        "navigationStyle": "custom",
         "navigationBarTitleText": "激活"
       }
     },
