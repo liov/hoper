@@ -9,8 +9,8 @@ part 'response.g.dart';
 class ResponseData {
   ResponseData();
   late int code;
-  late Map<String, dynamic>? details;
-  String? message;
+  late Map<String, dynamic>? data;
+  String? msg;
 
   factory ResponseData.fromJson(Map<String, dynamic> json) => _$ResponseDataFromJson(json);
 
@@ -42,6 +42,6 @@ extension StringExtension on $dio.Response {
 ResponseData _$ResponseDataFromJson2(Map<String, dynamic> json) {
   return ResponseData()
     ..code = json['code'] as int
-    ..details = json['data'] as Map<String, dynamic>?
-    ..message = json['msg'] as String;
+    ..data = json['data'] as Map<String, dynamic>?
+    ..msg = json['msg'] as String;
 }
