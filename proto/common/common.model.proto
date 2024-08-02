@@ -1,5 +1,8 @@
 syntax = "proto3";
 package common;
+import "common/common.enum.proto";
+import "hopeio/time/time.proto";
+import "hopeio/time/deletedAt/deletedAt.proto";
 import "hopeio/utils/patch/go.proto";
 import "hopeio/time/timestamp/timestamp.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
@@ -10,13 +13,130 @@ option java_multiple_files = true;
 option go_package = "github.com/liov/hoper/server/go/protobuf/common";
 
 
-message Attr {
+message Attribute{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" validate:"required,gte=2,lte=10" comment:"名称"'}];
-  string description = 3 [(go.field) = {tags:'gorm:"size:100"  comment:"描述"'}];
-  string expressionURL = 17 [(go.field) = {tags:'gorm:"size:255"  comment:"表情url"'}];
-  timestamp.Timestamp createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  string desc = 3 [(go.field) = {tags:'gorm:"size:255"  comment:"描述"'}];
+  DataType type = 5 [(go.field) = {tags:'gorm:"type:int2" comment:"属性的值输入类型"'}];
+  string range = 4 [(go.field) = {tags:'gorm:"type:int2" comment:"属性使用范围"'}];
+  uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
+  uint32 status = 6 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    read_only:true
+  }];
+  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  deletedAt.DeletedAt deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+}
+
+message Dict{
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
+  uint32 typ = 2 [(go.field) = {tags:'comment:"类型'}];
+  uint64 pId = 3 [(go.field) = {tags:'gorm:"size:20"'}];
+  string key = 4 [(go.field) = {tags:'gorm:"index"'}];
+  string val = 5 [(go.field) = {tags:'comment:"值"'}];
+  uint32 seq = 6[(go.field) = {tags:'comment:"顺序"'}];
+  string cAt = 16 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  string dAt = 10 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
+  uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    read_only:true
+  }];
+  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  time.Time updatedAt = 17 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
+  deletedAt.DeletedAt deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+}
+
+message Area {
+  uint64 code = 1;
+  string name = 2;
+  int32 level = 3;
+  uint64 pcode = 4;
+  Area pArea = 5 [(go.field) = {tags:'gorm:"-"'}];
+  uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
+  uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    read_only:true
+  }];
+  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  time.Time updatedAt = 17 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
+  deletedAt.DeletedAt deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+}
+
+message Media{
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
+  string url = 2 [(go.field) = {tags:'gorm:"size:255;not null" comment:"url"'}];
+  uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
+  uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    read_only:true
+  }];
+  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  time.Time updatedAt = 17 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
+  deletedAt.DeletedAt deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+}
+
+message Tag {
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
+  string name = 2 [(go.field) = {tags:'gorm:"size:10;not null;uniqueIndex" validate:"required,gte=2,lte=10" comment:"名称"'}];
+  string desc = 3 [(go.field) = {tags:'gorm:"size:100"  comment:"描述"'}];
+  string image = 17 [(go.field) = {tags:'gorm:"size:255"  comment:"表情url"'}];
+  uint64 userId = 4 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
+  uint32 status = 29 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    read_only:true
+  }];
+  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  deletedAt.DeletedAt deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+}
+
+
+message TinyTag{
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
+  string name = 2 [(go.field) = {tags:'gorm:"size:10;not null;uniqueIndex" validate:"required,gte=2,lte=10" comment:"名称"'}];
+}
+
+
+message TagGroup{
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
+  string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" validate:"required,gte=2,lte=10" comment:"名称"'}];
+  uint64 pId = 3 [(go.field) = {tags:'gorm:"default:0;index" comment:"直接父分类的ID"'}];
+  uint64 userId = 4 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
   uint32 status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
+  string createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  deletedAt.DeletedAt deletedAt = 26 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+}
+
+
+message TagTagGroup{
+  uint64 tagId = 1 [(go.field) = {tags:'gorm:"index:idx_rel"'}];
+  uint64 groupId = 2 [(go.field) = {tags:'gorm:"index:idx_rel"'}];
+  uint64 userId = 4 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
+  uint32 status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    read_only:true
+  }];
+  string createdAt = 5 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  deletedAt.DeletedAt deletedAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+}
+
+message EditLog{
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
+  string table = 2 [(go.field) = {tags:'gorm:"size:20;not null;index"'}];
+  bytes old = 3 [(go.field) = {tags:'gorm:"type:jsonb;not null"'}];
+  bytes new = 4 [(go.field) = {tags:'gorm:"type:jsonb;not null"'}];
+  uint64 userId = 5 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
+  string createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+}
+
+// 自描述枚举 type=0 为 type 枚举
+message Enum{
+  uint32 type = 1 [(go.field) = {tags:'gorm:"size:100;primaryKey;autoIncrement:false" comment:"类型"'}];
+  uint32 index = 2 [(go.field) = {tags:'gorm:"size:20;primaryKey;autoIncrement"'}];
+  DataType dataType = 5 [(go.field) = {tags:'gorm:"type:int2;default:0"'}];
+  string value = 3 [(go.field) = {tags:'gorm:"size:100"'}];
+  string desc = 4 [(go.field) = {tags:'gorm:"size:255"'}];
+  uint64 userId = 6 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
+  uint32 status = 7 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    read_only:true
+  }];
+  string createdAt = 8 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  time.Time updatedAt = 9 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
+  deletedAt.DeletedAt deletedAt = 10 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
 }

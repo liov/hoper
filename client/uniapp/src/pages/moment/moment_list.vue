@@ -136,7 +136,7 @@ import { STATIC_DIR as staticDir } from '@/env/config'
 import type { Moment, MomentList } from '@/model/moment'
 import type { User } from '@/model/user'
 import { onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app'
-import type { PageRequest } from '@/service/request'
+import type { PageRequest } from '@/service/param'
 
 const listReq: PageRequest = {
   PageNo: 1,

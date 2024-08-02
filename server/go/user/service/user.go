@@ -127,14 +127,14 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*wrappe
 	}
 
 	var user = &model.User{
-		Name:      req.Name,
-		Account:   uuid.New().String(),
-		Mail:      req.Mail,
-		Phone:     req.Phone,
-		Gender:    req.Gender,
-		AvatarUrl: modelconst.DefaultAvatar,
-		Role:      model.RoleNormal,
-		Status:    model.UserStatusInActive,
+		Name:    req.Name,
+		Account: uuid.New().String(),
+		Mail:    req.Mail,
+		Phone:   req.Phone,
+		Gender:  req.Gender,
+		Avatar:  modelconst.DefaultAvatar,
+		Role:    model.RoleNormal,
+		Status:  model.UserStatusInActive,
 	}
 
 	user.Password = encryptPassword(req.Password)
@@ -609,7 +609,7 @@ func (u *UserService) EasySignup(ctx context.Context, req *model.SignupReq) (*mo
 		Mail:        req.Mail,
 		Phone:       req.Phone,
 		Gender:      req.Gender,
-		AvatarUrl:   modelconst.DefaultAvatar,
+		Avatar:      modelconst.DefaultAvatar,
 		Role:        model.RoleNormal,
 		ActivatedAt: timepb.NewTime(ctxi.RequestAt.Time),
 		Status:      model.UserStatusActivated,

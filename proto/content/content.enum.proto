@@ -62,15 +62,6 @@ enum ViewPermission{
   ViewPermissionOpen = 6 [(enum.enumvalue_cn) = "开放部分人"];
 }
 
-// 可见范围
-enum MomentType{
-  option (go.enum) = {stringer_name: 'OrigString'};
-  MomentTypePlaceholder = 0 [(enum.enumvalue_cn) = "占位"];
-  MomentTypeImage = 1 [(enum.enumvalue_cn) = "图片"];
-  MomentTypeVideo = 2 [(enum.enumvalue_cn) = "视频"];
-  MomentTypeAudio = 4 [(enum.enumvalue_cn) = "音频"];
-}
-
 // Deprecated 类型拆分
 enum ContainerType{
   option (go.enum) = {stringer_name: 'OrigString'};
@@ -80,3 +71,4 @@ enum ContainerType{
   ContainerTypeAlbum = 3[(enum.enumvalue_cn) = "专辑"];
   ContainerTypeCollection = 4[(enum.enumvalue_cn) = "合集"];
 }
+

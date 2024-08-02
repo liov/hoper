@@ -320,7 +320,7 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 		return nil, err
 	}
 	for i := range statistics {
-		if comment, ok := m[statistics[i].RefId]; ok {
+		if comment, ok := m[statistics[i].Id]; ok {
 			comment.Statistics = statistics[i]
 		}
 	}

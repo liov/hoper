@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/liov/hoper/server/go/protobuf/common"
 	"github.com/liov/hoper/server/go/protobuf/content"
 )
 
@@ -17,7 +18,7 @@ type ContentTag struct {
 
 type ContentTagRel struct {
 	RefId uint64 `json:"refId" validate:"required" comment:"相关id"`
-	content.TinyTag
+	common.TinyTag
 }
 
 type ContentExt struct {

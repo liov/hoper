@@ -1,13 +1,12 @@
 import { API_HOST } from '@/env/config'
 import type { MomentList } from '@/model/moment'
-import uniHttp from '@/utils/request'
+import request from '@/utils/request'
 import { userStore } from '@/store'
-import type { Response } from '@/service/response'
 import moment from '@/pages/moment/moment_list.vue'
 
 class MomentService {
   static async getMomentList(pageNo: number, pageSize: number): Promise<MomentList> {
-    const { data } = await uniHttp.get<Response<MomentList>>(
+    const { data } = await request.get<ResData<MomentList>>(
       '/api/v1/moment',
       {
         pageNo,

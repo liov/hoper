@@ -3,11 +3,7 @@ package upload;
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "hopeio/utils/validator/validator.proto";
 import "google/api/annotations.proto";
-import "google/protobuf/empty.proto";
-import "hopeio/response/response.proto";
-import "hopeio/request/param.proto";
 import "danielvladco/protobuf/graphql.proto";
-import "hopeio/oauth/oauth.proto";
 import "hopeio/utils/patch/go.proto";
 import "google/protobuf/wrappers.proto";
 

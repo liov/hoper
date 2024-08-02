@@ -15,8 +15,6 @@ import (
 	"github.com/liov/hoper/server/go/protobuf/content"
 
 	"github.com/hopeio/protobuf/errcode"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type ContentService struct {
@@ -25,67 +23,6 @@ type ContentService struct {
 
 func (m *ContentService) Service() (describe, prefix string, middleware []http.HandlerFunc) {
 	return "内容相关", "/api/content", nil
-}
-
-func (*ContentService) TagInfo(context.Context, *request.Id) (*content.Tag, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Info not implemented")
-}
-func (*ContentService) AddTag(ctx context.Context, req *content.AddTagReq) (*emptypb.Empty, error) {
-	ctxi := httpctx.FromContextValue(ctx)
-	defer ctxi.StartSpanEnd("")()
-
-	user, err := auth(ctxi, false)
-	if err != nil {
-		return nil, err
-	}
-	db := confdao.Dao.GORMDB.DB
-	req.UserId = user.Id
-	err = db.Create(req).Error
-	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "db.Create")
-	}
-	return nil, nil
-}
-func (*ContentService) EditTag(ctx context.Context, req *content.EditTagReq) (*emptypb.Empty, error) {
-	ctxi := httpctx.FromContextValue(ctx)
-	defer ctxi.StartSpanEnd("")()
-	auth, err := auth(ctxi, true)
-	if err != nil {
-		return nil, err
-	}
-
-	db := confdao.Dao.GORMDB.DB
-	err = db.Updates(&content.Tag{
-		Description: req.Description,
-		ImgURL:      req.ExpressionURL,
-	}).Where(`id = ? AND user_id = ? AND status = 0`, req.Id, auth.Id).Error
-	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "db.Updates")
-	}
-	return nil, nil
-}
-func (*ContentService) TagList(ctx context.Context, req *content.TagListReq) (*content.TagListRep, error) {
-	ctxi := httpctx.FromContextValue(ctx)
-	var tags []*content.Tag
-
-	user, err := auth(ctxi, true)
-	if err != nil {
-		return nil, err
-	}
-	db := confdao.Dao.GORMDB.DB
-
-	if req.Name != "" {
-		db = db.Where(`name LIKE ?` + "%" + req.Name + "%")
-	}
-	if req.GroupId != 0 {
-		db = db.Where(`id IN ?`, db.Table(model.TableNameTagGroup).Select("tag_id").Where("group_id = ?", req.GroupId))
-	}
-	var count int64
-	err = db.Table(`tag`).Where("user_id = ?", user.Id).Find(&tags).Count(&count).Error
-	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "db.Find")
-	}
-	return &content.TagListRep{List: tags, Total: uint32(count)}, nil
 }
 
 func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*request.Id, error) {
@@ -170,7 +107,7 @@ func (*ContentService) TinyFavList(ctx context.Context, req *content.FavListReq)
 }
 
 // 创建合集
-func (*ContentService) AddContainer(ctx context.Context, req *content.AddContainerReq) (*emptypb.Empty, error) {
+func (*ContentService) AddSet(ctx context.Context, req *content.AddSetReq) (*emptypb.Empty, error) {
 	ctxi := httpctx.FromContextValue(ctx)
 	defer ctxi.StartSpanEnd("")()
 	auth, err := auth(ctxi, true)
@@ -192,7 +129,7 @@ func (*ContentService) AddContainer(ctx context.Context, req *content.AddContain
 }
 
 // 修改合集
-func (*ContentService) EditDiaryContainer(ctx context.Context, req *content.AddContainerReq) (*emptypb.Empty, error) {
+func (*ContentService) EditSet(ctx context.Context, req *content.AddSetReq) (*emptypb.Empty, error) {
 	ctxi := httpctx.FromContextValue(ctx)
 	defer ctxi.StartSpanEnd("")()
 	auth, err := auth(ctxi, true)

@@ -1,0 +1,48 @@
+syntax = "proto3";
+package content;
+import "content/content.enum.proto";
+import "hopeio/utils/patch/go.proto";
+import "hopeio/time/time.proto";
+import "hopeio/time/deletedAt/deletedAt.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "user/user.model.proto";
+import "common/common.model.proto";
+import "common/common.enum.proto";
+import "content/action.model.proto";
+import "content/content.model.proto";
+
+option java_package = "xyz.hoper.protobuf.content";
+option java_multiple_files = true;
+option go_package = "github.com/liov/hoper/server/go/protobuf/content";
+
+// 瞬间
+message Moment {
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
+  string content = 2 [(go.field) = {tags:'gorm:"type:text;not null" comment:"内容"'}];
+  string images = 32 [(go.field) = {tags:'gorm:"type:text" comment:"图片"'}];
+  // 还是决定瞬间和日记形态合为一种
+  //uint64 bookId = 4 [(go.field) = {tags:'gorm:"size:20;default:0" comment:"日记本Id"'}];
+  //DiaryBook book = 26 [(go.field) = {tags:'gorm:"-" comment:"日记本"'}];
+  // 单个视频或音频或多个图片
+  common.DataType type = 3[(go.field) = {tags:'gorm:"type:int2;default:0" comment:"瞬间类型"'}];
+  common.TinyTag mood = 5 [(go.field) = {tags:'gorm:"-" comment:"心情"'}];
+  common.TinyTag weather = 7 [(go.field) = {tags:'gorm:"-" comment:"天气"'}];
+  common.Area area = 9 [(go.field) = {tags:'gorm:"-" comment:"地区"'}];
+  uint64 areaId = 10 [(go.field) = {tags:'gorm:"size:10;default:0" comment:"地区"'}];
+  //uint32 areaVisibility = 11 [(go.field) = {tags:'gorm:"type:int2;default:2" comment:"地区可见性，1-可见"'}];
+  string location = 12 [(go.field) = {tags:'gorm:"size:20" comment:"位置"'}];
+  repeated common.TinyTag tags = 13 [(go.field) = {tags:'gorm:"-" comment:"标签"'}];
+  user.UserBase user = 14 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
+  uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" comment:"用户id"'}];
+  Statistics statistics = 30[(go.field) = {tags:'gorm:"-" comment:"统计数据"'}];
+  UserAction action = 28[(go.field) = {tags:'gorm:"-" comment:"用户动作"'}];
+  uint32 sequence = 19 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
+  uint32 anonymous = 20 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"是否匿名,0-是,1否"'}];
+  ViewPermission permission = 21 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"查看权限"'}];
+  uint32 status = 24 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    read_only:true
+  }];
+  time.Time createdAt = 22 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  deletedAt.DeletedAt deletedAt = 23 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+
+}

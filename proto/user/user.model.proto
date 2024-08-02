@@ -30,8 +30,8 @@ message User {
   string address = 14 [(go.field) = {tags:'gorm:"size:255"'}];
   string intro = 10 [(go.field) = {tags:'gorm:"size:255"'}];
   string signature = 11 [(go.field) = {tags:'gorm:"size:255"'}];
-  string avatarUrl = 12 [(go.field) = {tags:'gorm:"size:255"'}];
-  string coverUrl = 13 [(go.field) = {tags:'gorm:"size:255"'}];
+  string avatar = 12 [(go.field) = {tags:'gorm:"size:255"'}];
+  string cover = 13 [(go.field) = {tags:'gorm:"size:255"'}];
   Role role = 24 [(go.field) = {tags:'gorm:"type:int2;default:0"'}];
   string realName = 19 [(go.field) = {tags:'gorm:"size:5" comment:"实名"'}];
   string IdNo = 18 [(go.field) = {tags:'gorm:"size:22" comment:"身份证号"'}];
@@ -149,7 +149,7 @@ message UserBase {
   Gender gender = 8 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type:INTEGER
   }];
-  string avatarUrl = 12 [(go.field) = {tags:'gorm:"size:255"'}];
+  string avatar = 12 [(go.field) = {tags:'gorm:"size:255"'}];
 }
 
 
@@ -159,7 +159,7 @@ message Oauth {
   string mail = 6 [(go.field) = {tags:'gorm:"size:16" validate:"email" comment:"邮箱"'}];
   string location = 16[(go.field) = {tags:'gorm:"size:255"'}];
   string intro = 10 [(go.field) = {tags:'gorm:"size:255"'}];
-  string avatarURL = 12 [(go.field) = {tags:'gorm:"size:255"'}];
+  string avatar = 12 [(go.field) = {tags:'gorm:"size:255"'}];
 }
 
 // 每次

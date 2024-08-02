@@ -1,4 +1,4 @@
-import uniHttp from '@/utils/request'
+import request from '@/utils/request'
 
 export const Env: ImportMetaEnv = import.meta.env
 console.log(Env)
@@ -7,4 +7,4 @@ export const API_HOST = Env.VITE_API_HOST
 
 const Prod = 'prod'
 
-uniHttp.defaults.baseUrl = API_HOST
+request.defaults.baseUrl = API_HOST

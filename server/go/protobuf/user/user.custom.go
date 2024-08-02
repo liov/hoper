@@ -39,6 +39,7 @@ type AuthInfo struct {
 	Name   string     `json:"name"`
 	Role   Role       `json:"role"`
 	Status UserStatus `json:"status"`
+	Avatar string     `json:"avatar"`
 }
 
 func (x *AuthInfo) IdStr() string {

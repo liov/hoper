@@ -13,22 +13,18 @@ import (
 
 type ContentDao struct {
 	*httpctx.Context
-	ChainDao
+	db *gorm.DB
 }
 
 func GetDao(ctx *httpctx.Context, db *gorm.DB) *ContentDao {
 	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}
-	return &ContentDao{Context: ctx, ChainDao: ChainDao{db: db}}
+	return &ContentDao{Context: ctx, db: db}
 }
 
 func (d *ContentDao) SetDB(db *gorm.DB) {
 	d.db = db
-}
-
-func (d *ContentDao) Begin() *ContentDao {
-	return GetDao(d.Context, d.db.Begin())
 }
 
 func (d *ContentDao) CreateContextExt(typ content.ContentType, refId uint64) error {

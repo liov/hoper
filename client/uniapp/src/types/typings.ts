@@ -1,6 +1,6 @@
 // 全局要用的类型放到这里
 
-type IResData<T> = {
+type ResData<T> = {
   code: number
   msg: string
   data: T
@@ -15,6 +15,14 @@ type IUniUploadFileOptions = {
   formData?: any
 }
 
+type UserBaseInfo = {
+  id: number
+  name: string
+  score: number
+  gender: string
+  avatarUrl: string
+}
+
 type IUserInfo = {
   nickname?: string
   avatar?: string
@@ -26,13 +34,4 @@ type IUserInfo = {
 enum TestEnum {
   A = 'a',
   B = 'b',
-}
-
-declare interface Window {
-  // window对象属性
-  turnstile: any // 加入对象
-
-  wx: any
-  WeixinJSBridge: any
-  __wxjs_environment: string
 }

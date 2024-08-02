@@ -34,3 +34,30 @@ enum MediaType{
   MediaTypeVideo = 2 [(enum.enumvalue_cn) = "视频"];
   MediaTypeAudio = 3 [(enum.enumvalue_cn) = "音频"];
 }
+
+enum DataType {
+  option (go.enum) = {stringer_name: 'OrigString'};
+  DataTypePlaceholder = 0 [(enum.enumvalue_cn) = "占位"];
+  DataTypeString = 1 [(enum.enumvalue_cn) = "字符串"];
+  DataTypeInteger = 2 [(enum.enumvalue_cn) = "整数"];
+  DataTypeFloat = 3 [(enum.enumvalue_cn) = "浮点数"];
+  DataTypeTime = 4 [(enum.enumvalue_cn) = "时间"];
+  DataTypeDate = 5 [(enum.enumvalue_cn) = "日期"];
+  DataTypeEnum = 6 [(enum.enumvalue_cn) = "枚举"];
+}
+
+enum Platform{
+  option (go.enum) = {stringer_name: 'OrigString'};
+  PlatformPlaceholder = 0 [(enum.enumvalue_cn)= "占位"];
+  PlatformWechat = 1 [(enum.enumvalue_cn)= "微信"];
+  PlatformQQ = 2 [(enum.enumvalue_cn)= "QQ"];
+}
+
+// 删除原因
+enum BanReason{
+  option (go.enum) = {stringer_name: 'OrigString'};
+  BanReasonPlaceholder = 0 [(enum.enumvalue_cn) = "占位"];
+  BanReasonViolationOfLawsAndRegulations = 1 [(enum.enumvalue_cn) = "违返法律法规"];
+  BanReasonEroticViolence = 3 [(enum.enumvalue_cn) = "色情暴力"];
+  BanReasonOther = 255 [(enum.enumvalue_cn) = "其他原因"];
+}

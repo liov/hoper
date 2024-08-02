@@ -3,11 +3,13 @@ package db
 import (
 	"github.com/hopeio/protobuf/errcode"
 	dbi "github.com/hopeio/utils/dao/database"
+	commonmodel "github.com/liov/hoper/server/go/common/model"
 	"github.com/liov/hoper/server/go/content/model"
+	"github.com/liov/hoper/server/go/protobuf/common"
 	"github.com/liov/hoper/server/go/protobuf/content"
 )
 
-const TagTableNameAlias = model.TableNameTag + " a"
+const TagTableNameAlias = commonmodel.TableNameTag + " a"
 
 func (d *ContentDao) GetContentTag(typ content.ContentType, refIds []uint64) ([]model.ContentTagRel, error) {
 	ctxi := d.Context
@@ -22,21 +24,9 @@ func (d *ContentDao) GetContentTag(typ content.ContentType, refIds []uint64) ([]
 	return tags, nil
 }
 
-func (d *ContentDao) GetTags(names []string) ([]model.TinyTag, error) {
+func (d *ContentDao) GetTagsByRefId(typ content.ContentType, refId uint64) ([]*common.TinyTag, error) {
 	ctxi := d.Context
-	var tags []model.TinyTag
-	err := d.db.Table(model.TableNameTag).Select("id,name").
-		Where("name IN (?)"+dbi.WithNotDeleted, names).
-		Find(&tags).Error
-	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "GetTags")
-	}
-	return tags, nil
-}
-
-func (d *ContentDao) GetTagsByRefId(typ content.ContentType, refId uint64) ([]*content.TinyTag, error) {
-	ctxi := d.Context
-	var tags []*content.TinyTag
+	var tags []*common.TinyTag
 	err := d.db.Select("a.id,a.name").Table(TagTableNameAlias).
 		Joins(`LEFT JOIN `+model.TableNameContentTag+` b ON a.id = b.tag_id`).
 		Where("b.type = ? AND b.ref_id = ?"+dbi.WithNotDeleted,

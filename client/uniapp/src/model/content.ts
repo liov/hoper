@@ -1,4 +1,4 @@
-export interface ContentExt {
-    likeCount: number;
-    commentCount: number;
+type ContentExt = {
+  likeCount: number
+  commentCount: number
 }

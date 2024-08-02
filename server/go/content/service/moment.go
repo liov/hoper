@@ -9,9 +9,12 @@ import (
 	"github.com/hopeio/protobuf/request"
 	gormi "github.com/hopeio/utils/dao/database/gorm"
 	"github.com/hopeio/utils/structure/set"
+	"github.com/liov/hoper/server/go/protobuf/common"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"unicode/utf8"
 
+	comconfdao "github.com/liov/hoper/server/go/common/confdao"
+	comdata "github.com/liov/hoper/server/go/common/data"
 	"github.com/liov/hoper/server/go/content/confdao"
 	"github.com/liov/hoper/server/go/content/data"
 	"github.com/liov/hoper/server/go/content/model"
@@ -39,9 +42,11 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 	contentDBDao := data.GetDBDao(ctxi, db)
 
 	var moment content.Moment
-	err := db.Table(model.TableNameMoment).
-		Where(`id = ?`, req.Id).First(&moment).Error
+	err := db.Table(model.TableNameMoment).First(&moment, req.Id).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, errcode.NotFound
+		}
 		return nil, ctxi.ErrorLog(errcode.DBError, err, "First")
 	}
 	// tags
@@ -49,7 +54,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 	if err != nil {
 		return nil, err
 	}
-	var tags = make([]*content.TinyTag, len(contentTags))
+	var tags = make([]*common.TinyTag, len(contentTags))
 	for i := range contentTags {
 		tags[i] = &contentTags[i].TinyTag
 	}
@@ -89,40 +94,24 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 	}
 	moment.Statistics = statistics[0]
 
-	userIds := set.New[uint64]()
-
 	// 匿名
 	if moment.Anonymous == 1 {
 		moment.UserId = 0
 	} else {
-		userIds.Add(moment.UserId)
-	}
-	if len(userIds) > 0 {
-		userList, err := data.UserClient().BaseList(ctxi.BaseContext(), &user.BaseListReq{Ids: userIds.ToSlice()})
-		if err != nil {
-			return nil, err
+		moment.User = &user.UserBase{
+			Id:     auth.Id,
+			Name:   auth.Name,
+			Score:  0,
+			Gender: 0,
+			Avatar: auth.Avatar,
 		}
-		/*	var m = make(map[uint64]*user.UserBaseInfo)
-			for _,u:=range userList.List{
-				m[u.Id] = u
-			}
-			// 这个可以放到前端做，减少数据返回
-			for i := range comments{
-				comments[i].RecvUser = m[comments[i].RecvId]
-				comments[i].User = m[comments[i].UserId]
-			}
-			moment.User = m[moment.UserId]*/
-		// 客户端组装
-		moment.Users = userList.List
 	}
-
 	momentMaskField(&moment)
 	return &moment, nil
 }
 
 // 屏蔽字段
 func momentMaskField(moment *content.Moment) {
-	moment.AreaVisibility = 0
 	moment.DeletedAt = nil
 	moment.Anonymous = 0
 }
@@ -140,7 +129,9 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		return nil, err
 	}
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
+	codb := gormi.NewTraceDB(comconfdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
 	contentDBDao := data.GetDBDao(ctxi, db)
+	commonDBDao := comdata.GetDBDao(ctxi, codb)
 
 	req.UserId = auth.Id
 
@@ -151,7 +142,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		}*/
 	var tags []model.TinyTag
 	if len(req.Tags) > 0 {
-		tags, err = contentDBDao.GetTags(req.Tags)
+		tags, err = commonDBDao.GetTagsByName(req.Tags)
 		if err != nil {
 			return nil, err
 		}
@@ -172,7 +163,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 			return err
 		}
 		var contentTags []model.ContentTag
-		var noExist []content.Tag
+		var noExist []common.Tag
 	Loop:
 		for i := range req.Tags {
 			// 性能可以优化
@@ -186,7 +177,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 					continue Loop
 				}
 			}
-			noExist = append(noExist, content.Tag{Name: req.Tags[i], UserId: auth.Id})
+			noExist = append(noExist, common.Tag{Name: req.Tags[i], UserId: auth.Id})
 		}
 		if len(noExist) == 1 {
 			if err = tx.Create(&noExist[1]).Error; err != nil {
@@ -228,7 +219,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
 	contentDBDao := data.GetDBDao(ctxi, db)
 
-	total, moments, err := contentDBDao.GetMomentListDB(req)
+	total, moments, err := contentDBDao.GetMomentList(req)
 	if err != nil {
 		return nil, err
 	}
@@ -269,7 +260,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 		return nil, err
 	}
 	for i := range statistics {
-		if moment, ok := m[statistics[i].RefId]; ok {
+		if moment, ok := m[statistics[i].Id]; ok {
 			moment.Statistics = statistics[i]
 		}
 	}

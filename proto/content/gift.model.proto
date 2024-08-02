@@ -4,7 +4,7 @@ import "content/content.enum.proto";
 import "hopeio/utils/patch/go.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "user/user.model.proto";
-import "common/area.proto";
+import "common/common.model.proto";
 import "content/action.model.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
@@ -15,6 +15,6 @@ message Gift{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null;uniqueIndex" validate:"required,gte=2,lte=10" comment:"名称"'}];
   uint64 price = 4;
-  string description = 3 [(go.field) = {tags:'gorm:"size:100"  comment:"描述"'}];
-  string expressionURL = 17 [(go.field) = {tags:'gorm:"size:255"  comment:"表情url"'}];
+  string desc = 3 [(go.field) = {tags:'gorm:"size:100"  comment:"描述"'}];
+  string image = 17 [(go.field) = {tags:'gorm:"size:255"  comment:"表情url"'}];
 }

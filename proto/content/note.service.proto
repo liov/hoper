@@ -1,13 +1,10 @@
 syntax = "proto3";
 package content;
-import "content/content.model.proto";
-
+import "content/note.model.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "hopeio/utils/validator/validator.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/wrappers.proto";
-import "google/protobuf/empty.proto";
-import "hopeio/response/response.proto";
 import "hopeio/utils/patch/go.proto";
 import "danielvladco/protobuf/graphql.proto";
 

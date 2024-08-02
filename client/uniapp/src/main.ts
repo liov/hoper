@@ -1,7 +1,7 @@
 import { createSSRApp } from 'vue'
 import App from './App.vue'
 import store, { init as storeInit } from './store'
-import { init as uniHttpInit } from '@/service/index'
+import { init as uniHttpInit } from '@/interceptors/request'
 import i18n from './locale/index'
 import { routeInterceptor, requestInterceptor, prototypeInterceptor } from './interceptors'
 import 'virtual:uno.css'

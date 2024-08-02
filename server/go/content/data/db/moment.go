@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func (d *ContentDao) GetMomentListDB(req *content.MomentListReq) (int64, []*content.Moment, error) {
+func (d *ContentDao) GetMomentList(req *content.MomentListReq) (int64, []*content.Moment, error) {
 	ctxi := d.Context
 	var moments []*content.Moment
 	db := d.db.Table(model.TableNameMoment)
@@ -21,7 +21,7 @@ func (d *ContentDao) GetMomentListDB(req *content.MomentListReq) (int64, []*cont
 	clauses = append(clauses, clausei.PageExpr(int(req.PageNo), int(req.PageSize)))
 	err = db.Clauses(clauses...).Order("created_at desc").Find(&moments).Error
 	if err != nil {
-		return 0, nil, ctxi.ErrorLog(errcode.DBError, err, "GetMomentListDB")
+		return 0, nil, ctxi.ErrorLog(errcode.DBError, err, "GetMomentList")
 	}
 	return count, moments, nil
 }

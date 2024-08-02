@@ -26,14 +26,6 @@ enum ActionType{
   ActionDelete = 10 [(enum.enumvalue_cn) = "删除"];
 }
 
-// 删除原因
-enum DelReason{
-  option (go.enum) = {stringer_name: 'OrigString'};
-  DelReasonPlaceholder = 0 [(enum.enumvalue_cn) = "占位"];
-  DelReasonViolationOfLawsAndRegulations = 1 [(enum.enumvalue_cn) = "违返法律法规"];
-  DelReasonEroticViolence = 3 [(enum.enumvalue_cn) = "色情暴力"];
-  DelReasonOther = 255 [(enum.enumvalue_cn) = "其他原因"];
-}
 
 // 评论类型
 enum CommentType{
@@ -45,9 +37,9 @@ enum CommentType{
   CommentArticle = 4 [(enum.enumvalue_cn)= "文章"];
 }
 
-enum Platform{
+enum LikeStatus{
   option (go.enum) = {stringer_name: 'OrigString'};
-  PlatformPlaceholder = 0 [(enum.enumvalue_cn)= "占位"];
-  PlatformWechat = 1 [(enum.enumvalue_cn)= "微信"];
-  PlatformQQ = 2 [(enum.enumvalue_cn)= "QQ"];
+  LikeStatusPlaceholder = 0 [(enum.enumvalue_cn)= "占位"];
+  LikeStatusLike = 2 [(enum.enumvalue_cn)= "点赞"];
+  LikeStatusUnlike = 3 [(enum.enumvalue_cn)= "不喜欢"];
 }

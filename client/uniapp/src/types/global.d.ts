@@ -14,3 +14,12 @@ declare const __UNI_PLATFORM__:
   | 'quickapp-webview-union'
 
 declare const __VITE_APP_PROXY__: 'true' | 'false'
+
+declare interface Window {
+  // window对象属性
+  turnstile: any // 加入对象
+
+  wx: any
+  WeixinJSBridge: any
+  __wxjs_environment: string
+}

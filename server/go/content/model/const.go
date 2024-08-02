@@ -18,10 +18,12 @@ const (
 	TableNameArticle    = Schema + "article"
 	TableNameDiaryBook  = Schema + "diary_book"
 	TableNameFavorite   = Schema + "favorite"
-	TableNameTag        = Schema + "tag"
-	TableNameTagGroup   = Schema + "tag"
 	TableNameStatistics = Schema + "statistics"
 	TableNameContentTag = Schema + "content_tag"
+
+	TableNameTag      = "tag"
+	TableNameTagGroup = "tag_group"
+	TableNameTagAttr  = "attr"
 )
 
 const (

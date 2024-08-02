@@ -1,12 +1,4 @@
-export interface UserBaseInfo {
-  id: number
-  name: string
-  score: number
-  gender: string
-  avatarUrl: string
-}
-
-export type Users = UserBaseInfo[]
+type Users = UserBaseInfo[]
 
 export function userMap(users: Users): Map<number, UserBaseInfo> {
   const map = new Map<number, UserBaseInfo>()

@@ -7,6 +7,7 @@ import (
 	pickgin "github.com/hopeio/pick/gin"
 	"github.com/hopeio/utils/log"
 	chatapi "github.com/liov/hoper/server/go/chat/api"
+	coconf "github.com/liov/hoper/server/go/common/confdao"
 	contentapi "github.com/liov/hoper/server/go/content/api"
 	cconf "github.com/liov/hoper/server/go/content/confdao"
 	uploadapi "github.com/liov/hoper/server/go/upload/api"
@@ -24,6 +25,7 @@ func main() {
 	defer initialize.Start(uconf.Conf, uconf.Dao)()
 	initialize.GlobalConfig().Inject(cconf.Conf, cconf.Dao)
 	initialize.GlobalConfig().Inject(upconf.Conf, upconf.Dao)
+	initialize.GlobalConfig().Inject(coconf.Conf, coconf.Dao)
 	log.Info("proxy:", initialize.GlobalConfig().Get("proxy"))
 	log.Info("proxy:", initialize.GlobalConfig().InitConfig.Proxy)
 	log.Info("proxy:", initialize.GlobalConfig().Get("http_proxy"))

@@ -2,16 +2,14 @@ syntax = "proto3";
 package content;
 import "content/content.model.proto";
 import "content/content.enum.proto";
+import "common/common.model.proto";
 import "content/action.model.proto";
-import "user/user.model.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "hopeio/utils/validator/validator.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "hopeio/request/param.proto";
-import "hopeio/response/response.proto";
 import "danielvladco/protobuf/graphql.proto";
-import "hopeio/oauth/oauth.proto";
 import "hopeio/utils/patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
@@ -23,109 +21,6 @@ service ContentService {
     description: "内容相关接口"
   };
 
-  // 详情
-  rpc TagInfo (request.Id) returns (Tag) {
-    option (google.api.http) = {
-      get: "/api/v1/content/tag/{id}"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags:["v1.0.0"]
-    };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
-  }
-
-  // 新建
-  rpc AddTag (AddTagReq) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      post: "/api/v1/content/tag"
-      body: "*"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags:["v1.0.0"]
-    };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
-  }
-
-  // 修改
-  rpc EditTag (EditTagReq) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      put: "/api/v1/content/tag/{id}"
-      body: "*"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags:["v1.0.0"]
-    };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
-  }
-
-  // 列表
-  rpc TagList (TagListReq) returns (TagListRep) {
-    option (google.api.http) = {
-      get: "/api/v1/content/tag"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags:["v1.0.0"]
-    };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
-  }
-
-  // 列表
-  rpc TagGroupList (TagGroupListReq) returns (TagGroupListRep) {
-    option (google.api.http) = {
-      get: "/api/v1/content/tagGroup"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags:["v1.0.0"]
-    };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
-  }
-
-
-  // 详情
-  rpc AttrInfo (request.Id) returns (Attribute) {
-    option (google.api.http) = {
-      get: "/api/v1/content/attr/{id}"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags:["v1.0.0"]
-    };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
-  }
-
-  // 新建
-  rpc AddAttr (AddAttrReq) returns (request.Id) {
-    option (google.api.http) = {
-      post: "/api/v1/content/attr"
-      body: "*"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags:["v1.0.0"]
-    };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
-  }
-
-  // 修改
-  rpc EditAttr (EditAttrReq) returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      put: "/api/v1/content/attr/{id}"
-      body: "*"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags:["v1.0.0"]
-    };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
-  }
-
-  // 列表
-  rpc AttrList (AttrListReq) returns (AttrListRep) {
-    option (google.api.http) = {
-      get: "/api/v1/content/attr"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags:["v1.0.0"]
-    };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
-  }
   //收藏夹列表
   rpc FavList (FavListReq) returns (FavListRep) {
     option (google.api.http) = {
@@ -167,9 +62,9 @@ service ContentService {
     option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   // 创建合集
-  rpc AddContainer (AddContainerReq) returns (google.protobuf.Empty) {
+  rpc AddSet (AddSetReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/api/v1/content/container"
+      post: "/api/v1/content/set"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -177,9 +72,9 @@ service ContentService {
     option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   // 修改合集
-  rpc EditDiaryContainer (AddContainerReq) returns (google.protobuf.Empty) {
+  rpc EditSet (AddSetReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/content/container/{id}"
+      put: "/api/v1/content/set/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -187,9 +82,9 @@ service ContentService {
     option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   // 用户内容数量
-  rpc GetUserContentStatistics (request.Id) returns (UserStatistics) {
+  rpc GetUserStatistics (request.Id) returns (UserStatistics) {
     option (google.api.http) = {
-      get: "/api/v1/content/statistics/{id}"
+      get: "/api/v1/content/userStatistics/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -200,68 +95,6 @@ service ContentService {
 }
 
 
-message AddTagReq {
-  string name = 1[(go.field) = {tags:'comment:"名称"'}];
-  string description = 3 [(go.field) = {tags:'comment:"描述"'}];
-  string expressionURL = 4 [(go.field) = {tags:'comment:"表情url"'}];
-  uint64 userId = 5 [(go.field) = {tags:'comment:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-    read_only: true}];
-}
-
-message EditTagReq {
-  uint64 id = 1 [(go.field) = {tags:'validate:"required"'}];
-  string name = 2[(go.field) = {tags:'comment:"名称"'}];
-  string description = 3 [(go.field) = {tags:'comment:"描述"'}];
-  string expressionURL = 4 [(go.field) = {tags:'comment:"表情url"'}];
-}
-
-
-message TagListReq{
-  string name = 1[(go.field) = {tags:'comment:"名称"'}];
-  uint64 groupId = 5 [(go.field) = {tags:'comment:"groupId"'}];
-  uint32 pageNo = 3;
-  uint32 pageSize = 4;
-}
-
-message TagListRep{
-  uint32 total = 1;
-  repeated Tag list = 2;
-}
-
-message TagGroupListReq{
-  string name = 3[(go.field) = {tags:'comment:"组名称"'}];
-  uint32 pageNo = 4;
-  uint32 pageSize = 5;
-}
-
-message TagGroupListRep {
-  int64 total = 1;
-  repeated TagGroup data = 2;
-}
-
-message AddAttrReq {
-  string name = 1[(go.field) = {tags:'comment:"名称"'}];
-  string description = 2 [(go.field) = {tags:'comment:"描述"'}];
-  uint32 range = 4 [(go.field) = {tags:'gorm:"type:int2" comment:"属性使用范围"'}];
-  uint32 style = 5 [(go.field) = {tags:'gorm:"type:int2" comment:"属性的值输入风格"'}];
-}
-
-message EditAttrReq {
-  uint64 id = 1 [(go.field) = {tags:'validate:"required"'}];
-  string name = 2[(go.field) = {tags:'comment:"名称"'}];
-  string description = 3 [(go.field) = {tags:'comment:"描述"'}];
-  uint32 range = 4 [(go.field) = {tags:'gorm:"type:int2" comment:"属性使用范围"'}];
-  uint32 style = 5 [(go.field) = {tags:'gorm:"type:int2" comment:"属性的值输入风格"'}];
-}
-
-message AttrListReq{
-  string name = 1[(go.field) = {tags:'comment:"名称"'}];
-}
-
-message AttrListRep{
-  int64 total = 1;
-  repeated Attribute list = 2;
-}
 
 message AddFavReq{
   uint64 id = 1;
@@ -274,7 +107,7 @@ message AddFavReq{
   uint32 anonymous = 15 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"是否匿名,0-是,1否"'}];
 }
 
-message AddContainerReq{
+message AddSetReq{
   uint64 id = 1;
   uint64 userId = 17 [(go.field) = {tags:'comment:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];

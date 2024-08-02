@@ -1,142 +1,12 @@
-export async function request<
-  D,
-  T extends UniNamespace.RequestOptions = UniNamespace.RequestOptions,
->(options: T): Promise<D> {
-  return new Promise(function (resolve, reject) {
-    uni.request({
-      ...options,
-      success: (res) => {
-        resolve(res.data as D)
-      },
-      fail: (e) => {
-        reject(e)
-      },
-    })
-  })
-}
-
-export async function get<D, T extends UniNamespace.RequestOptions = UniNamespace.RequestOptions>(
-  options: T,
-): Promise<D> {
-  return request({
-    ...options,
-    method: 'GET',
-  })
-}
-
-export async function post<D, T extends UniNamespace.RequestOptions = UniNamespace.RequestOptions>(
-  options: T,
-): Promise<D> {
-  return request({
-    ...options,
-    method: 'POST',
-  })
-}
-
-interface UniResponse<T extends string | AnyObject | ArrayBuffer>
-  extends UniApp.RequestSuccessCallbackResult {
-  data: T
-}
-interface UniRequestConfig {
+/* eslint-disable no-param-reassign */
+import qs from 'qs'
+export type UniRequestOptions = Omit<UniApp.RequestOptions, 'url'> & {
   baseUrl?: string
-  /**
-   * 设置请求的 header，header 中不能设置 Referer。
-   */
-  header?: any
-
-  /**
-   * 超时时间
-   */
-  timeout?: number
-  /**
-   * 如果设为json，会尝试对返回的数据做一次 JSON.parse
-   */
-  dataType?: string
-  /**
-   * 设置响应的数据类型。合法值：text、arraybuffer
-   */
-  responseType?: string
-  /**
-   * 验证 ssl 证书
-   */
-  sslVerify?: boolean
-  /**
-   * 跨域请求时是否携带凭证
-   */
-  withCredentials?: boolean
-  /**
-   * DNS解析时优先使用 ipv4
-   */
-  firstIpv4?: boolean
-  /**
-   * 开启 http2
-   */
-  enableHttp2?: boolean
-  /**
-   * 开启 quic
-   */
-  enableQuic?: boolean
-  /**
-   * 开启 cache
-   */
-  enableCache?: boolean
-  /**
-   * 是否开启 HttpDNS 服务。如开启，需要同时填入 httpDNSServiceId 。 HttpDNS 用法详见 [移动解析HttpDNS](https://developers.weixin.qq.com/miniprogram/dev/framework/ability/HTTPDNS.html)
-   */
-  enableHttpDNS?: boolean
-  /**
-   * HttpDNS 服务商 Id。 HttpDNS 用法详见 [移动解析HttpDNS](https://developers.weixin.qq.com/miniprogram/dev/framework/ability/HTTPDNS.html)
-   */
-  httpDNSServiceId?: boolean
-  /**
-   * 开启 transfer-encoding chunked
-   */
-  enableChunked?: boolean
-  /**
-   * wifi下使用移动网络发送请求
-   */
-  forceCellularNetwork?: boolean
-  /**
-   * 默认 false，开启后可在headers中编辑cookie（支付宝小程序10.2.33版本开始支持）
-   */
-  enableCookie?: boolean
-  /**
-   * 是否开启云加速（详见[云加速服务](https://smartprogram.baidu.com/docs/develop/extended/component-codeless/cloud-speed/introduction/)）
-   */
-  cloudCache?: object | boolean
-  /**
-   * 控制当前请求是否延时至首屏内容渲染后发送
-   */
-  defer?: boolean
-  success?: (result: RequestSuccessCallbackResult) => void
-  /**
-   * 失败的回调函数
-   */
-  fail?: (result: UniApp.GeneralCallbackResult) => void
-  /**
-   * 结束的回调函数（调用成功、失败都会执行）
-   */
-  complete?: (result: UniApp.GeneralCallbackResult) => void
+  query?: Record<string, any>
+  /** 出错时是否隐藏错误提示 */
+  hideErrorToast?: boolean
 }
 
-interface RequestSuccessCallbackResult {
-  /**
-   * 开发者服务器返回的数据
-   */
-  data: string | AnyObject | ArrayBuffer
-  /**
-   * 开发者服务器返回的 HTTP 状态码
-   */
-  statusCode: number
-  /**
-   * 开发者服务器返回的 HTTP Response Header
-   */
-  header: any
-  /**
-   * 开发者服务器返回的 cookies，格式为字符串数组
-   */
-  cookies: string[]
-}
 type UniRequestInterceptor = (options: UniApp.RequestOptions) => UniApp.RequestOptions
 type UniResponseInterceptor = (
   response: UniApp.RequestSuccessCallbackResult,
@@ -146,16 +16,20 @@ type UniResponseErrorInterceptor = (
 ) => UniApp.GeneralCallbackResult
 
 class UniRequest {
-  constructor(defaultConfig?: UniRequestConfig) {
+  constructor(defaultConfig?: UniRequestOptions) {
     if (defaultConfig) {
       this.defaults = Object.assign(this.defaults, defaultConfig)
     }
   }
 
   // 默认的请求配置
-  public defaults: UniRequestConfig = {
+  public defaults: UniRequestOptions = {
     baseUrl: '',
     header: {},
+    dataType: 'json',
+    // #ifndef MP-WEIXIN
+    responseType: 'json',
+    // #endif
     timeout: 30000,
   }
 
@@ -187,9 +61,18 @@ class UniRequest {
     method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     url: string,
     data?: D,
-    config?: UniRequestConfig,
-  ): Promise<UniResponse<T>> {
-    return new Promise((resolve, reject) => {
+    config?: UniRequestOptions,
+  ): Promise<ResData<T>> {
+    return new Promise<ResData<T>>((resolve, reject) => {
+      // 接口请求支持通过 query 参数配置 queryString
+      if (config.query) {
+        const queryStr = qs.stringify(config.query)
+        if (url.includes('?')) {
+          url += `&${queryStr}`
+        } else {
+          url += `?${queryStr}`
+        }
+      }
       url = (config?.baseUrl || this.defaults.baseUrl) + url
       const header = config?.header
         ? Object.assign(this.defaults.header, config.header)
@@ -207,14 +90,28 @@ class UniRequest {
           for (const ri of this.responseInterceptors) {
             res = ri(res)
           }
-          if (res.statusCode < 200 || res.statusCode > 399 || res.data.code !== 0) {
-            uni.showToast({
-              title: res.data.msg,
-              icon: 'error',
-              duration: 1000,
-            })
+          // 状态码 2xx，参考 axios 的设计
+          if (
+            res.statusCode >= 200 &&
+            res.statusCode < 300 &&
+            (res.data as ResData<T>).code === 0
+          ) {
+            // 2.1 提取核心数据 res.data
+            resolve(res.data as ResData<T>)
+          } else {
+            // 其他错误 -> 根据后端错误信息轻提示
+            !config.hideErrorToast &&
+              uni.showToast({
+                icon: 'none',
+                title: (res.data as ResData<T>).msg || '请求错误',
+              })
+            if (res.statusCode === 401) {
+              // 401错误  -> 清理用户信息，跳转到登录页
+              // userStore.clearUserInfo()
+              // uni.navigateTo({ url: '/pages/login/login' })
+            }
+            reject(res)
           }
-          resolve(res as UniResponse<T>)
         },
         fail: (err) => {
           // 执行响应错误拦截
@@ -222,11 +119,9 @@ class UniRequest {
             err = ei(err)
           }
           uni.showToast({
-            title: decodeURI(err.errMsg),
-            icon: 'error',
-            duration: 1000,
+            icon: 'none',
+            title: '网络错误，换个网络试试',
           })
-          console.error(err)
           reject(err)
         },
       }
@@ -244,7 +139,7 @@ class UniRequest {
   public get<
     T extends string | AnyObject | ArrayBuffer = any,
     D extends string | AnyObject | ArrayBuffer | undefined = any,
-  >(url: string, params?: D, config?: UniRequestConfig) {
+  >(url: string, params?: D, config?: UniRequestOptions) {
     return this.request<T, D>('GET', url, params, config)
   }
 
@@ -252,12 +147,12 @@ class UniRequest {
   public post<
     T extends string | AnyObject | ArrayBuffer = any,
     D extends string | AnyObject | ArrayBuffer | undefined = any,
-  >(url: string, data?: D, config?: UniRequestConfig) {
+  >(url: string, data?: D, config?: UniRequestOptions) {
     return this.request<T, D>('POST', url, data, config)
   }
 }
 
-const uniHttp = new UniRequest({
+const request = new UniRequest({
   baseUrl: '',
   header: {
     'content-type': 'application/json',
@@ -266,4 +161,4 @@ const uniHttp = new UniRequest({
   timeout: 10000,
 })
 
-export default uniHttp
+export default request
