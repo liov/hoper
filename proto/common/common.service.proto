@@ -124,6 +124,17 @@ service CommonService {
     };
     option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
+
+  rpc SendMail (SendMailReq) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/sendMail"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["v1.0.0"]
+    };
+    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
+  }
 }
 
 message AddAttrReq {
@@ -191,3 +202,18 @@ message TagGroupListRep {
   repeated TagGroup data = 2;
 }
 
+message SendMailReq {
+  string addr = 1;
+  string fromName = 2;
+  string from = 3;
+  string subject = 4;
+  string contentType = 5;
+  string content = 6;
+  repeated string to = 7;
+}
+
+message SendSmsReq {
+  string sign = 5;
+  string content = 6;
+  repeated string to = 7;
+}

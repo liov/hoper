@@ -13,7 +13,7 @@ func (d *CommonDao) GetTags(ids []int) ([]model.TinyTag, error) {
 		Where("id IN ?"+dbi.WithNotDeleted, ids).
 		Find(&tags).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "GetTags")
+		return nil, ctxi.RespErrorLog(errcode.DBError, err, "GetTags")
 	}
 	return tags, nil
 }
@@ -25,7 +25,7 @@ func (d *CommonDao) GetTagsByName(names []string) ([]model.TinyTag, error) {
 		Where("name IN ?"+dbi.WithNotDeleted, names).
 		Find(&tags).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "GetTags")
+		return nil, ctxi.RespErrorLog(errcode.DBError, err, "GetTags")
 	}
 	return tags, nil
 }

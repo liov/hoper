@@ -1,9 +1,7 @@
 package confdao
 
 import (
-	"database/sql"
 	"github.com/hopeio/initialize/conf_dao/gormdb/postgres"
-	initredis "github.com/hopeio/initialize/conf_dao/redis"
 	"github.com/hopeio/utils/log"
 	"github.com/liov/hoper/server/go/protobuf/common"
 	"github.com/liov/hoper/server/go/protobuf/content"
@@ -17,9 +15,8 @@ var Dao *dao = &dao{}
 type dao struct {
 	// GORMDB 数据库连接
 	GORMDB postgres.DB
-	StdDB  *sql.DB
 	// RedisPool Redis连接池
-	Redis initredis.Client
+	//Mail mail.Mail `init:"config:mail"`
 	//elastic
 }
 

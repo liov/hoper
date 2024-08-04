@@ -32,7 +32,7 @@ func (*CommonService) AddTag(ctx context.Context, req *common.AddTagReq) (*empty
 	req.UserId = user.Id
 	err = db.Create(req).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "db.Create")
+		return nil, ctxi.RespErrorLog(errcode.DBError, err, "db.Create")
 	}
 	return nil, nil
 }
@@ -50,7 +50,7 @@ func (*CommonService) EditTag(ctx context.Context, req *common.EditTagReq) (*emp
 		Image: req.Image,
 	}).Where(`id = ? AND user_id = ? AND status = 0`, req.Id, auth.Id).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "db.Updates")
+		return nil, ctxi.RespErrorLog(errcode.DBError, err, "db.Updates")
 	}
 	return nil, nil
 }
@@ -73,7 +73,11 @@ func (*CommonService) TagList(ctx context.Context, req *common.TagListReq) (*com
 	var count int64
 	err = db.Table(`tag`).Where("user_id = ?", user.Id).Find(&tags).Count(&count).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "db.Find")
+		return nil, ctxi.RespErrorLog(errcode.DBError, err, "db.Find")
 	}
 	return &common.TagListRep{List: tags, Total: uint32(count)}, nil
+}
+
+func (*CommonService) SendMail(context.Context, *common.SendMailReq) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendMail not implemented")
 }

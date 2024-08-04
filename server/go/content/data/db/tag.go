@@ -19,7 +19,7 @@ func (d *ContentDao) GetContentTag(typ content.ContentType, refIds []uint64) ([]
 		Where("b.type = ? AND b.ref_id IN (?)"+dbi.WithNotDeleted,
 			typ, refIds).Find(&tags).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "GetContentTag")
+		return nil, ctxi.RespErrorLog(errcode.DBError, err, "GetContentTag")
 	}
 	return tags, nil
 }
@@ -32,7 +32,7 @@ func (d *ContentDao) GetTagsByRefId(typ content.ContentType, refId uint64) ([]*c
 		Where("b.type = ? AND b.ref_id = ?"+dbi.WithNotDeleted,
 			typ, refId).Scan(&tags).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "GetTagsByRefId")
+		return nil, ctxi.RespErrorLog(errcode.DBError, err, "GetTagsByRefId")
 	}
 	return tags, nil
 }
@@ -43,7 +43,7 @@ func (d *ContentDao) GetStatistics(typ content.ContentType, refIds []uint64) ([]
 	err := d.db.Table(model.TableNameStatistics).
 		Where("type = ? AND ref_id IN (?)", typ, refIds).Find(&exts).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "GetContentTag")
+		return nil, ctxi.RespErrorLog(errcode.DBError, err, "GetContentTag")
 	}
 	return exts, nil
 }

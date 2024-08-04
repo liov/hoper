@@ -32,7 +32,7 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*req
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	contentDBDao := data.GetDBDao(ctxi, db)
 
 	req.UserId = auth.Id
@@ -48,7 +48,7 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*req
 		contenttxDBDao := data.GetDBDao(ctxi, tx)
 		err = tx.Table(model.TableNameFavorite).Create(req).Error
 		if err != nil {
-			return ctxi.ErrorLog(errcode.DBError, err, "CreateFav")
+			return ctxi.RespErrorLog(errcode.DBError, err, "CreateFav")
 		}
 		err = contenttxDBDao.CreateContextExt(content.ContentFavorites, req.Id)
 		if err != nil {
@@ -73,11 +73,11 @@ func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*em
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	err = db.Table(model.TableNameFavorite).Where(`id =? AND user_id =?`, req.Id, auth.Id).
 		Updates(req).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "UpdateColumn")
+		return nil, ctxi.RespErrorLog(errcode.DBError, err, "UpdateColumn")
 	}
 	return nil, nil
 }
@@ -95,13 +95,13 @@ func (*ContentService) TinyFavList(ctx context.Context, req *content.FavListReq)
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	var favs []*content.TinyFavorites
 	if req.UserId == 0 {
 		err = db.Table(model.TableNameFavorite).Select("id,title").Where(`user_id = ?`, auth.Id).Find(&favs).Error
 	}
 	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "CreateFav")
+		return nil, ctxi.RespErrorLog(errcode.DBError, err, "CreateFav")
 	}
 	return &content.TinyFavListRep{List: favs}, nil
 }
@@ -119,11 +119,11 @@ func (*ContentService) AddSet(ctx context.Context, req *content.AddSetReq) (*emp
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	req.UserId = auth.Id
 	err = db.Table(model.TableNameContainer).Create(req).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "CreateFav")
+		return nil, ctxi.RespErrorLog(errcode.DBError, err, "CreateFav")
 	}
 	return nil, nil
 }
@@ -141,11 +141,11 @@ func (*ContentService) EditSet(ctx context.Context, req *content.AddSetReq) (*em
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	err = db.Table(model.TableNameContainer).Where(`id =? AND user_id =?`, req.Id, auth.Id).
 		Updates(req).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "CreateFav")
+		return nil, ctxi.RespErrorLog(errcode.DBError, err, "CreateFav")
 	}
 	return nil, nil
 }

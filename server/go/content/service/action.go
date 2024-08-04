@@ -36,7 +36,7 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 
 	contentDBDao := dbdao.GetDao(ctxi, db)
 
@@ -54,7 +54,7 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 		contenttxDBDao := dbdao.GetDao(ctxi, tx)
 		err = tx.Table(model.TableNameLike).Create(req).Error
 		if err != nil {
-			return ctxi.ErrorLog(errcode.DBError, err, "Create")
+			return ctxi.RespErrorLog(errcode.DBError, err, "Create")
 		}
 
 		err = contenttxDBDao.ActionCount(req.Type, req.Action, req.RefId, 1)
@@ -70,7 +70,7 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 	err = contentRedisDao.HotCount(req.Type, req.RefId, 1)
 
 	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.RedisErr, err, "HotCountRedis")
+		return nil, ctxi.RespErrorLog(errcode.RedisErr, err, "HotCountRedis")
 	}
 	return &request.Id{Id: req.Id}, nil
 }
@@ -83,7 +83,7 @@ func (*ActionService) DelLike(ctx context.Context, req *request.Id) (*emptypb.Em
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	contentDBDao := data.GetDBDao(ctxi, db)
 
 	like, err := contentDBDao.GetLike(req.Id, auth.Id)
@@ -116,14 +116,14 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*re
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 
 	req.UserId = auth.Id
 	err = db.Transaction(func(tx *gorm.DB) error {
 		contenttxDBDao := dbdao.GetDao(ctxi, tx)
 		err = tx.Table(model.TableNameComment).Create(req).Error
 		if err != nil {
-			return ctxi.ErrorLog(errcode.DBError, err, "Create")
+			return ctxi.RespErrorLog(errcode.DBError, err, "Create")
 		}
 		err = contenttxDBDao.CreateContextExt(content.ContentComment, req.Id)
 		if err != nil {
@@ -156,20 +156,20 @@ func (*ActionService) DelComment(ctx context.Context, req *request.Id) (*emptypb
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	contentDBDao := data.GetDBDao(ctxi, db)
 
 	var comment content.Comment
 	err = db.Table(model.TableNameComment).First(&comment, "id = ?", req.Id).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "Find")
+		return nil, ctxi.RespErrorLog(errcode.DBError, err, "Find")
 	}
 	if comment.UserId != auth.Id {
 		var userId uint64
 		err = db.Table(model.ContentTableName(comment.Type)).Select("user_id").
 			Where(`id = ?`, comment.RefId).Scan(&userId).Error
 		if err != nil {
-			return nil, ctxi.ErrorLog(errcode.DBError, err, "SelectUserId")
+			return nil, ctxi.RespErrorLog(errcode.DBError, err, "SelectUserId")
 		}
 		if userId != auth.Id {
 			return nil, errcode.PermissionDenied
@@ -199,7 +199,7 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*em
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	contentDBDao := data.GetDBDao(ctxi, db)
 
 	req.UserId = auth.Id
@@ -222,19 +222,19 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*em
 		collect.FavId = id
 		err = db.Table(model.TableNameCollect).Create(&collect).Error
 		if err != nil {
-			return nil, ctxi.ErrorLog(errcode.DBError, err, "Create")
+			return nil, ctxi.RespErrorLog(errcode.DBError, err, "Create")
 		}
 	}
 	if len(origin) == 0 && len(req.FavIds) > 0 {
 		err = contentDBDao.ActionCount(req.Type, content.ActionCollect, req.RefId, 1)
 		if err != nil {
-			return nil, ctxi.ErrorLog(errcode.DBError, err, "ActionCount")
+			return nil, ctxi.RespErrorLog(errcode.DBError, err, "ActionCount")
 		}
 	}
 	err = db.Table(model.TableNameCollect).Where(`type = ? AND ref_id = ? AND fav_id NOT IN (?)`, req.Type, req.RefId, req.FavIds).
 		Update(`deleted_at`, ctxi.RequestAt.TimeString).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "DELETE")
+		return nil, ctxi.RespErrorLog(errcode.DBError, err, "DELETE")
 	}
 	var hotCount float64
 	if len(origin) == 0 && len(req.FavIds) > 0 {
@@ -266,13 +266,13 @@ func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*empt
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	req.UserId = auth.Id
 	err = db.Transaction(func(tx *gorm.DB) error {
 		contenttxDBDao := data.GetDBDao(ctxi, tx)
 		err = tx.Table(model.TableNameReport).Create(req).Error
 		if err != nil {
-			return ctxi.ErrorLog(errcode.DBError, err, "Create")
+			return ctxi.RespErrorLog(errcode.DBError, err, "Create")
 		}
 		err = contenttxDBDao.ActionCount(req.Type, content.ActionReport, req.RefId, 1)
 		if err != nil {
@@ -296,7 +296,7 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	contentDBDao := data.GetDBDao(ctxi, db)
 
 	total, comments, err := contentDBDao.GetComments(content.ContentMoment, req.RefId, req.RootId, int(req.PageNo), int(req.PageSize))
@@ -359,7 +359,7 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 	}
 	var users []*user.UserBase
 	if len(userIds) > 0 {
-		userList, err := data.UserClient().BaseList(ctxi.BaseContext(), &user.BaseListReq{Ids: userIds.ToSlice()})
+		userList, err := data.UserClient().BaseList(ctxi.Base(), &user.BaseListReq{Ids: userIds.ToSlice()})
 		if err != nil {
 			return nil, err
 		}
@@ -385,7 +385,7 @@ func (*ActionService) GetUserAction(ctx context.Context, req *content.ContentReq
 		return nil, err
 	}
 
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	contentDBDao := dbdao.GetDao(ctxi, db)
 
 	action := &content.UserAction{}

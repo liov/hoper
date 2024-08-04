@@ -30,20 +30,7 @@ service UserService {
     description: "用户相关接口"
   };
   // 验证码
-  rpc VerifyCode (google.protobuf.Empty) returns (google.protobuf.StringValue) {
-    option (google.api.http) = {
-      get: "/api/v1/verifyCode"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags:["用户相关接口", "util", "v1.0.0"]
-      summary : "验证码"
-      description : "验证码生成接口"
-    };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
-  }
-
-  // 验证码
-  rpc SendVerifyCode (SendVerifyCodeReq) returns (google.protobuf.Empty) {
+  rpc VerifyCode (VerifyCodeReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       get: "/api/v1/sendVerifyCode"
     };
@@ -56,7 +43,7 @@ service UserService {
   }
 
   //注册验证
-  rpc SignupVerify (SingUpVerifyReq) returns (google.protobuf.StringValue) {
+  rpc SignupVerify (SingUpVerifyReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/api/v1/user/signupVerify"
       body: "*"
@@ -399,12 +386,14 @@ message ActionLogListRep {
   repeated ActionLog list = 2;
 }
 
-message SendVerifyCodeReq{
+message VerifyCodeReq{
   // 邮箱
   string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" comment:"邮箱"'}];
   // 手机号
   string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" comment:"手机号"'}];
-  Action type = 2 [(go.field) = {tags:'comment:"操作类型"'}];
+  Action action = 2 [(go.field) = {tags:'comment:"操作类型"'}];
+  // 验证码
+  string vCode = 8 [(go.field) = {tags:'validate:"required" comment:"验证码"'}];
 }
 
 message BaseListReq{

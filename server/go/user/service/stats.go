@@ -36,7 +36,7 @@ func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*emptypb
 		FollowId: auth.Id,
 	}).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "Create")
+		return nil, ctxi.RespErrorLog(errcode.DBError, err, "Create")
 	}
 	return new(emptypb.Empty), nil
 }
@@ -62,7 +62,7 @@ func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user
 	err = userDao.Table(model.TableNameFollow).Where("user_id = ? AND follow_id = ?"+dbi.WithNotDeleted, req.Id, auth.Id).
 		UpdateColumn("deleted_at", ctxi.RequestAt.TimeString).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "Create")
+		return nil, ctxi.RespErrorLog(errcode.DBError, err, "Create")
 	}
 	return nil, nil
 }

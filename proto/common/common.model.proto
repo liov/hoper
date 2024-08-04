@@ -140,3 +140,19 @@ message Enum{
   time.Time updatedAt = 9 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
   deletedAt.DeletedAt deletedAt = 10 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
 }
+
+message Mail {
+  string addr = 1;
+  string fromName = 2;
+  string from = 3;
+  string subject = 4;
+  string contentType = 5;
+  string content = 6;
+  repeated string to = 7;
+}
+
+message sms {
+  string sign = 1;
+  string content = 6;
+  repeated string to = 7;
+}

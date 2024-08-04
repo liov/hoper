@@ -13,7 +13,7 @@ var limitErr = errcode.TimeTooMuch.Msg("您的操作过于频繁，请先休息�
 
 func (d *ContentDao) Limit(l *confdao.Limit) error {
 	ctxi := d
-	ctx := ctxi.BaseContext()
+	ctx := ctxi.Base()
 	minuteKey := l.MinuteLimitKey + ctxi.AuthID
 	dayKey := l.DayLimitKey + ctxi.AuthID
 
@@ -24,7 +24,7 @@ func (d *ContentDao) Limit(l *confdao.Limit) error {
 		return nil
 	})
 	if err != nil {
-		return ctxi.ErrorLog(errcode.RedisErr, err, "Incr")
+		return ctxi.RespErrorLog(errcode.RedisErr, err, "Incr")
 	}
 
 	if minuteIntCmd.Val() > l.MinuteLimitCount || dayIntCmd.Val() > l.DayLimitCount {
@@ -37,7 +37,7 @@ func (d *ContentDao) Limit(l *confdao.Limit) error {
 		return nil
 	})
 	if err != nil {
-		return ctxi.ErrorLog(errcode.RedisErr, err, "PTTL")
+		return ctxi.RespErrorLog(errcode.RedisErr, err, "PTTL")
 	}
 
 	_, err = d.conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
@@ -50,7 +50,7 @@ func (d *ContentDao) Limit(l *confdao.Limit) error {
 		return nil
 	})
 	if err != nil {
-		return ctxi.ErrorLog(errcode.RedisErr, err, "Expire")
+		return ctxi.RespErrorLog(errcode.RedisErr, err, "Expire")
 	}
 	return nil
 }

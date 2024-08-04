@@ -83,7 +83,7 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 	ctxi := httpctx.FromContextValue(ctx)
 	auth, err := auth(ctxi, false)
 	uploadDao := data.GetDao(ctxi)
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	upload, err := uploadDao.UploadDB(db, md5, size)
 	if err != nil {
 		httpi.RespErrRep(w, errcode.DBError.Origin().ErrRep())
@@ -96,7 +96,7 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 			UploadId:  upload.Id,
 		}
 		if err := db.Table(model.UploadExtTableName).Create(&uploadExt).Error; err != nil {
-			ctxi.ErrorLog(errcode.DBError, err, "Create")
+			ctxi.RespErrorLog(errcode.DBError, err, "Create")
 		}
 		(&httpi.ResAnyData{
 			Code: 1,
@@ -110,7 +110,7 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 
 func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
 	uploadDao := data.GetDao(ctx)
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx.BaseContext(), ctx.TraceID)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx.Base(), ctx.TraceID)
 	auth := ctx.AuthInfo.(*user.AuthInfo)
 	if md5Str != "" {
 		upload, err = uploadDao.UploadDB(db, md5Str, strconv.FormatInt(info.Size, 10))
@@ -126,13 +126,13 @@ func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (uplo
 		}
 		file, err = info.Open()
 		if err != nil {
-			return nil, ctx.ErrorLog(errcode.IOError, err, "Open")
+			return nil, ctx.RespErrorLog(errcode.IOError, err, "Open")
 		}
 		defer file.Close()
 		hash := md5.New()
 		_, err = io.Copy(hash, file)
 		if err != nil {
-			return nil, ctx.ErrorLog(errcode.IOError, err, "Create")
+			return nil, ctx.RespErrorLog(errcode.IOError, err, "Create")
 		}
 		md5Str = hex.EncodeToString(hash.Sum(nil))
 		upload, err = uploadDao.UploadDB(db, md5Str, strconv.FormatInt(info.Size, 10))
@@ -147,7 +147,7 @@ func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (uplo
 			UploadId:  upload.Id,
 		}
 		if err = db.Table(model.UploadExtTableName).Create(&uploadExt).Error; err != nil {
-			return nil, ctx.ErrorLog(errcode.DBError, err, "Create")
+			return nil, ctx.RespErrorLog(errcode.DBError, err, "Create")
 		}
 		return
 	}
@@ -196,7 +196,7 @@ func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (uplo
 
 	err = db.Table(model.UploadTableName).Create(&fileUpload).Error
 	if err != nil {
-		return nil, ctx.ErrorLog(errcode.DBError, err, "Create")
+		return nil, ctx.RespErrorLog(errcode.DBError, err, "Create")
 	}
 	return &fileUpload, nil
 }

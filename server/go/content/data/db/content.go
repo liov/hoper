@@ -15,7 +15,7 @@ WHERE title = ? AND user_id = ?` + dbi.WithNotDeleted
 
 	err := d.db.Raw(sql, title, d.AuthInfo).Scan(&id).Error
 	if err != nil && err != sqlib.ErrNoRows {
-		return 0, ctxi.ErrorLog(errcode.DBError, err, "ContainerExists")
+		return 0, ctxi.RespErrorLog(errcode.DBError, err, "ContainerExists")
 	}
 	return id, nil
 }

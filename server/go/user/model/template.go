@@ -17,9 +17,12 @@ const (
 			<a href="{{.ActionURL}}">{{.ActionURL}}</a>
 			<p>感谢你对 {{.SiteName}} 的支持，希望你在 {{.SiteName}} 的体验有益且愉快。</p>
 			<p>(这是一封自动产生的email，请勿回复。)</p>{{end}}`
+	VerifycodeContent  = "VerifycodeContent"
+	VerifycodeTemplate = `{{define "VerifycodeContent"}}<p>本次{{Action.}}需要的验证码是 {{.Vcode}},请在15分钟内输入验证妈并进行下一步操作</p>`
 )
 
 func init() {
 	templatei.Parse(ActionActiveTemplate)
 	templatei.Parse(ActionRestPasswordTemplate)
+	templatei.Parse(VerifycodeTemplate)
 }

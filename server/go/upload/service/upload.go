@@ -18,7 +18,7 @@ func (*UploadService) GetUrls(ctx context.Context, req *upload.GetUrlsReq) (*upl
 
 	uploadDao := data.GetDao(ctxi)
 
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	uploadInfos, err := uploadDao.GetUrls(db, req.Ids)
 	if err != nil {
 		return nil, err
@@ -30,7 +30,7 @@ func (*UploadService) GetUrlsByStrId(ctx context.Context, req *upload.GetUrlsByS
 
 	uploadDao := data.GetDao(ctxi)
 
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID)
+	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	uploadInfos, err := uploadDao.GetUrlsByStrId(db, req.Ids)
 	if err != nil {
 		return nil, err

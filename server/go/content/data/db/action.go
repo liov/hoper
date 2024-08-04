@@ -42,7 +42,7 @@ func (d *ContentDao) ActionCount(typ content.ContentType, action content.ActionT
 	err := d.db.Table(model.TableNameStatistics).Where(`type = ? AND ref_id = ?`, typ, refId).
 		Update(column, expr).Error
 	if err != nil {
-		return ctxi.ErrorLog(errcode.DBError, err, "ActionCount")
+		return ctxi.RespErrorLog(errcode.DBError, err, "ActionCount")
 	}
 	return nil
 }
@@ -55,7 +55,7 @@ WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ?` + dbi.WithNotDelet
 	var id uint64
 	err := d.db.Raw(sql, typ, refId, action, userId).Row().Scan(&id)
 	if err != nil && err != sqlstd.ErrNoRows {
-		return 0, ctxi.ErrorLog(errcode.DBError, err, "LikeId")
+		return 0, ctxi.RespErrorLog(errcode.DBError, err, "LikeId")
 	}
 	return id, nil
 }
@@ -66,7 +66,7 @@ func (d *ContentDao) DelAction(typ content.ContentType, action content.ActionTyp
 WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ?` + dbi.WithNotDeleted
 	err := d.db.Exec(sql, ctxi.TimeString, typ, refId, action, userId).Error
 	if err != nil {
-		return ctxi.ErrorLog(errcode.DBError, err, "DelAction")
+		return ctxi.RespErrorLog(errcode.DBError, err, "DelAction")
 	}
 	return nil
 }
@@ -77,7 +77,7 @@ func (d *ContentDao) Del(tableName string, id uint64) error {
 WHERE id = ?` + dbi.WithNotDeleted
 	err := d.db.Exec(sql, ctxi.TimeString, id).Error
 	if err != nil {
-		return ctxi.ErrorLog(errcode.DBError, err, "Del")
+		return ctxi.RespErrorLog(errcode.DBError, err, "Del")
 	}
 	return nil
 }
@@ -88,7 +88,7 @@ func (d *ContentDao) DelByAuth(tableName string, id, userId uint64) error {
 WHERE id = ?  AND user_id = ?` + dbi.WithNotDeleted
 	err := d.db.Exec(sql, ctxi.TimeString, id, userId).Error
 	if err != nil {
-		return ctxi.ErrorLog(errcode.DBError, err, "DelByAuth")
+		return ctxi.RespErrorLog(errcode.DBError, err, "DelByAuth")
 	}
 	return nil
 }
@@ -100,7 +100,7 @@ WHERE id = ?  AND user_id = ?` + dbi.WithNotDeleted + ` LIMIT 1)`
 	var exists bool
 	err := d.db.Raw(sql, id, userId).Scan(&exists).Error
 	if err != nil {
-		return false, ctxi.ErrorLog(errcode.DBError, err, "ExistsByAuth")
+		return false, ctxi.RespErrorLog(errcode.DBError, err, "ExistsByAuth")
 	}
 	return exists, nil
 }
@@ -112,7 +112,7 @@ WHERE id = ?  AND type = ? AND user_id = ?` + dbi.WithNotDeleted + ` LIMIT 1)`
 	var exists bool
 	err := d.db.Raw(sql, id, typ, userId).Scan(&exists).Error
 	if err != nil {
-		return false, ctxi.ErrorLog(errcode.DBError, err, "ContainerExists")
+		return false, ctxi.RespErrorLog(errcode.DBError, err, "ContainerExists")
 	}
 	return exists, nil
 }
@@ -124,7 +124,7 @@ func (d *ContentDao) GetContentActions(action content.ActionType, typ content.Co
 		Where("type = ? AND ref_id IN (?) AND user_id = ?"+dbi.WithNotDeleted,
 			typ, refIds, userId).Scan(&actions).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "GetContentActions")
+		return nil, ctxi.RespErrorLog(errcode.DBError, err, "GetContentActions")
 	}
 	return actions, nil
 }
@@ -136,7 +136,7 @@ func (d *ContentDao) GetLike(likeId, userId uint64) (*model.ContentAction, error
 		Where("id = ? AND user_id = ?"+dbi.WithNotDeleted,
 			likeId, userId).Scan(&action).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "GetContentActions")
+		return nil, ctxi.RespErrorLog(errcode.DBError, err, "GetContentActions")
 	}
 	return &action, nil
 }
@@ -148,7 +148,7 @@ func (d *ContentDao) GetCollects(typ content.ContentType, refIds []uint64, userI
 		Where("type = ? AND ref_id IN (?) AND user_id = ?"+dbi.WithNotDeleted,
 			typ, refIds, userId).Scan(&collects).Error
 	if err != nil {
-		return nil, ctxi.ErrorLog(errcode.DBError, err, "GetContentActions")
+		return nil, ctxi.RespErrorLog(errcode.DBError, err, "GetContentActions")
 	}
 	return collects, nil
 }
@@ -159,14 +159,14 @@ func (d *ContentDao) GetComments(typ content.ContentType, refId, rootId uint64, 
 	var count int64
 	err := db.Count(&count).Error
 	if err != nil {
-		return 0, nil, ctxi.ErrorLog(errcode.DBError, err, "Find")
+		return 0, nil, ctxi.RespErrorLog(errcode.DBError, err, "Find")
 	}
 	var clauses []clause.Expression
 	clauses = append(clauses, clausei.PageExpr(pageNo, pageSize))
 	var comments []*content.Comment
 	err = db.Clauses(clauses...).Find(&comments).Error
 	if err != nil {
-		return 0, nil, ctxi.ErrorLog(errcode.DBError, err, "Find")
+		return 0, nil, ctxi.RespErrorLog(errcode.DBError, err, "Find")
 	}
 	return count, comments, nil
 }
