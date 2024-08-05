@@ -8,6 +8,6 @@ import xyz.hoper.content.entity.Content
  * @Created by lbyi
  */
 
-interface ContentService {
-  fun info(id:Long): Content
+public interface UserService {
+  Content info(Long id);
 }
