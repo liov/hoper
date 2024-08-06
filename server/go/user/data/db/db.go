@@ -26,7 +26,7 @@ func GetUserDao(ctx *httpctx.Context, db *gorm.DB) *UserDao {
 	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}
-	return &UserDao{ctx, gormi.NewTraceDB(db, ctx.Base(), ctx.TraceID)}
+	return &UserDao{ctx, gormi.NewTraceDB(db, ctx.Base(), ctx.TraceID())}
 }
 
 func (d *UserDao) GetByNameOrEmailOrPhone(name, email, phone string) (*model.User, error) {
