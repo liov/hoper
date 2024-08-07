@@ -2,6 +2,7 @@ syntax = "proto3";
 package content;
 import "content/content.enum.proto";
 import "common/common.model.proto";
+import "common/common.enum.proto";
 import "hopeio/utils/patch/go.proto";
 import "hopeio/time/time.proto";
 import "hopeio/time/deletedAt/deletedAt.proto";
@@ -35,8 +36,6 @@ message Category{
   time.Time updatedAt = 27 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
   deletedAt.DeletedAt deletedAt = 22 [(go.field) = {tags:'gorm:"type:timestamptz(6);index"'}];
 }
-
-
 
 
 message AttrGroup{
@@ -75,12 +74,14 @@ message ContentAttr{
 
 // Deprecated 类型拆分
 message Content{
-  ContentType type = 23[(go.field) = {tags:'gorm:"type:int2;primaryKey;autoIncrement:false" comment:"类型"'}];
-  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;autoIncrement"'}];
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
+  ContentType type = 23[(go.field) = {tags:'gorm:"type:int2;index" comment:"类型"'}];
   string title = 24 [(go.field) = {tags:'gorm:"size:50;not null" comment:"标题"'}];
   string intro = 25 [(go.field) = {tags:'gorm:"size:100;not null" comment:"介绍"'}];
   string abstract = 26 [(go.field) = {tags:'gorm:"size:100;not null" comment:"摘要"'}];
   string content = 2 [(go.field) = {tags:'gorm:"text;not null" comment:"内容"'}];
+  common.DocType docType = 28 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"文档类型"'}];
+  repeated string images = 32 [(go.field) = {tags:'gorm:"type:text" comment:"图片"'}];
   uint64 containerId = 4 [(go.field) = {tags:'gorm:"size:20;default:0" comment:"集合Id"'}];
   Container container = 5 [(go.field) = {tags:'gorm:"-" comment:"集合"'}];
   common.Tag mood = 9 [(go.field) = {tags:'gorm:"-" comment:"心情"'}];
@@ -106,8 +107,8 @@ message Content{
 
 // Deprecated 类型拆分
 message Container{
-  ContainerType type = 5 [(go.field) = {tags:'gorm:"type:int2;primaryKey;autoIncrement:false" comment:"类型"'}];
-  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;autoIncrement"'}];
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
+  ContainerType type = 5 [(go.field) = {tags:'gorm:"type:int2;index" comment:"类型"'}];
   string title = 2 [(go.field) = {tags:'gorm:"size:50;not null" comment:"标题"'}];
   string desc = 3 [(go.field) = {tags:'gorm:"type:text;not null" comment:"描述"'}];
   string cover = 4 [(go.field) = {tags:'gorm:"size:255;not null" comment:"封面"'}];

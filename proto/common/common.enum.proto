@@ -61,3 +61,10 @@ enum BanReason{
   BanReasonEroticViolence = 3 [(enum.enumvalue_cn) = "色情暴力"];
   BanReasonOther = 255 [(enum.enumvalue_cn) = "其他原因"];
 }
+
+enum DocType{
+  option (go.enum) = {stringer_name: 'OrigString'};
+  DocTypePlaceholder = 0 [(enum.enumvalue_cn) = "占位"];
+  DocTypeMarkdown = 1 [(enum.enumvalue_cn) = "markdown"];
+  DocTypeHtml = 2 [(enum.enumvalue_cn) = "html"];
+}

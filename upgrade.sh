@@ -11,15 +11,37 @@ function upgrade(){
   git commit -m "chore: upgrade dependency"
   git commit --amend --date="$(date -d '-10 hours' '+%Y-%m-%d %H:%M:%S')" --no-edit
   git tag "$new_version"
-  git push origin $new_version
 }
 
-cd $dir/thirdparty/initialize
-upgrade "utils"
-cd $dir/thirdparty/protobuf
-upgrade "utils"
-cd $dir/thirdparty/context
-upgrade "utils"
+# 获取参数值
+param=$1
 
-cd $dir/thirdparty/pick
-upgrade "context"
+# 根据参数执行不同的逻辑
+case $param in
+    "")
+        echo "Parameter is empty."
+        # 在这里执行空参数的逻辑
+         cd $dir/thirdparty/context
+          upgrade "utils"
+          cd $dir/thirdparty/initialize
+          upgrade "utils"
+          cd $dir/thirdparty/protobuf
+          upgrade "utils"
+        ;;
+    pick)
+        echo "Parameter is pick."
+        # 在这里执行pick参数的逻辑
+        cd $dir/thirdparty/pick
+        upgrade "context"
+        ;;
+    cherry)
+        echo "Parameter is cherry."
+        # 在这里执行cherry参数的逻辑
+
+        upgrade "context"
+        ;;
+    *)
+        echo "Invalid parameter: $param"
+        exit 1
+        ;;
+esac
