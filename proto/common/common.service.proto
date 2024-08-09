@@ -35,7 +35,7 @@ service CommonService {
 
 
   // 详情
-  rpc AttrInfo (request.Id) returns (Attribute) {
+  rpc AttrInfo (request.Id) returns (Attr) {
     option (google.api.http) = {
       get: "/api/v1/attr/{id}"
     };
@@ -160,7 +160,7 @@ message AttrListReq{
 
 message AttrListRep{
   int64 total = 1;
-  repeated common.Attribute list = 2;
+  repeated common.Attr list = 2;
 }
 
 message AddTagReq {

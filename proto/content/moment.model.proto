@@ -19,7 +19,7 @@ option go_package = "github.com/liov/hoper/server/go/protobuf/content";
 message Moment {
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   string content = 2 [(go.field) = {tags:'gorm:"type:text;not null" comment:"内容"'}];
-  string images = 32 [(go.field) = {tags:'gorm:"type:text" comment:"图片"'}];
+  repeated string images = 32 [(go.field) = {tags:'gorm:"type:text[];serializer:string_array" comment:"图片"'}];
   // 还是决定瞬间和日记形态合为一种
   //uint64 bookId = 4 [(go.field) = {tags:'gorm:"size:20;default:0" comment:"日记本Id"'}];
   //DiaryBook book = 26 [(go.field) = {tags:'gorm:"-" comment:"日记本"'}];

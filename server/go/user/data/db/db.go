@@ -5,6 +5,7 @@ import (
 	"github.com/hopeio/context/httpctx"
 	dbi "github.com/hopeio/utils/dao/database"
 	gormi "github.com/hopeio/utils/dao/database/gorm"
+	_ "github.com/hopeio/utils/dao/database/gorm/serializer"
 	"github.com/hopeio/utils/log"
 	"github.com/hopeio/utils/slices"
 	"github.com/hopeio/utils/validation"

@@ -13,11 +13,11 @@ type config struct {
 	Server    cherry.Server
 }
 
-func (c *config) InitBeforeInject() {
+func (c *config) BeforeInject() {
 	c.Customize.UploadMaxSize = 1024 * 1024 * 1024
 }
 
-func (c *config) InitAfterInject() {
+func (c *config) AfterInject() {
 	c.Customize.UploadMaxSize = c.Customize.UploadMaxSize * 1024 * 1024
 }
 

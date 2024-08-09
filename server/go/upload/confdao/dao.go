@@ -14,15 +14,15 @@ type dao struct {
 	Redis initredis.Client
 }
 
-func (d *dao) InitBeforeInject() {
+func (d *dao) BeforeInject() {
 
 }
 
-func (d *dao) InitAfterInjectConfig() {
+func (d *dao) AfterInjectConfig() {
 
 }
 
-func (d *dao) InitAfterInject() {
+func (d *dao) AfterInject() {
 	db := d.GORMDB
 	db.Callback().Create().Remove("gorm:save_before_associations")
 	db.Callback().Create().Remove("gorm:save_after_associations")

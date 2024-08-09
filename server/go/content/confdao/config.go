@@ -28,10 +28,10 @@ var Conf = &config{
 	},
 }
 
-func (c *config) InitBeforeInject() {
+func (c *config) BeforeInject() {
 
 }
 
-func (c *config) InitAfterInject() {
+func (c *config) AfterInject() {
 
 }

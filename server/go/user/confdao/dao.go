@@ -26,13 +26,13 @@ type dao struct {
 	Mail mail.Mail `init:"config:mail"`
 }
 
-func (d *dao) InitBeforeInject() {
+func (d *dao) BeforeInject() {
 }
 
-func (d *dao) InitAfterInjectConfig() {
+func (d *dao) AfterInjectConfig() {
 
 }
-func (d *dao) InitAfterInject() {
+func (d *dao) AfterInject() {
 	d.GORMDB.Conf.NamingStrategy.TablePrefix = "user."
 	d.GORMDB.NamingStrategy = d.GORMDB.Conf.NamingStrategy
 	err := d.GORMDB.Exec(`CREATE SCHEMA IF NOT EXISTS "user"`).Error

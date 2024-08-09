@@ -27,7 +27,7 @@ func main() {
 	initialize.GlobalConfig().Inject(upconf.Conf, upconf.Dao)
 	initialize.GlobalConfig().Inject(coconf.Conf, coconf.Dao)
 	log.Info("proxy:", initialize.GlobalConfig().Get("proxy"))
-	log.Info("proxy:", initialize.GlobalConfig().InitConfig.Proxy)
+	log.Info("proxy:", initialize.GlobalConfig().RootConfig.Proxy)
 	log.Info("proxy:", initialize.GlobalConfig().Get("http_proxy"))
 	uconf.Conf.Server.WithOptions(func(s *cherry.Server) {
 		s.GrpcHandler = func(gs *grpc.Server) {

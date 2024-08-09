@@ -4,7 +4,6 @@ import (
 	"github.com/hopeio/initialize/conf_dao/gormdb/postgres"
 	"github.com/hopeio/utils/log"
 	"github.com/liov/hoper/server/go/protobuf/common"
-	"github.com/liov/hoper/server/go/protobuf/content"
 )
 
 // 原本是个单独模块，但是考虑到数据库必须初始化，所以合进来了
@@ -20,22 +19,23 @@ type dao struct {
 	//elastic
 }
 
-func (d *dao) InitBeforeInject() {
+func (d *dao) BeforeInject() {
 
 }
 
-func (d *dao) InitAfterInjectConfig() {
+func (d *dao) AfterInjectConfig() {
 
 }
 
-func (d *dao) InitAfterInject() {
+func (d *dao) AfterInject() {
 	d.GORMDB.NamingStrategy = d.GORMDB.Conf.NamingStrategy
 	err := d.GORMDB.Exec(`CREATE SCHEMA IF NOT EXISTS "content"`).Error
 	if err != nil {
 		log.Fatal(err)
 	}
 	err = d.GORMDB.Migrator().AutoMigrate(&common.Tag{},
-		&common.TagGroup{}, &common.TagTagGroup{}, &content.AttrAttrGroup{},
+		&common.TagGroup{}, &common.TagTagGroup{}, &common.AttrAttrGroup{}, &common.AttrGroup{},
+		&common.Category{}, &common.Attr{},
 	)
 	if err != nil {
 		log.Fatal(err)

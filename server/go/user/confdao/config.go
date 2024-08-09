@@ -19,11 +19,11 @@ type config struct {
 
 var Conf = &config{}
 
-func (c *config) InitBeforeInject() {
+func (c *config) BeforeInject() {
 	c.Customize.TokenMaxAge = timei.Day
 }
 
-func (c *config) InitAfterInject() {
+func (c *config) AfterInject() {
 	c.Customize.TokenMaxAge = timei.StdDuration(c.Customize.TokenMaxAge, time.Hour)
 	c.Customize.TokenSecretBytes = []byte(c.Customize.TokenSecret)
 }
