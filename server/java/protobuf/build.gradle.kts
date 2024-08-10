@@ -44,7 +44,7 @@ java {
 val grpcKotlinVersion:String by project
 
 val protopath: String = file("${rootDir}/../../proto").absolutePath
-val projectpath: String = file("${rootDir}/../../thirdparty/cherry").absolutePath
+val projectpath: String = file("${rootDir}/../../thirdparty/protobuf").absolutePath
 
 
 sourceSets {
@@ -55,7 +55,7 @@ sourceSets {
         proto {
             srcDirs(protopath,)
             println(srcDirs)
-            includes+="$projectpath/protobuf/_proto"
+            includes+="$projectpath/_proto"
         }
     }
 }
@@ -84,7 +84,7 @@ protobuf {
         tasks.forEach{task->
             if (task.name == "extractProto") {
                 task.actions.add{
-                    val extractDir = "$buildDir/extracted-protos/main"
+                    val extractDir = "${layout.buildDirectory}/extracted-protos/main"
                     delete( "$extractDir/patch")
                 }
             }
@@ -120,7 +120,7 @@ dependencies {
     api("io.grpc:grpc-protobuf-lite:$grpcVersion")
     api("io.grpc:grpc-stub:$grpcVersion")
     //api("io.grpc:grpc-kotlin-stub:$grpcKotlinVersion")
-    protobuf(files("$projectpath/protobuf/_proto"))
+    protobuf(files("$projectpath/_proto"))
     //api("com.squareup.wire:wire-runtime:${rootProject.ext["wire_version"]}")
     //api("com.squareup.wire:wire-schema-multiplatform:${rootProject.ext["wire_version"]}")
     if (JavaVersion.current().isJava9Compatible) {
@@ -154,7 +154,7 @@ fun allProtolib(): List<String> {
     outputStr = protolib("github.com/googleapis/googleapis")
     stdout.reset()
     includes += outputStr
-    includes += "$projectpath/protobuf/_proto"
+    includes += "$projectpath/_proto"
 
     return includes
 }

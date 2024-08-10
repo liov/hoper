@@ -1,5 +1,5 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent.*
-
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
     application
