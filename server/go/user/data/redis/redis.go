@@ -3,12 +3,12 @@ package redis
 import (
 	"github.com/go-redis/redis/v8"
 	"github.com/hopeio/context/httpctx"
+	"github.com/hopeio/utils/dao/redis/hash"
 	"github.com/hopeio/utils/encoding/json"
 	"strconv"
 
 	"github.com/hopeio/protobuf/errcode"
 	redisi "github.com/hopeio/utils/dao/redis"
-	"github.com/hopeio/utils/encoding/strarray"
 	"github.com/hopeio/utils/log"
 	"github.com/liov/hoper/server/go/protobuf/common"
 	model "github.com/liov/hoper/server/go/protobuf/user"
@@ -84,7 +84,7 @@ func (d *UserDao) UserHashToRedis() error {
 	var redisArgs []interface{}
 	loginUserKey := modelconst.LoginUserKey + ctxi.AuthID
 	redisArgs = append(redisArgs, redisi.CommandHMSET, loginUserKey)
-	redisArgs = append(redisArgs, strarray.Marshal(ctxi.AuthInfo)...)
+	redisArgs = append(redisArgs, hash.Marshal(ctxi.AuthInfo)...)
 	if _, err := d.Pipelined(ctx, func(pipe redis.Pipeliner) error {
 		pipe.Do(ctx, redisArgs...)
 		pipe.Expire(ctx, loginUserKey, confdao.Conf.Customize.TokenMaxAge)
@@ -109,7 +109,7 @@ func (d *UserDao) UserHashFromRedis() error {
 	if len(userArgs) == 0 {
 		return model.UserErrInvalidToken
 	}
-	strarray.Unmarshal(ctxi.AuthInfo, userArgs)
+	hash.Unmarshal(ctxi.AuthInfo, userArgs)
 	return nil
 }
 
