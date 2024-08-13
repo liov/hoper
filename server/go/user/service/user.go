@@ -48,7 +48,7 @@ type UserService struct {
 func (u *UserService) VerifyCode(ctx context.Context, req *model.VerifyCodeReq) (*emptypb.Empty, error) {
 	ctxi := httpctx.FromContextValue(ctx)
 	defer ctxi.StartSpanEnd("")()
-	vcode := validation.GenerateCode()
+	vcode := validation.RandomCode(4)
 	log.Info(vcode)
 	key := modelconst.VerificationCodeKey + req.Mail + req.Phone
 	if err := confdao.Dao.Redis.SetEX(ctx, key, vcode, modelconst.VerificationCodeDuration).Err(); err != nil {
