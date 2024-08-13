@@ -37,7 +37,8 @@ case $param in
     cherry)
         echo "Parameter is cherry."
         # 在这里执行cherry参数的逻辑
-
+        cd $dir/thirdparty/cherry
+        go get github.com/hopeio/protobuf@main
         upgrade "context"
         ;;
     *)

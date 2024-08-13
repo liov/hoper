@@ -80,21 +80,6 @@
       "style": {
         "navigationBarTitleText": "瞬间"
       }
-    },
-    {
-      "path": "pages/user/active",
-      "type": "page",
-      "style": {
-        "navigationStyle": "custom",
-        "navigationBarTitleText": "激活"
-      }
-    },
-    {
-      "path": "pages/user/login",
-      "type": "page",
-      "style": {
-        "navigationBarTitleText": "登录"
-      }
     }
   ],
   "subPackages": []

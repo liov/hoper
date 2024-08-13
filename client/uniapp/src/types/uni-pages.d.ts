@@ -8,9 +8,7 @@ interface NavigateToOptions {
        "/pages/about/about" |
        "/pages/about/i18n" |
        "/pages/moment/moment_detail" |
-       "/pages/moment/moment_list" |
-       "/pages/user/active" |
-       "/pages/user/login";
+       "/pages/moment/moment_list";
 }
 interface RedirectToOptions extends NavigateToOptions {}
 

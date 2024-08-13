@@ -2,7 +2,7 @@ package confdao
 
 import (
 	"github.com/hopeio/cherry"
-	"github.com/hopeio/utils/io/fs"
+	"github.com/hopeio/utils/fs"
 )
 
 var Conf = &config{}
