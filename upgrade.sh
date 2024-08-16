@@ -5,8 +5,6 @@ function upgrade(){
   local patch=$(echo $last_tag | cut -d'.' -f3)
   local new_version="${last_tag%.*}.$((patch + 1))"
   echo $new_version
-  local name="$1"
-  go get github.com/hopeio/$name@main
   git add .
   git commit -m "chore: upgrade dependency"
   git commit --amend --date="$(date -d '-10 hours' '+%Y-%m-%d %H:%M:%S')" --no-edit
@@ -21,25 +19,38 @@ case $param in
     "")
         echo "Parameter is empty."
         # 在这里执行空参数的逻辑
-         cd $dir/thirdparty/context
-          upgrade "utils"
-          cd $dir/thirdparty/initialize
-          upgrade "utils"
-          cd $dir/thirdparty/protobuf
-          upgrade "utils"
+        cd $dir/thirdparty/context
+        go get github.com/hopeio/utils@main
+        upgrade
+        cd $dir/thirdparty/initialize
+        go get github.com/hopeio/utils@main
+        upgrade
+        cd $dir/thirdparty/protobuf
+        go get github.com/hopeio/utils@main
+        upgrade
+        cd $dir/thirdparty/deploy/plugin/go
+        go get github.com/hopeio/utils@main
+        cd $dir/thirdparty/deploy
+        upgrade
         ;;
-    pick)
-        echo "Parameter is pick."
-        # 在这里执行pick参数的逻辑
+    pc)
+        echo "Parameter is pc."
+        # 在这里执行pc参数的逻辑
         cd $dir/thirdparty/pick
-        upgrade "context"
-        ;;
-    cherry)
-        echo "Parameter is cherry."
-        # 在这里执行cherry参数的逻辑
+        go get github.com/hopeio/context@main
+        upgrade
         cd $dir/thirdparty/cherry
         go get github.com/hopeio/protobuf@main
-        upgrade "context"
+        go get github.com/hopeio/context@main
+        upgrade
+        ;;
+    co)
+        echo "Parameter is co."
+        # 在这里执行co参数的逻辑
+        cd $dir/thirdparty/collection
+        go get github.com/hopeio/cherry@main
+        go get github.com/hopeio/pick@main
+        upgrade
         ;;
     *)
         echo "Invalid parameter: $param"
