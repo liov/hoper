@@ -11,9 +11,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@pc/*": ["./src/pc/*"],
-      "@h5/*": ["./src/h5/*"],
-      "@generated/*": ["./generated/*"]
+      "@generated/*": ["./generated/*"],
+      "@types/*": ["./types/*"]
     },
     "target": "esnext",
     "module": "esnext",
