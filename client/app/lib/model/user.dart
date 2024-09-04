@@ -16,8 +16,8 @@ class User {
   Map<String, dynamic> toJson() => _$UserToJson(this);
 }
 
-extension UserConvert on $pb.UserBaseInfo {
-  $pb.UserBaseInfo from($pb.User user){
-    return $pb.UserBaseInfo(id:user.id,name:user.name,gender: user.gender,avatarUrl: user.avatarUrl);
+extension UserConvert on $pb.UserBase {
+  $pb.UserBase from($pb.User user){
+    return $pb.UserBase(id:user.id,name:user.name,gender: user.gender,avatar: user.avatar);
   }
 }

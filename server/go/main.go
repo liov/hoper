@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hopeio/cherry"
 	"github.com/hopeio/initialize"
+	"github.com/hopeio/pick"
 	pickgin "github.com/hopeio/pick/gin"
 	"github.com/hopeio/utils/log"
 	chatapi "github.com/liov/hoper/server/go/chat/api"
@@ -39,6 +40,7 @@ func main() {
 			uploadapi.GinRegister(app)
 			chatapi.GinRegister(app)
 			contentapi.GinRegister(app)
+			pick.HandlerPrefix("Pick")
 			pickgin.Register(app, &service.UserService{})
 		}
 		//s.GraphqlHandler= graphql.NewExecutableSchema(),

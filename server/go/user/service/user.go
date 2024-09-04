@@ -355,14 +355,14 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 }
 
 func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.LoginRep, error) {
-	authorization := Authorization{AuthInfo: &model.AuthInfo{
+	authorization := Authorization{AuthBase: &model.AuthBase{
 		Id:     user.Id,
 		Name:   user.Name,
 		Role:   user.Role,
 		Status: user.Status,
 	}}
 
-	ctxi.AuthInfo = authorization.AuthInfo
+	ctxi.AuthInfo = authorization.AuthBase
 	authorization.IssuedAt = &jwt.NumericDate{Time: ctxi.Time}
 	authorization.ExpiresAt = &jwt.NumericDate{Time: ctxi.Time.Add(confdao.Conf.Customize.TokenMaxAge)}
 
@@ -430,13 +430,13 @@ func (u *UserService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.
 	return new(emptypb.Empty), nil
 }
 
-func (u *UserService) AuthInfo(ctx context.Context, req *emptypb.Empty) (*model.AuthInfoRep, error) {
+func (u *UserService) AuthInfo(ctx context.Context, req *emptypb.Empty) (*model.Auth, error) {
 	ctxi := httpctx.FromContextValue(ctx)
 	user, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
 	}
-	return user.UserAuthInfo(), nil
+	return user.Proto(), nil
 }
 
 func (u *UserService) Info(ctx context.Context, req *request.Id) (*model.UserRep, error) {
@@ -573,7 +573,7 @@ func (*UserService) Service() (string, string, []gin.HandlerFunc) {
 	return "用户相关", "/api/user", []gin.HandlerFunc{middle.GinLog}
 }
 
-func (*UserService) Add(ctx *ginctx.Context, req *model.SignupReq) (*wrappers.StringValue, error) {
+func (*UserService) PickAdd(ctx *ginctx.Context, req *model.SignupReq) (*wrappers.StringValue, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() {
 		pick.Get("/add").
@@ -589,7 +589,7 @@ func (*UserService) Add(ctx *ginctx.Context, req *model.SignupReq) (*wrappers.St
 	return &wrappers.StringValue{Value: req.Name}, nil
 }
 
-func (*UserService) Addv(ctx *ginctx.Context, req *response.TinyRep) (*response.TinyRep, error) {
+func (*UserService) PickAddv(ctx *ginctx.Context, req *response.TinyRep) (*response.TinyRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() {
 		pick.Post("/add").

@@ -1,5 +1,4 @@
 import 'package:app/components/async/async.dart';
-import 'package:app/generated/protobuf/content/content.model.pb.dart' as $moment;
 import 'package:app/generated/protobuf/content/moment.service.pb.dart';
 import 'package:app/global/global_state.dart';
 
@@ -9,6 +8,8 @@ import 'package:app/routes/route.dart';
 import 'package:app/service/moment.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import 'package:app/generated/protobuf/content/moment.model.pb.dart' as $moment;
 
 
 
@@ -90,7 +91,7 @@ class _MomentListV2ViewState extends State<MomentListV2View> with AutomaticKeepA
                             itemBuilder: (context, index) {
                               return InkWell(
                                 onTap: (){
-                                  Get.toNamed(Routes.contentDetails(list[index].ext.type, list[index].ext.refId),arguments: list[index]);
+                                  Get.toNamed(Routes.contentDetails(list[index].statistics.type, list[index].statistics.refId),arguments: list[index]);
                                 },
                                 child: MomentItem(
                                     moment: list[index]),

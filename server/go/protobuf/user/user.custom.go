@@ -34,7 +34,7 @@ func RegisterUserServiceHandlerFromModuleWithReConnect(ctx context.Context, mux 
 
 /*----------------------------AuthInfo-------------------------------*/
 
-type AuthInfo struct {
+type AuthBase struct {
 	Id     uint64     `json:"id"`
 	Name   string     `json:"name"`
 	Role   Role       `json:"role"`
@@ -42,12 +42,12 @@ type AuthInfo struct {
 	Avatar string     `json:"avatar"`
 }
 
-func (x *AuthInfo) IdStr() string {
+func (x *AuthBase) IdStr() string {
 	return strconv.FormatUint(x.Id, 10)
 }
 
-func (x *AuthInfo) UserAuthInfo() *AuthInfoRep {
-	return &AuthInfoRep{
+func (x *AuthBase) Proto() *Auth {
+	return &Auth{
 		Id:     x.Id,
 		Name:   x.Name,
 		Role:   x.Role,

@@ -13,7 +13,7 @@ import 'comment_item_view.dart';
 
 class CommentListViewV2 extends StatelessWidget {
   CommentListViewV2(this.ext) : super();
-  final ContentExt ext;
+  final Statistics ext;
   late final CommentController controller = Get.find()..init(ext.type, ext.refId);
   late final ScrollController scrollController = ScrollController()
     ..addListener(() {

@@ -3,7 +3,8 @@
 import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/generated/protobuf/user/user.service.pb.dart';
 import 'package:app/generated/protobuf/google/protobuf/empty.pb.dart';
-import 'package:app/generated/protobuf/cherry/protobuf/request/param.pb.dart' as request;
+import 'package:app/generated/protobuf/hopeio/request/param.pb.dart'
+as request;
 import 'package:app/global/global_state.dart';
 import 'package:app/global/const.dart';
 import 'package:app/pages/home/home_controller.dart';
@@ -18,8 +19,8 @@ import 'package:grpc/grpc.dart';
 
 
 class AuthState {
-  UserAuthInfo? userAuth = null;
-  UserBaseInfo? get userBaseInfo => self!=null?UserBaseInfo(id:self!.id,name:self!.name,gender: self!.gender,avatarUrl: self!.avatarUrl):null;
+  Auth? userAuth = null;
+  UserBase? get userBaseInfo => self!=null?UserBase(id:self!.id,name:self!.name,gender: self!.gender,avatar: self!.avatar):null;
   User? self = null;
 
   static const _PRE = "AuthState";
@@ -74,7 +75,7 @@ class AuthState {
       final rep = await globalService.userClient.stub.login(LoginReq(input: account, password: password,vCode: 'super'));
       final user = rep.user;
       self = rep.user;
-      userAuth = UserAuthInfo(id:user.id,name:user.name,role:user.role,status:user.status);
+      userAuth = Auth(id:user.id,name:user.name,role:user.role,status:user.status);
       setAuth(rep.token);
       this.account = account;
       navigator!.pop();

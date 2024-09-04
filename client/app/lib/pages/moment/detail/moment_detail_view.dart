@@ -9,9 +9,10 @@ import 'package:app/routes/route.dart';
 import 'package:app/service/moment.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:app/generated/protobuf/content/content.model.pb.dart' as $pb;
+import 'package:app/generated/protobuf/content/moment.model.pb.dart' as $pb;
 import 'package:fixnum/fixnum.dart';
-import 'package:app/generated/protobuf/cherry/protobuf/request/param.pb.dart' as $1;
+import 'package:app/generated/protobuf/hopeio/request/param.pb.dart' as
+$1;
 
 class MomentDetailView extends StatelessWidget {
   final CommentController commentController = Get.find();
@@ -73,7 +74,7 @@ class MomentDetailView extends StatelessWidget {
                 child: Column(
                   children: [
                     MomentItem(moment: moment),
-                    Expanded(flex: 10, child: CommentListViewV2(moment.ext)),
+                    Expanded(flex: 10, child: CommentListViewV2(moment.statistics)),
                     const Expanded(flex: 1, child: Text('')),
                   ],
                 ),

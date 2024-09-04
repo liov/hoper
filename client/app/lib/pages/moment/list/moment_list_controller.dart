@@ -5,6 +5,8 @@ import 'package:app/service/moment.dart';
 import 'package:app/utils/multi_entity.dart';
 import 'package:get/get.dart';
 
+import 'package:app/generated/protobuf/content/moment.model.pb.dart';
+
 // 相当于多个controller,实验性，不要这么用
 class MomentListController extends GetxController with MultiEntity<ListState>{
   final MomentClient momentClient = Get.find();

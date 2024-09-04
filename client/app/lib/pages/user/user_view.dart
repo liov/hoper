@@ -78,7 +78,7 @@ final UserController userController = Get.put(UserController());
     return GFListTile(
         avatar:CircleAvatar(
           child:ExtendedImage.network(
-            BASE_STATIC_URL + globalState.authState.self!.avatarUrl,
+            BASE_STATIC_URL + globalState.authState.self!.avatar,
             alignment: Alignment.centerLeft,
             fit: BoxFit.fill,
             shape: BoxShape.circle,

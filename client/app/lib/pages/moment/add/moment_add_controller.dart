@@ -13,6 +13,8 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
+import 'package:app/generated/protobuf/common/common.enum.pbenum.dart';
+
 
 class MomentAddController extends GetxController with MediaController{
 
@@ -24,9 +26,9 @@ class MomentAddController extends GetxController with MediaController{
   Future<void> save() async {
     try {
       await momentClient.stub.add(AddMomentReq(
-        type: MomentType.MomentTypeImage,
+        type: MediaType.MediaTypeImage,
         content: content,
-        images: imageUrls.join(','),
+        images: imageUrls,
       ));
       navigator!.pop();
     }catch (e) {

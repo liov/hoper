@@ -38,7 +38,7 @@ class CommentItem extends StatelessWidget {
                   child: GestureDetector(
                     child: CircleAvatar(
                       child: ExtendedImage.network(
-                        BASE_STATIC_URL + user!.avatarUrl,
+                        BASE_STATIC_URL + user!.avatar,
                         alignment: Alignment.centerLeft,
                         fit: BoxFit.fill,
                         shape: BoxShape.circle,
@@ -50,7 +50,7 @@ class CommentItem extends StatelessWidget {
               ),*/
                     ),
                     onTap: () =>
-                        slidePhotoRoute(BASE_STATIC_URL + user.avatarUrl),
+                        slidePhotoRoute(BASE_STATIC_URL + user.avatar),
                   )),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

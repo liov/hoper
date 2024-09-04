@@ -17,7 +17,7 @@ import (
 var ExportAuth = auth
 
 type Authorization struct {
-	*user.AuthInfo `json:"auth"`
+	*user.AuthBase `json:"auth"`
 	jwt.RegisteredClaims
 	AuthInfoRaw string `json:"-"`
 }
@@ -37,13 +37,13 @@ func (x *Authorization) ParseToken(token string, secret []byte) error {
 	if err != nil {
 		return err
 	}
-	x.ID = x.AuthInfo.IdStr()
-	authBytes, _ := json.Marshal(x.AuthInfo)
+	x.ID = x.AuthBase.IdStr()
+	authBytes, _ := json.Marshal(x.AuthBase)
 	x.AuthInfoRaw = stringsi.BytesToString(authBytes)
 	return nil
 }
 
-func auth(ctx *httpctx.Context, update bool) (*user.AuthInfo, error) {
+func auth(ctx *httpctx.Context, update bool) (*user.AuthBase, error) {
 	signature := ctx.Token[strings.LastIndexByte(ctx.Token, '.')+1:]
 	cacheTmp, ok := confdao.Dao.Cache.Get(signature)
 	if ok {
@@ -52,16 +52,16 @@ func auth(ctx *httpctx.Context, update bool) (*user.AuthInfo, error) {
 		if err != nil {
 			return nil, err
 		}
-		authInfo := cache.AuthInfo
+		authInfo := cache.AuthBase
 		return authInfo, nil
 	}
 
-	authorization := Authorization{AuthInfo: &user.AuthInfo{}}
+	authorization := Authorization{AuthBase: &user.AuthBase{}}
 	if err := authorization.ParseToken(ctx.Token, confdao.Conf.Customize.TokenSecretBytes); err != nil {
 		return nil, user.UserErrNoLogin
 	}
 
-	authInfo := authorization.AuthInfo
+	authInfo := authorization.AuthBase
 	ctx.AuthID = authInfo.IdStr()
 	ctx.AuthInfo = authInfo
 	ctx.AuthInfoRaw = authorization.AuthInfoRaw

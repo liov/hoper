@@ -196,3 +196,13 @@ message Device {
   deletedAt.DeletedAt deletedAt = 31 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type: STRING}];
 }
+
+// 用户授权信息
+message Auth {
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
+  string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" comment:\"名字\"'}];
+  Role role = 24 [(go.field) = {tags:'gorm:"type:int2;default:0"'}];
+  UserStatus status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    read_only:true
+  }];
+}

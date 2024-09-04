@@ -5,7 +5,7 @@ import 'dart:io'; // For Platform.isX
 import 'dart:math'; // For Platform.isX
 
 DynamicLibrary findDynamicLibrary(String name, String dir) {
-  if (!dir.endsWith('/')) dir = dir + '/';
+  if (!dir.endsWith('/')) dir = '$dir/';
   if (Platform.isAndroid) {
     try {
       return DynamicLibrary.open('lib$name.so');
@@ -48,7 +48,7 @@ nativeGreetingLib
     .asFunction();
 
 String callRustGreeting(){
-  final String myString = "😎👿💬";
+  const String myString = "😎👿💬";
   final Pointer<Utf8> charPointer = rustGreeting(myString.toNativeUtf8());
   return charPointer.toDartString();
 }

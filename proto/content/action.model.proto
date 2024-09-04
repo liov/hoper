@@ -121,6 +121,8 @@ message Comment{
 
 message Statistics{
   uint64 id = 1 [(go.field) = {tags:'json:"-" gorm:"primaryKey" validate:"required" comment:"相关id"'}];
+  ContentType type = 10[(go.field) = {tags:'gorm:"type:int2;index:idx_comment_type_id" comment:"类型"'}];
+  uint64 refId = 11 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index:idx_comment_type_id" validate:"required" comment:"相关id"'}];
   uint64 like = 3 [(go.field) = {tags:'gorm:"size:20;default:0" comment:"点赞数"'}];
   uint64 browse = 4 [(go.field) = {tags:'gorm:"size:20;default:0" comment:"浏览数"'}];
   uint64 unlike = 5 [(go.field) = {tags:'gorm:"size:20;default:0" comment:"不喜欢数"'}];

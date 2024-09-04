@@ -7,16 +7,16 @@ import 'package:app/model/user.dart' as $self;
 
 class UserState {
   var users$ = Map<int, $self.User>();
-  var _users = Map<Int64, UserBaseInfo>();
+  var _users = Map<Int64, UserBase>();
 
-  UserBaseInfo? getUser(Int64 id){
+  UserBase? getUser(Int64 id){
     return _users[id];
   }
 
-  appendUsers(List<UserBaseInfo> users){
+  appendUsers(List<UserBase> users){
     users.forEach((e) => _users[e.id] = e);
   }
-  append(UserBaseInfo? user){
+  append(UserBase? user){
     if (user!=null)
     _users[user.id] = user;
   }

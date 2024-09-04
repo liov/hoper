@@ -1,6 +1,8 @@
 import 'package:app/generated/protobuf/content/action.enum.pbenum.dart';
 import 'package:app/generated/protobuf/content/action.model.pb.dart';
 import 'package:app/generated/protobuf/content/action.service.pb.dart';
+import 'package:app/generated/protobuf/content/content.model.pb.dart'  as
+$content;
 import 'package:app/generated/protobuf/content/content.service.pb.dart';
 import 'package:app/global/global_state.dart';
 import 'package:app/routes/route.dart';
@@ -10,7 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:fixnum/fixnum.dart';
-import 'package:app/generated/protobuf/cherry/protobuf/request/param.pb.dart' as $param;
+import 'package:app/generated/protobuf/hopeio/request/param.pb.dart'
+as $param;
 
 class ActionBar extends StatefulWidget {
   ActionBar(this.content) : super();
@@ -20,7 +23,7 @@ class ActionBar extends StatefulWidget {
 }
 
 class ActionBarState extends State<ActionBar> {
-  late ContentExt ext = widget.content.ext.toBuilder() as ContentExt;
+  late Statistics ext = widget.content.statistics.toBuilder() as Statistics;
   late UserAction? action = widget.content.action?.toBuilder() as UserAction?;
   static const size = 25.0;
   final ContentClient contentClient =Get.find();
@@ -45,7 +48,7 @@ class ActionBarState extends State<ActionBar> {
                           Icon(Icons.share, color: Colors.green, size: size)),
                   Expanded(
                     flex: 1,
-                    child: Text(ext.shareCount.toStringUnsigned()),
+                    child: Text(ext.share.toStringUnsigned()),
                   )
                 ])),
           ),
@@ -53,7 +56,7 @@ class ActionBarState extends State<ActionBar> {
             flex: 3,
             child: GestureDetector(
                 onTap: () {
-                  final route = Routes.contentDetails(ext.type, ext.refId);
+                  final route = Routes.contentDetails(widget.content.type, widget.content.refId);
                   globalService.logger.d(Get.currentRoute);
                   if (route!=Get.currentRoute){
                     Get.toNamed(route);
@@ -61,12 +64,12 @@ class ActionBarState extends State<ActionBar> {
                 },
                 child: Row(
                   children: [
-                    Expanded(
+                    const Expanded(
                         flex: 1,
                         child: FaIcon(FontAwesomeIcons.commentAlt, size: size)),
                     Expanded(
                       flex: 1,
-                      child: Text(ext.commentCount.toStringUnsigned()),
+                      child: Text(ext.comment.toStringUnsigned()),
                     )
                   ],
                 )),
@@ -89,9 +92,9 @@ class ActionBarState extends State<ActionBar> {
                 Expanded(
                     flex: 1,
                     child: Icon(Icons.star,
-                        color: action!=null&&action!.collects.length>0? Colors.blueAccent[200]:Colors.white54, size: size)),
+                        color: action!=null&&action!.collectIds.length>0? Colors.blueAccent[200]:Colors.white54, size: size)),
                 Expanded(
-                    flex: 1, child: Text(ext.collectCount.toStringUnsigned()))
+                    flex: 1, child: Text(ext.collect.toStringUnsigned()))
               ],
             )),
           ),
@@ -101,13 +104,14 @@ class ActionBarState extends State<ActionBar> {
                 onTap: () async{
                   if(!await check()) return;
                   if(action!.likeId == 0){
-                    final object = await actionClient.stub.like(LikeReq(type: ext.type,refId: ext.refId,action:ActionType.ActionLike));
+                    final object = await actionClient.stub.like(LikeReq(type:
+                    ext.type,refId: ext.refId,action:ActionType.ActionLike));
                     action!.likeId = object.id;
-                    ext.likeCount++;
+                    ext.like++;
                   }else{
                     await actionClient.stub.delLike($param.Id(id:action!.likeId));
                     action!.likeId = Int64(0);
-                    ext.likeCount--;
+                    ext.like--;
                   }
 
                   setState(() {});
@@ -119,7 +123,7 @@ class ActionBarState extends State<ActionBar> {
                       child: Icon(Icons.favorite, color: action!=null&&action!.likeId!=0? Colors.red :Colors.white54, size: size)),
                   Expanded(
                     flex: 1,
-                    child: Text(ext.likeCount.toStringUnsigned()),
+                    child: Text(ext.like.toStringUnsigned()),
                   )
                 ],
             )),
@@ -138,7 +142,8 @@ class ActionBarState extends State<ActionBar> {
     }
     if(action == null){
       try{
-        action = await actionClient.stub.getUserAction(ContentReq(type: ext.type,refId: ext.refId));
+        action = await actionClient.stub.getUserAction(ContentReq(type: ext
+            .type,refId: ext.refId));
       }catch(e){
         return false;
       }

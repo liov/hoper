@@ -37,7 +37,7 @@ var manager = ClientManager{
 
 func (manager *ClientManager) register(client *Client) {
 	manager.mutex.Lock()
-	id := client.ctx.AuthInfo.(*user.AuthInfo).Id
+	id := client.ctx.AuthInfo.(*user.AuthBase).Id
 	manager.clients[id] = client
 	jsonMessage, _ := json.Marshal(&Message{Remark: "/A new conn has connected."})
 	client.conn.WriteMessage(websocket.PongMessage, jsonMessage)
@@ -46,7 +46,7 @@ func (manager *ClientManager) register(client *Client) {
 
 func (manager *ClientManager) unregister(client *Client) {
 	manager.mutex.Lock()
-	id := client.ctx.AuthInfo.(*user.AuthInfo).Id
+	id := client.ctx.AuthInfo.(*user.AuthBase).Id
 	if _, ok := manager.clients[id]; ok {
 		delete(manager.clients, id)
 		jsonMessage, _ := json.Marshal(&Message{Remark: "/A conn has disconnected."})
@@ -74,7 +74,7 @@ func (c *Client) read() {
 		var message Message
 		json.Unmarshal(msg, &message)
 		message.CreatedAt = time.Now()
-		message.SendUserID = c.ctx.AuthInfo.(*user.AuthInfo).Id
+		message.SendUserID = c.ctx.AuthInfo.(*user.AuthBase).Id
 		jsonMessage, _ := json.Marshal(&message)
 		confdao.Dao.Redis.Do(c.ctx.Base(), "RPUSH", "Chat", jsonMessage)
 	}

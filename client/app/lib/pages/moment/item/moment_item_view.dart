@@ -14,12 +14,13 @@ import 'package:app/pages/action_bar/action_bar.dart';
 
 import 'package:app/utils/time.dart';
 
+import 'package:app/generated/protobuf/content/moment.model.pb.dart';
+
 class MomentItem extends StatelessWidget {
   MomentItem({Key? key, required this.moment}) : super(key: key) {
     if (moment.images != "") {
       images = moment
           .images
-          .split(",")
           .map((url) => BASE_STATIC_URL + url)
           .toList();
     } else {
@@ -44,7 +45,7 @@ class MomentItem extends StatelessWidget {
                   child: GestureDetector(
                     child: CircleAvatar(
                       child: ExtendedImage.network(
-                        BASE_STATIC_URL + user!.avatarUrl,
+                        BASE_STATIC_URL + user!.avatar,
                         alignment: Alignment.centerLeft,
                         fit: BoxFit.fill,
                         shape: BoxShape.circle,
@@ -56,7 +57,7 @@ class MomentItem extends StatelessWidget {
               ),*/
                     ),
                     onTap: () =>
-                        slidePhotoRoute(BASE_STATIC_URL + user.avatarUrl),
+                        slidePhotoRoute(BASE_STATIC_URL + user.avatar),
                   )),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
