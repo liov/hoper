@@ -33,7 +33,7 @@ import { RouterView, useRouter } from "vue-router";
 import { useGlobalStore } from "@/mixin/store/global";
 import { Platform } from "@/mixin/model/const";
 import wxenv from "@/utils/platform/weixin";
-import { parseQueryString } from "@/utils/location";
+import { parseQueryString } from "diamond/browser";
 import "@types/grpc_custom_status";
 import { ref } from "vue";
 import type { Ref } from "vue";

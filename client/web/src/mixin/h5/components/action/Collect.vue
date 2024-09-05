@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import Action from "@h5/components/action/Action.vue";
+import Action from "@/mixin/h5/components/action/Action.vue";
 import axios from "axios";
 import { upload } from "@/utils/upload";
 import { reactive, ref } from "vue";

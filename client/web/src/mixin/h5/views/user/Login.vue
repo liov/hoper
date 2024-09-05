@@ -102,13 +102,13 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref } from "vue";
 import axios from "axios";
-import Luosimao from "@h5/components/Luosimao.vue";
-import Validator from "@/utils/validator";
+import Luosimao from "@/mixin/h5/components/Luosimao.vue";
+import Validator from "diamond/validator";
 import { useRoute, useRouter } from "vue-router";
-import { useUserStore } from "@h5/store/user";
+import { useUserStore } from "@/mixin/store/user";
 import { Dialog, Toast } from "vant";
-import { useGlobalStore } from "@h5/store/global";
-import { Platform } from "@h5/model/const";
+import { useGlobalStore } from "@/mixin/store/global";
+import { Platform } from "@/mixin/model/const";
 
 const globalState = useGlobalStore();
 onMounted(() => {

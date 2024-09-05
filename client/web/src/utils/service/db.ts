@@ -23,7 +23,9 @@ export function db(momentList) {
           console.log(results.rows.item(i).content);
         }
       },
-      null
+      function (tx,err)  {
+
+      }
     );
   });
 }

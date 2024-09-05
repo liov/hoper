@@ -1,4 +1,4 @@
-export interface UserBaseInfo {
+export interface UserBase {
   id: number;
   name: string;
   score: number;
@@ -6,10 +6,10 @@ export interface UserBaseInfo {
   avatarUrl: string;
 }
 
-export type Users = UserBaseInfo[];
+export type Users = UserBase[];
 
-export function userMap(users: Users): Map<number, UserBaseInfo> {
-  const map = new Map<number, UserBaseInfo>();
+export function userMap(users: Users): Map<number, UserBase> {
+  const map = new Map<number, UserBase>();
   for (const user of users) {
     map.set(user.id, user);
   }
@@ -17,9 +17,9 @@ export function userMap(users: Users): Map<number, UserBaseInfo> {
 }
 
 export function appendUserMap(
-  map: Map<number, UserBaseInfo>,
+  map: Map<number, UserBase>,
   users: Users
-): Map<number, UserBaseInfo> {
+): Map<number, UserBase> {
   for (const user of users) {
     map.set(user.id, user);
   }

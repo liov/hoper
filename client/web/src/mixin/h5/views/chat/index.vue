@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { API_HOST, Env, STATIC_DIR as staticDir } from "@h5/plugin/config";
+import { API_HOST, Env, STATIC_DIR as staticDir } from "@/mixin/plugin/config";
 import {
   reactive,
   ref,
@@ -53,7 +53,7 @@ import {
   onDeactivated,
   onActivated,
 } from "vue";
-import { useUserStore } from "@h5/store/user";
+import { useUserStore } from "@/mixin/store/user";
 import { useRouter, useRoute } from "vue-router";
 import type { Ref } from "vue";
 

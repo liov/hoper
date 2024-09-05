@@ -41,10 +41,10 @@
 
 <script setup lang="ts">
 import { showImagePreview } from "vant";
-import { date2s } from "@/utils/time";
+import { date2s } from "diamond/time";
 import axios from "axios";
-import emitter from "@h5/plugin/emitter";
-import { STATIC_DIR as staticDir } from "@h5/plugin/config";
+import emitter from "@/mixin/plugin/emitter";
+import { STATIC_DIR as staticDir } from "@/mixin/plugin/config";
 import { reactive } from "vue";
 
 const props = defineProps<{

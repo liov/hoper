@@ -47,7 +47,7 @@ case $param in
     co)
         echo "Parameter is co."
         # 在这里执行co参数的逻辑
-        cd $dir/thirdparty/collection
+        cd $dir/thirdparty/example
         go get github.com/hopeio/cherry@main
         go get github.com/hopeio/pick@main
         upgrade

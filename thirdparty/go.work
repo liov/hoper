@@ -6,7 +6,7 @@ use (
 	protobuf
 	utils
 	context
-	collection
+	example
 	pick
 	deploy/plugin/go
 )

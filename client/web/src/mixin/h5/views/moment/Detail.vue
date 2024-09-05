@@ -13,9 +13,9 @@
 
 <script setup lang="ts">
 import { reactive, ref } from "vue";
-import Moment from "@h5/components/moment/Moment.vue";
-import CommentList from "@h5/components/comment/List.vue";
-import AddComment from "@h5/components/comment/Add.vue";
+import Moment from "@/mixin/h5/components/moment/Moment.vue";
+import CommentList from "@/mixin/h5/components/comment/List.vue";
+import AddComment from "@/mixin/h5/components/comment/Add.vue";
 import axios from "axios";
 import { useContentStore } from "@/mixin/store/content";
 import { useRoute } from "vue-router";

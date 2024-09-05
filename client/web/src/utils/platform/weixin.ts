@@ -1,4 +1,4 @@
-import { dynamicLoadJs } from "@/utils/script";
+import { dynamicLoadJs } from "../../../../../thirdparty/diamond/src/browser/script";
 
 let active = false;
 

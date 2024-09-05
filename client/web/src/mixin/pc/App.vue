@@ -137,7 +137,7 @@
 import { RouterView, useRoute, useRouter } from "vue-router";
 import { useGlobalStore } from "@/mixin/store/global";
 import { useUserStore } from "@/mixin/store/user";
-import { parseQueryString } from "@/utils/location";
+import { parseQueryString } from "diamond/browser";
 import "@types/grpc_custom_status";
 import zh_CN from "ant-design-vue/es/locale/zh_CN";
 import { onDeactivated, onUnmounted, ref } from "vue";

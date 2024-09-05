@@ -185,7 +185,7 @@ import {
 } from "@ant-design/icons-vue";
 import { useUserStore } from "@/mixin/store/user";
 import ArticleClient from "@/mixin/service/article";
-import { date2s, s2date } from "@/utils/time";
+import { date2s, s2date } from "../../../../../../../thirdparty/diamond/src/time/time";
 import { STATIC_DIR } from "@/mixin/plugin/config";
 import { tagColor } from "@/mixin/pc/views/article/const";
 

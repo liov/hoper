@@ -41,8 +41,8 @@ update_commit_time_if_needed
 echo "当前目录: $dir/thirdparty/cherry"
 cd $dir/thirdparty/cherry
 update_commit_time_if_needed
-echo "当前目录: $dir/thirdparty/collection"
-cd $dir/thirdparty/collection
+echo "当前目录: $dir/thirdparty/example"
+cd $dir/thirdparty/example
 update_commit_time_if_needed
 echo "当前目录: $dir/thirdparty/context"
 cd $dir/thirdparty/context

@@ -76,7 +76,7 @@
 <script setup lang="ts">
 import axios from "axios";
 import { upload } from "@/utils/upload";
-import dataTool from "@/utils/date";
+import {dateTool} from "diamond/time";
 import dayjs from "dayjs";
 
 import { STATIC_DIR } from "@/mixin/plugin/config";
@@ -97,9 +97,9 @@ const staticDir = STATIC_DIR;
 const user = reactive(store.auth);
 if (!user.intro) user.intro = "我不想介绍自己";
 if (!user.signature) user.signature = "太个性签名签不下";
-user.birthday = dayjs(user.birthday).format(dataTool.formatYMD);
-if (user.birthday !== dataTool.zeroTime)
-  birthday.value = dayjs(user.birthday).format(dataTool.formatYMD).split("-");
+user.birthday = dayjs(user.birthday).format(dateTool.formatYMD);
+if (user.birthday !== dateTool.zeroTime)
+  birthday.value = dayjs(user.birthday).format(dateTool.formatYMD).split("-");
 
 async function afterRead(file: any) {
   loading.value = true;

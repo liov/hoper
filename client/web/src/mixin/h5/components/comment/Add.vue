@@ -33,13 +33,12 @@
 <script setup lang="ts">
 import axios from "axios";
 import { upload } from "@/utils/upload";
-import emitter from "@h5/plugin/emitter";
-import dateTool from "@/utils/date";
+import emitter from "@/mixin/plugin/emitter";
 import { ref, onMounted, onUnmounted, reactive, toRefs, type Ref } from "vue";
 import { Toast } from "vant";
 import { useRoute, useRouter } from "vue-router";
-import { useUserStore } from "@h5/store/user";
-import { useContentStore } from "@h5/store/content";
+import { useUserStore } from "@/mixin/store/user";
+import { useContentStore } from "@/mixin/store/content";
 
 const props = defineProps<{
   comment: any;

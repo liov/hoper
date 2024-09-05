@@ -14,5 +14,5 @@ export const jump = (path: string, type: number, content: any) => {
   emitter.emit("onComment");
 };
 
-export const _import = (path) =>
+export const _import = (path:string) =>
   defineAsyncComponent(() => import(`../views/${path}.vue`));

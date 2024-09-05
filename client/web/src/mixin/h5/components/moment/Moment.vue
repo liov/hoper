@@ -42,7 +42,7 @@ import Action from "@/mixin/h5/components/action/Action.vue";
 import { jump } from "@/mixin/router/utils";
 import { STATIC_DIR as staticDir } from "@/mixin/plugin/config";
 import { useRoute } from "vue-router";
-import { date2s } from "@/utils/time";
+import { date2s } from "diamond/time";
 import { reactive } from "vue";
 
 const props = defineProps<{

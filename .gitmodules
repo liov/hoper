@@ -14,10 +14,6 @@
 	path = awesome
 	url = https://github.com/liov/awesome
 	branch = main
-[submodule "thirdparty/collection"]
-	path = thirdparty/collection
-	url = https://github.com/hopeio/collection
-	branch = main
 [submodule "thirdparty/context"]
 	path = thirdparty/context
 	url = https://github.com/hopeio/context
@@ -37,4 +33,8 @@
 [submodule "thirdparty/deploy"]
 	path = thirdparty/deploy
 	url = https://github.com/hopeio/deploy
+	branch = main
+[submodule "thirdparty/example"]
+	path = thirdparty/example
+	url = https://github.com/hopeio/example
 	branch = main

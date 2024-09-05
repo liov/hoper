@@ -80,9 +80,9 @@
 
 <script setup lang="ts">
 import axios from "axios";
-import { STATIC_DIR as staticDir } from "@h5/plugin/config";
+import { STATIC_DIR as staticDir } from "@/mixin/plugin/config";
 
-import { useUserStore } from "@h5/store/user";
+import { useUserStore } from "@/mixin/store/user";
 import { showToast } from "vant";
 import { reactive } from "vue";
 import { useRouter } from "vue-router";

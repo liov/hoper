@@ -123,7 +123,7 @@
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from "@pc/store/user";
+import { useUserStore } from "@/mixin/pc/store/user";
 import { reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
