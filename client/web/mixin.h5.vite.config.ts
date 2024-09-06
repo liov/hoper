@@ -52,6 +52,7 @@ export default defineConfig({
       "echarts",
       "esm-dep > cjs-dep",
     ],
+    exclude:["src/mixin/pc/*"]
   },
   plugins: [
     vue(),

@@ -4,6 +4,7 @@ import emitter from "@/mixin/plugin/emitter";
 
 import { contentMutations } from "@/mixin/store/content";
 import { defineAsyncComponent } from "vue";
+import {APP_PLATFORM} from "@/mixin/plugin/config";
 
 export const jump = (path: string, type: number, content: any) => {
   const route = `/${contentRoute[type]}/${content.id}`;
@@ -15,4 +16,4 @@ export const jump = (path: string, type: number, content: any) => {
 };
 
 export const _import = (path:string) =>
-  defineAsyncComponent(() => import(`../views/${path}.vue`));
+  defineAsyncComponent(() => import(`../${APP_PLATFORM}/views/${path}.vue`));

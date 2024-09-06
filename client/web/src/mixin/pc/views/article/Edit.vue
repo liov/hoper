@@ -308,7 +308,7 @@ onMounted(() => {
       import("vditor/dist/index.css");
       vditor = new Vditor.default("vditor", {});
     } else {
-      await import("@pc/plugin/tinymce/tinymce.js");
+      await import("@/mixin/plugin/tinymce/tinymce.js");
       window.tinymce.init(tinymceConfig).then((resolve) => {
         if (route.query.id && article.value.content_type === 1) {
           window.tinymce.activeEditor.setContent(article.value.html_content);
