@@ -10,6 +10,4 @@ func GinRegister(app *gin.Engine) {
 	_ = content.RegisterMomentServiceHandlerServer(app, contentService.GetMomentService())
 	_ = content.RegisterContentServiceHandlerServer(app, contentService.GetContentService())
 	_ = content.RegisterActionServiceHandlerServer(app, contentService.GetActionService())
-	app.GET("/video/*file", contentService.Play)
-	app.GET("/live/stream", contentService.Stream)
 }
