@@ -107,7 +107,6 @@ export default ({ command, mode }) => {
         ],
       },
     },
-
     resolve: {
       alias: {
         '@': path.join(process.cwd(), './src'),

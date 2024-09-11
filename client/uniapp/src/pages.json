@@ -80,6 +80,37 @@
       "style": {
         "navigationBarTitleText": "瞬间"
       }
+    },
+    {
+      "path": "pages/user/active",
+      "type": "page",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "激活"
+      }
+    },
+    {
+      "path": "pages/user/login",
+      "type": "page",
+      "style": {
+        "navigationBarTitleText": "登录"
+      }
+    },
+    {
+      "path": "pages/wopan/list",
+      "type": "page",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "wopan列表"
+      }
+    },
+    {
+      "path": "pages/wopan/login",
+      "type": "page",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "wopan登录"
+      }
     }
   ],
   "subPackages": []

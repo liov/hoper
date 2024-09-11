@@ -1,6 +1,14 @@
 import { CustomRequestOptions } from '@/interceptors/http'
-
+import { toUrlParams } from 'diamond/compatible'
 export const http = <T>(options: CustomRequestOptions) => {
+  if (options.query) {
+    const queryStr = toUrlParams(options.query)
+    if (options.url.includes('?')) {
+      options.url += `&${queryStr}`
+    } else {
+      options.url += `?${queryStr}`
+    }
+  }
   // 1. 返回 Promise 对象
   return new Promise<ResData<T>>((resolve, reject) => {
     uni.request({

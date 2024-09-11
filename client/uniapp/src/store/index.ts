@@ -3,6 +3,7 @@ import { createPersistedState } from 'pinia-plugin-persistedstate' // 数据持�
 import { useUserStore } from '@/store/user'
 import { useGlobalStore } from '@/store/global'
 import { useContentStore } from '@/store/content'
+import { useWopanStore } from '@/store/wopan'
 
 const store = createPinia()
 store.use(
@@ -17,11 +18,13 @@ store.use(
 export let userStore
 export let globalStore
 export let contentStore
+export let wopanStore
 
 export function init() {
   globalStore = useGlobalStore()
   userStore = useUserStore()
   contentStore = useContentStore()
+  wopanStore = useWopanStore()
   if (!userStore.auth) {
     userStore.getAuth()
   }

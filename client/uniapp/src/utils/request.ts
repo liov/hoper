@@ -1,5 +1,5 @@
+import { toUrlParams } from 'diamond/compatible'
 /* eslint-disable no-param-reassign */
-import qs from 'qs'
 export type UniRequestOptions = Omit<UniApp.RequestOptions, 'url'> & {
   baseUrl?: string
   query?: Record<string, any>
@@ -66,7 +66,7 @@ class UniRequest {
     return new Promise<ResData<T>>((resolve, reject) => {
       // 接口请求支持通过 query 参数配置 queryString
       if (config.query) {
-        const queryStr = qs.stringify(config.query)
+        const queryStr = toUrlParams(config.query)
         if (url.includes('?')) {
           url += `&${queryStr}`
         } else {

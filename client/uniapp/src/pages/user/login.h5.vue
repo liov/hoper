@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { dynamicLoadJs } from '@/utils/h5'
+import { dynamicLoadJs } from 'diamond/browser'
 
 const turnstile = window.turnstile
 const onloadTurnstileCallback = function () {
