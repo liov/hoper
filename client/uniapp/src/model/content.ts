@@ -1,4 +1,4 @@
-type ContentExt = {
+export type ContentExt = {
   likeCount: number
   commentCount: number
 }

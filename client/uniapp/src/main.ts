@@ -1,22 +1,23 @@
 import { createSSRApp } from 'vue'
 import App from './App.vue'
-import store, { init as storeInit } from './store'
+import * as Pinia from 'pinia'
 import { init as uniHttpInit } from '@/interceptors/request'
 import i18n from './locale/index'
 import { routeInterceptor, requestInterceptor, prototypeInterceptor } from './interceptors'
 import 'virtual:uno.css'
 import '@/style/index.scss'
+import '@/service/wopan'
 
 export function createApp() {
   const app = createSSRApp(App)
-  app.use(store)
+  app.use(Pinia.createPinia())
   app.use(i18n)
   app.use(routeInterceptor)
   app.use(requestInterceptor)
   app.use(prototypeInterceptor)
-  storeInit()
   uniHttpInit()
   return {
     app,
+    Pinia, // 此处必须将 Pinia 返回
   }
 }

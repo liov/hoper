@@ -4,7 +4,7 @@
  * 可以设置路由白名单，或者黑名单，看业务需要选哪一个
  * 我这里应为大部分都可以随便进入，所以使用黑名单
  */
-import { useUserStore } from '@/store'
+import { useUserStore } from '@/store/user'
 import { getNeedLoginPages, needLoginPages as _needLoginPages } from '@/utils'
 
 // TODO Check
@@ -12,7 +12,7 @@ const loginRoute = '/pages/login/index'
 
 const isLogined = () => {
   const userStore = useUserStore()
-  return userStore.info !== null
+  return userStore.auth !== null
 }
 
 const isDev = import.meta.env.DEV

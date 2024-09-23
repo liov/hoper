@@ -1,11 +1,11 @@
 import uniHttp from '@/utils/request'
 import { API_HOST } from '@/env/config'
-import { userStore } from '@/store'
+import { useUserStore } from '@/store/user'
 
 export function init() {
   uniHttp.defaults.baseUrl = API_HOST
   const token = uni.getStorageSync('token')
-
+  const userStore = useUserStore()
   uniHttp.defaults.header.Authorization = token || userStore.token
 
   // 添加请求拦截器

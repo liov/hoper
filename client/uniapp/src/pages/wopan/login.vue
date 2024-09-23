@@ -16,22 +16,26 @@
         <wd-input
           label="用户名"
           label-width="100px"
-          prop="value1"
+          prop="phone"
           clearable
           v-model="model.phone"
           placeholder="请输入用户名"
           :rules="[{ required: true, message: '请填写用户名' }]"
         />
         <wd-input
-          label="密码"
+          label="验证码"
           label-width="100px"
-          prop="value2"
-          show-password
+          prop="smsCode"
           clearable
-          v-model="model.password"
-          placeholder="请输入密码"
-          :rules="[{ required: true, message: '请填写密码' }]"
-        />
+          use-suffix-slot
+          v-model="model.smsCode"
+          placeholder="请输入验证码"
+          :rules="[{ required: true, message: '请填写验证码' }]"
+        >
+          <template #suffix>
+            <view><wd-button @click="sendSmsCode">获取验证码</wd-button></view>
+          </template>
+        </wd-input>
       </wd-cell-group>
       <view class="footer">
         <wd-button type="primary" size="large" @click="handleSubmit" block>提交</wd-button>
@@ -44,20 +48,23 @@
 import PLATFORM from '@/utils/platform'
 import { useToast } from 'wot-design-uni'
 import * as wopan from 'diamond/wopan'
+
+import { useWopanStore } from '@/store/wopan'
+
 defineOptions({
   name: 'WopanLogin',
 })
-
+const wopanStore = useWopanStore()
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
 const { success: showSuccess } = useToast()
 
 const model = reactive<{
   phone: string
-  password: string
+  smsCode: string
 }>({
   phone: '',
-  password: '',
+  smsCode: '',
 })
 
 onLoad(() => {
@@ -66,12 +73,16 @@ onLoad(() => {
 
 const form = ref()
 
+function sendSmsCode() {
+  wopan.sendMessageCodeBase(model.phone)
+}
+
 function handleSubmit() {
   form.value
     .validate()
-    .then(({ valid, errors }) => {
+    .then(async ({ valid, errors }) => {
       if (valid) {
-        const res = wopan.PcWebLogin(model.phone, model.password)
+        await wopanStore.AppLoginByMobile(model)
         showSuccess({
           msg: '校验通过',
         })

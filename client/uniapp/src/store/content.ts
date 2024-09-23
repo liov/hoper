@@ -1,7 +1,7 @@
 import { ObjMap } from '@/utils/user'
 import { defineStore } from 'pinia'
 
-export interface ContentStore {
+export interface ContentState {
   moment: any
   note?: any
   diary?: any
@@ -12,7 +12,7 @@ export interface ContentStore {
   commentCache: Map<number, any[]>
 }
 
-const state: ContentStore = {
+const state: ContentState = {
   moment: null,
   commentCache: new Map<number, any[]>(),
 }
@@ -28,8 +28,7 @@ const getters = {
   },
 }
 
-export const useContentStore = defineStore({
-  id: 'content',
+export const useContentStore = defineStore('content', {
   state: () => state,
   getters,
   actions,

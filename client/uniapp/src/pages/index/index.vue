@@ -12,7 +12,7 @@
     class="bg-white overflow-hidden pt-2 px-4"
     :style="{ marginTop: safeAreaInsets?.top + 'px' }"
   >
-    <navigator url="/pages/wopan/login" hover-class="navigator-hover">
+    <navigator url="/pages/wopan/list" hover-class="navigator-hover">
       <button type="default">wopan</button>
     </navigator>
   </view>

@@ -5,32 +5,32 @@ import type { User } from '@/model/user'
 import request from '@/utils/request'
 
 export interface UserState {
-  info: any
+  auth: any
   token: string
   userCache: Map<number, any>
 }
 
-export const state: UserState = {
-  info: null,
+const state: UserState = {
+  auth: null,
   token: '',
   userCache: new Map<number, any>(),
 }
 
 const getters = {
-  getUser: (state) => {
-    return (id): User => state.userCache.get(id)
+  getUser: (state: UserState) => {
+    return (id: number): User => state.userCache.get(id)
   },
 }
 
 const actions = {
   async getAuth() {
-    if (state.info) return
+    if (state.auth) return
     const token = uni.getStorageSync('token')
     if (token) {
       state.token = token
       const { data } = await request.get(API_HOST + `/api/v1/auth`)
       // 跟后端的初始化配合
-      if (data.code === 0) state.info = data.data
+      if (data.code === 0) state.auth = data.data
     }
   },
   async login(params) {
@@ -41,7 +41,7 @@ const actions = {
         throw new Error('Bad credentials')
       }
 
-      state.info = data.user
+      state.auth = data.user
       state.token = data.token
       uni.setStorageSync('token', data.token)
       request.defaults.header.Authorization = data.token
@@ -59,7 +59,7 @@ const actions = {
           'content-type': 'application/json',
         },
       })
-      state.info = details.user
+      state.auth = details.user
       state.token = details.token
       uni.setStorageSync('token', details.token)
       request.defaults.header.Authorization = details.token
@@ -92,8 +92,7 @@ const actions = {
   },
 }
 
-export const useUserStore = defineStore({
-  id: 'user',
+export const useUserStore = defineStore('user', {
   state: () => state,
   getters,
   actions,

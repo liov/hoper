@@ -1,7 +1,6 @@
 import { API_HOST } from '@/env/config'
 import type { MomentList } from '@/model/moment'
 import request from '@/utils/request'
-import { userStore } from '@/store'
 import moment from '@/pages/moment/moment_list.vue'
 
 class UserService {

@@ -17,7 +17,6 @@ client.fetch = async function (url, method, headers, body) {
 }
 client.setToken(uni.getStorageSync('accessToken'), uni.getStorageSync('accessToken'))
 client.psToken = uni.getStorageSync('psToken')
-
-const wopanClient = client
-
-export default wopanClient
+client.proxy = 'http://localhost:8080'
+console.log(client)
+export default client

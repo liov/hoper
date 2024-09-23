@@ -1,7 +1,8 @@
 import { defineStore } from "pinia";
 import { Platform } from "@/mixin/model/const";
 
-interface GlobalState {
+
+export interface GlobalState {
   counter: number;
   platform: Platform;
 }
