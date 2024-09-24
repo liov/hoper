@@ -15,8 +15,16 @@ client.fetch = async function (url, method, headers, body) {
     })
   })
 }
-client.setToken(uni.getStorageSync('accessToken'), uni.getStorageSync('accessToken'))
-client.psToken = uni.getStorageSync('psToken')
+client.failCallback = function (err) {
+  if (err.message.startsWith('request failed with rsp_code: 1001')) {
+    uni.navigateTo({ url: '/pages/wopan/login' })
+  } else if (err.message.startsWith('request failed with rsp_code: 110001')) {
+    uni.navigateTo({ url: '/pages/wopan/login?psToken=1' })
+  }
+  uni.showToast({
+    title: err,
+  })
+}
 client.proxy = 'http://localhost:8080'
 console.log(client)
 export default client

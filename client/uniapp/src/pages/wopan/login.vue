@@ -14,6 +14,7 @@
     <wd-form ref="form" :model="model">
       <wd-cell-group border>
         <wd-input
+          v-if="!setPwd"
           label="用户名"
           label-width="100px"
           prop="phone"
@@ -23,6 +24,7 @@
           :rules="[{ required: true, message: '请填写用户名' }]"
         />
         <wd-input
+          v-if="!setPwd"
           label="验证码"
           label-width="100px"
           prop="smsCode"
@@ -36,6 +38,16 @@
             <view><wd-button @click="sendSmsCode">获取验证码</wd-button></view>
           </template>
         </wd-input>
+        <wd-input
+          v-if="setPwd"
+          label="密码"
+          label-width="100px"
+          prop="passwd"
+          clearable
+          v-model="model.passwd"
+          placeholder="请输入密码"
+          :rules="[{ required: true, message: '请填写密码' }]"
+        />
       </wd-cell-group>
       <view class="footer">
         <wd-button type="primary" size="large" @click="handleSubmit" block>提交</wd-button>
@@ -50,10 +62,16 @@ import { useToast } from 'wot-design-uni'
 import * as wopan from 'diamond/wopan'
 
 import { useWopanStore } from '@/store/wopan'
+import { onLoad } from '@dcloudio/uni-app'
 
 defineOptions({
   name: 'WopanLogin',
 })
+const setPwd = ref(false)
+onLoad((options) => {
+  setPwd.value = options.psToken === '1'
+})
+
 const wopanStore = useWopanStore()
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
@@ -62,9 +80,11 @@ const { success: showSuccess } = useToast()
 const model = reactive<{
   phone: string
   smsCode: string
+  passwd: string
 }>({
   phone: '',
   smsCode: '',
+  passwd: '',
 })
 
 onLoad(() => {
@@ -77,20 +97,14 @@ function sendSmsCode() {
   wopan.sendMessageCodeBase(model.phone)
 }
 
-function handleSubmit() {
-  form.value
-    .validate()
-    .then(async ({ valid, errors }) => {
-      if (valid) {
-        await wopanStore.AppLoginByMobile(model)
-        showSuccess({
-          msg: '校验通过',
-        })
-      }
-    })
-    .catch((error) => {
-      console.log(error, 'error')
-    })
+async function handleSubmit() {
+  if (setPwd.value) {
+    await wopanStore.PrivateSpaceLogin(model)
+    uni.navigateBack()
+  } else {
+    await wopanStore.AppLoginByMobile(model)
+    setPwd.value = true
+  }
 }
 </script>
 

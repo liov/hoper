@@ -1,14 +1,7 @@
-import wopanClient from '@/service/wopan'
+import client from '@/service/wopan'
 import * as wopan from 'diamond/wopan'
 import { defineStore } from 'pinia'
-
-interface FileNode {
-  parent: wopan.File
-  file: wopan.File
-  subFiles: FileNode[]
-  pageNo: number
-  pageSize: number
-}
+import { FileNode } from '@/model/wopan'
 
 export interface WopanState {
   file: FileNode
@@ -23,17 +16,16 @@ const accessTokenKey = 'accessToken'
 const refreshTokenKey = 'refreshToken'
 const psTokenKey = 'psToken'
 const phoneKey = 'phone'
-const rootFile = {
+const rootFile: FileNode = {
   parent: null,
   file: {
-    fid: '',
-    id: '',
-    name: '',
+    id: '0',
     type: 1,
   },
   subFiles: [],
   pageNo: 0,
   pageSize: 20,
+  hasMore: true,
 }
 const state: WopanState = {
   accessToken: uni.getStorageSync(accessTokenKey),
@@ -43,75 +35,73 @@ const state: WopanState = {
   file: rootFile,
   curDir: rootFile,
 }
-
-const getters = {}
+client.setToken(state.accessToken, state.refreshToken)
+client.psToken = state.psToken
+const getters = {
+  fileList(state) {
+    return state.curDir.subFiles
+  },
+}
 
 const actions = {
   async PcWebLogin(params) {
-    try {
-      await wopan.PcWebLogin(params.phone, params.password)
-    } catch (error: any) {
-      console.log(error)
-    }
+    await wopan.PcWebLogin(params.phone, params.password)
   },
   async PcLoginVerifyCode(params) {
-    try {
-      const res = await wopan.PcLoginVerifyCode(params.phone, params.password, params.messageCode)
-      uni.setStorageSync(accessTokenKey, res.access_token)
-      uni.setStorageSync(refreshTokenKey, res.refresh_token)
-      await uni.navigateTo({ url: '/wopan/list' })
-    } catch (error: any) {
-      console.log(error)
-    }
+    const res = await wopan.PcLoginVerifyCode(params.phone, params.password, params.messageCode)
+    uni.setStorageSync(accessTokenKey, res.access_token)
+    uni.setStorageSync(refreshTokenKey, res.refresh_token)
+    await uni.navigateTo({ url: '/wopan/list' })
   },
   async AppLoginByMobile(params) {
     console.log('params', params)
-    try {
-      console.log('params', params)
-      const res = await wopan.AppLoginByMobile(params.phone, params.smsCode)
-      state.accessToken = res.access_token
-      state.refreshToken = res.refresh_token
-      uni.setStorageSync(accessTokenKey, res.access_token)
-      uni.setStorageSync(refreshTokenKey, res.refresh_token)
-    } catch (error: any) {
-      console.log(error)
-    }
+
+    console.log('params', params)
+    const res = await wopan.AppLoginByMobile(params.phone, params.smsCode)
+    state.accessToken = res.access_token
+    state.refreshToken = res.refresh_token
+    uni.setStorageSync(accessTokenKey, res.access_token)
+    uni.setStorageSync(refreshTokenKey, res.refresh_token)
   },
   async VerifySetPwd() {
-    try {
-      const res = await wopan.VerifySetPwd()
-      if (res.verifyResult === '01') {
-        await uni.navigateTo({ url: '/pages/wopan/login?setpwd=1' })
-      }
-    } catch (e) {
-      uni.navigateTo({ url: '/pages/wopan/login' })
-      console.log(e)
+    const res = await wopan.VerifySetPwd()
+    if (res.verifyResult === '01') {
+      await uni.navigateTo({ url: '/pages/wopan/login?setpwd=1' })
     }
   },
+  async PrivateSpaceLogin(params) {
+    const res = await wopan.PrivateSpaceLogin(params.passwd)
+    state.psToken = res.psToken
+    uni.setStorageSync(psTokenKey, res.psToken)
+  },
   async FileList() {
-    try {
-      const res = await wopan.QueryAllFiles(
-        wopan.SpaceType.Private,
-        '',
-        state.curDir.pageNo,
-        state.curDir.pageSize,
-        wopan.SortType.NameAsc,
-        '',
-      )
-      state.curDir.subFiles.push(
-        res.files.map(
-          (file: wopan.File): FileNode => ({
-            parent: state.curDir,
-            file,
-            subFiles: [],
-            pageNo: 0,
-            pageSize: 20,
-          }),
-        ),
-      )
-    } catch (error: any) {
-      console.log(error)
+    if (!state.curDir.hasMore) {
+      return
     }
+    const res = await wopan.QueryAllFiles(
+      wopan.SpaceType.Private,
+      state.curDir.file.id,
+      state.curDir.pageNo,
+      state.curDir.pageSize,
+      wopan.SortType.NameAsc,
+      '',
+    )
+    state.curDir.subFiles.push(
+      ...res.files.map(
+        (file: wopan.File): FileNode => ({
+          parent: state.curDir,
+          file,
+          subFiles: [],
+          pageNo: 0,
+          pageSize: 50,
+          hasMore: true,
+        }),
+      ),
+    )
+    if (res.files.length < state.curDir.pageSize) {
+      state.curDir.hasMore = false
+    }
+    state.curDir.pageNo++
   },
 }
 

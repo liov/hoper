@@ -3,13 +3,85 @@
   style: {
     navigationStyle: 'custom',
     navigationBarTitleText: 'wopan列表',
+    onReachBottomDistance: 50,
   },
 }
 </route>
-<template><view></view></template>
+<template>
+  <view class="list">
+    <uni-section title="文件列表" type="line">
+      <template v-slot:right>
+        <button class="button-box" @click="toPDir">上一级</button>
+        <button class="button-box" @click="deleteAll">删除全部</button>
+        <button class="button-box" @click="deleteChecked">删除</button>
+        <button class="button-box" @click="formData.waterfall = !formData.waterfall">
+          切换视图
+        </button>
+      </template>
+    </uni-section>
+    <uni-list :class="{ 'uni-list--waterfall': formData.waterfall }">
+      <checkbox-group @change="checkboxChange" style="display: contents">
+        <uni-list-item
+          :border="!formData.waterfall"
+          class="uni-list-item--waterfall"
+          title="文件列表"
+          v-for="item in curDir.subFiles"
+          :key="item.file.id"
+          clickable
+          @click="onClick(item)"
+        >
+          <template v-slot:header v-if="item.file.type == 1">
+            <view
+              class="uni-thumb file-picture"
+              :class="{ 'file-picture-column': formData.waterfall }"
+            >
+              <image
+                :src="item.file.name.endsWith('.avif') ? item.file.previewUrl : item.file.thumbUrl"
+                mode="aspectFill"
+              ></image>
+            </view>
+          </template>
+
+          <template v-slot:body>
+            <view class="file">
+              <view>
+                <view class="uni-title">
+                  <text class="uni-ellipsis-2">{{ item.file.name }}</text>
+                </view>
+              </view>
+              <view v-if="item.file.type == 1">
+                <text class="uni-tag">{{ (item.file.size / 1024).toFixed(2) }}kb</text>
+                <text class="uni-tag">{{ item.file.createTime }}</text>
+              </view>
+              <view v-if="item.file.type == 1 && !formData.waterfall">
+                <view class="uni-note ellipsis">
+                  {{ item.file.fid }}
+                </view>
+                <view class="uni-note ellipsis">
+                  {{ item.file.id }}
+                </view>
+              </view>
+            </view>
+          </template>
+          <template v-slot:footer v-if="!formData.waterfall">
+            <checkbox :value="item.file.id" color="#FFCC33" />
+          </template>
+        </uni-list-item>
+      </checkbox-group>
+    </uni-list>
+    <uni-load-more
+      v-if="formData.loading || formData.status === 'no-more'"
+      :status="formData.status"
+    />
+  </view>
+</template>
 
 <script lang="ts" setup>
 import { useWopanStore } from '@/store/wopan'
+import * as wopan from 'diamond/wopan'
+import { storeToRefs } from 'pinia'
+import { FileNode } from '@/model/wopan'
+import { onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app'
 
 defineOptions({
   name: 'WopanList',
@@ -21,8 +93,211 @@ if (wopanStore.$state.accessToken === '') {
   })
 }
 if (wopanStore.$state.psToken === '') {
-  console.log('psToken is empty')
+  uni.navigateTo({
+    url: '/pages/wopan/login?psToken=1',
+  })
 }
+const formData = reactive({
+  waterfall: false, // 布局方向切换
+  status: 'loading', // 加载状态
+  tipShow: false,
+  loading: false,
+})
+if (wopanStore.$state.curDir.subFiles.length === 0) {
+  loadFiles()
+}
+function loadFiles() {
+  formData.status = 'loading'
+  formData.loading = true
+  wopanStore.FileList().then(() => {
+    console.log('FileList', wopanStore.$state.curDir.subFiles)
+    if (!wopanStore.$state.curDir.hasMore) {
+      formData.status = 'no-more'
+    } else {
+      formData.status = 'more'
+    }
+    formData.loading = false
+  })
+}
+const { curDir } = storeToRefs(wopanStore)
+console.log('curDir', curDir)
+onPullDownRefresh(() => {
+  formData.status = 'more'
+  formData.tipShow = true
+  //
+  formData.tipShow = false
+  uni.stopPullDownRefresh()
+})
+
+function onClick(e: FileNode) {
+  if (e.file.type === 0) {
+    wopanStore.$state.curDir = e
+    loadFiles()
+  }
+}
+const checkList = ref([])
+function checkboxChange(e) {
+  checkList.value = e.detail.value
+}
+function deleteChecked() {
+  for (let i = 0, lenI = wopanStore.$state.curDir.subFiles.length; i < lenI; ++i) {
+    const item = wopanStore.$state.curDir.subFiles[i]
+    if (checkList.value.includes(item.file.id)) {
+      console.log('checked', item.file.id)
+    } else {
+      console.log('unchecked', item.file.id)
+    }
+  }
+}
+function deleteAll() {
+  console.log('deleteAll')
+}
+function toPDir() {
+  wopanStore.$state.curDir = wopanStore.$state.curDir.parent
+}
+onReachBottom(() => {
+  console.log('onReachBottom')
+  loadFiles()
+})
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+@import '../../style/uni-ui.scss';
+
+page {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  background-color: #efeff4;
+  min-height: 100%;
+  height: auto;
+}
+
+.tips {
+  color: #67c23a;
+  font-size: 14px;
+  line-height: 40px;
+  text-align: center;
+  background-color: #f0f9eb;
+  height: 0;
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: all 0.3s;
+}
+
+.tips-ani {
+  transform: translateY(0);
+  height: 40px;
+  opacity: 1;
+}
+
+.file {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.file-picture {
+  width: 100px;
+  height: 100px;
+}
+
+.file-picture-column {
+  width: 100%;
+  height: 100px;
+}
+
+.file-price {
+  font-size: 12px;
+  color: #ff5a5f;
+}
+
+.file-price-text {
+  font-size: 16px;
+}
+
+.hot-tag {
+  background: #ff5a5f;
+  border: none;
+  color: #fff;
+}
+
+.button-box {
+  display: inline-block;
+  height: 30px;
+  margin-left: 10px;
+  line-height: 30px;
+  font-size: 12px;
+  background: #007aff;
+  color: #fff;
+}
+
+.uni-link {
+  flex-shrink: 0;
+}
+
+.ellipsis {
+  display: flex;
+  overflow: hidden;
+}
+
+.uni-ellipsis-1 {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.uni-ellipsis-2 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+// 默认加入 scoped ，所以外面加一层提升权重
+.list {
+  /* #ifdef H5 || APP-VUE */
+  ::v-deep
+    /* #endif */
+  .uni-section-header {
+    padding: 5px 10px;
+  }
+  /* #ifdef H5 || APP-VUE */
+  ::v-deep
+    /* #endif */
+  .uni-list-item__container {
+    padding: 5px 10px;
+  }
+  .uni-list--waterfall {
+    /* #ifndef H5 || APP-VUE */
+    // 小程序 编译后会多一层标签，而其他平台没有，所以需要特殊处理一下
+    ::v-deep(.uni-list) {
+      /* #endif */
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      padding: 5px;
+      box-sizing: border-box;
+
+      /* #ifdef H5 || APP-VUE */
+      // h5 和 app-vue 使用深度选择器，因为默认使用了 scoped ，所以样式会无法穿透
+      ::v-deep
+      /* #endif */
+      .uni-list-item--waterfall {
+        width: 50%;
+        box-sizing: border-box;
+
+        .uni-list-item__container {
+          flex-direction: column;
+        }
+      }
+
+      /* #ifndef H5 || APP-VUE */
+    }
+
+    /* #endif */
+  }
+}
+</style>

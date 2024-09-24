@@ -101,7 +101,8 @@
       "type": "page",
       "style": {
         "navigationStyle": "custom",
-        "navigationBarTitleText": "wopan列表"
+        "navigationBarTitleText": "wopan列表",
+        "onReachBottomDistance": 50
       }
     },
     {
