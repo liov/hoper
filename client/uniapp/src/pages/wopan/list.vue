@@ -9,26 +9,32 @@
 </route>
 <template>
   <view class="list">
-    <uni-section title="文件列表" type="line">
-      <template v-slot:right>
-        <button class="button-box" @click="toPDir">上一级</button>
-        <button class="button-box" @click="deleteAll">删除全部</button>
-        <button class="button-box" @click="deleteChecked">删除</button>
-        <button class="button-box" @click="formData.waterfall = !formData.waterfall">
-          切换视图
-        </button>
+    <wd-navbar fixed left-text="返回" left-arrow right-icon="tune" placeholder>
+      <template v-slot:title>
+        <wd-button class="button-box" size="small" @click="toPDir">上一级</wd-button>
+        <wd-button class="button-box" size="small" @click="deleteAll">删除全部</wd-button>
+        <wd-button class="button-box" size="small" @click="deleteChecked">删除</wd-button>
       </template>
-    </uni-section>
+      <template v-slot:right>
+        <wd-icon name="swap" size="18" @click="formData.waterfall = !formData.waterfall" />
+      </template>
+    </wd-navbar>
     <uni-list :class="{ 'uni-list--waterfall': formData.waterfall }">
-      <checkbox-group @change="checkboxChange" style="display: contents">
+      <wd-checkbox-group
+        v-model="checkList"
+        @change="checkboxChange"
+        shape="square"
+        style="display: contents"
+        inline
+      >
         <uni-list-item
           :border="!formData.waterfall"
           class="uni-list-item--waterfall"
           title="文件列表"
-          v-for="item in curDir.subFiles"
+          v-for="(item, index) in curDir.subFiles"
           :key="item.file.id"
           clickable
-          @click="onClick(item)"
+          @click="onClick(item, index)"
         >
           <template v-slot:header v-if="item.file.type == 1">
             <view
@@ -46,33 +52,46 @@
             <view class="file">
               <view>
                 <view class="uni-title">
-                  <text class="uni-ellipsis-2">{{ item.file.name }}</text>
+                  <text class="uni-ellipsis-2">
+                    {{
+                      item.file.name.length < 25
+                        ? item.file.name
+                        : item.file.name.slice(0, 12) + '···' + item.file.name.slice(-12)
+                    }}
+                  </text>
                 </view>
               </view>
               <view v-if="item.file.type == 1">
                 <text class="uni-tag">{{ (item.file.size / 1024).toFixed(2) }}kb</text>
-                <text class="uni-tag">{{ item.file.createTime }}</text>
+                <text class="uni-tag">{{ item.file.createTime.slice(0, 8) }}</text>
+                <wd-checkbox :modelValue="index" shape="square" />
               </view>
               <view v-if="item.file.type == 1 && !formData.waterfall">
                 <view class="uni-note ellipsis">
-                  {{ item.file.fid }}
+                  {{
+                    item.file.fid.length < 40
+                      ? item.file.fid
+                      : item.file.fid.slice(0, 20) + '···' + item.file.fid.slice(-20)
+                  }}
                 </view>
                 <view class="uni-note ellipsis">
-                  {{ item.file.id }}
+                  {{
+                    item.file.id.length < 40
+                      ? item.file.id
+                      : item.file.id.slice(0, 20) + '···' + item.file.id.slice(-20)
+                  }}
                 </view>
               </view>
             </view>
           </template>
-          <template v-slot:footer v-if="!formData.waterfall">
-            <checkbox :value="item.file.id" color="#FFCC33" />
-          </template>
         </uni-list-item>
-      </checkbox-group>
+      </wd-checkbox-group>
     </uni-list>
     <uni-load-more
       v-if="formData.loading || formData.status === 'no-more'"
       :status="formData.status"
     />
+    <wd-backtop :scrollTop="scrollTop"></wd-backtop>
   </view>
 </template>
 
@@ -81,10 +100,15 @@ import { useWopanStore } from '@/store/wopan'
 import * as wopan from 'diamond/wopan'
 import { storeToRefs } from 'pinia'
 import { FileNode } from '@/model/wopan'
-import { onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app'
+import { onPullDownRefresh, onReachBottom, onPageScroll } from '@dcloudio/uni-app'
 
 defineOptions({
   name: 'WopanList',
+})
+
+const scrollTop = ref<number>(0)
+onPageScroll((e) => {
+  scrollTop.value = e.scrollTop
 })
 const wopanStore = useWopanStore()
 if (wopanStore.$state.accessToken === '') {
@@ -129,25 +153,33 @@ onPullDownRefresh(() => {
   uni.stopPullDownRefresh()
 })
 
-function onClick(e: FileNode) {
-  if (e.file.type === 0) {
-    wopanStore.$state.curDir = e
-    loadFiles()
+function onClick(file: FileNode, index: number) {
+  if (file.file.type === 0) {
+    wopanStore.$state.curDir = file
+    if (wopanStore.$state.curDir.subFiles.length === 0) {
+      loadFiles()
+    }
   }
 }
 const checkList = ref([])
 function checkboxChange(e) {
-  checkList.value = e.detail.value
+  console.log(e)
 }
 function deleteChecked() {
-  for (let i = 0, lenI = wopanStore.$state.curDir.subFiles.length; i < lenI; ++i) {
-    const item = wopanStore.$state.curDir.subFiles[i]
-    if (checkList.value.includes(item.file.id)) {
-      console.log('checked', item.file.id)
+  const dirList: string[] = []
+  const fileList: string[] = []
+  for (const i of checkList.value) {
+    if (wopanStore.$state.curDir.subFiles[i].file.type === 1) {
+      dirList.push(wopanStore.$state.curDir.subFiles[i].file.id)
     } else {
-      console.log('unchecked', item.file.id)
+      fileList.push(wopanStore.$state.curDir.subFiles[i].file.id)
     }
   }
+  wopan.DeleteFile(wopan.SpaceType.Private, dirList, fileList).then(() => {
+    for (const i of checkList.value) {
+      wopanStore.$state.curDir.subFiles.splice(i, 1)
+    }
+  })
 }
 function deleteAll() {
   console.log('deleteAll')
@@ -159,6 +191,10 @@ onReachBottom(() => {
   console.log('onReachBottom')
   loadFiles()
 })
+
+function handleClickLeft() {
+  uni.navigateBack()
+}
 </script>
 
 <style lang="scss" scoped>
@@ -172,7 +208,10 @@ page {
   min-height: 100%;
   height: auto;
 }
-
+.uni-navbar__header-container {
+  display: flex;
+  align-self: center;
+}
 .tips {
   color: #67c23a;
   font-size: 14px;
@@ -224,13 +263,7 @@ page {
 }
 
 .button-box {
-  display: inline-block;
-  height: 30px;
-  margin-left: 10px;
-  line-height: 30px;
-  font-size: 12px;
-  background: #007aff;
-  color: #fff;
+  margin-left: 5px;
 }
 
 .uni-link {
@@ -269,6 +302,9 @@ page {
     /* #endif */
   .uni-list-item__container {
     padding: 5px 10px;
+  }
+  .wd-checkbox.is-inline {
+    display: contents;
   }
   .uni-list--waterfall {
     /* #ifndef H5 || APP-VUE */

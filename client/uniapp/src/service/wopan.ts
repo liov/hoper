@@ -6,6 +6,7 @@ client.fetch = async function (url, method, headers, body) {
       method,
       header: headers,
       data: body,
+      timeout: 20000,
       success: function (res) {
         resolve(res)
       },
@@ -24,6 +25,7 @@ client.failCallback = function (err) {
   uni.showToast({
     title: err,
   })
+  throw new Error(err)
 }
 client.proxy = 'http://localhost:8080'
 console.log(client)
