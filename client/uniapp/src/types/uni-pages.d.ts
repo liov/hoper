@@ -12,7 +12,8 @@ interface NavigateToOptions {
        "/pages/user/active" |
        "/pages/user/login" |
        "/pages/wopan/list" |
-       "/pages/wopan/login";
+       "/pages/wopan/login" |
+       "/pages/wopan/view";
 }
 interface RedirectToOptions extends NavigateToOptions {}
 

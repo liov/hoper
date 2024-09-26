@@ -9,16 +9,38 @@
 </route>
 <template>
   <view class="list">
-    <wd-navbar fixed left-text="返回" left-arrow right-icon="tune" placeholder>
+    <wd-navbar
+      fixed
+      left-text="返回"
+      left-arrow
+      @click-left="handleClickLeft"
+      right-icon="tune"
+      placeholder
+    >
       <template v-slot:title>
-        <wd-button class="button-box" size="small" @click="toPDir">上一级</wd-button>
-        <wd-button class="button-box" size="small" @click="deleteAll">删除全部</wd-button>
-        <wd-button class="button-box" size="small" @click="deleteChecked">删除</wd-button>
+        <text>文件列表</text>
       </template>
       <template v-slot:right>
-        <wd-icon name="swap" size="18" @click="formData.waterfall = !formData.waterfall" />
+        <wd-button @click="deleteAll" custom-class="title-right" type="primary" size="small" round>
+          删除全部
+        </wd-button>
+        <wd-icon
+          name="swap"
+          size="18"
+          @click="formData.waterfall = !formData.waterfall"
+          custom-class="title-right"
+        />
       </template>
     </wd-navbar>
+    <uni-breadcrumb separator=">">
+      <uni-breadcrumb-item
+        v-for="(file, index) in breadcrumb"
+        :key="index"
+        @click="breadcrumbTo(index)"
+      >
+        {{ file.file.name }}
+      </uni-breadcrumb-item>
+    </uni-breadcrumb>
     <uni-list :class="{ 'uni-list--waterfall': formData.waterfall }">
       <wd-checkbox-group
         v-model="checkList"
@@ -27,12 +49,10 @@
         style="display: contents"
         inline
       >
+        <wd-swipe-action  v-for="(item, index) in wopanStore.$state.curDir.subFiles" :key="item.file.id"  custom-class="uni-list-item--waterfall">
         <uni-list-item
           :border="!formData.waterfall"
-          class="uni-list-item--waterfall"
           title="文件列表"
-          v-for="(item, index) in curDir.subFiles"
-          :key="item.file.id"
           clickable
           @click="onClick(item, index)"
         >
@@ -56,17 +76,17 @@
                     {{
                       item.file.name.length < 25
                         ? item.file.name
-                        : item.file.name.slice(0, 12) + '···' + item.file.name.slice(-12)
+                        : item.file.name.slice(0, 21) + '···' + item.file.name.slice(-4)
                     }}
                   </text>
+                  <wd-checkbox :modelValue="index" shape="square" @click.stop/>
                 </view>
               </view>
-              <view v-if="item.file.type == 1">
+              <view v-show="item.file.type == 1">
                 <text class="uni-tag">{{ (item.file.size / 1024).toFixed(2) }}kb</text>
-                <text class="uni-tag">{{ item.file.createTime.slice(0, 8) }}</text>
-                <wd-checkbox :modelValue="index" shape="square" />
+                <text class="uni-tag">{{ item.file.createTime }}</text>
               </view>
-              <view v-if="item.file.type == 1 && !formData.waterfall">
+              <view v-show="item.file.type == 1 && !formData.waterfall">
                 <view class="uni-note ellipsis">
                   {{
                     item.file.fid.length < 40
@@ -85,13 +105,36 @@
             </view>
           </template>
         </uni-list-item>
+          <template #right>
+            <wd-button size="small" @click="deleteFile(index)">删除</wd-button>
+          </template>
+        </wd-swipe-action>
       </wd-checkbox-group>
     </uni-list>
     <uni-load-more
-      v-if="formData.loading || formData.status === 'no-more'"
+      v-show="formData.loading || formData.status === 'no-more'"
       :status="formData.status"
     />
     <wd-backtop :scrollTop="scrollTop"></wd-backtop>
+    <wd-fab  draggable type="primary" position="left-bottom">
+      <wd-button
+        @click="deleteChecked"
+        custom-class="custom-button"
+        type="success"
+        round
+        size="small"
+      >
+        删除选中
+      </wd-button>
+    </wd-fab>
+    <wd-fab
+      v-show="checkList.length>0"
+      type="primary"
+      position="right-bottom"
+      :expandable="false"
+      @click="deleteChecked"
+      inactiveIcon="delete"
+    ></wd-fab>
   </view>
 </template>
 
@@ -101,7 +144,8 @@ import * as wopan from 'diamond/wopan'
 import { storeToRefs } from 'pinia'
 import { FileNode } from '@/model/wopan'
 import { onPullDownRefresh, onReachBottom, onPageScroll } from '@dcloudio/uni-app'
-
+import { useMessage } from 'wot-design-uni'
+const message = useMessage()
 defineOptions({
   name: 'WopanList',
 })
@@ -111,22 +155,15 @@ onPageScroll((e) => {
   scrollTop.value = e.scrollTop
 })
 const wopanStore = useWopanStore()
-if (wopanStore.$state.accessToken === '') {
-  uni.navigateTo({
-    url: '/pages/wopan/login',
-  })
-}
-if (wopanStore.$state.psToken === '') {
-  uni.navigateTo({
-    url: '/pages/wopan/login?psToken=1',
-  })
-}
+wopanStore.checkToken()
 const formData = reactive({
   waterfall: false, // 布局方向切换
   status: 'loading', // 加载状态
   tipShow: false,
   loading: false,
 })
+const breadcrumb = ref([wopanStore.$state.file])
+
 if (wopanStore.$state.curDir.subFiles.length === 0) {
   loadFiles()
 }
@@ -134,7 +171,6 @@ function loadFiles() {
   formData.status = 'loading'
   formData.loading = true
   wopanStore.FileList().then(() => {
-    console.log('FileList', wopanStore.$state.curDir.subFiles)
     if (!wopanStore.$state.curDir.hasMore) {
       formData.status = 'no-more'
     } else {
@@ -143,8 +179,12 @@ function loadFiles() {
     formData.loading = false
   })
 }
-const { curDir } = storeToRefs(wopanStore)
-console.log('curDir', curDir)
+
+function breadcrumbTo(index: number) {
+  wopanStore.$state.curDir = breadcrumb.value[index]
+  breadcrumb.value = breadcrumb.value.slice(0, index + 1)
+}
+
 onPullDownRefresh(() => {
   formData.status = 'more'
   formData.tipShow = true
@@ -159,6 +199,12 @@ function onClick(file: FileNode, index: number) {
     if (wopanStore.$state.curDir.subFiles.length === 0) {
       loadFiles()
     }
+    breadcrumb.value.push(wopanStore.$state.curDir)
+    checkList.value = []
+  }else{
+    uni.navigateTo({
+      url: '/pages/wopan/view?index=' + index,
+    })
   }
 }
 const checkList = ref([])
@@ -166,6 +212,7 @@ function checkboxChange(e) {
   console.log(e)
 }
 function deleteChecked() {
+  console.log('delete checked')
   const dirList: string[] = []
   const fileList: string[] = []
   for (const i of checkList.value) {
@@ -182,10 +229,22 @@ function deleteChecked() {
   })
 }
 function deleteAll() {
-  console.log('deleteAll')
+  message
+    .confirm({
+      msg: '确认删除',
+      title: '删除全部',
+    })
+    .then(() => {
+      console.log('点击了确定按钮')
+    })
+    .catch(() => {
+      console.log('点击了取消按钮')
+    })
 }
 function toPDir() {
   wopanStore.$state.curDir = wopanStore.$state.curDir.parent
+  breadcrumb.value.pop()
+  checkList.value = []
 }
 onReachBottom(() => {
   console.log('onReachBottom')
@@ -193,7 +252,14 @@ onReachBottom(() => {
 })
 
 function handleClickLeft() {
-  uni.navigateBack()
+  if (wopanStore.$state.curDir.file.id !== '0') {
+    toPDir()
+  } else {
+    uni.navigateBack()
+  }
+}
+function deleteFile(index:number) {
+  wopanStore.deleteCurDirFile(index);
 }
 </script>
 
@@ -211,6 +277,15 @@ page {
 .uni-navbar__header-container {
   display: flex;
   align-self: center;
+}
+.title-right {
+  margin-left: 10px;
+}
+/* #ifdef H5 || APP-VUE */
+::v-deep
+  /* #endif */
+.uni-breadcrumb-item--slot {
+  padding: 0;
 }
 .tips {
   color: #67c23a;
@@ -255,7 +330,12 @@ page {
 .file-price-text {
   font-size: 16px;
 }
-
+/* #ifdef H5 || APP-VUE */
+::v-deep
+  /* #endif */
+.wd-checkbox__shape{
+  margin-left: auto;
+}
 .hot-tag {
   background: #ff5a5f;
   border: none;
@@ -306,6 +386,15 @@ page {
   .wd-checkbox.is-inline {
     display: contents;
   }
+  /* #ifdef H5 || APP-VUE */
+  ::v-deep
+    /* #endif */
+  .wd-swipe-action__right{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
   .uni-list--waterfall {
     /* #ifndef H5 || APP-VUE */
     // 小程序 编译后会多一层标签，而其他平台没有，所以需要特殊处理一下

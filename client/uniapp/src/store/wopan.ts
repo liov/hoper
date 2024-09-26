@@ -20,6 +20,7 @@ const rootFile: FileNode = {
   parent: null,
   file: {
     id: '0',
+    name: 'root',
     type: 1,
   },
   subFiles: [],
@@ -38,9 +39,6 @@ const state: WopanState = {
 client.setToken(state.accessToken, state.refreshToken)
 client.psToken = state.psToken
 const getters = {
-  fileList(state) {
-    return state.curDir.subFiles
-  },
 }
 
 const actions = {
@@ -88,14 +86,19 @@ const actions = {
     )
     state.curDir.subFiles.push(
       ...res.files.map(
-        (file: wopan.File): FileNode => ({
+        (file: wopan.File): FileNode => {
+          if(file.previewUrl===""){
+            file.previewUrl = wopan.preview(file.fid)
+          }
+        return {
           parent: state.curDir,
           file,
           subFiles: [],
           pageNo: 0,
           pageSize: 50,
           hasMore: true,
-        }),
+        }
+        },
       ),
     )
     if (res.files.length < state.curDir.pageSize) {
@@ -103,6 +106,33 @@ const actions = {
     }
     state.curDir.pageNo++
   },
+  checkToken(){
+    if (state.accessToken === '') {
+      uni.navigateTo({
+        url: '/pages/wopan/login',
+      })
+    }
+    if (state.psToken === '') {
+      uni.navigateTo({
+        url: '/pages/wopan/login?psToken=1',
+      })
+    }
+  },
+  async deleteCurDirFile(index: number){
+    if (state.curDir.file.id === '0') {
+      return
+    }
+    const dirList= []
+    const  fileList = []
+    if (state.curDir.subFiles[index].file.type === 0) {
+      dirList.push(state.curDir.subFiles[index].file.id)
+    }else {
+      fileList.push(state.curDir.subFiles[index].file.id)
+    }
+    console.log('deleteCurDirFile', dirList, fileList)
+    await wopan.DeleteFile(wopan.SpaceType.Private, dirList, fileList)
+    state.curDir.subFiles.splice(index, 1)
+  }
 }
 
 export const useWopanStore = defineStore('wopan', {

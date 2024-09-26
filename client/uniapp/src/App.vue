@@ -13,13 +13,12 @@ onHide(() => {
 </script>
 
 <style lang="scss">
-/* stylelint-disable selector-type-no-unknown */
+
 button::after {
   border: none;
 }
 
-swiper,
-scroll-view {
+swiper, scroll-view {
   flex: 1;
   height: 100%;
   overflow: hidden;

@@ -16,16 +16,17 @@ client.fetch = async function (url, method, headers, body) {
     })
   })
 }
-client.failCallback = function (err) {
-  if (err.message.startsWith('request failed with rsp_code: 1001')) {
+client.failCallback = function (msg:string) {
+  if (msg.startsWith('request failed with rsp_code: 1001')) {
     uni.navigateTo({ url: '/pages/wopan/login' })
-  } else if (err.message.startsWith('request failed with rsp_code: 110001')) {
+  } else if (msg.startsWith('request failed with rsp_code: 110001')) {
     uni.navigateTo({ url: '/pages/wopan/login?psToken=1' })
   }
   uni.showToast({
-    title: err,
+    icon:'none',
+    title: msg,
   })
-  throw new Error(err)
+  throw new Error(msg)
 }
 client.proxy = 'http://localhost:8080'
 console.log(client)

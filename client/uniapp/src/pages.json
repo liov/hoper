@@ -112,6 +112,14 @@
         "navigationStyle": "custom",
         "navigationBarTitleText": "wopan登录"
       }
+    },
+    {
+      "path": "pages/wopan/view",
+      "type": "page",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "file-view"
+      }
     }
   ],
   "subPackages": []
