@@ -16,7 +16,6 @@
       <button type="default">wopan</button>
     </navigator>
   </view>
-  <tabbar />
 </template>
 
 <script lang="ts" setup>

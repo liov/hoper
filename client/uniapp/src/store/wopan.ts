@@ -10,6 +10,8 @@ export interface WopanState {
   refreshToken: string
   psToken: string
   phone: string
+  viewList: number[]
+  pageSize: number
 }
 
 const accessTokenKey = 'accessToken'
@@ -25,7 +27,6 @@ const rootFile: FileNode = {
   },
   subFiles: [],
   pageNo: 0,
-  pageSize: 20,
   hasMore: true,
 }
 const state: WopanState = {
@@ -35,6 +36,8 @@ const state: WopanState = {
   refreshToken: uni.getStorageSync(refreshTokenKey),
   file: rootFile,
   curDir: rootFile,
+  viewList: [],
+  pageSize: 50,
 }
 client.setToken(state.accessToken, state.refreshToken)
 client.psToken = state.psToken
@@ -76,11 +79,16 @@ const actions = {
     if (!state.curDir.hasMore) {
       return
     }
+    if (state.curDir.deleted){
+      state.curDir.pageNo = Math.floor(state.curDir.subFiles.length / state.pageSize)
+      state.curDir.subFiles = state.curDir.subFiles.slice(0, state.curDir.pageNo * state.pageSize)
+      state.curDir.deleted = false
+    }
     const res = await wopan.QueryAllFiles(
       wopan.SpaceType.Private,
       state.curDir.file.id,
       state.curDir.pageNo,
-      state.curDir.pageSize,
+      state.pageSize,
       wopan.SortType.NameAsc,
       '',
     )
@@ -101,7 +109,12 @@ const actions = {
         },
       ),
     )
-    if (res.files.length < state.curDir.pageSize) {
+    if(state.curDir.pageNo == 0 && res.files.length == 0 ){
+      console.log('no file')
+      await wopan.DeleteFile(wopan.SpaceType.Private,[state.curDir.file.id],[])
+      state.curDir = state.curDir.parent
+    }
+    if (res.files.length < state.pageSize) {
       state.curDir.hasMore = false
     }
     state.curDir.pageNo++
@@ -111,6 +124,7 @@ const actions = {
       uni.navigateTo({
         url: '/pages/wopan/login',
       })
+      return
     }
     if (state.psToken === '') {
       uni.navigateTo({
@@ -132,6 +146,26 @@ const actions = {
     console.log('deleteCurDirFile', dirList, fileList)
     await wopan.DeleteFile(wopan.SpaceType.Private, dirList, fileList)
     state.curDir.subFiles.splice(index, 1)
+    state.curDir.deleted = true
+  },
+  async deleteFiles(idxs: number[]){
+    const dirList: string[] = []
+    const fileList: string[] = []
+
+    const delSet: Set<number> = new Set()
+    for (const i of idxs) {
+      if (state.curDir.subFiles[i].file.type === 0) {
+        dirList.push(state.curDir.subFiles[i].file.id)
+      } else {
+        fileList.push(state.curDir.subFiles[i].file.id)
+      }
+      delSet.add(i)
+    }
+    const newList = state.curDir.subFiles.filter((_,idx)=>!delSet.has(idx))
+    console.log(delSet,dirList, newList)
+    state.curDir.subFiles =  newList
+    await wopan.DeleteFile(wopan.SpaceType.Private, dirList, fileList)
+    state.curDir.deleted = true
   }
 }
 

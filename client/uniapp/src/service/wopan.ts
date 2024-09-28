@@ -1,4 +1,5 @@
 import { client } from 'diamond/wopan'
+import {Env} from "@/env/config";
 client.fetch = async function (url, method, headers, body) {
   return new Promise((resolve, reject) => {
     uni.request({
@@ -28,6 +29,6 @@ client.failCallback = function (msg:string) {
   })
   throw new Error(msg)
 }
-client.proxy = 'http://localhost:8080'
+client.proxy = Env.VITE_PROXY
 console.log(client)
 export default client

@@ -26,6 +26,7 @@ interface ImportMetaEnv {
 
   readonly VITE_STATIC_DIR: string
   readonly VITE_API_HOST: string
+  readonly VITE_PROXY: string
 }
 
 interface ImportMeta {

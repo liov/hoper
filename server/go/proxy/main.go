@@ -1,20 +1,10 @@
 package main
 
 import (
-	"log"
-	"net/http"
-	"net/http/httputil"
-	"net/url"
+	"github.com/hopeio/utils/log"
+	"github.com/hopeio/utils/net/http/proxy"
 )
 
 func main() {
-	target := "http://example.com" // 目标服务器的地址
-	targetURL, err := url.Parse(target)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	proxy := httputil.NewSingleHostReverseProxy(targetURL)
-
-	log.Fatal(http.ListenAndServe(":8080", proxy))
+	log.Fatal(proxy.Director(":8080"))
 }

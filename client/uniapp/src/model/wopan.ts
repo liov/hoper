@@ -5,6 +5,7 @@ export interface FileNode {
   file: wopan.File
   subFiles: FileNode[]
   pageNo: number
-  pageSize: number
   hasMore: boolean
+  read: boolean
+  deleted: boolean
 }

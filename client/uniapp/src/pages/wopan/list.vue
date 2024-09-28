@@ -44,7 +44,6 @@
     <uni-list :class="{ 'uni-list--waterfall': formData.waterfall }">
       <wd-checkbox-group
         v-model="checkList"
-        @change="checkboxChange"
         shape="square"
         style="display: contents"
         inline
@@ -72,11 +71,13 @@
             <view class="file">
               <view>
                 <view class="uni-title">
-                  <text class="uni-ellipsis-2">
+                  <text class="uni-ellipsis-2" :style="{ color: item.read ? '#6FD8D6' : '#303030' }">
                     {{
-                      item.file.name.length < 25
-                        ? item.file.name
-                        : item.file.name.slice(0, 21) + '···' + item.file.name.slice(-4)
+                      formData.waterfall?
+                      item.file.name.length < 18 ?
+                        item.file.name : item.file.name.slice(0, 13) + '···'+ item.file.name.slice(-4):
+                        item.file.name.length < 30 ?
+                          item.file.name : item.file.name.slice(0, 24) + '···' + item.file.name.slice(-4)
                     }}
                   </text>
                   <wd-checkbox :modelValue="index" shape="square" @click.stop/>
@@ -116,7 +117,7 @@
       :status="formData.status"
     />
     <wd-backtop :scrollTop="scrollTop"></wd-backtop>
-    <wd-fab  draggable type="primary" position="left-bottom">
+<!--    <wd-fab  draggable type="primary" position="left-bottom">
       <wd-button
         @click="deleteChecked"
         custom-class="custom-button"
@@ -126,7 +127,7 @@
       >
         删除选中
       </wd-button>
-    </wd-fab>
+    </wd-fab>-->
     <wd-fab
       v-show="checkList.length>0"
       type="primary"
@@ -194,8 +195,10 @@ onPullDownRefresh(() => {
 })
 
 function onClick(file: FileNode, index: number) {
+  file.read = true
   if (file.file.type === 0) {
     wopanStore.$state.curDir = file
+    wopanStore.$state.viewList.push(index)
     if (wopanStore.$state.curDir.subFiles.length === 0) {
       loadFiles()
     }
@@ -208,25 +211,10 @@ function onClick(file: FileNode, index: number) {
   }
 }
 const checkList = ref([])
-function checkboxChange(e) {
-  console.log(e)
-}
+
 function deleteChecked() {
   console.log('delete checked')
-  const dirList: string[] = []
-  const fileList: string[] = []
-  for (const i of checkList.value) {
-    if (wopanStore.$state.curDir.subFiles[i].file.type === 1) {
-      dirList.push(wopanStore.$state.curDir.subFiles[i].file.id)
-    } else {
-      fileList.push(wopanStore.$state.curDir.subFiles[i].file.id)
-    }
-  }
-  wopan.DeleteFile(wopan.SpaceType.Private, dirList, fileList).then(() => {
-    for (const i of checkList.value) {
-      wopanStore.$state.curDir.subFiles.splice(i, 1)
-    }
-  })
+  wopanStore.deleteFiles(checkList.value)
 }
 function deleteAll() {
   message
@@ -245,6 +233,7 @@ function toPDir() {
   wopanStore.$state.curDir = wopanStore.$state.curDir.parent
   breadcrumb.value.pop()
   checkList.value = []
+  wopanStore.$state.viewList.pop()
 }
 onReachBottom(() => {
   console.log('onReachBottom')
@@ -334,7 +323,8 @@ page {
 ::v-deep
   /* #endif */
 .wd-checkbox__shape{
-  margin-left: auto;
+  position: absolute;
+  right: 0;
 }
 .hot-tag {
   background: #ff5a5f;

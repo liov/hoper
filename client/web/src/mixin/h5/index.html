@@ -11,12 +11,10 @@
             const isPhone = userAgent.match(/(iphone|ios|Android|ipad)/i);
             if(!isPhone) {
                 const location =  window.location
-                let host = location.host;
                 if(location.host.startsWith("m.")){
-                    host = location.host.slice(2)
+                    console.log("跳转到电脑版");
+                    location.replace( location.protocol+"//"+location.host.slice(2)+location.pathname+location.search);
                 }
-                console.log("跳转到电脑版");
-                location.replace( location.protocol+"//"+host+location.pathname+location.search);
             }
         }
 

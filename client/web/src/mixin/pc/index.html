@@ -16,8 +16,10 @@
                 if(location.host.startsWith("www.")){
                     host = "m"+location.host.slice(3)
                 }
-                console.log("跳转到手机版");
-                location.replace( location.protocol+"//"+host+location.pathname+location.search);
+                if(!location.host.startsWith("m.")){
+                    console.log("跳转到手机版");
+                    location.replace( location.protocol+"//"+host+location.pathname+location.search);
+                }
             }
         }
 
