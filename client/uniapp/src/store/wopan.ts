@@ -1,24 +1,24 @@
 import client from '@/service/wopan'
 import * as wopan from 'diamond/wopan'
 import { defineStore } from 'pinia'
-import { FileNode } from '@/model/wopan'
 
 export interface WopanState {
-  file: FileNode
-  curDir: FileNode
+  file: wopan.FileNode
+  curDir: wopan.FileNode
   accessToken: string
   refreshToken: string
   psToken: string
   phone: string
   viewList: number[]
   pageSize: number
+  spaceType: wopan.SpaceType
 }
 
 const accessTokenKey = 'accessToken'
 const refreshTokenKey = 'refreshToken'
 const psTokenKey = 'psToken'
 const phoneKey = 'phone'
-const rootFile: FileNode = {
+const rootFile: wopan.FileNode = {
   parent: null,
   file: {
     id: '0',
@@ -38,6 +38,7 @@ const state: WopanState = {
   curDir: rootFile,
   viewList: [],
   pageSize: 50,
+  spaceType: wopan.SpaceType.Private,
 }
 client.setToken(state.accessToken, state.refreshToken)
 client.psToken = state.psToken
@@ -94,7 +95,7 @@ const actions = {
     )
     state.curDir.subFiles.push(
       ...res.files.map(
-        (file: wopan.File): FileNode => {
+        (file: wopan.File): wopan.FileNode => {
           if(file.previewUrl===""){
             file.previewUrl = wopan.preview(file.fid)
           }
@@ -111,7 +112,7 @@ const actions = {
     )
     if(state.curDir.pageNo == 0 && res.files.length == 0 ){
       console.log('no file')
-      await wopan.DeleteFile(wopan.SpaceType.Private,[state.curDir.file.id],[])
+      await wopan.DeleteFile(state.spaceType,[state.curDir.file.id],[])
       state.curDir = state.curDir.parent
     }
     if (res.files.length < state.pageSize) {
@@ -144,7 +145,7 @@ const actions = {
       fileList.push(state.curDir.subFiles[index].file.id)
     }
     console.log('deleteCurDirFile', dirList, fileList)
-    await wopan.DeleteFile(wopan.SpaceType.Private, dirList, fileList)
+    await wopan.DeleteFile(state.spaceType, dirList, fileList)
     state.curDir.subFiles.splice(index, 1)
     state.curDir.deleted = true
   },
@@ -164,7 +165,7 @@ const actions = {
     const newList = state.curDir.subFiles.filter((_,idx)=>!delSet.has(idx))
     console.log(delSet,dirList, newList)
     state.curDir.subFiles =  newList
-    await wopan.DeleteFile(wopan.SpaceType.Private, dirList, fileList)
+    await wopan.DeleteFile(state.spaceType, dirList, fileList)
     state.curDir.deleted = true
   }
 }
