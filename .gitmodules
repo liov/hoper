@@ -38,3 +38,7 @@
 	path = thirdparty/example
 	url = https://github.com/hopeio/example
 	branch = main
+[submodule "thirdparty/wopan-sdk-go"]
+	path = thirdparty/wopan-sdk-go
+	url = https://github.com/liov/wopan-sdk-go
+	branch = main

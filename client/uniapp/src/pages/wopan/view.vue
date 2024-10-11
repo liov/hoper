@@ -61,7 +61,6 @@ navigationBarTitleText: 'file-view',
 <script setup lang="ts">
 import { useWopanStore } from '@/store/wopan'
 import {onLoad} from "@dcloudio/uni-app";
-import {storeToRefs} from "pinia";
 import * as wopan from "diamond/wopan";
 import { useToast } from 'wot-design-uni'
 import {FileNode} from "@/model/wopan";
@@ -104,9 +103,9 @@ async function deleteFile(){
   console.log("deleteFile")
    await wopanStore.deleteCurDirFile(index.value);
   total.value = wopanStore.curDir.subFiles.length
-  if(index.value == wopanStore.curDir.subFiles.length){
-  await wopanStore.FileList()
-    }
+  if(index.value == wopanStore.curDir.subFiles.length && !hasMore){
+    await wopanStore.FileList()
+  }
   if(index.value == wopanStore.curDir.subFiles.length){
     if(hasMore){
       hasMore = false
