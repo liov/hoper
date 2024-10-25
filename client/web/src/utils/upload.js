@@ -26,7 +26,7 @@ const getMD5 = function (file) {
     const chunkSize = 2097152; // Read in chunks of 2MB
     const chunks = Math.ceil(file.size / chunkSize);
     let currentChunk = 0;
-    const spark = new SparkMD5.ArrayBuffer();
+    const spark = new SparkMD5();
     const fileReader = new FileReader();
 
     fileReader.onload = function (e) {

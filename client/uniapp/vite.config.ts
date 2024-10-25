@@ -98,6 +98,11 @@ export default ({ command, mode }) => {
       'process.env.VUE_APP_TEST': JSON.stringify('test'),
     },
     css: {
+      preprocessorOptions: {
+        scss: {
+          api:"modern-compiler"
+        },
+      },
       postcss: {
         plugins: [
           // autoprefixer({

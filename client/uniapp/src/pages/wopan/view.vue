@@ -88,6 +88,10 @@ const fileName = computed(()=>{
 
 const total = ref(wopanStore.curDir.subFiles.length)
 onLoad((options) => {
+  if(total.value == 0){
+    uni.redirectTo({url:'/pages/wopan/list'})
+    return
+  }
   index.value = parseInt(options.index)
   file.value =wopanStore.curDir.subFiles[index.value].file
   console.log("file-view",file.value)
