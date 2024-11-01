@@ -16,7 +16,7 @@ import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import { visualizer } from 'rollup-plugin-visualizer'
 import ViteRestart from 'vite-plugin-restart'
-
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 // https://vitejs.dev/config/
 export default ({ command, mode }) => {
   // console.log(mode === process.env.NODE_ENV) // true
@@ -49,6 +49,7 @@ export default ({ command, mode }) => {
     envDir, // 自定义env目录
     // envPrefix: 'VITE_', // 由于第三方库已经使用了VITE_开头的环境变量，所以限制了不能自定义
     plugins: [
+      nodePolyfills(),
       UniPages({
         exclude: ['**/components/**/**.*'],
         routeBlockLang: 'json5', // 虽然设了默认值，但是vue文件还是要加上 lang="json5", 这样才能很好地格式化

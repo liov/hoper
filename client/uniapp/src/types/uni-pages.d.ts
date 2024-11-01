@@ -9,6 +9,8 @@ interface NavigateToOptions {
        "/pages/about/i18n" |
        "/pages/moment/moment_detail" |
        "/pages/moment/moment_list" |
+       "/pages/user/active" |
+       "/pages/user/login" |
        "/pages/wopan/list" |
        "/pages/wopan/login" |
        "/pages/wopan/view";
