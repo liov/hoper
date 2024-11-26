@@ -1,4 +1,4 @@
-use rust::export::start;
+use mobile::export::start;
 
 
 fn main() {

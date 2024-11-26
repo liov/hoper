@@ -6,6 +6,6 @@ opt-level = 3
 
 [workspace]
 members = [
-    "cdylib",
+    "mobile", "rfv",
     "wasm"
 ]

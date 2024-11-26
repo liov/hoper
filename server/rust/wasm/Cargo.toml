@@ -24,7 +24,7 @@ console_error_panic_hook = { version = "0.1.7", optional = true }
 # allocator, however.
 wee_alloc = { version = "0.4.5", optional = true }
 
-fixedbitset = "0.4.2"
+fixedbitset = "0.5"
 js-sys = "0.3.60"
 
 [dev-dependencies]
