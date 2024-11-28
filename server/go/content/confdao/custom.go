@@ -1,6 +1,6 @@
 package confdao
 
-import "github.com/hopeio/utils/fs"
+import "github.com/hopeio/utils/os/fs"
 
 type serverConfig struct {
 	PassSalt    string
