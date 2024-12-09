@@ -1,6 +1,7 @@
 dir=$(cd $(dirname $0);pwd)
 
 function upgrade(){
+  go mod tidy
   local last_tag=$(git describe --tags --abbrev=0)
   local patch=$(echo $last_tag | cut -d'.' -f3)
   local new_version="${last_tag%.*}.$((patch + 1))"
