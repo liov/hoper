@@ -18,3 +18,9 @@ tower = {version = "0.5", features = ["full"]}
 tower-http = { version = "0.6", features = ["full"] }
 tracing-subscriber = "0.3"
 tracing = "0.1"
+image = "0.25"
+mime_guess = "2.0.5"
+ffmpeg-next = "7"
+
+[target.x86_64-pc-windows-gnu]
+linker = "D:/sdk/msys64/ucrt64/bin/gcc"

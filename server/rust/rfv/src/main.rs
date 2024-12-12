@@ -7,16 +7,19 @@ use axum::{
 use tower::ServiceBuilder;
 use tower_http::trace::TraceLayer;
 use tracing_subscriber;
+use ffmpeg_next as ffmpeg;
+
 
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt()
-        .with_max_level(tracing::Level::INFO)
+        .with_max_level(tracing::Level::DEBUG)
         .init();
+    ffmpeg::init().unwrap();
     // build our application with a single route
     let app = Router::new().route("/", get(|| async { "Hello, World!" })).
         route("/list_files", get(file::list_files_handler)).
-        route("/file/:path", get(file::file_thumbnail_handler)).
+        route("/thumbnail/*path", get(file::file_thumbnail_handler)).
         layer(
         ServiceBuilder::new()
             .layer(TraceLayer::new_for_http())

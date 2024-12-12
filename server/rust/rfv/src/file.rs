@@ -1,15 +1,22 @@
-use std::fs;
-use std::io;
-use std::path::Path;
+use crate::file::FileType::File;
+use axum::http::header;
 use axum::{
+    extract::{Path as AxumPath, Query},
     http::StatusCode,
-    extract::{Query,Path as AxumPath},
-    response::{Response, IntoResponse},
+    response::{IntoResponse, Response},
     Json,
 };
-use std::path::{PathBuf};
+use image::{DynamicImage, GenericImageView, ImageFormat, ImageReader};
 use serde::{Deserialize, Serialize};
-use crate::file::FileType::File;
+use std::fs;
+use std::io;
+use std::io::Cursor;
+use std::path::Path;
+use std::path::PathBuf;
+use ffmpeg_next as ffmpeg;
+use ffmpeg_next::decoder::Decoder;
+use ffmpeg_next::software::scaling::Context;
+use tracing::debug;
 
 #[derive(Deserialize)]
 pub struct ListFilesParams {
@@ -28,8 +35,9 @@ pub struct FileInfo {
     typ: i32,
 }
 
-
-pub async fn list_files_handler(Query(params): Query<ListFilesParams>) -> Result<Json<Vec<FileInfo>>, (StatusCode, String)> {
+pub async fn list_files_handler(
+    Query(params): Query<ListFilesParams>,
+) -> Result<Json<Vec<FileInfo>>, (StatusCode, String)> {
     let path = PathBuf::from(&params.path);
 
     // 检查路径是否存在并且是一个目录
@@ -44,7 +52,7 @@ pub async fn list_files_handler(Query(params): Query<ListFilesParams>) -> Result
             .map(|entry| {
                 let file_type = if entry.path().is_file() {
                     FileType::File as i32
-                } else  {
+                } else {
                     FileType::Directory as i32
                 };
                 FileInfo {
@@ -53,31 +61,185 @@ pub async fn list_files_handler(Query(params): Query<ListFilesParams>) -> Result
                 }
             })
             .collect(),
-        Err(e) =>  return Err((StatusCode::INTERNAL_SERVER_ERROR, format!("Error reading directory: {}", e))),
+        Err(e) => {
+            return Err((
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Error reading directory: {}", e),
+            ))
+        }
     };
 
     Ok(Json(files))
 }
 
-pub async fn file_thumbnail_handler(AxumPath(path):AxumPath<String>) -> Result<Response, (StatusCode, String)> {
-    let path_buf = PathBuf::from(path.clone());
+pub async fn file_thumbnail_handler(
+    AxumPath(path): AxumPath<String>,
+) -> Result<Response, (StatusCode, String)> {
+    let path_buf = PathBuf::from(format!("D:/{}", path));
     if !path_buf.exists() || !path_buf.is_file() {
         return Err((StatusCode::NOT_FOUND, "File not found".to_string()));
     }
+    const max_size: u32 = 256;
+    if let Some(ext) = path_buf.extension() {
+        if let Some(ext_str) = ext.to_str() {
+            let lower_ext = ext_str.to_lowercase();
+            if ["png", "jpg", "jpeg", "gif", "avif", "webp", "heic", "heif"]
+                .contains(&lower_ext.as_str())
+            {
+                let img = match image::open(&path_buf) {
+                    Ok(img) => img,
+                    Err(e) => {
+                        return Err((
+                            StatusCode::INTERNAL_SERVER_ERROR,
+                            format!("Error decoding image: {}", e),
+                        ))
+                    }
+                };
+                // 计算新的尺寸，保持宽高比。
+                let (width, height) = img.dimensions();
+                let thumbnail = if width > height {
+                    img.resize(
+                        max_size,
+                        max_size * height / width,
+                        image::imageops::FilterType::Triangle,
+                    )
+                } else {
+                    img.resize(
+                        max_size * width / height,
+                        max_size,
+                        image::imageops::FilterType::Triangle,
+                    )
+                };
+                let mut thumb_bytes: Vec<u8> = Vec::new();
+                thumbnail
+                    .write_to(&mut Cursor::new(&mut thumb_bytes), ImageFormat::WebP)
+                    .unwrap();
+                // 构建 HTTP 响应。
+                return Ok((
+                    [
+                        (header::CONTENT_TYPE, "image/webp"),
+                        (header::CACHE_CONTROL, "public, max-age=31536000"),
+                    ],
+                    thumb_bytes,
+                )
+                    .into_response());
+            } else if ["mp4", "flv", "avi", "rmvb"].contains(&lower_ext.as_str()) {
+                // 打开视频文件。
+                let mut context = match ffmpeg::format::input(&path_buf) {
+                    Ok(ctx) => ctx,
+                    Err(_) => return Err((StatusCode::NOT_FOUND, "Video file not found".to_string())),
+                };
+                // 提取第一帧作为缩略图。
 
+                let mut frame = ffmpeg::frame::Video::empty();
+                for (stream, packet) in context.packets() {
+                    if stream.parameters().medium() == ffmpeg::media::Type::Video {
+                        debug!("stream: {:?}",stream);
+                        // 获取解码器上下文。
+                        let codec_context = ffmpeg::codec::context::Context::from_parameters(
+                            stream.parameters(),
+                        ).unwrap();
+                        let mut decoder = codec_context.decoder().video().unwrap();
+                        // 准备接收帧的变量。
+                        let mut key_frame_count = 0; // 用于计数关键帧的数量
+                        let mut frame_count = 0; // 用于计数帧的数量
+                        decoder.send_packet(&packet).unwrap();
+
+                         loop {
+                            match decoder.receive_frame(&mut frame) {
+                                Ok(_) => {
+                                    if frame.is_key() { // 检查当前帧是否是关键帧
+                                        key_frame_count += 1;
+                                        if key_frame_count == 3 { // 只需要第二个关键帧
+                                            break;
+                                        }
+                                    }
+                                    frame_count += 1;
+                                    if frame_count >= 10 {
+                                        break;
+                                    }
+                                },
+                                Err(ffmpeg::Error::Eof) => (),
+                                Err(err) => return Err((StatusCode::INTERNAL_SERVER_ERROR, format!("Error decoding video: {}", err))),
+                            }
+                        }
+                        break;
+                    }
+                }
+                // 将帧转换为 RGB 格式。
+                let mut rgb_frame = ffmpeg::frame::Video::empty();
+                let mut width = frame.width();
+                let mut height = frame.height();
+                if width > height {
+                    width=max_size;
+                    height=max_size*height/width;
+                } else {
+                   height = max_size;
+                    width=max_size*width/height;
+                }
+                let mut scaler = Context::get(
+                    frame.format(),
+                    frame.width(),
+                    frame.height(),
+                    ffmpeg::format::pixel::Pixel::RGB24,
+                    width,
+                    height,
+                    ffmpeg::software::scaling::flag::Flags::BILINEAR,
+                ).unwrap();
+
+                scaler.run(&frame, &mut rgb_frame).unwrap();
+                // 将 RGB 数据转换为图像。
+                let img = DynamicImage::ImageRgb8(image::RgbImage::from_raw(
+                    width,
+                    height,
+                    rgb_frame.data(0).to_vec(),
+                ).unwrap());
+                // 将缩略图编码为 WebP 字节流。
+                let mut thumb_bytes: Vec<u8> = Vec::new();
+                img.write_to(&mut Cursor::new(&mut thumb_bytes), ImageFormat::WebP).unwrap();
+                // 构建 HTTP 响应。
+                return Ok((
+                    [
+                        (header::CONTENT_TYPE, "image/webp"),
+                        (header::CACHE_CONTROL, "public, max-age=31536000"),
+                    ],
+                    thumb_bytes,
+                )
+                    .into_response());
+            }
+        }
+    }
     // 读取文件内容
     match fs::read(&path_buf) {
         Ok(content) => {
+            let mime_type = mime_guess::from_path(&path)
+                .first_or_octet_stream()
+                .to_string();
             // 设置适当的头部信息
-            let disposition = format!("attachment; filename=\"{}\"", path);
-            let headers = [
-                (axum::http::header::CONTENT_TYPE, "application/octet-stream"),
-                (axum::http::header::CONTENT_DISPOSITION, disposition.as_str()),
-            ];
+            let headers = if mime_type == "application/octet-stream" {
+                [
+                    (header::CONTENT_TYPE, mime_type),
+                    (
+                        header::CONTENT_DISPOSITION,
+                        format!(
+                            "attachment; filename=\"{}\"",
+                            path_buf.file_name().unwrap().to_str().unwrap()
+                        ),
+                    ),
+                ]
+            } else {
+                [
+                    (header::CONTENT_TYPE, mime_type),
+                    (header::CACHE_CONTROL, "public, max-age=31536000".parse().unwrap()),
+                ]
+            };
 
             // 返回带有头部信息和文件内容的响应
             Ok((headers, content).into_response())
         }
-        Err(_) => Err((StatusCode::INTERNAL_SERVER_ERROR, "Error reading file".to_string())),
+        Err(_) => Err((
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "Error reading file".to_string(),
+        )),
     }
 }
