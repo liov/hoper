@@ -86,7 +86,7 @@ pub async fn file_thumbnail_handler(
     thumbnail_path_buf.set_extension("webp");
     if thumbnail_path_buf.exists()  {
         // 打开文件进行异步读取。
-        let file = match tokio::fs::File::open(path).await {
+        let file = match tokio::fs::File::open(thumbnail_path_buf).await {
             Ok(file) => file,
             Err(_) => return Err((StatusCode::NOT_FOUND, "File not found".to_string())),
         };
@@ -98,7 +98,7 @@ pub async fn file_thumbnail_handler(
         let body = Body::from_stream(stream);
 
        return  Ok(Response::builder()
-            .header("Content-Type", "application/octet-stream")
+            .header("Content-Type", "image/webp")
             .body(body)
             .unwrap())
     }
