@@ -17,7 +17,9 @@ use std::io;
 use std::io::Cursor;
 use std::path::Path;
 use std::path::PathBuf;
+use axum::body::Body;
 use tracing::debug;
+use tokio_util::codec::{BytesCodec, FramedRead};
 
 #[derive(Deserialize)]
 pub struct ListFilesParams {
@@ -73,14 +75,39 @@ pub async fn list_files_handler(
     Ok(Json(files))
 }
 
+const MAX_SIZE: u32 = 256;
+const THUMBNAIL_DIR: &str = ".thumbnails";
+
 pub async fn file_thumbnail_handler(
     AxumPath(path): AxumPath<String>,
 ) -> Result<Response, (StatusCode, String)> {
+
+    let mut thumbnail_path_buf = PathBuf::from(format!("{}/{}", THUMBNAIL_DIR, path));
+    thumbnail_path_buf.set_extension("webp");
+    if thumbnail_path_buf.exists()  {
+        // 打开文件进行异步读取。
+        let file = match tokio::fs::File::open(path).await {
+            Ok(file) => file,
+            Err(_) => return Err((StatusCode::NOT_FOUND, "File not found".to_string())),
+        };
+
+        // 将文件转换为流，以便可以被发送到客户端。
+        let stream = FramedRead::new(file, BytesCodec::new());
+
+        // 从流创建一个Body，然后构建响应。
+        let body = Body::from_stream(stream);
+
+       return  Ok(Response::builder()
+            .header("Content-Type", "application/octet-stream")
+            .body(body)
+            .unwrap())
+    }
+
     let path_buf = PathBuf::from(format!("D:/{}", path));
     if !path_buf.exists() || !path_buf.is_file() {
         return Err((StatusCode::NOT_FOUND, "File not found".to_string()));
     }
-    const MAX_SIZE: u32 = 256;
+    fs::create_dir_all(thumbnail_path_buf.parent().unwrap()).unwrap();
     if let Some(ext) = path_buf.extension() {
         if let Some(ext_str) = ext.to_str() {
             let lower_ext = ext_str.to_lowercase();
@@ -115,6 +142,7 @@ pub async fn file_thumbnail_handler(
                 thumbnail
                     .write_to(&mut Cursor::new(&mut thumb_bytes), ImageFormat::WebP)
                     .unwrap();
+                fs::write(thumbnail_path_buf, &thumb_bytes).unwrap();
                 // 构建 HTTP 响应。
                 return Ok((
                     [
@@ -148,7 +176,7 @@ pub async fn file_thumbnail_handler(
                 let mut key_frame_count = 0; // 用于计数关键帧的数量
                 let mut frame_count = 0; // 用于计数帧的数量
                 let mut frame = ffmpeg::frame::Video::empty();
-                for (stream, packet) in input.packets() {
+                'lable: for (stream, packet) in input.packets() {
                     if stream.index() == video_stream_index {
                         debug!("stream: {:?}", stream);
                         decoder.send_packet(&packet).unwrap();
@@ -156,14 +184,14 @@ pub async fn file_thumbnail_handler(
                             if frame.is_key() {
                                 // 检查当前帧是否是关键帧
                                 key_frame_count += 1;
-                                if key_frame_count == 3 {
+                                if key_frame_count == 10 {
                                     // 只需要第二个关键帧
-                                    break;
+                                    break 'lable;
                                 }
                             }
                             frame_count += 1;
-                            if frame_count >= 10 {
-                                break;
+                            if frame_count >= 100 {
+                                break 'lable;
                             }
                         }
                     }
@@ -201,6 +229,7 @@ pub async fn file_thumbnail_handler(
                 let mut thumb_bytes: Vec<u8> = Vec::new();
                 img.write_to(&mut Cursor::new(&mut thumb_bytes), ImageFormat::WebP)
                     .unwrap();
+                fs::write(thumbnail_path_buf, &thumb_bytes).unwrap();
                 // 构建 HTTP 响应。
                 return Ok((
                     [
