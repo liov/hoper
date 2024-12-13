@@ -98,7 +98,8 @@ pub async fn file_thumbnail_handler(
         let body = Body::from_stream(stream);
 
        return  Ok(Response::builder()
-            .header("Content-Type", "image/webp")
+            .header(header::CONTENT_TYPE, "image/webp")
+            .header(header::CACHE_CONTROL, "public, max-age=31536000")
             .body(body)
             .unwrap())
     }
