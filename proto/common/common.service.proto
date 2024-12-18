@@ -1,7 +1,6 @@
 syntax = "proto3";
 package common;
 
-import "common/common.enum.proto";
 import "common/common.model.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "hopeio/utils/validator/validator.proto";

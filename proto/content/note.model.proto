@@ -1,6 +1,6 @@
 syntax = "proto3";
 package content;
-import "content/content.enum.proto";
+import "content/content.model.proto";
 import "hopeio/utils/patch/go.proto";
 import "hopeio/time/time.proto";
 import "hopeio/time/deletedAt/deletedAt.proto";
