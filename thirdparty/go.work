@@ -9,4 +9,5 @@ use (
 	pick
 	protobuf
 	utils
+	scaffold
 )

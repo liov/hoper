@@ -65,7 +65,7 @@ class UniRequest {
   ): Promise<ResData<T>> {
     return new Promise<ResData<T>>((resolve, reject) => {
       // 接口请求支持通过 query 参数配置 queryString
-      if (config.query) {
+      if (config?.query) {
         const queryStr = toUrlParams(config.query)
         if (url.includes('?')) {
           url += `&${queryStr}`
