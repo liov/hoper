@@ -37,7 +37,7 @@ message User {
   string cover = 13 [(go.field) = {tags:'gorm:"size:255"'}];
   Role role = 24 [(go.field) = {tags:'gorm:"type:int2;default:0"'}];
   string realName = 19 [(go.field) = {tags:'gorm:"size:5" comment:"实名"'}];
-  string IdNo = 18 [(go.field) = {tags:'gorm:"size:22" comment:"身份证号"'}];
+  string idNo = 18 [(go.field) = {tags:'gorm:"size:22" comment:"身份证号"'}];
   UserStatus status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
