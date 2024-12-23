@@ -15,7 +15,7 @@ const state: UserState = {
   token: '',
   userCache: new Map<number, any>(),
 }
-
+const tokenKey = 'token'
 const getters = {
   getUser: (state: UserState) => {
     return (id: number): User => state.userCache.get(id)
@@ -25,7 +25,7 @@ const getters = {
 const actions = {
   async getAuth() {
     if (state.auth) return
-    const token = uni.getStorageSync('token')
+    const token = uni.getStorageSync(tokenKey)
     if (token) {
       state.token = token
       const { data } = await request.get(API_HOST + `/api/v1/auth`)
@@ -43,7 +43,7 @@ const actions = {
 
       state.auth = data.user
       state.token = data.token
-      uni.setStorageSync('token', data.token)
+      uni.setStorageSync(tokenKey, data.token)
       request.defaults.header.Authorization = data.token
       await uni.navigateTo({ url: '/' })
     } catch (error: any) {
@@ -61,7 +61,7 @@ const actions = {
       })
       state.auth = details.user
       state.token = details.token
-      uni.setStorageSync('token', details.token)
+      uni.setStorageSync(tokenKey, details.token)
       request.defaults.header.Authorization = details.token
       await uni.navigateTo({ url: '/' })
     } catch (error: any) {

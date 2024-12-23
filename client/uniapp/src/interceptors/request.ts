@@ -24,7 +24,7 @@ export function init() {
           uni.showToast({ title: '请登录', icon: 'exception' })
           const pages = getCurrentPages()
           uni.navigateTo({
-            url: 'pages/user/login?back=' + pages[pages.length - 1].route,
+            url: '/pages/user/login?back=' + pages[pages.length - 1].route,
           })
         } else if (data.code !== 0) {
           uni.showToast({ title: data.msg, icon: 'error' })
