@@ -10,12 +10,6 @@ func main() {
 		GrpcHandler: api.GrpcRegister,
 
 		GinHandler: api.GinRegister,
-
-		/*		GraphqlResolve: model.NewExecutableSchema(model.Config{
-				Resolvers: &model.GQLServer{
-					UserService:  service.GetUserService(),
-					OauthService: service.GetOauthService(),
-				}}),*/
 	}
 	server.Run()
 }

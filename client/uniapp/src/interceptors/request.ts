@@ -1,21 +1,21 @@
-import uniHttp from '@/utils/request'
+import { unirequest } from 'diamond/uniapp'
 import { API_HOST } from '@/env/config'
 import { useUserStore } from '@/store/user'
 
 export function init() {
-  uniHttp.defaults.baseUrl = API_HOST
+  unirequest.defaults.baseUrl = API_HOST
   const token = uni.getStorageSync('token')
   const userStore = useUserStore()
-  uniHttp.defaults.header.Authorization = token || userStore.token
+  unirequest.defaults.header.Authorization = token || userStore.token
 
   // 添加请求拦截器
-  uniHttp.interceptors.request.use(function (config) {
+  unirequest.interceptors.request.use(function (config) {
     // 在发送请求之前做些什么
     return config
   })
 
   // 添加响应拦截器
-  uniHttp.interceptors.response.use(
+  unirequest.interceptors.response.use(
     function (response): UniApp.RequestSuccessCallbackResult {
       // 对响应数据做点什么
       if (response.statusCode === 200) {

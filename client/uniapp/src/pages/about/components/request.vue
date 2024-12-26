@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts" setup>
-import { getFooAPI, postFooAPI, IFooItem } from '@/service/index/foo'
+import { getFooAPI, postFooAPI, IFooItem } from '@/api/index/foo'
 
 const recommendUrl = ref('https://hoper.xyz')
 

@@ -10,7 +10,7 @@
 <template></template>
 
 <script setup lang="ts">
-import UserService from '@/service/user'
+import UserService from '@/api/user'
 import { useUserStore } from '@/store/user'
 import { useRouter, useRoute } from 'vue-router'
 

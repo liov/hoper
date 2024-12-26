@@ -1,4 +1,4 @@
-import client from '@/service/wopan'
+import client from '@/api/wopan'
 import * as wopan from 'diamond/wopan'
 import { defineStore } from 'pinia'
 

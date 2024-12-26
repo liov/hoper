@@ -3,7 +3,6 @@ module github.com/liov/hoper/server/go
 go 1.23.0
 
 require (
-	github.com/99designs/gqlgen v0.17.60
 	github.com/asticode/go-astiav v0.18.0
 	github.com/danielvladco/go-proto-gql v0.10.1-0.20221227181908-22fca0a9469c
 	github.com/gin-gonic/gin v1.10.0

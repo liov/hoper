@@ -130,13 +130,13 @@
 
 <script setup lang="ts">
 import Actions from '@/components/action.vue'
-import MomentService from '@/service/moment'
+import MomentService from '@/api/moment'
 
 import { STATIC_DIR as staticDir } from '@/env/config'
 import type { Moment, MomentList } from '@/model/moment'
 import type { User } from '@/model/user'
 import { onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app'
-import type { PageRequest } from '@/service/param'
+import type { PageRequest } from '@/api/param'
 import { useUserStore } from '@/store/user'
 const userStore = useUserStore()
 const listReq: PageRequest = {
