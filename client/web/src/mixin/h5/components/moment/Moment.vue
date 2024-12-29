@@ -3,7 +3,7 @@
     <div class="auth">
       <img class="avatar" :src="staticDir + user.avatarUrl" />
       <span class="name">{{ user.name }}</span>
-      <span class="time">{{ date2s(moment.createdAt) }}</span>
+      <span class="time">{{ dateFmtDateTime(moment.createdAt) }}</span>
     </div>
     <div class="content" @click="detail">
       <van-field
@@ -42,7 +42,7 @@ import Action from "@/mixin/h5/components/action/Action.vue";
 import { jump } from "@/mixin/router/utils";
 import { STATIC_DIR as staticDir } from "@/mixin/plugin/config";
 import { useRoute } from "vue-router";
-import { date2s } from "diamond/time";
+import { dateFmtDateTime } from "diamond/time";
 import { reactive } from "vue";
 
 const props = defineProps<{

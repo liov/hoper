@@ -286,20 +286,19 @@ export default {
     };
   },
   created() {
-    this.user.birthday = this.$s2date(
-      this.user.birthday,
-      "YYYY-MM-DD HH:mm:ss",
+    this.user.birthday = this.$toDate(
+      this.user.birthday
     );
     for (const v of this.user.edu_exps) {
       this.edu_exps.push({
         id: v.id,
         school: v.school,
         speciality: v.speciality,
-        start_time: this.$s2date(v.start_time, "YYYY-MM-DD HH:mm:ss"),
-        end_time: this.$s2date(v.end_time, "YYYY-MM-DD HH:mm:ss"),
+        start_time: this.$toDate(v.start_time),
+        end_time: this.$toDate(v.end_time),
         time: [
-          this.$s2date(v.start_time, "YYYY-MM-DD HH:mm:ss"),
-          this.$s2date(v.end_time, "YYYY-MM-DD HH:mm:ss"),
+          this.$toDate(v.start_time),
+          this.$toDate(v.end_time)
         ],
       });
     }
@@ -309,11 +308,11 @@ export default {
         id: v.id,
         company: v.company,
         title: v.title,
-        start_time: this.$s2date(v.start_time, "YYYY-MM-DD HH:mm:ss"),
-        end_time: this.$s2date(v.end_time, "YYYY-MM-DD HH:mm:ss"),
+        start_time: this.$toDate(v.start_time),
+        end_time: this.$toDate(v.end_time),
         time: [
-          this.$s2date(v.start_time, "YYYY-MM-DD HH:mm:ss"),
-          this.$s2date(v.end_time, "YYYY-MM-DD HH:mm:ss"),
+          this.$toDate(v.start_time),
+          this.$toDate(v.end_time),
         ],
       });
     }

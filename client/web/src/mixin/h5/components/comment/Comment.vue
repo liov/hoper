@@ -3,7 +3,7 @@
     <div class="auth">
       <img class="avatar" :src="staticDir + user.avatarUrl" />
       <span class="name">{{ user.name }}</span>
-      <span class="time">{{ date2s(comment.createdAt) }}</span>
+      <span class="time">{{ dateFmtDateTime(comment.createdAt) }}</span>
       <div class="like">
         <van-icon
           :name="comment.likeId > 0 ? 'like' : 'like-o'"
@@ -41,7 +41,7 @@
 
 <script setup lang="ts">
 import { showImagePreview } from "vant";
-import { date2s } from "diamond/time";
+import { dateFmtDateTime } from "diamond/time";
 import axios from "axios";
 import emitter from "@/mixin/plugin/emitter";
 import { STATIC_DIR as staticDir } from "@/mixin/plugin/config";

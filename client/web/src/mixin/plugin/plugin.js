@@ -11,11 +11,11 @@ export default {
       return dayjs(value).format("YYYY-MM-DD HH:mm:ss");
     });
 
-    app.config.globalProperties.$s2date = (value) =>
-      dayjs(value, "YYYY-MM-DD HH:mm:ss.SSS Z");
-    app.config.globalProperties.$date2s = (value) =>
+    app.config.globalProperties.$toDate = (value) =>
+      dayjs(value, "YYYY-MM-DD HH:mm:ss.SSSZ");
+    app.config.globalProperties.$dateFmtDateTime = (value) =>
       dayjs(value).format("YYYY-MM-DD HH:mm:ss");
-    app.config.globalProperties.$datefmt = (value, format) =>
+    app.config.globalProperties.$dateFmt = (value, format) =>
       dayjs(value).format(format);
 
     app.config.globalProperties.$customUpload = async ({
