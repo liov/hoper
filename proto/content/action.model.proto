@@ -24,7 +24,7 @@ message Action{
   ActionType action = 3 [(go.field) = {tags:'gorm:"type:int2;default:1" validate:"required" comment:"动作"'}];
   user.UserBase user = 4 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  time.Time updateAt = 30 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
+  time.Time updatedAt = 30 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
   deletedAt.DeletedAt deletedAt = 26 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
 }
 
@@ -37,7 +37,7 @@ message Like{
   LikeStatus status = 3 [(go.field) = {tags:'gorm:"type:int2;default:1" validate:"required" comment:"状态"'}];
   user.UserBase user = 4 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  time.Time updateAt = 30 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
+  time.Time updatedAt = 30 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
   deletedAt.DeletedAt deletedAt = 26 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
 }
 
@@ -48,7 +48,7 @@ message UnLike{
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
   user.UserBase user = 4 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  time.Time updateAt = 30 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
+  time.Time updatedAt = 30 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
   deletedAt.DeletedAt deletedAt = 26 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
 }
 

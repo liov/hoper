@@ -43,7 +43,7 @@ message User {
   }];
   time.Time activatedAt = 3 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
   time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  time.Time updateAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
+  time.Time updatedAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
   deletedAt.DeletedAt deletedAt = 27 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
 }
 
@@ -64,7 +64,7 @@ message Follow {
   uint64 followId = 2 [(go.field) = {tags:'gorm:"default:0"'}];
   time.Time createdAt = 3 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type: STRING}];
-  time.Time updateAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
+  time.Time updatedAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
   deletedAt.DeletedAt deletedAt = 4 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type: STRING}];
   uint32 status = 5 [(go.field) = {tags:'gorm:"type:int2;"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
@@ -138,7 +138,7 @@ message Resume {
   }];
   time.Time createdAt = 29 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type: STRING}];
-  time.Time updateAt = 30 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
+  time.Time updatedAt = 30 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
   deletedAt.DeletedAt deletedAt = 31 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type: STRING}];
 }
@@ -195,7 +195,7 @@ message Device {
   double screenSize = 11 [(go.field) = {tags:'gorm:"type:int8;default:0"'}];
   time.Time createdAt = 29 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type: STRING}];
-  time.Time updateAt = 30 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
+  time.Time updatedAt = 30 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
   deletedAt.DeletedAt deletedAt = 31 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type: STRING}];
 }
