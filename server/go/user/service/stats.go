@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"github.com/hopeio/context/httpctx"
+	dbi "github.com/hopeio/utils/dao/database/sql"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/confdao"
 	"github.com/liov/hoper/server/go/user/data"
@@ -10,7 +11,6 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/hopeio/protobuf/errcode"
-	dbi "github.com/hopeio/utils/dao/database"
 )
 
 // 关注

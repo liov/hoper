@@ -3,9 +3,9 @@ package db
 import (
 	"encoding/json"
 	"github.com/hopeio/context/httpctx"
-	dbi "github.com/hopeio/utils/dao/database"
 	gormi "github.com/hopeio/utils/dao/database/gorm"
 	_ "github.com/hopeio/utils/dao/database/gorm/serializer"
+	dbi "github.com/hopeio/utils/dao/database/sql"
 	"github.com/hopeio/utils/log"
 	"github.com/hopeio/utils/slices"
 	"github.com/hopeio/utils/validation"
@@ -210,5 +210,5 @@ func (d *UserDao) UserInfoByAccount(account string) (*puser.User, error) {
 		sql = "account = ?"
 	}
 	return &user, d.Table(model.TableNameUser).
-		Where(sql+` AND status != ?`+dbi.WithNotDeleted, account, puser.UserStatusDeleted).First(&user).Error
+		Where(sql+` AND status != ?`+sql.WithNotDeleted, account, puser.UserStatusDeleted).First(&user).Error
 }
