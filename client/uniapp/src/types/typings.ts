@@ -1,11 +1,5 @@
 // 全局要用的类型放到这里
 
-type ResData<T> = {
-  code: number
-  msg: string
-  data: T
-}
-
 // uni.uploadFile文件上传参数
 type IUniUploadFileOptions = {
   file?: File
