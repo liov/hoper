@@ -11,7 +11,7 @@ export default {
       return dayjs(value).format("YYYY-MM-DD HH:mm:ss");
     });
 
-    app.config.globalProperties.$toDate = (value) =>
+    app.config.globalProperties.$toDayjs = (value) =>
       dayjs(value, "YYYY-MM-DD HH:mm:ss.SSSZ");
     app.config.globalProperties.$dateFmtDateTime = (value) =>
       dayjs(value).format("YYYY-MM-DD HH:mm:ss");

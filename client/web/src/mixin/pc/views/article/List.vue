@@ -86,7 +86,7 @@
                   <a-col :flex="1" style="font-size: 10px">
                     <span> {{ dateFmtDateTime(item.created_at) }}</span>
                     <a-divider type="vertical" />
-                    <span>{{ toDate(item.created_at).fromNow() }}</span>
+                    <span>{{ toDayjs(item.created_at).fromNow() }}</span>
                   </a-col>
                 </a-row>
               </template>
@@ -185,7 +185,7 @@ import {
 } from "@ant-design/icons-vue";
 import { useUserStore } from "@/mixin/store/user";
 import ArticleClient from "@/mixin/service/article";
-import { dateFmtDateTime, toDate } from "diamond/time";
+import { dateFmtDateTime, toDayjs } from "diamond/time";
 import { STATIC_DIR } from "@/mixin/plugin/config";
 import { tagColor } from "@/mixin/pc/views/article/const";
 

@@ -286,7 +286,7 @@ export default {
     };
   },
   created() {
-    this.user.birthday = this.$toDate(
+    this.user.birthday = this.$toDayjs(
       this.user.birthday
     );
     for (const v of this.user.edu_exps) {
@@ -294,11 +294,11 @@ export default {
         id: v.id,
         school: v.school,
         speciality: v.speciality,
-        start_time: this.$toDate(v.start_time),
-        end_time: this.$toDate(v.end_time),
+        start_time: this.$toDayjs(v.start_time),
+        end_time: this.$toDayjs(v.end_time),
         time: [
-          this.$toDate(v.start_time),
-          this.$toDate(v.end_time)
+          this.$toDayjs(v.start_time),
+          this.$toDayjs(v.end_time)
         ],
       });
     }
@@ -308,11 +308,11 @@ export default {
         id: v.id,
         company: v.company,
         title: v.title,
-        start_time: this.$toDate(v.start_time),
-        end_time: this.$toDate(v.end_time),
+        start_time: this.$toDayjs(v.start_time),
+        end_time: this.$toDayjs(v.end_time),
         time: [
-          this.$toDate(v.start_time),
-          this.$toDate(v.end_time),
+          this.$toDayjs(v.start_time),
+          this.$toDayjs(v.end_time),
         ],
       });
     }
