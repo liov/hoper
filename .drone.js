@@ -6,17 +6,17 @@ const compileHost = {
     localhost:((dirprefix)=> {
         return{
             dirprefix: dirprefix,
-            codedir: dirprefix + '/code/hoper/',
-            gopath: dirprefix + '/SDK/gopath',
+            codedir: dirprefix + '/code/hopeio/hoper',
+            gopath: dirprefix + '/sdk/gopath',
         }
     })('/mnt/d'),
-    tot: ((dirprefix)=> {
+    mint: ((dirprefix)=> {
         return {
             dirprefix: dirprefix,
-            codedir: dirprefix + '/code/hoper',
-            gopath: dirprefix + '/gopath',
+            codedir: dirprefix + '/code/hopeio/hoper',
+            gopath: dirprefix + '/sdk/gopath',
         }
-    })('/home/new/data'),
+    })('/var'),
 };
 
 const deploytHost = {
@@ -24,13 +24,13 @@ const deploytHost = {
         datadir: '/data',
         confdir: '/root/config',
     },
-    tot: ((dirprefix)=> {
+    mint: ((dirprefix)=> {
         return {
         dirprefix: dirprefix,
         datadir: dirprefix + '/data',
         confdir: dirprefix + '/config',
         }
-    })('/home/new'),
+    })('/var'),
 };
 
 
