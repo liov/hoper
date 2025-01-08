@@ -76,7 +76,7 @@
 <script setup lang="ts">
 import axios from "axios";
 import { upload } from "@/utils/upload";
-import {dateTool} from "diamond/time";
+import {dateTool} from "@hopeio/utils/time";
 import dayjs from "dayjs";
 
 import { STATIC_DIR } from "@/mixin/plugin/config";

@@ -1,4 +1,4 @@
-import { http } from 'diamond/uniapp'
+import { http } from '@hopeio/utils/uniapp'
 export interface IFooItem {
   id: string
   name: string

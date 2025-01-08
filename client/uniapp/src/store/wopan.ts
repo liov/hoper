@@ -1,5 +1,5 @@
 import client from '@/api/wopan'
-import * as wopan from 'diamond/wopan'
+import * as wopan from '@hopeio/utils/wopan'
 import { defineStore } from 'pinia'
 
 export interface WopanState {

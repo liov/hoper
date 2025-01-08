@@ -2,7 +2,7 @@ import { ObjMap } from '@/utils/user'
 import { defineStore } from 'pinia'
 import { API_HOST } from '@/env/config'
 import type { User } from '@/model/user'
-import { unirequest } from 'diamond/uniapp'
+import { unirequest } from '@hopeio/utils/uniapp'
 
 export interface UserState {
   auth: any

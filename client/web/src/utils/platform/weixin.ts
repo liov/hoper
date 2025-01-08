@@ -1,4 +1,4 @@
-import { dynamicLoadJs } from "../../../../../thirdparty/diamond/src/browser/script";
+import { dynamicLoadJs } from "@hopeio/utils/browser/script";
 
 let active = false;
 

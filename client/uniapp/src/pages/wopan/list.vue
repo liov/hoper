@@ -141,7 +141,7 @@
 
 <script lang="ts" setup>
 import { useWopanStore } from '@/store/wopan'
-import * as wopan from 'diamond/wopan'
+import * as wopan from '@hopeio/utils/wopan'
 import { storeToRefs } from 'pinia'
 import { FileNode } from '@/model/wopan'
 import { onPullDownRefresh, onReachBottom, onPageScroll } from '@dcloudio/uni-app'

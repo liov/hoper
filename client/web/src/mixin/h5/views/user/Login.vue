@@ -103,7 +103,7 @@
 import { nextTick, onMounted, ref } from "vue";
 import axios from "axios";
 import Luosimao from "@/mixin/h5/components/Luosimao.vue";
-import Validator from "diamond/validator";
+import Validator from "@hopeio/utils/validator";
 import { useRoute, useRouter } from "vue-router";
 import { useUserStore } from "@/mixin/store/user";
 import { Dialog, Toast } from "vant";

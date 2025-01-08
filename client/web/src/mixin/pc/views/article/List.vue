@@ -185,7 +185,7 @@ import {
 } from "@ant-design/icons-vue";
 import { useUserStore } from "@/mixin/store/user";
 import ArticleClient from "@/mixin/service/article";
-import { dateFmtDateTime, toDayjs } from "diamond/time";
+import { dateFmtDateTime, toDayjs } from "@hopeio/utils/time";
 import { STATIC_DIR } from "@/mixin/plugin/config";
 import { tagColor } from "@/mixin/pc/views/article/const";
 

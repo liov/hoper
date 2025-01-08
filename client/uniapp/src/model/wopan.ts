@@ -1,4 +1,4 @@
-import * as wopan from 'diamond/es/wopan'
+import * as wopan from '@hopeio/utils/es/wopan'
 
 export interface FileNode {
   parent: FileNode

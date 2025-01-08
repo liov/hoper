@@ -61,7 +61,7 @@ navigationBarTitleText: 'file-view',
 <script setup lang="ts">
 import { useWopanStore } from '@/store/wopan'
 import {onLoad} from "@dcloudio/uni-app";
-import * as wopan from "diamond/wopan";
+import * as wopan from "@hopeio/utils/wopan";
 import { useToast } from 'wot-design-uni'
 import {FileNode} from "@/model/wopan";
 const wopanStore = useWopanStore()

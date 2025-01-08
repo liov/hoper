@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { dynamicLoadJs } from 'diamond/browser'
+import { dynamicLoadJs } from '@hopeio/utils/browser'
 
 const turnstile = window.turnstile
 const onloadTurnstileCallback = function () {

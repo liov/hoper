@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { useUserStore } from '@/store/user'
 import { platform } from '@/utils/platform'
-import { toUrlParams } from 'diamond/compatible'
+import { toUrlParams } from '@hopeio/utils/compatible'
 
 export type CustomRequestOptions = UniApp.RequestOptions & {
   query?: Record<string, any>

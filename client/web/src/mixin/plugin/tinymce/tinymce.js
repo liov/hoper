@@ -6,7 +6,7 @@ import "tinymce/plugins/code";
 import "tinymce/plugins/table";
 import "tinymce/plugins/lists";
 import "tinymce/plugins/wordcount";
-import {getGlobal} from "diamond/compatible";
+import {getGlobal} from "@hopeio/utils/compatible";
 
 const getTinymce = () => {
     const global = getGlobal();

@@ -42,7 +42,7 @@ import Action from "@/mixin/h5/components/action/Action.vue";
 import { jump } from "@/mixin/router/utils";
 import { STATIC_DIR as staticDir } from "@/mixin/plugin/config";
 import { useRoute } from "vue-router";
-import { dateFmtDateTime } from "diamond/time";
+import { dateFmtDateTime } from "@hopeio/utils/time";
 import { reactive } from "vue";
 
 const props = defineProps<{

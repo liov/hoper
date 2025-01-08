@@ -1,6 +1,6 @@
 import { API_HOST } from '@/env/config'
 import type { MomentList } from '@/model/moment'
-import {unirequest} from 'diamond/uniapp'
+import {unirequest} from '@hopeio/utils/uniapp'
 
 import moment from '@/pages/moment/moment_list.vue'
 import { useUserStore } from '@/store/user'

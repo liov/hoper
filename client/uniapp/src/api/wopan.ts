@@ -1,4 +1,4 @@
-import { client } from 'diamond/wopan'
+import { client } from '@hopeio/utils/wopan'
 import {Env} from "@/env/config";
 client.fetch = async function (url, method, headers, body) {
   return new Promise((resolve, reject) => {

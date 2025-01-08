@@ -1,4 +1,4 @@
-import { unirequest } from 'diamond/uniapp'
+import { unirequest } from '@hopeio/utils/uniapp'
 import { API_HOST } from '@/env/config'
 import { useUserStore } from '@/store/user'
 

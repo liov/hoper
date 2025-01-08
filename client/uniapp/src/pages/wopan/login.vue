@@ -59,7 +59,7 @@
 <script lang="ts" setup>
 import PLATFORM from '@/utils/platform'
 import { useToast } from 'wot-design-uni'
-import * as wopan from 'diamond/wopan'
+import * as wopan from '@hopeio/utils/wopan'
 
 import { useWopanStore } from '@/store/wopan'
 import { onLoad } from '@dcloudio/uni-app'

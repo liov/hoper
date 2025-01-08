@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { dynamicLoadJs } from "../../../../../../thirdparty/diamond/src/browser/script";
+import { dynamicLoadJs } from "@hopeio/utils/browser";
 import { ref, onMounted } from "vue";
 
 let value = "";

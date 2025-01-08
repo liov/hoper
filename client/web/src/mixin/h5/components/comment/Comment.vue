@@ -41,7 +41,7 @@
 
 <script setup lang="ts">
 import { showImagePreview } from "vant";
-import { dateFmtDateTime } from "diamond/time";
+import { dateFmtDateTime } from "@hopeio/utils/time";
 import axios from "axios";
 import emitter from "@/mixin/plugin/emitter";
 import { STATIC_DIR as staticDir } from "@/mixin/plugin/config";
