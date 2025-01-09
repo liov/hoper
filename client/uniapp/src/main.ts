@@ -1,9 +1,8 @@
 import { createSSRApp } from 'vue'
 import App from './App.vue'
 import * as Pinia from 'pinia'
-import { init as uniHttpInit } from '@/interceptors/request'
 import i18n from './locale/index'
-import { routeInterceptor, requestInterceptor, prototypeInterceptor } from './interceptors'
+import { routeInterceptor, requestInterceptor, prototypeInterceptor,init as uniHttpInit  } from './interceptors'
 import 'virtual:uno.css'
 import '@/style/index.scss'
 

@@ -1,3 +1,4 @@
 export { routeInterceptor } from './route'
-export { requestInterceptor } from './http'
+export { init } from './http'
+export { requestInterceptor } from './request'
 export { prototypeInterceptor } from './prototype'
