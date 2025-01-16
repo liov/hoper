@@ -1,4 +1,4 @@
-package confdao
+package global
 
 type config struct {
 }

@@ -4,17 +4,17 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/hopeio/initialize"
-	"github.com/liov/hoper/server/go/content/confdao"
+	"github.com/liov/hoper/server/go/content/global"
 	"github.com/liov/hoper/server/go/content/service"
 	model "github.com/liov/hoper/server/go/protobuf/content"
 	"google.golang.org/grpc"
 )
 
 func main() {
-	defer initialize.Start(confdao.Conf, confdao.Dao)()
+	defer initialize.Start(global.Conf, global.Dao)()
 
 	s := server.Server{
-		Config: confdao.Conf.Server.Origin(),
+		Config: global.Conf.Server.Origin(),
 		GrpcHandler: func(gs *grpc.Server) {
 			model.RegisterMomentServiceServer(gs, service.GetMomentService())
 		},

@@ -1,4 +1,4 @@
-package confdao
+package global
 
 import (
 	"github.com/hopeio/initialize/conf_dao/gormdb/postgres"

@@ -13,8 +13,8 @@ import (
 	"github.com/hopeio/utils/net/http/fs"
 	timei "github.com/hopeio/utils/time"
 	"github.com/liov/hoper/server/go/protobuf/user"
-	"github.com/liov/hoper/server/go/upload/confdao"
 	"github.com/liov/hoper/server/go/upload/data"
+	"github.com/liov/hoper/server/go/upload/global"
 	"github.com/liov/hoper/server/go/upload/model"
 	"io"
 	"mime"
@@ -35,7 +35,7 @@ const (
 
 // Upload 文件上传
 func Upload(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseMultipartForm(confdao.Conf.Customize.UploadMaxSize)
+	err := r.ParseMultipartForm(global.Conf.Customize.UploadMaxSize)
 	if err != nil {
 		httpi.RespErrRep(w, errcode.ParamInvalid.Origin().Msg(errRep))
 		return
@@ -83,7 +83,7 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 	ctxi := httpctx.FromContextValue(ctx)
 	auth, err := auth(ctxi, false)
 	uploadDao := data.GetDao(ctxi)
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
+	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	upload, err := uploadDao.UploadDB(db, md5, size)
 	if err != nil {
 		httpi.RespErrRep(w, errcode.DBError.Origin().ErrRep())
@@ -110,7 +110,7 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 
 func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
 	uploadDao := data.GetDao(ctx)
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx.Base(), ctx.TraceID())
+	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx.Base(), ctx.TraceID())
 	auth := ctx.AuthInfo.(*user.AuthBase)
 	if md5Str != "" {
 		upload, err = uploadDao.UploadDB(db, md5Str, strconv.FormatInt(info.Size, 10))
@@ -166,7 +166,7 @@ func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (uplo
 	}
 
 	uploadDir := dirType + sep + ymdStr + sep
-	dir := string(confdao.Conf.Customize.UploadDir) + uploadDir
+	dir := string(global.Conf.Customize.UploadDir) + uploadDir
 	if err := os.MkdirAll(dir, 0777); err != nil {
 		return nil, err
 	}
@@ -202,7 +202,7 @@ func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (uplo
 }
 
 func MultiUpload(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseMultipartForm(confdao.Conf.Customize.UploadMaxSize)
+	err := r.ParseMultipartForm(global.Conf.Customize.UploadMaxSize)
 	if err != nil {
 		httpi.RespErrRep(w, errcode.ParamInvalid.Origin().Msg(errRep))
 		return

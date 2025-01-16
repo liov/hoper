@@ -13,10 +13,10 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"unicode/utf8"
 
-	comconfdao "github.com/liov/hoper/server/go/common/confdao"
 	comdata "github.com/liov/hoper/server/go/common/data"
-	"github.com/liov/hoper/server/go/content/confdao"
+	comconfdao "github.com/liov/hoper/server/go/common/global"
 	"github.com/liov/hoper/server/go/content/data"
+	"github.com/liov/hoper/server/go/content/global"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"
 	"github.com/liov/hoper/server/go/protobuf/user"
@@ -38,7 +38,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 	ctxi := httpctx.FromContextValue(ctx)
 	defer ctxi.StartSpanEnd("")()
 	auth, _ := auth(ctxi, true)
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
+	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	contentDBDao := data.GetDBDao(ctxi, db)
 
 	var moment content.Moment
@@ -118,8 +118,8 @@ func momentMaskField(moment *content.Moment) {
 
 func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*request.Id, error) {
 
-	if utf8.RuneCountInString(req.Content) < confdao.Conf.Customize.Moment.MaxContentLen {
-		return nil, errcode.InvalidArgument.Msg(fmt.Sprintf("文章内容不能小于%d个字", confdao.Conf.Customize.Moment.MaxContentLen))
+	if utf8.RuneCountInString(req.Content) < global.Conf.Customize.Moment.MaxContentLen {
+		return nil, errcode.InvalidArgument.Msg(fmt.Sprintf("文章内容不能小于%d个字", global.Conf.Customize.Moment.MaxContentLen))
 	}
 
 	ctxi := httpctx.FromContextValue(ctx)
@@ -128,7 +128,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
+	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	codb := gormi.NewTraceDB(comconfdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	contentDBDao := data.GetDBDao(ctxi, db)
 	commonDBDao := comdata.GetDBDao(ctxi, codb)
@@ -216,7 +216,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	ctxi := httpctx.FromContextValue(ctx)
 	defer ctxi.StartSpanEnd("")()
 	auth, _ := auth(ctxi, true)
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
+	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	contentDBDao := data.GetDBDao(ctxi, db)
 
 	total, moments, err := contentDBDao.GetMomentList(req)
@@ -318,7 +318,7 @@ func (*MomentService) Delete(ctx context.Context, req *request.Id) (*emptypb.Emp
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
+	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	contentDBDao := data.GetDBDao(ctxi, db)
 
 	err = contentDBDao.DelByAuth(model.TableNameMoment, req.Id, auth.Id)

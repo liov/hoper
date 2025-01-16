@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/hopeio/context/httpctx"
 	gormi "github.com/hopeio/utils/dao/database/gorm"
-	"github.com/liov/hoper/server/go/content/confdao"
 	"github.com/liov/hoper/server/go/content/data"
+	"github.com/liov/hoper/server/go/content/global"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -46,7 +46,7 @@ func (*DiaryService) AddDiaryBook(ctx context.Context, req *content.AddDiaryBook
 		return nil, err
 	}
 
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
+	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	req.UserId = auth.Id
 	err = db.Table(model.TableNameDiaryBook).Create(req).Error
 	if err != nil {
@@ -61,7 +61,7 @@ func (*DiaryService) EditDiaryBook(ctx context.Context, req *content.AddDiaryBoo
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
+	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	req.UserId = auth.Id
 	err = db.Table(model.TableNameDiaryBook).Where(`id =? AND user_id =?`, req.Id, auth.Id).
 		Updates(req).Error
@@ -77,12 +77,12 @@ func (*DiaryService) Info(ctx context.Context, req *request.Id) (*content.Diary,
 	if err != nil {
 		return nil, err
 	}
-	contentRedisDao := data.GetRedisDao(ctxi, confdao.Dao.Redis)
-	err = contentRedisDao.Limit(&confdao.Conf.Customize.Moment.Limit)
+	contentRedisDao := data.GetRedisDao(ctxi, global.Dao.Redis)
+	err = contentRedisDao.Limit(&global.Conf.Customize.Moment.Limit)
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
+	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	var diary content.Diary
 	err = db.Where(`id = ? AND user_id = ?`, req.Id, auth.Id).First(&diary).Error
 	if err != nil {
@@ -97,7 +97,7 @@ func (*DiaryService) Add(ctx context.Context, req *content.AddDiaryReq) (*reques
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
+	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	req.UserId = auth.Id
 	err = db.Table(model.TableNameDiary).Create(req).Error
 	if err != nil {
@@ -121,7 +121,7 @@ func (*DiaryService) Delete(ctx context.Context, req *request.Id) (*emptypb.Empt
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(confdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
+	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	contentDBDao := data.GetDBDao(ctxi, db)
 	err = contentDBDao.DelByAuth(model.TableNameDiary, req.Id, auth.Id)
 	if err != nil {

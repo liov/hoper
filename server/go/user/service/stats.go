@@ -5,8 +5,8 @@ import (
 	"github.com/hopeio/context/httpctx"
 	dbi "github.com/hopeio/utils/dao/database/sql"
 	"github.com/liov/hoper/server/go/protobuf/user"
-	"github.com/liov/hoper/server/go/user/confdao"
 	"github.com/liov/hoper/server/go/user/data"
+	"github.com/liov/hoper/server/go/user/global"
 	"github.com/liov/hoper/server/go/user/model"
 	"google.golang.org/protobuf/types/known/emptypb"
 
@@ -23,7 +23,7 @@ func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*emptypb
 		return nil, err
 	}
 
-	userDao := data.GetDBDao(ctxi, confdao.Dao.GORMDB.DB)
+	userDao := data.GetDBDao(ctxi, global.Dao.GORMDB.DB)
 	exists, err := userDao.FollowExistsDB(req.Id, auth.Id)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user
 		return nil, err
 	}
 
-	userDao := data.GetDBDao(ctxi, confdao.Dao.GORMDB.DB)
+	userDao := data.GetDBDao(ctxi, global.Dao.GORMDB.DB)
 	exists, err := userDao.FollowExistsDB(req.Id, auth.Id)
 	if err != nil {
 		return nil, err

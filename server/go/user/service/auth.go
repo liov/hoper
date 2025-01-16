@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/liov/hoper/server/go/user/confdao"
 	"github.com/liov/hoper/server/go/user/data"
+	"github.com/liov/hoper/server/go/user/global"
 )
 
 var ExportAuth = auth
@@ -45,7 +45,7 @@ func (x *Authorization) ParseToken(token string, secret []byte) error {
 
 func auth(ctx *httpctx.Context, update bool) (*user.AuthBase, error) {
 	signature := ctx.Token[strings.LastIndexByte(ctx.Token, '.')+1:]
-	cacheTmp, ok := confdao.Dao.Cache.Get(signature)
+	cacheTmp, ok := global.Dao.Cache.Get(signature)
 	if ok {
 		cache := cacheTmp.(*Authorization)
 		err := cache.Validate()
@@ -57,7 +57,7 @@ func auth(ctx *httpctx.Context, update bool) (*user.AuthBase, error) {
 	}
 
 	authorization := Authorization{AuthBase: &user.AuthBase{}}
-	if err := authorization.ParseToken(ctx.Token, confdao.Conf.Customize.TokenSecretBytes); err != nil {
+	if err := authorization.ParseToken(ctx.Token, global.Conf.Customize.TokenSecretBytes); err != nil {
 		return nil, user.UserErrNoLogin
 	}
 
@@ -67,14 +67,14 @@ func auth(ctx *httpctx.Context, update bool) (*user.AuthBase, error) {
 	ctx.AuthInfoRaw = authorization.AuthInfoRaw
 
 	if update {
-		userDao := data.GetRedisDao(ctx, confdao.Dao.Redis.Client)
+		userDao := data.GetRedisDao(ctx, global.Dao.Redis.Client)
 		err := userDao.EfficientUserHashFromRedis()
 		if err != nil {
 			return nil, err
 		}
 	}
 	if !ok {
-		confdao.Dao.Cache.SetWithTTL(signature, authorization, 0, 5*time.Second)
+		global.Dao.Cache.SetWithTTL(signature, authorization, 0, 5*time.Second)
 	}
 	return authInfo, nil
 }

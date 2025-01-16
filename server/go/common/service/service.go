@@ -5,7 +5,7 @@ import (
 	"github.com/hopeio/context/httpctx"
 	"github.com/hopeio/protobuf/errcode"
 	"github.com/hopeio/protobuf/request"
-	"github.com/liov/hoper/server/go/content/confdao"
+	"github.com/liov/hoper/server/go/content/global"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/common"
 	"google.golang.org/grpc/codes"
@@ -28,7 +28,7 @@ func (*CommonService) AddTag(ctx context.Context, req *common.AddTagReq) (*empty
 	if err != nil {
 		return nil, err
 	}
-	db := confdao.Dao.GORMDB.DB
+	db := global.Dao.GORMDB.DB
 	req.UserId = user.Id
 	err = db.Create(req).Error
 	if err != nil {
@@ -44,7 +44,7 @@ func (*CommonService) EditTag(ctx context.Context, req *common.EditTagReq) (*emp
 		return nil, err
 	}
 
-	db := confdao.Dao.GORMDB.DB
+	db := global.Dao.GORMDB.DB
 	err = db.Updates(&common.Tag{
 		Desc:  req.Desc,
 		Image: req.Image,
@@ -62,7 +62,7 @@ func (*CommonService) TagList(ctx context.Context, req *common.TagListReq) (*com
 	if err != nil {
 		return nil, err
 	}
-	db := confdao.Dao.GORMDB.DB
+	db := global.Dao.GORMDB.DB
 
 	if req.Name != "" {
 		db = db.Where(`name LIKE ?` + "%" + req.Name + "%")

@@ -4,7 +4,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/hopeio/context/httpctx"
 	"github.com/hopeio/utils/encoding/json"
-	"github.com/liov/hoper/server/go/content/confdao"
+	"github.com/liov/hoper/server/go/content/global"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"sync"
 	"time"
@@ -76,7 +76,7 @@ func (c *Client) read() {
 		message.CreatedAt = time.Now()
 		message.SendUserID = c.ctx.AuthInfo.(*user.AuthBase).Id
 		jsonMessage, _ := json.Marshal(&message)
-		confdao.Dao.Redis.Do(c.ctx.Base(), "RPUSH", "Chat", jsonMessage)
+		global.Dao.Redis.Do(c.ctx.Base(), "RPUSH", "Chat", jsonMessage)
 	}
 
 }
