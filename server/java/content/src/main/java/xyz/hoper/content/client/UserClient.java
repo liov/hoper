@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 
 import xyz.hoper.protobuf.user.UserServiceGrpc;
+import xyz.hoper.protobuf.user.VerifyCodeReq;
 
 
 @Component
@@ -34,7 +35,7 @@ class UserClient {
     void call() {
         var channel = grpcClientManager.getChannel(host, port);
         var stub = UserServiceGrpc.newBlockingStub(channel);
-        var request = Empty.newBuilder().build();
+        var request = VerifyCodeReq.newBuilder().build();
         try {
             var reply = stub.verifyCode(request);
             log.info("time: $reply");
