@@ -43,3 +43,10 @@ tasks.withType<BootBuildImage> {
     //builder = "paketobuildpacks/builder:tiny"
     //environment = mapOf("BP_NATIVE_IMAGE" to "true")
 }
+
+application {
+    mainClass.set("xyz.hoper.ContentApplication")
+}
+tasks.bootJar {
+    mainClass.set("xyz.hoper.ContentApplication")
+}

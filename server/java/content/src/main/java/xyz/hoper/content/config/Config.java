@@ -1,4 +1,4 @@
-package xyz.hoper.user.config;
+package xyz.hoper.content.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @ConfigurationProperties(prefix = "config")
 @Component
-class UserProperties {
+class Properties {
     String name;
     String password;
     String ip;

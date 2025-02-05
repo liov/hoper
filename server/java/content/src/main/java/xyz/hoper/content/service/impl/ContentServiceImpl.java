@@ -1,4 +1,4 @@
-package xyz.hoper.user.service.impl;
+package xyz.hoper.content.service.impl;
 
 
 import org.springframework.beans.factory.annotation.Autowired;

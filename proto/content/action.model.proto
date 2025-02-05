@@ -1,6 +1,7 @@
 syntax = "proto3";
 package content;
 import "user/user.model.proto";
+import "common/common.model.proto";
 import "content/content.model.proto";
 import "hopeio/utils/enum/enum.proto";
 import "hopeio/time/time.proto";
@@ -173,3 +174,5 @@ enum LikeStatus{
   LikeStatusPlaceholder = 0 [(enum.enumvalue)= "占位"];
   LikeStatusLike = 2 [(enum.enumvalue)= "点赞"];
   LikeStatusUnlike = 3 [(enum.enumvalue)= "不喜欢"];
+}
+

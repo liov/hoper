@@ -1,6 +1,6 @@
-package xyz.hoper.content.service
+package xyz.hoper.content.service;
 
-import xyz.hoper.content.entity.Content
+import xyz.hoper.content.entity.Content;
 
 /**
  * @Description TODO
@@ -8,6 +8,6 @@ import xyz.hoper.content.entity.Content
  * @Created by lbyi
  */
 
-public interface UserService {
+public interface ContentService {
   Content info(Long id);
 }

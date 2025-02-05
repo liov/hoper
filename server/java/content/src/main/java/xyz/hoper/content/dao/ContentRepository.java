@@ -11,5 +11,5 @@ import xyz.hoper.content.entity.Content;
  * @Created by lbyi
  */
 @Repository
-interface ContentRepository extends CrudRepository<Content,Long> {
+public interface ContentRepository extends CrudRepository<Content,Long> {
 }

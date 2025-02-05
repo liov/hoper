@@ -2,19 +2,16 @@ import com.google.protobuf.gradle.*
 import java.io.ByteArrayOutputStream
 
 plugins {
-    kotlin("jvm") version "1.9.0"
     //id("com.squareup.wire") version "3.1.0"
-    id("com.google.protobuf") version "0.9.1"
+    id("com.google.protobuf") version "0.9.4"
     //kotlin("kapt")
-    java
-    idea
 }
 
 apply<JavaPlugin>()
 apply<IdeaPlugin>()
 
 group = "xyz.hoper"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.1"
 
 repositories {
     //maven("https://maven.aliyun.com/repository/public")
@@ -22,11 +19,6 @@ repositories {
     gradlePluginPortal()
     google()
     mavenLocal()
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
 }
 
 //wire {
@@ -49,9 +41,6 @@ val projectpath: String = file("${rootDir}/../../thirdparty/protobuf").absoluteP
 
 sourceSets {
     main {
-        java {
-            srcDirs("src/main/java")
-        }
         proto {
             srcDirs(protopath,)
             println(srcDirs)
@@ -117,8 +106,14 @@ dependencies {
     //implementation("com.google.protobuf:protobuf-kotlin-lite:$protocVersion")
     api("io.grpc:grpc-netty-shaded:$grpcVersion")
     api("io.grpc:grpc-protobuf:$grpcVersion")
-    api("io.grpc:grpc-protobuf-lite:$grpcVersion")
+    api("io.grpc:grpc-services:$grpcVersion")
     api("io.grpc:grpc-stub:$grpcVersion")
+    runtimeOnly("io.grpc:grpc-netty-shaded:${grpcVersion}")
+
+    testImplementation("io.grpc:grpc-testing:${grpcVersion}")
+    testImplementation("io.grpc:grpc-inprocess:${grpcVersion}")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.mockito:mockito-core:4.4.0")
     //api("io.grpc:grpc-kotlin-stub:$grpcKotlinVersion")
     protobuf(files("$projectpath/_proto"))
     //api("com.squareup.wire:wire-runtime:${rootProject.ext["wire_version"]}")

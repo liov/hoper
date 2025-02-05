@@ -1,6 +1,5 @@
 rootProject.name = "spring"
 
-include("user")
 include("content")
 include("protobuf")
 

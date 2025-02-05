@@ -1,4 +1,4 @@
-package xyz.hoper.user.client;
+package xyz.hoper.content.client;
 
 
 import com.google.protobuf.Empty;

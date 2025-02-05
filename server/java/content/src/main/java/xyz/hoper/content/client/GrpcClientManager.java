@@ -1,4 +1,4 @@
-package xyz.hoper.user.client;
+package xyz.hoper.content.client;
 
 
 import java.util.concurrent.TimeUnit;
