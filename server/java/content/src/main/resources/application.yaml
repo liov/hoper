@@ -1,6 +1,7 @@
 logging:
   level:
     root: info
+  config: "classpath:log4j2.xml"
 
 spring:
   profiles:

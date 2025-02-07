@@ -1,5 +1,6 @@
 package xyz.hoper.content.service;
 
+import xyz.hoper.content.api.ApiResponse;
 import xyz.hoper.content.entity.Content;
 
 /**
@@ -9,5 +10,5 @@ import xyz.hoper.content.entity.Content;
  */
 
 public interface ContentService {
-  Content info(Long id);
+  ApiResponse<Content> info(Long id);
 }

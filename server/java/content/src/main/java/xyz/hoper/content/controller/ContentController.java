@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import xyz.hoper.content.api.ApiResponse;
 import xyz.hoper.content.entity.Content;
 import xyz.hoper.content.service.ContentService;
 
@@ -24,7 +25,7 @@ class ContentController {
     private ContentService contentService;
 
     @GetMapping("{id}")
-    Content content(@PathVariable Long id)  {
+    ApiResponse<Content> content(@PathVariable Long id)  {
         return contentService.info(id);
     }
 }

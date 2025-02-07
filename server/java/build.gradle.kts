@@ -41,26 +41,28 @@ allprojects {
 
 }
 
+subprojects {
+    if (name == "protobuf" || name == "spring") {
+        return@subprojects
+    }
+    apply(plugin = "io.spring.dependency-management")
+    apply(plugin = "org.springframework.boot")
+
+    /*
 configurations.all {
     resolutionStrategy.eachDependency {
         if (requested.group == "org.slf4j") {
             useVersion("1.8.0")
         }
     }
-}
-
-subprojects {
-    if (name == "protobuf") {
-        return@subprojects
-    }
-    apply(plugin = "io.spring.dependency-management")
-    apply(plugin = "org.springframework.boot")
-
+}*/
 
     configurations {
         compileOnly {
             extendsFrom(configurations.annotationProcessor.get())
         }
+    }.all{
+        exclude(group = "org.springframework.boot",module = "spring-boot-starter-logging")
     }
 
     sourceSets {
@@ -75,8 +77,9 @@ subprojects {
     }
 
     dependencies {
-        implementation("org.slf4j:slf4j-api:2.0.4")
-        implementation("org.springframework.boot:spring-boot-starter")
+        // 添加 Log4j2 依赖
+        implementation("org.springframework.boot:spring-boot-starter-log4j2")
+        // 排除 Logback 依赖
         implementation("org.jetbrains.kotlin:kotlin-reflect")
         implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
         implementation("org.springframework.boot:spring-boot-starter-data-jpa")
