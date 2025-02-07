@@ -25,7 +25,7 @@ class ContentController {
     private ContentService contentService;
 
     @GetMapping("{id}")
-    ApiResponse<Content> content(@PathVariable Long id)  {
+    Content content(@PathVariable Long id)  {
         return contentService.info(id);
     }
 }

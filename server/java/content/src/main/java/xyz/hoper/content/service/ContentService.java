@@ -10,5 +10,5 @@ import xyz.hoper.content.entity.Content;
  */
 
 public interface ContentService {
-  ApiResponse<Content> info(Long id);
+  Content info(Long id);
 }
