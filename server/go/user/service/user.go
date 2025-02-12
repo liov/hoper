@@ -19,6 +19,8 @@ import (
 	gormi "github.com/hopeio/utils/dao/database/gorm"
 	"github.com/hopeio/utils/sdk/luosimao"
 	stringsi "github.com/hopeio/utils/strings"
+	"github.com/hopeio/utils/validate/captcha"
+	"github.com/hopeio/utils/validate/validator"
 	model "github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/api/middle"
 	"github.com/liov/hoper/server/go/user/data"
@@ -37,7 +39,7 @@ import (
 	httpi "github.com/hopeio/utils/net/http"
 
 	"github.com/hopeio/utils/net/mail"
-	"github.com/hopeio/utils/validation"
+
 	"gorm.io/gorm"
 )
 
@@ -48,7 +50,7 @@ type UserService struct {
 func (u *UserService) VerifyCode(ctx context.Context, req *model.VerifyCodeReq) (*emptypb.Empty, error) {
 	ctxi := httpctx.FromContextValue(ctx)
 	defer ctxi.StartSpanEnd("")()
-	vcode := validation.RandomCode(4)
+	vcode := captcha.RandomCode(4)
 	log.Info(vcode)
 	key := modelconst.VerificationCodeKey + req.Mail + req.Phone
 	if err := global.Dao.Redis.SetEX(ctx, key, vcode, modelconst.VerificationCodeDuration).Err(); err != nil {
@@ -477,7 +479,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 	user, err := userDBDao.GetByEmailOrPhone(req.Input, req.Input, "id", "name", "password")
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			if validation.PhoneOrMail(req.Input) != validation.Phone {
+			if validator.PhoneOrMail(req.Input) != validator.Phone {
 				return nil, errcode.InvalidArgument.Msg("邮箱不存在")
 			} else {
 				return nil, errcode.InvalidArgument.Msg("手机号不存在")
@@ -578,7 +580,6 @@ func (*UserService) PickAdd(ctx *ginctx.Context, req *model.SignupReq) (*wrapper
 	pick.Api(func() {
 		pick.Get("/add").
 			Title("用户注册").
-			Version(2).
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
 			ChangeLog("1.0.1", "jyb", "2019/12/16", "修改测试").End()
 	})
@@ -594,7 +595,6 @@ func (*UserService) PickAddv(ctx *ginctx.Context, req *response.TinyRep) (*respo
 	pick.Api(func() {
 		pick.Post("/add").
 			Title("用户注册").
-			Version(1).
 			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
 			ChangeLog("1.0.1", "jyb", "2019/12/16", "修改测试").End()
 	})

@@ -5,10 +5,10 @@ import (
 	"github.com/hopeio/context/httpctx"
 	gormi "github.com/hopeio/utils/dao/database/gorm"
 	_ "github.com/hopeio/utils/dao/database/gorm/serializer"
-	dbi "github.com/hopeio/utils/dao/database/sql"
+	sqli "github.com/hopeio/utils/dao/database/sql"
 	"github.com/hopeio/utils/log"
 	"github.com/hopeio/utils/slices"
-	"github.com/hopeio/utils/validation"
+	"github.com/hopeio/utils/validate/validator"
 	puser "github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/model"
 	"gorm.io/gorm"
@@ -50,9 +50,9 @@ func (d *UserDao) GetByEmailOrPhone(input string, fields ...string) (*puser.User
 		db = d.Table(model.TableNameUser).Select(fields)
 	}
 	if strings.Contains(input, "@") {
-		err = db.Where("mail = ? AND status != ?"+dbi.WithNotDeleted, input, puser.UserStatusDeleted).First(&u).Error
+		err = db.Where("mail = ? AND status != ?"+sqli.WithNotDeleted, input, puser.UserStatusDeleted).First(&u).Error
 	} else {
-		err = db.Where("phone = ? AND status != ?"+dbi.WithNotDeleted, input, puser.UserStatusDeleted).First(&u).Error
+		err = db.Where("phone = ? AND status != ?"+sqli.WithNotDeleted, input, puser.UserStatusDeleted).First(&u).Error
 	}
 	if err != nil {
 		return nil, err
@@ -181,7 +181,7 @@ func (d *UserDao) GetBaseListDB(ids []uint64, pageNo, pageSize int) (int64, []*p
 
 func (d *UserDao) FollowExistsDB(id, followId uint64) (bool, error) {
 	sql := `SELECT EXISTS(SELECT * FROM "` + model.TableNameFollow + `" 
-WHERE user_id = ?  AND follow_id = ?` + dbi.WithNotDeleted + ` LIMIT 1)`
+WHERE user_id = ?  AND follow_id = ?` + sqli.WithNotDeleted + ` LIMIT 1)`
 	var exists bool
 	err := d.Raw(sql, id, followId).Scan(&exists).Error
 	if err != nil {
@@ -201,14 +201,14 @@ func (d *UserDao) Update(req *puser.EditReq) error {
 func (d *UserDao) UserInfoByAccount(account string) (*puser.User, error) {
 	var user puser.User
 	var sql string
-	switch validation.PhoneOrMail(account) {
-	case validation.Mail:
+	switch validator.PhoneOrMail(account) {
+	case validator.Mail:
 		sql = "mail = ?"
-	case validation.Phone:
+	case validator.Phone:
 		sql = "phone = ?"
 	default:
 		sql = "account = ?"
 	}
 	return &user, d.Table(model.TableNameUser).
-		Where(sql+` AND status != ?`+sql.WithNotDeleted, account, puser.UserStatusDeleted).First(&user).Error
+		Where(sql+` AND status != ?`+sqli.WithNotDeleted, account, puser.UserStatusDeleted).First(&user).Error
 }
