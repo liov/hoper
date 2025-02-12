@@ -46,7 +46,7 @@ case $param in
         upgrade
         ;;
     ex)
-        echo "Parameter is co."
+        echo "Parameter is ex."
         # 在这里执行co参数的逻辑
         cd $dir/thirdparty/example
         go get github.com/hopeio/cherry@main
