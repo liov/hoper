@@ -16,7 +16,7 @@ import (
 	"github.com/hopeio/utils/net/http/oauth"
 	oauth3 "github.com/hopeio/utils/net/http/oauth"
 	"github.com/hopeio/utils/types/param"
-	jwti "github.com/hopeio/utils/validate/auth/jwt"
+	jwti "github.com/hopeio/utils/validation/auth/jwt"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/global"
 	"google.golang.org/grpc/metadata"

@@ -8,7 +8,7 @@ import (
 	sqli "github.com/hopeio/utils/dao/database/sql"
 	"github.com/hopeio/utils/log"
 	"github.com/hopeio/utils/slices"
-	"github.com/hopeio/utils/validate/validator"
+	"github.com/hopeio/utils/validation/validator"
 	puser "github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/model"
 	"gorm.io/gorm"
