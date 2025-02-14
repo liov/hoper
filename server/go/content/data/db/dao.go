@@ -3,7 +3,8 @@ package db
 import (
 	"database/sql"
 	"github.com/hopeio/context/httpctx"
-	"github.com/hopeio/protobuf/errcode"
+	"github.com/hopeio/scaffold/errcode"
+
 	"github.com/hopeio/utils/log"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"

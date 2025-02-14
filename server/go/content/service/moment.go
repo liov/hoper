@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/hopeio/context/httpctx"
-	"github.com/hopeio/protobuf/errcode"
+	"github.com/hopeio/scaffold/errcode"
+
 	"github.com/hopeio/protobuf/request"
 	gormi "github.com/hopeio/utils/dao/database/gorm"
 	"github.com/hopeio/utils/structure/set"

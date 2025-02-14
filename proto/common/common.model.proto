@@ -12,7 +12,7 @@ option java_package = "xyz.hoper.protobuf.common";
 option java_multiple_files = true;
 option go_package = "github.com/liov/hoper/server/go/protobuf/common";
 
-option (enum.enum_gqlgen_all) = true;
+option (enum.gqlgen_all) = true;
 option (go.file) = {no_enum_prefix:true};
 
 message Attr{
@@ -207,57 +207,57 @@ message Category{
 
 enum RedisIndex{
   option (go.enum) = {stringer_name: 'OrigString'};
-  RedisIndexPlaceholder = 0 [(enum.enumvalue) = "占位"];
-  RedisIndexFlag = 13 [(enum.enumvalue) = "标志"];
-  RedisIndexSys = 14 [(enum.enumvalue) = "系统"];
-  RedisIndexCron = 15 [(enum.enumvalue) = "定时任务"];
+  RedisIndexPlaceholder = 0 [(enum.text) = "占位"];
+  RedisIndexFlag = 13 [(enum.text) = "标志"];
+  RedisIndexSys = 14 [(enum.text) = "系统"];
+  RedisIndexCron = 15 [(enum.text) = "定时任务"];
 
 }
 
 enum ObjectType{
   option (go.enum) = {stringer_name: 'OrigString'};
-  ObjectPlaceholder = 0 [(enum.enumvalue) = "占位"];
-  ObjectContent = 1 [(enum.enumvalue) = "内容"];
+  ObjectPlaceholder = 0 [(enum.text) = "占位"];
+  ObjectContent = 1 [(enum.text) = "内容"];
 }
 
 enum MediaType{
   option (go.enum) = {stringer_name: 'OrigString'};
-  MediaTypePlaceholder = 0 [(enum.enumvalue) = "占位"];
-  MediaTypeImage = 1 [(enum.enumvalue) = "图片"];
-  MediaTypeVideo = 2 [(enum.enumvalue) = "视频"];
-  MediaTypeAudio = 3 [(enum.enumvalue) = "音频"];
+  MediaTypePlaceholder = 0 [(enum.text) = "占位"];
+  MediaTypeImage = 1 [(enum.text) = "图片"];
+  MediaTypeVideo = 2 [(enum.text) = "视频"];
+  MediaTypeAudio = 3 [(enum.text) = "音频"];
 }
 
 enum DataType {
   option (go.enum) = {stringer_name: 'OrigString'};
-  DataTypePlaceholder = 0 [(enum.enumvalue) = "占位"];
-  DataTypeString = 1 [(enum.enumvalue) = "字符串"];
-  DataTypeInteger = 2 [(enum.enumvalue) = "整数"];
-  DataTypeFloat = 3 [(enum.enumvalue) = "浮点数"];
-  DataTypeTime = 4 [(enum.enumvalue) = "时间"];
-  DataTypeDate = 5 [(enum.enumvalue) = "日期"];
-  DataTypeEnum = 6 [(enum.enumvalue) = "枚举"];
+  DataTypePlaceholder = 0 [(enum.text) = "占位"];
+  DataTypeString = 1 [(enum.text) = "字符串"];
+  DataTypeInteger = 2 [(enum.text) = "整数"];
+  DataTypeFloat = 3 [(enum.text) = "浮点数"];
+  DataTypeTime = 4 [(enum.text) = "时间"];
+  DataTypeDate = 5 [(enum.text) = "日期"];
+  DataTypeEnum = 6 [(enum.text) = "枚举"];
 }
 
 enum Platform{
   option (go.enum) = {stringer_name: 'OrigString'};
-  PlatformPlaceholder = 0 [(enum.enumvalue)= "占位"];
-  PlatformWechat = 1 [(enum.enumvalue)= "微信"];
-  PlatformQQ = 2 [(enum.enumvalue)= "QQ"];
+  PlatformPlaceholder = 0 [(enum.text)= "占位"];
+  PlatformWechat = 1 [(enum.text)= "微信"];
+  PlatformQQ = 2 [(enum.text)= "QQ"];
 }
 
 // 删除原因
 enum BanReason{
   option (go.enum) = {stringer_name: 'OrigString'};
-  BanReasonPlaceholder = 0 [(enum.enumvalue) = "占位"];
-  BanReasonViolationOfLawsAndRegulations = 1 [(enum.enumvalue) = "违返法律法规"];
-  BanReasonEroticViolence = 3 [(enum.enumvalue) = "色情暴力"];
-  BanReasonOther = 255 [(enum.enumvalue) = "其他原因"];
+  BanReasonPlaceholder = 0 [(enum.text) = "占位"];
+  BanReasonViolationOfLawsAndRegulations = 1 [(enum.text) = "违返法律法规"];
+  BanReasonEroticViolence = 3 [(enum.text) = "色情暴力"];
+  BanReasonOther = 255 [(enum.text) = "其他原因"];
 }
 
 enum DocType{
   option (go.enum) = {stringer_name: 'OrigString'};
-  DocTypePlaceholder = 0 [(enum.enumvalue) = "占位"];
-  DocTypeMarkdown = 1 [(enum.enumvalue) = "markdown"];
-  DocTypeHtml = 2 [(enum.enumvalue) = "html"];
+  DocTypePlaceholder = 0 [(enum.text) = "占位"];
+  DocTypeMarkdown = 1 [(enum.text) = "markdown"];
+  DocTypeHtml = 2 [(enum.text) = "html"];
 }

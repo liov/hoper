@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/hopeio/context/httpctx"
 	"github.com/hopeio/protobuf/request"
+	"github.com/hopeio/scaffold/errcode"
 	gormi "github.com/hopeio/utils/dao/database/gorm"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"gorm.io/gorm"
@@ -13,8 +14,6 @@ import (
 	"github.com/liov/hoper/server/go/content/global"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"
-
-	"github.com/hopeio/protobuf/errcode"
 )
 
 type ContentService struct {

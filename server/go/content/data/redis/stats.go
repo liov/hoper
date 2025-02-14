@@ -1,7 +1,7 @@
 package redis
 
 import (
-	"github.com/hopeio/protobuf/errcode"
+	"github.com/hopeio/scaffold/errcode"
 	"github.com/liov/hoper/server/go/content/model"
 )
 

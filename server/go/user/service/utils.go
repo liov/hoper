@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/hopeio/protobuf/errcode"
+	"github.com/hopeio/scaffold/errcode"
 	"github.com/hopeio/utils/sdk/luosimao"
 	"github.com/liov/hoper/server/go/user/global"
 )

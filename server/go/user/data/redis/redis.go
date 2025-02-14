@@ -3,11 +3,11 @@ package redis
 import (
 	"github.com/go-redis/redis/v8"
 	"github.com/hopeio/context/httpctx"
+	"github.com/hopeio/scaffold/errcode"
 	"github.com/hopeio/utils/dao/redis/hash"
 	"github.com/hopeio/utils/encoding/json"
 	"strconv"
 
-	"github.com/hopeio/protobuf/errcode"
 	redisi "github.com/hopeio/utils/dao/redis"
 	"github.com/hopeio/utils/log"
 	"github.com/liov/hoper/server/go/protobuf/common"

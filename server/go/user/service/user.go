@@ -16,6 +16,7 @@ import (
 	"github.com/hopeio/protobuf/request"
 	"github.com/hopeio/protobuf/response"
 	timepb "github.com/hopeio/protobuf/time"
+	"github.com/hopeio/scaffold/errcode"
 	gormi "github.com/hopeio/utils/dao/database/gorm"
 	"github.com/hopeio/utils/sdk/luosimao"
 	stringsi "github.com/hopeio/utils/strings"
@@ -32,7 +33,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hopeio/protobuf/errcode"
 	redisi "github.com/hopeio/utils/dao/redis"
 	templatei "github.com/hopeio/utils/encoding/text/template"
 	"github.com/hopeio/utils/log"

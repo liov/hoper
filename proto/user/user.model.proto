@@ -11,7 +11,7 @@ option java_package = "xyz.hoper.protobuf.user";
 option java_multiple_files = true;
 option go_package = "github.com/liov/hoper/server/go/protobuf/user";
 
-option (enum.enum_gqlgen_all) = true;
+option (enum.gqlgen_all) = true;
 option (go.file) = {no_enum_prefix:true};
 
 // 用户
@@ -213,74 +213,74 @@ message Auth {
 // 用户操作
 enum Action {
   option (go.enum) = {stringer_name: 'OrigString'};
-  ActionPlaceholder = 0 [(enum.enumvalue)= "占位"];
-  ActionSignup = 1 [(enum.enumvalue)= "注册"];
-  ActionActive = 2 [(enum.enumvalue)= "激活"];
-  ActionRestPassword = 3 [(enum.enumvalue)= "重置密码"];
-  ActionEditPassword = 4 [(enum.enumvalue)= "修改密码"];
-  ActionCreateResume = 5 [(enum.enumvalue)= "新建简历"];
-  ActionEditResume = 6 [(enum.enumvalue)= "编辑简历"];
-  ActionDeleteResume = 7 [(enum.enumvalue)= "删除简历"];
+  ActionPlaceholder = 0 [(enum.text)= "占位"];
+  ActionSignup = 1 [(enum.text)= "注册"];
+  ActionActive = 2 [(enum.text)= "激活"];
+  ActionRestPassword = 3 [(enum.text)= "重置密码"];
+  ActionEditPassword = 4 [(enum.text)= "修改密码"];
+  ActionCreateResume = 5 [(enum.text)= "新建简历"];
+  ActionEditResume = 6 [(enum.text)= "编辑简历"];
+  ActionDeleteResume = 7 [(enum.text)= "删除简历"];
 }
 // 用户角色
 enum Role {
   option (go.enum) = {stringer_name: 'OrigString'};
-  PlaceholderRole = 0 [(enum.enumvalue)= "占位"];
-  RoleNormal = 1 [(enum.enumvalue)= "普通用户"];
-  RoleAdmin = 2 [(enum.enumvalue)= "管理员"];
-  RoleSuperAdmin = 3 [(enum.enumvalue)= "超级管理员"];
+  PlaceholderRole = 0 [(enum.text)= "占位"];
+  RoleNormal = 1 [(enum.text)= "普通用户"];
+  RoleAdmin = 2 [(enum.text)= "管理员"];
+  RoleSuperAdmin = 3 [(enum.text)= "超级管理员"];
 }
 
 // 用户性别
 enum Gender{
   option (go.enum) = {stringer_name: 'OrigString'};
-  GenderPlaceholder = 0 [(enum.enumvalue)= "占位"];
-  GenderUnfilled = 1 [(enum.enumvalue)= "未填"];
-  GenderMale = 2 [(enum.enumvalue)= "男"];
-  GenderFemale = 3 [(enum.enumvalue)= "女"];
+  GenderPlaceholder = 0 [(enum.text)= "占位"];
+  GenderUnfilled = 1 [(enum.text)= "未填"];
+  GenderMale = 2 [(enum.text)= "男"];
+  GenderFemale = 3 [(enum.text)= "女"];
 }
 
 // 用户状态
 enum UserStatus {
   option (go.enum) = {stringer_name: 'OrigString'};
-  option (enum.enum_jsonmarshal) = false;
-  UserStatusPlaceholder = 0 [(enum.enumvalue)= "占位"];
-  UserStatusInActive = 1 [(enum.enumvalue)= "未激活"];
-  UserStatusActivated = 2 [(enum.enumvalue)= "已激活"];
-  UserStatusFrozen = 3 [(enum.enumvalue)= "已冻结"];
-  UserStatusDeleted = 4 [(enum.enumvalue)= "已注销"];
+  option (enum.jsonmarshal) = false;
+  UserStatusPlaceholder = 0 [(enum.text)= "占位"];
+  UserStatusInActive = 1 [(enum.text)= "未激活"];
+  UserStatusActivated = 2 [(enum.text)= "已激活"];
+  UserStatusFrozen = 3 [(enum.text)= "已冻结"];
+  UserStatusDeleted = 4 [(enum.text)= "已注销"];
 }
 
 // 封禁类型
 enum BannedType{
   option (go.enum) = {stringer_name: 'OrigString'};
-  option (enum.enum_jsonmarshal) = false;
-  BannedTypePlaceholder = 0 [(enum.enumvalue)= "占位"];
-  BannedTypePost = 1 [(enum.enumvalue)= "禁言"];
-  BannedTypeLogin = 2 [(enum.enumvalue)= "禁止登录"];
+  option (enum.jsonmarshal) = false;
+  BannedTypePlaceholder = 0 [(enum.text)= "占位"];
+  BannedTypePost = 1 [(enum.text)= "禁言"];
+  BannedTypeLogin = 2 [(enum.text)= "禁止登录"];
 }
 
 enum UserErr {
   option (go.enum) = {stringer_name: 'OrigString'};
-  option (enum.enum_errcode) = true;
-  option (enum.enum_jsonmarshal) = false;
-  UserErrPlaceholder = 0 [(enum.enumvalue)= "占位"];
-  UserErrLogin = 1000 [(enum.enumvalue)= "用户名或密码错误"];
-  UserErrNoActive = 1001 [(enum.enumvalue)= "未激活账号"];
-  UserErrNoAuthority = 1002 [(enum.enumvalue)= "无权限"];
-  UserErrLoginTimeout = 1003 [(enum.enumvalue)= "登录超时"];
-  UserErrInvalidToken = 1004 [(enum.enumvalue)= "Token错误"];
-  UserErrNoLogin = 1005 [(enum.enumvalue)= "未登录"];
+  option (enum.errcode) = true;
+  option (enum.jsonmarshal) = false;
+  UserErrPlaceholder = 0 [(enum.text)= "占位"];
+  UserErrLogin = 1000 [(enum.text)= "用户名或密码错误"];
+  UserErrNoActive = 1001 [(enum.text)= "未激活账号"];
+  UserErrNoAuthority = 1002 [(enum.text)= "无权限"];
+  UserErrLoginTimeout = 1003 [(enum.text)= "登录超时"];
+  UserErrInvalidToken = 1004 [(enum.text)= "Token错误"];
+  UserErrNoLogin = 1005 [(enum.text)= "未登录"];
 }
 
 enum DeviceType {
   option (go.enum) = {stringer_name: 'OrigString'};
-  option (enum.enum_errcode) = true;
-  option (enum.enum_jsonmarshal) = false;
-  DeviceTypePlaceholder = 0 [(enum.enumvalue)= "占位"];
-  DeviceTypePhone = 1 [(enum.enumvalue)= "手机"];
-  DeviceTypePC = 2 [(enum.enumvalue)= "电脑"];
-  DeviceTypePad = 3 [(enum.enumvalue)= "平板"];
-  DeviceTypeWatch = 4 [(enum.enumvalue)= "手表"];
+  option (enum.errcode) = true;
+  option (enum.jsonmarshal) = false;
+  DeviceTypePlaceholder = 0 [(enum.text)= "占位"];
+  DeviceTypePhone = 1 [(enum.text)= "手机"];
+  DeviceTypePC = 2 [(enum.text)= "电脑"];
+  DeviceTypePad = 3 [(enum.text)= "平板"];
+  DeviceTypeWatch = 4 [(enum.text)= "手表"];
 
 }

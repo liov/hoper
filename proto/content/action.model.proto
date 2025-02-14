@@ -13,7 +13,7 @@ option java_package = "xyz.hoper.protobuf.content";
 option java_multiple_files = true;
 option go_package = "github.com/liov/hoper/server/go/protobuf/content";
 
-option (enum.enum_gqlgen_all) = true;
+option (enum.gqlgen_all) = true;
 option (go.file) = {no_enum_prefix:true};
 
 // Deprecated: Like UnLike Browse Approve
@@ -145,34 +145,34 @@ message UserAction{
 // 操作类型
 enum ActionType{
   option (go.enum) = {stringer_name: 'OrigString'};
-  ActionPlaceholder = 0 [(enum.enumvalue) = "占位"];
-  ActionBrowse = 1 [(enum.enumvalue) = "浏览"];
-  ActionLike = 2 [(enum.enumvalue) = "点赞"];
-  ActionUnlike = 3 [(enum.enumvalue) = "不喜欢"];
-  ActionComment = 4 [(enum.enumvalue) = "评论"];
-  ActionCollect = 5 [(enum.enumvalue) = "收藏"];
-  ActionShare = 6 [(enum.enumvalue) = "收藏"];
-  ActionReport = 7 [(enum.enumvalue) = "举报"];
-  ActionGive = 8 [(enum.enumvalue) = "回馈"];
-  ActionApprove = 9 [(enum.enumvalue) = "赞同"];
-  ActionDelete = 10 [(enum.enumvalue) = "删除"];
+  ActionPlaceholder = 0 [(enum.text) = "占位"];
+  ActionBrowse = 1 [(enum.text) = "浏览"];
+  ActionLike = 2 [(enum.text) = "点赞"];
+  ActionUnlike = 3 [(enum.text) = "不喜欢"];
+  ActionComment = 4 [(enum.text) = "评论"];
+  ActionCollect = 5 [(enum.text) = "收藏"];
+  ActionShare = 6 [(enum.text) = "收藏"];
+  ActionReport = 7 [(enum.text) = "举报"];
+  ActionGive = 8 [(enum.text) = "回馈"];
+  ActionApprove = 9 [(enum.text) = "赞同"];
+  ActionDelete = 10 [(enum.text) = "删除"];
 }
 
 
 // 评论类型
 enum CommentType{
   option (go.enum) = {stringer_name: 'OrigString'};
-  CommentPlaceholder = 0 [(enum.enumvalue)= "占位"];
-  CommentMoment = 1 [(enum.enumvalue)= "瞬间"];
-  CommentDiary = 2 [(enum.enumvalue)= "日记"];
-  CommentDiaryBook = 3 [(enum.enumvalue)= "日记本"];
-  CommentArticle = 4 [(enum.enumvalue)= "文章"];
+  CommentPlaceholder = 0 [(enum.text)= "占位"];
+  CommentMoment = 1 [(enum.text)= "瞬间"];
+  CommentDiary = 2 [(enum.text)= "日记"];
+  CommentDiaryBook = 3 [(enum.text)= "日记本"];
+  CommentArticle = 4 [(enum.text)= "文章"];
 }
 
 enum LikeStatus{
   option (go.enum) = {stringer_name: 'OrigString'};
-  LikeStatusPlaceholder = 0 [(enum.enumvalue)= "占位"];
-  LikeStatusLike = 2 [(enum.enumvalue)= "点赞"];
-  LikeStatusUnlike = 3 [(enum.enumvalue)= "不喜欢"];
+  LikeStatusPlaceholder = 0 [(enum.text)= "占位"];
+  LikeStatusLike = 2 [(enum.text)= "点赞"];
+  LikeStatusUnlike = 3 [(enum.text)= "不喜欢"];
 }
 

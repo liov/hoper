@@ -5,7 +5,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"github.com/hopeio/context/httpctx"
-	"github.com/hopeio/protobuf/errcode"
+	"github.com/hopeio/scaffold/errcode"
 
 	gormi "github.com/hopeio/utils/dao/database/gorm"
 	errcode2 "github.com/hopeio/utils/errors/errcode"
