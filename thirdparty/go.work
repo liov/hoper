@@ -3,7 +3,7 @@ go 1.23.0
 use (
 	cherry
 	context
-	deploy/plugin/go
+	deploy/plugin
 	example
 	initialize
 	pick

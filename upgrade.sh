@@ -29,7 +29,7 @@ case $param in
         cd $dir/thirdparty/protobuf
         go get github.com/hopeio/utils@main
         upgrade
-        cd $dir/thirdparty/deploy/plugin/go
+        cd $dir/thirdparty/deploy/plugin
         go get github.com/hopeio/utils@main
         cd $dir/thirdparty/deploy
         upgrade
