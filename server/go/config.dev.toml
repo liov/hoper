@@ -1,0 +1,95 @@
+[GORMDB]
+Charset = "utf8"
+EnablePrometheus = false
+EnableStdLogger = true
+MaxIdleConns = 10
+MaxOpenConns = 10
+Port = 5432
+Schema = ""
+TimeFormat = ""
+TimeZone = ""
+Type = "postgres"
+
+[GORMDB.Gorm]
+DisableForeignKeyConstraintWhenMigrating = true
+
+[GORMDB.Logger]
+Colorful = true
+IgnoreRecordNotFoundError = false
+LogLevel = 4
+ParameterizedQueries = false
+SlowThreshold = "200ms"
+
+[GORMDB.NamingStrategy]
+SingularTable = true
+
+[Mail]
+AuthType = "PLAIN"
+Host = "smtp.qq.com"
+Port = ":465"
+From =  "lby.i@qq.com"
+
+[Log]
+DisableCaller = false
+DisableStacktrace = false
+EncodeLevelType = ""
+ErrorOutputPaths = []
+Level = "debug"
+
+[Log.EncoderConfig]
+CallerKey = ""
+ConsoleSeparator = ""
+FunctionKey = ""
+LevelKey = ""
+LineEnding = ""
+MessageKey = ""
+NameKey = ""
+SkipLineEnding = false
+StacktraceKey = ""
+TimeKey = ""
+
+[Log.OutputPaths]
+Console = ["stdout"]
+Json = []
+
+
+[Server]
+CertFile = ""
+EnableCors = true
+EnableGrpcWeb = true
+GenDoc = false
+KeyFile = ""
+Prometheus = true
+StopTimeout = "5s"
+MetricsInterval = "10h"
+
+[Server.Http]
+Addr = ":8090"
+ReadTimeout = "60s"
+WriteTimeout = "60s"
+[Server.HttpOptions]
+ExcludeLogPrefixes = ["/api/v1/upload", "/api/v1/multiUpload", "/api/ws/chat"]
+IncludeLogPrefixes = ["/api"]
+
+[Server.Gin]
+ContextWithFallback = true
+
+[Server.HttpOption]
+ExcludeLogPrefixes = ["/video","/live"]
+IncludeLogPrefixes = []
+StaticFs = []
+
+[Redis]
+DialTimeout = "20s"
+IdleTimeout = "20s"
+MaxConnAge = 10
+MaxRetries = 10
+MinIdleConns = 1
+PoolFIFO = false
+PoolSize = 5
+PoolTimeout = "1s"
+ReadTimeout = "20s"
+WriteTimeout = "20s"
+
+[Customize]
+SiteURL = "http://localhost:8090"

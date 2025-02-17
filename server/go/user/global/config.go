@@ -17,8 +17,6 @@ type config struct {
 	Server    cherry.Server
 }
 
-var Conf = &config{}
-
 func (c *config) BeforeInject() {
 	c.Customize.TokenMaxAge = timei.Day
 }

@@ -92,7 +92,7 @@ func (*ActionService) DelLike(ctx context.Context, req *request.Id) (*emptypb.Em
 		return nil, err
 	}
 	if like.Id == 0 {
-		return nil, errcode.ParamInvalid
+		return nil, errcode.InvalidArgument
 	}
 	err = contentDBDao.DelByAuth(model.TableNameLike, req.Id, auth.Id)
 	if err != nil {

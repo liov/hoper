@@ -37,12 +37,12 @@ const (
 func Upload(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(global.Conf.Customize.UploadMaxSize)
 	if err != nil {
-		httpi.RespErrRep(w, errcode.ParamInvalid.Origin().Msg(errRep))
+		httpi.RespErrRep(w, errcode.InvalidArgument.Origin().Msg(errRep))
 		return
 	}
 
 	if r.MultipartForm == nil || (r.MultipartForm.Value == nil && r.MultipartForm.File == nil) {
-		httpi.RespErrRep(w, errcode.ParamInvalid.Origin().Msg(errRep))
+		httpi.RespErrRep(w, errcode.InvalidArgument.Origin().Msg(errRep))
 		return
 	}
 	md5Str := r.RequestURI[len(ApiUpload):]
@@ -122,7 +122,7 @@ func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (uplo
 	var file multipart.File
 	if upload == nil {
 		if info == nil {
-			return nil, errcode.ParamInvalid
+			return nil, errcode.InvalidArgument
 		}
 		file, err = info.Open()
 		if err != nil {
@@ -204,7 +204,7 @@ func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (uplo
 func MultiUpload(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(global.Conf.Customize.UploadMaxSize)
 	if err != nil {
-		httpi.RespErrRep(w, errcode.ParamInvalid.Origin().Msg(errRep))
+		httpi.RespErrRep(w, errcode.InvalidArgument.Origin().Msg(errRep))
 		return
 	}
 	ctxi := httpctx.FromContextValue(r.Context())
@@ -217,14 +217,14 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if r.MultipartForm == nil || (r.MultipartForm.Value == nil && r.MultipartForm.File == nil) {
-		httpi.RespErrRep(w, errcode.ParamInvalid.Origin().Msg(errRep))
+		httpi.RespErrRep(w, errcode.InvalidArgument.Origin().Msg(errRep))
 		return
 	}
 	md5s := r.MultipartForm.Value["md5[]"]
 	files := r.MultipartForm.File["file[]"]
 	// 如果有md5
 	if len(md5s) != 0 && len(md5s) != len(files) {
-		httpi.RespErrRep(w, errcode.ParamInvalid.Origin().Msg(errRep))
+		httpi.RespErrRep(w, errcode.InvalidArgument.Origin().Msg(errRep))
 		return
 	}
 	var urls = make([]model.MultiRep, len(files))

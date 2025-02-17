@@ -1,0 +1,19 @@
+[GORMDB]
+Database = "xxx"
+Host = "xxx"
+Password = "xxx"
+User = "xxx"
+
+
+[Mail]
+UserName =  "xxx"
+Password = "xxx"
+
+
+[Redis]
+Addr = 'xxx:6379'
+Password = 'xxx'
+
+
+[Customize]
+LuosimaoSuperPW="xxx"
