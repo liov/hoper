@@ -288,7 +288,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*emptypb.Em
 	if user.Id != req.Id {
 		return nil, errcode.PermissionDenied
 	}
-	device := ctxi.DeviceInfo
+	device := ctxi.Device()
 
 	if req.Detail != nil {
 		userDBDao := data.GetDBDao(ctxi, global.Dao.GORMDB.DB)
@@ -375,7 +375,7 @@ func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.Login
 	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctxi.Base(), ctxi.TraceID())
 
 	db.Table(modelconst.TableNameUserExt).Where(`id = ?`, user.Id).
-		UpdateColumn("last_activated_at", ctxi.RequestAt.TimeString)
+		UpdateColumn("last_activated_at", ctxi.RequestAt.String())
 	userRedisDao := redis.GetUserDao(ctxi, global.Dao.Redis.Client)
 	if err := userRedisDao.EfficientUserHashToRedis(); err != nil {
 		return nil, errcode.RedisErr
@@ -395,7 +395,7 @@ func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.Login
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
-	err = (*httpctx.HttpContext)(ctxi).SetCookie(cookie)
+	err = ctxi.SetCookie(cookie)
 	if err != nil {
 		return nil, errcode.Unavailable
 	}
@@ -424,7 +424,7 @@ func (u *UserService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
-	err = (*httpctx.HttpContext)(ctxi).SetCookie(cookie)
+	err = ctxi.SetCookie(cookie)
 	if err != nil {
 		log.Error(err)
 		return nil, err

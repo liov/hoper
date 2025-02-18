@@ -65,7 +65,7 @@ func (d *ContentDao) DelAction(typ content.ContentType, action content.ActionTyp
 	ctxi := d.Context
 	sql := `Update "` + model.ActionTableName(action) + `" SET deleted_at = ?
 WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ?` + dbi.WithNotDeleted
-	err := d.db.Exec(sql, ctxi.TimeString, typ, refId, action, userId).Error
+	err := d.db.Exec(sql, ctxi.RequestAt.String(), typ, refId, action, userId).Error
 	if err != nil {
 		return ctxi.RespErrorLog(errcode.DBError, err, "DelAction")
 	}
@@ -76,7 +76,7 @@ func (d *ContentDao) Del(tableName string, id uint64) error {
 	ctxi := d.Context
 	sql := `Update "` + tableName + `" SET deleted_at = ?
 WHERE id = ?` + dbi.WithNotDeleted
-	err := d.db.Exec(sql, ctxi.TimeString, id).Error
+	err := d.db.Exec(sql, ctxi.RequestAt.String(), id).Error
 	if err != nil {
 		return ctxi.RespErrorLog(errcode.DBError, err, "Del")
 	}
@@ -87,7 +87,7 @@ func (d *ContentDao) DelByAuth(tableName string, id, userId uint64) error {
 	ctxi := d.Context
 	sql := `Update "` + tableName + `" SET deleted_at = ?
 WHERE id = ?  AND user_id = ?` + dbi.WithNotDeleted
-	err := d.db.Exec(sql, ctxi.TimeString, id, userId).Error
+	err := d.db.Exec(sql, ctxi.RequestAt.String(), id, userId).Error
 	if err != nil {
 		return ctxi.RespErrorLog(errcode.DBError, err, "DelByAuth")
 	}

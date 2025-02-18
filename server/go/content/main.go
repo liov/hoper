@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-
 	"github.com/hopeio/initialize"
 	"github.com/liov/hoper/server/go/content/global"
 	"github.com/liov/hoper/server/go/content/service"
@@ -13,14 +12,11 @@ import (
 func main() {
 	defer initialize.Start(global.Conf, global.Dao)()
 
-	s := server.Server{
-		Config: global.Conf.Server.Origin(),
-		GrpcHandler: func(gs *grpc.Server) {
-			model.RegisterMomentServiceServer(gs, service.GetMomentService())
-		},
-		GinHandler: func(engine *gin.Engine) {
-			_ = model.RegisterMomentServiceHandlerServer(engine, service.GetMomentService())
-		},
+	global.Conf.Server.GrpcHandler = func(gs *grpc.Server) {
+		model.RegisterMomentServiceServer(gs, service.GetMomentService())
 	}
-	s.Start()
+	global.Conf.Server.GinHandler = func(engine *gin.Engine) {
+		_ = model.RegisterMomentServiceHandlerServer(engine, service.GetMomentService())
+	}
+	global.Conf.Server.Run()
 }
