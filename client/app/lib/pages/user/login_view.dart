@@ -1,4 +1,4 @@
-import 'package:app/generated/protobuf/user/user.enum.pbenum.dart';
+import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/generated/protobuf/user/user.service.pb.dart';
 import 'package:app/global/state/auth.dart';

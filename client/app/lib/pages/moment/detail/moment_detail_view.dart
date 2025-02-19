@@ -1,6 +1,6 @@
 import 'package:app/components/async/async.dart';
-import 'package:app/generated/protobuf/content/action.enum.pb.dart';
-import 'package:app/generated/protobuf/content/content.enum.pb.dart';
+import 'package:app/generated/protobuf/content/content.model.pbenum.dart';
+
 import 'package:app/pages/comment/comment_add_view.dart';
 import 'package:app/pages/comment/comment_controller.dart';
 import 'package:app/pages/comment/comment_list_view_v2.dart';

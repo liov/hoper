@@ -1,4 +1,3 @@
-import 'package:app/generated/protobuf/content/action.enum.pbenum.dart';
 import 'package:app/generated/protobuf/content/action.model.pb.dart';
 import 'package:app/generated/protobuf/content/action.service.pb.dart';
 import 'package:app/generated/protobuf/content/content.model.pb.dart'  as

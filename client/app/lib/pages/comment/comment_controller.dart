@@ -1,7 +1,6 @@
 import 'package:app/generated/protobuf/content/action.model.pb.dart';
 import 'package:app/generated/protobuf/content/action.service.pb.dart';
-import 'package:app/generated/protobuf/content/content.enum.pb.dart';
-import 'package:app/generated/protobuf/user/user.model.pb.dart';
+import 'package:app/generated/protobuf/content/content.model.pbenum.dart';
 import 'package:app/global/global_state.dart';
 import 'package:app/service/action.dart';
 import 'package:app/components/media/media.dart';
@@ -10,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:grpc/grpc.dart';
 
-import '../../utils/dialog.dart';
+import 'package:app/utils/dialog.dart';
 
 class CommentController extends GetxController with MediaController {
   final req = CommentListReq(pageNo: 1, pageSize: 10);

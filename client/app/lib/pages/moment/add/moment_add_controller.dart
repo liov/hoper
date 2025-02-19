@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:app/components/camrea/camera_view.dart';
-import 'package:app/generated/protobuf/content/content.enum.pb.dart';
+import 'package:app/generated/protobuf/content/content.model.pb.dart';
 import 'package:app/generated/protobuf/content/moment.service.pb.dart';
 import 'package:app/global/global_state.dart';
 import 'package:app/service/moment.dart';
@@ -13,7 +13,8 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
-import 'package:app/generated/protobuf/common/common.enum.pbenum.dart';
+import 'package:app/generated/protobuf/common/common.model.pbenum.dart';
+
 
 
 class MomentAddController extends GetxController with MediaController{
