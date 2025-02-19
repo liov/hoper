@@ -357,7 +357,7 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 }
 
 func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.LoginRep, error) {
-	authorization := Authorization{AuthBase: &model.AuthBase{
+	authorization := authorization{AuthBase: &model.AuthBase{
 		Id:     user.Id,
 		Name:   user.Name,
 		Role:   user.Role,

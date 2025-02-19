@@ -1,11 +1,9 @@
 package service
 
 import (
-	"encoding/json"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/hopeio/context/httpctx"
-	stringsi "github.com/hopeio/utils/strings"
-	jwti "github.com/hopeio/utils/validation/auth/jwt"
+	jwt2 "github.com/hopeio/scaffold/jwt"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"strings"
 	"time"
@@ -15,56 +13,23 @@ import (
 )
 
 var ExportAuth = auth
-
-type Authorization struct {
-	*user.AuthBase `json:"auth"`
-	jwt.RegisteredClaims
-	AuthInfoRaw string `json:"-"`
-}
-
-func (x *Authorization) Validate() error {
-	return nil
-}
-
-func (x *Authorization) GenerateToken(secret []byte) (string, error) {
-	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, x)
-	token, err := tokenClaims.SignedString(secret)
-	return token, err
-}
-
-func (x *Authorization) ParseToken(token string, secret []byte) error {
-	_, err := jwti.ParseToken(x, token, secret)
-	if err != nil {
-		return err
-	}
-	x.ID = x.AuthBase.IdStr()
-	authBytes, _ := json.Marshal(x.AuthBase)
-	x.AuthInfoRaw = stringsi.BytesToString(authBytes)
-	return nil
-}
+var jwtValidator = jwt.NewValidator()
 
 func auth(ctx *httpctx.Context, update bool) (*user.AuthBase, error) {
 	signature := ctx.Token[strings.LastIndexByte(ctx.Token, '.')+1:]
 	cacheTmp, ok := global.Dao.Cache.Get(signature)
 	if ok {
-		cache := cacheTmp.(*Authorization)
-		err := cache.Validate()
+		cache := cacheTmp.(*jwt2.Authorization[*user.AuthBase])
+		err := jwtValidator.Validate(cache)
 		if err != nil {
 			return nil, err
 		}
-		authInfo := cache.AuthBase
-		return authInfo, nil
+		return cache.Auth, nil
 	}
-
-	authorization := Authorization{AuthBase: &user.AuthBase{}}
-	if err := authorization.ParseToken(ctx.Token, global.Conf.Customize.TokenSecretBytes); err != nil {
+	authorization, err := jwt2.Auth[httpctx.RequestCtx, *user.AuthBase](ctx, global.Conf.Customize.TokenSecretBytes)
+	if err != nil {
 		return nil, user.UserErrNoLogin
 	}
-
-	authInfo := authorization.AuthBase
-	ctx.AuthID = authInfo.IdStr()
-	ctx.AuthInfo = authInfo
-	ctx.AuthInfoRaw = authorization.AuthInfoRaw
 
 	if update {
 		userDao := data.GetRedisDao(ctx, global.Dao.Redis.Client)
@@ -76,5 +41,5 @@ func auth(ctx *httpctx.Context, update bool) (*user.AuthBase, error) {
 	if !ok {
 		global.Dao.Cache.SetWithTTL(signature, authorization, 0, 5*time.Second)
 	}
-	return authInfo, nil
+	return authorization.Auth, nil
 }
