@@ -44,6 +44,7 @@ dart pub global activate protoc_plugin
 export PATH="$PATH:$HOME/.pub-cache/bin" (win:%USERPROFILE%\AppData\Local\Pub\Cache\bin)
 export PATH="$PATH:$flutterSDK/bin/cache/dart-sdk/bin"
 dart run generate.dart
+protoc --dart_out=grpc:lib/src/generated -I../../../protobuf ../../../protobuf/helloworld.proto
 
 ### lua(废弃)
 怪不得[flutter_lua](https://github.com/drydart/flutter_lua)插件有libgojni.so 且只支持lua5.2,
