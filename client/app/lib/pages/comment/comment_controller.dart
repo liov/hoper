@@ -1,7 +1,7 @@
 import 'package:app/generated/protobuf/content/action.model.pb.dart';
 import 'package:app/generated/protobuf/content/action.service.pb.dart';
 import 'package:app/generated/protobuf/content/content.model.pbenum.dart';
-import 'package:app/global/global_state.dart';
+import 'package:app/global/state.dart';
 import 'package:app/service/action.dart';
 import 'package:app/components/media/media.dart';
 import 'package:get/get.dart';

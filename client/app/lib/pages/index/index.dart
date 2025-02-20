@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:animate_do/animate_do.dart';
 import 'package:app/components/async/async.dart';
-import 'package:app/global/global_state.dart';
+import 'package:app/global/state.dart';
 
 import 'package:app/pages/home/splash_view.dart';
 import 'package:app/routes/route.dart';

@@ -7,12 +7,13 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get.dart';
 import 'package:grpc/grpc.dart';
 import 'package:hive/hive.dart';
-import 'package:logging/logging.dart';
+import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:app/utils/dio.dart' as $dio;
 import 'package:path/path.dart' as $path;
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 final globalService = GlobalService.instance;
 
@@ -23,7 +24,9 @@ class GlobalService{
 
   static GlobalService get instance => _instance ??= GlobalService._();
 
-  Subject<CallOptions> subject = Subject(CallOptions(timeout: Duration(seconds: 5)));
+  final logger = Logger(printer: HybridPrinter(PrettyPrinter(), debug: SimplePrinter()),level:Level.verbose);
+
+  Subject<CallOptions> subject = Subject(CallOptions(timeout: const Duration(seconds: 5)));
   set callOptions(CallOptions callOptions)=> subject.setState(callOptions);
 
   late final UserClient userClient = Get.put(UserClient(subject));
@@ -36,24 +39,25 @@ class GlobalService{
   late final Database db;
   late final SharedPreferences shared;
   final cache = DefaultCacheManager();
-  final log = Logger.root;
+
 
 
   init() async {
-    log.level = Level.ALL; // defaults to Level.INFO
-    log.onRecord.listen((record) {
-      print('${record.level.name}: ${record.time}: ${record.message}');
-    });
 
     final appDocDir = await getApplicationDocumentsDirectory();
+    logger.d(appDocDir.path);
+    final appSupportDir = await getApplicationSupportDirectory();
+    logger.d(appSupportDir.path);
+    //final dbpath = await getDatabasesPath();
 
-    final boxfuture = () async {
+    boxfuture() async {
       box = await Hive.openBox('box', path: $path.join(appDocDir.path, "hive"));
-    };
+    }
 
-    final dbfuture = () async {
+    dbfuture() async {
+      databaseFactory = databaseFactoryFfi;
       db = await openDatabase(
-          $path.join(appDocDir.path, 'databases', 'hoper.db'),
+          $path.join(appDocDir.path,'database', 'hoper.db'),
           version: 1, onCreate: (Database db, int version) async {
 
         // When creating the db, create the table
@@ -70,7 +74,7 @@ class GlobalService{
 
       });
 
-    };
+    }
     await Future.wait([boxfuture(), dbfuture()]);
     shared = await SharedPreferences.getInstance();
   }

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 
-import 'package:app/global/global_service.dart';
+import 'package:app/global/service.dart';
 import 'package:app/pages/photo/slide_photo.dart';
 import 'package:app/components/media/media.dart';
 import 'package:extended_image/extended_image.dart';

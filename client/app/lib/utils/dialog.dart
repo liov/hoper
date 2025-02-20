@@ -1,4 +1,4 @@
-import 'package:app/global/global_state.dart';
+import 'package:app/global/state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 
-import 'package:app/global/global_service.dart';
+import 'package:app/global/service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
 import 'state/app.dart';
@@ -12,7 +12,7 @@ import 'package:get/get.dart';
 
 import 'state/auth.dart';
 
-export 'global_service.dart';
+export 'service.dart';
 
 final globalState = GlobalState.instance;
 

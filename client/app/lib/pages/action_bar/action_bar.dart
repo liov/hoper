@@ -3,7 +3,7 @@ import 'package:app/generated/protobuf/content/action.service.pb.dart';
 import 'package:app/generated/protobuf/content/content.model.pb.dart'  as
 $content;
 import 'package:app/generated/protobuf/content/content.service.pb.dart';
-import 'package:app/global/global_state.dart';
+import 'package:app/global/state.dart';
 import 'package:app/routes/route.dart';
 import 'package:app/service/action.dart';
 import 'package:app/service/content.dart';

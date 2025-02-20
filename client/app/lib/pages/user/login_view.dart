@@ -2,7 +2,7 @@ import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/generated/protobuf/user/user.service.pb.dart';
 import 'package:app/global/state/auth.dart';
-import 'package:app/global/global_state.dart';
+import 'package:app/global/state.dart';
 import 'package:app/routes/route.dart';
 import 'package:app/utils/keyboard.dart';
 import 'package:grpc/grpc.dart';

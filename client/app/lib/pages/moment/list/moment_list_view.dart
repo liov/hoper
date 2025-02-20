@@ -3,7 +3,7 @@ import 'package:app/components/async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../global/global_service.dart';
+import '../../../global/service.dart';
 import '../item/moment_item_view.dart';
 import 'moment_list_controller.dart';
 // TabBarView StatelessWidget无法保持状态

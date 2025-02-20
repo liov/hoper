@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:app/components/christmas_tree.dart';
 
 import 'package:app/ffi/ffi.dart';
-import 'package:app/global/global_state.dart';
+import 'package:app/global/state.dart';
 import 'package:app/global/theme.dart';
 import 'package:app/pages/home/splash_conroller.dart';
 import 'package:app/pages/home/splash_view.dart';

@@ -1,6 +1,6 @@
 import 'package:app/components/async/async.dart';
 import 'package:app/generated/protobuf/content/moment.service.pb.dart';
-import 'package:app/global/global_state.dart';
+import 'package:app/global/state.dart';
 
 import 'package:app/pages/moment/item/moment_item_view.dart';
 import 'package:app/pages/moment/detail/moment_detail_view.dart';

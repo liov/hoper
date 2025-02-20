@@ -1,4 +1,4 @@
-import 'package:app/global/global_service.dart';
+import 'package:app/global/service.dart';
 import 'package:app/service/action.dart';
 import 'package:app/service/content.dart';
 import 'package:app/service/moment.dart';

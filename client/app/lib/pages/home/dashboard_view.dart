@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
-import 'package:app/global/global_service.dart';
+import 'package:app/global/service.dart';
 import 'home_controller.dart';
 
 class DashboardView extends GetView<HomeController> {

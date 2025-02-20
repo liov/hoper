@@ -1,4 +1,4 @@
-import 'package:app/global/global_service.dart';
+import 'package:app/global/service.dart';
 import 'package:get/get.dart';
 
 class AppState {
