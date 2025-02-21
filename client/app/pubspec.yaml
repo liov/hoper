@@ -95,6 +95,8 @@ dependencies:
   infinite_scroll_pagination: ^4.0.0
   convex_bottom_bar: ^3.2.0
   logger: ^2.4.0
+  apppkg:
+    path: ../../../hoper/thirdparty/apppkg
  # flame: ^1.7.1 游戏引擎
 # provider: ^5.0.0
 

@@ -46,3 +46,7 @@
 	path = thirdparty/scaffold
 	url = https://github.com/hopeio/scaffold
 	branch = main
+[submodule "thirdparty/applib"]
+	path = thirdparty/applib
+	url = https://github.com/hopeio/applib
+	branch = main
