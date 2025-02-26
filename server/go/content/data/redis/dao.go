@@ -3,7 +3,7 @@ package redis
 import (
 	"github.com/go-redis/redis/v8"
 	"github.com/hopeio/context/httpctx"
-	redisi "github.com/hopeio/initialize/conf_dao/redis"
+	redisi "github.com/hopeio/initialize/dao/redis"
 	"github.com/hopeio/utils/log"
 )
 

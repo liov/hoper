@@ -2,9 +2,9 @@ package global
 
 import (
 	"github.com/hopeio/initialize"
-	"github.com/hopeio/initialize/conf_dao/gormdb/postgres"
-	"github.com/hopeio/initialize/conf_dao/redis"
-	"github.com/hopeio/initialize/conf_dao/ristretto"
+	"github.com/hopeio/initialize/dao/gormdb/postgres"
+	"github.com/hopeio/initialize/dao/redis"
+	"github.com/hopeio/initialize/dao/ristretto"
 )
 
 var Dao *dao = &dao{}

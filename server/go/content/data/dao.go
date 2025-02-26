@@ -2,7 +2,7 @@ package data
 
 import (
 	"github.com/hopeio/context/httpctx"
-	"github.com/hopeio/initialize/conf_dao/redis"
+	"github.com/hopeio/initialize/dao/redis"
 	"github.com/liov/hoper/server/go/content/data/db"
 	rdao "github.com/liov/hoper/server/go/content/data/redis"
 	"gorm.io/gorm"
