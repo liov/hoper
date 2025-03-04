@@ -57,7 +57,7 @@
     "build:quickapp-webview-union": "uni build -p quickapp-webview-union",
     "type-check": "vue-tsc --noEmit",
     "diamond:add": "pnpm add file:..\\..\\thirdparty\\diamond",
-    "diamond:link": "pnpm link --global @hopeio/utils",
+    "diamond:link": "pnpm link @hopeio/utils",
     "clear:cache": "rm -r node_modules/.vite/deps"
   },
   "lint-staged": {
