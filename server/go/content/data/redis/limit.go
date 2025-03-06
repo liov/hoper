@@ -45,7 +45,7 @@ func (d *ContentDao) Limit(l *global.Limit) error {
 			pipe.Expire(ctx, minuteKey, time.Minute)
 		}
 		if dayDurationCmd.Val() < 0 {
-			pipe.Expire(ctx, dayKey, timei.TimeDay)
+			pipe.Expire(ctx, dayKey, timei.Day)
 		}
 		return nil
 	})
