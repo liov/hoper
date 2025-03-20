@@ -53,7 +53,7 @@ func GetOauthService() *OauthService {
 		if _, err := jwti.ParseToken(claims, token, global.Conf.Customize.TokenSecretBytes); err != nil {
 			return "", err
 		}
-		return strconv.FormatUint(claims.Data, 10), nil
+		return strconv.FormatUint(claims.Auth, 10), nil
 	}
 
 	srv.InternalErrorHandler = func(err error) (re *errors.Response) {

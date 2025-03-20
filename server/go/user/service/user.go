@@ -18,8 +18,10 @@ import (
 	timepb "github.com/hopeio/protobuf/time"
 	"github.com/hopeio/scaffold/errcode"
 	gormi "github.com/hopeio/utils/dao/database/gorm"
+	"github.com/hopeio/utils/net/http/consts"
 	"github.com/hopeio/utils/sdk/luosimao"
 	stringsi "github.com/hopeio/utils/strings"
+	jwti "github.com/hopeio/utils/validation/auth/jwt"
 	"github.com/hopeio/utils/validation/captcha"
 	"github.com/hopeio/utils/validation/validator"
 	model "github.com/liov/hoper/server/go/protobuf/user"
@@ -36,8 +38,6 @@ import (
 	redisi "github.com/hopeio/utils/dao/redis"
 	templatei "github.com/hopeio/utils/encoding/text/template"
 	"github.com/hopeio/utils/log"
-	httpi "github.com/hopeio/utils/net/http"
-
 	"github.com/hopeio/utils/net/mail"
 
 	"gorm.io/gorm"
@@ -357,14 +357,14 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 }
 
 func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.LoginRep, error) {
-	authorization := authorization{AuthBase: &model.AuthBase{
+	authorization := jwti.Claims[*model.AuthBase]{Auth: &model.AuthBase{
 		Id:     user.Id,
 		Name:   user.Name,
 		Role:   user.Role,
 		Status: user.Status,
 	}}
 
-	ctxi.AuthInfo = authorization.AuthBase
+	ctxi.AuthInfo = authorization.Auth
 	authorization.IssuedAt = &jwt.NumericDate{Time: ctxi.Time}
 	authorization.ExpiresAt = &jwt.NumericDate{Time: ctxi.Time.Add(global.Conf.Customize.TokenMaxAge)}
 
@@ -415,8 +415,8 @@ func (u *UserService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.
 		return nil, ctxi.RespErrorLog(errcode.RedisErr, err, "redisi.Del")
 	}
 	cookie := (&http.Cookie{
-		Name:  httpi.HeaderCookieValueToken,
-		Value: httpi.HeaderCookieValueDel,
+		Name:  consts.HeaderCookieValueToken,
+		Value: consts.HeaderCookieValueDel,
 		Path:  "/",
 		//Domain:   "hoper.xyz",
 		Expires:  time.Now().Add(-1),
