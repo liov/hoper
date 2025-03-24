@@ -4,6 +4,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/hopeio/context/httpctx"
 	jwt2 "github.com/hopeio/scaffold/jwt"
+	jwti "github.com/hopeio/utils/validation/auth/jwt"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"strings"
 	"time"
@@ -19,7 +20,7 @@ func auth(ctx *httpctx.Context, update bool) (*user.AuthBase, error) {
 	signature := ctx.Token[strings.LastIndexByte(ctx.Token, '.')+1:]
 	cacheTmp, ok := global.Dao.Cache.Get(signature)
 	if ok {
-		cache := cacheTmp.(*jwt2.Authorization[*user.AuthBase])
+		cache := cacheTmp.(*jwti.Claims[*user.AuthBase])
 		err := jwtValidator.Validate(cache)
 		if err != nil {
 			return nil, err
