@@ -6,5 +6,5 @@ import (
 )
 
 func main() {
-	log.Fatal(proxy.Director(":8080"))
+	log.Fatal(proxy.DirectorServer(":8080"))
 }
