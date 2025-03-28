@@ -36,7 +36,7 @@ func (*MomentService) Service() (describe, prefix string, middleware []gin.Handl
 }
 
 func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Moment, error) {
-	ctxi := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContextValue(ctx)
 	defer ctxi.StartSpanEnd("")()
 	auth, _ := auth(ctxi, true)
 	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
@@ -123,7 +123,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		return nil, errcode.InvalidArgument.Msg(fmt.Sprintf("文章内容不能小于%d个字", global.Conf.Customize.Moment.MaxContentLen))
 	}
 
-	ctxi := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContextValue(ctx)
 	defer ctxi.StartSpanEnd("")()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -214,7 +214,7 @@ func (*MomentService) Edit(context.Context, *content.AddMomentReq) (*emptypb.Emp
 }
 
 func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*content.MomentListRep, error) {
-	ctxi := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContextValue(ctx)
 	defer ctxi.StartSpanEnd("")()
 	auth, _ := auth(ctxi, true)
 	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
@@ -313,7 +313,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 }
 
 func (*MomentService) Delete(ctx context.Context, req *request.Id) (*emptypb.Empty, error) {
-	ctxi := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContextValue(ctx)
 	defer ctxi.StartSpanEnd("")()
 	auth, err := auth(ctxi, true)
 	if err != nil {

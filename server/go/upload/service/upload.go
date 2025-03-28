@@ -14,7 +14,7 @@ type UploadService struct {
 }
 
 func (*UploadService) GetUrls(ctx context.Context, req *upload.GetUrlsReq) (*upload.GetUrlsRep, error) {
-	ctxi := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContextValue(ctx)
 
 	uploadDao := data.GetDao(ctxi)
 
@@ -26,7 +26,7 @@ func (*UploadService) GetUrls(ctx context.Context, req *upload.GetUrlsReq) (*upl
 	return &upload.GetUrlsRep{UploadInfos: uploadInfos}, nil
 }
 func (*UploadService) GetUrlsByStrId(ctx context.Context, req *upload.GetUrlsByStrIdReq) (*upload.GetUrlsRep, error) {
-	ctxi := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContextValue(ctx)
 
 	uploadDao := data.GetDao(ctxi)
 

@@ -22,7 +22,7 @@ func (*CommonService) TagInfo(context.Context, *request.Id) (*common.Tag, error)
 	return nil, status.Errorf(codes.Unimplemented, "method Info not implemented")
 }
 func (*CommonService) AddTag(ctx context.Context, req *common.AddTagReq) (*emptypb.Empty, error) {
-	ctxi := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContextValue(ctx)
 	defer ctxi.StartSpanEnd("")()
 
 	user, err := auth(ctxi, false)
@@ -38,7 +38,7 @@ func (*CommonService) AddTag(ctx context.Context, req *common.AddTagReq) (*empty
 	return nil, nil
 }
 func (*CommonService) EditTag(ctx context.Context, req *common.EditTagReq) (*emptypb.Empty, error) {
-	ctxi := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContextValue(ctx)
 	defer ctxi.StartSpanEnd("")()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -56,7 +56,7 @@ func (*CommonService) EditTag(ctx context.Context, req *common.EditTagReq) (*emp
 	return nil, nil
 }
 func (*CommonService) TagList(ctx context.Context, req *common.TagListReq) (*common.TagListRep, error) {
-	ctxi := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContextValue(ctx)
 	var tags []*common.Tag
 
 	user, err := auth(ctxi, true)

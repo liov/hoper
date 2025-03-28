@@ -55,7 +55,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		info = fhs[0]
 	}
 
-	ctxi := httpctx.FromContextValue(r.Context())
+	ctxi, _ := httpctx.FromContextValue(r.Context())
 	_, err = auth(ctxi, false)
 	if err != nil {
 		(&httpi.ResAnyData{
@@ -80,7 +80,7 @@ func Exists(w http.ResponseWriter, req *http.Request) {
 }
 
 func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
-	ctxi := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContextValue(ctx)
 	auth, err := auth(ctxi, false)
 	uploadDao := data.GetDao(ctxi)
 	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
@@ -204,10 +204,10 @@ func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (uplo
 func MultiUpload(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(global.Conf.Customize.UploadMaxSize)
 	if err != nil {
-		httpi.RespErrRep(w, errcode.InvalidArgument.Origin().Msg(errRep))
+		httpi.RespErrRep(w, errcode.InvalidArgument.Msg(errRep))
 		return
 	}
-	ctxi := httpctx.FromContextValue(r.Context())
+	ctxi, _ := httpctx.FromContextValue(r.Context())
 	_, err = auth(ctxi, false)
 	if err != nil {
 		(&httpi.ResAnyData{
@@ -217,7 +217,7 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if r.MultipartForm == nil || (r.MultipartForm.Value == nil && r.MultipartForm.File == nil) {
-		httpi.RespErrRep(w, errcode.InvalidArgument.Origin().Msg(errRep))
+		httpi.RespErrRep(w, errcode.InvalidArgument.Msg(errRep))
 		return
 	}
 	md5s := r.MultipartForm.Value["md5[]"]
