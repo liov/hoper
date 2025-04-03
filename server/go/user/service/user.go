@@ -502,7 +502,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 }
 
 func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswordReq) (*wrappers.StringValue, error) {
-	ctxi := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContextValue(ctx)
 	defer ctxi.StartSpanEnd("ResetPassword")()
 
 	redisKey := modelconst.ResetTimeKey + strconv.FormatUint(req.Id, 10)
@@ -549,7 +549,7 @@ func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListR
 }
 
 func (*UserService) BaseList(ctx context.Context, req *model.BaseListReq) (*model.BaseListRep, error) {
-	ctxi := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContextValue(ctx)
 	defer ctxi.StartSpanEnd("BaseList")()
 	if ctxi.Internal == "" {
 		return nil, errcode.PermissionDenied
