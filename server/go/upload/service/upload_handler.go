@@ -37,12 +37,12 @@ const (
 func Upload(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(global.Conf.Customize.UploadMaxSize)
 	if err != nil {
-		httpi.RespErrRep(w, errcode.InvalidArgument.Origin().Msg(errRep))
+		httpi.RespErrRep(w, errcode.InvalidArgument.Msg(errRep))
 		return
 	}
 
 	if r.MultipartForm == nil || (r.MultipartForm.Value == nil && r.MultipartForm.File == nil) {
-		httpi.RespErrRep(w, errcode.InvalidArgument.Origin().Msg(errRep))
+		httpi.RespErrRep(w, errcode.InvalidArgument.Msg(errRep))
 		return
 	}
 	md5Str := r.RequestURI[len(ApiUpload):]
@@ -58,18 +58,18 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	ctxi, _ := httpctx.FromContextValue(r.Context())
 	_, err = auth(ctxi, false)
 	if err != nil {
-		(&httpi.ResAnyData{
+		(&httpi.RespAnyData{
 			Code: errcode2.ErrCode(user.UserErrLogin),
 			Msg:  errRep,
-		}).Response(w, http.StatusOK)
+		}).Response(w)
 		return
 	}
 	upload, err := save(ctxi, info, md5Str)
 	if err != nil {
-		httpi.RespErrRep(w, errcode.UploadFail.Origin().ErrRep())
+		httpi.RespErrRep(w, errcode.UploadFail.ErrRep())
 		return
 	}
-	(&httpi.ResAnyData{Data: model.Rep{Id: upload.Id, URL: upload.Path}}).Response(w, http.StatusOK)
+	(&httpi.RespAnyData{Data: model.Rep{Id: upload.Id, URL: upload.Path}}).Response(w)
 
 }
 
@@ -86,7 +86,7 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	upload, err := uploadDao.UploadDB(db, md5, size)
 	if err != nil {
-		httpi.RespErrRep(w, errcode.DBError.Origin().ErrRep())
+		httpi.RespErrRep(w, errcode.DBError.ErrRep())
 		return
 	}
 	if upload != nil {
@@ -98,14 +98,14 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 		if err := db.Table(model.UploadExtTableName).Create(&uploadExt).Error; err != nil {
 			ctxi.RespErrorLog(errcode.DBError, err, "Create")
 		}
-		(&httpi.ResAnyData{
+		(&httpi.RespAnyData{
 			Code: 1,
 			Msg:  "已存在",
 			Data: model.Rep{Id: upload.Id, URL: upload.Path},
-		}).Response(w, http.StatusOK)
+		}).Response(w)
 		return
 	}
-	(&httpi.ResAnyData{Msg: "不存在"}).Response(w, http.StatusOK)
+	(&httpi.RespAnyData{Msg: "不存在"}).Response(w)
 }
 
 func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
@@ -210,10 +210,10 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 	ctxi, _ := httpctx.FromContextValue(r.Context())
 	_, err = auth(ctxi, false)
 	if err != nil {
-		(&httpi.ResAnyData{
+		(&httpi.RespAnyData{
 			Code: errcode2.ErrCode(user.UserErrLogin),
 			Msg:  errRep,
-		}).Response(w, http.StatusOK)
+		}).Response(w)
 		return
 	}
 	if r.MultipartForm == nil || (r.MultipartForm.Value == nil && r.MultipartForm.File == nil) {
@@ -224,7 +224,7 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 	files := r.MultipartForm.File["file[]"]
 	// 如果有md5
 	if len(md5s) != 0 && len(md5s) != len(files) {
-		httpi.RespErrRep(w, errcode.InvalidArgument.Origin().Msg(errRep))
+		httpi.RespErrRep(w, errcode.InvalidArgument.Msg(errRep))
 		return
 	}
 	var urls = make([]model.MultiRep, len(files))
@@ -233,14 +233,14 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 		upload, err := save(ctxi, file, md5s[i])
 		if err != nil {
 			failures = append(failures, file.Filename)
-			httpi.RespErrRep(w, errcode.UploadFail.Origin().ErrRep())
+			httpi.RespErrRep(w, errcode.UploadFail.ErrRep())
 			return
 		}
 		urls[i].URL = upload.Path
 		urls[i].Success = true
 	}
-	(&httpi.ResAnyData{
+	(&httpi.RespAnyData{
 		Msg:  strings.Join(failures, ",") + errRep,
 		Data: urls,
-	}).Response(w, http.StatusOK)
+	}).Response(w)
 }

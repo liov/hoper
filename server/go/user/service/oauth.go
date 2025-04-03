@@ -117,7 +117,7 @@ func (u *OauthService) OauthAuthorize(ctx context.Context, req *goauth.OauthReq)
 func (u *OauthService) OauthToken(ctx context.Context, req *goauth.OauthReq) (*response.HttpResponse, error) {
 	req.GrantType = string(oauth2.AuthorizationCode)
 	var res httpi.ResponseRecorder
-	u.Server.HandleTokenRequest(ctx, &param.OauthReq{
+	err := u.Server.HandleTokenRequest(ctx, &param.OauthReq{
 		ResponseType:   req.ResponseType,
 		ClientID:       req.ClientID,
 		Scope:          req.Scope,
@@ -132,6 +132,9 @@ func (u *OauthService) OauthToken(ctx context.Context, req *goauth.OauthReq) (*r
 		AccessType:     req.AccessType,
 		LoginURI:       req.LoginURI,
 	}, &res)
+	if err != nil {
+		return nil, err
+	}
 	headers := make(map[string]string)
 	for k, v := range res.Headers {
 		headers[k] = v[0]
