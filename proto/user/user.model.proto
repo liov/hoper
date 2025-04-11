@@ -212,7 +212,6 @@ message Auth {
 
 // 用户操作
 enum Action {
-  option (go.enum) = {stringer_name: 'OrigString'};
   ActionPlaceholder = 0 [(enum.text)= "占位"];
   ActionSignup = 1 [(enum.text)= "注册"];
   ActionActive = 2 [(enum.text)= "激活"];
@@ -224,7 +223,6 @@ enum Action {
 }
 // 用户角色
 enum Role {
-  option (go.enum) = {stringer_name: 'OrigString'};
   PlaceholderRole = 0 [(enum.text)= "占位"];
   RoleNormal = 1 [(enum.text)= "普通用户"];
   RoleAdmin = 2 [(enum.text)= "管理员"];
@@ -233,7 +231,7 @@ enum Role {
 
 // 用户性别
 enum Gender{
-  option (go.enum) = {stringer_name: 'OrigString'};
+
   GenderPlaceholder = 0 [(enum.text)= "占位"];
   GenderUnfilled = 1 [(enum.text)= "未填"];
   GenderMale = 2 [(enum.text)= "男"];
@@ -242,7 +240,6 @@ enum Gender{
 
 // 用户状态
 enum UserStatus {
-  option (go.enum) = {stringer_name: 'OrigString'};
   option (enum.jsonmarshal) = false;
   UserStatusPlaceholder = 0 [(enum.text)= "占位"];
   UserStatusInActive = 1 [(enum.text)= "未激活"];
@@ -253,7 +250,6 @@ enum UserStatus {
 
 // 封禁类型
 enum BannedType{
-  option (go.enum) = {stringer_name: 'OrigString'};
   option (enum.jsonmarshal) = false;
   BannedTypePlaceholder = 0 [(enum.text)= "占位"];
   BannedTypePost = 1 [(enum.text)= "禁言"];
@@ -261,7 +257,7 @@ enum BannedType{
 }
 
 enum UserErr {
-  option (go.enum) = {stringer_name: 'OrigString'};
+
   option (enum.errcode) = true;
   option (enum.jsonmarshal) = false;
   UserErrPlaceholder = 0 [(enum.text)= "占位"];
@@ -274,7 +270,7 @@ enum UserErr {
 }
 
 enum DeviceType {
-  option (go.enum) = {stringer_name: 'OrigString'};
+
   option (enum.errcode) = true;
   option (enum.jsonmarshal) = false;
   DeviceTypePlaceholder = 0 [(enum.text)= "占位"];

@@ -144,7 +144,7 @@ message UserAction{
 
 // 操作类型
 enum ActionType{
-  option (go.enum) = {stringer_name: 'OrigString'};
+
   ActionPlaceholder = 0 [(enum.text) = "占位"];
   ActionBrowse = 1 [(enum.text) = "浏览"];
   ActionLike = 2 [(enum.text) = "点赞"];
@@ -161,7 +161,7 @@ enum ActionType{
 
 // 评论类型
 enum CommentType{
-  option (go.enum) = {stringer_name: 'OrigString'};
+
   CommentPlaceholder = 0 [(enum.text)= "占位"];
   CommentMoment = 1 [(enum.text)= "瞬间"];
   CommentDiary = 2 [(enum.text)= "日记"];
@@ -170,7 +170,7 @@ enum CommentType{
 }
 
 enum LikeStatus{
-  option (go.enum) = {stringer_name: 'OrigString'};
+
   LikeStatusPlaceholder = 0 [(enum.text)= "占位"];
   LikeStatusLike = 2 [(enum.text)= "点赞"];
   LikeStatusUnlike = 3 [(enum.text)= "不喜欢"];

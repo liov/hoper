@@ -128,7 +128,7 @@ message UserStatistics{
 
 
 enum ContentType{
-  option (go.enum) = {stringer_name: 'OrigString'};
+
   ContentPlaceholder = 0 [(enum.text) = "占位"];
   ContentMoment = 1 [(enum.text) = "瞬间"];
   ContentNote = 2 [(enum.text) = "笔记"];
@@ -141,7 +141,7 @@ enum ContentType{
 
 // Deprecated 使用数据库表
 /*enum AttrType{
-  option (go.enum) = {stringer_name: 'OrigString'};
+
   AttrPlaceholder = 0 [(enum.text) = "占位"];
   AttrImage = 1 [(enum.text) = "图片"];
   AttrVideo = 2 [(enum.text) = "视频"];
@@ -157,7 +157,7 @@ enum ContentType{
 
 // Deprecated 使用数据库表TagGroup
 /*enum TagType{
-  option (go.enum) = {stringer_name: 'OrigString'};
+
   TagPlaceholder = 0 [(enum.text) = "占位"];
   TagContent = 1[(enum.text) = "内容"];
   TagMood = 2 [(enum.text) = "心情"];
@@ -169,7 +169,7 @@ enum ContentType{
 
 // 可见范围
 enum ViewPermission{
-  option (go.enum) = {stringer_name: 'OrigString'};
+
   ViewPermissionPlaceholder = 0 [(enum.text) = "占位"];
   ViewPermissionAll = 1 [(enum.text) = "无限制"];
   ViewPermissionSelf = 2 [(enum.text) = "仅自己"];
@@ -181,7 +181,7 @@ enum ViewPermission{
 
 // Deprecated 类型拆分
 enum ContainerType{
-  option (go.enum) = {stringer_name: 'OrigString'};
+
   ContainerTypePlaceholder = 0 [(enum.text) = "占位"];
   ContainerTypeFavorites = 1[(enum.text) = "收藏夹"];
   ContainerTypeDiaryBook = 2[(enum.text) = "日记本"];

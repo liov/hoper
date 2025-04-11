@@ -206,7 +206,7 @@ message Category{
 // RedisIndex
 
 enum RedisIndex{
-  option (go.enum) = {stringer_name: 'OrigString'};
+
   RedisIndexPlaceholder = 0 [(enum.text) = "占位"];
   RedisIndexFlag = 13 [(enum.text) = "标志"];
   RedisIndexSys = 14 [(enum.text) = "系统"];
@@ -215,13 +215,13 @@ enum RedisIndex{
 }
 
 enum ObjectType{
-  option (go.enum) = {stringer_name: 'OrigString'};
+
   ObjectPlaceholder = 0 [(enum.text) = "占位"];
   ObjectContent = 1 [(enum.text) = "内容"];
 }
 
 enum MediaType{
-  option (go.enum) = {stringer_name: 'OrigString'};
+
   MediaTypePlaceholder = 0 [(enum.text) = "占位"];
   MediaTypeImage = 1 [(enum.text) = "图片"];
   MediaTypeVideo = 2 [(enum.text) = "视频"];
@@ -229,7 +229,7 @@ enum MediaType{
 }
 
 enum DataType {
-  option (go.enum) = {stringer_name: 'OrigString'};
+
   DataTypePlaceholder = 0 [(enum.text) = "占位"];
   DataTypeString = 1 [(enum.text) = "字符串"];
   DataTypeInteger = 2 [(enum.text) = "整数"];
@@ -240,7 +240,7 @@ enum DataType {
 }
 
 enum Platform{
-  option (go.enum) = {stringer_name: 'OrigString'};
+
   PlatformPlaceholder = 0 [(enum.text)= "占位"];
   PlatformWechat = 1 [(enum.text)= "微信"];
   PlatformQQ = 2 [(enum.text)= "QQ"];
@@ -248,7 +248,7 @@ enum Platform{
 
 // 删除原因
 enum BanReason{
-  option (go.enum) = {stringer_name: 'OrigString'};
+
   BanReasonPlaceholder = 0 [(enum.text) = "占位"];
   BanReasonViolationOfLawsAndRegulations = 1 [(enum.text) = "违返法律法规"];
   BanReasonEroticViolence = 3 [(enum.text) = "色情暴力"];
@@ -256,7 +256,7 @@ enum BanReason{
 }
 
 enum DocType{
-  option (go.enum) = {stringer_name: 'OrigString'};
+
   DocTypePlaceholder = 0 [(enum.text) = "占位"];
   DocTypeMarkdown = 1 [(enum.text) = "markdown"];
   DocTypeHtml = 2 [(enum.text) = "html"];
