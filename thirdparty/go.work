@@ -4,7 +4,7 @@ use (
 	cherry
 	context
 	deploy/plugin
-	example
+	./../awesome/lang/go/custom/example
 	initialize
 	pick
 	protobuf
