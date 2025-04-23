@@ -29,3 +29,13 @@ build
 **/local.toml
 *.apidoc.md
 *.swagger.json
+server/go/config.template.toml
+server/go/local.template.toml
+client/web/index.html
+client/app/web/index.html
+client/app/web/manifest.json
+client/app/devtools_options.yaml
+client/app/android/app/src/main/res/drawable-v21/launch_background.xml
+client/app/android/app/src/main/res/values-night-v31/styles.xml
+.gitignore
+client/app/ios/Runner/Assets.xcassets/LaunchBackground.imageset/Contents.json

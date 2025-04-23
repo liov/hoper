@@ -38,3 +38,5 @@ gen
 gradle
 gradlew
 gradlew.bat
+bin
+logs
