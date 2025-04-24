@@ -5,15 +5,14 @@ Env = "dev"
 [dev]
 Debug = true
 ConfigTemplateDir = "."
+
+[dev.localConfig]
+Paths = ["local.toml"]
+
 [dev.configCenter]
 Type = "local"
-NoInject = ["Apollo","Etcd", "Es"]
+NoInject = ["Apollo", "Etcd", "Es"]
 Format = 'toml'
-
-[dev.configCenter.local]
-Debug = true
-ConfigPath = "local.toml"
-ReloadType = "fsnotify"
 
 [dev.configCenter.http]
 Interval = 100
@@ -23,8 +22,8 @@ Url = "http://localhost:6666/local.toml"
 
 [test.configCenter]
 configType = "nacos"
-Watch  = true
-NoInject = ["Apollo","Etcd", "Es"]
+Watch = true
+NoInject = ["Apollo", "Etcd", "Es"]
 
 [test.configCenter.nacos]
 DataId = "pro"
@@ -43,4 +42,3 @@ password = "123456"
 LogLevel = "debug"
 
 [prod]
-

@@ -3,6 +3,7 @@ module github.com/liov/hoper/server/go
 go 1.23.0
 
 require (
+	github.com/danielvladco/go-proto-gql v0.10.1-0.20221227181908-22fca0a9469c
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-oauth2/oauth2/v4 v4.5.2
 	github.com/go-redis/redis/v8 v8.11.5
@@ -39,7 +40,6 @@ require (
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cloudwego/base64x v0.1.5 // indirect
-	github.com/danielvladco/go-proto-gql v0.10.1-0.20221227181908-22fca0a9469c // indirect
 	github.com/dgraph-io/ristretto v0.1.2-0.20240116140435-c67e07994f91 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
@@ -59,7 +59,6 @@ require (
 	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/google/pprof v0.0.0-20241210010833-40e02aabc2ad // indirect
-	github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus v1.0.1 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.1.0 // indirect
 	github.com/invopop/yaml v0.3.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect

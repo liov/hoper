@@ -4,7 +4,7 @@ EnablePrometheus = false
 EnableStdLogger = true
 MaxIdleConns = 10
 MaxOpenConns = 10
-Port = 5432
+Port = 15432
 Schema = ""
 TimeFormat = ""
 TimeZone = ""
@@ -27,7 +27,7 @@ SingularTable = true
 AuthType = "PLAIN"
 Host = "smtp.qq.com"
 Port = ":465"
-From =  "lby.i@qq.com"
+From = "lby.i@qq.com"
 
 [Log]
 DisableCaller = false
@@ -75,7 +75,7 @@ IncludeLogPrefixes = ["/api"]
 ContextWithFallback = true
 
 [Server.HttpOption]
-ExcludeLogPrefixes = ["/video","/live"]
+ExcludeLogPrefixes = ["/video", "/live"]
 IncludeLogPrefixes = []
 StaticFs = []
 
