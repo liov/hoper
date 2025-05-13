@@ -138,7 +138,7 @@ func (d *UserDao) EfficientUserHashToRedis() error {
 压缩列表中的节点数量大于 server.hash_max_ziplist_entries （默认值为 512 ）。
 */
 func (d *UserDao) EfficientUserHashFromRedis() error {
-	defer d.StartSpanEnd("EfficientUserHashFromRedis")
+	defer d.StartSpanEnd("EfficientUserHashFromRedis")()
 	ctxi := d
 	ctx := ctxi.Base()
 	loginUser := modelconst.LoginUserKey + ctxi.AuthID
