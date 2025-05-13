@@ -1,22 +1,6 @@
 package global
 
-import "github.com/hopeio/utils/os/fs"
-
-type serverConfig struct {
-	PassSalt    string
-	TokenMaxAge int64
-	TokenSecret string
-	PageSize    int8
-
-	LuosimaoVerifyURL string
-	LuosimaoAPIKey    string
-
-	QrCodeSaveDir fs.Dir //二维码保存路径
-	PrefixUrl     string
-	FontSaveDir   fs.Dir //字体保存路径
-
-	CrawlerName string //爬虫
-
+type Config struct {
 	Moment Moment
 }
 

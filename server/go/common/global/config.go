@@ -3,8 +3,6 @@ package global
 type config struct {
 }
 
-var Conf = &config{}
-
 func (c *config) BeforeInject() {
 
 }

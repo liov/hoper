@@ -5,8 +5,6 @@ import (
 	initredis "github.com/hopeio/initialize/dao/redis"
 )
 
-var Dao *dao = &dao{}
-
 // dao dao.
 type dao struct {
 	GORMDB postgres.DB

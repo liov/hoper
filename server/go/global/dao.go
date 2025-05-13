@@ -3,9 +3,11 @@ package global
 import (
 	"database/sql"
 	"github.com/hopeio/initialize/dao/gormdb/postgres"
-	initredis "github.com/hopeio/initialize/dao/redis"
+	"github.com/hopeio/initialize/dao/mail"
+	"github.com/hopeio/initialize/dao/redis"
+	"github.com/hopeio/initialize/dao/ristretto"
 	"github.com/hopeio/utils/log"
-	"github.com/liov/hoper/server/go/protobuf/content"
+	"github.com/liov/hoper/server/go/protobuf/user"
 )
 
 // 原本是个单独模块，但是考虑到数据库必须初始化，所以合进来了
@@ -17,30 +19,26 @@ type dao struct {
 	GORMDB postgres.DB
 	StdDB  *sql.DB
 	// RedisPool Redis连接池
-	Redis initredis.Client
+	Redis redis.Client
+	Cache ristretto.Cache[string, any]
 	//elastic
+	Mail mail.Mail `init:"config:mail"`
 }
 
 func (d *dao) BeforeInject() {
-
 }
 
 func (d *dao) AfterInjectConfig() {
 
 }
-
 func (d *dao) AfterInject() {
-	d.GORMDB.Conf.NamingStrategy.TablePrefix = "content."
+	d.GORMDB.Conf.NamingStrategy.TablePrefix = "user."
 	d.GORMDB.NamingStrategy = d.GORMDB.Conf.NamingStrategy
-	err := d.GORMDB.Exec(`CREATE SCHEMA IF NOT EXISTS "content"`).Error
+	err := d.GORMDB.Exec(`CREATE SCHEMA IF NOT EXISTS "user"`).Error
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = d.GORMDB.Migrator().AutoMigrate(&content.Content{}, &content.Container{},
-		&content.ContentAttr{}, &content.Comment{},
-		&content.Favorite{}, &content.FavFollow{}, &content.UserStatistics{},
-		&content.Statistics{},
-	)
+	err = d.GORMDB.Migrator().AutoMigrate(&user.User{}, &user.Resume{}, &user.ActionLog{}, &user.BannedLog{}, &user.Device{}, &user.ScoreLog{}, &user.UserExt{}, user.Oauth{})
 	if err != nil {
 		log.Fatal(err)
 	}

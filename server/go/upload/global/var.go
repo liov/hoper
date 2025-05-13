@@ -5,5 +5,8 @@ import (
 )
 
 var Dao = global.Global.Dao
-var Conf = global.Global.Config
+var Conf = &config{}
 
+func init() {
+	global.Global.Unmarshal(Conf)
+}

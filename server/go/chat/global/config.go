@@ -5,8 +5,6 @@ import (
 	"github.com/hopeio/initialize"
 )
 
-var Conf = &config{}
-
 type config struct {
 	initialize.EmbeddedPresets
 	//自定义的配置

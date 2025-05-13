@@ -2,32 +2,26 @@ package global
 
 import (
 	"github.com/hopeio/cherry"
-	"github.com/liov/hoper/server/go/content/model"
+	timei "github.com/hopeio/utils/time"
+	"time"
 )
 
 /*var ServerSettings = &ServerConfig{}
 var DatabaseSettings = &DatabaseConfig{}
-var RedisSettings = &Config{}
+var RedisSettings = &RedisConfig{}
 var MongoSettings = &MongoConfig{}*/
 
 type config struct {
 	//自定义的配置
-	Customize Config
+	Customize serverConfig
 	Server    cherry.Server
 }
 
 func (c *config) BeforeInject() {
-	c.Customize = Config{
-		Moment: Moment{
-			Limit: Limit{
-				SecondLimitKey: model.MomentSecondLimitKey,
-				MinuteLimitKey: model.MomentMinuteLimitKey,
-				DayLimitKey:    model.MomentDayLimitKey,
-			},
-		},
-	}
+	c.Customize.TokenMaxAge = timei.Day
 }
 
 func (c *config) AfterInject() {
-
+	c.Customize.TokenMaxAge = timei.StdDuration(c.Customize.TokenMaxAge, time.Hour)
+	c.Customize.TokenSecretBytes = []byte(c.Customize.TokenSecret)
 }

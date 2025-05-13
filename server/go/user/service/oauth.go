@@ -9,7 +9,7 @@ import (
 	"github.com/go-oauth2/oauth2/v4/models"
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/go-oauth2/oauth2/v4/store"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 	goauth "github.com/hopeio/protobuf/oauth"
 	"github.com/hopeio/protobuf/response"
 	httpi "github.com/hopeio/utils/net/http"

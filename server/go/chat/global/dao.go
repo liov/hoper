@@ -7,8 +7,6 @@ import (
 	"github.com/hopeio/initialize/dao/ristretto"
 )
 
-var Dao *dao = &dao{}
-
 // dao dao.
 type dao struct {
 	initialize.EmbeddedPresets
