@@ -3,8 +3,8 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	gini "github.com/hopeio/utils/net/http/gin"
-	"github.com/liov/hoper/server/go/upload/global"
-	"github.com/liov/hoper/server/go/upload/service"
+	"github.com/liov/hoper/server/go/file/global"
+	"github.com/liov/hoper/server/go/file/service"
 	"net/http"
 )
 

@@ -30,6 +30,7 @@ Port = ":465"
 From = "lby.i@qq.com"
 
 [Log]
+Development = true
 DisableCaller = false
 DisableStacktrace = false
 EncodeLevelType = ""

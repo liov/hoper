@@ -5,13 +5,13 @@ import (
 	"log"
 )
 
-type uploadDao struct {
+type chatDao struct {
 	*httpctx.Context
 }
 
-func GetDao(ctx *httpctx.Context) *uploadDao {
+func GetDao(ctx *httpctx.Context) *chatDao {
 	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}
-	return &uploadDao{ctx}
+	return &chatDao{ctx}
 }

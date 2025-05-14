@@ -57,11 +57,11 @@ message GetUrlsByStrIdReq {
   string ids = 1 [(go.field) = {tags:'validate:"required" comment:"ids"'}];
 }
 
-message UploadInfo {
+message File {
   uint64 id = 1 [(go.field) = {tags:'comment:"id"'}];
   string url = 2 [(go.field) = {tags:'comment:"url"'}];
 }
 
 message GetUrlsRep {
-  repeated UploadInfo UploadInfos = 1[(go.field) = {tags:'comment:"上传文件信息"'}];
+  repeated File files = 1[(go.field) = {tags:'comment:"上传文件信息"'}];
 }

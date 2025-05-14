@@ -3,11 +3,11 @@ module github.com/liov/hoper/server/go
 go 1.23.0
 
 require (
+	github.com/bdragon300/tusgo v0.1.2
 	github.com/danielvladco/go-proto-gql v0.10.1-0.20221227181908-22fca0a9469c
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-oauth2/oauth2/v4 v4.5.3
 	github.com/go-redis/redis/v8 v8.11.5
-	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/golang/protobuf v1.5.4
 	github.com/google/uuid v1.6.0
@@ -23,6 +23,7 @@ require (
 	github.com/notedit/rtmp-lib v0.0.8
 	github.com/pion/rtp v1.8.9
 	github.com/pion/webrtc/v4 v4.0.0-beta.29
+	github.com/tus/tusd v1.13.0
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.54.0
 	go.uber.org/zap v1.27.0
 	golang.org/x/net v0.40.0
@@ -35,6 +36,7 @@ require (
 require (
 	github.com/andybalholm/brotli v1.1.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/bmizerany/pat v0.0.0-20170815010413-6226ea591a40 // indirect
 	github.com/bytedance/sonic v1.13.2 // indirect
 	github.com/bytedance/sonic/loader v0.2.4 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect

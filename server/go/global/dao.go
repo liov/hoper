@@ -1,7 +1,6 @@
 package global
 
 import (
-	"database/sql"
 	"github.com/hopeio/initialize/dao/gormdb/postgres"
 	"github.com/hopeio/initialize/dao/mail"
 	"github.com/hopeio/initialize/dao/redis"
@@ -17,7 +16,6 @@ import (
 type dao struct {
 	// GORMDB 数据库连接
 	GORMDB postgres.DB
-	StdDB  *sql.DB
 	// RedisPool Redis连接池
 	Redis redis.Client
 	Cache ristretto.Cache[string, any]
@@ -32,14 +30,16 @@ func (d *dao) AfterInjectConfig() {
 
 }
 func (d *dao) AfterInject() {
-	d.GORMDB.Conf.NamingStrategy.TablePrefix = "user."
-	d.GORMDB.NamingStrategy = d.GORMDB.Conf.NamingStrategy
-	err := d.GORMDB.Exec(`CREATE SCHEMA IF NOT EXISTS "user"`).Error
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = d.GORMDB.Migrator().AutoMigrate(&user.User{}, &user.Resume{}, &user.ActionLog{}, &user.BannedLog{}, &user.Device{}, &user.ScoreLog{}, &user.UserExt{}, user.Oauth{})
-	if err != nil {
-		log.Fatal(err)
+	if d.GORMDB.DB != nil {
+		d.GORMDB.Conf.NamingStrategy.TablePrefix = "user."
+		d.GORMDB.NamingStrategy = d.GORMDB.Conf.NamingStrategy
+		err := d.GORMDB.Exec(`CREATE SCHEMA IF NOT EXISTS "user"`).Error
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = d.GORMDB.Migrator().AutoMigrate(&user.User{}, &user.Resume{}, &user.ActionLog{}, &user.BannedLog{}, &user.Device{}, &user.ScoreLog{}, &user.UserExt{}, user.Oauth{})
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
