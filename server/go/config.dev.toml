@@ -4,7 +4,6 @@ EnablePrometheus = false
 EnableStdLogger = true
 MaxIdleConns = 10
 MaxOpenConns = 10
-Port = 15432
 Schema = ""
 TimeFormat = ""
 TimeZone = ""

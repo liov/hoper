@@ -7,7 +7,8 @@ const (
 )
 
 const (
-	Schema             = "user."
+	//Schema             = "user."
+	Schema             = ""
 	TableNameUser      = Schema + `user`
 	TableNameUserExt   = Schema + "user_ext"
 	TableNameResume    = Schema + "resume"

@@ -31,7 +31,7 @@ func (d *dao) AfterInjectConfig() {
 }
 func (d *dao) AfterInject() {
 	if d.GORMDB.DB != nil {
-		d.GORMDB.Conf.NamingStrategy.TablePrefix = "user."
+		//d.GORMDB.Conf.NamingStrategy.TablePrefix = "user."
 		d.GORMDB.NamingStrategy = d.GORMDB.Conf.NamingStrategy
 		err := d.GORMDB.Exec(`CREATE SCHEMA IF NOT EXISTS "user"`).Error
 		if err != nil {

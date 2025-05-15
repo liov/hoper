@@ -113,17 +113,6 @@ service CommonService {
     option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
 
-  // 列表
-  rpc TagGroupList (TagGroupListReq) returns (TagGroupListRep) {
-    option (google.api.http) = {
-      get: "/api/v1/tagGroup"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags:["v1.0.0"]
-    };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
-  }
-
   rpc SendMail (SendMailReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/api/v1/sendMail"
@@ -166,6 +155,7 @@ message AddTagReq {
   string name = 1[(go.field) = {tags:'comment:"名称"'}];
   string desc = 3 [(go.field) = {tags:'comment:"描述"'}];
   string image = 4 [(go.field) = {tags:'comment:"表情url"'}];
+  uint32 type = 5 [(go.field) = {tags:'comment:"类型"'}];
   uint64 userId = 5 [(go.field) = {tags:'comment:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
 }
@@ -175,6 +165,7 @@ message EditTagReq {
   string name = 2[(go.field) = {tags:'comment:"名称"'}];
   string desc = 3 [(go.field) = {tags:'comment:"描述"'}];
   string image = 4 [(go.field) = {tags:'comment:"表情url"'}];
+  uint32 type = 5 [(go.field) = {tags:'comment:"类型"'}];
 }
 
 
@@ -194,11 +185,6 @@ message TagGroupListReq{
   string name = 3[(go.field) = {tags:'comment:"组名称"'}];
   uint32 pageNo = 4;
   uint32 pageSize = 5;
-}
-
-message TagGroupListRep {
-  int64 total = 1;
-  repeated TagGroup data = 2;
 }
 
 message SendMailReq {

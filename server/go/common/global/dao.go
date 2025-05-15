@@ -32,7 +32,7 @@ func (d *dao) AfterInject() {
 		log.Fatal(err)
 	}
 	err = d.GORMDB.Migrator().AutoMigrate(&common.Tag{},
-		&common.TagGroup{}, &common.TagTagGroup{}, &common.AttrAttrGroup{}, &common.AttrGroup{},
+		&common.AttrAttrGroup{}, &common.AttrGroup{},
 		&common.Category{}, &common.Attr{},
 	)
 	if err != nil {

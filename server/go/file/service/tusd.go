@@ -3,10 +3,8 @@ package service
 import (
 	"fmt"
 	"github.com/hopeio/utils/log"
-	"github.com/tus/tusd/pkg/filestore"
-	tusd "github.com/tus/tusd/pkg/handler"
+	tusd "github.com/tus/tusd/v2/pkg/handler"
 	"net/http"
-	"os"
 )
 
 func init() {
@@ -16,10 +14,8 @@ func init() {
 	// If you want to save them on a different medium, for example
 	// a remote FTP server, you can implement your own storage backend
 	// by implementing the tusd.DataStore interface.
-	os.Mkdir("./uploads", 0666)
-	store := filestore.FileStore{
-		Path: "./uploads",
-	}
+
+	store := NewFileStore("./uploads")
 
 	// A storage backend for tusd may consist of multiple different parts which
 	// handle upload creation, locking, termination and so on. The composer is a
@@ -31,7 +27,6 @@ func init() {
 	// Create a new HTTP handler for the tusd server by providing a configuration.
 	// The StoreComposer property must be set to allow the handler to function.
 	handler, err := tusd.NewHandler(tusd.Config{
-		DisableCors:           true,
 		BasePath:              "/files/",
 		StoreComposer:         composer,
 		NotifyCompleteUploads: true,

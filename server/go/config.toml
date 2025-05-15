@@ -5,7 +5,7 @@ Env = "dev"
 [dev]
 Debug = true
 ConfigTemplateDir = "."
-NoInject = ["GORMDB","Redis"]
+NoInject = []
 [dev.localConfig]
 Paths = ["local.toml"]
 

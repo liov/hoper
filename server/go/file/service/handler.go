@@ -89,12 +89,12 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 		return
 	}
 	if file != nil {
-		upload := model.Upload{
+		upload := model.UploadInfo{
 			UserId:    auth.Id,
 			CreatedAt: ctxi.RequestAt.Time,
 			FileId:    file.Id,
 		}
-		if err := db.Table(model.TableNameUpload).Create(&upload).Error; err != nil {
+		if err := db.Table(model.TableNameUploadInfo).Create(&upload).Error; err != nil {
 			ctxi.RespErrorLog(errcode.DBError, err, "Create")
 		}
 		(&httpi.RespAnyData{
@@ -107,11 +107,11 @@ func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
 	(&httpi.RespAnyData{Msg: "不存在"}).Response(w)
 }
 
-func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (upload *model.Upload, err error) {
+func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
 	uploadDao := data.GetDao(ctx)
 	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx.Base(), ctx.TraceID())
 	auth := ctx.AuthInfo.(*user.AuthBase)
-	var file *model.File
+	var file *model.FileInfo
 	if md5Str != "" {
 		file, err = uploadDao.FileInfo(db, md5Str, strconv.FormatInt(info.Size, 10))
 		if err != nil {
@@ -141,12 +141,12 @@ func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (uplo
 		}
 	}
 	if file != nil {
-		upload := model.Upload{
+		upload = &model.UploadInfo{
 			UserId:    auth.Id,
 			CreatedAt: ctx.RequestAt.Time,
 			FileId:    file.Id,
 		}
-		if err = db.Table(model.TableNameUpload).Create(&upload).Error; err != nil {
+		if err = db.Table(model.TableNameUploadInfo).Create(upload).Error; err != nil {
 			return nil, ctx.RespErrorLog(errcode.DBError, err, "Create")
 		}
 		return
@@ -182,24 +182,23 @@ func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (uplo
 	if err != nil {
 		return nil, err
 	}
-	file = &model.File{
+	file = &model.FileInfo{
 		Name: info.Filename,
 		MD5:  md5Str,
-		Ext:  ext,
 		Size: info.Size,
 		Path: uploadDir + fileName,
 	}
-	err = db.Table(model.TableNameFile).Create(file).Error
+	err = db.Table(model.TableNameFileInfo).Create(file).Error
 	if err != nil {
 		return nil, ctx.RespErrorLog(errcode.DBError, err, "Create")
 	}
-	upload = &model.Upload{
+	upload = &model.UploadInfo{
 		FileId:    file.Id,
 		UserId:    auth.Id,
 		CreatedAt: ctx.RequestAt.Time,
 	}
 
-	err = db.Table(model.TableNameUpload).Create(upload).Error
+	err = db.Table(model.TableNameUploadInfo).Create(upload).Error
 	if err != nil {
 		return nil, ctx.RespErrorLog(errcode.DBError, err, "Create")
 	}

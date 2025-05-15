@@ -12,7 +12,7 @@ import (
 
 func Video(ctx *gin.Context) {
 	file := ctx.Param("file")
-	ffmpeg.Run("-i D:\\Download\\" + file + "-an -vcodec libvpx -cpu-used 5 -deadline 1 -g 10 -error-resilient 1 -auto-alt-ref 1 -f rtp rtp://127.0.0.1:5004?pkt_size=1200 -vn -c:a libopus -f rtp rtp:/127.0.0.1:5006?pkt_size=1200")
+	ffmpeg.Run("-i D:\\Download\\" + file + "-an -vcodec libvpx -cpu-used 5 -deadline 1 -g 10 -error-resilient 1 -auto-alt-ref 1 -f rtp rtp://127.0.0.1:5004?pkt_size=1200 -vn -c:a libopus -f rtp rtp://127.0.0.1:5006?pkt_size=1200")
 }
 
 type Channel struct {

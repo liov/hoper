@@ -1,6 +1,6 @@
 package model
 
 const (
-	TableNameUpload = "upload"
-	TableNameFile   = "file"
+	TableNameUploadInfo = "upload_info"
+	TableNameFileInfo   = "file_info"
 )

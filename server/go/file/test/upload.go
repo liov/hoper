@@ -44,7 +44,7 @@ func CreateUploadFromFile(f *os.File, cl *tusgo.Client) *tusgo.Upload {
 	}
 
 	u := tusgo.Upload{}
-	if _, err = cl.CreateUpload(&u, finfo.Size(), true, nil); err != nil {
+	if _, err = cl.CreateUpload(&u, finfo.Size(), true, map[string]string{"filename": "zls-x86_64-windows.zip"}); err != nil {
 		panic(err)
 	}
 	return &u
@@ -53,7 +53,14 @@ func CreateUploadFromFile(f *os.File, cl *tusgo.Client) *tusgo.Upload {
 func main() {
 	baseURL, _ := url.Parse("http://localhost:8080/files/")
 	cl := tusgo.NewClient(http.DefaultClient, baseURL)
-
+	cl.GetRequest = func(method, url string, body io.Reader, tusClient *tusgo.Client, httpClient *http.Client) (*http.Request, error) {
+		req, err := http.NewRequest(method, url, body)
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Set("Authorization", "xxx")
+		return req, nil
+	}
 	f, err := os.Open(`D:\Download\zls-x86_64-windows.zip`)
 	if err != nil {
 		panic(err)
