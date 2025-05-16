@@ -23,11 +23,11 @@ func init() {
 	// we only use the file store but you may plug in multiple.
 	composer := tusd.NewStoreComposer()
 	store.UseIn(composer)
-
+	const prefix = "/api/v2/files/"
 	// Create a new HTTP handler for the tusd server by providing a configuration.
 	// The StoreComposer property must be set to allow the handler to function.
 	handler, err := tusd.NewHandler(tusd.Config{
-		BasePath:              "/files/",
+		BasePath:              prefix,
 		StoreComposer:         composer,
 		NotifyCompleteUploads: true,
 	})
@@ -40,7 +40,7 @@ func init() {
 	// itself and the relevant HTTP request.
 	go TusdHandler(handler)
 
-	http.Handle("/files/", http.StripPrefix("/files/", handler))
+	http.Handle(prefix, http.StripPrefix(prefix, handler))
 }
 
 func TusdHandler(handler *tusd.Handler) {

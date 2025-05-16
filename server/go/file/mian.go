@@ -14,7 +14,7 @@ func main() {
 	defer global.Global.Cleanup()
 	global.Global.Dao.GORMDB.Migrator().CreateTable(&model.FileInfo{}, &model.UploadInfo{})
 	uconf.Conf.Server.WithOptions(func(s *cherry.Server) {
-		s.GinHandler = func(app *gin.Engine) {
+		s.HttpHandler = func(app *gin.Engine) {
 			uploadapi.GinRegister(app)
 		}
 		//s.GraphqlHandler= graphql.NewExecutableSchema(),

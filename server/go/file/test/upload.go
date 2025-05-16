@@ -51,7 +51,7 @@ func CreateUploadFromFile(f *os.File, cl *tusgo.Client) *tusgo.Upload {
 }
 
 func main() {
-	baseURL, _ := url.Parse("http://localhost:8080/files/")
+	baseURL, _ := url.Parse("http://localhost:8080/api/v2/files/")
 	cl := tusgo.NewClient(http.DefaultClient, baseURL)
 	cl.GetRequest = func(method, url string, body io.Reader, tusClient *tusgo.Client, httpClient *http.Client) (*http.Request, error) {
 		req, err := http.NewRequest(method, url, body)
