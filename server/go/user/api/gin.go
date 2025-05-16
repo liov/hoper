@@ -8,8 +8,8 @@ import (
 )
 
 func GinRegister(app *gin.Engine) {
-	_ = model.RegisterUserServiceHandlerServer(app, service.GetUserService())
-	_ = model.RegisterOauthServiceHandlerServer(app, service.GetOauthService())
+	model.RegisterUserServiceHandlerServer(app, service.GetUserService())
+	model.RegisterOauthServiceHandlerServer(app, service.GetOauthService())
 	//oauth.RegisterOauthServiceHandlerServer(app, service.GetOauthService())
 	app.StaticFS("/oauth/login", http.Dir("./static/login.html"))
 }
