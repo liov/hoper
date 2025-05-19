@@ -11,5 +11,5 @@ func Test_Enum(t *testing.T) {
 	fmt.Println(a)
 	b := Role(1)
 	fmt.Println(b.String())
-	fmt.Println(b.OrigString())
+	fmt.Println(b.String())
 }

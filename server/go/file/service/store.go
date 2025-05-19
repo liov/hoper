@@ -59,7 +59,7 @@ func (store FileStore) UseIn(composer *handler.StoreComposer) {
 }
 
 func (store FileStore) NewUpload(ctx context.Context, info handler.FileInfo) (handler.Upload, error) {
-	ctxi, _ := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContext(ctx)
 	authInfo, _ := auth(ctxi, false)
 	if info.ID == "" {
 		info.ID = id.UniqueID()

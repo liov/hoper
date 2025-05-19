@@ -48,7 +48,7 @@ type UserService struct {
 }
 
 func (u *UserService) VerifyCode(ctx context.Context, req *model.VerifyCodeReq) (*emptypb.Empty, error) {
-	ctxi, _ := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
 	vcode := captcha.RandomCode(4)
 	log.Info(vcode)
@@ -61,7 +61,7 @@ func (u *UserService) VerifyCode(ctx context.Context, req *model.VerifyCodeReq) 
 }
 
 func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*emptypb.Empty, error) {
-	ctxi, _ := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
 
 	if req.Mail == "" && req.Phone == "" {
@@ -90,7 +90,7 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 }
 
 func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*wrappers.StringValue, error) {
-	ctxi, _ := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
 
 	if req.Mail == "" && req.Phone == "" {
@@ -245,7 +245,7 @@ func checkPassword(password string, user *model.User) bool {
 }
 
 func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.LoginRep, error) {
-	ctxi, _ := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
 	userDBDao := data.GetDBDao(ctxi, global.Dao.GORMDB.DB)
 
@@ -279,7 +279,7 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 }
 
 func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*emptypb.Empty, error) {
-	ctxi, _ := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
 	user, err := auth(ctxi, true)
 	if err != nil {
@@ -318,7 +318,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*emptypb.Em
 }
 
 func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginRep, error) {
-	ctxi, _ := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
 
 	if req.VCode != global.Conf.Customize.LuosimaoSuperPW {
@@ -403,7 +403,7 @@ func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.Login
 }
 
 func (u *UserService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.Empty, error) {
-	ctxi, _ := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("Logout")()
 	user, err := auth(ctxi, true)
 	if err != nil {
@@ -433,7 +433,7 @@ func (u *UserService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.
 }
 
 func (u *UserService) AuthInfo(ctx context.Context, req *emptypb.Empty) (*model.Auth, error) {
-	ctxi, _ := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContext(ctx)
 	user, err := auth(ctxi, true)
 	if err != nil {
 		return nil, err
@@ -442,7 +442,7 @@ func (u *UserService) AuthInfo(ctx context.Context, req *emptypb.Empty) (*model.
 }
 
 func (u *UserService) Info(ctx context.Context, req *request.Id) (*model.UserRep, error) {
-	ctxi, _ := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -465,7 +465,7 @@ func (u *UserService) Info(ctx context.Context, req *request.Id) (*model.UserRep
 }
 
 func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (*wrappers.StringValue, error) {
-	ctxi, _ := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
 	if verifyErr := luosimao.Verify(global.Conf.Customize.LuosimaoVerifyURL, global.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
 		return nil, errcode.InvalidArgument.Wrap(verifyErr)
@@ -502,7 +502,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 }
 
 func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswordReq) (*wrappers.StringValue, error) {
-	ctxi, _ := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("ResetPassword")()
 
 	redisKey := modelconst.ResetTimeKey + strconv.FormatUint(req.Id, 10)
@@ -549,7 +549,7 @@ func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListR
 }
 
 func (*UserService) BaseList(ctx context.Context, req *model.BaseListReq) (*model.BaseListRep, error) {
-	ctxi, _ := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("BaseList")()
 	if ctxi.Internal == "" {
 		return nil, errcode.PermissionDenied
@@ -602,7 +602,7 @@ func (*UserService) PickAddv(ctx *ginctx.Context, req *response.TinyRep) (*respo
 }
 
 func (u *UserService) EasySignup(ctx context.Context, req *model.SignupReq) (*model.LoginRep, error) {
-	ctxi, _ := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("EasySignup")()
 
 	if req.Mail == "" && req.Phone == "" {

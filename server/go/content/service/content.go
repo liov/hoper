@@ -25,7 +25,7 @@ func (m *ContentService) Service() (describe, prefix string, middleware []http.H
 }
 
 func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*request.Id, error) {
-	ctxi, _ := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -61,7 +61,7 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*req
 	return &request.Id{Id: req.Id}, nil
 }
 func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*emptypb.Empty, error) {
-	ctxi, _ := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -88,7 +88,7 @@ func (*ContentService) FavList(ctx context.Context, req *content.FavListReq) (*c
 
 // 收藏夹列表
 func (*ContentService) TinyFavList(ctx context.Context, req *content.FavListReq) (*content.TinyFavListRep, error) {
-	ctxi, _ := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -107,7 +107,7 @@ func (*ContentService) TinyFavList(ctx context.Context, req *content.FavListReq)
 
 // 创建合集
 func (*ContentService) AddSet(ctx context.Context, req *content.AddSetReq) (*emptypb.Empty, error) {
-	ctxi, _ := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
 	auth, err := auth(ctxi, true)
 	if err != nil {
@@ -129,7 +129,7 @@ func (*ContentService) AddSet(ctx context.Context, req *content.AddSetReq) (*emp
 
 // 修改合集
 func (*ContentService) EditSet(ctx context.Context, req *content.AddSetReq) (*emptypb.Empty, error) {
-	ctxi, _ := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
 	auth, err := auth(ctxi, true)
 	if err != nil {

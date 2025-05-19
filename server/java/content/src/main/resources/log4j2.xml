@@ -7,6 +7,7 @@ monitorInterval：用于指定log4j自动重新配置的监测间隔时间，单
 <Configuration status="WARN" monitorInterval="30">
     <!-- 全局参数 -->
     <Properties>
+        <property name="APP_NAME">content</property>
         <!-- 日志打印级别 -->
         <property name="LOG_LEVEL">INFO</property>
         <!-- 日志文件存储路径 -->

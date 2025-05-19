@@ -54,7 +54,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		info = fhs[0]
 	}
 
-	ctxi, _ := httpctx.FromContextValue(r.Context())
+	ctxi, _ := httpctx.FromContext(r.Context())
 	_, err = auth(ctxi, false)
 	if err != nil {
 		(&httpi.RespAnyData{
@@ -79,7 +79,7 @@ func Exists(w http.ResponseWriter, req *http.Request) {
 }
 
 func exists(ctx context.Context, w http.ResponseWriter, md5, size string) {
-	ctxi, _ := httpctx.FromContextValue(ctx)
+	ctxi, _ := httpctx.FromContext(ctx)
 	auth, err := auth(ctxi, false)
 	uploadDao := data.GetDao(ctxi)
 	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
@@ -211,7 +211,7 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 		httpi.RespErrRep(w, errcode.InvalidArgument.Msg(errRep))
 		return
 	}
-	ctxi, _ := httpctx.FromContextValue(r.Context())
+	ctxi, _ := httpctx.FromContext(r.Context())
 	_, err = auth(ctxi, false)
 	if err != nil {
 		(&httpi.RespAnyData{
