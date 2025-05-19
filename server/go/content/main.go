@@ -15,7 +15,7 @@ func main() {
 	global.Conf.Server.GrpcHandler = func(gs *grpc.Server) {
 		model.RegisterMomentServiceServer(gs, service.GetMomentService())
 	}
-	global.Conf.Server.HttpHandler = func(engine *gin.Engine) {
+	global.Conf.Server.GinHandler = func(engine *gin.Engine) {
 		_ = model.RegisterMomentServiceHandlerServer(engine, service.GetMomentService())
 	}
 	global.Conf.Server.Run()
