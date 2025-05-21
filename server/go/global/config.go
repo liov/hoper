@@ -14,40 +14,41 @@ var MongoSettings = &MongoConfig{}*/
 
 type config struct {
 	//自定义的配置
-	Customize Config
-	Server    cherry.Server
+	PageSize      int8
+	Volume        fs.Dir
+	SiteURL       string
+	QrCodeSaveDir fs.Dir //二维码保存路径
+	FontSaveDir   fs.Dir //字体保存路径
+	User          Config
+	Moment        Moment
+	Upload        Upload
+	Server        cherry.Server
 }
 
 func (c *config) BeforeInject() {
-	c.Customize.TokenMaxAge = timei.Day
+	c.User.TokenMaxAge = timei.Day
 }
 
 func (c *config) AfterInject() {
-	c.Customize.TokenMaxAge = timei.StdDuration(c.Customize.TokenMaxAge, time.Hour)
-	c.Customize.TokenSecretBytes = []byte(c.Customize.TokenSecret)
+	c.User.TokenMaxAge = timei.StdDuration(c.User.TokenMaxAge, time.Hour)
+	c.User.TokenSecretBytes = []byte(c.User.TokenSecret)
 }
 
 type Config struct {
-	Volume   fs.Dir
-	SiteURL  string
 	PassSalt string
 	// 天数
 	TokenMaxAge      time.Duration
 	TokenSecret      string
 	TokenSecretBytes []byte
-	PageSize         int8
 
 	LuosimaoSuperPW   string
 	LuosimaoVerifyURL string
 	LuosimaoAPIKey    string
 
-	QrCodeSaveDir fs.Dir //二维码保存路径
-	FontSaveDir   fs.Dir //字体保存路径
-
-	Limit Limit
+	Limit UserLimit
 }
 
-type Limit struct {
+type UserLimit struct {
 	// 用户名的最大长度
 	MaxUserNameLen uint8
 
@@ -68,4 +69,22 @@ type Limit struct {
 
 	//个人简介的最大长度
 	MaxIntroduceLen uint8
+}
+
+type ContentLimit struct {
+	SecondLimitKey, MinuteLimitKey, DayLimitKey       string
+	SecondLimitCount, MinuteLimitCount, DayLimitCount int64
+}
+
+type Moment struct {
+	MaxContentLen int
+	Limit         ContentLimit
+}
+
+type Upload struct {
+	Volume fs.Dir
+
+	UploadDir      fs.Dir
+	UploadMaxSize  int64
+	UploadAllowExt []string
 }

@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/liov/hoper/server/go/video/service"
+	"github.com/liov/hoper/server/go/webrtc/service"
 )
 
 func GinRegister(app *gin.Engine) {

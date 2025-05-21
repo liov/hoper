@@ -11,8 +11,8 @@ import (
 	"net/http"
 
 	"github.com/liov/hoper/server/go/content/data"
-	"github.com/liov/hoper/server/go/content/global"
 	"github.com/liov/hoper/server/go/content/model"
+	"github.com/liov/hoper/server/go/global"
 	"github.com/liov/hoper/server/go/protobuf/content"
 )
 
@@ -68,7 +68,7 @@ func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*em
 		return nil, err
 	}
 	contentRedisDao := data.GetRedisDao(ctxi, global.Dao.Redis)
-	err = contentRedisDao.Limit(&global.Conf.Customize.Moment.Limit)
+	err = contentRedisDao.Limit(&global.Conf.Moment.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +114,7 @@ func (*ContentService) AddSet(ctx context.Context, req *content.AddSetReq) (*emp
 		return nil, err
 	}
 	contentRedisDao := data.GetRedisDao(ctxi, global.Dao.Redis)
-	err = contentRedisDao.Limit(&global.Conf.Customize.Moment.Limit)
+	err = contentRedisDao.Limit(&global.Conf.Moment.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +136,7 @@ func (*ContentService) EditSet(ctx context.Context, req *content.AddSetReq) (*em
 		return nil, err
 	}
 	contentRedisDao := data.GetRedisDao(ctxi, global.Dao.Redis)
-	err = contentRedisDao.Limit(&global.Conf.Customize.Moment.Limit)
+	err = contentRedisDao.Limit(&global.Conf.Moment.Limit)
 	if err != nil {
 		return nil, err
 	}

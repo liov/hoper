@@ -5,9 +5,9 @@ import (
 	"github.com/hopeio/context/httpctx"
 	"github.com/hopeio/scaffold/errcode"
 	dbi "github.com/hopeio/utils/dao/database/sql"
+	"github.com/liov/hoper/server/go/global"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/data"
-	"github.com/liov/hoper/server/go/user/global"
 	"github.com/liov/hoper/server/go/user/model"
 	"google.golang.org/protobuf/types/known/emptypb"
 )

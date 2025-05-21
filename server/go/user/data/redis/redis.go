@@ -38,7 +38,7 @@ func (d *UserDao) UserToRedis() error {
 	}
 
 	loginUserKey := modelconst.LoginUserKey + ctxi.AuthID
-	if redisErr := d.SetEX(ctx, loginUserKey, UserString, global.Conf.Customize.TokenMaxAge).Err(); redisErr != nil {
+	if redisErr := d.SetEX(ctx, loginUserKey, UserString, global.Conf.User.TokenMaxAge).Err(); redisErr != nil {
 		return d.RespErrorLog(errcode.RedisErr, err, "UserToRedis.SetEX")
 	}
 	return nil
@@ -87,7 +87,7 @@ func (d *UserDao) UserHashToRedis() error {
 	redisArgs = append(redisArgs, hash.Marshal(ctxi.AuthInfo)...)
 	if _, err := d.Pipelined(ctx, func(pipe redis.Pipeliner) error {
 		pipe.Do(ctx, redisArgs...)
-		pipe.Expire(ctx, loginUserKey, global.Conf.Customize.TokenMaxAge)
+		pipe.Expire(ctx, loginUserKey, global.Conf.User.TokenMaxAge)
 		return nil
 	}); err != nil {
 		return ctxi.RespErrorLog(errcode.RedisErr, err, "UserHashToRedis")
@@ -123,7 +123,7 @@ func (d *UserDao) EfficientUserHashToRedis() error {
 			"Role", uint32(user.Role),
 			"Status", uint8(user.Status),
 			"LastActiveAt", ctxi.TimeStamp)
-		pipe.Expire(ctx.Base(), loginUserKey, global.Conf.Customize.TokenMaxAge)
+		pipe.Expire(ctx.Base(), loginUserKey, global.Conf.User.TokenMaxAge)
 		return nil
 	}); err != nil {
 		return ctxi.RespErrorLog(errcode.RedisErr, err, "EfficientUserHashToRedis")

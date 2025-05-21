@@ -27,7 +27,7 @@ func auth(ctx *httpctx.Context, update bool) (*user.AuthBase, error) {
 		}
 		return cache.Auth, nil
 	}
-	authorization, err := jwt2.Auth[httpctx.RequestCtx, *user.AuthBase](ctx, global.Conf.Customize.TokenSecretBytes)
+	authorization, err := jwt2.Auth[httpctx.RequestCtx, *user.AuthBase](ctx, global.Conf.User.TokenSecretBytes)
 	if err != nil {
 		return nil, user.UserErrNoLogin
 	}

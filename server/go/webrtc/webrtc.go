@@ -8,7 +8,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/liov/hoper/server/go/video/service/signal"
+	"github.com/liov/hoper/server/go/webrtc/service/signal"
 	"net"
 
 	"github.com/pion/rtp"

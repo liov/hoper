@@ -6,12 +6,12 @@ import (
 	"time"
 
 	timei "github.com/hopeio/utils/time"
-	"github.com/liov/hoper/server/go/content/global"
+	"github.com/liov/hoper/server/go/global"
 )
 
 var limitErr = errcode.TimesTooMuch.Msg("您的操作过于频繁，请先休息一会儿。")
 
-func (d *ContentDao) Limit(l *global.Limit) error {
+func (d *ContentDao) Limit(l *global.ContentLimit) error {
 	ctxi := d
 	ctx := ctxi.Base()
 	minuteKey := l.MinuteLimitKey + ctxi.AuthID

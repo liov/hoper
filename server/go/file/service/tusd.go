@@ -15,7 +15,7 @@ func init() {
 	// a remote FTP server, you can implement your own storage backend
 	// by implementing the tusd.DataStore interface.
 
-	store := NewFileStore("./uploads")
+	store := NewFileStore("./data/uploads")
 
 	// A storage backend for tusd may consist of multiple different parts which
 	// handle upload creation, locking, termination and so on. The composer is a

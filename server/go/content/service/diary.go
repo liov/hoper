@@ -6,8 +6,8 @@ import (
 	"github.com/hopeio/scaffold/errcode"
 	gormi "github.com/hopeio/utils/dao/database/gorm"
 	"github.com/liov/hoper/server/go/content/data"
-	"github.com/liov/hoper/server/go/content/global"
 	"github.com/liov/hoper/server/go/content/model"
+	"github.com/liov/hoper/server/go/global"
 	"github.com/liov/hoper/server/go/protobuf/content"
 	"google.golang.org/protobuf/types/known/emptypb"
 
@@ -78,7 +78,7 @@ func (*DiaryService) Info(ctx context.Context, req *request.Id) (*content.Diary,
 		return nil, err
 	}
 	contentRedisDao := data.GetRedisDao(ctxi, global.Dao.Redis)
-	err = contentRedisDao.Limit(&global.Conf.Customize.Moment.Limit)
+	err = contentRedisDao.Limit(&global.Conf.Moment.Limit)
 	if err != nil {
 		return nil, err
 	}

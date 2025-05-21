@@ -6,8 +6,8 @@ import (
 	"github.com/hopeio/scaffold/errcode"
 
 	"github.com/hopeio/protobuf/request"
-	"github.com/liov/hoper/server/go/content/global"
 	"github.com/liov/hoper/server/go/content/model"
+	"github.com/liov/hoper/server/go/global"
 	"github.com/liov/hoper/server/go/protobuf/common"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

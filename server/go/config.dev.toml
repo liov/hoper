@@ -1,3 +1,5 @@
+SiteURL = "http://localhost:8090"
+
 [GORMDB]
 Charset = "utf8"
 EnablePrometheus = false
@@ -54,6 +56,9 @@ Json = []
 
 
 [Server]
+Addr = ":8090"
+ReadTimeout = "60s"
+WriteTimeout = "60s"
 CertFile = ""
 EnableCors = true
 EnableGrpcWeb = true
@@ -62,18 +67,14 @@ KeyFile = ""
 Prometheus = true
 StopTimeout = "5s"
 MetricsInterval = "10h"
+ExcludeLogPrefixes = ["/api/v1/upload", "/api/v1/multiUpload", "/api/ws/chat","/api/v2/files","/video", "/live","/static","/upload"]
+IncludeLogPrefixes = []
 
-[Server.Http]
-Addr = ":8090"
-ReadTimeout = "60s"
-WriteTimeout = "60s"
 
 [Server.Gin]
 ContextWithFallback = true
 
-[Server.HttpOption]
-ExcludeLogPrefixes = ["/api/v1/upload", "/api/v1/multiUpload", "/api/ws/chat","/api/v2/files","/video", "/live"]
-IncludeLogPrefixes = []
+
 
 [Redis]
 DialTimeout = "20s"
@@ -86,6 +87,3 @@ PoolSize = 5
 PoolTimeout = "1s"
 ReadTimeout = "20s"
 WriteTimeout = "20s"
-
-[Customize]
-SiteURL = "http://localhost:8090"

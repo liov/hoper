@@ -1,5 +1,5 @@
 syntax = "proto3";
-package upload;
+package file;
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "hopeio/utils/validator/validator.proto";
 import "google/api/annotations.proto";
@@ -7,9 +7,9 @@ import "danielvladco/protobuf/graphql.proto";
 import "hopeio/utils/patch/go.proto";
 import "google/protobuf/wrappers.proto";
 
-option java_package = "xyz.hoper.protobuf.upload";
+option java_package = "xyz.hoper.protobuf.file";
 option java_multiple_files = true;
-option go_package = "github.com/liov/hoper/server/go/protobuf/upload";
+option go_package = "github.com/liov/hoper/server/go/protobuf/file";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
@@ -17,10 +17,10 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   }
 };
 
-service UploadService {
+service FileService {
 
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {
-    description: "上传中心相关接口"
+    description: "文件中心相关接口"
   };
   // 获取url
   rpc GetUrls (GetUrlsReq) returns (GetUrlsRep) {

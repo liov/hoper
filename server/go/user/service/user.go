@@ -24,11 +24,11 @@ import (
 	jwti "github.com/hopeio/utils/validation/auth/jwt"
 	"github.com/hopeio/utils/validation/captcha"
 	"github.com/hopeio/utils/validation/validator"
+	"github.com/liov/hoper/server/go/global"
 	model "github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/api/middle"
 	"github.com/liov/hoper/server/go/user/data"
 	"github.com/liov/hoper/server/go/user/data/redis"
-	"github.com/liov/hoper/server/go/user/global"
 	modelconst "github.com/liov/hoper/server/go/user/model"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"net/http"
@@ -96,7 +96,7 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*wrappe
 	if req.Mail == "" && req.Phone == "" {
 		return nil, errcode.InvalidArgument.Msg("请填写邮箱或手机号")
 	}
-	if req.VCode != global.Conf.Customize.LuosimaoSuperPW {
+	if req.VCode != global.Conf.User.LuosimaoSuperPW {
 		if err := LuosimaoVerify(req.VCode); err != nil {
 			return nil, err
 		}
@@ -158,12 +158,12 @@ func salt(password string) string {
 
 // EncryptPassword 给密码加密
 func encryptPassword(password string) string {
-	hash := salt(password) + global.Conf.Customize.PassSalt + password[5:]
+	hash := salt(password) + global.Conf.User.PassSalt + password[5:]
 	return fmt.Sprintf("%x", md5.Sum(stringsi.ToBytes(hash)))
 }
 
 func sendMail(ctxi *httpctx.Context, action model.Action, curTime int64, user *model.User) {
-	siteURL := global.Conf.Customize.SiteURL
+	siteURL := global.Conf.SiteURL
 	title := action.String()
 	secretStr := strconv.FormatInt(curTime, 10) + user.Mail + user.Password
 	secretStr = fmt.Sprintf("%x", md5.Sum(stringsi.ToBytes(secretStr)))
@@ -321,7 +321,7 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
 
-	if req.VCode != global.Conf.Customize.LuosimaoSuperPW {
+	if req.VCode != global.Conf.User.LuosimaoSuperPW {
 		if err := LuosimaoVerify(req.VCode); err != nil {
 			return nil, err
 		}
@@ -366,9 +366,9 @@ func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.Login
 
 	ctxi.AuthInfo = authorization.Auth
 	authorization.IssuedAt = &jwt.NumericDate{Time: ctxi.Time}
-	authorization.ExpiresAt = &jwt.NumericDate{Time: ctxi.Time.Add(global.Conf.Customize.TokenMaxAge)}
+	authorization.ExpiresAt = &jwt.NumericDate{Time: ctxi.Time.Add(global.Conf.User.TokenMaxAge)}
 
-	tokenString, err := authorization.GenerateToken(global.Conf.Customize.TokenSecretBytes)
+	tokenString, err := authorization.GenerateToken(global.Conf.User.TokenSecretBytes)
 	if err != nil {
 		return nil, errcode.Internal
 	}
@@ -390,8 +390,8 @@ func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.Login
 		Value: tokenString,
 		Path:  "/",
 		//Domain:   "hoper.xyz",
-		Expires:  time.Now().Add(global.Conf.Customize.TokenMaxAge * time.Second),
-		MaxAge:   int(global.Conf.Customize.TokenMaxAge),
+		Expires:  time.Now().Add(global.Conf.User.TokenMaxAge * time.Second),
+		MaxAge:   int(global.Conf.User.TokenMaxAge),
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
@@ -467,7 +467,7 @@ func (u *UserService) Info(ctx context.Context, req *request.Id) (*model.UserRep
 func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (*wrappers.StringValue, error) {
 	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
-	if verifyErr := luosimao.Verify(global.Conf.Customize.LuosimaoVerifyURL, global.Conf.Customize.LuosimaoAPIKey, req.VCode); verifyErr != nil {
+	if verifyErr := luosimao.Verify(global.Conf.User.LuosimaoVerifyURL, global.Conf.User.LuosimaoAPIKey, req.VCode); verifyErr != nil {
 		return nil, errcode.InvalidArgument.Wrap(verifyErr)
 	}
 

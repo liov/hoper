@@ -115,21 +115,6 @@ message TinyTag{
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null;uniqueIndex" validate:"required,gte=2,lte=10" comment:"名称"'}];
 }
 
-message Category{
-  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
-  string name = 2 [(go.field) = {tags:'gorm:"size:10;not null;uniqueIndex" validate:"required,gte=2,lte=10" comment:"名称"'}];
-  string desc = 3 [(go.field) = {tags:'gorm:"size:100"  comment:"描述"'}];
-  string image = 17 [(go.field) = {tags:'gorm:"size:255"  comment:"表情url"'}];
-  uint64 userId = 4 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
-  uint64 pId = 5 [(go.field) = {tags:'gorm:"default:0;index" comment:"直接父分类的ID"'}];
-  uint32 status = 29 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-    read_only:true
-  }];
-  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  time.Time updatedAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-  deletedAt.DeletedAt deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
-}
-
 message EditLog{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
   string table = 2 [(go.field) = {tags:'gorm:"size:20;not null;index"'}];
@@ -182,6 +167,8 @@ message Category{
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" validate:"required,gte=2,lte=10" comment:"名称"'}];
   uint64 pId = 3 [(go.field) = {tags:'gorm:"default:0;index" comment:"直接父分类的ID"'}];
   uint32 seq = 4 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
+  string desc = 6 [(go.field) = {tags:'gorm:"size:100"  comment:"描述"'}];
+  string image = 17 [(go.field) = {tags:'gorm:"size:255"  comment:"表情url"'}];
   uint64 userId = 5 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
   uint32 status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
