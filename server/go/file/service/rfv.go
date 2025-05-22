@@ -34,3 +34,7 @@ func (*FileService) ListDir(ctx context.Context, req *request.ListDir) (*respons
 	}
 	return nil, nil
 }
+
+func (*FileService) Thumbnail(ctx context.Context, req *request.Path) (*response.ListDir, error) {
+	return nil, nil
+}

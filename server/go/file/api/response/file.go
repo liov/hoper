@@ -17,3 +17,7 @@ type File struct {
 	Id  string `json:"id"`
 	URL string `json:"url"`
 }
+
+type Path struct {
+	Url string `json:"url"`
+}
