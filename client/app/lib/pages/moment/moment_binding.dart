@@ -1,7 +1,7 @@
 import 'package:app/global/service.dart';
-import 'package:app/service/action.dart';
-import 'package:app/service/content.dart';
-import 'package:app/service/moment.dart';
+import 'package:app/rpc/action.dart';
+import 'package:app/rpc/content.dart';
+import 'package:app/rpc/moment.dart';
 import 'package:get/get.dart';
 
 import 'list/moment_list_controller.dart';

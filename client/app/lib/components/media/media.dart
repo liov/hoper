@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:app/components/camrea/camera_view.dart';
 import 'package:app/global/state.dart';
-import 'package:app/service/moment.dart';
+import 'package:app/rpc/moment.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';

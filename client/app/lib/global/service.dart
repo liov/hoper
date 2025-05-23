@@ -1,7 +1,7 @@
 
 import 'package:app/utils/observer.dart';
-import 'package:app/service/upload.dart';
-import 'package:app/service/user.dart';
+import 'package:app/rpc/upload.dart';
+import 'package:app/rpc/user.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get.dart';

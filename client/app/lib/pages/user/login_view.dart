@@ -6,7 +6,7 @@ import 'package:app/global/state.dart';
 import 'package:app/routes/route.dart';
 import 'package:app/utils/keyboard.dart';
 import 'package:grpc/grpc.dart';
-import 'package:app/service/user.dart';
+import 'package:app/rpc/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

@@ -6,7 +6,7 @@ import 'package:app/pages/comment/comment_controller.dart';
 import 'package:app/pages/comment/comment_list_view_v2.dart';
 import 'package:app/pages/moment/item/moment_item_view.dart';
 import 'package:app/routes/route.dart';
-import 'package:app/service/moment.dart';
+import 'package:app/rpc/moment.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:app/generated/protobuf/content/moment.model.pb.dart' as $pb;

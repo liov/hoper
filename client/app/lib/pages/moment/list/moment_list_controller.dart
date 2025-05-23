@@ -1,7 +1,7 @@
 import 'package:app/generated/protobuf/content/content.model.pb.dart';
 import 'package:app/generated/protobuf/content/moment.service.pb.dart';
 import 'package:app/global/state.dart';
-import 'package:app/service/moment.dart';
+import 'package:app/rpc/moment.dart';
 import 'package:app/utils/multi_entity.dart';
 import 'package:get/get.dart';
 

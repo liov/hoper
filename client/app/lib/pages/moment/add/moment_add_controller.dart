@@ -4,7 +4,7 @@ import 'package:app/components/camrea/camera_view.dart';
 import 'package:app/generated/protobuf/content/content.model.pb.dart';
 import 'package:app/generated/protobuf/content/moment.service.pb.dart';
 import 'package:app/global/state.dart';
-import 'package:app/service/moment.dart';
+import 'package:app/rpc/moment.dart';
 import 'package:app/components/media/media.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
