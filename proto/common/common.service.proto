@@ -156,7 +156,7 @@ message AddTagReq {
   string desc = 3 [(go.field) = {tags:'comment:"描述"'}];
   string image = 4 [(go.field) = {tags:'comment:"表情url"'}];
   uint32 type = 5 [(go.field) = {tags:'comment:"类型"'}];
-  uint64 userId = 5 [(go.field) = {tags:'comment:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  uint64 userId = 6 [(go.field) = {tags:'comment:"用户id"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only: true}];
 }
 
