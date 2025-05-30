@@ -7,6 +7,5 @@ class WeiboBinding extends Bindings {
   void dependencies() {
     Get.lazyPut(() => WeiboController());
     Get.lazyPut(() => WeiboClient());
-
   }
 }
