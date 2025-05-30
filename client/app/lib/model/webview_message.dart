@@ -3,7 +3,7 @@ part 'webview_message.g.dart';
 
 @JsonSerializable()
 class WebviewMessage{
-  WebviewMessage(this.method, this.params);
+  WebviewMessage({required this.method, required this.params});
   final String method;
   final List<dynamic> params;
 

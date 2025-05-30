@@ -4,10 +4,10 @@ part 'content.g.dart';
 
 @JsonSerializable()
 class TinyTag{
-  TinyTag();
-  late int id;
-  late String name;
-  late TagType type;
+  TinyTag({required this.id, required this.name, required this.type});
+   int id;
+   String name;
+   TagType type;
 
   factory TinyTag.fromJson(Map<String, dynamic> json) => _$TinyTagFromJson(json);
 

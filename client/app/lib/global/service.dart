@@ -1,17 +1,17 @@
 
-import 'package:app/utils/observer.dart';
+import 'package:applib/util/observer.dart';
 import 'package:app/rpc/upload.dart';
 import 'package:app/rpc/user.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:get/get.dart';
-import 'package:grpc/grpc.dart';
+import 'package:get/get.dart' hide Response;
+import 'package:grpc/grpc.dart' hide Response;
 import 'package:hive_ce/hive.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:app/utils/dio.dart' as $dio;
+import 'package:app/global/dio.dart' as $dio;
 import 'package:path/path.dart' as $path;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -31,9 +31,6 @@ class GlobalService{
 
   late final UserClient userClient = Get.put(UserClient(subject));
   late final UploadClient uploadClient = Get.put(UploadClient(subject));
-  late final Dio httpClient = $dio.httpClient;
-
-
 
   late final Box box;
   late final Database db;
@@ -49,7 +46,30 @@ class GlobalService{
     final appSupportDir = await getApplicationSupportDirectory();
     logger.d(appSupportDir.path);
     //final dbpath = await getDatabasesPath();
-
+    $dio.httpClient.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
+// Do something before request is sent.
+// If you want to resolve the request with custom data,
+// you can resolve a `Response` using `handler.resolve(response)`.
+// If you want to reject the request with a error message,
+// you can reject with a `DioException` using `handler.reject(dioError)`.
+          return handler.next(options);
+        },
+        onResponse: (Response response, ResponseInterceptorHandler handler) {
+// Do something with response data.
+// If you want to reject the request with a error message,
+// you can reject a `DioException` object using `handler.reject(dioError)`.
+          return handler.next(response);
+        },
+        onError: (DioException error, ErrorInterceptorHandler handler) {
+// Do something with response error.
+// If you want to resolve the request with some custom data,
+// you can resolve a `Response` object using `handler.resolve(response)`.
+          return handler.next(error);
+        },
+      ),
+    );
     boxfuture() async {
       box = await Hive.openBox('box', path: $path.join(appDocDir.path, "hive"));
     }

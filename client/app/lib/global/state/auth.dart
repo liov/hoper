@@ -17,6 +17,8 @@ import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:grpc/grpc.dart';
 
+import '../dio.dart';
+
 
 class AuthState {
   Auth? userAuth = null;
@@ -65,7 +67,7 @@ class AuthState {
   }
 
   void setAuth(String authKey) {
-    globalService.httpClient.options.headers[Authorization] = authKey;
+    httpClient.options.headers[Authorization] = authKey;
     globalService.subject.setState(CallOptions(metadata: {Authorization: authKey},timeout: Duration(seconds: 5)));
     globalService.box.put(AuthState.StringAuthKey, authKey);
   }
@@ -91,7 +93,7 @@ class AuthState {
 
    Future<void> logout() async{
     userAuth = null;
-    globalService.httpClient.options.headers.remove(Authorization);
+    httpClient.options.headers.remove(Authorization);
     globalService.box.delete(AuthState.StringAuthKey);
     self = null;
     try{

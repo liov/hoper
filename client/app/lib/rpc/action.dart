@@ -4,7 +4,7 @@ import 'package:app/generated/protobuf/content/action.service.pbgrpc.dart';
 import 'package:grpc/grpc.dart';
 
 
-import '../utils/observer.dart';
+import 'package:applib/util/observer.dart';
 
 
 class ActionClient extends Observer<CallOptions> {

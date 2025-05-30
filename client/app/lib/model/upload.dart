@@ -4,9 +4,9 @@ part 'upload.g.dart';
 
 @JsonSerializable()
 class UploadInfo {
-  UploadInfo();
-  late int id;
-  late String url;
+  UploadInfo({required this.id, required this.url});
+   int id;
+   String url;
 
   factory UploadInfo.fromJson(Map<String, dynamic> json) => _$UploadInfoFromJson(json);
 
@@ -15,10 +15,10 @@ class UploadInfo {
 
 @JsonSerializable()
 class MultiUploadRep  {
-  MultiUploadRep();
-  late int id;
-  late String url;
-  late bool success;
+  MultiUploadRep({required this.id, required this.url, required this.success});
+   int id;
+   String url;
+   bool success;
 
   factory MultiUploadRep.fromJson(Map<String, dynamic> json) => _$MultiUploadRepFromJson(json);
 

@@ -12,7 +12,7 @@ import 'package:get/get.dart';
 
 import 'package:app/pages/action_bar/action_bar.dart';
 
-import 'package:app/utils/time.dart';
+import 'package:applib/util/time.dart';
 
 import 'package:app/generated/protobuf/content/moment.model.pb.dart';
 

@@ -5,12 +5,12 @@ import 'package:crypto/crypto.dart';
 
 import 'package:app/model/upload.dart';
 import 'package:app/model/response.dart';
-import 'package:app/utils/dio.dart';
+import 'package:app/global/dio.dart';
 import 'package:dio/dio.dart';
 
 import 'package:grpc/src/client/call.dart';
 
-import 'package:app/utils/observer.dart';
+import 'package:applib/util/observer.dart';
 
 class UploadClient extends Observer<CallOptions> {
 
@@ -46,7 +46,7 @@ class UploadClient extends Observer<CallOptions> {
       final response = await httpClient.post(api,
           data: FormData.fromMap({'file': await MultipartFile.fromFile(file.path)}),
        );
-      return UploadInfo.fromJson(response.getData()).url;
+      return response.getData((v)=>UploadInfo.fromJson(v as   Map<String,dynamic>)).url;
     } catch (e) {
       print(e);
       return '';
@@ -62,7 +62,7 @@ class UploadClient extends Observer<CallOptions> {
       final response = await httpClient.post(api,
         data: FormData.fromMap({'size[]':sizeList,'md5[]':md5List,'file[]':fileList}),
          );
-      return UploadInfo.fromJson(response.getData()).url;
+      return response.getData((v)=>UploadInfo.fromJson(v as   Map<String,dynamic>)).url;
     } catch (exception) {
       return '';
     }

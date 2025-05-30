@@ -2,7 +2,7 @@ import 'package:app/generated/protobuf/content/content.model.pb.dart';
 import 'package:app/generated/protobuf/content/moment.service.pb.dart';
 import 'package:app/global/state.dart';
 import 'package:app/rpc/moment.dart';
-import 'package:app/utils/multi_entity.dart';
+import 'package:applib/util/multi_entity.dart';
 import 'package:get/get.dart';
 
 import 'package:app/generated/protobuf/content/moment.model.pb.dart';
@@ -11,19 +11,19 @@ import 'package:app/generated/protobuf/content/moment.model.pb.dart';
 class MomentListController extends GetxController with MultiEntity<ListState>{
   final MomentClient momentClient = Get.find();
 
-  newList(String tag) async{
+  Future<void> newList(String tag) async{
     if (getEntity(tag)!=null) return;
     final list = ListState(tag);
     await list.grpcGetList(momentClient);
     entityMap[tag] = list;
   }
 
-  pullList(String tag) async{
+  Future<void> pullList(String tag) async{
     await entityMap[tag]?.grpcGetList(momentClient);
     update([tag]);
   }
 
-  resetList(String tag) async{
+  Future<void> resetList(String tag) async{
     entityMap[tag]?.resetList();
     await pullList(tag);
   }

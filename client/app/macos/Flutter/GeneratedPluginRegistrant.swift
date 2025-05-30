@@ -5,7 +5,6 @@
 import FlutterMacOS
 import Foundation
 
-import applib
 import audio_session
 import connectivity_plus
 import device_info_plus
@@ -25,7 +24,6 @@ import video_player_avfoundation
 import webview_flutter_wkwebview
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
-  ApplibPlugin.register(with: registry.registrar(forPlugin: "ApplibPlugin"))
   AudioSessionPlugin.register(with: registry.registrar(forPlugin: "AudioSessionPlugin"))
   ConnectivityPlusPlugin.register(with: registry.registrar(forPlugin: "ConnectivityPlusPlugin"))
   DeviceInfoPlusMacosPlugin.register(with: registry.registrar(forPlugin: "DeviceInfoPlusMacosPlugin"))

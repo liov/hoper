@@ -17,7 +17,9 @@ import 'package:get/get.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 
-import '../tools/picture.dart';
+import '../components/picture.dart';
+import '../pages/weibo/image_view.dart';
+import '../pages/weibo/weibo_binding.dart';
 
 
 
@@ -27,8 +29,8 @@ class AppPages {
   static final routes = [
     GetPage(
       name: Routes.HOME,
-      page: () => HomeView(),
-      bindings: [HomeBinding(),MomentBinding()],
+      page: () => ImageView(),
+      bindings: [WeiboBinding()],
     ),
     GetPage(
       name: Routes.MOMENT,

@@ -1,9 +1,11 @@
 
 import 'package:flutter/material.dart';
 
+import '../../global/service.dart';
+
 extension HandleAsync<T> on AsyncSnapshot<T> {
   Widget? handle<T>(){
-    switch (this.connectionState) {
+    switch (connectionState) {
       case ConnectionState.none:
       case ConnectionState.active:
         return Text('ConnectionState.active');
@@ -12,6 +14,7 @@ extension HandleAsync<T> on AsyncSnapshot<T> {
           child: CircularProgressIndicator(),
         );
       case ConnectionState.done:
+        globalService.logger.d('done');
         return null;
     }
   }

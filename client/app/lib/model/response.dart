@@ -1,47 +1,65 @@
 import 'dart:io';
+import 'package:app/global/service.dart';
+import 'package:app/model/weibo/weibo.dart';
 import 'package:dio/dio.dart' as $dio;
 import 'package:get/get.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'response.g.dart';
 
-@JsonSerializable()
-class ResponseData {
-  ResponseData();
-  late int code;
-  late Map<String, dynamic>? data;
-  String? msg;
+@JsonSerializable(genericArgumentFactories: true)
+class ResponseData<T> {
+  ResponseData({required this.code, this.data, this.msg});
+  final  int code;
+  final  T? data;
+  final String? msg;
 
-  factory ResponseData.fromJson(Map<String, dynamic> json) => _$ResponseDataFromJson(json);
+  factory ResponseData.fromJson(Map<String, dynamic> json,T Function(dynamic json) fromJsonT) => _$ResponseDataFromJson(json,fromJsonT);
 
-  Map<String, dynamic> toJson() => _$ResponseDataToJson(this);
+  Map<String, dynamic> toJson(T Function(T) toJsonT) => _$ResponseDataToJson(this,toJsonT);
 }
 
-extension StringExtension on $dio.Response {
-  Map<String, dynamic> getData() {
-    if (this.statusCode == HttpStatus.ok) {
-      final data = ResponseData.fromJson(this.data);
-      if (data.code!=0) Get.rawSnackbar(message:data.msg!);
-      return data.data ?? Map();
+extension Extension<T> on $dio.Response {
+  T? getData(T Function(Object? json) fromJsonT) {
+    if (statusCode == HttpStatus.ok) {
+      final data = ResponseData.fromJson(this.data,fromJsonT);
+      if (data.code!=0) {
+        globalService.logger.e('请求出错 ${data.msg}');
+        Get.rawSnackbar(message: data.msg!);
+      }
+        return data.data;
     }
+    globalService.logger.e('请求出错 $statusCode');
     Get.rawSnackbar(message:'请求出错');
-    return Map() ;
+    return null;
   }
 
-  Map<String, dynamic> getData2() {
-    if (this.statusCode == HttpStatus.ok) {
-      final data = _$ResponseDataFromJson2(this.data);
-      if (data.code!=200) Get.rawSnackbar(message:data.msg!);
-      return data.data ?? Map();
+  T? getBaoyuData(T Function(Object? json) fromJsonT) {
+    if (statusCode == HttpStatus.ok) {
+      final data = ResponseData.fromJson(this.data,fromJsonT);
+      if (data.code!=200) {
+        globalService.logger.e('请求出错 ${data.msg}');
+        Get.rawSnackbar(message:data.msg!);
+      };
+      return data.data;
     }
+    globalService.logger.e('请求出错 $statusCode');
     Get.rawSnackbar(message:'请求出错');
-    return Map() ;
+    return null;
   }
-}
 
-ResponseData _$ResponseDataFromJson2(Map<String, dynamic> json) {
-  return ResponseData()
-    ..code = json['code'] as int
-    ..data = json['data'] as Map<String, dynamic>?
-    ..msg = json['msg'] as String;
+  T? getWeiboData(T Function(Object? json) fromJsonT) {
+    if (statusCode == HttpStatus.ok) {
+      final data = WeiboResponse.fromJson(this.data as Map<String, dynamic>,fromJsonT);
+      globalService.logger.d(data);
+      if (data.ok!=1) {
+        globalService.logger.e('请求出错 ${data.msg}');
+        Get.rawSnackbar(message: data.msg!);
+      }
+      return data.data;
+    }
+    globalService.logger.e('请求出错 $statusCode');
+    Get.rawSnackbar(message:'请求出错');
+    return null;
+  }
 }

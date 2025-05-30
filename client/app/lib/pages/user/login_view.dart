@@ -4,7 +4,7 @@ import 'package:app/generated/protobuf/user/user.service.pb.dart';
 import 'package:app/global/state/auth.dart';
 import 'package:app/global/state.dart';
 import 'package:app/routes/route.dart';
-import 'package:app/utils/keyboard.dart';
+import 'package:applib/util/keyboard.dart';
 import 'package:grpc/grpc.dart';
 import 'package:app/rpc/user.dart';
 import 'package:flutter/cupertino.dart';
@@ -37,10 +37,11 @@ class LoginView extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Obx(() {
-                      if (loginController.mode == 1)
+                      if (loginController.mode == 1) {
                         return _buildLoginView();
-                      else
+                      } else {
                         return _buildSignView();
+                      }
                     }),
                     SizedBox(
                       height: 24,

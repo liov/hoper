@@ -20,8 +20,8 @@ class LocalhostServer {
   String _path = "assets/dist";
 
   LocalhostServer({int port = 8080, String path = "assets/dist"}) {
-    this._port = port;
-    this._path = path;
+    _port = port;
+    _path = path;
   }
 
   ///Starts the server on `http://localhost:[port]/`.
@@ -36,10 +36,10 @@ class LocalhostServer {
   ///```
   ///The `NSAllowsLocalNetworking` key is available since **iOS 10**.
   Future<void> start() async {
-    if (this._started) {
+    if (_started) {
       throw Exception('Server already started on http://localhost:$_port');
     }
-    this._started = true;
+    _started = true;
 
     var completer = Completer();
 
@@ -47,7 +47,7 @@ class LocalhostServer {
       HttpServer.bind('127.0.0.1', _port).then((server) {
         print('Server running on http://localhost:' + _port.toString());
 
-        this._server = server;
+        _server = server;
 
         server.listen((HttpRequest request) async {
           Uint8List body = Uint8List(0);
@@ -88,18 +88,18 @@ class LocalhostServer {
 
   ///Closes the server.
   Future<void> close() async {
-    if (this._server == null) {
+    if (_server == null) {
       return;
     }
-    await this._server!.close(force: true);
+    await _server!.close(force: true);
     print('Server running on http://localhost:$_port closed');
-    this._started = false;
-    this._server = null;
+    _started = false;
+    _server = null;
   }
 
   ///Indicates if the server is running or not.
   bool isRunning() {
-    return this._server != null;
+    return _server != null;
   }
 }
 
