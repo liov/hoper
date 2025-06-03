@@ -11,6 +11,7 @@ import 'package:app/generated/protobuf/content/moment.model.pb.dart';
 class MomentListController extends GetxController with MultiEntity<ListState>{
   final MomentClient momentClient = Get.find();
 
+
   Future<void> newList(String tag) async{
     if (getEntity(tag)!=null) return;
     final list = ListState(tag);

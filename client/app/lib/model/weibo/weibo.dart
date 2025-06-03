@@ -31,7 +31,6 @@ class WeiboList {
   String sinceId;
   @JsonKey(name: 'status_visible')
   int statusVisible;
-  @JsonKey(name: 'topic_list')
   List<dynamic> topicList;
   int total;
 
@@ -51,138 +50,148 @@ class WeiboList {
   Map<String, dynamic> toJson() => _$WeiboListToJson(this);
 }
 
+
+@JsonSerializable()
+class WeiboOriginList {
+  List<Myblog> list;
+  dynamic total;
+
+  WeiboOriginList({
+    required this.list,
+    required this.total,
+  });
+
+  factory WeiboOriginList.fromJson(Map<String, dynamic> json) =>
+      _$WeiboOriginListFromJson(json);
+
+  Map<String, dynamic> toJson() => _$WeiboOriginListToJson(this);
+}
+
+
 @JsonSerializable()
 class Myblog {
   @JsonKey(name: 'analysis_extra')
-  String analysisExtra;
-  List<dynamic> annotations;
+  String? analysisExtra;
+  List<dynamic>? annotations;
   @JsonKey(name: 'attitudes_count')
-  int attitudesCount;
+  int? attitudesCount;
   @JsonKey(name: 'attitudes_status')
   int attitudesStatus;
   @JsonKey(name: 'can_edit')
-  bool canEdit;
+  bool? canEdit;
   @JsonKey(name: 'comment_manage_info')
-  CommentManageInfo commentManageInfo;
+  CommentManageInfo? commentManageInfo;
   @JsonKey(name: 'comments_count')
-  int commentsCount;
+  int? commentsCount;
   @JsonKey(name: 'content_auth')
-  int contentAuth;
+  int? contentAuth;
   @JsonKey(name: 'created_at')
   String createdAt;
-  bool favorited;
+  bool? favorited;
   int id;
-  @JsonKey(name: 'id_str')
   String idstr;
   @JsonKey(name: 'is_long_text')
-  bool isLongText;
+  bool? isLongText;
   @JsonKey(name: 'is_paid')
-  bool isPaid;
+  bool? isPaid;
   @JsonKey(name: 'is_show_bulletin')
-  int isShowBulletin;
+  int? isShowBulletin;
   @JsonKey(name: 'is_show_mixed')
-  bool isShowMixed;
-  @JsonKey(name: 'is_single_pay_audio')
+  bool? isShowMixed;
   bool isSinglePayAudio;
   @JsonKey(name: 'mblog_vip_type')
-  int mblogVipType;
+  int? mblogVipType;
   String mblogid;
-  int mblogtype;
+  int? mblogtype;
   String mid;
   @JsonKey(name: 'mixed_count')
-  int mixedCount;
-  int mlevel;
+  int? mixedCount;
+  int? mlevel;
   @JsonKey(name: 'number_display_strategy')
-  NumberDisplayStrategy numberDisplayStrategy;
+  NumberDisplayStrategy? numberDisplayStrategy;
   @JsonKey(name: 'page_info')
-  PageInfo pageInfo;
+  PageInfo? pageInfo;
   @JsonKey(name: 'pic_ids')
-  List<String> picIds;
+  List<String>? picIds;
   @JsonKey(name: 'pic_infos')
-  Map<String, AllPicInfo2> picInfos;
+  Map<String, AllPicInfo2>? picInfos;
   @JsonKey(name: 'pic_num')
-  int picNum;
-  @JsonKey(name: 'picture_viewer_sign')
+  int? picNum;
   bool pictureViewerSign;
-  @JsonKey(name: 'rc_list')
   List<dynamic> rcList;
-  @JsonKey(name: 'read_time_type')
-  String readTimeType;
+  String? readtimetype;
   @JsonKey(name: 'region_name')
-  String regionName;
+  String? regionName;
   @JsonKey(name: 'repost_type')
-  int repostType;
+  int? repostType;
   @JsonKey(name: 'reposts_count')
-  int repostsCount;
+  int? repostsCount;
   @JsonKey(name: 'retweeted_status')
   Myblog? retweetedStatus;
-  String rid;
+  String? rid;
   @JsonKey(name: 'share_repost_type')
-  int shareRepostType;
-  @JsonKey(name: 'show_feed_comment')
+  int? shareRepostType;
   bool showFeedComment;
   @JsonKey(name: 'show_feed_repost')
-  bool showFeedRepost;
-  @JsonKey(name: 'show_picture_viewer')
+  bool? showFeedRepost;
   bool showPictureViewer;
   String source;
   String text;
-  @JsonKey(name: 'text_length')
   int textLength;
   @JsonKey(name: 'text_raw')
   String textRaw;
   @JsonKey(name: 'url_struct')
-  List<UrlStruct> urlStruct;
-  User user;
+  List<UrlStruct>? urlStruct;
+  User? user;
   Visible visible;
 
   Myblog({
-    required this.analysisExtra,
-    required this.annotations,
-    required this.attitudesCount,
+    this.analysisExtra,
+    this.annotations,
+    this.attitudesCount,
     required this.attitudesStatus,
-    required this.canEdit,
-    required this.commentManageInfo,
-    required this.commentsCount,
-    required this.contentAuth,
+    this.canEdit,
+    this.commentManageInfo,
+    this.commentsCount,
+    this.contentAuth,
     required this.createdAt,
-    required this.favorited,
+    this.favorited,
     required this.id,
     required this.idstr,
-    required this.isLongText,
-    required this.isPaid,
-    required this.isShowBulletin,
-    required this.isShowMixed,
+    this.isLongText,
+    this.isPaid,
+    this.isShowBulletin,
+    this.isShowMixed,
     required this.isSinglePayAudio,
-    required this.mblogVipType,
+    this.mblogVipType,
     required this.mblogid,
-    required this.mblogtype,
+    this.mblogtype,
     required this.mid,
-    required this.mixedCount,
-    required this.mlevel,
-    required this.numberDisplayStrategy,
-    required this.pageInfo,
-    required this.picIds,
-    required this.picInfos,
-    required this.picNum,
+    this.mixedCount,
+    this.mlevel,
+    this.numberDisplayStrategy,
+    this.pageInfo,
+    this.picIds,
+    this.picInfos,
+    this.picNum,
     required this.pictureViewerSign,
     required this.rcList,
-    required this.readTimeType,
-    required this.regionName,
-    required this.repostType,
-    required this.repostsCount,
+    this.readtimetype,
+    this.regionName,
+    this.repostType,
+    this.repostsCount,
     this.retweetedStatus,
-    required this.rid,
-    required this.shareRepostType,
+    this.rid,
+    this.shareRepostType,
     required this.showFeedComment,
-    required this.showFeedRepost,
+    this.showFeedRepost,
     required this.showPictureViewer,
     required this.source,
     required this.text,
     required this.textLength,
     required this.textRaw,
-    required this.urlStruct,
-    required this.user,
+    this.urlStruct,
+    this.user,
     required this.visible,
   });
 
@@ -277,11 +286,11 @@ class AllPicInfo {
 
 @JsonSerializable()
 class PicInfo {
-  String height;
-  String url;
-  String width;
+  String? height;
+  String? url;
+  String? width;
 
-  PicInfo({required this.height, required this.url, required this.width});
+  PicInfo({this.height, this.url, this.width});
 
   factory PicInfo.fromJson(Map<String, dynamic> json) =>
       _$PicInfoFromJson(json);
@@ -292,27 +301,27 @@ class PicInfo {
 @JsonSerializable()
 class Actionlog {
   @JsonKey(name: 'act_code')
-  int actCode;
+  dynamic actCode;
   @JsonKey(name: 'act_type')
-  int actType;
-  String ext;
-  String fid;
-  String lcardid;
-  String mid;
+  int? actType;
+  String? ext;
+  String? fid;
+  String? lcardid;
+  String? mid;
   String oid;
-  String source;
-  int uuid;
+  String? source;
+  int? uuid;
 
   Actionlog({
     required this.actCode,
-    required this.actType,
-    required this.ext,
-    required this.fid,
-    required this.lcardid,
-    required this.mid,
+     this.actType,
+    this.ext,
+    this.fid,
+    this.lcardid,
+    this.mid,
     required this.oid,
-    required this.source,
-    required this.uuid,
+    this.source,
+    this.uuid,
   });
 
   factory Actionlog.fromJson(Map<String, dynamic> json) =>
@@ -344,21 +353,21 @@ class MediaInfo {
   @JsonKey(name: 'forward_strategy')
   int forwardStrategy;
   @JsonKey(name: 'h265_mp4_hd')
-  String h265Mp4Hd;
+  String? h265Mp4Hd;
   @JsonKey(name: 'h265_mp4_ld')
-  String h265Mp4Ld;
+  String? h265Mp4Ld;
   @JsonKey(name: 'h5_url')
-  String h5Url;
+  String? h5Url;
   @JsonKey(name: 'hevc_mp4_hd')
-  String hevcMp4720p;
+  String? hevcMp4720p;
   @JsonKey(name: 'hevc_mp4_ld')
-  String inch4Mp4Hd;
+  String? inch4Mp4Hd;
   @JsonKey(name: 'inch_5_5_mp4_hd')
-  String inch55Mp4Hd;
+  String? inch55Mp4Hd;
   @JsonKey(name: 'inch_5_mp4_hd')
-  String inch5Mp4Hd;
+  String? inch5Mp4Hd;
   @JsonKey(name: 'is_keep_current_mblog')
-  int isKeepCurrentMblog;
+  int? isKeepCurrentMblog;
   @JsonKey(name: 'is_short_video')
   int isShortVideo;
   @JsonKey(name: 'jump_to')
@@ -387,8 +396,8 @@ class MediaInfo {
   List<PlayCompletionAction> playCompletionActions;
   @JsonKey(name: 'play_loop_type')
   int playLoopType;
-  @JsonKey(name: 'play_back_list')
-  List<Playback> playbackList;
+  @JsonKey(name: 'playback_list')
+  List<Playback>? playbackList;
   @JsonKey(name: 'prefetch_size')
   int prefetchSize;
   @JsonKey(name: 'prefetch_type')
@@ -430,14 +439,14 @@ class MediaInfo {
     required this.extraInfo,
     required this.format,
     required this.forwardStrategy,
-    required this.h265Mp4Hd,
-    required this.h265Mp4Ld,
-    required this.h5Url,
-    required this.hevcMp4720p,
-    required this.inch4Mp4Hd,
-    required this.inch55Mp4Hd,
-    required this.inch5Mp4Hd,
-    required this.isKeepCurrentMblog,
+    this.h265Mp4Hd,
+    this.h265Mp4Ld,
+    this.h5Url,
+    this.hevcMp4720p,
+    this.inch4Mp4Hd,
+    this.inch55Mp4Hd,
+    this.inch5Mp4Hd,
+    this.isKeepCurrentMblog,
     required this.isShortVideo,
     required this.jumpTo,
     required this.kolTitle,
@@ -452,7 +461,7 @@ class MediaInfo {
     required this.originTotalBitrate,
     required this.playCompletionActions,
     required this.playLoopType,
-    required this.playbackList,
+    this.playbackList,
     required this.prefetchSize,
     required this.prefetchType,
     required this.protocol,
@@ -487,7 +496,7 @@ class StatusTotalCounter {
   @JsonKey(name: 'total_cnt')
   String totalCnt;
   @JsonKey(name: 'total_cnt_format')
-  String totalCntFormat;
+  dynamic totalCntFormat;
 
   StatusTotalCounter({
     required this.commentCnt,
@@ -507,41 +516,41 @@ class StatusTotalCounter {
 class PlayCompletionAction {
   Actionlog actionlog;
   @JsonKey(name: 'btn_code')
-  int btnCode;
+  int? btnCode;
   @JsonKey(name: 'countdown_time')
-  int countdownTime;
+  int? countdownTime;
   @JsonKey(name: 'display_endtime')
-  int displayEndtime;
+  int? displayEndtime;
   @JsonKey(name: 'display_mode')
-  int displayMode;
+  int? displayMode;
   @JsonKey(name: 'display_start_time')
-  int displayStartTime;
+  int? displayStartTime;
   @JsonKey(name: 'display_type')
-  int displayType;
-  Ext ext;
-  String icon;
-  String link;
-  String scheme;
+  int? displayType;
+  Ext? ext;
+  String? icon;
+  String? link;
+  String? scheme;
   @JsonKey(name: 'show_position')
-  int showPosition;
-  String text;
-  int type;
+  int? showPosition;
+  String? text;
+  dynamic type;
 
   PlayCompletionAction({
     required this.actionlog,
-    required this.btnCode,
-    required this.countdownTime,
-    required this.displayEndtime,
-    required this.displayMode,
-    required this.displayStartTime,
-    required this.displayType,
-    required this.ext,
-    required this.icon,
-    required this.link,
-    required this.scheme,
-    required this.showPosition,
-    required this.text,
-    required this.type,
+     this.btnCode,
+    this.countdownTime,
+    this.displayEndtime,
+    this.displayMode,
+    this.displayStartTime,
+    this.displayType,
+    this.ext,
+     this.icon,
+     this.link,
+    this.scheme,
+     this.showPosition,
+     this.text,
+     this.type,
   });
 
   factory PlayCompletionAction.fromJson(Map<String, dynamic> json) =>
@@ -553,25 +562,25 @@ class PlayCompletionAction {
 @JsonSerializable()
 class Ext {
   @JsonKey(name: 'followers_count')
-  int followersCount;
-  int level;
-  String uid;
+  int? followersCount;
+  int? level;
+  String? uid;
   @JsonKey(name: 'user_name')
-  String userName;
-  bool verified;
+  String? userName;
+  bool? verified;
   @JsonKey(name: 'verified_reason')
-  String verifiedReason;
+  String? verifiedReason;
   @JsonKey(name: 'verified_type')
-  int verifiedType;
+  int? verifiedType;
 
   Ext({
-    required this.followersCount,
-    required this.level,
-    required this.uid,
-    required this.userName,
-    required this.verified,
-    required this.verifiedReason,
-    required this.verifiedType,
+    this.followersCount,
+     this.level,
+     this.uid,
+     this.userName,
+    this.verified,
+    this.verifiedReason,
+     this.verifiedType,
   });
 
   factory Ext.fromJson(Map<String, dynamic> json) => _$ExtFromJson(json);
@@ -619,25 +628,25 @@ class Playback {
 @JsonSerializable()
 class PlayInfo {
   @JsonKey(name: 'audio_bits_per_sample')
-  int audioBitsPerSample;
+  int? audioBitsPerSample;
   @JsonKey(name: 'audio_channels')
-  int audioChannels;
+  int? audioChannels;
   @JsonKey(name: 'audio_codecs')
-  String audioCodecs;
+  String? audioCodecs;
   @JsonKey(name: 'audio_sample_fmt')
-  String audioSampleFmt;
+  String? audioSampleFmt;
   @JsonKey(name: 'audio_sample_rate')
-  int audioSampleRate;
-  int bitrate;
+  int? audioSampleRate;
+  int? bitrate;
   @JsonKey(name: 'color_transfer')
-  String colorTransfer;
+  String? colorTransfer;
   @JsonKey(name: 'dolby_atmos')
-  bool dolbyAtmos;
-  double duration;
+  bool? dolbyAtmos;
+  double? duration;
   Extension extension;
   @JsonKey(name: 'first_pkt_end_pos')
-  int firstPktEndPos;
-  int fps;
+  int? firstPktEndPos;
+  int? fps;
   int height;
   String label;
   String mime;
@@ -652,34 +661,34 @@ class PlayInfo {
   String qualityDesc;
   @JsonKey(name: 'quality_label')
   String qualityLabel;
-  String sar;
-  int size;
+  String? sar;
+  int? size;
   @JsonKey(name: 'stereo_video')
-  int stereoVideo;
+  int? stereoVideo;
   @JsonKey(name: 'tcp_receive_buffer')
   int tcpReceiveBuffer;
   int type;
   String url;
   @JsonKey(name: 'video_codecs')
-  String videoCodecs;
+  String? videoCodecs;
   @JsonKey(name: 'video_decoder')
   String videoDecoder;
-  String watermark;
+  String? watermark;
   int width;
 
   PlayInfo({
-    required this.audioBitsPerSample,
-    required this.audioChannels,
-    required this.audioCodecs,
-    required this.audioSampleFmt,
-    required this.audioSampleRate,
-    required this.bitrate,
-    required this.colorTransfer,
-    required this.dolbyAtmos,
-    required this.duration,
+    this.audioBitsPerSample,
+    this.audioChannels,
+    this.audioCodecs,
+    this.audioSampleFmt,
+    this.audioSampleRate,
+    this.bitrate,
+    this.colorTransfer,
+    this.dolbyAtmos,
+    this.duration,
     required this.extension,
-    required this.firstPktEndPos,
-    required this.fps,
+    this.firstPktEndPos,
+    this.fps,
     required this.height,
     required this.label,
     required this.mime,
@@ -689,15 +698,15 @@ class PlayInfo {
     required this.qualityClass,
     required this.qualityDesc,
     required this.qualityLabel,
-    required this.sar,
-    required this.size,
-    required this.stereoVideo,
+    this.sar,
+    this.size,
+    this.stereoVideo,
     required this.tcpReceiveBuffer,
     required this.type,
     required this.url,
-    required this.videoCodecs,
+    this.videoCodecs,
     required this.videoDecoder,
-    required this.watermark,
+    this.watermark,
     required this.width,
   });
 
@@ -823,13 +832,13 @@ class CommentManageInfo {
   @JsonKey(name: 'comment_sort_type')
   int commentSortType;
   @JsonKey(name: 'ai_play_picture_type')
-  int aiPlayPictureType;
+  int? aiPlayPictureType;
 
   CommentManageInfo({
     required this.approvalCommentType,
     required this.commentPermissionType,
     required this.commentSortType,
-    required this.aiPlayPictureType,
+    this.aiPlayPictureType,
   });
 
   factory CommentManageInfo.fromJson(Map<String, dynamic> json) =>
@@ -859,7 +868,7 @@ class UrlStruct {
   String shortUrl;
   @JsonKey(name: 'storage_type')
   String storageType;
-  int ttl;
+  int? ttl;
   @JsonKey(name: 'url_title')
   String urlTitle;
   @JsonKey(name: 'url_type')
@@ -879,7 +888,7 @@ class UrlStruct {
     required this.result,
     required this.shortUrl,
     required this.storageType,
-    required this.ttl,
+    this.ttl,
     required this.urlTitle,
     required this.urlType,
     required this.urlTypePic,
@@ -902,12 +911,12 @@ class User {
   bool followMe;
   bool following;
   @JsonKey(name: 'icon_list')
-  List<dynamic> iconList;
+  List<dynamic>? iconList;
   int id;
-  @JsonKey(name: 'id_str')
   String idstr;
   int mbrank;
   int mbtype;
+  @JsonKey(name: 'pc_new')
   int pcNew;
   @JsonKey(name: 'planet_video')
   bool planetVideo;
@@ -918,7 +927,7 @@ class User {
   @JsonKey(name: 'screen_name')
   String screenName;
   @JsonKey(name: 'status_total_counter')
-  StatusTotalCounter statusTotalCounter;
+  StatusTotalCounter? statusTotalCounter;
   @JsonKey(name: 'user_ability')
   int userAbility;
   @JsonKey(name: 'v_plus')
@@ -928,27 +937,27 @@ class User {
   int verifiedType;
   String weihao;
   @JsonKey(name: 'verified_type_ext')
-  int verifiedTypeExt;
-@JsonKey(name: 'cover_image_phone')
-  String coverImagePhone;
-  String description;
+  int? verifiedTypeExt;
+  @JsonKey(name: 'cover_image_phone')
+  String? coverImagePhone;
+  String? description;
   @JsonKey(name: 'followers_count')
-  int followersCount;
+  int? followersCount;
   @JsonKey(name: 'followers_count_str')
-  String followersCountStr;
-@JsonKey(name: 'friends_count')
-  int friendsCount;
-  String gender;
+  String? followersCountStr;
+  @JsonKey(name: 'friends_count')
+  int? friendsCount;
+  String? gender;
 
-  String location;
-@JsonKey(name: 'statuses_count')
-  int statusesCount;
-  int svip;
-  String url;
-@JsonKey(name: 'verified_reason')
-  String verifiedReason;
+  String? location;
+  @JsonKey(name: 'statuses_count')
+  int? statusesCount;
+  int? svip;
+  String? url;
+  @JsonKey(name: 'verified_reason')
+  String? verifiedReason;
 
-  int vvip;
+  int? vvip;
 
   User({
     required this.avatarHd,
@@ -956,7 +965,7 @@ class User {
     required this.domain,
     required this.followMe,
     required this.following,
-    required this.iconList,
+    this.iconList,
     required this.id,
     required this.idstr,
     required this.mbrank,
@@ -966,25 +975,25 @@ class User {
     required this.profileImageUrl,
     required this.profileUrl,
     required this.screenName,
-    required this.statusTotalCounter,
+     this.statusTotalCounter,
     required this.userAbility,
     required this.vPlus,
     required this.verified,
     required this.verifiedType,
     required this.weihao,
-    required this.verifiedTypeExt,
-    required this.coverImagePhone,
-    required this.description,
-    required this.followersCount,
-    required this.followersCountStr,
-    required this.friendsCount,
-    required this.gender,
-    required this.location,
-    required this.statusesCount,
-    required this.svip,
-    required this.url,
-    required this.verifiedReason,
-    required this.vvip,
+    this.verifiedTypeExt,
+    this.coverImagePhone,
+    this.description,
+    this.followersCount,
+    this.followersCountStr,
+    this.friendsCount,
+    this.gender,
+    this.location,
+    this.statusesCount,
+    this.svip,
+    this.url,
+    this.verifiedReason,
+    this.vvip,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
@@ -1041,24 +1050,27 @@ class Visible {
 @JsonSerializable()
 class AllPicInfo2 {
   PicInfo2 bmiddle;
-  String fid;
+  String? fid;
   PicInfo2 large;
   PicInfo2 largecover;
   PicInfo2 largest;
   PicInfo2 mw2000;
+  @JsonKey(name: 'object_id')
   String objectId;
   PicInfo2 original;
+  @JsonKey(name: 'photo_tag')
   int photoTag;
+  @JsonKey(name: 'pic_id')
   String picId;
   @JsonKey(name: 'pic_status')
   int picStatus;
   PicInfo2 thumbnail;
   String type;
-  String video;
+  String? video;
 
   AllPicInfo2({
     required this.bmiddle,
-    required this.fid,
+    this.fid,
     required this.large,
     required this.largecover,
     required this.largest,
@@ -1070,7 +1082,7 @@ class AllPicInfo2 {
     required this.picStatus,
     required this.thumbnail,
     required this.type,
-    required this.video,
+    this.video,
   });
 
   factory AllPicInfo2.fromJson(Map<String, dynamic> json) =>
@@ -1084,14 +1096,14 @@ class PicInfo2 {
   @JsonKey(name: 'cut_type')
   int cutType;
   int height;
-  String type;
+  String? type;
   String url;
   int width;
 
   PicInfo2({
     required this.cutType,
     required this.height,
-    required this.type,
+     this.type,
     required this.url,
     required this.width,
   });

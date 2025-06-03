@@ -8,8 +8,8 @@ import '../item/moment_item_view.dart';
 import 'moment_list_controller.dart';
 // TabBarView StatelessWidget无法保持状态
 class MomentListView extends StatelessWidget  {
-  MomentListView({this.tag = "default"}) : super(key:Key(tag));
-
+  MomentListView({super.key, this.tag = "moment"}):super();
+  late final Future<void> future = controller.newList(tag);
   final MomentListController controller = Get.find();
 
   final String tag;
@@ -25,9 +25,8 @@ class MomentListView extends StatelessWidget  {
   Widget build(BuildContext context) {
     globalService.logger.d('MomentListView重绘');
     print(_controller);
-    final _future = controller.newList(tag);
     return FutureBuilder<void>(
-        future: _future,
+        future: future,
         builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
     return snapshot.handle() ?? GetBuilder<MomentListController>(
                   id: tag,

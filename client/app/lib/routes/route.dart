@@ -18,6 +18,8 @@ import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 
 import '../components/picture.dart';
+import '../pages/home/start_binding.dart';
+import '../pages/home/start_view.dart';
 import '../pages/weibo/image_view.dart';
 import '../pages/weibo/weibo_binding.dart';
 
@@ -29,8 +31,8 @@ class AppPages {
   static final routes = [
     GetPage(
       name: Routes.HOME,
-      page: () => ImageView(),
-      bindings: [WeiboBinding()],
+      page: () => StartView(),
+      bindings: [StartBinding(),WeiboBinding()],
     ),
     GetPage(
       name: Routes.MOMENT,

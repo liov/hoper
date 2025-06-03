@@ -10,7 +10,7 @@ import 'package:get/get.dart';
 import 'package:app/global/state.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-
+import 'package:applib/widget/hot_load_warp.dart';
 import 'package:app/ffi/ffi.dart';
 import 'package:app/global/state/app.dart';
 
@@ -24,16 +24,18 @@ Future<void> main() async {
         child: Text("找不到页面"),
       );
     };
+    globalService.logger.d('runZonedGuarded');
     assert(AppState.isDebug = true);
     globalService.logger.d("${AppState.isDebug}");
-    runApp(GetMaterialApp(
+    runApp( GetMaterialApp(
       title: 'hoper',
       themeMode: globalState.isDarkMode.value ? ThemeMode.dark : ThemeMode
           .system,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      builder: (context, child) =>
-          Scaffold(
+      builder: (context, child) {
+      globalService.logger.d('GetMaterialApp');
+        return  Scaffold(
             body: GestureDetector(
               onTap: () {
                 FocusScopeNode focusScopeNode = FocusScope.of(context);
@@ -44,7 +46,8 @@ Future<void> main() async {
               },
               child: child,
             ),
-          ),
+          );
+        },
       //home: HomeView(),
       initialRoute: Routes.HOME,
       initialBinding: BindingsBuilder.put(() => globalState),

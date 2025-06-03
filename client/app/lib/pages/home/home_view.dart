@@ -29,35 +29,6 @@ class HomeView extends StatefulWidget {
 }
 */
 
-class HomeView extends StatelessWidget {
-  final SplashController controller = Get.find();
-
-   HomeView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-
-    controller.startAd();
-    globalState.rebuildTimes++;
-    globalService.logger.d("HomeView重绘${globalState.rebuildTimes}次");
-
-    return FutureBuilder(
-      // Replace the 3 second delay with your initialization code:
-      future: controller.adCompleter.future,
-      builder: (context, AsyncSnapshot snapshot) {
-        // Show splash screen while waiting for app resources to load:
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return splash;
-        } else {
-          final app = App();
-          WidgetsBinding.instance.addObserver(app);
-          // Loading is done, return the app:
-          return app;
-        }
-      },
-    );
-  }
-}
 
 class App extends StatelessWidget with WidgetsBindingObserver {
   final HomeController controller = Get.find();

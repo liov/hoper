@@ -14,7 +14,7 @@ import 'package:app/generated/protobuf/content/moment.model.pb.dart' as $moment;
 
 
 class MomentListV2View extends StatefulWidget {
-  MomentListV2View({this.tag = "default"}) : super();
+  const MomentListV2View({super.key, this.tag = "moment"});
 
   final String tag;
   @override
