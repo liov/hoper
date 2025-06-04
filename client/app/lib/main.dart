@@ -10,7 +10,6 @@ import 'package:get/get.dart';
 import 'package:app/global/state.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'package:applib/widget/hot_load_warp.dart';
 import 'package:app/ffi/ffi.dart';
 import 'package:app/global/state/app.dart';
 
