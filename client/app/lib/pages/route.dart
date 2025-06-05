@@ -23,51 +23,6 @@ import 'weibo/image_view.dart';
 import 'weibo/weibo_binding.dart';
 
 
-
-class AppPages {
-
-
-  static final routes = [
-    GetPage(
-      name: Routes.HOME,
-      page: () => StartView(),
-      bindings: [StartBinding(),WeiboBinding()],
-    ),
-    GetPage(
-      name: Routes.MOMENT,
-      page: () => MomentListView(),
-      binding: MomentBinding(),
-      children:[
-        GetPage(
-          name: Routes.ADD,
-          page: () =>  Routes.authCheck(()=>MomentAddView()) ,
-          binding: BindingsBuilder.put(() => MomentAddController())
-        ),
-        GetPage(
-            name: Routes.DynamicId,
-            page: () =>  MomentDetailView(),
-            binding: BindingsBuilder(() {
-              //Get.put(CommentAddController());
-              Get.put(CommentController());
-            })
-        ),
-      ]
-    ),
-    GetPage(
-      name: Routes.LOGIN,
-      page: () => LoginView(),
-    ),
-    GetPage(
-      name: Routes.SPLASH,
-      page: () => Splash(),
-    ),
-    GetPage(
-      name: Routes.WEBVIEW,
-      page: () => WebViewExample(),
-    ),
-  ];
-}
-
 abstract class Routes {
   Routes._();
 
@@ -98,5 +53,46 @@ abstract class Routes {
   }
 
   static Widget authCheck(Widget Function() builder) => globalState.authState.userAuth == null ? LoginView():builder();
+
+
+  static final pages = [
+    GetPage(
+      name: Routes.HOME,
+      page: () => StartView(),
+      bindings: [StartBinding(),WeiboBinding()],
+    ),
+    GetPage(
+        name: Routes.MOMENT,
+        page: () => MomentListView(),
+        binding: MomentBinding(),
+        children:[
+          GetPage(
+              name: Routes.ADD,
+              page: () =>  Routes.authCheck(()=>MomentAddView()) ,
+              binding: BindingsBuilder.put(() => MomentAddController())
+          ),
+          GetPage(
+              name: Routes.DynamicId,
+              page: () =>  MomentDetailView(),
+              binding: BindingsBuilder(() {
+                //Get.put(CommentAddController());
+                Get.put(CommentController());
+              })
+          ),
+        ]
+    ),
+    GetPage(
+      name: Routes.LOGIN,
+      page: () => LoginView(),
+    ),
+    GetPage(
+      name: Routes.SPLASH,
+      page: () => Splash(),
+    ),
+    GetPage(
+      name: Routes.WEBVIEW,
+      page: () => WebViewExample(),
+    ),
+  ];
 }
 

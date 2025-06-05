@@ -1,3 +1,4 @@
+import 'package:app/global/service.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -21,6 +22,7 @@ class HeroImage extends StatelessWidget{
       tag: tag,
       createRectTween: (Rect? begin, Rect? end) {
         _rectTween = RectTween(begin: begin, end: end);
+        globalService.logger.d(_rectTween);
         return _rectTween;
       },
       // make hero better when slide out

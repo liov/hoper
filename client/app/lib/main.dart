@@ -35,7 +35,7 @@ Future<void> main() async {
       //home: HomeView(),
       initialRoute: Routes.HOME,
       initialBinding: BindingsBuilder.put(() => globalState),
-      getPages: AppPages.routes,
+      getPages: Routes.pages,
       localeListResolutionCallback:
           (List<Locale>? locales, Iterable<Locale> supportedLocales) {
         return const Locale('zh');

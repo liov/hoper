@@ -80,20 +80,22 @@ class ImageView extends StatelessWidget {
           dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse},
         ),
         child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 5,
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 300,
             mainAxisSpacing: 10.0,
             crossAxisSpacing: 10.0,
           ),
           itemCount: controller.list.length,
           // 数据源的长度
           itemBuilder: (BuildContext context, int index) {
-            return GestureDetector(child:ExtendedImage.network(
+            return GestureDetector(child:Hero(
+            tag: controller.list[index],
+                child:ExtendedImage.network(
               controller.list[index],
               width: controller.picWidth.toDouble(),
               height: controller.picHeight.toDouble(),
               fit: BoxFit.scaleDown,
-            ),
+            )),
               onTap: () {
                 slideImageRoute(controller.list[index]);
               },

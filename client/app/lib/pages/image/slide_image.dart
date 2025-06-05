@@ -8,40 +8,39 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 
 class SlideImageView extends StatelessWidget {
   SlideImageView(this.url, {super.key});
+
   final String url;
-  final _slidePageKey  = GlobalKey<ExtendedImageSlidePageState>();
+  final _slidePageKey = GlobalKey<ExtendedImageSlidePageState>();
 
   @override
   Widget build(BuildContext context) {
     return Material(
       type: MaterialType.transparency,
-      child: ExtendedImageSlidePage(
-        key: _slidePageKey,
-        slideAxis: SlideAxis.both,
-        slideType: SlideType.onlyImage,
-        child: GestureDetector(
-          child:  HeroImage(
+      child: GestureDetector(
+        child: ExtendedImageSlidePage(
+          key: _slidePageKey,
+          slideAxis: SlideAxis.both,
+          slideType: SlideType.onlyImage,
+
+          child: HeroImage(
             tag: url,
             slideType: SlideType.onlyImage,
             slidePageKey: _slidePageKey,
-            child: url.startsWith("http")?ExtendedImage.network(
-              url,
-              enableSlideOutPage: true,
-            ):ExtendedImage.file(
-              File(url),
-              enableSlideOutPage: true,
-            ),
+            child:
+                url.startsWith("http")
+                    ? ExtendedImage.network(url, enableSlideOutPage: true)
+                    : ExtendedImage.file(File(url), enableSlideOutPage: true),
           ),
-          onTap: () {
-            _slidePageKey.currentState!.popPage();
-            Navigator.pop(context);
-          },
         ),
+        onTap: () {
+          _slidePageKey.currentState!.popPage();
+          Navigator.pop(context);
+        },
       ),
     );
   }
 }
 
-slideImageRoute(String url){
-  navigator!.push(SimpleRoute(builder:(context)=>SlideImageView(url)));
+slideImageRoute(String url) {
+  navigator!.push(SimpleRoute(builder: (context) => SlideImageView(url)));
 }
