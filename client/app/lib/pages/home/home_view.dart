@@ -12,7 +12,7 @@ import 'package:app/pages/home/splash_view.dart';
 import 'package:app/pages/index/index.dart';
 import 'package:app/pages/moment/moment_view.dart';
 import 'package:app/pages/user/user_view.dart';
-import 'package:app/routes/route.dart';
+import 'package:app/pages/route.dart';
 
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';

@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:app/components/hero.dart';
-import 'package:app/components/route.dart';
+import 'package:applib/util/route.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 
-class SlidePhotoView extends StatelessWidget {
-  SlidePhotoView(this.url, {super.key});
+class SlideImageView extends StatelessWidget {
+  SlideImageView(this.url, {super.key});
   final String url;
   final _slidePageKey  = GlobalKey<ExtendedImageSlidePageState>();
 
@@ -20,7 +20,7 @@ class SlidePhotoView extends StatelessWidget {
         slideAxis: SlideAxis.both,
         slideType: SlideType.onlyImage,
         child: GestureDetector(
-          child:  HeroWidget(
+          child:  HeroImage(
             tag: url,
             slideType: SlideType.onlyImage,
             slidePageKey: _slidePageKey,
@@ -42,6 +42,6 @@ class SlidePhotoView extends StatelessWidget {
   }
 }
 
-slidePhotoRoute(String url){
-  navigator!.push(SimpleRoute(builder:(context)=>SlidePhotoView(url)));
+slideImageRoute(String url){
+  navigator!.push(SimpleRoute(builder:(context)=>SlideImageView(url)));
 }

@@ -3,8 +3,8 @@ import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/global/const.dart';
 import 'package:app/global/state.dart';
 
-import 'package:app/pages/photo/photo.dart';
-import 'package:app/pages/photo/slide_photo.dart';
+import 'package:app/pages/image/image_view.dart';
+import 'package:app/pages/image/slide_image.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -57,7 +57,7 @@ class MomentItem extends StatelessWidget {
               ),*/
                     ),
                     onTap: () =>
-                        slidePhotoRoute(BASE_STATIC_URL + user.avatar),
+                        slideImageRoute(BASE_STATIC_URL + user.avatar),
                   )),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,7 +102,7 @@ class MomentItem extends StatelessWidget {
                       cache: true,
                       //cancelToken: cancellationToken,
                     ),
-                    onTap: () => slidePhotoRoute(images![index]),
+                    onTap: () => slideImageRoute(images![index]),
                   ));
             }),
       ActionBar(moment),

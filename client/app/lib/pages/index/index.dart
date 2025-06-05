@@ -5,7 +5,7 @@ import 'package:applib/util/async.dart';
 import 'package:app/global/state.dart';
 
 import 'package:app/pages/home/splash_view.dart';
-import 'package:app/routes/route.dart';
+import 'package:app/pages/route.dart';
 import 'package:app/rpc/baoyu.dart';
 import 'package:app/utils/httpserver.dart';
 import 'package:flutter/cupertino.dart';

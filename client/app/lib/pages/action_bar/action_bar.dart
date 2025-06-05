@@ -4,7 +4,7 @@ import 'package:app/generated/protobuf/content/content.model.pb.dart'  as
 $content;
 import 'package:app/generated/protobuf/content/content.service.pb.dart';
 import 'package:app/global/state.dart';
-import 'package:app/routes/route.dart';
+import 'package:app/pages/route.dart';
 import 'package:app/rpc/action.dart';
 import 'package:app/rpc/content.dart';
 import 'package:flutter/material.dart';

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 /**
@@ -66,6 +68,6 @@ final TextStyle cardTextStyle = TextStyle(
 final Color exampleColor = Colors.white;
 
 class AppTheme {
-  static ThemeData light = ThemeData.light();
-  static ThemeData dark = ThemeData.dark();
+  static ThemeData light = ThemeData(brightness: Brightness.light, useMaterial3: true,fontFamily: Platform.isWindows ? '微软雅黑' : null);
+  static ThemeData dark =  ThemeData(brightness: Brightness.dark, useMaterial3: true,fontFamily: Platform.isWindows ? '微软雅黑' : null);
 }

@@ -17,10 +17,10 @@ import 'package:get/get.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 
-import '../pages/home/start_binding.dart';
-import '../pages/home/start_view.dart';
-import '../pages/weibo/image_view.dart';
-import '../pages/weibo/weibo_binding.dart';
+import 'home/start_binding.dart';
+import 'home/start_view.dart';
+import 'weibo/image_view.dart';
+import 'weibo/weibo_binding.dart';
 
 
 

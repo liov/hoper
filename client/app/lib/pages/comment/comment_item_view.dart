@@ -2,7 +2,7 @@ import 'package:app/generated/protobuf/content/action.model.pb.dart';
 import 'package:app/global/state.dart';
 import 'package:app/global/const.dart';
 import 'package:app/pages/action_bar/action_bar.dart';
-import 'package:app/pages/photo/slide_photo.dart';
+import 'package:app/pages/image/slide_image.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -50,7 +50,7 @@ class CommentItem extends StatelessWidget {
               ),*/
                     ),
                     onTap: () =>
-                        slidePhotoRoute(BASE_STATIC_URL + user.avatar),
+                        slideImageRoute(BASE_STATIC_URL + user.avatar),
                   )),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,7 +69,7 @@ class CommentItem extends StatelessWidget {
       ]),
       Padding(
           padding: const EdgeInsets.symmetric(vertical:5.0,horizontal:10),
-          child: MarkdownBody(data: '${comment.content}')),
+          child: MarkdownBody(data: comment.content)),
       if (images != null)
         GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -89,7 +89,7 @@ class CommentItem extends StatelessWidget {
                       cache: true,
                       //cancelToken: cancellationToken,
                     ),
-                    onTap: () => slidePhotoRoute(images![index]),
+                    onTap: () => slideImageRoute(images![index]),
                   ));
             }),
     ]);

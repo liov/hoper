@@ -1,8 +1,8 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 
-class HeroWidget extends StatelessWidget{
-  HeroWidget({
+class HeroImage extends StatelessWidget{
+  HeroImage({
     required this.child,
     required this.tag,
     required this.slidePageKey,

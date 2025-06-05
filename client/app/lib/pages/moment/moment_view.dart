@@ -1,9 +1,9 @@
-import 'package:app/components/todo.dart';
+
 import 'package:app/global/state.dart';
 import 'package:app/pages/moment/list/moment_list_view.dart';
 import 'package:app/pages/moment/physics.dart';
 import 'package:app/pages/webview/webview.dart';
-import 'package:app/routes/route.dart';
+import 'package:app/pages/route.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -55,9 +55,9 @@ class _MomentState extends State<MomentView> with AutomaticKeepAliveClientMixin 
         controller: controller.tabController,
         children: controller.tabValues.map((f) {
           globalService.logger.d(f);
-          if (f == "推荐") return TODOView();
+          if (f == "推荐") return Text('TODO');
           if (f == "刚刚") return MomentListV2View(tag:'newest');
-          if (f == "关注") return TODOView();
+          if (f == "关注") return Text('TODO');
           return Text(f);
         }).toList(),
       ),

@@ -15,14 +15,28 @@ class WeiboController extends GetxController{
   List<String> list = [];
   int picWidth = 300;
   int picHeight = 300;
+  bool isEnd = false;
 
 
+  Future<void> newList(int userId) async {
+    this.userId = userId;
+    page =1;
+    isEnd = false;
+    list.clear();
+    return getList();
+  }
 
   Future<void> getList() async {
     globalService.logger.d('getList');
+    if(isEnd) return;
     try{
     final response = await weiboClient.getOriginalList(uid: userId, page: page, feature: feature, sinceId: sinceId);
     if (response == null) {
+      isEnd = true;
+      return;
+    }
+    if (response.list.isEmpty) {
+      isEnd = true;
       return;
     }
     //sinceId = response.sinceId;

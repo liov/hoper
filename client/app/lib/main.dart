@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:isolate';
 
-import 'package:app/routes/route.dart';
+import 'package:app/pages/route.dart';
 import 'package:app/global/theme.dart';
 
 import 'package:flutter/material.dart';
@@ -32,21 +32,6 @@ Future<void> main() async {
           .system,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      builder: (context, child) {
-      globalService.logger.d('GetMaterialApp');
-        return  Scaffold(
-            body: GestureDetector(
-              onTap: () {
-                FocusScopeNode focusScopeNode = FocusScope.of(context);
-                if (!focusScopeNode.hasPrimaryFocus &&
-                    focusScopeNode.focusedChild != null) {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                }
-              },
-              child: child,
-            ),
-          );
-        },
       //home: HomeView(),
       initialRoute: Routes.HOME,
       initialBinding: BindingsBuilder.put(() => globalState),

@@ -137,7 +137,7 @@ class Myblog {
   bool showPictureViewer;
   String source;
   String text;
-  int textLength;
+  int? textLength;
   @JsonKey(name: 'text_raw')
   String textRaw;
   @JsonKey(name: 'url_struct')
@@ -188,7 +188,7 @@ class Myblog {
     required this.showPictureViewer,
     required this.source,
     required this.text,
-    required this.textLength,
+     this.textLength,
     required this.textRaw,
     this.urlStruct,
     this.user,

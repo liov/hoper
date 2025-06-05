@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:app/components/flexible.dart';
+
 import 'package:app/generated/protobuf/content/action.service.pb.dart';
 import 'package:app/pages/moment/add/moment_add_controller.dart';
 import 'package:app/pages/moment/add/moment_add_view.dart';
-import 'package:app/pages/photo/slide_photo.dart';
+import 'package:app/pages/image/slide_image.dart';
 import 'package:app/rpc/action.dart';
 import 'package:app/rpc/baoyu.dart';
 import 'package:extended_image/extended_image.dart';

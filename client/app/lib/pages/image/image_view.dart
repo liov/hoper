@@ -2,10 +2,10 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get_core/src/get_main.dart';
 
-class PhotoView extends StatelessWidget {
-  PhotoView(this.urls,this.initialPage, {super.key});
+class ImageView extends StatelessWidget {
+  const ImageView(this.urls,this.initialIndex, {super.key});
   final List<String> urls;
-  final int initialPage;
+  final int initialIndex;
 
 
   @override
@@ -35,7 +35,7 @@ class PhotoView extends StatelessWidget {
             );
           },
         );
-        if (index == initialPage) {
+        if (index == initialIndex) {
           return Hero(
             tag: url,
             child: image,
@@ -51,7 +51,7 @@ class PhotoView extends StatelessWidget {
       onPageChanged: (int index) {
       },
       controller: ExtendedPageController(
-        initialPage: initialPage,
+        initialPage: initialIndex,
       ),
       scrollDirection: Axis.horizontal,
     );

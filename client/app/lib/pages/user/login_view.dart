@@ -3,7 +3,7 @@ import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/generated/protobuf/user/user.service.pb.dart';
 import 'package:app/global/state/auth.dart';
 import 'package:app/global/state.dart';
-import 'package:app/routes/route.dart';
+import 'package:app/pages/route.dart';
 import 'package:applib/util/keyboard.dart';
 import 'package:grpc/grpc.dart';
 import 'package:app/rpc/user.dart';

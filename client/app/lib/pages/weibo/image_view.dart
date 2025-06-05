@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'dart:io';
 
 import '../../global/service.dart';
+import '../image/slide_image.dart';
 import 'controller.dart';
 
 class ImageView extends StatelessWidget {
@@ -17,12 +18,13 @@ class ImageView extends StatelessWidget {
   late final Future<void> future = controller.getList();
   late final ScrollController _controller =
       ScrollController()..addListener(() {
-        if (_controller.position.pixels == _controller.position.maxScrollExtent) {
+        if (_controller.position.pixels >=
+            _controller.position.maxScrollExtent) {
           globalService.logger.d('这里执行了吗');
           controller.getList();
         }
       });
-
+  final TextEditingController _searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     globalService.logger.d('ImageView重绘');
@@ -32,48 +34,75 @@ class ImageView extends StatelessWidget {
     final rows = (height / controller.picHeight).floor();
     globalService.logger.d('$columns $rows');
 
-    return FutureBuilder<void>(
-      future: future,
-      builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-        return snapshot.handle() ??
-            GetBuilder<WeiboController>(
-              builder:
-                  (_) => RefreshIndicator(
-                    onRefresh: () {
-                      globalService.logger.d('这里执行了吗2');
-                      return controller.getList();
-                    },
-                    child: ScrollConfiguration(
-                      behavior: ScrollConfiguration.of(context).copyWith(
-                        dragDevices: {
-                          PointerDeviceKind.touch,
-                          PointerDeviceKind.mouse,
-                        },
-                      ),
-                      child: GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 5,
-                          mainAxisSpacing: 10.0,
-                          crossAxisSpacing: 10.0,
-                        ),
-                        itemCount: controller.list.length,
-                        // 数据源的长度
-                        itemBuilder: (BuildContext context, int index) {
-                          return ExtendedImage.network(
-                            controller.list[index],
-                            width: controller.picWidth.toDouble(),
-                            height: controller.picHeight.toDouble(),
-                            fit: BoxFit.scaleDown,
-                          );
-                        },
-                        controller: _controller,
-                        physics: AlwaysScrollableScrollPhysics(),
-                      ),
-                    ),
-                  ),
+    return  Scaffold(
+      appBar: AppBar(
+        title: TextField(
+          controller: _searchController,
+          decoration: InputDecoration(
+            hintText: '复制分享链接到此处',
+            border: InputBorder.none,
+            hintStyle: const TextStyle(color: Colors.white70),
+          ),
+          style: const TextStyle(color: Colors.white),
+          autofocus: true,
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () {
+              final idStr = _searchController.text.split('/').last.split('#').first;
+              globalService.logger.d(idStr);
+              controller.newList(int.parse(_searchController.text));
+            },
+          ),
+        ],
+      ),
+      body: FutureBuilder<void>(
+          future: future,
+          builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+            return snapshot.handle() ?? GetBuilder<WeiboController>(
+              builder: (_) => refreshIndicator(context),
               dispose: (state) => _controller.dispose(),
             );
+          }
+    ),
+    );
+  }
+
+  Widget refreshIndicator(BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: () {
+        globalService.logger.d('这里执行了吗2');
+        return controller.getList();
       },
+      child: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(
+          dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse},
+        ),
+        child: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 5,
+            mainAxisSpacing: 10.0,
+            crossAxisSpacing: 10.0,
+          ),
+          itemCount: controller.list.length,
+          // 数据源的长度
+          itemBuilder: (BuildContext context, int index) {
+            return GestureDetector(child:ExtendedImage.network(
+              controller.list[index],
+              width: controller.picWidth.toDouble(),
+              height: controller.picHeight.toDouble(),
+              fit: BoxFit.scaleDown,
+            ),
+              onTap: () {
+                slideImageRoute(controller.list[index]);
+              },
+            );
+          },
+          controller: _controller,
+          physics: AlwaysScrollableScrollPhysics(),
+        ),
+      ),
     );
   }
 }

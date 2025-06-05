@@ -4,7 +4,7 @@ import 'package:app/global/state.dart';
 
 import 'package:app/pages/moment/item/moment_item_view.dart';
 import 'package:app/pages/moment/detail/moment_detail_view.dart';
-import 'package:app/routes/route.dart';
+import 'package:app/pages/route.dart';
 import 'package:app/rpc/moment.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
