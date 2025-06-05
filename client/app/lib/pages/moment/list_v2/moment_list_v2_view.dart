@@ -1,4 +1,4 @@
-import 'package:app/components/async/async.dart';
+import 'package:applib/util/async.dart';
 import 'package:app/generated/protobuf/content/moment.service.pb.dart';
 import 'package:app/global/state.dart';
 

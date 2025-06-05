@@ -1,5 +1,5 @@
 
-import 'package:app/components/async/async.dart';
+import 'package:applib/util/async.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

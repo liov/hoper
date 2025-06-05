@@ -17,7 +17,6 @@ import 'package:get/get.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 
-import '../components/picture.dart';
 import '../pages/home/start_binding.dart';
 import '../pages/home/start_view.dart';
 import '../pages/weibo/image_view.dart';
@@ -66,10 +65,6 @@ class AppPages {
       name: Routes.WEBVIEW,
       page: () => WebViewExample(),
     ),
-    GetPage(
-      name: Routes.PICTURE,
-      page: () => const PictureView(),
-    ),
   ];
 }
 
@@ -90,7 +85,6 @@ abstract class Routes {
   static const MOMENT_DETAILS = MOMENT + DynamicId;
   static const WEBVIEW = '/webview';
   static const NOTFOUND = '/NOTFOUND';
-  static const PICTURE = '/picture';
 
   static String productDetails(String productId) => '$PRODUCT/$productId';
   static String momentDetails(String momentId) => '$MOMENT/$momentId';

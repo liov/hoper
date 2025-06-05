@@ -1,4 +1,4 @@
-import 'package:app/components/async/async.dart';
+import 'package:applib/util/async.dart';
 import 'package:app/generated/protobuf/content/action.model.pb.dart';
 import 'package:app/generated/protobuf/content/action.service.pb.dart';
 import 'package:app/pages/comment/comment_controller.dart';

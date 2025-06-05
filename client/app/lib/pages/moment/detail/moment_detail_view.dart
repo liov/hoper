@@ -1,4 +1,4 @@
-import 'package:app/components/async/async.dart';
+import 'package:applib/util/async.dart';
 import 'package:app/generated/protobuf/content/content.model.pbenum.dart';
 
 import 'package:app/pages/comment/comment_add_view.dart';
