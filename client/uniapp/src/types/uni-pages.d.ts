@@ -11,6 +11,7 @@ interface NavigateToOptions {
        "/pages/moment/moment_list" |
        "/pages/user/active" |
        "/pages/user/login" |
+       "/pages/weibo/list" |
        "/pages/wopan/list" |
        "/pages/wopan/login" |
        "/pages/wopan/view";

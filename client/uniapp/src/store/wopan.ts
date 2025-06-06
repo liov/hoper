@@ -3,8 +3,8 @@ import * as wopan from '@hopeio/utils/wopan'
 import { defineStore } from 'pinia'
 
 export interface WopanState {
-  file: wopan.FileNode
-  curDir: wopan.FileNode
+  file: FileNode
+  curDir: FileNode
   accessToken: string
   refreshToken: string
   psToken: string
@@ -14,11 +14,20 @@ export interface WopanState {
   spaceType: wopan.SpaceType
 }
 
+export interface FileNode {
+  parent: FileNode
+  file: wopan.File
+  subFiles: FileNode[]
+  pageNo: number
+  hasMore: boolean
+  deleted: boolean
+}
+
 const accessTokenKey = 'accessToken'
 const refreshTokenKey = 'refreshToken'
 const psTokenKey = 'psToken'
 const phoneKey = 'phone'
-const rootFile: wopan.FileNode = {
+const rootFile: FileNode = {
   parent: null,
   file: {
     id: '0',
@@ -95,17 +104,17 @@ const actions = {
     )
     state.curDir.subFiles.push(
       ...res.files.map(
-        (file: wopan.File): wopan.FileNode => {
+        (file: wopan.File):FileNode => {
           if(file.previewUrl===""){
             file.previewUrl = wopan.preview(file.fid)
           }
         return {
+          deleted: false,
           parent: state.curDir,
           file,
           subFiles: [],
           pageNo: 0,
-          pageSize: 50,
-          hasMore: true,
+          hasMore: true
         }
         },
       ),

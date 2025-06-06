@@ -75,23 +75,24 @@
     "bin-wrapper": "npm:bin-wrapper-china"
   },
   "dependencies": {
-    "@dcloudio/uni-app": "3.0.0-4030620241128001",
-    "@dcloudio/uni-app-harmony": "3.0.0-4030620241128001",
-    "@dcloudio/uni-app-plus": "3.0.0-4030620241128001",
-    "@dcloudio/uni-components": "3.0.0-4030620241128001",
-    "@dcloudio/uni-h5": "3.0.0-4030620241128001",
-    "@dcloudio/uni-mp-alipay": "3.0.0-4030620241128001",
-    "@dcloudio/uni-mp-baidu": "3.0.0-4030620241128001",
-    "@dcloudio/uni-mp-jd": "3.0.0-4030620241128001",
-    "@dcloudio/uni-mp-kuaishou": "3.0.0-4030620241128001",
-    "@dcloudio/uni-mp-lark": "3.0.0-4030620241128001",
-    "@dcloudio/uni-mp-qq": "3.0.0-4030620241128001",
-    "@dcloudio/uni-mp-toutiao": "3.0.0-4030620241128001",
-    "@dcloudio/uni-mp-weixin": "3.0.0-4030620241128001",
-    "@dcloudio/uni-mp-xhs": "3.0.0-4030620241128001",
-    "@dcloudio/uni-quickapp-webview": "3.0.0-4030620241128001",
+    "@dcloudio/uni-app": "3.0.0-4060620250520001",
+    "@dcloudio/uni-app-harmony": "3.0.0-4060620250520001",
+    "@dcloudio/uni-app-plus": "3.0.0-4060620250520001",
+    "@dcloudio/uni-components": "3.0.0-4060620250520001",
+    "@dcloudio/uni-h5": "3.0.0-4060620250520001",
+    "@dcloudio/uni-mp-alipay": "3.0.0-4060620250520001",
+    "@dcloudio/uni-mp-baidu": "3.0.0-4060620250520001",
+    "@dcloudio/uni-mp-harmony": "3.0.0-4060620250520001",
+    "@dcloudio/uni-mp-jd": "3.0.0-4060620250520001",
+    "@dcloudio/uni-mp-kuaishou": "3.0.0-4060620250520001",
+    "@dcloudio/uni-mp-lark": "3.0.0-4060620250520001",
+    "@dcloudio/uni-mp-qq": "3.0.0-4060620250520001",
+    "@dcloudio/uni-mp-toutiao": "3.0.0-4060620250520001",
+    "@dcloudio/uni-mp-weixin": "3.0.0-4060620250520001",
+    "@dcloudio/uni-mp-xhs": "3.0.0-4060620250520001",
+    "@dcloudio/uni-quickapp-webview": "3.0.0-4060620250520001",
     "@dcloudio/uni-ui": "^1.5.6",
-    "@hopeio/utils": "^0.0.5",
+    "@hopeio/utils": "^0.0.6",
     "dayjs": "1.11.13",
     "pinia": "2.2.2",
     "pinia-plugin-persistedstate": "4.0.2",
@@ -103,10 +104,10 @@
     "@commitlint/cli": "^19.5.0",
     "@commitlint/config-conventional": "^19.5.0",
     "@dcloudio/types": "^3.4.14",
-    "@dcloudio/uni-automator": "3.0.0-4030620241128001",
-    "@dcloudio/uni-cli-shared": "3.0.0-4030620241128001",
-    "@dcloudio/uni-stacktracey": "3.0.0-4030620241128001",
-    "@dcloudio/vite-plugin-uni": "3.0.0-4030620241128001",
+    "@dcloudio/uni-automator": "3.0.0-4060620250520001",
+    "@dcloudio/uni-cli-shared": "3.0.0-4060620250520001",
+    "@dcloudio/uni-stacktracey": "3.0.0-4060620250520001",
+    "@dcloudio/vite-plugin-uni": "3.0.0-4060620250520001",
     "@esbuild/darwin-arm64": "0.24.0",
     "@esbuild/darwin-x64": "0.24.0",
     "@eslint/js": "^9.17.0",
@@ -157,5 +158,11 @@
     "vue-i18n": "9.1.9",
     "vue-tsc": "^2.1.6"
   },
-  "packageManager": "pnpm@9.14.4+sha512.c8180b3fbe4e4bca02c94234717896b5529740a6cbadf19fa78254270403ea2f27d4e1d46a08a0f56c89b63dc8ebfd3ee53326da720273794e6200fcf0d184ab"
+  "packageManager": "pnpm@10.5.2",
+  "pnpm": {
+    "overrides": {
+      "@intlify/shared": "11.0.1",
+      "@hopeio/utils": "link:../../../../../../sdk/pnpm/bin/global/5/node_modules/@hopeio/utils"
+    }
+  }
 }

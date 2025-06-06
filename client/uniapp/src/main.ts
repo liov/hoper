@@ -2,7 +2,8 @@ import { createSSRApp } from 'vue'
 import App from './App.vue'
 import * as Pinia from 'pinia'
 import i18n from './locale/index'
-import { routeInterceptor, requestInterceptor, prototypeInterceptor,init as uniHttpInit  } from './interceptors'
+import { routeInterceptor, init as uniHttpInit  } from './interceptors'
+import { prototypeInterceptor } from '@hopeio/utils/plugin';
 import 'virtual:uno.css'
 import '@/style/index.scss'
 
@@ -11,7 +12,6 @@ export function createApp() {
   app.use(Pinia.createPinia())
   app.use(i18n)
   app.use(routeInterceptor)
-  app.use(requestInterceptor)
   app.use(prototypeInterceptor)
   uniHttpInit()
   return {

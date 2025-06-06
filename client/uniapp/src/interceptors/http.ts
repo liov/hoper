@@ -10,7 +10,13 @@ export function init() {
 
   // 添加请求拦截器
   unirequest.interceptors.request.use(function (config) {
+    if (JSON.parse(__VITE_APP_PROXY__)) {
+      //
+    }
     // 在发送请求之前做些什么
+    uni.showLoading({
+      title: config.loadingMsg || '加载中'
+    })
     return config
   })
 

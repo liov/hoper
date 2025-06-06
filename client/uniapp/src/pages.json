@@ -97,6 +97,15 @@
       }
     },
     {
+      "path": "pages/weibo/list",
+      "type": "page",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "weibo列表",
+        "onReachBottomDistance": 50
+      }
+    },
+    {
       "path": "pages/wopan/list",
       "type": "page",
       "style": {
