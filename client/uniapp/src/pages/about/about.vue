@@ -14,13 +14,12 @@
     <view class="text-center mt-8 text-#fff">
       <wd-button type="success" @click="gotoPage('i18n')">进入多语言页面</wd-button>
     </view>
-    <RequestComp />
     <UploadComp />
   </view>
 </template>
 
 <script lang="ts" setup>
-import RequestComp from './components/request.vue'
+
 import UploadComp from './components/upload.vue'
 
 // 获取屏幕边界到安全区域距离
