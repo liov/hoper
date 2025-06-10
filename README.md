@@ -16,7 +16,7 @@ git submodule init
 git submodule update
 cd server/go
 go run $(go list -m -f {{.Dir}}  github.com/hopeio/cherry)/tools/protoc/install_tools.go
-protogen go -e -w -q -v -p ../../proto -g protobuf
+protogen go -e -w -v -p ../../proto -o protobuf
 go run main.go -c config.toml
 ```
 
@@ -48,7 +48,7 @@ hoper项目客户端，服务端通用的proto定义，用来生成go，rust，j
 各种语言服务
 ## go
 主要的后端服务,采用cherry
-`protogen go -e -w -q -v -p ../../proto -g protobuf`
+`protogen go -e -w -v -p ../../proto -o protobuf`
 ## java
 ### user
 - springboot+grpc
