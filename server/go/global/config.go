@@ -1,7 +1,9 @@
 package global
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/hopeio/cherry"
+	"github.com/hopeio/initialize/rootconf"
 	"github.com/hopeio/utils/os/fs"
 	timei "github.com/hopeio/utils/time"
 	"time"
@@ -32,6 +34,12 @@ func (c *config) BeforeInject() {
 func (c *config) AfterInject() {
 	c.User.TokenMaxAge = timei.StdDuration(c.User.TokenMaxAge, time.Hour)
 	c.User.TokenSecretBytes = []byte(c.User.TokenSecret)
+}
+
+func (c *config) AfterInjectWithRoot(rootconfig *rootconf.RootConfig) {
+	if !rootconfig.Debug {
+		gin.SetMode(gin.ReleaseMode)
+	}
 }
 
 type Config struct {

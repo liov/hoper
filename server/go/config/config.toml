@@ -4,26 +4,22 @@ Env = "dev"
 
 [dev]
 Debug = true
-ConfigTemplateDir = "."
-NoInject = []
-[dev.localConfig]
-Paths = ["local.toml"]
-
-[dev.configCenter]
-Type = "local"
+ConfigTemplateDir = "./config"
 NoInject = ["Apollo", "Etcd", "Es"]
-Format = 'toml'
+[dev.localConfig]
+Paths = ["config/local.toml"]
+
 
 [dev.configCenter.http]
 Interval = 100
 Url = "http://localhost:6666/local.toml"
 
 [test]
+NoInject = ["Apollo", "Etcd", "Es"]
 
 [test.configCenter]
-configType = "nacos"
-Watch = true
-NoInject = ["Apollo", "Etcd", "Es"]
+Format = 'toml'
+Type = "nacos"
 
 [test.configCenter.nacos]
 DataId = "pro"
