@@ -3,20 +3,16 @@ const deployrepo = 'https://github.com/hopeio/deploy';
 const workspace = '/src';
 
 const compileHost = {
-    localhost:((dirprefix)=> {
-        return{
-            dirprefix: dirprefix,
-            codedir: dirprefix + '/code/hopeio/hoper',
-            gopath: dirprefix + '/sdk/gopath',
-        }
-    })('/mnt/d'),
-    mint: ((dirprefix)=> {
-        return {
-            dirprefix: dirprefix,
-            codedir: dirprefix + '/code/hopeio/hoper',
-            gopath: dirprefix + '/sdk/gopath',
-        }
-    })('/var'),
+    localhost:{
+        dirprefix: '/mnt/d',
+        codedir: '/mnt/d/code/hopeio/hoper',
+        gopath: '/mnt/d/sdk/gopath',
+    },
+    mint: {
+        dirprefix: '/var',
+        codedir: '/var/code/hopeio/hoper',
+        gopath: '/var/sdk/gopath',
+    },
 };
 
 const deploytHost = {
@@ -24,17 +20,15 @@ const deploytHost = {
         datadir: '/data',
         confdir: '/root/config',
     },
-    mint: ((dirprefix)=> {
-        return {
-        dirprefix: dirprefix,
-        datadir: dirprefix + '/data',
-        confdir: dirprefix + '/config',
-        }
-    })('/var'),
+    mint: {
+        dirprefix: '/var',
+        datadir: '/var/data',
+        confdir: '/var/config',
+        },
 };
 
 
-function Pipeline({group, buildDir = '',name = '', deploy_kind = 'deployment', build_type = 'bin',  sourceFile = '', protopath = '', opts = [], compile = 'localhost', target = 'tx', schedule = ''}) {
+function Pipeline(group, buildDir = '',name = '', deploy_kind = 'deployment', build_type = 'bin',  sourceFile = '', protopath = '', opts = [], compile = 'localhost', target = 'tx', schedule = '') {
 
     let cconfig = compileHost[compile];
     let tconfig = deploytHost[target];
@@ -130,7 +124,7 @@ function Pipeline({group, buildDir = '',name = '', deploy_kind = 'deployment', b
                     'git checkout -b deploy $DRONE_COMMIT_REF',
                     // edit Dockerfile && deploy file
                     `cp -r /code/${protopath}/* ${protoGenpath}`,
-                    `${protopath !== '' ? 'if [ ! -f ' + buildfile + ' ]; then protogen go -e -w -q -p ' + workspace + '/proto -g ' + protoGenpath + '; fi' : 'echo'}`,
+                    `${protopath !== '' ? 'if [ ! -f ' + buildfile + ' ]; then protogen go -e -w -v -p ' + workspace + '/proto -o ' + protoGenpath + '; fi' : 'echo'}`,
                     // go build
                     `cd ${buildDir}`,
                     //'go mod tidy',
@@ -194,5 +188,5 @@ function Pipeline({group, buildDir = '',name = '', deploy_kind = 'deployment', b
     }
 }
 
-const pipelines = [{group:'hoper', buildDir : 'server/go', protopath : 'server/go/protobuf'}]
+const pipelines = [Pipeline(group='hoper', buildDir = 'server/go', protopath = 'server/go/protobuf')]
 

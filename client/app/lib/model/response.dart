@@ -50,6 +50,10 @@ extension Extension<T> on $dio.Response {
 
   T? getWeiboData(T Function(Object? json) fromJsonT) {
     if (statusCode == HttpStatus.ok) {
+      if  (this.data is String) {
+        globalService.logger.e('请求出错 ${this.data}');
+        return null;
+      };
       final data = WeiboResponse.fromJson(this.data as Map<String, dynamic>,fromJsonT);
       globalService.logger.d(data);
       if (data.ok!=1) {

@@ -4,6 +4,7 @@ import 'package:applib/util/async.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'dart:io';
 
@@ -25,6 +26,7 @@ class ImageView extends StatelessWidget {
         }
       });
   final TextEditingController _searchController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     globalService.logger.d('ImageView重绘');
@@ -34,38 +36,54 @@ class ImageView extends StatelessWidget {
     final rows = (height / controller.picHeight).floor();
     globalService.logger.d('$columns $rows');
 
-    return  Scaffold(
-      appBar: AppBar(
-        title: TextField(
-          controller: _searchController,
-          decoration: InputDecoration(
-            hintText: '复制分享链接到此处',
-            border: InputBorder.none,
-            hintStyle: const TextStyle(color: Colors.white70),
+    return PopScope(
+        canPop:false,
+      onPopInvokedWithResult: (didPop, result)  {
+        if (didPop) {
+          // 页面已经被 pop 了，不需要额外处理
+          return;
+        }
+        if (Theme.of(context).platform == TargetPlatform.android) {
+          // Android：尝试让 App 进入后台
+          SystemNavigator.pop(); // 进入后台
+        } else {}
+        globalService.logger.d(result);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: '复制分享链接到此处',
+              border: InputBorder.none,
+              hintStyle: const TextStyle(color: Colors.white70),
+            ),
+            style: const TextStyle(color: Colors.white),
+            autofocus: false,
           ),
-          style: const TextStyle(color: Colors.white),
-          autofocus: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                final idStr =
+                    _searchController.text.split('/').last.split('#').first;
+                globalService.logger.d(idStr);
+                controller.newList(int.parse(_searchController.text));
+              },
+            ),
+          ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () {
-              final idStr = _searchController.text.split('/').last.split('#').first;
-              globalService.logger.d(idStr);
-              controller.newList(int.parse(_searchController.text));
-            },
-          ),
-        ],
-      ),
-      body: FutureBuilder<void>(
+        body: FutureBuilder<void>(
           future: future,
           builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-            return snapshot.handle() ?? GetBuilder<WeiboController>(
-              builder: (_) => refreshIndicator(context),
-              dispose: (state) => _controller.dispose(),
-            );
-          }
-    ),
+            return snapshot.handle() ??
+                GetBuilder<WeiboController>(
+                  builder: (_) => refreshIndicator(context),
+                  dispose: (state) => _controller.dispose(),
+                );
+          },
+        ),
+      ),
     );
   }
 
@@ -88,14 +106,16 @@ class ImageView extends StatelessWidget {
           itemCount: controller.list.length,
           // 数据源的长度
           itemBuilder: (BuildContext context, int index) {
-            return GestureDetector(child:Hero(
-            tag: controller.list[index],
-                child:ExtendedImage.network(
-              controller.list[index],
-              width: controller.picWidth.toDouble(),
-              height: controller.picHeight.toDouble(),
-              fit: BoxFit.scaleDown,
-            )),
+            return GestureDetector(
+              child: Hero(
+                tag: controller.list[index],
+                child: ExtendedImage.network(
+                  controller.list[index],
+                  width: controller.picWidth.toDouble(),
+                  height: controller.picHeight.toDouble(),
+                  fit: BoxFit.scaleDown,
+                ),
+              ),
               onTap: () {
                 slideImageRoute(controller.list[index]);
               },

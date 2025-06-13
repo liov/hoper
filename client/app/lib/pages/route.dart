@@ -5,7 +5,7 @@ import 'package:app/global/state.dart';
 import 'package:app/pages/comment/comment_controller.dart';
 import 'package:app/pages/home/home_binding.dart';
 import 'package:app/pages/home/home_view.dart';
-import 'package:app/pages/home/splash_view.dart';
+import 'package:app/pages/start/splash_view.dart';
 import 'package:app/pages/moment/detail/moment_detail_view.dart';
 import 'package:app/pages/user/login_view.dart';
 import 'package:app/pages/moment/add/moment_add_controller.dart';
@@ -17,8 +17,8 @@ import 'package:get/get.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 
-import 'home/start_binding.dart';
-import 'home/start_view.dart';
+import 'start/start_binding.dart';
+import 'start/start_view.dart';
 import 'weibo/image_view.dart';
 import 'weibo/weibo_binding.dart';
 
@@ -26,6 +26,7 @@ import 'weibo/weibo_binding.dart';
 abstract class Routes {
   Routes._();
 
+  static const START = '/';
   static const HOME = '/home';
   static const CONTENT = '/content';
   static const MOMENT = '/moment';
@@ -57,9 +58,14 @@ abstract class Routes {
 
   static final pages = [
     GetPage(
-      name: Routes.HOME,
+      name: Routes.START,
       page: () => StartView(),
-      bindings: [StartBinding(),WeiboBinding()],
+      bindings: [StartBinding()],
+    ),
+    GetPage(
+      name: Routes.HOME,
+      page: () => ImageView(),
+      bindings: [WeiboBinding()],
     ),
     GetPage(
         name: Routes.MOMENT,

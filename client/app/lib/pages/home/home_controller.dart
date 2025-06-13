@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:app/components/bottom/bottom.dart';
 import 'package:app/global/state.dart';
-import 'package:app/pages/home/splash_view.dart';
+import 'package:app/pages/start/splash_view.dart';
 import 'package:app/utils/dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

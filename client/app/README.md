@@ -25,7 +25,7 @@ rustup target add x86_64-linux-android armv7-linux-androideabi aarch64-linux-and
 cargo build --release --target=armv7-linux-androideabi
 
 ### 图标和开屏
-dart run flutter_native_splash:create // 天坑，不看源码还不知道，flutter_native_splash是根据build.gradle判断编译SKD版本的，判断方法简单粗暴截取转整型，后面有注释识别不了
+dart run flutter_native_splash:create  --path=flutter_native_splash.yaml// 天坑，不看源码还不知道，flutter_native_splash是根据build.gradle判断编译SKD版本的，判断方法简单粗暴截取转整型，后面有注释识别不了
 dart run flutter_launcher_icons:main
 ### json
 dart run build_runner build --delete-conflicting-outputs

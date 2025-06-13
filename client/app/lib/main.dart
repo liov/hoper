@@ -32,8 +32,21 @@ Future<void> main() async {
           .system,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
+      builder: (context, child) {
+        globalService.logger.d('GetMaterialApp');
+        return  Listener(
+          onPointerDown: (_) {
+              FocusScopeNode focusScopeNode = FocusScope.of(context);
+              if (!focusScopeNode.hasPrimaryFocus &&
+                  focusScopeNode.focusedChild != null) {
+                FocusManager.instance.primaryFocus?.unfocus();
+              }
+            },
+            child: child,
+        );
+      },
       //home: HomeView(),
-      initialRoute: Routes.HOME,
+      initialRoute: Routes.START,
       initialBinding: BindingsBuilder.put(() => globalState),
       getPages: Routes.pages,
       localeListResolutionCallback:
