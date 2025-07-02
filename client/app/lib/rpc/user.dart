@@ -6,15 +6,11 @@ import 'package:app/global/dio.dart';
 import 'package:get/get.dart';
 import 'package:grpc/grpc.dart';
 import 'package:app/model/response.dart';
-
+import 'package:app/rpc/grpc.dart';
 import 'package:applib/util/observer.dart';
 
 
 class UserClient extends Observer<CallOptions> {
-
-
-  final channel = ClientChannel('grpc.hoper.xyz');
-
 
   late  UserServiceClient stub ;
 

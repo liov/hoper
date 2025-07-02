@@ -8,7 +8,7 @@ import '../../rpc/weibo.dart';
 
 class WeiboController extends GetxController{
   final WeiboClient weiboClient = Get.find();
-  int userId = 1821205960;
+  int userId = 0;
   int page = 1;
   int feature = 0;
   String sinceId = '';
