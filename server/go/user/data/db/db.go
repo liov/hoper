@@ -3,9 +3,9 @@ package db
 import (
 	"encoding/json"
 	"github.com/hopeio/context/httpctx"
-	gormi "github.com/hopeio/utils/dao/database/gorm"
-	_ "github.com/hopeio/utils/dao/database/gorm/serializer"
-	sqli "github.com/hopeio/utils/dao/database/sql"
+	gormi "github.com/hopeio/utils/datax/database/gorm"
+	_ "github.com/hopeio/utils/datax/database/gorm/serializer"
+	sqli "github.com/hopeio/utils/datax/database/sql"
 	"github.com/hopeio/utils/log"
 	"github.com/hopeio/utils/slices"
 	"github.com/hopeio/utils/validation/validator"

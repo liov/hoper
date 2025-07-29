@@ -2,7 +2,7 @@ package db
 
 import (
 	"github.com/hopeio/scaffold/errcode"
-	dbi "github.com/hopeio/utils/dao/database/sql"
+	dbi "github.com/hopeio/utils/datax/database/sql"
 	commonmodel "github.com/liov/hoper/server/go/common/model"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/common"

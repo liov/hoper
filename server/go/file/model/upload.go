@@ -2,7 +2,7 @@ package model
 
 import (
 	"errors"
-	"github.com/hopeio/utils/dao/database/datatypes"
+	"github.com/hopeio/utils/datax/database/datatypes"
 	"gorm.io/gorm"
 	"mime/multipart"
 	"strings"

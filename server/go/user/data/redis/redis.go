@@ -4,11 +4,11 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/hopeio/context/httpctx"
 	"github.com/hopeio/scaffold/errcode"
-	"github.com/hopeio/utils/dao/redis/hash"
+	"github.com/hopeio/utils/datax/redis/hash"
 	"github.com/hopeio/utils/encoding/json"
 	"strconv"
 
-	redisi "github.com/hopeio/utils/dao/redis"
+	redisi "github.com/hopeio/utils/datax/redis"
 	"github.com/hopeio/utils/log"
 	"github.com/liov/hoper/server/go/protobuf/common"
 	model "github.com/liov/hoper/server/go/protobuf/user"

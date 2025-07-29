@@ -4,8 +4,8 @@ import (
 	sqlstd "database/sql"
 	"github.com/hopeio/scaffold/errcode"
 
-	clausei "github.com/hopeio/utils/dao/database/gorm/clause"
-	dbi "github.com/hopeio/utils/dao/database/sql"
+	clausei "github.com/hopeio/utils/datax/database/gorm/clause"
+	dbi "github.com/hopeio/utils/datax/database/sql"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"
 	"gorm.io/gorm"

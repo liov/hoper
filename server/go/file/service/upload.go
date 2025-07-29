@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 	"github.com/hopeio/context/httpctx"
 	"github.com/hopeio/scaffold/errcode"
-	gormi "github.com/hopeio/utils/dao/database/gorm"
+	gormi "github.com/hopeio/utils/datax/database/gorm"
 	errcode2 "github.com/hopeio/utils/errors/errcode"
 	httpi "github.com/hopeio/utils/net/http"
 	"github.com/hopeio/utils/net/http/fs"

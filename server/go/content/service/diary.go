@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/hopeio/context/httpctx"
 	"github.com/hopeio/scaffold/errcode"
-	gormi "github.com/hopeio/utils/dao/database/gorm"
+	gormi "github.com/hopeio/utils/datax/database/gorm"
 	"github.com/liov/hoper/server/go/content/data"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/global"
