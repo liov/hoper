@@ -1,0 +1,27 @@
+[package]
+name = "rfv"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "rfv"
+crate-type = ["lib", "staticlib", "cdylib"]
+
+[dependencies]
+libc = "0.2"
+axum = "0.7"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.19", features = ["full"] }
+slog = "2.7"
+tower = {version = "0.5", features = ["full"]}
+tower-http = { version = "0.6", features = ["full"] }
+tracing-subscriber = "0.3"
+tracing = "0.1"
+image = "0.25"
+mime_guess = "2.0.5"
+ffmpeg-next = "7"
+tokio-util = { version = "0.7", features = ["codec"] }
+
+[target.x86_64-pc-windows-gnu]
+linker = "D:/sdk/msys64/ucrt64/bin/gcc"
