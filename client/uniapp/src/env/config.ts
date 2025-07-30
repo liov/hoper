@@ -1,4 +1,4 @@
-import {unirequest} from '@hopeio/utils/uniapp'
+import {request} from '@hopeio/utils/uniapp'
 
 export const Env: ImportMetaEnv = import.meta.env
 console.log(Env)
@@ -7,4 +7,4 @@ export const API_HOST = Env.VITE_API_HOST
 
 const Prod = 'prod'
 
-unirequest.defaults.baseUrl = API_HOST
+request.defaults.baseUrl = API_HOST

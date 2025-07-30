@@ -1,15 +1,15 @@
-import { unirequest } from '@hopeio/utils/uniapp'
+import { request } from '@hopeio/utils/uniapp'
 import { API_HOST } from '@/env/config'
 import { useUserStore } from '@/store/user'
 
 export function init() {
-  unirequest.defaults.baseUrl = API_HOST
+  request.defaults.baseUrl = API_HOST
   const token = uni.getStorageSync('token')
   const userStore = useUserStore()
-  unirequest.defaults.header.Authorization = token || userStore.token
+  request.defaults.header.Authorization = token || userStore.token
 
   // 添加请求拦截器
-  unirequest.interceptors.request.use(function (config) {
+  request.interceptors.request.use(function (config) {
     if (JSON.parse(__VITE_APP_PROXY__)) {
       //
     }
@@ -21,7 +21,7 @@ export function init() {
   })
 
   // 添加响应拦截器
-  unirequest.interceptors.response.use(
+  request.interceptors.response.use(
     function (response): UniApp.RequestSuccessCallbackResult {
       // 对响应数据做点什么
       if (response.statusCode === 200) {
