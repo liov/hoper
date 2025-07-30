@@ -2,7 +2,7 @@ package global
 
 import (
 	"github.com/hopeio/initialize/dao/gormdb/postgres"
-	"github.com/hopeio/utils/log"
+	"github.com/hopeio/gox/log"
 	"github.com/liov/hoper/server/go/protobuf/common"
 )
 

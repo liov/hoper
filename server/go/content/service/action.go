@@ -5,7 +5,7 @@ import (
 	"github.com/hopeio/context/httpctx"
 	"github.com/hopeio/scaffold/errcode"
 
-	gormi "github.com/hopeio/utils/datax/database/gorm"
+	gormi "github.com/hopeio/gox/datax/database/gorm"
 	"github.com/liov/hoper/server/go/content/data"
 	dbdao "github.com/liov/hoper/server/go/content/data/db"
 	"github.com/liov/hoper/server/go/content/model"
@@ -15,9 +15,9 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/hopeio/protobuf/request"
-	"github.com/hopeio/utils/datastructure/set"
-	"github.com/hopeio/utils/log"
-	"github.com/hopeio/utils/slices"
+	"github.com/hopeio/gox/datastructure/set"
+	"github.com/hopeio/gox/log"
+	"github.com/hopeio/gox/slices"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )

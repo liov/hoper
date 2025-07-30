@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/bdragon300/tusgo"
-	"github.com/hopeio/utils/log"
+	"github.com/hopeio/gox/log"
 	"net/http"
 	"net/url"
 )

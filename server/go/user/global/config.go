@@ -2,7 +2,7 @@ package global
 
 import (
 	"github.com/hopeio/cherry"
-	timei "github.com/hopeio/utils/time"
+	timei "github.com/hopeio/gox/time"
 	"time"
 )
 

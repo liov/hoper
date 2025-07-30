@@ -2,7 +2,7 @@ package global
 
 import (
 	"github.com/hopeio/cherry"
-	"github.com/hopeio/utils/os/fs"
+	"github.com/hopeio/gox/os/fs"
 )
 
 type config struct {

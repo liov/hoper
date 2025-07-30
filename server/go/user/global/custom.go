@@ -3,7 +3,7 @@ package global
 import (
 	"time"
 
-	"github.com/hopeio/utils/os/fs"
+	"github.com/hopeio/gox/os/fs"
 )
 
 type serverConfig struct {

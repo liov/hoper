@@ -1,7 +1,7 @@
 package data
 
 import (
-	grpci "github.com/hopeio/utils/net/http/grpc"
+	grpci "github.com/hopeio/gox/net/http/grpc"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"

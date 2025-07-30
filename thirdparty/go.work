@@ -7,6 +7,6 @@ use (
 	initialize
 	pick
 	protobuf
-	utils
+	gox
 	scaffold
 )

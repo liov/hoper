@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/gorilla/websocket"
 	"github.com/hopeio/context/httpctx"
-	"github.com/hopeio/utils/encoding/json"
+	"github.com/hopeio/gox/encoding/json"
 	"github.com/liov/hoper/server/go/global"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"sync"

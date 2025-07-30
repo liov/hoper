@@ -4,7 +4,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/hopeio/context/httpctx"
 	redisi "github.com/hopeio/initialize/dao/redis"
-	"github.com/hopeio/utils/log"
+	"github.com/hopeio/gox/log"
 )
 
 type ContentDao struct {

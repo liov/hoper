@@ -19,7 +19,7 @@ require (
 	github.com/hopeio/pick v1.0.0
 	github.com/hopeio/protobuf v1.0.0
 	github.com/hopeio/scaffold v1.0.0
-	github.com/hopeio/utils v1.0.0
+	github.com/hopeio/gox v1.0.0
 	github.com/notedit/rtmp-lib v0.0.8
 	github.com/pion/rtp v1.8.9
 	github.com/pion/webrtc/v4 v4.0.0-beta.29
@@ -158,5 +158,5 @@ replace (
 	github.com/hopeio/pick => ../../thirdparty/pick
 	github.com/hopeio/protobuf => ../../thirdparty/protobuf
 	github.com/hopeio/scaffold => ../../thirdparty/scaffold
-	github.com/hopeio/utils => ../../thirdparty/utils
+	github.com/hopeio/gox => ./../../thirdparty/gox
 )

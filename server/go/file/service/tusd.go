@@ -2,7 +2,7 @@ package service
 
 import (
 	"fmt"
-	"github.com/hopeio/utils/log"
+	"github.com/hopeio/gox/log"
 	tusd "github.com/tus/tusd/v2/pkg/handler"
 	"net/http"
 )

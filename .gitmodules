@@ -26,9 +26,9 @@
 	path = thirdparty/protobuf
 	url = https://github.com/hopeio/protobuf
 	branch = main
-[submodule "thirdparty/utils"]
-	path = thirdparty/utils
-	url = https://github.com/hopeio/utils
+[submodule "thirdparty/gox"]
+	path = thirdparty/gox
+	url = https://github.com/hopeio/gox
 	branch = main
 [submodule "thirdparty/deploy"]
 	path = thirdparty/deploy

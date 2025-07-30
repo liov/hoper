@@ -5,7 +5,7 @@ import (
 	"github.com/hopeio/initialize/dao/mail"
 	"github.com/hopeio/initialize/dao/redis"
 	"github.com/hopeio/initialize/dao/ristretto"
-	"github.com/hopeio/utils/log"
+	"github.com/hopeio/gox/log"
 	"github.com/liov/hoper/server/go/protobuf/user"
 )
 

@@ -8,8 +8,8 @@ import (
 	"github.com/hopeio/scaffold/errcode"
 
 	"github.com/hopeio/protobuf/request"
-	"github.com/hopeio/utils/datastructure/set"
-	gormi "github.com/hopeio/utils/datax/database/gorm"
+	"github.com/hopeio/gox/datastructure/set"
+	gormi "github.com/hopeio/gox/datax/database/gorm"
 	"github.com/liov/hoper/server/go/protobuf/common"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"unicode/utf8"

@@ -21,16 +21,16 @@ case $param in
         echo "Parameter is empty."
         # 在这里执行空参数的逻辑
         cd $dir/thirdparty/context
-        go get github.com/hopeio/utils@main
+        go get github.com/hopeio/gox@main
         upgrade
         cd $dir/thirdparty/initialize
-        go get github.com/hopeio/utils@main
+        go get github.com/hopeio/gox@main
         upgrade
         cd $dir/thirdparty/protobuf
-        go get github.com/hopeio/utils@main
+        go get github.com/hopeio/gox@main
         upgrade
         cd $dir/thirdparty/deploy/plugin
-        go get github.com/hopeio/utils@main
+        go get github.com/hopeio/gox@main
         cd $dir/thirdparty/deploy
         upgrade
         ;;

@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"github.com/hopeio/initialize/dao/gormdb/postgres"
 	initredis "github.com/hopeio/initialize/dao/redis"
-	"github.com/hopeio/utils/log"
+	"github.com/hopeio/gox/log"
 	"github.com/liov/hoper/server/go/protobuf/content"
 )
 

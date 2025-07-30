@@ -59,6 +59,6 @@ update_commit_time_if_needed
 echo "当前目录: $dir/thirdparty/protobuf"
 cd $dir/thirdparty/protobuf
 update_commit_time_if_needed
-echo "当前目录: $dir/thirdparty/utils"
-cd $dir/thirdparty/utils
+echo "当前目录: $dir/thirdparty/gox"
+cd $dir/thirdparty/gox
 update_commit_time_if_needed

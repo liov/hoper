@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hopeio/utils/sdk/ffmpeg"
+	"github.com/hopeio/gox/sdk/ffmpeg"
 	"github.com/notedit/rtmp-lib/flv"
 	"github.com/notedit/rtmp-lib/pubsub"
 	"io"

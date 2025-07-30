@@ -4,7 +4,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/hopeio/context/httpctx"
 	jwt2 "github.com/hopeio/scaffold/jwt"
-	jwti "github.com/hopeio/utils/validation/auth/jwt"
+	jwti "github.com/hopeio/gox/validation/auth/jwt"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"strings"
 	"time"

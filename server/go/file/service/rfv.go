@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"github.com/hopeio/utils/sugar"
+	"github.com/hopeio/gox/sugar"
 	"github.com/liov/hoper/server/go/file/api/request"
 	"github.com/liov/hoper/server/go/file/api/response"
 	"os"
