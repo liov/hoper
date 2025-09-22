@@ -1,8 +1,8 @@
 package redis
 
 import (
+	redisi "github.com/hopeio/gox/dataaccess/redis"
 	"github.com/hopeio/scaffold/errcode"
-	redisi "github.com/hopeio/gox/datax/redis"
 	"github.com/liov/hoper/server/go/protobuf/content"
 	"strconv"
 )

@@ -3,9 +3,9 @@ package db
 import (
 	"encoding/json"
 	"github.com/hopeio/context/httpctx"
-	gormi "github.com/hopeio/gox/datax/database/gorm"
-	_ "github.com/hopeio/gox/datax/database/gorm/serializer"
-	sqli "github.com/hopeio/gox/datax/database/sql"
+	gormx "github.com/hopeio/gox/dataaccess/database/gorm"
+	_ "github.com/hopeio/gox/dataaccess/database/gorm/serializer"
+	sqlx "github.com/hopeio/gox/dataaccess/database/sql"
 	"github.com/hopeio/gox/log"
 	"github.com/hopeio/gox/slices"
 	"github.com/hopeio/gox/validation/validator"
@@ -27,7 +27,7 @@ func GetUserDao(ctx *httpctx.Context, db *gorm.DB) *UserDao {
 	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}
-	return &UserDao{ctx, gormi.NewTraceDB(db, ctx.Base(), ctx.TraceID())}
+	return &UserDao{ctx, gormx.NewTraceDB(db, ctx.Base(), ctx.TraceID())}
 }
 
 func (d *UserDao) GetByNameOrEmailOrPhone(name, email, phone string) (*model.User, error) {
@@ -50,9 +50,9 @@ func (d *UserDao) GetByEmailOrPhone(input string, fields ...string) (*puser.User
 		db = d.Table(model.TableNameUser).Select(fields)
 	}
 	if strings.Contains(input, "@") {
-		err = db.Where("mail = ? AND status != ?"+sqli.WithNotDeleted, input, puser.UserStatusDeleted).First(&u).Error
+		err = db.Where("mail = ? AND status != ?"+sqlx.WithNotDeleted, input, puser.UserStatusDeleted).First(&u).Error
 	} else {
-		err = db.Where("phone = ? AND status != ?"+sqli.WithNotDeleted, input, puser.UserStatusDeleted).First(&u).Error
+		err = db.Where("phone = ? AND status != ?"+sqlx.WithNotDeleted, input, puser.UserStatusDeleted).First(&u).Error
 	}
 	if err != nil {
 		return nil, err
@@ -181,7 +181,7 @@ func (d *UserDao) GetBaseListDB(ids []uint64, pageNo, pageSize int) (int64, []*p
 
 func (d *UserDao) FollowExistsDB(id, followId uint64) (bool, error) {
 	sql := `SELECT EXISTS(SELECT * FROM "` + model.TableNameFollow + `" 
-WHERE user_id = ?  AND follow_id = ?` + sqli.WithNotDeleted + ` LIMIT 1)`
+WHERE user_id = ?  AND follow_id = ?` + sqlx.WithNotDeleted + ` LIMIT 1)`
 	var exists bool
 	err := d.Raw(sql, id, followId).Scan(&exists).Error
 	if err != nil {
@@ -210,5 +210,5 @@ func (d *UserDao) UserInfoByAccount(account string) (*puser.User, error) {
 		sql = "account = ?"
 	}
 	return &user, d.Table(model.TableNameUser).
-		Where(sql+` AND status != ?`+sqli.WithNotDeleted, account, puser.UserStatusDeleted).First(&user).Error
+		Where(sql+` AND status != ?`+sqlx.WithNotDeleted, account, puser.UserStatusDeleted).First(&user).Error
 }

@@ -4,7 +4,7 @@ import (
 	sqlib "database/sql"
 	"github.com/hopeio/scaffold/errcode"
 
-	dbi "github.com/hopeio/gox/datax/database/sql"
+	dbi "github.com/hopeio/gox/dataaccess/database/sql"
 	"github.com/liov/hoper/server/go/content/model"
 )
 

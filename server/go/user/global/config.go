@@ -2,7 +2,7 @@ package global
 
 import (
 	"github.com/hopeio/cherry"
-	timei "github.com/hopeio/gox/time"
+	timex "github.com/hopeio/gox/time"
 	"time"
 )
 
@@ -18,10 +18,10 @@ type config struct {
 }
 
 func (c *config) BeforeInject() {
-	c.Customize.TokenMaxAge = timei.Day
+	c.Customize.TokenMaxAge = timex.Day
 }
 
 func (c *config) AfterInject() {
-	c.Customize.TokenMaxAge = timei.StdDuration(c.Customize.TokenMaxAge, time.Hour)
+	c.Customize.TokenMaxAge = timex.StdDuration(c.Customize.TokenMaxAge, time.Hour)
 	c.Customize.TokenSecretBytes = []byte(c.Customize.TokenSecret)
 }

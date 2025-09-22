@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 	"github.com/hopeio/context/httpctx"
+	"github.com/hopeio/gox/dataaccess/database/datatypes"
 	"github.com/hopeio/gox/datastructure/idgen/id"
-	"github.com/hopeio/gox/datax/database/datatypes"
 	"github.com/hopeio/gox/log"
 	"github.com/hopeio/gox/os/fs"
-	timei "github.com/hopeio/gox/time"
+	timex "github.com/hopeio/gox/time"
 	"github.com/liov/hoper/server/go/file/global"
 	"github.com/liov/hoper/server/go/file/model"
 	"github.com/tus/tusd/v2/pkg/handler"
@@ -69,7 +69,7 @@ func (store FileStore) NewUpload(ctx context.Context, info handler.FileInfo) (ha
 		name = info.ID
 	}
 	md5 := info.MetaData["md5"]
-	path := filepath.Join(timei.GetYMD(time.Now(), sep), info.ID+"_"+name)
+	path := filepath.Join(timex.GetYMD(time.Now(), sep), info.ID+"_"+name)
 	completePath := filepath.Join(store.Dir, path)
 
 	// Create binary file with no content

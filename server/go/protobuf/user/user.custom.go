@@ -1,8 +1,9 @@
 package user
 
 import (
-	contexti "github.com/hopeio/context/reqctx"
 	"strconv"
+
+	"github.com/hopeio/context/reqctx"
 )
 
 // Cannot use 'resumes' (type []*model.Resume) as type []CmpKey
@@ -55,7 +56,7 @@ func (x *AuthBase) Proto() *Auth {
 	}
 }
 
-func ConvDeviceInfo(x *contexti.DeviceInfo) *AccessDevice {
+func ConvDeviceInfo(x *reqctx.DeviceInfo) *AccessDevice {
 	return &AccessDevice{
 		Device:    x.Device,
 		OS:        x.OS,

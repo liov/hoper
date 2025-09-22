@@ -1,8 +1,8 @@
 package db
 
 import (
+	dbi "github.com/hopeio/gox/dataaccess/database/sql"
 	"github.com/hopeio/scaffold/errcode"
-	dbi "github.com/hopeio/gox/datax/database/sql"
 	commonmodel "github.com/liov/hoper/server/go/common/model"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/common"

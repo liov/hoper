@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 	"github.com/hopeio/context/httpctx"
+	gormi "github.com/hopeio/gox/dataaccess/database/gorm"
 	"github.com/hopeio/protobuf/request"
 	"github.com/hopeio/scaffold/errcode"
-	gormi "github.com/hopeio/gox/datax/database/gorm"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"gorm.io/gorm"
 	"net/http"

@@ -10,13 +10,13 @@ import (
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/go-oauth2/oauth2/v4/store"
 	"github.com/golang-jwt/jwt/v5"
-	goauth "github.com/hopeio/protobuf/oauth"
-	"github.com/hopeio/protobuf/response"
-	httpi "github.com/hopeio/gox/net/http"
+	httpx "github.com/hopeio/gox/net/http"
 	"github.com/hopeio/gox/net/http/oauth"
 	oauth3 "github.com/hopeio/gox/net/http/oauth"
 	"github.com/hopeio/gox/types/param"
-	jwti "github.com/hopeio/gox/validation/auth/jwt"
+	jwtx "github.com/hopeio/gox/validation/auth/jwt"
+	goauth "github.com/hopeio/protobuf/oauth"
+	"github.com/hopeio/protobuf/response"
 	"github.com/liov/hoper/server/go/global"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"google.golang.org/grpc/metadata"
@@ -49,8 +49,8 @@ func GetOauthService() *OauthService {
 		if token == "" {
 			return "", errors.ErrInvalidAccessToken
 		}
-		claims := new(jwti.Claims[uint64])
-		if _, err := jwti.ParseToken(claims, token, global.Conf.User.TokenSecretBytes); err != nil {
+		claims := new(jwtx.Claims[uint64])
+		if _, err := jwtx.ParseToken(claims, token, global.Conf.User.TokenSecretBytes); err != nil {
 			return "", err
 		}
 		return strconv.FormatUint(claims.Auth, 10), nil
@@ -105,7 +105,7 @@ func (u *OauthService) OauthAuthorize(ctx context.Context, req *goauth.OauthReq)
 	tokens = append(tokens, "")
 	req.AccessTokenExp = int64(24 * time.Hour)
 	req.LoginURI = "/oauth/login"
-	var res httpi.ResponseRecorder
+	var res httpx.ResponseRecorder
 	u.Server.HandleAuthorizeRequest(ctx, &param.OauthReq{}, tokens[0], &res)
 	headers := make(map[string]string)
 	for k, v := range res.Headers {
@@ -116,7 +116,7 @@ func (u *OauthService) OauthAuthorize(ctx context.Context, req *goauth.OauthReq)
 
 func (u *OauthService) OauthToken(ctx context.Context, req *goauth.OauthReq) (*response.HttpResponse, error) {
 	req.GrantType = string(oauth2.AuthorizationCode)
-	var res httpi.ResponseRecorder
+	var res httpx.ResponseRecorder
 	err := u.Server.HandleTokenRequest(ctx, &param.OauthReq{
 		ResponseType:   req.ResponseType,
 		ClientID:       req.ClientID,

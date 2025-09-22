@@ -1,13 +1,14 @@
 package service
 
 import (
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/hopeio/context/httpctx"
-	jwt2 "github.com/hopeio/scaffold/jwt"
-	jwti "github.com/hopeio/gox/validation/auth/jwt"
-	"github.com/liov/hoper/server/go/protobuf/user"
 	"strings"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/hopeio/context/httpctx"
+	jwtx "github.com/hopeio/gox/validation/auth/jwt"
+	jwt2 "github.com/hopeio/scaffold/jwt"
+	"github.com/liov/hoper/server/go/protobuf/user"
 
 	"github.com/liov/hoper/server/go/user/data"
 	"github.com/liov/hoper/server/go/user/global"
@@ -20,7 +21,7 @@ func auth(ctx *httpctx.Context, update bool) (*user.AuthBase, error) {
 	signature := ctx.Token[strings.LastIndexByte(ctx.Token, '.')+1:]
 	cacheTmp, ok := global.Dao.Cache.Get(signature)
 	if ok {
-		cache := cacheTmp.(*jwti.Claims[*user.AuthBase])
+		cache := cacheTmp.(*jwtx.Claims[*user.AuthBase])
 		err := jwtValidator.Validate(cache)
 		if err != nil {
 			return nil, err
@@ -39,8 +40,6 @@ func auth(ctx *httpctx.Context, update bool) (*user.AuthBase, error) {
 			return nil, err
 		}
 	}
-	if !ok {
-		global.Dao.Cache.SetWithTTL(signature, authorization, 0, 5*time.Second)
-	}
+	global.Dao.Cache.SetWithTTL(signature, authorization, 0, 5*time.Second)
 	return authorization.Auth, nil
 }

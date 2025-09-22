@@ -3,9 +3,9 @@ package global
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hopeio/cherry"
-	"github.com/hopeio/initialize/rootconf"
 	"github.com/hopeio/gox/os/fs"
-	timei "github.com/hopeio/gox/time"
+	timex "github.com/hopeio/gox/time"
+	"github.com/hopeio/initialize/rootconf"
 	"time"
 )
 
@@ -28,11 +28,11 @@ type config struct {
 }
 
 func (c *config) BeforeInject() {
-	c.User.TokenMaxAge = timei.Day
+	c.User.TokenMaxAge = timex.Day
 }
 
 func (c *config) AfterInject() {
-	c.User.TokenMaxAge = timei.StdDuration(c.User.TokenMaxAge, time.Hour)
+	c.User.TokenMaxAge = timex.StdDuration(c.User.TokenMaxAge, time.Hour)
 	c.User.TokenSecretBytes = []byte(c.User.TokenSecret)
 }
 

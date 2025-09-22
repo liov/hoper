@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"github.com/hopeio/context/httpctx"
+	gormi "github.com/hopeio/gox/dataaccess/database/gorm"
 	"github.com/hopeio/scaffold/errcode"
-	gormi "github.com/hopeio/gox/datax/database/gorm"
 	"github.com/liov/hoper/server/go/content/data"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/global"

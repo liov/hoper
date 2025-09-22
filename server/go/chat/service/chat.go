@@ -5,7 +5,7 @@ import (
 	"github.com/hopeio/context/httpctx"
 	"github.com/hopeio/gox/datastructure/idgen/snowflake"
 	"github.com/hopeio/gox/errors/errcode"
-	httpi "github.com/hopeio/gox/net/http"
+	httpx "github.com/hopeio/gox/net/http"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"net/http"
 )
@@ -34,7 +34,7 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 	ctxi, _ := httpctx.FromContext(r.Context())
 	_, err = auth(ctxi, false)
 	if err != nil {
-		(&httpi.RespAnyData{
+		(&httpx.RespAnyData{
 			Code: errcode.ErrCode(user.UserErrNoLogin),
 			Msg:  errRep,
 		}).Response(w)

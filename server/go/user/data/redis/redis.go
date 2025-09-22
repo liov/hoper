@@ -3,12 +3,12 @@ package redis
 import (
 	"github.com/go-redis/redis/v8"
 	"github.com/hopeio/context/httpctx"
-	"github.com/hopeio/scaffold/errcode"
-	"github.com/hopeio/gox/datax/redis/hash"
+	"github.com/hopeio/gox/dataaccess/redis/hash"
 	"github.com/hopeio/gox/encoding/json"
+	"github.com/hopeio/scaffold/errcode"
 	"strconv"
 
-	redisi "github.com/hopeio/gox/datax/redis"
+	redisx "github.com/hopeio/gox/dataaccess/redis"
 	"github.com/hopeio/gox/log"
 	"github.com/liov/hoper/server/go/protobuf/common"
 	model "github.com/liov/hoper/server/go/protobuf/user"
@@ -50,7 +50,7 @@ func (d *UserDao) UserFromRedis() (*model.AuthBase, error) {
 	ctx := ctxi.Base()
 	loginUser := modelconst.LoginUserKey + ctxi.AuthID
 
-	userString, err := redisi.String(d.Get(ctx, loginUser).Result())
+	userString, err := redisx.String(d.Get(ctx, loginUser).Result())
 	if err != nil {
 		return nil, d.RespErrorLog(errcode.RedisErr, err, "UserFromRedis.Get")
 	}
@@ -83,7 +83,7 @@ func (d *UserDao) UserHashToRedis() error {
 	ctx := d.Base()
 	var redisArgs []interface{}
 	loginUserKey := modelconst.LoginUserKey + ctxi.AuthID
-	redisArgs = append(redisArgs, redisi.CommandHMSET, loginUserKey)
+	redisArgs = append(redisArgs, redisx.CommandHMSET, loginUserKey)
 	redisArgs = append(redisArgs, hash.Marshal(ctxi.AuthInfo)...)
 	if _, err := d.Pipelined(ctx, func(pipe redis.Pipeliner) error {
 		pipe.Do(ctx, redisArgs...)
@@ -101,9 +101,9 @@ func (d *UserDao) UserHashFromRedis() error {
 	ctx := ctxi.Base()
 	loginUser := modelconst.LoginUserKey + ctxi.AuthID
 
-	userArgs, err := redisi.Strings(d.Do(ctx, redisi.CommandHGETALL, loginUser).Result())
+	userArgs, err := redisx.Strings(d.Do(ctx, redisx.CommandHGETALL, loginUser).Result())
 	if err != nil {
-		return ctxi.RespErrorLog(errcode.RedisErr, err, redisi.CommandHGETALL)
+		return ctxi.RespErrorLog(errcode.RedisErr, err, redisx.CommandHGETALL)
 	}
 	log.Debug(userArgs)
 	if len(userArgs) == 0 {
@@ -143,7 +143,7 @@ func (d *UserDao) EfficientUserHashFromRedis() error {
 	ctx := ctxi.Base()
 	loginUser := modelconst.LoginUserKey + ctxi.AuthID
 
-	userArgs, err := redisi.Strings(d.Do(ctx, redisi.CommandHGETALL, loginUser).Result())
+	userArgs, err := redisx.Strings(d.Do(ctx, redisx.CommandHGETALL, loginUser).Result())
 	log.Debug(userArgs)
 	if err != nil {
 		return ctxi.RespErrorLog(errcode.RedisErr, err, "EfficientUserHashFromRedis")
@@ -194,7 +194,7 @@ func (d *UserDao) GetUserExtRedis() (*model.UserExt, error) {
 	ctx := ctxi.Base()
 	key := modelconst.UserExtKey + ctxi.AuthID
 
-	userExt, err := redisi.Strings(d.Do(ctx, redisi.CommandHGETALL, key).Result())
+	userExt, err := redisx.Strings(d.Do(ctx, redisx.CommandHGETALL, key).Result())
 	if err != nil {
 		return nil, ctxi.RespErrorLog(errcode.RedisErr, err, "GetUserExtRedis")
 	}

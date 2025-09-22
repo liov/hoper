@@ -2,9 +2,10 @@ package service
 
 import (
 	"context"
+
 	"github.com/hopeio/context/httpctx"
+	sqlx "github.com/hopeio/gox/dataaccess/database/sql"
 	"github.com/hopeio/scaffold/errcode"
-	dbi "github.com/hopeio/gox/datax/database/sql"
 	"github.com/liov/hoper/server/go/global"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/data"
@@ -58,7 +59,7 @@ func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user
 	if !exists {
 		return nil, nil
 	}
-	err = userDao.Table(model.TableNameFollow).Where("user_id = ? AND follow_id = ?"+dbi.WithNotDeleted, req.Id, auth.Id).
+	err = userDao.Table(model.TableNameFollow).Where("user_id = ? AND follow_id = ?"+sqlx.WithNotDeleted, req.Id, auth.Id).
 		UpdateColumn("deleted_at", ctxi.RequestAt.String()).Error
 	if err != nil {
 		return nil, ctxi.RespErrorLog(errcode.DBError, err, "Create")

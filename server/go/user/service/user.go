@@ -6,24 +6,28 @@ import (
 	"crypto/md5"
 	"errors"
 	"fmt"
+	"net/http"
+	"strconv"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/uuid"
 	"github.com/hopeio/context/ginctx"
 	"github.com/hopeio/context/httpctx"
+	gormx "github.com/hopeio/gox/dataaccess/database/gorm"
+	"github.com/hopeio/gox/net/http/consts"
+	"github.com/hopeio/gox/sdk/luosimao"
+	stringsx "github.com/hopeio/gox/strings"
+	jwtx "github.com/hopeio/gox/validation/auth/jwt"
+	"github.com/hopeio/gox/validation/captcha"
+	"github.com/hopeio/gox/validation/validator"
 	"github.com/hopeio/pick"
 	"github.com/hopeio/protobuf/request"
 	"github.com/hopeio/protobuf/response"
 	timepb "github.com/hopeio/protobuf/time"
 	"github.com/hopeio/scaffold/errcode"
-	gormi "github.com/hopeio/gox/datax/database/gorm"
-	"github.com/hopeio/gox/net/http/consts"
-	"github.com/hopeio/gox/sdk/luosimao"
-	stringsi "github.com/hopeio/gox/strings"
-	jwti "github.com/hopeio/gox/validation/auth/jwt"
-	"github.com/hopeio/gox/validation/captcha"
-	"github.com/hopeio/gox/validation/validator"
 	"github.com/liov/hoper/server/go/global"
 	model "github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/api/middle"
@@ -31,12 +35,9 @@ import (
 	"github.com/liov/hoper/server/go/user/data/redis"
 	modelconst "github.com/liov/hoper/server/go/user/model"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"net/http"
-	"strconv"
-	"time"
 
-	redisi "github.com/hopeio/gox/datax/redis"
-	templatei "github.com/hopeio/gox/encoding/text/template"
+	redisx "github.com/hopeio/gox/dataaccess/redis"
+	templatex "github.com/hopeio/gox/encoding/text/template"
 	"github.com/hopeio/gox/log"
 	"github.com/hopeio/gox/net/mail"
 
@@ -159,14 +160,14 @@ func salt(password string) string {
 // EncryptPassword 给密码加密
 func encryptPassword(password string) string {
 	hash := salt(password) + global.Conf.User.PassSalt + password[5:]
-	return fmt.Sprintf("%x", md5.Sum(stringsi.ToBytes(hash)))
+	return fmt.Sprintf("%x", md5.Sum(stringsx.ToBytes(hash)))
 }
 
 func sendMail(ctxi *httpctx.Context, action model.Action, curTime int64, user *model.User) {
 	siteURL := global.Conf.SiteURL
 	title := action.String()
 	secretStr := strconv.FormatInt(curTime, 10) + user.Mail + user.Password
-	secretStr = fmt.Sprintf("%x", md5.Sum(stringsi.ToBytes(secretStr)))
+	secretStr = fmt.Sprintf("%x", md5.Sum(stringsx.ToBytes(secretStr)))
 	var activeOrRestPasswdValues = struct {
 		UserName, SiteName, SiteURL, ActionURL, SecretStr string
 	}{user.Name, "hoper", siteURL, "", secretStr}
@@ -181,7 +182,7 @@ func sendMail(ctxi *httpctx.Context, action model.Action, curTime int64, user *m
 	}
 	log.Debug(activeOrRestPasswdValues.ActionURL)
 	var buf = new(bytes.Buffer)
-	err := templatei.Execute(buf, templ, &activeOrRestPasswdValues)
+	err := templatex.Execute(buf, templ, &activeOrRestPasswdValues)
 	if err != nil {
 		log.Error("executing template:", err)
 	}
@@ -212,7 +213,7 @@ func sendVcode(ctxi *httpctx.Context, action model.Action, vcode string, mailAdd
 	templ := modelconst.VerifycodeContent
 
 	var buf = new(bytes.Buffer)
-	err := templatei.Execute(buf, templ, &values)
+	err := templatex.Execute(buf, templ, &values)
 	if err != nil {
 		log.Error("executing template:", err)
 	}
@@ -265,7 +266,7 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 	}
 	secretStr := strconv.Itoa((int)(emailTime)) + user.Mail + user.Password
 
-	secretStr = fmt.Sprintf("%x", md5.Sum(stringsi.ToBytes(secretStr)))
+	secretStr = fmt.Sprintf("%x", md5.Sum(stringsx.ToBytes(secretStr)))
 
 	if req.Secret != secretStr {
 		return nil, errcode.InvalidArgument.Msg("无效的链接")
@@ -342,7 +343,7 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 	}
 	if user.Status == model.UserStatusInActive {
 		//没看懂
-		//encodedEmail := base64.StdEncoding.EncodeToString(stringsi.ToBytes(user.Mail))
+		//encodedEmail := base64.StdEncoding.EncodeToString(stringsx.ToBytes(user.Mail))
 		activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
 
 		curTime := time.Now().Unix()
@@ -357,7 +358,7 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 }
 
 func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.LoginRep, error) {
-	authorization := jwti.Claims[*model.AuthBase]{Auth: &model.AuthBase{
+	authorization := jwtx.Claims[*model.AuthBase]{Auth: &model.AuthBase{
 		Id:     user.Id,
 		Name:   user.Name,
 		Role:   user.Role,
@@ -372,7 +373,7 @@ func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.Login
 	if err != nil {
 		return nil, errcode.Internal
 	}
-	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctxi.Base(), ctxi.TraceID())
+	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctxi.Base(), ctxi.TraceID())
 
 	db.Table(modelconst.TableNameUserExt).Where(`id = ?`, user.Id).
 		UpdateColumn("last_activated_at", ctxi.RequestAt.String())
@@ -411,8 +412,8 @@ func (u *UserService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.
 	}
 	global.Dao.GORMDB.Table(modelconst.TableNameUserExt).Where(`id = ?`, user.Id).UpdateColumn("last_activated_at", time.Now())
 
-	if err := global.Dao.Redis.Del(ctx, redisi.CommandDEL, modelconst.LoginUserKey+strconv.FormatUint(user.Id, 10)).Err(); err != nil {
-		return nil, ctxi.RespErrorLog(errcode.RedisErr, err, "redisi.Del")
+	if err := global.Dao.Redis.Del(ctx, redisx.CommandDEL, modelconst.LoginUserKey+strconv.FormatUint(user.Id, 10)).Err(); err != nil {
+		return nil, ctxi.RespErrorLog(errcode.RedisErr, err, "redisx.Del")
 	}
 	cookie := (&http.Cookie{
 		Name:  consts.HeaderCookieValueToken,
@@ -452,7 +453,7 @@ func (u *UserService) Info(ctx context.Context, req *request.Id) (*model.UserRep
 		req.Id = auth.Id
 	}
 	userRedisDao := redis.GetUserDao(ctxi, global.Dao.Redis.Client)
-	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctxi.Base(), ctxi.TraceID())
+	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctxi.Base(), ctxi.TraceID())
 	var user1 model.User
 	if err = db.First(&user1, req.Id).Error; err != nil {
 		return nil, errcode.DBError.Msg("账号不存在")
@@ -521,12 +522,12 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 	}
 	secretStr := strconv.Itoa(int(emailTime)) + user.Mail + user.Password
 
-	secretStr = fmt.Sprintf("%x", md5.Sum(stringsi.ToBytes(secretStr)))
+	secretStr = fmt.Sprintf("%x", md5.Sum(stringsx.ToBytes(secretStr)))
 
 	if req.Secret != secretStr {
 		return nil, errcode.InvalidArgument.Msg("无效的链接")
 	}
-	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctxi.Base(), ctxi.TraceID())
+	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctxi.Base(), ctxi.TraceID())
 	if err := db.Table(modelconst.TableNameUser).
 		Where(`id = ?`, user.Id).Update("password", req.Password).Error; err != nil {
 		log.Error("UserService.ResetPassword,DB.Update", err)

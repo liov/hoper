@@ -1,7 +1,7 @@
 package model
 
 import (
-	templatei "github.com/hopeio/gox/encoding/text/template"
+	templatex "github.com/hopeio/gox/encoding/text/template"
 )
 
 const (
@@ -22,7 +22,7 @@ const (
 )
 
 func init() {
-	templatei.Parse(ActionActiveTemplate)
-	templatei.Parse(ActionRestPasswordTemplate)
-	templatei.Parse(VerifycodeTemplate)
+	templatex.Parse(ActionActiveTemplate)
+	templatex.Parse(ActionRestPasswordTemplate)
+	templatex.Parse(VerifycodeTemplate)
 }
