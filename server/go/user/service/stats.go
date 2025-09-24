@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/hopeio/context/httpctx"
-	sqlx "github.com/hopeio/gox/dataaccess/database/sql"
+	sqlx "github.com/hopeio/gox/database/sql"
 	"github.com/hopeio/scaffold/errcode"
 	"github.com/liov/hoper/server/go/global"
 	"github.com/liov/hoper/server/go/protobuf/user"

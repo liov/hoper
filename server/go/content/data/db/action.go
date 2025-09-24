@@ -2,15 +2,17 @@ package db
 
 import (
 	sqlstd "database/sql"
+
 	"github.com/hopeio/scaffold/errcode"
 
-	clausei "github.com/hopeio/gox/dataaccess/database/gorm/clause"
-	dbi "github.com/hopeio/gox/dataaccess/database/sql"
+	"strconv"
+
+	dbi "github.com/hopeio/gox/database/sql"
+	clausei "github.com/hopeio/gox/database/sql/gorm/clause"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	"strconv"
 )
 
 func (d *ContentDao) ActionCount(typ content.ContentType, action content.ActionType, refId uint64, changeCount int) error {

@@ -2,10 +2,14 @@ package db
 
 import (
 	"encoding/json"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/hopeio/context/httpctx"
-	gormx "github.com/hopeio/gox/dataaccess/database/gorm"
-	_ "github.com/hopeio/gox/dataaccess/database/gorm/serializer"
-	sqlx "github.com/hopeio/gox/dataaccess/database/sql"
+	sqlx "github.com/hopeio/gox/database/sql"
+	gormx "github.com/hopeio/gox/database/sql/gorm"
+	_ "github.com/hopeio/gox/database/sql/gorm/serializer"
 	"github.com/hopeio/gox/log"
 	"github.com/hopeio/gox/slices"
 	"github.com/hopeio/gox/validation/validator"
@@ -13,9 +17,6 @@ import (
 	"github.com/liov/hoper/server/go/user/model"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	"strconv"
-	"strings"
-	"time"
 )
 
 type UserDao struct {

@@ -16,7 +16,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hopeio/context/ginctx"
 	"github.com/hopeio/context/httpctx"
-	gormx "github.com/hopeio/gox/dataaccess/database/gorm"
+	gormx "github.com/hopeio/gox/database/sql/gorm"
 	"github.com/hopeio/gox/net/http/consts"
 	"github.com/hopeio/gox/sdk/luosimao"
 	stringsx "github.com/hopeio/gox/strings"
@@ -36,7 +36,7 @@ import (
 	modelconst "github.com/liov/hoper/server/go/user/model"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	redisx "github.com/hopeio/gox/dataaccess/redis"
+	redisx "github.com/hopeio/gox/database/redis"
 	templatex "github.com/hopeio/gox/encoding/text/template"
 	"github.com/hopeio/gox/log"
 	"github.com/hopeio/gox/net/mail"

@@ -1,7 +1,7 @@
 package db
 
 import (
-	clausei "github.com/hopeio/gox/dataaccess/database/gorm/clause"
+	clausei "github.com/hopeio/gox/database/sql/gorm/clause"
 	"github.com/hopeio/scaffold/errcode"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"

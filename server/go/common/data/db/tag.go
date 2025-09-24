@@ -1,7 +1,7 @@
 package db
 
 import (
-	sqlx "github.com/hopeio/gox/dataaccess/database/sql"
+	sqlx "github.com/hopeio/gox/database/sql"
 	"github.com/hopeio/scaffold/errcode"
 	"github.com/liov/hoper/server/go/content/model"
 )

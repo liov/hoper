@@ -2,9 +2,10 @@ package db
 
 import (
 	sqlib "database/sql"
+
 	"github.com/hopeio/scaffold/errcode"
 
-	dbi "github.com/hopeio/gox/dataaccess/database/sql"
+	dbi "github.com/hopeio/gox/database/sql"
 	"github.com/liov/hoper/server/go/content/model"
 )
 

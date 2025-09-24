@@ -2,8 +2,9 @@ package service
 
 import (
 	"context"
+
 	"github.com/hopeio/context/httpctx"
-	gormi "github.com/hopeio/gox/dataaccess/database/gorm"
+	gormi "github.com/hopeio/gox/database/sql/gorm"
 	"github.com/hopeio/scaffold/errcode"
 	"github.com/liov/hoper/server/go/content/data"
 	"github.com/liov/hoper/server/go/content/model"
@@ -11,10 +12,11 @@ import (
 	"github.com/liov/hoper/server/go/protobuf/content"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"net/http"
+
 	"github.com/hopeio/protobuf/request"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"net/http"
 )
 
 type DiaryService struct {

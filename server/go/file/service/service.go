@@ -2,8 +2,9 @@ package service
 
 import (
 	"context"
+
 	"github.com/hopeio/context/httpctx"
-	gormx "github.com/hopeio/gox/dataaccess/database/gorm"
+	gormx "github.com/hopeio/gox/database/sql/gorm"
 	"github.com/liov/hoper/server/go/file/data"
 	"github.com/liov/hoper/server/go/file/global"
 	"github.com/liov/hoper/server/go/protobuf/file"

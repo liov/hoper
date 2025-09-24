@@ -3,9 +3,16 @@ package service
 import (
 	"context"
 	"fmt"
+	"hash"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
+	"time"
+
 	"github.com/hopeio/context/httpctx"
-	"github.com/hopeio/gox/dataaccess/database/datatypes"
-	"github.com/hopeio/gox/datastructure/idgen/id"
+	"github.com/hopeio/gox/container/idgen/id"
+	"github.com/hopeio/gox/database/sql/datatypes"
 	"github.com/hopeio/gox/log"
 	"github.com/hopeio/gox/os/fs"
 	timex "github.com/hopeio/gox/time"
@@ -13,12 +20,6 @@ import (
 	"github.com/liov/hoper/server/go/file/model"
 	"github.com/tus/tusd/v2/pkg/handler"
 	"gorm.io/gorm"
-	"hash"
-	"io"
-	"net/http"
-	"os"
-	"path/filepath"
-	"time"
 )
 
 var defaultFilePerm = os.FileMode(0664)

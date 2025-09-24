@@ -3,12 +3,12 @@ package redis
 import (
 	"github.com/go-redis/redis/v8"
 	"github.com/hopeio/context/httpctx"
-	"github.com/hopeio/gox/dataaccess/redis/hash"
+	"github.com/hopeio/gox/database/redis/hash"
 	"github.com/hopeio/gox/encoding/json"
 	"github.com/hopeio/scaffold/errcode"
 	"strconv"
 
-	redisx "github.com/hopeio/gox/dataaccess/redis"
+	redisx "github.com/hopeio/gox/database/redis"
 	"github.com/hopeio/gox/log"
 	"github.com/liov/hoper/server/go/protobuf/common"
 	model "github.com/liov/hoper/server/go/protobuf/user"

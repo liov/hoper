@@ -2,11 +2,12 @@ package model
 
 import (
 	"errors"
-	"github.com/hopeio/gox/dataaccess/database/datatypes"
-	"gorm.io/gorm"
 	"mime/multipart"
 	"strings"
 	"time"
+
+	"github.com/hopeio/gox/database/sql/datatypes"
+	"gorm.io/gorm"
 )
 
 type UploadInfo struct {

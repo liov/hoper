@@ -2,13 +2,14 @@ package service
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/hopeio/context/httpctx"
-	gormi "github.com/hopeio/gox/dataaccess/database/gorm"
+	gormi "github.com/hopeio/gox/database/sql/gorm"
 	"github.com/hopeio/protobuf/request"
 	"github.com/hopeio/scaffold/errcode"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"gorm.io/gorm"
-	"net/http"
 
 	"github.com/liov/hoper/server/go/content/data"
 	"github.com/liov/hoper/server/go/content/model"

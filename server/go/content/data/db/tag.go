@@ -1,7 +1,7 @@
 package db
 
 import (
-	dbi "github.com/hopeio/gox/dataaccess/database/sql"
+	dbi "github.com/hopeio/gox/database/sql"
 	"github.com/hopeio/scaffold/errcode"
 	commonmodel "github.com/liov/hoper/server/go/common/model"
 	"github.com/liov/hoper/server/go/content/model"

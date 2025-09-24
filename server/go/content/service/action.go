@@ -2,10 +2,11 @@ package service
 
 import (
 	"context"
+
 	"github.com/hopeio/context/httpctx"
 	"github.com/hopeio/scaffold/errcode"
 
-	gormi "github.com/hopeio/gox/dataaccess/database/gorm"
+	gormi "github.com/hopeio/gox/database/sql/gorm"
 	"github.com/liov/hoper/server/go/content/data"
 	dbdao "github.com/liov/hoper/server/go/content/data/db"
 	"github.com/liov/hoper/server/go/content/model"
@@ -14,7 +15,7 @@ import (
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/hopeio/gox/datastructure/set"
+	"github.com/hopeio/gox/container/set"
 	"github.com/hopeio/gox/log"
 	"github.com/hopeio/gox/slices"
 	"github.com/hopeio/protobuf/request"
