@@ -17,7 +17,7 @@ import (
 	"github.com/hopeio/context/ginctx"
 	"github.com/hopeio/context/httpctx"
 	gormx "github.com/hopeio/gox/database/sql/gorm"
-	"github.com/hopeio/gox/net/http/consts"
+	httpx "github.com/hopeio/gox/net/http"
 	"github.com/hopeio/gox/sdk/luosimao"
 	stringsx "github.com/hopeio/gox/strings"
 	jwtx "github.com/hopeio/gox/validation/auth/jwt"
@@ -34,6 +34,8 @@ import (
 	"github.com/liov/hoper/server/go/user/data"
 	"github.com/liov/hoper/server/go/user/data/redis"
 	modelconst "github.com/liov/hoper/server/go/user/model"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	redisx "github.com/hopeio/gox/database/redis"
@@ -396,9 +398,13 @@ func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.Login
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
-	err = ctxi.SetCookie(cookie)
-	if err != nil {
-		return nil, errcode.Unavailable
+	ctxi.ReqCtx.ResponseWriter.Header().Set(httpx.HeaderSetCookie, cookie)
+	serverTransportStream := grpc.ServerTransportStreamFromContext(ctxi.Base())
+	if serverTransportStream != nil {
+		err = serverTransportStream.SetHeader(metadata.MD{httpx.HeaderSetCookie: []string{cookie}})
+		if err != nil {
+			return nil, errcode.Unavailable
+		}
 	}
 	return resp, nil
 }
@@ -416,8 +422,8 @@ func (u *UserService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.
 		return nil, ctxi.RespErrorLog(errcode.RedisErr, err, "redisx.Del")
 	}
 	cookie := (&http.Cookie{
-		Name:  consts.HeaderCookieValueToken,
-		Value: consts.HeaderCookieValueDel,
+		Name:  httpx.HeaderCookieValueToken,
+		Value: httpx.HeaderCookieValueDel,
 		Path:  "/",
 		//Domain:   "hoper.xyz",
 		Expires:  time.Now().Add(-1),
@@ -425,10 +431,13 @@ func (u *UserService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
-	err = ctxi.SetCookie(cookie)
-	if err != nil {
-		log.Error(err)
-		return nil, err
+	ctxi.ReqCtx.ResponseWriter.Header().Set(httpx.HeaderSetCookie, cookie)
+	serverTransportStream := grpc.ServerTransportStreamFromContext(ctxi.Base())
+	if serverTransportStream != nil {
+		err = serverTransportStream.SetHeader(metadata.MD{httpx.HeaderSetCookie: []string{cookie}})
+		if err != nil {
+			return nil, errcode.Unavailable
+		}
 	}
 	return new(emptypb.Empty), nil
 }
@@ -591,7 +600,7 @@ func (*UserService) PickAdd(ctx *ginctx.Context, req *model.SignupReq) (*wrapper
 	return &wrappers.StringValue{Value: req.Name}, nil
 }
 
-func (*UserService) PickAddv(ctx *ginctx.Context, req *response.TinyRep) (*response.TinyRep, error) {
+func (*UserService) PickAddv(ctx *ginctx.Context, req *response.CommonRep) (*response.CommonRep, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() {
 		pick.Post("/add").

@@ -1,13 +1,14 @@
 package service
 
 import (
+	"net/http"
+
 	"github.com/gorilla/websocket"
 	"github.com/hopeio/context/httpctx"
 	"github.com/hopeio/gox/container/idgen/snowflake"
-	"github.com/hopeio/gox/errors/errcode"
+	"github.com/hopeio/gox/errors"
 	httpx "github.com/hopeio/gox/net/http"
 	"github.com/liov/hoper/server/go/protobuf/user"
-	"net/http"
 )
 
 const errRep = "未登录"
@@ -35,7 +36,7 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 	_, err = auth(ctxi, false)
 	if err != nil {
 		(&httpx.RespAnyData{
-			Code: errcode.ErrCode(user.UserErrNoLogin),
+			Code: errors.ErrCode(user.UserErrNoLogin),
 			Msg:  errRep,
 		}).Response(w)
 		return

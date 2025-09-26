@@ -14,7 +14,7 @@ import (
 
 	"github.com/hopeio/context/httpctx"
 	gormx "github.com/hopeio/gox/database/sql/gorm"
-	errcodex "github.com/hopeio/gox/errors/errcode"
+	errcodex "github.com/hopeio/gox/errors"
 	httpx "github.com/hopeio/gox/net/http"
 	"github.com/hopeio/gox/net/http/fs"
 	timex "github.com/hopeio/gox/time"
