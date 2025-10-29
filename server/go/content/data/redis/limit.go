@@ -1,11 +1,12 @@
 package redis
 
 import (
-	"github.com/go-redis/redis/v8"
-	"github.com/hopeio/scaffold/errcode"
 	"time"
 
-	timei "github.com/hopeio/gox/time"
+	"github.com/go-redis/redis/v8"
+	"github.com/hopeio/scaffold/errcode"
+
+	timex "github.com/hopeio/gox/time"
 	"github.com/liov/hoper/server/go/global"
 )
 
@@ -45,7 +46,7 @@ func (d *ContentDao) Limit(l *global.ContentLimit) error {
 			pipe.Expire(ctx, minuteKey, time.Minute)
 		}
 		if dayDurationCmd.Val() < 0 {
-			pipe.Expire(ctx, dayKey, timei.Day)
+			pipe.Expire(ctx, dayKey, timex.Day)
 		}
 		return nil
 	})
