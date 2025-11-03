@@ -8,12 +8,16 @@ function upgrade(){
   echo $new_version
   git add .
   git commit -m "chore: upgrade dependency"
-  git commit --amend --date="$(date -d '-10 hours' '+%Y-%m-%d %H:%M:%S')" --no-edit
+  #git commit --amend --date="$(date -d '-10 hours' '+%Y-%m-%d %H:%M:%S')" --no-edit
   git tag "$new_version"
 }
 
 # 获取参数值
 param=$1
+version=$2
+if [ -z "$version" ]; then
+  version="main"
+fi
 
 # 根据参数执行不同的逻辑
 case $param in
@@ -21,16 +25,16 @@ case $param in
         echo "Parameter is empty."
         # 在这里执行空参数的逻辑
         cd $dir/thirdparty/context
-        go get github.com/hopeio/gox@main
+        go get github.com/hopeio/gox@$version
         upgrade
         cd $dir/thirdparty/initialize
-        go get github.com/hopeio/gox@main
+        go get github.com/hopeio/gox@$version
         upgrade
         cd $dir/thirdparty/protobuf
-        go get github.com/hopeio/gox@main
+        go get github.com/hopeio/gox@$version
         upgrade
         cd $dir/thirdparty/deploy/plugin
-        go get github.com/hopeio/gox@main
+        go get github.com/hopeio/gox@$version
         cd $dir/thirdparty/deploy
         upgrade
         ;;

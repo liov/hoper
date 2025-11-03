@@ -5,8 +5,8 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/hopeio/context/httpctx"
-	"github.com/hopeio/gox/container/idgen/snowflake"
 	"github.com/hopeio/gox/errors"
+	"github.com/hopeio/gox/idgen/snowflake"
 	httpx "github.com/hopeio/gox/net/http"
 	"github.com/liov/hoper/server/go/protobuf/user"
 )
