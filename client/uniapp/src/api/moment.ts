@@ -1,6 +1,6 @@
 import { API_HOST } from '@/env/config'
 import type { MomentList } from '@/model/moment'
-import {request} from '@hopeio/utils/uniapp'
+import {httpclient} from '@hopeio/utils/uniapp'
 
 import moment from '@/pages/moment/moment_list.vue'
 import { useUserStore } from '@/store/user'
@@ -8,7 +8,7 @@ import { useUserStore } from '@/store/user'
 const userStore = useUserStore()
 class MomentService {
   static async getMomentList(pageNo: number, pageSize: number): Promise<MomentList> {
-    const { data } = await request.get<ResData<MomentList>>(
+    const { data } = await httpclient.get<ResData<MomentList>>(
       '/api/v1/moment',
       {
         pageNo,
