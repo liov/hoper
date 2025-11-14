@@ -12,10 +12,9 @@
 `install protoc`[https://github.com/protocolbuffers/protobuf/releases](https://github.com/protocolbuffers/protobuf/releases)
 
 ```sh
-git submodule init
-git submodule update
+git submodule update --init
 cd server/go
-go run $(go list -m -f {{.Dir}}  github.com/hopeio/cherry)/tools/protoc/install_tools.go
+go run $(go list -m -f {{.Dir}}  github.com/hopeio/protobuf)/tools/install_tools.go
 protogen go -e -w -v -p ../../proto -o protobuf
 go run main.go -c config.toml
 ```
