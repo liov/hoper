@@ -63,15 +63,15 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		(&httpx.RespAnyData{
 			Code: errcodex.ErrCode(user.UserErrLogin),
 			Msg:  errRep,
-		}).Response(w)
+		}).Respond(w)
 		return
 	}
 	upload, err := save(ctxi, info, md5Str)
 	if err != nil {
-		httpx.RespErrRep(w, errcode.UploadFail.ErrRep())
+		httpx.RespErrRep(w, errcode.UploadFail.ErrResp())
 		return
 	}
-	(&httpx.RespAnyData{Data: response.File{Id: upload.File.Id, URL: upload.File.Path}}).Response(w)
+	(&httpx.RespAnyData{Data: response.File{Id: upload.File.Id, URL: upload.File.Path}}).Respond(w)
 
 }
 
@@ -209,7 +209,7 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 		(&httpx.RespAnyData{
 			Code: errcodex.ErrCode(user.UserErrLogin),
 			Msg:  errRep,
-		}).Response(w)
+		}).Respond(w)
 		return
 	}
 	if r.MultipartForm == nil || (r.MultipartForm.Value == nil && r.MultipartForm.File == nil) {
@@ -229,7 +229,7 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 		upload, err := save(ctxi, multipartFile, md5s[i])
 		if err != nil {
 			failures = append(failures, multipartFile.Filename)
-			httpx.RespErrRep(w, errcode.UploadFail.ErrRep())
+			httpx.RespErrRep(w, errcode.UploadFail.ErrResp())
 			return
 		}
 		urls[i].URL = upload.File.Path
@@ -238,5 +238,5 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 	(&httpx.RespAnyData{
 		Msg:  strings.Join(failures, ",") + errRep,
 		Data: urls,
-	}).Response(w)
+	}).Respond(w)
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/liov/hoper/server/go/protobuf/user"
 )
 
-const errRep = "未登录"
+const errResp = "未登录"
 
 var idgen = snowflake.NewSnowflake(snowflake.Settings{})
 
@@ -37,8 +37,8 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		(&httpx.RespAnyData{
 			Code: errors.ErrCode(user.UserErrNoLogin),
-			Msg:  errRep,
-		}).Response(w)
+			Msg:  errResp,
+		}).Respond(w)
 		return
 	}
 	id, _ := idgen.NextID()

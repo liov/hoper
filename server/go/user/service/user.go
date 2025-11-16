@@ -587,12 +587,7 @@ func (*UserService) Service() (string, string, []gin.HandlerFunc) {
 
 func (*UserService) PickAdd(ctx *ginctx.Context, req *model.SignupReq) (*wrappers.StringValue, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
-	pick.Api(func() {
-		pick.Get("/add").
-			Title("用户注册").
-			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
-			ChangeLog("1.0.1", "jyb", "2019/12/16", "修改测试").End()
-	})
+	pick.Api(func() { pick.Get("/add").Title("用户注册").End() })
 	client := global.Dao.Redis
 	cmd, _ := client.Do(ctx.Base(), "HGETALL", modelconst.LoginUserKey+"1").Result()
 	log.Debug(cmd)
@@ -600,14 +595,9 @@ func (*UserService) PickAdd(ctx *ginctx.Context, req *model.SignupReq) (*wrapper
 	return &wrappers.StringValue{Value: req.Name}, nil
 }
 
-func (*UserService) PickAddv(ctx *ginctx.Context, req *response.CommonRep) (*response.CommonRep, error) {
+func (*UserService) PickAddv(ctx *ginctx.Context, req *response.CommonResp) (*response.CommonResp, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
-	pick.Api(func() {
-		pick.Post("/add").
-			Title("用户注册").
-			CreateLog("1.0.0", "jyb", "2019/12/16", "创建").
-			ChangeLog("1.0.1", "jyb", "2019/12/16", "修改测试").End()
-	})
+	pick.Api(func() { pick.Post("/add").Title("用户注册").End() })
 	return req, nil
 }
 
