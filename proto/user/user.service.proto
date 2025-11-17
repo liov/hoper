@@ -70,7 +70,7 @@ service UserService {
   }
 
   //注册
-  rpc EasySignup (SignupReq) returns (LoginRep) {
+  rpc EasySignup (SignupReq) returns (LoginResp) {
     option (google.api.http) = {
       post: "/api/v2/user"
       body: "*"
@@ -83,7 +83,7 @@ service UserService {
   }
 
   //激活
-  rpc Active (ActiveReq) returns (LoginRep) {
+  rpc Active (ActiveReq) returns (LoginResp) {
     option (google.api.http) = {
       get: "/api/v1/user/active/{id}/{secret}"
     };
@@ -116,7 +116,7 @@ service UserService {
     option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   //登录
-  rpc Login (LoginReq) returns (LoginRep) {
+  rpc Login (LoginReq) returns (LoginResp) {
     option (google.api.http) = {
       post: "/api/v1/user/login"
       body: "*"
@@ -195,7 +195,7 @@ service UserService {
   }
 
   //获取用户信息
-  rpc Info (request.Id) returns (UserRep) {
+  rpc Info (request.Id) returns (UserResp) {
     option (google.api.http) = {
       get: "/api/v1/user/{id}"
     };
@@ -207,7 +207,7 @@ service UserService {
     option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
 
-  rpc ActionLogList (ActionLogListReq) returns (ActionLogListRep) {
+  rpc ActionLogList (ActionLogListReq) returns (ActionLogListResp) {
     option (google.api.http) = {
       get: "/api/v1/user/actionLog"
     };
@@ -220,7 +220,7 @@ service UserService {
   }
 
   //获取基础用户信息
-  rpc BaseList (BaseListReq) returns (BaseListRep) {
+  rpc BaseList (BaseListReq) returns (BaseListResp) {
     option (google.api.http) = {
       post: "/api/v1/baseUserList"
       body : "*"
@@ -245,7 +245,7 @@ service UserService {
     option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   // 取消关注
-  rpc delFollow (FollowReq) returns (BaseListRep) {
+  rpc delFollow (FollowReq) returns (BaseListResp) {
     option (google.api.http) = {
       delete: "/api/v1/user/follow"
     };
@@ -356,7 +356,7 @@ message LoginReq {
   string vCode = 3;
 }
 // 登录返回
-message LoginRep {
+message LoginResp {
   User user = 1;
   string token = 2;
 }
@@ -380,7 +380,7 @@ message ActionLogListReq {
     type: STRING}];
 }
 
-message ActionLogListRep {
+message ActionLogListResp {
   uint32 count = 1;
   repeated ActionLog list = 2;
 }
@@ -401,12 +401,12 @@ message BaseListReq{
   uint32 pageSize = 3;
 }
 
-message BaseListRep{
+message BaseListResp{
   int64 total = 1;
   repeated UserBase list = 2;
 }
 
-message UserRep{
+message UserResp{
   User user = 1;
   UserExt uerExt = 2;
 }

@@ -21,7 +21,7 @@ service ContentService {
   };
 
   //收藏夹列表
-  rpc FavList (FavListReq) returns (FavListRep) {
+  rpc FavList (FavListReq) returns (FavListResp) {
     option (google.api.http) = {
       get: "/api/v1/content/fav/{userId}"
     };
@@ -31,7 +31,7 @@ service ContentService {
     option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
   //收藏夹列表
-  rpc TinyFavList (FavListReq) returns (TinyFavListRep) {
+  rpc TinyFavList (FavListReq) returns (TinyFavListResp) {
     option (google.api.http) = {
       get: "/api/v1/content/tinyFav/{userId}"
     };
@@ -122,12 +122,12 @@ message FavListReq{
   uint32 userId  = 1 [(go.field) = {tags:'comment:"权限,0-自己可写的，1-可读写"'}];
 }
 
-message FavListRep{
+message FavListResp{
   int64 total = 1;
   repeated Favorite list = 2;
 }
 
-message TinyFavListRep{
+message TinyFavListResp{
   int64 total = 1;
   repeated TinyFavorites list = 2;
 }

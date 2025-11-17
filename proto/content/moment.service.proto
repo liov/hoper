@@ -62,7 +62,7 @@ service MomentService {
   }
 
   // 列表
-  rpc List (MomentListReq) returns (MomentListRep) {
+  rpc List (MomentListReq) returns (MomentListResp) {
     option (google.api.http) = {
       get: "/api/v1/moment"
     };
@@ -108,7 +108,7 @@ message MomentListReq{
   uint32 pageSize = 2;
 }
 
-message MomentListRep{
+message MomentListResp{
   int64 total = 1;
   repeated Moment list = 2;
   repeated user.UserBase users = 3;

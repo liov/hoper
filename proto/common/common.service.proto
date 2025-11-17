@@ -57,7 +57,7 @@ service CommonService {
   }
 
   // 列表
-  rpc AttrList (AttrListReq) returns (AttrListRep) {
+  rpc AttrList (AttrListReq) returns (AttrListResp) {
     option (google.api.http) = {
       get: "/api/v1/attr"
     };
@@ -103,7 +103,7 @@ service CommonService {
   }
 
   // 列表
-  rpc TagList (TagListReq) returns (TagListRep) {
+  rpc TagList (TagListReq) returns (TagListResp) {
     option (google.api.http) = {
       get: "/api/v1/tag"
     };
@@ -146,7 +146,7 @@ message AttrListReq{
   string name = 1[(go.field) = {tags:'comment:"名称"'}];
 }
 
-message AttrListRep{
+message AttrListResp{
   int64 total = 1;
   repeated common.Attr list = 2;
 }
@@ -176,7 +176,7 @@ message TagListReq{
   uint32 pageSize = 4;
 }
 
-message TagListRep{
+message TagListResp{
   uint32 total = 1;
   repeated Tag list = 2;
 }

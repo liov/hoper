@@ -23,7 +23,7 @@ service FileService {
     description: "文件中心相关接口"
   };
   // 获取url
-  rpc GetUrls (GetUrlsReq) returns (GetUrlsRep) {
+  rpc GetUrls (GetUrlsReq) returns (GetUrlsResp) {
     option (google.api.http) = {
       post: "/api/v1/urls"
     };
@@ -36,7 +36,7 @@ service FileService {
   }
 
   // 获取url
-  rpc GetUrlsByStrId (GetUrlsByStrIdReq) returns (GetUrlsRep) {
+  rpc GetUrlsByStrId (GetUrlsByStrIdReq) returns (GetUrlsResp) {
     option (google.api.http) = {
       get: "/api/v1/urls"
     };
@@ -62,6 +62,6 @@ message File {
   string url = 2 [(go.field) = {tags:'comment:"url"'}];
 }
 
-message GetUrlsRep {
+message GetUrlsResp {
   repeated File files = 1[(go.field) = {tags:'comment:"上传文件信息"'}];
 }
