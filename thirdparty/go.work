@@ -1,4 +1,4 @@
-go 1.25.0
+go 1.24.0
 
 use (
 	cherry
@@ -9,4 +9,8 @@ use (
 	pick
 	protobuf
 	scaffold
+)
+
+replace (
+	 github.com/ugorji/go => github.com/ugorji/go/codec v1.3.0
 )
