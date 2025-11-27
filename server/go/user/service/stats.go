@@ -42,7 +42,7 @@ func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*emptypb
 }
 
 // 取消关注
-func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user.BaseListRep, error) {
+func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user.BaseListResp, error) {
 	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
 

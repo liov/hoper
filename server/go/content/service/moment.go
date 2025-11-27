@@ -215,7 +215,7 @@ func (*MomentService) Edit(context.Context, *content.AddMomentReq) (*emptypb.Emp
 	return nil, status.Errorf(codes.Unimplemented, "method Edit not implemented")
 }
 
-func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*content.MomentListRep, error) {
+func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*content.MomentListResp, error) {
 	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
 	auth, _ := auth(ctxi, true)
@@ -228,7 +228,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	}
 
 	if len(moments) == 0 {
-		return &content.MomentListRep{
+		return &content.MomentListResp{
 			Total: total,
 			List:  nil,
 			Users: nil,
@@ -307,7 +307,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 		}
 		users = userList.List
 	}
-	return &content.MomentListRep{
+	return &content.MomentListResp{
 		Total: total,
 		List:  moments,
 		Users: users,

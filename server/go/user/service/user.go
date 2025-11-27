@@ -247,7 +247,7 @@ func checkPassword(password string, user *model.User) bool {
 	return encryptPassword(password) == user.Password
 }
 
-func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.LoginRep, error) {
+func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.LoginResp, error) {
 	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
 	userDBDao := data.GetDBDao(ctxi, global.Dao.GORMDB.DB)
@@ -320,7 +320,7 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*emptypb.Em
 	return new(emptypb.Empty), nil
 }
 
-func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginRep, error) {
+func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginResp, error) {
 	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
 
@@ -359,7 +359,7 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 	return u.login(ctxi, user)
 }
 
-func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.LoginRep, error) {
+func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.LoginResp, error) {
 	authorization := jwtx.Claims[*model.AuthBase]{Auth: &model.AuthBase{
 		Id:     user.Id,
 		Name:   user.Name,
@@ -383,7 +383,7 @@ func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.Login
 	if err := userRedisDao.EfficientUserHashToRedis(); err != nil {
 		return nil, errcode.RedisErr
 	}
-	resp := &model.LoginRep{
+	resp := &model.LoginResp{
 		Token: tokenString,
 		User:  user,
 	}
@@ -451,7 +451,7 @@ func (u *UserService) AuthInfo(ctx context.Context, req *emptypb.Empty) (*model.
 	return user.Proto(), nil
 }
 
-func (u *UserService) Info(ctx context.Context, req *request.Id) (*model.UserRep, error) {
+func (u *UserService) Info(ctx context.Context, req *request.Id) (*model.UserResp, error) {
 	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
 	auth, err := auth(ctxi, true)
@@ -471,7 +471,7 @@ func (u *UserService) Info(ctx context.Context, req *request.Id) (*model.UserRep
 	if err != nil {
 		return nil, err
 	}
-	return &model.UserRep{User: &user1, UerExt: userExt}, nil
+	return &model.UserResp{User: &user1, UerExt: userExt}, nil
 }
 
 func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (*wrappers.StringValue, error) {
@@ -546,8 +546,8 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 	return &wrappers.StringValue{Value: "重置成功，请重新登录"}, nil
 }
 
-func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListReq) (*model.ActionLogListRep, error) {
-	rep := &model.ActionLogListRep{}
+func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListReq) (*model.ActionLogListResp, error) {
+	rep := &model.ActionLogListResp{}
 	var logs []*model.ActionLog
 	err := global.Dao.GORMDB.Table(modelconst.TableNameActionLog).
 		Offset(0).Limit(10).Find(&logs).Error
@@ -558,7 +558,7 @@ func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListR
 	return rep, nil
 }
 
-func (*UserService) BaseList(ctx context.Context, req *model.BaseListReq) (*model.BaseListRep, error) {
+func (*UserService) BaseList(ctx context.Context, req *model.BaseListReq) (*model.BaseListResp, error) {
 	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("BaseList")()
 	if ctxi.Internal == "" {
@@ -571,7 +571,7 @@ func (*UserService) BaseList(ctx context.Context, req *model.BaseListReq) (*mode
 	if err != nil {
 		return nil, err
 	}
-	return &model.BaseListRep{
+	return &model.BaseListResp{
 		Total: count,
 		List:  users,
 	}, nil
@@ -601,7 +601,7 @@ func (*UserService) PickAddv(ctx *ginctx.Context, req *response.CommonResp) (*re
 	return req, nil
 }
 
-func (u *UserService) EasySignup(ctx context.Context, req *model.SignupReq) (*model.LoginRep, error) {
+func (u *UserService) EasySignup(ctx context.Context, req *model.SignupReq) (*model.LoginResp, error) {
 	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("EasySignup")()
 

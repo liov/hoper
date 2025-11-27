@@ -14,7 +14,7 @@ type FileService struct {
 	file.UnimplementedFileServiceServer
 }
 
-func (*FileService) GetUrls(ctx context.Context, req *file.GetUrlsReq) (*file.GetUrlsRep, error) {
+func (*FileService) GetUrls(ctx context.Context, req *file.GetUrlsReq) (*file.GetUrlsResp, error) {
 	ctxi, _ := httpctx.FromContext(ctx)
 
 	uploadDao := data.GetDao(ctxi)
@@ -24,9 +24,9 @@ func (*FileService) GetUrls(ctx context.Context, req *file.GetUrlsReq) (*file.Ge
 	if err != nil {
 		return nil, err
 	}
-	return &file.GetUrlsRep{Files: files}, nil
+	return &file.GetUrlsResp{Files: files}, nil
 }
-func (*FileService) GetUrlsByStrId(ctx context.Context, req *file.GetUrlsByStrIdReq) (*file.GetUrlsRep, error) {
+func (*FileService) GetUrlsByStrId(ctx context.Context, req *file.GetUrlsByStrIdReq) (*file.GetUrlsResp, error) {
 	ctxi, _ := httpctx.FromContext(ctx)
 
 	uploadDao := data.GetDao(ctxi)
@@ -36,5 +36,5 @@ func (*FileService) GetUrlsByStrId(ctx context.Context, req *file.GetUrlsByStrId
 	if err != nil {
 		return nil, err
 	}
-	return &file.GetUrlsRep{Files: files}, nil
+	return &file.GetUrlsResp{Files: files}, nil
 }

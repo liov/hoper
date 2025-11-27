@@ -291,7 +291,7 @@ func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*empt
 	return new(emptypb.Empty), nil
 }
 
-func (*ActionService) CommentList(ctx context.Context, req *content.CommentListReq) (*content.CommentListRep, error) {
+func (*ActionService) CommentList(ctx context.Context, req *content.CommentListReq) (*content.CommentListResp, error) {
 	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
 	auth, err := auth(ctxi, true)
@@ -367,7 +367,7 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 		}
 		users = userList.List
 	}
-	return &content.CommentListRep{
+	return &content.CommentListResp{
 		Total: total,
 		List:  comments,
 		Users: users,

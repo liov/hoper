@@ -5,7 +5,6 @@ go 1.25.0
 require (
 	github.com/bdragon300/tusgo v0.1.2
 	github.com/danielvladco/go-proto-gql v0.10.1-0.20221227181908-22fca0a9469c
-	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
 	github.com/gin-gonic/gin v1.11.0
 	github.com/go-oauth2/oauth2/v4 v4.5.4
 	github.com/go-redis/redis/v8 v8.11.5
@@ -15,8 +14,8 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.3
 	github.com/hopeio/cherry v1.19.2
-	github.com/hopeio/context v0.5.7
-	github.com/hopeio/gox v1.3.15
+	github.com/hopeio/context v0.5.8
+	github.com/hopeio/gox v1.3.16
 	github.com/hopeio/initialize v1.0.0
 	github.com/hopeio/pick v1.12.2
 	github.com/hopeio/protobuf v1.0.0

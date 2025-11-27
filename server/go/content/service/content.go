@@ -83,12 +83,12 @@ func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*em
 }
 
 // 收藏夹列表
-func (*ContentService) FavList(ctx context.Context, req *content.FavListReq) (*content.FavListRep, error) {
+func (*ContentService) FavList(ctx context.Context, req *content.FavListReq) (*content.FavListResp, error) {
 	return nil, nil
 }
 
 // 收藏夹列表
-func (*ContentService) TinyFavList(ctx context.Context, req *content.FavListReq) (*content.TinyFavListRep, error) {
+func (*ContentService) TinyFavList(ctx context.Context, req *content.FavListReq) (*content.TinyFavListResp, error) {
 	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
 	auth, err := auth(ctxi, true)
@@ -103,7 +103,7 @@ func (*ContentService) TinyFavList(ctx context.Context, req *content.FavListReq)
 	if err != nil {
 		return nil, ctxi.RespErrorLog(errcode.DBError, err, "CreateFav")
 	}
-	return &content.TinyFavListRep{List: favs}, nil
+	return &content.TinyFavListResp{List: favs}, nil
 }
 
 // 创建合集
