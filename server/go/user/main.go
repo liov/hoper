@@ -2,14 +2,14 @@ package main
 
 import (
 	"github.com/hopeio/cherry"
+	"github.com/hopeio/initialize"
+	"github.com/liov/hoper/server/go/global"
 	"github.com/liov/hoper/server/go/user/api"
 )
 
 func main() {
-	server := cherry.Server{
-		GrpcHandler: api.GrpcRegister,
+	defer initialize.Start(global.Conf, global.Dao)()
 
-		GinHandler: api.GinRegister,
-	}
-	server.Run()
+	global.Conf.Server.WithOptions(cherry.WithGinHandler(api.GinRegister), cherry.WithGrpcHandler(api.GrpcRegister))
+	global.Conf.Server.Run()
 }

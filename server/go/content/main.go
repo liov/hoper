@@ -16,7 +16,7 @@ func main() {
 		model.RegisterMomentServiceServer(gs, service.GetMomentService())
 	}
 	global.Conf.Server.GinHandler = func(engine *gin.Engine) {
-		_ = model.RegisterMomentServiceHandlerServer(engine, service.GetMomentService())
+		model.RegisterMomentServiceHandlerServer(engine, service.GetMomentService())
 	}
 	global.Conf.Server.Run()
 }
