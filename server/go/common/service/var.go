@@ -4,7 +4,7 @@ var (
 	commonSvc = &CommonService{}
 )
 
-func GetMomentService() *CommonService {
+func GetCommonService() *CommonService {
 	if commonSvc != nil {
 		return commonSvc
 	}

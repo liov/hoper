@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"github.com/hopeio/context/httpctx"
 	"github.com/hopeio/scaffold/errcode"
 
@@ -55,7 +56,7 @@ func (*CommonService) EditTag(ctx context.Context, req *common.EditTagReq) (*emp
 	}
 	return nil, nil
 }
-func (*CommonService) TagList(ctx context.Context, req *common.TagListReq) (*common.TagListRep, error) {
+func (*CommonService) TagList(ctx context.Context, req *common.TagListReq) (*common.TagListResp, error) {
 	ctxi, _ := httpctx.FromContext(ctx)
 	var tags []*common.Tag
 
@@ -76,7 +77,7 @@ func (*CommonService) TagList(ctx context.Context, req *common.TagListReq) (*com
 	if err != nil {
 		return nil, ctxi.RespErrorLog(errcode.DBError, err, "db.Find")
 	}
-	return &common.TagListRep{List: tags, Total: uint32(count)}, nil
+	return &common.TagListResp{List: tags, Total: uint32(count)}, nil
 }
 
 func (*CommonService) SendMail(context.Context, *common.SendMailReq) (*emptypb.Empty, error) {

@@ -183,57 +183,57 @@ message Category{
 
 enum RedisIndex{
 
-  RedisIndexPlaceholder = 0 [(enum.text) = "占位"];
-  RedisIndexFlag = 13 [(enum.text) = "标志"];
-  RedisIndexSys = 14 [(enum.text) = "系统"];
-  RedisIndexCron = 15 [(enum.text) = "定时任务"];
+  RedisIndexPlaceholder = 0 [(enum.comment) = "占位"];
+  RedisIndexFlag = 13 [(enum.comment) = "标志"];
+  RedisIndexSys = 14 [(enum.comment) = "系统"];
+  RedisIndexCron = 15 [(enum.comment) = "定时任务"];
 
 }
 
 enum ObjectType{
 
-  ObjectPlaceholder = 0 [(enum.text) = "占位"];
-  ObjectContent = 1 [(enum.text) = "内容"];
+  ObjectPlaceholder = 0 [(enum.comment) = "占位"];
+  ObjectContent = 1 [(enum.comment) = "内容"];
 }
 
 enum MediaType{
 
-  MediaTypePlaceholder = 0 [(enum.text) = "占位"];
-  MediaTypeImage = 1 [(enum.text) = "图片"];
-  MediaTypeVideo = 2 [(enum.text) = "视频"];
-  MediaTypeAudio = 3 [(enum.text) = "音频"];
+  MediaTypePlaceholder = 0 [(enum.comment) = "占位"];
+  MediaTypeImage = 1 [(enum.comment) = "图片"];
+  MediaTypeVideo = 2 [(enum.comment) = "视频"];
+  MediaTypeAudio = 3 [(enum.comment) = "音频"];
 }
 
 enum DataType {
 
-  DataTypePlaceholder = 0 [(enum.text) = "占位"];
-  DataTypeString = 1 [(enum.text) = "字符串"];
-  DataTypeInteger = 2 [(enum.text) = "整数"];
-  DataTypeFloat = 3 [(enum.text) = "浮点数"];
-  DataTypeTime = 4 [(enum.text) = "时间"];
-  DataTypeDate = 5 [(enum.text) = "日期"];
-  DataTypeEnum = 6 [(enum.text) = "枚举"];
+  DataTypePlaceholder = 0 [(enum.comment) = "占位"];
+  DataTypeString = 1 [(enum.comment) = "字符串"];
+  DataTypeInteger = 2 [(enum.comment) = "整数"];
+  DataTypeFloat = 3 [(enum.comment) = "浮点数"];
+  DataTypeTime = 4 [(enum.comment) = "时间"];
+  DataTypeDate = 5 [(enum.comment) = "日期"];
+  DataTypeEnum = 6 [(enum.comment) = "枚举"];
 }
 
 enum Platform{
 
-  PlatformPlaceholder = 0 [(enum.text)= "占位"];
-  PlatformWechat = 1 [(enum.text)= "微信"];
-  PlatformQQ = 2 [(enum.text)= "QQ"];
+  PlatformPlaceholder = 0 [(enum.comment)= "占位"];
+  PlatformWechat = 1 [(enum.comment)= "微信"];
+  PlatformQQ = 2 [(enum.comment)= "QQ"];
 }
 
 // 删除原因
 enum BanReason{
 
-  BanReasonPlaceholder = 0 [(enum.text) = "占位"];
-  BanReasonViolationOfLawsAndRegulations = 1 [(enum.text) = "违返法律法规"];
-  BanReasonEroticViolence = 3 [(enum.text) = "色情暴力"];
-  BanReasonOther = 255 [(enum.text) = "其他原因"];
+  BanReasonPlaceholder = 0 [(enum.comment) = "占位"];
+  BanReasonViolationOfLawsAndRegulations = 1 [(enum.comment) = "违返法律法规"];
+  BanReasonEroticViolence = 3 [(enum.comment) = "色情暴力"];
+  BanReasonOther = 255 [(enum.comment) = "其他原因"];
 }
 
 enum DocType{
 
-  DocTypePlaceholder = 0 [(enum.text) = "占位"];
-  DocTypeMarkdown = 1 [(enum.text) = "markdown"];
-  DocTypeHtml = 2 [(enum.text) = "html"];
+  DocTypePlaceholder = 0 [(enum.comment) = "占位"];
+  DocTypeMarkdown = 1 [(enum.comment) = "markdown"];
+  DocTypeHtml = 2 [(enum.comment) = "html"];
 }

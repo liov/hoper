@@ -129,63 +129,63 @@ message UserStatistics{
 
 enum ContentType{
 
-  ContentPlaceholder = 0 [(enum.text) = "占位"];
-  ContentMoment = 1 [(enum.text) = "瞬间"];
-  ContentNote = 2 [(enum.text) = "笔记"];
-  ContentDairy = 3 [(enum.text) = "日记"];
-  ContentDairyBook = 4 [(enum.text) = "日记本"];
-  ContentFavorites = 5 [(enum.text) = "收藏夹"];
-  ContentCollection = 6 [(enum.text) = "收藏"];
-  ContentComment = 7 [(enum.text) = "评论"];
+  ContentPlaceholder = 0 [(enum.comment) = "占位"];
+  ContentMoment = 1 [(enum.comment) = "瞬间"];
+  ContentNote = 2 [(enum.comment) = "笔记"];
+  ContentDairy = 3 [(enum.comment) = "日记"];
+  ContentDairyBook = 4 [(enum.comment) = "日记本"];
+  ContentFavorites = 5 [(enum.comment) = "收藏夹"];
+  ContentCollection = 6 [(enum.comment) = "收藏"];
+  ContentComment = 7 [(enum.comment) = "评论"];
 }
 
 // Deprecated 使用数据库表
 /*enum AttrType{
 
-  AttrPlaceholder = 0 [(enum.text) = "占位"];
-  AttrImage = 1 [(enum.text) = "图片"];
-  AttrVideo = 2 [(enum.text) = "视频"];
-  AttrAudio = 3 [(enum.text) = "音频"];
-  AttrCover = 4 [(enum.text) = "封面"];
-  AttrCategory = 5 [(enum.text) = "分类"];
-  AttrTitle = 6 [(enum.text) = "标题"];
-  AttrAbstract = 7 [(enum.text) = "摘要"];
-  AttrIntro = 8 [(enum.text) = "介绍"];
-  AttrContentType = 9 [(enum.text) = "文本类型"];
-  AttrModifyTimes = 10 [(enum.text) = "修改次数"];
+  AttrPlaceholder = 0 [(enum.comment) = "占位"];
+  AttrImage = 1 [(enum.comment) = "图片"];
+  AttrVideo = 2 [(enum.comment) = "视频"];
+  AttrAudio = 3 [(enum.comment) = "音频"];
+  AttrCover = 4 [(enum.comment) = "封面"];
+  AttrCategory = 5 [(enum.comment) = "分类"];
+  AttrTitle = 6 [(enum.comment) = "标题"];
+  AttrAbstract = 7 [(enum.comment) = "摘要"];
+  AttrIntro = 8 [(enum.comment) = "介绍"];
+  AttrContentType = 9 [(enum.comment) = "文本类型"];
+  AttrModifyTimes = 10 [(enum.comment) = "修改次数"];
 }*/
 
 // Deprecated 使用数据库表TagGroup
 /*enum TagType{
 
-  TagPlaceholder = 0 [(enum.text) = "占位"];
-  TagContent = 1[(enum.text) = "内容"];
-  TagMood = 2 [(enum.text) = "心情"];
-  TagWeather = 3 [(enum.text) = "天气"];
-  TagLocation = 4 [(enum.text) = "地点"];
-  TagCategory = 5 [(enum.text) = "分类"];
-  TagNotice = 6 [(enum.text) = "提示"];
+  TagPlaceholder = 0 [(enum.comment) = "占位"];
+  TagContent = 1[(enum.comment) = "内容"];
+  TagMood = 2 [(enum.comment) = "心情"];
+  TagWeather = 3 [(enum.comment) = "天气"];
+  TagLocation = 4 [(enum.comment) = "地点"];
+  TagCategory = 5 [(enum.comment) = "分类"];
+  TagNotice = 6 [(enum.comment) = "提示"];
 }*/
 
 // 可见范围
 enum ViewPermission{
 
-  ViewPermissionPlaceholder = 0 [(enum.text) = "占位"];
-  ViewPermissionAll = 1 [(enum.text) = "无限制"];
-  ViewPermissionSelf = 2 [(enum.text) = "仅自己"];
-  ViewPermissionHomePage = 3 [(enum.text) = "主页"];
-  ViewPermissionStranger = 4 [(enum.text) = "陌生人"];
-  ViewPermissionShield = 5 [(enum.text) = "屏蔽部分人"];
-  ViewPermissionOpen = 6 [(enum.text) = "开放部分人"];
+  ViewPermissionPlaceholder = 0 [(enum.comment) = "占位"];
+  ViewPermissionAll = 1 [(enum.comment) = "无限制"];
+  ViewPermissionSelf = 2 [(enum.comment) = "仅自己"];
+  ViewPermissionHomePage = 3 [(enum.comment) = "主页"];
+  ViewPermissionStranger = 4 [(enum.comment) = "陌生人"];
+  ViewPermissionShield = 5 [(enum.comment) = "屏蔽部分人"];
+  ViewPermissionOpen = 6 [(enum.comment) = "开放部分人"];
 }
 
 // Deprecated 类型拆分
 enum ContainerType{
 
-  ContainerTypePlaceholder = 0 [(enum.text) = "占位"];
-  ContainerTypeFavorites = 1[(enum.text) = "收藏夹"];
-  ContainerTypeDiaryBook = 2[(enum.text) = "日记本"];
-  ContainerTypeAlbum = 3[(enum.text) = "专辑"];
-  ContainerTypeCollection = 4[(enum.text) = "合集"];
+  ContainerTypePlaceholder = 0 [(enum.comment) = "占位"];
+  ContainerTypeFavorites = 1[(enum.comment) = "收藏夹"];
+  ContainerTypeDiaryBook = 2[(enum.comment) = "日记本"];
+  ContainerTypeAlbum = 3[(enum.comment) = "专辑"];
+  ContainerTypeCollection = 4[(enum.comment) = "合集"];
 }
 

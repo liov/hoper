@@ -6,6 +6,7 @@ import (
 	"github.com/hopeio/pick"
 	pickgin "github.com/hopeio/pick/gin"
 	chatapi "github.com/liov/hoper/server/go/chat/api"
+	commonapi "github.com/liov/hoper/server/go/common/api"
 	contentapi "github.com/liov/hoper/server/go/content/api"
 	uploadapi "github.com/liov/hoper/server/go/file/api"
 	"github.com/liov/hoper/server/go/global"
@@ -19,6 +20,7 @@ func main() {
 	//配置初始化应该在第一位
 	defer global.Global.Cleanup()
 	global.Conf.Server.WithOptions(cherry.WithGinHandler(func(app *gin.Engine) {
+		commonapi.GinRegister(app)
 		userapi.GinRegister(app)
 		uploadapi.GinRegister(app)
 		chatapi.GinRegister(app)
