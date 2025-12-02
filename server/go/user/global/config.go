@@ -22,6 +22,6 @@ func (c *config) BeforeInject() {
 }
 
 func (c *config) AfterInject() {
-	c.Customize.TokenMaxAge = timex.StdDuration(c.Customize.TokenMaxAge, time.Hour)
+	c.Customize.TokenMaxAge = timex.NormalizeDuration(c.Customize.TokenMaxAge, time.Hour)
 	c.Customize.TokenSecretBytes = []byte(c.Customize.TokenSecret)
 }
