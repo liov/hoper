@@ -14,8 +14,8 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.3
 	github.com/hopeio/cherry v1.19.2
-	github.com/hopeio/context v0.5.10
-	github.com/hopeio/gox v1.3.19
+	github.com/hopeio/context v0.5.13
+	github.com/hopeio/gox v1.3.23
 	github.com/hopeio/initialize v1.0.0
 	github.com/hopeio/pick v1.12.2
 	github.com/hopeio/protobuf v1.0.0
@@ -27,7 +27,7 @@ require (
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.63.0
 	go.uber.org/zap v1.27.1
 	golang.org/x/net v0.47.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20251124214823-79d6a2a48846
+	google.golang.org/genproto/googleapis/api v0.0.0-20251202230838-ff82c1b0f217
 	google.golang.org/grpc v1.77.0
 	google.golang.org/protobuf v1.36.10
 	gorm.io/gorm v1.31.1
