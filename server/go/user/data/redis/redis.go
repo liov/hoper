@@ -51,7 +51,7 @@ func (d *UserDao) UserFromRedis() (*model.AuthBase, error) {
 	ctx := ctxi.Base()
 	loginUser := modelconst.LoginUserKey + ctxi.AuthID
 
-	userString, err := redisx.String(d.Get(ctx, loginUser).Result())
+	userString, err := d.Get(ctx, loginUser).Result()
 	if err != nil {
 		return nil, d.RespErrorLog(errcode.RedisErr, err, "UserFromRedis.Get")
 	}
@@ -82,12 +82,9 @@ func (d *UserDao) EditRedisUser() error {
 func (d *UserDao) UserHashToRedis() error {
 	ctxi := d
 	ctx := d.Base()
-	var redisArgs []interface{}
 	loginUserKey := modelconst.LoginUserKey + ctxi.AuthID
-	redisArgs = append(redisArgs, redisx.CommandHMSET, loginUserKey)
-	redisArgs = append(redisArgs, hash.Marshal(ctxi.AuthInfo)...)
 	if _, err := d.Pipelined(ctx, func(pipe redis.Pipeliner) error {
-		pipe.Do(ctx, redisArgs...)
+		pipe.HMSet(ctx, loginUserKey, hash.Marshal(ctxi.AuthInfo)...)
 		pipe.Expire(ctx, loginUserKey, global.Conf.User.TokenMaxAge)
 		return nil
 	}); err != nil {
@@ -102,7 +99,7 @@ func (d *UserDao) UserHashFromRedis() error {
 	ctx := ctxi.Base()
 	loginUser := modelconst.LoginUserKey + ctxi.AuthID
 
-	userArgs, err := redisx.Strings(d.Do(ctx, redisx.CommandHGETALL, loginUser).Result())
+	userArgs, err := d.HGetAll(ctx, loginUser).Result()
 	if err != nil {
 		return ctxi.RespErrorLog(errcode.RedisErr, err, redisx.CommandHGETALL)
 	}
@@ -144,7 +141,7 @@ func (d *UserDao) EfficientUserHashFromRedis() error {
 	ctx := ctxi.Base()
 	loginUser := modelconst.LoginUserKey + ctxi.AuthID
 
-	userArgs, err := redisx.Strings(d.Do(ctx, redisx.CommandHGETALL, loginUser).Result())
+	userArgs, err := d.HGetAll(ctx, loginUser).Result()
 	log.Debug(userArgs)
 	if err != nil {
 		return ctxi.RespErrorLog(errcode.RedisErr, err, "EfficientUserHashFromRedis")
@@ -153,10 +150,10 @@ func (d *UserDao) EfficientUserHashFromRedis() error {
 		return model.UserErrLoginTimeout
 	}
 	user := ctxi.AuthInfo.(*model.AuthBase)
-	user.Name = userArgs[1]
-	n, err := strconv.ParseUint(userArgs[3], 10, 32)
+	user.Name = userArgs["Name"]
+	n, err := strconv.ParseUint(userArgs["Role"], 10, 32)
 	user.Role = model.Role(n)
-	n, err = strconv.ParseUint(userArgs[5], 10, 8)
+	n, err = strconv.ParseUint(userArgs["Status"], 10, 8)
 	user.Status = model.UserStatus(n)
 	return nil
 }
@@ -195,13 +192,13 @@ func (d *UserDao) GetUserExtRedis() (*model.UserExt, error) {
 	ctx := ctxi.Base()
 	key := modelconst.UserExtKey + ctxi.AuthID
 
-	userExt, err := redisx.Strings(d.Do(ctx, redisx.CommandHGETALL, key).Result())
+	userExt, err := d.HGetAll(ctx, key).Result()
 	if err != nil {
 		return nil, ctxi.RespErrorLog(errcode.RedisErr, err, "GetUserExtRedis")
 	}
 	if len(userExt) > 3 {
-		followCount, _ := strconv.ParseUint(userExt[1], 10, 64)
-		followedCount, _ := strconv.ParseUint(userExt[3], 10, 64)
+		followCount, _ := strconv.ParseUint(userExt["Follow"], 10, 64)
+		followedCount, _ := strconv.ParseUint(userExt["Followed"], 10, 64)
 		return &model.UserExt{
 			Follow:   followCount,
 			Followed: followedCount,

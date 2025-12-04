@@ -18,7 +18,7 @@ func (d *ContentDao) GetMomentList(req *content.MomentListReq) (int64, []*conten
 		return 0, nil, ctxi.RespErrorLog(errcode.DBError, err, "Count")
 	}
 	var clauses []clause.Expression
-	clauses = append(clauses, clausei.PageExpr(int(req.PageNo), int(req.PageSize)))
+	clauses = append(clauses, clausei.PaginationExpr(int(req.PageNo), int(req.PageSize)))
 	err = db.Clauses(clauses...).Order("created_at desc").Find(&moments).Error
 	if err != nil {
 		return 0, nil, ctxi.RespErrorLog(errcode.DBError, err, "GetMomentList")

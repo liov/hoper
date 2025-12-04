@@ -38,7 +38,6 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	redisx "github.com/hopeio/gox/database/redis"
 	templatex "github.com/hopeio/gox/encoding/text/template"
 	"github.com/hopeio/gox/log"
 	"github.com/hopeio/gox/net/mail"
@@ -418,7 +417,7 @@ func (u *UserService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.
 	}
 	global.Dao.GORMDB.Table(modelconst.TableNameUserExt).Where(`id = ?`, user.Id).UpdateColumn("last_activated_at", time.Now())
 
-	if err := global.Dao.Redis.Del(ctx, redisx.CommandDEL, modelconst.LoginUserKey+strconv.FormatUint(user.Id, 10)).Err(); err != nil {
+	if err := global.Dao.Redis.Del(ctx, modelconst.LoginUserKey+strconv.FormatUint(user.Id, 10)).Err(); err != nil {
 		return nil, ctxi.RespErrorLog(errcode.RedisErr, err, "redisx.Del")
 	}
 	cookie := (&http.Cookie{
