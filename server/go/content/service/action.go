@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/hopeio/context/httpctx"
+	"github.com/hopeio/gox/context/httpctx"
 	"github.com/hopeio/scaffold/errcode"
 
 	gormi "github.com/hopeio/gox/database/sql/gorm"
@@ -309,8 +309,8 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 	userIds := set.New[uint64]()
 	var m = make(map[uint64]*content.Comment)
 	for i := range comments {
-		ids = append(ids, comments[i].Id)
-		m[comments[i].Id] = comments[i]
+		ids = append(ids, comments[i].Basic.Id)
+		m[comments[i].Basic.Id] = comments[i]
 		userIds.Add(comments[i].UserId)
 		userIds.Add(comments[i].RecvId)
 		// 屏蔽字段
@@ -376,7 +376,7 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 
 // 屏蔽字段
 func commentMaskField(comment *content.Comment) {
-	comment.DeletedAt = nil
+	comment.Basic.DeletedAt = nil
 }
 
 func (*ActionService) GetUserAction(ctx context.Context, req *content.ContentReq) (*content.UserAction, error) {

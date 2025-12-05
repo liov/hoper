@@ -2,7 +2,7 @@ package db
 
 import (
 	"database/sql"
-	"github.com/hopeio/context/httpctx"
+	"github.com/hopeio/gox/context/httpctx"
 	"github.com/hopeio/scaffold/errcode"
 
 	"github.com/hopeio/gox/log"

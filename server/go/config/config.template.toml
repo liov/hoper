@@ -1,0 +1,16 @@
+Env = 'dev'
+Name = '___go_build_github_com_liov_hoper_server_go'
+
+[dev]
+ConfigTemplateDir = './config'
+Debug = true
+NoInject = []
+Proxy = ''
+
+[dev.ConfigCenter]
+Format = 'toml'
+Type = ''
+
+[dev.LocalConfig]
+Paths = []
+ReloadInterval = 0

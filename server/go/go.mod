@@ -14,8 +14,8 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.3
 	github.com/hopeio/cherry v1.19.2
-	github.com/hopeio/context v0.5.13
-	github.com/hopeio/gox v1.3.23
+	github.com/hopeio/context v0.5.15
+	github.com/hopeio/gox v1.3.25
 	github.com/hopeio/initialize v1.0.0
 	github.com/hopeio/pick v1.12.2
 	github.com/hopeio/protobuf v1.0.0
@@ -152,7 +152,6 @@ require (
 
 replace (
 	github.com/hopeio/cherry => ../../thirdparty/cherry
-	github.com/hopeio/context => ../../thirdparty/context
 	github.com/hopeio/gox => ./../../thirdparty/gox
 	github.com/hopeio/initialize => ../../thirdparty/initialize
 	github.com/hopeio/pick => ../../thirdparty/pick

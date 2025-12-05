@@ -7,8 +7,8 @@ import (
 )
 
 type serverConfig struct {
-	Volume   fs.Dir
-	SiteURL  string
+	Volume  fs.Dir
+	SiteURL string
 	PassSalt string
 	// 天数
 	TokenMaxAge      time.Duration

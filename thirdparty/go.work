@@ -2,7 +2,6 @@ go 1.24.0
 
 use (
 	cherry
-	context
 	deploy/plugin
 	gox
 	initialize

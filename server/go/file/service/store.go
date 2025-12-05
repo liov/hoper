@@ -10,9 +10,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/hopeio/context/httpctx"
+	"github.com/hopeio/gox/context/httpctx"
 	"github.com/hopeio/gox/database/sql/datatypes"
-	"github.com/hopeio/gox/idgen/id"
+	"github.com/hopeio/gox/idgen"
 	"github.com/hopeio/gox/log"
 	"github.com/hopeio/gox/os/fs"
 	timex "github.com/hopeio/gox/time"
@@ -63,7 +63,7 @@ func (store FileStore) NewUpload(ctx context.Context, info handler.FileInfo) (ha
 	ctxi, _ := httpctx.FromContext(ctx)
 	authInfo, _ := auth(ctxi, false)
 	if info.ID == "" {
-		info.ID = id.UniqueID()
+		info.ID = idgen.UniqueID()
 	}
 	name := info.MetaData["filename"]
 	if name == "" {

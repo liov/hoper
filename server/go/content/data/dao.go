@@ -1,7 +1,7 @@
 package data
 
 import (
-	"github.com/hopeio/context/httpctx"
+	"github.com/hopeio/gox/context/httpctx"
 	"github.com/hopeio/initialize/dao/redis"
 	"github.com/liov/hoper/server/go/content/data/db"
 	rdao "github.com/liov/hoper/server/go/content/data/redis"

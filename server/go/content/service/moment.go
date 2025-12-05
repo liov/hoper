@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hopeio/context/httpctx"
+	"github.com/hopeio/gox/context/httpctx"
 	"github.com/hopeio/scaffold/errcode"
 
 	"unicode/utf8"
@@ -53,7 +53,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 		return nil, ctxi.RespErrorLog(errcode.DBError, err, "First")
 	}
 	// tags
-	contentTags, err := contentDBDao.GetContentTag(content.ContentMoment, []uint64{moment.Id})
+	contentTags, err := contentDBDao.GetContentTag(content.ContentMoment, []uint64{moment.Basic.Id})
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +91,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 		}
 	}
 	// ext
-	statistics, err := contentDBDao.GetStatistics(content.ContentMoment, []uint64{moment.Id})
+	statistics, err := contentDBDao.GetStatistics(content.ContentMoment, []uint64{moment.Basic.Id})
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +115,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 
 // 屏蔽字段
 func momentMaskField(moment *content.Moment) {
-	moment.DeletedAt = nil
+	moment.Basic.DeletedAt = nil
 	moment.Anonymous = 0
 }
 
@@ -196,7 +196,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 			contentTags = append(contentTags, model.ContentTag{
 				Type:  content.ContentMoment,
 				RefId: req.Id,
-				TagId: noExist[i].Id,
+				TagId: noExist[i].Basic.Id,
 			})
 		}
 		if len(contentTags) > 0 {
@@ -239,8 +239,8 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	var ids []uint64
 	userIds := set.New[uint64]()
 	for i := range moments {
-		ids = append(ids, moments[i].Id)
-		m[moments[i].Id] = moments[i]
+		ids = append(ids, moments[i].Basic.Id)
+		m[moments[i].Basic.Id] = moments[i]
 		userIds.Add(moments[i].UserId)
 		// 屏蔽字段
 		momentMaskField(moments[i])

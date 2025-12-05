@@ -22,7 +22,7 @@ func (c *config) AfterInject() {
 type Config struct {
 	Volume fs.Dir
 
-	UploadDir      fs.Dir
-	UploadMaxSize  int64
+	UploadDir     fs.Dir
+	UploadMaxSize int64
 	UploadAllowExt []string
 }

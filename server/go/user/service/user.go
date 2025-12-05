@@ -14,20 +14,20 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/uuid"
-	"github.com/hopeio/context/ginctx"
-	"github.com/hopeio/context/httpctx"
+	"github.com/hopeio/gox/context/ginctx"
+	"github.com/hopeio/gox/context/httpctx"
 	gormx "github.com/hopeio/gox/database/sql/gorm"
+	"github.com/hopeio/gox/math/rand"
 	httpx "github.com/hopeio/gox/net/http"
 	"github.com/hopeio/gox/sdk/luosimao"
 	stringsx "github.com/hopeio/gox/strings"
-	jwtx "github.com/hopeio/gox/validation/auth/jwt"
-	"github.com/hopeio/gox/validation/captcha"
-	"github.com/hopeio/gox/validation/validator"
+	"github.com/hopeio/gox/validator"
 	"github.com/hopeio/pick"
 	"github.com/hopeio/protobuf/request"
 	"github.com/hopeio/protobuf/response"
-	timepb "github.com/hopeio/protobuf/time"
+	"github.com/hopeio/protobuf/time/timestamp"
 	"github.com/hopeio/scaffold/errcode"
+	jwtx "github.com/hopeio/scaffold/jwt"
 	"github.com/liov/hoper/server/go/global"
 	model "github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/api/middle"
@@ -38,9 +38,10 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	templatex "github.com/hopeio/gox/encoding/text/template"
 	"github.com/hopeio/gox/log"
 	"github.com/hopeio/gox/net/mail"
+	templatex "github.com/hopeio/gox/text/template"
+	basic "github.com/hopeio/protobuf/model"
 
 	"gorm.io/gorm"
 )
@@ -52,7 +53,7 @@ type UserService struct {
 func (u *UserService) VerifyCode(ctx context.Context, req *model.VerifyCodeReq) (*emptypb.Empty, error) {
 	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("")()
-	vcode := captcha.RandomCode(4)
+	vcode := rand.RandomCode(4)
 	log.Info(vcode)
 	key := modelconst.VerificationCodeKey + req.Mail + req.Phone
 	if err := global.Dao.Redis.SetEX(ctx, key, vcode, modelconst.VerificationCodeDuration).Err(); err != nil {
@@ -138,7 +139,7 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*wrappe
 		return nil, ctxi.RespErrorLog(errcode.DBError.Msg("新建出错"), err, "UserService.Creat")
 	}
 
-	activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
+	activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Basic.Id, 10)
 
 	curTime := ctxi.RequestAt.TimeStamp
 
@@ -175,10 +176,10 @@ func sendMail(ctxi *httpctx.Context, action model.Action, curTime int64, user *m
 	var templ string
 	switch action {
 	case model.ActionActive:
-		activeOrRestPasswdValues.ActionURL = siteURL + "/api/v1/user/active/" + strconv.FormatUint(user.Id, 10) + "/" + secretStr
+		activeOrRestPasswdValues.ActionURL = siteURL + "/api/v1/user/active/" + strconv.FormatUint(user.Basic.Id, 10) + "/" + secretStr
 		templ = modelconst.ActionActiveContent
 	case model.ActionRestPassword:
-		activeOrRestPasswdValues.ActionURL = siteURL + "/api/v1/user/resetPassword/" + strconv.FormatUint(user.Id, 10) + "/" + secretStr
+		activeOrRestPasswdValues.ActionURL = siteURL + "/api/v1/user/resetPassword/" + strconv.FormatUint(user.Basic.Id, 10) + "/" + secretStr
 		templ = modelconst.ActionRestPasswordContent
 	}
 	log.Debug(activeOrRestPasswdValues.ActionURL)
@@ -345,7 +346,7 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 	if user.Status == model.UserStatusInActive {
 		//没看懂
 		//encodedEmail := base64.StdEncoding.EncodeToString(stringsx.ToBytes(user.Mail))
-		activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
+		activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Basic.Id, 10)
 
 		curTime := time.Now().Unix()
 		if err := global.Dao.Redis.SetEX(ctx, activeUser, curTime, modelconst.ActiveDuration).Err(); err != nil {
@@ -360,7 +361,7 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 
 func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.LoginResp, error) {
 	authorization := jwtx.Claims[*model.AuthBase]{Auth: &model.AuthBase{
-		Id:     user.Id,
+		Id:     user.Basic.Id,
 		Name:   user.Name,
 		Role:   user.Role,
 		Status: user.Status,
@@ -376,7 +377,7 @@ func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.Login
 	}
 	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctxi.Base(), ctxi.TraceID())
 
-	db.Table(modelconst.TableNameUserExt).Where(`id = ?`, user.Id).
+	db.Table(modelconst.TableNameUserExt).Where(`id = ?`, user.Basic.Id).
 		UpdateColumn("last_activated_at", ctxi.RequestAt.String())
 	userRedisDao := redis.GetUserDao(ctxi, global.Dao.Redis.Client)
 	if err := userRedisDao.EfficientUserHashToRedis(); err != nil {
@@ -497,7 +498,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 		log.Error(err)
 		return nil, errcode.DBError
 	}
-	restPassword := modelconst.ResetTimeKey + strconv.FormatUint(user.Id, 10)
+	restPassword := modelconst.ResetTimeKey + strconv.FormatUint(user.Basic.Id, 10)
 
 	curTime := time.Now().Unix()
 	if err := global.Dao.Redis.SetEX(ctx, restPassword, curTime, modelconst.ResetDuration).Err(); err != nil {
@@ -537,7 +538,7 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 	}
 	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctxi.Base(), ctxi.TraceID())
 	if err := db.Table(modelconst.TableNameUser).
-		Where(`id = ?`, user.Id).Update("password", req.Password).Error; err != nil {
+		Where(`id = ?`, user.Basic.Id).Update("password", req.Password).Error; err != nil {
 		log.Error("UserService.ResetPassword,DB.Update", err)
 		return nil, errcode.DBError
 	}
@@ -577,7 +578,7 @@ func (*UserService) BaseList(ctx context.Context, req *model.BaseListReq) (*mode
 }
 
 func (*UserService) GetTest(ctx context.Context, req *request.Id) (*model.User, error) {
-	return &model.User{Id: req.Id, Name: "测试"}, nil
+	return &model.User{Basic: &basic.Model{Id: req.Id}, Name: "测试"}, nil
 }
 
 func (*UserService) Service() (string, string, []gin.HandlerFunc) {
@@ -633,7 +634,7 @@ func (u *UserService) EasySignup(ctx context.Context, req *model.SignupReq) (*mo
 		Gender:      req.Gender,
 		Avatar:      modelconst.DefaultAvatar,
 		Role:        model.RoleNormal,
-		ActivatedAt: timepb.NewTime(ctxi.RequestAt.Time),
+		ActivatedAt: timestamp.New(ctxi.RequestAt.Time),
 		Status:      model.UserStatusActivated,
 	}
 

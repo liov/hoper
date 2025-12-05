@@ -3,7 +3,7 @@ package user
 import (
 	"strconv"
 
-	"github.com/hopeio/context/reqctx"
+	"github.com/hopeio/gox/context/reqctx"
 )
 
 var UserserviceServicedesc = &UserService_ServiceDesc

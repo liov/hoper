@@ -6,13 +6,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hopeio/context/httpctx"
+	"github.com/hopeio/gox/context/httpctx"
 	sqlx "github.com/hopeio/gox/database/sql"
 	gormx "github.com/hopeio/gox/database/sql/gorm"
 	_ "github.com/hopeio/gox/database/sql/gorm/serializer"
 	"github.com/hopeio/gox/log"
 	"github.com/hopeio/gox/slices"
-	"github.com/hopeio/gox/validation/validator"
+	"github.com/hopeio/gox/validator"
 	puser "github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/model"
 	"gorm.io/gorm"
@@ -95,11 +95,11 @@ func (d *UserDao) SaveResumes(userId uint64, resumes []*puser.Resume, originalId
 	for i := range resumes {
 		resumes[i].UserId = userId
 		resumes[i].Status = 1
-		if resumes[i].Id != 0 {
+		if resumes[i].Basic.Id != 0 {
 			err = d.Save(resumes[i]).Error
 			actionLog.Action = puser.ActionCreateResume
 			actionLog.LastValue, _ = json.Marshal(resumes[i])
-			editIds = append(editIds, resumes[i].Id)
+			editIds = append(editIds, resumes[i].Basic.Id)
 		} else {
 			err = d.Create(resumes[i]).Error
 			actionLog.Action = puser.ActionEditResume
@@ -108,7 +108,7 @@ func (d *UserDao) SaveResumes(userId uint64, resumes []*puser.Resume, originalId
 			return err
 		}
 		actionLog.Id = 0
-		actionLog.RelatedId = tableName + strconv.FormatUint(resumes[i].Id, 10)
+		actionLog.RelatedId = tableName + strconv.FormatUint(resumes[i].Basic.Id, 10)
 		if err = d.Table(model.TableNameActionLog).Create(&actionLog).Error; err != nil {
 			log.Error(err)
 		}

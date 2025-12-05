@@ -2,8 +2,9 @@ syntax = "proto3";
 package content;
 
 import "hopeio/utils/patch/go.proto";
-import "hopeio/time/time.proto";
+import "hopeio/time/timestamp/timestamp.proto";
 import "hopeio/time/deletedAt/deletedAt.proto";
+import "hopeio/model/basic.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "user/user.model.proto";
 import "common/common.model.proto";
@@ -16,7 +17,7 @@ option go_package = "github.com/liov/hoper/server/go/protobuf/content";
 
 
 message Diary {
-  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
+  model.Model  basic = 1 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
   string content = 2 [(go.field) = {tags:'gorm:"type:text;not null" comment:"内容"'}];
   uint64 bookId = 4 [(go.field) = {tags:'gorm:"size:20;default:0" comment:"日记本Id"'}];
   DiaryBook book = 26 [(go.field) = {tags:'gorm:"-" comment:"日记本"'}];
@@ -36,15 +37,13 @@ message Diary {
   uint32 sequence = 19 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
   uint32 anonymous = 20 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"是否匿名,0-是,1否"'}];
   ViewPermission permission = 21 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"查看权限"'}];
-  time.Time createdAt = 22 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  deletedAt.DeletedAt deletedAt = 23 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
   uint32 status = 24 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
 }
 
 message DiaryBook{
-  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
+  model.Model  basic = 1 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
   string title = 2 [(go.field) = {tags:'gorm:"size:50;not null" comment:"标题"'}];
   string description = 3 [(go.field) = {tags:'gorm:"type:text;not null" comment:"描述"'}];
   string cover = 4 [(go.field) = {tags:'gorm:"size:255;not null" comment:"封面"'}];
@@ -52,8 +51,6 @@ message DiaryBook{
   uint32 anonymous = 15 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"是否匿名,0-是,1否"'}];
   ViewPermission permission = 13 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"查看权限"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" comment:"用户id"'}];
-  time.Time createdAt = 16 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  deletedAt.DeletedAt deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
   uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];

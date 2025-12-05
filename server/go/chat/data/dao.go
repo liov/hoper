@@ -1,7 +1,7 @@
 package data
 
 import (
-	"github.com/hopeio/context/httpctx"
+	"github.com/hopeio/gox/context/httpctx"
 	"log"
 )
 

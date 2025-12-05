@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/hopeio/context/httpctx"
+	"github.com/hopeio/gox/context/httpctx"
 	"github.com/hopeio/scaffold/errcode"
 
 	"github.com/hopeio/protobuf/request"
