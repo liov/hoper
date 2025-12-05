@@ -1,0 +1,304 @@
+FontSaveDir = ''
+PageSize = 0
+QrCodeSaveDir = ''
+SiteURL = ''
+Volume = ''
+
+[Cache]
+BufferItems = 0
+IgnoreInternalCost = false
+MaxCost = 0
+Metrics = false
+NumCounters = 0
+TtlTickerDurationInSec = 0
+
+[GORMDB]
+Charset = ''
+ConnMaxIdleTime = 0
+ConnMaxLifetime = 0
+Database = ''
+Host = ''
+MaxIdleConns = 0
+MaxOpenConns = 0
+Password = ''
+Port = 0
+TimeZone = ''
+Type = ''
+UseGormLogger = false
+User = ''
+
+[GORMDB.Gorm]
+AllowGlobalUpdate = false
+CreateBatchSize = 0
+DefaultContextTimeout = 0
+DefaultTransactionTimeout = 0
+DisableAutomaticPing = false
+DisableForeignKeyConstraintWhenMigrating = false
+DisableNestedTransaction = false
+DryRun = false
+FullSaveAssociations = false
+IgnoreRelationshipsWhenMigrating = false
+PrepareStmt = false
+PrepareStmtMaxSize = 0
+PrepareStmtTTL = 0
+PropagateUnscoped = false
+QueryFields = false
+SkipDefaultTransaction = false
+TranslateError = false
+
+[GORMDB.Logger]
+Colorful = false
+IgnoreRecordNotFoundError = false
+LogLevel = 0
+ParameterizedQueries = false
+SlowThreshold = 0
+
+[GORMDB.Mysql]
+Loc = ''
+ParseTime = ''
+
+[GORMDB.NamingStrategy]
+IdentifierMaxLength = 0
+NoLowerCase = false
+SingularTable = false
+TablePrefix = ''
+
+[GORMDB.Postgres]
+SSLMode = ''
+Schema = ''
+
+[GORMDB.Prometheus]
+DBName = ''
+Enabled = false
+HTTPServerPort = 0
+PushAddr = ''
+PushPassword = ''
+PushUser = ''
+RefreshInterval = 0
+StartServer = false
+
+[[GORMDB.Prometheus.MetricsCollectors]]
+Interval = 0
+Prefix = ''
+VariableNames = []
+
+[GORMDB.Sqlite]
+DSN = ''
+
+[Log]
+CallerKey = ''
+ConsoleSeparator = ''
+Development = false
+DisableCaller = false
+DisableStacktrace = false
+EncodeLevelType = ''
+ErrorOutputPaths = []
+FunctionKey = ''
+Level = 'info'
+LevelKey = ''
+LineEnding = ''
+MessageKey = ''
+Name = ''
+NameKey = ''
+SkipLineEnding = false
+StacktraceKey = ''
+TimeKey = ''
+TimeLayout = ''
+
+[Log.OutputPaths]
+Console = []
+Json = []
+
+[Log.Sampling]
+Initial = 0
+Thereafter = 0
+
+[Mail]
+AuthType = ''
+From = ''
+Host = ''
+Identity = ''
+Password = ''
+Port = ''
+UserName = ''
+
+[Moment]
+MaxContentLen = 0
+
+[Moment.Limit]
+DayLimitCount = 0
+DayLimitKey = ''
+MinuteLimitCount = 0
+MinuteLimitKey = ''
+SecondLimitCount = 0
+SecondLimitKey = ''
+
+[Redis]
+Addr = ''
+CertFile = ''
+DB = 0
+DialTimeout = 0
+IdleCheckFrequency = 0
+IdleTimeout = 0
+KeyFile = ''
+MaxConnAge = 0
+MaxRetries = 0
+MaxRetryBackoff = 0
+MinIdleConns = 0
+MinRetryBackoff = 0
+Network = ''
+Password = ''
+PoolFIFO = false
+PoolSize = 0
+PoolTimeout = 0
+ReadTimeout = 0
+Username = ''
+WriteTimeout = 0
+
+[Server]
+Addr = ''
+CertFile = ''
+DisableGeneralOptionsHandler = false
+IdleTimeout = 0
+KeyFile = ''
+MaxHeaderBytes = 0
+ReadHeaderTimeout = 0
+ReadTimeout = 0
+WriteTimeout = 0
+
+[Server.AccessLog]
+ExcludePrefixes = []
+IncludePrefixes = []
+
+[Server.ApiDoc]
+Dir = ''
+Enabled = false
+UriPrefix = ''
+
+[Server.Cors]
+AllowCredentials = false
+AllowPrivateNetwork = false
+AllowedHeaders = []
+AllowedMethods = []
+AllowedOrigins = []
+Debug = false
+Enabled = false
+ExposedHeaders = []
+MaxAge = 0
+OptionsPassthrough = false
+OptionsSuccessStatus = 0
+
+[Server.DebugHandler]
+Enabled = false
+UriPrefix = ''
+
+[Server.GinServer]
+AppEngine = false
+ContextWithFallback = false
+ForwardedByClientIP = false
+HandleMethodNotAllowed = false
+MaxMultipartMemory = 0
+RedirectFixedPath = false
+RedirectTrailingSlash = false
+RemoteIPHeaders = []
+RemoveExtraSlash = false
+TrustedPlatform = ''
+UnescapePathValues = false
+UseH2C = false
+UseRawPath = false
+
+[Server.Grpc]
+EnableGrpcWeb = false
+
+[Server.HTTP2]
+IdleTimeout = 0
+MaxConcurrentStreams = 0
+MaxDecoderHeaderTableSize = 0
+MaxEncoderHeaderTableSize = 0
+MaxHandlers = 0
+MaxReadFrameSize = 0
+MaxUploadBufferPerConnection = 0
+MaxUploadBufferPerStream = 0
+PermitProhibitedCipherSuites = false
+PingTimeout = 0
+ReadIdleTimeout = 0
+WriteByteTimeout = 0
+
+[Server.HTTP3]
+Addr = ''
+CertFile = ''
+EnableDatagrams = false
+Enabled = false
+IdleTimeout = 0
+KeyFile = ''
+MaxHeaderBytes = 0
+Port = 0
+
+[Server.HTTP3.QUICConfig]
+Allow0RTT = false
+DisablePathMTUDiscovery = false
+EnableDatagrams = false
+EnableStreamResetPartialDelivery = false
+HandshakeIdleTimeout = 0
+InitialConnectionReceiveWindow = 0
+InitialPacketSize = 0
+InitialStreamReceiveWindow = 0
+KeepAlivePeriod = 0
+MaxConnectionReceiveWindow = 0
+MaxIdleTimeout = 0
+MaxIncomingStreams = 0
+MaxIncomingUniStreams = 0
+MaxStreamReceiveWindow = 0
+Versions = []
+
+[Server.InternalServer]
+Addr = ''
+DisableGeneralOptionsHandler = false
+IdleTimeout = 0
+MaxHeaderBytes = 0
+ReadHeaderTimeout = 0
+ReadTimeout = 0
+WriteTimeout = 0
+
+[Server.InternalServer.HTTP2]
+MaxConcurrentStreams = 0
+MaxDecoderHeaderTableSize = 0
+MaxEncoderHeaderTableSize = 0
+MaxReadFrameSize = 0
+MaxReceiveBufferPerConnection = 0
+MaxReceiveBufferPerStream = 0
+PermitProhibitedCipherSuites = false
+PingTimeout = 0
+SendPingTimeout = 0
+WriteByteTimeout = 0
+
+[Server.Telemetry]
+Enabled = false
+
+[Server.Telemetry.Prometheus]
+Enabled = false
+HttpUri = ''
+
+[Upload]
+UploadAllowExt = []
+UploadDir = ''
+UploadMaxSize = 0
+Volume = ''
+
+[User]
+LuosimaoAPIKey = ''
+LuosimaoSuperPW = ''
+LuosimaoVerifyURL = ''
+PassSalt = ''
+TokenMaxAge = 86400000000000
+TokenSecret = ''
+TokenSecretBytes = []
+
+[User.Limit]
+MaxIntroduceLen = 0
+MaxLocationLen = 0
+MaxPassLen = 0
+MaxSignatureLen = 0
+MaxUserNameLen = 0
+MinPassLen = 0
+MinUserNameLen = 0

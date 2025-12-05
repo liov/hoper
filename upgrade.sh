@@ -24,9 +24,6 @@ case $param in
     "")
         echo "Parameter is empty."
         # 在这里执行空参数的逻辑
-        cd $dir/thirdparty/context
-        go get github.com/hopeio/gox@$version
-        upgrade
         cd $dir/thirdparty/initialize
         go get github.com/hopeio/gox@$version
         upgrade
@@ -42,11 +39,9 @@ case $param in
         echo "Parameter is pc."
         # 在这里执行pc参数的逻辑
         cd $dir/thirdparty/pick
-        go get github.com/hopeio/context@main
         upgrade
         cd $dir/thirdparty/cherry
         go get github.com/hopeio/protobuf@main
-        go get github.com/hopeio/context@main
         upgrade
         ;;
     ex)

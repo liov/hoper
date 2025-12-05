@@ -4,7 +4,7 @@ import (
 	"strconv"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/hopeio/context/httpctx"
+	"github.com/hopeio/gox/context/httpctx"
 	"github.com/hopeio/gox/database/redis/hash"
 	"github.com/hopeio/gox/encoding/json"
 	"github.com/hopeio/scaffold/errcode"

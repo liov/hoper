@@ -5,7 +5,7 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 import "hopeio/utils/validator/validator.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
-import "hopeio/time/time.proto";
+import "hopeio/time/timestamp/timestamp.proto";
 import "hopeio/response/response.proto";
 import "hopeio/request/param.proto";
 import "danielvladco/protobuf/graphql.proto";
@@ -374,9 +374,9 @@ message ResetPasswordReq {
 }
 
 message ActionLogListReq {
-  time.Time beginTime = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  timestamp.Timestamp beginTime = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type: STRING}];
-  time.Time endTime = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  timestamp.Timestamp endTime = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type: STRING}];
 }
 

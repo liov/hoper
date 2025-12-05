@@ -1,7 +1,7 @@
 package model
 
 import (
-	templatex "github.com/hopeio/gox/encoding/text/template"
+	templatex "github.com/hopeio/gox/text/template"
 )
 
 const (

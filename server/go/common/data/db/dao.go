@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/hopeio/context/httpctx"
+	"github.com/hopeio/gox/context/httpctx"
 	"gorm.io/gorm"
 )
 

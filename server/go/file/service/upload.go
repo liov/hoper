@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hopeio/context/httpctx"
+	"github.com/hopeio/gox/context/httpctx"
 	gormx "github.com/hopeio/gox/database/sql/gorm"
 	errcodex "github.com/hopeio/gox/errors"
 	httpx "github.com/hopeio/gox/net/http"

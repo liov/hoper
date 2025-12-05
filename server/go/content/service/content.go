@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/hopeio/context/httpctx"
+	"github.com/hopeio/gox/context/httpctx"
 	gormi "github.com/hopeio/gox/database/sql/gorm"
 	"github.com/hopeio/protobuf/request"
 	"github.com/hopeio/scaffold/errcode"

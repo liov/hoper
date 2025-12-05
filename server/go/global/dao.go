@@ -6,6 +6,7 @@ import (
 	"github.com/hopeio/initialize/dao/mail"
 	"github.com/hopeio/initialize/dao/redis"
 	"github.com/hopeio/initialize/dao/ristretto"
+	"github.com/liov/hoper/server/go/protobuf/content"
 )
 
 // 原本是个单独模块，但是考虑到数据库必须初始化，所以合进来了
@@ -33,13 +34,17 @@ func (d *dao) AfterInject() {
 	log.Info("AfterInject")
 	if d.GORMDB.DB != nil {
 		//d.GORMDB.Conf.NamingStrategy.TablePrefix = "user."
-		/*		err := d.GORMDB.Exec(`CREATE SCHEMA IF NOT EXISTS "user"`).Error
-				if err != nil {
-					log.Fatal(err)
-				}
-				err = d.GORMDB.Migrator().AutoMigrate(&user.User{}, &user.Resume{}, &user.ActionLog{}, &user.BannedLog{}, &user.Device{}, &user.ScoreLog{}, &user.UserExt{}, user.Oauth{})
+		err := d.GORMDB.Exec(`CREATE SCHEMA IF NOT EXISTS "user"`).Error
+		if err != nil {
+			log.Fatal(err)
+		}
+		/*		err = d.GORMDB.Migrator().AutoMigrate(&user.User{}, &user.Resume{}, &user.ActionLog{}, &user.BannedLog{}, &user.Device{}, &user.ScoreLog{}, &user.UserExt{}, user.Oauth{})
 				if err != nil {
 					log.Fatal(err)
 				}*/
+		err = d.GORMDB.Migrator().AutoMigrate(&content.ContentTag{})
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }

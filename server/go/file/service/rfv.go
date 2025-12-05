@@ -2,10 +2,11 @@ package service
 
 import (
 	"context"
-	"github.com/hopeio/gox/sugar"
+	"os"
+
+	"github.com/hopeio/gox"
 	"github.com/liov/hoper/server/go/file/api/request"
 	"github.com/liov/hoper/server/go/file/api/response"
-	"os"
 )
 
 func (*FileService) ListDir(ctx context.Context, req *request.ListDir) (*response.ListDir, error) {
@@ -28,7 +29,7 @@ func (*FileService) ListDir(ctx context.Context, req *request.ListDir) (*respons
 		}
 		items = append(items, &response.Entry{
 			Name: dir.Name(),
-			Type: sugar.TernaryOperator(dir.IsDir(), 0, 1),
+			Type: gox.TernaryOperator(dir.IsDir(), 0, 1),
 			Size: info.Size(),
 		})
 	}

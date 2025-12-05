@@ -2,7 +2,9 @@ syntax = "proto3";
 package user;
 import "hopeio/utils/patch/go.proto";
 import "hopeio/utils/enum/enum.proto";
+import "hopeio/time/timestamp/timestamp.proto";
 import "hopeio/time/time.proto";
+import "hopeio/model/basic.proto";
 import "hopeio/time/deletedAt/deletedAt.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
@@ -16,7 +18,7 @@ option (go.file) = {no_enum_prefix:true};
 
 // 用户
 message User {
-  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
+  model.Model  basic = 1 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" comment:"昵称"'}];
   string account = 17 [(go.field) = {tags:'gorm:"size:36;not null;unique" validate:"required,gte=6,lte=20" comment:"账号"'}];
   string password = 5 [(go.field) = {tags:'json:"-" gorm:"size:32;not null" validate:"gte=8,lte=15" comment:"密码"'}];
@@ -26,7 +28,7 @@ message User {
   Gender gender = 8 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type:INTEGER
   }];
-  time.Date birthday = 9 [(go.field) = {tags:'gorm:"<-:false;type:date;index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  time.Date birthday = 9 [(go.field) = {tags:'gorm:"<-:false;type:date;index"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     default:"2018-08-08",
     type: STRING}];
   string address = 14 [(go.field) = {tags:'gorm:"size:255"'}];
@@ -40,15 +42,12 @@ message User {
   UserStatus status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
-  time.Time activatedAt = 3 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
-  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  time.Time updatedAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-  deletedAt.DeletedAt deletedAt = 27 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  timestamp.Timestamp activatedAt = 3 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
 }
 
 message UserExt {
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  time.Time lastActivatedAt = 23 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index" comment:"上次操作时间"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  timestamp.Timestamp lastActivatedAt = 23 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index" comment:"上次操作时间"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type: STRING}];
   uint64 score = 15 [(go.field) = {tags:'gorm:"default:0" comment:"分数"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     title:"分数"
@@ -61,12 +60,8 @@ message UserExt {
 message Follow {
   uint64 userId = 1 [(go.field) = {tags:'gorm:"index"'}];
   uint64 followId = 2 [(go.field) = {tags:'gorm:"default:0"'}];
-  time.Time createdAt = 3 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-    type: STRING}];
-  time.Time updatedAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-  deletedAt.DeletedAt deletedAt = 4 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-    type: STRING}];
-  uint32 status = 5 [(go.field) = {tags:'gorm:"type:int2;"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  model.ModelTime  basic = 3;
+  uint32 status = 4 [(go.field) = {tags:'gorm:"type:int2;"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }]; //状态：0无效，1有效
 }
@@ -77,7 +72,7 @@ message ScoreLog {
   uint64 userId = 2 [(go.field) = {tags:'gorm:"index"'}];
   sint64 score = 3 [(go.field) = {tags: 'json:"score" gorm:""'}];
   string reason = 5 [(go.field) = {tags:'gorm:"size:255"'}];
-  time.Time createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  timestamp.Timestamp createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type: STRING}];
   string remark = 7 [(go.field) = {tags:'gorm:"size:255"'}];
 }
@@ -88,7 +83,7 @@ message BannedLog {
   uint64 duration = 3 [(go.field) = {tags:'gorm:""'}];
   string reason = 4 [(go.field) = {tags:'gorm:"size:255"'}];
   BannedType type = 5 ;
-  time.Time createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  timestamp.Timestamp createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type: STRING}];
   string remark = 7 [(go.field) = {tags:'gorm:"size:255"'}];
 }
@@ -102,7 +97,7 @@ message ActionLog {
   //相关id
   string relatedId = 4[(go.field) = {tags:'gorm:"size:255"'}];
   bytes lastValue = 5 [(go.field) = {tags:'gorm:"size:255"'}];
-  time.Time createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  timestamp.Timestamp createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type: STRING}];
   string remark = 7 [(go.field) = {tags:'gorm:"size:255"'}];
   //设备
@@ -113,9 +108,7 @@ message ActionLog {
 
 //简历
 message Resume {
-  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-    type:INTEGER
-  }];
+  model.Model  basic = 1 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
   uint64 userId = 2 [(go.field) = {tags:'gorm:"index"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type:INTEGER
   }];
@@ -125,9 +118,9 @@ message Resume {
   string title = 4 [(go.field) = {tags:'gorm:"size:255"'}];
   // 部门或专业
   string department = 5 [(go.field) = {tags:'gorm:"size:255"'}];
-  time.Time beginTime = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  timestamp.Timestamp beginTime = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type: STRING}];
-  time.Time endTime = 7 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  timestamp.Timestamp endTime = 7 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type: STRING}];
   string remark = 11 [(go.field) = {tags:'gorm:"size:255"'}];
   // 0-Education 教育经历,1- Work 职业生涯
@@ -135,11 +128,6 @@ message Resume {
   uint32 status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
-  time.Time createdAt = 29 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-    type: STRING}];
-  time.Time updatedAt = 30 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-  deletedAt.DeletedAt deletedAt = 31 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-    type: STRING}];
 }
 
 message UserBase {
@@ -181,22 +169,17 @@ message AccessDevice {
 
 
 message Device {
-  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
+  model.Model  basic = 1 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
   string name = 2 [(go.field) = {tags:'gorm:"size:255"'}];
   DeviceType deviceType = 3[(go.field) = {tags:'gorm:"type:int2;default:0"'}];
-  string manufacturer  = 4 [(go.field) = {tags:'gorm:"size:255" comment:"制造商"'}];
-  string model   = 5 [(go.field) = {tags:'gorm:"size:255" comment:"型号"'}];
-  string serialNo   = 6 [(go.field) = {tags:'gorm:"size:255" comment:"序列号"'}];
+  string manufacturer = 4 [(go.field) = {tags:'gorm:"size:255" comment:"制造商"'}];
+  string model = 5 [(go.field) = {tags:'gorm:"size:255" comment:"型号"'}];
+  string serialNo = 6 [(go.field) = {tags:'gorm:"size:255" comment:"序列号"'}];
   string OS = 7 [(go.field) = {tags:'gorm:"size:255"'}];
   uint32 cpu = 8 [(go.field) = {tags:'gorm:"type:int2;default:0"'}];
   uint32 ram = 9 [(go.field) = {tags:'gorm:"type:int8;default:0"'}];
   uint32 storage = 10 [(go.field) = {tags:'gorm:"type:int8;default:0"'}];
   double screenSize = 11 [(go.field) = {tags:'gorm:"type:int8;default:0"'}];
-  time.Time createdAt = 29 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-    type: STRING}];
-  time.Time updatedAt = 30 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-  deletedAt.DeletedAt deletedAt = 31 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'},(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-    type: STRING}];
 }
 
 // 用户授权信息
@@ -212,71 +195,71 @@ message Auth {
 
 // 用户操作
 enum Action {
-  ActionPlaceholder = 0 [(enum.comment)= "占位"];
-  ActionSignup = 1 [(enum.comment)= "注册"];
-  ActionActive = 2 [(enum.comment)= "激活"];
-  ActionRestPassword = 3 [(enum.comment)= "重置密码"];
-  ActionEditPassword = 4 [(enum.comment)= "修改密码"];
-  ActionCreateResume = 5 [(enum.comment)= "新建简历"];
-  ActionEditResume = 6 [(enum.comment)= "编辑简历"];
-  ActionDeleteResume = 7 [(enum.comment)= "删除简历"];
+  ActionPlaceholder = 0 [(enum.comment) = "占位"];
+  ActionSignup = 1 [(enum.comment) = "注册"];
+  ActionActive = 2 [(enum.comment) = "激活"];
+  ActionRestPassword = 3 [(enum.comment) = "重置密码"];
+  ActionEditPassword = 4 [(enum.comment) = "修改密码"];
+  ActionCreateResume = 5 [(enum.comment) = "新建简历"];
+  ActionEditResume = 6 [(enum.comment) = "编辑简历"];
+  ActionDeleteResume = 7 [(enum.comment) = "删除简历"];
 }
 // 用户角色
 enum Role {
-  PlaceholderRole = 0 [(enum.comment)= "占位"];
-  RoleNormal = 1 [(enum.comment)= "普通用户"];
-  RoleAdmin = 2 [(enum.comment)= "管理员"];
-  RoleSuperAdmin = 3 [(enum.comment)= "超级管理员"];
+  PlaceholderRole = 0 [(enum.comment) = "占位"];
+  RoleNormal = 1 [(enum.comment) = "普通用户"];
+  RoleAdmin = 2 [(enum.comment) = "管理员"];
+  RoleSuperAdmin = 3 [(enum.comment) = "超级管理员"];
 }
 
 // 用户性别
 enum Gender{
 
-  GenderPlaceholder = 0 [(enum.comment)= "占位"];
-  GenderUnfilled = 1 [(enum.comment)= "未填"];
-  GenderMale = 2 [(enum.comment)= "男"];
-  GenderFemale = 3 [(enum.comment)= "女"];
+  GenderPlaceholder = 0 [(enum.comment) = "占位"];
+  GenderUnfilled = 1 [(enum.comment) = "未填"];
+  GenderMale = 2 [(enum.comment) = "男"];
+  GenderFemale = 3 [(enum.comment) = "女"];
 }
 
 // 用户状态
 enum UserStatus {
   option (enum.jsonmarshal) = false;
-  UserStatusPlaceholder = 0 [(enum.comment)= "占位"];
-  UserStatusInActive = 1 [(enum.comment)= "未激活"];
-  UserStatusActivated = 2 [(enum.comment)= "已激活"];
-  UserStatusFrozen = 3 [(enum.comment)= "已冻结"];
-  UserStatusDeleted = 4 [(enum.comment)= "已注销"];
+  UserStatusPlaceholder = 0 [(enum.comment) = "占位"];
+  UserStatusInActive = 1 [(enum.comment) = "未激活"];
+  UserStatusActivated = 2 [(enum.comment) = "已激活"];
+  UserStatusFrozen = 3 [(enum.comment) = "已冻结"];
+  UserStatusDeleted = 4 [(enum.comment) = "已注销"];
 }
 
 // 封禁类型
 enum BannedType{
   option (enum.jsonmarshal) = false;
-  BannedTypePlaceholder = 0 [(enum.comment)= "占位"];
-  BannedTypePost = 1 [(enum.comment)= "禁言"];
-  BannedTypeLogin = 2 [(enum.comment)= "禁止登录"];
+  BannedTypePlaceholder = 0 [(enum.comment) = "占位"];
+  BannedTypePost = 1 [(enum.comment) = "禁言"];
+  BannedTypeLogin = 2 [(enum.comment) = "禁止登录"];
 }
 
 enum UserErr {
 
   option (enum.errcode) = true;
   option (enum.jsonmarshal) = false;
-  UserErrPlaceholder = 0 [(enum.comment)= "占位"];
-  UserErrLogin = 1000 [(enum.comment)= "用户名或密码错误"];
-  UserErrNoActive = 1001 [(enum.comment)= "未激活账号"];
-  UserErrNoAuthority = 1002 [(enum.comment)= "无权限"];
-  UserErrLoginTimeout = 1003 [(enum.comment)= "登录超时"];
-  UserErrInvalidToken = 1004 [(enum.comment)= "Token错误"];
-  UserErrNoLogin = 1005 [(enum.comment)= "未登录"];
+  UserErrPlaceholder = 0 [(enum.comment) = "占位"];
+  UserErrLogin = 1000 [(enum.comment) = "用户名或密码错误"];
+  UserErrNoActive = 1001 [(enum.comment) = "未激活账号"];
+  UserErrNoAuthority = 1002 [(enum.comment) = "无权限"];
+  UserErrLoginTimeout = 1003 [(enum.comment) = "登录超时"];
+  UserErrInvalidToken = 1004 [(enum.comment) = "Token错误"];
+  UserErrNoLogin = 1005 [(enum.comment) = "未登录"];
 }
 
 enum DeviceType {
 
   option (enum.errcode) = true;
   option (enum.jsonmarshal) = false;
-  DeviceTypePlaceholder = 0 [(enum.comment)= "占位"];
-  DeviceTypePhone = 1 [(enum.comment)= "手机"];
-  DeviceTypePC = 2 [(enum.comment)= "电脑"];
-  DeviceTypePad = 3 [(enum.comment)= "平板"];
-  DeviceTypeWatch = 4 [(enum.comment)= "手表"];
+  DeviceTypePlaceholder = 0 [(enum.comment) = "占位"];
+  DeviceTypePhone = 1 [(enum.comment) = "手机"];
+  DeviceTypePC = 2 [(enum.comment) = "电脑"];
+  DeviceTypePad = 3 [(enum.comment) = "平板"];
+  DeviceTypeWatch = 4 [(enum.comment) = "手表"];
 
 }

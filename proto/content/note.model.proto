@@ -2,8 +2,9 @@ syntax = "proto3";
 package content;
 import "content/content.model.proto";
 import "hopeio/utils/patch/go.proto";
-import "hopeio/time/time.proto";
+import "hopeio/time/timestamp/timestamp.proto";
 import "hopeio/time/deletedAt/deletedAt.proto";
+import "hopeio/model/basic.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "user/user.model.proto";
 import "content/action.model.proto";
@@ -13,18 +14,16 @@ option java_multiple_files = true;
 option go_package = "github.com/liov/hoper/server/go/protobuf/content";
 
 message Note {
-  uint64 id = 1 [(go.field) = {tags:'json:"id" gorm:"primaryKey;"'}];
+  model.Model  basic = 1 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
   string title = 2 [(go.field) = {tags:'gorm:"type:varchar(10)" json:"title" validate:"gte=3,lte=10" comment:"标题"'}];
   string content = 3 [(go.field) = {tags:'gorm:"type:text" json:"content"'}];
-  time.Time createdAt = 16 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  deletedAt.DeletedAt deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
   uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
 }
 
 message NoteBook{
-  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
+  model.Model  basic = 1 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
   string title = 2 [(go.field) = {tags:'gorm:"size:50;not null" comment:"标题"'}];
   string description = 3 [(go.field) = {tags:'gorm:"type:text;not null" comment:"描述"'}];
   string cover = 4 [(go.field) = {tags:'gorm:"size:255;not null" comment:"封面"'}];
@@ -32,8 +31,6 @@ message NoteBook{
   uint32 anonymous = 15 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"是否匿名,0-是,1否"'}];
   ViewPermission permission = 13 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"查看权限"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" comment:"用户id"'}];
-  time.Time createdAt = 16 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  deletedAt.DeletedAt deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
   uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];

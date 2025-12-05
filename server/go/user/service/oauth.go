@@ -2,6 +2,10 @@ package service
 
 import (
 	"context"
+	"log"
+	"strconv"
+	"time"
+
 	"github.com/go-oauth2/oauth2/v4"
 	"github.com/go-oauth2/oauth2/v4/errors"
 	"github.com/go-oauth2/oauth2/v4/generates"
@@ -14,16 +18,13 @@ import (
 	"github.com/hopeio/gox/net/http/oauth"
 	oauth3 "github.com/hopeio/gox/net/http/oauth"
 	"github.com/hopeio/gox/types/param"
-	jwtx "github.com/hopeio/gox/validation/auth/jwt"
 	goauth "github.com/hopeio/protobuf/oauth"
 	"github.com/hopeio/protobuf/response"
+	jwtx "github.com/hopeio/scaffold/jwt"
 	"github.com/liov/hoper/server/go/global"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"google.golang.org/grpc/metadata"
 	"gorm.io/gorm"
-	"log"
-	"strconv"
-	"time"
 )
 
 func GetOauthService() *OauthService {

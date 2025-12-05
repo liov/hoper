@@ -2,8 +2,9 @@ syntax = "proto3";
 package content;
 
 import "hopeio/utils/patch/go.proto";
-import "hopeio/time/time.proto";
+import "hopeio/time/timestamp/timestamp.proto";
 import "hopeio/time/deletedAt/deletedAt.proto";
+import "hopeio/model/basic.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "user/user.model.proto";
 import "common/common.model.proto";
@@ -16,7 +17,7 @@ option go_package = "github.com/liov/hoper/server/go/protobuf/content";
 
 // 瞬间
 message Moment {
-  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
+  model.Model  basic = 1 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
   string content = 2 [(go.field) = {tags:'gorm:"type:text;not null" comment:"内容"'}];
   repeated string images = 32 [(go.field) = {tags:'gorm:"type:text[];serializer:string_array" comment:"图片"'}];
   // 还是决定瞬间和日记形态合为一种
@@ -41,7 +42,4 @@ message Moment {
   uint32 status = 24 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
-  time.Time createdAt = 22 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  deletedAt.DeletedAt deletedAt = 23 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
-
 }

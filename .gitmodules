@@ -14,10 +14,6 @@
 	path = awesome
 	url = https://github.com/liov/awesome
 	branch = main
-[submodule "thirdparty/context"]
-	path = thirdparty/context
-	url = https://github.com/hopeio/context
-	branch = main
 [submodule "thirdparty/initialize"]
 	path = thirdparty/initialize
 	url = https://github.com/hopeio/initialize

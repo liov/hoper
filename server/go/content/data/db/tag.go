@@ -1,7 +1,6 @@
 package db
 
 import (
-	dbi "github.com/hopeio/gox/database/sql"
 	"github.com/hopeio/scaffold/errcode"
 	commonmodel "github.com/liov/hoper/server/go/common/model"
 	"github.com/liov/hoper/server/go/content/model"
@@ -16,7 +15,7 @@ func (d *ContentDao) GetContentTag(typ content.ContentType, refIds []uint64) ([]
 	var tags []model.ContentTagRel
 	err := d.db.Select("b.ref_id,a.id,a.name").Table(TagTableNameAlias).
 		Joins(`LEFT JOIN `+model.TableNameContentTag+` b ON a.id = b.tag_id`).
-		Where("b.type = ? AND b.ref_id IN (?)"+dbi.WithNotDeleted,
+		Where("b.type = ? AND b.ref_id IN (?) AND b.deleted_at IS NULL",
 			typ, refIds).Find(&tags).Error
 	if err != nil {
 		return nil, ctxi.RespErrorLog(errcode.DBError, err, "GetContentTag")
@@ -24,13 +23,13 @@ func (d *ContentDao) GetContentTag(typ content.ContentType, refIds []uint64) ([]
 	return tags, nil
 }
 
-func (d *ContentDao) GetTagsByRefId(typ content.ContentType, refId uint64) ([]*common.TinyTag, error) {
+func (d *ContentDao) GetTagsByRefId(refId uint64) ([]*common.TinyTag, error) {
 	ctxi := d.Context
 	var tags []*common.TinyTag
 	err := d.db.Select("a.id,a.name").Table(TagTableNameAlias).
 		Joins(`LEFT JOIN `+model.TableNameContentTag+` b ON a.id = b.tag_id`).
-		Where("b.type = ? AND b.ref_id = ?"+dbi.WithNotDeleted,
-			typ, refId).Scan(&tags).Error
+		Where("b.ref_id = ? AND b.deleted_at IS NULL",
+			refId).Scan(&tags).Error
 	if err != nil {
 		return nil, ctxi.RespErrorLog(errcode.DBError, err, "GetTagsByRefId")
 	}
