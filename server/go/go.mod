@@ -15,7 +15,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.3
 	github.com/hopeio/cherry v1.19.2
 	github.com/hopeio/context v0.5.15
-	github.com/hopeio/gox v1.4.0
+	github.com/hopeio/gox v1.5.0
 	github.com/hopeio/initialize v1.0.0
 	github.com/hopeio/pick v1.12.2
 	github.com/hopeio/protobuf v1.0.0

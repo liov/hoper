@@ -30,24 +30,24 @@ case $param in
         cd $dir/thirdparty/protobuf
         go get github.com/hopeio/gox@$version
         upgrade
+        cd $dir/thirdparty/pick
+        go get github.com/hopeio/gox@$version
+        upgrade
         cd $dir/thirdparty/deploy/plugin
         go get github.com/hopeio/gox@$version
         cd $dir/thirdparty/deploy
         upgrade
         ;;
-    pc)
+    ch)
         echo "Parameter is pc."
         # 在这里执行pc参数的逻辑
-        cd $dir/thirdparty/pick
-        upgrade
         cd $dir/thirdparty/cherry
         go get github.com/hopeio/protobuf@main
         upgrade
         ;;
-    ex)
+    sc)
         echo "Parameter is ex."
-        # 在这里执行co参数的逻辑
-        cd $dir/thirdparty/example
+        cd $dir/thirdparty/scaffold
         go get github.com/hopeio/cherry@main
         go get github.com/hopeio/pick@main
         ;;
