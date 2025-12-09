@@ -2,9 +2,10 @@ package service
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/hopeio/gox/log"
 	tusd "github.com/tus/tusd/v2/pkg/handler"
-	"net/http"
 )
 
 func init() {

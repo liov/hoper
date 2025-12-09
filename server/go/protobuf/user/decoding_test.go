@@ -2,8 +2,9 @@ package user
 
 import (
 	"encoding/json"
-	"google.golang.org/protobuf/encoding/protojson"
 	"testing"
+
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func BenchmarkProtoJson(b *testing.B) {
