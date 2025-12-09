@@ -112,7 +112,7 @@ func (u *OauthService) OauthAuthorize(ctx context.Context, req *goauth.OauthReq)
 	for k, v := range res.Headers {
 		headers[k] = v[0]
 	}
-	return &response.HttpResponse{Body: res.Body.Bytes(), Status: uint32(res.Code), Headers: headers}, nil
+	return &response.HttpResponse{Body: res.Body.Bytes(), Status: int32(res.Code), Headers: headers}, nil
 }
 
 func (u *OauthService) OauthToken(ctx context.Context, req *goauth.OauthReq) (*response.HttpResponse, error) {
@@ -140,5 +140,5 @@ func (u *OauthService) OauthToken(ctx context.Context, req *goauth.OauthReq) (*r
 	for k, v := range res.Headers {
 		headers[k] = v[0]
 	}
-	return &response.HttpResponse{Body: res.Body.Bytes(), Status: uint32(res.Code), Headers: headers}, nil
+	return &response.HttpResponse{Body: res.Body.Bytes(), Status: int32(res.Code), Headers: headers}, nil
 }

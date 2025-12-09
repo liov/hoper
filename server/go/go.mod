@@ -11,13 +11,12 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/golang/protobuf v1.5.4
 	github.com/google/uuid v1.6.0
-	github.com/gorilla/websocket v1.5.3
+	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.3
-	github.com/hopeio/cherry v1.19.2
-	github.com/hopeio/context v0.5.15
-	github.com/hopeio/gox v1.5.0
+	github.com/hopeio/cherry v1.20.4
+	github.com/hopeio/gox v1.6.3
 	github.com/hopeio/initialize v1.0.0
-	github.com/hopeio/pick v1.12.2
+	github.com/hopeio/pick v1.13.3
 	github.com/hopeio/protobuf v1.0.0
 	github.com/hopeio/scaffold v1.0.0
 	github.com/notedit/rtmp-lib v0.0.8
@@ -26,7 +25,6 @@ require (
 	github.com/tus/tusd/v2 v2.8.0
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.63.0
 	go.uber.org/zap v1.27.1
-	golang.org/x/net v0.47.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20251202230838-ff82c1b0f217
 	google.golang.org/grpc v1.77.0
 	google.golang.org/protobuf v1.36.10
@@ -140,6 +138,7 @@ require (
 	golang.org/x/crypto v0.45.0 // indirect
 	golang.org/x/exp v0.0.0-20251113190631-e25ba8c21ef6 // indirect
 	golang.org/x/mod v0.30.0 // indirect
+	golang.org/x/net v0.47.0 // indirect
 	golang.org/x/sync v0.18.0 // indirect
 	golang.org/x/sys v0.38.0 // indirect
 	golang.org/x/text v0.31.0 // indirect

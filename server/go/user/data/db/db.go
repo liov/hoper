@@ -62,10 +62,7 @@ func (d *UserDao) GetByEmailOrPhone(input string, fields ...string) (*puser.User
 }
 
 func (d *UserDao) Creat(user *puser.User) error {
-	if err := d.Table(model.TableNameUser).Create(user).Error; err != nil {
-		return err
-	}
-	return nil
+	return d.Table(model.TableNameUser).Create(user).Error
 }
 
 func (d *UserDao) GetByPrimaryKey(id uint64) (*puser.User, error) {
