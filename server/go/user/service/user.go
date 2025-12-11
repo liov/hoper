@@ -595,7 +595,7 @@ func (*UserService) PickAdd(ctx *ginctx.Context, req *model.SignupReq) (*wrapper
 	return &wrappers.StringValue{Value: req.Name}, nil
 }
 
-func (*UserService) PickAddv(ctx *ginctx.Context, req *response.CommonResp) (*response.CommonResp, error) {
+func (*UserService) PickAddv(ctx *ginctx.Context, req *response.ErrResp) (*response.ErrResp, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() { pick.Post("/add").Title("用户注册").End() })
 	return req, nil

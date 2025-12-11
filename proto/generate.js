@@ -96,7 +96,7 @@ process.argv.slice(2).forEach(function(val,index,array){
   switch (val) {
     case 'go':
       //generate(protopath, [], goConfig);
-      childProcess.execSync(`protogen.exe go -e -w -q -p ${protopath} -g ${goConfig.output}`,{ cwd: goConfig.output,encoding: 'utf-8' });
+      childProcess.execSync(`protogen.exe go -d -e -w -i ${protopath} -o ${goConfig.output}`,{ cwd: goConfig.output,encoding: 'utf-8' });
       break;
     case 'dart':
       generate(protopath, [], dartConfig);

@@ -16,7 +16,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-//go:generate protogen.exe go -e -w -v -p ../../proto
+//go:generate protogen.exe go -d -e -w -v -i ../../proto
 func main() {
 	//配置初始化应该在第一位
 	defer global.Global.Cleanup()

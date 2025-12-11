@@ -124,7 +124,7 @@ function Pipeline(group, buildDir = '',name = '', deploy_kind = 'deployment', bu
                     'git checkout -b deploy $DRONE_COMMIT_REF',
                     // edit Dockerfile && deploy file
                     `cp -r /code/${protopath}/* ${protoGenpath}`,
-                    `${protopath !== '' ? 'if [ ! -f ' + buildfile + ' ]; then protogen go -e -w -v -p ' + workspace + '/proto -o ' + protoGenpath + '; fi' : 'echo'}`,
+                    `${protopath !== '' ? 'if [ ! -f ' + buildfile + ' ]; then protogen go -d -e -w -v -i ' + workspace + '/proto -o ' + protoGenpath + '; fi' : 'echo'}`,
                     // go build
                     `cd ${buildDir}`,
                     //'go mod tidy',
