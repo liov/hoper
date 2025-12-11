@@ -14,7 +14,7 @@ option java_multiple_files = true;
 option go_package = "github.com/liov/hoper/server/go/protobuf/content";
 
 message Note {
-  model.Model  basic = 1 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
+  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
   string title = 2 [(go.field) = {tags:'gorm:"type:varchar(10)" json:"title" validate:"gte=3,lte=10" comment:"标题"'}];
   string content = 3 [(go.field) = {tags:'gorm:"type:text" json:"content"'}];
   uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
@@ -23,7 +23,7 @@ message Note {
 }
 
 message NoteBook{
-  model.Model  basic = 1 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
+  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
   string title = 2 [(go.field) = {tags:'gorm:"size:50;not null" comment:"标题"'}];
   string description = 3 [(go.field) = {tags:'gorm:"type:text;not null" comment:"描述"'}];
   string cover = 4 [(go.field) = {tags:'gorm:"size:255;not null" comment:"封面"'}];

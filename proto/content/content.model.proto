@@ -41,7 +41,7 @@ message ContentAttr{
 
 // Deprecated 类型拆分
 message Content{
-  model.Model  basic = 1 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
+  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
   ContentType type = 23[(go.field) = {tags:'gorm:"type:int2;index" comment:"类型"'}];
   string title = 24 [(go.field) = {tags:'gorm:"size:50;not null" comment:"标题"'}];
   string intro = 25 [(go.field) = {tags:'gorm:"size:100;not null" comment:"介绍"'}];
@@ -71,7 +71,7 @@ message Content{
 
 // Deprecated 类型拆分
 message Container{
-  model.Model  basic = 1 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
+  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
   ContainerType type = 5 [(go.field) = {tags:'gorm:"type:int2;index" comment:"类型"'}];
   string title = 2 [(go.field) = {tags:'gorm:"size:50;not null" comment:"标题"'}];
   string desc = 3 [(go.field) = {tags:'gorm:"type:text;not null" comment:"描述"'}];
@@ -86,7 +86,7 @@ message Container{
 }
 
 message Favorite{
-  model.Model  basic = 1 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
+  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
   user.UserBase user = 2 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
   string title = 3 [(go.field) = {tags:'gorm:"size:10;not null" comment:"标题"'}];
@@ -105,7 +105,7 @@ message FavFollow{
 }
 
 message UserStatistics{
-  model.Model  basic = 1 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
+  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
   uint32 diary = 2 [(go.field) = {tags:'gorm:"type:int8'}];
   uint32 moment = 3 [(go.field) = {tags:'gorm:"type:int8"'}];
   uint32 article = 4 [(go.field) = {tags:'gorm:"type:int8"'}];

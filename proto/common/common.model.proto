@@ -17,7 +17,7 @@ option (enum.gqlgen_all) = true;
 option (go.file) = {no_enum_prefix:true};
 
 message Attr{
-  model.Model  basic = 9 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
+  model.Model  basic = 9 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" validate:"required,gte=2,lte=10" comment:"名称"'}];
   string desc = 3 [(go.field) = {tags:'gorm:"size:255"  comment:"描述"'}];
   DataType type = 5 [(go.field) = {tags:'gorm:"type:int2" comment:"属性的值输入类型"'}];
@@ -30,7 +30,7 @@ message Attr{
 
 // 例如猪有固定的几个属性
 message AttrGroup{
-  model.Model  basic = 9 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
+  model.Model  basic = 9 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" validate:"required,gte=2,lte=10" comment:"名称"'}];
   uint64 pId = 3 [(go.field) = {tags:'gorm:"default:0;index" comment:"直接父分类的ID"'}];
   uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
@@ -43,7 +43,7 @@ message AttrAttrGroup{
   uint64 attrId = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   uint64 groupId = 2 [(go.field) = {tags:'gorm:"primaryKey"'}];
   uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
-  model.ModelTime  time = 9 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
+  model.ModelTime  time = 9 [(go.field) = {tags:'json:"time,inline" gorm:"embedded"'}];
 }
 
 message Dict{
@@ -55,7 +55,7 @@ message Dict{
   uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
-  model.ModelTime  time = 9 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
+  model.ModelTime  time = 9 [(go.field) = {tags:'json:"time,inline" gorm:"embedded"'}];
 }
 
 message Area {
@@ -68,11 +68,11 @@ message Area {
   uint32 status = 8 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
-  model.ModelTime  time = 9 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
+  model.ModelTime  time = 9 [(go.field) = {tags:'json:"time,inline" gorm:"embedded"'}];
 }
 
 message Media{
-  model.Model  basic = 1 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
+  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
   string url = 2 [(go.field) = {tags:'gorm:"size:255;not null" comment:"url"'}];
   uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
   uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
@@ -81,7 +81,7 @@ message Media{
 }
 
 message Tag {
-  model.Model  basic = 1 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
+  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null;uniqueIndex" validate:"required,gte=2,lte=10" comment:"名称"'}];
   string desc = 3 [(go.field) = {tags:'gorm:"size:100"  comment:"描述"'}];
   string image = 17 [(go.field) = {tags:'gorm:"size:255"  comment:"表情url"'}];
@@ -118,7 +118,7 @@ message Enum{
   uint32 status = 7 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
-  model.ModelTime  time = 8 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
+  model.ModelTime  time = 8 [(go.field) = {tags:'json:"time,inline" gorm:"embedded"'}];
 }
 
 message Mail {
@@ -129,18 +129,18 @@ message Mail {
   string contentType = 5;
   string content = 6;
   repeated string to = 7;
-  model.ModelTime  time = 9 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
+  model.ModelTime  time = 9 [(go.field) = {tags:'json:"time,inline" gorm:"embedded"'}];
 }
 
 message sms {
   string sign = 1;
   string content = 6;
   repeated string to = 7;
-  model.ModelTime  time = 9 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
+  model.ModelTime  time = 9 [(go.field) = {tags:'json:"time,inline" gorm:"embedded"'}];
 }
 
 message Category{
-  model.Model  basic = 1 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
+  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" validate:"required,gte=2,lte=10" comment:"名称"'}];
   uint64 pId = 3 [(go.field) = {tags:'gorm:"default:0;index" comment:"直接父分类的ID"'}];
   uint32 seq = 4 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];

@@ -17,7 +17,7 @@ option go_package = "github.com/liov/hoper/server/go/protobuf/content";
 
 
 message Diary {
-  model.Model  basic = 1 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
+  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
   string content = 2 [(go.field) = {tags:'gorm:"type:text;not null" comment:"内容"'}];
   uint64 bookId = 4 [(go.field) = {tags:'gorm:"size:20;default:0" comment:"日记本Id"'}];
   DiaryBook book = 26 [(go.field) = {tags:'gorm:"-" comment:"日记本"'}];
@@ -43,7 +43,7 @@ message Diary {
 }
 
 message DiaryBook{
-  model.Model  basic = 1 [(go.field) = {tags:'json:",inline" gorm:"embedded"'}];
+  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
   string title = 2 [(go.field) = {tags:'gorm:"size:50;not null" comment:"标题"'}];
   string description = 3 [(go.field) = {tags:'gorm:"type:text;not null" comment:"描述"'}];
   string cover = 4 [(go.field) = {tags:'gorm:"size:255;not null" comment:"封面"'}];
