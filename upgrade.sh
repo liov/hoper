@@ -50,6 +50,7 @@ case $param in
         cd $dir/thirdparty/scaffold
         go get github.com/hopeio/cherry@main
         go get github.com/hopeio/pick@main
+        upgrade
         ;;
     *)
         echo "Invalid parameter: $param"

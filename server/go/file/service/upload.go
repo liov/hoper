@@ -88,7 +88,7 @@ func (*FileService) Exists(ctx context.Context, req *request.Exists) (*response.
 	if file != nil {
 		upload := model.UploadInfo{
 			UserId:    auth.Id,
-			CreatedAt: ctxi.RequestAt.Time,
+			CreatedAt: ctxi.RequestTime.Time,
 			FileId:    file.Id,
 		}
 		if err := db.Table(model.TableNameUploadInfo).Create(&upload).Error; err != nil {
@@ -135,7 +135,7 @@ func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (uplo
 	if file != nil {
 		upload = &model.UploadInfo{
 			UserId:    auth.Id,
-			CreatedAt: ctx.RequestAt.Time,
+			CreatedAt: ctx.RequestTime.Time,
 			FileId:    file.Id,
 		}
 		if err = db.Table(model.TableNameUploadInfo).Create(upload).Error; err != nil {
@@ -144,7 +144,7 @@ func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (uplo
 		return
 	}
 
-	ymdStr := timex.GetYMD(ctx.RequestAt.Time, sep)
+	ymdStr := timex.GetYMD(ctx.RequestTime.Time, sep)
 
 	ext, err := fs.GetExt(info)
 	if err != nil {
@@ -187,7 +187,7 @@ func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (uplo
 	upload = &model.UploadInfo{
 		FileId:    file.Id,
 		UserId:    auth.Id,
-		CreatedAt: ctx.RequestAt.Time,
+		CreatedAt: ctx.RequestTime.Time,
 	}
 
 	err = db.Table(model.TableNameUploadInfo).Create(upload).Error

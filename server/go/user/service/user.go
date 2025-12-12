@@ -141,7 +141,7 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*wrappe
 
 	activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Basic.Id, 10)
 
-	curTime := ctxi.RequestAt.TimeStamp
+	curTime := ctxi.RequestTime.TimeStamp
 
 	if err := global.Dao.Redis.SetEX(ctx, activeUser, curTime, modelconst.ActiveDuration).Err(); err != nil {
 		return nil, ctxi.RespErrorLog(errcode.RedisErr, err, "UserService.Signup,SetEX")
@@ -263,7 +263,7 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 	redisKey := modelconst.ActiveTimeKey + strconv.FormatUint(req.Id, 10)
 	emailTime, err := global.Dao.Redis.Get(ctx, redisKey).Int64()
 	if err != nil {
-		go sendMail(ctxi, model.ActionActive, ctxi.RequestAt.TimeStamp, user)
+		go sendMail(ctxi, model.ActionActive, ctxi.RequestTime.TimeStamp, user)
 		return nil, ctxi.RespErrorLog(errcode.InvalidArgument.Msg("已过激活期限"), err, "Get")
 	}
 	secretStr := strconv.Itoa((int)(emailTime)) + user.Mail + user.Password
@@ -378,7 +378,7 @@ func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.Login
 	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctxi.Base(), ctxi.TraceID())
 
 	db.Table(modelconst.TableNameUserExt).Where(`id = ?`, user.Basic.Id).
-		UpdateColumn("last_activated_at", ctxi.RequestAt.String())
+		UpdateColumn("last_activated_at", ctxi.RequestTime.String())
 	userRedisDao := redis.GetUserDao(ctxi, global.Dao.Redis.Client)
 	if err := userRedisDao.EfficientUserHashToRedis(); err != nil {
 		return nil, errcode.RedisErr
@@ -634,7 +634,7 @@ func (u *UserService) EasySignup(ctx context.Context, req *model.SignupReq) (*mo
 		Gender:      req.Gender,
 		Avatar:      modelconst.DefaultAvatar,
 		Role:        model.RoleNormal,
-		ActivatedAt: timestamp.New(ctxi.RequestAt.Time),
+		ActivatedAt: timestamp.New(ctxi.RequestTime.Time),
 		Status:      model.UserStatusActivated,
 	}
 

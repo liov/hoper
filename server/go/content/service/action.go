@@ -234,7 +234,7 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*em
 		}
 	}
 	err = db.Table(model.TableNameCollect).Where(`type = ? AND ref_id = ? AND fav_id NOT IN (?)`, req.Type, req.RefId, req.FavIds).
-		Update(`deleted_at`, ctxi.RequestAt.String()).Error
+		Update(`deleted_at`, ctxi.RequestTime.String()).Error
 	if err != nil {
 		return nil, ctxi.RespErrorLog(errcode.DBError, err, "DELETE")
 	}

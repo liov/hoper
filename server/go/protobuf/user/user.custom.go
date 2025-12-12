@@ -20,7 +20,7 @@ type AuthBase struct {
 	Avatar string     `json:"avatar"`
 }
 
-func (x *AuthBase) IdStr() string {
+func (x *AuthBase) GetId() string {
 	return strconv.FormatUint(x.Id, 10)
 }
 
