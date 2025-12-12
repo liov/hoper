@@ -7,8 +7,8 @@ import (
 
 	"strconv"
 
-	dbi "github.com/hopeio/gox/database/sql"
-	clausei "github.com/hopeio/gox/database/sql/gorm/clause"
+	sqlx "github.com/hopeio/gox/database/sql"
+	clausex "github.com/hopeio/gox/database/sql/gorm/clause"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"
 	"gorm.io/gorm"
@@ -54,7 +54,7 @@ func (d *ContentDao) LikeId(typ content.ContentType, action content.ActionType, 
 	ctxi := d.Context
 	// 性能优化之分开写
 	sql := `SELECT id FROM "` + model.ActionTableName(action) + `" 
-WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ?` + dbi.WithNotDeleted
+WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ?` + sqlx.WithNotDeleted
 	var id uint64
 	err := d.db.Raw(sql, typ, refId, action, userId).Row().Scan(&id)
 	if err != nil && err != sqlstd.ErrNoRows {
@@ -66,7 +66,7 @@ WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ?` + dbi.WithNotDelet
 func (d *ContentDao) DelAction(typ content.ContentType, action content.ActionType, refId, userId uint64) error {
 	ctxi := d.Context
 	sql := `Update "` + model.ActionTableName(action) + `" SET deleted_at = ?
-WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ?` + dbi.WithNotDeleted
+WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ?` + sqlx.WithNotDeleted
 	err := d.db.Exec(sql, ctxi.RequestTime.String(), typ, refId, action, userId).Error
 	if err != nil {
 		return ctxi.RespErrorLog(errcode.DBError, err, "DelAction")
@@ -77,7 +77,7 @@ WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ?` + dbi.WithNotDelet
 func (d *ContentDao) Del(tableName string, id uint64) error {
 	ctxi := d.Context
 	sql := `Update "` + tableName + `" SET deleted_at = ?
-WHERE id = ?` + dbi.WithNotDeleted
+WHERE id = ?` + sqlx.WithNotDeleted
 	err := d.db.Exec(sql, ctxi.RequestTime.String(), id).Error
 	if err != nil {
 		return ctxi.RespErrorLog(errcode.DBError, err, "Del")
@@ -88,7 +88,7 @@ WHERE id = ?` + dbi.WithNotDeleted
 func (d *ContentDao) DelByAuth(tableName string, id, userId uint64) error {
 	ctxi := d.Context
 	sql := `Update "` + tableName + `" SET deleted_at = ?
-WHERE id = ?  AND user_id = ?` + dbi.WithNotDeleted
+WHERE id = ?  AND user_id = ?` + sqlx.WithNotDeleted
 	err := d.db.Exec(sql, ctxi.RequestTime.String(), id, userId).Error
 	if err != nil {
 		return ctxi.RespErrorLog(errcode.DBError, err, "DelByAuth")
@@ -99,7 +99,7 @@ WHERE id = ?  AND user_id = ?` + dbi.WithNotDeleted
 func (d *ContentDao) ExistsByAuth(tableName string, id, userId uint64) (bool, error) {
 	ctxi := d.Context
 	sql := `SELECT EXISTS(SELECT * FROM "` + tableName + `" 
-WHERE id = ?  AND user_id = ?` + dbi.WithNotDeleted + ` LIMIT 1)`
+WHERE id = ?  AND user_id = ?` + sqlx.WithNotDeleted + ` LIMIT 1)`
 	var exists bool
 	err := d.db.Raw(sql, id, userId).Scan(&exists).Error
 	if err != nil {
@@ -111,7 +111,7 @@ WHERE id = ?  AND user_id = ?` + dbi.WithNotDeleted + ` LIMIT 1)`
 func (d *ContentDao) ContainerExists(typ content.ContainerType, id, userId uint64) (bool, error) {
 	ctxi := d.Context
 	sql := `SELECT EXISTS(SELECT * FROM "` + model.TableNameContainer + `" 
-WHERE id = ?  AND type = ? AND user_id = ?` + dbi.WithNotDeleted + ` LIMIT 1)`
+WHERE id = ?  AND type = ? AND user_id = ?` + sqlx.WithNotDeleted + ` LIMIT 1)`
 	var exists bool
 	err := d.db.Raw(sql, id, typ, userId).Scan(&exists).Error
 	if err != nil {
@@ -124,7 +124,7 @@ func (d *ContentDao) GetContentActions(action content.ActionType, typ content.Co
 	ctxi := d.Context
 	var actions []model.ContentAction
 	err := d.db.Select("id,ref_id,action").Table(model.ActionTableName(action)).
-		Where("type = ? AND ref_id IN (?) AND user_id = ?"+dbi.WithNotDeleted,
+		Where("type = ? AND ref_id IN (?) AND user_id = ?"+sqlx.WithNotDeleted,
 			typ, refIds, userId).Scan(&actions).Error
 	if err != nil {
 		return nil, ctxi.RespErrorLog(errcode.DBError, err, "GetContentActions")
@@ -136,7 +136,7 @@ func (d *ContentDao) GetLike(likeId, userId uint64) (*model.ContentAction, error
 	ctxi := d.Context
 	var action model.ContentAction
 	err := d.db.Select("id,ref_id,action,type").Table(model.TableNameLike).
-		Where("id = ? AND user_id = ?"+dbi.WithNotDeleted,
+		Where("id = ? AND user_id = ?"+sqlx.WithNotDeleted,
 			likeId, userId).Scan(&action).Error
 	if err != nil {
 		return nil, ctxi.RespErrorLog(errcode.DBError, err, "GetContentActions")
@@ -148,7 +148,7 @@ func (d *ContentDao) GetCollects(typ content.ContentType, refIds []uint64, userI
 	ctxi := d.Context
 	var collects []model.ContentCollect
 	err := d.db.Select("id,ref_id,fav_id").Table(model.TableNameCollect).
-		Where("type = ? AND ref_id IN (?) AND user_id = ?"+dbi.WithNotDeleted,
+		Where("type = ? AND ref_id IN (?) AND user_id = ?"+sqlx.WithNotDeleted,
 			typ, refIds, userId).Scan(&collects).Error
 	if err != nil {
 		return nil, ctxi.RespErrorLog(errcode.DBError, err, "GetContentActions")
@@ -158,14 +158,14 @@ func (d *ContentDao) GetCollects(typ content.ContentType, refIds []uint64, userI
 
 func (d *ContentDao) GetComments(typ content.ContentType, refId, rootId uint64, pageNo, pageSize int) (int64, []*content.Comment, error) {
 	ctxi := d.Context
-	db := d.db.Table(model.TableNameComment).Where(`type = ? AND ref_id = ? AND root_id = ?`+dbi.WithNotDeleted, typ, refId, rootId)
+	db := d.db.Table(model.TableNameComment).Where(`type = ? AND ref_id = ? AND root_id = ?`+sqlx.WithNotDeleted, typ, refId, rootId)
 	var count int64
 	err := db.Count(&count).Error
 	if err != nil {
 		return 0, nil, ctxi.RespErrorLog(errcode.DBError, err, "Find")
 	}
 	var clauses []clause.Expression
-	clauses = append(clauses, clausei.PaginationExpr(pageNo, pageSize))
+	clauses = append(clauses, clausex.PaginationExpr(pageNo, pageSize))
 	var comments []*content.Comment
 	err = db.Clauses(clauses...).Find(&comments).Error
 	if err != nil {

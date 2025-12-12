@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/hopeio/gox/context/httpctx"
-	gormi "github.com/hopeio/gox/database/sql/gorm"
+	gormx "github.com/hopeio/gox/database/sql/gorm"
 	"github.com/hopeio/protobuf/request"
 	"github.com/hopeio/scaffold/errcode"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -32,7 +32,7 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*req
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
+	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	contentDBDao := data.GetDBDao(ctxi, db)
 
 	req.UserId = auth.Id
@@ -73,7 +73,7 @@ func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*em
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
+	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	err = db.Table(model.TableNameFavorite).Where(`id =? AND user_id =?`, req.Id, auth.Id).
 		Updates(req).Error
 	if err != nil {
@@ -95,7 +95,7 @@ func (*ContentService) TinyFavList(ctx context.Context, req *content.FavListReq)
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
+	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	var favs []*content.TinyFavorites
 	if req.UserId == 0 {
 		err = db.Table(model.TableNameFavorite).Select("id,title").Where(`user_id = ?`, auth.Id).Find(&favs).Error
@@ -119,7 +119,7 @@ func (*ContentService) AddSet(ctx context.Context, req *content.AddSetReq) (*emp
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
+	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	req.UserId = auth.Id
 	err = db.Table(model.TableNameContainer).Create(req).Error
 	if err != nil {
@@ -141,7 +141,7 @@ func (*ContentService) EditSet(ctx context.Context, req *content.AddSetReq) (*em
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
+	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	err = db.Table(model.TableNameContainer).Where(`id =? AND user_id =?`, req.Id, auth.Id).
 		Updates(req).Error
 	if err != nil {

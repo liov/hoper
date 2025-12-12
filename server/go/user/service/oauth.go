@@ -17,7 +17,7 @@ import (
 	httpx "github.com/hopeio/gox/net/http"
 	"github.com/hopeio/gox/net/http/oauth"
 	oauth3 "github.com/hopeio/gox/net/http/oauth"
-	"github.com/hopeio/gox/types/param"
+	"github.com/hopeio/gox/types/request"
 	goauth "github.com/hopeio/protobuf/oauth"
 	"github.com/hopeio/protobuf/response"
 	jwtx "github.com/hopeio/scaffold/jwt"
@@ -107,7 +107,7 @@ func (u *OauthService) OauthAuthorize(ctx context.Context, req *goauth.OauthReq)
 	req.AccessTokenExp = int64(24 * time.Hour)
 	req.LoginURI = "/oauth/login"
 	var res httpx.ResponseRecorder
-	u.Server.HandleAuthorizeRequest(ctx, &param.OauthReq{}, tokens[0], &res)
+	u.Server.HandleAuthorizeRequest(ctx, &request.OauthReq{}, tokens[0], &res)
 	headers := make(map[string]string)
 	for k, v := range res.Headers {
 		headers[k] = v[0]
@@ -118,7 +118,7 @@ func (u *OauthService) OauthAuthorize(ctx context.Context, req *goauth.OauthReq)
 func (u *OauthService) OauthToken(ctx context.Context, req *goauth.OauthReq) (*response.HttpResponse, error) {
 	req.GrantType = string(oauth2.AuthorizationCode)
 	var res httpx.ResponseRecorder
-	err := u.Server.HandleTokenRequest(ctx, &param.OauthReq{
+	err := u.Server.HandleTokenRequest(ctx, &request.OauthReq{
 		ResponseType:   req.ResponseType,
 		ClientID:       req.ClientID,
 		Scope:          req.Scope,
