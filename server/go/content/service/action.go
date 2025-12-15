@@ -301,7 +301,7 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 	contentDBDao := data.GetDBDao(ctxi, db)
 
-	total, comments, err := contentDBDao.GetComments(content.ContentMoment, req.RefId, req.RootId, int(req.PageNo), int(req.PageSize))
+	total, comments, err := contentDBDao.GetComments(content.ContentMoment, req.RefId, req.RootId, req.PageNo, req.PageSize)
 	if err != nil {
 		return nil, err
 	}

@@ -156,7 +156,7 @@ func (d *ContentDao) GetCollects(typ content.ContentType, refIds []uint64, userI
 	return collects, nil
 }
 
-func (d *ContentDao) GetComments(typ content.ContentType, refId, rootId uint64, pageNo, pageSize int) (int64, []*content.Comment, error) {
+func (d *ContentDao) GetComments(typ content.ContentType, refId, rootId uint64, pageNo, pageSize uint32) (int64, []*content.Comment, error) {
 	ctxi := d.Context
 	db := d.db.Table(model.TableNameComment).Where(`type = ? AND ref_id = ? AND root_id = ?`+sqlx.WithNotDeleted, typ, refId, rootId)
 	var count int64
@@ -165,7 +165,7 @@ func (d *ContentDao) GetComments(typ content.ContentType, refId, rootId uint64, 
 		return 0, nil, ctxi.RespErrorLog(errcode.DBError, err, "Find")
 	}
 	var clauses []clause.Expression
-	clauses = append(clauses, clausex.PaginationExpr(pageNo, pageSize))
+	clauses = append(clauses, clausex.PaginationExpr(pageNo, pageSize)...)
 	var comments []*content.Comment
 	err = db.Clauses(clauses...).Find(&comments).Error
 	if err != nil {
