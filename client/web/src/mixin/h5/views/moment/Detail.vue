@@ -29,7 +29,7 @@ const refId = route.params.id as string;
 const moment = ref(store.moment);
 
 if (!moment.value) {
-  const res = await axios.get(`/api/v1/moment/${route.params.id}`);
+  const res = await axios.get(`/api/moment/${route.params.id}`);
   moment.value = res.data.data;
   store.moment = moment.value;
   userStore.appendUsers(moment.value.users);

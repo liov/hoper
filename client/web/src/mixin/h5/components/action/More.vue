@@ -124,7 +124,7 @@ function remark(name: string) {
   report.field = name === "255";
 }
 async function onReport() {
-  await axios.post("/api/v1/action/report", {
+  await axios.post("/api/action/report", {
     type,
     refId,
     remark: report.message,

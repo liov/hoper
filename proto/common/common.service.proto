@@ -23,7 +23,7 @@ service CommonService {
   // 新建
   rpc AddAttr (AddAttrReq) returns (request.Id) {
     option (google.api.http) = {
-      post: "/api/v1/attr"
+      post: "/api/attr"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -36,7 +36,7 @@ service CommonService {
   // 详情
   rpc AttrInfo (request.Id) returns (Attr) {
     option (google.api.http) = {
-      get: "/api/v1/attr/{id}"
+      get: "/api/attr/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -47,7 +47,7 @@ service CommonService {
   // 修改
   rpc EditAttr (EditAttrReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/attr/{id}"
+      put: "/api/attr/{id}"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -59,7 +59,7 @@ service CommonService {
   // 列表
   rpc AttrList (AttrListReq) returns (AttrListResp) {
     option (google.api.http) = {
-      get: "/api/v1/attr"
+      get: "/api/attr"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -70,7 +70,7 @@ service CommonService {
   // 新建
   rpc AddTag (AddTagReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/api/v1/tag"
+      post: "/api/tag"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -82,7 +82,7 @@ service CommonService {
   // 详情
   rpc TagInfo (request.Id) returns (common.Tag) {
     option (google.api.http) = {
-      get: "/api/v1/tag/{id}"
+      get: "/api/tag/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -93,7 +93,7 @@ service CommonService {
   // 修改
   rpc EditTag (EditTagReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/tag/{id}"
+      put: "/api/tag/{id}"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -105,7 +105,7 @@ service CommonService {
   // 列表
   rpc TagList (TagListReq) returns (TagListResp) {
     option (google.api.http) = {
-      get: "/api/v1/tag"
+      get: "/api/tag"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -115,7 +115,7 @@ service CommonService {
 
   rpc SendMail (SendMailReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/api/v1/sendMail"
+      post: "/api/sendMail"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {

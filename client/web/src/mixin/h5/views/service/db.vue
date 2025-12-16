@@ -16,7 +16,7 @@ const params = {
   pageNo: 0,
   pageSize: 5,
 };
-const { data } = await axios.get(`/api/v1/moment`, { params });
+const { data } = await axios.get(`/api/moment`, { params });
 const momentList = reactive(data.data);
 const total = ref(data.count);
 const topCount = ref(data.top_count);

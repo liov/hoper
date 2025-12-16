@@ -6,7 +6,7 @@ import {ResData} from "@hopeio/utils/types";
 
 class UserService {
   static async active(id: number, secret: string): Promise<void> {
-    await httpclient.get<ResData<void>>(`/api/v1/user/active/${id}/${secret}`)
+    await httpclient.get<ResData<void>>(`/api/user/active/${id}/${secret}`)
   }
 }
 export default UserService

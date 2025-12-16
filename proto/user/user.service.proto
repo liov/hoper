@@ -31,7 +31,7 @@ service UserService {
   // 验证码
   rpc VerifyCode (VerifyCodeReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      get: "/api/v1/sendVerifyCode"
+      get: "/api/sendVerifyCode"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "util", "v1.0.0"]
@@ -44,7 +44,7 @@ service UserService {
   //注册验证
   rpc SignupVerify (SingUpVerifyReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/api/v1/user/signupVerify"
+      post: "/api/user/signupVerify"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -58,7 +58,7 @@ service UserService {
   //注册
   rpc Signup (SignupReq) returns (google.protobuf.StringValue) {
     option (google.api.http) = {
-      post: "/api/v1/user"
+      post: "/api/user"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -85,7 +85,7 @@ service UserService {
   //激活
   rpc Active (ActiveReq) returns (LoginResp) {
     option (google.api.http) = {
-      get: "/api/v1/user/active/{id}/{secret}"
+      get: "/api/user/active/{id}/{secret}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]
@@ -97,7 +97,7 @@ service UserService {
   //编辑
   rpc Edit (EditReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/user/{id}"
+      put: "/api/user/{id}"
       body: "detail"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -118,7 +118,7 @@ service UserService {
   //登录
   rpc Login (LoginReq) returns (LoginResp) {
     option (google.api.http) = {
-      post: "/api/v1/user/login"
+      post: "/api/user/login"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -131,7 +131,7 @@ service UserService {
   //退出
   rpc Logout (google.protobuf.Empty) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      get: "/api/v1/user/logout"
+      get: "/api/user/logout"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]
@@ -144,7 +144,7 @@ service UserService {
   //鉴权
   rpc AuthInfo (google.protobuf.Empty) returns (Auth) {
     option (google.api.http) = {
-      get: "/api/v1/auth"
+      get: "/api/auth"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]
@@ -171,7 +171,7 @@ service UserService {
   //重置密码
   rpc ForgetPassword (LoginReq) returns (google.protobuf.StringValue) {
     option (google.api.http) = {
-      get: "/api/v1/user/forgetPassword"
+      get: "/api/user/forgetPassword"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]
@@ -183,7 +183,7 @@ service UserService {
 
   rpc ResetPassword (ResetPasswordReq) returns (google.protobuf.StringValue) {
     option (google.api.http) = {
-      patch: "/api/v1/user/resetPassword/{id}/{secret}"
+      patch: "/api/user/resetPassword/{id}/{secret}"
       body: "password"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -197,7 +197,7 @@ service UserService {
   //获取用户信息
   rpc Info (request.Id) returns (UserResp) {
     option (google.api.http) = {
-      get: "/api/v1/user/{id}"
+      get: "/api/user/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]
@@ -209,7 +209,7 @@ service UserService {
 
   rpc ActionLogList (ActionLogListReq) returns (ActionLogListResp) {
     option (google.api.http) = {
-      get: "/api/v1/user/actionLog"
+      get: "/api/user/actionLog"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]
@@ -222,7 +222,7 @@ service UserService {
   //获取基础用户信息
   rpc BaseList (BaseListReq) returns (BaseListResp) {
     option (google.api.http) = {
-      post: "/api/v1/baseUserList"
+      post: "/api/baseUserList"
       body : "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -236,7 +236,7 @@ service UserService {
   // 关注
   rpc Follow (FollowReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      get: "/api/v1/user/follow"
+      get: "/api/user/follow"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]
@@ -247,7 +247,7 @@ service UserService {
   // 取消关注
   rpc delFollow (FollowReq) returns (BaseListResp) {
     option (google.api.http) = {
-      delete: "/api/v1/user/follow"
+      delete: "/api/user/follow"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]

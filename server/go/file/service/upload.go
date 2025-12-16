@@ -31,8 +31,8 @@ const errResp = "上传失败"
 const sep = "/"
 
 const (
-	ApiExists = "/api/v1/exists"
-	ApiUpload = "/api/v1/upload/"
+	ApiExists = "/api/exists"
+	ApiUpload = "/api/upload/"
 )
 
 // Upload 文件上传

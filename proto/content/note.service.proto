@@ -26,7 +26,7 @@ service NoteService {
     //验证码
     rpc Create (Note) returns (google.protobuf.StringValue) {
         option (google.api.http) = {
-            post: "/api/v1/note"
+            post: "/api/note"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {

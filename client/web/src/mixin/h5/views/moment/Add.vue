@@ -87,7 +87,7 @@ async function submit() {
     images += up.url + ",";
   }
   if (images !== "") images = images.slice(0, images.length - 1);
-  const res = await axios.post(`/api/v1/moment`, {
+  const res = await axios.post(`/api/moment`, {
     mood: "",
     tags: [],
     permission: permission,

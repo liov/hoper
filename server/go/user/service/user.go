@@ -176,10 +176,10 @@ func sendMail(ctxi *httpctx.Context, action model.Action, curTime int64, user *m
 	var templ string
 	switch action {
 	case model.ActionActive:
-		activeOrRestPasswdValues.ActionURL = siteURL + "/api/v1/user/active/" + strconv.FormatUint(user.Basic.Id, 10) + "/" + secretStr
+		activeOrRestPasswdValues.ActionURL = siteURL + "/api/user/active/" + strconv.FormatUint(user.Basic.Id, 10) + "/" + secretStr
 		templ = modelconst.ActionActiveContent
 	case model.ActionRestPassword:
-		activeOrRestPasswdValues.ActionURL = siteURL + "/api/v1/user/resetPassword/" + strconv.FormatUint(user.Basic.Id, 10) + "/" + secretStr
+		activeOrRestPasswdValues.ActionURL = siteURL + "/api/user/resetPassword/" + strconv.FormatUint(user.Basic.Id, 10) + "/" + secretStr
 		templ = modelconst.ActionRestPasswordContent
 	}
 	log.Debug(activeOrRestPasswdValues.ActionURL)

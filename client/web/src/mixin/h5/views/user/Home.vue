@@ -94,7 +94,7 @@ if (!user.intro) user.intro = "我不想介绍自己";
 if (!user.signature) user.signature = "太个性签名签不下";
 
 async function logout() {
-  const res = await axios.get("/api/v1/user/logout");
+  const res = await axios.get("/api/user/logout");
   showToast(res.data.msg);
   store.auth = null;
   router.push("/");

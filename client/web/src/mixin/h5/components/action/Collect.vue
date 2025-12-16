@@ -81,14 +81,14 @@ defineExpose({
   setCollect,
 });
 
-const res = await axios.get("/api/v1/content/tinyFav/0");
+const res = await axios.get("/api/content/tinyFav/0");
 console.log(res);
 const favs: UnwrapNestedRefs<any[]> = res.data.data.list
   ? reactive(res.data.data.list)
   : reactive([]);
 
 async function onCollect() {
-  await axios.post("/api/v1/action/collect", {
+  await axios.post("/api/action/collect", {
     type: type,
     refId: refId,
     favIds: collects,
@@ -110,7 +110,7 @@ async function onConfirm() {
     title: title.value,
     cover: uploader.value.length > 0 ? uploader.value[0].url : "",
   };
-  const res = await axios.post("/api/v1/content/fav", fav);
+  const res = await axios.post("/api/content/fav", fav);
   fav.id = res.data.data.id;
   fav.userId = userStore.auth.id;
   favs.push(fav);

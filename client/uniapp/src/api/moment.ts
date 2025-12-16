@@ -9,7 +9,7 @@ const userStore = useUserStore()
 class MomentService {
   static async getMomentList(pageNo: number, pageSize: number): Promise<MomentList> {
     const { data } = await httpclient.get<ResData<MomentList>>(
-      '/api/v1/moment',
+      '/api/moment',
       {
         pageNo,
         pageSize,

@@ -26,7 +26,7 @@ const actions = {
     const token = localStorage.getItem("token");
     if (token) {
       state.token = token;
-      const res = await axios.get(`/api/v1/auth`);
+      const res = await axios.get(`/api/auth`);
       // 跟后端的初始化配合
       if (res.data.code === 0) state.auth = res.data.data;
     }
@@ -35,7 +35,7 @@ const actions = {
     try {
       const {
         data: { details },
-      } = await axios.post("/api/v1/user/login", params);
+      } = await axios.post("/api/user/login", params);
       state.auth = details.user;
       state.token = details.token;
       localStorage.setItem("token", details.token);
@@ -71,7 +71,7 @@ const actions = {
       if (!state.userCache.has(value)) noExistsId.push(value);
     });
     if (noExistsId.length > 0) {
-      const { data } = await axios.post(`/api/v1/user/baseUserList`, {
+      const { data } = await axios.post(`/api/user/baseUserList`, {
         ids: noExistsId,
       });
       if (data.code && data.code !== 0) Toast.fail(data.msg);

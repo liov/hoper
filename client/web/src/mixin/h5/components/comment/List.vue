@@ -62,7 +62,7 @@ async function onLoad() {
   finished.value = false;
   // 异步更新数据
   const res = await axios.get(
-    `/api/v1/action/comment?type=${props.type}&refId=${props.refId}&rootId=${props.rootId}&pageNo=${pageNo.value}&pageSize=${pageSize.value}`,
+    `/api/action/comment?type=${props.type}&refId=${props.refId}&rootId=${props.rootId}&pageNo=${pageNo.value}&pageSize=${pageSize.value}`,
   );
   loading.value = false;
   const data = res.data.data;

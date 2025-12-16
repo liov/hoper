@@ -23,7 +23,7 @@ service ContentService {
   //收藏夹列表
   rpc FavList (FavListReq) returns (FavListResp) {
     option (google.api.http) = {
-      get: "/api/v1/content/fav/{userId}"
+      get: "/api/content/fav/{userId}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -33,7 +33,7 @@ service ContentService {
   //收藏夹列表
   rpc TinyFavList (FavListReq) returns (TinyFavListResp) {
     option (google.api.http) = {
-      get: "/api/v1/content/tinyFav/{userId}"
+      get: "/api/content/tinyFav/{userId}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -43,7 +43,7 @@ service ContentService {
   // 创建收藏夹
   rpc AddFav (AddFavReq) returns (request.Id) {
     option (google.api.http) = {
-      post: "/api/v1/content/fav"
+      post: "/api/content/fav"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -53,7 +53,7 @@ service ContentService {
   // 修改收藏夹
   rpc EditFav (AddFavReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/content/fav/{id}"
+      put: "/api/content/fav/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -63,7 +63,7 @@ service ContentService {
   // 创建合集
   rpc AddSet (AddSetReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/api/v1/content/set"
+      post: "/api/content/set"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -73,7 +73,7 @@ service ContentService {
   // 修改合集
   rpc EditSet (AddSetReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/content/set/{id}"
+      put: "/api/content/set/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -83,7 +83,7 @@ service ContentService {
   // 用户内容数量
   rpc GetUserStatistics (request.Id) returns (UserStatistics) {
     option (google.api.http) = {
-      get: "/api/v1/content/userStatistics/{id}"
+      get: "/api/content/userStatistics/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]

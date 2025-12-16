@@ -28,14 +28,14 @@ const actions = {
     const token = uni.getStorageSync(tokenKey)
     if (token) {
       state.token = token
-      const { data } = await request.get(API_HOST + `/api/v1/auth`)
+      const { data } = await request.get(API_HOST + `/api/auth`)
       // 跟后端的初始化配合
       if (data.code === 0) state.auth = data.data
     }
   },
   async login(params) {
     try {
-      const { code, data } = await request.post('/api/v1/user/login', params)
+      const { code, data } = await request.post('/api/user/login', params)
 
       if (code !== 0) {
         throw new Error('Bad credentials')
@@ -77,7 +77,7 @@ const actions = {
       if (!state.userCache.has(value)) noExistsId.push(value)
     })
     if (noExistsId.length > 0) {
-      const data = await request.post(`/api/v1/user/baseUserList`, {
+      const data = await request.post(`/api/user/baseUserList`, {
         ids: noExistsId,
       })
       if (data.code && data.code !== 0)

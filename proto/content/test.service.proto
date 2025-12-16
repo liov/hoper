@@ -26,7 +26,7 @@ service TestService {
 
     rpc GC(GCReq) returns(google.protobuf.Empty){
         option (google.api.http) = {
-            get: "/api/v1/gc/{address}"
+            get: "/api/gc/{address}"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             tags:["测试相关接口","v1.0.0","test"]
@@ -38,7 +38,7 @@ service TestService {
 
     rpc Register(google.protobuf.Empty) returns(google.protobuf.Empty){
         option (google.api.http) = {
-            get: "/api/v1/register"
+            get: "/api/register"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             tags:["测试相关接口","v1.0.0","test"]
@@ -50,7 +50,7 @@ service TestService {
 
     rpc Restart(google.protobuf.Empty) returns(google.protobuf.Empty) {
         option (google.api.http) = {
-            get: "/api/v1/restart"
+            get: "/api/restart"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             tags:["测试相关接口","v1.0.0","test"]
@@ -62,7 +62,7 @@ service TestService {
 
     rpc Array(Ids) returns(google.protobuf.Empty) {
         option (google.api.http) = {
-            post: "/api/v1/array"
+            post: "/api/array"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {

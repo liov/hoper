@@ -170,7 +170,7 @@ function getFormValues(values: any): any {
 }
 
 async function signup(values: any) {
-  const res = await axios.post("/api/v1/user", getFormValues(values));
+  const res = await axios.post("/api/user", getFormValues(values));
   if (res.data.code == 0) {
     Toast.success("请前往邮箱查收激活邮件");
   }

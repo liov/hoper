@@ -25,7 +25,7 @@ service FileService {
   // 获取url
   rpc GetUrls (GetUrlsReq) returns (GetUrlsResp) {
     option (google.api.http) = {
-      post: "/api/v1/urls"
+      post: "/api/urls"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["获取url相关接口", "util", "v1.0.0"]
@@ -38,7 +38,7 @@ service FileService {
   // 获取url
   rpc GetUrlsByStrId (GetUrlsByStrIdReq) returns (GetUrlsResp) {
     option (google.api.http) = {
-      get: "/api/v1/urls"
+      get: "/api/urls"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["获取url相关接口", "util", "v1.0.0"]

@@ -67,7 +67,7 @@ KeyFile = ""
 Prometheus = true
 StopTimeout = "5s"
 MetricsInterval = "10h"
-ExcludeLogPrefixes = ["/api/v1/upload", "/api/v1/multiUpload", "/api/ws/chat","/api/v2/files","/video", "/live","/static","/upload"]
+ExcludeLogPrefixes = ["/api/upload", "/api/multiUpload", "/api/ws/chat","/api/v2/files","/video", "/live","/static","/upload"]
 IncludeLogPrefixes = []
 
 

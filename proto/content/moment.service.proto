@@ -29,7 +29,7 @@ service MomentService {
   // 详情
   rpc Info (request.Id) returns (Moment) {
     option (google.api.http) = {
-      get: "/api/v1/moment/{id}"
+      get: "/api/moment/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -40,7 +40,7 @@ service MomentService {
   // 新建
   rpc Add (AddMomentReq) returns (request.Id) {
     option (google.api.http) = {
-      post: "/api/v1/moment"
+      post: "/api/moment"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -52,7 +52,7 @@ service MomentService {
   // 修改
   rpc Edit (AddMomentReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/moment/{id}"
+      put: "/api/moment/{id}"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -64,7 +64,7 @@ service MomentService {
   // 列表
   rpc List (MomentListReq) returns (MomentListResp) {
     option (google.api.http) = {
-      get: "/api/v1/moment"
+      get: "/api/moment"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -75,7 +75,7 @@ service MomentService {
   // 删除
   rpc Delete (request.Id) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      delete: "/api/v1/moment/{id}"
+      delete: "/api/moment/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]

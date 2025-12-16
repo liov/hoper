@@ -12,8 +12,8 @@ import (
 func GinRegister(app *gin.Engine) {
 	app.StaticFS("/upload", http.Dir(global.Conf.Customize.UploadDir))
 	app.StaticFS("/static", http.Dir("D:\\Download"))
-	app.GET("/api/v1/exists", wrap.HandlerWrapGRPC(service.GetFileService().Exists))
-	app.GET("/api/v1/exists/:md5/:size", wrap.HandlerWrapGRPC(service.GetFileService().Exists))
-	app.POST("/api/v1/upload/:md5", ginx.Convert(service.Upload))
-	app.POST("/api/v1/multiUpload", ginx.Convert(service.MultiUpload))
+	app.GET("/api/exists", wrap.HandlerWrapGRPC(service.GetFileService().Exists))
+	app.GET("/api/exists/:md5/:size", wrap.HandlerWrapGRPC(service.GetFileService().Exists))
+	app.POST("/api/upload/:md5", ginx.Convert(service.Upload))
+	app.POST("/api/multiUpload", ginx.Convert(service.MultiUpload))
 }

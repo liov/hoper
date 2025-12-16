@@ -67,7 +67,7 @@ function preview() {
   });
 }
 async function like() {
-  const api = `/api/v1/action/like`;
+  const api = `/api/action/like`;
   const id = comment.id;
   const likeId = comment.likeId;
   if (likeId > 0) {

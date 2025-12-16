@@ -15,7 +15,7 @@ const route = useRoute();
 
 onMounted(() => {
   axios
-    .get(`/api/v1/user/active/${route.params.id}/${route.params.secret}`)
+    .get(`/api/user/active/${route.params.id}/${route.params.secret}`)
     .then((res) => {
       if (!res.data.code || res.data.code === 0) {
         Toast.success(res.data.msg);

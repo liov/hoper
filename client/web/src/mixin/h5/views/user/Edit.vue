@@ -108,7 +108,7 @@ async function afterRead(file: any) {
 }
 async function confirm() {
   user.birthday = birthday.value.join("-");
-  const res = await axios.put(`/api/v1/user/${user.id}`, {
+  const res = await axios.put(`/api/user/${user.id}`, {
     id: user.id,
     details: {
       name: user.name,

@@ -65,7 +65,7 @@ async function onLoad() {
   listConfig.finished = false;
   // 异步更新数据
   const res = await axios.get(
-    `/api/v1/moment?pageNo=${listConfig.pageNo}&pageSize=${listConfig.pageSize}`,
+    `/api/moment?pageNo=${listConfig.pageNo}&pageSize=${listConfig.pageSize}`,
   );
 
   listConfig.loading = false;

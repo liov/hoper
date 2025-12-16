@@ -63,7 +63,7 @@ function commentShow() {
   jump(route.path, props.type, content);
 }
 async function like() {
-  const api = `/api/v1/action/like`;
+  const api = `/api/action/like`;
   const id = content.id;
   const likeId = content.likeId;
   if (likeId > 0) {

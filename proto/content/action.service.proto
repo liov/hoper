@@ -28,7 +28,7 @@ service ActionService {
   // 动作  Like Unlike
   rpc Like (LikeReq) returns (request.Id) {
     option (google.api.http) = {
-      post: "/api/v1/action/like"
+      post: "/api/action/like"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["动作相关接口","v1.0.0"]
@@ -38,7 +38,7 @@ service ActionService {
   // 动作  Like Unlike
   rpc DelLike (request.Id) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      delete: "/api/v1/action/like/{id}"
+      delete: "/api/action/like/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["动作相关接口","v1.0.0"]
@@ -48,7 +48,7 @@ service ActionService {
   // 评论
   rpc Comment (CommentReq) returns (request.Id) {
     option (google.api.http) = {
-      post: "/api/v1/action/comment"
+      post: "/api/action/comment"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -58,7 +58,7 @@ service ActionService {
   // 评论列表
   rpc CommentList (CommentListReq) returns (CommentListResp) {
     option (google.api.http) = {
-      get: "/api/v1/action/comment"
+      get: "/api/action/comment"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -68,7 +68,7 @@ service ActionService {
   // 评论
   rpc DelComment (request.Id) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      delete: "/api/v1/action/comment/{id}"
+      delete: "/api/action/comment/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -78,7 +78,7 @@ service ActionService {
   // 收藏
   rpc Collect (CollectReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/api/v1/action/collect"
+      post: "/api/action/collect"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -88,7 +88,7 @@ service ActionService {
   // 举报
   rpc Report (ReportReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/api/v1/action/report"
+      post: "/api/action/report"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
@@ -98,7 +98,7 @@ service ActionService {
   // 用户的操作
   rpc GetUserAction (ContentReq) returns (UserAction) {
     option (google.api.http) = {
-      get: "/api/v1/userAction/{type}/{refId}"
+      get: "/api/userAction/{type}/{refId}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
