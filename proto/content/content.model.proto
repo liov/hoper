@@ -41,7 +41,7 @@ message ContentAttr{
 
 // Deprecated 类型拆分
 message Content{
-  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   ContentType type = 23[(go.field) = {tags:'gorm:"type:int2;index" comment:"类型"'}];
   string title = 24 [(go.field) = {tags:'gorm:"size:50;not null" comment:"标题"'}];
   string intro = 25 [(go.field) = {tags:'gorm:"size:100;not null" comment:"介绍"'}];
@@ -66,12 +66,13 @@ message Content{
   uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
+  model.ModelTime  modelTime = 22 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 
 // Deprecated 类型拆分
 message Container{
-  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   ContainerType type = 5 [(go.field) = {tags:'gorm:"type:int2;index" comment:"类型"'}];
   string title = 2 [(go.field) = {tags:'gorm:"size:50;not null" comment:"标题"'}];
   string desc = 3 [(go.field) = {tags:'gorm:"type:text;not null" comment:"描述"'}];
@@ -83,10 +84,11 @@ message Container{
   uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
+  model.ModelTime  modelTime = 22 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 message Favorite{
-  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   user.UserBase user = 2 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
   string title = 3 [(go.field) = {tags:'gorm:"size:10;not null" comment:"标题"'}];
@@ -95,6 +97,7 @@ message Favorite{
   uint32 sequence = 12 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
   uint32 anonymous = 15 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"是否匿名,0-是,1否"'}];
   repeated  user.UserBase followUsers = 7 [(go.field) = {tags:'gorm:"-" comment:"关注人"'}];
+  model.ModelTime  modelTime = 22 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 message FavFollow{
@@ -105,7 +108,7 @@ message FavFollow{
 }
 
 message UserStatistics{
-  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   uint32 diary = 2 [(go.field) = {tags:'gorm:"type:int8'}];
   uint32 moment = 3 [(go.field) = {tags:'gorm:"type:int8"'}];
   uint32 article = 4 [(go.field) = {tags:'gorm:"type:int8"'}];
@@ -115,6 +118,7 @@ message UserStatistics{
   uint32 comment = 8 [(go.field) = {tags:'gorm:"type:int8"'}];
   uint32 like = 9 [(go.field) = {tags:'gorm:"type:int8"'}];
   uint32 collect = 10 [(go.field) = {tags:'gorm:"type:int8"'}];
+  model.ModelTime  modelTime = 22 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 

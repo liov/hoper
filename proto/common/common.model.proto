@@ -43,7 +43,7 @@ message AttrAttrGroup{
   uint64 attrId = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   uint64 groupId = 2 [(go.field) = {tags:'gorm:"primaryKey"'}];
   uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
-  model.ModelTime  time = 9 [(go.field) = {tags:'json:"time,inline" gorm:"embedded"'}];
+  model.ModelTime  modelTime = 9 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 message Dict{
@@ -55,7 +55,7 @@ message Dict{
   uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
-  model.ModelTime  time = 9 [(go.field) = {tags:'json:"time,inline" gorm:"embedded"'}];
+  model.ModelTime  modelTime = 9 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 message Area {
@@ -68,7 +68,7 @@ message Area {
   uint32 status = 8 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
-  model.ModelTime  time = 9 [(go.field) = {tags:'json:"time,inline" gorm:"embedded"'}];
+  model.ModelTime  modelTime = 9 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 message Media{
@@ -118,7 +118,7 @@ message Enum{
   uint32 status = 7 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
-  model.ModelTime  time = 8 [(go.field) = {tags:'json:"time,inline" gorm:"embedded"'}];
+  model.ModelTime  modelTime = 8 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 message Mail {
@@ -129,14 +129,14 @@ message Mail {
   string contentType = 5;
   string content = 6;
   repeated string to = 7;
-  model.ModelTime  time = 9 [(go.field) = {tags:'json:"time,inline" gorm:"embedded"'}];
+  model.ModelTime  modelTime = 9 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 message sms {
   string sign = 1;
   string content = 6;
   repeated string to = 7;
-  model.ModelTime  time = 9 [(go.field) = {tags:'json:"time,inline" gorm:"embedded"'}];
+  model.ModelTime  modelTime = 9 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 message Category{

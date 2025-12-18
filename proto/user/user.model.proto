@@ -18,7 +18,7 @@ option (go.file) = {no_enum_prefix:true};
 
 // 用户
 message User {
-  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" comment:"昵称"'}];
   string account = 17 [(go.field) = {tags:'gorm:"size:36;not null;unique" validate:"required,gte=6,lte=20" comment:"账号"'}];
   string password = 5 [(go.field) = {tags:'json:"-" gorm:"size:32;not null" validate:"gte=8,lte=15" comment:"密码"'}];
@@ -43,6 +43,7 @@ message User {
     read_only:true
   }];
   timestamp.Timestamp activatedAt = 3 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  model.ModelTime  modelTime = 22 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 message UserExt {
@@ -60,7 +61,7 @@ message UserExt {
 message Follow {
   uint64 userId = 1 [(go.field) = {tags:'gorm:"index"'}];
   uint64 followId = 2 [(go.field) = {tags:'gorm:"default:0"'}];
-  model.ModelTime  basic = 3 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
+  model.ModelTime  modelTime = 3 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
   uint32 status = 4 [(go.field) = {tags:'gorm:"type:int2;"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }]; //状态：0无效，1有效

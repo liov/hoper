@@ -19,30 +19,33 @@ option (go.file) = {no_enum_prefix:true};
 
 // Deprecated: Like UnLike Browse Approve
 message Action{
-  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   ContentType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null;index:idx_like_type_id" validate:"required" comment:"相关类型"'}];
   uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_like_type_id" validate:"required" comment:"相关id"'}];
-  uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
+  uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
   ActionType action = 3 [(go.field) = {tags:'gorm:"type:int2;default:1" validate:"required" comment:"动作"'}];
   user.UserBase user = 4 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
+  model.ModelTime  modelTime = 8 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 // Deprecated: use collect favId=0
 message Like{
-  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   ContentType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null;index:idx_like_type_id" validate:"required" comment:"相关类型"'}];
   uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_like_type_id" validate:"required" comment:"相关id"'}];
-  uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
+  uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
   LikeStatus status = 3 [(go.field) = {tags:'gorm:"type:int2;default:1" validate:"required" comment:"状态"'}];
   user.UserBase user = 4 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
+  model.ModelTime  modelTime = 8 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 message UnLike{
-  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   ContentType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null;index:idx_like_type_id" validate:"required" comment:"相关类型"'}];
   uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_like_type_id" validate:"required" comment:"相关id"'}];
-  uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
+  uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
   user.UserBase user = 4 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
+  model.ModelTime  modelTime = 8 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 // 举报
@@ -59,22 +62,24 @@ message Report{
 
 // 收藏 Like:favId=0
 message Collect{
-  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   ContentType type = 12 [(go.field) = {tags:'json:"-" gorm:"type:int2;not null;index:idx_collect_type_id" validate:"required" comment:"相关类型"'}];
   uint64 refId = 6 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index:idx_collect_type_id" validate:"required" comment:"相关id"'}];
-  uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
+  uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
   user.UserBase user = 2 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   uint64 favId = 3 [(go.field) = {tags:'gorm:"size:20;not null;index" comment:"用户id"'}];
+  model.ModelTime  modelTime = 8 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 // 分享
 message Share{
-  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   ContentType type = 23[(go.field) = {tags:'gorm:"type:int2;index:idx_share_type_id" comment:"类型"'}];
   uint64 refId = 6 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index:idx_share_type_id" validate:"required" comment:"相关id"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
   user.UserBase user = 2 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   common.Platform platform = 3 [(go.field) = {tags:'gorm:"size:20;not null" validate:"required" comment:"用户id"'}];
+  model.ModelTime  modelTime = 22 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 // 系统删除内容记录
@@ -88,7 +93,7 @@ message ContentDel{
 }
 // 评论
 message Comment{
-  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   uint64 refId = 6 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index:idx_comment_type_id" validate:"required" comment:"相关id"'}];
   ContentType type = 23[(go.field) = {tags:'gorm:"type:int2;index:idx_comment_type_id" comment:"类型"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
@@ -106,6 +111,7 @@ message Comment{
   uint32 status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
+  model.ModelTime  modelTime = 22 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 message Statistics{

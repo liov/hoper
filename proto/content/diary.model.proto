@@ -17,7 +17,7 @@ option go_package = "github.com/liov/hoper/server/go/protobuf/content";
 
 
 message Diary {
-  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   string content = 2 [(go.field) = {tags:'gorm:"type:text;not null" comment:"内容"'}];
   uint64 bookId = 4 [(go.field) = {tags:'gorm:"size:20;default:0" comment:"日记本Id"'}];
   DiaryBook book = 26 [(go.field) = {tags:'gorm:"-" comment:"日记本"'}];
@@ -40,10 +40,11 @@ message Diary {
   uint32 status = 24 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
+  model.ModelTime  modelTime = 22 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 message DiaryBook{
-  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   string title = 2 [(go.field) = {tags:'gorm:"size:50;not null" comment:"标题"'}];
   string description = 3 [(go.field) = {tags:'gorm:"type:text;not null" comment:"描述"'}];
   string cover = 4 [(go.field) = {tags:'gorm:"size:255;not null" comment:"封面"'}];
@@ -54,4 +55,5 @@ message DiaryBook{
   uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
+  model.ModelTime  modelTime = 22 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }

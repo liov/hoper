@@ -41,8 +41,6 @@ import (
 	"github.com/hopeio/gox/log"
 	"github.com/hopeio/gox/net/mail"
 	templatex "github.com/hopeio/gox/text/template"
-	basic "github.com/hopeio/protobuf/model"
-
 	"gorm.io/gorm"
 )
 
@@ -139,7 +137,7 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*wrappe
 		return nil, ctxi.RespErrorLog(errcode.DBError.Msg("新建出错"), err, "UserService.Creat")
 	}
 
-	activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Basic.Id, 10)
+	activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
 
 	curTime := ctxi.RequestTime.TimeStamp
 
@@ -176,10 +174,10 @@ func sendMail(ctxi *httpctx.Context, action model.Action, curTime int64, user *m
 	var templ string
 	switch action {
 	case model.ActionActive:
-		activeOrRestPasswdValues.ActionURL = siteURL + "/api/user/active/" + strconv.FormatUint(user.Basic.Id, 10) + "/" + secretStr
+		activeOrRestPasswdValues.ActionURL = siteURL + "/api/user/active/" + strconv.FormatUint(user.Id, 10) + "/" + secretStr
 		templ = modelconst.ActionActiveContent
 	case model.ActionRestPassword:
-		activeOrRestPasswdValues.ActionURL = siteURL + "/api/user/resetPassword/" + strconv.FormatUint(user.Basic.Id, 10) + "/" + secretStr
+		activeOrRestPasswdValues.ActionURL = siteURL + "/api/user/resetPassword/" + strconv.FormatUint(user.Id, 10) + "/" + secretStr
 		templ = modelconst.ActionRestPasswordContent
 	}
 	log.Debug(activeOrRestPasswdValues.ActionURL)
@@ -346,7 +344,7 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 	if user.Status == model.UserStatusInActive {
 		//没看懂
 		//encodedEmail := base64.StdEncoding.EncodeToString(stringsx.ToBytes(user.Mail))
-		activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Basic.Id, 10)
+		activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
 
 		curTime := time.Now().Unix()
 		if err := global.Dao.Redis.SetEX(ctx, activeUser, curTime, modelconst.ActiveDuration).Err(); err != nil {
@@ -361,7 +359,7 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 
 func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.LoginResp, error) {
 	authorization := jwtx.Claims[*model.AuthBase]{Auth: &model.AuthBase{
-		Id:     user.Basic.Id,
+		Id:     user.Id,
 		Name:   user.Name,
 		Role:   user.Role,
 		Status: user.Status,
@@ -377,7 +375,7 @@ func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.Login
 	}
 	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctxi.Base(), ctxi.TraceID())
 
-	db.Table(modelconst.TableNameUserExt).Where(`id = ?`, user.Basic.Id).
+	db.Table(modelconst.TableNameUserExt).Where(`id = ?`, user.Id).
 		UpdateColumn("last_activated_at", ctxi.RequestTime.String())
 	userRedisDao := redis.GetUserDao(ctxi, global.Dao.Redis.Client)
 	if err := userRedisDao.EfficientUserHashToRedis(); err != nil {
@@ -498,7 +496,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 		log.Error(err)
 		return nil, errcode.DBError
 	}
-	restPassword := modelconst.ResetTimeKey + strconv.FormatUint(user.Basic.Id, 10)
+	restPassword := modelconst.ResetTimeKey + strconv.FormatUint(user.Id, 10)
 
 	curTime := time.Now().Unix()
 	if err := global.Dao.Redis.SetEX(ctx, restPassword, curTime, modelconst.ResetDuration).Err(); err != nil {
@@ -538,7 +536,7 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 	}
 	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctxi.Base(), ctxi.TraceID())
 	if err := db.Table(modelconst.TableNameUser).
-		Where(`id = ?`, user.Basic.Id).Update("password", req.Password).Error; err != nil {
+		Where(`id = ?`, user.Id).Update("password", req.Password).Error; err != nil {
 		log.Error("UserService.ResetPassword,DB.Update", err)
 		return nil, errcode.DBError
 	}
@@ -578,7 +576,7 @@ func (*UserService) BaseList(ctx context.Context, req *model.BaseListReq) (*mode
 }
 
 func (*UserService) GetTest(ctx context.Context, req *request.Id) (*model.User, error) {
-	return &model.User{Basic: &basic.Model{Id: req.Id}, Name: "测试"}, nil
+	return &model.User{Id: req.Id, Name: "测试"}, nil
 }
 
 func (*UserService) Service() (string, string, []gin.HandlerFunc) {
