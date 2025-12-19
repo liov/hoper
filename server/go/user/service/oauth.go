@@ -106,18 +106,18 @@ func (u *OauthService) OauthAuthorize(ctx context.Context, req *goauth.OauthReq)
 	tokens = append(tokens, "")
 	req.AccessTokenExp = int64(24 * time.Hour)
 	req.LoginURI = "/oauth/login"
-	var res httpx.ResponseRecorder
+	var res httpx.Recorder
 	u.Server.HandleAuthorizeRequest(ctx, &request.OauthReq{}, tokens[0], &res)
 	headers := make(map[string]string)
-	for k, v := range res.Headers {
+	for k, v := range res.Header() {
 		headers[k] = v[0]
 	}
-	return &response.HttpResponse{Body: res.Body.Bytes(), Status: int32(res.Code), Headers: headers}, nil
+	return &response.HttpResponse{Body: res.Reponse.Body.Bytes(), Status: int32(res.Code), Headers: headers}, nil
 }
 
 func (u *OauthService) OauthToken(ctx context.Context, req *goauth.OauthReq) (*response.HttpResponse, error) {
 	req.GrantType = string(oauth2.AuthorizationCode)
-	var res httpx.ResponseRecorder
+	var res httpx.Recorder
 	err := u.Server.HandleTokenRequest(ctx, &request.OauthReq{
 		ResponseType:   req.ResponseType,
 		ClientID:       req.ClientID,
@@ -137,8 +137,8 @@ func (u *OauthService) OauthToken(ctx context.Context, req *goauth.OauthReq) (*r
 		return nil, err
 	}
 	headers := make(map[string]string)
-	for k, v := range res.Headers {
+	for k, v := range res.Header() {
 		headers[k] = v[0]
 	}
-	return &response.HttpResponse{Body: res.Body.Bytes(), Status: int32(res.Code), Headers: headers}, nil
+	return &response.HttpResponse{Body: res.Reponse.Body.Bytes(), Status: int32(res.Code), Headers: headers}, nil
 }
