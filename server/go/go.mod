@@ -13,10 +13,10 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.3
-	github.com/hopeio/cherry v1.20.7
-	github.com/hopeio/gox v1.6.12
+	github.com/hopeio/cherry v1.20.14
+	github.com/hopeio/gox v1.7.4
 	github.com/hopeio/initialize v1.0.0
-	github.com/hopeio/pick v1.13.5
+	github.com/hopeio/pick v1.13.11
 	github.com/hopeio/protobuf v1.0.0
 	github.com/hopeio/scaffold v1.0.0
 	github.com/notedit/rtmp-lib v0.0.8

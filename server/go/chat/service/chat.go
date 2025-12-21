@@ -35,7 +35,7 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 	ctxi, _ := httpctx.FromContext(r.Context())
 	_, err = auth(ctxi, false)
 	if err != nil {
-		(&httpx.RespAnyData{
+		(&httpx.CommonAnyResp{
 			Code: errors.ErrCode(user.UserErrNoLogin),
 			Msg:  errResp,
 		}).Respond(ctxi.Base(), w)

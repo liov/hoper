@@ -68,7 +68,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		httpx.RespondError(r.Context(), w, errcode.UploadFail.ErrResp())
 		return
 	}
-	(&httpx.RespAnyData{Data: response.File{Id: upload.File.Id, URL: upload.File.Path}}).Respond(r.Context(), w)
+	(&httpx.CommonAnyResp{Data: response.File{Id: upload.File.Id, URL: upload.File.Path}}).Respond(r.Context(), w)
 
 }
 
@@ -203,7 +203,7 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 	ctxi, _ := httpctx.FromContext(r.Context())
 	_, err = auth(ctxi, false)
 	if err != nil {
-		(&httpx.RespAnyData{
+		(&httpx.CommonAnyResp{
 			Code: errcodex.ErrCode(user.UserErrLogin),
 			Msg:  errResp,
 		}).Respond(r.Context(), w)
@@ -232,7 +232,7 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 		urls[i].URL = upload.File.Path
 		urls[i].Success = true
 	}
-	(&httpx.RespAnyData{
+	(&httpx.CommonAnyResp{
 		Msg:  strings.Join(failures, ",") + errResp,
 		Data: urls,
 	}).Respond(r.Context(), w)
