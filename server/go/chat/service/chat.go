@@ -38,7 +38,7 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 		(&httpx.CommonAnyResp{
 			Code: errors.ErrCode(user.UserErrNoLogin),
 			Msg:  errResp,
-		}).Respond(ctxi.Base(), w)
+		}).ServeHTTP(w, r)
 		return
 	}
 	id, _ := idgen.NextID()
