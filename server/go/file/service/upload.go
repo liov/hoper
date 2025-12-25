@@ -39,12 +39,12 @@ const (
 func Upload(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(global.Conf.Upload.UploadMaxSize)
 	if err != nil {
-		httpx.RespondError(w, r, errcode.InvalidArgument.Msg(errResp))
+		httpx.ServeError(w, r, errcode.InvalidArgument.Msg(errResp))
 		return
 	}
 
 	if r.MultipartForm == nil || (r.MultipartForm.Value == nil && r.MultipartForm.File == nil) {
-		httpx.RespondError(w, r, errcode.InvalidArgument.Msg(errResp))
+		httpx.ServeError(w, r, errcode.InvalidArgument.Msg(errResp))
 		return
 	}
 	md5Str := r.RequestURI[len(ApiUpload):]
@@ -60,12 +60,12 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	ctxi, _ := httpctx.FromContext(r.Context())
 	_, err = auth(ctxi, false)
 	if err != nil {
-		httpx.RespondError(w, r, user.UserErrLogin.Msg(errResp))
+		httpx.ServeError(w, r, user.UserErrLogin.Msg(errResp))
 		return
 	}
 	upload, err := save(ctxi, info, md5Str)
 	if err != nil {
-		httpx.RespondError(w, r, errcode.UploadFail.ErrResp())
+		httpx.ServeError(w, r, errcode.UploadFail.ErrResp())
 		return
 	}
 	(&httpx.CommonAnyResp{Data: response.File{Id: upload.File.Id, URL: upload.File.Path}}).ServeHTTP(w, r)
@@ -197,7 +197,7 @@ func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (uplo
 func MultiUpload(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(global.Conf.Upload.UploadMaxSize)
 	if err != nil {
-		httpx.RespondError(w, r, errcode.InvalidArgument.Msg(errResp))
+		httpx.ServeError(w, r, errcode.InvalidArgument.Msg(errResp))
 		return
 	}
 	ctxi, _ := httpctx.FromContext(r.Context())
@@ -210,14 +210,14 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if r.MultipartForm == nil || (r.MultipartForm.Value == nil && r.MultipartForm.File == nil) {
-		httpx.RespondError(w, r, errcode.InvalidArgument.Msg(errResp))
+		httpx.ServeError(w, r, errcode.InvalidArgument.Msg(errResp))
 		return
 	}
 	md5s := r.MultipartForm.Value["md5[]"]
 	multipartFiles := r.MultipartForm.File["file[]"]
 	// 如果有md5
 	if len(md5s) != 0 && len(md5s) != len(multipartFiles) {
-		httpx.RespondError(w, r, errcode.InvalidArgument.Msg(errResp))
+		httpx.ServeError(w, r, errcode.InvalidArgument.Msg(errResp))
 		return
 	}
 	var urls = make([]model.MultiRep, len(multipartFiles))
@@ -226,7 +226,7 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 		upload, err := save(ctxi, multipartFile, md5s[i])
 		if err != nil {
 			failures = append(failures, multipartFile.Filename)
-			httpx.RespondError(w, r, errcode.UploadFail.ErrResp())
+			httpx.ServeError(w, r, errcode.UploadFail.ErrResp())
 			return
 		}
 		urls[i].URL = upload.File.Path
