@@ -14,7 +14,7 @@ class UploadInfo {
 }
 
 @JsonSerializable()
-class MultiUploadRep  {
+class MultiUploadResp  {
   MultiUploadRep({required this.id, required this.url, required this.success});
    int id;
    String url;

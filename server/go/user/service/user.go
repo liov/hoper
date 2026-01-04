@@ -545,15 +545,16 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 }
 
 func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListReq) (*model.ActionLogListResp, error) {
-	rep := &model.ActionLogListResp{}
+	resp := &model.ActionLogListResp{}
 	var logs []*model.ActionLog
 	err := global.Dao.GORMDB.Table(modelconst.TableNameActionLog).
 		Offset(0).Limit(10).Find(&logs).Error
 	if err != nil {
 		return nil, errcode.DBError.Wrap(err)
 	}
-	rep.List = logs
-	return rep, nil
+	
+	resp.List = logs
+	return resp, nil
 }
 
 func (*UserService) BaseList(ctx context.Context, req *model.BaseListReq) (*model.BaseListResp, error) {

@@ -62,7 +62,7 @@ func GetExt(file *multipart.FileHeader) (string, error) {
 	return ext, nil
 }
 
-type MultiRep struct {
+type MultiResp struct {
 	Id      string `json:"id"`
 	URL     string `json:"url"`
 	Success bool   `json:"success"`

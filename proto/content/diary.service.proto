@@ -23,7 +23,7 @@ service DiaryService {
   };
 
   // 日记本
-  rpc DiaryBook (DiaryBookReq) returns (DiaryBookRep) {
+  rpc DiaryBook (DiaryBookReq) returns (DiaryBookResp) {
     option (google.api.http) = {
       get: "/api/diaryBook/{id}"
     };
@@ -33,7 +33,7 @@ service DiaryService {
     option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
   // 日记本列表
-  rpc DiaryBookList (DiaryBookListReq) returns (DiaryBookListRep) {
+  rpc DiaryBookList (DiaryBookListReq) returns (DiaryBookListResp) {
     option (google.api.http) = {
       get: "/api/diaryBook"
     };
@@ -99,7 +99,7 @@ service DiaryService {
   }
 
   // 列表
-  rpc List (DiaryListReq) returns (DiaryListRep) {
+  rpc List (DiaryListReq) returns (DiaryListResp) {
     option (google.api.http) = {
       get: "/api/diary"
     };
@@ -124,7 +124,7 @@ service DiaryService {
 message DiaryBookListReq{
 }
 
-message DiaryBookListRep{
+message DiaryBookListResp{
   uint32 count = 1;
   repeated DiaryBook list = 2;
 }
@@ -135,7 +135,7 @@ message DiaryBookReq{
   uint32 pageSize = 3;
 }
 
-message DiaryBookRep{
+message DiaryBookResp{
   DiaryBook book = 1;
   repeated Diary list = 2;
 }
@@ -175,7 +175,7 @@ message DiaryListReq{
   uint32 pageSize = 2;
 }
 
-message DiaryListRep{
+message DiaryListResp{
   int64 total = 1;
   repeated Diary list = 2;
 }

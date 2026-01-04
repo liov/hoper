@@ -1,5 +1,5 @@
 import { MomentServiceClient } from "@generated/protobuf-ts/content/moment.service.client";
-import type { MomentListRep } from "@generated/protobuf-ts/content/moment.service";
+import type { MomentListResp } from "@generated/protobuf-ts/content/moment.service";
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { showFailToast } from "vant";
 import type { RpcError } from "@protobuf-ts/runtime-rpc";
@@ -13,7 +13,7 @@ const momentClient = new MomentServiceClient(
 export async function momentList(
   pageNo: number,
   pageSize: number
-): Promise<MomentListRep> {
+): Promise<MomentListResp> {
   try {
     const { response, status } = await momentClient.list({ pageNo, pageSize });
     console.log(status);

@@ -31,7 +31,7 @@ func (*DiaryService) DiaryBook(ctx context.Context, req *content.DiaryBookReq) (
 
 	return nil, status.Errorf(codes.Unimplemented, "method DiaryBook not implemented")
 }
-func (*DiaryService) DiaryBookList(ctx context.Context, req *content.DiaryBookListReq) (*content.DiaryBookListRep, error) {
+func (*DiaryService) DiaryBookList(ctx context.Context, req *content.DiaryBookListReq) (*content.DiaryBookListResp, error) {
 	ctxi, _ := httpctx.FromContext(ctx)
 	_, err := auth(ctxi, true)
 	if err != nil {
@@ -112,7 +112,7 @@ func (*DiaryService) Edit(context.Context, *content.AddDiaryReq) (*emptypb.Empty
 	return nil, status.Errorf(codes.Unimplemented, "method Edit not implemented")
 }
 
-func (*DiaryService) List(context.Context, *content.DiaryListReq) (*content.DiaryListRep, error) {
+func (*DiaryService) List(context.Context, *content.DiaryListReq) (*content.DiaryListResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
 
