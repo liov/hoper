@@ -25,12 +25,10 @@
   },
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",
-    "@protobuf-ts/grpcweb-transport": "^2.9.4",
     "@hopeio/utils": "^0.0.5",
     "ant-design-vue": "^4.2.3",
     "axios": "^1.7.7",
     "dayjs": "^1.11.13",
-    "google-protobuf": "^3.21.4",
     "grpc-web": "^1.5.0",
     "markdown-it": "^14.1.0",
     "mitt": "^3.0.1",
@@ -46,7 +44,6 @@
     "vue-router": "^4.4.3"
   },
   "devDependencies": {
-    "@protobuf-ts/plugin": "^2.9.4",
     "@iconify-json/ant-design": "^1.2.0",
     "@iconify-json/logos": "^1.2.0",
     "@originjs/vite-plugin-commonjs": "^1.0.3",

@@ -5,10 +5,7 @@ class ArticleClient {
     const { data } = await axios.get(
       `/api/article?pageNo=${pageNo}&pageSize=${pageSize}`
     );
-    return {
-      articleList: data.data,
-      total: data.count,
-    };
+    return data;
   }
 
   static async info(id) {

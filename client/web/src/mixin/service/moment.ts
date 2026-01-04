@@ -1,26 +1,17 @@
-import { MomentServiceClient } from "@generated/protobuf-ts/content/moment.service.client";
-import type { MomentListResp } from "@generated/protobuf-ts/content/moment.service";
-import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
+import axios from "axios";
 import { showFailToast } from "vant";
-import type { RpcError } from "@protobuf-ts/runtime-rpc";
 
-const momentClient = new MomentServiceClient(
-  new GrpcWebFetchTransport({
-    baseUrl: "https://api.hoper.xyz",
-  })
-);
 
 export async function momentList(
   pageNo: number,
   pageSize: number
-): Promise<MomentListResp> {
+){
   try {
-    const { response, status } = await momentClient.list({ pageNo, pageSize });
+    const { response, status } = await axios.get(`/api/moment?pageNo=${pageNo}&pageSize=${pageSize}`);
     console.log(status);
     return response;
   } catch (e) {
-    const rpcError = e as RpcError;
-    showFailToast(decodeURI(rpcError.message));
-    return Promise.reject(rpcError);
+    showFailToast(decodeURI(e.message));
+    return Promise.reject(e);
   }
 }

@@ -218,11 +218,11 @@ const favState: any = reactive({
 await list(listState.current, listState.pageSize);
 async function list(current: number, pageSize: number) {
   listState.pageSize = pageSize;
-  const { articleList, total } = await ArticleClient.list(
+  const { list, total } = await ArticleClient.list(
     current - 1,
     listState.pageSize,
   );
-  listState.articleList = articleList;
+  listState.list = list;
   listState.total = total;
 }
 
