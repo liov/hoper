@@ -33,10 +33,6 @@ case $param in
         cd $dir/thirdparty/pick
         go get github.com/hopeio/gox@$version
         upgrade
-        cd $dir/thirdparty/deploy/plugin
-        go get github.com/hopeio/gox@$version
-        cd $dir/thirdparty/deploy
-        upgrade
         ;;
     ch)
         echo "Parameter is pc."
