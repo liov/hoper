@@ -15,13 +15,13 @@ import fs from "fs";
 import wasm from "vite-plugin-wasm";
 import { viteCommonjs } from "@originjs/vite-plugin-commonjs";
 
-const lessVar = path.resolve(__dirname, "src/mixin/pc/assets/var.less");
+const lessVar = path.resolve(__dirname, "src/pc/assets/var.less");
 
-fs.copyFileSync("src/mixin/pc/index.html", "index.html");
+fs.copyFileSync("src/pc/index.html", "index.html");
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  envDir: "./src/mixin/env",
+  envDir: "./src/env",
   envPrefix: "HOPRE_",
   define: {
     __APP_PLATFORM__: JSON.stringify('pc'),
@@ -102,7 +102,7 @@ export default defineConfig({
     rollupOptions: {
       // https://rollupjs.org/guide/en/#outputmanualchunks
       output: {
-        dir: "dist/mixin/pc",
+        dir: "dist/pc",
         manualChunks: {},
       },
       plugins: [],
@@ -115,8 +115,8 @@ export default defineConfig({
       },
     },
     dynamicImportVarsOptions: {
-      include: ["./src/mixin/**/*.ts"],
-      exclude:["./src/mixin/h5/**/*.ts"],
+      include: ["./src/**/*.ts"],
+      exclude:["./src/h5/**/*.ts"],
     },
   },
   css: {

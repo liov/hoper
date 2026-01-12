@@ -14,12 +14,12 @@ import wasm from "vite-plugin-wasm";
 import { viteCommonjs } from "@originjs/vite-plugin-commonjs";
 import fs from "fs";
 
-fs.copyFileSync("src/mixin/h5/index.html", "index.html");
+fs.copyFileSync("src/h5/index.html", "index.html");
 
-const lessVar = path.resolve(__dirname, "src/mixin/h5/assets/var_vant.less");
+const lessVar = path.resolve(__dirname, "src/h5/assets/var_vant.less");
 // https://vitejs.dev/config/
 export default defineConfig({
-  envDir: "./src/mixin/env",
+  envDir: "./src/env",
   envPrefix: "HOPRE_",
   define: {
     __APP_PLATFORM__: JSON.stringify('h5'),
@@ -52,7 +52,7 @@ export default defineConfig({
       "echarts",
       "esm-dep > cjs-dep",
     ],
-    exclude:["src/mixin/pc/*"]
+    exclude:["src/pc/*"]
   },
   plugins: [
     vue(),
@@ -61,7 +61,7 @@ export default defineConfig({
     Components({
       resolvers: [VantResolver()],
     }),
-    VitePWA({ registerType: "autoUpdate", outDir: "dist/mixin/h5" }),
+    VitePWA({ registerType: "autoUpdate", outDir: "dist/h5" }),
     //wasm(),
     //ViteRsw(),
     Unocss({
@@ -85,9 +85,9 @@ export default defineConfig({
       // https://rollupjs.org/guide/en/#outputmanualchunks
       external: [],
       output: {
-        dir: "dist/mixin/h5",
+        dir: "dist/h5",
         manualChunks: {
-          "group-chat": ["./src/mixin/h5/views/chat/index.vue"],
+          "group-chat": ["./src/h5/views/chat/index.vue"],
         },
       },
       plugins: [],
@@ -100,8 +100,8 @@ export default defineConfig({
       },
     },
     dynamicImportVarsOptions: {
-      include: ["./src/mixin/**/*.ts"],
-      exclude:["./src/mixin/pc/**/*.ts"],
+      include: ["./src/**/*.ts"],
+      exclude:["./src/pc/**/*.ts"],
     },
   },
   css: {
