@@ -1,0 +1,3 @@
+FROM frolvlad/alpine-glibc
+
+RUN apk update && apk add --no-cache tzdata

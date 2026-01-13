@@ -16,7 +16,6 @@ import (
 	gormx "github.com/hopeio/gox/database/sql/gorm"
 	errcodex "github.com/hopeio/gox/errors"
 	httpx "github.com/hopeio/gox/net/http"
-	"github.com/hopeio/gox/net/http/fs"
 	timex "github.com/hopeio/gox/time"
 	"github.com/hopeio/scaffold/errcode"
 	"github.com/liov/hoper/server/go/file/api/request"
@@ -143,7 +142,7 @@ func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (uplo
 
 	ymdStr := timex.GetYMD(ctx.RequestTime.Time, sep)
 
-	ext, err := fs.GetExt(info)
+	ext, err := httpx.GetFileExt(info)
 	if err != nil {
 		return nil, err
 	}
@@ -220,7 +219,7 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 		httpx.ServeError(w, r, errcode.InvalidArgument.Msg(errResp))
 		return
 	}
-	var urls = make([]model.MultiRep, len(multipartFiles))
+	var urls = make([]response.UploadRes, len(multipartFiles))
 	var failures = make([]string, 0)
 	for i, multipartFile := range multipartFiles {
 		upload, err := save(ctxi, multipartFile, md5s[i])
@@ -229,8 +228,8 @@ func MultiUpload(w http.ResponseWriter, r *http.Request) {
 			httpx.ServeError(w, r, errcode.UploadFail.ErrResp())
 			return
 		}
-		urls[i].URL = upload.File.Path
-		urls[i].Success = true
+		urls[i].Name = multipartFile.Filename
+		urls[i].Path = upload.File.Path
 	}
 	(&httpx.CommonAnyResp{
 		Msg:  strings.Join(failures, ",") + errResp,

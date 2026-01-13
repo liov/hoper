@@ -26,10 +26,6 @@
 	path = thirdparty/gox
 	url = https://github.com/hopeio/gox
 	branch = main
-[submodule "thirdparty/deploy"]
-	path = thirdparty/deploy
-	url = https://github.com/hopeio/deploy
-	branch = main
 [submodule "thirdparty/scaffold"]
 	path = thirdparty/scaffold
 	url = https://github.com/hopeio/scaffold

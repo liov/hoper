@@ -21,3 +21,8 @@ type File struct {
 type Path struct {
 	Url string `json:"url"`
 }
+
+type UploadRes struct {
+	Name string `json:"name"`
+	Path string `json:"path"`
+}

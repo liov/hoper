@@ -1,0 +1,35 @@
+FROM jybl/timezone AS tz
+
+FROM jybl/face
+
+ARG TZ=Asia/Shanghai
+ENV TZ=${TZ} LANG=C.UTF-8
+COPY --from=tz /usr/share/zoneinfo/$TZ /usr/share/zoneinfo/$TZ
+RUN echo $TZ > /etc/timezone && ln -s /usr/share/zoneinfo/$TZ /etc/localtime
+
+#RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
+#RUN python3 -m pip install --upgrade pip
+
+# 设置 python 环境变量
+ENV PYTHONUNBUFFERED=1
+# 禁用更新检查
+ENV PDM_CHECK_UPDATE=false
+
+# 设置国内源
+RUN pip config set global.index-url https://mirrors.cloud.tencent.com/pypi/simple/ && \
+    # 安装 pdm
+    pip install -U pdm && \
+    # 配置镜像
+    pdm config pypi.url "https://mirrors.cloud.tencent.com/pypi/simple/"
+
+# 复制文件
+ADD . /app
+
+WORKDIR /app
+
+RUN pdm install --check --prod --no-editable
+
+ENV PATH="/app/.venv/bin:$PATH"
+
+CMD ["python", "${cmd}"]
