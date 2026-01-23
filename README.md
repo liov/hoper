@@ -12,7 +12,7 @@
 `install protoc`[https://github.com/protocolbuffers/protobuf/releases](https://github.com/protocolbuffers/protobuf/releases)
 
 ```sh
-git submodule update --init
+git submodule update --init --recursive --remote
 cd server/go
 go run $(go list -m -f {{.Dir}}  github.com/hopeio/protobuf)/tools/install_tools.go
 protogen go -d -e -w -v -i ../../proto -o protobuf
