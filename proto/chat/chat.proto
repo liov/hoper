@@ -1,0 +1,39 @@
+syntax = "proto3";
+package chat;
+import "hopeio/utils/enum/enum.proto";
+import "hopeio/time/time.proto";
+import "hopeio/model/basic.proto";
+import "hopeio/time/deletedAt/deletedAt.proto";
+import "hopeio/utils/patch/go.proto";
+import "hopeio/time/timestamp/timestamp.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option java_package = "xyz.hoper.protobuf.common";
+option java_multiple_files = true;
+option go_package = "github.com/liov/hoper/server/go/protobuf/chat";
+
+option (enum.gqlgen_all) = true;
+option (go.file) = {no_enum_prefix:true};
+
+message MQMessage {
+  uint64 id = 1;
+  uint64 cmd = 2;
+  timestamp.Timestamp created_at = 3;
+  uint64 uid = 4;
+  uint64 recv_uid = 5;
+  uint64 recv_group_id = 6;
+  bytes payload = 7;
+}
+
+message Message {
+  uint64 id = 1;
+  uint64 cmd = 2;
+  timestamp.Timestamp time = 3;
+  bytes payload = 7;
+}
+
+message ClientMeta{
+  uint64 uid = 1;
+  string server_id = 2;
+  string device = 3;
+}

@@ -6,16 +6,16 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/hopeio/gox/context/httpctx"
 	"github.com/hopeio/gox/errors"
-	"github.com/hopeio/gox/idgen/snowflake"
 	httpx "github.com/hopeio/gox/net/http"
+	"github.com/liov/hoper/server/go/chat/global"
 	"github.com/liov/hoper/server/go/protobuf/user"
 )
 
 const errResp = "未登录"
 
-var idgen = snowflake.NewSnowflake(snowflake.Settings{})
+var manager = NewHub("1")
 
-func Chat(w http.ResponseWriter, r *http.Request) {
+func Register(w http.ResponseWriter, r *http.Request) {
 	conn, err := (&websocket.Upgrader{
 		CheckOrigin:     func(r *http.Request) bool { return true },
 		ReadBufferSize:  1024,
@@ -41,10 +41,8 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 		}).ServeHTTP(w, r)
 		return
 	}
-	id, _ := idgen.NextID()
-	client := &Client{id: id, conn: conn, ctx: ctxi}
+	client := &Client{ID: global.SF.Generate(), Conn: conn}
 
-	manager.register(client)
+	manager.Register(client)
 
-	go client.read()
 }

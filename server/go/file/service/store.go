@@ -65,7 +65,7 @@ func (store FileStore) NewUpload(ctx context.Context, info handler.FileInfo) (ha
 	if info.ID == "" {
 		info.ID = idgen.UniqueID()
 	}
-	name := info.MetaData["filename"]
+	name := info.MetaData["name"]
 	if name == "" {
 		name = info.ID
 	}
@@ -237,9 +237,8 @@ func (upload *fileUpload) ConcatUploads(ctx context.Context, uploads []handler.U
 func (upload *fileUpload) DeclareLength(ctx context.Context, length int64) error {
 	upload.Size = length
 	upload.SizeIsDeferred = false
-	return global.Dao.GORMDB.Table(model.TableNameFileInfo).Where("id = ?", upload.Id).Updates(map[string]any{
-		"size": length, "size_is_deferred": false,
-	}).Error
+	return global.Dao.GORMDB.Table(model.TableNameFileInfo).Where("id = ?", upload.Id).
+		Updates(map[string]any{"size": length, "size_is_deferred": false}).Error
 }
 
 // writeInfo updates the entire information. Everything will be overwritten.
@@ -252,9 +251,8 @@ func (upload *fileUpload) FinishUpload(ctx context.Context) error {
 			return err
 		}
 	}
-	return global.Dao.GORMDB.Table(model.TableNameFileInfo).Where("id = ?", upload.Id).Updates(map[string]any{
-		"is_final": true, "finished_at": time.Now(), "md5": upload.MD5,
-	}).Error
+	return global.Dao.GORMDB.Table(model.TableNameFileInfo).Where("id = ?", upload.Id).
+		Updates(map[string]any{"is_final": true, "finished_at": time.Now(), "md5": upload.MD5}).Error
 }
 
 func (upload *fileUpload) ServeContent(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
