@@ -98,7 +98,7 @@ func (*FileService) Exists(ctx context.Context, req *request.Exists) (*response.
 func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
 	uploadDao := data.GetDao(ctx)
 	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx.Base(), ctx.TraceID())
-	auth := ctx.AuthInfo.(*user.AuthBase)
+	auth := ctx.Auth().Info.(*user.AuthInfo)
 	var file *model.FileInfo
 	if md5Str != "" {
 		file, err = uploadDao.FileInfo(db, md5Str, strconv.FormatInt(info.Size, 10))

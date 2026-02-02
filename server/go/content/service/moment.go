@@ -301,7 +301,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	}
 	var users []*user.UserBase
 	if len(userIds) > 0 {
-		userList, err := data.UserClient().BaseList(ctxi.Base(), &user.BaseListReq{Ids: userIds.ToSlice()})
+		userList, err := global.UserClient().BaseList(ctxi.Base(), &user.BaseListReq{Ids: userIds.ToSlice()})
 		if err != nil {
 			return nil, err
 		}

@@ -358,14 +358,14 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 }
 
 func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.LoginResp, error) {
-	authorization := jwtx.Claims[*model.AuthBase]{Auth: &model.AuthBase{
+	authorization := jwtx.Claims[*model.AuthInfo]{Auth: &model.AuthInfo{
 		Id:     user.Id,
 		Name:   user.Name,
 		Role:   user.Role,
 		Status: user.Status,
 	}}
 
-	ctxi.AuthInfo = authorization.Auth
+	ctxi.Auth().Info = authorization.Auth
 	authorization.IssuedAt = &jwt.NumericDate{Time: ctxi.Time}
 	authorization.ExpiresAt = &jwt.NumericDate{Time: ctxi.Time.Add(global.Conf.User.TokenMaxAge)}
 
@@ -552,7 +552,7 @@ func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListR
 	if err != nil {
 		return nil, errcode.DBError.Wrap(err)
 	}
-	
+
 	resp.List = logs
 	return resp, nil
 }

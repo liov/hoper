@@ -12,7 +12,7 @@ var UserserviceServicedesc = &UserService_ServiceDesc
 
 /*----------------------------AuthInfo-------------------------------*/
 
-type AuthBase struct {
+type AuthInfo struct {
 	Id     uint64     `json:"id"`
 	Name   string     `json:"name"`
 	Role   Role       `json:"role"`
@@ -20,11 +20,11 @@ type AuthBase struct {
 	Avatar string     `json:"avatar"`
 }
 
-func (x *AuthBase) GetId() string {
+func (x *AuthInfo) GetId() string {
 	return strconv.FormatUint(x.Id, 10)
 }
 
-func (x *AuthBase) Proto() *Auth {
+func (x *AuthInfo) Proto() *Auth {
 	return &Auth{
 		Id:     x.Id,
 		Name:   x.Name,

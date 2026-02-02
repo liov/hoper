@@ -16,18 +16,19 @@ import (
 var ExportAuth = auth
 var jwtValidator = jwt.NewValidator()
 
-func auth(ctx *httpctx.Context, update bool) (*user.AuthBase, error) {
-	signature := ctx.Token[strings.LastIndexByte(ctx.Token, '.')+1:]
+func auth(ctx *httpctx.Context, update bool) (*user.AuthInfo, error) {
+	token := ctx.Auth().Token
+	signature := token[strings.LastIndexByte(token, '.')+1:]
 	cacheTmp, ok := global.Dao.Cache.Get(signature)
 	if ok {
-		cache := cacheTmp.(*jwt2.Claims[*user.AuthBase])
+		cache := cacheTmp.(*jwt2.Claims[*user.AuthInfo])
 		err := jwtValidator.Validate(cache)
 		if err != nil {
 			return nil, err
 		}
 		return cache.Auth, nil
 	}
-	authorization, err := jwt2.Auth[httpctx.RequestCtx, *user.AuthBase](ctx, global.Conf.User.TokenSecretBytes)
+	authorization, err := jwt2.Auth[httpctx.RequestCtx, *user.AuthInfo](ctx, global.Conf.User.TokenSecretBytes)
 	if err != nil {
 		return nil, user.UserErrNoLogin
 	}

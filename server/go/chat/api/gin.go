@@ -7,5 +7,5 @@ import (
 )
 
 func GinRegister(app *gin.Engine) {
-	app.GET("/api/ws/chat", ginx.Convert(service.Chat))
+	app.GET("/api/ws/chat", ginx.Convert(service.Register))
 }

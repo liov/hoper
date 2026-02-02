@@ -5,6 +5,7 @@ import (
 
 	"github.com/hopeio/gox/context/httpctx"
 	"github.com/hopeio/scaffold/errcode"
+	global2 "github.com/liov/hoper/server/go/content/global"
 
 	gormx "github.com/hopeio/gox/database/sql/gorm"
 	"github.com/liov/hoper/server/go/content/data"
@@ -361,7 +362,7 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 	}
 	var users []*user.UserBase
 	if len(userIds) > 0 {
-		userList, err := data.UserClient().BaseList(ctxi.Base(), &user.BaseListReq{Ids: userIds.ToSlice()})
+		userList, err := global2.UserClient().BaseList(ctxi.Base(), &user.BaseListReq{Ids: userIds.ToSlice()})
 		if err != nil {
 			return nil, err
 		}

@@ -20,12 +20,24 @@ message MQMessage {
   uint64 cmd = 2;
   timestamp.Timestamp created_at = 3;
   uint64 uid = 4;
-  uint64 recv_uid = 5;
+  uint64 recv_user_id = 5;
   uint64 recv_group_id = 6;
   bytes payload = 7;
+  uint32 type = 8; // 1:text, 2:binary, 3:image, 4:file, 5:video, 6:audio
 }
 
-message Message {
+message ReadMessage {
+  uint64 id = 1;
+  uint64 cmd = 2;
+  timestamp.Timestamp created_at = 3;
+  uint64 recv_user_id = 5;
+  uint64 recv_group_id = 6;
+  bytes payload = 7;
+  uint32 type = 8; // 1:text, 2:binary, 3:image, 4:file, 5:video, 6:audio
+  timestamp.Timestamp read_at = 9;
+}
+
+message WriteMessage {
   uint64 id = 1;
   uint64 cmd = 2;
   timestamp.Timestamp time = 3;

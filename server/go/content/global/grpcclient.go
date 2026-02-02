@@ -1,4 +1,4 @@
-package data
+package global
 
 import (
 	"sync"
@@ -16,7 +16,7 @@ var (
 	fileClient file.FileServiceClient
 	UserClient = sync.OnceValue[user.UserServiceClient](func() user.UserServiceClient {
 		// Set up a connection to the server.
-		conn, err := grpcx.NewClient("127.0.0.1:8090", grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
+		conn, err := grpcx.NewClient("127.0.0.1:8080", grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
@@ -24,7 +24,7 @@ var (
 	})
 	UploadClient = sync.OnceValue[file.FileServiceClient](func() file.FileServiceClient {
 		// Set up a connection to the server.
-		conn, err := grpcx.NewClient("127.0.0.1:8090", grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
+		conn, err := grpcx.NewClient("127.0.0.1:8080", grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
 
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)

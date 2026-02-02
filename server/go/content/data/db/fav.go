@@ -15,7 +15,7 @@ func (d *ContentDao) FavExists(title string) (uint64, error) {
 WHERE title = ? AND user_id = ?` + sqlx.WithNotDeleted
 	var id uint64
 
-	err := d.db.Raw(sql, title, d.AuthInfo).Scan(&id).Error
+	err := d.db.Raw(sql, title, d.Auth().Info).Scan(&id).Error
 	if err != nil && err != sqlib.ErrNoRows {
 		return 0, ctxi.RespErrorLog(errcode.DBError, err, "ContainerExists")
 	}

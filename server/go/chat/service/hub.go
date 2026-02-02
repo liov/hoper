@@ -3,7 +3,10 @@ package service
 import (
 	"context"
 	"sync"
+	"time"
 
+	"github.com/hopeio/protobuf/time/timestamp"
+	"github.com/liov/hoper/server/go/protobuf/chat"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -70,7 +73,7 @@ func (h *Hub) sendToLocal(clientID uint64, payload []byte) {
 	}
 }
 
-// Broadcast 向所有客户端广播（若使用 Redis 则多实例都会收到）
+// Broadcast 向所有客户端广播（
 func (h *Hub) Broadcast(payload []byte) {
 	select {
 	case h.broadcast <- payload:
@@ -89,7 +92,13 @@ func (h *Hub) SendToClient(clientID uint64, payload []byte) {
 
 // OnMessage 由 Client.readPump 调用
 func (h *Hub) OnMessage(c *Client, message []byte) {
-	proto.Unmarshal(message)
+	var msg chat.ReadMessage
+	err := proto.Unmarshal(message, &msg)
+	if err != nil {
+		c.Write([]byte(err.Error()))
+		return
+	}
+	msg.ReadAt = timestamp.New(time.Now())
 }
 
 // Register 注册新客户端

@@ -2,18 +2,17 @@ package service
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/websocket"
 	"github.com/hopeio/gox/context/httpctx"
 	"github.com/hopeio/gox/errors"
 	httpx "github.com/hopeio/gox/net/http"
-	"github.com/liov/hoper/server/go/chat/global"
+	"github.com/hopeio/scaffold/errcode"
 	"github.com/liov/hoper/server/go/protobuf/user"
 )
 
 const errResp = "未登录"
-
-var manager = NewHub("1")
 
 func Register(w http.ResponseWriter, r *http.Request) {
 	conn, err := (&websocket.Upgrader{
@@ -21,17 +20,25 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024}).Upgrade(w, r, nil)
 	if err != nil {
-		http.NotFound(w, r)
+		(&httpx.CommonAnyResp{
+			Code: errors.ErrCode(errcode.InvalidArgument),
+			Msg:  err.Error(),
+		}).ServeHTTP(w, r)
 		return
 	}
 
-	/*	if strings.Contains(c.Request().Header.Get("User-Agent"), "iPhone") {
-			dviceName = "iPhone"
-		} else if strings.Contains(c.Request().Header.Get("User-Agent"), "Android") {
-			dviceName = "Android"
-		} else {
-			dviceName = "PC"
-		}*/
+	device := "PC"
+	channel := "wx"
+	if strings.Contains(r.Header.Get("User-Agent"), "iPhone") {
+		device = "iPhone"
+	} else if strings.Contains(r.Header.Get("User-Agent"), "Android") {
+		device = "Android"
+	} else {
+		device = "PC"
+	}
+	if strings.Contains(r.Header.Get("User-Agent"), "MicroMessenger") {
+		channel = "wx"
+	}
 	ctxi, _ := httpctx.FromContext(r.Context())
 	_, err = auth(ctxi, false)
 	if err != nil {
@@ -41,8 +48,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		}).ServeHTTP(w, r)
 		return
 	}
-	client := &Client{ID: global.SF.Generate(), Conn: conn}
-
-	manager.Register(client)
-
+	client := &Client{ID: ctxi.Auth().Info.(*user.AuthInfo).Id, Conn: conn, Device: device, Channel: channel}
+	Manager.Register(client)
 }

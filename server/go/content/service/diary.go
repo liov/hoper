@@ -27,7 +27,7 @@ func (m *DiaryService) Service() (describe, prefix string, middleware []http.Han
 	return "日记相关", "/api/diary", nil
 }
 
-func (*DiaryService) DiaryBook(ctx context.Context, req *content.DiaryBookReq) (*content.DiaryBookRep, error) {
+func (*DiaryService) DiaryBook(ctx context.Context, req *content.DiaryBookReq) (*content.DiaryBookResp, error) {
 
 	return nil, status.Errorf(codes.Unimplemented, "method DiaryBook not implemented")
 }

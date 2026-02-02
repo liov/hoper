@@ -8,7 +8,7 @@ import (
 func (d *ContentDao) UserContentEdit(field string, value interface{}) error {
 	ctxi := d
 	ctx := ctxi.Base()
-	key := model.UserContentCountKey + ctxi.AuthID
+	key := model.UserContentCountKey + ctxi.Auth().ID
 
 	err := d.conn.HSet(ctx, key, field, value).Err()
 	if err != nil {
