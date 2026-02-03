@@ -6,7 +6,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hopeio/gox/context/httpctx"
+	httpx "github.com/hopeio/gox/net/http"
 	"github.com/hopeio/scaffold/errcode"
+	"google.golang.org/grpc/metadata"
 
 	"unicode/utf8"
 
@@ -301,7 +303,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	}
 	var users []*user.UserBase
 	if len(userIds) > 0 {
-		userList, err := global.UserClient().BaseList(ctxi.Base(), &user.BaseListReq{Ids: userIds.ToSlice()})
+		userList, err := global.UserClient().BaseList(metadata.AppendToOutgoingContext(ctxi.Base(), httpx.HeaderGrpcInternal, httpx.HeaderGrpcInternal), &user.BaseListReq{Ids: userIds.ToSlice()})
 		if err != nil {
 			return nil, err
 		}

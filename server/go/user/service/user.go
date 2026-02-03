@@ -560,7 +560,12 @@ func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListR
 func (*UserService) BaseList(ctx context.Context, req *model.BaseListReq) (*model.BaseListResp, error) {
 	ctxi, _ := httpctx.FromContext(ctx)
 	defer ctxi.StartSpanEnd("BaseList")()
-	if ctxi.Internal == "" {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, errcode.InvalidArgument
+	}
+
+	if md.Get(httpx.HeaderGrpcInternal) == nil || md.Get(httpx.HeaderGrpcInternal)[0] == "" {
 		return nil, errcode.PermissionDenied
 	}
 	ctx = ctxi.Base()
