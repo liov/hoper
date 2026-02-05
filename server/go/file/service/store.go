@@ -63,7 +63,7 @@ func (store FileStore) NewUpload(ctx context.Context, info handler.FileInfo) (ha
 	ctxi, _ := httpctx.FromContext(ctx)
 	authInfo, _ := auth(ctxi, false)
 	if info.ID == "" {
-		info.ID = idgen.UniqueID()
+		info.ID = idgen.UniqueID().String()
 	}
 	name := info.MetaData["name"]
 	if name == "" {

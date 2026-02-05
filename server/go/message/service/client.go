@@ -17,15 +17,15 @@ type Client struct {
 	Device  string
 	Channel string
 	Conn    *websocket.Conn
-	Send    chan []byte
+	Send    chan msg
 	Hub     *Hub
 	metaMu  sync.RWMutex
 }
 
 // Write 将消息写入发送通道
-func (c *Client) Write(message []byte) bool {
+func (c *Client) Write(msg msg) bool {
 	select {
-	case c.Send <- message:
+	case c.Send <- msg:
 		return true
 	default:
 		return false
@@ -36,14 +36,14 @@ func (c *Client) Write(message []byte) bool {
 func (c *Client) ReadPump() {
 	defer c.Hub.Unregister(c)
 	for {
-		_, msg, err := c.Conn.ReadMessage()
+		typ, payload, err := c.Conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Error()
 			}
 			break
 		}
-		c.Hub.OnMessage(c, msg)
+		c.Hub.OnMessage(c, typ, payload)
 	}
 }
 
@@ -51,8 +51,14 @@ func (c *Client) ReadPump() {
 func (c *Client) WritePump() {
 	defer c.Hub.Unregister(c)
 	for message := range c.Send {
-		if err := c.Conn.WriteMessage(websocket.TextMessage, message); err != nil {
-			return
+		if message.PreparedMessage != nil {
+			if err := c.Conn.WritePreparedMessage(message.PreparedMessage); err != nil {
+				return
+			}
+		} else {
+			if err := c.Conn.WriteMessage(message.typ, message.payload); err != nil {
+				return
+			}
 		}
 	}
 }

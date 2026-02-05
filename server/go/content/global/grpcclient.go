@@ -14,7 +14,7 @@ import (
 var (
 	userClient user.UserServiceClient
 	fileClient file.FileServiceClient
-	UserClient = sync.OnceValue[user.UserServiceClient](func() user.UserServiceClient {
+	UserClient = sync.OnceValue(func() user.UserServiceClient {
 		// Set up a connection to the server.
 		conn, err := grpcx.NewClient("127.0.0.1:8080", grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
 		if err != nil {
@@ -22,7 +22,7 @@ var (
 		}
 		return user.NewUserServiceClient(conn)
 	})
-	UploadClient = sync.OnceValue[file.FileServiceClient](func() file.FileServiceClient {
+	UploadClient = sync.OnceValue(func() file.FileServiceClient {
 		// Set up a connection to the server.
 		conn, err := grpcx.NewClient("127.0.0.1:8080",
 			grpc.WithStatsHandler(otelgrpc.NewClientHandler()),

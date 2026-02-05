@@ -5,8 +5,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gorilla/websocket"
+	"github.com/hopeio/gox/log"
 	"github.com/hopeio/protobuf/time/timestamp"
-	"github.com/liov/hoper/server/go/protobuf/chat"
+	"github.com/liov/hoper/server/go/message/global"
+	"github.com/liov/hoper/server/go/protobuf/message"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -16,14 +19,19 @@ var Manager *Hub
 type Hub struct {
 	clients   map[uint64]*Client
 	mu        sync.RWMutex
-	broadcast chan []byte
+	broadcast chan msg
 	peer      chan peerMsg
 	serverID  uint16
 }
 
+type msg struct {
+	typ             int
+	payload         []byte
+	PreparedMessage *websocket.PreparedMessage
+}
 type peerMsg struct {
 	targetID uint64
-	payload  []byte
+	msg
 }
 
 // NewHub 创建 Hub，serverID 用于多实例时标识本节点
@@ -33,7 +41,7 @@ func NewHub(serverID uint16) *Hub {
 	}
 	h := &Hub{
 		clients:   make(map[uint64]*Client),
-		broadcast: make(chan []byte, 256),
+		broadcast: make(chan msg, 256),
 		peer:      make(chan peerMsg, 256),
 		serverID:  serverID,
 	}
@@ -46,59 +54,76 @@ func (h *Hub) Run(ctx context.Context) {
 		select {
 		case <-ctx.Done():
 			return
-		case payload := <-h.broadcast:
-			h.broadcastToLocal(payload)
+		case msg := <-h.broadcast:
+			h.broadcastToLocal(msg)
 		case p := <-h.peer:
-			h.sendToLocal(p.targetID, p.payload)
+			h.sendToLocal(p.targetID, p.msg)
 		}
 	}
 }
 
 // BroadcastToLocal 仅向本机所有连接广播
-func (h *Hub) broadcastToLocal(payload []byte) {
+func (h *Hub) broadcastToLocal(msg msg) {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 	for _, c := range h.clients {
-		c.Write(payload)
+		c.Write(msg)
 	}
 }
 
 // SendToLocal 仅向本机指定 clientID 发送
-func (h *Hub) sendToLocal(clientID uint64, payload []byte) {
+func (h *Hub) sendToLocal(clientID uint64, msg msg) {
 	h.mu.RLock()
 	c, ok := h.clients[clientID]
 	h.mu.RUnlock()
 	if ok {
-		c.Write(payload)
+		c.Write(msg)
 	}
 }
 
 // Broadcast 向所有客户端广播（
-func (h *Hub) Broadcast(payload []byte) {
+func (h *Hub) Broadcast(typ int, payload []byte) error {
+	preparedMessage, err := websocket.NewPreparedMessage(typ, payload)
+	if err != nil {
+		return err
+	}
 	select {
-	case h.broadcast <- payload:
+	case h.broadcast <- msg{
+		PreparedMessage: preparedMessage,
+	}:
 	default:
 		// 通道满可考虑丢弃或记录
 	}
+	return nil
 }
 
 // SendToClient 向指定客户端发送（若使用 Redis 则仅对应实例会投递）
-func (h *Hub) SendToClient(clientID uint64, payload []byte) {
+func (h *Hub) SendToClient(clientID uint64, message msg) {
 	select {
-	case h.peer <- peerMsg{targetID: clientID, payload: payload}:
+	case h.peer <- peerMsg{targetID: clientID, msg: message}:
 	default:
 	}
 }
 
 // OnMessage 由 Client.readPump 调用
-func (h *Hub) OnMessage(c *Client, message []byte) {
-	var msg chat.ReadMessage
-	err := proto.Unmarshal(message, &msg)
+func (h *Hub) OnMessage(c *Client, typ int, payload []byte) {
+	var rmsg message.ClientMessage
+	err := proto.Unmarshal(payload, &rmsg)
 	if err != nil {
-		c.Write([]byte(err.Error()))
+		log.Error(err)
+		err = c.Conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+		if err != nil {
+			log.Error(err)
+			return
+		}
 		return
 	}
-	msg.ReadAt = timestamp.New(time.Now())
+	rmsg.ReadAt = timestamp.New(time.Now())
+	_, err = global.MessageClient().Receive(context.TODO(), &rmsg)
+	if err != nil {
+		log.Error(err)
+		return
+	}
 }
 
 // Register 注册新客户端

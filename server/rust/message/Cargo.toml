@@ -1,15 +1,15 @@
 [package]
-name = "rfv"
+name = "message"
 version = "0.1.0"
 edition = "2024"
 
 [lib]
-name = "rfv"
+name = "message"
 crate-type = ["lib", "staticlib", "cdylib"]
 
 [dependencies]
 libc = "0.2"
-axum = "0.8"
+axum = { version = "0.8", features = ["ws"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tokio = { version = "1.19", features = ["full"] }
@@ -19,9 +19,5 @@ tower-http = { version = "0.6", features = ["full"] }
 tracing-subscriber = "0.3"
 tracing = "0.1"
 tokio-util = { version = "0.7", features = ["codec"] }
-image = "0.25"
-mime_guess = "2"
-ffmpeg-next = "8"
-
-[target.x86_64-pc-windows-gnu]
-linker = "D:/sdk/msys64/ucrt64/bin/gcc"
+dashmap = "6.1"
+futures-util = "0.3"
