@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 
-	"github.com/hopeio/gox/context/httpctx"
 	sqlx "github.com/hopeio/gox/database/sql"
 	"github.com/hopeio/scaffold/errcode"
 	"github.com/liov/hoper/server/go/global"
@@ -15,15 +14,15 @@ import (
 
 // 关注
 func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*emptypb.Empty, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
+	ctx, span := Tracer.Start(ctx, "UserService.Follow")
+	defer span.End()
 
-	auth, err := auth(ctxi, true)
+	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
 
-	userDao := data.GetDBDao(ctxi, global.Dao.GORMDB.DB)
+	userDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
 	exists, err := userDao.FollowExistsDB(req.Id, auth.Id)
 	if err != nil {
 		return nil, err
@@ -43,15 +42,15 @@ func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*emptypb
 
 // 取消关注
 func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user.BaseListResp, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
+	ctx, span := Tracer.Start(ctx, "UserService.DelFollow")
+	defer span.End()
 
-	auth, err := auth(ctxi, true)
+	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
 
-	userDao := data.GetDBDao(ctxi, global.Dao.GORMDB.DB)
+	userDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
 	exists, err := userDao.FollowExistsDB(req.Id, auth.Id)
 	if err != nil {
 		return nil, err

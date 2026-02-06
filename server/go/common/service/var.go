@@ -1,7 +1,10 @@
 package service
 
+import "go.opentelemetry.io/otel"
+
 var (
 	commonSvc = &CommonService{}
+	Trancer   = otel.Tracer("service")
 )
 
 func GetCommonService() *CommonService {

@@ -6,10 +6,10 @@ import (
 )
 
 type uploadDao struct {
-	*httpctx.Context
+	context.Context
 }
 
-func GetDao(ctx *httpctx.Context) *uploadDao {
+func GetDao(ctx context.Context) *uploadDao {
 	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}

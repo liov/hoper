@@ -6,10 +6,10 @@ import (
 )
 
 type chatDao struct {
-	*httpctx.Context
+	context.Context
 }
 
-func GetDao(ctx *httpctx.Context) *chatDao {
+func GetDao(ctx context.Context) *chatDao {
 	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}

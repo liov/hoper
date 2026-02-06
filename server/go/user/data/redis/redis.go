@@ -1,16 +1,17 @@
 package redis
 
 import (
+	"context"
 	"strconv"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/hopeio/gox/context/httpctx"
 	"github.com/hopeio/gox/database/redis/hash"
 	"github.com/hopeio/gox/encoding/json"
 	"github.com/hopeio/scaffold/errcode"
+	"go.uber.org/zap"
 
-	redisx "github.com/hopeio/gox/database/redis"
 	"github.com/hopeio/gox/log"
+	httpx "github.com/hopeio/gox/net/http"
 	"github.com/liov/hoper/server/go/protobuf/common"
 	model "github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/global"
@@ -18,113 +19,119 @@ import (
 )
 
 type UserDao struct {
-	*httpctx.Context
 	*redis.Client
 }
 
-func GetUserDao(ctx *httpctx.Context, client *redis.Client) *UserDao {
-	if ctx == nil {
-		log.Fatal("ctx can't nil")
-	}
-	return &UserDao{ctx, client}
+func GetUserDao(ctx context.Context, client *redis.Client) *UserDao {
+	return &UserDao{client.WithContext(ctx)}
 }
 
 // UserToRedis 将用户信息存到redis
 func (d *UserDao) UserToRedis() error {
-	ctxi := d
-	ctx := ctxi.Base()
-	UserString, err := json.MarshalToString(ctxi.Auth().Info)
+	ctx := d.Context()
+	metadata := ctx.Value(httpx.RequestMetadataKey).(*httpx.RequestMetadata)
+	UserString, err := json.MarshalToString(metadata.Auth.Info)
 	if err != nil {
-		return d.RespErrorLog(errcode.RedisErr, err, "UserToRedis.MarshalToString")
+		log.Errorw("UserToRedis.MarshalToString", zap.Error(err))
+		return errcode.RedisErr.Wrap(err)
 	}
 
-	loginUserKey := modelconst.LoginUserKey + ctxi.Auth().ID
+	loginUserKey := modelconst.LoginUserKey + metadata.Auth.ID
 	if redisErr := d.SetEX(ctx, loginUserKey, UserString, global.Conf.User.TokenMaxAge).Err(); redisErr != nil {
-		return d.RespErrorLog(errcode.RedisErr, err, "UserToRedis.SetEX")
+		log.Errorw("UserToRedis.SetEX", zap.Error(err))
+		return errcode.RedisErr.Wrap(err)
 	}
 	return nil
 }
 
 // UserFromRedis 从redis中取出用户信息
 func (d *UserDao) UserFromRedis() (*model.AuthInfo, error) {
-	ctxi := d
-	ctx := ctxi.Base()
-	loginUser := modelconst.LoginUserKey + ctxi.Auth().ID
+	ctx := d.Context()
+	metadata := ctx.Value(httpx.RequestMetadataKey).(*httpx.RequestMetadata)
+	loginUser := modelconst.LoginUserKey + metadata.Auth.ID
 
 	userString, err := d.Get(ctx, loginUser).Result()
 	if err != nil {
-		return nil, d.RespErrorLog(errcode.RedisErr, err, "UserFromRedis.Get")
+		log.Errorw("UserFromRedis.Get", zap.Error(err))
+		return nil, errcode.RedisErr.Wrap(err)
 	}
 
 	var user model.AuthInfo
 	err = json.UnmarshalFromString(userString, &user)
 	if err != nil {
-		return nil, d.RespErrorLog(errcode.RedisErr, err, "UserFromRedis.UnmarshalFromString")
+		log.Errorw("UserFromRedis.UnmarshalFromString", zap.Error(err))
+		return nil, errcode.RedisErr.Wrap(err)
 	}
 	return &user, nil
 }
 
 func (d *UserDao) EditRedisUser() error {
-	ctx := d.Base()
-	UserString, err := json.MarshalToString(d.Auth().Info)
+	ctx := d.Context()
+	metadata := ctx.Value(httpx.RequestMetadataKey).(*httpx.RequestMetadata)
+	UserString, err := json.MarshalToString(metadata.Auth.Info)
 	if err != nil {
-		return d.RespErrorLog(errcode.RedisErr, err, "EditRedisUser.MarshalToString")
+		log.Errorw("UserToRedis.MarshalToString", zap.Error(err))
+		return errcode.RedisErr.Wrap(err)
 	}
-	loginUserKey := modelconst.LoginUserKey + d.Auth().ID
+	loginUserKey := modelconst.LoginUserKey + metadata.Auth.ID
 	err = d.Client.Set(ctx, loginUserKey, UserString, 0).Err()
 	if err != nil {
-		return d.RespErrorLog(errcode.RedisErr, err, "EditRedisUser.MarshalToString")
+		log.Errorw("UserToRedis.SetEX", zap.Error(err))
+		return errcode.RedisErr.Wrap(err)
 	}
 	return nil
 }
 
 // UserToRedis 将用户信息存到redis
 func (d *UserDao) UserHashToRedis() error {
-	ctxi := d
-	ctx := d.Base()
-	loginUserKey := modelconst.LoginUserKey + ctxi.Auth().ID
+	ctx := d.Context()
+	metadata := ctx.Value(httpx.RequestMetadataKey).(*httpx.RequestMetadata)
+	loginUserKey := modelconst.LoginUserKey + metadata.Auth.ID
 	if _, err := d.Pipelined(ctx, func(pipe redis.Pipeliner) error {
-		pipe.HMSet(ctx, loginUserKey, hash.Marshal(ctxi.Auth().Info)...)
+		pipe.HMSet(ctx, loginUserKey, hash.Marshal(metadata.Auth.Info)...)
 		pipe.Expire(ctx, loginUserKey, global.Conf.User.TokenMaxAge)
 		return nil
 	}); err != nil {
-		return ctxi.RespErrorLog(errcode.RedisErr, err, "UserHashToRedis")
+		log.Errorw("UserHashToRedis", zap.Error(err))
+		return errcode.RedisErr.Wrap(err)
 	}
 	return nil
 }
 
 // UserFromRedis 从redis中取出用户信息
 func (d *UserDao) UserHashFromRedis() error {
-	ctxi := d
-	ctx := ctxi.Base()
-	loginUser := modelconst.LoginUserKey + ctxi.Auth().ID
+	ctx := d.Context()
+	metadata := ctx.Value(httpx.RequestMetadataKey).(*httpx.RequestMetadata)
+	loginUser := modelconst.LoginUserKey + metadata.Auth.ID
 
 	userArgs, err := d.HGetAll(ctx, loginUser).Result()
 	if err != nil {
-		return ctxi.RespErrorLog(errcode.RedisErr, err, redisx.CommandHGETALL)
+		log.Errorw("UserHashFromRedis", zap.Error(err))
+		return errcode.RedisErr.Wrap(err)
 	}
 	log.Debug(userArgs)
 	if len(userArgs) == 0 {
 		return model.UserErrInvalidToken
 	}
-	hash.Unmarshal(ctxi.Auth().Info, userArgs)
+	hash.Unmarshal(metadata.Auth.Info, userArgs)
 	return nil
 }
 
 func (d *UserDao) EfficientUserHashToRedis() error {
-	ctxi := d
-	ctx := ctxi.Context
-	user := ctxi.Auth().Info.(*model.AuthInfo)
+	ctx := d.Context()
+	metadata := ctx.Value(httpx.RequestMetadataKey).(*httpx.RequestMetadata)
+	user := metadata.Auth.Info.(*model.AuthInfo)
 	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
-	if _, err := d.Pipelined(ctx.Base(), func(pipe redis.Pipeliner) error {
-		pipe.HMSet(ctx.Base(), loginUserKey, "Name", user.Name,
+	if _, err := d.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+		pipe.HMSet(ctx, loginUserKey, "Name", user.Name,
 			"Role", uint32(user.Role),
 			"Status", uint8(user.Status),
-			"LastActiveAt", ctxi.TimeStamp)
-		pipe.Expire(ctx.Base(), loginUserKey, global.Conf.User.TokenMaxAge)
+			"LastActiveAt", metadata.RequestAt.UnixMilli())
+		pipe.Expire(ctx, loginUserKey, global.Conf.User.TokenMaxAge)
 		return nil
 	}); err != nil {
-		return ctxi.RespErrorLog(errcode.RedisErr, err, "EfficientUserHashToRedis")
+		log.Errorw("EfficientUserHashToRedis", zap.Error(err))
+		return errcode.RedisErr.Wrap(err)
 	}
 	return nil
 }
@@ -136,20 +143,20 @@ func (d *UserDao) EfficientUserHashToRedis() error {
 压缩列表中的节点数量大于 server.hash_max_ziplist_entries （默认值为 512 ）。
 */
 func (d *UserDao) EfficientUserHashFromRedis() error {
-	defer d.StartSpanEnd("EfficientUserHashFromRedis")()
-	ctxi := d
-	ctx := ctxi.Base()
-	loginUser := modelconst.LoginUserKey + ctxi.Auth().ID
+	ctx := d.Context()
+	metadata := ctx.Value(httpx.RequestMetadataKey).(*httpx.RequestMetadata)
+	loginUser := modelconst.LoginUserKey + metadata.Auth.ID
 
 	userArgs, err := d.HGetAll(ctx, loginUser).Result()
 	log.Debug(userArgs)
 	if err != nil {
-		return ctxi.RespErrorLog(errcode.RedisErr, err, "EfficientUserHashFromRedis")
+		log.Errorw("EfficientUserHashFromRedis", zap.Error(err))
+		return errcode.RedisErr.Wrap(err)
 	}
 	if len(userArgs) == 0 {
 		return model.UserErrLoginTimeout
 	}
-	user := ctxi.Auth().Info.(*model.AuthInfo)
+	user := metadata.Auth.Info.(*model.AuthInfo)
 	user.Name = userArgs["Name"]
 	n, err := strconv.ParseUint(userArgs["Role"], 10, 32)
 	user.Role = model.Role(n)
@@ -159,42 +166,45 @@ func (d *UserDao) EfficientUserHashFromRedis() error {
 }
 
 func (d *UserDao) UserLastActiveTime() error {
-	ctxi := d
-	ctx := ctxi.Base()
-	loginUser := modelconst.LoginUserKey + ctxi.Auth().ID
+	ctx := d.Context()
+	metadata := ctx.Value(httpx.RequestMetadataKey).(*httpx.RequestMetadata)
+	loginUser := modelconst.LoginUserKey + metadata.Auth.ID
 	if _, err := d.Pipelined(ctx, func(pipe redis.Pipeliner) error {
 		pipe.Select(ctx, common.CronIndex)
 		//有序集合存一份，遍历长时间未活跃用户用
 		pipe.ZAdd(ctx, modelconst.LoginUserKey+"ActiveTime",
-			&redis.Z{Score: float64(ctxi.TimeStamp), Member: ctxi.Auth().ID})
+			&redis.Z{Score: float64(metadata.RequestAt.UnixMilli()), Member: metadata.Auth.ID})
 		pipe.HSet(ctx, loginUser, "LastActiveAt")
 		return nil
 	}); err != nil {
-		return ctxi.RespErrorLog(errcode.RedisErr, err, "UserLastActiveTime")
+		log.Errorw("UserLastActiveTime", zap.Error(err))
+		return errcode.RedisErr.Wrap(err)
 	}
 	return nil
 }
 
 func (d *UserDao) RedisUserInfoEdit(field string, value interface{}) error {
-	ctxi := d
-	ctx := ctxi.Base()
-	key := modelconst.LoginUserKey + ctxi.Auth().ID
+	ctx := d.Context()
+	metadata := ctx.Value(httpx.RequestMetadataKey).(*httpx.RequestMetadata)
+	key := modelconst.LoginUserKey + metadata.Auth.ID
 
 	err := d.HSet(ctx, key, field, value).Err()
 	if err != nil {
-		return ctxi.RespErrorLog(errcode.RedisErr, err, "RedisUserInfoEdit")
+		log.Errorw("RedisUserInfoEdit", zap.Error(err))
+		return errcode.RedisErr.Wrap(err)
 	}
 	return nil
 }
 
 func (d *UserDao) GetUserExtRedis() (*model.UserExt, error) {
-	ctxi := d
-	ctx := ctxi.Base()
-	key := modelconst.UserExtKey + ctxi.Auth().ID
+	ctx := d.Context()
+	metadata := ctx.Value(httpx.RequestMetadataKey).(*httpx.RequestMetadata)
+	key := modelconst.UserExtKey + metadata.Auth.ID
 
 	userExt, err := d.HGetAll(ctx, key).Result()
 	if err != nil {
-		return nil, ctxi.RespErrorLog(errcode.RedisErr, err, "GetUserExtRedis")
+		log.Errorw("GetUserExtRedis", zap.Error(err))
+		return nil, errcode.RedisErr.Wrap(err)
 	}
 	if len(userExt) > 3 {
 		followCount, _ := strconv.ParseUint(userExt["Follow"], 10, 64)

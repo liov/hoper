@@ -1,14 +1,13 @@
 package db
 
 import (
+	"context"
 	"encoding/json"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/hopeio/gox/context/httpctx"
 	sqlx "github.com/hopeio/gox/database/sql"
-	gormx "github.com/hopeio/gox/database/sql/gorm"
 	_ "github.com/hopeio/gox/database/sql/gorm/serializer"
 	"github.com/hopeio/gox/log"
 	"github.com/hopeio/gox/slices"
@@ -20,15 +19,14 @@ import (
 )
 
 type UserDao struct {
-	*httpctx.Context
 	*gorm.DB
 }
 
-func GetUserDao(ctx *httpctx.Context, db *gorm.DB) *UserDao {
+func GetUserDao(ctx context.Context, db *gorm.DB) *UserDao {
 	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}
-	return &UserDao{ctx, gormx.NewTraceDB(db, ctx.Base(), ctx.TraceID())}
+	return &UserDao{db.Session(&gorm.Session{Context: ctx, NewDB: true})}
 }
 
 func (d *UserDao) GetByNameOrEmailOrPhone(name, email, phone string) (*model.User, error) {

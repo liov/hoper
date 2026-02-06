@@ -14,8 +14,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/uuid"
-	"github.com/hopeio/gox/context/ginctx"
-	"github.com/hopeio/gox/context/httpctx"
 	gormx "github.com/hopeio/gox/database/sql/gorm"
 	"github.com/hopeio/gox/math/rand"
 	httpx "github.com/hopeio/gox/net/http"
@@ -34,13 +32,13 @@ import (
 	"github.com/liov/hoper/server/go/user/data"
 	"github.com/liov/hoper/server/go/user/data/redis"
 	modelconst "github.com/liov/hoper/server/go/user/model"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
-	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/hopeio/gox/log"
 	"github.com/hopeio/gox/net/mail"
 	templatex "github.com/hopeio/gox/text/template"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"gorm.io/gorm"
 )
 
@@ -49,15 +47,15 @@ type UserService struct {
 }
 
 func (u *UserService) VerifyCode(ctx context.Context, req *model.VerifyCodeReq) (*emptypb.Empty, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
+	ctx, span := Tracer.Start(ctx, "UserService.VerifyCode")
+	defer span.End()
 	vcode := rand.RandomCode(4)
 	log.Info(vcode)
 	key := modelconst.VerificationCodeKey + req.Mail + req.Phone
 	if err := global.Dao.Redis.SetEX(ctx, key, vcode, modelconst.VerificationCodeDuration).Err(); err != nil {
 		return nil, ctxi.RespErrorLog(errcode.RedisErr.Msg("新建出错"), err, "SetEX")
 	}
-	sendVcode(ctxi, req.Action, vcode, req.Mail)
+	sendVcode(ctx, req.Action, vcode, req.Mail)
 	return new(emptypb.Empty), nil
 }
 
@@ -163,7 +161,7 @@ func encryptPassword(password string) string {
 	return fmt.Sprintf("%x", md5.Sum(stringsx.ToBytes(hash)))
 }
 
-func sendMail(ctxi *httpctx.Context, action model.Action, curTime int64, user *model.User) {
+func sendMail(ctx context.Context, action model.Action, curTime int64, user *model.User) {
 	siteURL := global.Conf.SiteURL
 	title := action.String()
 	secretStr := strconv.FormatInt(curTime, 10) + user.Mail + user.Password
@@ -206,7 +204,7 @@ func sendMail(ctxi *httpctx.Context, action model.Action, curTime int64, user *m
 	}
 }
 
-func sendVcode(ctxi *httpctx.Context, action model.Action, vcode string, mailAddr string) {
+func sendVcode(ctx context.Context, action model.Action, vcode string, mailAddr string) {
 	var values = struct {
 		Action, Vcode string
 	}{action.String(), vcode}
@@ -246,9 +244,9 @@ func checkPassword(password string, user *model.User) bool {
 }
 
 func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.LoginResp, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
-	userDBDao := data.GetDBDao(ctxi, global.Dao.GORMDB.DB)
+	ctx, span := Tracer.Start(ctx, "UserService.Active")
+	defer span.End()
+	userDBDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
 
 	user, err := userDBDao.GetByPrimaryKey(req.Id)
 	if err != nil {
@@ -261,7 +259,7 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 	redisKey := modelconst.ActiveTimeKey + strconv.FormatUint(req.Id, 10)
 	emailTime, err := global.Dao.Redis.Get(ctx, redisKey).Int64()
 	if err != nil {
-		go sendMail(ctxi, model.ActionActive, ctxi.RequestTime.TimeStamp, user)
+		go sendMail(ctx, model.ActionActive, ctx.RequestTime.TimeStamp, user)
 		return nil, ctxi.RespErrorLog(errcode.InvalidArgument.Msg("已过激活期限"), err, "Get")
 	}
 	secretStr := strconv.Itoa((int)(emailTime)) + user.Mail + user.Password
@@ -276,13 +274,13 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 		return nil, errcode.DBError
 	}
 	global.Dao.Redis.Del(ctx, redisKey)
-	return u.login(ctxi, user)
+	return u.login(ctx, user)
 }
 
 func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*emptypb.Empty, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
-	user, err := auth(ctxi, true)
+	ctx, span := Tracer.Start(ctx, "UserService.Edit")
+	defer span.End()
+	user, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
@@ -357,7 +355,7 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 	return u.login(ctxi, user)
 }
 
-func (*UserService) login(ctxi *httpctx.Context, user *model.User) (*model.LoginResp, error) {
+func (*UserService) login(ctxi context.Context, user *model.User) (*model.LoginResp, error) {
 	authorization := jwtx.Claims[*model.AuthInfo]{Auth: &model.AuthInfo{
 		Id:     user.Id,
 		Name:   user.Name,

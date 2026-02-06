@@ -95,7 +95,7 @@ func (*FileService) Exists(ctx context.Context, req *request.Exists) (*response.
 	return nil, errcode.NotFound
 }
 
-func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
+func save(ctx context.Context, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
 	uploadDao := data.GetDao(ctx)
 	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx.Base(), ctx.TraceID())
 	auth := ctx.Auth().Info.(*user.AuthInfo)

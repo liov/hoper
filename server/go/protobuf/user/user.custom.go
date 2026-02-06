@@ -3,7 +3,7 @@ package user
 import (
 	"strconv"
 
-	"github.com/hopeio/gox/context/reqctx"
+	"github.com/hopeio/scaffold/context"
 )
 
 var UserserviceServicedesc = &UserService_ServiceDesc
@@ -33,7 +33,7 @@ func (x *AuthInfo) Proto() *Auth {
 	}
 }
 
-func ConvDeviceInfo(x *reqctx.DeviceInfo) *AccessDevice {
+func ConvDeviceInfo(x *context.DeviceInfo) *AccessDevice {
 	return &AccessDevice{
 		Device:    x.Device,
 		OS:        x.OS,

@@ -6,11 +6,11 @@ import (
 )
 
 type CommonDao struct {
-	*httpctx.Context
+	context.Context
 	db *gorm.DB
 }
 
-func GetDao(ctx *httpctx.Context, d *gorm.DB) *CommonDao {
+func GetDao(ctx context.Context, d *gorm.DB) *CommonDao {
 	return &CommonDao{
 		Context: ctx,
 		db:      d,

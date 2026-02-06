@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 
-	"github.com/hopeio/gox/context/httpctx"
 	"github.com/hopeio/scaffold/errcode"
 	global2 "github.com/liov/hoper/server/go/content/global"
 
@@ -73,7 +72,8 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 	err = contentRedisDao.HotCount(req.Type, req.RefId, 1)
 
 	if err != nil {
-		return nil, ctxi.RespErrorLog(errcode.RedisErr, err, "HotCountRedis")
+		log.Errorw("HotCountRedis", zap.Error(err))
+		return nil, errcode.RedisErr.Wrap(err)
 	}
 	return &request.Id{Id: req.Id}, nil
 }
@@ -86,8 +86,8 @@ func (*ActionService) DelLike(ctx context.Context, req *request.Id) (*emptypb.Em
 	if err != nil {
 		return nil, err
 	}
-	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
-	contentDBDao := data.GetDBDao(ctxi, db)
+
+	contentDBDao := data.GetDBDao(ctxi, global.Dao.GORMDB.DB)
 
 	like, err := contentDBDao.GetLike(req.Id, auth.Id)
 	if err != nil {
@@ -119,10 +119,9 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*re
 	if err != nil {
 		return nil, err
 	}
-	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
 
 	req.UserId = auth.Id
-	err = db.Transaction(func(tx *gorm.DB) error {
+	err = global.Dao.GORMDB.DB.Transaction(func(tx *gorm.DB) error {
 		contenttxDBDao := dbdao.GetDao(ctxi, tx)
 		err = tx.Table(model.TableNameComment).Create(req).Error
 		if err != nil {
@@ -159,17 +158,17 @@ func (*ActionService) DelComment(ctx context.Context, req *request.Id) (*emptypb
 	if err != nil {
 		return nil, err
 	}
-	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
-	contentDBDao := data.GetDBDao(ctxi, db)
+
+	contentDBDao := data.GetDBDao(ctxi, global.Dao.GORMDB.DB)
 
 	var comment content.Comment
-	err = db.Table(model.TableNameComment).First(&comment, "id = ?", req.Id).Error
+	err = global.Dao.GORMDB.DB.Table(model.TableNameComment).First(&comment, "id = ?", req.Id).Error
 	if err != nil {
 		return nil, ctxi.RespErrorLog(errcode.DBError, err, "Find")
 	}
 	if comment.UserId != auth.Id {
 		var userId uint64
-		err = db.Table(model.ContentTableName(comment.Type)).Select("user_id").
+		err = global.Dao.GORMDB.DB.Table(model.ContentTableName(comment.Type)).Select("user_id").
 			Where(`id = ?`, comment.RefId).Scan(&userId).Error
 		if err != nil {
 			return nil, ctxi.RespErrorLog(errcode.DBError, err, "SelectUserId")
@@ -269,7 +268,7 @@ func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*empt
 	if err != nil {
 		return nil, err
 	}
-	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
+	db := global.Dao.GORMDB.DB.Session(&gorm.Session{Context: ctx, NewDB: true})
 	req.UserId = auth.Id
 	err = db.Transaction(func(tx *gorm.DB) error {
 		contenttxDBDao := data.GetDBDao(ctxi, tx)
@@ -299,7 +298,7 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 	if err != nil {
 		return nil, err
 	}
-	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
+	db := global.Dao.GORMDB.DB.Session(&gorm.Session{Context: ctx, NewDB: true})
 	contentDBDao := data.GetDBDao(ctxi, db)
 
 	total, comments, err := contentDBDao.GetComments(content.ContentMoment, req.RefId, req.RootId, req.PageNo, req.PageSize)
@@ -362,7 +361,7 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 	}
 	var users []*user.UserBase
 	if len(userIds) > 0 {
-		userList, err := global2.UserClient().BaseList(ctxi.Base(), &user.BaseListReq{Ids: userIds.ToSlice()})
+		userList, err := global2.UserClient().BaseList(ctx, &user.BaseListReq{Ids: userIds.ToSlice()})
 		if err != nil {
 			return nil, err
 		}
@@ -387,9 +386,8 @@ func (*ActionService) GetUserAction(ctx context.Context, req *content.ContentReq
 	if err != nil {
 		return nil, err
 	}
-
-	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
-	contentDBDao := dbdao.GetDao(ctxi, db)
+	
+	contentDBDao := dbdao.GetDao(ctxi, global.Dao.GORMDB.DB)
 
 	action := &content.UserAction{}
 	likes, err := contentDBDao.GetContentActions(content.ActionLike, content.ContentMoment, []uint64{req.RefId}, auth.Id)

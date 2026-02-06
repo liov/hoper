@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	"github.com/hopeio/gox/context/httpctx"
-	"github.com/hopeio/scaffold/errcode"
+	"github.com/hopeio/gox/log"
+	"go.uber.org/zap"
 
 	"github.com/hopeio/protobuf/request"
 	"github.com/liov/hoper/server/go/content/model"
@@ -23,10 +23,10 @@ func (*CommonService) TagInfo(context.Context, *request.Id) (*common.Tag, error)
 	return nil, status.Errorf(codes.Unimplemented, "method Info not implemented")
 }
 func (*CommonService) AddTag(ctx context.Context, req *common.AddTagReq) (*emptypb.Empty, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
+	ctx, span := Trancer.Start(ctx, "CommonService.AddTag")
+	defer span.End()
 
-	user, err := auth(ctxi, false)
+	user, err := auth(ctx, false)
 	if err != nil {
 		return nil, err
 	}
@@ -34,14 +34,15 @@ func (*CommonService) AddTag(ctx context.Context, req *common.AddTagReq) (*empty
 	req.UserId = user.Id
 	err = db.Create(req).Error
 	if err != nil {
-		return nil, ctxi.RespErrorLog(errcode.DBError, err, "db.Create")
+		log.Errorw("db.Create", zap.Error(err))
+		return nil, err
 	}
 	return nil, nil
 }
 func (*CommonService) EditTag(ctx context.Context, req *common.EditTagReq) (*emptypb.Empty, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
-	auth, err := auth(ctxi, true)
+	ctx, span := Trancer.Start(ctx, "CommonService.EditTag")
+	defer span.End()
+	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
@@ -52,15 +53,16 @@ func (*CommonService) EditTag(ctx context.Context, req *common.EditTagReq) (*emp
 		Image: req.Image,
 	}).Where(`id = ? AND user_id = ? AND status = 0`, req.Id, auth.Id).Error
 	if err != nil {
-		return nil, ctxi.RespErrorLog(errcode.DBError, err, "db.Updates")
+		log.Errorw("db.Updates", zap.Error(err))
+		return nil, err
 	}
 	return nil, nil
 }
 func (*CommonService) TagList(ctx context.Context, req *common.TagListReq) (*common.TagListResp, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
+	ctx, span := Trancer.Start(ctx, "CommonService.TagList")
+	defer span.End()
 	var tags []*common.Tag
-
-	user, err := auth(ctxi, true)
+	user, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +77,8 @@ func (*CommonService) TagList(ctx context.Context, req *common.TagListReq) (*com
 	var count int64
 	err = db.Table(`tag`).Where("user_id = ?", user.Id).Find(&tags).Count(&count).Error
 	if err != nil {
-		return nil, ctxi.RespErrorLog(errcode.DBError, err, "db.Find")
+		log.Errorw("db.Find", zap.Error(err))
+		return nil, err
 	}
 	return &common.TagListResp{List: tags, Total: uint32(count)}, nil
 }

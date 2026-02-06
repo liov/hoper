@@ -13,11 +13,11 @@ import (
 )
 
 type ContentDao struct {
-	*httpctx.Context
+	context.Context
 	db *gorm.DB
 }
 
-func GetDao(ctx *httpctx.Context, db *gorm.DB) *ContentDao {
+func GetDao(ctx context.Context, db *gorm.DB) *ContentDao {
 	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}

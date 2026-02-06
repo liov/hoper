@@ -6,6 +6,6 @@ import (
 	"github.com/liov/hoper/server/go/user/service"
 )
 
-func auth(ctx *httpctx.Context, update bool) (*user.AuthInfo, error) {
+func auth(ctx context.Context, update bool) (*user.AuthInfo, error) {
 	return service.ExportAuth(ctx, update)
 }

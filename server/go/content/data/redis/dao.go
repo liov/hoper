@@ -8,11 +8,11 @@ import (
 )
 
 type ContentDao struct {
-	*httpctx.Context
+	context.Context
 	conn redis.Cmdable
 }
 
-func GetDao(ctx *httpctx.Context, redis redisi.Client) *ContentDao {
+func GetDao(ctx context.Context, redis redisi.Client) *ContentDao {
 	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}

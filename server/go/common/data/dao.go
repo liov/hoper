@@ -6,6 +6,6 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetDBDao(ctx *httpctx.Context, d *gorm.DB) *db.CommonDao {
+func GetDBDao(ctx context.Context, d *gorm.DB) *db.CommonDao {
 	return db.GetDao(ctx, d)
 }
