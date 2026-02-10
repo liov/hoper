@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/hopeio/gox/context/httpctx"
 	"github.com/hopeio/gox/database/sql/datatypes"
 	"github.com/hopeio/gox/idgen"
 	"github.com/hopeio/gox/log"
@@ -60,8 +59,9 @@ func (store FileStore) UseIn(composer *handler.StoreComposer) {
 }
 
 func (store FileStore) NewUpload(ctx context.Context, info handler.FileInfo) (handler.Upload, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	authInfo, _ := auth(ctxi, false)
+	ctx, span := Tracer.Start(ctx, "FileStore.NewUpload")
+	defer span.End()
+	authInfo, _ := auth(ctx, false)
 	if info.ID == "" {
 		info.ID = idgen.UniqueID().String()
 	}

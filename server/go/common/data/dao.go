@@ -1,7 +1,8 @@
 package data
 
 import (
-	"github.com/hopeio/gox/context/httpctx"
+	"context"
+
 	"github.com/liov/hoper/server/go/common/data/db"
 	"gorm.io/gorm"
 )

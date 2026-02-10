@@ -12,12 +12,15 @@ var UserserviceServicedesc = &UserService_ServiceDesc
 
 /*----------------------------AuthInfo-------------------------------*/
 
+type ClientInfo struct {
+	Auth   *AuthInfo
+	Device *context.DeviceInfo
+}
+
 type AuthInfo struct {
-	Id     uint64     `json:"id"`
-	Name   string     `json:"name"`
-	Role   Role       `json:"role"`
-	Status UserStatus `json:"status"`
-	Avatar string     `json:"avatar"`
+	Id   uint64 `json:"id"`
+	Name string `json:"name"`
+	Role Role   `json:"role"`
 }
 
 func (x *AuthInfo) GetId() string {
@@ -26,10 +29,9 @@ func (x *AuthInfo) GetId() string {
 
 func (x *AuthInfo) Proto() *Auth {
 	return &Auth{
-		Id:     x.Id,
-		Name:   x.Name,
-		Role:   x.Role,
-		Status: x.Status,
+		Id:   x.Id,
+		Name: x.Name,
+		Role: x.Role,
 	}
 }
 
@@ -39,7 +41,7 @@ func ConvDeviceInfo(x *context.DeviceInfo) *AccessDevice {
 		OS:        x.OS,
 		AppCode:   x.AppCode,
 		AppVer:    x.AppVer,
-		IP:        x.IP,
+		IP:        x.IP.String(),
 		Lng:       x.Lng,
 		Lat:       x.Lat,
 		Area:      x.Area,

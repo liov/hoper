@@ -14,7 +14,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/uuid"
-	gormx "github.com/hopeio/gox/database/sql/gorm"
+	contextx "github.com/hopeio/cherry"
 	"github.com/hopeio/gox/math/rand"
 	httpx "github.com/hopeio/gox/net/http"
 	"github.com/hopeio/gox/sdk/luosimao"
@@ -27,11 +27,12 @@ import (
 	"github.com/hopeio/scaffold/errcode"
 	jwtx "github.com/hopeio/scaffold/jwt"
 	"github.com/liov/hoper/server/go/global"
-	model "github.com/liov/hoper/server/go/protobuf/user"
+	userpb "github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/api/middle"
 	"github.com/liov/hoper/server/go/user/data"
 	"github.com/liov/hoper/server/go/user/data/redis"
 	modelconst "github.com/liov/hoper/server/go/user/model"
+	"go.uber.org/zap"
 
 	"github.com/hopeio/gox/log"
 	"github.com/hopeio/gox/net/mail"
@@ -43,31 +44,31 @@ import (
 )
 
 type UserService struct {
-	model.UnimplementedUserServiceServer
+	userpb.UnimplementedUserServiceServer
 }
 
-func (u *UserService) VerifyCode(ctx context.Context, req *model.VerifyCodeReq) (*emptypb.Empty, error) {
+func (u *UserService) VerifyCode(ctx context.Context, req *userpb.VerifyCodeReq) (*emptypb.Empty, error) {
 	ctx, span := Tracer.Start(ctx, "UserService.VerifyCode")
 	defer span.End()
 	vcode := rand.RandomCode(4)
 	log.Info(vcode)
 	key := modelconst.VerificationCodeKey + req.Mail + req.Phone
 	if err := global.Dao.Redis.SetEX(ctx, key, vcode, modelconst.VerificationCodeDuration).Err(); err != nil {
-		return nil, ctxi.RespErrorLog(errcode.RedisErr.Msg("新建出错"), err, "SetEX")
+		return nil, errcode.RedisErr.Wrap(err)
 	}
 	sendVcode(ctx, req.Action, vcode, req.Mail)
 	return new(emptypb.Empty), nil
 }
 
-func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq) (*emptypb.Empty, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
+func (*UserService) SignupVerify(ctx context.Context, req *userpb.SingUpVerifyReq) (*emptypb.Empty, error) {
+	ctx, span := Tracer.Start(ctx, "UserService.SignupVerify")
+	defer span.End()
 
 	if req.Mail == "" && req.Phone == "" {
 		return nil, errcode.InvalidArgument.Msg("请填写邮箱或手机号")
 	}
 
-	userDao := data.GetDBDao(ctxi, global.Dao.GORMDB.DB)
+	userDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
 	input := req.Mail
 	if input == "" {
 		input = req.Phone
@@ -88,9 +89,9 @@ func (*UserService) SignupVerify(ctx context.Context, req *model.SingUpVerifyReq
 	return new(emptypb.Empty), nil
 }
 
-func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*wrappers.StringValue, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
+func (u *UserService) Signup(ctx context.Context, req *userpb.SignupReq) (*wrappers.StringValue, error) {
+	ctx, span := Tracer.Start(ctx, "UserService.Signup")
+	defer span.End()
 
 	if req.Mail == "" && req.Phone == "" {
 		return nil, errcode.InvalidArgument.Msg("请填写邮箱或手机号")
@@ -101,11 +102,11 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*wrappe
 		}
 	}
 
-	userDao := data.GetDBDao(ctxi, global.Dao.GORMDB.DB)
+	userDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
 
 	checkUser, err := userDao.GetByNameOrEmailOrPhone(req.Name, req.Mail, req.Phone)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, ctxi.RespErrorLog(errcode.DBError.Msg("查询出错"), err, "userDao.GetByNameOrEmailOrPhone")
+		return nil, errcode.DBError.Wrap(err)
 	}
 	if err == nil {
 		if checkUser.Name == req.Name {
@@ -119,32 +120,32 @@ func (u *UserService) Signup(ctx context.Context, req *model.SignupReq) (*wrappe
 		}
 	}
 
-	var user = &model.User{
+	var user = &userpb.User{
 		Name:    req.Name,
 		Account: uuid.New().String(),
 		Mail:    req.Mail,
 		Phone:   req.Phone,
 		Gender:  req.Gender,
 		Avatar:  modelconst.DefaultAvatar,
-		Role:    model.RoleNormal,
-		Status:  model.UserStatusInActive,
+		Role:    userpb.RoleNormal,
+		Status:  userpb.UserStatusInActive,
 	}
 
 	user.Password = encryptPassword(req.Password)
-	if err := userDao.Creat(user); err != nil {
-		return nil, ctxi.RespErrorLog(errcode.DBError.Msg("新建出错"), err, "UserService.Creat")
+	if err := userDao.Create(user); err != nil {
+		return nil, errcode.DBError.Wrap(err)
 	}
 
 	activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
 
-	curTime := ctxi.RequestTime.TimeStamp
+	curTime := time.Now()
 
 	if err := global.Dao.Redis.SetEX(ctx, activeUser, curTime, modelconst.ActiveDuration).Err(); err != nil {
-		return nil, ctxi.RespErrorLog(errcode.RedisErr, err, "UserService.Signup,SetEX")
+		return nil, errcode.RedisErr.Wrap(err)
 	}
 
 	if req.Mail != "" {
-		go sendMail(ctxi, model.ActionActive, curTime, user)
+		go sendMail(ctx, userpb.ActionActive, curTime.UnixMilli(), user)
 	}
 
 	return &wrappers.StringValue{Value: "注册成功，注意查收邮件"}, nil
@@ -161,7 +162,7 @@ func encryptPassword(password string) string {
 	return fmt.Sprintf("%x", md5.Sum(stringsx.ToBytes(hash)))
 }
 
-func sendMail(ctx context.Context, action model.Action, curTime int64, user *model.User) {
+func sendMail(ctx context.Context, action userpb.Action, curTime int64, user *userpb.User) {
 	siteURL := global.Conf.SiteURL
 	title := action.String()
 	secretStr := strconv.FormatInt(curTime, 10) + user.Mail + user.Password
@@ -171,10 +172,10 @@ func sendMail(ctx context.Context, action model.Action, curTime int64, user *mod
 	}{user.Name, "hoper", siteURL, "", secretStr}
 	var templ string
 	switch action {
-	case model.ActionActive:
+	case userpb.ActionActive:
 		activeOrRestPasswdValues.ActionURL = siteURL + "/api/user/active/" + strconv.FormatUint(user.Id, 10) + "/" + secretStr
 		templ = modelconst.ActionActiveContent
-	case model.ActionRestPassword:
+	case userpb.ActionRestPassword:
 		activeOrRestPasswdValues.ActionURL = siteURL + "/api/user/resetPassword/" + strconv.FormatUint(user.Id, 10) + "/" + secretStr
 		templ = modelconst.ActionRestPasswordContent
 	}
@@ -204,7 +205,7 @@ func sendMail(ctx context.Context, action model.Action, curTime int64, user *mod
 	}
 }
 
-func sendVcode(ctx context.Context, action model.Action, vcode string, mailAddr string) {
+func sendVcode(ctx context.Context, action userpb.Action, vcode string, mailAddr string) {
 	var values = struct {
 		Action, Vcode string
 	}{action.String(), vcode}
@@ -236,14 +237,14 @@ func sendVcode(ctx context.Context, action model.Action, vcode string, mailAddr 
 }
 
 // 验证密码是否正确
-func checkPassword(password string, user *model.User) bool {
+func checkPassword(password string, user *userpb.User) bool {
 	if password == "" || user.Password == "" {
 		return false
 	}
 	return encryptPassword(password) == user.Password
 }
 
-func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.LoginResp, error) {
+func (u *UserService) Active(ctx context.Context, req *userpb.ActiveReq) (*userpb.LoginResp, error) {
 	ctx, span := Tracer.Start(ctx, "UserService.Active")
 	defer span.End()
 	userDBDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
@@ -253,14 +254,14 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 		return nil, errcode.DBError
 	}
 
-	if user.Status != model.UserStatusInActive {
+	if user.Status != userpb.UserStatusInActive {
 		return nil, errcode.AlreadyExists.Msg("已激活")
 	}
 	redisKey := modelconst.ActiveTimeKey + strconv.FormatUint(req.Id, 10)
 	emailTime, err := global.Dao.Redis.Get(ctx, redisKey).Int64()
 	if err != nil {
-		go sendMail(ctx, model.ActionActive, ctx.RequestTime.TimeStamp, user)
-		return nil, ctxi.RespErrorLog(errcode.InvalidArgument.Msg("已过激活期限"), err, "Get")
+		go sendMail(ctx, userpb.ActionActive, time.Now().UnixMilli(), user)
+		return nil, errcode.InvalidArgument.Msg("已过激活期限")
 	}
 	secretStr := strconv.Itoa((int)(emailTime)) + user.Mail + user.Password
 
@@ -277,7 +278,8 @@ func (u *UserService) Active(ctx context.Context, req *model.ActiveReq) (*model.
 	return u.login(ctx, user)
 }
 
-func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*emptypb.Empty, error) {
+func (u *UserService) Edit(ctx context.Context, req *userpb.EditReq) (*emptypb.Empty, error) {
+
 	ctx, span := Tracer.Start(ctx, "UserService.Edit")
 	defer span.End()
 	user, err := auth(ctx, true)
@@ -287,22 +289,22 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*emptypb.Em
 	if user.Id != req.Id {
 		return nil, errcode.PermissionDenied
 	}
-	device := ctxi.Device()
 
+	device := Device(ctx)
 	if req.Detail != nil {
-		userDBDao := data.GetDBDao(ctxi, global.Dao.GORMDB.DB)
+		userDBDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
 
 		originalIds, err := userDBDao.ResumesIds(user.Id)
 		if err != nil {
 			return nil, errcode.DBError.Msg("更新失败")
 		}
-		var resumes []*model.Resume
+		var resumes []*userpb.Resume
 		resumes = append(req.Detail.EduExps, req.Detail.WorkExps...)
 		tx := userDBDao.Begin()
 		defer tx.Rollback()
-		userDBDao = data.GetDBDao(ctxi, tx)
+		userDBDao = data.GetDBDao(ctx, tx)
 		if len(resumes) > 0 {
-			err = userDBDao.SaveResumes(req.Id, resumes, originalIds, model.ConvDeviceInfo(device))
+			err = userDBDao.SaveResumes(req.Id, resumes, originalIds, userpb.ConvDeviceInfo(device))
 			if err != nil {
 				return nil, errcode.DBError.Msg("更新失败")
 			}
@@ -316,9 +318,9 @@ func (u *UserService) Edit(ctx context.Context, req *model.EditReq) (*emptypb.Em
 	return new(emptypb.Empty), nil
 }
 
-func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.LoginResp, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
+func (u *UserService) Login(ctx context.Context, req *userpb.LoginReq) (*userpb.LoginResp, error) {
+	ctx, span := Tracer.Start(ctx, "UserService.Login")
+	defer span.End()
 
 	if req.VCode != global.Conf.User.LuosimaoSuperPW {
 		if err := LuosimaoVerify(req.VCode); err != nil {
@@ -330,56 +332,56 @@ func (u *UserService) Login(ctx context.Context, req *model.LoginReq) (*model.Lo
 		return nil, errcode.InvalidArgument.Msg("账号错误")
 	}
 
-	userDBDao := data.GetDBDao(ctxi, global.Dao.GORMDB.DB)
+	userDBDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
 	user, err := userDBDao.UserInfoByAccount(req.Input)
 	if err != nil {
-		return nil, ctxi.RespErrorLog(errcode.DBError.Msg("账号不存在"), err, "Login")
+		return nil, errcode.DBError.Msg("账号不存在")
 	}
 
 	if !checkPassword(req.Password, user) {
 		return nil, errcode.InvalidArgument.Msg("密码错误")
 	}
-	if user.Status == model.UserStatusInActive {
+	if user.Status == userpb.UserStatusInActive {
 		//没看懂
 		//encodedEmail := base64.StdEncoding.EncodeToString(stringsx.ToBytes(user.Mail))
 		activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
 
 		curTime := time.Now().Unix()
 		if err := global.Dao.Redis.SetEX(ctx, activeUser, curTime, modelconst.ActiveDuration).Err(); err != nil {
-			return nil, ctxi.RespErrorLog(errcode.RedisErr, err, "SetEX")
+			return nil, errcode.RedisErr.Wrap(err)
 		}
-		go sendMail(ctxi, model.ActionActive, curTime, user)
-		return nil, model.UserErrNoActive.Msg("账号未激活,请进入邮箱点击激活")
+		go sendMail(ctx, userpb.ActionActive, curTime, user)
+		return nil, userpb.UserErrNoActive.Msg("账号未激活,请进入邮箱点击激活")
 	}
 
-	return u.login(ctxi, user)
+	return u.login(ctx, user)
 }
 
-func (*UserService) login(ctxi context.Context, user *model.User) (*model.LoginResp, error) {
-	authorization := jwtx.Claims[*model.AuthInfo]{Auth: &model.AuthInfo{
-		Id:     user.Id,
-		Name:   user.Name,
-		Role:   user.Role,
-		Status: user.Status,
+func (*UserService) login(ctx context.Context, user *userpb.User) (*userpb.LoginResp, error) {
+	md := contextx.GetMetadata(ctx)
+	authorization := jwtx.Claims[*userpb.AuthInfo]{Auth: &userpb.AuthInfo{
+		Id:   user.Id,
+		Name: user.Name,
+		Role: user.Role,
 	}}
-
-	ctxi.Auth().Info = authorization.Auth
-	authorization.IssuedAt = &jwt.NumericDate{Time: ctxi.Time}
-	authorization.ExpiresAt = &jwt.NumericDate{Time: ctxi.Time.Add(global.Conf.User.TokenMaxAge)}
+	now := time.Now()
+	md.Data = authorization.Auth
+	authorization.IssuedAt = &jwt.NumericDate{Time: now}
+	authorization.ExpiresAt = &jwt.NumericDate{Time: now.Add(global.Conf.User.TokenMaxAge)}
 
 	tokenString, err := authorization.GenerateToken(global.Conf.User.TokenSecretBytes)
 	if err != nil {
 		return nil, errcode.Internal
 	}
-	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctxi.Base(), ctxi.TraceID())
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
 
 	db.Table(modelconst.TableNameUserExt).Where(`id = ?`, user.Id).
-		UpdateColumn("last_activated_at", ctxi.RequestTime.String())
-	userRedisDao := redis.GetUserDao(ctxi, global.Dao.Redis.Client)
-	if err := userRedisDao.EfficientUserHashToRedis(); err != nil {
+		UpdateColumn("last_activated_at", now)
+	userRedisDao := redis.GetUserDao(ctx, global.Dao.Redis.Client)
+	if err := userRedisDao.EfficientUserHashToRedis(authorization.Auth); err != nil {
 		return nil, errcode.RedisErr
 	}
-	resp := &model.LoginResp{
+	resp := &userpb.LoginResp{
 		Token: tokenString,
 		User:  user,
 	}
@@ -394,28 +396,32 @@ func (*UserService) login(ctxi context.Context, user *model.User) (*model.LoginR
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
-	ctxi.ReqCtx.ResponseWriter.Header().Set(httpx.HeaderSetCookie, cookie)
-	serverTransportStream := grpc.ServerTransportStreamFromContext(ctxi.Base())
+
+	serverTransportStream := grpc.ServerTransportStreamFromContext(ctx)
 	if serverTransportStream != nil {
 		err = serverTransportStream.SetHeader(metadata.MD{httpx.HeaderSetCookie: []string{cookie}})
 		if err != nil {
 			return nil, errcode.Unavailable
 		}
+	} else {
+		md.ResponseWriter.Header().Set(httpx.HeaderSetCookie, cookie)
 	}
 	return resp, nil
 }
 
 func (u *UserService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.Empty, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("Logout")()
-	user, err := auth(ctxi, true)
+	md := contextx.GetMetadata(ctx)
+	ctx, span := Tracer.Start(ctx, "UserService.Logout")
+	defer span.End()
+	user, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
+
 	global.Dao.GORMDB.Table(modelconst.TableNameUserExt).Where(`id = ?`, user.Id).UpdateColumn("last_activated_at", time.Now())
 
 	if err := global.Dao.Redis.Del(ctx, modelconst.LoginUserKey+strconv.FormatUint(user.Id, 10)).Err(); err != nil {
-		return nil, ctxi.RespErrorLog(errcode.RedisErr, err, "redisx.Del")
+		return nil, errcode.RedisErr.Wrap(err)
 	}
 	cookie := (&http.Cookie{
 		Name:  httpx.HeaderCookieValueToken,
@@ -427,8 +433,8 @@ func (u *UserService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.
 		Secure:   false,
 		HttpOnly: true,
 	}).String()
-	ctxi.ReqCtx.ResponseWriter.Header().Set(httpx.HeaderSetCookie, cookie)
-	serverTransportStream := grpc.ServerTransportStreamFromContext(ctxi.Base())
+	md.ResponseWriter.Header().Set(httpx.HeaderSetCookie, cookie)
+	serverTransportStream := grpc.ServerTransportStreamFromContext(ctx)
 	if serverTransportStream != nil {
 		err = serverTransportStream.SetHeader(metadata.MD{httpx.HeaderSetCookie: []string{cookie}})
 		if err != nil {
@@ -438,41 +444,42 @@ func (u *UserService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.
 	return new(emptypb.Empty), nil
 }
 
-func (u *UserService) AuthInfo(ctx context.Context, req *emptypb.Empty) (*model.Auth, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	user, err := auth(ctxi, true)
+func (u *UserService) AuthInfo(ctx context.Context, req *emptypb.Empty) (*userpb.Auth, error) {
+	ctx, span := Tracer.Start(ctx, "UserService.AuthInfo")
+	defer span.End()
+	user, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
 	return user.Proto(), nil
 }
 
-func (u *UserService) Info(ctx context.Context, req *request.Id) (*model.UserResp, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
-	auth, err := auth(ctxi, true)
+func (u *UserService) Info(ctx context.Context, req *request.Id) (*userpb.UserResp, error) {
+	ctx, span := Tracer.Start(ctx, "UserService.Info")
+	defer span.End()
+	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
 	if req.Id == 0 {
 		req.Id = auth.Id
 	}
-	userRedisDao := redis.GetUserDao(ctxi, global.Dao.Redis.Client)
-	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctxi.Base(), ctxi.TraceID())
-	var user1 model.User
+	userRedisDao := redis.GetUserDao(ctx, global.Dao.Redis.Client)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	var user1 userpb.User
 	if err = db.First(&user1, req.Id).Error; err != nil {
 		return nil, errcode.DBError.Msg("账号不存在")
 	}
-	userExt, err := userRedisDao.GetUserExtRedis()
+	userExt, err := userRedisDao.GetUserExtRedis(auth.Id)
 	if err != nil {
 		return nil, err
 	}
-	return &model.UserResp{User: &user1, UerExt: userExt}, nil
+	return &userpb.UserResp{User: &user1, UerExt: userExt}, nil
 }
 
-func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (*wrappers.StringValue, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
+func (u *UserService) ForgetPassword(ctx context.Context, req *userpb.LoginReq) (*wrappers.StringValue, error) {
+	ctx, span := Tracer.Start(ctx, "UserService.ForgetPassword")
+	defer span.End()
 	if verifyErr := luosimao.Verify(global.Conf.User.LuosimaoVerifyURL, global.Conf.User.LuosimaoAPIKey, req.VCode); verifyErr != nil {
 		return nil, errcode.InvalidArgument.Wrap(verifyErr)
 	}
@@ -480,7 +487,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 	if req.Input == "" {
 		return nil, errcode.InvalidArgument.Msg("账号错误")
 	}
-	userDBDao := data.GetDBDao(ctxi, global.Dao.GORMDB.DB)
+	userDBDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
 
 	user, err := userDBDao.GetByEmailOrPhone(req.Input, req.Input, "id", "name", "password")
 	if err != nil {
@@ -502,21 +509,22 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *model.LoginReq) (
 		return nil, errcode.RedisErr
 	}
 
-	go sendMail(ctxi, model.ActionRestPassword, curTime, user)
+	go sendMail(ctx, userpb.ActionRestPassword, curTime, user)
 
 	return &wrappers.StringValue{Value: "注意查收邮件"}, nil
 }
 
-func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswordReq) (*wrappers.StringValue, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("ResetPassword")()
+func (u *UserService) ResetPassword(ctx context.Context, req *userpb.ResetPasswordReq) (*wrappers.StringValue, error) {
+	ctx, span := Tracer.Start(ctx, "UserService.ResetPassword")
+	defer span.End()
 
 	redisKey := modelconst.ResetTimeKey + strconv.FormatUint(req.Id, 10)
 	emailTime, err := global.Dao.Redis.Get(ctx, redisKey).Int64()
 	if err != nil {
-		return nil, ctxi.RespErrorLog(errcode.InvalidArgument.Msg("无效的链接"), err, "Redis.Get")
+		log.Errorw("Get faild", zap.Error(err))
+		return nil, errcode.InvalidArgument.Msg("无效的链接")
 	}
-	userDBDao := data.GetDBDao(ctxi, global.Dao.GORMDB.DB)
+	userDBDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
 
 	user, err := userDBDao.GetByPrimaryKey(req.Id)
 	if err != nil {
@@ -532,7 +540,7 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 	if req.Secret != secretStr {
 		return nil, errcode.InvalidArgument.Msg("无效的链接")
 	}
-	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctxi.Base(), ctxi.TraceID())
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	if err := db.Table(modelconst.TableNameUser).
 		Where(`id = ?`, user.Id).Update("password", req.Password).Error; err != nil {
 		log.Error("UserService.ResetPassword,DB.Update", err)
@@ -542,9 +550,9 @@ func (u *UserService) ResetPassword(ctx context.Context, req *model.ResetPasswor
 	return &wrappers.StringValue{Value: "重置成功，请重新登录"}, nil
 }
 
-func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListReq) (*model.ActionLogListResp, error) {
-	resp := &model.ActionLogListResp{}
-	var logs []*model.ActionLog
+func (*UserService) ActionLogList(ctx context.Context, req *userpb.ActionLogListReq) (*userpb.ActionLogListResp, error) {
+	resp := &userpb.ActionLogListResp{}
+	var logs []*userpb.ActionLog
 	err := global.Dao.GORMDB.Table(modelconst.TableNameActionLog).
 		Offset(0).Limit(10).Find(&logs).Error
 	if err != nil {
@@ -555,9 +563,9 @@ func (*UserService) ActionLogList(ctx context.Context, req *model.ActionLogListR
 	return resp, nil
 }
 
-func (*UserService) BaseList(ctx context.Context, req *model.BaseListReq) (*model.BaseListResp, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("BaseList")()
+func (*UserService) BaseList(ctx context.Context, req *userpb.BaseListReq) (*userpb.BaseListResp, error) {
+	ctx, span := Tracer.Start(ctx, "UserService.BaseList")
+	defer span.End()
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, errcode.InvalidArgument
@@ -566,52 +574,51 @@ func (*UserService) BaseList(ctx context.Context, req *model.BaseListReq) (*mode
 	if md.Get(httpx.HeaderGrpcInternal) == nil || md.Get(httpx.HeaderGrpcInternal)[0] == "" {
 		return nil, errcode.PermissionDenied
 	}
-	ctx = ctxi.Base()
-	userDBDao := data.GetDBDao(ctxi, global.Dao.GORMDB.DB)
+	userDBDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
 
 	count, users, err := userDBDao.GetBaseListDB(req.Ids, int(req.PageNo), int(req.PageSize))
 	if err != nil {
 		return nil, err
 	}
-	return &model.BaseListResp{
+	return &userpb.BaseListResp{
 		Total: count,
 		List:  users,
 	}, nil
 }
 
-func (*UserService) GetTest(ctx context.Context, req *request.Id) (*model.User, error) {
-	return &model.User{Id: req.Id, Name: "测试"}, nil
+func (*UserService) GetTest(ctx context.Context, req *request.Id) (*userpb.User, error) {
+	return &userpb.User{Id: req.Id, Name: "测试"}, nil
 }
 
 func (*UserService) Service() (string, string, []gin.HandlerFunc) {
 	return "用户相关", "/api/user", []gin.HandlerFunc{middle.GinLog}
 }
 
-func (*UserService) PickAdd(ctx *ginctx.Context, req *model.SignupReq) (*wrappers.StringValue, error) {
+func (*UserService) PickAdd(ctx *gin.Context, req *userpb.SignupReq) (*wrappers.StringValue, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() { pick.Get("/add").Title("用户注册").End() })
 	client := global.Dao.Redis
-	cmd, _ := client.Do(ctx.Base(), "HGETALL", modelconst.LoginUserKey+"1").Result()
+	cmd, _ := client.Do(ctx, "HGETALL", modelconst.LoginUserKey+"1").Result()
 	log.Debug(cmd)
 
 	return &wrappers.StringValue{Value: req.Name}, nil
 }
 
-func (*UserService) PickAddv(ctx *ginctx.Context, req *response.ErrResp) (*response.ErrResp, error) {
+func (*UserService) PickAddv(ctx *gin.Context, req *response.ErrResp) (*response.ErrResp, error) {
 	//对于一个性能强迫症来说，我宁愿它不优雅一些也不能接受每次都调用
 	pick.Api(func() { pick.Post("/add").Title("用户注册").End() })
 	return req, nil
 }
 
-func (u *UserService) EasySignup(ctx context.Context, req *model.SignupReq) (*model.LoginResp, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("EasySignup")()
+func (u *UserService) EasySignup(ctx context.Context, req *userpb.SignupReq) (*userpb.LoginResp, error) {
+	ctx, span := Tracer.Start(ctx, "UserService.EasySignup")
+	defer span.End()
 
 	if req.Mail == "" && req.Phone == "" {
 		return nil, errcode.InvalidArgument.Msg("请填写邮箱或手机号")
 	}
 
-	userDBDao := data.GetDBDao(ctxi, global.Dao.GORMDB.DB)
+	userDBDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
 	checkUser, err := userDBDao.GetByNameOrEmailOrPhone(req.Name, req.Mail, req.Phone)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errcode.DBError
@@ -628,21 +635,22 @@ func (u *UserService) EasySignup(ctx context.Context, req *model.SignupReq) (*mo
 		}
 	}
 
-	var user = &model.User{
+	var user = &userpb.User{
 		Name:        req.Name,
 		Account:     uuid.New().String(),
 		Mail:        req.Mail,
 		Phone:       req.Phone,
 		Gender:      req.Gender,
 		Avatar:      modelconst.DefaultAvatar,
-		Role:        model.RoleNormal,
-		ActivatedAt: timestamp.New(ctxi.RequestTime.Time),
-		Status:      model.UserStatusActivated,
+		Role:        userpb.RoleNormal,
+		ActivatedAt: timestamp.New(time.Now()),
+		Status:      userpb.UserStatusActivated,
 	}
 
 	user.Password = encryptPassword(req.Password)
-	if err := userDBDao.Creat(user); err != nil {
-		return nil, ctxi.RespErrorLog(errcode.DBError.Msg("新建出错"), err, "UserService.Creat")
+	if err := userDBDao.Create(user); err != nil {
+		log.Errorw("Create faild", zap.Error(err))
+		return nil, errcode.DBError.Msg("新建出错")
 	}
-	return u.login(ctxi, user)
+	return u.login(ctx, user)
 }

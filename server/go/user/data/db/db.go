@@ -59,7 +59,7 @@ func (d *UserDao) GetByEmailOrPhone(input string, fields ...string) (*puser.User
 	return &u, nil
 }
 
-func (d *UserDao) Creat(user *puser.User) error {
+func (d *UserDao) Create(user *puser.User) error {
 	return d.Table(model.TableNameUser).Create(user).Error
 }
 
@@ -96,7 +96,7 @@ func (d *UserDao) SaveResumes(userId uint64, resumes []*puser.Resume, originalId
 			actionLog.LastValue, _ = json.Marshal(resumes[i])
 			editIds = append(editIds, resumes[i].Basic.Id)
 		} else {
-			err = d.Create(resumes[i]).Error
+			err = d.DB.Create(resumes[i]).Error
 			actionLog.Action = puser.ActionEditResume
 		}
 		if err != nil {

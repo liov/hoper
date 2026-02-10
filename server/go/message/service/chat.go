@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/gorilla/websocket"
-	"github.com/hopeio/gox/context/httpctx"
 	"github.com/hopeio/gox/errors"
 	httpx "github.com/hopeio/gox/net/http"
 	"github.com/hopeio/scaffold/errcode"
@@ -39,8 +38,9 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	if strings.Contains(r.Header.Get("User-Agent"), "MicroMessenger") {
 		channel = "wx"
 	}
-	ctxi, _ := httpctx.FromContext(r.Context())
-	_, err = auth(ctxi, false)
+	ctx, span := Tracer.Start(r.Context(), "Register")
+	defer span.End()
+	auth, err := auth(ctx, false)
 	if err != nil {
 		(&httpx.CommonAnyResp{
 			Code: errors.ErrCode(user.UserErrNoLogin),
@@ -48,6 +48,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		}).ServeHTTP(w, r)
 		return
 	}
-	client := &Client{ID: ctxi.Auth().Info.(*user.AuthInfo).Id, Conn: conn, Device: device, Channel: channel}
+	client := &Client{ID: auth.Id, Conn: conn, Device: device, Channel: channel}
 	Manager.Register(client)
 }

@@ -1,7 +1,8 @@
 package service
 
 import (
-	"github.com/hopeio/gox/context/httpctx"
+	"context"
+
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/service"
 )

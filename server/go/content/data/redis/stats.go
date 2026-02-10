@@ -1,18 +1,19 @@
 package redis
 
 import (
+	"strconv"
+
 	"github.com/hopeio/scaffold/errcode"
 	"github.com/liov/hoper/server/go/content/model"
 )
 
-func (d *ContentDao) UserContentEdit(field string, value interface{}) error {
-	ctxi := d
-	ctx := ctxi.Base()
-	key := model.UserContentCountKey + ctxi.Auth().ID
+func (d *ContentDao) UserContentEdit(userId uint64, field string, value interface{}) error {
+	ctx := d.Context()
+	key := model.UserContentCountKey + strconv.FormatUint(userId, 10)
 
-	err := d.conn.HSet(ctx, key, field, value).Err()
+	err := d.HSet(ctx, key, field, value).Err()
 	if err != nil {
-		return ctxi.RespErrorLog(errcode.RedisErr, err, "RedisUserInfoEdit")
+		return errcode.RedisErr.Wrap(err)
 	}
 	return nil
 }

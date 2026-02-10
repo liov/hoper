@@ -1,7 +1,10 @@
 package service
 
+import "go.opentelemetry.io/otel"
+
 var (
 	fileSvc = &FileService{}
+	Tracer  = otel.Tracer("file")
 )
 
 func GetFileService() *FileService {

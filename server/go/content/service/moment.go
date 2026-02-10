@@ -5,15 +5,15 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hopeio/gox/context/httpctx"
+	"github.com/hopeio/gox/log"
 	httpx "github.com/hopeio/gox/net/http"
 	"github.com/hopeio/scaffold/errcode"
+	"go.uber.org/zap"
 	"google.golang.org/grpc/metadata"
 
 	"unicode/utf8"
 
 	"github.com/hopeio/gox/container/set"
-	gormx "github.com/hopeio/gox/database/sql/gorm"
 	"github.com/hopeio/protobuf/request"
 	"github.com/liov/hoper/server/go/protobuf/common"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -40,24 +40,25 @@ func (*MomentService) Service() (describe, prefix string, middleware []gin.Handl
 }
 
 func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Moment, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
-	auth, _ := auth(ctxi, true)
-	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
-	contentDBDao := data.GetDBDao(ctxi, db)
+	ctx, span := Tracer.Start(ctx, "Content.Info")
+	defer span.End()
+	auth, _ := auth(ctx, true)
+
+	contentDBDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
 
 	var moment content.Moment
-	err := db.Table(model.TableNameMoment).First(&moment, req.Id).Error
+	err := contentDBDao.Table(model.TableNameMoment).First(&moment, req.Id).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, errcode.NotFound
 		}
-		return nil, ctxi.RespErrorLog(errcode.DBError, err, "First")
+		log.Errorw("Find", zap.Error(err))
+		return nil, errcode.DBError.Wrap(err)
 	}
 	// tags
 	contentTags, err := contentDBDao.GetContentTag(content.ContentMoment, []uint64{moment.Id})
 	if err != nil {
-		return nil, err
+		return nil, errcode.DBError.Wrap(err)
 	}
 	var tags = make([]*common.TinyTag, len(contentTags))
 	for i := range contentTags {
@@ -70,7 +71,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 		action := &content.UserAction{}
 		likes, err := contentDBDao.GetContentActions(content.ActionLike, content.ContentMoment, []uint64{req.Id}, auth.Id)
 		if err != nil {
-			return nil, err
+			return nil, errcode.DBError.Wrap(err)
 		}
 
 		for i := range likes {
@@ -83,7 +84,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 		}
 		collects, err := contentDBDao.GetCollects(content.ContentMoment, []uint64{req.Id}, auth.Id)
 		if err != nil {
-			return nil, err
+			return nil, errcode.DBError.Wrap(err)
 		}
 		for i := range collects {
 			action.CollectIds = append(action.CollectIds, collects[i].RefId)
@@ -95,7 +96,7 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 	// ext
 	statistics, err := contentDBDao.GetStatistics(content.ContentMoment, []uint64{moment.Id})
 	if err != nil {
-		return nil, err
+		return nil, errcode.DBError.Wrap(err)
 	}
 	moment.Statistics = statistics[0]
 
@@ -108,7 +109,6 @@ func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Momen
 			Name:   auth.Name,
 			Score:  0,
 			Gender: 0,
-			Avatar: auth.Avatar,
 		}
 	}
 	momentMaskField(&moment)
@@ -127,16 +127,14 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		return nil, errcode.InvalidArgument.Msg(fmt.Sprintf("文章内容不能小于%d个字", global.Conf.Customize.Moment.MaxContentLen))
 	}
 
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
-	auth, err := auth(ctxi, true)
+	ctx, span := Tracer.Start(ctx, "Content.Add")
+	defer span.End()
+	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
-	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
-	codb := gormx.NewTraceDB(comconfdao.Dao.GORMDB.DB, ctx, ctxi.TraceID())
-	contentDBDao := data.GetDBDao(ctxi, db)
-	commonDBDao := comdata.GetDBDao(ctxi, codb)
+	contentDBDao := data.GetDBDao(ctx, comconfdao.Dao.GORMDB.DB)
+	commonDBDao := comdata.GetDBDao(ctx, comconfdao.Dao.GORMDB.DB)
 
 	req.UserId = auth.Id
 
@@ -149,7 +147,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 	if len(req.Tags) > 0 {
 		tags, err = commonDBDao.GetTagsByName(req.Tags)
 		if err != nil {
-			return nil, err
+			return nil, errcode.DBError.Wrap(err)
 		}
 	}
 
@@ -158,10 +156,10 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		if req.Permission == 0 {
 			req.Permission = content.ViewPermissionAll
 		}
-		contenttxDBDao := data.GetDBDao(ctxi, tx)
+		contenttxDBDao := data.GetDBDao(ctx, tx)
 		err = tx.Table(model.TableNameMoment).Create(req).Error
 		if err != nil {
-			return ctxi.RespErrorLog(errcode.DBError, err, "tx.CreateReq")
+			return errcode.DBError.Wrap(err)
 		}
 		err = contenttxDBDao.CreateContextExt(content.ContentMoment, req.Id)
 		if err != nil {
@@ -186,12 +184,12 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		}
 		if len(noExist) == 1 {
 			if err = tx.Create(&noExist[1]).Error; err != nil {
-				return ctxi.RespErrorLog(errcode.DBError, err, "db.CreateNoExist")
+				return errcode.DBError.Wrap(err)
 			}
 		}
 		if len(noExist) > 1 {
 			if err = tx.Create(&noExist).Error; err != nil {
-				return ctxi.RespErrorLog(errcode.DBError, err, "db.CreateNoExist")
+				return errcode.DBError.Wrap(err)
 			}
 		}
 		for i := range noExist {
@@ -203,7 +201,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		}
 		if len(contentTags) > 0 {
 			if err = tx.Create(&contentTags).Error; err != nil {
-				return ctxi.RespErrorLog(errcode.DBError, err, "db.CreateContentTags")
+				return errcode.DBError.Wrap(err)
 			}
 		}
 		return nil
@@ -218,11 +216,11 @@ func (*MomentService) Edit(context.Context, *content.AddMomentReq) (*emptypb.Emp
 }
 
 func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*content.MomentListResp, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
-	auth, _ := auth(ctxi, true)
-	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
-	contentDBDao := data.GetDBDao(ctxi, db)
+	ctx, span := Tracer.Start(ctx, "Content.List")
+	defer span.End()
+	auth, _ := auth(ctx, true)
+
+	contentDBDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
 
 	total, moments, err := contentDBDao.GetMomentList(req)
 	if err != nil {
@@ -303,7 +301,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 	}
 	var users []*user.UserBase
 	if len(userIds) > 0 {
-		userList, err := global.UserClient().BaseList(metadata.AppendToOutgoingContext(ctxi.Base(), httpx.HeaderGrpcInternal, httpx.HeaderGrpcInternal), &user.BaseListReq{Ids: userIds.ToSlice()})
+		userList, err := global.UserClient().BaseList(metadata.AppendToOutgoingContext(ctx, httpx.HeaderGrpcInternal, httpx.HeaderGrpcInternal), &user.BaseListReq{Ids: userIds.ToSlice()})
 		if err != nil {
 			return nil, err
 		}
@@ -317,14 +315,14 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 }
 
 func (*MomentService) Delete(ctx context.Context, req *request.Id) (*emptypb.Empty, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
-	auth, err := auth(ctxi, true)
+	ctx, span := Tracer.Start(ctx, "Content.Delete")
+	defer span.End()
+	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
-	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
-	contentDBDao := data.GetDBDao(ctxi, db)
+
+	contentDBDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
 
 	err = contentDBDao.DelByAuth(model.TableNameMoment, req.Id, auth.Id)
 	if err != nil {

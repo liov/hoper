@@ -1,17 +1,19 @@
 package data
 
 import (
-	"github.com/hopeio/gox/context/httpctx"
+	"context"
 	"log"
+
+	"gorm.io/gorm"
 )
 
 type uploadDao struct {
-	context.Context
+	*gorm.DB
 }
 
-func GetDao(ctx context.Context) *uploadDao {
+func GetDao(ctx context.Context, db *gorm.DB) uploadDao {
 	if ctx == nil {
 		log.Fatal("ctx can't nil")
 	}
-	return &uploadDao{ctx}
+	return uploadDao{db.Session(&gorm.Session{Context: ctx, NewDB: true})}
 }

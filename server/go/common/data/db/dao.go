@@ -1,18 +1,17 @@
 package db
 
 import (
-	"github.com/hopeio/gox/context/httpctx"
+	"context"
+
 	"gorm.io/gorm"
 )
 
 type CommonDao struct {
-	context.Context
-	db *gorm.DB
+	*gorm.DB
 }
 
-func GetDao(ctx context.Context, d *gorm.DB) *CommonDao {
+func GetDao(ctx context.Context, db *gorm.DB) *CommonDao {
 	return &CommonDao{
-		Context: ctx,
-		db:      d,
+		db.Session(&gorm.Session{Context: ctx, NewDB: true}),
 	}
 }

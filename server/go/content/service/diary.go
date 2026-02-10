@@ -3,8 +3,6 @@ package service
 import (
 	"context"
 
-	"github.com/hopeio/gox/context/httpctx"
-	gormx "github.com/hopeio/gox/database/sql/gorm"
 	"github.com/hopeio/scaffold/errcode"
 	"github.com/liov/hoper/server/go/content/data"
 	"github.com/liov/hoper/server/go/content/model"
@@ -32,8 +30,9 @@ func (*DiaryService) DiaryBook(ctx context.Context, req *content.DiaryBookReq) (
 	return nil, status.Errorf(codes.Unimplemented, "method DiaryBook not implemented")
 }
 func (*DiaryService) DiaryBookList(ctx context.Context, req *content.DiaryBookListReq) (*content.DiaryBookListResp, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	_, err := auth(ctxi, true)
+	ctx, span := Tracer.Start(ctx, "Content.DiaryBook")
+	defer span.End()
+	_, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
@@ -41,69 +40,69 @@ func (*DiaryService) DiaryBookList(ctx context.Context, req *content.DiaryBookLi
 	return nil, status.Errorf(codes.Unimplemented, "method DiaryBookList not implemented")
 }
 func (*DiaryService) AddDiaryBook(ctx context.Context, req *content.AddDiaryBookReq) (*request.Id, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
-	auth, err := auth(ctxi, true)
+	ctx, span := Tracer.Start(ctx, "Content.AddDiaryBook")
+	defer span.End()
+	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
 
-	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	req.UserId = auth.Id
 	err = db.Table(model.TableNameDiaryBook).Create(req).Error
 	if err != nil {
-		return nil, ctxi.RespErrorLog(errcode.DBError, err, "Create")
+		return nil, errcode.DBError.Wrap(err)
 	}
 	return &request.Id{Id: req.Id}, nil
 }
 func (*DiaryService) EditDiaryBook(ctx context.Context, req *content.AddDiaryBookReq) (*emptypb.Empty, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
-	auth, err := auth(ctxi, true)
+	ctx, span := Tracer.Start(ctx, "Content.EditDiaryBook")
+	defer span.End()
+	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
-	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	req.UserId = auth.Id
 	err = db.Table(model.TableNameDiaryBook).Where(`id =? AND user_id =?`, req.Id, auth.Id).
 		Updates(req).Error
 	if err != nil {
-		return nil, ctxi.RespErrorLog(errcode.DBError, err, "Create")
+		return nil, errcode.DBError.Wrap(err)
 	}
 	return nil, nil
 }
 func (*DiaryService) Info(ctx context.Context, req *request.Id) (*content.Diary, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
-	auth, err := auth(ctxi, true)
+	ctx, span := Tracer.Start(ctx, "Content.Info")
+	defer span.End()
+	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
-	contentRedisDao := data.GetRedisDao(ctxi, global.Dao.Redis)
-	err = contentRedisDao.Limit(&global.Conf.Moment.Limit)
+	contentRedisDao := data.GetRedisDao(ctx, global.Dao.Redis)
+	err = contentRedisDao.Limit(&global.Conf.Moment.Limit, auth.Id)
 	if err != nil {
 		return nil, err
 	}
-	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	var diary content.Diary
 	err = db.Where(`id = ? AND user_id = ?`, req.Id, auth.Id).First(&diary).Error
 	if err != nil {
-		return nil, ctxi.RespErrorLog(errcode.DBError, err, "First")
+		return nil, errcode.DBError.Wrap(err)
 	}
 	return nil, nil
 }
 func (*DiaryService) Add(ctx context.Context, req *content.AddDiaryReq) (*request.Id, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
-	auth, err := auth(ctxi, true)
+	ctx, span := Tracer.Start(ctx, "Content.Add")
+	defer span.End()
+	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
-	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	req.UserId = auth.Id
 	err = db.Table(model.TableNameDiary).Create(req).Error
 	if err != nil {
-		return nil, ctxi.RespErrorLog(errcode.DBError, err, "Create")
+		return nil, errcode.DBError.Wrap(err)
 	}
 	return nil, nil
 }
@@ -117,17 +116,17 @@ func (*DiaryService) List(context.Context, *content.DiaryListReq) (*content.Diar
 }
 
 func (*DiaryService) Delete(ctx context.Context, req *request.Id) (*emptypb.Empty, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
-	auth, err := auth(ctxi, true)
+	ctx, span := Tracer.Start(ctx, "Content.Delete")
+	defer span.End()
+	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
-	db := gormx.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
-	contentDBDao := data.GetDBDao(ctxi, db)
+
+	contentDBDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
 	err = contentDBDao.DelByAuth(model.TableNameDiary, req.Id, auth.Id)
 	if err != nil {
-		return nil, err
+		return nil, errcode.DBError.Wrap(err)
 	}
 	return nil, nil
 }

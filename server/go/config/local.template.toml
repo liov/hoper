@@ -272,12 +272,19 @@ PingTimeout = 0
 SendPingTimeout = 0
 WriteByteTimeout = 0
 
+[Server.Prometheus]
+DisableCompression = false
+EnableOpenMetrics = false
+EnableOpenMetricsTextCreatedSamples = false
+Enabled = false
+ErrorHandling = 0
+HttpURI = ''
+MaxRequestsInFlight = 0
+OfferedCompressions = []
+Timeout = 0
+
 [Server.Telemetry]
 Enabled = false
-
-[Server.Telemetry.Prometheus]
-Enabled = false
-HttpUri = ''
 
 [Upload]
 UploadAllowExt = []
