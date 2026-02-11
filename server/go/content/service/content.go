@@ -32,10 +32,11 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*req
 	if err != nil {
 		return nil, err
 	}
-	contentDBDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	contentDBDao := data.GetDBDao(db)
 
 	req.UserId = auth.Id
-	id, err := contentDBDao.FavExists(req.Title, auth.Id)
+	id, err := contentDBDao.FavExists(ctx, req.Title, auth.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -44,13 +45,13 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*req
 	}
 
 	err = contentDBDao.Transaction(func(tx *gorm.DB) error {
-		contenttxDBDao := data.GetDBDao(ctx, tx)
+		contenttxDBDao := data.GetDBDao(tx)
 		err = tx.Table(model.TableNameFavorite).Create(req).Error
 		if err != nil {
 			log.Errorw("Create", zap.Error(err))
 			return errcode.DBError.Wrap(err)
 		}
-		err = contenttxDBDao.CreateContextExt(content.ContentFavorites, req.Id)
+		err = contenttxDBDao.CreateContextExt(ctx, content.ContentFavorites, req.Id)
 		if err != nil {
 			return err
 		}
@@ -69,8 +70,9 @@ func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*em
 	if err != nil {
 		return nil, err
 	}
-	contentRedisDao := data.GetRedisDao(ctx, global.Dao.Redis)
-	err = contentRedisDao.Limit(&global.Conf.Moment.Limit, auth.Id)
+	rclient := global.Dao.Redis.WithContext(ctx)
+	contentRedisDao := data.GetRedisDao(rclient)
+	err = contentRedisDao.Limit(ctx, &global.Conf.Moment.Limit, auth.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -117,8 +119,9 @@ func (*ContentService) AddSet(ctx context.Context, req *content.AddSetReq) (*emp
 	if err != nil {
 		return nil, err
 	}
-	contentRedisDao := data.GetRedisDao(ctx, global.Dao.Redis)
-	err = contentRedisDao.Limit(&global.Conf.Moment.Limit, auth.Id)
+	rclient := global.Dao.Redis.WithContext(ctx)
+	contentRedisDao := data.GetRedisDao(rclient)
+	err = contentRedisDao.Limit(ctx, &global.Conf.Moment.Limit, auth.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -140,8 +143,9 @@ func (*ContentService) EditSet(ctx context.Context, req *content.AddSetReq) (*em
 	if err != nil {
 		return nil, err
 	}
-	contentRedisDao := data.GetRedisDao(ctx, global.Dao.Redis)
-	err = contentRedisDao.Limit(&global.Conf.Moment.Limit, auth.Id)
+	rclient := global.Dao.Redis.WithContext(ctx)
+	contentRedisDao := data.GetRedisDao(rclient)
+	err = contentRedisDao.Limit(ctx, &global.Conf.Moment.Limit, auth.Id)
 	if err != nil {
 		return nil, err
 	}

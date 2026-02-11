@@ -1,14 +1,15 @@
 package redis
 
 import (
+	"context"
+
 	"github.com/go-redis/redis/v8"
 	"github.com/hopeio/scaffold/errcode"
 
 	"github.com/liov/hoper/server/go/protobuf/content"
 )
 
-func (d *ContentDao) GetTopMoments(key string, pageNo int, PageSize int) ([]content.Moment, error) {
-	ctx := d.Context()
+func (d *ContentDao) GetTopMoments(ctx context.Context, key string, pageNo int, PageSize int) ([]content.Moment, error) {
 	var moments []content.Moment
 	exist, err := d.Exists(ctx, key).Result()
 	if err != nil {

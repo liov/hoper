@@ -78,8 +78,9 @@ func (*FileService) Exists(ctx context.Context, req *request.Exists) (*response.
 	ctx, span := Tracer.Start(ctx, "Exists")
 	defer span.End()
 	auth, err := auth(ctx, false)
-	uploadDao := data.GetDao(ctx, global.Dao.GORMDB.DB)
-	file, err := uploadDao.FileInfo(req.Md5, req.Size)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	uploadDao := data.GetDao(db)
+	file, err := uploadDao.FileInfo(ctx, req.Md5, req.Size)
 	if err != nil {
 		return nil, errcode.DBError
 	}
@@ -98,12 +99,13 @@ func (*FileService) Exists(ctx context.Context, req *request.Exists) (*response.
 }
 
 func save(ctx context.Context, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
-	uploadDao := data.GetDao(ctx, global.Dao.GORMDB.DB)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	uploadDao := data.GetDao(db)
 
 	auth, _ := auth(ctx, false)
 	var file *model.FileInfo
 	if md5Str != "" {
-		file, err = uploadDao.FileInfo(md5Str, strconv.FormatInt(info.Size, 10))
+		file, err = uploadDao.FileInfo(ctx, md5Str, strconv.FormatInt(info.Size, 10))
 		if err != nil {
 			return nil, err
 		}
@@ -125,7 +127,7 @@ func save(ctx context.Context, info *multipart.FileHeader, md5Str string) (uploa
 			return nil, errcode.IOError.Wrap(err)
 		}
 		md5Str = hex.EncodeToString(hash.Sum(nil))
-		file, err = uploadDao.FileInfo(md5Str, strconv.FormatInt(info.Size, 10))
+		file, err = uploadDao.FileInfo(ctx, md5Str, strconv.FormatInt(info.Size, 10))
 		if err != nil {
 			return nil, err
 		}

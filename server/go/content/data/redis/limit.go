@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"context"
 	"strconv"
 	"time"
 
@@ -13,8 +14,8 @@ import (
 
 var limitErr = errcode.TimesTooMuch.Msg("您的操作过于频繁，请先休息一会儿。")
 
-func (d *ContentDao) Limit(l *global.ContentLimit, userId uint64) error {
-	ctx := d.Context()
+func (d *ContentDao) Limit(ctx context.Context, l *global.ContentLimit, userId uint64) error {
+
 	userIdStr := strconv.FormatUint(userId, 10)
 	minuteKey := l.MinuteLimitKey + userIdStr
 	dayKey := l.DayLimitKey + userIdStr

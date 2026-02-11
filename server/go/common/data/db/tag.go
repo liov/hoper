@@ -1,6 +1,8 @@
 package db
 
 import (
+	"context"
+
 	sqlx "github.com/hopeio/gox/database/sql"
 	"github.com/hopeio/gox/log"
 	"github.com/hopeio/scaffold/errcode"
@@ -8,7 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func (d *CommonDao) GetTags(ids []int) ([]model.TinyTag, error) {
+func (d *CommonDao) GetTags(ctx context.Context, ids []int) ([]model.TinyTag, error) {
 	var tags []model.TinyTag
 	err := d.Table(model.TableNameTag).Select("id,name").
 		Where("id IN ?"+sqlx.WithNotDeleted, ids).
@@ -20,7 +22,7 @@ func (d *CommonDao) GetTags(ids []int) ([]model.TinyTag, error) {
 	return tags, nil
 }
 
-func (d *CommonDao) GetTagsByName(names []string) ([]model.TinyTag, error) {
+func (d *CommonDao) GetTagsByName(ctx context.Context, names []string) ([]model.TinyTag, error) {
 	var tags []model.TinyTag
 	err := d.Table(model.TableNameTag).Select("id,name").
 		Where("name IN ?"+sqlx.WithNotDeleted, names).

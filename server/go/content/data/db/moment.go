@@ -1,6 +1,8 @@
 package db
 
 import (
+	"context"
+
 	clausex "github.com/hopeio/gox/database/sql/gorm/clause"
 	"github.com/hopeio/scaffold/errcode"
 	"github.com/liov/hoper/server/go/content/model"
@@ -8,7 +10,7 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func (d *ContentDao) GetMomentList(req *content.MomentListReq) (int64, []*content.Moment, error) {
+func (d *ContentDao) GetMomentList(ctx context.Context, req *content.MomentListReq) (int64, []*content.Moment, error) {
 	var moments []*content.Moment
 	db := d.Table(model.TableNameMoment)
 	var count int64

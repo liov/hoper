@@ -16,14 +16,11 @@ type ContentDao struct {
 	*gorm.DB
 }
 
-func GetDao(ctx context.Context, db *gorm.DB) *ContentDao {
-	if ctx == nil {
-		log.Fatal("ctx can't nil")
-	}
-	return &ContentDao{db.Session(&gorm.Session{Context: ctx, NewDB: true})}
+func GetDao(db *gorm.DB) *ContentDao {
+	return &ContentDao{db}
 }
 
-func (d *ContentDao) CreateContextExt(typ content.ContentType, refId uint64) error {
+func (d *ContentDao) CreateContextExt(ctx context.Context, typ content.ContentType, refId uint64) error {
 	err := d.Exec(`INSERT INTO `+model.TableNameStatistics+`(type,ref_id) Values(?,?)`, typ, refId).Error
 	if err != nil {
 		log.Error("CreateContextExt", zap.Error(err))

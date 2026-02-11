@@ -22,9 +22,9 @@ func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*emptypb
 	if err != nil {
 		return nil, err
 	}
-
-	userDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
-	exists, err := userDao.FollowExistsDB(req.Id, auth.Id)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	userDao := data.GetDBDao(db)
+	exists, err := userDao.FollowExistsDB(ctx, req.Id, auth.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -50,9 +50,9 @@ func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user
 	if err != nil {
 		return nil, err
 	}
-
-	userDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
-	exists, err := userDao.FollowExistsDB(req.Id, auth.Id)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	userDao := data.GetDBDao(db)
+	exists, err := userDao.FollowExistsDB(ctx, req.Id, auth.Id)
 	if err != nil {
 		return nil, err
 	}

@@ -22,14 +22,11 @@ type UserDao struct {
 	*gorm.DB
 }
 
-func GetUserDao(ctx context.Context, db *gorm.DB) *UserDao {
-	if ctx == nil {
-		log.Fatal("ctx can't nil")
-	}
-	return &UserDao{db.Session(&gorm.Session{Context: ctx, NewDB: true})}
+func GetUserDao(db *gorm.DB) *UserDao {
+	return &UserDao{db}
 }
 
-func (d *UserDao) GetByNameOrEmailOrPhone(name, email, phone string) (*model.User, error) {
+func (d *UserDao) GetByNameOrEmailOrPhone(ctx context.Context, name, email, phone string) (*model.User, error) {
 
 	var u model.User
 	var err error
@@ -40,7 +37,7 @@ func (d *UserDao) GetByNameOrEmailOrPhone(name, email, phone string) (*model.Use
 	return &u, nil
 }
 
-func (d *UserDao) GetByEmailOrPhone(input string, fields ...string) (*puser.User, error) {
+func (d *UserDao) GetByEmailOrPhone(ctx context.Context, input string, fields ...string) (*puser.User, error) {
 
 	var u puser.User
 	var err error
@@ -59,11 +56,11 @@ func (d *UserDao) GetByEmailOrPhone(input string, fields ...string) (*puser.User
 	return &u, nil
 }
 
-func (d *UserDao) Create(user *puser.User) error {
+func (d *UserDao) Create(ctx context.Context, user *puser.User) error {
 	return d.Table(model.TableNameUser).Create(user).Error
 }
 
-func (d *UserDao) GetByPrimaryKey(id uint64) (*puser.User, error) {
+func (d *UserDao) GetByPrimaryKey(ctx context.Context, id uint64) (*puser.User, error) {
 
 	var user puser.User
 	if err := d.Table(model.TableNameUser).First(&user, id).Error; err != nil {
@@ -72,7 +69,7 @@ func (d *UserDao) GetByPrimaryKey(id uint64) (*puser.User, error) {
 	return &user, nil
 }
 
-func (d *UserDao) SaveResumes(userId uint64, resumes []*puser.Resume, originalIds []uint64, device *puser.AccessDevice) error {
+func (d *UserDao) SaveResumes(ctx context.Context, userId uint64, resumes []*puser.Resume, originalIds []uint64, device *puser.AccessDevice) error {
 
 	if len(resumes) == 0 {
 		return nil
@@ -127,7 +124,7 @@ func (d *UserDao) SaveResumes(userId uint64, resumes []*puser.Resume, originalId
 	return nil
 }
 
-func (d *UserDao) ActionLog(log *puser.ActionLog) error {
+func (d *UserDao) ActionLog(ctx context.Context, log *puser.ActionLog) error {
 
 	err := d.Table(model.TableNameActionLog).Create(&log).Error
 	if err != nil {
@@ -136,7 +133,7 @@ func (d *UserDao) ActionLog(log *puser.ActionLog) error {
 	return nil
 }
 
-func (d *UserDao) ResumesIds(userId uint64) ([]uint64, error) {
+func (d *UserDao) ResumesIds(ctx context.Context, userId uint64) ([]uint64, error) {
 
 	var resumeIds []uint64
 	err := d.Table(model.TableNameResume).Where("user_id = ? AND status > 0", userId).Pluck("id", &resumeIds).Error
@@ -146,7 +143,7 @@ func (d *UserDao) ResumesIds(userId uint64) ([]uint64, error) {
 	return resumeIds, nil
 }
 
-func (d *UserDao) GetBaseListDB(ids []uint64, pageNo, pageSize int) (int64, []*puser.UserBase, error) {
+func (d *UserDao) GetBaseListDB(ctx context.Context, ids []uint64, pageNo, pageSize int) (int64, []*puser.UserBase, error) {
 
 	db := d.Table(model.TableNameUser)
 	var count int64
@@ -175,7 +172,7 @@ func (d *UserDao) GetBaseListDB(ids []uint64, pageNo, pageSize int) (int64, []*p
 	return count, users, nil
 }
 
-func (d *UserDao) FollowExistsDB(id, followId uint64) (bool, error) {
+func (d *UserDao) FollowExistsDB(ctx context.Context, id, followId uint64) (bool, error) {
 	sql := `SELECT EXISTS(SELECT * FROM "` + model.TableNameFollow + `" 
 WHERE user_id = ?  AND follow_id = ?` + sqlx.WithNotDeleted + ` LIMIT 1)`
 	var exists bool
@@ -186,15 +183,15 @@ WHERE user_id = ?  AND follow_id = ?` + sqlx.WithNotDeleted + ` LIMIT 1)`
 	return exists, nil
 }
 
-func (d *UserDao) Active(u *puser.User) error {
+func (d *UserDao) Active(ctx context.Context, u *puser.User) error {
 	return d.Model(u).Updates(map[string]interface{}{"activated_at": time.Now(), "status": puser.UserStatusActivated}).Error
 }
 
-func (d *UserDao) Update(req *puser.EditReq) error {
+func (d *UserDao) Update(ctx context.Context, req *puser.EditReq) error {
 	return d.Table(model.TableNameUser).Where(`id = ?`, req.Id).UpdateColumns(req.Detail).Error
 }
 
-func (d *UserDao) UserInfoByAccount(account string) (*puser.User, error) {
+func (d *UserDao) UserInfoByAccount(ctx context.Context, account string) (*puser.User, error) {
 	var user puser.User
 	var sql string
 	switch validator.PhoneOrMail(account) {

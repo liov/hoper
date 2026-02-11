@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	sqlib "database/sql"
 
 	"github.com/hopeio/scaffold/errcode"
@@ -9,7 +10,7 @@ import (
 	"github.com/liov/hoper/server/go/content/model"
 )
 
-func (d *ContentDao) FavExists(title string, userId uint64) (uint64, error) {
+func (d *ContentDao) FavExists(ctx context.Context, title string, userId uint64) (uint64, error) {
 	sql := `SELECT id FROM "` + model.TableNameFavorite + `" 
 WHERE title = ? AND user_id = ?` + sqlx.WithNotDeleted
 	var id uint64

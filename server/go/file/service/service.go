@@ -15,10 +15,10 @@ type FileService struct {
 func (*FileService) GetUrls(ctx context.Context, req *file.GetUrlsReq) (*file.GetUrlsResp, error) {
 	ctx, span := Tracer.Start(ctx, "FileService.GetUrls")
 	defer span.End()
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	uploadDao := data.GetDao(db)
 
-	uploadDao := data.GetDao(ctx, global.Dao.GORMDB.DB)
-
-	files, err := uploadDao.GetUrls(req.Ids)
+	files, err := uploadDao.GetUrls(ctx, req.Ids)
 	if err != nil {
 		return nil, err
 	}
@@ -27,8 +27,9 @@ func (*FileService) GetUrls(ctx context.Context, req *file.GetUrlsReq) (*file.Ge
 func (*FileService) GetUrlsByStrId(ctx context.Context, req *file.GetUrlsByStrIdReq) (*file.GetUrlsResp, error) {
 	ctx, span := Tracer.Start(ctx, "FileService.GetUrlsByStrId")
 	defer span.End()
-	uploadDao := data.GetDao(ctx, global.Dao.GORMDB.DB)
-	files, err := uploadDao.GetUrlsByStrId(req.Ids)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	uploadDao := data.GetDao(db)
+	files, err := uploadDao.GetUrlsByStrId(ctx, req.Ids)
 	if err != nil {
 		return nil, err
 	}

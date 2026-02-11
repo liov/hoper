@@ -22,13 +22,12 @@ type UserDao struct {
 	*redis.Client
 }
 
-func GetUserDao(ctx context.Context, client *redis.Client) *UserDao {
-	return &UserDao{client.WithContext(ctx)}
+func GetUserDao(client *redis.Client) *UserDao {
+	return &UserDao{client}
 }
 
 // UserToRedis 将用户信息存到redis
-func (d *UserDao) UserToRedis(user *model.AuthInfo) error {
-	ctx := d.Context()
+func (d *UserDao) UserToRedis(ctx context.Context, user *model.AuthInfo) error {
 
 	UserString, err := json.MarshalToString(user)
 	if err != nil {
@@ -45,8 +44,7 @@ func (d *UserDao) UserToRedis(user *model.AuthInfo) error {
 }
 
 // UserFromRedis 从redis中取出用户信息
-func (d *UserDao) UserFromRedis(userId uint64) (*model.AuthInfo, error) {
-	ctx := d.Context()
+func (d *UserDao) UserFromRedis(ctx context.Context, userId uint64) (*model.AuthInfo, error) {
 
 	loginUser := modelconst.LoginUserKey + strconv.FormatUint(userId, 10)
 
@@ -65,8 +63,7 @@ func (d *UserDao) UserFromRedis(userId uint64) (*model.AuthInfo, error) {
 	return &user, nil
 }
 
-func (d *UserDao) EditRedisUser(user *model.AuthInfo) error {
-	ctx := d.Context()
+func (d *UserDao) EditRedisUser(ctx context.Context, user *model.AuthInfo) error {
 
 	UserString, err := json.MarshalToString(user)
 	if err != nil {
@@ -83,8 +80,7 @@ func (d *UserDao) EditRedisUser(user *model.AuthInfo) error {
 }
 
 // UserToRedis 将用户信息存到redis
-func (d *UserDao) UserHashToRedis(user *model.AuthInfo) error {
-	ctx := d.Context()
+func (d *UserDao) UserHashToRedis(ctx context.Context, user *model.AuthInfo) error {
 
 	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
 	if _, err := d.Pipelined(ctx, func(pipe redis.Pipeliner) error {
@@ -99,8 +95,7 @@ func (d *UserDao) UserHashToRedis(user *model.AuthInfo) error {
 }
 
 // UserFromRedis 从redis中取出用户信息
-func (d *UserDao) UserHashFromRedis(user *model.AuthInfo) error {
-	ctx := d.Context()
+func (d *UserDao) UserHashFromRedis(ctx context.Context, user *model.AuthInfo) error {
 
 	loginUser := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
 
@@ -117,8 +112,7 @@ func (d *UserDao) UserHashFromRedis(user *model.AuthInfo) error {
 	return nil
 }
 
-func (d *UserDao) EfficientUserHashToRedis(user *model.AuthInfo) error {
-	ctx := d.Context()
+func (d *UserDao) EfficientUserHashToRedis(ctx context.Context, user *model.AuthInfo) error {
 	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
 	if _, err := d.Pipelined(ctx, func(pipe redis.Pipeliner) error {
 		pipe.HMSet(ctx, loginUserKey, "Name", user.Name,
@@ -139,8 +133,7 @@ func (d *UserDao) EfficientUserHashToRedis(user *model.AuthInfo) error {
 哈希表中某个键或某个值的长度大于 server.hash_max_ziplist_value （默认值为 64 ）。
 压缩列表中的节点数量大于 server.hash_max_ziplist_entries （默认值为 512 ）。
 */
-func (d *UserDao) EfficientUserHashFromRedis(user *model.AuthInfo) error {
-	ctx := d.Context()
+func (d *UserDao) EfficientUserHashFromRedis(ctx context.Context, user *model.AuthInfo) error {
 
 	loginUser := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
 
@@ -161,8 +154,7 @@ func (d *UserDao) EfficientUserHashFromRedis(user *model.AuthInfo) error {
 	return nil
 }
 
-func (d *UserDao) UserLastActiveTime(userId uint64) error {
-	ctx := d.Context()
+func (d *UserDao) UserLastActiveTime(ctx context.Context, userId uint64) error {
 	userIdStr := strconv.FormatUint(userId, 10)
 	loginUser := modelconst.LoginUserKey + userIdStr
 	if _, err := d.Pipelined(ctx, func(pipe redis.Pipeliner) error {
@@ -179,8 +171,7 @@ func (d *UserDao) UserLastActiveTime(userId uint64) error {
 	return nil
 }
 
-func (d *UserDao) RedisUserInfoEdit(field string, user *model.AuthInfo) error {
-	ctx := d.Context()
+func (d *UserDao) RedisUserInfoEdit(ctx context.Context, field string, user *model.AuthInfo) error {
 
 	key := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
 
@@ -192,8 +183,7 @@ func (d *UserDao) RedisUserInfoEdit(field string, user *model.AuthInfo) error {
 	return nil
 }
 
-func (d *UserDao) GetUserExtRedis(userId uint64) (*model.UserExt, error) {
-	ctx := d.Context()
+func (d *UserDao) GetUserExtRedis(ctx context.Context, userId uint64) (*model.UserExt, error) {
 
 	key := modelconst.UserExtKey + strconv.FormatUint(userId, 10)
 

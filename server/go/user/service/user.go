@@ -67,13 +67,13 @@ func (*UserService) SignupVerify(ctx context.Context, req *userpb.SingUpVerifyRe
 	if req.Mail == "" && req.Phone == "" {
 		return nil, errcode.InvalidArgument.Msg("请填写邮箱或手机号")
 	}
-
-	userDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	userDao := data.GetDBDao(db)
 	input := req.Mail
 	if input == "" {
 		input = req.Phone
 	}
-	checkUser, err := userDao.GetByEmailOrPhone(input)
+	checkUser, err := userDao.GetByEmailOrPhone(ctx, input)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errcode.DBError
 	}
@@ -101,10 +101,10 @@ func (u *UserService) Signup(ctx context.Context, req *userpb.SignupReq) (*wrapp
 			return nil, err
 		}
 	}
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	userDao := data.GetDBDao(db)
 
-	userDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
-
-	checkUser, err := userDao.GetByNameOrEmailOrPhone(req.Name, req.Mail, req.Phone)
+	checkUser, err := userDao.GetByNameOrEmailOrPhone(ctx, req.Name, req.Mail, req.Phone)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errcode.DBError.Wrap(err)
 	}
@@ -132,7 +132,7 @@ func (u *UserService) Signup(ctx context.Context, req *userpb.SignupReq) (*wrapp
 	}
 
 	user.Password = encryptPassword(req.Password)
-	if err := userDao.Create(user); err != nil {
+	if err := userDao.Create(ctx, user); err != nil {
 		return nil, errcode.DBError.Wrap(err)
 	}
 
@@ -247,9 +247,10 @@ func checkPassword(password string, user *userpb.User) bool {
 func (u *UserService) Active(ctx context.Context, req *userpb.ActiveReq) (*userpb.LoginResp, error) {
 	ctx, span := Tracer.Start(ctx, "UserService.Active")
 	defer span.End()
-	userDBDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	userDBDao := data.GetDBDao(db)
 
-	user, err := userDBDao.GetByPrimaryKey(req.Id)
+	user, err := userDBDao.GetByPrimaryKey(ctx, req.Id)
 	if err != nil {
 		return nil, errcode.DBError
 	}
@@ -270,7 +271,7 @@ func (u *UserService) Active(ctx context.Context, req *userpb.ActiveReq) (*userp
 	if req.Secret != secretStr {
 		return nil, errcode.InvalidArgument.Msg("无效的链接")
 	}
-	err = userDBDao.Active(user)
+	err = userDBDao.Active(ctx, user)
 	if err != nil {
 		return nil, errcode.DBError
 	}
@@ -291,25 +292,26 @@ func (u *UserService) Edit(ctx context.Context, req *userpb.EditReq) (*emptypb.E
 	}
 
 	device := Device(ctx)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	if req.Detail != nil {
-		userDBDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
+		userDBDao := data.GetDBDao(db)
 
-		originalIds, err := userDBDao.ResumesIds(user.Id)
+		originalIds, err := userDBDao.ResumesIds(ctx, user.Id)
 		if err != nil {
 			return nil, errcode.DBError.Msg("更新失败")
 		}
 		var resumes []*userpb.Resume
 		resumes = append(req.Detail.EduExps, req.Detail.WorkExps...)
-		tx := userDBDao.Begin()
+		tx := db.Begin()
 		defer tx.Rollback()
-		userDBDao = data.GetDBDao(ctx, tx)
+		userDBDao = data.GetDBDao(tx)
 		if len(resumes) > 0 {
-			err = userDBDao.SaveResumes(req.Id, resumes, originalIds, userpb.ConvDeviceInfo(device))
+			err = userDBDao.SaveResumes(ctx, req.Id, resumes, originalIds, userpb.ConvDeviceInfo(device))
 			if err != nil {
 				return nil, errcode.DBError.Msg("更新失败")
 			}
 		}
-		err = userDBDao.Update(req)
+		err = userDBDao.Update(ctx, req)
 		if err != nil {
 			return nil, errcode.DBError.Msg("更新失败")
 		}
@@ -331,9 +333,9 @@ func (u *UserService) Login(ctx context.Context, req *userpb.LoginReq) (*userpb.
 	if req.Input == "" {
 		return nil, errcode.InvalidArgument.Msg("账号错误")
 	}
-
-	userDBDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
-	user, err := userDBDao.UserInfoByAccount(req.Input)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	userDBDao := data.GetDBDao(db)
+	user, err := userDBDao.UserInfoByAccount(ctx, req.Input)
 	if err != nil {
 		return nil, errcode.DBError.Msg("账号不存在")
 	}
@@ -377,8 +379,9 @@ func (*UserService) login(ctx context.Context, user *userpb.User) (*userpb.Login
 
 	db.Table(modelconst.TableNameUserExt).Where(`id = ?`, user.Id).
 		UpdateColumn("last_activated_at", now)
-	userRedisDao := redis.GetUserDao(ctx, global.Dao.Redis.Client)
-	if err := userRedisDao.EfficientUserHashToRedis(authorization.Auth); err != nil {
+	rclient := global.Dao.Redis.Client.WithContext(ctx)
+	userRedisDao := redis.GetUserDao(rclient)
+	if err := userRedisDao.EfficientUserHashToRedis(ctx, authorization.Auth); err != nil {
 		return nil, errcode.RedisErr
 	}
 	resp := &userpb.LoginResp{
@@ -464,13 +467,14 @@ func (u *UserService) Info(ctx context.Context, req *request.Id) (*userpb.UserRe
 	if req.Id == 0 {
 		req.Id = auth.Id
 	}
-	userRedisDao := redis.GetUserDao(ctx, global.Dao.Redis.Client)
+	rclient := global.Dao.Redis.Client.WithContext(ctx)
+	userRedisDao := redis.GetUserDao(rclient)
 	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	var user1 userpb.User
 	if err = db.First(&user1, req.Id).Error; err != nil {
 		return nil, errcode.DBError.Msg("账号不存在")
 	}
-	userExt, err := userRedisDao.GetUserExtRedis(auth.Id)
+	userExt, err := userRedisDao.GetUserExtRedis(ctx, auth.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -487,9 +491,10 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *userpb.LoginReq) 
 	if req.Input == "" {
 		return nil, errcode.InvalidArgument.Msg("账号错误")
 	}
-	userDBDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	userDBDao := data.GetDBDao(db)
 
-	user, err := userDBDao.GetByEmailOrPhone(req.Input, req.Input, "id", "name", "password")
+	user, err := userDBDao.GetByEmailOrPhone(ctx, req.Input, req.Input, "id", "name", "password")
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			if validator.PhoneOrMail(req.Input) != validator.Phone {
@@ -524,9 +529,9 @@ func (u *UserService) ResetPassword(ctx context.Context, req *userpb.ResetPasswo
 		log.Errorw("Get faild", zap.Error(err))
 		return nil, errcode.InvalidArgument.Msg("无效的链接")
 	}
-	userDBDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
-
-	user, err := userDBDao.GetByPrimaryKey(req.Id)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	userDBDao := data.GetDBDao(db)
+	user, err := userDBDao.GetByPrimaryKey(ctx, req.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -540,7 +545,7 @@ func (u *UserService) ResetPassword(ctx context.Context, req *userpb.ResetPasswo
 	if req.Secret != secretStr {
 		return nil, errcode.InvalidArgument.Msg("无效的链接")
 	}
-	db := global.Dao.GORMDB.DB.WithContext(ctx)
+
 	if err := db.Table(modelconst.TableNameUser).
 		Where(`id = ?`, user.Id).Update("password", req.Password).Error; err != nil {
 		log.Error("UserService.ResetPassword,DB.Update", err)
@@ -574,9 +579,10 @@ func (*UserService) BaseList(ctx context.Context, req *userpb.BaseListReq) (*use
 	if md.Get(httpx.HeaderGrpcInternal) == nil || md.Get(httpx.HeaderGrpcInternal)[0] == "" {
 		return nil, errcode.PermissionDenied
 	}
-	userDBDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	userDBDao := data.GetDBDao(db)
 
-	count, users, err := userDBDao.GetBaseListDB(req.Ids, int(req.PageNo), int(req.PageSize))
+	count, users, err := userDBDao.GetBaseListDB(ctx, req.Ids, int(req.PageNo), int(req.PageSize))
 	if err != nil {
 		return nil, err
 	}
@@ -617,9 +623,9 @@ func (u *UserService) EasySignup(ctx context.Context, req *userpb.SignupReq) (*u
 	if req.Mail == "" && req.Phone == "" {
 		return nil, errcode.InvalidArgument.Msg("请填写邮箱或手机号")
 	}
-
-	userDBDao := data.GetDBDao(ctx, global.Dao.GORMDB.DB)
-	checkUser, err := userDBDao.GetByNameOrEmailOrPhone(req.Name, req.Mail, req.Phone)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	userDBDao := data.GetDBDao(db)
+	checkUser, err := userDBDao.GetByNameOrEmailOrPhone(ctx, req.Name, req.Mail, req.Phone)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errcode.DBError
 	}
@@ -648,7 +654,7 @@ func (u *UserService) EasySignup(ctx context.Context, req *userpb.SignupReq) (*u
 	}
 
 	user.Password = encryptPassword(req.Password)
-	if err := userDBDao.Create(user); err != nil {
+	if err := userDBDao.Create(ctx, user); err != nil {
 		log.Errorw("Create faild", zap.Error(err))
 		return nil, errcode.DBError.Msg("新建出错")
 	}

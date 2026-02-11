@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 	"time"
-	
+
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/hopeio/cherry"
 	httpx "github.com/hopeio/gox/net/http"
@@ -42,8 +42,9 @@ func auth(ctx context.Context, update bool) (*user.AuthInfo, error) {
 	}
 
 	if update {
-		userDao := data.GetRedisDao(ctx, global.Dao.Redis.Client)
-		err := userDao.EfficientUserHashFromRedis(authorization.Auth)
+		rclient := global.Dao.Redis.Client.WithContext(ctx)
+		userDao := data.GetRedisDao(rclient)
+		err := userDao.EfficientUserHashFromRedis(ctx, authorization.Auth)
 		if err != nil {
 			return nil, err
 		}
