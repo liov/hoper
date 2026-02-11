@@ -270,6 +270,7 @@ MaxReceiveBufferPerStream = 0
 PermitProhibitedCipherSuites = false
 PingTimeout = 0
 SendPingTimeout = 0
+StrictMaxConcurrentRequests = false
 WriteByteTimeout = 0
 
 [Server.Prometheus]
