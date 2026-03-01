@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ChristmasTree extends StatefulWidget {
-  ChristmasTree({Key? key}) : super(key: key);
+  const ChristmasTree({super.key});
 
   @override
   _ChristmasTreeState createState() => _ChristmasTreeState();
@@ -95,6 +95,8 @@ class _ChristmasTreeState extends State<ChristmasTree> with TickerProviderStateM
 }
 
 class SnowChristmasTree extends StatelessWidget{
+  const SnowChristmasTree({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

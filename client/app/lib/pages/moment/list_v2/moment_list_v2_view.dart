@@ -71,7 +71,7 @@ class _MomentListV2ViewState extends State<MomentListV2View> with AutomaticKeepA
   @override
     Widget build(BuildContext context) {
       super.build(context);
-      globalService.logger.d("${this.toStringShort()}重绘");
+      globalService.logger.d("${toStringShort()}重绘");
       return FutureBuilder<void>(
           future: _future,
           builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
@@ -108,13 +108,13 @@ class _MomentListV2ViewState extends State<MomentListV2View> with AutomaticKeepA
   @override
   void didUpdateWidget(covariant MomentListV2View oldWidget) {
     super.didUpdateWidget(oldWidget);
-    print('${this.toStringShort()}didUpdateWidget');
+    print('${toStringShort()}didUpdateWidget');
     resetList();
   }
 
   @override
   void reassemble() {
-    print('${this.toStringShort()}reassemble');
+    print('${toStringShort()}reassemble');
     super.reassemble();
   }
 

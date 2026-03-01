@@ -14,6 +14,8 @@ class UserView extends StatelessWidget {
 
 final UserController userController = Get.put(UserController());
 
+  const UserView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -33,12 +35,14 @@ final UserController userController = Get.put(UserController());
                return GetBuilder<UserController>(builder: (_) {
                  if(globalState.authState.self == null){
                    return _buildNoLogin();
-                 }else return Column(
+                 }else {
+                   return Column(
                    children: [
                      _buildHeader(),
                      _buildSignOut()
                    ],
                  );
+                 }
                },
                );
             }

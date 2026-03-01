@@ -10,7 +10,6 @@ import 'package:hive_ce/hive.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:app/global/dio.dart' as $dio;
 import 'package:path/path.dart' as $path;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';

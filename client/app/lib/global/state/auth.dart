@@ -21,14 +21,14 @@ import '../dio.dart';
 
 
 class AuthState {
-  Auth? userAuth = null;
+  Auth? userAuth;
   UserBase? get userBaseInfo => self!=null?UserBase(id:self!.id,name:self!.name,gender: self!.gender,avatar: self!.avatar):null;
-  User? self = null;
+  User? self;
 
   static const _PRE = "AuthState";
   static const StringAuthKey = _PRE+Authorization;
-  static const StringAccountKey = _PRE+"AccountKey";
-  static const StringAuthInfoKey = _PRE+"AuthInfoKey";
+  static const StringAccountKey = "${_PRE}AccountKey";
+  static const StringAuthInfoKey = "${_PRE}AuthInfoKey";
 
   set account (String account)=> globalService.box.put(AuthState.StringAccountKey, account);
   String get account => globalService.box.get(AuthState.StringAccountKey);
@@ -41,10 +41,10 @@ class AuthState {
       try {
         final user = await globalService.userClient.stub.authInfo(Empty(),options:CallOptions(metadata: {Authorization: authKey}));
         if (user.id == 0) return;
-        this.userAuth = user;
+        userAuth = user;
         setAuth(authKey);
         getSelf().then((value) => globalState.userState.append(userBaseInfo));
-        return null;
+        return;
       } catch (err) {
         print(err);
       }
@@ -59,8 +59,8 @@ class AuthState {
     try {
       final user = await globalService.userClient.stub.info(request.Id());
       if (user.user.id == 0) return;
-      this.self = user.user;
-      return null;
+      self = user.user;
+      return;
     } catch (err) {
       print(err);
     }
@@ -109,7 +109,7 @@ class AuthState {
     Get.rootController.restartApp();
   }
 
-  void test(void test()){
+  void test(void Function() test){
     test();
   }
 }

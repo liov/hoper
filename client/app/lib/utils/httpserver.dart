@@ -45,7 +45,7 @@ class LocalhostServer {
 
     runZonedGuarded(() {
       HttpServer.bind('127.0.0.1', _port).then((server) {
-        print('Server running on http://localhost:' + _port.toString());
+        print('Server running on http://localhost:$_port');
 
         _server = server;
 

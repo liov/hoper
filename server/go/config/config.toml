@@ -8,7 +8,7 @@ ConfigTemplateDir = "./config"
 NoInject = ["Apollo", "Etcd", "Es"]
 [dev.localConfig]
 Paths = ["config/local.toml"]
-
+Watch = true
 
 [dev.configCenter.http]
 Interval = 100

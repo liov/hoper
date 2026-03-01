@@ -1,9 +1,7 @@
 
 import 'package:get/get.dart';
-import 'package:applib/util/multi_entity.dart';
 
 import '../../global/service.dart';
-import '../../model/weibo/weibo.dart';
 import '../../rpc/weibo.dart';
 
 class WeiboController extends GetxController{

@@ -22,6 +22,8 @@ class CommentAdd extends StatelessWidget {
   late final TextEditingController _controller = controller.textEditingController;
   late final _focusNode = controller.focusNode;
 
+  const CommentAdd({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +72,7 @@ class CommentAdd extends StatelessWidget {
                     mode = true;
                     controller.update(['add']);
                   }
-                  if(mode && !value.isEmpty){
+                  if(mode && value.isNotEmpty){
                     mode = false;
                     controller.update(['add']);
                   }

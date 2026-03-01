@@ -15,7 +15,7 @@ import 'package:app/generated/protobuf/hopeio/request/param.pb.dart'
 as $param;
 
 class ActionBar extends StatefulWidget {
-  ActionBar(this.content) : super();
+  const ActionBar(this.content, {super.key});
   final dynamic content;
   @override
   ActionBarState createState() => ActionBarState();
@@ -59,7 +59,7 @@ class ActionBarState extends State<ActionBar> {
                   globalService.logger.d(Get.currentRoute);
                   if (route!=Get.currentRoute){
                     Get.toNamed(route);
-                  };
+                  }
                 },
                 child: Row(
                   children: [

@@ -7,7 +7,7 @@ import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
 
 class MediaPick extends StatefulWidget {
-  const MediaPick({Key? key, this.title = "照片选择"}) : super(key: key);
+  const MediaPick({super.key, this.title = "照片选择"});
 
   final String? title;
 
@@ -394,7 +394,7 @@ typedef OnPickImageCallback = void Function(
     double? maxWidth, double? maxHeight, int? quality);
 
 class AspectRatioVideo extends StatefulWidget {
-  AspectRatioVideo(this.controller, {super.key});
+  const AspectRatioVideo(this.controller, {super.key});
 
   final VideoPlayerController? controller;
 

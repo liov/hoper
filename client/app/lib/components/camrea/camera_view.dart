@@ -6,7 +6,7 @@ import 'camera_controller.dart';
 import 'camera_example.dart';
 
 class CameraView extends StatefulWidget {
-  CameraView(this.cameras);
+  const CameraView(this.cameras, {super.key});
 
   final List<CameraDescription> cameras;
 
@@ -43,12 +43,12 @@ class CameraViewState extends State<CameraView> with WidgetsBindingObserver {
                                 child:ElevatedButton(
                                     style: ButtonStyle(
                                         backgroundColor:
-                                        MaterialStateProperty.resolveWith(
+                                        WidgetStateProperty.resolveWith(
                                                 (states) => (Colors.red)),
-                                        shape: MaterialStateProperty.resolveWith(
+                                        shape: WidgetStateProperty.resolveWith(
                                                 (states) => CircleBorder()),
                                         minimumSize:
-                                        MaterialStateProperty.resolveWith(
+                                        WidgetStateProperty.resolveWith(
                                                 (states) => Size(100, 100))),
                                     child: Text('按'),
                                     onPressed: () {
@@ -122,7 +122,7 @@ class CameraViewState extends State<CameraView> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    print("--" + state.toString());
+    print("--$state");
     // App state changed before we got the chance to initialize.
     if (controller == null || !controller!.value.isInitialized) {
       return;
@@ -146,7 +146,7 @@ void _showCameraException(CameraException e) {
 Future<XFile?> getPhoto() async {
   final cameras = await availableCameras();
   print(cameras);
-  if (cameras.length == 0) return null;
+  if (cameras.isEmpty) return null;
   XFile? file = await Get.to(() => CameraView(cameras));
   return file;
 }
@@ -154,7 +154,7 @@ Future<XFile?> getPhoto() async {
 Future<XFile?> getPhoto2() async {
   final cameras = await availableCameras();
   print(cameras);
-  if (cameras.length == 0) return null;
+  if (cameras.isEmpty) return null;
   XFile? file = await Get.to(() => CameraExample(cameras));
   return file;
 }

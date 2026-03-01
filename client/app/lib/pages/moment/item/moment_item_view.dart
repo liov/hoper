@@ -17,7 +17,7 @@ import 'package:applib/util/time.dart';
 import 'package:app/generated/protobuf/content/moment.model.pb.dart';
 
 class MomentItem extends StatelessWidget {
-  MomentItem({Key? key, required this.moment}) : super(key: key) {
+  MomentItem({super.key, required this.moment}) {
     if (moment.images != "") {
       images = moment
           .images

@@ -12,12 +12,11 @@ class WeatherRainSnowBg extends StatefulWidget {
   final double viewWidth;
   final double viewHeight;
 
-  WeatherRainSnowBg(
-      {Key? key,
+  const WeatherRainSnowBg(
+      {super.key,
       required this.weatherType,
       required this.viewWidth,
-      required this.viewHeight})
-      : super(key: key);
+      required this.viewHeight});
 
   @override
   _WeatherRainSnowBgState createState() => _WeatherRainSnowBgState();
@@ -25,9 +24,9 @@ class WeatherRainSnowBg extends StatefulWidget {
 
 class _WeatherRainSnowBgState extends State<WeatherRainSnowBg>
     with SingleTickerProviderStateMixin {
-  List<ui.Image> _images = [];
+  final List<ui.Image> _images = [];
   late AnimationController _controller;
-  List<RainSnowParams> _rainSnows = [];
+  final List<RainSnowParams> _rainSnows = [];
   int count = 0;
   WeatherDataState? _state;
 
@@ -131,8 +130,8 @@ class _WeatherRainSnowBgState extends State<WeatherRainSnowBg>
 }
 
 class RainSnowPainter extends CustomPainter {
-  var _paint = Paint();
-  _WeatherRainSnowBgState _state;
+  final _paint = Paint();
+  final _WeatherRainSnowBgState _state;
 
   RainSnowPainter(this._state);
 
@@ -149,7 +148,7 @@ class RainSnowPainter extends CustomPainter {
     if (_state._images.length > 1) {
       ui.Image image = _state._images[0];
       if (_state._rainSnows.isNotEmpty) {
-        _state._rainSnows.forEach((element) {
+        for (var element in _state._rainSnows) {
           move(element);
           ui.Offset offset = ui.Offset(element.x, element.y);
           canvas.save();
@@ -179,7 +178,7 @@ class RainSnowPainter extends CustomPainter {
           _paint.colorFilter = identity;
           canvas.drawImage(image, offset, _paint);
           canvas.restore();
-        });
+        }
       }
     }
   }
@@ -206,7 +205,7 @@ class RainSnowPainter extends CustomPainter {
     if (_state._images.length > 1) {
       ui.Image image = _state._images[1];
       if (_state._rainSnows.isNotEmpty) {
-        _state._rainSnows.forEach((element) {
+        for (var element in _state._rainSnows) {
           move(element);
           ui.Offset offset = ui.Offset(element.x, element.y);
           canvas.save();
@@ -236,7 +235,7 @@ class RainSnowPainter extends CustomPainter {
           _paint.colorFilter = identity;
           canvas.drawImage(image, offset, _paint);
           canvas.restore();
-        });
+        }
       }
     }
   }
@@ -306,16 +305,16 @@ class RainSnowParams {
     }
     if (WeatherUtil.isRainy(weatherType)) {
       double random = 0.4 + 0.12 * Random().nextDouble() * 5;
-      this.scale = random * 1.2;
-      this.speed = 30 * random * ratio * heightRatio;
-      this.alpha = random * 0.6;
+      scale = random * 1.2;
+      speed = 30 * random * ratio * heightRatio;
+      alpha = random * 0.6;
       x = Random().nextInt(width * 1.2 ~/ scale).toDouble() -
           width * 0.1 ~/ scale;
     } else {
       double random = 0.4 + 0.12 * Random().nextDouble() * 5;
-      this.scale = random * 0.8 * heightRatio;
-      this.speed = 8 * random * ratio * heightRatio;
-      this.alpha = random;
+      scale = random * 0.8 * heightRatio;
+      speed = 8 * random * ratio * heightRatio;
+      alpha = random;
       x = Random().nextInt(width * 1.2 ~/ scale).toDouble() -
           width * 0.1 ~/ scale;
     }

@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'moment_list_view.dart';
 
 class MomentListViewWrap extends StatefulWidget {
-  MomentListViewWrap({this.tag = "default"}) : super();
+  const MomentListViewWrap({super.key, this.tag = "default"});
 
   final String tag;
   @override

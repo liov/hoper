@@ -21,10 +21,6 @@ class MomentController extends GetxController with SingleGetTickerProviderMixin{
   );
 
 
-  @override
-  void onInit() {
-    super.onInit();
-  }
 
   @override
   void onReady() {

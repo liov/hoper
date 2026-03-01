@@ -40,7 +40,7 @@ extension Extension<T> on $dio.Response {
       if (data.code!=200) {
         globalService.logger.e('请求出错 ${data.msg}');
         Get.rawSnackbar(message:data.msg!);
-      };
+      }
       return data.data;
     }
     globalService.logger.e('请求出错 $statusCode');
@@ -53,7 +53,7 @@ extension Extension<T> on $dio.Response {
       if  (this.data is String) {
         globalService.logger.e('请求出错 ${this.data}');
         return null;
-      };
+      }
       final data = WeiboResponse.fromJson(this.data as Map<String, dynamic>,fromJsonT);
       globalService.logger.d(data);
       if (data.ok!=1) {

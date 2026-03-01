@@ -344,7 +344,7 @@ class SampleMenu extends StatelessWidget {
 }
 
 class NavigationControls extends StatelessWidget {
-  const NavigationControls(this._webViewControllerFuture);
+  const NavigationControls(this._webViewControllerFuture, {super.key});
 
   final Future<WebViewController> _webViewControllerFuture;
 

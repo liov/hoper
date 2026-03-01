@@ -2,8 +2,8 @@ import 'dart:ffi';
 import 'dart:isolate';
 import 'package:ffi/ffi.dart';
 import 'package:applib/util/ffi.dart';
-import 'dart:io'; // For Platform.isX
-import 'dart:math'; // For Platform.isX
+// For Platform.isX
+// For Platform.isX
 
 final DynamicLibrary nativeGreetingLib = findDynamicLibrary("greeting",'libraries');
 final DynamicLibrary nativeHelloLib = findDynamicLibrary("hello",'libraries');

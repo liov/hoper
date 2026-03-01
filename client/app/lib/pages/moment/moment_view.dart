@@ -1,14 +1,10 @@
 
 import 'package:app/global/state.dart';
-import 'package:app/pages/moment/list/moment_list_view.dart';
-import 'package:app/pages/moment/physics.dart';
-import 'package:app/pages/webview/webview.dart';
 import 'package:app/pages/route.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../user/login_view.dart';
-import 'add/moment_add_view.dart';
 import 'list_v2/moment_list_v2_view.dart';
 import 'moment_controller.dart';
 

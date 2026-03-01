@@ -8,16 +8,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 class CommentItem extends StatelessWidget {
-  CommentItem({Key? key, required this.comment}) : super(key: key) {
-    if (this.comment.image != "")
-      this.images = this
-          .comment
+  CommentItem({super.key, required this.comment}) {
+    if (comment.image != "") {
+      images = comment
           .image
           .split(",")
           .map((url) => BASE_STATIC_URL + url)
           .toList();
-    else
-      this.images = null;
+    } else {
+      images = null;
+    }
   }
 
   final Comment comment;
@@ -26,7 +26,7 @@ class CommentItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("${this.toStringShort()}");
+    print(toStringShort());
     final user = globalState.userState.getUser(comment.userId);
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(children: [

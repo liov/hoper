@@ -11,20 +11,20 @@ class Controller extends GetxController {
     VideoPlayerController? videoController;
     VoidCallback? videoPlayerListener;
     bool enableAudio = true;
-    double _minAvailableExposureOffset = 0.0;
-    double _maxAvailableExposureOffset = 0.0;
-    double _currentExposureOffset = 0.0;
+    final double _minAvailableExposureOffset = 0.0;
+    final double _maxAvailableExposureOffset = 0.0;
+    final double _currentExposureOffset = 0.0;
     late AnimationController _flashModeControlRowAnimationController;
     late Animation<double> _flashModeControlRowAnimation;
     late AnimationController _exposureModeControlRowAnimationController;
     late Animation<double> _exposureModeControlRowAnimation;
     late AnimationController _focusModeControlRowAnimationController;
     late Animation<double> _focusModeControlRowAnimation;
-    double _minAvailableZoom = 1.0;
-    double _maxAvailableZoom = 1.0;
-    double _currentScale = 1.0;
-    double _baseScale = 1.0;
-    int _pointers = 0;
+    final double _minAvailableZoom = 1.0;
+    final double _maxAvailableZoom = 1.0;
+    final double _currentScale = 1.0;
+    final double _baseScale = 1.0;
+    final int _pointers = 0;
     setController (CameraController? c) async{
      controller?.dispose();
      controller = c;

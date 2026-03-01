@@ -5,6 +5,8 @@ import 'package:path_provider/path_provider.dart';
 
 
 class PathProvide extends StatelessWidget {
+  const PathProvide({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -18,7 +20,7 @@ class PathProvide extends StatelessWidget {
 }
 
 class PathProvidePage extends StatefulWidget {
-  const PathProvidePage({Key? key, required this.title}) : super(key: key);
+  const PathProvidePage({super.key, required this.title});
   final String title;
 
   @override
@@ -120,8 +122,8 @@ class _PathProvidePageState extends State<PathProvidePage> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
-                child: const Text('Get Temporary Directory'),
                 onPressed: _requestTempDirectory,
+                child: const Text('Get Temporary Directory'),
               ),
             ),
             FutureBuilder<Directory?>(
@@ -129,8 +131,8 @@ class _PathProvidePageState extends State<PathProvidePage> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
-                child: const Text('Get Application Documents Directory'),
                 onPressed: _requestAppDocumentsDirectory,
+                child: const Text('Get Application Documents Directory'),
               ),
             ),
             FutureBuilder<Directory?>(
@@ -138,8 +140,8 @@ class _PathProvidePageState extends State<PathProvidePage> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
-                child: const Text('Get Application Support Directory'),
                 onPressed: _requestAppSupportDirectory,
+                child: const Text('Get Application Support Directory'),
               ),
             ),
             FutureBuilder<Directory?>(
@@ -147,8 +149,8 @@ class _PathProvidePageState extends State<PathProvidePage> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
-                child: const Text('Get Application Library Directory'),
                 onPressed: _requestAppLibraryDirectory,
+                child: const Text('Get Application Library Directory'),
               ),
             ),
             FutureBuilder<Directory?>(
@@ -156,11 +158,11 @@ class _PathProvidePageState extends State<PathProvidePage> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
+                onPressed:
+                Platform.isIOS ? null : _requestExternalStorageDirectory,
                 child: Text(Platform.isIOS
                     ? 'External directories are unavailable on iOS'
                     : 'Get External Storage Directory'),
-                onPressed:
-                Platform.isIOS ? null : _requestExternalStorageDirectory,
               ),
             ),
             FutureBuilder<Directory?>(
@@ -169,9 +171,6 @@ class _PathProvidePageState extends State<PathProvidePage> {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
-                  child: Text(Platform.isIOS
-                      ? 'External directories are unavailable on iOS'
-                      : 'Get External Storage Directories'),
                   onPressed: Platform.isIOS
                       ? null
                       : () {
@@ -179,6 +178,9 @@ class _PathProvidePageState extends State<PathProvidePage> {
                       StorageDirectory.music,
                     );
                   },
+                  child: Text(Platform.isIOS
+                      ? 'External directories are unavailable on iOS'
+                      : 'Get External Storage Directories'),
                 ),
               ),
             ]),
@@ -189,11 +191,11 @@ class _PathProvidePageState extends State<PathProvidePage> {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
+                  onPressed:
+                  Platform.isIOS ? null : _requestExternalCacheDirectories,
                   child: Text(Platform.isIOS
                       ? 'External directories are unavailable on iOS'
                       : 'Get External Cache Directories'),
-                  onPressed:
-                  Platform.isIOS ? null : _requestExternalCacheDirectories,
                 ),
               ),
             ]),

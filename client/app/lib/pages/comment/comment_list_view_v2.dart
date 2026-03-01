@@ -12,7 +12,7 @@ import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'comment_item_view.dart';
 
 class CommentListViewV2 extends StatelessWidget {
-  CommentListViewV2(this.ext) : super();
+  CommentListViewV2(this.ext, {super.key});
   final Statistics ext;
   late final CommentController controller = Get.find()..init(ext.type, ext.refId);
   late final ScrollController scrollController = ScrollController()

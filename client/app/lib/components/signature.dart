@@ -3,35 +3,45 @@ import 'package:flutter/material.dart';
 class SignaturePainter extends CustomPainter {
   SignaturePainter(this.points);
   final List<Offset?> points;
+  @override
   void paint(Canvas canvas, Size size) {
-    var paint = new Paint()
+    var paint = Paint()
       ..color = Colors.black
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 5.0;
     for (int i = 0; i < points.length - 1; i++) {
-      if (points[i] != null && points[i + 1] != null)
+      if (points[i] != null && points[i + 1] != null) {
         canvas.drawLine(points[i]!, points[i + 1]!, paint);
+      }
     }
   }
+  @override
   bool shouldRepaint(SignaturePainter other) => other.points != points;
 }
 class Signature extends StatefulWidget {
-  SignatureState createState() => new SignatureState();
+  const Signature({super.key});
+
+  @override
+  SignatureState createState() => SignatureState();
 }
 class SignatureState extends State<Signature> {
   List<Offset?> _points = <Offset>[];
+  @override
   Widget build(BuildContext context) {
-    return new GestureDetector(
+    return GestureDetector(
       onPanUpdate: (DragUpdateDetails details) {
         setState(() {
-          _points = new List.from(_points)..add(details.localPosition);
+          _points = List.from(_points)..add(details.localPosition);
         });
       },
       onPanEnd: (DragEndDetails details) => _points.add(null),
-      child: new CustomPaint(painter: new SignaturePainter(_points)),
+      child: CustomPaint(painter: SignaturePainter(_points)),
     );
   }
 }
 class DemoApp extends StatelessWidget {
-  Widget build(BuildContext context) => new Scaffold(body: new Signature());
+  const DemoApp({super.key});
+
+  @override
+  Widget build(BuildContext context) => Scaffold(body: Signature());
 }

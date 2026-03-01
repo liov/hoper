@@ -14,5 +14,7 @@ Type = ''
 [dev.LocalConfig]
 Paths = []
 ReloadInterval = 0
+Watch = true
+WatchReload = false
 Watch = false
 WatchReload = false

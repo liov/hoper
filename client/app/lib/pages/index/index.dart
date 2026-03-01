@@ -1,19 +1,14 @@
-import 'dart:io';
 
 import 'package:animate_do/animate_do.dart';
-import 'package:applib/util/async.dart';
 import 'package:app/global/state.dart';
 
-import 'package:app/pages/start/splash_view.dart';
 import 'package:app/pages/route.dart';
 import 'package:app/rpc/baoyu.dart';
-import 'package:app/utils/httpserver.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 import '../webview/webview.dart';
 

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:isolate';
 
 import 'package:app/pages/route.dart';
 import 'package:app/global/theme.dart';
@@ -10,7 +9,6 @@ import 'package:get/get.dart';
 import 'package:app/global/state.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'package:app/ffi/ffi.dart';
 import 'package:app/global/state/app.dart';
 
 

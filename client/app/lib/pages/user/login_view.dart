@@ -19,6 +19,8 @@ class LoginView extends StatelessWidget {
 
   final LoginController loginController = Get.put(LoginController());
 
+  LoginView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

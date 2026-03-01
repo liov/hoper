@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class CameraExample extends StatefulWidget {
-  CameraExample(this.cameras);
+  const CameraExample(this.cameras, {super.key});
   final List<CameraDescription> cameras;
   @override
   _CameraExampleState createState() {
@@ -128,12 +128,6 @@ class _CameraExampleState extends State<CameraExample>
         children: <Widget>[
           Expanded(
             child: Container(
-              child: Padding(
-                padding: const EdgeInsets.all(1.0),
-                child: Center(
-                  child: _cameraPreviewWidget(),
-                ),
-              ),
               decoration: BoxDecoration(
                 color: Colors.black,
                 border: Border.all(
@@ -142,6 +136,12 @@ class _CameraExampleState extends State<CameraExample>
                       ? Colors.redAccent
                       : Colors.grey,
                   width: 3.0,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(1.0),
+                child: Center(
+                  child: _cameraPreviewWidget(),
                 ),
               ),
             ),
@@ -225,6 +225,8 @@ class _CameraExampleState extends State<CameraExample>
             localVideoController == null && imageFile == null
                 ? Container()
                 : SizedBox(
+              width: 64.0,
+              height: 64.0,
               child: (localVideoController == null)
                   ? Image.file(File(imageFile!.path))
                   : Container(
@@ -236,8 +238,6 @@ class _CameraExampleState extends State<CameraExample>
                 decoration: BoxDecoration(
                     border: Border.all(color: Colors.pink)),
               ),
-              width: 64.0,
-              height: 64.0,
             ),
           ],
         ),
@@ -369,7 +369,6 @@ class _CameraExampleState extends State<CameraExample>
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   TextButton(
-                    child: Text('AUTO'),
                     style: styleAuto,
                     onPressed: controller != null
                         ? () =>
@@ -381,14 +380,15 @@ class _CameraExampleState extends State<CameraExample>
                         showInSnackBar('Resetting exposure point');
                       }
                     },
+                    child: Text('AUTO'),
                   ),
                   TextButton(
-                    child: Text('LOCKED'),
                     style: styleLocked,
                     onPressed: controller != null
                         ? () =>
                         onSetExposureModeButtonPressed(ExposureMode.locked)
                         : null,
+                    child: Text('LOCKED'),
                   ),
                 ],
               ),
@@ -447,7 +447,6 @@ class _CameraExampleState extends State<CameraExample>
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   TextButton(
-                    child: Text('AUTO'),
                     style: styleAuto,
                     onPressed: controller != null
                         ? () => onSetFocusModeButtonPressed(FocusMode.auto)
@@ -456,13 +455,14 @@ class _CameraExampleState extends State<CameraExample>
                       if (controller != null) controller!.setFocusPoint(null);
                       showInSnackBar('Resetting focus point');
                     },
+                    child: Text('AUTO'),
                   ),
                   TextButton(
-                    child: Text('LOCKED'),
                     style: styleLocked,
                     onPressed: controller != null
                         ? () => onSetFocusModeButtonPressed(FocusMode.locked)
                         : null,
+                    child: Text('LOCKED'),
                   ),
                 ],
               ),
@@ -530,13 +530,13 @@ class _CameraExampleState extends State<CameraExample>
   Widget _cameraTogglesRowWidget() {
     final List<Widget> toggles = <Widget>[];
 
-    final onChanged = (CameraDescription? description) {
+    Null onChanged(CameraDescription? description) {
       if (description == null) {
         return;
       }
 
       onNewCameraSelected(description);
-    };
+    }
 
     if (widget.cameras.isEmpty) {
       return const Text('No camera found');
@@ -787,7 +787,7 @@ class _CameraExampleState extends State<CameraExample>
     final CameraController? cameraController = controller;
 
     if (cameraController == null || !cameraController.value.isRecordingVideo) {
-      return null;
+      return;
     }
 
     try {
@@ -802,7 +802,7 @@ class _CameraExampleState extends State<CameraExample>
     final CameraController? cameraController = controller;
 
     if (cameraController == null || !cameraController.value.isRecordingVideo) {
-      return null;
+      return;
     }
 
     try {
@@ -876,7 +876,7 @@ class _CameraExampleState extends State<CameraExample>
     final VideoPlayerController vController =
     VideoPlayerController.file(File(videoFile!.path));
     videoPlayerListener = () {
-      if (videoController != null && videoController!.value.size != null) {
+      if (videoController != null) {
         // Refreshing the state to update video player with the correct ratio.
         if (mounted) setState(() {});
         videoController!.removeListener(videoPlayerListener!);

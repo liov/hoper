@@ -2,11 +2,9 @@ import 'dart:ui';
 
 import 'package:applib/util/async.dart';
 import 'package:extended_image/extended_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'dart:io';
 
 import '../../global/service.dart';
 import '../image/slide_image.dart';

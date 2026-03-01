@@ -8,12 +8,12 @@ import 'package:flutter/material.dart';
 class PageViewTabClampingScrollPhysics extends ScrollPhysics {
   /// Creates scroll physics that prevent the scroll offset from exceeding the
   /// bounds of the content.
-  const PageViewTabClampingScrollPhysics({ ScrollPhysics? parent,required this.controller }) : super(parent: parent);
+  const PageViewTabClampingScrollPhysics({ super.parent,required this.controller });
   final HomeController controller;
 
   @override
   PageViewTabClampingScrollPhysics applyTo(ScrollPhysics? ancestor) {
-    return PageViewTabClampingScrollPhysics(parent: buildParent(ancestor), controller: this.controller);
+    return PageViewTabClampingScrollPhysics(parent: buildParent(ancestor), controller: controller);
   }
 
   @override
@@ -40,19 +40,27 @@ class PageViewTabClampingScrollPhysics extends ScrollPhysics {
       if (controller.scrollNum < - 7) {
         controller.continueScroll();
         return 0.0;
-      } else return value - position.pixels;
+      } else {
+        return value - position.pixels;
+      }
     }
     if (position.maxScrollExtent <= position.pixels && position.pixels < value) { // overscroll
       controller.scrollNum++;
       if (controller.scrollNum > 7) {
         controller.continueScroll();
         return 0.0;
-      }else return  value - position.pixels;
+      }else {
+        return  value - position.pixels;
+      }
     }
-    if (value < position.minScrollExtent && position.minScrollExtent < position.pixels) // hit top edge
+    if (value < position.minScrollExtent && position.minScrollExtent < position.pixels) {
+      // hit top edge
       return value - position.minScrollExtent;
-    if (position.pixels < position.maxScrollExtent && position.maxScrollExtent < value) // hit bottom edge
+    }
+    if (position.pixels < position.maxScrollExtent && position.maxScrollExtent < value) {
+      // hit bottom edge
       return value - position.maxScrollExtent;
+    }
     return 0.0;
   }
 
@@ -61,10 +69,12 @@ class PageViewTabClampingScrollPhysics extends ScrollPhysics {
     final Tolerance tolerance = this.tolerance;
     if (position.outOfRange) {
       double? end;
-      if (position.pixels > position.maxScrollExtent)
+      if (position.pixels > position.maxScrollExtent) {
         end = position.maxScrollExtent;
-      if (position.pixels < position.minScrollExtent)
+      }
+      if (position.pixels < position.minScrollExtent) {
         end = position.minScrollExtent;
+      }
       assert(end != null);
       return ScrollSpringSimulation(
         spring,
@@ -74,12 +84,15 @@ class PageViewTabClampingScrollPhysics extends ScrollPhysics {
         tolerance: tolerance,
       );
     }
-    if (velocity.abs() < tolerance.velocity)
+    if (velocity.abs() < tolerance.velocity) {
       return null;
-    if (velocity > 0.0 && position.pixels >= position.maxScrollExtent)
+    }
+    if (velocity > 0.0 && position.pixels >= position.maxScrollExtent) {
       return null;
-    if (velocity < 0.0 && position.pixels <= position.minScrollExtent)
+    }
+    if (velocity < 0.0 && position.pixels <= position.minScrollExtent) {
       return null;
+    }
     return ClampingScrollSimulation(
       position: position.pixels,
       velocity: velocity,

@@ -290,7 +290,7 @@ Future<Response> _handleAssets(Request request, String path) async {
     HttpHeaders.acceptRangesHeader: 'bytes',
   };
 
-  final contentType = await DefaultMimeTypeResolver.lookup(path);
+  final contentType = DefaultMimeTypeResolver.lookup(path);
   if (contentType != null) headers[HttpHeaders.contentTypeHeader] = contentType;
 
   headers[HttpHeaders.contentLengthHeader] = body.length.toString();

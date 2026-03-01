@@ -1,4 +1,3 @@
-import 'package:get/get.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'weibo.g.dart';

@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'follow_controller.dart';
 
 class FollowWidget extends StatelessWidget {
-  const FollowWidget({Key? key}) : super(key: key);
+  const FollowWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

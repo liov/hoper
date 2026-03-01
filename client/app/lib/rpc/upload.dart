@@ -26,7 +26,7 @@ class UploadClient extends Observer<CallOptions> {
   }
 
   Future<String> exists(String mdFive,int size) async {
-    var api = '/v1/exists/${mdFive}/${size}';
+    var api = '/v1/exists/$mdFive/$size';
     try {
       final response = await httpClient.get(api);
       return response.data;
@@ -41,7 +41,7 @@ class UploadClient extends Observer<CallOptions> {
     final mdFive = await md5.bind(file.openRead()).first;
     final url = await exists(mdFive.toString(),size);
     if (url!='') return url;
-    var api = '/v1/upload/${mdFive}';
+    var api = '/v1/upload/$mdFive';
     try {
       final response = await httpClient.post(api,
           data: FormData.fromMap({'file': await MultipartFile.fromFile(file.path)}),

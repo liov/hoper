@@ -98,7 +98,7 @@ class App extends StatelessWidget with WidgetsBindingObserver {
   }
 
   Widget _bottom2(){
-    globalService.logger.d(Get.theme.colorScheme.background);
+    globalService.logger.d(Get.theme.colorScheme.surface);
     final ThemeData theme = globalState.isDarkMode.value ? AppTheme.dark : AppTheme.light;
     return ConvexAppBar(
       disableDefaultTabController: true,

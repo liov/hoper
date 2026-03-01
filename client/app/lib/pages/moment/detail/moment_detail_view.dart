@@ -36,12 +36,12 @@ class MomentDetailView extends StatelessWidget {
     Get.toNamed(Routes.NOTFOUND);
   }
 
-  MomentDetailView.detail(this.moment) : super() {
+  MomentDetailView.detail(this.moment, {super.key}){
     id = moment.id;
     future = Future.value(moment);
   }
 
-  MomentDetailView.byId(this.id) : super() {
+  MomentDetailView.byId(this.id, {super.key}){
     future = getMoment();
   }
 

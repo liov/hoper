@@ -81,7 +81,7 @@ class MomentAddView extends StatelessWidget {
 
 
 class MomentAddBottomSheet extends StatelessWidget{
-  const MomentAddBottomSheet({Key? key}):super(key: key);
+  const MomentAddBottomSheet({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -18,7 +18,7 @@ DynamicLibrary findDynamicLibrary(String name, String dir) {
       return DynamicLibrary.open('/data/data/$appId/lib/lib$name.so');
     }
   }
-  if (!dir.endsWith('/')) dir = dir + '/';
+  if (!dir.endsWith('/')) dir = '$dir/';
   if (Platform.isLinux) return DynamicLibrary.open('${dir}lib$name.so');
     if (Platform.isMacOS) return DynamicLibrary.open('${dir}lib$name.dylib');
     if (Platform.isWindows) return DynamicLibrary.open('$dir$name.dll');

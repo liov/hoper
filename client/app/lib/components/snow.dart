@@ -11,9 +11,9 @@ class SnowWidget extends StatefulWidget {
   final double speed;
   final bool isRunning;
 
-  const SnowWidget(this.totalSnow, this.speed, this.isRunning, {Key? key})
-      : super(key: key);
+  const SnowWidget(this.totalSnow, this.speed, this.isRunning, {super.key});
 
+  @override
   _SnowWidgetState createState() => _SnowWidgetState();
 }
 
@@ -58,7 +58,7 @@ class _SnowWidgetState extends State<SnowWidget> with SingleTickerProviderStateM
   }
 
   update() {
-    globalService.logger.d("update " + widget.isRunning.toString());
+    globalService.logger.d("update ${widget.isRunning}");
     angle += 0.01;
     if (widget.totalSnow != _snows.length) {
       _createSnow();
@@ -104,7 +104,7 @@ class _SnowWidgetState extends State<SnowWidget> with SingleTickerProviderStateM
         }
         return CustomPaint(
           willChange: widget.isRunning,
-          painter: SnowPainter(this._snows),
+          painter: SnowPainter(_snows),
           size: Size.infinite,
         );
       },
@@ -134,7 +134,7 @@ class SnowPainter extends CustomPainter {
       ..color = Colors.white
       ..style = PaintingStyle.fill
       ..strokeWidth = 5;
-    snows.forEach((snow) {canvas.drawCircle(Offset(snow.x,snow.y), snow.r, paint); });
+    for (var snow in snows) {canvas.drawCircle(Offset(snow.x,snow.y), snow.r, paint); }
 
   }
 

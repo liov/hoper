@@ -3,7 +3,7 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 
 class HeroImage extends StatelessWidget{
-  HeroImage({
+  const  HeroImage({super.key,
     required this.child,
     required this.tag,
     required this.slidePageKey,
@@ -14,16 +14,16 @@ class HeroImage extends StatelessWidget{
   final SlideType slideType;
   final Object tag;
   final GlobalKey<ExtendedImageSlidePageState> slidePageKey;
-  late final RectTween _rectTween;
 
   @override
   Widget build(BuildContext context) {
+    late final RectTween rectTween;
     return Hero(
       tag: tag,
       createRectTween: (Rect? begin, Rect? end) {
-        _rectTween = RectTween(begin: begin, end: end);
-        globalService.logger.d(_rectTween);
-        return _rectTween;
+         rectTween = RectTween(begin: begin, end: end);
+        globalService.logger.d(rectTween);
+        return rectTween;
       },
       // make hero better when slide out
       flightShuttleBuilder: (BuildContext flightContext,
@@ -55,8 +55,8 @@ class HeroImage extends StatelessWidget{
                     opacity: 1 - animation.value,
                     child: UnconstrainedBox(
                       child: SizedBox(
-                        width: _rectTween.begin!.width,
-                        height: _rectTween.begin!.height,
+                        width: rectTween.begin!.width,
+                        height: rectTween.begin!.height,
                         child: toHeroWidget,
                       ),
                     ),
