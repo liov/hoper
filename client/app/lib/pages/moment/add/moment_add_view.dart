@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:video_player/video_player.dart';
 import 'package:app/pages/moment/add/moment_add_controller.dart';
 
 class MomentAddView extends StatelessWidget {

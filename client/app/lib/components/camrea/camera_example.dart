@@ -230,13 +230,13 @@ class _CameraExampleState extends State<CameraExample>
               child: (localVideoController == null)
                   ? Image.file(File(imageFile!.path))
                   : Container(
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.pink)),
                 child: Center(
                   child: AspectRatio(
                       aspectRatio: localVideoController.value.aspectRatio,
                       child: VideoPlayer(localVideoController)),
                 ),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.pink)),
               ),
             ),
           ],

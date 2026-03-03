@@ -1,6 +1,5 @@
 import 'dart:ffi';
 import 'dart:math';
-import 'package:ffi/ffi.dart';
 import 'dart:io'; // For Platform.isX
 
 DynamicLibrary findDynamicLibrary(String name, String dir) {

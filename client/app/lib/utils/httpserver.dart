@@ -7,7 +7,6 @@ import 'package:flutter/services.dart' show rootBundle;
 
 
 import 'package:shelf/src/request.dart';
-import 'package:shelf/src/response.dart';
 import 'package:shelf/src/handler.dart';
 import 'package:shelf_proxy/shelf_proxy.dart';
 

@@ -1,10 +1,7 @@
 
 
-import 'dart:io';
 
-import 'package:app/components/christmas_tree.dart';
 
-import 'package:app/ffi/ffi.dart';
 import 'package:app/global/state.dart';
 import 'package:app/global/theme.dart';
 import 'package:app/pages/start/splash_conroller.dart';
@@ -17,7 +14,6 @@ import 'package:app/pages/route.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 import 'package:app/components/media/pick.dart';
 import 'home_controller.dart';

@@ -1,10 +1,7 @@
 import 'package:applib/util/async.dart';
 import 'package:app/generated/protobuf/content/content.model.pb.dart' as $moment;
 
-import 'package:app/global/state.dart';
 
-import 'package:app/pages/moment/item/moment_item_view.dart';
-import 'package:app/pages/moment/detail/moment_detail_view.dart';
 
 import 'package:flutter/material.dart';
 

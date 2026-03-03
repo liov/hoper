@@ -1,4 +1,3 @@
-import 'dart:async';
 
 
 import 'package:app/components/weather/weather_bg.dart';

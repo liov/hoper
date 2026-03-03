@@ -1,4 +1,3 @@
-import 'package:applib/util/async.dart';
 import 'package:app/global/state.dart';
 import 'package:app/global/const.dart';
 import 'package:app/pages/user/user_controller.dart';
@@ -6,7 +5,6 @@ import 'package:app/pages/route.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:getwidget/components/avatar/gf_avatar.dart';
 import 'package:getwidget/components/list_tile/gf_list_tile.dart';
 
 

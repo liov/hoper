@@ -11,7 +11,6 @@ import 'package:convert/convert.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import 'package:shelf/shelf.dart';
 
 import 'directory_listing.dart';

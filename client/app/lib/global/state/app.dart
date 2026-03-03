@@ -1,5 +1,4 @@
 import 'package:app/global/service.dart';
-import 'package:get/get.dart';
 
 class AppState {
   AppState() : assert(isDebug = true);
