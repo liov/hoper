@@ -1,0 +1,22 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "hoper protogen",
+			"type": "process",
+			"options": {
+                "cwd": "${workspaceFolder}/server/go"
+            },
+			"command": "protogen.exe",
+			"args": [
+				"go",
+				"-d",
+				"-e",
+				"-w",
+				"-v",
+				"-i",
+				"../../proto"
+			],
+		}
+	]
+}

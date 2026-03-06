@@ -17,7 +17,6 @@ node_modules
 dist
 add-config.toml
 proto_std
-.vscode
 gradle
 /tools/server/local.toml
 secret.txt
