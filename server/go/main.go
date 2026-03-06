@@ -11,6 +11,7 @@ import (
 	"github.com/hopeio/pick"
 	pickgin "github.com/hopeio/pick/gin"
 	"github.com/hopeio/scaffold/grpc/gateway"
+	"github.com/hopeio/gox/log"
 	commonapi "github.com/liov/hoper/server/go/common/api"
 	contentapi "github.com/liov/hoper/server/go/content/api"
 	uploadapi "github.com/liov/hoper/server/go/file/api"
@@ -19,9 +20,9 @@ import (
 	userapi "github.com/liov/hoper/server/go/user/api"
 	"github.com/liov/hoper/server/go/user/service"
 	"github.com/prometheus/client_golang/prometheus"
-	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
+	"github.com/hopeio/scaffold/otel"
 )
 
 //go:generate protogen.exe go -d -e -w -v -i ../../proto
@@ -30,6 +31,14 @@ func main() {
 	defer global.Global.Cleanup()
 	gatewayx.DefaultMarshal = gateway.JsonMarshal
 	timex.DefaultEncoding = timex.EncodingUnixMilliseconds
+	ctx := context.Background()
+	shutdown, err := otel.SetupOTelSDK(ctx)
+	if err != nil {
+		log.Fatalf("Failed to setup OpenTelemetry: %v", err)
+	}
+	global.Global.Defer(func() {
+		shutdown(ctx)
+	})
 	srvMetrics := grpcprom.NewServerMetrics(
 		grpcprom.WithServerHandlingTimeHistogram(
 			grpcprom.WithHistogramBuckets([]float64{0.001, 0.01, 0.1, 0.3, 0.6, 1, 3, 6, 9, 20, 30, 60, 90, 120}),
@@ -52,9 +61,6 @@ func main() {
 			option.StreamServerInterceptors = []grpc.StreamServerInterceptor{
 				srvMetrics.StreamServerInterceptor(grpcprom.WithExemplarFromContext(exemplarFromContext)),
 			}
-		}),
-		cherry.WithTelemetry(func(telemetry *cherry.TelemetryConfig) {
-			telemetry.StdoutExportOpts = []stdoutmetric.Option{}
 		}),
 		cherry.WithGinHandler(func(app *gin.Engine) {
 			commonapi.GinRegister(app)

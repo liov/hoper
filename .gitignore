@@ -39,3 +39,5 @@ client/app/android/app/src/main/res/drawable-v21/launch_background.xml
 client/app/android/app/src/main/res/values-night-v31/styles.xml
 .gitignore
 client/app/ios/Runner/Assets.xcassets/LaunchBackground.imageset/Contents.json
+client/app/android/local.properties
+client/app/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java

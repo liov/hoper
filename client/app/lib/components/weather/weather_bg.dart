@@ -55,7 +55,7 @@ class _WeatherBgState extends State<WeatherBg>
       width: widget.width,
       height: widget.height,
     );
-    oldBgWidget ??= currentBgWidget;
+    oldBgWidget = currentBgWidget;
     var firstWidget = currentBgWidget;
     var secondWidget = currentBgWidget;
     if (needChange) {
