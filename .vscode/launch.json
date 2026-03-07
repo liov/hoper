@@ -32,8 +32,8 @@
 			"program": "${workspaceFolder}/server/go/main.go",
 			"env": {
 				"OTEL_EXPORTER_OTLP_METRICS_ENDPOINT": "http://8.222.139.120:8428/opentelemetry/v1/metrics",
-				"OTEL_EXPORTER_OTLP_TRACES_ENDPOINT": "http://8.222.139.120:9428/insert/opentelemetry/v1/logs",
-				"OTEL_EXPORTER_OTLP_LOGS_ENDPOINT": "http://8.222.139.120:10428/insert/opentelemetry/v1/traces"
+				"OTEL_EXPORTER_OTLP_LOGS_ENDPOINT": "http://8.222.139.120:9428/insert/opentelemetry/v1/logs",
+				"OTEL_EXPORTER_OTLP_TRACES_ENDPOINT": "http://8.222.139.120:10428/insert/opentelemetry/v1/traces"
 			}
 		}
 	]
