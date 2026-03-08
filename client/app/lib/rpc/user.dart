@@ -3,7 +3,6 @@ import 'package:app/generated/protobuf/user/user.service.pbgrpc.dart';
 
 
 import 'package:app/global/dio.dart';
-import 'package:get/get.dart';
 import 'package:grpc/grpc.dart';
 import 'package:app/model/response.dart';
 import 'package:app/rpc/grpc.dart';
@@ -19,7 +18,7 @@ class UserClient extends Observer<CallOptions> {
     subject.attach(this);
   }
 
-  setOptions(CallOptions? options){
+  void setOptions(CallOptions? options){
     stub =  UserServiceClient(channel,options:options);
   }
 

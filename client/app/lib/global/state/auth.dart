@@ -7,13 +7,8 @@ import 'package:app/generated/protobuf/hopeio/request/param.pb.dart'
 as request;
 import 'package:app/global/state.dart';
 import 'package:app/global/const.dart';
-import 'package:app/pages/home/home_controller.dart';
-import 'package:app/pages/user/login_view.dart';
 import 'package:app/utils/dialog.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:grpc/grpc.dart';
 

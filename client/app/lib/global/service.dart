@@ -38,7 +38,7 @@ class GlobalService{
 
 
 
-  init() async {
+  Future<void> init() async {
 
     final appDocDir = await getApplicationDocumentsDirectory();
     logger.d(appDocDir.path);

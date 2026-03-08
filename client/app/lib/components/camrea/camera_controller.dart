@@ -25,7 +25,7 @@ class Controller extends GetxController {
     final double _currentScale = 1.0;
     final double _baseScale = 1.0;
     final int _pointers = 0;
-    setController (CameraController? c) async{
+    Future<void> setController (CameraController? c) async{
      controller?.dispose();
      controller = c;
      await controller?.initialize();

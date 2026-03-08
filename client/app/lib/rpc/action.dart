@@ -17,7 +17,7 @@ class ActionClient extends Observer<CallOptions> {
     subject.attach(this);
   }
 
-  setOptions(CallOptions? options){
+  void setOptions(CallOptions? options){
     stub =  ActionServiceClient(channel,options:options);
   }
 

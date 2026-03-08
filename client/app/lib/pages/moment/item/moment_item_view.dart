@@ -1,14 +1,10 @@
-import 'package:app/generated/protobuf/content/content.model.pb.dart';
-import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/global/const.dart';
 import 'package:app/global/state.dart';
 
-import 'package:app/pages/image/image_view.dart';
 import 'package:app/pages/image/slide_image.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:get/get.dart';
 
 import 'package:app/pages/action_bar/action_bar.dart';
 

@@ -43,7 +43,7 @@ class _ChristmasTreeState extends State<ChristmasTree> with TickerProviderStateM
         child: buildTree(),
     );
   }
-  buildTree() {
+  Column buildTree() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -56,7 +56,7 @@ class _ChristmasTreeState extends State<ChristmasTree> with TickerProviderStateM
     );
   }
 
-  buildRow(int i) {
+  Wrap buildRow(int i) {
     return Wrap(
       children: [
         for (var j = 0; j <= i; j++)

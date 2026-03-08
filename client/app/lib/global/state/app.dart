@@ -13,7 +13,7 @@ class AppState {
   // 打开次数
   static const IntOpenTimesKey = "${_PRE}OpenTimesKey";
 
-  init() {
+  void init() {
     final openTimes = globalService.box.get(IntOpenTimesKey, defaultValue: 0);
     globalService.box.put(IntOpenTimesKey, openTimes + 1);
   }

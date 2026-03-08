@@ -74,7 +74,7 @@ class CameraViewState extends State<CameraView> with WidgetsBindingObserver {
     return maxLogicalHeight / logicalHeight;
   }
 
-  onNewCameraSelected(CameraDescription cameraDescription) async {
+  Future<void> onNewCameraSelected(CameraDescription cameraDescription) async {
     if (controller != null) {
       await controller!.dispose();
     }

@@ -41,6 +41,6 @@ class SlideImageView extends StatelessWidget {
   }
 }
 
-slideImageRoute(String url) {
+void slideImageRoute(String url) {
   navigator!.push(SimpleRoute(builder: (context) => SlideImageView(url)));
 }

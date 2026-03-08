@@ -33,6 +33,6 @@ nativeRustLib
     .asFunction();
 
 
-main(){
+void main(){
   funServe(3000);
 }

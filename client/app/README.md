@@ -7,7 +7,10 @@
 ## Getting Started
 安装flutter
 打开项目目录下执行：
-pub get
+flutter packages upgrade
+flutter pub outdated
+flutter pub upgrade --major-versions
+flutter pub get --no-example
 
 ### protobuf
 dart pub global activate protoc_plugin

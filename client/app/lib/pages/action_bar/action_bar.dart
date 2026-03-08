@@ -1,7 +1,5 @@
 import 'package:app/generated/protobuf/content/action.model.pb.dart';
 import 'package:app/generated/protobuf/content/action.service.pb.dart';
-import 'package:app/generated/protobuf/content/content.model.pb.dart'  as
-$content;
 import 'package:app/generated/protobuf/content/content.service.pb.dart';
 import 'package:app/global/state.dart';
 import 'package:app/pages/route.dart';
@@ -91,7 +89,7 @@ class ActionBarState extends State<ActionBar> {
                 Expanded(
                     flex: 1,
                     child: Icon(Icons.star,
-                        color: action!=null&&action!.collectIds.length>0? Colors.blueAccent[200]:Colors.white54, size: size)),
+                        color: action!=null&&action!.collectIds.isNotEmpty? Colors.blueAccent[200]:Colors.white54, size: size)),
                 Expanded(
                     flex: 1, child: Text(ext.collect.toStringUnsigned()))
               ],

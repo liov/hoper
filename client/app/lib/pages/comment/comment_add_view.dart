@@ -1,6 +1,5 @@
 
 
-import 'package:app/generated/protobuf/content/action.service.pb.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

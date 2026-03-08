@@ -52,12 +52,12 @@ class _SnowWidgetState extends State<SnowWidget> with SingleTickerProviderStateM
     super.dispose();
   }
 
-  _createSnow() {
+  void _createSnow() {
     _snows = List.generate(widget.totalSnow, (index) => Snow(_rnd.nextDouble() * W, _rnd.nextDouble() * H,
         _rnd.nextDouble() * 4 + 1, _rnd.nextDouble() * widget.speed));
   }
 
-  update() {
+  void update() {
     globalService.logger.d("update ${widget.isRunning}");
     angle += 0.01;
     if (widget.totalSnow != _snows.length) {

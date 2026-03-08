@@ -1,12 +1,10 @@
 import 'package:applib/util/async.dart';
 import 'package:app/generated/protobuf/content/action.model.pb.dart';
-import 'package:app/generated/protobuf/content/action.service.pb.dart';
 import 'package:app/pages/comment/comment_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 
 import 'comment_item_view.dart';

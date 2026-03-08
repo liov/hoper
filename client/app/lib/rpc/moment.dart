@@ -1,10 +1,8 @@
-import 'dart:io';
 
 import 'package:app/generated/protobuf/content/moment.service.pbgrpc.dart';
 import 'package:app/model/moment/moment.service.dart';
 
 import 'package:app/global/dio.dart';
-import 'package:get/get.dart';
 import 'package:grpc/grpc.dart';
 import 'package:app/model/response.dart';
 import 'package:app/rpc/grpc.dart';
@@ -20,7 +18,7 @@ class MomentClient extends Observer<CallOptions> {
     subject.attach(this);
   }
 
-  setOptions(CallOptions? options) {
+  void setOptions(CallOptions? options) {
     stub = MomentServiceClient(channel, options: options);
   }
 

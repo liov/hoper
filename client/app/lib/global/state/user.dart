@@ -1,6 +1,5 @@
 
 import 'package:app/generated/protobuf/user/user.model.pb.dart';
-import 'package:get/get.dart';
 import 'package:fixnum/fixnum.dart';
 
 import 'package:app/model/user.dart' as $self;
@@ -13,12 +12,12 @@ class UserState {
     return _users[id];
   }
 
-  appendUsers(List<UserBase> users){
+  void appendUsers(List<UserBase> users){
     for (var e in users) {
       _users[e.id] = e;
     }
   }
-  append(UserBase? user){
+  void append(UserBase? user){
     if (user!=null) {
       _users[user.id] = user;
     }

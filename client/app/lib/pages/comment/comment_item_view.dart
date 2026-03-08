@@ -1,7 +1,6 @@
 import 'package:app/generated/protobuf/content/action.model.pb.dart';
 import 'package:app/global/state.dart';
 import 'package:app/global/const.dart';
-import 'package:app/pages/action_bar/action_bar.dart';
 import 'package:app/pages/image/slide_image.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
@@ -54,7 +53,7 @@ class CommentItem extends StatelessWidget {
                   )),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [Text('${user.name}'), Text('${comment.createdAt}')],
+                children: [Text(user.name), Text('${comment.createdAt}')],
               ),
             ])),
         Expanded(

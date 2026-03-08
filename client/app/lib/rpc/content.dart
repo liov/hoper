@@ -18,7 +18,7 @@ class ContentClient extends Observer<CallOptions> {
     subject.attach(this);
   }
 
-  setOptions(CallOptions? options){
+  void setOptions(CallOptions? options){
     stub =  ContentServiceClient(channel,options:options);
   }
 

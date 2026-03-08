@@ -1,5 +1,4 @@
 import 'package:applib/util/async.dart';
-import 'package:app/generated/protobuf/content/content.model.pb.dart' as $moment;
 
 
 

@@ -1,4 +1,3 @@
-import 'package:app/generated/protobuf/content/content.model.pb.dart';
 import 'package:app/generated/protobuf/content/moment.service.pb.dart';
 import 'package:app/global/state.dart';
 import 'package:app/rpc/moment.dart';
@@ -53,12 +52,12 @@ class ListState {
   var list = List<Moment>.empty(growable: true);
 
 
-  resetList(){
+  void resetList(){
     list.removeRange(0, list.length);
     req.pageNo = 1;
   }
 
-  grpcGetList(MomentClient momentClient) async {
+  Future<void> grpcGetList(MomentClient momentClient) async {
     var response = await momentClient.stub.list(req);
     if (response.list.isEmpty) return;
     // If the widget was removed from the tree while the message was in flight,
