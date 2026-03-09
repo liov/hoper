@@ -4,7 +4,7 @@ import 'package:app/global/state.dart';
 import 'package:app/pages/image/slide_image.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 import 'package:app/pages/action_bar/action_bar.dart';
 
@@ -57,7 +57,7 @@ class MomentItem extends StatelessWidget {
                   )),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [Text(user.name), Text(getDateTime(moment.createdAt.seconds.toInt(),moment.createdAt.nanos.toInt()).toString())],
+                children: [Text(user.name), Text(getDateTime(moment.modelTime!.createdAt.seconds.toInt(),moment.modelTime!.createdAt.nanos.toInt()).toString())],
               ),
             ])),
         Expanded(

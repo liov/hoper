@@ -13,7 +13,7 @@ flutter pub upgrade --major-versions
 flutter pub get --no-example
 
 ### protobuf
-dart pub global activate protoc_plugin
+flutter pub global activate protoc_plugin
 export PATH="$PATH:$HOME/.pub-cache/bin" (win:%USERPROFILE%\AppData\Local\Pub\Cache\bin)
 export PATH="$PATH:$flutterSDK/bin/cache/dart-sdk/bin"
 dart run generate.dart
@@ -40,6 +40,17 @@ flutter create --platforms=windows .
 ### web
 flutter create --platforms=web .
 
+### macos
+flutter create --platforms=macos .
+
+### linux
+flutter create --platforms=linux .
+
+### ios
+flutter create --platforms=ios .
+
+### android
+flutter create --platforms=android .
 
 ### 打包
 

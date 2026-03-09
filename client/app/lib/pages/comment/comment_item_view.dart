@@ -4,7 +4,7 @@ import 'package:app/global/const.dart';
 import 'package:app/pages/image/slide_image.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 class CommentItem extends StatelessWidget {
   CommentItem({super.key, required this.comment}) {
@@ -53,7 +53,7 @@ class CommentItem extends StatelessWidget {
                   )),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [Text(user.name), Text('${comment.createdAt}')],
+                children: [Text(user.name), Text('${comment.modelTime!.createdAt}')],
               ),
             ])),
         Expanded(

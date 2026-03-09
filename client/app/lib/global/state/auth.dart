@@ -2,7 +2,7 @@
 
 import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/generated/protobuf/user/user.service.pb.dart';
-import 'package:app/generated/protobuf/google/protobuf/empty.pb.dart';
+import 'package:protobuf/well_known_types/google/protobuf/empty.pb.dart';
 import 'package:app/generated/protobuf/hopeio/request/param.pb.dart'
 as request;
 import 'package:app/global/state.dart';

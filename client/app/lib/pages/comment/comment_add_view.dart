@@ -6,15 +6,15 @@ import 'package:get/get.dart';
 import 'comment_controller.dart';
 
 class CommentAdd extends StatelessWidget {
-  final CommentController controller = Get.find();
-  late final TextEditingController _controller = controller.textEditingController;
-  late final _focusNode = controller.focusNode;
 
   const CommentAdd({super.key});
 
 
   @override
   Widget build(BuildContext context) {
+    final CommentController controller = Get.find();
+    final TextEditingController _controller = controller.textEditingController;
+    final _focusNode = controller.focusNode;
     print('@'.codeUnits);
     var mode = true;
     return
@@ -77,6 +77,9 @@ class CommentAdd extends StatelessWidget {
   }
 
   Widget button1(){
+    final CommentController controller = Get.find();
+    final TextEditingController _controller = controller.textEditingController;
+    final _focusNode = controller.focusNode;
     return GetBuilder<CommentController>(
       id:'add',
       builder:(CommentController _){

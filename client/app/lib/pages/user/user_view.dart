@@ -9,13 +9,10 @@ import 'package:getwidget/components/list_tile/gf_list_tile.dart';
 
 
 class UserView extends StatelessWidget {
-
-final UserController userController = Get.put(UserController());
-
   const UserView({super.key});
-
   @override
   Widget build(BuildContext context) {
+    final UserController userController = Get.put(UserController());
     return SafeArea(
       child: Center(
         child: FutureBuilder(
