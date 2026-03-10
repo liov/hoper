@@ -40,8 +40,7 @@ func (*MomentService) Service() (describe, prefix string, middleware []gin.Handl
 }
 
 func (*MomentService) Info(ctx context.Context, req *request.Id) (*content.Moment, error) {
-	ctx, span := Tracer.Start(ctx, "Content.Info")
-	defer span.End()
+
 	auth, _ := auth(ctx, true)
 	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	contentDBDao := data.GetDBDao(db)
@@ -127,8 +126,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 		return nil, errcode.InvalidArgument.Msg(fmt.Sprintf("文章内容不能小于%d个字", global.Conf.Customize.Moment.MaxContentLen))
 	}
 
-	ctx, span := Tracer.Start(ctx, "Content.Add")
-	defer span.End()
+
 	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
@@ -216,8 +214,7 @@ func (*MomentService) Edit(context.Context, *content.AddMomentReq) (*emptypb.Emp
 }
 
 func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*content.MomentListResp, error) {
-	ctx, span := Tracer.Start(ctx, "Content.List")
-	defer span.End()
+
 	auth, _ := auth(ctx, true)
 	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	contentDBDao := data.GetDBDao(db)
@@ -315,8 +312,7 @@ func (*MomentService) List(ctx context.Context, req *content.MomentListReq) (*co
 }
 
 func (*MomentService) Delete(ctx context.Context, req *request.Id) (*emptypb.Empty, error) {
-	ctx, span := Tracer.Start(ctx, "Content.Delete")
-	defer span.End()
+
 	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err

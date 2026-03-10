@@ -48,8 +48,7 @@ type UserService struct {
 }
 
 func (u *UserService) VerifyCode(ctx context.Context, req *userpb.VerifyCodeReq) (*emptypb.Empty, error) {
-	ctx, span := Tracer.Start(ctx, "UserService.VerifyCode")
-	defer span.End()
+
 	vcode := rand.RandomCode(4)
 	log.Info(vcode)
 	key := modelconst.VerificationCodeKey + req.Mail + req.Phone
@@ -61,8 +60,6 @@ func (u *UserService) VerifyCode(ctx context.Context, req *userpb.VerifyCodeReq)
 }
 
 func (*UserService) SignupVerify(ctx context.Context, req *userpb.SingUpVerifyReq) (*emptypb.Empty, error) {
-	ctx, span := Tracer.Start(ctx, "UserService.SignupVerify")
-	defer span.End()
 
 	if req.Mail == "" && req.Phone == "" {
 		return nil, errcode.InvalidArgument.Msg("请填写邮箱或手机号")
@@ -90,8 +87,6 @@ func (*UserService) SignupVerify(ctx context.Context, req *userpb.SingUpVerifyRe
 }
 
 func (u *UserService) Signup(ctx context.Context, req *userpb.SignupReq) (*wrappers.StringValue, error) {
-	ctx, span := Tracer.Start(ctx, "UserService.Signup")
-	defer span.End()
 
 	if req.Mail == "" && req.Phone == "" {
 		return nil, errcode.InvalidArgument.Msg("请填写邮箱或手机号")
@@ -245,8 +240,7 @@ func checkPassword(password string, user *userpb.User) bool {
 }
 
 func (u *UserService) Active(ctx context.Context, req *userpb.ActiveReq) (*userpb.LoginResp, error) {
-	ctx, span := Tracer.Start(ctx, "UserService.Active")
-	defer span.End()
+
 	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	userDBDao := data.GetDBDao(db)
 
@@ -281,8 +275,6 @@ func (u *UserService) Active(ctx context.Context, req *userpb.ActiveReq) (*userp
 
 func (u *UserService) Edit(ctx context.Context, req *userpb.EditReq) (*emptypb.Empty, error) {
 
-	ctx, span := Tracer.Start(ctx, "UserService.Edit")
-	defer span.End()
 	user, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
@@ -321,8 +313,6 @@ func (u *UserService) Edit(ctx context.Context, req *userpb.EditReq) (*emptypb.E
 }
 
 func (u *UserService) Login(ctx context.Context, req *userpb.LoginReq) (*userpb.LoginResp, error) {
-	ctx, span := Tracer.Start(ctx, "UserService.Login")
-	defer span.End()
 
 	if req.VCode != global.Conf.User.LuosimaoSuperPW {
 		if err := LuosimaoVerify(req.VCode); err != nil {
@@ -414,8 +404,7 @@ func (*UserService) login(ctx context.Context, user *userpb.User) (*userpb.Login
 
 func (u *UserService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.Empty, error) {
 	md := contextx.GetMetadata(ctx)
-	ctx, span := Tracer.Start(ctx, "UserService.Logout")
-	defer span.End()
+
 	user, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
@@ -448,8 +437,7 @@ func (u *UserService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.
 }
 
 func (u *UserService) AuthInfo(ctx context.Context, req *emptypb.Empty) (*userpb.Auth, error) {
-	ctx, span := Tracer.Start(ctx, "UserService.AuthInfo")
-	defer span.End()
+
 	user, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
@@ -458,8 +446,7 @@ func (u *UserService) AuthInfo(ctx context.Context, req *emptypb.Empty) (*userpb
 }
 
 func (u *UserService) Info(ctx context.Context, req *request.Id) (*userpb.UserResp, error) {
-	ctx, span := Tracer.Start(ctx, "UserService.Info")
-	defer span.End()
+
 	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
@@ -482,8 +469,7 @@ func (u *UserService) Info(ctx context.Context, req *request.Id) (*userpb.UserRe
 }
 
 func (u *UserService) ForgetPassword(ctx context.Context, req *userpb.LoginReq) (*wrappers.StringValue, error) {
-	ctx, span := Tracer.Start(ctx, "UserService.ForgetPassword")
-	defer span.End()
+
 	if verifyErr := luosimao.Verify(global.Conf.User.LuosimaoVerifyURL, global.Conf.User.LuosimaoAPIKey, req.VCode); verifyErr != nil {
 		return nil, errcode.InvalidArgument.Wrap(verifyErr)
 	}
@@ -520,8 +506,6 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *userpb.LoginReq) 
 }
 
 func (u *UserService) ResetPassword(ctx context.Context, req *userpb.ResetPasswordReq) (*wrappers.StringValue, error) {
-	ctx, span := Tracer.Start(ctx, "UserService.ResetPassword")
-	defer span.End()
 
 	redisKey := modelconst.ResetTimeKey + strconv.FormatUint(req.Id, 10)
 	emailTime, err := global.Dao.Redis.Get(ctx, redisKey).Int64()
@@ -569,8 +553,7 @@ func (*UserService) ActionLogList(ctx context.Context, req *userpb.ActionLogList
 }
 
 func (*UserService) BaseList(ctx context.Context, req *userpb.BaseListReq) (*userpb.BaseListResp, error) {
-	ctx, span := Tracer.Start(ctx, "UserService.BaseList")
-	defer span.End()
+
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, errcode.InvalidArgument
@@ -617,8 +600,6 @@ func (*UserService) PickAddv(ctx *gin.Context, req *response.ErrResp) (*response
 }
 
 func (u *UserService) EasySignup(ctx context.Context, req *userpb.SignupReq) (*userpb.LoginResp, error) {
-	ctx, span := Tracer.Start(ctx, "UserService.EasySignup")
-	defer span.End()
 
 	if req.Mail == "" && req.Phone == "" {
 		return nil, errcode.InvalidArgument.Msg("请填写邮箱或手机号")

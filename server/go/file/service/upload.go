@@ -57,8 +57,6 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		info = fhs[0]
 	}
 
-	ctx, span := Tracer.Start(r.Context(), "Upload")
-	defer span.End()
 	_, err = auth(ctx, false)
 	if err != nil {
 		httpx.ServeError(w, r, user.UserErrLogin.Msg(errResp))
@@ -75,8 +73,6 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 
 func (*FileService) Exists(ctx context.Context, req *request.Exists) (*response.File, error) {
 
-	ctx, span := Tracer.Start(ctx, "Exists")
-	defer span.End()
 	auth, err := auth(ctx, false)
 	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	uploadDao := data.GetDao(db)

@@ -38,3 +38,9 @@ client/app/ios/Runner/Assets.xcassets/LaunchBackground.imageset/Contents.json
 client/app/android/local.properties
 **/generated_*
 **/Generated*
+
+client/app/linux/flutter/generated_plugin_registrant.cc
+client/app/linux/flutter/generated_plugins.cmake
+client/app/macos/Flutter/GeneratedPluginRegistrant.swift
+client/app/windows/flutter/generated_plugin_registrant.cc
+client/app/windows/flutter/generated_plugins.cmake

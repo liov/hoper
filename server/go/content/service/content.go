@@ -26,8 +26,7 @@ func (m *ContentService) Service() (describe, prefix string, middleware []http.H
 }
 
 func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*request.Id, error) {
-	ctx, span := Tracer.Start(ctx, "Content.AddFav")
-	defer span.End()
+
 	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
@@ -64,8 +63,7 @@ func (*ContentService) AddFav(ctx context.Context, req *content.AddFavReq) (*req
 }
 func (*ContentService) EditFav(ctx context.Context, req *content.AddFavReq) (*emptypb.Empty, error) {
 	//metadata := contextx.GetMetadata[*userpb.AuthInfo](ctx)
-	ctx, span := Tracer.Start(ctx, "Content.EditFav")
-	defer span.End()
+
 	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
@@ -93,8 +91,7 @@ func (*ContentService) FavList(ctx context.Context, req *content.FavListReq) (*c
 
 // 收藏夹列表
 func (*ContentService) TinyFavList(ctx context.Context, req *content.FavListReq) (*content.TinyFavListResp, error) {
-	ctx, span := Tracer.Start(ctx, "Content.TinyFavList")
-	defer span.End()
+
 	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
@@ -113,8 +110,7 @@ func (*ContentService) TinyFavList(ctx context.Context, req *content.FavListReq)
 
 // 创建合集
 func (*ContentService) AddSet(ctx context.Context, req *content.AddSetReq) (*emptypb.Empty, error) {
-	ctx, span := Tracer.Start(ctx, "Content.AddSet")
-	defer span.End()
+
 	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
@@ -137,8 +133,7 @@ func (*ContentService) AddSet(ctx context.Context, req *content.AddSetReq) (*emp
 
 // 修改合集
 func (*ContentService) EditSet(ctx context.Context, req *content.AddSetReq) (*emptypb.Empty, error) {
-	ctx, span := Tracer.Start(ctx, "Content.EditSet")
-	defer span.End()
+
 	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err

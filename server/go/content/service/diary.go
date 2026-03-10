@@ -30,8 +30,7 @@ func (*DiaryService) DiaryBook(ctx context.Context, req *content.DiaryBookReq) (
 	return nil, status.Errorf(codes.Unimplemented, "method DiaryBook not implemented")
 }
 func (*DiaryService) DiaryBookList(ctx context.Context, req *content.DiaryBookListReq) (*content.DiaryBookListResp, error) {
-	ctx, span := Tracer.Start(ctx, "Content.DiaryBook")
-	defer span.End()
+
 	_, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
@@ -40,8 +39,7 @@ func (*DiaryService) DiaryBookList(ctx context.Context, req *content.DiaryBookLi
 	return nil, status.Errorf(codes.Unimplemented, "method DiaryBookList not implemented")
 }
 func (*DiaryService) AddDiaryBook(ctx context.Context, req *content.AddDiaryBookReq) (*request.Id, error) {
-	ctx, span := Tracer.Start(ctx, "Content.AddDiaryBook")
-	defer span.End()
+
 	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
@@ -56,8 +54,7 @@ func (*DiaryService) AddDiaryBook(ctx context.Context, req *content.AddDiaryBook
 	return &request.Id{Id: req.Id}, nil
 }
 func (*DiaryService) EditDiaryBook(ctx context.Context, req *content.AddDiaryBookReq) (*emptypb.Empty, error) {
-	ctx, span := Tracer.Start(ctx, "Content.EditDiaryBook")
-	defer span.End()
+
 	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
@@ -72,8 +69,7 @@ func (*DiaryService) EditDiaryBook(ctx context.Context, req *content.AddDiaryBoo
 	return nil, nil
 }
 func (*DiaryService) Info(ctx context.Context, req *request.Id) (*content.Diary, error) {
-	ctx, span := Tracer.Start(ctx, "Content.Info")
-	defer span.End()
+
 	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
@@ -93,8 +89,7 @@ func (*DiaryService) Info(ctx context.Context, req *request.Id) (*content.Diary,
 	return nil, nil
 }
 func (*DiaryService) Add(ctx context.Context, req *content.AddDiaryReq) (*request.Id, error) {
-	ctx, span := Tracer.Start(ctx, "Content.Add")
-	defer span.End()
+
 	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
@@ -117,8 +112,7 @@ func (*DiaryService) List(context.Context, *content.DiaryListReq) (*content.Diar
 }
 
 func (*DiaryService) Delete(ctx context.Context, req *request.Id) (*emptypb.Empty, error) {
-	ctx, span := Tracer.Start(ctx, "Content.Delete")
-	defer span.End()
+
 	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err

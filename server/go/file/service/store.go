@@ -59,8 +59,7 @@ func (store FileStore) UseIn(composer *handler.StoreComposer) {
 }
 
 func (store FileStore) NewUpload(ctx context.Context, info handler.FileInfo) (handler.Upload, error) {
-	ctx, span := Tracer.Start(ctx, "FileStore.NewUpload")
-	defer span.End()
+
 	authInfo, _ := auth(ctx, false)
 	if info.ID == "" {
 		info.ID = idgen.UniqueID().String()

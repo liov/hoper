@@ -15,8 +15,6 @@ import (
 
 // 关注
 func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*emptypb.Empty, error) {
-	ctx, span := Tracer.Start(ctx, "UserService.Follow")
-	defer span.End()
 
 	auth, err := auth(ctx, true)
 	if err != nil {
@@ -43,8 +41,6 @@ func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*emptypb
 
 // 取消关注
 func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user.BaseListResp, error) {
-	ctx, span := Tracer.Start(ctx, "UserService.DelFollow")
-	defer span.End()
 
 	auth, err := auth(ctx, true)
 	if err != nil {

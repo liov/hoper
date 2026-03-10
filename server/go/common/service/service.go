@@ -23,8 +23,6 @@ func (*CommonService) TagInfo(context.Context, *request.Id) (*common.Tag, error)
 	return nil, status.Errorf(codes.Unimplemented, "method Info not implemented")
 }
 func (*CommonService) AddTag(ctx context.Context, req *common.AddTagReq) (*emptypb.Empty, error) {
-	ctx, span := Trancer.Start(ctx, "CommonService.AddTag")
-	defer span.End()
 
 	user, err := auth(ctx, false)
 	if err != nil {
@@ -40,8 +38,7 @@ func (*CommonService) AddTag(ctx context.Context, req *common.AddTagReq) (*empty
 	return nil, nil
 }
 func (*CommonService) EditTag(ctx context.Context, req *common.EditTagReq) (*emptypb.Empty, error) {
-	ctx, span := Trancer.Start(ctx, "CommonService.EditTag")
-	defer span.End()
+
 	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
@@ -59,8 +56,7 @@ func (*CommonService) EditTag(ctx context.Context, req *common.EditTagReq) (*emp
 	return nil, nil
 }
 func (*CommonService) TagList(ctx context.Context, req *common.TagListReq) (*common.TagListResp, error) {
-	ctx, span := Trancer.Start(ctx, "CommonService.TagList")
-	defer span.End()
+
 	var tags []*common.Tag
 	user, err := auth(ctx, true)
 	if err != nil {

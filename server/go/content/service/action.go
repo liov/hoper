@@ -31,8 +31,7 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 	if req.Action != content.ActionLike && req.Action != content.ActionUnlike && req.Action != content.ActionBrowse {
 		return nil, nil
 	}
-	ctx, span := Tracer.Start(ctx, "Action.Like")
-	defer span.End()
+
 	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
@@ -79,8 +78,6 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 }
 
 func (*ActionService) DelLike(ctx context.Context, req *request.Id) (*emptypb.Empty, error) {
-	ctx, span := Tracer.Start(ctx, "Action.DelLike")
-	defer span.End()
 	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
@@ -113,8 +110,6 @@ func (*ActionService) DelLike(ctx context.Context, req *request.Id) (*emptypb.Em
 }
 
 func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*request.Id, error) {
-	ctx, span := Tracer.Start(ctx, "Action.Comment")
-	defer span.End()
 	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
@@ -154,8 +149,7 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*re
 }
 
 func (*ActionService) DelComment(ctx context.Context, req *request.Id) (*emptypb.Empty, error) {
-	ctx, span := Tracer.Start(ctx, "Action.DelComment")
-	defer span.End()
+
 	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
@@ -201,9 +195,6 @@ func (*ActionService) DelComment(ctx context.Context, req *request.Id) (*emptypb
 
 func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*emptypb.Empty, error) {
 	//metadata := context2.GetMetadata[*user.AuthInfo](ctx)
-	ctx, span := Tracer.Start(ctx, "Action.Collect")
-	defer span.End()
-
 	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
@@ -268,8 +259,7 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*em
 }
 
 func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*emptypb.Empty, error) {
-	ctx, span := Tracer.Start(ctx, "Action.Report")
-	defer span.End()
+
 	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
@@ -306,8 +296,7 @@ func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*empt
 }
 
 func (*ActionService) CommentList(ctx context.Context, req *content.CommentListReq) (*content.CommentListResp, error) {
-	ctx, span := Tracer.Start(ctx, "Action.CommentList")
-	defer span.End()
+
 	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
@@ -394,8 +383,7 @@ func commentMaskField(comment *content.Comment) {
 }
 
 func (*ActionService) GetUserAction(ctx context.Context, req *content.ContentReq) (*content.UserAction, error) {
-	ctx, span := Tracer.Start(ctx, "GetUserAction")
-	defer span.End()
+
 	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
