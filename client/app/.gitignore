@@ -61,8 +61,3 @@ dynLibs
 /web/**/*.png
 **/generated_*
 **/Generated*
-app/linux/flutter/generated_plugin_registrant.cc
-app/linux/flutter/generated_plugins.cmake
-app/macos/Flutter/GeneratedPluginRegistrant.swift
-app/windows/flutter/generated_plugin_registrant.cc
-app/windows/flutter/generated_plugins.cmake

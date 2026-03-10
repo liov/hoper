@@ -181,12 +181,12 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 			noExist = append(noExist, common.Tag{Name: req.Tags[i], UserId: auth.Id})
 		}
 		if len(noExist) == 1 {
-			if err = tx.Create(&noExist[1]).Error; err != nil {
+			if err = tx.Create(&noExist[0]).Error; err != nil {
 				return errcode.DBError.Wrap(err)
 			}
 		}
 		if len(noExist) > 1 {
-			if err = tx.Create(&noExist).Error; err != nil {
+			if err = tx.Create(noExist).Error; err != nil {
 				return errcode.DBError.Wrap(err)
 			}
 		}

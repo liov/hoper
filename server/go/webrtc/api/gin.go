@@ -7,5 +7,5 @@ import (
 
 func GinRegister(app *gin.Engine) {
 	app.GET("/video/*file", service.Video)
-	app.GET("/live/stream", service.Stream)
+	app.GET("/live/stream", service.Play)
 }

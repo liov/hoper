@@ -57,12 +57,12 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		info = fhs[0]
 	}
 
-	_, err = auth(ctx, false)
+	_, err = auth(r.Context(), false)
 	if err != nil {
 		httpx.ServeError(w, r, user.UserErrLogin.Msg(errResp))
 		return
 	}
-	upload, err := save(ctx, info, md5Str)
+	upload, err := save(r.Context(), info, md5Str)
 	if err != nil {
 		httpx.ServeError(w, r, errcode.UploadFail.ErrResp())
 		return

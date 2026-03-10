@@ -133,14 +133,14 @@ func (u *UserService) Signup(ctx context.Context, req *userpb.SignupReq) (*wrapp
 
 	activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
 
-	curTime := time.Now()
+	curTime := time.Now().UnixMilli()
 
 	if err := global.Dao.Redis.SetEX(ctx, activeUser, curTime, modelconst.ActiveDuration).Err(); err != nil {
 		return nil, errcode.RedisErr.Wrap(err)
 	}
 
 	if req.Mail != "" {
-		go sendMail(ctx, userpb.ActionActive, curTime.UnixMilli(), user)
+		go sendMail(ctx, userpb.ActionActive, curTime, user)
 	}
 
 	return &wrappers.StringValue{Value: "注册成功，注意查收邮件"}, nil
@@ -338,7 +338,7 @@ func (u *UserService) Login(ctx context.Context, req *userpb.LoginReq) (*userpb.
 		//encodedEmail := base64.StdEncoding.EncodeToString(stringsx.ToBytes(user.Mail))
 		activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
 
-		curTime := time.Now().Unix()
+		curTime := time.Now().UnixMilli()
 		if err := global.Dao.Redis.SetEX(ctx, activeUser, curTime, modelconst.ActiveDuration).Err(); err != nil {
 			return nil, errcode.RedisErr.Wrap(err)
 		}
