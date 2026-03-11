@@ -6,12 +6,13 @@ import (
 	"github.com/gin-gonic/gin"
 	grpcprom "github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus"
 	"github.com/hopeio/cherry"
+	"github.com/hopeio/gox/log"
 	gatewayx "github.com/hopeio/gox/net/http/grpc/gateway"
 	timex "github.com/hopeio/gox/time"
 	"github.com/hopeio/pick"
 	pickgin "github.com/hopeio/pick/gin"
 	"github.com/hopeio/scaffold/grpc/gateway"
-	"github.com/hopeio/gox/log"
+	"github.com/hopeio/scaffold/otel"
 	commonapi "github.com/liov/hoper/server/go/common/api"
 	contentapi "github.com/liov/hoper/server/go/content/api"
 	uploadapi "github.com/liov/hoper/server/go/file/api"
@@ -20,19 +21,33 @@ import (
 	userapi "github.com/liov/hoper/server/go/user/api"
 	"github.com/liov/hoper/server/go/user/service"
 	"github.com/prometheus/client_golang/prometheus"
+	"go.opentelemetry.io/otel/sdk/resource"
+	semconv "go.opentelemetry.io/otel/semconv/v1.37.0"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
-	"github.com/hopeio/scaffold/otel"
 )
 
 //go:generate protogen.exe go -d -e -w -v -i ../../proto
 func main() {
-	//配置初始化应该在第一位
 	defer global.Global.Cleanup()
 	gatewayx.DefaultMarshal = gateway.JsonMarshal
 	timex.DefaultEncoding = timex.EncodingUnixMilliseconds
 	ctx := context.Background()
-	shutdown, err := otel.SetupOTelSDK(ctx)
+	res, err := resource.New(ctx,
+		resource.WithAttributes(
+			semconv.ServiceName(global.Global.RootConfig.Name),
+		),
+		resource.WithFromEnv(),
+		resource.WithTelemetrySDK(),
+		resource.WithProcess(),
+		resource.WithOS(),
+		resource.WithContainer(),
+		resource.WithHost(),
+	)
+	if err != nil {
+		log.Fatalf("Failed to create resource: %v", err)
+	}
+	shutdown, err := otel.SetupOTelSDK(ctx,res)
 	if err != nil {
 		log.Fatalf("Failed to setup OpenTelemetry: %v", err)
 	}

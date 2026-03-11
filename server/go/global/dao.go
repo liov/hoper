@@ -7,7 +7,7 @@ import (
 	"github.com/hopeio/initialize/dao/redis"
 	"github.com/hopeio/initialize/dao/ristretto"
 	//"github.com/liov/hoper/server/go/protobuf/content"
-	"github.com/liov/hoper/server/go/protobuf/content"
+	//"github.com/liov/hoper/server/go/protobuf/content"
 )
 
 // 原本是个单独模块，但是考虑到数据库必须初始化，所以合进来了
@@ -43,9 +43,9 @@ func (d *dao) AfterInject() {
 		// if err != nil {
 		// 	log.Fatal(err)
 		// }
-		err = d.GORMDB.Migrator().AutoMigrate(&content.Statistics{})
-		if err != nil {
-			log.Fatal(err)
-		}
+		// err = d.GORMDB.Migrator().AutoMigrate(&content.Statistics{})
+		// if err != nil {
+		// 	log.Fatal(err)
+		// }
 	}
 }

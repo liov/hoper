@@ -22,7 +22,7 @@ Future<void> main() async {
 
   // 规范化路径，避免相对路径混乱
   include = [
-    "-I${protoPath}",
+    "-I$protoPath",
     "-I${Directory(cherryPath).absolute.path}"
   ];
 

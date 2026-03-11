@@ -1,4 +1,4 @@
-Module = "hoper"
+Name = "hoper"
 # dev | test | prod
 Env = "dev"
 

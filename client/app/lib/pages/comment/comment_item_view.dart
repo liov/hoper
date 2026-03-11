@@ -53,7 +53,7 @@ class CommentItem extends StatelessWidget {
                   )),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [Text(user.name), Text('${comment.modelTime!.createdAt}')],
+                children: [Text(user.name), Text('${comment.modelTime.createdAt}')],
               ),
             ])),
         Expanded(

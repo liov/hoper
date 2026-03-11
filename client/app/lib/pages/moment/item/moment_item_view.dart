@@ -57,7 +57,7 @@ class MomentItem extends StatelessWidget {
                   )),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [Text(user.name), Text(getDateTime(moment.modelTime!.createdAt.seconds.toInt(),moment.modelTime!.createdAt.nanos.toInt()).toString())],
+                children: [Text(user.name), Text(getDateTime(moment.modelTime.createdAt.seconds.toInt(),moment.modelTime.createdAt.nanos.toInt()).toString())],
               ),
             ])),
         Expanded(

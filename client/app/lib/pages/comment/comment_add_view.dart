@@ -13,8 +13,8 @@ class CommentAdd extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final CommentController controller = Get.find();
-    final TextEditingController _controller = controller.textEditingController;
-    final _focusNode = controller.focusNode;
+    final TextEditingController controller0 = controller.textEditingController;
+    final focusNode = controller.focusNode;
     print('@'.codeUnits);
     var mode = true;
     return
@@ -25,8 +25,8 @@ class CommentAdd extends StatelessWidget {
           Expanded(
               flex: 7,
               child: TextField(
-                controller: _controller,
-                focusNode: _focusNode,
+                controller: controller0,
+                focusNode: focusNode,
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
                 maxLength: 512,
@@ -44,7 +44,7 @@ class CommentAdd extends StatelessWidget {
                       EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                   suffixIcon: IconButton(
                       onPressed: () async {
-                        _focusNode.unfocus();
+                        focusNode.unfocus();
                         showBottomSheet( context: context,
                           builder: (BuildContext context) {
                           return Text('测试');
@@ -78,26 +78,26 @@ class CommentAdd extends StatelessWidget {
 
   Widget button1(){
     final CommentController controller = Get.find();
-    final TextEditingController _controller = controller.textEditingController;
-    final _focusNode = controller.focusNode;
+    final TextEditingController controller0 = controller.textEditingController;
+    final focusNode = controller.focusNode;
     return GetBuilder<CommentController>(
       id:'add',
       builder:(CommentController _){
         return  IconButton(
             onPressed: () async {
-              if(_controller.text.isEmpty){
-                _controller.text = "为了遇见你我珍惜自己我穿越风和雨是"
+              if(controller0.text.isEmpty){
+                controller0.text = "为了遇见你我珍惜自己我穿越风和雨是"
                     "为交出我的心，直到遇见你";
                 return;
               }
 
-              await controller.save(_controller.text);
-              _controller.text = '';
-              _focusNode.unfocus();
+              await controller.save(controller0.text);
+              controller0.text = '';
+              focusNode.unfocus();
               controller.update(['add']);
             },
             color: Colors.blue,
-            icon: _controller.text.isEmpty ?Icon(Icons.add) : Text("发送"),
+            icon: controller0.text.isEmpty ?Icon(Icons.add) : Text("发送"),
             tooltip: '更多');
       },);
   }
