@@ -74,6 +74,7 @@ class GlobalService{
     }
 
     dbfuture() async {
+      sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
       db = await openDatabase(
           $path.join(appDocDir.path,'database', 'hoper.db'),

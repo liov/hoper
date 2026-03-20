@@ -95,6 +95,8 @@ dependencies:
   infinite_scroll_pagination: ^5.0.0
   convex_bottom_bar: ^3.2.0
   logger: ^2.5.0
+  sqflite3: ^3.2.0
+  sqflite_common_ffi: ^2.3.5
   applib:
     path: ../../../hoper/thirdparty/applib
  # flame: ^1.7.1 游戏引擎
@@ -103,7 +105,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  sqflite_common_ffi: ^2.3.5
   pigeon: ^26.1.10
   build_runner: ^2.4.15
   json_serializable: ^6.9.5
