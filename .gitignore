@@ -29,9 +29,7 @@ build
 *.apidoc.md
 *.swagger.json
 *.template.toml
-client/web/index.html
-client/app/web/index.html
-client/app/web/manifest.json
+
 client/app/devtools_options.yaml
 client/app/android/app/src/main/res
 client/app/ios/Runner/Assets.xcassets/LaunchBackground.imageset/Contents.json
