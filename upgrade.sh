@@ -10,6 +10,7 @@ function upgrade(){
   git commit -m "chore: upgrade dependency"
   #git commit --amend --date="$(date -d '-10 hours' '+%Y-%m-%d %H:%M:%S')" --no-edit
   git tag "$new_version"
+  git push origin main --tags
 }
 
 # 获取参数值

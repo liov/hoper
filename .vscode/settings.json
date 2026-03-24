@@ -1,3 +1,8 @@
 {
-	"java.compile.nullAnalysis.mode": "automatic"
+	"java.compile.nullAnalysis.mode": "automatic",
+	"rust-analyzer.linkedProjects": [
+		"awesome/lang/rust/Cargo.toml",
+		"server/rust/rfv/Cargo.toml",
+		"server/rust/message/Cargo.toml"
+	]
 }

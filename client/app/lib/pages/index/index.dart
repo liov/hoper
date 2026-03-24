@@ -16,7 +16,7 @@ class IndexPage extends StatefulWidget {
   const IndexPage({super.key});
 
   @override
-  _IndexPageState createState() => _IndexPageState();
+  State<IndexPage> createState() => _IndexPageState();
 }
 
 class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixin {

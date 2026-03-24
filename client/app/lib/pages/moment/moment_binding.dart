@@ -13,8 +13,8 @@ class MomentBinding extends Bindings {
     Get.lazyPut(() => MomentController());
 
     Get.lazyPut(() => MomentListController());
-    Get.lazyPut(() => MomentClient(globalService.subject));
-    Get.lazyPut(() => ContentClient(globalService.subject));
-    Get.lazyPut(() => ActionClient(globalService.subject));
+    Get.lazyPut(() => MomentGrpcClient(globalService.subject));
+    Get.lazyPut(() => ContentGrpcClient(globalService.subject));
+    Get.lazyPut(() => ActionGrpcClient(globalService.subject));
   }
 }

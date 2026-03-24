@@ -16,7 +16,7 @@ class CommentController extends GetxController with MediaController {
   var times = 0;
   var list = List<Comment>.empty(growable: true);
   late Future<void> future;
-  final ActionClient actionClient = Get.find();
+  final ActionGrpcClient actionClient = Get.find();
 
   void init(ContentType type, $fixnum.Int64 refId) {
     req.type = type;
@@ -61,27 +61,31 @@ class CommentController extends GetxController with MediaController {
 
   Future<void> save(String content) async {
     try {
-      final object = await actionClient.stub.comment(CommentReq(
-        type: type,
-        content: content,
-        refId: refId,
-        replyId: replyId,
-        rootId: rootId,
-        recvId: recvId,
-        image: image,
-      ));
-      list.add(Comment(
-        id: object.id,
-        content: content,
-        type: type,
-        refId: refId,
-        replyId: replyId,
-        rootId: rootId,
-        recvId: recvId,
-        image: image,
-        userId: globalState.authState.userAuth!.id,
-        user: globalState.authState.userBaseInfo,
-      ));
+      final object = await actionClient.stub.comment(
+        CommentReq(
+          type: type,
+          content: content,
+          refId: refId,
+          replyId: replyId,
+          rootId: rootId,
+          recvId: recvId,
+          image: image,
+        ),
+      );
+      list.add(
+        Comment(
+          id: object.id,
+          content: content,
+          type: type,
+          refId: refId,
+          replyId: replyId,
+          rootId: rootId,
+          recvId: recvId,
+          image: image,
+          userId: globalState.authState.userAuth!.id,
+          user: globalState.authState.userBaseInfo,
+        ),
+      );
       update(["list"]);
     } catch (e) {
       print(e);

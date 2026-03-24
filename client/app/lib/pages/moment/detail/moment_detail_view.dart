@@ -11,13 +11,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:app/generated/protobuf/content/moment.model.pb.dart' as $pb;
 import 'package:fixnum/fixnum.dart';
-import 'package:app/generated/protobuf/hopeio/request/param.pb.dart' as
-$1;
+import 'package:app/generated/protobuf/hopeio/request/param.pb.dart' as $1;
 
 class MomentDetailView extends StatelessWidget {
   final CommentController commentController = Get.find();
 
-  MomentDetailView({super.key}){
+  MomentDetailView({super.key}) {
     if (Get.arguments != null) {
       moment = Get.arguments;
       commentController.refId = moment.id;
@@ -36,16 +35,16 @@ class MomentDetailView extends StatelessWidget {
     Get.toNamed(Routes.NOTFOUND);
   }
 
-  MomentDetailView.detail(this.moment, {super.key}){
+  MomentDetailView.detail(this.moment, {super.key}) {
     id = moment.id;
     future = Future.value(moment);
   }
 
-  MomentDetailView.byId(this.id, {super.key}){
+  MomentDetailView.byId(this.id, {super.key}) {
     future = getMoment();
   }
 
-  final MomentClient momentClient = Get.find();
+  final MomentGrpcClient momentClient = Get.find();
   late final $pb.Moment moment;
   late final Int64 id;
   late final Future<$pb.Moment> future;
@@ -59,29 +58,30 @@ class MomentDetailView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<$pb.Moment>(
-        future: future,
-        builder: (BuildContext context, AsyncSnapshot<$pb.Moment> snapshot) {
-          final noReady = snapshot.handle();
-          if (noReady != null) return Scaffold(body: noReady);
-          final moment = snapshot.data!;
-          return SafeArea(
-            child: Scaffold(
-              appBar: AppBar(
-                centerTitle: true,
-                title: const Text('瞬间'),
+      future: future,
+      builder: (BuildContext context, AsyncSnapshot<$pb.Moment> snapshot) {
+        final noReady = snapshot.handle();
+        if (noReady != null) return Scaffold(body: noReady);
+        final moment = snapshot.data!;
+        return SafeArea(
+          child: Scaffold(
+            appBar: AppBar(centerTitle: true, title: const Text('瞬间')),
+            body: Center(
+              child: Column(
+                children: [
+                  MomentItem(moment: moment),
+                  Expanded(
+                    flex: 10,
+                    child: CommentListViewV2(moment.statistics),
+                  ),
+                  const Expanded(flex: 1, child: Text('')),
+                ],
               ),
-              body: Center(
-                child: Column(
-                  children: [
-                    MomentItem(moment: moment),
-                    Expanded(flex: 10, child: CommentListViewV2(moment.statistics)),
-                    const Expanded(flex: 1, child: Text('')),
-                  ],
-                ),
-              ),
-              bottomSheet: CommentAdd(),
             ),
-          );
-        });
+            bottomSheet: CommentAdd(),
+          ),
+        );
+      },
+    );
   }
 }

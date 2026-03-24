@@ -1,4 +1,3 @@
-
 import 'package:applib/util/observer.dart';
 import 'package:app/rpc/upload.dart';
 import 'package:app/rpc/user.dart';
@@ -16,19 +15,24 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 final globalService = GlobalService.instance;
 
-class GlobalService{
+class GlobalService {
   GlobalService._();
 
   static GlobalService? _instance;
 
   static GlobalService get instance => _instance ??= GlobalService._();
 
-  final logger = Logger(printer: HybridPrinter(PrettyPrinter(), debug: SimplePrinter()),level:Level.verbose);
+  final logger = Logger(
+    printer: HybridPrinter(PrettyPrinter(), debug: SimplePrinter()),
+    level: Level.verbose,
+  );
 
-  Subject<CallOptions> subject = Subject(CallOptions(timeout: const Duration(seconds: 5)));
-  set callOptions(CallOptions callOptions)=> subject.setState(callOptions);
+  Subject<CallOptions> subject = Subject(
+    CallOptions(timeout: const Duration(seconds: 5)),
+  );
+  set callOptions(CallOptions callOptions) => subject.setState(callOptions);
 
-  late final UserClient userClient = Get.put(UserClient(subject));
+  late final UserGrpcClient userClient = Get.put(UserGrpcClient(subject));
   late final UploadClient uploadClient = Get.put(UploadClient(subject));
 
   late final Box box;
@@ -36,10 +40,7 @@ class GlobalService{
   late final SharedPreferences shared;
   final cache = DefaultCacheManager();
 
-
-
   Future<void> init() async {
-
     final appDocDir = await getApplicationDocumentsDirectory();
     logger.d(appDocDir.path);
     final appSupportDir = await getApplicationSupportDirectory();
@@ -48,23 +49,23 @@ class GlobalService{
     $dio.httpClient.interceptors.add(
       InterceptorsWrapper(
         onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
-// Do something before request is sent.
-// If you want to resolve the request with custom data,
-// you can resolve a `Response` using `handler.resolve(response)`.
-// If you want to reject the request with a error message,
-// you can reject with a `DioException` using `handler.reject(dioError)`.
+          // Do something before request is sent.
+          // If you want to resolve the request with custom data,
+          // you can resolve a `Response` using `handler.resolve(response)`.
+          // If you want to reject the request with a error message,
+          // you can reject with a `DioException` using `handler.reject(dioError)`.
           return handler.next(options);
         },
         onResponse: (Response response, ResponseInterceptorHandler handler) {
-// Do something with response data.
-// If you want to reject the request with a error message,
-// you can reject a `DioException` object using `handler.reject(dioError)`.
+          // Do something with response data.
+          // If you want to reject the request with a error message,
+          // you can reject a `DioException` object using `handler.reject(dioError)`.
           return handler.next(response);
         },
         onError: (DioException error, ErrorInterceptorHandler handler) {
-// Do something with response error.
-// If you want to resolve the request with some custom data,
-// you can resolve a `Response` object using `handler.resolve(response)`.
+          // Do something with response error.
+          // If you want to resolve the request with some custom data,
+          // you can resolve a `Response` object using `handler.resolve(response)`.
           return handler.next(error);
         },
       ),
@@ -77,11 +78,11 @@ class GlobalService{
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
       db = await openDatabase(
-          $path.join(appDocDir.path,'database', 'hoper.db'),
-          version: 1, onCreate: (Database db, int version) async {
-
-        // When creating the db, create the table
-            await db.execute('''
+        $path.join(appDocDir.path, 'database', 'hoper.db'),
+        version: 1,
+        onCreate: (Database db, int version) async {
+          // When creating the db, create the table
+          await db.execute('''
               create table if not exists hoper (
                 id integer primary key autoincrement,
                 name text,
@@ -91,10 +92,10 @@ class GlobalService{
                 updated_at text
               )
             ''');
-
-      });
-
+        },
+      );
     }
+
     await Future.wait([boxfuture(), dbfuture()]);
     shared = await SharedPreferences.getInstance();
   }

@@ -32,6 +32,7 @@ dependencies:
   async: ^2.13.0
   http: ^1.6.0
   dio: ^5.9.2
+  retrofit: ^4.9.2
   webview_flutter: ^4.13.1
   #webview_flutter_web: ^0.2.2+4
   ffi: ^2.2.0
@@ -81,7 +82,7 @@ dependencies:
   animate_do: ^4.2.0
   getwidget: ^7.0.0
   fluttertoast: ^9.0.0
-  vector_math: ^2.2.0
+  vector_math: ^2.3.0
   shelf_proxy: ^1.0.4
   feedback: ^3.0.1
   flex_color_scheme: ^8.2.0
@@ -95,7 +96,7 @@ dependencies:
   infinite_scroll_pagination: ^5.0.0
   convex_bottom_bar: ^3.2.0
   logger: ^2.5.0
-  sqflite3: ^3.2.0
+  sqlite3: ^3.2.0
   sqflite_common_ffi: ^2.3.5
   applib:
     path: ../../../hoper/thirdparty/applib
@@ -114,9 +115,10 @@ dev_dependencies:
   flutter_launcher_icons: ^0.14.4
   freezed: ^3.0.6
   flutter_lints: ^6.0.0
+  retrofit_generator: ^10.2.3
 
 dependency_overrides: {
-  vector_math: ^2.2.0
+  vector_math: ^2.3.0
 }
 
 # For information on the generic Dart part of this file, see the

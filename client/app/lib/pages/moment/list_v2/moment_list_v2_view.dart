@@ -10,8 +10,6 @@ import 'package:get/get.dart';
 
 import 'package:app/generated/protobuf/content/moment.model.pb.dart' as $moment;
 
-
-
 class MomentListV2View extends StatefulWidget {
   const MomentListV2View({super.key, this.tag = "moment"});
 
@@ -20,11 +18,11 @@ class MomentListV2View extends StatefulWidget {
   _MomentListV2ViewState createState() => _MomentListV2ViewState();
 }
 
-class _MomentListV2ViewState extends State<MomentListV2View> with AutomaticKeepAliveClientMixin {
+class _MomentListV2ViewState extends State<MomentListV2View>
+    with AutomaticKeepAliveClientMixin {
+  final MomentGrpcClient momentClient = Get.find();
 
-  final MomentClient momentClient = Get.find();
-
-  late final req = MomentListReq(pageNo:1,pageSize:10);
+  late final req = MomentListReq(pageNo: 1, pageSize: 10);
   var times = 0;
   var list = List<$moment.Moment>.empty(growable: true);
 
@@ -34,8 +32,7 @@ class _MomentListV2ViewState extends State<MomentListV2View> with AutomaticKeepA
       if (_controller.position.atEdge) {
         grpcGetList();
       }
-    }
-    );
+    });
 
   Future<void> resetList() {
     times = 0;
@@ -66,38 +63,55 @@ class _MomentListV2ViewState extends State<MomentListV2View> with AutomaticKeepA
     _future = grpcGetList();
   }
 
-
   @override
-    Widget build(BuildContext context) {
-      super.build(context);
-      globalService.logger.d("${toStringShort()}重绘");
-      return FutureBuilder<void>(
-          future: _future,
-          builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-            return snapshot.handle() ??  RefreshIndicator(
-                        onRefresh: () {
-                          return resetList();
+  Widget build(BuildContext context) {
+    super.build(context);
+    globalService.logger.d("${toStringShort()}重绘");
+    return FutureBuilder<void>(
+      future: _future,
+      builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+        return snapshot.handle() ??
+            RefreshIndicator(
+              onRefresh: () {
+                return resetList();
+              },
+              child: list.isEmpty
+                  ? Center(
+                      child: IconButton(
+                        icon: Icon(Icons.refresh),
+                        onPressed: () {
+                          setState(() {
+                            _future = grpcGetList();
+                          });
                         },
-                        child: list.isEmpty? Center(child:IconButton(icon: Icon(Icons.refresh), onPressed: () { setState(() {
-                          _future = grpcGetList();
-                        }); },)) : ListView.separated(
-                            physics: BouncingScrollPhysics(),
-                            controller: _controller,
-                            itemCount: list.length,
-                            separatorBuilder: (BuildContext context, int index) {
-                              return Divider();
-                            },
-                            itemBuilder: (context, index) {
-                              return InkWell(
-                                onTap: (){
-                                  Get.toNamed(Routes.contentDetails(list[index].statistics.type, list[index].statistics.refId),arguments: list[index]);
-                                },
-                                child: MomentItem(
-                                    moment: list[index]),
-                              );
-                            }));
-            });
-    }
+                      ),
+                    )
+                  : ListView.separated(
+                      physics: BouncingScrollPhysics(),
+                      controller: _controller,
+                      itemCount: list.length,
+                      separatorBuilder: (BuildContext context, int index) {
+                        return Divider();
+                      },
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                          onTap: () {
+                            Get.toNamed(
+                              Routes.contentDetails(
+                                list[index].statistics.type,
+                                list[index].statistics.refId,
+                              ),
+                              arguments: list[index],
+                            );
+                          },
+                          child: MomentItem(moment: list[index]),
+                        );
+                      },
+                    ),
+            );
+      },
+    );
+  }
 
   @override
   void dispose() {
