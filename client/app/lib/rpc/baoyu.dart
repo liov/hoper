@@ -1,6 +1,6 @@
 
 import 'package:app/model/response.dart';
-import 'package:app/global/dio.dart';
+import 'package:app/rpc/http.dart';
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 

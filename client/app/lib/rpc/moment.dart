@@ -1,13 +1,12 @@
 import 'package:app/generated/protobuf/content/moment.service.pbgrpc.dart';
-import 'package:app/model/moment/moment.service.dart';
+import 'package:app/model/moment.dart';
 
-import 'package:dio/dio.dart' hide Headers;
+import 'package:dio/dio.dart';
 import 'package:grpc/grpc.dart';
 import 'package:app/rpc/grpc.dart';
 import 'package:applib/util/observer.dart';
-import 'package:retrofit/retrofit.dart';
+import 'package:app/rpc/http.dart';
 
-part 'moment.g.dart';
 
 class MomentGrpcClient extends Observer<CallOptions> {
   late MomentServiceClient stub;
@@ -28,20 +27,14 @@ class MomentGrpcClient extends Observer<CallOptions> {
 }
 
 
-@RestApi(baseUrl: 'http://api.hoper.xyz/api')
-abstract class MomentClient {
-  factory MomentClient(
-    Dio dio, {
-    String? baseUrl,
-    ParseErrorLogger? errorLogger,
-  }) = _MomentClient;
+class MomentClient {
 
-
-  @GET('/moment')
-  Future<MomentListResponse$?> getMomentList({@Queries() MomentListReq message});
-
-  @GET('/moment')
-  @Headers(<String, String>{'accept': 'application/x-protobuf'})
-  @DioResponseType(ResponseType.bytes)
-  Future<MomentListResp> getMomentListPB(@Body() MomentListReq message);
+  Future<MomentListResp> getMomentList(MomentListReq message) async {
+    final response = await httpClient.get('/moment', queryParameters: message.writeToJsonMap());
+    return MomentListResp.fromJson(response.data);
+  }
+    Future<MomentListResp> getMomentListPB(MomentListReq message) async {
+    final response = await httpProtobufClient.get('/moment', queryParameters: message.writeToJsonMap());
+    return MomentListResp.fromJson(response.data);
+  }
 }

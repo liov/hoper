@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:app/global/service.dart';
-import 'package:app/model/weibo/weibo.dart';
+import 'package:app/model/weibo.dart';
 import 'package:dio/dio.dart' as $dio;
 import 'package:get/get.dart';
 import 'package:json_annotation/json_annotation.dart';

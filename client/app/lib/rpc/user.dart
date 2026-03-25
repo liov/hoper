@@ -1,15 +1,14 @@
 import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/generated/protobuf/user/user.service.pbgrpc.dart';
 
-import 'package:app/global/dio.dart';
+import 'package:app/rpc/http.dart';
 import 'package:dio/dio.dart' hide Headers;
 import 'package:grpc/grpc.dart';
 import 'package:app/model/response.dart';
 import 'package:app/rpc/grpc.dart';
 import 'package:applib/util/observer.dart';
-import 'package:retrofit/retrofit.dart';
+import 'package:app/rpc/http.dart';
 
-part 'user.g.dart';
 
 class UserGrpcClient extends Observer<CallOptions> {
   late UserServiceClient stub;
@@ -30,19 +29,17 @@ class UserGrpcClient extends Observer<CallOptions> {
 
 }
 
-@RestApi(baseUrl: 'http://api.hoper.xyz/api', headers: {'User-Agent': 'app/1.0.0', r'Content-Type': 'application/x-protobuf'})
-abstract class UserClient {
-  factory UserClient(
-    Dio dio, {
-    String? baseUrl,
-    ParseErrorLogger? errorLogger,
-  }) = _UserClient;
 
-  @POST('/v1/login')
-  @Headers(<String, String>{r'accept': 'application/json', r'Content-Type': 'application/json'})
-  @DioResponseType(ResponseType.json)
-  Future<User> login(@Body() LoginReq request);
+class UserClient {
 
-  @POST('/v1/login')
-  Future<User> loginPB(@Body() LoginReq request);
+  Future<User> login(LoginReq request) async {
+    final response = await httpClient.post('/login', data: request.writeToJsonMap());
+    return User.fromJson(response.data);
+  }
+
+
+  Future<User> loginPB(LoginReq request) async {
+    final response = await httpProtobufClient.post('/login', data: request.writeToBuffer());
+    return User.fromBuffer(response.data);
+  }
 }

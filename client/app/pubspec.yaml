@@ -32,7 +32,6 @@ dependencies:
   async: ^2.13.0
   http: ^1.6.0
   dio: ^5.9.2
-  retrofit: ^4.9.2
   webview_flutter: ^4.13.1
   #webview_flutter_web: ^0.2.2+4
   ffi: ^2.2.0
@@ -100,6 +99,7 @@ dependencies:
   sqflite_common_ffi: ^2.3.5
   applib:
     path: ../../../hoper/thirdparty/applib
+  path: ^1.9.1
  # flame: ^1.7.1 游戏引擎
 # provider: ^5.0.0
 
@@ -115,7 +115,6 @@ dev_dependencies:
   flutter_launcher_icons: ^0.14.4
   freezed: ^3.0.6
   flutter_lints: ^6.0.0
-  retrofit_generator: ^10.2.3
 
 dependency_overrides: {
   vector_math: ^2.3.0

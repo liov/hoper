@@ -2,7 +2,7 @@
 import 'package:app/global/service.dart';
 import 'package:app/model/response.dart';
 import 'package:dio/dio.dart';
-import '../model/weibo/weibo.dart';
+import '../model/weibo.dart';
 
 const prefix = "https://weibo.com/ajax/statuses";
 

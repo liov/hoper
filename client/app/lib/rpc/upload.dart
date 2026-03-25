@@ -3,7 +3,7 @@ import 'package:crypto/crypto.dart';
 
 import 'package:app/model/upload.dart';
 import 'package:app/model/response.dart';
-import 'package:app/global/dio.dart';
+import 'package:app/rpc/http.dart';
 import 'package:dio/dio.dart';
 
 import 'package:grpc/src/client/call.dart';

@@ -1,3 +1,4 @@
+import 'package:app/model/user.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'package:app/model/content.dart';
@@ -26,4 +27,18 @@ class Moment$ {
   factory Moment$.fromJson(Map<String, dynamic> json) => _$Moment$FromJson(json);
 
   Map<String, dynamic> toJson() => _$Moment$ToJson(this);
+}
+
+@JsonSerializable()
+class MomentListResponse$ {
+  MomentListResponse$();
+
+  late List<User> users;
+  late List<Moment$> list;
+  late int total;
+
+  factory MomentListResponse$.fromJson(Map<String, dynamic> json) =>
+      _$MomentListResponse$FromJson(json);
+
+  Map<String, dynamic> toJson() => _$MomentListResponse$ToJson(this);
 }
