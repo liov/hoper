@@ -23,7 +23,7 @@ class MomentListView extends StatelessWidget  {
     );
   @override
   Widget build(BuildContext context) {
-    globalService.logger.d('MomentListView重绘');
+    globalService.logger.fine('MomentListView重绘');
     print(_controller);
     return FutureBuilder<void>(
         future: future,

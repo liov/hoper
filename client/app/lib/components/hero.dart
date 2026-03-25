@@ -22,7 +22,7 @@ class HeroImage extends StatelessWidget{
       tag: tag,
       createRectTween: (Rect? begin, Rect? end) {
          rectTween = RectTween(begin: begin, end: end);
-        globalService.logger.d(rectTween);
+        globalService.logger.fine(rectTween);
         return rectTween;
       },
       // make hero better when slide out

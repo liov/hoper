@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-import '../../global/service.dart';
-import '../image/slide_image.dart';
+import 'package:app/global/service.dart';
+import 'package:app/pages/image/slide_image.dart';
 import 'controller.dart';
 
 class ImageView extends StatelessWidget {
@@ -19,7 +19,7 @@ class ImageView extends StatelessWidget {
       ScrollController()..addListener(() {
         if (_controller.position.pixels >=
             _controller.position.maxScrollExtent) {
-          globalService.logger.d('这里执行了吗');
+          globalService.logger.fine('这里执行了吗');
           controller.getList();
         }
       });
@@ -27,12 +27,13 @@ class ImageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    globalService.logger.d('ImageView重绘');
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
+    globalService.logger.fine('ImageView重绘');
+    final size = MediaQuery.sizeOf(context);
+    final width = size.width;
+    final height = size.height;
     final columns = (width / controller.picWidth).floor();
     final rows = (height / controller.picHeight).floor();
-    globalService.logger.d('$columns $rows');
+    globalService.logger.fine('$columns $rows');
 
     return PopScope(
         canPop:false,
@@ -45,7 +46,7 @@ class ImageView extends StatelessWidget {
           // Android：尝试让 App 进入后台
           SystemNavigator.pop(); // 进入后台
         } else {}
-        globalService.logger.d(result);
+        globalService.logger.fine(result);
       },
       child: Scaffold(
         appBar: AppBar(
@@ -65,7 +66,7 @@ class ImageView extends StatelessWidget {
               onPressed: () {
                 final idStr =
                     _searchController.text.split('/').last.split('#').first;
-                globalService.logger.d(idStr);
+                globalService.logger.fine(idStr);
                 controller.newList(int.parse(_searchController.text));
               },
             ),
@@ -88,7 +89,7 @@ class ImageView extends StatelessWidget {
   Widget refreshIndicator(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () {
-        globalService.logger.d('这里执行了吗2');
+        globalService.logger.fine('这里执行了吗2');
         return controller.getList();
       },
       child: ScrollConfiguration(

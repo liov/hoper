@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:app/utils/http_static/static_handler.dart';
+import 'package:app/util/http_static/static_handler.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 

@@ -24,7 +24,7 @@ class _MomentState extends State<MomentView> with AutomaticKeepAliveClientMixin 
 
   @override
   Widget build(BuildContext context) {
-    globalService.logger.d("MomentView重绘");
+    globalService.logger.fine("MomentView重绘");
     super.build(context);
     return Scaffold(
       appBar: AppBar(
@@ -50,7 +50,7 @@ class _MomentState extends State<MomentView> with AutomaticKeepAliveClientMixin 
         //physics:PageViewTabClampingScrollPhysics(controller:controller.homeController.to),
         controller: controller.tabController,
         children: controller.tabValues.map((f) {
-          globalService.logger.d(f);
+          globalService.logger.fine(f);
           if (f == "推荐") return Text('TODO');
           if (f == "刚刚") return MomentListV2View(tag:'newest');
           if (f == "关注") return Text('TODO');

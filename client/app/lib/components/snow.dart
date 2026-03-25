@@ -58,7 +58,7 @@ class _SnowWidgetState extends State<SnowWidget> with SingleTickerProviderStateM
   }
 
   void update() {
-    globalService.logger.d("update ${widget.isRunning}");
+    globalService.logger.fine("update ${widget.isRunning}");
     angle += 0.01;
     if (widget.totalSnow != _snows.length) {
       _createSnow();

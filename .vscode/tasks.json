@@ -17,6 +17,15 @@
 				"-i",
 				"../../proto"
 			],
+		},
+		{
+			"label": "app release",
+			"type": "process",
+			"options": {
+				"cwd": "${workspaceFolder}/client/app"
+			},
+			"command": "flutter",
+			"args": ["build", "apk", "--release"],
 		}
 	]
 }

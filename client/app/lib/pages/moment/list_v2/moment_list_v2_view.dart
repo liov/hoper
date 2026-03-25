@@ -43,7 +43,7 @@ class _MomentListV2ViewState extends State<MomentListV2View>
   }
 
   Future<void> grpcGetList() async {
-    globalService.logger.d(req.toString());
+    globalService.logger.fine(req.toString());
     var response = await momentClient.stub.list(req);
     if (response.list.isEmpty) return;
     // If the widget was removed from the tree while the message was in flight,
@@ -66,7 +66,7 @@ class _MomentListV2ViewState extends State<MomentListV2View>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    globalService.logger.d("${toStringShort()}重绘");
+    globalService.logger.fine("${toStringShort()}重绘");
     return FutureBuilder<void>(
       future: _future,
       builder: (BuildContext context, AsyncSnapshot<void> snapshot) {

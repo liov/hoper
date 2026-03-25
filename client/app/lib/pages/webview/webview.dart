@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:app/global/state.dart';
-import 'package:app/utils/httpserver.dart';
+import 'package:app/util/httpserver.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -71,13 +71,13 @@ class _WebViewExampleState extends State<WebViewExample> {
         NavigationDelegate(
           onProgress: (int progress) {
             globalService.logger
-                .d("WebView is loading (progress : $progress%)");
+                .fine("WebView is loading (progress : $progress%)");
           },
           onPageStarted: (String url) {
-            globalService.logger.d('Page started loading: $url');
+            globalService.logger.fine('Page started loading: $url');
           },
           onPageFinished: (String url) {
-            globalService.logger.d('Page finished loading: $url');
+            globalService.logger.fine('Page finished loading: $url');
           },
           onWebResourceError: (WebResourceError error) {
             debugPrint('''
@@ -90,10 +90,10 @@ Page resource error:
           },
           onNavigationRequest: (NavigationRequest request) {
             if (request.url.startsWith('https://hoper.xyz')) {
-              globalService.logger.d('blocking navigation to $request}');
+              globalService.logger.fine('blocking navigation to $request}');
               return NavigationDecision.prevent;
             }
-            globalService.logger.d('allowing navigation to $request');
+            globalService.logger.fine('allowing navigation to $request');
             return NavigationDecision.navigate;
           },
           onUrlChange: (UrlChange change) {

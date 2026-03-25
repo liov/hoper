@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:app/components/hero.dart';
+import 'package:app/util/image_file.dart';
 import 'package:applib/util/route.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
@@ -26,10 +25,9 @@ class SlideImageView extends StatelessWidget {
             tag: url,
             slideType: SlideType.onlyImage,
             slidePageKey: _slidePageKey,
-            child:
-                url.startsWith("http")
+            child: url.startsWith("http")
                     ? ExtendedImage.network(url, enableSlideOutPage: true)
-                    : ExtendedImage.file(File(url), enableSlideOutPage: true),
+                    : extendedImageFile(url, enableSlideOutPage: true),
           ),
         ),
         onTap: () {

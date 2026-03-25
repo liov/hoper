@@ -14,7 +14,7 @@ class SplashController extends GetxController {
   Duration time = Duration(seconds:3);
   set duration(Duration duration){
     countdown = (duration.inMilliseconds/1000).round();
-    globalService.logger.d(countdown);
+    globalService.logger.fine(countdown);
     update();
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       countdown--;
@@ -30,7 +30,7 @@ class SplashController extends GetxController {
     if(pausedTime ==null) return;
     final current = DateTime.now();
     if (current.difference(pausedTime!)  < const Duration(minutes:10)) return;
-    globalService.logger.d('advertising');
+    globalService.logger.fine('advertising');
     Get.showOverlay(loadingWidget:splash, asyncFunction: () {
       adCompleter = Completer();
       duration = time;

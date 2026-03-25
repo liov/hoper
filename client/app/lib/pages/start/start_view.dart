@@ -19,7 +19,7 @@ class StartView extends StatelessWidget {
       Get.offNamed(Routes.HOME);
     });
     globalState.rebuildTimes++;
-    globalService.logger.d("StartView重绘${globalState.rebuildTimes}次");
+    globalService.logger.fine("StartView重绘${globalState.rebuildTimes}次");
 
     return splash;
   }

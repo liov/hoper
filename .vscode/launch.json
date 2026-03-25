@@ -6,35 +6,72 @@
 	"configurations": [
 		{
 			"name": "app",
-			"cwd": "client\\app",
+			"cwd": "${workspaceFolder}/client/app",
 			"request": "launch",
-			"type": "dart"
+			"type": "dart",
+			"program": "lib/main.dart",
 		},
 		{
 			"name": "app (profile mode)",
-			"cwd": "client\\app",
+			"cwd": "${workspaceFolder}/client/app",
 			"request": "launch",
 			"type": "dart",
+			"program": "lib/main.dart",
 			"flutterMode": "profile"
 		},
 		{
 			"name": "app (release mode)",
-			"cwd": "client\\app",
+			"cwd": "${workspaceFolder}/client/app",
 			"request": "launch",
 			"type": "dart",
+			"program": "lib/main.dart",
 			"flutterMode": "release"
 		},
 		{
-			"name": "hoper",
+			"name": "hoper (go)",
 			"cwd": "${workspaceFolder}/server/go",
 			"request": "launch",
+			"preLaunchTask": "hoper protogen",
 			"type": "go",
 			"program": "${workspaceFolder}/server/go/main.go",
+			"args": ["-c", "config/config.toml"],
 			"env": {
 				"OTEL_EXPORTER_OTLP_METRICS_ENDPOINT": "http://8.222.139.120:8428/opentelemetry/v1/metrics",
 				"OTEL_EXPORTER_OTLP_LOGS_ENDPOINT": "http://8.222.139.120:9428/insert/opentelemetry/v1/logs",
 				"OTEL_EXPORTER_OTLP_TRACES_ENDPOINT": "http://8.222.139.120:10428/insert/opentelemetry/v1/traces"
 			}
+		},
+		{
+			"name": "rfv (rust)",
+			"cwd": "${workspaceFolder}/server/rust/rfv",
+			"request": "launch",
+			"type": "lldb",
+			"cargo": { "args": ["build", "--bin", "rfv"] }
+		},
+		{
+			"name": "message (rust)",
+			"cwd": "${workspaceFolder}/server/rust/message",
+			"request": "launch",
+			"type": "lldb",
+			"cargo": { "args": ["build", "--bin", "message"] }
+		},
+		{
+			"name": "web",
+			"cwd": "${workspaceFolder}/client/web",
+			"request": "launch",
+			"type": "chrome",
+			"url": "http://localhost:8080",
+			"webRoot": "${workspaceFolder}/client/web/src",
+			"preLaunchTask": "pnpm run h5:dev"
+		},
+		{
+			"name": "uniapp",
+			"cwd": "${workspaceFolder}/client/uniapp",
+			"request": "launch",
+			"type": "chrome",
+			"url": "http://localhost:8080",
+			"webRoot": "${workspaceFolder}/client/uniapp/src",
+			"preLaunchTask": "pnpm run dev"
 		}
 	]
 }

@@ -1,6 +1,4 @@
-import 'dart:io';
-
-
+import 'package:app/util/image_file.dart';
 import 'package:app/global/service.dart';
 import 'package:app/pages/image/slide_image.dart';
 import 'package:app/components/media/media.dart';
@@ -20,7 +18,7 @@ class MomentAddView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    globalService.logger.d('@'.codeUnits);
+    globalService.logger.fine('@'.codeUnits);
     return Scaffold(
         appBar: AppBar(
             actions: [
@@ -62,12 +60,7 @@ class MomentAddView extends StatelessWidget {
                   itemCount:images.length,
                   itemBuilder: (BuildContext context, int index) {
                     return  GestureDetector(
-                      child:ExtendedImage.file(
-                        File(images[index].path),
-                        alignment: Alignment.centerLeft,
-                        fit: BoxFit.fill,
-                        //cancelToken: cancellationToken,
-                      ),
+                      child: extendedImageFile(images[index].path, alignment: Alignment.centerLeft, fit: BoxFit.fill),
                       onTap:()=>slideImageRoute(images[index].path),
                     );});
             },),

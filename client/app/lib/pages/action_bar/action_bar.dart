@@ -57,7 +57,7 @@ class ActionBarState extends State<ActionBar> {
                   widget.content.type,
                   widget.content.refId,
                 );
-                globalService.logger.d(Get.currentRoute);
+                globalService.logger.fine(Get.currentRoute);
                 if (route != Get.currentRoute) {
                   Get.toNamed(route);
                 }
@@ -66,7 +66,7 @@ class ActionBarState extends State<ActionBar> {
                 children: [
                   const Expanded(
                     flex: 1,
-                    child: FaIcon(FontAwesomeIcons.commentAlt, size: size),
+                    child: FaIcon(FontAwesomeIcons.message, size: size),
                   ),
                   Expanded(
                     flex: 1,

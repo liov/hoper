@@ -25,9 +25,8 @@ class WeiboController extends GetxController{
   }
 
   Future<void> getList() async {
-    globalService.logger.d('getList');
+    globalService.logger.fine('getList');
     if(isEnd) return;
-    try{
     final response = await weiboClient.getOriginalList(uid: userId, page: page, feature: feature, sinceId: sinceId);
     if (response == null) {
       isEnd = true;
@@ -46,14 +45,11 @@ class WeiboController extends GetxController{
         ));
       }
     }
-    globalService.logger.d('${response.list.length} ${list.length}');
-    globalService.logger.d(list);
+    globalService.logger.fine('${response.list.length} ${list.length}');
+    globalService.logger.fine(list);
     page++;
     update();
-    }catch(e, stackTrace){
-      globalService.logger.e(e);
-      print(stackTrace.toString());
-    }
+
   }
 
 

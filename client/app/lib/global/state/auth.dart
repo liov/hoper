@@ -7,7 +7,7 @@ import 'package:app/generated/protobuf/hopeio/request/param.pb.dart'
 as request;
 import 'package:app/global/state.dart';
 import 'package:app/global/const.dart';
-import 'package:app/utils/dialog.dart';
+import 'package:app/util/dialog.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:grpc/grpc.dart';

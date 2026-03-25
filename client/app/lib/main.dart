@@ -13,17 +13,17 @@ import 'package:app/global/state/app.dart';
 
 
 Future<void> main() async {
-  runZonedGuarded(() {
+  runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
     ErrorWidget.builder = (FlutterErrorDetails flutterErrorDetails) {
-      globalService.logger.d(flutterErrorDetails.toString());
+      globalService.logger.fine(flutterErrorDetails.toString());
       return const Center(
         child: Text("找不到页面"),
       );
     };
-    globalService.logger.d('runZonedGuarded');
+    globalService.logger.fine('runZonedGuarded');
     assert(AppState.isDebug = true);
-    globalService.logger.d("${AppState.isDebug}");
+    globalService.logger.fine("${AppState.isDebug}");
     runApp( GetMaterialApp(
       title: 'hoper',
       themeMode: globalState.isDarkMode.value ? ThemeMode.dark : ThemeMode
@@ -31,7 +31,7 @@ Future<void> main() async {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       builder: (context, child) {
-        globalService.logger.d('GetMaterialApp');
+        globalService.logger.fine('GetMaterialApp');
         return  Listener(
           onPointerDown: (_) {
               FocusScopeNode focusScopeNode = FocusScope.of(context);
@@ -66,6 +66,6 @@ Future<void> main() async {
       ],
     ));
   }, (dynamic error, StackTrace stack) {
-    globalService.logger.e("Something went wrong!", error: error,  stackTrace: stack);
+    globalService.logger.severe("Something went wrong!", error, stack);
   });
 }

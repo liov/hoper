@@ -40,7 +40,7 @@ class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixi
 
   @override
   Widget build(BuildContext context) {
-    globalService.logger.d("IndexPage重绘");
+    globalService.logger.fine("IndexPage重绘");
     super.build(context);
     final theme = Theme.of(context);
     return Scaffold(

@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:grpc/grpc.dart';
 
-import 'package:app/utils/dialog.dart';
+import 'package:app/util/dialog.dart';
 
 class CommentController extends GetxController with MediaController {
   final req = CommentListReq(pageNo: 1, pageSize: 10);
@@ -25,7 +25,7 @@ class CommentController extends GetxController with MediaController {
   }
 
   Future<void> grpcGetList() async {
-    globalService.logger.d(req.toString());
+    globalService.logger.fine(req.toString());
     try {
       var response = await actionClient.stub.commentList(req);
       if (response.list.isEmpty) return;

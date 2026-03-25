@@ -44,7 +44,7 @@ class App extends StatelessWidget with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    globalService.logger.d("--$state");
+    globalService.logger.fine("--$state");
     switch (state) {
       case AppLifecycleState.inactive: // 处于这种状态的应用程序应该假设它们可能在任何时候暂停。
         break;
@@ -63,7 +63,7 @@ class App extends StatelessWidget with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    globalService.logger.d('重建了');
+    globalService.logger.fine('重建了');
     return Scaffold(
         body: PageView(
           controller: controller.pageController,
@@ -94,7 +94,7 @@ class App extends StatelessWidget with WidgetsBindingObserver {
   }
 
   Widget _bottom2(){
-    globalService.logger.d(Get.theme.colorScheme.surface);
+    globalService.logger.fine(Get.theme.colorScheme.surface);
     final ThemeData theme = globalState.isDarkMode.value ? AppTheme.dark : AppTheme.light;
     return ConvexAppBar(
       disableDefaultTabController: true,

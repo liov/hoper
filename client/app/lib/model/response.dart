@@ -28,12 +28,12 @@ extension Extension<T> on $dio.Response {
     if (statusCode == HttpStatus.ok) {
       final data = CommonResp.fromJson(this.data, fromJsonT);
       if (data.code != 0) {
-        globalService.logger.e('请求出错 ${data.msg}');
+        globalService.logger.severe('请求出错 ${data.msg}');
         Get.rawSnackbar(message: data.msg!);
       }
       return data.data;
     }
-    globalService.logger.e('请求出错 $statusCode');
+    globalService.logger.severe('请求出错 $statusCode');
     Get.rawSnackbar(message: '请求出错');
     return null;
   }
@@ -42,12 +42,12 @@ extension Extension<T> on $dio.Response {
     if (statusCode == HttpStatus.ok) {
       final data = CommonResp.fromJson(this.data, fromJsonT);
       if (data.code != 200) {
-        globalService.logger.e('请求出错 ${data.msg}');
+        globalService.logger.severe('请求出错 ${data.msg}');
         Get.rawSnackbar(message: data.msg!);
       }
       return data.data;
     }
-    globalService.logger.e('请求出错 $statusCode');
+    globalService.logger.severe('请求出错 $statusCode');
     Get.rawSnackbar(message: '请求出错');
     return null;
   }
@@ -55,21 +55,21 @@ extension Extension<T> on $dio.Response {
   T? getWeiboData(T Function(Object? json) fromJsonT) {
     if (statusCode == HttpStatus.ok) {
       if (this.data is String) {
-        globalService.logger.e('请求出错 ${this.data}');
+        globalService.logger.severe('请求出错 ${this.data}');
         return null;
       }
       final data = WeiboResponse.fromJson(
         this.data as Map<String, dynamic>,
         fromJsonT,
       );
-      globalService.logger.d(data);
+      globalService.logger.fine(data);
       if (data.ok != 1) {
-        globalService.logger.e('请求出错 ${data.msg}');
+        globalService.logger.severe('请求出错 ${data.msg}');
         Get.rawSnackbar(message: data.msg!);
       }
       return data.data;
     }
-    globalService.logger.e('请求出错 $statusCode');
+    globalService.logger.severe('请求出错 $statusCode');
     Get.rawSnackbar(message: '请求出错');
     return null;
   }

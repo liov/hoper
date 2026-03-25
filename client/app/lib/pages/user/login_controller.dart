@@ -1,7 +1,7 @@
 import 'package:app/generated/protobuf/user/user.model.pbenum.dart';
 import 'package:app/generated/protobuf/user/user.service.pb.dart';
 import 'package:app/global/state.dart';
-import 'package:app/utils/dialog.dart';
+import 'package:app/util/dialog.dart';
 import 'package:get/get.dart';
 
 class LoginController extends GetxController {

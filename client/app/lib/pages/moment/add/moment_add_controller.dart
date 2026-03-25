@@ -21,7 +21,7 @@ class MomentAddController extends GetxController with MediaController {
       );
       navigator!.pop();
     } catch (e) {
-      globalService.logger.e(e);
+      globalService.logger.severe(e);
     }
   }
 
