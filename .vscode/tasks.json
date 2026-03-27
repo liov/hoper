@@ -7,7 +7,7 @@
 			"options": {
                 "cwd": "${workspaceFolder}/server/go"
             },
-			"command": "protogen.exe",
+			"command": "protogen",
 			"args": [
 				"go",
 				"-d",

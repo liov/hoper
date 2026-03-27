@@ -1,7 +1,17 @@
 package global
 
-import "github.com/hopeio/initialize"
+import (
+	"github.com/hopeio/initialize"
+	"go.opentelemetry.io/otel"
+)
 
-var Global = initialize.NewGlobal[*config, *dao]()
-var Dao *dao = Global.Dao
-var Conf *config = Global.Config
+const ScopeName = "github.com/liov/hoper/server/go/user"
+
+var (
+	Global         = initialize.NewGlobal[*config, *dao]()
+	Dao    *dao    = Global.Dao
+	Conf   *config = Global.Config
+
+	Tracer = otel.Tracer(ScopeName)
+	Meter  = otel.Meter(ScopeName)
+)

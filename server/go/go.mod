@@ -14,8 +14,8 @@ require (
 	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674
 	github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus v1.1.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.28.0
-	github.com/hopeio/cherry v1.20.29
-	github.com/hopeio/gox v1.9.0
+	github.com/hopeio/cherry v1.20.32
+	github.com/hopeio/gox v1.9.1
 	github.com/hopeio/initialize v1.0.0
 	github.com/hopeio/pick v1.13.17
 	github.com/hopeio/protobuf v1.0.0
