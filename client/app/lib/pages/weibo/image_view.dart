@@ -15,14 +15,7 @@ class ImageView extends StatelessWidget {
 
   final WeiboController controller = Get.find();
   late final Future<void> future = controller.getList();
-  late final ScrollController _controller =
-      ScrollController()..addListener(() {
-        if (_controller.position.pixels >=
-            _controller.position.maxScrollExtent) {
-          globalService.logger.fine('这里执行了吗');
-          controller.getList();
-        }
-      });
+  late final ScrollController _controller = ScrollController();
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -96,7 +89,14 @@ class ImageView extends StatelessWidget {
         behavior: ScrollConfiguration.of(context).copyWith(
           dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse},
         ),
-        child: GridView.builder(
+        child: NotificationListener<ScrollEndNotification>(
+          onNotification: (n) {
+            if (n.metrics.pixels >= n.metrics.maxScrollExtent) {
+              controller.getList();
+            }
+            return false;
+          },
+          child: GridView.builder(
           gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
             maxCrossAxisExtent: 300,
             mainAxisSpacing: 10.0,
@@ -122,6 +122,7 @@ class ImageView extends StatelessWidget {
           },
           controller: _controller,
           physics: AlwaysScrollableScrollPhysics(),
+        ),
         ),
       ),
     );

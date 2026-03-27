@@ -1,11 +1,8 @@
-import 'dart:developer' as developer;
-import 'dart:io';
 
 import 'package:applib/util/observer.dart';
 import 'package:app/global/logger.dart';
 import 'package:app/rpc/upload.dart';
 import 'package:app/rpc/user.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:grpc/grpc.dart' hide Response;

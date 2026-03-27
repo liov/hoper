@@ -1,6 +1,4 @@
 import 'package:app/generated/protobuf/content/moment.service.pbgrpc.dart';
-import 'package:app/model/moment.dart';
-import 'package:dio/dio.dart';
 import 'package:grpc/grpc.dart';
 import 'package:app/rpc/grpc.dart';
 import 'package:applib/util/observer.dart';

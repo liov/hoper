@@ -2,7 +2,6 @@ import 'package:app/util/image_file.dart';
 import 'package:app/global/service.dart';
 import 'package:app/pages/image/slide_image.dart';
 import 'package:app/components/media/media.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';

@@ -14,41 +14,39 @@ class WeiboController extends GetxController{
   int picWidth = 300;
   int picHeight = 300;
   bool isEnd = false;
-
+  bool isLoading = false;
 
   Future<void> newList(int userId) async {
     this.userId = userId;
-    page =1;
+    page = 1;
     isEnd = false;
+    isLoading = false;
     list.clear();
     return getList();
   }
 
   Future<void> getList() async {
     globalService.logger.fine('getList');
-    if(isEnd) return;
-    final response = await weiboClient.getOriginalList(uid: userId, page: page, feature: feature, sinceId: sinceId);
-    if (response == null) {
-      isEnd = true;
-      return;
-    }
-    if (response.list.isEmpty) {
-      isEnd = true;
-      return;
-    }
-    //sinceId = response.sinceId;
-    for (var e in response.list) {
-      if (e.picInfos != null){
-        list.addAll(e.picInfos!.values.map((v){
-          return  v.mw2000.url;
-        }
-        ));
+    if (isEnd || isLoading) return;
+    isLoading = true;
+    try {
+      final response = await weiboClient.getOriginalList(uid: userId, page: page, feature: feature, sinceId: sinceId);
+      if (response == null || response.list.isEmpty) {
+        isEnd = true;
+        return;
       }
+      //sinceId = response.sinceId;
+      for (var e in response.list) {
+        if (e.picInfos != null) {
+          list.addAll(e.picInfos!.values.map((v) => v.mw2000.url));
+        }
+      }
+      globalService.logger.fine('${response.list.length} ${list.length}');
+      page++;
+      update();
+    } finally {
+      isLoading = false;
     }
-    globalService.logger.fine('${response.list.length} ${list.length}');
-    globalService.logger.fine(list);
-    page++;
-    update();
 
   }
 

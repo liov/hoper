@@ -1,6 +1,6 @@
-import '../strings.dart';
+import 'package:app/translations/strings.dart';
 
 final Map<String, String> enUs = {
-  'hi': 'Hello',
-  home: "Home",
+  kHi: 'Hello',
+  kHome: 'Home',
 };

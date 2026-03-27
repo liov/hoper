@@ -2,12 +2,9 @@ import 'package:app/generated/protobuf/user/user.model.pb.dart';
 import 'package:app/generated/protobuf/user/user.service.pbgrpc.dart';
 
 import 'package:app/rpc/http.dart';
-import 'package:dio/dio.dart' hide Headers;
 import 'package:grpc/grpc.dart';
-import 'package:app/model/response.dart';
 import 'package:app/rpc/grpc.dart';
 import 'package:applib/util/observer.dart';
-import 'package:app/rpc/http.dart';
 
 
 class UserGrpcClient extends Observer<CallOptions> {

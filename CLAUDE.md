@@ -10,6 +10,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Shared**: Protocol Buffer definitions in `proto/` consumed by all clients and servers
 - **Libraries**: 9 Git submodules under `thirdparty/` (all internal hopeio libraries)
 
+
+在 proto 目录下定义, 服务端通过 grpc 交互,客户端通过 http 调用, flutter 客户端通过 protobuf 编码与服务端交互, web 客户端通过 json 编码与服务端交互
+
 ## Submodule Setup
 
 ```bash

@@ -4,8 +4,8 @@
 
 import 'package:app/global/state.dart';
 import 'package:app/global/theme.dart';
-import 'package:app/pages/start/splash_conroller.dart';
-import 'package:app/pages/start/splash_view.dart';
+import 'package:app/pages/splash/splash_conroller.dart';
+import 'package:app/pages/splash/splash_view.dart';
 import 'package:app/pages/index/index.dart';
 import 'package:app/pages/moment/moment_view.dart';
 import 'package:app/pages/user/user_view.dart';

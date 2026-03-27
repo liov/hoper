@@ -2,7 +2,7 @@
 import 'package:app/generated/protobuf/content/content.model.pbenum.dart';
 import 'package:app/global/state.dart';
 import 'package:app/pages/comment/comment_controller.dart';
-import 'package:app/pages/start/splash_view.dart';
+import 'package:app/pages/splash/splash_view.dart';
 import 'package:app/pages/moment/detail/moment_detail_view.dart';
 import 'package:app/pages/user/login_view.dart';
 import 'package:app/pages/moment/add/moment_add_controller.dart';
@@ -14,8 +14,8 @@ import 'package:get/get.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 
-import 'start/start_binding.dart';
-import 'start/start_view.dart';
+import 'splash/start_binding.dart';
+import 'splash/start_view.dart';
 import 'weibo/image_view.dart';
 import 'weibo/weibo_binding.dart';
 

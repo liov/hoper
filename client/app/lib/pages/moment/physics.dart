@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:app/global/service.dart';
 
 class PageViewTabClampingScrollPhysics extends ScrollPhysics {
   /// Creates scroll physics that prevent the scroll offset from exceeding the
@@ -34,7 +35,7 @@ class PageViewTabClampingScrollPhysics extends ScrollPhysics {
       }
       return true;
     }());
-    print(controller.scrollNum);
+    globalService.logger.fine(controller.scrollNum);
     if (value < position.pixels && position.pixels <= position.minScrollExtent) { // underscroll
       controller.scrollNum--;
       if (controller.scrollNum < - 7) {
@@ -66,7 +67,7 @@ class PageViewTabClampingScrollPhysics extends ScrollPhysics {
 
   @override
   Simulation? createBallisticSimulation(ScrollMetrics position, double velocity) {
-    final Tolerance tolerance = this.tolerance;
+    final Tolerance tolerance = toleranceFor(position);
     if (position.outOfRange) {
       double? end;
       if (position.pixels > position.maxScrollExtent) {

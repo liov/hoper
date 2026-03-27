@@ -10,6 +10,8 @@ import 'package:app/global/state.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:app/global/state/app.dart';
+import 'package:app/translations/app_translations.dart';
+import 'package:app/translations/zh_CN/local.dart';
 
 
 Future<void> main() async {
@@ -47,22 +49,18 @@ Future<void> main() async {
       initialRoute: Routes.START,
       initialBinding: BindingsBuilder.put(() => globalState),
       getPages: Routes.pages,
-      localeListResolutionCallback:
-          (List<Locale>? locales, Iterable<Locale> supportedLocales) {
-        return const Locale('zh');
-      },
-      localeResolutionCallback:
-          (Locale? locale, Iterable<Locale> supportedLocales) {
-        return const Locale('zh');
-      },
+      translations: AppTranslation(),
+      fallbackLocale: const Locale('zh', 'CN'),
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
+        ZhCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [
         Locale('zh', 'CN'),
         Locale('en', 'US'),
+        Locale('vi', 'VN'),
       ],
     ));
   }, (dynamic error, StackTrace stack) {

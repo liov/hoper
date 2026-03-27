@@ -1,7 +1,6 @@
 import 'package:app/global/const.dart';
 import 'package:app/global/service.dart';
 import 'package:dio/dio.dart';
-import 'package:get/get.dart' hide Response;
 
 Dio httpClient = Dio(
   BaseOptions(

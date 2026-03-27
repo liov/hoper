@@ -2,21 +2,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
 class MyLocalizationsDelegate
-    extends LocalizationsDelegate<CupertinoLocalizations> {
+    extends LocalizationsDelegate<ZhCupertinoLocalizations> {
   const MyLocalizationsDelegate();
 
   @override
-  bool isSupported(Locale locale) => locale.languageCode == 'zh';
+  bool isSupported(Locale locale) => locale.languageCode == 'zh' && locale.countryCode == 'CN';
 
   @override
-  Future<CupertinoLocalizations> load(Locale locale) =>
+  Future<ZhCupertinoLocalizations> load(Locale locale) =>
       ZhCupertinoLocalizations.load(locale);
 
   @override
   bool shouldReload(MyLocalizationsDelegate old) => false;
 
   @override
-  String toString() => 'DefaultCupertinoLocalizations.delegate(zh)';
+  String toString() => 'DefaultCupertinoLocalizations.delegate(zh-CN)';
 }
 
 
@@ -129,14 +129,14 @@ class ZhCupertinoLocalizations implements CupertinoLocalizations {
   @override
   String get selectAllButtonLabel => '选择全部';
 
-  static Future<CupertinoLocalizations> load(Locale locale) {
-    return SynchronousFuture<CupertinoLocalizations>(
+  static Future<ZhCupertinoLocalizations> load(Locale locale) {
+    return SynchronousFuture<ZhCupertinoLocalizations>(
         const ZhCupertinoLocalizations());
   }
 
   /// A [LocalizationsDelegate] that uses [DefaultCupertinoLocalizations.load]
   /// to create an instance of this class.
-  static const LocalizationsDelegate<CupertinoLocalizations> delegate =
+  static const LocalizationsDelegate<ZhCupertinoLocalizations> delegate =
   MyLocalizationsDelegate();
 
   @override
@@ -163,60 +163,46 @@ class ZhCupertinoLocalizations implements CupertinoLocalizations {
   String get noSpellCheckReplacementsLabel => '';
 
   @override
-  // TODO: implement clearButtonLabel
   String get clearButtonLabel => '清除';
 
   @override
   String datePickerStandaloneMonth(int monthIndex) {
-    // TODO: implement datePickerStandaloneMonth
     return _months[monthIndex - 1];
   }
 
   @override
-  // TODO: implement lookUpButtonLabel
   String get lookUpButtonLabel => '查询';
 
   @override
-  // TODO: implement menuDismissLabel
   String get menuDismissLabel => '关闭';
 
   @override
-  // TODO: implement searchWebButtonLabel
   String get searchWebButtonLabel => '搜索';
 
   @override
-  // TODO: implement shareButtonLabel
   String get shareButtonLabel => '分享';
 
   @override
-  // TODO: implement backButtonLabel
   String get backButtonLabel => '返回';
 
   @override
-  // TODO: implement cancelButtonLabel
   String get cancelButtonLabel => '取消';
 
   @override
-  // TODO: implement collapsedHint
   String get collapsedHint => '折叠';
 
   @override
-  // TODO: implement expandedHint
   String get expandedHint => '展开';
 
   @override
-  // TODO: implement expansionTileCollapsedHint
   String get expansionTileCollapsedHint => '折叠';
 
   @override
-  // TODO: implement expansionTileCollapsedTapHint
   String get expansionTileCollapsedTapHint => '折叠';
 
   @override
-  // TODO: implement expansionTileExpandedHint
   String get expansionTileExpandedHint => '展开';
 
   @override
-  // TODO: implement expansionTileExpandedTapHint
   String get expansionTileExpandedTapHint => '展开';
 }
