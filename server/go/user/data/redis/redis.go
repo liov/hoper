@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/hopeio/gox/database/redis/hash"
+	redisx "github.com/hopeio/gox/database/redis"
 	"github.com/hopeio/gox/encoding/json"
 	"github.com/hopeio/scaffold/errcode"
 	"go.uber.org/zap"
@@ -84,7 +84,7 @@ func (d *UserDao) UserHashToRedis(ctx context.Context, user *model.AuthInfo) err
 
 	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
 	if _, err := d.Pipelined(ctx, func(pipe redis.Pipeliner) error {
-		pipe.HMSet(ctx, loginUserKey, hash.Marshal(user)...)
+		pipe.HMSet(ctx, loginUserKey, redisx.HashEncode(user)...)
 		pipe.Expire(ctx, loginUserKey, global.Conf.User.TokenMaxAge)
 		return nil
 	}); err != nil {
@@ -108,7 +108,7 @@ func (d *UserDao) UserHashFromRedis(ctx context.Context, user *model.AuthInfo) e
 	if len(userArgs) == 0 {
 		return model.UserErrInvalidToken
 	}
-	hash.Unmarshal(user, userArgs)
+	redisx.HashDecode(user, userArgs)
 	return nil
 }
 
