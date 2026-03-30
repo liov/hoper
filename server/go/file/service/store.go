@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/hopeio/gox/database/sql/datatypes"
+	sqlx "github.com/hopeio/gox/database/sql"
 	"github.com/hopeio/gox/idgen"
 	"github.com/hopeio/gox/log"
 	"github.com/hopeio/gox/os/fs"
@@ -85,7 +85,7 @@ func (store FileStore) NewUpload(ctx context.Context, info handler.FileInfo) (ha
 			Size:           info.Size,
 			SizeIsDeferred: info.SizeIsDeferred,
 			Offset:         info.Offset,
-			MetaData:       datatypes.MapJson[string](info.MetaData),
+			MetaData:       sqlx.MapJson[string](info.MetaData),
 			IsPartial:      info.IsPartial,
 			IsFinal:        info.IsFinal,
 			PartialUploads: info.PartialUploads,

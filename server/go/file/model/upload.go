@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hopeio/gox/database/sql/datatypes"
+	sqlx "github.com/hopeio/gox/database/sql"
 	"gorm.io/gorm"
 )
 
@@ -30,7 +30,7 @@ type FileInfo struct {
 	SizeIsDeferred bool `json:"sizeIsDeferred"`
 	// Offset in bytes (zero-based)
 	Offset   int64                     `json:"offset"`
-	MetaData datatypes.MapJson[string] `gorm:"type:jsonb" json:"metadata"`
+	MetaData sqlx.MapJson[string] `gorm:"type:jsonb" json:"metadata"`
 	// Indicates that this is a partial upload which will later be used to form
 	// a final upload by concatenation. Partial uploads should not be processed
 	// when they are finished since they are only incomplete chunks of files.
@@ -41,9 +41,9 @@ type FileInfo struct {
 	// ordered slice containing the ids of the uploads of which the final upload
 	// will consist after concatenation.
 	PartialUploads []string                  `gorm:"type:text[]" json:"partial_uploads"`
-	Storage        datatypes.MapJson[string] `gorm:"type:jsonb" json:"storage"`
+	Storage        sqlx.MapJson[string] `gorm:"type:jsonb" json:"storage"`
 	CreatedAt      time.Time                 `json:"created_at"`
-	FinishedAt     datatypes.Null[time.Time] `json:"finished_at"`
+	FinishedAt     sqlx.Null[time.Time] `json:"finished_at"`
 	UpdatedAt      time.Time                 `json:"updated_at"`
 	DeletedAt      gorm.DeletedAt            `json:"-"`
 }

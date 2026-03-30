@@ -9,7 +9,7 @@ import (
 	"github.com/hopeio/scaffold/errcode"
 
 	sqlx "github.com/hopeio/gox/database/sql"
-	clausex "github.com/hopeio/gox/database/sql/gorm/clause"
+	gormx "github.com/hopeio/gox/database/sql/gorm"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"
 	"gorm.io/gorm"
@@ -53,7 +53,7 @@ func (d *ContentDao) ActionCount(typ content.ContentType, action content.ActionT
 func (d *ContentDao) LikeId(typ content.ContentType, action content.ActionType, refId, userId uint64) (uint64, error) {
 
 	// 性能优化之分开写
-	sql := `SELECT id FROM "` + model.ActionTableName(action) + `" 
+	sql := `SELECT id FROM "` + model.ActionTableName(action) + `"
 WHERE type = ? AND ref_id = ? AND action = ? AND user_id = ?` + sqlx.WithNotDeleted
 	var id uint64
 	err := d.Raw(sql, typ, refId, action, userId).Row().Scan(&id)
@@ -95,7 +95,7 @@ WHERE id = ?  AND user_id = ?` + sqlx.WithNotDeleted
 }
 
 func (d *ContentDao) ExistsByAuth(tableName string, id, userId uint64) (bool, error) {
-	sql := `SELECT EXISTS(SELECT * FROM "` + tableName + `" 
+	sql := `SELECT EXISTS(SELECT * FROM "` + tableName + `"
 WHERE id = ?  AND user_id = ?` + sqlx.WithNotDeleted + ` LIMIT 1)`
 	var exists bool
 	err := d.Raw(sql, id, userId).Scan(&exists).Error
@@ -106,7 +106,7 @@ WHERE id = ?  AND user_id = ?` + sqlx.WithNotDeleted + ` LIMIT 1)`
 }
 
 func (d *ContentDao) ContainerExists(typ content.ContainerType, id, userId uint64) (bool, error) {
-	sql := `SELECT EXISTS(SELECT * FROM "` + model.TableNameContainer + `" 
+	sql := `SELECT EXISTS(SELECT * FROM "` + model.TableNameContainer + `"
 WHERE id = ?  AND type = ? AND user_id = ?` + sqlx.WithNotDeleted + ` LIMIT 1)`
 	var exists bool
 	err := d.Raw(sql, id, typ, userId).Scan(&exists).Error
@@ -157,7 +157,7 @@ func (d *ContentDao) GetComments(typ content.ContentType, refId, rootId uint64, 
 		return 0, nil, errcode.DBError.Wrap(err)
 	}
 	var clauses []clause.Expression
-	clauses = append(clauses, clausex.PaginationExpr(pageNo, pageSize))
+	clauses = append(clauses, gormx.PaginationExpr(pageNo, pageSize))
 	var comments []*content.Comment
 	err = db.Clauses(clauses...).Find(&comments).Error
 	if err != nil {

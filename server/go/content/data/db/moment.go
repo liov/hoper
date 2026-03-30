@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 
-	clausex "github.com/hopeio/gox/database/sql/gorm/clause"
+	gormx "github.com/hopeio/gox/database/sql/gorm"
 	"github.com/hopeio/scaffold/errcode"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"
@@ -19,7 +19,7 @@ func (d *ContentDao) GetMomentList(ctx context.Context, req *content.MomentListR
 		return 0, nil, errcode.DBError.Wrap(err)
 	}
 	var clauses []clause.Expression
-	clauses = append(clauses, clausex.PaginationExpr(req.PageNo, req.PageSize))
+	clauses = append(clauses, gormx.PaginationExpr(req.PageNo, req.PageSize))
 	err = db.Clauses(clauses...).Order("created_at desc").Find(&moments).Error
 	if err != nil {
 		return 0, nil, errcode.DBError.Wrap(err)

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	sqlx "github.com/hopeio/gox/database/sql"
-	_ "github.com/hopeio/gox/database/sql/gorm/serializer"
+	_ "github.com/hopeio/gox/database/sql/gorm"
 	"github.com/hopeio/gox/log"
 	"github.com/hopeio/gox/slices"
 	"github.com/hopeio/gox/validator"
@@ -173,7 +173,7 @@ func (d *UserDao) GetBaseListDB(ctx context.Context, ids []uint64, pageNo, pageS
 }
 
 func (d *UserDao) FollowExistsDB(ctx context.Context, id, followId uint64) (bool, error) {
-	sql := `SELECT EXISTS(SELECT * FROM "` + model.TableNameFollow + `" 
+	sql := `SELECT EXISTS(SELECT * FROM "` + model.TableNameFollow + `"
 WHERE user_id = ?  AND follow_id = ?` + sqlx.WithNotDeleted + ` LIMIT 1)`
 	var exists bool
 	err := d.Raw(sql, id, followId).Scan(&exists).Error
