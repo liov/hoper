@@ -3,8 +3,8 @@ package redis
 import (
 	"context"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/hopeio/scaffold/errcode"
+	"github.com/redis/go-redis/v9"
 
 	"github.com/liov/hoper/server/go/protobuf/content"
 )

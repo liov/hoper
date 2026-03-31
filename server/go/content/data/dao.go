@@ -1,9 +1,9 @@
 package data
 
 import (
-	"github.com/go-redis/redis/v8"
 	"github.com/liov/hoper/server/go/content/data/db"
 	rdao "github.com/liov/hoper/server/go/content/data/redis"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 

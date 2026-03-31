@@ -52,7 +52,7 @@ func (u *UserService) VerifyCode(ctx context.Context, req *userpb.VerifyCodeReq)
 	vcode := rand.RandomCode(4)
 	log.Info(vcode)
 	key := modelconst.VerificationCodeKey + req.Mail + req.Phone
-	if err := global.Dao.Redis.SetEX(ctx, key, vcode, modelconst.VerificationCodeDuration).Err(); err != nil {
+	if err := global.Dao.Redis.Set(ctx, key, vcode, modelconst.VerificationCodeDuration).Err(); err != nil {
 		return nil, errcode.RedisErr.Wrap(err)
 	}
 	sendVcode(ctx, req.Action, vcode, req.Mail)
@@ -135,7 +135,7 @@ func (u *UserService) Signup(ctx context.Context, req *userpb.SignupReq) (*wrapp
 
 	curTime := time.Now().UnixMilli()
 
-	if err := global.Dao.Redis.SetEX(ctx, activeUser, curTime, modelconst.ActiveDuration).Err(); err != nil {
+	if err := global.Dao.Redis.Set(ctx, activeUser, curTime, modelconst.ActiveDuration).Err(); err != nil {
 		return nil, errcode.RedisErr.Wrap(err)
 	}
 
@@ -339,7 +339,7 @@ func (u *UserService) Login(ctx context.Context, req *userpb.LoginReq) (*userpb.
 		activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
 
 		curTime := time.Now().UnixMilli()
-		if err := global.Dao.Redis.SetEX(ctx, activeUser, curTime, modelconst.ActiveDuration).Err(); err != nil {
+		if err := global.Dao.Redis.Set(ctx, activeUser, curTime, modelconst.ActiveDuration).Err(); err != nil {
 			return nil, errcode.RedisErr.Wrap(err)
 		}
 		go sendMail(ctx, userpb.ActionActive, curTime, user)
@@ -369,8 +369,7 @@ func (*UserService) login(ctx context.Context, user *userpb.User) (*userpb.Login
 
 	db.Table(modelconst.TableNameUserExt).Where(`id = ?`, user.Id).
 		UpdateColumn("last_activated_at", now)
-	rclient := global.Dao.Redis.Client.WithContext(ctx)
-	userRedisDao := redis.GetUserDao(rclient)
+	userRedisDao := redis.GetUserDao(global.Dao.Redis.Client)
 	if err := userRedisDao.EfficientUserHashToRedis(ctx, authorization.Auth); err != nil {
 		return nil, errcode.RedisErr
 	}
@@ -454,8 +453,8 @@ func (u *UserService) Info(ctx context.Context, req *request.Id) (*userpb.UserRe
 	if req.Id == 0 {
 		req.Id = auth.Id
 	}
-	rclient := global.Dao.Redis.Client.WithContext(ctx)
-	userRedisDao := redis.GetUserDao(rclient)
+
+	userRedisDao := redis.GetUserDao(global.Dao.Redis.Client)
 	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	var user1 userpb.User
 	if err = db.First(&user1, req.Id).Error; err != nil {
@@ -495,7 +494,7 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *userpb.LoginReq) 
 	restPassword := modelconst.ResetTimeKey + strconv.FormatUint(user.Id, 10)
 
 	curTime := time.Now().Unix()
-	if err := global.Dao.Redis.SetEX(ctx, restPassword, curTime, modelconst.ResetDuration).Err(); err != nil {
+	if err := global.Dao.Redis.Set(ctx, restPassword, curTime, modelconst.ResetDuration).Err(); err != nil {
 		log.Error("redis set failed:", err)
 		return nil, errcode.RedisErr
 	}

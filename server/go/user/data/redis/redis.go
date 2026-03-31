@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/go-redis/redis/v8"
 	redisx "github.com/hopeio/gox/database/redis"
 	"github.com/hopeio/gox/encoding/json"
 	"github.com/hopeio/scaffold/errcode"
+	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 
 	"github.com/hopeio/gox/log"
@@ -36,8 +36,8 @@ func (d *UserDao) UserToRedis(ctx context.Context, user *model.AuthInfo) error {
 	}
 
 	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
-	if redisErr := d.SetEX(ctx, loginUserKey, UserString, global.Conf.User.TokenMaxAge).Err(); redisErr != nil {
-		log.Errorw("UserToRedis.SetEX", zap.Error(err))
+	if redisErr := d.Set(ctx, loginUserKey, UserString, global.Conf.User.TokenMaxAge).Err(); redisErr != nil {
+		log.Errorw("UserToRedis.Set", zap.Error(err))
 		return errcode.RedisErr.Wrap(err)
 	}
 	return nil
@@ -73,7 +73,7 @@ func (d *UserDao) EditRedisUser(ctx context.Context, user *model.AuthInfo) error
 	loginUserKey := modelconst.LoginUserKey + strconv.FormatUint(user.Id, 10)
 	err = d.Client.Set(ctx, loginUserKey, UserString, 0).Err()
 	if err != nil {
-		log.Errorw("UserToRedis.SetEX", zap.Error(err))
+		log.Errorw("UserToRedis.Set", zap.Error(err))
 		return errcode.RedisErr.Wrap(err)
 	}
 	return nil
@@ -161,7 +161,7 @@ func (d *UserDao) UserLastActiveTime(ctx context.Context, userId uint64) error {
 		pipe.Select(ctx, common.CronIndex)
 		//有序集合存一份，遍历长时间未活跃用户用
 		pipe.ZAdd(ctx, modelconst.LoginUserKey+"ActiveTime",
-			&redis.Z{Score: float64(time.Now().UnixMilli()), Member: userIdStr})
+			redis.Z{Score: float64(time.Now().UnixMilli()), Member: userIdStr})
 		pipe.HSet(ctx, loginUser, "LastActiveAt")
 		return nil
 	}); err != nil {

@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/hopeio/scaffold/errcode"
+	"github.com/redis/go-redis/v9"
 
 	timex "github.com/hopeio/gox/time"
 	"github.com/liov/hoper/server/go/global"

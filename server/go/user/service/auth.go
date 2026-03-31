@@ -42,8 +42,7 @@ func auth(ctx context.Context, update bool) (*user.AuthInfo, error) {
 	}
 
 	if update {
-		rclient := global.Dao.Redis.Client.WithContext(ctx)
-		userDao := data.GetRedisDao(rclient)
+		userDao := data.GetRedisDao(global.Dao.Redis.Client)
 		err := userDao.EfficientUserHashFromRedis(ctx, authorization.Auth)
 		if err != nil {
 			return nil, err

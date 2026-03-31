@@ -66,8 +66,7 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 	if err != nil {
 		return nil, err
 	}
-	rclient := global.Dao.Redis.WithContext(ctx)
-	contentRedisDao := data.GetRedisDao(rclient)
+	contentRedisDao := data.GetRedisDao(global.Dao.Redis.Client)
 	err = contentRedisDao.HotCount(ctx, req.Type, req.RefId, 1)
 
 	if err != nil {
@@ -100,8 +99,7 @@ func (*ActionService) DelLike(ctx context.Context, req *request.Id) (*emptypb.Em
 	if err != nil {
 		return nil, err
 	}
-	rclient := global.Dao.Redis.WithContext(ctx)
-	contentRedisDao := data.GetRedisDao(rclient)
+	contentRedisDao := data.GetRedisDao(global.Dao.Redis.Client)
 	err = contentRedisDao.HotCount(ctx, like.Type, like.RefId, -1)
 	if err != nil {
 		return nil, err
@@ -139,8 +137,7 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*re
 		}
 		return nil, err
 	}
-	rclient := global.Dao.Redis.WithContext(ctx)
-	contentRedisDao := data.GetRedisDao(rclient)
+	contentRedisDao := data.GetRedisDao(global.Dao.Redis.Client)
 	err = contentRedisDao.HotCount(ctx, req.Type, req.RefId, 1)
 	if err != nil {
 		return nil, err
@@ -184,8 +181,7 @@ func (*ActionService) DelComment(ctx context.Context, req *request.Id) (*emptypb
 	if err != nil {
 		return nil, err
 	}
-	rclient := global.Dao.Redis.WithContext(ctx)
-	contentRedisDao := data.GetRedisDao(rclient)
+	contentRedisDao := data.GetRedisDao(global.Dao.Redis.Client)
 	err = contentRedisDao.HotCount(ctx, comment.Type, comment.RefId, -1)
 	if err != nil {
 		return nil, err
@@ -246,8 +242,7 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*em
 		hotCount = -1
 	}
 	if hotCount != 0 {
-		rclient := global.Dao.Redis.WithContext(ctx)
-		contentRedisDao := data.GetRedisDao(rclient)
+		contentRedisDao := data.GetRedisDao(global.Dao.Redis.Client)
 		err = contentRedisDao.HotCount(ctx, req.Type, req.RefId, hotCount)
 		if err != nil {
 			log.Errorw("HotCountRedis", zap.Error(err))
@@ -264,8 +259,7 @@ func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*empt
 	if err != nil {
 		return nil, err
 	}
-	rclient := global.Dao.Redis.WithContext(ctx)
-	contentRedisDao := data.GetRedisDao(rclient)
+	contentRedisDao := data.GetRedisDao(global.Dao.Redis.Client)
 	err = contentRedisDao.Limit(ctx, &global.Conf.Moment.Limit, auth.Id)
 	if err != nil {
 		return nil, err

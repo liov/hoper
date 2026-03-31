@@ -8,6 +8,7 @@ import (
 	"github.com/hopeio/initialize/dao/redis"
 	"github.com/hopeio/initialize/dao/ristretto"
 	"github.com/liov/hoper/server/go/protobuf/user"
+	"github.com/redis/go-redis/extra/redisotel/v9"
 )
 
 // 原本是个单独模块，但是考虑到数据库必须初始化，所以合进来了
@@ -40,6 +41,15 @@ func (d *dao) AfterInject() {
 	}
 	err = d.GORMDB.Migrator().AutoMigrate(&user.User{}, &user.Resume{}, &user.ActionLog{}, &user.BannedLog{}, &user.Device{}, &user.ScoreLog{}, &user.UserExt{}, user.Oauth{})
 	if err != nil {
+		log.Fatal(err)
+	}
+	// Enable tracing instrumentation.
+	if err := redisotel.InstrumentTracing(d.Redis.Client); err != nil {
+		log.Fatal(err)
+	}
+
+	// Enable metrics instrumentation.
+	if err := redisotel.InstrumentMetrics(d.Redis.Client); err != nil {
 		log.Fatal(err)
 	}
 }

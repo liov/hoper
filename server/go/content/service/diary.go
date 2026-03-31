@@ -74,8 +74,7 @@ func (*DiaryService) Info(ctx context.Context, req *request.Id) (*content.Diary,
 	if err != nil {
 		return nil, err
 	}
-	rclient := global.Dao.Redis.WithContext(ctx)
-	contentRedisDao := data.GetRedisDao(rclient)
+	contentRedisDao := data.GetRedisDao(global.Dao.Redis.Client)
 	err = contentRedisDao.Limit(ctx, &global.Conf.Moment.Limit, auth.Id)
 	if err != nil {
 		return nil, err
