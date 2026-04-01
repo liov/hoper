@@ -3,7 +3,7 @@
 	"tasks": [
 		{
 			"label": "hoper protogen",
-			"type": "process",
+			"type": "shell",
 			"options": {
                 "cwd": "${workspaceFolder}/server/go"
             },
@@ -17,10 +17,13 @@
 				"-i",
 				"../../proto"
 			],
+			"runOptions": {
+				"runOn": "folderOpen",
+			}
 		},
 		{
 			"label": "app release",
-			"type": "process",
+			"type": "shell",
 			"options": {
 				"cwd": "${workspaceFolder}/client/app"
 			},

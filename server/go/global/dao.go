@@ -7,6 +7,8 @@ import (
 	"github.com/hopeio/initialize/dao/redis"
 	"github.com/hopeio/initialize/dao/ristretto"
 	"github.com/hopeio/initialize/dao/minio"
+	gormx "github.com/hopeio/gox/database/sql/gorm"
+	ominio "github.com/minio/minio-go/v7"
 	//"github.com/liov/hoper/server/go/protobuf/content"
 	//"github.com/liov/hoper/server/go/protobuf/content"
 )
@@ -25,7 +27,7 @@ type dao struct {
 	Mail mail.Mail `init:"config:mail"`
 	//minio
 	Minio minio.Client `init:"config:minio"`
-	MinioCore minio.Core `init:"config:minio"`
+	MinioCore *ominio.Core `init:"skip"`
 }
 
 func (d *dao) BeforeInject() {
@@ -38,6 +40,7 @@ func (d *dao) AfterInjectConfig() {
 func (d *dao) AfterInject() {
 	log.Info("AfterInject")
 	if d.GORMDB.DB != nil {
+		d.GORMDB.DB.Use(gormx.NewOTelPlugin())
 		//d.GORMDB.Conf.NamingStrategy.TablePrefix = "user."
 		err := d.GORMDB.Exec(`CREATE SCHEMA IF NOT EXISTS "user"`).Error
 		if err != nil {
@@ -51,5 +54,8 @@ func (d *dao) AfterInject() {
 		// if err != nil {
 		// 	log.Fatal(err)
 		// }
+	}
+	if d.Minio.Client != nil {
+		d.MinioCore = &ominio.Core{Client: d.Minio.Client}
 	}
 }
