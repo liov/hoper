@@ -14,17 +14,14 @@ import (
 	"time"
 
 	errcodex "github.com/hopeio/gox/errors"
-	"github.com/hopeio/gox/log"
 	httpx "github.com/hopeio/gox/net/http"
 	timex "github.com/hopeio/gox/time"
 	"github.com/hopeio/scaffold/errcode"
-	"github.com/liov/hoper/server/go/file/api/request"
 	"github.com/liov/hoper/server/go/file/api/response"
 	"github.com/liov/hoper/server/go/file/data"
 	"github.com/liov/hoper/server/go/file/model"
 	"github.com/liov/hoper/server/go/global"
 	"github.com/liov/hoper/server/go/protobuf/user"
-	"go.uber.org/zap"
 )
 
 const errResp = "上传失败"
@@ -71,28 +68,6 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (*FileService) Exists(ctx context.Context, req *request.Exists) (*response.File, error) {
-
-	auth, err := auth(ctx, false)
-	db := global.Dao.GORMDB.DB.WithContext(ctx)
-	uploadDao := data.GetDao(db)
-	file, err := uploadDao.FileInfo(ctx, req.Md5, req.Size)
-	if err != nil {
-		return nil, errcode.DBError
-	}
-	if file != nil {
-		upload := model.UploadInfo{
-			UserId:    auth.Id,
-			CreatedAt: time.Now(),
-			FileId:    file.Id,
-		}
-		if err := uploadDao.Table(model.TableNameUploadInfo).Create(&upload).Error; err != nil {
-			log.Errorw("Exists", zap.Error(err))
-		}
-		return &response.File{Id: file.Id, URL: file.Path}, nil
-	}
-	return nil, errcode.NotFound
-}
 
 func save(ctx context.Context, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
 	db := global.Dao.GORMDB.DB.WithContext(ctx)

@@ -5,9 +5,10 @@ import (
 	"github.com/hopeio/gox/log"
 	"net/http"
 	"net/url"
+	"testing"
 )
 
-func main() {
+func TestDownload(t *testing.T) {
 	baseURL, _ := url.Parse("http://localhost:8080/files/")
 	cl := tusgo.NewClient(http.DefaultClient, baseURL)
 	u := tusgo.Upload{}

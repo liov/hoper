@@ -21,7 +21,7 @@ func (d uploadDao) FileInfo(ctx context.Context, md5, size string) (*model.FileI
 	return &file, nil
 }
 
-func (d uploadDao) GetUrls(ctx context.Context, ids []uint64) ([]*file.File, error) {
+func (d uploadDao) GetUrls(ctx context.Context, ids []string) ([]*file.File, error) {
 	var uploadInfos []*file.File
 	err := d.Table(model.TableNameFileInfo).Where(`id IN (?)`, ids).Find(&uploadInfos).Error
 	if err != nil {

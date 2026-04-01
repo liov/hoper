@@ -36,7 +36,7 @@ service FileService {
   }
 
   // 获取url
-  rpc GetUrlsByStrId (GetUrlsByStrIdReq) returns (GetUrlsResp) {
+  rpc GetUrl (GetUrlsByIdsStrReq) returns (GetUrlsResp) {
     option (google.api.http) = {
       get: "/api/urls"
     };
@@ -47,21 +47,76 @@ service FileService {
     };
     option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
+
+  rpc PreUpload (PreUploadReq) returns (PreUploadResp) {
+    option (google.api.http) = {
+      post: "/api/preUpload"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["上传文件相关接口", "util", "v1.0.0"]
+      summary : "预上传文件"
+      description : "预上传文件接口"
+    };
+  }
 }
 
 message GetUrlsReq {
-  repeated uint64 ids = 1 [(go.field) = {tags:'validate:"required" comment:"ids"'}];
+  repeated string ids = 1 [(go.field) = {tags:'validate:"required" comment:"ids"'}];
 }
 
-message GetUrlsByStrIdReq {
+message GetUrlsByIdsStrReq {
   string ids = 1 [(go.field) = {tags:'validate:"required" comment:"ids"'}];
 }
 
 message File {
-  uint64 id = 1 [(go.field) = {tags:'comment:"id"'}];
+  string id = 1 [(go.field) = {tags:'comment:"id"'}];
   string url = 2 [(go.field) = {tags:'comment:"url"'}];
+  string name = 3 [(go.field) = {tags:'comment:"name"'}];
 }
 
 message GetUrlsResp {
   repeated File files = 1[(go.field) = {tags:'comment:"上传文件信息"'}];
+}
+
+enum PreUploadType {
+  PRE_UPLOAD_TYPE_EXISTS = 0;
+  PRE_UPLOAD_TYPE_MULTIPART_UPLOAD = 1;
+  PRE_UPLOAD_TYPE_UPLOAD_URL = 2;
+  PRE_UPLOAD_TYPE_CREDENTIALS = 3;
+}
+
+
+message PreUploadReq {
+  PreUploadType pre_upload_type = 1 [(go.field) = {tags:'comment:"预上传类型"'}];
+  string name = 2 [(go.field) = {tags:'comment:"name"'}];
+  string md5 = 3 [(go.field) = {tags:'comment:"md5"'}];
+  int64 size = 4 [(go.field) = {tags:'comment:"size"'}];
+}
+
+
+message Credentials{
+  string access_key_id = 1 [(go.field) = {tags:'comment:"access_key_id"'}];
+  string secret_access_key = 2 [(go.field) = {tags:'comment:"secret_access_key"'}];
+  string session_token = 3 [(go.field) = {tags:'comment:"session_token"'}];
+  string expiration = 4 [(go.field) = {tags:'comment:"expiration"'}];
+  int32 signer_type = 5 [(go.field) = {tags:'comment:"signer_type"'}];
+}
+
+message MultipartUpload {
+  string id = 1 [(go.field) = {tags:'comment:"上传id"'}];
+  repeated string urls = 2 [(go.field) = {tags:'comment:"上传url"'}];
+}
+
+message PreUploadResp {
+  PreUploadType pre_upload_type = 1 [(go.field) = {tags:'comment:"预上传类型"'}];
+  File file = 2 [(go.field) = {tags:'comment:"文件信息"'}];
+  string upload_url = 3 [(go.field) = {tags:'comment:"上传url"'}];
+  MultipartUpload multipart_upload = 4 [(go.field) = {tags:'comment:"分片上传信息"'}];
+  Credentials credentials = 5 [(go.field) = {tags:'comment:"凭证信息"'}];
+}
+
+message UploadPart{
+  int32 part_number = 2 [(go.field) = {tags:'comment:"分片序号"'}];
+  string etag = 3 [(go.field) = {tags:'comment:"etag"'}];
 }

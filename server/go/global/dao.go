@@ -6,6 +6,7 @@ import (
 	"github.com/hopeio/initialize/dao/mail"
 	"github.com/hopeio/initialize/dao/redis"
 	"github.com/hopeio/initialize/dao/ristretto"
+	"github.com/hopeio/initialize/dao/minio"
 	//"github.com/liov/hoper/server/go/protobuf/content"
 	//"github.com/liov/hoper/server/go/protobuf/content"
 )
@@ -22,6 +23,9 @@ type dao struct {
 	Cache ristretto.Cache[string, any]
 	//elastic
 	Mail mail.Mail `init:"config:mail"`
+	//minio
+	Minio minio.Client `init:"config:minio"`
+	MinioCore minio.Core `init:"config:minio"`
 }
 
 func (d *dao) BeforeInject() {

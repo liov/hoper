@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"time"
+	"testing"
 )
 
 func UploadWithRetry(dst *tusgo.UploadStream, src *os.File) error {
@@ -50,7 +51,7 @@ func CreateUploadFromFile(f *os.File, cl *tusgo.Client) *tusgo.Upload {
 	return &u
 }
 
-func main() {
+func TestUpload(t *testing.T) {
 	baseURL, _ := url.Parse("http://localhost:8080/api/v2/files/")
 	cl := tusgo.NewClient(http.DefaultClient, baseURL)
 	cl.GetRequest = func(method, url string, body io.Reader, tusClient *tusgo.Client, httpClient *http.Client) (*http.Request, error) {
