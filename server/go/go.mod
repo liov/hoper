@@ -12,12 +12,13 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.28.0
-	github.com/hopeio/cherry v1.20.37
-	github.com/hopeio/gox v1.10.3
+	github.com/hopeio/cherry v1.20.38
+	github.com/hopeio/gox v1.10.5
 	github.com/hopeio/initialize v1.0.0
 	github.com/hopeio/pick v1.13.17
 	github.com/hopeio/protobuf v1.0.0
 	github.com/hopeio/scaffold v1.0.0
+	github.com/minio/minio-go/v7 v7.0.99
 	github.com/notedit/rtmp-lib v0.0.8
 	github.com/pion/rtp v1.8.9
 	github.com/pion/webrtc/v4 v4.0.0-beta.29
@@ -81,7 +82,6 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/minio/crc64nvme v1.1.1 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
-	github.com/minio/minio-go/v7 v7.0.99 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect

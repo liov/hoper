@@ -5,14 +5,15 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "app",
+			"name": "flutter:app:debug",
 			"cwd": "${workspaceFolder}/client/app",
 			"request": "launch",
 			"type": "dart",
 			"program": "lib/main.dart",
+			"flutterMode": "debug"
 		},
 		{
-			"name": "app (profile mode)",
+			"name": "flutter:app:profile",
 			"cwd": "${workspaceFolder}/client/app",
 			"request": "launch",
 			"type": "dart",
@@ -20,7 +21,7 @@
 			"flutterMode": "profile"
 		},
 		{
-			"name": "app (release mode)",
+			"name": "flutter:app:release",
 			"cwd": "${workspaceFolder}/client/app",
 			"request": "launch",
 			"type": "dart",
@@ -28,10 +29,9 @@
 			"flutterMode": "release"
 		},
 		{
-			"name": "hoper (go)",
+			"name": "go:hoper",
 			"cwd": "${workspaceFolder}/server/go",
 			"request": "launch",
-			"preLaunchTask": "hoper protogen",
 			"type": "go",
 			"program": "${workspaceFolder}/server/go/main.go",
 			"args": ["-c", "config/config.toml"],
@@ -42,21 +42,49 @@
 			}
 		},
 		{
-			"name": "rfv (rust)",
+			"name": "go:cherry",
+			"cwd": "${workspaceFolder}/thirdparty/cherry/_example",
+			"request": "launch",
+			"type": "go",
+			"program": "${workspaceFolder}/thirdparty/cherry/_example/user"
+		},
+		{
+			"name": "go:pick:std",
+			"cwd": "${workspaceFolder}/thirdparty/pick/_example/std",
+			"request": "launch",
+			"type": "go",
+			"program": "${workspaceFolder}/thirdparty/pick/_example/std"
+		},
+		{
+			"name": "go:pick:gin",
+			"cwd": "${workspaceFolder}/thirdparty/pick/_example/gin",
+			"request": "launch",
+			"type": "go",
+			"program": "${workspaceFolder}/thirdparty/pick/_example/gin"
+		},
+		{
+			"name": "go:pick:fiber",
+			"cwd": "${workspaceFolder}/thirdparty/pick/_example/fiber",
+			"request": "launch",
+			"type": "go",
+			"program": "${workspaceFolder}/thirdparty/pick/_example/fiber"
+		},
+		{
+			"name": "rust:rfv",
 			"cwd": "${workspaceFolder}/server/rust/rfv",
 			"request": "launch",
 			"type": "lldb",
 			"cargo": { "args": ["build", "--bin", "rfv"] }
 		},
 		{
-			"name": "message (rust)",
+			"name": "rust:message",
 			"cwd": "${workspaceFolder}/server/rust/message",
 			"request": "launch",
 			"type": "lldb",
 			"cargo": { "args": ["build", "--bin", "message"] }
 		},
 		{
-			"name": "web",
+			"name": "vue:web",
 			"cwd": "${workspaceFolder}/client/web",
 			"request": "launch",
 			"type": "chrome",

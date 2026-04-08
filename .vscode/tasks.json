@@ -22,6 +22,18 @@
 			}
 		},
 		{
+			"label": "install protobuf tools",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/thirdparty/protobuf/tools"
+			},
+			"command": "go",
+			"args": [
+				"run",
+				"install_tools.go"
+			]
+		},
+		{
 			"label": "app release",
 			"type": "shell",
 			"options": {
