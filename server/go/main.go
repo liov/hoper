@@ -22,6 +22,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	semconv "go.opentelemetry.io/otel/semconv/v1.37.0"
 	"google.golang.org/grpc"
+	_ "github.com/hopeio/scaffold/prometheus"
 )
 
 //go:generate protogen.exe go -d -e -w -v -i ../../proto
