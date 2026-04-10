@@ -1,7 +1,6 @@
 import axios, { AxiosError } from "axios";
 import { Toast } from "vant";
 import router from "@/router";
-import { ObjMap } from "@/utils/user";
 import { defineStore } from "pinia";
 
 export interface UserState {
@@ -85,8 +84,7 @@ const actions = {
   },
 };
 
-export const useUserStore = defineStore({
-  id: "user",
+export const useUserStore = defineStore("user", {
   state: () => state,
   getters,
   actions,

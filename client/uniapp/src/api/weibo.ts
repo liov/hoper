@@ -2,7 +2,7 @@ import {API_HOST} from '@/env/config'
 import type {MomentList} from '@/model/moment'
 import {HttpClient} from '@hopeio/utils/uniapp'
 import moment from '@/pages/moment/moment_list.vue'
-import {ResData} from "@hopeio/utils/types";
+import {CommonResp} from "@hopeio/utils/types";
 
 class WeiboService {
   private static httpClient = new HttpClient({
@@ -17,7 +17,7 @@ class WeiboService {
   })
 
   static async list(uid: number, page: number): Promise<any> {
-    await this.httpClient.get<ResData<void>>(`/ajax/statuses/searchProfile`, {
+    await this.httpClient.get<CommonResp<void>>(`/ajax/statuses/searchProfile`, {
       query: {
         uid,
         page,

@@ -1,4 +1,5 @@
-import { UnwrapRef } from 'vue'
+import { Ref, UnwrapRef } from 'vue'
+import { CommonResp } from '@hopeio/utils/types'
 
 type IUseRequestOptions<T> = {
   /** 是否立即执行，如果是则在onLoad执行 */
@@ -16,12 +17,12 @@ type IUseRequestOptions<T> = {
  * @returns 返回一个对象{loading, error, data, run}，包含请求的加载状态、错误信息、响应数据和手动触发请求的函数。
  */
 export default function useRequest<T>(
-  func: () => Promise<ResData<T>>,
+  func: () => Promise<CommonResp<T>>,
   options: IUseRequestOptions<T> = { immediate: true },
-) {
+): { loading: Ref<boolean>; error: Ref<boolean>; data: Ref<UnwrapRef<T> | undefined>; run: () => Promise<void> } {
   const loading = ref(false)
   const error = ref(false)
-  const data = ref<T>(options.initialData)
+  const data = ref<T | undefined>(options.initialData)
   const run = async () => {
     loading.value = true
     func()
@@ -40,5 +41,5 @@ export default function useRequest<T>(
   onLoad(() => {
     options.immediate && run()
   })
-  return { loading, error, data, run }
+  return { loading: loading as Ref<boolean>, error: error as Ref<boolean>, data: data as Ref<UnwrapRef<T> | undefined>, run }
 }

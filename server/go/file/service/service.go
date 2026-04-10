@@ -72,7 +72,7 @@ func (*FileService) PreUpload(ctx context.Context, req *file.PreUploadReq) (*fil
 		return nil, errcode.InvalidArgument.Msg("file size too large")
 	}
 	if req.Size < 100*1024*1024 {
-		url, err := global.Dao.Minio.Client.PresignedPutObject(ctx, "my-bucket", fmt.Sprintf("uploads/%s", req.Name), time.Duration(15*60)*time.Second)
+		url, err := global.Dao.Minio.Client.PresignedPutObject(ctx, global.Conf.Upload.Bucket, fmt.Sprintf("%s/%s", global.Conf.Upload.UploadDir, req.Name), time.Duration(15*60)*time.Second)
 		if err != nil {
 			log.Errorw("PresignedPutObject", zap.Error(err))
 			return nil, errcode.IOError.Wrap(err)
@@ -80,7 +80,7 @@ func (*FileService) PreUpload(ctx context.Context, req *file.PreUploadReq) (*fil
 		return &file.PreUploadResp{PreUploadType: file.PreUploadType_PRE_UPLOAD_TYPE_UPLOAD_URL, UploadUrl: url.String()}, nil
 	}
 	if req.Size < 1024*1024*1024 {
-		uploadId, presignedURLs, err := InitiateMultipartUpload(ctx, "my-bucket", fmt.Sprintf("uploads/%s", req.Name), 10)
+		uploadId, presignedURLs, err := InitiateMultipartUpload(ctx, global.Conf.Upload.Bucket, fmt.Sprintf("%s/%s", global.Conf.Upload.UploadDir, req.Name), 10)
 		if err != nil {
 			log.Errorw("InitiateMultipartUpload", zap.Error(err))
 			return nil, errcode.IOError.Wrap(err)
@@ -93,23 +93,7 @@ func (*FileService) PreUpload(ctx context.Context, req *file.PreUploadReq) (*fil
 			},
 		}, nil
 	}
-	const policy = `{
-		"Version": "2012-10-17",
-		"Statement": [
-			{
-				"Effect": "Allow",
-				"Action": [
-					"s3:GetObject",
-					"s3:PutObject",
-					"s3:AbortMultipartUpload",
-					"s3:ListMultipartUploadParts"
-				],
-				"Resource": [
-					"arn:aws:s3:::test-bucket/uploads/*"
-				]
-			}
-		]
-	}`
+
 
 	// 3. 调用 STS AssumeRole 获取临时凭证
 	// 这里的 RoleArn 在 MinIO 中通常可以随便填，或者填 'arn:aws:iam::minio-user:sts'
@@ -119,7 +103,7 @@ func (*FileService) PreUpload(ctx context.Context, req *file.PreUploadReq) (*fil
 		Options: credentials.STSAssumeRoleOptions{
 			AccessKey:       global.Dao.Minio.Conf.AccessKeyID,
 			SecretKey:       global.Dao.Minio.Conf.SecretAccessKey,
-			Policy:          policy,
+			Policy:          global.Conf.Upload.Policy,
 			RoleARN:         "arn:aws:iam::123456789012:role/DummyRole",
 			RoleSessionName: "FrontendSession",
 		},

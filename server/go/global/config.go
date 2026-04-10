@@ -1,6 +1,7 @@
 package global
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -41,6 +42,23 @@ func (c *config) AfterInjectWithRoot(rootconfig *rootconf.RootConfig) {
 	if !rootconfig.Debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
+	c.Upload.Policy = fmt.Sprintf(`{
+		"Version": "2012-10-17",
+		"Statement": [
+			{
+				"Effect": "Allow",
+				"Action": [
+					"s3:GetObject",
+					"s3:PutObject",
+					"s3:AbortMultipartUpload",
+					"s3:ListMultipartUploadParts"
+				],
+				"Resource": [
+					"arn:aws:s3:::%s/%s/*"
+				]
+			}
+		]
+	}`, c.Upload.Bucket, c.Upload.UploadDir)
 }
 
 type Config struct {
@@ -96,4 +114,6 @@ type Upload struct {
 	UploadDir      fs.Dir
 	UploadMaxSize  int64
 	UploadAllowExt []string
+	Bucket         string
+	Policy         string
 }

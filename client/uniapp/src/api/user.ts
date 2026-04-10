@@ -2,11 +2,11 @@ import { API_HOST } from '@/env/config'
 import type { MomentList } from '@/model/moment'
 import {httpclient} from '@hopeio/utils/uniapp'
 import moment from '@/pages/moment/moment_list.vue'
-import {ResData} from "@hopeio/utils/types";
+import {CommonResp} from "@hopeio/utils/types";
 
 class UserService {
   static async active(id: number, secret: string): Promise<void> {
-    await httpclient.get<ResData<void>>(`/api/user/active/${id}/${secret}`)
+    await httpclient.get<CommonResp<void>>(`/api/user/active/${id}/${secret}`)
   }
 }
 export default UserService

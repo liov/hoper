@@ -1,4 +1,3 @@
-import { ObjMap } from "@/utils/user";
 import { defineStore } from "pinia";
 
 export interface ContentState {
@@ -28,8 +27,7 @@ const getters = {
   },
 };
 
-export const useContentStore = defineStore({
-  id: "content",
+export const useContentStore = defineStore("content", {
   state: () => state,
   getters,
   actions,

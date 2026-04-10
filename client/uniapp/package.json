@@ -162,7 +162,7 @@
   "pnpm": {
     "overrides": {
       "@intlify/shared": "11.0.1",
-      "@hopeio/utils": "link:../../../../../../sdk/pnpm/bin/global/5/node_modules/@hopeio/utils"
+      "@hopeio/utils": "link:../../../../../Library/pnpm/global/5/node_modules/@hopeio/utils"
     }
   }
 }

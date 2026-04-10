@@ -12,8 +12,7 @@ const state: GlobalState = {
   platform: Platform.H5,
 };
 
-export const useGlobalStore = defineStore({
-  id: "global",
+export const useGlobalStore = defineStore("global", {
   state: () => state,
   getters: {
     doubleCount: (state) => state.counter * 2,

@@ -8,7 +8,7 @@ import (
 	tusd "github.com/tus/tusd/v2/pkg/handler"
 )
 
-func init() {
+func InitTusd() {
 	// Create a new FileStore instance which is responsible for
 	// storing the uploaded file on disk in the specified directory.
 	// This path _must_ exist before tusd will store uploads in it.

@@ -1,2 +1,2 @@
 export { routeInterceptor } from './route'
-export { init } from './http'
+export { json as init } from './http'

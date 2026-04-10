@@ -20,6 +20,7 @@ export interface FileNode {
   subFiles: FileNode[]
   pageNo: number
   hasMore: boolean
+  read: boolean
   deleted: boolean
 }
 
@@ -37,6 +38,8 @@ const rootFile: FileNode = {
   subFiles: [],
   pageNo: 0,
   hasMore: true,
+  read: false,
+  deleted: false,
 }
 const state: WopanState = {
   accessToken: uni.getStorageSync(accessTokenKey),
@@ -110,6 +113,7 @@ const actions = {
           }
         return {
           deleted: false,
+          read: false,
           parent: state.curDir,
           file,
           subFiles: [],

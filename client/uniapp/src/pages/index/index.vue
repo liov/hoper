@@ -21,7 +21,7 @@
 <script lang="ts" setup>
 import PLATFORM from '@/utils/platform'
 import { useToast } from 'wot-design-uni'
-import * as wopan from '@hopeio/utils/es/wopan'
+import * as wopan from '@hopeio/utils/wopan'
 defineOptions({
   name: 'Home',
 })

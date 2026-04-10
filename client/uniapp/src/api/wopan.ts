@@ -5,7 +5,7 @@ client.fetch = async function (url, method, headers, body) {
   return new Promise((resolve, reject) => {
     uni.request({
       url,
-      method,
+      method: method as any,
       header: headers,
       data: body,
       timeout: 20000,

@@ -4,30 +4,23 @@ import {httpclient} from '@hopeio/utils/uniapp'
 
 import moment from '@/pages/moment/moment_list.vue'
 import { useUserStore } from '@/store/user'
+import { CommonResp } from '@hopeio/utils/types'
 
 const userStore = useUserStore()
 class MomentService {
   static async getMomentList(pageNo: number, pageSize: number): Promise<MomentList> {
-    const { data } = await httpclient.get<ResData<MomentList>>(
+    const { data } = await httpclient.get<CommonResp<MomentList>>(
       '/api/moment',
-      {
-        pageNo,
-        pageSize,
-      },
-      {
-        header: {
-          'custom-header': 'hello', // 自定义请求头信息
-        },
-      },
+      { query: { pageNo, pageSize } },
     )
-    console.log(data.data)
-    if (data.data.users) userStore.appendUsers(data.data.users)
-    if (data.data.list)
-      data.data.list.forEach((moment) => {
+    console.log(data)
+    if (data.users) userStore.appendUsers(data.users)
+    if (data.list)
+      data.list.forEach((moment) => {
         moment.user = userStore.getUser(moment.userId)
         if (moment.images && moment.images !== '') moment.imagesUrls = moment.images.split(',')
       })
-    return data.data
+    return data
   }
 }
 export default MomentService

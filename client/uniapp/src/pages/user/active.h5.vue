@@ -18,7 +18,7 @@ const store = useUserStore()
 const router = useRouter()
 const route = useRoute()
 
-UserService.active(route.params.id, route.params.secret)
+UserService.active(Number(route.params.id), String(route.params.secret))
 </script>
 
 <style scoped></style>
