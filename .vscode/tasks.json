@@ -58,7 +58,7 @@
 			"label": "ts:pb",
 			"type": "shell",
 			"options": {
-				"cwd": "${workspaceFolder}/client/web"
+				"cwd": "${workspaceFolder}/client/uniapp"
 			},
 			"command": "protogen",
 			"args": ["ts","-p","../../thirdparty/protobuf/_proto","-i","../../proto","-o","gen/pb"],
