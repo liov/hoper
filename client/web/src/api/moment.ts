@@ -1,17 +1,11 @@
-import axios from "axios";
+import { httpclient } from "./common";
 import { showFailToast } from "vant";
-
+import type { CommonResp } from "@hopeio/utils/types";
+import type { MomentListResp } from "@gen/pb/content/moment.service";
 
 export async function momentList(
   pageNo: number,
   pageSize: number
 ){
-  try {
-    const { response, status } = await axios.get(`/api/moment?pageNo=${pageNo}&pageSize=${pageSize}`);
-    console.log(status);
-    return response;
-  } catch (e) {
-    showFailToast(decodeURI(e.message));
-    return Promise.reject(e);
-  }
+  return await httpclient.get<CommonResp<MomentListResp>>(`/api/moment?pageNo=${pageNo}&pageSize=${pageSize}`);
 }

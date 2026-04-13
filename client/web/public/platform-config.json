@@ -1,0 +1,21 @@
+{
+  "Version": "1.0.0",
+  "Title": "Hoper",
+  "FixedHeader": true,
+  "HiddenSideBar": false,
+  "MultiTagsCache": false,
+  "KeepAlive": true,
+  "Locale": "zh",
+  "Layout": "vertical",
+  "Theme": "default",
+  "DarkMode": false,
+  "OverallStyle": "light",
+  "Grey": false,
+  "Weak": false,
+  "HideTabs": false,
+  "HideFooter": false,
+  "SidebarStatus": true,
+  "EpThemeColor": "#6366f1",
+  "ShowLogo": true,
+  "ResponsiveStorageNameSpace": "hoper__"
+}

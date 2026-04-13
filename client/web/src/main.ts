@@ -1,5 +1,4 @@
 import HoperPlugin from "@/plugin/plugin";
-import "uno.css";
 import * as Vant from "vant";
 import "vant/es/toast/style";
 import "vant/es/dialog/style";
@@ -8,14 +7,13 @@ import "vant/es/image-preview/style";
 import router from "@/router";
 import { createApp } from "vue";
 import App from "@/App.vue";
-import { createPinia } from "pinia";
-import { init as axiosInit } from "@/plugin/axios";
-
-import { init as globalInit } from "@/store";
+import { store } from "@/store";
+import { i18n }  from "@/plugin/i18n";
+import { getPlatformConfig } from "./utils/env";
+import { useEcharts } from "@/plugin/echarts";
+import { MotionPlugin } from "@vueuse/motion";
 
 export const app = createApp(App)
-  .use(createPinia())
-  .use(router)
   .use(Vant.Col)
   .use(Vant.Row)
   .use(Vant.NavBar)
@@ -53,7 +51,12 @@ export const app = createApp(App)
   .use(Vant.Popover)
   .use(Vant.ConfigProvider);
 
-app.mount("#app");
+getPlatformConfig(app).then(async config => {
+  app.use(store)
+  app.use(router)
+  app.use(MotionPlugin).use(i18n).use(useEcharts);
 
-axiosInit();
-globalInit();
+  app.mount("#app");
+})
+
+

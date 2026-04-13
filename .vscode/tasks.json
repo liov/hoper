@@ -2,7 +2,7 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "hoper protogen",
+			"label": "go:protogen",
 			"type": "shell",
 			"options": {
                 "cwd": "${workspaceFolder}/server/go"
@@ -41,6 +41,28 @@
 			},
 			"command": "flutter",
 			"args": ["build", "apk", "--release"],
+		},
+		{
+			"label": "diamond build",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/thirdparty/diamond"
+			},
+			"command": "pnpm",
+			"args": ["build"],
+			"runOptions": {
+				"runOn": "folderOpen",
+			}
+		},
+		{
+			"label": "ts:pb",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/client/web"
+			},
+			"command": "protogen",
+			"args": ["ts","-p","../../thirdparty/protobuf/_proto","-i","../../proto","-o","gen/pb"],
+
 		}
 	]
 }

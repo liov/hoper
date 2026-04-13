@@ -21,20 +21,17 @@
         日记
       </van-tabbar-item>
       <van-tabbar-item replace to="/chat" icon="chat-o"> 聊天 </van-tabbar-item>
-      <van-tabbar-item replace to="/me" icon="user-circle-o"
-        >我的</van-tabbar-item
-      >
+      <van-tabbar-item replace to="/me" icon="user-circle-o">我的</van-tabbar-item>
     </van-tabbar>
   </van-config-provider>
 </template>
 
 <script setup lang="ts">
 import { RouterView, useRouter } from "vue-router";
-import { useGlobalStore } from "@/store/global";
-import { Platform } from "@/model/const";
-import wxenv from "@/utils/platform/weixin";
+import { useAppStore } from "@/store/modules/app";
+import { Platform } from "@/types/enum";
 import { parseQueryString } from "@hopeio/utils/browser";
-import "@types/grpc_custom_status";
+import wxenv from "@hopeio/utils/jweixin";
 import { ref } from "vue";
 import type { Ref } from "vue";
 import type { ConfigProviderTheme } from "vant";
@@ -42,7 +39,7 @@ import type { ConfigProviderTheme } from "vant";
 const light: ConfigProviderTheme = "light";
 const theme = ref(light);
 
-const store = useGlobalStore();
+const store = useAppStore();
 console.log("url:", window.location.href);
 const queryParams = parseQueryString();
 console.log(queryParams);

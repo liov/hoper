@@ -4,7 +4,7 @@
     "@vue/tsconfig/tsconfig.dom.json",
   ],
   "references": [{ "path": "./tsconfig.node.json" }],
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue","generated/**/*.ts","types/**/*.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue","gen/**/*.ts"],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
     "composite": true,
@@ -12,8 +12,7 @@
     "outDir": "dist",
     "paths": {
       "@/*": ["./src/*"],
-      "@generated/*": ["./generated/*"],
-      "@types/*": ["./types/*"]
+      "@gen/*": ["./gen/*"]
     },
     "target": "esnext",
     "module": "esnext",
@@ -29,7 +28,11 @@
     //"sourceMap": true,
     "noImplicitAny": false,
     "types": [
-      "node"
+      "vite/client",
+      "element-plus/global",
+      "@pureadmin/table/volar",
+      "@pureadmin/descriptions/volar",
+      "@hopeio/utils/dist/types/index.d.ts"
     ],
     "lib": [
       "esnext",

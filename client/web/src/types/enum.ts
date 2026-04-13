@@ -1,10 +1,10 @@
-export const enum Platform {
+export enum Platform {
   H5 = "H5",
   Weapp = "WEAPP",
   App = "APP",
 }
 
-export const enum OS {
+export enum OS {
   Android = "Android",
   Ios = "ios",
 }

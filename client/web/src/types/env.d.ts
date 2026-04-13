@@ -1,7 +1,8 @@
 /// <reference types="vite/client" />
-interface ImportMetaEnv {
-  HOPRE_STATIC_DIR: string;
-  HOPRE_API_HOST: string;
+
+interface ImportMetaEnv extends ViteEnv{
+  VITE_STATIC_DIR: string;
+  VITE_API_HOST: string;
 }
 
 interface ImportMeta {

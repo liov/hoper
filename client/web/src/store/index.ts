@@ -1,16 +1,9 @@
-import { useUserStore } from "@/store/user";
-import { useGlobalStore } from "@/store/global";
-import { useContentStore } from "@/store/content";
+import type { App } from "vue";
+import { createPinia } from "pinia";
+const store = createPinia();
 
-export let userStore;
-export let globalStore;
-export let contentStore;
-
-export function init() {
-  globalStore = useGlobalStore();
-  userStore = useUserStore();
-  contentStore = useContentStore();
-  if (!userStore.auth) {
-    userStore.getAuth();
-  }
+export function setupStore(app: App<Element>) {
+  app.use(store);
 }
+
+export { store };

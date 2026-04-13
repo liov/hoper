@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
 
-import { upload } from "../utils/upload.d.ts";
+import { upload } from "../utils/upload.js";
 
 dayjs.locale("zh-cn");
 

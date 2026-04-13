@@ -1,50 +1,19 @@
 <template>
   <div>
-    <van-field
-      v-model="message"
-      rows="3"
-      autosize
-      label-width="0"
-      type="textarea"
-      maxlength="567"
-      size="large"
-      show-word-limit
-    />
+    <van-field v-model="message" rows="3" autosize label-width="0" type="textarea" maxlength="567" size="large"
+      show-word-limit />
     <van-field name="uploader" label-width="0">
       <template #input>
-        <van-uploader
-          v-model="uploader"
-          :max-count="9"
-          :max-size="500 * 1024"
-          @oversize="onOversize"
-          :after-read="afterRead"
-          @click="notH5Upload"
-        />
+        <van-uploader v-model="uploader" :max-count="9" :max-size="500 * 1024" @oversize="onOversize"
+          :after-read="afterRead" @click="notH5Upload" />
       </template>
     </van-field>
-    <van-field
-      readonly
-      clickable
-      label="权限"
-      v-model="permissionVal"
-      placeholder="选择权限"
-      @click="showPicker = true"
-    />
+    <van-field readonly clickable label="权限" v-model="permissionVal" placeholder="选择权限" @click="showPicker = true" />
     <van-popup v-model:show="showPicker" round position="bottom">
-      <van-picker
-        :columns="columns"
-        @cancel="showPicker = false"
-        @confirm="onConfirm"
-      />
+      <van-picker :columns="columns" @cancel="showPicker = false" @confirm="onConfirm" />
     </van-popup>
     <div style="margin: 16px">
-      <van-button
-        round
-        block
-        type="primary"
-        native-type="submit"
-        @click="submit"
-      >
+      <van-button round block type="primary" native-type="submit" @click="submit">
         提交
       </van-button>
     </div>
@@ -57,10 +26,10 @@ import { upload } from "@/utils/upload";
 import { showToast } from "vant";
 import { useRouter } from "vue-router";
 import { reactive, type Ref, ref } from "vue";
-import { useGlobalStore } from "@/store/global";
-import { Platform } from "@/model/const";
+import { useAppStore } from "@/store/modules/app";
+import { Platform } from "@/types/enum";
 
-const globalState = useGlobalStore();
+const appState = useAppStore();
 
 const router = useRouter();
 
@@ -106,7 +75,7 @@ function onConfirm(value: string, index: number) {
 }
 
 function notH5Upload() {
-  if (globalState.platform == Platform.App) {
+  if (appState.platform == Platform.App) {
     window.Flutter.postMessage(
       JSON.stringify({ method: "pickPhoto", params: [] }),
     );
