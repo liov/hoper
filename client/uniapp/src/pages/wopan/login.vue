@@ -1,11 +1,4 @@
-<route lang="json5">
-{
-  style: {
-    navigationStyle: 'custom',
-    navigationBarTitleText: 'wopan登录',
-  },
-}
-</route>
+
 <template>
   <view
     class="bg-white overflow-hidden pt-2 px-4"
@@ -64,8 +57,11 @@ import * as wopan from '@hopeio/utils/wopan'
 import { useWopanStore } from '@/store/wopan'
 import { onLoad } from '@dcloudio/uni-app'
 
-defineOptions({
-  name: 'WopanLogin',
+definePage({
+  style: {
+    navigationBarTitleText: 'wopan登录',
+    navigationStyle: 'custom',
+  }
 })
 const setPwd = ref(false)
 onLoad((options) => {

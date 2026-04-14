@@ -1,9 +1,10 @@
 import { ObjMap } from '@/utils/user'
 import { defineStore } from 'pinia'
-import { API_HOST } from '@/env/config'
-import type { User } from '@/model/user'
-import { httpclient } from '@hopeio/utils/uniapp'
+
+import type { UserBase } from '@gen/pb/user/user.model'
+import { httpclient } from '@/api/common'
 import { CommonResp } from '@hopeio/utils/types'
+import UserService from '@/api/user'
 
 export interface UserState {
   auth: any
@@ -19,7 +20,7 @@ const state: UserState = {
 const tokenKey = 'token'
 const getters = {
   getUser: (state: UserState) => {
-    return (id: number): User => state.userCache.get(id)
+    return (id: number): UserBase => state.userCache.get(id)
   },
 }
 
@@ -29,14 +30,14 @@ const actions = {
     const token = uni.getStorageSync(tokenKey)
     if (token) {
       state.token = token
-      const { data } = await httpclient.get<CommonResp<any>>(API_HOST + `/api/auth`)
+      const { data } = await httpclient.get<CommonResp<any>>(`/api/auth`)
       // 跟后端的初始化配合
       if (data.code === 0) state.auth = data.data
     }
   },
   async login(params) {
     try {
-      const { code,data } = await httpclient.post<CommonResp<any>>('/api/user/login', {data: params})
+      const { code, data } = await UserService.login(params)
 
       if (code !== 0) {
         throw new Error('Bad credentials')
@@ -53,7 +54,7 @@ const actions = {
   },
   async signup(params) {
     try {
-      const {data} = await httpclient.post<CommonResp<any>>('/api/v2/user', {data: params})
+      const { data } = await UserService.signup(params)
       state.auth = data.user
       state.token = data.token
       uni.setStorageSync(tokenKey, data.token)
@@ -72,9 +73,7 @@ const actions = {
       if (!state.userCache.has(value)) noExistsId.push(value)
     })
     if (noExistsId.length > 0) {
-      const data = await httpclient.post<CommonResp<any>>(`/api/user/baseUserList`, {
-        data:{ids: noExistsId},
-      })
+      const data = await UserService.baseUserList(noExistsId)
       if (data.code && data.code !== 0)
         await uni.showToast({ title: data.msg, icon: 'error', duration: 1000 })
       else this.appendUsers(data.data.list)

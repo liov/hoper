@@ -9,7 +9,6 @@
     "allowSyntheticDefaultImports": true,
     "allowJs": true,
     "sourceMap": true,
-    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./src/*"
@@ -26,7 +25,8 @@
     "types": [
       "@dcloudio/types",
       "@types/wechat-miniprogram",
-      "wot-design-uni/global.d.ts"
+      "wot-design-uni/global.d.ts",
+      "@uni-helper/vite-plugin-uni-pages"
     ]
   },
   "vueCompilerOptions": {
@@ -47,6 +47,7 @@
     "src/**/*.tsx",
     "src/**/*.jsx",
     "src/**/*.vue",
-    "src/**/*.json"
+    "src/**/*.json",
+    "gen/**/*.ts"
   ]
 }

@@ -1,10 +1,3 @@
-<route lang="json5">
-{
-  style: {
-    navigationBarTitleText: '瞬间',
-  },
-}
-</route>
 <template>
   <view>
     <uni-list :border="false">
@@ -15,34 +8,34 @@
             <template v-slot:header>
               <uni-list-chat
                 :avatar-circle="true"
-                :title="moment.user.name"
-                :avatar="staticDir + moment.user.avatarUrl"
+                :title="moment.user?.name"
+                :avatar="staticDir + moment.user?.avatar"
                 note="来自iPhone15 Pro Max"
-                :time="moment.createdAt.slice(0, 10) + ' ' + moment.createdAt.slice(11, 19)"
+                :time="pbTimeToDayjs(moment.modelTime?.createdAt!).format('YYYY-MM-DD HH:mm:ss')"
               ></uni-list-chat>
             </template>
             <!-- 自定义 body -->
             <template v-slot:body>
               <text class="slot-text">{{ moment.content }}</text>
               <view v-if="moment.images" class="uni-title-sub uni-ellipsis-2">
-                <view v-if="moment.imagesUrls.length == 1">
+                <view v-if="moment.images.length == 1">
                   <image
-                    :src="staticDir + moment.imagesUrls[0]"
+                    :src="staticDir + moment.images[0]"
                     style="width: 60%; max-height: 500px"
                     mode="aspectFill"
                   />
                 </view>
-                <view v-else-if="(moment.imagesUrls.length = 2) || (moment.imagesUrls.length = 4)">
+                <view v-else-if="(moment.images.length = 2) || (moment.images.length = 4)">
                   <uni-grid :column="2" :show-border="false" :square="false">
                     <uni-grid-item
-                      v-for="(img, iidx) in moment.imagesUrls"
+                      v-for="(img, iidx) in moment.images"
                       :index="iidx"
                       :key="iidx"
                     >
                       <view class="grid-item-box">
                         <image
                           :src="staticDir + img"
-                          :style="{ width: '100%', height: 360 / moment.imagesUrls.length + 'px' }"
+                          :style="{ width: '100%', height: 360 / moment.images.length + 'px' }"
                           mode="aspectFill"
                           @click="preview(midx, iidx)"
                         />
@@ -50,10 +43,10 @@
                     </uni-grid-item>
                   </uni-grid>
                 </view>
-                <view v-else-if="moment.imagesUrls.length < 10">
+                <view v-else-if="moment.images.length < 10">
                   <uni-grid :column="3" :show-border="false" :square="false">
                     <uni-grid-item
-                      v-for="(img, iidx) in moment.imagesUrls"
+                      v-for="(img, iidx) in moment.images"
                       :index="iidx"
                       :key="iidx"
                     >
@@ -69,10 +62,10 @@
                 </view>
                 <view v-else>
                   <swiper class="swiper" :indicator-dots="true">
-                    <swiper-item v-for="sidx in Math.ceil(moment.imagesUrls.length / 9)">
+                    <swiper-item v-for="sidx in Math.ceil(moment.images.length / 9)">
                       <uni-grid :column="3" :show-border="false" :square="false">
                         <uni-grid-item
-                          v-for="(img, iidx) in moment.imagesUrls.slice(9 * (sidx - 1), 9 * sidx)"
+                          v-for="(img, iidx) in moment.images.slice(9 * (sidx - 1), 9 * sidx)"
                           :index="iidx"
                           :key="iidx"
                         >
@@ -133,11 +126,24 @@ import Actions from '@/components/action.vue'
 import MomentService from '@/api/moment'
 
 import { STATIC_DIR as staticDir } from '@/env/config'
-import type { Moment, MomentList } from '@/model/moment'
-import type { User } from '@/model/user'
+import type { Moment } from '@gen/pb/content/moment.model'
+import type { MomentListResp } from '@gen/pb/content/moment.service'
+import type { UserBase } from '@gen/pb/user/user.model'
 import { onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app'
 import type { PageRequest } from '@/api/param'
 import { useUserStore } from '@/store/user'
+import { CommonResp } from '@hopeio/utils/types'
+import { pbTimeToDayjs } from '@hopeio/utils/time'
+
+definePage({
+  style: {
+    navigationBarTitleText: '瞬间',
+  },
+  middlewares: [
+    'auth',
+  ],
+})
+
 const userStore = useUserStore()
 const listReq: PageRequest = {
   PageNo: 1,
@@ -148,10 +154,12 @@ const momentList: Ref<Moment[]> = ref([])
 const loadMoreStatus = ref('more')
 
 getMomentList().then((res) => {
-  momentList.value = momentList.value.concat(res.list)
+  if (res.data?.list) {
+    momentList.value = momentList.value.concat(res.data?.list)
+  }
 })
 
-async function getMomentList(): Promise<MomentList> {
+async function getMomentList(): Promise<CommonResp<MomentListResp>> {
   return MomentService.getMomentList(listReq.PageNo, listReq.PageSize)
 }
 
@@ -159,7 +167,9 @@ onPullDownRefresh(async () => {
   console.log('refresh')
   listReq.PageNo = 1
   const res = await getMomentList()
-  momentList.value = res.list
+  if (res.data?.list) {
+    momentList.value = res.data?.list
+  }
   uni.stopPullDownRefresh()
 })
 
@@ -168,11 +178,11 @@ onReachBottom(async () => {
   listReq.PageNo++
   loadMoreStatus.value = 'loading'
   const res = await getMomentList()
-  if (res.list) {
-    momentList.value = momentList.value.concat(res.list)
-    if (res.list.length < listReq.PageSize) {
+  if (res.data?.list) {
+    momentList.value = momentList.value.concat(res.data?.list)
+    if (res.data?.list.length < listReq.PageSize) {
       loadMoreStatus.value = 'no-more'
-      if (res.list.length === 0) listReq.PageNo--
+      if (res.data?.list.length === 0) listReq.PageNo--
     } else {
       loadMoreStatus.value = 'more'
     }
@@ -191,10 +201,10 @@ const previewImgs: Ref<string[]> = ref([])
 const current = ref(0)
 function preview(midx: number, iidx: number) {
   console.log(midx, iidx)
-  previewImgs.value = momentList.value[midx].imagesUrls
+  previewImgs.value = momentList.value[midx].images.map((image) => staticDir + image)
   console.log(previewImgs.value)
   current.value = iidx
-  popup.value.open('center')
+  popup.value?.open('center')
 }
 function change(e) {
   current.value = e.detail.current

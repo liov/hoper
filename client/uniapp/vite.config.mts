@@ -1,16 +1,21 @@
 import path from 'node:path'
 import dayjs from 'dayjs'
 import { defineConfig, loadEnv } from 'vite'
-import Uni from '@dcloudio/vite-plugin-uni'
+import _Uni from '@dcloudio/vite-plugin-uni'
+const Uni = ((_Uni as any).default ?? _Uni) as typeof _Uni
 // @see https://uni-helper.js.org/vite-plugin-uni-pages
-import UniPages from '@uni-helper/vite-plugin-uni-pages'
+import _UniPages from '@uni-helper/vite-plugin-uni-pages'
+const UniPages = ((_UniPages as any).default ?? _UniPages) as typeof _UniPages
 // @see https://uni-helper.js.org/vite-plugin-uni-layouts
-import UniLayouts from '@uni-helper/vite-plugin-uni-layouts'
+import _UniLayouts from '@uni-helper/vite-plugin-uni-layouts'
+const UniLayouts = ((_UniLayouts as any).default ?? _UniLayouts) as typeof _UniLayouts
 // @see https://github.com/uni-helper/vite-plugin-uni-platform
 // 需要与 @uni-helper/vite-plugin-uni-pages 插件一起使用
-import UniPlatform from '@uni-helper/vite-plugin-uni-platform'
+import _UniPlatform from '@uni-helper/vite-plugin-uni-platform'
+const UniPlatform = ((_UniPlatform as any).default ?? _UniPlatform) as typeof _UniPlatform
 // @see https://github.com/uni-helper/vite-plugin-uni-manifest
-import UniManifest from '@uni-helper/vite-plugin-uni-manifest'
+import _UniManifest from '@uni-helper/vite-plugin-uni-manifest'
+const UniManifest = ((_UniManifest as any).default ?? _UniManifest) as typeof _UniManifest
 // @see https://unocss.dev/
 import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'

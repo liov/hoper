@@ -1,11 +1,11 @@
 import { client } from '@hopeio/utils/wopan'
 import {Env} from "@/env/config";
-import {resolve} from "eslint-import-resolver-typescript";
-client.fetch = async function (url, method, headers, body) {
+
+client.fetch = async function (url: string, method: 'OPTIONS' | 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'TRACE' | 'CONNECT', headers: Record<string, string>, body: any) {
   return new Promise((resolve, reject) => {
     uni.request({
       url,
-      method: method as any,
+      method: method,
       header: headers,
       data: body,
       timeout: 20000,

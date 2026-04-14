@@ -1,12 +1,11 @@
-import {API_HOST} from '@/env/config'
-import type {MomentList} from '@/model/moment'
+
 import {HttpClient} from '@hopeio/utils/uniapp'
 import moment from '@/pages/moment/moment_list.vue'
 import {CommonResp} from "@hopeio/utils/types";
 
 class WeiboService {
   private static httpClient = new HttpClient({
-    baseUrl: "https://weibo.com",
+    baseURL: "https://weibo.com",
     withCredentials: true,
     header: {
       'content-type': 'application/json',

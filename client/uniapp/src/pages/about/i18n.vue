@@ -1,11 +1,3 @@
-<route lang="json">
-{
-  "style": {
-    "navigationBarTitleText": "%app.name%"
-  }
-}
-</route>
-
 <template>
   <view class="center flex-col mt-6">
     <view class="text-red-500 p-4 leading-6">
@@ -47,6 +39,12 @@
 <script lang="ts" setup>
 import i18n, { formatI18n, formatString, translate } from '@/locale/index'
 import { testI18n } from '@/utils/i18n'
+
+definePage({
+  style: {
+    navigationBarTitleText: i18n.global.t('app.name'),
+  }
+})
 
 const current = ref(uni.getLocale())
 const user = { name: '张三', detail: { height: 178, weight: '75kg' } }

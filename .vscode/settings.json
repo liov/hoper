@@ -4,5 +4,6 @@
 		"awesome/lang/rust/Cargo.toml",
 		"server/rust/rfv/Cargo.toml",
 		"server/rust/message/Cargo.toml"
-	]
+	],
+	"typescript.tsdk": "/Users/jyb/Library/pnpm/global/5/node_modules/typescript/lib"
 }

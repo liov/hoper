@@ -9,6 +9,7 @@ const messages = {
 }
 
 const i18n = createI18n({
+  legacy: false, // 启用 Composition API 模式，useI18n() 需要此配置
   locale: uni.getLocale(), // 获取已设置的语言，fallback 语言需要再 manifest.config.ts 中设置
   messages,
 })
