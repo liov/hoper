@@ -123,6 +123,16 @@ service CommonService {
     };
     option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
+
+  rpc Locale (LocaleReq) returns (LocaleResp) {
+    option (google.api.http) = {
+      get: "/api/locale"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["v1.0.0"]
+    };
+    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
+  }
 }
 
 message AddAttrReq {
@@ -201,4 +211,13 @@ message SendSmsReq {
   string sign = 5;
   string content = 6;
   repeated string to = 7;
+}
+
+message LocaleReq {
+  string locale = 1;
+}
+
+message LocaleResp {
+  string locale = 1;
+  map<string, string> messages = 2;
 }

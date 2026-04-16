@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { onLaunch, onShow, onHide } from '@dcloudio/uni-app'
+import { syncLocaleMessages } from '@/locale/index'
 
 onLaunch(() => {
+  syncLocaleMessages().catch((error) => {
+    console.error('[i18n] sync on launch error', error)
+  })
   console.log('App Launch')
 })
 onShow(() => {

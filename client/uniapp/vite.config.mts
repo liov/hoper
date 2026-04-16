@@ -121,7 +121,7 @@ export default ({ command, mode }) => {
     resolve: {
       alias: {
         '@': path.join(process.cwd(), './src'),
-        '@img': path.join(process.cwd(), './src/static/images'),
+        '@gen': path.join(process.cwd(), './gen'),
       },
     },
     server: {

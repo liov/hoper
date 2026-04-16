@@ -28,7 +28,7 @@ import (
 //go:generate protogen.exe go -d -e -w -v -i ../../proto
 func main() {
 	defer global.Global.Cleanup()
-	gatewayx.DefaultMarshal = gateway.JsonMarshal
+	gatewayx.DefaultMarshal = gateway.ProtobufMarshal
 	timex.DefaultEncoding = timex.EncodingUnixMilliseconds
 	ctx := context.Background()
 	res, err := resource.New(ctx,

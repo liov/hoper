@@ -41,7 +41,8 @@
           :class="focused === 'loginPwd' ? 'border-[#018d71] bg-[#f0fdf8]' : ''">
           <text class="text-xl mr-2.5 flex-shrink-0">🔒</text>
           <input v-model="loginForm.password" class="flex-1 text-sm text-gray-800 bg-transparent h-full"
-            :class="{ 'pwd-masked': !showLoginPwd }" type="text" :placeholder="$t('auth.password')"
+            :class="{ 'pwd-masked': !showLoginPwd && loginForm.password.length > 0 }" type="text"
+            :placeholder="$t('auth.password')"
             placeholder-class="text-gray-300 text-sm" @focus="focused = 'loginPwd'" @blur="focused = ''" />
           <text class="ml-2 flex-shrink-0 text-gray-400 text-base select-none" @click.stop="showLoginPwd = !showLoginPwd">{{ showLoginPwd ? '🙈' : '👁' }}</text>
         </view>
@@ -102,7 +103,8 @@
           :class="focused === 'regPwd' ? 'border-[#018d71] bg-[#f0fdf8]' : ''">
           <text class="text-xl mr-2.5 flex-shrink-0">🔒</text>
           <input v-model="registerForm.password" class="flex-1 text-sm text-gray-800 bg-transparent h-full"
-            :class="{ 'pwd-masked': !showRegPwd }" type="text" :placeholder="$t('auth.setPwd')"
+            :class="{ 'pwd-masked': !showRegPwd && registerForm.password.length > 0 }" type="text"
+            :placeholder="$t('auth.setPwd')"
             placeholder-class="text-gray-300 text-sm" @focus="focused = 'regPwd'" @blur="focused = ''" />
           <text class="ml-2 flex-shrink-0 text-gray-400 text-base select-none" @click.stop="showRegPwd = !showRegPwd">{{ showRegPwd ? '🙈' : '👁' }}</text>
         </view>
@@ -110,7 +112,8 @@
           :class="focused === 'confirm' ? 'border-[#018d71] bg-[#f0fdf8]' : ''">
           <text class="text-xl mr-2.5 flex-shrink-0">🔒</text>
           <input v-model="registerForm.confirmPassword" class="flex-1 text-sm text-gray-800 bg-transparent h-full"
-            :class="{ 'pwd-masked': !showRegPwd }" type="text" :placeholder="$t('auth.confirmPwd')"
+            :class="{ 'pwd-masked': !showRegPwd && registerForm.confirmPassword.length > 0 }" type="text"
+            :placeholder="$t('auth.confirmPwd')"
             placeholder-class="text-gray-300 text-sm" @focus="focused = 'confirm'" @blur="focused = ''" />
         </view>
 
