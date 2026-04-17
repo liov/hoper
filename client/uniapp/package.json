@@ -57,7 +57,7 @@
     "build:quickapp-webview-union": "uni build -p quickapp-webview-union",
     "type-check": "vue-tsc --noEmit",
     "diamond:add": "pnpm add file:..\\..\\thirdparty\\diamond",
-    "diamond:link": "pnpm link @hopeio/utils",
+    "diamond:link": "pnpm add @hopeio/utils@link:../../thirdparty/diamond --no-frozen-lockfile",
     "clear:cache": "rm -r node_modules/.vite/deps"
   },
   "lint-staged": {
@@ -92,7 +92,7 @@
     "@dcloudio/uni-mp-xhs": "3.0.0-5000720260410001",
     "@dcloudio/uni-quickapp-webview": "3.0.0-5000720260410001",
     "@dcloudio/uni-ui": "^1.5.12",
-    "@hopeio/utils": "^0.0.6",
+    "@hopeio/utils": "link:../../thirdparty/diamond",
     "@uni-helper/uni-env": "^0.2.0",
     "dayjs": "1.11.20",
     "pinia": "3.0.4",
@@ -167,8 +167,7 @@
       "@intlify/shared": "9.14.4",
       "@intlify/message-compiler": "9.14.4",
       "@intlify/core-base": "9.14.4",
-      "typescript": "6.0.2",
-      "@hopeio/utils": "link:../../../../../Library/pnpm/global/5/node_modules/@hopeio/utils"
+      "typescript": "6.0.2"
     }
   }
 }

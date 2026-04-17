@@ -21,9 +21,10 @@ message User {
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" comment:"昵称"'}];
   string mail = 3 [(go.field) = {tags:'gorm:"size:32" validate:"email" comment:"邮箱"'}];
-  string phone = 4 [(go.field) = {tags:'gorm:"size:32" validate:"phone" comment:"手机号"'}];
-  string account = 5 [(go.field) = {tags:'gorm:"size:36;not null;unique" validate:"required,gte=6,lte=20" comment:"账号"'}];
-  string password = 6 [(go.field) = {tags:'json:"-" gorm:"size:32;not null" validate:"gte=8,lte=15" comment:"密码"'}];
+  string countryCallingCode = 4 [(go.field) = {tags:'gorm:"size:32;uniqueIndex:idx_phone" comment:"国家码"'}];
+  string phone = 5 [(go.field) = {tags:'gorm:"size:32;uniqueIndex:idx_phone" comment:"手机号"'}];
+  string account = 6 [(go.field) = {tags:'gorm:"size:36;not null;unique" validate:"required,gte=6,lte=20" comment:"账号"'}];
+  string password = 7 [(go.field) = {tags:'json:"-" gorm:"size:32;not null" validate:"gte=8,lte=15" comment:"密码"'}];
   // 性别，0未填写，1男，2女
   Gender gender = 8 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type:INTEGER
@@ -31,18 +32,19 @@ message User {
   time.Date birthday = 9 [(go.field) = {tags:'gorm:"<-:false;type:date;index"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     default:"2018-08-08",
     type: STRING}];
-  string address = 14 [(go.field) = {tags:'gorm:"size:255"'}];
-  string intro = 10 [(go.field) = {tags:'gorm:"size:255"'}];
-  string signature = 11 [(go.field) = {tags:'gorm:"size:255"'}];
-  string avatar = 12 [(go.field) = {tags:'gorm:"size:255"'}];
-  string cover = 13 [(go.field) = {tags:'gorm:"size:255"'}];
-  Role role = 24 [(go.field) = {tags:'gorm:"type:int2;default:0"'}];
-  string realName = 19 [(go.field) = {tags:'gorm:"size:5" comment:"实名"'}];
+  string countryCode = 10 [(go.field) = {tags:'gorm:"size:32" comment:"国家码"'}];
+  string address = 11 [(go.field) = {tags:'gorm:"size:255"'}];
+  string intro = 12 [(go.field) = {tags:'gorm:"size:255"'}];
+  string signature = 13 [(go.field) = {tags:'gorm:"size:255"'}];
+  string avatar = 14 [(go.field) = {tags:'gorm:"size:255"'}];
+  string cover = 15 [(go.field) = {tags:'gorm:"size:255"'}];
+  Role role = 16 [(go.field) = {tags:'gorm:"type:int2;default:0"'}];
+  string realName = 17 [(go.field) = {tags:'gorm:"size:5" comment:"实名"'}];
   string idNo = 18 [(go.field) = {tags:'gorm:"size:22" comment:"身份证号"'}];
-  timestamp.Timestamp activatedAt = 21 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
-  model.ModelTime  modelTime = 22 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
-  timestamp.Timestamp bannedAt = 23 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6)"'}];
-  UserStatus status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  timestamp.Timestamp activatedAt = 19 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  model.ModelTime  modelTime = 20 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
+  timestamp.Timestamp bannedAt = 21 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6)"'}];
+  UserStatus status = 22 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
 }

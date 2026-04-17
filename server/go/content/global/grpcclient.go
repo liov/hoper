@@ -14,8 +14,6 @@ import (
 )
 
 var (
-	userClient user.UserServiceClient
-	fileClient file.FileServiceClient
 	option     = otelgrpc.WithPropagators(
 		propagation.NewCompositeTextMapPropagator(
 			opentelemetry.GRPCTraceBinPropagator{}, propagation.Baggage{},

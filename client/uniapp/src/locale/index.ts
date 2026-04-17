@@ -47,7 +47,7 @@ export const syncLocaleMessages = async (inputLocale?: string) => {
   const cached = readCachedLocalePack(locale)
   mergeLocaleMessages(locale, cached?.messages)
   try {
-    const remote = await fetchLocalePack(locale)
+    const remote = await fetchLocalePack(locale).catch((e) => console.log(e))
     if (!remote) return
     mergeLocaleMessages(locale, remote.messages)
     uni.setStorageSync(getCacheKey(locale), remote)

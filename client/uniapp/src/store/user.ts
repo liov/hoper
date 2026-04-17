@@ -5,6 +5,7 @@ import type { UserBase } from '@gen/pb/user/user.model'
 import { httpclient } from '@/api/common'
 import { CommonResp } from '@hopeio/utils/types'
 import UserService from '@/api/user'
+import { LoginReq, SignupReq } from '@gen/pb/user/user.service'
 
 export interface UserState {
   auth: any
@@ -35,37 +36,24 @@ const actions = {
       if (data.code === 0) state.auth = data.data
     }
   },
-  async login(params) {
+  async login(params: LoginReq) {
     try {
-      const { code, data } = await UserService.login(params)
-
-      if (code !== 0) {
-        throw new Error('Bad credentials')
-      }
-
+      const data = await UserService.login(params)
       state.auth = data.user
       state.token = data.token
       uni.setStorageSync(tokenKey, data.token)
       httpclient.defaults.header.Authorization = data.token
       await uni.navigateTo({ url: '/' })
-    } catch (error: any) {
+    } catch (error) {
       console.log(error)
     }
   },
-  async signup(params) {
-    try {
-      const { data } = await UserService.signup(params)
-      state.auth = data.user
-      state.token = data.token
-      uni.setStorageSync(tokenKey, data.token)
-      httpclient.defaults.header.Authorization = data.token
-      await uni.navigateTo({ url: '/' })
-    } catch (error: any) {
-      if (error.response && error.response.status === 401) {
-        throw new Error('Bad credentials')
-      }
-      console.log(error)
-    }
+  async signup(params: SignupReq) {
+    const res = await UserService.signup(params)
+    if (res.code !== 0) return res
+    const tip = typeof res.data === 'string' ? res.data : '注册成功'
+    await uni.showToast({ title: tip, icon: 'success', duration: 2500 })
+    return res
   },
   async appendUsersById(ids: number[]) {
     const noExistsId: number[] = []

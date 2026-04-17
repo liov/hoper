@@ -34,14 +34,14 @@ httpclient.interceptors.request.use(function (config) {
 // 添加响应拦截器
 httpclient.interceptors.response.use(
   function (res) {
+    uni.hideLoading();
     // 对响应数据做点什么
     if (res.response.statusCode === 200) {
       let code = res.response.header['error-code'];
       let isProtobuf = res.response.header['content-type'] === 'application/x-protobuf' || res.response.header['content-type'] === 'application/protobuf';
       let errresp = res.response.data;
-      if (code) {
-        if (isProtobuf) {
-          console.log(errresp);
+      if (isProtobuf) {
+        if (code) {
           errresp = ErrResp.decode(new Uint8Array(res.response.data as ArrayBuffer));
         }
       }
@@ -52,16 +52,16 @@ httpclient.interceptors.response.use(
         uni.navigateTo({
           url: '/pages/user/login?back=' + pages[pages.length - 1].route,
         })
-      } else if (errresp.code !== 0) {
+      } else if (errresp.code) {
         uni.showToast({ title: errresp.msg, icon: 'error' })
-        return res
+        return errresp
       }
     }
     return res
   },
   function (error): UniApp.GeneralCallbackResult {
     // 对响应错误做点什么
-    uni.showToast({ title: error.errMsg, icon: 'error' })
+    uni.showToast({ title: errresp.msg, icon: 'error' })
     return error
   },
 )

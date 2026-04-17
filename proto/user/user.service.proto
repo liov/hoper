@@ -296,9 +296,10 @@ message SingUpVerifyReq {
     example: '{"mail":"123@qq.com", "phone":"12345678901"}'
   };
   // 邮箱
-  string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" comment:"邮箱"'}];
+  string mail = 1 [(go.field) = {tags:'gorm:"size:32" validate:"email" comment:"邮箱"'}];
   // 手机号
-  string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" comment:"手机号"'}];
+  string countryCallingCode = 2 [(go.field) = {tags:'gorm:"size:32;uniqueIndex:idx_phone" comment:"国家码"'}];
+  string phone = 3 [(go.field) = {tags:'gorm:"size:32;uniqueIndex:idx_phone" comment:"手机号"'}];
 }
 
 message SignupReq {
@@ -311,7 +312,7 @@ message SignupReq {
   // 邮箱
   string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" comment:"邮箱"'}];
   // 手机号
-  string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" comment:"手机号"'}];
+  string phone = 7 [(go.field) = {tags:'comment:"手机号"'}];
   // 验证码
   string vCode = 8 [(go.field) = {tags:'validate:"required" comment:"验证码"'}];
 }
@@ -348,12 +349,16 @@ message EditReq {
 }
 // 登录请求
 message LoginReq {
-  string input = 1;
-  string password = 2 [(go.field) = {tags:'validate:"required,gt=5,lt=15" comment:"密码"'},(validator.field) = {
+  // 邮箱
+  string mail = 1 [(go.field) = {tags:'validate:"omitempty,email" comment:"邮箱"'}];
+  // 手机号
+  string countryCallingCode = 2 [(go.field) = {tags:'comment:"国家码"'}];
+  string phone = 3 [(go.field) = {tags: 'comment:"手机号"'}];
+  string password = 4 [(go.field) = {tags:'validate:"required,gt=5,lt=15" comment:"密码"'},(validator.field) = {
     length_gt: 5
     custom_error: "密码错误"
   }];
-  string vCode = 3;
+  string vCode = 5;
 }
 // 登录返回
 message LoginResp {
@@ -387,12 +392,13 @@ message ActionLogListResp {
 
 message VerifyCodeReq{
   // 邮箱
-  string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" comment:"邮箱"'}];
+  string mail = 1 [(go.field) = {tags:'validate:"omitempty,email" comment:"邮箱"'}];
   // 手机号
-  string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" comment:"手机号"'}];
-  Action action = 2 [(go.field) = {tags:'comment:"操作类型"'}];
+  string countryCallingCode = 2 [(go.field) = {tags:'comment:"国家码"'}];
+  string phone = 3 [(go.field) = {tags:'comment:"手机号"'}];
+  Action action = 4 [(go.field) = {tags:'comment:"操作类型"'}];
   // 验证码
-  string vCode = 8 [(go.field) = {tags:'validate:"required" comment:"验证码"'}];
+  string vCode = 5 [(go.field) = {tags:'validate:"required" comment:"验证码"'}];
 }
 
 message BaseListReq{

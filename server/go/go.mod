@@ -13,7 +13,7 @@ require (
 	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.28.0
 	github.com/hopeio/cherry v1.20.39
-	github.com/hopeio/gox v1.11.0
+	github.com/hopeio/gox v1.11.1
 	github.com/hopeio/initialize v1.0.0
 	github.com/hopeio/pick v1.13.17
 	github.com/hopeio/protobuf v1.0.0
@@ -88,6 +88,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
+	github.com/nyaruka/phonenumbers v1.7.1 // indirect
 	github.com/oasdiff/yaml v0.0.0-20250309154309-f31be36b4037 // indirect
 	github.com/oasdiff/yaml3 v0.0.0-20250309153720-d2182401db90 // indirect
 	github.com/onsi/ginkgo/v2 v2.25.1 // indirect

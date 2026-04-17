@@ -1,39 +1,42 @@
 <!doctype html>
 <html build-date="%BUILD_DATE%">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-    <script>
-      function browserRedirect() {//只读的字符串，声明了浏览器用于 HTTP 请求的用户代理头的值
-        const userAgent = navigator.userAgent.toLowerCase();
-        const isPhone = userAgent.match(/(iphone|ios|Android|ipad)/i);
-        if(!isPhone) {
-          const location =  window.location
-          if(location.host.startsWith("m.")){
-            console.log("跳转到电脑版");
-            location.replace( location.protocol+"//"+location.host.slice(2)+location.pathname+location.search);
-          }
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+  <script>
+    function browserRedirect() {//只读的字符串，声明了浏览器用于 HTTP 请求的用户代理头的值
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isPhone = userAgent.match(/(iphone|ios|Android|ipad)/i);
+      if (!isPhone) {
+        const location = window.location
+        if (location.host.startsWith("m.")) {
+          console.log("跳转到电脑版");
+          location.replace(location.protocol + "//" + location.host.slice(2) + location.pathname + location.search);
         }
       }
-      browserRedirect();
-      var coverSupport =
-        'CSS' in window &&
-        typeof CSS.supports === 'function' &&
-        (CSS.supports('top: env(a)') || CSS.supports('top: constant(a)'))
-      document.write(
-        '<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0' +
-          (coverSupport ? ', viewport-fit=cover' : '') +
-          '" />',
-      )
-    </script>
-    <title>hoper</title>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onloadTurnstileCallback" async defer></script>
-    <!--preload-links-->
-    <!--app-context-->
-  </head>
+    }
+    browserRedirect();
+    var coverSupport =
+      'CSS' in window &&
+      typeof CSS.supports === 'function' &&
+      (CSS.supports('top: env(a)') || CSS.supports('top: constant(a)'))
+    document.write(
+      '<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0' +
+      (coverSupport ? ', viewport-fit=cover' : '') +
+      '" />',
+    )
+  </script>
+  <title>hoper</title>
+  <!-- <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onloadTurnstileCallback"
+    async defer></script> -->
+  <!--preload-links-->
+  <!--app-context-->
+</head>
 
-  <body>
-    <div id="app"><!--app-html--></div>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+<body>
+  <div id="app"><!--app-html--></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
 </html>

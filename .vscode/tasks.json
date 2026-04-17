@@ -2,7 +2,7 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "go:protogen",
+			"label": "go:pb",
 			"type": "shell",
 			"options": {
                 "cwd": "${workspaceFolder}/server/go"
@@ -40,7 +40,11 @@
 				"cwd": "${workspaceFolder}/client/app"
 			},
 			"command": "flutter",
-			"args": ["build", "apk", "--release"],
+			"args": [
+				"build",
+				"apk",
+				"--release"
+			],
 		},
 		{
 			"label": "diamond build",
@@ -49,10 +53,41 @@
 				"cwd": "${workspaceFolder}/thirdparty/diamond"
 			},
 			"command": "pnpm",
-			"args": ["build"],
+			"args": [
+				"build"
+			],
 			"runOptions": {
 				"runOn": "folderOpen",
 			}
+		},
+		{
+			"label": "uniapp:dev",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/client/uniapp"
+			},
+			"isBackground": true, // 必须为 true，因为 dev 服务是常驻的
+			"problemMatcher": {
+				"owner": "typescript",
+				"fileLocation": "relative",
+				"pattern": {
+					"regexp": ".*"
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": ".*",
+					"endsPattern": "ready in.*" // 当终端出现 ready in 时，认为启动成功
+				}
+			},
+			"presentation": {
+				"close": true, // 当任务终止时关闭面板
+				"panel": "new" // 每次创建新面板
+			},
+			"command": "pnpm",
+			"args": [
+				"run",
+				"dev"
+			],
 		},
 		{
 			"label": "ts:pb",
@@ -61,8 +96,54 @@
 				"cwd": "${workspaceFolder}/client/uniapp"
 			},
 			"command": "protogen",
-			"args": ["ts","-p","../../thirdparty/protobuf/_proto","-i","../../proto","-o","gen/pb"],
-
-		}
+			"args": [
+				"ts",
+				"-p",
+				"../../thirdparty/protobuf/_proto",
+				"-i",
+				"../../proto",
+				"-o",
+				"gen/pb"
+			],
+		},
+		{
+			"label": "pb:ts",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/proto/generated/ts"
+			},
+			"command": "protogen",
+			"args": [
+				"ts",
+				"-p",
+				"../../../thirdparty/protobuf/_proto",
+				"-i",
+				"../..",
+				"-o",
+				"src"
+			],
+		},
+		{
+			"label": "pb:go",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/proto/generated/go"
+			},
+			"command": "protogen",
+			"args": [
+				"go",
+				"-d",
+				"-e",
+				"-w",
+				"-v",
+				"-i",
+				"../..",
+				"-o",
+				"."
+			],
+			"runOptions": {
+				"runOn": "folderOpen",
+			}
+		},
 	]
 }

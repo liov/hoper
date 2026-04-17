@@ -1,0 +1,7 @@
+.generated/**
+!.generated
+!.generated/ts/package.json
+!.generated/ts/vite.config.ts
+!.generated/ts/tsconfig.json
+!.generated/ts/tsconfig.types.json
+!.generated/go/go.mod

@@ -9,7 +9,7 @@ import (
 	"github.com/hopeio/initialize/dao/minio"
 	gormx "github.com/hopeio/gox/database/sql/gorm"
 	ominio "github.com/minio/minio-go/v7"
-	//"github.com/liov/hoper/server/go/protobuf/content"
+	//"github.com/liov/hoper/server/go/protobuf/user"
 	//"github.com/liov/hoper/server/go/protobuf/content"
 )
 
@@ -42,11 +42,11 @@ func (d *dao) AfterInject() {
 	if d.GORMDB.DB != nil {
 		d.GORMDB.DB.Use(gormx.NewOTelPlugin())
 		//d.GORMDB.Conf.NamingStrategy.TablePrefix = "user."
-		err := d.GORMDB.Exec(`CREATE SCHEMA IF NOT EXISTS "user"`).Error
-		if err != nil {
-			log.Fatal(err)
-		}
-		// err = d.GORMDB.Migrator().AutoMigrate(&user.User{}, &user.Resume{}, &user.ActionLog{}, &user.BannedLog{}, &user.Device{}, &user.ScoreLog{}, &user.UserExt{}, user.Oauth{})
+		// err := d.GORMDB.Exec(`CREATE SCHEMA IF NOT EXISTS "user"`).Error
+		// if err != nil {
+		// 	log.Fatal(err)
+		// }
+		// err := d.GORMDB.Migrator().AutoMigrate(&user.User{})
 		// if err != nil {
 		// 	log.Fatal(err)
 		// }

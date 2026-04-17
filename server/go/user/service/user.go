@@ -19,7 +19,6 @@ import (
 	httpx "github.com/hopeio/gox/net/http"
 	"github.com/hopeio/gox/sdk/luosimao"
 	stringsx "github.com/hopeio/gox/strings"
-	"github.com/hopeio/gox/validator"
 	"github.com/hopeio/pick"
 	"github.com/hopeio/protobuf/request"
 	"github.com/hopeio/protobuf/response"
@@ -49,20 +48,36 @@ type UserService struct {
 
 func (u *UserService) VerifyCode(ctx context.Context, req *userpb.VerifyCodeReq) (*emptypb.Empty, error) {
 
+	if req.Mail != "" && req.Phone != "" {
+		return nil, errcode.InvalidArgument.Msg("auth.err.onlyOneContact")
+	}
+	if req.Mail == "" && req.Phone == "" {
+		return nil, errcode.InvalidArgument.Msg("auth.err.contactRequired")
+	}
 	vcode := rand.RandomCode(4)
 	log.Info(vcode)
 	key := modelconst.VerificationCodeKey + req.Mail + req.Phone
 	if err := global.Dao.Redis.Set(ctx, key, vcode, modelconst.VerificationCodeDuration).Err(); err != nil {
 		return nil, errcode.RedisErr.Wrap(err)
 	}
-	sendVcode(ctx, req.Action, vcode, req.Mail)
+	if req.Mail != "" {
+		sendVcode(ctx, req.Action, vcode, req.Mail)
+		return new(emptypb.Empty), nil
+	}
+	// 手机号：验证码已写入 Redis；下发走短信网关，接入前 Debug 下打印便于联调
+	if global.Global.RootConfig.Debug {
+		log.Infow("phone verify code (debug)", zap.String("phone", req.Phone), zap.String("code", vcode))
+	}
 	return new(emptypb.Empty), nil
 }
 
 func (*UserService) SignupVerify(ctx context.Context, req *userpb.SingUpVerifyReq) (*emptypb.Empty, error) {
 
+	if req.Mail != "" && req.Phone != "" {
+		return nil, errcode.InvalidArgument.Msg("auth.err.onlyOneContact")
+	}
 	if req.Mail == "" && req.Phone == "" {
-		return nil, errcode.InvalidArgument.Msg("请填写邮箱或手机号")
+		return nil, errcode.InvalidArgument.Msg("auth.err.contactRequired")
 	}
 	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	userDao := data.GetDBDao(db)
@@ -70,16 +85,16 @@ func (*UserService) SignupVerify(ctx context.Context, req *userpb.SingUpVerifyRe
 	if input == "" {
 		input = req.Phone
 	}
-	checkUser, err := userDao.GetByEmailOrPhone(ctx, input)
+	checkUser, err := userDao.GetByEmailOrPhone(ctx, req.Mail, req.CountryCallingCode, req.Phone)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errcode.DBError
 	}
 	if err == nil {
 		if checkUser.Mail == req.Mail {
-			return nil, errcode.InvalidArgument.Msg("邮箱已被注册")
+			return nil, errcode.InvalidArgument.Msg("auth.err.mailRegistered")
 		}
 		if checkUser.Phone == req.Phone {
-			return nil, errcode.InvalidArgument.Msg("手机号已被注册")
+			return nil, errcode.InvalidArgument.Msg("auth.err.phoneRegistered")
 		}
 	}
 
@@ -88,8 +103,11 @@ func (*UserService) SignupVerify(ctx context.Context, req *userpb.SingUpVerifyRe
 
 func (u *UserService) Signup(ctx context.Context, req *userpb.SignupReq) (*wrappers.StringValue, error) {
 
+	if req.Mail != "" && req.Phone != "" {
+		return nil, errcode.InvalidArgument.Msg("auth.err.onlyOneContact")
+	}
 	if req.Mail == "" && req.Phone == "" {
-		return nil, errcode.InvalidArgument.Msg("请填写邮箱或手机号")
+		return nil, errcode.InvalidArgument.Msg("auth.err.contactRequired")
 	}
 	if req.VCode != global.Conf.User.LuosimaoSuperPW {
 		if err := LuosimaoVerify(req.VCode); err != nil {
@@ -105,13 +123,13 @@ func (u *UserService) Signup(ctx context.Context, req *userpb.SignupReq) (*wrapp
 	}
 	if err == nil {
 		if checkUser.Name == req.Name {
-			return nil, errcode.InvalidArgument.Msg("用户名已被注册")
+			return nil, errcode.InvalidArgument.Msg("auth.err.nameRegistered")
 		}
 		if checkUser.Mail == req.Mail {
-			return nil, errcode.InvalidArgument.Msg("邮箱已被注册")
+			return nil, errcode.InvalidArgument.Msg("auth.err.mailRegistered")
 		}
 		if checkUser.Phone == req.Phone {
-			return nil, errcode.InvalidArgument.Msg("手机号已被注册")
+			return nil, errcode.InvalidArgument.Msg("auth.err.phoneRegistered")
 		}
 	}
 
@@ -250,20 +268,20 @@ func (u *UserService) Active(ctx context.Context, req *userpb.ActiveReq) (*userp
 	}
 
 	if user.Status != userpb.UserStatusInActive {
-		return nil, errcode.AlreadyExists.Msg("已激活")
+		return nil, errcode.AlreadyExists.Msg("auth.err.activated")
 	}
 	redisKey := modelconst.ActiveTimeKey + strconv.FormatUint(req.Id, 10)
 	emailTime, err := global.Dao.Redis.Get(ctx, redisKey).Int64()
 	if err != nil {
 		go sendMail(ctx, userpb.ActionActive, time.Now().UnixMilli(), user)
-		return nil, errcode.InvalidArgument.Msg("已过激活期限")
+		return nil, errcode.InvalidArgument.Msg("auth.err.activationExpired")
 	}
 	secretStr := strconv.Itoa((int)(emailTime)) + user.Mail + user.Password
 
 	secretStr = fmt.Sprintf("%x", md5.Sum(stringsx.ToBytes(secretStr)))
 
 	if req.Secret != secretStr {
-		return nil, errcode.InvalidArgument.Msg("无效的链接")
+		return nil, errcode.InvalidArgument.Msg("auth.err.invalidLink")
 	}
 	err = userDBDao.Active(ctx, user)
 	if err != nil {
@@ -290,7 +308,7 @@ func (u *UserService) Edit(ctx context.Context, req *userpb.EditReq) (*emptypb.E
 
 		originalIds, err := userDBDao.ResumesIds(ctx, user.Id)
 		if err != nil {
-			return nil, errcode.DBError.Msg("更新失败")
+			return nil, errcode.DBError.Msg("auth.err.updateFailed")
 		}
 		var resumes []*userpb.Resume
 		resumes = append(req.Detail.EduExps, req.Detail.WorkExps...)
@@ -300,12 +318,12 @@ func (u *UserService) Edit(ctx context.Context, req *userpb.EditReq) (*emptypb.E
 		if len(resumes) > 0 {
 			err = userDBDao.SaveResumes(ctx, req.Id, resumes, originalIds, userpb.ConvDeviceInfo(device))
 			if err != nil {
-				return nil, errcode.DBError.Msg("更新失败")
+				return nil, errcode.DBError.Msg("auth.err.updateFailed")
 			}
 		}
 		err = userDBDao.Update(ctx, req)
 		if err != nil {
-			return nil, errcode.DBError.Msg("更新失败")
+			return nil, errcode.DBError.Msg("auth.err.updateFailed")
 		}
 		tx.Commit()
 	}
@@ -320,18 +338,18 @@ func (u *UserService) Login(ctx context.Context, req *userpb.LoginReq) (*userpb.
 		}
 	}
 
-	if req.Input == "" {
-		return nil, errcode.InvalidArgument.Msg("账号错误")
+	if req.Mail == "" && req.Phone == "" {
+		return nil, errcode.InvalidArgument.Msg("auth.err.invalidAccount")
 	}
 	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	userDBDao := data.GetDBDao(db)
-	user, err := userDBDao.UserInfoByAccount(ctx, req.Input)
+	user, err := userDBDao.UserInfoByAccount(ctx, req.Mail, req.CountryCallingCode, req.Phone)
 	if err != nil {
-		return nil, errcode.DBError.Msg("账号不存在")
+		return nil, errcode.DBError.Msg("auth.err.accountNotFound")
 	}
 
 	if !checkPassword(req.Password, user) {
-		return nil, errcode.InvalidArgument.Msg("密码错误")
+		return nil, errcode.InvalidArgument.Msg("auth.err.passwordWrong")
 	}
 	if user.Status == userpb.UserStatusInActive {
 		//没看懂
@@ -343,7 +361,7 @@ func (u *UserService) Login(ctx context.Context, req *userpb.LoginReq) (*userpb.
 			return nil, errcode.RedisErr.Wrap(err)
 		}
 		go sendMail(ctx, userpb.ActionActive, curTime, user)
-		return nil, userpb.UserErrNoActive.Msg("账号未激活,请进入邮箱点击激活")
+		return nil, userpb.UserErrNoActive.Msg("auth.err.notActivated")
 	}
 
 	return u.login(ctx, user)
@@ -458,7 +476,7 @@ func (u *UserService) Info(ctx context.Context, req *request.Id) (*userpb.UserRe
 	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	var user1 userpb.User
 	if err = db.First(&user1, req.Id).Error; err != nil {
-		return nil, errcode.DBError.Msg("账号不存在")
+		return nil, errcode.DBError.Msg("auth.err.accountNotFound")
 	}
 	userExt, err := userRedisDao.GetUserExtRedis(ctx, auth.Id)
 	if err != nil {
@@ -473,19 +491,19 @@ func (u *UserService) ForgetPassword(ctx context.Context, req *userpb.LoginReq) 
 		return nil, errcode.InvalidArgument.Wrap(verifyErr)
 	}
 
-	if req.Input == "" {
-		return nil, errcode.InvalidArgument.Msg("账号错误")
+	if req.Mail == "" && req.Phone == "" {
+		return nil, errcode.InvalidArgument.Msg("auth.err.invalidAccount")
 	}
 	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	userDBDao := data.GetDBDao(db)
 
-	user, err := userDBDao.GetByEmailOrPhone(ctx, req.Input, req.Input, "id", "name", "password")
+	user, err := userDBDao.GetByEmailOrPhone(ctx, req.Mail, req.CountryCallingCode, req.Phone, "id", "name", "password")
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			if validator.PhoneOrMail(req.Input) != validator.Phone {
-				return nil, errcode.InvalidArgument.Msg("邮箱不存在")
+			if req.Mail != "" {
+				return nil, errcode.InvalidArgument.Msg("auth.err.mailNotFound")
 			} else {
-				return nil, errcode.InvalidArgument.Msg("手机号不存在")
+				return nil, errcode.InvalidArgument.Msg("auth.err.phoneNotFound")
 			}
 		}
 		log.Error(err)
@@ -510,7 +528,7 @@ func (u *UserService) ResetPassword(ctx context.Context, req *userpb.ResetPasswo
 	emailTime, err := global.Dao.Redis.Get(ctx, redisKey).Int64()
 	if err != nil {
 		log.Errorw("Get faild", zap.Error(err))
-		return nil, errcode.InvalidArgument.Msg("无效的链接")
+		return nil, errcode.InvalidArgument.Msg("auth.err.invalidLink")
 	}
 	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	userDBDao := data.GetDBDao(db)
@@ -519,14 +537,14 @@ func (u *UserService) ResetPassword(ctx context.Context, req *userpb.ResetPasswo
 		return nil, err
 	}
 	if user.Status != 1 {
-		return nil, errcode.FailedPrecondition.Msg("无效账号")
+		return nil, errcode.FailedPrecondition.Msg("auth.err.invalidAccountStatus")
 	}
 	secretStr := strconv.Itoa(int(emailTime)) + user.Mail + user.Password
 
 	secretStr = fmt.Sprintf("%x", md5.Sum(stringsx.ToBytes(secretStr)))
 
 	if req.Secret != secretStr {
-		return nil, errcode.InvalidArgument.Msg("无效的链接")
+		return nil, errcode.InvalidArgument.Msg("auth.err.invalidLink")
 	}
 
 	if err := db.Table(modelconst.TableNameUser).
@@ -600,8 +618,11 @@ func (*UserService) PickAddv(ctx *gin.Context, req *response.ErrResp) (*response
 
 func (u *UserService) EasySignup(ctx context.Context, req *userpb.SignupReq) (*userpb.LoginResp, error) {
 
+	if req.Mail != "" && req.Phone != "" {
+		return nil, errcode.InvalidArgument.Msg("auth.err.onlyOneContact")
+	}
 	if req.Mail == "" && req.Phone == "" {
-		return nil, errcode.InvalidArgument.Msg("请填写邮箱或手机号")
+		return nil, errcode.InvalidArgument.Msg("auth.err.contactRequired")
 	}
 	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	userDBDao := data.GetDBDao(db)
@@ -611,13 +632,13 @@ func (u *UserService) EasySignup(ctx context.Context, req *userpb.SignupReq) (*u
 	}
 	if err == nil {
 		if checkUser.Name == req.Name {
-			return nil, errcode.InvalidArgument.Msg("用户名已被注册")
+			return nil, errcode.InvalidArgument.Msg("auth.err.nameRegistered")
 		}
 		if checkUser.Mail == req.Mail {
-			return nil, errcode.InvalidArgument.Msg("邮箱已被注册")
+			return nil, errcode.InvalidArgument.Msg("auth.err.mailRegistered")
 		}
 		if checkUser.Phone == req.Phone {
-			return nil, errcode.InvalidArgument.Msg("手机号已被注册")
+			return nil, errcode.InvalidArgument.Msg("auth.err.phoneRegistered")
 		}
 	}
 
@@ -636,7 +657,7 @@ func (u *UserService) EasySignup(ctx context.Context, req *userpb.SignupReq) (*u
 	user.Password = encryptPassword(req.Password)
 	if err := userDBDao.Create(ctx, user); err != nil {
 		log.Errorw("Create faild", zap.Error(err))
-		return nil, errcode.DBError.Msg("新建出错")
+		return nil, errcode.DBError.Msg("auth.err.createFailed")
 	}
 	return u.login(ctx, user)
 }

@@ -4,14 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"strconv"
-	"strings"
 	"time"
 
 	sqlx "github.com/hopeio/gox/database/sql"
 	_ "github.com/hopeio/gox/database/sql/gorm"
 	"github.com/hopeio/gox/log"
 	"github.com/hopeio/gox/slices"
-	"github.com/hopeio/gox/validator"
 	puser "github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/model"
 	"gorm.io/gorm"
@@ -37,7 +35,7 @@ func (d *UserDao) GetByNameOrEmailOrPhone(ctx context.Context, name, email, phon
 	return &u, nil
 }
 
-func (d *UserDao) GetByEmailOrPhone(ctx context.Context, input string, fields ...string) (*puser.User, error) {
+func (d *UserDao) GetByEmailOrPhone(ctx context.Context, mail string, countryCallingCode string, phone string, fields ...string) (*puser.User, error) {
 
 	var u puser.User
 	var err error
@@ -45,10 +43,10 @@ func (d *UserDao) GetByEmailOrPhone(ctx context.Context, input string, fields ..
 	if len(fields) > 0 {
 		db = d.Table(model.TableNameUser).Select(fields)
 	}
-	if strings.Contains(input, "@") {
-		err = db.Where("mail = ? AND status != ?"+sqlx.WithNotDeleted, input, puser.UserStatusDeleted).First(&u).Error
-	} else {
-		err = db.Where("phone = ? AND status != ?"+sqlx.WithNotDeleted, input, puser.UserStatusDeleted).First(&u).Error
+	if mail != "" {
+		err = db.Where("mail = ? AND status != ?"+sqlx.WithNotDeleted, mail, puser.UserStatusDeleted).First(&u).Error
+	} else if countryCallingCode != "" && phone != "" {
+		err = db.Where("country_calling_code = ? AND phone = ? AND status != ?"+sqlx.WithNotDeleted, countryCallingCode, phone, puser.UserStatusDeleted).First(&u).Error
 	}
 	if err != nil {
 		return nil, err
@@ -191,17 +189,14 @@ func (d *UserDao) Update(ctx context.Context, req *puser.EditReq) error {
 	return d.Table(model.TableNameUser).Where(`id = ?`, req.Id).UpdateColumns(req.Detail).Error
 }
 
-func (d *UserDao) UserInfoByAccount(ctx context.Context, account string) (*puser.User, error) {
+func (d *UserDao) UserInfoByAccount(ctx context.Context, mail, countryCallingCode, phone string) (*puser.User, error) {
 	var user puser.User
 	var sql string
-	switch validator.PhoneOrMail(account) {
-	case validator.Mail:
+	if mail != "" {
 		sql = "mail = ?"
-	case validator.Phone:
-		sql = "phone = ?"
-	default:
-		sql = "account = ?"
+	}else if countryCallingCode != "" && phone != "" {
+		sql = "country_calling_code = ? AND phone = ?"
 	}
 	return &user, d.Table(model.TableNameUser).
-		Where(sql+` AND status != ?`+sqlx.WithNotDeleted, account, puser.UserStatusDeleted).First(&user).Error
+		Where(sql+` AND status != ?`+sqlx.WithNotDeleted, mail, countryCallingCode, phone, puser.UserStatusDeleted).First(&user).Error
 }
