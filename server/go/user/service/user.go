@@ -4,14 +4,10 @@ import (
 	"bytes"
 	"context"
 	"crypto/md5"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strconv"
-	"strings"
 	"sync"
 	"time"
 
@@ -104,28 +100,6 @@ func (*UserService) SignupVerify(ctx context.Context, req *userpb.SingUpVerifyRe
 			return nil, errcode.InvalidArgument.Msg("auth.err.phoneRegistered")
 		}
 	}
-
-	if req.Mail != "" {
-		m := &mail.Mail{
-			Addr:     global.Dao.Mail.Conf.Host + global.Dao.Mail.Conf.Port,
-			FromName: global.Conf.SiteName,
-			From:     global.Dao.Mail.Conf.UserName,
-			Subject:  global.LocalizerMap["zh-Hans"].MustLocalize(&i18n.LocalizeConfig{
-				MessageID: "auth.mail.verifyCodeSubject",
-			}),
-			Content:  global.LocalizerMap["zh-Hans"].MustLocalize(&i18n.LocalizeConfig{
-				MessageID: "auth.mail.verifyCodeContent",
-				TemplateData: map[string]interface{}{"Vcode": rand.RandomCode(4)},
-			}),
-			To:       []string{req.Mail},
-			Auth:     global.Dao.Mail.Auth,
-		}
-		err = m.SendMailTLS()
-		if err != nil {
-			log.Error("sendMail:", err)
-		}
-	}
-
 	return new(emptypb.Empty), nil
 }
 
@@ -247,94 +221,26 @@ func sendMail(ctx context.Context, action userpb.Action, curTime int64, user *us
 }
 
 func sendVcode(ctx context.Context, action userpb.Action, vcode string, mailAddr string) {
-	var values = struct {
-		Action, Vcode string
-	}{action.String(), vcode}
-	templ := modelconst.VerifycodeContent
-
-	var buf = new(bytes.Buffer)
-	err := templatex.Execute(buf, templ, &values)
-	if err != nil {
-		log.Error("executing template:", err)
-	}
-	//content += "<p><img src=\"" + siteURL + "/images/logo.png\" style=\"height: 42px;\"/></p>"
-	//fmt.Println(content)
-	content := buf.String()
-
+	content := global.LocalizerMap["zh-Hans"].MustLocalize(&i18n.LocalizeConfig{
+		MessageID: "auth.mail.verifyCodeContent",
+		TemplateData: map[string]interface{}{"Action": action.String(), "Vcode": vcode},
+	})
 	m := &mail.Mail{
 		Addr:     global.Dao.Mail.Conf.Host + global.Dao.Mail.Conf.Port,
-		FromName: "hoper",
+		FromName: global.Conf.SiteName,
 		From:     global.Dao.Mail.Conf.UserName,
-		Subject:  i18nText(ctx, "auth.mail.verifyCodeSubject", "验证码"),
+		Subject:  global.LocalizerMap["zh-Hans"].MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "auth.mail.verifyCodeSubject",
+		}),
 		Content:  content,
 		To:       []string{mailAddr},
 		Auth:     global.Dao.Mail.Auth,
 	}
 	log.Debug(content)
-	err = m.SendMailTLS()
+	err := m.SendMailTLS()
 	if err != nil {
 		log.Error("sendMail:", err)
 	}
-}
-
-func i18nText(ctx context.Context, key, defaultText string) string {
-	locale := localeFromContext(ctx)
-	if msg := i18nTextByLocale(locale, key); msg != "" {
-		return msg
-	}
-	if locale != "zh-CN" {
-		if msg := i18nTextByLocale("zh-CN", key); msg != "" {
-			return msg
-		}
-	}
-	return defaultText
-}
-
-func i18nTextByLocale(locale, key string) string {
-	cacheKey := locale + ":" + key
-	if cached, ok := localeMessageCache.Load(cacheKey); ok {
-		return cached.(string)
-	}
-	path := filepath.Clean(filepath.Join(global.Conf.Locale.Dir, locale+".json"))
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return ""
-	}
-	messages := make(map[string]string)
-	if err = json.Unmarshal(data, &messages); err != nil {
-		return ""
-	}
-	msg := messages[key]
-	if msg != "" {
-		localeMessageCache.Store(cacheKey, msg)
-	}
-	return msg
-}
-
-func localeFromContext(ctx context.Context) string {
-	locale := global.Conf.Locale.Default
-	if locale == "" {
-		locale = "zh-CN"
-	}
-	if md := contextx.GetMetadata(ctx); md != nil && md.Request != nil {
-		if acceptLang := md.Request.Header.Get(httpx.HeaderAcceptLanguage); acceptLang != "" {
-			locale = acceptLang
-		}
-	}
-	if idx := strings.IndexByte(locale, ','); idx >= 0 {
-		locale = locale[:idx]
-	}
-	if idx := strings.IndexByte(locale, ';'); idx >= 0 {
-		locale = locale[:idx]
-	}
-	locale = strings.TrimSpace(locale)
-	if locale == "zh-Hans" || strings.HasPrefix(locale, "zh") {
-		return "zh-CN"
-	}
-	if strings.HasPrefix(locale, "en") {
-		return "en"
-	}
-	return locale
 }
 
 // 验证密码是否正确

@@ -53,5 +53,5 @@
   "auth.err.invalidAccountStatus": "无效账号",
   "auth.err.createFailed": "新建出错",
   "auth.mail.verifyCodeSubject": "验证码",
-  "auth.mail.verifyCodeContent": "您的验证码是：{{.Vcode}}"
+  "auth.mail.verifyCodeContent": "<p>本次{{.Action}}需要的验证码是 {{.Vcode}},请在15分钟内输入验证码并进行下一步操作</p>"
 }

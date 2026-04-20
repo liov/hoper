@@ -183,6 +183,10 @@ const registerForm = reactive({
 let smsTimer: ReturnType<typeof setInterval> | null = null
 
 function startSmsCountdown() {
+  if (smsTimer) {
+    clearInterval(smsTimer)
+    smsTimer = null
+  }
   smsCountdown.value = 60
   smsTimer = setInterval(() => {
     if (--smsCountdown.value <= 0 && smsTimer) { clearInterval(smsTimer); smsTimer = null }
@@ -233,12 +237,10 @@ async function onSendVerifyCode() {
   const vCode = getSendVerifyVCode()
   if (!vCode) return uni.showToast({ title: t('auth.err.turnstile'), icon: 'none' })
   try {
-    const pre = await UserService.signupVerify(req)
-    if (pre.code !== 0) return
+    await UserService.signupVerify(req)
     req.vCode = vCode
     req.action = 1
-    const sent = await UserService.sendVerifyCode(req)
-    if (sent.code !== 0) return
+    await UserService.sendVerifyCode(req)
     startSmsCountdown()
     uni.showToast({ title: t('auth.codeSent'), icon: 'success' })
   } catch (e) {
