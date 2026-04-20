@@ -11,7 +11,7 @@
 - [code.go](file://thirdparty/gox/errors/code.go)
 - [validator.go](file://thirdparty/gox/validator/validator.go)
 - [api.openapi.json](file://server/go/apidoc/api.openapi.json)
-- [zh-Hans.json](file://locale/zh-Hans.json)
+- [zh-CN.json](file://locale/zh-CN.json)
 - [en.json](file://locale/en.json)
 </cite>
 
@@ -51,7 +51,7 @@ P2["common.model.proto"]
 end
 subgraph "配置层"
 C1["config.go"]
-L1["zh-Hans.json"]
+L1["zh-CN.json"]
 L2["en.json"]
 end
 subgraph "错误与校验"
@@ -250,7 +250,7 @@ InitLocale --> Ready(["服务就绪"])
 
 **章节来源**
 - [config.go:19-126](file://server/go/global/config.go#L19-L126)
-- [zh-Hans.json:1-40](file://locale/zh-Hans.json#L1-L40)
+- [zh-CN.json:1-40](file://locale/zh-CN.json#L1-L40)
 - [en.json:1-40](file://locale/en.json#L1-L40)
 
 ### 统一错误处理与响应格式

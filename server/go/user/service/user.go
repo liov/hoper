@@ -4,10 +4,15 @@ import (
 	"bytes"
 	"context"
 	"crypto/md5"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -31,6 +36,7 @@ import (
 	"github.com/liov/hoper/server/go/user/data"
 	"github.com/liov/hoper/server/go/user/data/redis"
 	modelconst "github.com/liov/hoper/server/go/user/model"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"go.uber.org/zap"
 
 	"github.com/hopeio/gox/log"
@@ -46,8 +52,9 @@ type UserService struct {
 	userpb.UnimplementedUserServiceServer
 }
 
-func (u *UserService) VerifyCode(ctx context.Context, req *userpb.VerifyCodeReq) (*emptypb.Empty, error) {
+var localeMessageCache sync.Map
 
+func (u *UserService) VerifyCode(ctx context.Context, req *userpb.VerifyCodeReq) (*emptypb.Empty, error) {
 	if req.Mail != "" && req.Phone != "" {
 		return nil, errcode.InvalidArgument.Msg("auth.err.onlyOneContact")
 	}
@@ -95,6 +102,27 @@ func (*UserService) SignupVerify(ctx context.Context, req *userpb.SingUpVerifyRe
 		}
 		if checkUser.Phone == req.Phone {
 			return nil, errcode.InvalidArgument.Msg("auth.err.phoneRegistered")
+		}
+	}
+
+	if req.Mail != "" {
+		m := &mail.Mail{
+			Addr:     global.Dao.Mail.Conf.Host + global.Dao.Mail.Conf.Port,
+			FromName: global.Conf.SiteName,
+			From:     global.Dao.Mail.Conf.UserName,
+			Subject:  global.LocalizerMap["zh-Hans"].MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "auth.mail.verifyCodeSubject",
+			}),
+			Content:  global.LocalizerMap["zh-Hans"].MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "auth.mail.verifyCodeContent",
+				TemplateData: map[string]interface{}{"Vcode": rand.RandomCode(4)},
+			}),
+			To:       []string{req.Mail},
+			Auth:     global.Dao.Mail.Auth,
+		}
+		err = m.SendMailTLS()
+		if err != nil {
+			log.Error("sendMail:", err)
 		}
 	}
 
@@ -182,7 +210,7 @@ func sendMail(ctx context.Context, action userpb.Action, curTime int64, user *us
 	secretStr = fmt.Sprintf("%x", md5.Sum(stringsx.ToBytes(secretStr)))
 	var activeOrRestPasswdValues = struct {
 		UserName, SiteName, SiteURL, ActionURL, SecretStr string
-	}{user.Name, "hoper", siteURL, "", secretStr}
+	}{user.Name, global.Conf.SiteName, global.Conf.SiteURL, "", secretStr}
 	var templ string
 	switch action {
 	case userpb.ActionActive:
@@ -237,7 +265,7 @@ func sendVcode(ctx context.Context, action userpb.Action, vcode string, mailAddr
 		Addr:     global.Dao.Mail.Conf.Host + global.Dao.Mail.Conf.Port,
 		FromName: "hoper",
 		From:     global.Dao.Mail.Conf.UserName,
-		Subject:  "验证码",
+		Subject:  i18nText(ctx, "auth.mail.verifyCodeSubject", "验证码"),
 		Content:  content,
 		To:       []string{mailAddr},
 		Auth:     global.Dao.Mail.Auth,
@@ -247,6 +275,66 @@ func sendVcode(ctx context.Context, action userpb.Action, vcode string, mailAddr
 	if err != nil {
 		log.Error("sendMail:", err)
 	}
+}
+
+func i18nText(ctx context.Context, key, defaultText string) string {
+	locale := localeFromContext(ctx)
+	if msg := i18nTextByLocale(locale, key); msg != "" {
+		return msg
+	}
+	if locale != "zh-CN" {
+		if msg := i18nTextByLocale("zh-CN", key); msg != "" {
+			return msg
+		}
+	}
+	return defaultText
+}
+
+func i18nTextByLocale(locale, key string) string {
+	cacheKey := locale + ":" + key
+	if cached, ok := localeMessageCache.Load(cacheKey); ok {
+		return cached.(string)
+	}
+	path := filepath.Clean(filepath.Join(global.Conf.Locale.Dir, locale+".json"))
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return ""
+	}
+	messages := make(map[string]string)
+	if err = json.Unmarshal(data, &messages); err != nil {
+		return ""
+	}
+	msg := messages[key]
+	if msg != "" {
+		localeMessageCache.Store(cacheKey, msg)
+	}
+	return msg
+}
+
+func localeFromContext(ctx context.Context) string {
+	locale := global.Conf.Locale.Default
+	if locale == "" {
+		locale = "zh-CN"
+	}
+	if md := contextx.GetMetadata(ctx); md != nil && md.Request != nil {
+		if acceptLang := md.Request.Header.Get(httpx.HeaderAcceptLanguage); acceptLang != "" {
+			locale = acceptLang
+		}
+	}
+	if idx := strings.IndexByte(locale, ','); idx >= 0 {
+		locale = locale[:idx]
+	}
+	if idx := strings.IndexByte(locale, ';'); idx >= 0 {
+		locale = locale[:idx]
+	}
+	locale = strings.TrimSpace(locale)
+	if locale == "zh-Hans" || strings.HasPrefix(locale, "zh") {
+		return "zh-CN"
+	}
+	if strings.HasPrefix(locale, "en") {
+		return "en"
+	}
+	return locale
 }
 
 // 验证密码是否正确

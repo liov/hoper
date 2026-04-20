@@ -13,7 +13,7 @@ import (
 	"github.com/liov/hoper/server/go/protobuf/user"
 
 	"github.com/liov/hoper/server/go/user/data"
-	"github.com/liov/hoper/server/go/user/global"
+	"github.com/liov/hoper/server/go/global"
 )
 
 var ExportAuth = auth

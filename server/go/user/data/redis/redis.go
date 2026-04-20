@@ -14,7 +14,7 @@ import (
 	"github.com/hopeio/gox/log"
 	"github.com/liov/hoper/server/go/protobuf/common"
 	model "github.com/liov/hoper/server/go/protobuf/user"
-	"github.com/liov/hoper/server/go/user/global"
+	"github.com/liov/hoper/server/go/global"
 	modelconst "github.com/liov/hoper/server/go/user/model"
 )
 

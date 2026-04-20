@@ -19,9 +19,8 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	comdata "github.com/liov/hoper/server/go/common/data"
-	comconfdao "github.com/liov/hoper/server/go/common/global"
 	"github.com/liov/hoper/server/go/content/data"
-	"github.com/liov/hoper/server/go/content/global"
+	"github.com/liov/hoper/server/go/global"
 	"github.com/liov/hoper/server/go/content/model"
 	"github.com/liov/hoper/server/go/protobuf/content"
 	"github.com/liov/hoper/server/go/protobuf/user"
@@ -122,8 +121,8 @@ func momentMaskField(moment *content.Moment) {
 
 func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*request.Id, error) {
 
-	if utf8.RuneCountInString(req.Content) < global.Conf.Customize.Moment.MaxContentLen {
-		return nil, errcode.InvalidArgument.Msg(fmt.Sprintf("文章内容不能小于%d个字", global.Conf.Customize.Moment.MaxContentLen))
+	if utf8.RuneCountInString(req.Content) < global.Conf.Moment.MaxContentLen {
+		return nil, errcode.InvalidArgument.Msg(fmt.Sprintf("文章内容不能小于%d个字", global.Conf.Moment.MaxContentLen))
 	}
 
 
@@ -131,7 +130,7 @@ func (m *MomentService) Add(ctx context.Context, req *content.AddMomentReq) (*re
 	if err != nil {
 		return nil, err
 	}
-	db := comconfdao.Dao.GORMDB.DB.WithContext(ctx)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	commonDBDao := comdata.GetDBDao(db)
 
 	req.UserId = auth.Id

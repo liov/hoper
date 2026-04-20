@@ -2,6 +2,7 @@ import { HttpClient, RequestOptions } from '@hopeio/utils/uniapp'
 import { Ref, UnwrapRef } from 'vue'
 import { CommonResp } from '@hopeio/utils/types'
 import { ErrResp } from "@gen/pb/hopeio/response/response";
+import { translate } from '@/locale'
 
 
 const defaultConfig: RequestOptions = {
@@ -47,13 +48,13 @@ httpclient.interceptors.response.use(
       }
 
       if (errresp.code >= 1003 && errresp.code <= 1005) {
-        uni.showToast({ title: '请登录', icon: 'exception' })
+        uni.showToast({ title: translate('auth.login'), icon: 'exception' })
         const pages = getCurrentPages()
         uni.navigateTo({
           url: '/pages/user/login?back=' + pages[pages.length - 1].route,
         })
       } else if (errresp.code) {
-        uni.showToast({ title: errresp.msg, icon: 'error' })
+        uni.showToast({ title: translate(errresp.msg), icon: 'error' })
         return errresp
       }
     }

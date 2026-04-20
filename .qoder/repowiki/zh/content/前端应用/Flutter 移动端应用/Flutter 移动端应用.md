@@ -11,7 +11,7 @@
 - [client/app/lib/global/service.dart](file://client/app/lib/global/service.dart)
 - [client/app/lib/global/theme.dart](file://client/app/lib/global/theme.dart)
 - [client/app/lib/translations/app_translations.dart](file://client/app/lib/translations/app_translations.dart)
-- [locale/zh-Hans.json](file://locale/zh-Hans.json)
+- [locale/zh-CN.json](file://locale/zh-CN.json)
 - [locale/en.json](file://locale/en.json)
 - [client/app/pubspec.yaml](file://client/app/pubspec.yaml)
 </cite>
@@ -70,7 +70,7 @@ P_Splash["pages/splash/*"]
 end
 subgraph "国际化"
 T["translations/app_translations.dart"]
-ZH["locale/zh-Hans.json"]
+ZH["locale/zh-CN.json"]
 EN["locale/en.json"]
 end
 subgraph "RPC与存储"
@@ -102,7 +102,7 @@ GSV --> DB
 - [client/app/lib/global/service.dart:21-85](file://client/app/lib/global/service.dart#L21-L85)
 - [client/app/lib/global/theme.dart:1-72](file://client/app/lib/global/theme.dart#L1-L72)
 - [client/app/lib/translations/app_translations.dart:1-15](file://client/app/lib/translations/app_translations.dart#L1-L15)
-- [locale/zh-Hans.json:1-40](file://locale/zh-Hans.json#L1-L40)
+- [locale/zh-CN.json:1-40](file://locale/zh-CN.json#L1-L40)
 - [locale/en.json:1-40](file://locale/en.json#L1-L40)
 
 章节来源
@@ -112,7 +112,7 @@ GSV --> DB
 - [client/app/lib/global/service.dart:21-85](file://client/app/lib/global/service.dart#L21-L85)
 - [client/app/lib/global/theme.dart:1-72](file://client/app/lib/global/theme.dart#L1-L72)
 - [client/app/lib/translations/app_translations.dart:1-15](file://client/app/lib/translations/app_translations.dart#L1-L15)
-- [locale/zh-Hans.json:1-40](file://locale/zh-Hans.json#L1-L40)
+- [locale/zh-CN.json:1-40](file://locale/zh-CN.json#L1-L40)
 - [locale/en.json:1-40](file://locale/en.json#L1-L40)
 
 ## 核心组件
@@ -253,13 +253,13 @@ App-->>App : 运行时根据系统语言选择
 图表来源
 - [client/app/lib/translations/app_translations.dart:7-14](file://client/app/lib/translations/app_translations.dart#L7-L14)
 - [client/app/lib/main.dart:52-64](file://client/app/lib/main.dart#L52-L64)
-- [locale/zh-Hans.json:1-40](file://locale/zh-Hans.json#L1-L40)
+- [locale/zh-CN.json:1-40](file://locale/zh-CN.json#L1-L40)
 - [locale/en.json:1-40](file://locale/en.json#L1-L40)
 
 章节来源
 - [client/app/lib/translations/app_translations.dart:1-15](file://client/app/lib/translations/app_translations.dart#L1-L15)
 - [client/app/lib/main.dart:52-64](file://client/app/lib/main.dart#L52-L64)
-- [locale/zh-Hans.json:1-40](file://locale/zh-Hans.json#L1-L40)
+- [locale/zh-CN.json:1-40](file://locale/zh-CN.json#L1-L40)
 - [locale/en.json:1-40](file://locale/en.json#L1-L40)
 
 ### 主题切换与外观
@@ -381,7 +381,7 @@ Service --> RPC_GRPC["rpc/user.dart"]
 Service --> DB["sqflite/sqflite_ffi"]
 Service --> Box["Hive Box"]
 Service --> SP["SharedPreferences"]
-Intl --> ZH["locale/zh-Hans.json"]
+Intl --> ZH["locale/zh-CN.json"]
 Intl --> EN["locale/en.json"]
 ```
 
@@ -391,7 +391,7 @@ Intl --> EN["locale/en.json"]
 - [client/app/lib/global/state.dart:19-200](file://client/app/lib/global/state.dart#L19-L200)
 - [client/app/lib/global/service.dart:21-85](file://client/app/lib/global/service.dart#L21-L85)
 - [client/app/lib/translations/app_translations.dart:1-15](file://client/app/lib/translations/app_translations.dart#L1-L15)
-- [locale/zh-Hans.json:1-40](file://locale/zh-Hans.json#L1-L40)
+- [locale/zh-CN.json:1-40](file://locale/zh-CN.json#L1-L40)
 - [locale/en.json:1-40](file://locale/en.json#L1-L40)
 
 章节来源
@@ -400,7 +400,7 @@ Intl --> EN["locale/en.json"]
 - [client/app/lib/global/state.dart:19-200](file://client/app/lib/global/state.dart#L19-L200)
 - [client/app/lib/global/service.dart:21-85](file://client/app/lib/global/service.dart#L21-L85)
 - [client/app/lib/translations/app_translations.dart:1-15](file://client/app/lib/translations/app_translations.dart#L1-L15)
-- [locale/zh-Hans.json:1-40](file://locale/zh-Hans.json#L1-L40)
+- [locale/zh-CN.json:1-40](file://locale/zh-CN.json#L1-L40)
 - [locale/en.json:1-40](file://locale/en.json#L1-L40)
 
 ## 性能考虑

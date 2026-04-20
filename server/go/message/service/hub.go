@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/hopeio/gox/log"
 	"github.com/hopeio/protobuf/time/timestamp"
-	"github.com/liov/hoper/server/go/message/global"
+	"github.com/liov/hoper/server/go/global"
 	"github.com/liov/hoper/server/go/protobuf/message"
 	"google.golang.org/protobuf/proto"
 )

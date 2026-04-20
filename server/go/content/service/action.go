@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/hopeio/scaffold/errcode"
-	global2 "github.com/liov/hoper/server/go/content/global"
+	global2 "github.com/liov/hoper/server/go/global"
 
 	"github.com/liov/hoper/server/go/content/data"
 	dbdao "github.com/liov/hoper/server/go/content/data/db"

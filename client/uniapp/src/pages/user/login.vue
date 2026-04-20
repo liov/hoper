@@ -89,18 +89,6 @@
             :placeholder="$t('auth.registerAccount')" placeholder-class="text-gray-300 text-sm"
             @focus="focused = 'regAccount'" @blur="focused = ''" />
         </view>
-        <view class="flex gap-2 rounded-2xl bg-gray-50 px-3.5 py-2.5 border-2 border-transparent"
-          :class="focused === 'gender' ? 'border-[#018d71] bg-[#f0fdf8]' : ''" @click="focused = 'gender'">
-          <text class="text-xs text-gray-500 self-center flex-shrink-0">{{ $t('auth.gender') }}</text>
-          <view class="flex flex-1 gap-2">
-            <view class="flex-1 text-center py-2 rounded-xl text-sm transition-all"
-              :class="registerForm.gender === 2 ? 'bg-[#018d71] text-white font-semibold' : 'bg-white text-gray-600 border border-gray-100'"
-              @click.stop="registerForm.gender = 2">{{ $t('auth.genderMale') }}</view>
-            <view class="flex-1 text-center py-2 rounded-xl text-sm transition-all"
-              :class="registerForm.gender === 3 ? 'bg-[#018d71] text-white font-semibold' : 'bg-white text-gray-600 border border-gray-100'"
-              @click.stop="registerForm.gender = 3">{{ $t('auth.genderFemale') }}</view>
-          </view>
-        </view>
         <view class="flex items-center bg-gray-50 rounded-2xl px-3.5 h-13 border-2 border-transparent transition-all"
           :class="focused === 'sms' ? 'border-[#018d71] bg-[#f0fdf8]' : ''">
           <text class="text-xl mr-2.5 flex-shrink-0">🔢</text>
@@ -187,7 +175,6 @@ const loginForm = reactive({ account: '', password: '' })
 /** 注册：account 为邮箱或手机号；昵称由服务端默认规则生成（邮箱前缀 / 手机号） */
 const registerForm = reactive({
   account: '',
-  gender: 2 as number,
   vCode: '',
   password: '',
   confirmPassword: '',
@@ -233,7 +220,7 @@ function defaultRegisterName(account: string): string {
 function getSendVerifyVCode(): string {
   try {
     const uniPlatform = uni.getSystemInfoSync().uniPlatform
-    if (uniPlatform === 'web') return turnstileToken.value
+    if (uniPlatform === 'web') return turnstileToken.value || 'dev'
   } catch {
     /* empty */
   }
@@ -276,7 +263,6 @@ async function onLogin() {
 async function onRegister() {
   const req = splitRegisterAccount(registerForm.account)
   if (!req.mail && !req.phone) return uni.showToast({ title: t('auth.err.accountOrPhone'), icon: 'none' })
-  if (!registerForm.gender || registerForm.gender < 2) return uni.showToast({ title: t('auth.err.gender'), icon: 'none' })
   if (!registerForm.vCode.trim()) return uni.showToast({ title: t('auth.err.smsCode'), icon: 'none' })
   if (registerForm.password.length < 6) return uni.showToast({ title: t('auth.err.pwdLength'), icon: 'none' })
   if (registerForm.password !== registerForm.confirmPassword) return uni.showToast({ title: t('auth.err.pwdNotMatch'), icon: 'none' })
@@ -286,7 +272,6 @@ async function onRegister() {
   try {
     const res = await userStore.signup({
       name,
-      gender: registerForm.gender,
       password: registerForm.password,
       vCode: registerForm.vCode.trim(),
       ...req,
@@ -294,7 +279,6 @@ async function onRegister() {
     if (res && res.code === 0) {
       mode.value = 'login'
       registerForm.account = ''
-      registerForm.gender = 2
       registerForm.vCode = ''
       registerForm.password = ''
       registerForm.confirmPassword = ''

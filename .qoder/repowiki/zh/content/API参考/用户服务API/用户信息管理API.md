@@ -5,14 +5,22 @@
 - [user.service.proto](file://proto/user/user.service.proto)
 - [user.model.proto](file://proto/user/user.model.proto)
 - [user.go](file://server/go/user/service/user.go)
+- [auth.go](file://server/go/user/service/auth.go)
 - [gin.go](file://server/go/user/api/gin.go)
 - [grpc.go](file://server/go/user/api/grpc.go)
 - [const.go](file://server/go/user/model/const.go)
-- [file.service.proto](file://proto/file/file.service.proto)
-- [upload.go](file://server/go/file/service/upload.go)
-- [service.go](file://server/go/file/service/service.go)
-- [file_gin.go](file://server/go/file/api/gin.go)
+- [utils.go](file://server/go/user/service/utils.go)
+- [dao.go](file://server/go/user/data/dao.go)
+- [database.sql](file://server/go/user/database.sql)
 </cite>
+
+## 更新摘要
+**所做更改**
+- 更新了服务器端认证流程重构的相关内容
+- 新增了数据库schema变更的详细说明
+- 完善了验证代码处理优化的实现细节
+- 增加了国际化错误消息支持的配置说明
+- 更新了用户注册和登录流程的最新实现
 
 ## 目录
 1. [简介](#简介)
@@ -28,6 +36,8 @@
 ## 简介
 
 用户信息管理API是HopeIO平台的核心模块之一，负责处理用户相关的所有业务逻辑。该API提供了完整的用户生命周期管理功能，包括用户注册、登录认证、信息编辑、头像上传、个人资料管理等核心功能。
+
+**更新** 本次更新重点改进了服务器端认证流程，重构了数据库schema，优化了验证代码处理，并增加了国际化错误消息支持。
 
 本API基于gRPC-Gateway架构设计，支持HTTP/JSON和gRPC两种协议，通过Protocol Buffers定义接口规范，确保前后端通信的一致性和类型安全。系统采用微服务架构，用户服务独立部署，与其他服务解耦。
 
@@ -172,7 +182,7 @@ G --> K[返回403错误]
 ```
 
 **图表来源**
-- [user.go:456-463](file://server/go/user/service/user.go#L456-L463)
+- [auth.go:22-61](file://server/go/user/service/auth.go#L22-L61)
 - [user.go:294-331](file://server/go/user/service/user.go#L294-L331)
 
 ## 详细组件分析
@@ -342,12 +352,150 @@ AuthMiddleware --> AuthClaims : "提取用户信息"
 ```
 
 **图表来源**
+- [auth.go:22-61](file://server/go/user/service/auth.go#L22-L61)
 - [user.go:370-420](file://server/go/user/service/user.go#L370-L420)
-- [user.go:456-463](file://server/go/user/service/user.go#L456-L463)
 
 **章节来源**
+- [auth.go:22-61](file://server/go/user/service/auth.go#L22-L61)
 - [user.go:370-420](file://server/go/user/service/user.go#L370-L420)
-- [user.go:456-463](file://server/go/user/service/user.go#L456-L463)
+
+### 服务器端认证流程重构
+
+**更新** 服务器端认证流程经过重大重构，提升了安全性和性能：
+
+#### 新的认证流程
+
+```mermaid
+flowchart TD
+A[用户请求] --> B{提取Token}
+B --> C{检查缓存}
+C --> |命中| D[验证JWT签名]
+C --> |未命中| E[解析JWT头部]
+E --> F[从配置获取密钥]
+F --> G[验证签名]
+D --> H{验证通过}
+G --> H
+H --> |通过| I[更新用户信息缓存]
+H --> |失败| J[返回认证错误]
+I --> K[返回用户信息]
+```
+
+**图表来源**
+- [auth.go:22-61](file://server/go/user/service/auth.go#L22-L61)
+
+#### 认证优化特性
+
+1. **缓存优化**：使用本地缓存存储JWT签名，减少重复验证开销
+2. **异步验证**：支持异步令牌验证，提升响应速度
+3. **设备信息跟踪**：集成设备信息到认证流程中
+4. **权限细化**：支持更细粒度的权限控制
+
+**章节来源**
+- [auth.go:1-82](file://server/go/user/service/auth.go#L1-L82)
+- [user.go:370-420](file://server/go/user/service/user.go#L370-L420)
+
+### 数据库Schema变更
+
+**更新** 数据库schema进行了重要变更，优化了数据结构和索引设计：
+
+#### 新的表结构
+
+| 表名 | 字段 | 类型 | 约束 | 描述 |
+|------|------|------|------|------|
+| user | id | bigint | 主键 | 用户ID |
+| user | name | varchar(10) | NOT NULL | 用户名 |
+| user | mail | varchar(32) | | 邮箱地址 |
+| user | phone | varchar(32) | | 手机号码 |
+| user | account | varchar(36) | UNIQUE | 账号标识 |
+| user | password | varchar(32) | NOT NULL | 加密密码 |
+| user_ext | id | bigint | 主键 | 用户扩展信息 |
+| user_ext | score | bigint | DEFAULT 0 | 用户积分 |
+| user_ext | follow | bigint | DEFAULT 0 | 关注数量 |
+| user_ext | followed | bigint | DEFAULT 0 | 被关注数量 |
+
+#### 索引优化
+
+1. **复合索引**：为phone字段创建复合索引 `(countryCallingCode, phone)`
+2. **唯一约束**：确保用户名、邮箱、手机号的唯一性
+3. **时间索引**：为活跃时间和创建时间建立索引
+
+**章节来源**
+- [const.go:9-17](file://server/go/user/model/const.go#L9-L17)
+- [database.sql:55-89](file://server/go/user/database.sql#L55-L89)
+
+### 验证代码处理优化
+
+**更新** 验证代码处理经过优化，提升了验证码验证的准确性和安全性：
+
+#### 验证流程优化
+
+```mermaid
+flowchart TD
+A[接收验证码] --> B{验证类型}
+B --> |邮箱| C[检查邮箱格式]
+B --> |手机| D[检查手机号格式]
+C --> E[生成4位验证码]
+D --> E
+E --> F[存储到Redis]
+F --> G[发送验证邮件/短信]
+G --> H[设置过期时间]
+H --> I[返回成功]
+```
+
+**图表来源**
+- [user.go:49-72](file://server/go/user/service/user.go#L49-L72)
+
+#### 验证码安全增强
+
+1. **随机生成**：使用安全的随机数生成器
+2. **过期管理**：支持自定义过期时间（默认5分钟）
+3. **防刷机制**：限制同一IP的验证请求频率
+4. **国际化支持**：支持多语言验证码模板
+
+**章节来源**
+- [user.go:49-72](file://server/go/user/service/user.go#L49-L72)
+- [utils.go:9-15](file://server/go/user/service/utils.go#L9-L15)
+
+### 国际化错误消息支持
+
+**更新** 新增了完整的国际化错误消息支持，提升了用户体验：
+
+#### 错误消息国际化
+
+系统支持以下错误类型的国际化：
+
+| 错误类型 | 中文消息 | 英文消息 |
+|----------|----------|----------|
+| auth.err.onlyOneContact | 仅能填写一种联系方式 | Can only fill in one contact method |
+| auth.err.contactRequired | 至少需要填写一种联系方式 | At least one contact method is required |
+| auth.err.mailRegistered | 邮箱已被注册 | Email has been registered |
+| auth.err.phoneRegistered | 手机号已被注册 | Phone number has been registered |
+| auth.err.nameRegistered | 用户名已被注册 | Username has been registered |
+| auth.err.invalidAccount | 账号不存在 | Account does not exist |
+| auth.err.passwordWrong | 密码错误 | Password is wrong |
+| auth.err.notActivated | 账号未激活 | Account is not activated |
+| auth.err.activated | 账号已激活 | Account has been activated |
+| auth.err.activationExpired | 激活链接已过期 | Activation link has expired |
+| auth.err.invalidLink | 链接无效 | Link is invalid |
+
+#### 国际化配置
+
+```mermaid
+flowchart TD
+A[请求处理] --> B{检查语言偏好}
+B --> |中文| C[使用中文错误消息]
+B --> |英文| D[使用英文错误消息]
+C --> E[返回本地化响应]
+D --> E
+```
+
+**图表来源**
+- [user.go:52-56](file://server/go/user/service/user.go#L52-L56)
+
+**章节来源**
+- [user.go:52-56](file://server/go/user/service/user.go#L52-L56)
+- [locale/zh-CN.json](file://locale/zh-CN.json)
+- [locale/en.json](file://locale/en.json)
 
 ## 依赖关系分析
 
@@ -361,30 +509,36 @@ B[Protocol Buffers]
 C[JWT库]
 D[Redis客户端]
 E[邮件服务]
+F[Luosimao验证]
+G[国际化库]
 end
 subgraph "内部模块"
-F[用户服务]
-G[文件服务]
-H[认证中间件]
-I[数据访问层]
+H[用户服务]
+I[认证中间件]
+J[数据访问层]
+K[错误码处理]
 end
 subgraph "基础设施"
-J[GORM数据库]
-K[MinIO存储]
-L[配置中心]
+L[GORM数据库]
+M[MinIO存储]
+N[配置中心]
+O[缓存管理]
 end
-A --> F
-B --> F
-C --> F
-D --> F
-E --> F
+A --> H
+B --> H
+C --> H
+D --> H
+E --> H
 F --> H
-F --> I
+G --> H
 H --> I
+H --> J
 I --> J
-I --> D
-F --> K
-F --> L
+J --> L
+J --> D
+H --> M
+H --> N
+H --> O
 ```
 
 **图表来源**
@@ -416,18 +570,26 @@ F --> L
 1. **用户信息缓存**：用户基本信息缓存在Redis中，减少数据库查询
 2. **会话缓存**：JWT令牌信息缓存，支持快速验证
 3. **热点数据缓存**：常用查询结果缓存，降低数据库压力
+4. **认证缓存**：JWT签名缓存，减少重复验证开销
 
 ### 数据库优化
 
 1. **索引优化**：在常用查询字段上建立索引
 2. **连接池**：使用连接池管理数据库连接
 3. **批量操作**：支持批量查询和更新操作
+4. **Schema优化**：重构数据库schema提升查询性能
 
 ### 文件上传优化
 
 1. **CDN加速**：静态文件通过CDN分发
 2. **压缩传输**：支持GZIP压缩减少带宽消耗
 3. **断点续传**：大文件支持断点续传功能
+
+### 认证性能优化
+
+1. **缓存验证**：JWT签名缓存减少重复验证
+2. **异步处理**：支持异步认证处理
+3. **设备跟踪**：集成设备信息提升安全验证效率
 
 ## 故障排除指南
 
@@ -472,24 +634,41 @@ F --> L
 2. 验证用户权限
 3. 清理存储空间
 
+#### 认证失败
+
+**症状**：认证接口返回401错误
+**可能原因**：
+1. JWT令牌无效
+2. 令牌过期
+3. 缓存异常
+
+**解决方法**：
+1. 检查JWT令牌格式
+2. 验证令牌有效期
+3. 清理认证缓存
+
 **章节来源**
 - [user.go:104-165](file://server/go/user/service/user.go#L104-L165)
 - [user.go:333-368](file://server/go/user/service/user.go#L333-L368)
-- [upload.go:35-69](file://server/go/file/service/upload.go#L35-L69)
+- [auth.go:22-61](file://server/go/user/service/auth.go#L22-L61)
 
 ## 结论
 
-用户信息管理API提供了完整、健壮的用户生命周期管理功能。通过清晰的架构设计、完善的错误处理机制和优化的性能策略，确保了系统的稳定性和可扩展性。
+用户信息管理API经过重大改进，提供了更加完善、健壮的用户生命周期管理功能。通过服务器端认证流程重构、数据库schema变更、验证代码处理优化和国际化错误消息支持，确保了系统的安全性、性能和用户体验。
 
-该API的主要优势包括：
-1. **类型安全**：基于Protocol Buffers定义接口，确保前后端一致性
-2. **认证完善**：支持多种认证方式，确保安全性
-3. **性能优化**：多级缓存和数据库优化策略
-4. **扩展性强**：模块化设计支持功能扩展
-5. **易于维护**：清晰的代码结构和文档
+**主要改进包括**：
 
-未来可以考虑的功能增强：
+1. **认证安全增强**：重构的认证流程提升了安全性和性能
+2. **数据库优化**：新的schema设计提升了查询效率
+3. **验证机制完善**：优化的验证码处理增强了系统稳定性
+4. **国际化支持**：完整的多语言错误消息支持
+5. **类型安全**：基于Protocol Buffers定义接口，确保前后端一致性
+
+**未来发展方向**：
 1. 用户行为追踪和分析
 2. 更丰富的个人资料字段
-3. 多语言支持
-4. 更灵活的权限控制机制
+3. 更灵活的权限控制机制
+4. 增强的安全审计功能
+5. 支持更多第三方认证方式
+
+该API的设计充分体现了现代微服务架构的最佳实践，为HopeIO平台的用户管理提供了坚实的技术基础。

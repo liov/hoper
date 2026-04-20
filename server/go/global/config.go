@@ -20,6 +20,7 @@ type config struct {
 	//自定义的配置
 	PageSize      int8
 	Volume        fs.Dir
+	SiteName      string
 	SiteURL       string
 	QrCodeSaveDir fs.Dir //二维码保存路径
 	FontSaveDir   fs.Dir //字体保存路径
@@ -32,7 +33,7 @@ type config struct {
 
 type LocaleConfig struct {
 	Default string
-	Files map[string]string
+	Dir     string
 }
 
 func (c *config) BeforeInject() {
