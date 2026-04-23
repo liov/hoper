@@ -140,10 +140,7 @@
 				"../..",
 				"-o",
 				"."
-			],
-			"runOptions": {
-				"runOn": "folderOpen",
-			}
+			]
 		},
 	]
 }

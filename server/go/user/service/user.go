@@ -57,7 +57,7 @@ func (u *UserService) VerifyCode(ctx context.Context, req *userpb.VerifyCodeReq)
 	if req.Mail == "" && req.Phone == "" {
 		return nil, errcode.InvalidArgument.Msg("auth.err.contactRequired")
 	}
-	vcode := rand.RandomCode(4)
+	vcode := rand.RandomNumber(6)
 	log.Info(vcode)
 	key := modelconst.VerificationCodeKey + req.Mail + req.Phone
 	if err := global.Dao.Redis.Set(ctx, key, vcode, modelconst.VerificationCodeDuration).Err(); err != nil {
