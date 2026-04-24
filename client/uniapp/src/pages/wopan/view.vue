@@ -56,10 +56,11 @@ import {onLoad} from "@dcloudio/uni-app";
 import * as wopan from "@hopeio/utils/wopan";
 import { useToast } from 'wot-design-uni'
 import {FileNode} from "@/model/wopan";
+import i18n from '@/locale'
 
 definePage({
   style: {
-    navigationBarTitleText: 'file-view',
+    navigationBarTitleText: i18n.global.t('page.wopan.view'),
     navigationStyle: 'custom',
   }
 })

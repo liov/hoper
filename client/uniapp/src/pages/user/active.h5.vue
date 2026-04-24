@@ -4,11 +4,12 @@
 import UserService from '@/api/user'
 import { useUserStore } from '@/store/user'
 import { useRouter, useRoute } from 'vue-router'
+import i18n from '@/locale'
 
 definePage({
   style: {
     navigationStyle: 'custom',
-    navigationBarTitleText: '激活',
+    navigationBarTitleText: i18n.global.t('page.active'),
   }
 })
 

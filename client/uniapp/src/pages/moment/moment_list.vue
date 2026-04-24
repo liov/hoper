@@ -124,6 +124,7 @@
 <script setup lang="ts">
 import Actions from '@/components/action.vue'
 import MomentService from '@/api/moment'
+import i18n from '@/locale'
 
 import { STATIC_DIR as staticDir } from '@/env/config'
 import type { Moment } from '@gen/pb/content/moment.model'
@@ -136,8 +137,9 @@ import { CommonResp } from '@hopeio/utils/types'
 import { pbTimeToDayjs } from '@hopeio/utils/time'
 
 definePage({
+  type: 'home',
   style: {
-    navigationBarTitleText: '瞬间',
+    navigationBarTitleText: i18n.global.t('page.moment.list'),
   },
   middlewares: [
     'auth',

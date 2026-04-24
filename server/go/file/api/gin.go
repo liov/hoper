@@ -8,13 +8,14 @@ import (
 	"github.com/hopeio/scaffold/gin/wrap"
 	"github.com/liov/hoper/server/go/file/global"
 	"github.com/liov/hoper/server/go/file/service"
+	"github.com/liov/hoper/server/go/protobuf/file"
 )
 
 func GinRegister(app *gin.Engine) {
 	app.StaticFS("/upload", http.Dir(global.Conf.Customize.UploadDir))
 	app.StaticFS("/static", http.Dir("D:\\Download"))
-	app.GET("/api/preUpload", wrap.HandlerWrapGRPC(service.GetFileService().PreUpload))
 	app.GET("/api/preUpload/:md5/:size", wrap.HandlerWrapGRPC(service.GetFileService().PreUpload))
 	app.POST("/api/upload/:md5", ginx.Convert(service.Upload))
 	app.POST("/api/multiUpload", ginx.Convert(service.MultiUpload))
+	file.RegisterFileServiceHandlerServer(app, service.GetFileService())
 }

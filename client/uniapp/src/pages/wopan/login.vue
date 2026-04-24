@@ -53,13 +53,14 @@
 import PLATFORM from '@/utils/platform'
 import { useToast } from 'wot-design-uni'
 import * as wopan from '@hopeio/utils/wopan'
+import i18n from '@/locale'
 
 import { useWopanStore } from '@/store/wopan'
 import { onLoad } from '@dcloudio/uni-app'
 
 definePage({
   style: {
-    navigationBarTitleText: 'wopan登录',
+    navigationBarTitleText: i18n.global.t('page.wopan.login'),
     navigationStyle: 'custom',
   }
 })

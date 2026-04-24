@@ -31,10 +31,11 @@
 </template>
 
 <script setup lang="ts">
+import i18n from '@/locale'
 
 definePage({
   style: {
-    navigationBarTitleText: '瞬间详情',
+    navigationBarTitleText: i18n.global.t('page.moment.detail'),
   },
   middlewares: [
     'auth',

@@ -56,10 +56,11 @@
 import { onPullDownRefresh, onReachBottom, onPageScroll } from '@dcloudio/uni-app'
 import { useMessage } from 'wot-design-uni'
 import WeiboService from "@/api/weibo";
+import i18n from '@/locale'
 
 definePage({
   style: {
-    navigationBarTitleText: 'weibo列表',
+    navigationBarTitleText: i18n.global.t('page.weibo.list'),
     navigationStyle: 'custom',
     onReachBottomDistance: 50,
   }

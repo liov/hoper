@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"sync"
+
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -30,9 +30,10 @@ import (
 	userpb "github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/api/middle"
 	"github.com/liov/hoper/server/go/user/data"
-	"github.com/liov/hoper/server/go/user/data/redis"
+	redisop "github.com/liov/hoper/server/go/user/data/redis"
 	modelconst "github.com/liov/hoper/server/go/user/model"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 
 	"github.com/hopeio/gox/log"
@@ -48,8 +49,6 @@ type UserService struct {
 	userpb.UnimplementedUserServiceServer
 }
 
-var localeMessageCache sync.Map
-
 func (u *UserService) VerifyCode(ctx context.Context, req *userpb.VerifyCodeReq) (*emptypb.Empty, error) {
 	if req.Mail != "" && req.Phone != "" {
 		return nil, errcode.InvalidArgument.Msg("auth.err.onlyOneContact")
@@ -57,10 +56,18 @@ func (u *UserService) VerifyCode(ctx context.Context, req *userpb.VerifyCodeReq)
 	if req.Mail == "" && req.Phone == "" {
 		return nil, errcode.InvalidArgument.Msg("auth.err.contactRequired")
 	}
+	_, err := u.SignupVerify(ctx, &userpb.SingUpVerifyReq{
+		Mail: req.Mail,
+		CountryCallingCode: req.CountryCallingCode,
+		Phone: req.Phone,
+	})
+	if err != nil {
+		return nil, err
+	}
 	vcode := rand.RandomNumber(6)
 	log.Info(vcode)
-	key := modelconst.VerificationCodeKey + req.Mail + req.Phone
-	if err := global.Dao.Redis.Set(ctx, key, vcode, modelconst.VerificationCodeDuration).Err(); err != nil {
+	key := modelconst.VerificationCodeKey + req.Mail + req.CountryCallingCode +req.Phone
+	if err = global.Dao.Redis.Set(ctx, key, vcode, modelconst.VerificationCodeDuration).Err(); err != nil {
 		return nil, errcode.RedisErr.Wrap(err)
 	}
 	if req.Mail != "" {
@@ -119,20 +126,17 @@ func (u *UserService) Signup(ctx context.Context, req *userpb.SignupReq) (*wrapp
 	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	userDao := data.GetDBDao(db)
 
-	checkUser, err := userDao.GetByNameOrEmailOrPhone(ctx, req.Name, req.Mail, req.Phone)
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, errcode.DBError.Wrap(err)
+	_, err := u.SignupVerify(ctx, &userpb.SingUpVerifyReq{
+		Mail: req.Mail,
+		CountryCallingCode: req.CountryCallingCode,
+		Phone: req.Phone,
+	})
+	if err != nil {
+		return nil, err
 	}
-	if err == nil {
-		if checkUser.Name == req.Name {
-			return nil, errcode.InvalidArgument.Msg("auth.err.nameRegistered")
-		}
-		if checkUser.Mail == req.Mail {
-			return nil, errcode.InvalidArgument.Msg("auth.err.mailRegistered")
-		}
-		if checkUser.Phone == req.Phone {
-			return nil, errcode.InvalidArgument.Msg("auth.err.phoneRegistered")
-		}
+
+	if req.Name == "" {
+		req.Name = rand.RandomChars(10)
 	}
 
 	var user = &userpb.User{
@@ -146,9 +150,27 @@ func (u *UserService) Signup(ctx context.Context, req *userpb.SignupReq) (*wrapp
 		Status:  userpb.UserStatusInActive,
 	}
 
+	if req.VCode != "" {
+		vcode, err := global.Dao.Redis.Get(ctx, modelconst.VerificationCodeKey + req.Mail + req.CountryCallingCode +req.Phone).Result()
+		if err != nil && !errors.Is(err, redis.Nil) {
+			return nil, errcode.RedisErr.Wrap(err)
+		}
+		if vcode != req.VCode && vcode != "" {
+			return nil, errcode.InvalidArgument.Msg("auth.err.invalidCode")
+		}
+		if err = global.Dao.Redis.Del(ctx, modelconst.VerificationCodeKey + req.Mail + req.CountryCallingCode +req.Phone).Err(); err != nil {
+			return nil, errcode.RedisErr.Wrap(err)
+		}
+		user.Status = userpb.UserStatusActivated
+	}
+
+
 	user.Password = encryptPassword(req.Password)
 	if err := userDao.Create(ctx, user); err != nil {
 		return nil, errcode.DBError.Wrap(err)
+	}
+	if req.VCode != "" {
+		return &wrappers.StringValue{Value: "注册成功"}, nil
 	}
 
 	activeUser := modelconst.ActiveTimeKey + strconv.FormatUint(user.Id, 10)
@@ -381,7 +403,7 @@ func (*UserService) login(ctx context.Context, user *userpb.User) (*userpb.Login
 
 	db.Table(modelconst.TableNameUserExt).Where(`id = ?`, user.Id).
 		UpdateColumn("last_activated_at", now)
-	userRedisDao := redis.GetUserDao(global.Dao.Redis.Client)
+	userRedisDao := redisop.GetUserDao(global.Dao.Redis.Client)
 	if err := userRedisDao.EfficientUserHashToRedis(ctx, authorization.Auth); err != nil {
 		return nil, errcode.RedisErr
 	}
@@ -466,7 +488,7 @@ func (u *UserService) Info(ctx context.Context, req *request.Id) (*userpb.UserRe
 		req.Id = auth.Id
 	}
 
-	userRedisDao := redis.GetUserDao(global.Dao.Redis.Client)
+	userRedisDao := redisop.GetUserDao(global.Dao.Redis.Client)
 	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	var user1 userpb.User
 	if err = db.First(&user1, req.Id).Error; err != nil {
@@ -620,20 +642,13 @@ func (u *UserService) EasySignup(ctx context.Context, req *userpb.SignupReq) (*u
 	}
 	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	userDBDao := data.GetDBDao(db)
-	checkUser, err := userDBDao.GetByNameOrEmailOrPhone(ctx, req.Name, req.Mail, req.Phone)
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, errcode.DBError
-	}
-	if err == nil {
-		if checkUser.Name == req.Name {
-			return nil, errcode.InvalidArgument.Msg("auth.err.nameRegistered")
-		}
-		if checkUser.Mail == req.Mail {
-			return nil, errcode.InvalidArgument.Msg("auth.err.mailRegistered")
-		}
-		if checkUser.Phone == req.Phone {
-			return nil, errcode.InvalidArgument.Msg("auth.err.phoneRegistered")
-		}
+	_, err := u.SignupVerify(ctx, &userpb.SingUpVerifyReq{
+		Mail: req.Mail,
+		CountryCallingCode: req.CountryCallingCode,
+		Phone: req.Phone,
+	})
+	if err != nil {
+		return nil, err
 	}
 
 	var user = &userpb.User{

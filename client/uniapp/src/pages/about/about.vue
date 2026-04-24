@@ -14,10 +14,11 @@
 <script lang="ts" setup>
 
 import UploadComp from './components/upload.vue'
+import i18n from '@/locale'
 
 definePage({
   style: {
-    navigationBarTitleText: '关于',
+    navigationBarTitleText: i18n.global.t('page.about'),
   }
 })
 

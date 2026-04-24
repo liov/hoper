@@ -33,7 +33,7 @@
         <view class="flex items-center bg-gray-50 rounded-2xl px-3.5 h-13 border-2 border-transparent transition-all"
           :class="focused === 'account' ? 'border-[#018d71] bg-[#f0fdf8]' : ''">
           <text class="text-xl mr-2.5 flex-shrink-0">📱</text>
-          <input v-model="loginForm.account" class="flex-1 text-sm text-gray-800 bg-transparent h-full" type="text"
+          <input v-model="account" class="flex-1 text-sm text-gray-800 bg-transparent h-full" type="text"
             :placeholder="$t('auth.account')" placeholder-class="text-gray-300 text-sm" @focus="focused = 'account'"
             @blur="focused = ''" />
         </view>
@@ -85,7 +85,7 @@
         <view class="flex items-center bg-gray-50 rounded-2xl px-3.5 h-13 border-2 border-transparent transition-all"
           :class="focused === 'regAccount' ? 'border-[#018d71] bg-[#f0fdf8]' : ''">
           <text class="text-xl mr-2.5 flex-shrink-0">📧</text>
-          <input v-model="registerForm.account" class="flex-1 text-sm text-gray-800 bg-transparent h-full" type="text"
+          <input v-model="account" class="flex-1 text-sm text-gray-800 bg-transparent h-full" type="text"
             :placeholder="$t('auth.registerAccount')" placeholder-class="text-gray-300 text-sm"
             @focus="focused = 'regAccount'" @blur="focused = ''" />
         </view>
@@ -149,12 +149,13 @@
 import { useUserStore } from '@/store/user'
 import UserService from '@/api/user'
 import { useI18n } from 'vue-i18n'
+import i18n from '@/locale'
 // #ifdef H5
 // #endif
 
 definePage({
-  type: 'home',
-  style: { navigationStyle: 'custom', navigationBarTitleText: '登录' },
+  type: 'page',
+  style: { navigationStyle: 'custom', navigationBarTitleText: i18n.global.t('page.login') },
 })
 
 const userStore = useUserStore()
@@ -171,10 +172,10 @@ const smsCountdown = ref(0)
 /** H5 Turnstile 回调写入，作为发送验证码接口的 vCode */
 const turnstileToken = ref('')
 
-const loginForm = reactive({ account: '', password: '' })
+const account = ref('')
+const loginForm = reactive({ password: '' })
 /** 注册：account 为邮箱或手机号；昵称由服务端默认规则生成（邮箱前缀 / 手机号） */
 const registerForm = reactive({
-  account: '',
   vCode: '',
   password: '',
   confirmPassword: '',
@@ -232,7 +233,7 @@ function getSendVerifyVCode(): string {
 }
 
 async function onSendVerifyCode() {
-  const req = splitRegisterAccount(registerForm.account)
+  const req = splitRegisterAccount(account.value)
   if (!req.mail && !req.phone) return uni.showToast({ title: t('auth.err.accountOrPhone'), icon: 'none' })
   const vCode = getSendVerifyVCode()
   if (!vCode) return uni.showToast({ title: t('auth.err.turnstile'), icon: 'none' })
@@ -249,11 +250,11 @@ async function onSendVerifyCode() {
 }
 
 async function onLogin() {
-  if (!loginForm.account) return uni.showToast({ title: t('auth.err.account'), icon: 'none' })
+  if (!account.value.trim()) return uni.showToast({ title: t('auth.err.account'), icon: 'none' })
   if (!loginForm.password) return uni.showToast({ title: t('auth.err.password'), icon: 'none' })
   submitting.value = true
 
-  const req = splitRegisterAccount(registerForm.account)
+  const req = { ...splitRegisterAccount(account.value), password: loginForm.password }
   try { await userStore.login(req) }
   catch (e) {
     console.log(e)
@@ -263,28 +264,25 @@ async function onLogin() {
 }
 
 async function onRegister() {
-  const req = splitRegisterAccount(registerForm.account)
+  const req = splitRegisterAccount(account.value)
   if (!req.mail && !req.phone) return uni.showToast({ title: t('auth.err.accountOrPhone'), icon: 'none' })
   if (!registerForm.vCode.trim()) return uni.showToast({ title: t('auth.err.smsCode'), icon: 'none' })
   if (registerForm.password.length < 6) return uni.showToast({ title: t('auth.err.pwdLength'), icon: 'none' })
   if (registerForm.password !== registerForm.confirmPassword) return uni.showToast({ title: t('auth.err.pwdNotMatch'), icon: 'none' })
   if (!agreed.value) return uni.showToast({ title: t('auth.err.agreement'), icon: 'none' })
-  const name = defaultRegisterName(registerForm.account).slice(0, 10)
   submitting.value = true
   try {
-    const res = await userStore.signup({
-      name,
+    await userStore.signup({
       password: registerForm.password,
       vCode: registerForm.vCode.trim(),
       ...req,
     })
-    if (res && res.code === 0) {
       mode.value = 'login'
-      registerForm.account = ''
+      account.value = ''
       registerForm.vCode = ''
       registerForm.password = ''
       registerForm.confirmPassword = ''
-    }
+
   } finally {
     submitting.value = false
   }

@@ -3,6 +3,7 @@ import { Ref, UnwrapRef } from 'vue'
 import { CommonResp } from '@hopeio/utils/types'
 import { ErrResp } from "@gen/pb/hopeio/response/response";
 import { translate } from '@/locale'
+import { tokenKey } from '@/store/user'
 
 
 const defaultConfig: RequestOptions = {
@@ -11,7 +12,7 @@ const defaultConfig: RequestOptions = {
   timeout: 10000,
   responseType: "arraybuffer",
   headers: {
-    Authorization: uni.getStorageSync('token'),
+    Authorization: uni.getStorageSync(tokenKey),
     Accept: "application/json, text/plain, */*",
     "Content-Type": "application/json",
     "X-Requested-With": "XMLHttpRequest"

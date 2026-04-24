@@ -24,17 +24,6 @@ func GetUserDao(db *gorm.DB) *UserDao {
 	return &UserDao{db}
 }
 
-func (d *UserDao) GetByNameOrEmailOrPhone(ctx context.Context, name, email, phone string) (*model.User, error) {
-
-	var u model.User
-	var err error
-	err = d.Where("(name = ? OR mail = ? OR phone = ?) AND status != ?", name, email, phone, puser.UserStatusDeleted).First(&u).Error
-	if err != nil {
-		return nil, err
-	}
-	return &u, nil
-}
-
 func (d *UserDao) GetByEmailOrPhone(ctx context.Context, mail string, countryCallingCode string, phone string, fields ...string) (*puser.User, error) {
 
 	var u puser.User
@@ -194,9 +183,15 @@ func (d *UserDao) UserInfoByAccount(ctx context.Context, mail, countryCallingCod
 	var sql string
 	if mail != "" {
 		sql = "mail = ?"
-	}else if countryCallingCode != "" && phone != "" {
+	}else {
 		sql = "country_calling_code = ? AND phone = ?"
 	}
-	return &user, d.Table(model.TableNameUser).
-		Where(sql+` AND status != ?`+sqlx.WithNotDeleted, mail, countryCallingCode, phone, puser.UserStatusDeleted).First(&user).Error
+	sql += ` AND status != ?`+sqlx.WithNotDeleted
+	db := d.Table(model.TableNameUser)
+	if mail != "" {
+		db = db.Where(sql, mail, puser.UserStatusDeleted)
+	} else if countryCallingCode != "" && phone != "" {
+		db = db.Where(sql, countryCallingCode, phone, puser.UserStatusDeleted)
+	}
+	return &user, db.First(&user).Error
 }
