@@ -7,6 +7,14 @@
 			"options": {
 				"cwd": "${workspaceFolder}/thirdparty/protobuf/tools"
 			},
+			"windows": {
+				"options": {
+					"shell": {
+						"executable": "cmd.exe",
+						"args": ["/d","/c"]
+					}
+				}
+			},
 			"command": "go",
 			"args": [
 				"run",
@@ -18,6 +26,14 @@
 			"type": "shell",
 			"options": {
 				"cwd": "${workspaceFolder}/client/app"
+			},
+			"windows": {
+				"options": {
+					"shell": {
+						"executable": "cmd.exe",
+						"args": ["/d","/c"]
+					}
+				}
 			},
 			"command": "flutter",
 			"args": [
@@ -32,6 +48,14 @@
 			"options": {
 				"cwd": "${workspaceFolder}/thirdparty/diamond"
 			},
+			"windows": {
+				"options": {
+					"shell": {
+						"executable": "cmd.exe",
+						"args": ["/d","/c"]
+					}
+				}
+			},
 			"command": "pnpm",
 			"args": [
 				"build"
@@ -45,6 +69,14 @@
 			"type": "shell",
 			"options": {
 				"cwd": "${workspaceFolder}/client/uniapp"
+			},
+			"windows": {
+				"options": {
+					"shell": {
+						"executable": "cmd.exe",
+						"args": ["/d","/c"]
+					}
+				}
 			},
 			"isBackground": true, // 必须为 true，因为 dev 服务是常驻的
 			"problemMatcher": {
@@ -75,6 +107,14 @@
 			"options": {
 				"cwd": "${workspaceFolder}/client"
 			},
+			"windows": {
+				"options": {
+					"shell": {
+						"executable": "cmd.exe",
+						"args": ["/d","/c"]
+					}
+				}
+			},
 			"command": "protogen",
 			"args": [
 				"ts",
@@ -92,6 +132,14 @@
 			"options": {
                 "cwd": "${workspaceFolder}/server/go"
             },
+			"windows": {
+				"options": {
+					"shell": {
+						"executable": "cmd.exe",
+						"args": ["/d","/c"]
+					}
+				}
+			},
 			"command": "protogen",
 			"args": [
 				"go",
@@ -112,6 +160,14 @@
 			"options": {
 				"cwd": "${workspaceFolder}/proto/.generated/ts"
 			},
+			"windows": {
+				"options": {
+					"shell": {
+						"executable": "cmd.exe",
+						"args": ["/d","/c"]
+					}
+				}
+			},
 			"command": "protogen",
 			"args": [
 				"ts",
@@ -128,6 +184,14 @@
 			"type": "shell",
 			"options": {
 				"cwd": "${workspaceFolder}/proto/.generated/go"
+			},
+			"windows": {
+				"options": {
+					"shell": {
+						"executable": "cmd.exe",
+						"args": ["/d","/c"]
+					}
+				}
 			},
 			"command": "protogen",
 			"args": [
