@@ -121,7 +121,7 @@ export default ({ command, mode }) => {
     resolve: {
       alias: {
         '@': path.join(process.cwd(), './src'),
-        '@gen': path.join(process.cwd(), './gen'),
+        '@gen': path.join(process.cwd(), '../gen'),
       },
     },
     server: {
@@ -138,7 +138,15 @@ export default ({ command, mode }) => {
             },
           }
         : undefined,
+        fs: {
+          // 允许访问当前项目根目录的上一级或其他特定路径
+          allow: [
+            '.',          // 允许当前项目根目录
+            '../gen'   // 允许访问项目外的共享目录
+          ]
+        }
     },
+
     build: {
       // 方便非h5端调试
       sourcemap: VITE_SHOW_SOURCEMAP === 'true', // 默认是false

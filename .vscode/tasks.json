@@ -2,26 +2,6 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "go:pb",
-			"type": "shell",
-			"options": {
-                "cwd": "${workspaceFolder}/server/go"
-            },
-			"command": "protogen",
-			"args": [
-				"go",
-				"-d",
-				"-e",
-				"-w",
-				"-v",
-				"-i",
-				"../../proto"
-			],
-			"runOptions": {
-				"runOn": "folderOpen",
-			}
-		},
-		{
 			"label": "install protobuf tools",
 			"type": "shell",
 			"options": {
@@ -93,24 +73,44 @@
 			"label": "ts:pb",
 			"type": "shell",
 			"options": {
-				"cwd": "${workspaceFolder}/client/uniapp"
+				"cwd": "${workspaceFolder}/client"
 			},
 			"command": "protogen",
 			"args": [
 				"ts",
 				"-p",
-				"../../thirdparty/protobuf/_proto",
+				"../thirdparty/protobuf/_proto",
 				"-i",
-				"../../proto",
+				"../proto",
 				"-o",
 				"gen/pb"
 			],
 		},
 		{
+			"label": "go:pb",
+			"type": "shell",
+			"options": {
+                "cwd": "${workspaceFolder}/server/go"
+            },
+			"command": "protogen",
+			"args": [
+				"go",
+				"-d",
+				"-e",
+				"-w",
+				"-v",
+				"-i",
+				"../../proto"
+			],
+			"runOptions": {
+				"runOn": "folderOpen",
+			}
+		},
+		{
 			"label": "pb:ts",
 			"type": "shell",
 			"options": {
-				"cwd": "${workspaceFolder}/proto/generated/ts"
+				"cwd": "${workspaceFolder}/proto/.generated/ts"
 			},
 			"command": "protogen",
 			"args": [
@@ -127,7 +127,7 @@
 			"label": "pb:go",
 			"type": "shell",
 			"options": {
-				"cwd": "${workspaceFolder}/proto/generated/go"
+				"cwd": "${workspaceFolder}/proto/.generated/go"
 			},
 			"command": "protogen",
 			"args": [

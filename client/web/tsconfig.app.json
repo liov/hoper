@@ -4,7 +4,7 @@
     "@vue/tsconfig/tsconfig.dom.json",
   ],
   "references": [{ "path": "./tsconfig.node.json" }],
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue","gen/**/*.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue","gen/**/*.ts","../gen/**/*.ts"],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
     "composite": true,
@@ -12,7 +12,7 @@
     "outDir": "dist",
     "paths": {
       "@/*": ["./src/*"],
-      "@gen/*": ["./gen/*"]
+      "@gen/*": ["../gen/*"]
     },
     "target": "esnext",
     "module": "esnext",

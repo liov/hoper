@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../toolbox"
+		},
+		{
+			"path": "../vscode-idea-git"
+		},
+		{
+			"path": "../vscode-database"
+		}
+	],
+	"settings": {
+		"typescript.tsdk": "/Users/jyb/Library/pnpm/global/5/node_modules/typescript/lib",
+		"i18n-ally.localesPaths": [
+			"../hoper/locale"
+		]
+	}
+}

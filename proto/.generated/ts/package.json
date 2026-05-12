@@ -4,10 +4,9 @@
   "description": "",
   "type": "module",
   "exports": {
-    "./*/*": {
-      "types": "./dist/*/*.d.ts",
-      "import": "./dist/*/*.js",
-      "require": "./dist/*/*.cjs"
+    "./*": {
+      "types": "./*.ts",
+      "import": "./*.ts"
     }
   },
   "scripts": {
@@ -23,7 +22,6 @@
   "devDependencies": {
     "@bufbuild/protobuf": "^2.11.0",
     "ts-proto": "^2.11.6",
-    "typescript": "^6.0.3",
-    "vite": "^8.0.8"
+    "typescript": "^6.0.3"
   }
 }

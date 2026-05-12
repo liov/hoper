@@ -31,6 +31,13 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
       // 预热文件以提前转换和缓存结果，降低启动期间的初始页面加载时长并防止转换瀑布
       warmup: {
         clientFiles: ["./index.html", "./src/{views,components}/*"]
+      },
+      fs: {
+        // 允许访问当前项目根目录的上一级或其他特定路径
+        allow: [
+          '.',          // 允许当前项目根目录
+          '../gen'   // 允许访问项目外的共享目录
+        ]
       }
     },
     plugins: getPluginsList(VITE_CDN, VITE_COMPRESSION),
