@@ -12,8 +12,8 @@
   "license": "MIT",
   "repository": "https://github.com/liov/hoper",
   "engines": {
-    "node": ">=18",
-    "pnpm": ">=9"
+    "node": ">=22",
+    "pnpm": ">=11"
   },
   "scripts": {
     "upgrade": "npx @dcloudio/uvm@latest",
@@ -56,19 +56,19 @@
     "build:quickapp-webview-huawei": "uni build -p quickapp-webview-huawei",
     "build:quickapp-webview-union": "uni build -p quickapp-webview-union",
     "type-check": "vue-tsc --noEmit",
+    "lint": "oxlint --fix -c .oxlintrc.jsonc --ignore-path .gitignore .",
+    "format": "oxfmt -c .oxfmtrc.json --ignore-path .gitignore .",
+    "format:check": "oxfmt -c .oxfmtrc.json --check --ignore-path .gitignore .",
     "diamond:add": "pnpm add file:..\\..\\thirdparty\\diamond",
     "diamond:link": "pnpm add @hopeio/utils@link:../../thirdparty/diamond --no-frozen-lockfile",
     "clear:cache": "rm -r node_modules/.vite/deps"
   },
   "lint-staged": {
-    "**/*.{html,vue,ts,cjs,json,md}": [
-      "prettier --write"
+    "**/*.{html,vue,ts,tsx,js,jsx,cjs,mjs,json,md}": [
+      "oxfmt -c .oxfmtrc.json --write --no-error-on-unmatched-pattern"
     ],
-    "**/*.{vue,js,ts,jsx,tsx}": [
-      "eslint --fix"
-    ],
-    "**/*.{vue,css,scss,html}": [
-      "stylelint --fix"
+    "**/*.{vue,js,ts,jsx,tsx,cjs,mjs}": [
+      "oxlint --fix -c .oxlintrc.jsonc --no-error-on-unmatched-pattern"
     ]
   },
   "resolutions": {
@@ -103,8 +103,6 @@
     "z-paging": "^2.8.8"
   },
   "devDependencies": {
-    "@commitlint/cli": "^20.5.0",
-    "@commitlint/config-conventional": "^20.5.0",
     "@dcloudio/types": "^3.4.30",
     "@dcloudio/uni-automator": "3.0.0-5000720260410001",
     "@dcloudio/uni-cli-shared": "3.0.0-5000720260410001",
@@ -112,13 +110,10 @@
     "@dcloudio/vite-plugin-uni": "3.0.0-5000720260410001",
     "@esbuild/darwin-arm64": "0.28.0",
     "@esbuild/darwin-x64": "0.28.0",
-    "@eslint/js": "^10.0.1",
     "@iconify-json/carbon": "^1.2.20",
     "@rollup/rollup-darwin-x64": "^4.60.1",
     "@types/node": "^25.6.0",
     "@types/wechat-miniprogram": "^3.4.10",
-    "@typescript-eslint/eslint-plugin": "^8.58.2",
-    "@typescript-eslint/parser": "^8.58.2",
     "@uni-helper/vite-plugin-uni-layouts": "^0.1.11",
     "@uni-helper/vite-plugin-uni-manifest": "^0.2.12",
     "@uni-helper/vite-plugin-uni-pages": "^0.3.24",
@@ -127,28 +122,13 @@
     "@vue/runtime-core": "^3.5.32",
     "@vue/tsconfig": "^0.9.1",
     "autoprefixer": "^10.5.0",
-    "commitlint": "^20.5.0",
-    "eslint": "^10.2.0",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-config-standard": "^17.1.0",
-    "eslint-define-config": "^2.1.0",
-    "eslint-import-resolver-typescript": "^4.4.0",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-prettier": "^5.5.5",
-    "eslint-plugin-vue": "^10.8.0",
-    "lint-staged": "^16.4.0",
+    "oxfmt": "^0.49.0",
+    "oxlint": "^1.64.0",
     "postcss": "^8.5.9",
     "postcss-html": "^1.8.1",
     "postcss-scss": "^4.0.9",
     "rollup-plugin-visualizer": "^7.0.1",
     "sass": "^1.99.0",
-    "stylelint": "^17.7.0",
-    "stylelint-config-html": "^1.1.0",
-    "stylelint-config-recess-order": "^7.7.0",
-    "stylelint-config-recommended": "^18.0.0",
-    "stylelint-config-recommended-scss": "^17.0.1",
-    "stylelint-config-recommended-vue": "^1.6.1",
-    "stylelint-prettier": "^5.0.3",
     "terser": "^5.46.1",
     "ts-proto": "^2.11.6",
     "typescript": "^6.0.2",
@@ -161,7 +141,7 @@
     "vue-i18n": "^9.14.4",
     "vue-tsc": "^3.2.6"
   },
-  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319",
+  "packageManager": "pnpm@11.1.0+sha512.0c44e842e5686b2c061a81adda8b2258bd8818e9704b2cf2c63d56b931a7b2e910092e085027003b96ca3911ab56a07f6df5abaed2be9925034cdd686a535b14",
   "pnpm": {
     "overrides": {
       "@intlify/shared": "9.14.4",

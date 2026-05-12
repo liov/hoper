@@ -303,8 +303,9 @@ onMounted(() => {
         turnstileToken.value = token
       },
     })
-  }
-    ; (window as any).turnstile ? render() : (window as any).onloadTurnstileCallback = render
+  };
+    if ((window as any).turnstile) render()
+    else {(window as any).onloadTurnstileCallback = render}
 })
 // #endif
 </script>

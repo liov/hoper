@@ -1,0 +1,39 @@
+// 自 eslint.config.cjs / .eslintrc.cjs / .prettierrc.cjs 迁移（实际以 eslint.config.cjs 为准；legacy .eslintrc 中的 import/standard 已由 flat 配置替代）。
+// 全局变量见 .oxlint-globals.json（合并 eslint.config 的 languageOptions、.eslintrc 的 uni 平台变量、.eslintrc-auto-import.json）。
+// no-unused-vars 关闭：flat 配置中 TS 使用 @typescript-eslint/no-unused-vars，oxlint 无完全等价实现；在不改 src 的前提下与现网代码对齐。
+
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "extends": ["./.oxlint-globals.json"],
+  "plugins": ["eslint", "typescript", "oxc", "vue"],
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "ignorePatterns": [
+    "**/.*",
+    "dist/**",
+    "**/*.d.ts",
+    "public/**",
+    "src/assets/**",
+    "src/**/iconfont/**",
+    "src/uni_modules/**",
+    "auto-import.d.ts",
+    "uni-pages.d.ts",
+    "src/pages.json",
+    "src/manifest.json"
+  ],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "no-debugger": "off",
+    "no-undef": "off",
+    "no-unused-expressions": "off",
+    "no-shadow-restricted-names": "off",
+    "no-unused-vars": "off"
+  },
+  "options": {
+    "respectEslintDisableDirectives": true
+  }
+}

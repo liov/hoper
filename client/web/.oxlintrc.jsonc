@@ -1,0 +1,32 @@
+// 自 .eslintrc.js 迁移说明：
+// - extends 原为 vue3-essential / eslint:recommended / @vue/eslint-config-typescript(recommended) / @vue/eslint-config-prettier；
+//   格式化由 oxfmt 承担（见 .oxfmtrc.json，由 Prettier 默认迁移）。
+// - 原 overrides 中 cypress 目录本仓库不存在，已省略。
+// - @typescript-eslint/recommended 将 no-unused-expressions 交给 TS 规则；oxlint 无同名 TS 实现，故关闭 eslint/no-unused-expressions，避免误报短路求值写法。
+// - no-shadow-restricted-names 对声明文件中的 `arguments` 等形参与 TS lib 冲突，关闭以对齐可维护性。
+// - @typescript-eslint/no-unused-vars 与 oxlint 内置 no-unused-vars 行为不一致，在不改 src 的前提下关闭 no-unused-vars（其余 correctness 仍来自 eslint/typescript/vue/oxc 插件）。
+
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["eslint", "typescript", "oxc", "vue"],
+  "env": {
+    "node": true,
+    "browser": true
+  },
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "no-console": "off",
+    "no-debugger": "off",
+    "no-use-before-define": "off",
+    "explicit-module-boundary-types": "off",
+    "no-this-alias": "off",
+    "no-unused-expressions": "off",
+    "no-shadow-restricted-names": "off",
+    "no-unused-vars": "off"
+  },
+  "options": {
+    "respectEslintDisableDirectives": true
+  }
+}
