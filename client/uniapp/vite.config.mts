@@ -1,4 +1,5 @@
 import path from 'node:path'
+
 import dayjs from 'dayjs'
 import { defineConfig, loadEnv } from 'vite'
 import _Uni from '@dcloudio/vite-plugin-uni'
@@ -121,7 +122,7 @@ export default ({ command, mode }) => {
     resolve: {
       alias: {
         '@': path.join(process.cwd(), './src'),
-        '@gen': path.join(process.cwd(), '../gen'),
+        '@gen': path.join(process.cwd(), './gen'),
       },
     },
     server: {
@@ -137,14 +138,7 @@ export default ({ command, mode }) => {
               rewrite: (path) => path.replace(new RegExp(`^${VITE_APP_PROXY_PREFIX}`), ''),
             },
           }
-        : undefined,
-        fs: {
-          // 允许访问当前项目根目录的上一级或其他特定路径
-          allow: [
-            '.',          // 允许当前项目根目录
-            '../gen'   // 允许访问项目外的共享目录
-          ]
-        }
+        : undefined
     },
 
     build: {

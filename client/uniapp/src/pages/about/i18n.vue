@@ -12,10 +12,10 @@
       </view>
     </view>
     <view class="text-green-500">多语言测试</view>
-    <view class="m-4">{{ t('app.name') }}</view>
-    <view class="m-4">{{ t('weight', { heavy: 100 }) }}</view>
+    <view class="m-4">{{ $t('app.name') }}</view>
+    <view class="m-4">{{ $t('weight', { heavy: 100 }) }}</view>
     <view class="m-4">
-      {{ t('introduction', user) }}
+      {{ $t('introduction', user) }}
     </view>
 
     <view class="text-green-500 mt-12">切换语言</view>
@@ -47,7 +47,7 @@ definePage({
 })
 
 const current = ref(uni.getLocale())
-const user = { name: '张三', detail: { height: 178, weight: '75kg' } }
+const user = { name: '张三',  height: 178, weight: '75kg' }
 const { t } = useI18n()
 const languages = [
   {

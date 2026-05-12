@@ -4,7 +4,7 @@
   "tabbar.moment": "Moments",
   "tabbar.mine": "Me",
   "weight": "{heavy}KG",
-  "introduction": "I am {name},height:{detail.height},weight:{detail.weight}",
+  "introduction": "I am {name}, height: {height}, weight: {weight}",
   "app.name": "En Title",
   "auth.slogan": "Connect & Share",
   "auth.login": "Login",

@@ -5,7 +5,7 @@
   "tabbar.mine": "我的",
   "app.name": "中文标题",
   "weight": "{heavy}公斤",
-  "introduction": "我是 {name},身高:{detail.height},体重:{detail.weight}",
+  "introduction": "我是 {name}，身高：{height}，体重：{weight}",
   "auth.slogan": "连接美好，分享生活",
   "auth.login": "登录",
   "auth.register": "注册",

@@ -16,7 +16,7 @@
         "./src/*"
       ],
       "@gen/*": [
-        "../gen/*"
+        "./gen/*"
       ]
     },
     "outDir": "dist",
@@ -50,7 +50,6 @@
     "src/**/*.jsx",
     "src/**/*.vue",
     "src/**/*.json",
-    "gen/**/*.ts",
-    "../gen/**/*.ts"
+    "gen/**/*.ts"
   ]
 }
