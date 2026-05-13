@@ -1,4 +1,4 @@
-import 'package:app/generated/protobuf/content/action.service.pbgrpc.dart';
+import 'package:app/gen/pb/content/action.service.pbgrpc.dart';
 import 'package:app/rpc/grpc.dart';
 
 import 'package:grpc/grpc.dart';

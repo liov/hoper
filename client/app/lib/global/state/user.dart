@@ -1,5 +1,5 @@
 
-import 'package:app/generated/protobuf/user/user.model.pb.dart';
+import 'package:app/gen/pb/user/user.model.pb.dart';
 import 'package:fixnum/fixnum.dart';
 
 import 'package:app/model/user.dart' as $self;

@@ -1,5 +1,5 @@
-import 'package:app/generated/protobuf/user/user.model.pbenum.dart';
-import 'package:app/generated/protobuf/user/user.service.pb.dart';
+import 'package:app/gen/pb/user/user.model.pbenum.dart';
+import 'package:app/gen/pb/user/user.service.pb.dart';
 import 'package:app/global/state.dart';
 import 'package:app/util/dialog.dart';
 import 'package:get/get.dart';
@@ -10,15 +10,16 @@ class LoginController extends GetxController {
 
   String? phone;
   String? mail ;
+  String? countryCallingCode;
   String? account;
   String? password;
-  var gender = Gender.GenderUnfilled.obs;
+  var gender = Gender.GenderPlaceholder.obs;
   String? nickname;
   DateTime birthDate = DateTime(2020,1,1,);
 
 
   Future<void> login() async{
-    return  globalState.authState.login(account!, password!);
+    return  globalState.authState.login(countryCallingCode, account!, password!);
   }
 
   Future<void> signup() async{

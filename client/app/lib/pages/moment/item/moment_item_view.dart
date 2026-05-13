@@ -10,7 +10,7 @@ import 'package:app/pages/action_bar/action_bar.dart';
 
 import 'package:applib/util/time.dart';
 
-import 'package:app/generated/protobuf/content/moment.model.pb.dart';
+import 'package:app/gen/pb/content/moment.model.pb.dart';
 
 class MomentItem extends StatelessWidget {
   MomentItem({super.key, required this.moment}) {

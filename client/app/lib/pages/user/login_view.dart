@@ -1,4 +1,4 @@
-import 'package:app/generated/protobuf/user/user.model.pb.dart';
+import 'package:app/gen/pb/user/user.model.pb.dart';
 import 'package:app/global/state/auth.dart';
 import 'package:app/global/state.dart';
 import 'package:applib/util/keyboard.dart';

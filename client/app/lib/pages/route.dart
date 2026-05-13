@@ -1,5 +1,5 @@
 
-import 'package:app/generated/protobuf/content/content.model.pbenum.dart';
+import 'package:app/gen/pb/content/content.model.pbenum.dart';
 import 'package:app/global/state.dart';
 import 'package:app/pages/comment/comment_controller.dart';
 import 'package:app/pages/splash/splash_view.dart';

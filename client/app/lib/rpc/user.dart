@@ -1,5 +1,5 @@
-import 'package:app/generated/protobuf/user/user.model.pb.dart';
-import 'package:app/generated/protobuf/user/user.service.pbgrpc.dart';
+import 'package:app/gen/pb/user/user.model.pb.dart';
+import 'package:app/gen/pb/user/user.service.pbgrpc.dart';
 
 import 'package:app/rpc/http.dart';
 import 'package:grpc/grpc.dart';

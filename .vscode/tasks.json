@@ -155,6 +155,34 @@
 			}
 		},
 		{
+			"label": "dart:pb",
+			"type": "shell",
+			"options": {
+                "cwd": "${workspaceFolder}/client/app"
+            },
+			"windows": {
+				"options": {
+					"shell": {
+						"executable": "cmd.exe",
+						"args": ["/d","/c"]
+					}
+				}
+			},
+			"command": "protogen",
+			"args": [
+				"dart",
+				"-p",
+				"../../../thirdparty/protobuf/_proto",
+				"-i",
+				"../proto",
+				"-o",
+				"lib/gen/pb"
+			],
+			"runOptions": {
+				"runOn": "folderOpen",
+			}
+		},
+		{
 			"label": "pb:ts",
 			"type": "shell",
 			"options": {

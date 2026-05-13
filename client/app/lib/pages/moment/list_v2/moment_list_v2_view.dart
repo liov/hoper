@@ -1,5 +1,5 @@
 import 'package:applib/util/async.dart';
-import 'package:app/generated/protobuf/content/moment.service.pb.dart';
+import 'package:app/gen/pb/content/moment.service.pb.dart';
 import 'package:app/global/state.dart';
 
 import 'package:app/pages/moment/item/moment_item_view.dart';
@@ -8,7 +8,7 @@ import 'package:app/rpc/moment.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:app/generated/protobuf/content/moment.model.pb.dart' as $moment;
+import 'package:app/gen/pb/content/moment.model.pb.dart' as $moment;
 
 class MomentListV2View extends StatefulWidget {
   const MomentListV2View({super.key, this.tag = "moment"});

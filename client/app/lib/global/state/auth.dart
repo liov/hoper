@@ -1,10 +1,7 @@
-
-
-import 'package:app/generated/protobuf/user/user.model.pb.dart';
-import 'package:app/generated/protobuf/user/user.service.pb.dart';
+import 'package:app/gen/pb/user/user.model.pb.dart';
+import 'package:app/gen/pb/user/user.service.pb.dart';
 import 'package:protobuf/well_known_types/google/protobuf/empty.pb.dart';
-import 'package:app/generated/protobuf/hopeio/request/param.pb.dart'
-as request;
+import 'package:app/gen/pb/hopeio/request/param.pb.dart' as request;
 import 'package:app/global/state.dart';
 import 'package:app/global/const.dart';
 import 'package:app/util/dialog.dart';
@@ -14,18 +11,25 @@ import 'package:grpc/grpc.dart';
 
 import 'package:app/rpc/http.dart';
 
-
 class AuthState {
   Auth? userAuth;
-  UserBase? get userBaseInfo => self!=null?UserBase(id:self!.id,name:self!.name,gender: self!.gender,avatar: self!.avatar):null;
+  UserBase? get userBaseInfo => self != null
+      ? UserBase(
+          id: self!.id,
+          name: self!.name,
+          gender: self!.gender,
+          avatar: self!.avatar,
+        )
+      : null;
   User? self;
 
   static const _PRE = "AuthState";
-  static const StringAuthKey = _PRE+Authorization;
+  static const StringAuthKey = _PRE + Authorization;
   static const StringAccountKey = "${_PRE}AccountKey";
   static const StringAuthInfoKey = "${_PRE}AuthInfoKey";
 
-  set account (String account)=> globalService.box.put(AuthState.StringAccountKey, account);
+  set account(String account) =>
+      globalService.box.put(AuthState.StringAccountKey, account);
   String get account => globalService.box.get(AuthState.StringAccountKey);
 
   Future<void> getAuth() async {
@@ -34,7 +38,10 @@ class AuthState {
     final authInfo = globalService.box.get(StringAuthInfoKey);
     if (authKey != null) {
       try {
-        final user = await globalService.userClient.stub.authInfo(Empty(),options:CallOptions(metadata: {Authorization: authKey}));
+        final user = await globalService.userClient.stub.authInfo(
+          Empty(),
+          options: CallOptions(metadata: {Authorization: authKey}),
+        );
         if (user.id == 0) return;
         userAuth = user;
         setAuth(authKey);
@@ -49,7 +56,7 @@ class AuthState {
   Future<void> getSelf() async {
     if (self != null) return;
     if (userAuth == null) {
-     await getAuth();
+      await getAuth();
     }
     try {
       final user = await globalService.userClient.stub.info(request.Id());
@@ -63,40 +70,39 @@ class AuthState {
 
   void setAuth(String authKey) {
     httpClient.options.headers[Authorization] = authKey;
-    globalService.subject.setState(CallOptions(metadata: {Authorization: authKey},timeout: Duration(seconds: 5)));
+    globalService.subject.setState(
+      CallOptions(
+        metadata: {Authorization: authKey},
+        timeout: Duration(seconds: 5),
+      ),
+    );
     globalService.box.put(AuthState.StringAuthKey, authKey);
   }
 
-  Future<void> login(String account,String password) async{
-    try{
-      final rep = await globalService.userClient.stub.login(LoginReq(input: account, password: password,vCode: 'super'));
-      final user = rep.user;
-      self = rep.user;
-      userAuth = Auth(id:user.id,name:user.name,role:user.role,status:user.status);
-      setAuth(rep.token);
-      this.account = account;
-      navigator!.pop();
-      //Get.forceAppUpdate();
-      Get.rootController.restartApp();
-    } on GrpcError catch (e) {
-      toast(e.message!);
-    }catch (e) {
-      // No specified type, handles all
-      print('Something really unknown: $e');
+  Future<void> login(String? countryCallingCode, String account, String password) async {
+    LoginReq req =  LoginReq(password: password, vCode: 'super');
+    if (account.contains('@')) {
+      req.mail = account;
+    }else{
+      countryCallingCode ??= '+86';
+      req.countryCallingCode = countryCallingCode;
+      req.phone = account;
     }
   }
 
-   Future<void> logout() async{
+  Future<void> logout() async {
     userAuth = null;
     httpClient.options.headers.remove(Authorization);
     globalService.box.delete(AuthState.StringAuthKey);
     self = null;
-    try{
+    try {
       await globalService.userClient.stub.logout(Empty());
-      globalService.subject.setState(CallOptions(timeout: Duration(seconds: 5)));
+      globalService.subject.setState(
+        CallOptions(timeout: Duration(seconds: 5)),
+      );
     } on GrpcError catch (e) {
       toast(e.message!);
-    }catch (e) {
+    } catch (e) {
       // No specified type, handles all
       print('Something really unknown: $e');
     }
@@ -104,9 +110,7 @@ class AuthState {
     Get.rootController.restartApp();
   }
 
-  void test(void Function() test){
+  void test(void Function() test) {
     test();
   }
 }
-
-

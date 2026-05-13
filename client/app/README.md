@@ -16,7 +16,7 @@ flutter pub get --no-example
 flutter pub global activate protoc_plugin
 export PATH="$PATH:$HOME/.pub-cache/bin" (win:%USERPROFILE%\AppData\Local\Pub\Cache\bin)
 export PATH="$PATH:$flutterSDK/bin/cache/dart-sdk/bin"
-dart run generate.dart
+protogen dart -p ../../thirdparty/protobuf/_proto -i ../../proto -o lib/gen/pb
 
 
 ### 动态库

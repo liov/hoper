@@ -1,4 +1,4 @@
-import 'package:app/generated/protobuf/content/action.model.pb.dart';
+import 'package:app/gen/pb/content/action.model.pb.dart';
 import 'package:app/global/state.dart';
 import 'package:app/global/const.dart';
 import 'package:app/pages/image/slide_image.dart';

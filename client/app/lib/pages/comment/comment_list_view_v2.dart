@@ -1,5 +1,5 @@
 import 'package:applib/util/async.dart';
-import 'package:app/generated/protobuf/content/action.model.pb.dart';
+import 'package:app/gen/pb/content/action.model.pb.dart';
 import 'package:app/pages/comment/comment_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

@@ -1,6 +1,6 @@
-import 'package:app/generated/protobuf/content/action.model.pb.dart';
-import 'package:app/generated/protobuf/content/action.service.pb.dart';
-import 'package:app/generated/protobuf/content/content.service.pb.dart';
+import 'package:app/gen/pb/content/action.model.pb.dart';
+import 'package:app/gen/pb/content/action.service.pb.dart';
+import 'package:app/gen/pb/content/content.service.pb.dart';
 import 'package:app/global/state.dart';
 import 'package:app/pages/route.dart';
 import 'package:app/rpc/action.dart';
@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:fixnum/fixnum.dart';
-import 'package:app/generated/protobuf/hopeio/request/param.pb.dart' as $param;
+import 'package:app/gen/pb/hopeio/request/param.pb.dart' as $param;
 
 class ActionBar extends StatefulWidget {
   const ActionBar(this.content, {super.key});

@@ -1,5 +1,5 @@
 import 'package:applib/util/async.dart';
-import 'package:app/generated/protobuf/content/content.model.pbenum.dart';
+import 'package:app/gen/pb/content/content.model.pbenum.dart';
 
 import 'package:app/pages/comment/comment_add_view.dart';
 import 'package:app/pages/comment/comment_controller.dart';
@@ -9,9 +9,9 @@ import 'package:app/pages/route.dart';
 import 'package:app/rpc/moment.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:app/generated/protobuf/content/moment.model.pb.dart' as $pb;
+import 'package:app/gen/pb/content/moment.model.pb.dart' as $pb;
 import 'package:fixnum/fixnum.dart';
-import 'package:app/generated/protobuf/hopeio/request/param.pb.dart' as $1;
+import 'package:app/gen/pb/hopeio/request/param.pb.dart' as $1;
 
 class MomentDetailView extends StatelessWidget {
   final CommentController commentController = Get.find();

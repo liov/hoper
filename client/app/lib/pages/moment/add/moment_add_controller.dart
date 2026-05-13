@@ -1,10 +1,10 @@
-import 'package:app/generated/protobuf/content/moment.service.pb.dart';
+import 'package:app/gen/pb/content/moment.service.pb.dart';
 import 'package:app/global/state.dart';
 import 'package:app/rpc/moment.dart';
 import 'package:app/components/media/media.dart';
 import 'package:get/get.dart';
 
-import 'package:app/generated/protobuf/common/common.model.pbenum.dart';
+import 'package:app/gen/pb/common/common.model.pbenum.dart';
 
 class MomentAddController extends GetxController with MediaController {
   String content = '';

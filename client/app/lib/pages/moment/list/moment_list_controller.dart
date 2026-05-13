@@ -1,10 +1,10 @@
-import 'package:app/generated/protobuf/content/moment.service.pb.dart';
+import 'package:app/gen/pb/content/moment.service.pb.dart';
 import 'package:app/global/state.dart';
 import 'package:app/rpc/moment.dart';
 import 'package:applib/util/multi_entity.dart';
 import 'package:get/get.dart';
 
-import 'package:app/generated/protobuf/content/moment.model.pb.dart';
+import 'package:app/gen/pb/content/moment.model.pb.dart';
 
 // 相当于多个controller,实验性，不要这么用
 class MomentListController extends GetxController with MultiEntity<ListState> {
