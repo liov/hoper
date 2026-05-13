@@ -32,6 +32,7 @@ dependencies:
   async: ^2.13.0
   http: ^1.6.0
   dio: ^5.9.2
+  web_socket_channel: ^3.0.3
   webview_flutter: ^4.13.1
   #webview_flutter_web: ^0.2.2+4
   ffi: ^2.2.0

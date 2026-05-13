@@ -6,6 +6,7 @@
   >
     <view class="text-center mt-8 text-#fff">
       <wd-button type="success" @click="gotoPage('i18n')">进入多语言页面</wd-button>
+      <wd-button type="primary" custom-class="mt-4" @click="gotoRemoteBrowse">远程相册</wd-button>
     </view>
     <UploadComp />
   </view>
@@ -29,6 +30,10 @@ const gotoPage = (path) => {
   uni.navigateTo({
     url: `/pages/about/${path}`,
   })
+}
+
+const gotoRemoteBrowse = () => {
+  uni.navigateTo({ url: '/pages/remotebrowse/pair' })
 }
 </script>
 

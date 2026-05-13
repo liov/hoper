@@ -1,0 +1,50 @@
+syntax = "proto3";
+package remotebrowse;
+
+import "hopeio/utils/patch/go.proto";
+
+option go_package = "github.com/liov/hoper/server/go/protobuf/remotebrowse";
+
+enum FileVariant {
+  FILE_VARIANT_UNSPECIFIED = 0;
+  FILE_VARIANT_THUMB = 1;
+  FILE_VARIANT_PREVIEW = 2;
+  FILE_VARIANT_ORIGINAL = 3;
+}
+
+message FileEntry {
+  string id = 1;
+  string name = 2;
+  int64 size = 3;
+  int64 mtime_unix_ms = 4;
+  string mime = 5;
+  uint32 width = 6;
+  uint32 height = 7;
+  string thumb_hash = 8;
+  uint32 flags = 9;
+}
+
+message ListFilesRequest {
+  string cursor = 1;
+  uint32 page_size = 2;
+  string root_path = 3 [(go.field) = {tags:'form:"path" validate:"required" comment:"目录路径"'}];
+}
+
+message ListFilesResponse {
+  repeated FileEntry entries = 1;
+  string next_cursor = 2;
+}
+
+message OpenFileRequest {
+  string id = 1;
+  FileVariant variant = 2;
+  int64 byte_offset = 3;
+  int64 byte_length = 4;
+}
+
+message OpenFileMeta {
+  string id = 1;
+  FileVariant variant = 2;
+  int64 total_size = 3;
+  string mime = 4;
+}

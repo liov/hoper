@@ -10,6 +10,7 @@ import 'package:app/pages/moment/add/moment_add_view.dart';
 import 'package:app/pages/moment/list/moment_list_view.dart';
 import 'package:app/pages/moment/moment_binding.dart';
 import 'package:app/pages/webview/webview.dart';
+import 'package:app/pages/remotebrowse/remote_browse_view.dart';
 import 'package:get/get.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +38,7 @@ abstract class Routes {
   static const PRODUCT_DETAILS = PRODUCT + DynamicId;
   static const MOMENT_DETAILS = MOMENT + DynamicId;
   static const WEBVIEW = '/webview';
+  static const REMOTE_BROWSE = '/remotebrowse';
   static const NOTFOUND = '/NOTFOUND';
 
   static String productDetails(String productId) => '$PRODUCT/$productId';
@@ -95,6 +97,11 @@ abstract class Routes {
     GetPage(
       name: Routes.WEBVIEW,
       page: () => WebViewExample(),
+    ),
+    GetPage(
+      name: Routes.REMOTE_BROWSE,
+      page: () => const RemoteBrowseView(),
+      binding: RemoteBrowseBinding(),
     ),
   ];
 }

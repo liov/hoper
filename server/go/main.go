@@ -19,6 +19,7 @@ import (
 	chatapi "github.com/liov/hoper/server/go/message/api"
 	userapi "github.com/liov/hoper/server/go/user/api"
 	"github.com/liov/hoper/server/go/user/service"
+	webrtcapi "github.com/liov/hoper/server/go/webrtc/api"
 	"go.opentelemetry.io/otel/sdk/resource"
 	semconv "go.opentelemetry.io/otel/semconv/v1.37.0"
 	"google.golang.org/grpc"
@@ -59,6 +60,7 @@ func main() {
 			uploadapi.GinRegister(app)
 			chatapi.GinRegister(app)
 			contentapi.GinRegister(app)
+			webrtcapi.GinRegister(app)
 			pick.HandlerPrefix("Pick")
 			pickgin.Register(app, &service.UserService{})
 		}), cherry.WithGrpcHandler(func(gs *grpc.Server) {

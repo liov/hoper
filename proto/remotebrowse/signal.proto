@@ -1,0 +1,54 @@
+syntax = "proto3";
+package remotebrowse;
+
+option go_package = "github.com/liov/hoper/server/go/protobuf/remotebrowse";
+
+// 信令：仅 ICE 与房间，不含 WebRTC SDP。
+
+message DeviceCapabilities {
+  bool has_ipv6 = 1;
+  bool network_metered = 2;
+  string platform = 3;
+}
+
+message IceParameters {
+  string ufrag = 1;
+  string pwd = 2;
+}
+
+message IceCandidateInit {
+  string candidate = 1;
+  string sdp_mid = 2;
+  uint32 sdp_mline_index = 3;
+  string username_fragment = 4;
+}
+
+message RelayToken {
+  string session_id = 1;
+  string relay_host = 2;
+  uint32 relay_port = 3;
+  bytes psk = 4;
+}
+
+message RegisterReq {
+  string room_code = 1;
+  string role = 2; // viewer | agent
+  DeviceCapabilities caps = 3;
+}
+
+message RegisterResp {
+  string peer_id = 1;
+  string room_id = 2;
+}
+
+message SignalEnvelope {
+  oneof payload {
+    RegisterReq register = 1;
+    RegisterResp register_ack = 2;
+    IceParameters ice_parameters = 3;
+    IceCandidateInit ice_candidate = 4;
+    bool ice_complete = 5;
+    RelayToken relay_token = 6;
+    string error = 7;
+  }
+}

@@ -7,21 +7,52 @@ edition = "2024"
 name = "rfv"
 crate-type = ["lib", "staticlib", "cdylib"]
 
+[features]
+default = ["media"]
+media = [
+  "dep:axum",
+  "dep:tower",
+  "dep:tower-http",
+  "dep:tokio",
+  "dep:tokio-util",
+  "dep:image",
+  "dep:ffmpeg-next",
+  "dep:tracing-subscriber",
+  "dep:tracing",
+  "dep:slog",
+  "dep:tonic",
+  "dep:prost",
+  "dep:sha2",
+  "dep:hex",
+]
+
 [dependencies]
 libc = "0.2"
-axum = "0.8"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-tokio = { version = "1.19", features = ["full"] }
-slog = "2.7"
-tower = {version = "0.5", features = ["full"]}
-tower-http = { version = "0.6", features = ["full"] }
-tracing-subscriber = "0.3"
-tracing = "0.1"
-tokio-util = { version = "0.7", features = ["codec"] }
-image = "0.25"
 mime_guess = "2"
-ffmpeg-next = "8"
+sha2 = { version = "0.10", optional = true }
+hex = { version = "0.4", optional = true }
+tonic = { version = "0.12", optional = true }
+prost = { version = "0.13", optional = true }
+axum = { version = "0.8", optional = true }
+tokio = { version = "1.19", features = ["full"], optional = true }
+slog = { version = "2.7", optional = true }
+tower = { version = "0.5", features = ["full"], optional = true }
+tower-http = { version = "0.6", features = ["full"], optional = true }
+tracing-subscriber = { version = "0.3", optional = true }
+tracing = { version = "0.1", optional = true }
+tokio-util = { version = "0.7", features = ["codec"], optional = true }
+image = { version = "0.25", optional = true }
+ffmpeg-next = { version = "8.1", optional = true }
+
+[build-dependencies]
+tonic-build = "0.12"
+
+[[bin]]
+name = "rfv"
+path = "src/main.rs"
+required-features = ["media"]
 
 [target.x86_64-pc-windows-gnu]
 linker = "D:/sdk/msys64/ucrt64/bin/gcc"
