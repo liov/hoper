@@ -32,7 +32,7 @@ func NewAgent(_ context.Context, urls []*stun.URI, localUfrag, localPwd string) 
 		Urls:         urls,
 		LocalUfrag:   localUfrag,
 		LocalPwd:     localPwd,
-		NetworkTypes: []ice.NetworkType{ice.NetworkTypeUDP4, ice.NetworkTypeUDP6},
+		NetworkTypes: []ice.NetworkType{ice.NetworkTypeUDP6, ice.NetworkTypeUDP4},
 	})
 }
 

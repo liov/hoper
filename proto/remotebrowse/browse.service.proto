@@ -37,6 +37,14 @@ message HealthResponse {
   string thumb_cache = 4;
 }
 
+message ThumbnailChunk {
+  bytes data = 1;
+  string thumb_hash = 2;
+  string mime = 3;
+  bool done = 4;
+  string error = 5;
+}
+
 service RemoteBrowseService {
   option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {
     description: "远程浏览 HTTP/gRPC"
@@ -69,6 +77,13 @@ service RemoteBrowseService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: ["远程浏览", "v1.0.0"]
       summary: "获取缩略图"
+    };
+  }
+
+  rpc ThumbnailPipe (stream ThumbnailRequest) returns (stream ThumbnailChunk) {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: ["远程浏览", "v1.0.0"]
+      summary: "缩略图双向流"
     };
   }
 }

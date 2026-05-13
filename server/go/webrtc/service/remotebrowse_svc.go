@@ -60,7 +60,7 @@ func (s *RemoteBrowseService) GetThumbnail(ctx context.Context, req *pb.Thumbnai
 	if maxEdge == 0 {
 		maxEdge = 256
 	}
-	data, hash, err := rfvclient.GetThumbnail(ctx, req.GetPath(), maxEdge)
+	data, hash, err := rfvclient.GetThumbnailStream(ctx, req.GetPath(), maxEdge)
 	if err != nil {
 		return nil, status.Errorf(codes.Unavailable, "rfv: %v", err)
 	}

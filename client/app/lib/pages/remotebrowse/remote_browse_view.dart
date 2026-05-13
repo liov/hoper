@@ -20,7 +20,10 @@ class _RemoteBrowseViewState extends State<RemoteBrowseView> {
   var _status = '';
   var _useRelay = !kIsWeb;
   int _previewIndex = 0;
+  var _thumbEdge = 256;
   RbRelaySession? _relay;
+
+  int get thumbEdge => _useRelay && !kIsWeb ? 128 : _thumbEdge;
 
   @override
   void dispose() {
@@ -93,7 +96,7 @@ class _RemoteBrowseViewState extends State<RemoteBrowseView> {
               child: PageView.builder(
                 itemCount: _entries.length,
                 onPageChanged: (i) => setState(() => _previewIndex = i),
-                itemBuilder: (ctx, i) => _ThumbPreview(api: _api, relay: _useRelay ? _relay : null, entry: _entries[i]),
+                itemBuilder: (ctx, i) => _ThumbPreview(api: _api, relay: _useRelay ? _relay : null, entry: _entries[i], maxEdge: thumbEdge),
               ),
             ),
           Expanded(
@@ -113,7 +116,7 @@ class _RemoteBrowseViewState extends State<RemoteBrowseView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Expanded(child: _ThumbPreview(api: _api, relay: _useRelay ? _relay : null, entry: e, fit: BoxFit.cover)),
+                        Expanded(child: _ThumbPreview(api: _api, relay: _useRelay ? _relay : null, entry: e, maxEdge: thumbEdge, fit: BoxFit.cover)),
                         Padding(padding: const EdgeInsets.all(4), child: Text(e.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11))),
                       ],
                     ),
@@ -129,19 +132,20 @@ class _RemoteBrowseViewState extends State<RemoteBrowseView> {
 }
 
 class _ThumbPreview extends StatelessWidget {
-  const _ThumbPreview({required this.api, required this.entry, this.relay, this.fit = BoxFit.contain});
+  const _ThumbPreview({required this.api, required this.entry, this.relay, this.maxEdge = 256, this.fit = BoxFit.contain});
 
   final RemoteBrowseApi api;
   final RbRelaySession? relay;
   final RbFileEntry entry;
+  final int maxEdge;
   final BoxFit fit;
 
   Future<Uint8List> _load() {
     final path = entry.id.isNotEmpty ? entry.id : entry.name;
     if (relay != null) {
-      return relay!.fetchThumb(path);
+      return relay!.fetchThumb(path, maxEdge: maxEdge);
     }
-    return api.fetchThumb(path, hash: entry.thumbHash);
+    return api.fetchThumb(path, hash: entry.thumbHash, maxEdge: maxEdge);
   }
 
   @override

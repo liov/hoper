@@ -1,14 +1,19 @@
 //! gRPC：Go `webrtc` 包通过本服务访问 rfv 媒体能力。
 use std::path::PathBuf;
 
-use tonic::{Request, Response, Status};
+use tokio::sync::mpsc;
+use tokio_stream::wrappers::ReceiverStream;
+use tonic::{Request, Response, Status, Streaming};
 
 pub mod proto {
     tonic::include_proto!("remotebrowse");
 }
 
 use proto::remote_browse_service_server::{RemoteBrowseService, RemoteBrowseServiceServer};
-use proto::{FileEntry, ListFilesRequest, ListFilesResponse, ThumbnailRequest, ThumbnailResponse};
+use proto::{
+    FileEntry, HealthResponse, ListFilesRequest, ListFilesResponse, ThumbnailChunk, ThumbnailRequest,
+    ThumbnailResponse,
+};
 
 #[derive(Default)]
 struct MediaSvc;
@@ -64,11 +69,63 @@ impl RemoteBrowseService for MediaSvc {
         }))
     }
 
+    type ThumbnailPipeStream = ReceiverStream<Result<ThumbnailChunk, Status>>;
+
+    async fn thumbnail_pipe(
+        &self,
+        req: Request<Streaming<ThumbnailRequest>>,
+    ) -> Result<Response<Self::ThumbnailPipeStream>, Status> {
+        let mut inbound = req.into_inner();
+        let (tx, rx) = mpsc::channel(4);
+        tokio::spawn(async move {
+            while let Ok(Some(job)) = inbound.message().await {
+                let path = PathBuf::from(job.path);
+                let edge = if job.max_edge == 0 {
+                    crate::remotebrowse::DEFAULT_MAX_EDGE
+                } else {
+                    job.max_edge
+                };
+                let out = tokio::task::spawn_blocking(move || {
+                    crate::remotebrowse::ensure_thumbnail(&path, edge)
+                })
+                .await;
+                let chunk = match out {
+                    Ok(Ok((data, hash, _))) => ThumbnailChunk {
+                        data,
+                        thumb_hash: hash,
+                        mime: "image/webp".into(),
+                        done: true,
+                        ..Default::default()
+                    },
+                    Ok(Err(e)) => ThumbnailChunk {
+                        error: e,
+                        done: true,
+                        ..Default::default()
+                    },
+                    Err(e) => ThumbnailChunk {
+                        error: e.to_string(),
+                        done: true,
+                        ..Default::default()
+                    },
+                };
+                if tx.send(Ok(chunk)).await.is_err() {
+                    break;
+                }
+            }
+        });
+        Ok(Response::new(ReceiverStream::new(rx)))
+    }
+
     async fn get_health(
         &self,
         _req: Request<()>,
-    ) -> Result<Response<proto::HealthResponse>, Status> {
-        Err(Status::unimplemented("health is served by Go gateway"))
+    ) -> Result<Response<HealthResponse>, Status> {
+        Ok(Response::new(HealthResponse {
+            signal_ws: "/rb/signal".into(),
+            relay_tcp: String::new(),
+            rfv_grpc: std::env::var("RFV_GRPC").unwrap_or_else(|_| "127.0.0.1:50051".into()),
+            thumb_cache: crate::remotebrowse::thumb_cache_dir().to_string_lossy().into_owned(),
+        }))
     }
 }
 

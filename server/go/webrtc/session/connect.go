@@ -97,8 +97,13 @@ func ConnectViewer(ctx context.Context, wsURL, room string) (io.ReadWriteCloser,
 	}()
 	select {
 	case ic := <-iceCh:
+		link, err := UpgradeICEQUIC(ctx, ic, true)
+		if err != nil {
+			_ = cli.Close()
+			return nil, err
+		}
 		_ = cli.Close()
-		return ic, nil
+		return link, nil
 	case <-time.After(iceTimeout()):
 	}
 	tok, err := sess.WaitRelayToken(ctx)

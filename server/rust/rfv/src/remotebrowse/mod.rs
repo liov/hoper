@@ -3,7 +3,7 @@
 mod thumbnail;
 
 #[cfg(feature = "media")]
-pub use thumbnail::{ensure_thumbnail, thumb_hash, DEFAULT_MAX_EDGE};
+pub use thumbnail::{ensure_thumbnail, thumb_cache_dir, thumb_hash, DEFAULT_MAX_EDGE};
 
 use serde::Serialize;
 use std::fs;

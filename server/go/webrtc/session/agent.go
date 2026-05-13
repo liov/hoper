@@ -35,7 +35,9 @@ func handleAgentRelayFrame(conn net.Conn, root string, typ byte, payload []byte)
 	case wire.TypeFileIndex:
 		return replyFileIndexRelay(conn, root, payload)
 	case wire.TypeThumbReq:
-		return replyThumbRelay(conn, payload)
+		return replyThumbRelay(conn, root, payload)
+	case wire.TypeFileChunk:
+		return replyFileChunkRelay(conn, root, payload)
 	default:
 		return nil
 	}
@@ -49,8 +51,8 @@ func replyFileIndexRelay(conn net.Conn, root string, payload []byte) error {
 	return writeWireRelay(conn, wire.TypeFileIndex, b)
 }
 
-func replyThumbRelay(conn net.Conn, payload []byte) error {
-	b, err := buildThumbPayload(payload)
+func replyThumbRelay(conn net.Conn, root string, payload []byte) error {
+	b, err := buildThumbPayload(root, payload)
 	if err != nil {
 		return err
 	}
@@ -62,7 +64,9 @@ func handleAgentFrame(w io.Writer, root string, typ byte, payload []byte) error 
 	case wire.TypeFileIndex:
 		return replyFileIndexWire(w, root, payload)
 	case wire.TypeThumbReq:
-		return replyThumbWire(w, payload)
+		return replyThumbWire(w, root, payload)
+	case wire.TypeFileChunk:
+		return replyFileChunkWire(w, root, payload)
 	default:
 		return nil
 	}
@@ -76,12 +80,20 @@ func replyFileIndexWire(w io.Writer, root string, payload []byte) error {
 	return writeWire(w, wire.TypeFileIndex, b)
 }
 
-func replyThumbWire(w io.Writer, payload []byte) error {
-	b, err := buildThumbPayload(payload)
+func replyThumbWire(w io.Writer, root string, payload []byte) error {
+	b, err := buildThumbPayload(root, payload)
 	if err != nil {
 		return err
 	}
 	return writeWire(w, wire.TypeThumbData, b)
+}
+
+func replyFileChunkRelay(conn net.Conn, root string, payload []byte) error {
+	b, err := buildFileChunkPayload(root, payload)
+	if err != nil {
+		return err
+	}
+	return writeWireRelay(conn, wire.TypeFileChunk, b)
 }
 
 func buildFileIndexPayload(root string, payload []byte) ([]byte, error) {
@@ -93,7 +105,7 @@ func buildFileIndexPayload(root string, payload []byte) ([]byte, error) {
 	if path == "" {
 		path = root
 	}
-	entries, err := listEntries(context.Background(), path)
+	entries, err := listEntriesSafe(context.Background(), root, path)
 	if err != nil {
 		return nil, err
 	}
@@ -104,7 +116,7 @@ func buildFileIndexPayload(root string, payload []byte) ([]byte, error) {
 	return b, nil
 }
 
-func buildThumbPayload(payload []byte) ([]byte, error) {
+func buildThumbPayload(root string, payload []byte) ([]byte, error) {
 	req := &pb.ThumbnailRequest{}
 	if err := proto.Unmarshal(payload, req); err != nil {
 		return nil, err
@@ -113,7 +125,11 @@ func buildThumbPayload(payload []byte) ([]byte, error) {
 	if maxEdge == 0 {
 		maxEdge = 256
 	}
-	data, hash, err := rfvclient.GetThumbnail(context.Background(), req.GetPath(), maxEdge)
+	path, err := ResolveUnderRoot(root, req.GetPath())
+	if err != nil {
+		return nil, err
+	}
+	data, hash, err := rfvclient.GetThumbnailStream(context.Background(), path, maxEdge)
 	if err != nil {
 		return nil, err
 	}

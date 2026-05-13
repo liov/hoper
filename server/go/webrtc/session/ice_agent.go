@@ -1,6 +1,7 @@
 package session
 
 import (
+	"context"
 	"io"
 
 	"github.com/pion/ice/v4"
@@ -25,10 +26,16 @@ func ServeAgentWire(rw io.ReadWriter, root string) error {
 	}
 }
 
-// ServeAgentICE 在 ICE 连接上服务 agent。
+// ServeAgentICE 在 ICE 上监听 QUIC 并服务 agent。
 func ServeAgentICE(conn *ice.Conn, root string) error {
 	defer conn.Close()
-	return ServeAgentWire(conn, root)
+	ctx := context.Background()
+	link, err := UpgradeICEQUIC(ctx, conn, false)
+	if err != nil {
+		return err
+	}
+	defer link.Close()
+	return ServeAgentWire(link, root)
 }
 
 // ListFilesWire 经直连 wire 拉取列表。
