@@ -1,42 +1,52 @@
-package service
+package remotebrowse
 
 import (
 	"context"
+	"os"
+	"strings"
 
 	pb "github.com/liov/hoper/server/go/protobuf/remotebrowse"
-	"github.com/liov/hoper/server/go/webrtc/rfvclient"
+	"github.com/liov/hoper/server/go/file/rfvclient"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-type RemoteBrowseService struct {
+type Service struct {
 	pb.UnimplementedRemoteBrowseServiceServer
 }
 
-var browseSvc *RemoteBrowseService
+var browseSvc *Service
 
-func GetRemoteBrowseService() *RemoteBrowseService {
+func GetService() *Service {
 	if browseSvc != nil {
 		return browseSvc
 	}
-	EnsureSignalHub()
-	browseSvc = &RemoteBrowseService{}
+	EnsureHub()
+	browseSvc = &Service{}
 	return browseSvc
 }
 
-func (s *RemoteBrowseService) GetHealth(ctx context.Context, _ *emptypb.Empty) (*pb.HealthResponse, error) {
-	hub := EnsureSignalHub()
+func (s *Service) GetHealth(ctx context.Context, _ *emptypb.Empty) (*pb.HealthResponse, error) {
+	hub := EnsureHub()
 	_ = ctx
+	signalWs := strings.TrimSpace(os.Getenv("RB_SIGNAL_WS"))
+	if signalWs == "" {
+		signalWs = "/rb/signal"
+	}
+	relay := hub.RelayTCPAddr
+	if relay == "" {
+		relay = strings.TrimSpace(os.Getenv("RB_RELAY_TCP"))
+	}
 	return &pb.HealthResponse{
-		SignalWs:   "/rb/signal",
-		RelayTcp:   hub.RelayTCPAddr,
+		SignalWs:   signalWs,
+		RelayTcp:   relay,
 		RfvGrpc:    rfvclient.GRPCAddr(),
 		ThumbCache: rfvclient.ThumbCacheDir(),
 	}, nil
 }
 
-func (s *RemoteBrowseService) ListFiles(ctx context.Context, req *pb.ListFilesRequest) (*pb.ListFilesResponse, error) {
+func (s *Service) ListFiles(ctx context.Context, req *pb.ListFilesRequest) (*pb.ListFilesResponse, error) {
 	if req.GetRootPath() == "" {
 		return nil, status.Error(codes.InvalidArgument, "missing path")
 	}
@@ -47,7 +57,7 @@ func (s *RemoteBrowseService) ListFiles(ctx context.Context, req *pb.ListFilesRe
 	return &pb.ListFilesResponse{Entries: entries}, nil
 }
 
-func (s *RemoteBrowseService) GetThumbnail(ctx context.Context, req *pb.ThumbnailRequest) (*pb.ThumbnailResponse, error) {
+func (s *Service) GetThumbnail(ctx context.Context, req *pb.ThumbnailRequest) (*pb.ThumbnailResponse, error) {
 	if req.GetHash() != "" {
 		if b, ok := rfvclient.GetThumbnailCached(req.GetHash()); ok {
 			return &pb.ThumbnailResponse{Data: b, Mime: "image/webp", ThumbHash: req.GetHash()}, nil

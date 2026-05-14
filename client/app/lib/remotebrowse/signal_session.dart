@@ -72,6 +72,19 @@ class RbSignalSession {
     _channel.sink.add(env.writeToBuffer());
   }
 
+  Future<RegisterResp> registerAgent(String room) async {
+    final c = Completer<RegisterResp>();
+    _registerWaiters.add(c);
+    await send(SignalEnvelope(
+      register: RegisterReq(
+        roomCode: room,
+        role: 'agent',
+        caps: DeviceCapabilities(hasIpv6: !kIsWeb, platform: kIsWeb ? 'web' : 'flutter'),
+      ),
+    ));
+    return c.future;
+  }
+
   Future<RegisterResp> registerViewer(String room) async {
     final c = Completer<RegisterResp>();
     _registerWaiters.add(c);

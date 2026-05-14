@@ -18,4 +18,5 @@ func GinRegister(app *gin.Engine) {
 	app.POST("/api/upload/:md5", ginx.Convert(service.Upload))
 	app.POST("/api/multiUpload", ginx.Convert(service.MultiUpload))
 	file.RegisterFileServiceHandlerServer(app, service.GetFileService())
+	RegisterRemoteBrowse(app)
 }

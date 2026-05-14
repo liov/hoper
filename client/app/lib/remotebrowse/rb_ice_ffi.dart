@@ -42,7 +42,7 @@ class RbIceFfi {
     }
     _inited = true;
     try {
-      _lib = findDynamicLibrary('rbclient', 'libraries');
+      _lib = findDynamicLibrary('rfv', 'libraries');
       _viewerNew = _lib!.lookupFunction<_ViewerNewNative, _ViewerNewDart>('rb_ice_viewer_new');
       _viewerPush = _lib!.lookupFunction<_ViewerPushNative, _ViewerPushDart>('rb_ice_viewer_push');
       _viewerPollOut = _lib!.lookupFunction<_ViewerPollOutNative, _ViewerPollOutDart>('rb_ice_viewer_poll_out');

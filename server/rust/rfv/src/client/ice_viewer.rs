@@ -13,10 +13,10 @@ use webrtc_ice::network_type::NetworkType;
 use webrtc_ice::url::Url;
 use webrtc_ice::agent::Agent;
 
-use crate::ice_stream::IceWire;
-use crate::proto::signal_envelope::Payload;
-use crate::proto::{IceCandidateInit, IceParameters, SignalEnvelope};
-use crate::wire;
+use crate::client::ice_stream::IceWire;
+use crate::signal_proto::signal_envelope::Payload;
+use crate::signal_proto::{IceCandidateInit, IceParameters, SignalEnvelope};
+use crate::client::wire;
 
 const STUN: &str = "stun:stun.l.google.com:19302";
 
@@ -114,7 +114,7 @@ async fn run_viewer(inner: Arc<Mutex<Inner>>, timeout: Duration) -> Result<(), S
         .map_err(|_| "ice timeout".to_string())?
         .map_err(|e| e.to_string())?;
     let _ = cancel_tx.send(()).await;
-    let stream = crate::ice_stream::connect(conn).await?;
+    let stream = crate::client::ice_stream::connect(conn).await?;
     inner.lock().expect("lock").state = ViewerState::Ready(stream);
     Ok(())
 }

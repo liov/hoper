@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:app/remotebrowse/direct_dialer.dart';
 import 'package:app/remotebrowse/ice_dialer.dart';
 import 'package:app/remotebrowse/relay_transport.dart';
+import 'package:app/remotebrowse/room_dialer.dart';
 import 'package:app/remotebrowse/signal_session.dart';
 import 'package:app/remotebrowse/wire_codec.dart';
 import 'package:app/remotebrowse/wire_session.dart';
@@ -20,6 +21,11 @@ class RbViewerSession {
       if (direct != null) {
         await sig.close();
         return RbWireSession(direct);
+      }
+      final roomLink = await RbRoomDialer.tryConnect(sig);
+      if (roomLink != null) {
+        await sig.close();
+        return RbWireSession(roomLink);
       }
       final ice = await _pickIce(sig);
       if (ice != null) {

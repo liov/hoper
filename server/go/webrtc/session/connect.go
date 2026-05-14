@@ -58,6 +58,11 @@ func RunAgent(ctx context.Context, wsURL, room, root string) error {
 		return err
 	}
 	defer ln.Close()
+	qln, qport, err := listenQuicRoom()
+	if err != nil {
+		return err
+	}
+	defer qln.Close()
 	cli, err := signalclient.Dial(ctx, wsURL)
 	if err != nil {
 		return err
@@ -69,8 +74,12 @@ func RunAgent(ctx context.Context, wsURL, room, root string) error {
 	sess := cli.StartSession()
 	sess.Pump(ctx)
 	_ = sess.SendPeerEndpoints(gatherPeerEndpoints(port))
+	_ = sendQuicPeerEndpoints(sess, qport)
 	if c, ok := waitDirectAgent(ctx, ln, sess); ok {
 		return ServeAgentWire(c, root)
+	}
+	if link, ok := waitQuicRoomAgent(ctx, qln); ok {
+		return ServeAgentWire(link, root)
 	}
 	iceCh := make(chan *ice.Conn, 1)
 	go func() {
@@ -132,6 +141,10 @@ func ConnectViewer(ctx context.Context, wsURL, room string, opt *ViewerDirectOpt
 	if c, ok := waitDirectViewer(ctx, sess, ln, manualHost, manualPort); ok {
 		_ = cli.Close()
 		return c, nil
+	}
+	if link, ok := tryQuicRoomViewer(ctx, sess); ok {
+		_ = cli.Close()
+		return link, nil
 	}
 	iceCh := make(chan *ice.Conn, 1)
 	go func() {

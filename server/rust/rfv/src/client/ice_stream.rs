@@ -3,7 +3,7 @@ use std::sync::Arc;
 use bytes::{BufMut, BytesMut};
 use webrtc_util::conn::Conn;
 
-use crate::wire;
+use crate::client::wire;
 
 pub struct IceWire {
     conn: Arc<dyn Conn + Send + Sync>,

@@ -2,15 +2,15 @@ use std::ffi::c_void;
 use std::ptr;
 use std::slice;
 
-use crate::ice_viewer::ViewerHandle;
+use crate::client::ice_viewer::ViewerHandle;
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn rb_ice_viewer_new(timeout_ms: u32) -> *mut c_void {
     let h = ViewerHandle::new(timeout_ms);
     Box::into_raw(Box::new(h)) as *mut c_void
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn rb_ice_viewer_push(h: *mut c_void, data: *const u8, len: usize) -> i32 {
     if h.is_null() || data.is_null() {
         return -1;
@@ -21,7 +21,7 @@ pub extern "C" fn rb_ice_viewer_push(h: *mut c_void, data: *const u8, len: usize
     0
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn rb_ice_viewer_poll_out(h: *mut c_void, buf: *mut u8, cap: usize, out_len: *mut usize) -> i32 {
     if h.is_null() || buf.is_null() || out_len.is_null() {
         return -1;
@@ -41,7 +41,7 @@ pub extern "C" fn rb_ice_viewer_poll_out(h: *mut c_void, buf: *mut u8, cap: usiz
     0
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn rb_ice_viewer_state(h: *mut c_void) -> i32 {
     if h.is_null() {
         return -1;
@@ -50,7 +50,7 @@ pub extern "C" fn rb_ice_viewer_state(h: *mut c_void) -> i32 {
     handle.state_code()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn rb_ice_viewer_write(h: *mut c_void, typ: u8, data: *const u8, len: usize) -> i32 {
     if h.is_null() || (len > 0 && data.is_null()) {
         return -1;
@@ -63,7 +63,7 @@ pub extern "C" fn rb_ice_viewer_write(h: *mut c_void, typ: u8, data: *const u8, 
     0
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn rb_ice_viewer_read(h: *mut c_void, buf: *mut u8, cap: usize, out_len: *mut usize) -> i32 {
     if h.is_null() || buf.is_null() || out_len.is_null() {
         return -1;
@@ -79,7 +79,7 @@ pub extern "C" fn rb_ice_viewer_read(h: *mut c_void, buf: *mut u8, cap: usize, o
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn rb_ice_viewer_close(h: *mut c_void) {
     if h.is_null() {
         return;

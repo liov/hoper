@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 The Pion community <https://pion.ly>
 // SPDX-License-Identifier: MIT
 
-//go:build ignore
+//go:build !js
 
 // rtmp-to-webrtc demonstrates how you could re-stream media from a RTMP server to WebRTC.
 package main

@@ -26,35 +26,70 @@ media = [
   "dep:sha2",
   "dep:hex",
 ]
+client = [
+  "dep:bytes",
+  "dep:prost",
+  "dep:rand",
+  "dep:tokio",
+  "dep:webrtc-ice",
+  "dep:webrtc-util",
+  "dep:hex",
+]
+daemon = [
+  "dep:axum",
+  "dep:futures-util",
+  "dep:tokio",
+  "dep:tracing-subscriber",
+  "dep:tracing",
+  "dep:prost",
+  "dep:uuid",
+]
 
 [dependencies]
 libc = "0.2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 mime_guess = "2"
+bytes = { version = "1", optional = true }
 sha2 = { version = "0.10", optional = true }
 hex = { version = "0.4", optional = true }
 tonic = { version = "0.12", optional = true }
 prost = { version = "0.13", optional = true }
 tokio-stream = { version = "0.1", optional = true }
-axum = { version = "0.8", optional = true }
+axum = { version = "0.8", features = ["ws"], optional = true }
 tokio = { version = "1.19", features = ["full"], optional = true }
 slog = { version = "2.7", optional = true }
 tower = { version = "0.5", features = ["full"], optional = true }
 tower-http = { version = "0.6", features = ["full"], optional = true }
-tracing-subscriber = { version = "0.3", optional = true }
+tracing-subscriber = { version = "0.3", optional = true, features = ["env-filter"] }
 tracing = { version = "0.1", optional = true }
 tokio-util = { version = "0.7", features = ["codec"], optional = true }
 image = { version = "0.25", optional = true }
 ffmpeg-next = { version = "8.1", optional = true }
+rand = { version = "0.8", optional = true }
+futures-util = { version = "0.3", optional = true }
+webrtc-ice = { version = "0.13", optional = true }
+webrtc-util = { version = "0.11", optional = true }
+uuid = { version = "1", features = ["v4"], optional = true }
 
 [build-dependencies]
 tonic-build = "0.12"
+prost-build = "0.13"
 
 [[bin]]
 name = "rfv"
 path = "src/main.rs"
 required-features = ["media"]
+
+[[bin]]
+name = "video"
+path = "src/bin/video.rs"
+required-features = ["media"]
+
+[[bin]]
+name = "rfv-daemon"
+path = "src/bin/daemon.rs"
+required-features = ["daemon"]
 
 [target.x86_64-pc-windows-gnu]
 linker = "D:/sdk/msys64/ucrt64/bin/gcc"

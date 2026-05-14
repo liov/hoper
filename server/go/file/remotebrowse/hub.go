@@ -1,4 +1,4 @@
-package service
+package remotebrowse
 
 import (
 	"net"
@@ -32,15 +32,15 @@ type room struct {
 }
 
 // RemoteBrowseHub 管理房间与信令转发；中继 TCP 由 relay.Hub 承担。
-type RemoteBrowseHub struct {
+type Hub struct {
 	mu    sync.Mutex
 	rooms map[string]*room
 	// RelayTCPAddr 若非空，在双方到齐后下发给两端（host:port）。
 	RelayTCPAddr string
 }
 
-func NewRemoteBrowseHub() *RemoteBrowseHub {
-	return &RemoteBrowseHub{rooms: make(map[string]*room)}
+func NewHub() *Hub {
+	return &Hub{rooms: make(map[string]*room)}
 }
 
 func parseRelayAddr(addr string) (host string, port uint32) {
@@ -55,7 +55,7 @@ func parseRelayAddr(addr string) (host string, port uint32) {
 	return host, uint32(p)
 }
 
-func (h *RemoteBrowseHub) getRoom(code string) *room {
+func (h *Hub) getRoom(code string) *room {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	r, ok := h.rooms[code]
@@ -66,7 +66,7 @@ func (h *RemoteBrowseHub) getRoom(code string) *room {
 	return r
 }
 
-func (h *RemoteBrowseHub) removePeerFromRoom(code, peerID string) {
+func (h *Hub) removePeerFromRoom(code, peerID string) {
 	h.mu.Lock()
 	r, ok := h.rooms[code]
 	if !ok {
@@ -115,7 +115,7 @@ func flushPending(conn *websocket.Conn, pending *[][]byte) {
 	*pending = nil
 }
 
-func (h *RemoteBrowseHub) HandleWS(conn *websocket.Conn) {
+func (h *Hub) HandleWS(conn *websocket.Conn) {
 	defer conn.Close()
 	var roomCode, peerID, role string
 	for {
@@ -139,7 +139,7 @@ func (h *RemoteBrowseHub) HandleWS(conn *websocket.Conn) {
 	}
 }
 
-func (h *RemoteBrowseHub) onRegister(conn *websocket.Conn, req *pb.RegisterReq, roomCode, peerID, role *string) {
+func (h *Hub) onRegister(conn *websocket.Conn, req *pb.RegisterReq, roomCode, peerID, role *string) {
 	if req.GetRoomCode() == "" || (req.GetRole() != RoleViewer && req.GetRole() != RoleAgent) {
 		_ = writeProto(conn, &pb.SignalEnvelope{Payload: &pb.SignalEnvelope_Error{Error: "bad register"}})
 		return
@@ -191,7 +191,7 @@ func (h *RemoteBrowseHub) onRegister(conn *websocket.Conn, req *pb.RegisterReq, 
 	}
 }
 
-func (h *RemoteBrowseHub) forwardICE(roomCode, role string, env *pb.SignalEnvelope) {
+func (h *Hub) forwardICE(roomCode, role string, env *pb.SignalEnvelope) {
 	b, err := proto.Marshal(env)
 	if err != nil {
 		return
