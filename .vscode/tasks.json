@@ -172,9 +172,9 @@
 			"args": [
 				"dart",
 				"-p",
-				"../../../thirdparty/protobuf/_proto",
+				"../../thirdparty/protobuf/_proto",
 				"-i",
-				"../proto",
+				"../../proto",
 				"-o",
 				"lib/gen/pb"
 			],
