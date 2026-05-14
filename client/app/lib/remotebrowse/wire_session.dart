@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:app/gen/pb/remotebrowse/browse.pb.dart';
-import 'package:app/gen/pb/remotebrowse/remotebrowse/browse.service.pb.dart';
+import 'package:app/gen/pb/remotebrowse/browse.service.pb.dart';
 import 'package:app/remotebrowse/api.dart';
 import 'package:app/remotebrowse/wire_codec.dart';
 import 'package:app/remotebrowse/wire_transport.dart';
