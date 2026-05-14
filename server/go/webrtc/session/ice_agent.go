@@ -26,9 +26,12 @@ func ServeAgentWire(rw io.ReadWriter, root string) error {
 	}
 }
 
-// ServeAgentICE 在 ICE 上监听 QUIC 并服务 agent。
+// ServeAgentICE 在 ICE 上服务 agent；RB_RAW_ICE=1 时走裸 wire。
 func ServeAgentICE(conn *ice.Conn, root string) error {
 	defer conn.Close()
+	if rawICEWire() {
+		return ServeAgentWire(conn, root)
+	}
 	ctx := context.Background()
 	link, err := UpgradeICEQUIC(ctx, conn, false)
 	if err != nil {

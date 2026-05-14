@@ -12,6 +12,7 @@ import (
 type Session struct {
 	conn *websocket.Conn
 	ice  chan *pb.SignalEnvelope
+	peer chan *pb.PeerEndpoints
 	relay chan *pb.RelayToken
 	errs chan error
 	once sync.Once
@@ -21,6 +22,7 @@ func (c *Client) StartSession() *Session {
 	s := &Session{
 		conn: c.conn,
 		ice:  make(chan *pb.SignalEnvelope, 32),
+		peer: make(chan *pb.PeerEndpoints, 8),
 		relay: make(chan *pb.RelayToken, 1),
 		errs: make(chan error, 1),
 	}
@@ -47,6 +49,8 @@ func (s *Session) loop(ctx context.Context) {
 		switch env.Payload.(type) {
 		case *pb.SignalEnvelope_IceParameters, *pb.SignalEnvelope_IceCandidate, *pb.SignalEnvelope_IceComplete:
 			s.ice <- env
+		case *pb.SignalEnvelope_PeerEndpoints:
+			s.peer <- env.GetPeerEndpoints()
 		case *pb.SignalEnvelope_RelayToken:
 			s.relay <- env.GetRelayToken()
 		default:
@@ -68,6 +72,10 @@ func (s *Session) SendIceComplete() error {
 	return writeProto(s.conn, &pb.SignalEnvelope{Payload: &pb.SignalEnvelope_IceComplete{IceComplete: true}})
 }
 
+func (s *Session) SendPeerEndpoints(eps *pb.PeerEndpoints) error {
+	return writeProto(s.conn, &pb.SignalEnvelope{Payload: &pb.SignalEnvelope_PeerEndpoints{PeerEndpoints: eps}})
+}
+
 func (s *Session) Recv(ctx context.Context) (*pb.SignalEnvelope, error) {
 	select {
 	case <-ctx.Done():
@@ -87,5 +95,16 @@ func (s *Session) WaitRelayToken(ctx context.Context) (*pb.RelayToken, error) {
 		return nil, err
 	case tok := <-s.relay:
 		return tok, nil
+	}
+}
+
+func (s *Session) RecvPeerEndpoints(ctx context.Context) (*pb.PeerEndpoints, error) {
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	case err := <-s.errs:
+		return nil, err
+	case eps := <-s.peer:
+		return eps, nil
 	}
 }

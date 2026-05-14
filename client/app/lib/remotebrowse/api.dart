@@ -3,8 +3,6 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 
-const rbBaseUrl = 'https://api.hoper.xyz';
-
 class RbFileEntry {
   RbFileEntry({required this.id, required this.name, required this.size, this.thumbHash = ''});
 
@@ -24,8 +22,13 @@ class RbFileEntry {
 }
 
 class RemoteBrowseApi {
-  RemoteBrowseApi({Dio? client}) : _dio = client ?? Dio(BaseOptions(baseUrl: rbBaseUrl, connectTimeout: const Duration(seconds: 8)));
+  RemoteBrowseApi({String? baseUrl, Dio? client})
+      : _baseUrl = baseUrl ?? rbDebugBaseUrl,
+        _dio = client ?? Dio(BaseOptions(baseUrl: baseUrl ?? rbDebugBaseUrl, connectTimeout: const Duration(seconds: 8)));
 
+  static const rbDebugBaseUrl = 'https://api.hoper.xyz';
+
+  final String _baseUrl;
   final Dio _dio;
 
   Future<Map<String, dynamic>> health() async {
@@ -57,9 +60,12 @@ class RemoteBrowseApi {
     return Uint8List.fromList(data);
   }
 
-  String signalWsUrl() {
-    final uri = Uri.parse(rbBaseUrl);
-    final scheme = uri.scheme == 'https' ? 'wss' : 'ws';
-    return Uri(scheme: scheme, host: uri.host, port: uri.hasPort ? uri.port : null, path: '/rb/signal').toString();
-  }
+  String signalWsUrl() => signalWsUrlFrom(_baseUrl);
+}
+
+String signalWsUrlFrom(String base) {
+  final uri = Uri.parse(base);
+  final scheme = uri.scheme == 'https' ? 'wss' : (uri.scheme == 'http' ? 'ws' : uri.scheme);
+  final path = uri.path.endsWith('/rb/signal') ? uri.path : '${uri.path.replaceAll(RegExp(r'/+$'), '')}/rb/signal';
+  return Uri(scheme: scheme, host: uri.host, port: uri.hasPort ? uri.port : null, path: path).toString();
 }

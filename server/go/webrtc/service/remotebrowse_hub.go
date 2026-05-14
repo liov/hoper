@@ -133,7 +133,7 @@ func (h *RemoteBrowseHub) HandleWS(conn *websocket.Conn) {
 		switch env.Payload.(type) {
 		case *pb.SignalEnvelope_Register:
 			h.onRegister(conn, env.GetRegister(), &roomCode, &peerID, &role)
-		case *pb.SignalEnvelope_IceParameters, *pb.SignalEnvelope_IceCandidate, *pb.SignalEnvelope_IceComplete:
+		case *pb.SignalEnvelope_IceParameters, *pb.SignalEnvelope_IceCandidate, *pb.SignalEnvelope_IceComplete, *pb.SignalEnvelope_PeerEndpoints:
 			h.forwardICE(roomCode, role, &env)
 		}
 	}
