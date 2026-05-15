@@ -6,6 +6,7 @@ const rbTypeFileIndex = 2;
 const rbTypeThumbReq = 3;
 const rbTypeThumbData = 4;
 const rbRoleViewer = 0;
+const rbRoleAgent = 1;
 
 Uint8List rbRelayJoinBytes(String sessionId, int role) {
   final id = _uuidBytes(sessionId);

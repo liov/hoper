@@ -1,7 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:app/gen/pb/remotebrowse/signal.pb.dart';
-import 'package:flutter/foundation.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class RbSignalSession {
@@ -79,7 +80,7 @@ class RbSignalSession {
       register: RegisterReq(
         roomCode: room,
         role: 'agent',
-        caps: DeviceCapabilities(hasIpv6: !kIsWeb, platform: kIsWeb ? 'web' : 'flutter'),
+        caps: DeviceCapabilities(hasIpv6: Platform.isAndroid || Platform.isIOS, platform: Platform.operatingSystem),
       ),
     ));
     return c.future;
@@ -92,7 +93,7 @@ class RbSignalSession {
       register: RegisterReq(
         roomCode: room,
         role: 'viewer',
-        caps: DeviceCapabilities(hasIpv6: !kIsWeb, platform: kIsWeb ? 'web' : 'flutter'),
+        caps: DeviceCapabilities(hasIpv6: Platform.isAndroid || Platform.isIOS, platform: Platform.operatingSystem),
       ),
     ));
     return c.future;

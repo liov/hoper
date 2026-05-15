@@ -10,7 +10,7 @@ import 'package:app/pages/moment/add/moment_add_view.dart';
 import 'package:app/pages/moment/list/moment_list_view.dart';
 import 'package:app/pages/moment/moment_binding.dart';
 import 'package:app/pages/webview/webview.dart';
-import 'package:app/pages/remotebrowse/remote_browse_view.dart';
+import 'package:app/pages/remotebrowse/remote_browse_pair_view.dart';
 import 'package:get/get.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
@@ -100,8 +100,8 @@ abstract class Routes {
     ),
     GetPage(
       name: Routes.REMOTE_BROWSE,
-      page: () => const RemoteBrowseView(),
-      binding: RemoteBrowseBinding(),
+      page: () => const RemoteBrowsePairView(),
+      binding: RemoteBrowsePairBinding(),
     ),
   ];
 }

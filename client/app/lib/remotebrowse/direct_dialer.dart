@@ -13,7 +13,7 @@ class RbDirectDialer {
   static Future<RbWireTransport?> tryConnect(RbSignalSession sig, {String? manualHost, int? manualPort}) async {
     final ln = await _listen();
     try {
-      await sig.sendPeerEndpoints(await _gatherEndpoints(ln?.$2 ?? defaultPort));
+      await sig.sendPeerEndpoints(await gatherEndpoints(ln?.$2 ?? defaultPort));
       final c = Completer<RbWireTransport?>();
       if (manualHost != null && manualHost.isNotEmpty) {
         unawaited(_dialHost(manualHost, manualPort ?? defaultPort, c));
@@ -49,7 +49,7 @@ class RbDirectDialer {
     }
   }
 
-  static Future<PeerEndpoints> _gatherEndpoints(int port) async {
+  static Future<PeerEndpoints> gatherEndpoints(int port) async {
     final items = <PeerEndpoint>[];
     final ifaces = await NetworkInterface.list(type: InternetAddressType.IPv4, includeLoopback: false);
     for (final ni in ifaces) {

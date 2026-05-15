@@ -63,6 +63,8 @@ class RemoteBrowseApi {
   String signalWsUrl() => signalWsUrlFrom(_baseUrl);
 }
 
+String defaultSignalWs() => signalWsUrlFrom(RemoteBrowseApi.rbDebugBaseUrl);
+
 String signalWsUrlFrom(String base) {
   final uri = Uri.parse(base);
   final scheme = uri.scheme == 'https' ? 'wss' : (uri.scheme == 'http' ? 'ws' : uri.scheme);
