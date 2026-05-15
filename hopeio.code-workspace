@@ -20,6 +20,9 @@
 		"typescript.tsdk": "/Users/jyb/Library/pnpm/global/5/node_modules/typescript/lib",
 		"i18n-ally.localesPaths": [
 			"../hoper/locale"
-		]
+		],
+		"rust-analyzer.linkedProjects": [
+			"../hoper/server/rust/rfv/Cargo.toml"
+		],
 	}
 }
