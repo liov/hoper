@@ -105,7 +105,7 @@
 			"label": "ts:pb",
 			"type": "shell",
 			"options": {
-				"cwd": "${workspaceFolder}/client"
+				"cwd": "${workspaceFolder}/client/uniapp"
 			},
 			"windows": {
 				"options": {
@@ -119,9 +119,9 @@
 			"args": [
 				"ts",
 				"-p",
-				"../thirdparty/protobuf/_proto",
+				"../../thirdparty/protobuf/_proto",
 				"-i",
-				"../proto",
+				"../../proto",
 				"-o",
 				"gen/pb"
 			],
