@@ -1,66 +1,56 @@
-//! 部署在被浏览主机上的 rfv：默认 gRPC/HTTP 媒体服务；`share` 子命令启动 P2P Agent。
-mod file;
-
+//! 被浏览主机：仅 `rfv` / `rfv <房间码>`，无子命令。浏览目录由客户端 wire 指定。
 use std::env;
 
-use axum::{routing::get, Router};
 use ffmpeg_next as ffmpeg;
-use tower::ServiceBuilder;
-use tower_http::trace::TraceLayer;
 use tracing_subscriber;
 
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt().with_max_level(tracing::Level::DEBUG).init();
     ffmpeg::init().expect("ffmpeg init");
-    let args: Vec<String> = env::args().collect();
-    if args.len() >= 2 && args[1] == "share" {
-        run_share(&args).await;
-        return;
-    }
-    run_media_server().await;
+    run_host(room_from_argv()).await;
 }
 
-#[cfg(feature = "transport")]
-async fn run_share(args: &[String]) {
-    let room = args.get(2).cloned().or_else(|| env::var("RB_ROOM").ok()).unwrap_or_default();
-    let root = args
-        .get(3)
-        .cloned()
-        .or_else(|| env::var("RB_ROOT").ok())
-        .unwrap_or_else(|| ".".into());
-    if room.is_empty() {
-        eprintln!("usage: rfv share <room_code> [root_dir]");
-        std::process::exit(2);
+/// 房间码：`RB_ROOM` 或第一个参数 `rfv <room>`（不是子命令）。
+fn room_from_argv() -> Option<String> {
+    if let Ok(s) = env::var("RB_ROOM") {
+        let s = s.trim().to_string();
+        if !s.is_empty() {
+            return Some(s);
+        }
     }
-    let signal_url = env::var("RB_SIGNAL_URL").unwrap_or_else(|_| "ws://127.0.0.1:8080/rb/signal".into());
-    let ice_ms: u32 = env::var("RB_ICE_TIMEOUT_MS").ok().and_then(|s| s.parse().ok()).unwrap_or(15000);
-    if let Err(e) = rfv::transport::run_agent(signal_url, room, root, ice_ms).await {
-        eprintln!("rfv share: {e}");
+    let arg = env::args().nth(1)?;
+    if arg.starts_with('-') {
+        return None;
+    }
+    Some(arg)
+}
+
+async fn run_host(room: Option<String>) {
+    let listen = env::var("RFV_LISTEN")
+        .or_else(|_| env::var("RFV_GRPC_ADDR"))
+        .unwrap_or_else(|_| "0.0.0.0:50051".into());
+    if let Some(room) = room {
+        spawn_agent(room);
+    }
+    if let Err(e) = rfv::grpc_server::serve(listen).await {
+        tracing::error!("rfv serve: {e}");
         std::process::exit(1);
     }
 }
 
-#[cfg(not(feature = "transport"))]
-async fn run_share(_args: &[String]) {
-    eprintln!("rfv share 需要编译 feature transport（cargo build --features host）");
-    std::process::exit(2);
-}
-
-async fn run_media_server() {
-    let grpc_addr = env::var("RFV_GRPC_ADDR").unwrap_or_else(|_| "0.0.0.0:50051".into());
+#[cfg(feature = "transport")]
+fn spawn_agent(room: String) {
+    let sandbox = env::var("RB_AGENT_SANDBOX").ok().filter(|s| !s.is_empty());
+    let signal_url = env::var("RB_SIGNAL_URL").unwrap_or_else(|_| "ws://127.0.0.1:8080/rb/signal".into());
+    let ice_ms: u32 = env::var("RB_ICE_TIMEOUT_MS").ok().and_then(|s| s.parse().ok()).unwrap_or(15000);
     tokio::spawn(async move {
-        if let Err(e) = rfv::grpc_server::serve(grpc_addr).await {
-            tracing::error!("rfv grpc: {e}");
+        tracing::info!(%room, "rfv agent: path from viewer wire");
+        if let Err(e) = rfv::transport::run_agent(signal_url, room, sandbox, ice_ms).await {
+            tracing::error!("rfv agent: {e}");
         }
     });
-    let app = Router::new()
-        .route("/", get(|| async { "rfv media" }))
-        .route("/list_files", get(file::list_files_handler))
-        .route("/thumbnail/*path", get(file::file_thumbnail_handler))
-        .layer(ServiceBuilder::new().layer(TraceLayer::new_for_http()));
-    let http = env::var("RFV_HTTP").unwrap_or_else(|_| "0.0.0.0:3000".into());
-    let listener = tokio::net::TcpListener::bind(&http).await.expect("http bind");
-    tracing::info!(%http, "rfv media listening");
-    axum::serve(listener, app.into_make_service()).await.expect("serve");
 }
+
+#[cfg(not(feature = "transport"))]
+fn spawn_agent(_room: String) {}

@@ -11,7 +11,7 @@ class RemoteBrowseAgentView extends StatefulWidget {
 
 class _RemoteBrowseAgentViewState extends State<RemoteBrowseAgentView> {
   final _roomCtrl = TextEditingController(text: 'demo');
-  final _rootCtrl = TextEditingController();
+  final _sandboxCtrl = TextEditingController();
   final _signalCtrl = TextEditingController();
   var _running = false;
   var _status = '';
@@ -25,23 +25,23 @@ class _RemoteBrowseAgentViewState extends State<RemoteBrowseAgentView> {
   @override
   void dispose() {
     _roomCtrl.dispose();
-    _rootCtrl.dispose();
+    _sandboxCtrl.dispose();
     _signalCtrl.dispose();
     super.dispose();
   }
 
   Future<void> _start() async {
-    final root = _rootCtrl.text.trim();
-    if (root.isEmpty) {
-      setState(() => _status = '请填写本机共享目录');
-      return;
-    }
     setState(() {
       _running = true;
-      _status = '等待浏览端连接…';
+      _status = '等待浏览端连接…（目录由浏览端填写）';
     });
     try {
-      await RbAgentSession.run(Uri.parse(_signalCtrl.text.trim()), _roomCtrl.text.trim(), root);
+      final sandbox = _sandboxCtrl.text.trim();
+      await RbAgentSession.run(
+        Uri.parse(_signalCtrl.text.trim()),
+        _roomCtrl.text.trim(),
+        sandbox: sandbox.isEmpty ? null : sandbox,
+      );
       if (mounted) {
         setState(() => _status = '会话已结束');
       }
@@ -71,11 +71,14 @@ class _RemoteBrowseAgentViewState extends State<RemoteBrowseAgentView> {
           TextField(controller: _roomCtrl, decoration: const InputDecoration(labelText: '房间码', border: OutlineInputBorder())),
           const SizedBox(height: 8),
           TextField(
-            controller: _rootCtrl,
-            decoration: const InputDecoration(labelText: '本机目录（绝对路径）', border: OutlineInputBorder()),
+            controller: _sandboxCtrl,
+            decoration: const InputDecoration(
+              labelText: '可选：本机沙箱根目录（限制浏览端只能访问其下路径）',
+              border: OutlineInputBorder(),
+            ),
           ),
           const SizedBox(height: 12),
-          FilledButton(onPressed: _running ? null : _start, child: Text(_running ? '服务中…' : '启动 Agent')),
+          FilledButton(onPressed: _running ? null : _start, child: Text(_running ? '服务中…' : '启动共享')),
           if (_status.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 12),
@@ -83,7 +86,7 @@ class _RemoteBrowseAgentViewState extends State<RemoteBrowseAgentView> {
             ),
           const SizedBox(height: 8),
           Text(
-            '共享端由 Rust（rfv）负责打洞与缩略图；连接顺序：直连 → ICE → 中继。浏览端使用相同房间码。',
+            '浏览端填写要看的目录；本机执行 rfv <房间码> 或设置 RB_ROOM 后执行 rfv。',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
           ),
         ],

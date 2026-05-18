@@ -18,8 +18,18 @@ use std::io::Cursor;
 use std::path::Path;
 use std::path::PathBuf;
 use axum::body::Body;
-use tracing::debug;
+use axum::routing::get;
+use axum::Router;
 use tokio_util::codec::{BytesCodec, FramedRead};
+use tracing::debug;
+
+/// 遗留/调试 HTTP 路由，与 gRPC 共用同一端口（见 `grpc_server::serve`）。
+pub fn router() -> Router {
+    Router::new()
+        .route("/", get(|| async { "rfv media (http+grpc)" }))
+        .route("/list_files", get(list_files_handler))
+        .route("/thumbnail/*path", get(file_thumbnail_handler))
+}
 
 #[derive(Deserialize)]
 pub struct ListFilesParams {

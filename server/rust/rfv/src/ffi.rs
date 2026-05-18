@@ -177,16 +177,16 @@ pub extern "C" fn rb_ice_agent_close(h: *mut c_void) {
     }
 }
 
-/// 后台运行完整 Agent（信令 + 选路 + ffmpeg 数据面）。0=已启动；-1=参数错；-2=已在运行。
+/// 后台运行 Agent；浏览路径由 Viewer wire 请求携带。`sandbox` 可空（同 `RB_AGENT_SANDBOX`）。
 #[cfg(feature = "transport")]
 #[unsafe(no_mangle)]
 pub extern "C" fn rb_agent_run(
     signal_url: *const c_char,
     room: *const c_char,
-    root: *const c_char,
+    sandbox: *const c_char,
     timeout_ms: u32,
 ) -> i32 {
-    if signal_url.is_null() || room.is_null() || root.is_null() {
+    if signal_url.is_null() || room.is_null() {
         return -1;
     }
     if RB_AGENT_BUSY.swap(true, Ordering::SeqCst) {
@@ -206,16 +206,21 @@ pub extern "C" fn rb_agent_run(
             return -1;
         }
     };
-    let root = match unsafe { CStr::from_ptr(root) }.to_str() {
-        Ok(s) => s.to_string(),
-        Err(_) => {
-            RB_AGENT_BUSY.store(false, Ordering::SeqCst);
-            return -1;
+    let sandbox = if sandbox.is_null() {
+        None
+    } else {
+        match unsafe { CStr::from_ptr(sandbox) }.to_str() {
+            Ok(s) if s.is_empty() => None,
+            Ok(s) => Some(s.to_string()),
+            Err(_) => {
+                RB_AGENT_BUSY.store(false, Ordering::SeqCst);
+                return -1;
+            }
         }
     };
     thread::spawn(move || {
         let rt = tokio::runtime::Runtime::new().expect("tokio runtime");
-        if let Err(e) = rt.block_on(crate::transport::run_agent(signal_url, room, root, timeout_ms)) {
+        if let Err(e) = rt.block_on(crate::transport::run_agent(signal_url, room, sandbox, timeout_ms)) {
             eprintln!("rb_agent_run: {e}");
         }
         RB_AGENT_BUSY.store(false, Ordering::SeqCst);

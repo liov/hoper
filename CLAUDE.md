@@ -54,7 +54,7 @@ Two services:
 
 ```bash
 cd server/rust/rfv && cargo build --release
-# 远程相册：rfv-daemon（信令）+ rfv（主机：gRPC + `rfv share`）；Viewer 在 Flutter librfv
+# 远程相册：rfv-daemon（信令）+ rfv（主机 gRPC；设 RB_ROOM 即 Agent）；Viewer 在 Flutter librfv
 cd server/rust/rfv && cargo build --release --features host,daemon
 ./scripts/build_flutter_dylib.sh
 cd server/rust/message && cargo build --release

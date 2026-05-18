@@ -1,6 +1,9 @@
 pub mod remotebrowse;
 
 #[cfg(feature = "media")]
+pub mod file;
+
+#[cfg(feature = "media")]
 pub mod grpc_server;
 
 #[cfg(feature = "client")]

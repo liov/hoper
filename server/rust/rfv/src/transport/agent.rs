@@ -10,7 +10,13 @@ use crate::transport::link::{gather_endpoints, listen_direct, pick_agent_link, A
 use crate::transport::signal::SignalClient;
 use crate::transport::wire_agent;
 
-pub async fn run_agent(signal_url: String, room: String, root: String, ice_timeout_ms: u32) -> Result<(), String> {
+/// `sandbox`：可选 `RB_AGENT_SANDBOX`，限制 Viewer 只能访问该目录下路径。
+pub async fn run_agent(
+    signal_url: String,
+    room: String,
+    sandbox: Option<String>,
+    ice_timeout_ms: u32,
+) -> Result<(), String> {
     let sig = Arc::new(SignalClient::connect(&signal_url).await?);
     let ice = Arc::new(AgentHandle::new(ice_timeout_ms));
     let sig_pump = sig.clone();
@@ -21,8 +27,8 @@ pub async fn run_agent(signal_url: String, room: String, root: String, ice_timeo
     sig.send_peer_endpoints(gather_endpoints(port)).await?;
     let link = pick_agent_link(&sig, ln, &ice).await?;
     match link {
-        AgentLink::Tcp(t) => wire_agent::serve_tcp(t, root).await,
-        AgentLink::Ice(i) => wire_agent::serve_ice(i, root).await,
+        AgentLink::Tcp(t) => wire_agent::serve_tcp(t, sandbox).await,
+        AgentLink::Ice(i) => wire_agent::serve_ice(i, sandbox).await,
     }
 }
 

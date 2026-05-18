@@ -1,8 +1,9 @@
-//! gRPC：Go `webrtc` 包通过本服务访问 rfv 媒体能力。
+//! gRPC + HTTP 同端口：tonic `Routes` 合并进 axum Router。
 use std::path::PathBuf;
 
 use tokio::sync::mpsc;
 use tokio_stream::wrappers::ReceiverStream;
+use tonic::service::Routes;
 use tonic::{Request, Response, Status, Streaming};
 
 pub mod proto {
@@ -129,10 +130,13 @@ impl RemoteBrowseService for MediaSvc {
     }
 }
 
+/// 同一 `TcpListener` 上提供 gRPC（HTTP/2）与 axum HTTP（HTTP/1.1/2）。
+/// 监听地址：`RFV_LISTEN` 或 `RFV_GRPC_ADDR`，默认 `0.0.0.0:50051`。
 pub async fn serve(addr: String) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    tonic::transport::Server::builder()
-        .add_service(RemoteBrowseServiceServer::new(MediaSvc::default()))
-        .serve(addr.parse()?)
-        .await?;
+    let grpc = Routes::new(RemoteBrowseServiceServer::new(MediaSvc::default())).into_axum_router();
+    let app = grpc.merge(crate::file::router());
+    let listener = tokio::net::TcpListener::bind(addr.parse::<std::net::SocketAddr>()?).await?;
+    tracing::info!(addr = %listener.local_addr()?, "rfv http+grpc listening");
+    axum::serve(listener, app).await?;
     Ok(())
 }
