@@ -7,29 +7,29 @@ use crate::client::ice_common::{run_ice, IceInbox};
 use crate::client::ice_stream::IceWire;
 use crate::client::wire;
 
-enum ViewerState {
+enum AgentState {
     Running,
     Ready(IceWire),
     Failed(String),
 }
 
-pub struct ViewerHandle {
+pub struct AgentHandle {
     runtime: Runtime,
     ice: Arc<Mutex<IceInbox>>,
-    state: Arc<Mutex<ViewerState>>,
+    state: Arc<Mutex<AgentState>>,
 }
 
-impl ViewerHandle {
+impl AgentHandle {
     pub fn new(timeout_ms: u32) -> Self {
         let runtime = Runtime::new().expect("tokio runtime");
         let ice = Arc::new(Mutex::new(IceInbox::default()));
-        let state = Arc::new(Mutex::new(ViewerState::Running));
+        let state = Arc::new(Mutex::new(AgentState::Running));
         let ice_bg = ice.clone();
         let state_bg = state.clone();
         runtime.spawn(async move {
-            match run_ice(ice_bg, Duration::from_millis(timeout_ms as u64), true).await {
-                Ok(stream) => *state_bg.lock().expect("lock") = ViewerState::Ready(stream),
-                Err(e) => *state_bg.lock().expect("lock") = ViewerState::Failed(e),
+            match run_ice(ice_bg, Duration::from_millis(timeout_ms as u64), false).await {
+                Ok(stream) => *state_bg.lock().expect("lock") = AgentState::Ready(stream),
+                Err(e) => *state_bg.lock().expect("lock") = AgentState::Failed(e),
             }
         });
         Self { runtime, ice, state }
@@ -45,15 +45,15 @@ impl ViewerHandle {
 
     pub fn state_code(&self) -> i32 {
         match &*self.state.lock().expect("lock") {
-            ViewerState::Running => 0,
-            ViewerState::Ready(_) => 1,
-            ViewerState::Failed(_) => -1,
+            AgentState::Running => 0,
+            AgentState::Ready(_) => 1,
+            AgentState::Failed(_) => -1,
         }
     }
 
     pub fn read_frame(&self, buf: &mut [u8]) -> Result<(u8, usize), &'static str> {
         let mut g = self.state.lock().expect("lock");
-        let ViewerState::Ready(ref mut ice) = *g else {
+        let AgentState::Ready(ref mut ice) = *g else {
             return Err("not ready");
         };
         let (typ, payload) = self.runtime.block_on(ice.read_frame()).map_err(|_| "read failed")?;
@@ -67,7 +67,7 @@ impl ViewerHandle {
 
     pub fn write_frame(&self, typ: u8, payload: &[u8]) -> Result<(), &'static str> {
         let mut g = self.state.lock().expect("lock");
-        let ViewerState::Ready(ref mut ice) = *g else {
+        let AgentState::Ready(ref mut ice) = *g else {
             return Err("not ready");
         };
         self.runtime
@@ -77,8 +77,8 @@ impl ViewerHandle {
 
     pub fn try_take_wire(&self) -> Option<IceWire> {
         let mut g = self.state.lock().expect("lock");
-        if let ViewerState::Ready(_) = *g {
-            if let ViewerState::Ready(w) = std::mem::replace(&mut *g, ViewerState::Running) {
+        if let AgentState::Ready(_) = *g {
+            if let AgentState::Ready(w) = std::mem::replace(&mut *g, AgentState::Running) {
                 return Some(w);
             }
         }

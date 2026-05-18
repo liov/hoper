@@ -83,7 +83,7 @@ class _RemoteBrowseAgentViewState extends State<RemoteBrowseAgentView> {
             ),
           const SizedBox(height: 8),
           Text(
-            '浏览端与 Agent 使用相同房间码；连接顺序：直连 → QUIC 房间 → ICE → 中继。',
+            '共享端由 Rust（rfv）负责打洞与缩略图；连接顺序：直连 → ICE → 中继。浏览端使用相同房间码。',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
           ),
         ],

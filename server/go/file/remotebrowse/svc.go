@@ -2,8 +2,6 @@ package remotebrowse
 
 import (
 	"context"
-	"os"
-	"strings"
 
 	pb "github.com/liov/hoper/server/go/protobuf/remotebrowse"
 	"github.com/liov/hoper/server/go/file/rfvclient"
@@ -12,6 +10,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+// Service 远程相册 HTTP/gRPC 门面：请求转发至 rfv gRPC，不实现 P2P/ICE。
 type Service struct {
 	pb.UnimplementedRemoteBrowseServiceServer
 }
@@ -19,28 +18,17 @@ type Service struct {
 var browseSvc *Service
 
 func GetService() *Service {
-	if browseSvc != nil {
-		return browseSvc
+	if browseSvc == nil {
+		browseSvc = &Service{}
 	}
-	EnsureHub()
-	browseSvc = &Service{}
 	return browseSvc
 }
 
 func (s *Service) GetHealth(ctx context.Context, _ *emptypb.Empty) (*pb.HealthResponse, error) {
-	hub := EnsureHub()
 	_ = ctx
-	signalWs := strings.TrimSpace(os.Getenv("RB_SIGNAL_WS"))
-	if signalWs == "" {
-		signalWs = "/rb/signal"
-	}
-	relay := hub.RelayTCPAddr
-	if relay == "" {
-		relay = strings.TrimSpace(os.Getenv("RB_RELAY_TCP"))
-	}
 	return &pb.HealthResponse{
-		SignalWs:   signalWs,
-		RelayTcp:   relay,
+		SignalWs:   publicSignalPath(),
+		RelayTcp:   relayTCPHint(),
 		RfvGrpc:    rfvclient.GRPCAddr(),
 		ThumbCache: rfvclient.ThumbCacheDir(),
 	}, nil

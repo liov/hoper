@@ -5,7 +5,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let proto_root = root.join("../../../proto");
     let hopeio_proto = root.join("../../../thirdparty/protobuf/_proto");
     let media = std::env::var("CARGO_FEATURE_MEDIA").is_ok();
-    let signal = std::env::var("CARGO_FEATURE_CLIENT").is_ok() || std::env::var("CARGO_FEATURE_DAEMON").is_ok();
+    let signal = std::env::var("CARGO_FEATURE_CLIENT").is_ok()
+        || std::env::var("CARGO_FEATURE_DAEMON").is_ok()
+        || std::env::var("CARGO_FEATURE_TRANSPORT").is_ok();
     if media {
         let mut protos = vec!["remotebrowse/browse.service.proto"];
         if signal {

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:app/remotebrowse/direct_dialer.dart';
 import 'package:app/remotebrowse/ice_dialer.dart';
 import 'package:app/remotebrowse/relay_transport.dart';
-import 'package:app/remotebrowse/room_dialer.dart';
 import 'package:app/remotebrowse/signal_session.dart';
 import 'package:app/remotebrowse/wire_codec.dart';
 import 'package:app/remotebrowse/wire_session.dart';
@@ -11,7 +10,6 @@ import 'package:app/remotebrowse/wire_transport.dart';
 
 class RbViewerSession {
   static const iceTimeout = Duration(seconds: 12);
-  static const directPort = 19091;
 
   static Future<RbWireSession> connect(Uri signalWs, String room, {String? directHost, int? directPort}) async {
     final sig = await RbSignalSession.connect(signalWs);
@@ -21,11 +19,6 @@ class RbViewerSession {
       if (direct != null) {
         await sig.close();
         return RbWireSession(direct);
-      }
-      final roomLink = await RbRoomDialer.tryConnect(sig);
-      if (roomLink != null) {
-        await sig.close();
-        return RbWireSession(roomLink);
       }
       final ice = await _pickIce(sig);
       if (ice != null) {
@@ -52,7 +45,7 @@ class RbViewerSession {
 
   static Future<RbWireTransport?> _pickIce(RbSignalSession sig) async {
     final c = Completer<RbWireTransport?>();
-    unawaited(RbIceDialer.tryConnect(sig).then((v) {
+    unawaited(RbIceViewerDialer.tryConnect(sig).then((v) {
       if (!c.isCompleted) {
         c.complete(v);
       }

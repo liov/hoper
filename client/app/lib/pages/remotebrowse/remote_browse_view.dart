@@ -1,4 +1,5 @@
 import 'package:app/remotebrowse/api.dart';
+import 'package:app/remotebrowse/direct_dialer.dart';
 import 'package:app/remotebrowse/viewer_session.dart';
 import 'package:app/remotebrowse/wire_session.dart';
 import 'package:flutter/material.dart';
@@ -72,7 +73,7 @@ class _RemoteBrowseViewState extends State<RemoteBrowseView> {
     }
     final hostPort = raw.split(':');
     if (hostPort.length == 1) {
-      return (hostPort[0], RbViewerSession.directPort);
+      return (hostPort[0], RbDirectDialer.defaultPort);
     }
     final port = int.tryParse(hostPort.last);
     if (port == null) {

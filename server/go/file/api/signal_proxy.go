@@ -8,6 +8,12 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+var rbWsUp = websocket.Upgrader{
+	ReadBufferSize:  4096,
+	WriteBufferSize: 4096,
+	CheckOrigin:     func(r *http.Request) bool { return true },
+}
+
 func proxyRBSignal(c *gin.Context, upstream string) {
 	u, err := url.Parse(upstream)
 	if err != nil {
