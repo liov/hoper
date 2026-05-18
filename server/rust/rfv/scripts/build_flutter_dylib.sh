@@ -5,7 +5,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 OUT="${ROOT}/../../../client/app/libraries"
 mkdir -p "$OUT"
 cd "$ROOT"
-cargo build --release --features transport
+cargo build --release --features host
 case "$(uname -s)" in
   Darwin) cp -f target/release/librfv.dylib "$OUT/librfv.dylib" ;;
   Linux) cp -f target/release/librfv.so "$OUT/librfv.so" ;;

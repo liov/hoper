@@ -8,7 +8,9 @@ name = "rfv"
 crate-type = ["lib", "staticlib", "cdylib"]
 
 [features]
-default = ["media"]
+default = ["host"]
+# 被浏览主机：gRPC/HTTP 媒体 + P2P share
+host = ["media", "transport"]
 media = [
   "dep:axum",
   "dep:tower",
@@ -91,27 +93,12 @@ prost-build = "0.13"
 [[bin]]
 name = "rfv"
 path = "src/main.rs"
-required-features = ["media"]
-
-[[bin]]
-name = "video"
-path = "src/bin/video.rs"
-required-features = ["media"]
+required-features = ["host"]
 
 [[bin]]
 name = "rfv-daemon"
 path = "src/bin/daemon.rs"
 required-features = ["daemon"]
-
-[[bin]]
-name = "rfv-agent"
-path = "src/bin/agent.rs"
-required-features = ["transport"]
-
-[[bin]]
-name = "rfv-viewer"
-path = "src/bin/viewer.rs"
-required-features = ["transport"]
 
 [target.x86_64-pc-windows-gnu]
 linker = "D:/sdk/msys64/ucrt64/bin/gcc"

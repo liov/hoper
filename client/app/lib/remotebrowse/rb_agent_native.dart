@@ -25,15 +25,15 @@ class RbAgentNative {
       await _runProcess(signalWs, room, root);
       return;
     }
-    throw StateError('请使用 --features transport 编译的 librfv，或在 PATH 中提供 rfv-agent');
+    throw StateError('请使用 --features transport 编译的 librfv，或在 PATH 中提供 rfv');
   }
 
   static Future<void> _runProcess(String signalWs, String room, String root) async {
-    final bin = await _findBinary('rfv-agent');
-    final proc = await Process.start(bin, [room, root], environment: {'RB_SIGNAL_URL': signalWs});
+    final bin = await _findBinary('rfv');
+    final proc = await Process.start(bin, ['share', room, root], environment: {'RB_SIGNAL_URL': signalWs});
     final code = await proc.exitCode;
     if (code != 0) {
-      throw StateError('rfv-agent 退出码 $code');
+      throw StateError('rfv share 退出码 $code');
     }
   }
 
