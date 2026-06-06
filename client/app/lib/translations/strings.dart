@@ -1,2 +1,2 @@
-
-String home = 'Home';
+const String kHi = 'hi';
+const String kHome = 'home';

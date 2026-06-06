@@ -3,7 +3,7 @@
 
 //go:build !js
 
-// rtmp-to-webrtc demonstrates how you could re-stream media from a RTMP server to WebRTC.
+// rtmp-to-webrtc 示例，不参与主服务编译。
 package main
 
 import (

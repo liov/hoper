@@ -12,8 +12,6 @@ import "hopeio/utils/validator/validator.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "hopeio/request/param.proto";
-import "danielvladco/protobuf/graphql.proto";
-import "hopeio/oauth/oauth.proto";
 import "hopeio/utils/patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
@@ -28,82 +26,82 @@ service ActionService {
   // 动作  Like Unlike
   rpc Like (LikeReq) returns (request.Id) {
     option (google.api.http) = {
-      post: "/api/v1/action/like"
+      post: "/api/action/like"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["动作相关接口","v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
   // 动作  Like Unlike
   rpc DelLike (request.Id) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      delete: "/api/v1/action/like/{id}"
+      delete: "/api/action/like/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["动作相关接口","v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
   // 评论
   rpc Comment (CommentReq) returns (request.Id) {
     option (google.api.http) = {
-      post: "/api/v1/action/comment"
+      post: "/api/action/comment"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
   // 评论列表
-  rpc CommentList (CommentListReq) returns (CommentListRep) {
+  rpc CommentList (CommentListReq) returns (CommentListResp) {
     option (google.api.http) = {
-      get: "/api/v1/action/comment"
+      get: "/api/action/comment"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
+
   }
   // 评论
   rpc DelComment (request.Id) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      delete: "/api/v1/action/comment/{id}"
+      delete: "/api/action/comment/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
   // 收藏
   rpc Collect (CollectReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/api/v1/action/collect"
+      post: "/api/action/collect"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
   // 举报
   rpc Report (ReportReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/api/v1/action/report"
+      post: "/api/action/report"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
   // 用户的操作
   rpc GetUserAction (ContentReq) returns (UserAction) {
     option (google.api.http) = {
-      get: "/api/v1/userAction/{type}/{refId}"
+      get: "/api/userAction/{type}/{refId}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
+
   }
 }
 
@@ -143,7 +141,7 @@ message CommentListReq{
   uint32 pageSize = 5;
 }
 
-message CommentListRep{
+message CommentListResp{
   int64 total = 1;
   repeated Comment list = 2;
   repeated user.UserBase users = 3;

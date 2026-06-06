@@ -74,6 +74,24 @@ apply_standard_settings(${BINARY_NAME})
 target_link_libraries(${BINARY_NAME} PRIVATE flutter)
 target_link_libraries(${BINARY_NAME} PRIVATE PkgConfig::GTK)
 
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64")
+  set(RB_ARCH "arm64")
+else()
+  set(RB_ARCH "x86_64")
+endif()
+set(RB_STATIC "${CMAKE_CURRENT_SOURCE_DIR}/../staticLibs/linux/${RB_ARCH}/librb.a")
+if(EXISTS "${RB_STATIC}")
+  set(RB_FFI_UNDEF
+    -Wl,-u,rb_ice_viewer_new -Wl,-u,rb_ice_viewer_push -Wl,-u,rb_ice_viewer_poll_out
+    -Wl,-u,rb_ice_viewer_state -Wl,-u,rb_ice_viewer_write -Wl,-u,rb_ice_viewer_read
+    -Wl,-u,rb_ice_viewer_close -Wl,-u,rb_ice_grpc_open -Wl,-u,rb_ice_grpc_close
+    -Wl,-u,rb_ice_grpc_list_files -Wl,-u,rb_ice_grpc_thumb_batch -Wl,-u,rb_ice_grpc_read_file
+    -Wl,-u,rb_ice_grpc_read_file_range -Wl,-u,rb_ice_grpc_delete_file)
+  target_link_libraries(${BINARY_NAME} PRIVATE ${RB_FFI_UNDEF} "${RB_STATIC}" pthread dl m)
+else()
+  message(WARNING "缺少 ${RB_STATIC}，远程相册 ICE 不可用")
+endif()
+
 # Run the Flutter tool portions of the build. This must not be removed.
 add_dependencies(${BINARY_NAME} flutter_assemble)
 

@@ -3,6 +3,7 @@ package global
 import (
 	"github.com/hopeio/initialize/dao/gormdb/postgres"
 	initredis "github.com/hopeio/initialize/dao/redis"
+	"github.com/minio/minio-go/v7"
 )
 
 // dao dao.
@@ -10,6 +11,7 @@ type dao struct {
 	GORMDB postgres.DB
 	// RedisPool Redis连接池
 	Redis initredis.Client
+	Minio minio.Client
 }
 
 func (d *dao) BeforeInject() {

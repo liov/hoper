@@ -2,21 +2,9 @@
 	path = thirdparty/cherry
 	url = https://github.com/hopeio/cherry
 	branch = main
-[submodule "thirdparty/pick"]
-	path = thirdparty/pick
-	url = https://github.com/hopeio/pick
-	branch = main
 [submodule "thirdparty/diamond"]
 	path = thirdparty/diamond
 	url = https://github.com/hopeio/diamond
-	branch = main
-[submodule "awesome"]
-	path = awesome
-	url = https://github.com/liov/awesome
-	branch = main
-[submodule "thirdparty/context"]
-	path = thirdparty/context
-	url = https://github.com/hopeio/context
 	branch = main
 [submodule "thirdparty/initialize"]
 	path = thirdparty/initialize
@@ -30,15 +18,7 @@
 	path = thirdparty/gox
 	url = https://github.com/hopeio/gox
 	branch = main
-[submodule "thirdparty/deploy"]
-	path = thirdparty/deploy
-	url = https://github.com/hopeio/deploy
-	branch = main
 [submodule "thirdparty/scaffold"]
 	path = thirdparty/scaffold
 	url = https://github.com/hopeio/scaffold
-	branch = main
-[submodule "thirdparty/applib"]
-	path = thirdparty/applib
-	url = https://github.com/hopeio/applib
 	branch = main

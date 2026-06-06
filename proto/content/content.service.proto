@@ -8,7 +8,6 @@ import "hopeio/utils/validator/validator.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "hopeio/request/param.proto";
-import "danielvladco/protobuf/graphql.proto";
 import "hopeio/utils/patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.content";
@@ -21,74 +20,67 @@ service ContentService {
   };
 
   //收藏夹列表
-  rpc FavList (FavListReq) returns (FavListRep) {
+  rpc FavList (FavListReq) returns (FavListResp) {
     option (google.api.http) = {
-      get: "/api/v1/content/fav/{userId}"
+      get: "/api/content/fav/{userId}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
   //收藏夹列表
-  rpc TinyFavList (FavListReq) returns (TinyFavListRep) {
+  rpc TinyFavList (FavListReq) returns (TinyFavListResp) {
     option (google.api.http) = {
-      get: "/api/v1/content/tinyFav/{userId}"
+      get: "/api/content/tinyFav/{userId}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
   // 创建收藏夹
   rpc AddFav (AddFavReq) returns (request.Id) {
     option (google.api.http) = {
-      post: "/api/v1/content/fav"
+      post: "/api/content/fav"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   // 修改收藏夹
   rpc EditFav (AddFavReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/content/fav/{id}"
+      put: "/api/content/fav/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   // 创建合集
   rpc AddSet (AddSetReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/api/v1/content/set"
+      post: "/api/content/set"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   // 修改合集
   rpc EditSet (AddSetReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/content/set/{id}"
+      put: "/api/content/set/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
   }
   // 用户内容数量
   rpc GetUserStatistics (request.Id) returns (UserStatistics) {
     option (google.api.http) = {
-      get: "/api/v1/content/userStatistics/{id}"
+      get: "/api/content/userStatistics/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
   }
 
 }
@@ -122,12 +114,12 @@ message FavListReq{
   uint32 userId  = 1 [(go.field) = {tags:'comment:"权限,0-自己可写的，1-可读写"'}];
 }
 
-message FavListRep{
+message FavListResp{
   int64 total = 1;
   repeated Favorite list = 2;
 }
 
-message TinyFavListRep{
+message TinyFavListResp{
   int64 total = 1;
   repeated TinyFavorites list = 2;
 }

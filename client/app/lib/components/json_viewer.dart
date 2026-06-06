@@ -52,7 +52,7 @@ class JsonViewerRoot extends StatefulWidget {
     node.nodeName = nodeName;
     node.nodeValue = nodeValue;
     node.leftOffset = leftOffset;
-    node.expandDeep = parent != null ? parent.expandDeep! - 1 : this.expandDeep;
+    node.expandDeep = parent != null ? parent.expandDeep! - 1 : expandDeep;
     return node;
   }
 
@@ -70,7 +70,7 @@ class JsonViewerRootState extends State<JsonViewerRoot> {
 
   @override
   Widget build(BuildContext context) {
-    return this.widget.onBuildNode!(null, "[root]", this.widget.jsonObj);
+    return widget.onBuildNode!(null, "[root]", widget.jsonObj);
   }
 }
 
@@ -131,6 +131,8 @@ class JsonViewerMapNode extends StatefulWidget
 
   @override
   int? expandDeep;
+
+  JsonViewerMapNode({super.key});
 }
 
 /// map类型的节点
@@ -147,7 +149,7 @@ class JsonViewerMapNodeState extends State<JsonViewerMapNode> {
   Widget build(BuildContext context) {
     Widget result = GestureDetector(
         onTap: () {
-          this.setState(() {
+          setState(() {
             widget.isOpen = !widget.isOpen;
           });
         },
@@ -204,15 +206,17 @@ class JsonViewerListNode extends StatefulWidget
   List<Widget> buildChild() {
     List<Widget> result = <Widget>[];
     var i = 0;
-    nodeValue!.forEach((v) {
+    for (var v in nodeValue!) {
       result.add(root!.onBuildNode!(this, "[$i]", v));
       i++;
-    });
+    }
     return result;
   }
 
   @override
   int? expandDeep;
+
+  JsonViewerListNode({super.key});
 }
 
 class JsonViewerListNodeState extends State<JsonViewerListNode> {
@@ -226,7 +230,7 @@ class JsonViewerListNodeState extends State<JsonViewerListNode> {
   Widget build(BuildContext context) {
     Widget result = GestureDetector(
         onTap: () {
-          this.setState(() {
+          setState(() {
             widget.isOpen = !widget.isOpen;
           });
         },
@@ -265,10 +269,10 @@ class JsonViewerNode extends StatelessWidget implements JsonNode {
   @override
   Widget build(BuildContext context) {
     var color = Colors.black;
-    if (this.nodeValue == null) {
+    if (nodeValue == null) {
       color = Colors.redAccent;
     } else {
-      switch (this.nodeValue.runtimeType) {
+      switch (nodeValue.runtimeType) {
         case bool:
           color = Colors.teal;
           break;
@@ -280,21 +284,21 @@ class JsonViewerNode extends StatelessWidget implements JsonNode {
 
     return Padding(
       padding: EdgeInsets.only(left: 24),
-      child: Container(
+      child: SizedBox(
         width: 360,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              this.nodeName ?? '',
+              nodeName ?? '',
               style: TextStyle(color: Colors.black54),
             ),
             Text(" : "),
             SizedBox(
               width: 134,
               child: Text(
-                this.nodeValue == null ? "null" : this.nodeValue.toString(),
+                nodeValue == null ? "null" : nodeValue.toString(),
                 style: TextStyle(color: color),
                 softWrap: true,
               ),),
@@ -319,4 +323,6 @@ class JsonViewerNode extends StatelessWidget implements JsonNode {
 
   @override
   int? expandDeep;
+
+  JsonViewerNode({super.key});
 }

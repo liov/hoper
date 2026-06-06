@@ -14,13 +14,13 @@ class UploadInfo {
 }
 
 @JsonSerializable()
-class MultiUploadRep  {
-  MultiUploadRep({required this.id, required this.url, required this.success});
+class MultiUploadResp  {
+  MultiUploadResp({required this.id, required this.url, required this.success});
    int id;
    String url;
    bool success;
 
-  factory MultiUploadRep.fromJson(Map<String, dynamic> json) => _$MultiUploadRepFromJson(json);
+  factory MultiUploadResp.fromJson(Map<String, dynamic> json) => _$MultiUploadRespFromJson(json);
 
-  Map<String, dynamic> toJson() => _$MultiUploadRepToJson(this);
+  Map<String, dynamic> toJson() => _$MultiUploadRespToJson(this);
 }

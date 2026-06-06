@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/hopeio/scaffold/errcode"
-	"github.com/hopeio/gox/sdk/luosimao"
+	"github.com/hopeio/scaffold/validator/luosimao"
 	"github.com/liov/hoper/server/go/global"
 )
 

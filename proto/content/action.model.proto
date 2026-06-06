@@ -4,8 +4,8 @@ import "user/user.model.proto";
 import "common/common.model.proto";
 import "content/content.model.proto";
 import "hopeio/utils/enum/enum.proto";
-import "hopeio/time/time.proto";
-import "hopeio/time/deletedAt/deletedAt.proto";
+import "hopeio/time/timestamp/timestamp.proto";
+import "hopeio/model/gorm.proto";
 import "hopeio/utils/patch/go.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
@@ -21,12 +21,10 @@ message Action{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   ContentType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null;index:idx_like_type_id" validate:"required" comment:"相关类型"'}];
   uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_like_type_id" validate:"required" comment:"相关id"'}];
-  uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
+  uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
   ActionType action = 3 [(go.field) = {tags:'gorm:"type:int2;default:1" validate:"required" comment:"动作"'}];
   user.UserBase user = 4 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
-  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  time.Time updatedAt = 30 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-  deletedAt.DeletedAt deletedAt = 26 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  model.ModelTime  modelTime = 8 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 // Deprecated: use collect favId=0
@@ -34,23 +32,19 @@ message Like{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   ContentType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null;index:idx_like_type_id" validate:"required" comment:"相关类型"'}];
   uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_like_type_id" validate:"required" comment:"相关id"'}];
-  uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
+  uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
   LikeStatus status = 3 [(go.field) = {tags:'gorm:"type:int2;default:1" validate:"required" comment:"状态"'}];
   user.UserBase user = 4 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
-  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  time.Time updatedAt = 30 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-  deletedAt.DeletedAt deletedAt = 26 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  model.ModelTime  modelTime = 8 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 message UnLike{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   ContentType type = 2 [(go.field) = {tags:'gorm:"type:int2;not null;index:idx_like_type_id" validate:"required" comment:"相关类型"'}];
   uint64 refId = 6 [(go.field) = {tags:'gorm:"size:20;not null;index:idx_like_type_id" validate:"required" comment:"相关id"'}];
-  uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
+  uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
   user.UserBase user = 4 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
-  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  time.Time updatedAt = 30 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-  deletedAt.DeletedAt deletedAt = 26 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  model.ModelTime  modelTime = 8 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 // 举报
@@ -62,7 +56,7 @@ message Report{
   user.UserBase user = 2 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   common.BanReason reason = 3[(go.field) = {tags:'gorm:"type:int2;default:0" comment:"举报原因"'}];
   string remark = 4[(go.field) = {tags:'gorm:"size:255" comment:"备注"'}];
-  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  timestamp.Timestamp createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
 }
 
 // 收藏 Like:favId=0
@@ -70,11 +64,10 @@ message Collect{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   ContentType type = 12 [(go.field) = {tags:'json:"-" gorm:"type:int2;not null;index:idx_collect_type_id" validate:"required" comment:"相关类型"'}];
   uint64 refId = 6 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index:idx_collect_type_id" validate:"required" comment:"相关id"'}];
-  uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
+  uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
   user.UserBase user = 2 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   uint64 favId = 3 [(go.field) = {tags:'gorm:"size:20;not null;index" comment:"用户id"'}];
-  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  deletedAt.DeletedAt deletedAt = 26 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  model.ModelTime  modelTime = 8 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 // 分享
@@ -85,8 +78,7 @@ message Share{
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
   user.UserBase user = 2 [(go.field) = {tags:'gorm:"-" comment:"用户"'}];
   common.Platform platform = 3 [(go.field) = {tags:'gorm:"size:20;not null" validate:"required" comment:"用户id"'}];
-  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  deletedAt.DeletedAt deletedAt = 26 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  model.ModelTime  modelTime = 22 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 // 系统删除内容记录
@@ -96,13 +88,13 @@ message ContentDel{
   uint64 refId = 2 [(go.field) = {tags:'gorm:"size:20;index:idx_del_type_id" comment:"相关id"'}];
   common.BanReason reason = 3[(go.field) = {tags:'gorm:"type:int2;default:0" comment:"删除原因"'}];
   string remark = 4[(go.field) = {tags:'gorm:"size:255" comment:"备注"'}];
-  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  timestamp.Timestamp createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
 }
 // 评论
 message Comment{
   uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  ContentType type = 23[(go.field) = {tags:'gorm:"type:int2;index:idx_comment_type_id" comment:"类型"'}];
   uint64 refId = 6 [(go.field) = {tags:'json:"-" gorm:"size:20;not null;index:idx_comment_type_id" validate:"required" comment:"相关id"'}];
+  ContentType type = 23[(go.field) = {tags:'gorm:"type:int2;index:idx_comment_type_id" comment:"类型"'}];
   uint64 userId = 17 [(go.field) = {tags:'gorm:"size:20;not null;index" validate:"required" comment:"用户id"'}];
   user.UserBase user = 2 [(go.field) = {tags:'gorm:"" comment:"用户"'}];
   string content = 3 [(go.field) = {tags:'gorm:"size:255;not null" comment:"内容"'}];
@@ -115,11 +107,10 @@ message Comment{
   UserAction action = 26[(go.field) = {tags:'gorm:"-" comment:"用户动作"'}];
   repeated Comment comments = 11 [(go.field) = {tags:'gorm:"-" comment:"子评论"'}];
   uint32 sequence = 4 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
-  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  deletedAt.DeletedAt deletedAt = 27 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
   uint32 status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
+  model.ModelTime  modelTime = 22 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 message Statistics{
@@ -145,34 +136,34 @@ message UserAction{
 // 操作类型
 enum ActionType{
 
-  ActionPlaceholder = 0 [(enum.text) = "占位"];
-  ActionBrowse = 1 [(enum.text) = "浏览"];
-  ActionLike = 2 [(enum.text) = "点赞"];
-  ActionUnlike = 3 [(enum.text) = "不喜欢"];
-  ActionComment = 4 [(enum.text) = "评论"];
-  ActionCollect = 5 [(enum.text) = "收藏"];
-  ActionShare = 6 [(enum.text) = "收藏"];
-  ActionReport = 7 [(enum.text) = "举报"];
-  ActionGive = 8 [(enum.text) = "回馈"];
-  ActionApprove = 9 [(enum.text) = "赞同"];
-  ActionDelete = 10 [(enum.text) = "删除"];
+  ActionPlaceholder = 0 [(enum.comment) = "占位"];
+  ActionBrowse = 1 [(enum.comment) = "浏览"];
+  ActionLike = 2 [(enum.comment) = "点赞"];
+  ActionUnlike = 3 [(enum.comment) = "不喜欢"];
+  ActionComment = 4 [(enum.comment) = "评论"];
+  ActionCollect = 5 [(enum.comment) = "收藏"];
+  ActionShare = 6 [(enum.comment) = "收藏"];
+  ActionReport = 7 [(enum.comment) = "举报"];
+  ActionGive = 8 [(enum.comment) = "回馈"];
+  ActionApprove = 9 [(enum.comment) = "赞同"];
+  ActionDelete = 10 [(enum.comment) = "删除"];
 }
 
 
 // 评论类型
 enum CommentType{
 
-  CommentPlaceholder = 0 [(enum.text)= "占位"];
-  CommentMoment = 1 [(enum.text)= "瞬间"];
-  CommentDiary = 2 [(enum.text)= "日记"];
-  CommentDiaryBook = 3 [(enum.text)= "日记本"];
-  CommentArticle = 4 [(enum.text)= "文章"];
+  CommentPlaceholder = 0 [(enum.comment)= "占位"];
+  CommentMoment = 1 [(enum.comment)= "瞬间"];
+  CommentDiary = 2 [(enum.comment)= "日记"];
+  CommentDiaryBook = 3 [(enum.comment)= "日记本"];
+  CommentArticle = 4 [(enum.comment)= "文章"];
 }
 
 enum LikeStatus{
 
-  LikeStatusPlaceholder = 0 [(enum.text)= "占位"];
-  LikeStatusLike = 2 [(enum.text)= "点赞"];
-  LikeStatusUnlike = 3 [(enum.text)= "不喜欢"];
+  LikeStatusPlaceholder = 0 [(enum.comment)= "占位"];
+  LikeStatusLike = 2 [(enum.comment)= "点赞"];
+  LikeStatusUnlike = 3 [(enum.comment)= "不喜欢"];
 }
 

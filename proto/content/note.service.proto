@@ -6,7 +6,7 @@ import "hopeio/utils/validator/validator.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/wrappers.proto";
 import "hopeio/utils/patch/go.proto";
-import "danielvladco/protobuf/graphql.proto";
+
 
 option go_package = "github.com/liov/hoper/server/go/protobuf/content";
 option java_package = "xyz.hoper.protobuf.content";
@@ -26,7 +26,7 @@ service NoteService {
     //验证码
     rpc Create (Note) returns (google.protobuf.StringValue) {
         option (google.api.http) = {
-            post: "/api/v1/note"
+            post: "/api/note"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -34,7 +34,7 @@ service NoteService {
             summary : "创建笔记"
             description : "创建笔记接口"
         };
-        option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
     }
 
 }

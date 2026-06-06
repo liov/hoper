@@ -3,17 +3,16 @@ import 'dart:math';
 import 'package:app/global/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:app/util/nav.dart';
 
 class SnowWidget extends StatefulWidget {
   final int totalSnow;
   final double speed;
   final bool isRunning;
 
-  const SnowWidget(this.totalSnow, this.speed, this.isRunning, {Key? key})
-      : super(key: key);
+  const SnowWidget(this.totalSnow, this.speed, this.isRunning, {super.key});
 
+  @override
   _SnowWidgetState createState() => _SnowWidgetState();
 }
 
@@ -23,8 +22,8 @@ class _SnowWidgetState extends State<SnowWidget> with SingleTickerProviderStateM
   late Animation animation;
   late List<Snow> _snows;
   double angle = 0;
-  double W = Get.width;
-  double H = Get.height;
+  double W = AppNavigator.width;
+  double H = AppNavigator.height;
 
   @override
   void initState() {
@@ -52,13 +51,13 @@ class _SnowWidgetState extends State<SnowWidget> with SingleTickerProviderStateM
     super.dispose();
   }
 
-  _createSnow() {
+  void _createSnow() {
     _snows = List.generate(widget.totalSnow, (index) => Snow(_rnd.nextDouble() * W, _rnd.nextDouble() * H,
         _rnd.nextDouble() * 4 + 1, _rnd.nextDouble() * widget.speed));
   }
 
-  update() {
-    globalService.logger.d("update " + widget.isRunning.toString());
+  void update() {
+    globalService.logger.fine("update ${widget.isRunning}");
     angle += 0.01;
     if (widget.totalSnow != _snows.length) {
       _createSnow();
@@ -104,7 +103,7 @@ class _SnowWidgetState extends State<SnowWidget> with SingleTickerProviderStateM
         }
         return CustomPaint(
           willChange: widget.isRunning,
-          painter: SnowPainter(this._snows),
+          painter: SnowPainter(_snows),
           size: Size.infinite,
         );
       },
@@ -134,7 +133,7 @@ class SnowPainter extends CustomPainter {
       ..color = Colors.white
       ..style = PaintingStyle.fill
       ..strokeWidth = 5;
-    snows.forEach((snow) {canvas.drawCircle(Offset(snow.x,snow.y), snow.r, paint); });
+    for (var snow in snows) {canvas.drawCircle(Offset(snow.x,snow.y), snow.r, paint); }
 
   }
 

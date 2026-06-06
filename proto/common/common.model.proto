@@ -1,8 +1,7 @@
 syntax = "proto3";
 package common;
 import "hopeio/utils/enum/enum.proto";
-import "hopeio/time/time.proto";
-import "hopeio/time/deletedAt/deletedAt.proto";
+import "hopeio/model/gorm.proto";
 import "hopeio/utils/patch/go.proto";
 import "hopeio/time/timestamp/timestamp.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
@@ -16,55 +15,72 @@ option (enum.gqlgen_all) = true;
 option (go.file) = {no_enum_prefix:true};
 
 message Attr{
-  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
+  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" validate:"required,gte=2,lte=10" comment:"名称"'}];
   string desc = 3 [(go.field) = {tags:'gorm:"size:255"  comment:"描述"'}];
-  DataType type = 5 [(go.field) = {tags:'gorm:"type:int2" comment:"属性的值输入类型"'}];
-  string range = 4 [(go.field) = {tags:'gorm:"type:int2" comment:"属性使用范围"'}];
-  uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
-  uint32 status = 6 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  DataType type = 4 [(go.field) = {tags:'gorm:"type:int2" comment:"属性的值输入类型"'}];
+  string range = 5 [(go.field) = {tags:'comment:"属性范围"'}];
+  uint64 userId = 6 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
+  uint32 status = 7 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
-  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  time.Time updatedAt = 27 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-  deletedAt.DeletedAt deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
 }
 
 // 例如猪有固定的几个属性
 message AttrGroup{
-  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
+  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" validate:"required,gte=2,lte=10" comment:"名称"'}];
   uint64 pId = 3 [(go.field) = {tags:'gorm:"default:0;index" comment:"直接父分类的ID"'}];
-  uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
-  uint32 status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  uint64 userId = 4 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
+  uint32 status = 5 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
-  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  time.Time updatedAt = 27 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-  deletedAt.DeletedAt deletedAt = 22 [(go.field) = {tags:'gorm:"type:timestamptz(6);index"'}];
 }
 
 message AttrAttrGroup{
   uint64 attrId = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
   uint64 groupId = 2 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
-  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  time.Time updatedAt = 27 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-  deletedAt.DeletedAt deletedAt = 26 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  uint64 userId = 3 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
+  model.ModelTime  modelTime = 4 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 message Dict{
-  uint32 type = 2 [(go.field) = {tags:'gorm:"primaryKey" comment:"类型'}];
-  string key = 4 [(go.field) = {tags:'gorm:"primaryKey"'}];
-  string val = 5 [(go.field) = {tags:'comment:"值"'}];
-  uint32 seq = 6[(go.field) = {tags:'comment:"顺序"'}];
-  uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
-  uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  uint32 type = 1 [(go.field) = {tags:'gorm:"primaryKey" comment:"类型"'}];
+  string key = 2 [(go.field) = {tags:'gorm:"primaryKey"'}];
+  string val = 3 [(go.field) = {tags:'comment:"值"'}];
+  uint32 seq = 4[(go.field) = {tags:'comment:"顺序"'}];
+  uint64 userId = 5 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
+  uint32 status = 6 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
-  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  time.Time updatedAt = 17 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-  deletedAt.DeletedAt deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  model.ModelTime  modelTime = 7 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
+}
+
+// 自描述枚举 type=0 为 枚举类型
+message Enum{
+  uint32 type = 1 [(go.field) = {tags:'gorm:"size:100;primaryKey;autoIncrement:false" comment:"类型"'}];
+  uint32 index = 2 [(go.field) = {tags:'gorm:"size:20;primaryKey;autoIncrement"'}];
+  DataType dataType = 3 [(go.field) = {tags:'gorm:"type:int2;default:0"'}];
+  string value = 4 [(go.field) = {tags:'gorm:"size:100"'}];
+  string desc = 5 [(go.field) = {tags:'gorm:"size:255"'}];
+  uint64 userId = 6 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
+  uint32 status = 7 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    read_only:true
+  }];
+  model.ModelTime  modelTime = 8 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
+}
+
+message Category{
+  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
+  string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" validate:"required,gte=2,lte=10" comment:"名称"'}];
+  uint64 pId = 3 [(go.field) = {tags:'gorm:"default:0;index" comment:"直接父分类的ID"'}];
+  uint32 seq = 4 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
+  string desc = 5 [(go.field) = {tags:'gorm:"size:100"  comment:"描述"'}];
+  string image = 6 [(go.field) = {tags:'gorm:"size:255"  comment:"表情url"'}];
+  uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
+  uint32 status = 8 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    read_only:true
+  }];
 }
 
 message Area {
@@ -74,28 +90,23 @@ message Area {
   uint64 pcode = 4;
   Area pArea = 5 [(go.field) = {tags:'gorm:"-"'}];
   uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
-  uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  uint32 status = 8 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
-  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  time.Time updatedAt = 17 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-  deletedAt.DeletedAt deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
+  model.ModelTime  modelTime = 9 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 message Media{
-  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
+  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
   string url = 2 [(go.field) = {tags:'gorm:"size:255;not null" comment:"url"'}];
   uint64 userId = 7 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
   uint32 status = 18 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
-  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  time.Time updatedAt = 17 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-  deletedAt.DeletedAt deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
 }
 
 message Tag {
-  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
+  model.Model  basic = 1 [(go.field) = {tags:'json:"basic,inline" gorm:"embedded"'}];
   string name = 2 [(go.field) = {tags:'gorm:"size:10;not null;uniqueIndex" validate:"required,gte=2,lte=10" comment:"名称"'}];
   string desc = 3 [(go.field) = {tags:'gorm:"size:100"  comment:"描述"'}];
   string image = 17 [(go.field) = {tags:'gorm:"size:255"  comment:"表情url"'}];
@@ -104,9 +115,6 @@ message Tag {
   uint32 status = 29 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     read_only:true
   }];
-  time.Time createdAt = 25 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  time.Time updatedAt = 26 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-  deletedAt.DeletedAt deletedAt = 28 [(go.field) = {tags:'gorm:"<-:false;type:timestamptz(6);index"'}];
 }
 
 
@@ -121,24 +129,9 @@ message EditLog{
   bytes old = 3 [(go.field) = {tags:'gorm:"type:jsonb;not null"'}];
   bytes new = 4 [(go.field) = {tags:'gorm:"type:jsonb;not null"'}];
   uint64 userId = 5 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
-  string createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  timestamp.Timestamp createdAt = 6 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
 }
 
-// 自描述枚举 type=0 为 type 枚举
-message Enum{
-  uint32 type = 1 [(go.field) = {tags:'gorm:"size:100;primaryKey;autoIncrement:false" comment:"类型"'}];
-  uint32 index = 2 [(go.field) = {tags:'gorm:"size:20;primaryKey;autoIncrement"'}];
-  DataType dataType = 5 [(go.field) = {tags:'gorm:"type:int2;default:0"'}];
-  string value = 3 [(go.field) = {tags:'gorm:"size:100"'}];
-  string desc = 4 [(go.field) = {tags:'gorm:"size:255"'}];
-  uint64 userId = 6 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
-  uint32 status = 7 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-    read_only:true
-  }];
-  string createdAt = 8 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  time.Time updatedAt = 9 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-  deletedAt.DeletedAt deletedAt = 10 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-}
 
 message Mail {
   string addr = 1;
@@ -148,92 +141,91 @@ message Mail {
   string contentType = 5;
   string content = 6;
   repeated string to = 7;
-  string createdAt = 8 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  time.Time updatedAt = 9 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-  deletedAt.DeletedAt deletedAt = 10 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  model.ModelTime  modelTime = 9 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
 
 message sms {
   string sign = 1;
   string content = 6;
   repeated string to = 7;
-  string createdAt = 8 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  time.Time updatedAt = 9 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-  deletedAt.DeletedAt deletedAt = 10 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
+  model.ModelTime  modelTime = 9 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
 }
-
-message Category{
-  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey;"'}];
-  string name = 2 [(go.field) = {tags:'gorm:"size:10;not null" validate:"required,gte=2,lte=10" comment:"名称"'}];
-  uint64 pId = 3 [(go.field) = {tags:'gorm:"default:0;index" comment:"直接父分类的ID"'}];
-  uint32 seq = 4 [(go.field) = {tags:'gorm:"type:int2;default:0" comment:"同级别的分类可根据sequence的值来排序，置顶"'}];
-  string desc = 6 [(go.field) = {tags:'gorm:"size:100"  comment:"描述"'}];
-  string image = 17 [(go.field) = {tags:'gorm:"size:255"  comment:"表情url"'}];
-  uint64 userId = 5 [(go.field) = {tags:'gorm:"size:20" comment:"用户id"'}];
-  uint32 status = 28 [(go.field) = {tags:'gorm:"type:int2;default:0"'}, (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-    read_only:true
-  }];
-  time.Time createdAt = 16 [(go.field) = {tags:'gorm:"type:timestamptz(6);default:now();index"'}];
-  time.Time updatedAt = 27 [(go.field) = {tags:'gorm:"type:timestamptz(6)"'}];
-  deletedAt.DeletedAt deletedAt = 22 [(go.field) = {tags:'gorm:"type:timestamptz(6);index"'}];
-}
-
 
 // RedisIndex
 
 enum RedisIndex{
 
-  RedisIndexPlaceholder = 0 [(enum.text) = "占位"];
-  RedisIndexFlag = 13 [(enum.text) = "标志"];
-  RedisIndexSys = 14 [(enum.text) = "系统"];
-  RedisIndexCron = 15 [(enum.text) = "定时任务"];
+  RedisIndexPlaceholder = 0 [(enum.comment) = "占位"];
+  RedisIndexFlag = 13 [(enum.comment) = "标志"];
+  RedisIndexSys = 14 [(enum.comment) = "系统"];
+  RedisIndexCron = 15 [(enum.comment) = "定时任务"];
 
 }
 
 enum ObjectType{
 
-  ObjectPlaceholder = 0 [(enum.text) = "占位"];
-  ObjectContent = 1 [(enum.text) = "内容"];
+  ObjectPlaceholder = 0 [(enum.comment) = "占位"];
+  ObjectContent = 1 [(enum.comment) = "内容"];
 }
 
 enum MediaType{
 
-  MediaTypePlaceholder = 0 [(enum.text) = "占位"];
-  MediaTypeImage = 1 [(enum.text) = "图片"];
-  MediaTypeVideo = 2 [(enum.text) = "视频"];
-  MediaTypeAudio = 3 [(enum.text) = "音频"];
+  MediaTypePlaceholder = 0 [(enum.comment) = "占位"];
+  MediaTypeImage = 1 [(enum.comment) = "图片"];
+  MediaTypeVideo = 2 [(enum.comment) = "视频"];
+  MediaTypeAudio = 3 [(enum.comment) = "音频"];
 }
 
 enum DataType {
 
-  DataTypePlaceholder = 0 [(enum.text) = "占位"];
-  DataTypeString = 1 [(enum.text) = "字符串"];
-  DataTypeInteger = 2 [(enum.text) = "整数"];
-  DataTypeFloat = 3 [(enum.text) = "浮点数"];
-  DataTypeTime = 4 [(enum.text) = "时间"];
-  DataTypeDate = 5 [(enum.text) = "日期"];
-  DataTypeEnum = 6 [(enum.text) = "枚举"];
+  DataTypePlaceholder = 0 [(enum.comment) = "占位"];
+  DataTypeString = 1 [(enum.comment) = "字符串"];
+  DataTypeInteger = 2 [(enum.comment) = "整数"];
+  DataTypeFloat = 3 [(enum.comment) = "浮点数"];
+  DataTypeTime = 4 [(enum.comment) = "时间"];
+  DataTypeDate = 5 [(enum.comment) = "日期"];
+  DataTypeEnum = 6 [(enum.comment) = "枚举"];
 }
 
 enum Platform{
 
-  PlatformPlaceholder = 0 [(enum.text)= "占位"];
-  PlatformWechat = 1 [(enum.text)= "微信"];
-  PlatformQQ = 2 [(enum.text)= "QQ"];
+  PlatformPlaceholder = 0 [(enum.comment)= "占位"];
+  PlatformWechat = 1 [(enum.comment)= "微信"];
+  PlatformQQ = 2 [(enum.comment)= "QQ"];
 }
 
 // 删除原因
 enum BanReason{
 
-  BanReasonPlaceholder = 0 [(enum.text) = "占位"];
-  BanReasonViolationOfLawsAndRegulations = 1 [(enum.text) = "违返法律法规"];
-  BanReasonEroticViolence = 3 [(enum.text) = "色情暴力"];
-  BanReasonOther = 255 [(enum.text) = "其他原因"];
+  BanReasonPlaceholder = 0 [(enum.comment) = "占位"];
+  BanReasonViolationOfLawsAndRegulations = 1 [(enum.comment) = "违返法律法规"];
+  BanReasonEroticViolence = 3 [(enum.comment) = "色情暴力"];
+  BanReasonOther = 255 [(enum.comment) = "其他原因"];
 }
 
 enum DocType{
 
-  DocTypePlaceholder = 0 [(enum.text) = "占位"];
-  DocTypeMarkdown = 1 [(enum.text) = "markdown"];
-  DocTypeHtml = 2 [(enum.text) = "html"];
+  DocTypePlaceholder = 0 [(enum.comment) = "占位"];
+  DocTypeMarkdown = 1 [(enum.comment) = "markdown"];
+  DocTypeHtml = 2 [(enum.comment) = "html"];
+}
+
+
+message FrontRoute{
+  uint64 id = 1 [(go.field) = {tags:'gorm:"primaryKey"'}];
+  string path = 2 ;
+  string name = 3 ;
+  string redirect = 4 ;
+  FrontRouteMeta meta = 5[(go.field) = {tags:'json:"meta,inline" gorm:"embedded"'}];
+  uint64 parentId = 6 [(go.field) = {tags:'gorm:"not null;default:0" comment:"父级id"'}];
+  repeated FrontRoute children = 7 [(go.field) = {tags:'gorm:"foreignkey:ParentId"'}];
+  model.ModelTime modelTime = 8 [(go.field) = {tags:'json:"modelTime,inline" gorm:"embedded"'}];
+}
+
+message FrontRouteMeta{
+  string title = 1;
+  string icon = 2;
+  bool showLink = 3;
+  int32 rank = 4;
+  repeated string roles = 5 [(go.field) = {tags:'gorm:"type:text[];serializer:string_array"'}];
 }

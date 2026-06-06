@@ -1,0 +1,6 @@
+// 静态链接 librb.a（先 server/rust/rb/scripts/build_flutter_lib.sh --mobile）
+// 不用 force_load：用 -u 引用 FFI 入口，链接器按需从 .a 取 .o（与 Android cdylib 同思路）
+RB_LDFLAGS_COMMON = -lc++ -framework Security -framework SystemConfiguration -framework CoreFoundation -lresolv
+RB_LDFLAGS_UNDEF = -Wl,-u,_rb_ice_viewer_new -Wl,-u,_rb_ice_viewer_push -Wl,-u,_rb_ice_viewer_poll_out -Wl,-u,_rb_ice_viewer_state -Wl,-u,_rb_ice_viewer_write -Wl,-u,_rb_ice_viewer_read -Wl,-u,_rb_ice_viewer_close -Wl,-u,_rb_ice_grpc_open -Wl,-u,_rb_ice_grpc_close -Wl,-u,_rb_ice_grpc_list_files -Wl,-u,_rb_ice_grpc_thumb_batch -Wl,-u,_rb_ice_grpc_read_file -Wl,-u,_rb_ice_grpc_read_file_range -Wl,-u,_rb_ice_grpc_delete_file
+OTHER_LDFLAGS[sdk=iphoneos*] = $(inherited) $(SRCROOT)/../staticLibs/ios/device/librb.a $(RB_LDFLAGS_UNDEF) $(RB_LDFLAGS_COMMON)
+OTHER_LDFLAGS[sdk=iphonesimulator*] = $(inherited) $(SRCROOT)/../staticLibs/ios/sim/librb.a $(RB_LDFLAGS_UNDEF) $(RB_LDFLAGS_COMMON)

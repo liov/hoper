@@ -1,0 +1,26 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "singleQuote": true,
+  "printWidth": 100,
+  "tabWidth": 2,
+  "useTabs": false,
+  "semi": false,
+  "trailingComma": "all",
+  "htmlWhitespaceSensitivity": "ignore",
+  "ignorePatterns": [
+    "auto-import.d.ts",
+    "uni-pages.d.ts",
+    "src/types/auto-import.d.ts",
+    "src/types/uni-pages.d.ts",
+    "src/pages.json",
+    "src/manifest.json"
+  ],
+  "overrides": [
+    {
+      "files": ["*.json"],
+      "options": {
+        "trailingComma": "none"
+      }
+    }
+  ]
+}

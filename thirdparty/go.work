@@ -1,12 +1,11 @@
-go 1.24.0
+go 1.25.0
 
 use (
 	cherry
-	context
-	deploy/plugin
-	initialize
-	pick
-	protobuf
 	gox
+	initialize
+	protobuf
 	scaffold
 )
+
+replace github.com/ugorji/go => github.com/ugorji/go/codec v1.3.0

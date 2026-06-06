@@ -1,5 +1,6 @@
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 
 
@@ -13,8 +14,12 @@ class Bottom {
   final int? pageIndex;
  final Function? onTap;
 
-  factory Bottom.icon(IconData icon, {String? label = "",int? pageIndex,Function? onTap}){
-    return Bottom(Icon(icon),label,pageIndex,onTap);
+  factory Bottom.icon(IconData icon, {String? label = "", int? pageIndex, Function? onTap}) {
+    return Bottom(Icon(icon), label, pageIndex, onTap);
+  }
+
+  factory Bottom.fa(FaIconData icon, {String? label = "", int? pageIndex, Function? onTap}) {
+    return Bottom(FaIcon(icon), label, pageIndex, onTap);
   }
 
   BottomNavigationBarItem navigationBarItem(){

@@ -1,0 +1,110 @@
+{
+	// 使用 IntelliSense 了解相关属性。
+	// 悬停以查看现有属性的描述。
+	// 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "flutter:app",
+			"cwd": "${workspaceFolder}/client/app",
+			"request": "launch",
+			"type": "dart",
+			"program": "lib/main.dart",
+			"flutterMode": "${input:flutterMode}",
+			"windows": {
+				"env": {
+					"HTTP_PROXY": "http://10.48.113.10:8080",
+					"HTTPS_PROXY": "http://10.48.113.10:8080",
+					"NO_PROXY": "localhost,127.0.0.1,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,10.48.113.10,.local,.lan",
+					"PUB_HOSTED_URL": "https://pub.flutter-io.cn",
+					"FLUTTER_STORAGE_BASE_URL": "https://storage.flutter-io.cn"
+				}
+			}
+		},
+		{
+			"name": "go:hoper",
+			"cwd": "${workspaceFolder}/server/go",
+			"request": "launch",
+			"type": "go",
+			"program": "${workspaceFolder}/server/go/main.go",
+			"args": [
+				"-c",
+				"config/config.toml"
+			]
+		},
+		{
+			"name": "go:cherry",
+			"cwd": "${workspaceFolder}/thirdparty/cherry/_example",
+			"request": "launch",
+			"type": "go",
+			"program": "${workspaceFolder}/thirdparty/cherry/_example/user"
+		},
+		{
+			"name": "rust:rb",
+			"cwd": "${workspaceFolder}/server/rust/rb",
+			"request": "launch",
+			"type": "lldb",
+			"cargo": {
+				"args": [
+					"build",
+					"--bin",
+					"rb"
+				]
+			}
+		},
+		{
+			"name": "rust:message",
+			"cwd": "${workspaceFolder}/server/rust/message",
+			"request": "launch",
+			"type": "lldb",
+			"cargo": {
+				"args": [
+					"build",
+					"--bin",
+					"message"
+				]
+			}
+		},
+		{
+			"name": "vue:web",
+			"cwd": "${workspaceFolder}/client/web",
+			"request": "launch",
+			"type": "msedge",
+			"url": "http://localhost:3000",
+			"webRoot": "${workspaceFolder}/client/web/src",
+			"sourceMapPathOverrides": {
+				"webpack:///./src/*": "${webRoot}/*",
+				"node_modules/*": "${workspaceFolder}/client/web/node_modules/*"
+			},
+			"sourceMaps": true,
+			"preLaunchTask": "web:dev"
+		},
+		{
+			"name": "uniapp:dev",
+			"cwd": "${workspaceFolder}/client/uniapp",
+			"request": "launch",
+			"type": "msedge",
+			"url": "http://localhost:9000",
+			"webRoot": "${workspaceFolder}/client/uniapp/src",
+			"sourceMapPathOverrides": {
+				"webpack:///./src/*": "${webRoot}/*",
+				"node_modules/*": "${workspaceFolder}/client/uniapp/node_modules/*"
+			},
+			"sourceMaps": true,
+			"preLaunchTask": "uniapp:dev"
+		}
+	],
+	"inputs": [
+		{
+			"id": "flutterMode",
+			"type": "pickString",
+			"description": "请选择flutter运行模式",
+			"options": [
+				"debug",
+				"profile",
+				"release"
+			],
+			"default": "debug"
+		}
+	]
+}

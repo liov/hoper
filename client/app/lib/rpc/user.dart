@@ -1,44 +1,42 @@
-import 'package:app/generated/protobuf/user/user.model.pb.dart';
-import 'package:app/generated/protobuf/user/user.service.pbgrpc.dart';
+import 'package:app/gen/pb/user/user.model.pb.dart';
+import 'package:app/gen/pb/user/user.service.pbgrpc.dart';
 
-
-import 'package:app/global/dio.dart';
-import 'package:get/get.dart';
+import 'package:app/rpc/http.dart';
 import 'package:grpc/grpc.dart';
-import 'package:app/model/response.dart';
 import 'package:app/rpc/grpc.dart';
-import 'package:applib/util/observer.dart';
+import 'package:app/util/observer.dart';
 
 
-class UserClient extends Observer<CallOptions> {
+class UserGrpcClient extends Observer<CallOptions> {
+  late UserServiceClient stub;
 
-  late  UserServiceClient stub ;
-
-  UserClient(Subject<CallOptions> subject){
+  UserGrpcClient(Subject<CallOptions> subject) {
     setOptions(subject.options);
     subject.attach(this);
   }
 
-  setOptions(CallOptions? options){
-    stub =  UserServiceClient(channel,options:options);
+  void setOptions(CallOptions? options) {
+    stub = UserServiceClient(channel, options: options);
   }
-
 
   @override
-  update(CallOptions? options){
-    if(options!=null) setOptions(options);
-  }
-
-  Future<User?> Login(String account, password) async {
-
-    var api = '/v1/login';
-    try {
-      var response = await httpClient.post(api,data:{'input': account, 'password': password, 'vCode':'5678'});
-      return User.create()..mergeFromJsonMap(response.getData((v) => v as Map<String, dynamic>));
-    } catch (exception) {
-      return null;
-    }
+  update(CallOptions? options) {
+    if (options != null) setOptions(options);
   }
 
 }
 
+
+class UserClient {
+
+  Future<User> login(LoginReq request) async {
+    final response = await httpClient.post('/login', data: request.writeToJsonMap());
+    return User.fromJson(response.data);
+  }
+
+
+  Future<User> loginPB(LoginReq request) async {
+    final response = await httpProtobufClient.post('/login', data: request.writeToBuffer());
+    return User.fromBuffer(response.data);
+  }
+}

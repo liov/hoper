@@ -1,12 +1,16 @@
 package global
 
 import (
+	"github.com/hopeio/gox/log"
 	"github.com/hopeio/initialize/dao/gormdb/postgres"
 	"github.com/hopeio/initialize/dao/mail"
 	"github.com/hopeio/initialize/dao/redis"
 	"github.com/hopeio/initialize/dao/ristretto"
-	"github.com/hopeio/gox/log"
-	"github.com/liov/hoper/server/go/protobuf/user"
+	"github.com/hopeio/initialize/dao/minio"
+	gormx "github.com/hopeio/gox/database/sql/gorm"
+	ominio "github.com/minio/minio-go/v7"
+	//"github.com/liov/hoper/server/go/protobuf/user"
+	//"github.com/liov/hoper/server/go/protobuf/content"
 )
 
 // 原本是个单独模块，但是考虑到数据库必须初始化，所以合进来了
@@ -21,25 +25,37 @@ type dao struct {
 	Cache ristretto.Cache[string, any]
 	//elastic
 	Mail mail.Mail `init:"config:mail"`
+	//minio
+	Minio minio.Client `init:"config:minio"`
+	MinioCore *ominio.Core `init:"skip"`
 }
 
 func (d *dao) BeforeInject() {
+	log.Info("BeforeInject")
 }
 
 func (d *dao) AfterInjectConfig() {
-
+	log.Info("AfterInjectConfig")
 }
 func (d *dao) AfterInject() {
+	log.Info("AfterInject")
 	if d.GORMDB.DB != nil {
+		d.GORMDB.DB.Use(gormx.NewOTelPlugin())
 		//d.GORMDB.Conf.NamingStrategy.TablePrefix = "user."
-		d.GORMDB.NamingStrategy = d.GORMDB.Conf.NamingStrategy
-		err := d.GORMDB.Exec(`CREATE SCHEMA IF NOT EXISTS "user"`).Error
-		if err != nil {
-			log.Fatal(err)
-		}
-		err = d.GORMDB.Migrator().AutoMigrate(&user.User{}, &user.Resume{}, &user.ActionLog{}, &user.BannedLog{}, &user.Device{}, &user.ScoreLog{}, &user.UserExt{}, user.Oauth{})
-		if err != nil {
-			log.Fatal(err)
-		}
+		// err := d.GORMDB.Exec(`CREATE SCHEMA IF NOT EXISTS "user"`).Error
+		// if err != nil {
+		// 	log.Fatal(err)
+		// }
+		// err := d.GORMDB.Migrator().AutoMigrate(&user.User{})
+		// if err != nil {
+		// 	log.Fatal(err)
+		// }
+		// err = d.GORMDB.Migrator().AutoMigrate(&content.Statistics{})
+		// if err != nil {
+		// 	log.Fatal(err)
+		// }
+	}
+	if d.Minio.Client != nil {
+		d.MinioCore = &ominio.Core{Client: d.Minio.Client}
 	}
 }

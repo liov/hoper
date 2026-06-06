@@ -1,0 +1,73 @@
+syntax = "proto3";
+package chat;
+import "hopeio/utils/enum/enum.proto";
+import "hopeio/time/time.proto";
+import "hopeio/model/gorm.proto";
+import "hopeio/utils/patch/go.proto";
+import "hopeio/time/timestamp/timestamp.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/protobuf/empty.proto";
+
+option java_package = "xyz.hoper.protobuf.message";
+option java_multiple_files = true;
+option go_package = "github.com/liov/hoper/server/go/protobuf/message";
+
+option (enum.gqlgen_all) = true;
+option (go.file) = {no_enum_prefix:true};
+
+enum ClientCmd {
+  ClientCmdPlaceholder = 0;
+  ClientCmdJoinGroup = 1;
+}
+
+enum ServerCmd {
+  ServerCmdPlaceholder = 0;
+}
+
+message MQMessage {
+  uint64 id = 1;
+  ServerCmd command = 2;
+  timestamp.Timestamp created_at = 3;
+  uint64 user_id = 4;
+  uint64 recv_user_id = 5;
+  uint64 recv_group_id = 6;
+  bytes payload = 7;
+  uint32 type = 8; // 1:text, 2:binary, 3:image, 4:file, 5:video, 6:audio
+}
+
+message ClientMessage {
+  uint64 id = 1;
+  ClientCmd command = 2;
+  timestamp.Timestamp created_at = 3;
+  uint64 recv_user_id = 5;
+  uint64 recv_group_id = 6;
+  bytes payload = 7;
+  uint32 type = 8; // 1:text, 2:binary, 3:image, 4:file, 5:video, 6:audio
+  timestamp.Timestamp read_at = 9;
+}
+
+message ServerMessage {
+  uint64 id = 1;
+  ServerCmd command = 2;
+  timestamp.Timestamp time = 3;
+  bytes payload = 4;
+  uint32 type = 5; // 1:text, 2:binary, 3:image, 4:file, 5:video, 6:audio
+}
+
+message JoinGroupReq{
+  uint64 group_id = 1;
+}
+message JoinGroupResp{
+
+}
+
+message ClientMeta{
+  uint64 user_id = 1;
+  string server_id = 2;
+  string device = 3;
+}
+
+service Message {
+  rpc Send(MQMessage) returns (google.protobuf.Empty);
+  rpc Receive(ClientMessage) returns (google.protobuf.Empty);
+}

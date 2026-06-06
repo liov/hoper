@@ -1,8 +1,8 @@
 package db
 
 import (
-	"database/sql"
-	"github.com/hopeio/context/httpctx"
+	"context"
+
 	"github.com/hopeio/scaffold/errcode"
 
 	"github.com/hopeio/gox/log"
@@ -13,34 +13,18 @@ import (
 )
 
 type ContentDao struct {
-	*httpctx.Context
-	db *gorm.DB
+	*gorm.DB
 }
 
-func GetDao(ctx *httpctx.Context, db *gorm.DB) *ContentDao {
-	if ctx == nil {
-		log.Fatal("ctx can't nil")
-	}
-	return &ContentDao{Context: ctx, db: db}
+func GetDao(db *gorm.DB) *ContentDao {
+	return &ContentDao{db}
 }
 
-func (d *ContentDao) SetDB(db *gorm.DB) {
-	d.db = db
-}
-
-func (d *ContentDao) CreateContextExt(typ content.ContentType, refId uint64) error {
-	err := d.db.Exec(`INSERT INTO `+model.TableNameStatistics+`(type,ref_id) Values(?,?)`, typ, refId).Error
+func (d *ContentDao) CreateContextExt(ctx context.Context, typ content.ContentType, refId uint64) error {
+	err := d.Exec(`INSERT INTO `+model.TableNameStatistics+`(type,ref_id) Values(?,?)`, typ, refId).Error
 	if err != nil {
-		return d.Context.RespErrorLog(errcode.DBError, err, "CreateContextExt")
+		log.Error("CreateContextExt", zap.Error(err))
+		return errcode.DBError.Wrap(err)
 	}
 	return nil
-}
-
-func (d *ContentDao) Transaction(fc func(tx *gorm.DB) error, opts ...*sql.TxOptions) error {
-	err := d.db.Transaction(fc, opts...)
-	if err != nil && err != errcode.DBError {
-		d.Context.ErrorLog(err, zap.String(log.FieldPosition, "Transaction"))
-		return err
-	}
-	return err
 }

@@ -1,65 +1,59 @@
-
 import 'package:app/global/state.dart';
-import 'package:app/pages/moment/list/moment_list_view.dart';
-import 'package:app/pages/moment/physics.dart';
-import 'package:app/pages/webview/webview.dart';
+import 'package:app/util/nav.dart';
 import 'package:app/pages/route.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 import '../user/login_view.dart';
-import 'add/moment_add_view.dart';
-import 'list_v2/moment_list_v2_view.dart';
-import 'moment_controller.dart';
+import 'list/moment_list_view.dart';
 
-
-
-class MomentView extends StatefulWidget{
+class MomentView extends StatefulWidget {
   const MomentView({super.key});
 
   @override
-  State<StatefulWidget> createState() => _MomentState();
-
+  State<MomentView> createState() => _MomentState();
 }
 
-class _MomentState extends State<MomentView> with AutomaticKeepAliveClientMixin {
-  final MomentController controller = Get.find();
+class _MomentState extends State<MomentView> with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
+  static const _tabValues = ['关注', '推荐', '刚刚'];
+  late final TabController _tabController = TabController(length: _tabValues.length, vsync: this, initialIndex: 2);
 
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    globalService.logger.d("MomentView重绘");
     super.build(context);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: TabBar(
           isScrollable: true,
-          tabs: controller.tabValues.map((choice) {
-            return Tab(text: choice,);
-          }).toList(),
-          controller: controller.tabController,
+          tabs: [for (final choice in _tabValues) Tab(text: choice)],
+          controller: _tabController,
         ),
         actions: [
-          IconButton(icon: const Icon(Icons.add),onPressed: (){
-            if (globalState.authState.userAuth!=null) {
-              Get.toNamed(Routes.MOMENT_ADD);
-            } else {
-              Get.to(()=>LoginView());
-            }
-          },)
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              if (globalState.authState.userAuth != null) {
+                AppNavigator.pushNamed(Routes.MOMENT_ADD);
+              } else {
+                AppNavigator.push(LoginView());
+              }
+            },
+          ),
         ],
       ),
       body: TabBarView(
-        //physics:PageViewTabClampingScrollPhysics(controller:controller.homeController.to),
-        controller: controller.tabController,
-        children: controller.tabValues.map((f) {
-          globalService.logger.d(f);
-          if (f == "推荐") return Text('TODO');
-          if (f == "刚刚") return MomentListV2View(tag:'newest');
-          if (f == "关注") return Text('TODO');
-          return Text(f);
-        }).toList(),
+        controller: _tabController,
+        children: const [
+          Center(child: Text('TODO')),
+          Center(child: Text('TODO')),
+          MomentListView(tag: 'newest'),
+        ],
       ),
     );
   }

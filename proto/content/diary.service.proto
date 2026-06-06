@@ -8,7 +8,6 @@ import "hopeio/utils/validator/validator.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "hopeio/request/param.proto";
-import "danielvladco/protobuf/graphql.proto";
 import "hopeio/utils/patch/go.proto";
 import "content/diary.model.proto";
 
@@ -23,108 +22,108 @@ service DiaryService {
   };
 
   // 日记本
-  rpc DiaryBook (DiaryBookReq) returns (DiaryBookRep) {
+  rpc DiaryBook (DiaryBookReq) returns (DiaryBookResp) {
     option (google.api.http) = {
-      get: "/api/v1/diaryBook/{id}"
+      get: "/api/diaryBook/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
+
   }
   // 日记本列表
-  rpc DiaryBookList (DiaryBookListReq) returns (DiaryBookListRep) {
+  rpc DiaryBookList (DiaryBookListReq) returns (DiaryBookListResp) {
     option (google.api.http) = {
-      get: "/api/v1/diaryBook"
+      get: "/api/diaryBook"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
+
   }
   // 创建日记本
   rpc AddDiaryBook (AddDiaryBookReq) returns (request.Id) {
     option (google.api.http) = {
-      post: "/api/v1/diaryBook"
+      post: "/api/diaryBook"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
+
   }
   // 修改日记本
   rpc EditDiaryBook (AddDiaryBookReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/diaryBook/{id}"
+      put: "/api/diaryBook/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
 
   // 详情
   rpc Info (request.Id) returns (Diary) {
     option (google.api.http) = {
-      get: "/api/v1/diary/{id}"
+      get: "/api/diary/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
+
   }
 
   // 新建
   rpc Add (AddDiaryReq) returns (request.Id) {
     option (google.api.http) = {
-      post: "/api/v1/diary"
+      post: "/api/diary"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
 
   // 修改
   rpc Edit (AddDiaryReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/diary/{id}"
+      put: "/api/diary/{id}"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
 
   // 列表
-  rpc List (DiaryListReq) returns (DiaryListRep) {
+  rpc List (DiaryListReq) returns (DiaryListResp) {
     option (google.api.http) = {
-      get: "/api/v1/diary"
+      get: "/api/diary"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
+
   }
 
   // 删除
   rpc Delete (request.Id) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      delete: "/api/v1/diary/{id}"
+      delete: "/api/diary/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
 }
 
 message DiaryBookListReq{
 }
 
-message DiaryBookListRep{
+message DiaryBookListResp{
   uint32 count = 1;
   repeated DiaryBook list = 2;
 }
@@ -135,7 +134,7 @@ message DiaryBookReq{
   uint32 pageSize = 3;
 }
 
-message DiaryBookRep{
+message DiaryBookResp{
   DiaryBook book = 1;
   repeated Diary list = 2;
 }
@@ -175,7 +174,7 @@ message DiaryListReq{
   uint32 pageSize = 2;
 }
 
-message DiaryListRep{
+message DiaryListResp{
   int64 total = 1;
   repeated Diary list = 2;
 }

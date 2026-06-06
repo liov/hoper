@@ -5,11 +5,10 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 import "hopeio/utils/validator/validator.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
-import "hopeio/time/time.proto";
+import "hopeio/time/timestamp/timestamp.proto";
 import "hopeio/response/response.proto";
 import "hopeio/request/param.proto";
-import "danielvladco/protobuf/graphql.proto";
-import "hopeio/oauth/oauth.proto";
+
 import "hopeio/utils/patch/go.proto";
 import "google/protobuf/wrappers.proto";
 
@@ -31,20 +30,20 @@ service UserService {
   // 验证码
   rpc VerifyCode (VerifyCodeReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      get: "/api/v1/sendVerifyCode"
+      get: "/api/sendVerifyCode"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "util", "v1.0.0"]
       summary : "发送验证码"
       description : "发送验证码"
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
+
   }
 
   //注册验证
   rpc SignupVerify (SingUpVerifyReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/api/v1/user/signupVerify"
+      post: "/api/user/signupVerify"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -52,13 +51,13 @@ service UserService {
       summary : "发送验证码"
       description : "发送验证码"
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
 
   //注册
   rpc Signup (SignupReq) returns (google.protobuf.StringValue) {
     option (google.api.http) = {
-      post: "/api/v1/user"
+      post: "/api/user"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -66,11 +65,11 @@ service UserService {
       summary : "注册"
       description : "注册接口"
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
 
   //注册
-  rpc EasySignup (SignupReq) returns (LoginRep) {
+  rpc EasySignup (SignupReq) returns (LoginResp) {
     option (google.api.http) = {
       post: "/api/v2/user"
       body: "*"
@@ -79,25 +78,25 @@ service UserService {
       tags:["用户相关接口", "v1.0.0"]
       summary : "简单注册"
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
 
   //激活
-  rpc Active (ActiveReq) returns (LoginRep) {
+  rpc Active (ActiveReq) returns (LoginResp) {
     option (google.api.http) = {
-      get: "/api/v1/user/active/{id}/{secret}"
+      get: "/api/user/active/{id}/{secret}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]
       summary : "激活"
       description : "激活接口"
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
   //编辑
   rpc Edit (EditReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/user/{id}"
+      put: "/api/user/{id}"
       body: "detail"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -113,12 +112,12 @@ service UserService {
         }
       }
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
   //登录
-  rpc Login (LoginReq) returns (LoginRep) {
+  rpc Login (LoginReq) returns (LoginResp) {
     option (google.api.http) = {
-      post: "/api/v1/user/login"
+      post: "/api/user/login"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -126,25 +125,25 @@ service UserService {
       summary : "登录"
       description : "登录接口"
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
+
   }
   //退出
   rpc Logout (google.protobuf.Empty) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      get: "/api/v1/user/logout"
+      get: "/api/user/logout"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]
       summary : "退出"
       description : "退出接口"
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
+
   }
 
   //鉴权
   rpc AuthInfo (google.protobuf.Empty) returns (Auth) {
     option (google.api.http) = {
-      get: "/api/v1/auth"
+      get: "/api/auth"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]
@@ -165,25 +164,25 @@ service UserService {
         }
       }
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
+
   }
 
   //重置密码
   rpc ForgetPassword (LoginReq) returns (google.protobuf.StringValue) {
     option (google.api.http) = {
-      get: "/api/v1/user/forgetPassword"
+      get: "/api/user/forgetPassword"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]
       summary : "忘记密码"
       description : "忘记密码接口"
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
 
   rpc ResetPassword (ResetPasswordReq) returns (google.protobuf.StringValue) {
     option (google.api.http) = {
-      patch: "/api/v1/user/resetPassword/{id}/{secret}"
+      patch: "/api/user/resetPassword/{id}/{secret}"
       body: "password"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -191,38 +190,38 @@ service UserService {
       summary : "重置密码"
       description : "重置密码接口"
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
 
   //获取用户信息
-  rpc Info (request.Id) returns (UserRep) {
+  rpc Info (request.Id) returns (UserResp) {
     option (google.api.http) = {
-      get: "/api/v1/user/{id}"
+      get: "/api/user/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]
       summary : "获取用户信息"
       description : "根据Id获取用户信息接口"
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
+
   }
 
-  rpc ActionLogList (ActionLogListReq) returns (ActionLogListRep) {
+  rpc ActionLogList (ActionLogListReq) returns (ActionLogListResp) {
     option (google.api.http) = {
-      get: "/api/v1/user/actionLog"
+      get: "/api/user/actionLog"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]
       summary : "操作日志"
       description : "操作日志接口"
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
 
   //获取基础用户信息
-  rpc BaseList (BaseListReq) returns (BaseListRep) {
+  rpc BaseList (BaseListReq) returns (BaseListResp) {
     option (google.api.http) = {
-      post: "/api/v1/baseUserList"
+      post: "/api/baseUserList"
       body : "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -230,62 +229,34 @@ service UserService {
       summary : "获取用户信息"
       description : "根据Id获取用户信息接口"
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
+
   }
 
   // 关注
   rpc Follow (FollowReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      get: "/api/v1/user/follow"
+      get: "/api/user/follow"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]
       summary : "关注"
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
   // 取消关注
-  rpc delFollow (FollowReq) returns (BaseListRep) {
+  rpc delFollow (FollowReq) returns (BaseListResp) {
     option (google.api.http) = {
-      delete: "/api/v1/user/follow"
+      delete: "/api/user/follow"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["用户相关接口", "v1.0.0"]
       summary : "取消关注"
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
 }
 
-service OauthService{
-  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {
-    description: "Oauth相关接口"
-  };
-  rpc OauthAuthorize (oauth.OauthReq) returns (response.HttpResponse) {
-    option (google.api.http) = {
-      get: "/oauth/authorize"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags:["用户相关接口", "v1.0.0", "oauth"]
-      summary : "oauth验证"
-      description : "oauth验证"
-    };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
-  }
 
-  rpc OauthToken (oauth.OauthReq) returns (response.HttpResponse) {
-    option (google.api.http) = {
-      post: "/oauth/access_token"
-      body: "*"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags:["用户相关接口", "v1.0.0", "oauth"]
-      summary : "签发token"
-      description : "签发token"
-    };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
-  }
-}
 
 // 注册验证请求
 message SingUpVerifyReq {
@@ -296,22 +267,24 @@ message SingUpVerifyReq {
     example: '{"mail":"123@qq.com", "phone":"12345678901"}'
   };
   // 邮箱
-  string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" comment:"邮箱"'}];
+  string mail = 1 [(go.field) = {tags:'gorm:"size:32" validate:"email" comment:"邮箱"'}];
   // 手机号
-  string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" comment:"手机号"'}];
+  string countryCallingCode = 2 [(go.field) = {tags:'gorm:"size:32;uniqueIndex:idx_phone" comment:"国家码"'}];
+  string phone = 3 [(go.field) = {tags:'gorm:"size:32;uniqueIndex:idx_phone" comment:"手机号"'}];
 }
 
 message SignupReq {
   // 密码
-  string password = 4 [(go.field) = {tags:'validate:"required,gte=6,lte=15" comment:"密码"'},
-    (validator.field) = {length_gt: 5,custom_error: "密码最短6位"},
+  string password = 1 [(go.field) = {tags:'validate:"required,gte=6,lte=15" comment:"密码"'},
+    (validator.field) = {length_gt: 2,custom_error: "密码最短6位"},
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {title: "密码",min_length: 6}];
-  string name = 1 [(go.field) = {tags:'validate:"required,gte=3,lte=10" comment:"昵称"'}];
-  Gender gender = 3 [(go.field) = {tags:'validate:"required" comment:"性别"'}];
+  string name = 3 [(go.field) = {tags:'validate:"required,gte=3,lte=10" comment:"昵称"'}];
+  Gender gender = 4 [(go.field) = {tags:'validate:"required" comment:"性别"'}];
   // 邮箱
-  string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" comment:"邮箱"'}];
+  string mail = 5 [(go.field) = {tags:'validate:"omitempty,email" comment:"邮箱"'}];
+  string countryCallingCode = 6 [(go.field) = {tags:'comment:"国家码"'}];
   // 手机号
-  string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" comment:"手机号"'}];
+  string phone = 7 [(go.field) = {tags:'comment:"手机号"'}];
   // 验证码
   string vCode = 8 [(go.field) = {tags:'validate:"required" comment:"验证码"'}];
 }
@@ -348,15 +321,19 @@ message EditReq {
 }
 // 登录请求
 message LoginReq {
-  string input = 1;
-  string password = 2 [(go.field) = {tags:'validate:"required,gt=5,lt=15" comment:"密码"'},(validator.field) = {
+  // 邮箱
+  string mail = 1 [(go.field) = {tags:'validate:"omitempty,email" comment:"邮箱"'}];
+  // 手机号
+  string countryCallingCode = 2 [(go.field) = {tags:'comment:"国家码"'}];
+  string phone = 3 [(go.field) = {tags: 'comment:"手机号"'}];
+  string password = 4 [(go.field) = {tags:'validate:"required,gt=5,lt=15" comment:"密码"'},(validator.field) = {
     length_gt: 5
     custom_error: "密码错误"
   }];
-  string vCode = 3;
+  string vCode = 5;
 }
 // 登录返回
-message LoginRep {
+message LoginResp {
   User user = 1;
   string token = 2;
 }
@@ -374,25 +351,26 @@ message ResetPasswordReq {
 }
 
 message ActionLogListReq {
-  time.Time beginTime = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  timestamp.Timestamp beginTime = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type: STRING}];
-  time.Time endTime = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+  timestamp.Timestamp endTime = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
     type: STRING}];
 }
 
-message ActionLogListRep {
+message ActionLogListResp {
   uint32 count = 1;
   repeated ActionLog list = 2;
 }
 
 message VerifyCodeReq{
   // 邮箱
-  string mail = 6 [(go.field) = {tags:'validate:"omitempty,email" comment:"邮箱"'}];
+  string mail = 1 [(go.field) = {tags:'validate:"omitempty,email" comment:"邮箱"'}];
   // 手机号
-  string phone = 7 [(go.field) = {tags:'validate:"omitempty,phone" comment:"手机号"'}];
-  Action action = 2 [(go.field) = {tags:'comment:"操作类型"'}];
+  string countryCallingCode = 2 [(go.field) = {tags:'comment:"国家码"'}];
+  string phone = 3 [(go.field) = {tags:'comment:"手机号"'}];
+  Action action = 4 [(go.field) = {tags:'comment:"操作类型"'}];
   // 验证码
-  string vCode = 8 [(go.field) = {tags:'validate:"required" comment:"验证码"'}];
+  string vCode = 5 [(go.field) = {tags:'validate:"required" comment:"验证码"'}];
 }
 
 message BaseListReq{
@@ -401,12 +379,12 @@ message BaseListReq{
   uint32 pageSize = 3;
 }
 
-message BaseListRep{
+message BaseListResp{
   int64 total = 1;
   repeated UserBase list = 2;
 }
 
-message UserRep{
+message UserResp{
   User user = 1;
   UserExt uerExt = 2;
 }

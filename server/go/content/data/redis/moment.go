@@ -1,25 +1,26 @@
 package redis
 
 import (
-	"github.com/go-redis/redis/v8"
+	"context"
+
 	"github.com/hopeio/scaffold/errcode"
+	"github.com/redis/go-redis/v9"
 
 	"github.com/liov/hoper/server/go/protobuf/content"
 )
 
-func (d *ContentDao) GetTopMoments(key string, pageNo int, PageSize int) ([]content.Moment, error) {
-	ctxi := d.Context
+func (d *ContentDao) GetTopMoments(ctx context.Context, key string, pageNo int, PageSize int) ([]content.Moment, error) {
 	var moments []content.Moment
-	exist, err := d.conn.Exists(ctxi.Base(), key).Result()
+	exist, err := d.Exists(ctx, key).Result()
 	if err != nil {
-		return nil, ctxi.RespErrorLog(errcode.RedisErr, err, "GetTopMoments")
+		return nil, errcode.RedisErr.Wrap(err)
 	}
 	if exist == 0 {
-		return nil, ctxi.RespErrorLog(errcode.DataLoss, err, "GetTopMoments")
+		return nil, errcode.DataLoss
 	}
-	d.conn.Pipelined(ctxi.Base(), func(pipe redis.Pipeliner) error {
+	d.Pipelined(ctx, func(pipe redis.Pipeliner) error {
 		return nil
 	})
 
-	return moments, ctxi.RespErrorLog(errcode.RedisErr, err, "GetTopMoments")
+	return moments, nil
 }

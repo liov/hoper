@@ -1,12 +1,3 @@
-<route lang="json5">
-{
-  style: {
-    navigationStyle: 'custom',
-    navigationBarTitleText: 'wopan列表',
-    onReachBottomDistance: 50,
-  },
-}
-</route>
 <template>
   <view class="list">
     <wd-navbar
@@ -146,6 +137,16 @@ import { storeToRefs } from 'pinia'
 import { FileNode } from '@/model/wopan'
 import { onPullDownRefresh, onReachBottom, onPageScroll } from '@dcloudio/uni-app'
 import { useMessage } from 'wot-design-uni'
+import i18n from '@/locale'
+
+definePage({
+  style: {
+    navigationBarTitleText: i18n.global.t('page.wopan.list'),
+    navigationStyle: 'custom',
+    onReachBottomDistance: 50,
+  }
+})
+
 const message = useMessage()
 defineOptions({
   name: 'WopanList',

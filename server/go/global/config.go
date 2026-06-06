@@ -1,12 +1,14 @@
 package global
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/hopeio/cherry"
-	"github.com/hopeio/initialize/rootconf"
 	"github.com/hopeio/gox/os/fs"
-	timei "github.com/hopeio/gox/time"
-	"time"
+	timex "github.com/hopeio/gox/time"
+	"github.com/hopeio/initialize/rootconf"
 )
 
 /*var ServerSettings = &ServerConfig{}
@@ -18,6 +20,7 @@ type config struct {
 	//自定义的配置
 	PageSize      int8
 	Volume        fs.Dir
+	SiteName      string
 	SiteURL       string
 	QrCodeSaveDir fs.Dir //二维码保存路径
 	FontSaveDir   fs.Dir //字体保存路径
@@ -25,14 +28,20 @@ type config struct {
 	Moment        Moment
 	Upload        Upload
 	Server        cherry.Server
+	Locale        LocaleConfig
+}
+
+type LocaleConfig struct {
+	Default string
+	Dir     string
 }
 
 func (c *config) BeforeInject() {
-	c.User.TokenMaxAge = timei.Day
+	c.User.TokenMaxAge = timex.Day
 }
 
 func (c *config) AfterInject() {
-	c.User.TokenMaxAge = timei.StdDuration(c.User.TokenMaxAge, time.Hour)
+	c.User.TokenMaxAge = timex.NormalizeDuration(c.User.TokenMaxAge, time.Hour)
 	c.User.TokenSecretBytes = []byte(c.User.TokenSecret)
 }
 
@@ -40,6 +49,23 @@ func (c *config) AfterInjectWithRoot(rootconfig *rootconf.RootConfig) {
 	if !rootconfig.Debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
+	c.Upload.Policy = fmt.Sprintf(`{
+		"Version": "2012-10-17",
+		"Statement": [
+			{
+				"Effect": "Allow",
+				"Action": [
+					"s3:GetObject",
+					"s3:PutObject",
+					"s3:AbortMultipartUpload",
+					"s3:ListMultipartUploadParts"
+				],
+				"Resource": [
+					"arn:aws:s3:::%s/%s/*"
+				]
+			}
+		]
+	}`, c.Upload.Bucket, c.Upload.UploadDir)
 }
 
 type Config struct {
@@ -95,4 +121,6 @@ type Upload struct {
 	UploadDir      fs.Dir
 	UploadMaxSize  int64
 	UploadAllowExt []string
+	Bucket         string
+	Policy         string
 }

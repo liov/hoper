@@ -1,19 +1,14 @@
-import 'dart:io';
 
 import 'package:animate_do/animate_do.dart';
-import 'package:applib/util/async.dart';
 import 'package:app/global/state.dart';
 
-import 'package:app/pages/start/splash_view.dart';
 import 'package:app/pages/route.dart';
 import 'package:app/rpc/baoyu.dart';
-import 'package:app/utils/httpserver.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:app/util/nav.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 import '../webview/webview.dart';
 
@@ -21,7 +16,7 @@ class IndexPage extends StatefulWidget {
   const IndexPage({super.key});
 
   @override
-  _IndexPageState createState() => _IndexPageState();
+  State<IndexPage> createState() => _IndexPageState();
 }
 
 class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixin {
@@ -45,7 +40,7 @@ class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixi
 
   @override
   Widget build(BuildContext context) {
-    globalService.logger.d("IndexPage重绘");
+    globalService.logger.fine("IndexPage重绘");
     super.build(context);
     final theme = Theme.of(context);
     return Scaffold(
@@ -84,7 +79,7 @@ class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixi
                 FadeIn(
                     child: FloatingActionButton(
                       heroTag: 'Webview',
-                      onPressed: ()=>{Get.to(()=> const WebViewExample())},
+                      onPressed: () => AppNavigator.push(const WebViewExample()),
                       tooltip: 'Webview',
                       child: const Icon(Icons.web),
                     )),
@@ -100,9 +95,7 @@ class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixi
           CupertinoSwitch(
               value: globalState.isDarkMode.value,
               onChanged: (value) {
-                globalState.isDarkMode.toggle();
-                Get.changeThemeMode(
-                    globalState.isDarkMode.value ? ThemeMode.dark : ThemeMode.light);
+                globalState.isDarkMode.value = !globalState.isDarkMode.value;
               }),
           Padding(
               padding: const EdgeInsets.all(16.0),
@@ -148,27 +141,27 @@ class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixi
           //_methodChannel.invokeMethod("toNative",{"route":"/"}).then((value) => null);
           final user = globalState.authState.userAuth;
           if (user != null) {
-            Get.dialog(AlertDialog(
+            showDialog<void>(context: context, builder: (ctx) => AlertDialog(
               title: const Text('提示', textAlign: TextAlign.center),
               content: const Text('确认退出吗？', textAlign: TextAlign.center),
               actions: <Widget>[
                 TextButton(
                   child: const Text('取消'),
                   onPressed: () {
-                    navigator!.pop('cancel');
+                    Navigator.pop(ctx, 'cancel');
                   },
                 ),
                 TextButton(
                   child: const Text('确认'),
                   onPressed: () {
                     globalState.authState.logout();
-                    navigator!.pop('ok');
+                    Navigator.pop(ctx, 'ok');
                   },
                 ),
               ],
             ));
           } else {
-            Get.toNamed(Routes.LOGIN);
+            AppNavigator.pushNamed(Routes.LOGIN);
           }
         },
         tooltip: 'ToBrowser',

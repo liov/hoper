@@ -1,0 +1,86 @@
+---
+description: 远程相册 rb/daemon/Flutter/proto 改动后 Agent 必须亲自编译；禁止只贴命令（hopeio 多根工作区，规则唯一存放在 hoper 根）
+globs: server/rust/rb/**,proto/remotebrowse/**,client/app/lib/remotebrowse/**,client/app/lib/pages/remotebrowse/**
+alwaysApply: true
+---
+
+# 远程相册：必编译与打包（Agent 强制执行）
+
+**工作区**：请打开 `hoper/hopeio.code-workspace`（多根含 hoper / toolbox 等）。远程相册实现代码与**本规则文件**均在 **hoper** 这一根下；`globs` 路径相对 **hoper 文件夹**。
+
+**终端 cwd**：执行编译请用下方**绝对路径**或先 `cd` 到 `hoper/server/rust/rb`。
+
+改动 `server/rust/rb/`、`proto/remotebrowse/`、`client/app/lib/remotebrowse/`、`client/app/lib/pages/remotebrowse/` 后：
+
+1. **必须用 Shell 工具在本机执行**下方对应命令（`block_until_ms` 给足，常见 2–10 分钟）。
+2. **禁止**只写「请自行编译」而不跑命令；编译失败要在同轮回复里贴错误并继续修。
+3. **结束回复前**汇报产物绝对路径，并写明需 **重启/冷启动** 的进程。
+
+**架构**：P2P 数据面 + 信令 + 中继 + 缩略图均在 **Rust**（`rb` / `rb-daemon`）。Flutter 直连 `/rb/signal`、`/rb/health`；**不再**经 Go `hoper` 的 `/rb/*`。
+
+## 改动 → 命令（按匹配取并集，不要漏）
+
+| 改动范围 | 必须执行 |
+|----------|----------|
+| 任意 `server/rust/rb/**`（含 `ice_grpc_ffi.rs`、`remotebrowse_svc.rs`、`ffi.rs`） | `cd server/rust/rb && bash scripts/macos/build.sh`（`rb` 用 host；`librb.a` 用 transport） |
+| 仅 `proto/remotebrowse/**` | 上表 **+** `cd client/app && protogen dart -p ../../thirdparty/protobuf/_proto -i ../../proto -o lib/gen/pb` |
+| 仅 Dart `remotebrowse/**` 且**未**改 Rust/proto | 若本次会话改过 Rust/proto，仍要 `build.sh`；纯 Dart UI 可只 `flutter` 热重载 |
+| `daemon/`、`relay`、`signal`（部署用） | `build.sh` **+** `bash scripts/macos/cross_build_linux.sh`，提醒 scp Linux daemon |
+| 需 Android/iOS 真机 ICE | `build.sh` 后加 `bash scripts/build_flutter_lib.sh --mobile` |
+
+**默认联调（macOS 本机，含 rb + daemon + staticLibs）**：
+
+```bash
+cd server/rust/rb && bash scripts/macos/build.sh
+```
+
+或绝对路径：`cd /Users/jyb/code/hopeio/hoper/server/rust/rb && bash scripts/macos/build.sh`
+
+固定 `CARGO_TARGET_DIR=server/rust/rb/target`（脚本内已 export 到 crate `target/`），避免终端仍跑旧二进制。
+
+## 产物路径（编译成功后必须在回复中写出）
+
+- `server/rust/rb/target/release/rb` — 本机 Agent（`--features host`）
+- `server/rust/rb/target/release/rb-daemon` — 本机联调 daemon（生产 Linux 用 cross_build 产物）
+- `client/app/staticLibs/macos/<arch>/librb.a` — Flutter 桌面/本机 ICE 静态库
+- Linux 部署 daemon：`server/rust/rb/target/x86_64-unknown-linux-gnu/release/rb-daemon`（`cross_build_linux.sh`）
+
+## 重启提醒
+
+| 产物 | 操作 |
+|------|------|
+| `rb` / `rb-daemon` | 杀旧进程后重启；无热更新 |
+| `librb.a` / 新 FFI 符号 | Flutter **完全退出再开**（非 hot reload） |
+| 仅 Dart UI | 可 hot reload |
+
+## 其它命令（按需，不替代 build.sh）
+
+```bash
+# Proto
+cd client/app && protogen dart -p ../../thirdparty/protobuf/_proto -i ../../proto -o lib/gen/pb
+
+# 仅 Rust 二进制（不编 staticLibs）
+cd server/rust/rb && cargo build --release --bin rb --features host
+
+# Linux 服务器 daemon（macOS/Linux）
+cd server/rust/rb && bash scripts/macos/cross_build_linux.sh
+
+# Linux 服务器 daemon（Windows MSYS bash，zig 交叉）
+cd server/rust/rb && bash scripts/windows/cross_build_linux.sh
+
+# Windows 本机 rb + rb-daemon（MSYS bash）
+cd server/rust/rb && bash scripts/windows/build.sh
+
+# 移动平台 staticLibs（需 FFMPEG_DIR_ANDROID / FFMPEG_DIR_IOS）
+cd server/rust/rb && bash scripts/build_flutter_lib.sh --mobile
+
+# Windows Agent（macOS 交叉，需 mingw-w64）
+cd server/rust/rb && bash scripts/macos/cross_build_windows.sh
+```
+
+## 联调示例
+
+```bash
+RB_HTTP=0.0.0.0:8079 RB_RELAY_HOST=<公网或内网IP> ./rb-daemon
+RB_SIGNAL_URL=ws://<host>:8079/rb/signal RUST_LOG=info ./target/release/rb <房间码>
+```

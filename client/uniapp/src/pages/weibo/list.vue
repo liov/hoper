@@ -1,12 +1,4 @@
-<route lang="json5">
-{
-style: {
-navigationStyle: 'custom',
-navigationBarTitleText: 'weibo列表',
-onReachBottomDistance: 50,
-},
-}
-</route>
+
 <template>
   <view class="list">
     <wd-navbar
@@ -64,6 +56,16 @@ onReachBottomDistance: 50,
 import { onPullDownRefresh, onReachBottom, onPageScroll } from '@dcloudio/uni-app'
 import { useMessage } from 'wot-design-uni'
 import WeiboService from "@/api/weibo";
+import i18n from '@/locale'
+
+definePage({
+  style: {
+    navigationBarTitleText: i18n.global.t('page.weibo.list'),
+    navigationStyle: 'custom',
+    onReachBottomDistance: 50,
+  }
+})
+
 const message = useMessage()
 defineOptions({
   name: 'WeiboList',

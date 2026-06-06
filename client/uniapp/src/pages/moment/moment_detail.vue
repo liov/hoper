@@ -1,10 +1,3 @@
-<route lang="json5">
-{
-  style: {
-    navigationBarTitleText: '瞬间详情',
-  },
-}
-</route>
 <template>
   <uni-card
     @click="onClick"
@@ -38,6 +31,17 @@
 </template>
 
 <script setup lang="ts">
+import i18n from '@/locale'
+
+definePage({
+  style: {
+    navigationBarTitleText: i18n.global.t('page.moment.detail'),
+  },
+  middlewares: [
+    'auth',
+  ],
+})
+
 const cover = 'https://web-assets.dcloud.net.cn/unidoc/zh/shuijiao.jpg'
 const avatar = 'https://web-assets.dcloud.net.cn/unidoc/zh/unicloudlogo.png'
 

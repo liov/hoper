@@ -1,22 +1,21 @@
 # hoper
 | app | h5 |            uniapp             |
 |:-----:|:-----:|:-----------------------------:|
-| ![app](assets/app.webp) | ![h5](assets/h5.webp) | ![uniapp](assets/uniapp.webp) |
+| ![app](docs/assets/app.webp) | ![h5](docs/assets/h5.webp) | ![uniapp](docs/assets/uniapp.webp) |
 
 
 # 架构
-![hoper](assets/hoper.webp)
+![hoper](docs/assets/hoper.webp)
 
 ## [quick start]
 
 `install protoc`[https://github.com/protocolbuffers/protobuf/releases](https://github.com/protocolbuffers/protobuf/releases)
 
 ```sh
-git submodule init
-git submodule update
+git submodule update --init --recursive --remote
 cd server/go
-go run $(go list -m -f {{.Dir}}  github.com/hopeio/cherry)/tools/protoc/install_tools.go
-protogen go -e -w -v -p ../../proto -o protobuf
+go run $(go list -m -f {{.Dir}}  github.com/hopeio/protobuf)/tools/install_tools.go
+protogen go -d -e -w -v -i ../../proto -o protobuf
 go run main.go -c config.toml
 ```
 
@@ -48,7 +47,7 @@ hoper项目客户端，服务端通用的proto定义，用来生成go，rust，j
 各种语言服务
 ## go
 主要的后端服务,采用cherry
-`protogen go -e -w -v -p ../../proto -o protobuf`
+`protogen go -d -e -w -v -i ../../proto -o protobuf`
 ## java
 ### user
 - springboot+grpc
@@ -57,7 +56,6 @@ hoper项目客户端，服务端通用的proto定义，用来生成go，rust，j
 - remove rust
 - remove kotlin
 
-# friend
-friend立项,前端驱动后端
-# 架构设想
-istio+k8s
+# agent
+`npx skills add flutter/skills --skill '*' --agent universal --yes`
+`npx skills add dart-lang/skills --skill '*' --agent universal --yes`

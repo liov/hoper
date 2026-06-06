@@ -1,0 +1,197 @@
+[package]
+name = "rb"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "rb"
+crate-type = ["lib", "staticlib"]
+
+[features]
+default = ["host"]
+host = ["media", "transport"]
+# protobuf + hash（无 tonic/axum）
+rb-core = ["dep:sha2", "dep:hex", "dep:prost", "dep:tracing"]
+rb-thumb = ["rb-core", "dep:image", "dep:webp"]
+media = [
+  "rb-core",
+  "rb-thumb",
+  "dep:axum",
+  "dep:tower",
+  "dep:tower-http",
+  "dep:tokio",
+  "tokio/full",
+  "dep:tokio-util",
+  "dep:tokio-stream",
+  "dep:ffmpeg-next",
+  "dep:tracing-subscriber",
+  "dep:slog",
+  "dep:serde",
+  "dep:serde_json",
+  "dep:mime_guess",
+  "hyper/client",
+  "hyper/http2",
+  "hyper/server",
+  "hyper-util/tokio",
+  "hyper-util/server-auto",
+  "dep:zstd",
+  "dep:rusqlite",
+]
+client = [
+  "dep:bytes",
+  "dep:prost",
+  "dep:rand",
+  "dep:tokio",
+  "tokio/rt-multi-thread",
+  "tokio/net",
+  "tokio/io-util",
+  "tokio/sync",
+  "tokio/time",
+  "tokio/macros",
+  "dep:tracing",
+  "dep:webrtc-ice",
+  "dep:webrtc-util",
+  "dep:hex",
+]
+daemon = [
+  "dep:axum",
+  "dep:futures-util",
+  "dep:if-addrs",
+  "dep:tokio",
+  "tokio/full",
+  "dep:tracing-subscriber",
+  "dep:tracing",
+  "dep:chrono",
+  "dep:prost",
+  "dep:uuid",
+  "dep:serde",
+  "dep:serde_json",
+]
+viewer-ffi = [
+  "client",
+  "dep:prost",
+  "dep:bytes",
+  "dep:hyper",
+  "dep:hyper-util",
+  "dep:http",
+  "dep:http-body-util",
+  "dep:futures-util",
+  "dep:zstd",
+  "hyper/client",
+  "hyper/http2",
+  "hyper-util/tokio",
+]
+# Flutter librb.a：编译期关闭 tracing；勿用于 rb / rb-daemon 可执行文件。
+viewer-ffi-slim = [
+  "viewer-ffi",
+  "tracing/max_level_off",
+  "tracing/release_max_level_off",
+]
+agent-serve = [
+  "rb-thumb",
+  "client",
+  "dep:axum",
+  "dep:tower",
+  "dep:tower-http",
+  "dep:hyper",
+  "dep:hyper-util",
+  "dep:http",
+  "dep:http-body-util",
+  "dep:tokio",
+  "tokio/rt-multi-thread",
+  "tokio/net",
+  "tokio/io-util",
+  "tokio/sync",
+  "tokio/time",
+  "tokio/macros",
+  "tokio/fs",
+  "dep:if-addrs",
+  "dep:tokio-tungstenite",
+  "dep:uuid",
+  "dep:tracing-subscriber",
+  "dep:chrono",
+  "dep:serde",
+  "dep:serde_json",
+  "dep:mime_guess",
+  "hyper/client",
+  "hyper/http2",
+  "hyper/server",
+  "hyper-util/tokio",
+  "hyper-util/server-auto",
+  "dep:zstd",
+  "dep:rusqlite",
+]
+transport = ["viewer-ffi", "agent-serve"]
+# 同 transport，librb.a 用 viewer-ffi-slim 减小体积。
+transport-slim = ["viewer-ffi-slim", "agent-serve"]
+
+[dependencies]
+libc = "0.2"
+serde = { version = "1.0", features = ["derive"], optional = true }
+serde_json = { version = "1.0", optional = true }
+mime_guess = { version = "2", optional = true }
+bytes = { version = "1", optional = true }
+sha2 = { version = "0.11", optional = true }
+hex = { version = "0.4", optional = true }
+prost = { version = "0.14", optional = true }
+tokio-stream = { version = "0.1", optional = true }
+axum = { version = "0.8", features = ["ws"], optional = true }
+tokio = { version = "1.52", optional = true, default-features = false }
+slog = { version = "2.8", optional = true }
+tower = { version = "0.5", features = ["full"], optional = true }
+tower-http = { version = "0.6", features = ["full"], optional = true }
+tracing-subscriber = { version = "0.3", optional = true, features = [
+  "env-filter",
+] }
+tracing = { version = "0.1", optional = true }
+chrono = { version = "0.4", default-features = false, features = [
+  "clock",
+  "std",
+], optional = true }
+tokio-util = { version = "0.7", features = ["codec"], optional = true }
+image = { version = "0.25", features = [
+  "jpeg",
+  "png",
+  "webp",
+  "gif",
+], optional = true }
+webp = { version = "0.3", optional = true }
+ffmpeg-next = { version = "8.1", optional = true }
+rand = { version = "0.10", optional = true }
+futures-util = { version = "0.3", optional = true }
+webrtc-ice = { version = "0.17", optional = true }
+webrtc-util = { version = "0.17", optional = true }
+uuid = { version = "1", features = ["v4"], optional = true }
+if-addrs = { version = "0.15", optional = true }
+tokio-tungstenite = { version = "0.29", optional = true }
+hyper = { version = "1", optional = true, default-features = false }
+hyper-util = { version = "0.1", optional = true, default-features = false }
+http = { version = "1", optional = true }
+http-body-util = { version = "0.1", optional = true }
+zstd = { version = "0.13", optional = true }
+rusqlite = { version = "0.32", features = ["bundled"], optional = true }
+
+[build-dependencies]
+prost-build = "0.14"
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+strip = "symbols"
+panic = "abort"
+
+[profile.release-small]
+inherits = "release"
+opt-level = "z"
+
+[[bin]]
+name = "rb"
+path = "src/main.rs"
+required-features = ["host"]
+
+[[bin]]
+name = "rb-daemon"
+path = "src/bin/daemon.rs"
+required-features = ["daemon"]
+
+# Windows 本机 MSYS：见 .cargo/config.windows-msys.toml.example

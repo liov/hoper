@@ -100,9 +100,3 @@ install(FILES "${AOT_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}"
   CONFIGURATIONS Profile;Release
   COMPONENT Runtime)
 
-# 拷贝dll
-file(GLOB DLL_FILES  "${CMAKE_CURRENT_SOURCE_DIR}/../dynLibs/windows/*")
-install(CODE "
-    file(COPY ${DLL_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX})
-    " COMPONENT Runtime)
-

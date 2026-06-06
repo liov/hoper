@@ -8,5 +8,5 @@
     "strict": true,
     "types": ["node", "jsdom", "vite/client"]
   },
-  "include": ["*.vite.config.ts"]
+  "include": ["vite.config.ts"]
 }

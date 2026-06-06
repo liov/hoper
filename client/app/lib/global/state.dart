@@ -8,7 +8,6 @@ import 'package:device_info_plus/device_info_plus.dart';
 
 import 'state/app.dart';
 import 'state/user.dart';
-import 'package:get/get.dart';
 
 import 'state/auth.dart';
 
@@ -16,7 +15,7 @@ export 'service.dart';
 
 final globalState = GlobalState.instance;
 
-class GlobalState extends GetxController{
+class GlobalState extends ChangeNotifier {
 
   GlobalState._();
 
@@ -28,7 +27,6 @@ class GlobalState extends GetxController{
   var authState = AuthState();
   var userState = UserState();
 
-  @override
   var initialized = false;
 
   final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
@@ -45,7 +43,7 @@ class GlobalState extends GetxController{
     deviceInfo = baseDeviceInfo.data;
   }
 
-  var isDarkMode = (AppState.isDebug?true:false).obs;
+  final isDarkMode = ValueNotifier<bool>(AppState.isDebug);
 
   Future<void> initPlatformState() async {
     var deviceData = <String, dynamic>{};
@@ -66,6 +64,7 @@ class GlobalState extends GetxController{
               _readWindowsDeviceInfo(await deviceInfoPlugin.windowsInfo);
         }
       }
+    deviceInfo = deviceData;
   }
 
   Map<String, dynamic> _readAndroidBuildData(AndroidDeviceInfo build) {
@@ -134,7 +133,7 @@ class GlobalState extends GetxController{
 
   Map<String, dynamic> _readWebBrowserInfo(WebBrowserInfo data) {
     return <String, dynamic>{
-      'browserName': describeEnum(data.browserName),
+      'browserName': data.browserName.name,
       'appCodeName': data.appCodeName,
       'appName': data.appName,
       'appVersion': data.appVersion,

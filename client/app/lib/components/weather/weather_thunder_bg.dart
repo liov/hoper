@@ -10,7 +10,7 @@ import 'package:app/components/weather/weather_type.dart';
 class WeatherThunderBg extends StatefulWidget {
   final WeatherType weatherType;
 
-  WeatherThunderBg({Key? key, required this.weatherType}) : super(key: key);
+  const WeatherThunderBg({super.key, required this.weatherType});
 
   @override
   _WeatherCloudBgState createState() => _WeatherCloudBgState();
@@ -18,9 +18,9 @@ class WeatherThunderBg extends StatefulWidget {
 
 class _WeatherCloudBgState extends State<WeatherThunderBg>
     with SingleTickerProviderStateMixin {
-  List<ui.Image> _images = [];
+  final List<ui.Image> _images = [];
   late AnimationController _controller;
-  List<ThunderParams> _thunderParams = [];
+  final List<ThunderParams> _thunderParams = [];
   WeatherDataState? _state;
 
   /// 异步获取雷暴图片资源
@@ -63,7 +63,7 @@ class _WeatherCloudBgState extends State<WeatherThunderBg>
     });
 
     // 构造第一个闪电的动画数据
-    var _animation = TweenSequence([
+    var animation = TweenSequence([
       TweenSequenceItem(
           tween: Tween(begin: 0.0, end: 1.0)
               .chain(CurveTween(curve: Curves.easeIn)),
@@ -82,7 +82,7 @@ class _WeatherCloudBgState extends State<WeatherThunderBg>
     ));
 
     // 构造第二个闪电的动画数据
-    var _animation1 = TweenSequence([
+    var animation1 = TweenSequence([
       TweenSequenceItem(
           tween: Tween(begin: 0.0, end: 1.0)
               .chain(CurveTween(curve: Curves.easeIn)),
@@ -101,7 +101,7 @@ class _WeatherCloudBgState extends State<WeatherThunderBg>
     ));
 
     // 构造第三个闪电的动画数据
-    var _animation2 = TweenSequence([
+    var animation2 = TweenSequence([
       TweenSequenceItem(
           tween: Tween(begin: 0.0, end: 1.0)
               .chain(CurveTween(curve: Curves.easeIn)),
@@ -119,23 +119,23 @@ class _WeatherCloudBgState extends State<WeatherThunderBg>
       ),
     ));
 
-    _animation.addListener(() {
+    animation.addListener(() {
       if (_thunderParams.isNotEmpty) {
-        _thunderParams[0].alpha = _animation.value;
+        _thunderParams[0].alpha = animation.value;
       }
       setState(() {});
     });
 
-    _animation1.addListener(() {
+    animation1.addListener(() {
       if (_thunderParams.isNotEmpty) {
-        _thunderParams[1].alpha = _animation1.value;
+        _thunderParams[1].alpha = animation1.value;
       }
       setState(() {});
     });
 
-    _animation2.addListener(() {
+    animation2.addListener(() {
       if (_thunderParams.isNotEmpty) {
-        _thunderParams[2].alpha = _animation2.value;
+        _thunderParams[2].alpha = animation2.value;
       }
       setState(() {});
     });
@@ -191,7 +191,7 @@ class _WeatherCloudBgState extends State<WeatherThunderBg>
 }
 
 class ThunderPainter extends CustomPainter {
-  var _paint = Paint();
+  final _paint = Paint();
   final List<ThunderParams> thunderParams;
 
   ThunderPainter(this.thunderParams);

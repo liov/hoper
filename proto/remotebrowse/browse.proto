@@ -1,0 +1,93 @@
+syntax = "proto3";
+package remotebrowse;
+
+import "hopeio/utils/patch/go.proto";
+
+option go_package = "github.com/liov/hoper/server/go/protobuf/remotebrowse";
+
+enum FileVariant {
+  FILE_VARIANT_UNSPECIFIED = 0;
+  FILE_VARIANT_THUMB = 1;
+  FILE_VARIANT_PREVIEW = 2;
+  FILE_VARIANT_ORIGINAL = 3;
+}
+
+// FileEntry.flags：bit0 = 目录；bit1 = Live Photo / Motion Photo（静图 + 短视频）
+message FileEntry {
+  string id = 1;
+  string name = 2;
+  int64 size = 3;
+  int64 mtime_unix_ms = 4;
+  string mime = 5;
+  uint32 width = 6;
+  uint32 height = 7;
+  string thumb_hash = 8;
+  uint32 flags = 9;
+  /// 视频时长（毫秒）；动态照片为配对/内嵌视频时长，普通非视频为 0
+  int64 duration_ms = 10;
+  /// 内嵌视频在 [name] 文件内的起始字节；有 [motion_companion] 时为 0
+  int64 motion_offset = 11;
+  /// 内嵌视频字节长度；侧车视频时为该文件 size（由 Agent 填充）
+  int64 motion_length = 12;
+  /// 侧车视频文件名（同目录），如 `IMG_1234.MOV`；纯内嵌时为空
+  string motion_companion = 13;
+}
+
+/// DFS [list_media] 续扫状态（仅路径与计数，元数据由服务端现查）。
+message MediaListCursor {
+  repeated string stack = 1;
+  repeated string pending = 2;
+  uint32 scanned_dirs = 3;
+}
+
+message ListFilesRequest {
+  string cursor = 1;
+  uint32 page_size = 2;
+  string root_path = 3 [(go.field) = {tags:'form:"path" validate:"required" comment:"目录路径"'}];
+}
+
+message ListFilesResponse {
+  repeated FileEntry entries = 1;
+  string next_cursor = 2;
+  /// Agent 侧解析后的绝对目录（list 实际读取路径）
+  string resolved_root_path = 3;
+  /// 因以 `.` 开头被隐藏的条目数（entries 为空时可用来提示用户）
+  uint32 hidden_skipped = 4;
+}
+
+/// 媒体项：DFS 递归列举时带绝对路径（与 thumb/batch 的 path 一致）。
+message MediaEntry {
+  string rel_path = 1;
+  FileEntry entry = 2;
+}
+
+/// 从 [root_path] 起深度优先列举图片/视频；[cursor] 未设或空表示从头，否则续扫。
+/// 字段编号与 [ListFilesRequest] 一致，避免网关/旧路由误解析。
+message ListMediaRequest {
+  MediaListCursor cursor = 1;
+  uint32 page_size = 2;
+  string root_path = 3 [(go.field) = {tags:'form:"path" validate:"required" comment:"目录路径"'}];
+}
+
+message ListMediaResponse {
+  repeated MediaEntry items = 1;
+  MediaListCursor next_cursor = 2;
+  bool done = 3;
+  string resolved_root_path = 4;
+  /// 累计已扫描目录数（含历史 cursor）
+  uint32 scanned_dirs = 5;
+}
+
+message OpenFileRequest {
+  string id = 1;
+  FileVariant variant = 2;
+  int64 byte_offset = 3;
+  int64 byte_length = 4;
+}
+
+message OpenFileMeta {
+  string id = 1;
+  FileVariant variant = 2;
+  int64 total_size = 3;
+  string mime = 4;
+}

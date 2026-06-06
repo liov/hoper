@@ -3,7 +3,8 @@ package model
 import "github.com/liov/hoper/server/go/protobuf/content"
 
 const (
-	Schema              = "content."
+	//Schema              = "content."
+	Schema              = ""
 	TableNameLike       = Schema + "like"
 	TableNameBrowser    = Schema + "browser"
 	TableNameComment    = Schema + "comment"

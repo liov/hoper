@@ -1,6 +1,5 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 class ImageView extends StatelessWidget {
   const ImageView(this.urls,this.initialIndex, {super.key});

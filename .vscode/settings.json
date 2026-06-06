@@ -1,0 +1,11 @@
+{
+	"java.compile.nullAnalysis.mode": "automatic",
+	"rust-analyzer.linkedProjects": [
+		"server/rust/rb/Cargo.toml"
+	],
+	"typescript.tsdk": "/Users/jyb/Library/pnpm/global/5/node_modules/typescript/lib",
+	"dart.env": {
+		"PUB_HOSTED_URL": "https://pub.flutter-io.cn",
+		"FLUTTER_STORAGE_BASE_URL": "https://storage.flutter-io.cn"
+	}
+}

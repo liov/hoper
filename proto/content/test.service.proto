@@ -5,7 +5,7 @@ import "hopeio/utils/validator/validator.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "hopeio/utils/patch/go.proto";
-import "danielvladco/protobuf/graphql.proto";
+
 
 option go_package = "github.com/liov/hoper/server/go/protobuf/content";
 option java_package = "xyz.hoper.protobuf.content";
@@ -26,43 +26,43 @@ service TestService {
 
     rpc GC(GCReq) returns(google.protobuf.Empty){
         option (google.api.http) = {
-            get: "/api/v1/gc/{address}"
+            get: "/api/gc/{address}"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             tags:["测试相关接口","v1.0.0","test"]
             summary : "测试接口"
             description : "根据地址取值测试该值是否被回收"
         };
-        option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
+
     }
 
     rpc Register(google.protobuf.Empty) returns(google.protobuf.Empty){
         option (google.api.http) = {
-            get: "/api/v1/register"
+            get: "/api/register"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             tags:["测试相关接口","v1.0.0","test"]
             summary : "服务注册"
             description : "服务注册测试接口"
         };
-        option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
     }
 
     rpc Restart(google.protobuf.Empty) returns(google.protobuf.Empty) {
         option (google.api.http) = {
-            get: "/api/v1/restart"
+            get: "/api/restart"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             tags:["测试相关接口","v1.0.0","test"]
             summary : "重启"
             description : "重启测试接口"
         };
-        option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
     }
 
     rpc Array(Ids) returns(google.protobuf.Empty) {
         option (google.api.http) = {
-            post: "/api/v1/array"
+            post: "/api/array"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -70,7 +70,7 @@ service TestService {
             summary : "数组参数测试"
             description : "数组参数测试接口"
         };
-        option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
+
     }
 
 }

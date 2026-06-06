@@ -1,10 +1,3 @@
-<route lang="json5">
-{
-  style: {
-    navigationBarTitleText: '关于',
-  },
-}
-</route>
 
 <template>
   <view
@@ -21,6 +14,13 @@
 <script lang="ts" setup>
 
 import UploadComp from './components/upload.vue'
+import i18n from '@/locale'
+
+definePage({
+  style: {
+    navigationBarTitleText: i18n.global.t('page.about'),
+  }
+})
 
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()

@@ -1,8 +1,3 @@
-<route lang="json5" type="page">
-{
-  style: { navigationBarTitleText: '分包页面 标题' },
-}
-</route>
 
 <template>
   <view class="text-center">
@@ -12,6 +7,13 @@
 </template>
 
 <script lang="ts" setup>
+
+definePage({
+  style: {
+    navigationBarTitleText: '分包页面 标题',
+  }
+})
+
 // code here
 </script>
 

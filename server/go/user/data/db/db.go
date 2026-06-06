@@ -1,47 +1,30 @@
 package db
 
 import (
+	"context"
 	"encoding/json"
-	"github.com/hopeio/context/httpctx"
-	gormi "github.com/hopeio/gox/datax/database/gorm"
-	_ "github.com/hopeio/gox/datax/database/gorm/serializer"
-	sqli "github.com/hopeio/gox/datax/database/sql"
+	"strconv"
+	"time"
+
+	sqlx "github.com/hopeio/gox/database/sql"
+	_ "github.com/hopeio/gox/database/sql/gorm"
 	"github.com/hopeio/gox/log"
 	"github.com/hopeio/gox/slices"
-	"github.com/hopeio/gox/validation/validator"
 	puser "github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/model"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	"strconv"
-	"strings"
-	"time"
 )
 
 type UserDao struct {
-	*httpctx.Context
 	*gorm.DB
 }
 
-func GetUserDao(ctx *httpctx.Context, db *gorm.DB) *UserDao {
-	if ctx == nil {
-		log.Fatal("ctx can't nil")
-	}
-	return &UserDao{ctx, gormi.NewTraceDB(db, ctx.Base(), ctx.TraceID())}
+func GetUserDao(db *gorm.DB) *UserDao {
+	return &UserDao{db}
 }
 
-func (d *UserDao) GetByNameOrEmailOrPhone(name, email, phone string) (*model.User, error) {
-
-	var u model.User
-	var err error
-	err = d.Where("(name = ? OR mail = ? OR phone = ?) AND status != ?", name, email, phone, puser.UserStatusDeleted).First(&u).Error
-	if err != nil {
-		return nil, err
-	}
-	return &u, nil
-}
-
-func (d *UserDao) GetByEmailOrPhone(input string, fields ...string) (*puser.User, error) {
+func (d *UserDao) GetByEmailOrPhone(ctx context.Context, mail string, countryCallingCode string, phone string, fields ...string) (*puser.User, error) {
 
 	var u puser.User
 	var err error
@@ -49,10 +32,10 @@ func (d *UserDao) GetByEmailOrPhone(input string, fields ...string) (*puser.User
 	if len(fields) > 0 {
 		db = d.Table(model.TableNameUser).Select(fields)
 	}
-	if strings.Contains(input, "@") {
-		err = db.Where("mail = ? AND status != ?"+sqli.WithNotDeleted, input, puser.UserStatusDeleted).First(&u).Error
-	} else {
-		err = db.Where("phone = ? AND status != ?"+sqli.WithNotDeleted, input, puser.UserStatusDeleted).First(&u).Error
+	if mail != "" {
+		err = db.Where("mail = ? AND status != ?"+sqlx.WithNotDeleted, mail, puser.UserStatusDeleted).First(&u).Error
+	} else if countryCallingCode != "" && phone != "" {
+		err = db.Where("country_calling_code = ? AND phone = ? AND status != ?"+sqlx.WithNotDeleted, countryCallingCode, phone, puser.UserStatusDeleted).First(&u).Error
 	}
 	if err != nil {
 		return nil, err
@@ -60,14 +43,11 @@ func (d *UserDao) GetByEmailOrPhone(input string, fields ...string) (*puser.User
 	return &u, nil
 }
 
-func (d *UserDao) Creat(user *puser.User) error {
-	if err := d.Table(model.TableNameUser).Create(user).Error; err != nil {
-		return err
-	}
-	return nil
+func (d *UserDao) Create(ctx context.Context, user *puser.User) error {
+	return d.Table(model.TableNameUser).Create(user).Error
 }
 
-func (d *UserDao) GetByPrimaryKey(id uint64) (*puser.User, error) {
+func (d *UserDao) GetByPrimaryKey(ctx context.Context, id uint64) (*puser.User, error) {
 
 	var user puser.User
 	if err := d.Table(model.TableNameUser).First(&user, id).Error; err != nil {
@@ -76,7 +56,7 @@ func (d *UserDao) GetByPrimaryKey(id uint64) (*puser.User, error) {
 	return &user, nil
 }
 
-func (d *UserDao) SaveResumes(userId uint64, resumes []*puser.Resume, originalIds []uint64, device *puser.AccessDevice) error {
+func (d *UserDao) SaveResumes(ctx context.Context, userId uint64, resumes []*puser.Resume, originalIds []uint64, device *puser.AccessDevice) error {
 
 	if len(resumes) == 0 {
 		return nil
@@ -94,20 +74,20 @@ func (d *UserDao) SaveResumes(userId uint64, resumes []*puser.Resume, originalId
 	for i := range resumes {
 		resumes[i].UserId = userId
 		resumes[i].Status = 1
-		if resumes[i].Id != 0 {
+		if resumes[i].Basic.Id != 0 {
 			err = d.Save(resumes[i]).Error
 			actionLog.Action = puser.ActionCreateResume
 			actionLog.LastValue, _ = json.Marshal(resumes[i])
-			editIds = append(editIds, resumes[i].Id)
+			editIds = append(editIds, resumes[i].Basic.Id)
 		} else {
-			err = d.Create(resumes[i]).Error
+			err = d.DB.Create(resumes[i]).Error
 			actionLog.Action = puser.ActionEditResume
 		}
 		if err != nil {
 			return err
 		}
 		actionLog.Id = 0
-		actionLog.RelatedId = tableName + strconv.FormatUint(resumes[i].Id, 10)
+		actionLog.RelatedId = tableName + strconv.FormatUint(resumes[i].Basic.Id, 10)
 		if err = d.Table(model.TableNameActionLog).Create(&actionLog).Error; err != nil {
 			log.Error(err)
 		}
@@ -131,7 +111,7 @@ func (d *UserDao) SaveResumes(userId uint64, resumes []*puser.Resume, originalId
 	return nil
 }
 
-func (d *UserDao) ActionLog(log *puser.ActionLog) error {
+func (d *UserDao) ActionLog(ctx context.Context, log *puser.ActionLog) error {
 
 	err := d.Table(model.TableNameActionLog).Create(&log).Error
 	if err != nil {
@@ -140,7 +120,7 @@ func (d *UserDao) ActionLog(log *puser.ActionLog) error {
 	return nil
 }
 
-func (d *UserDao) ResumesIds(userId uint64) ([]uint64, error) {
+func (d *UserDao) ResumesIds(ctx context.Context, userId uint64) ([]uint64, error) {
 
 	var resumeIds []uint64
 	err := d.Table(model.TableNameResume).Where("user_id = ? AND status > 0", userId).Pluck("id", &resumeIds).Error
@@ -150,7 +130,7 @@ func (d *UserDao) ResumesIds(userId uint64) ([]uint64, error) {
 	return resumeIds, nil
 }
 
-func (d *UserDao) GetBaseListDB(ids []uint64, pageNo, pageSize int) (int64, []*puser.UserBase, error) {
+func (d *UserDao) GetBaseListDB(ctx context.Context, ids []uint64, pageNo, pageSize int) (int64, []*puser.UserBase, error) {
 
 	db := d.Table(model.TableNameUser)
 	var count int64
@@ -179,9 +159,9 @@ func (d *UserDao) GetBaseListDB(ids []uint64, pageNo, pageSize int) (int64, []*p
 	return count, users, nil
 }
 
-func (d *UserDao) FollowExistsDB(id, followId uint64) (bool, error) {
-	sql := `SELECT EXISTS(SELECT * FROM "` + model.TableNameFollow + `" 
-WHERE user_id = ?  AND follow_id = ?` + sqli.WithNotDeleted + ` LIMIT 1)`
+func (d *UserDao) FollowExistsDB(ctx context.Context, id, followId uint64) (bool, error) {
+	sql := `SELECT EXISTS(SELECT * FROM "` + model.TableNameFollow + `"
+WHERE user_id = ?  AND follow_id = ?` + sqlx.WithNotDeleted + ` LIMIT 1)`
 	var exists bool
 	err := d.Raw(sql, id, followId).Scan(&exists).Error
 	if err != nil {
@@ -190,25 +170,28 @@ WHERE user_id = ?  AND follow_id = ?` + sqli.WithNotDeleted + ` LIMIT 1)`
 	return exists, nil
 }
 
-func (d *UserDao) Active(u *puser.User) error {
+func (d *UserDao) Active(ctx context.Context, u *puser.User) error {
 	return d.Model(u).Updates(map[string]interface{}{"activated_at": time.Now(), "status": puser.UserStatusActivated}).Error
 }
 
-func (d *UserDao) Update(req *puser.EditReq) error {
+func (d *UserDao) Update(ctx context.Context, req *puser.EditReq) error {
 	return d.Table(model.TableNameUser).Where(`id = ?`, req.Id).UpdateColumns(req.Detail).Error
 }
 
-func (d *UserDao) UserInfoByAccount(account string) (*puser.User, error) {
+func (d *UserDao) UserInfoByAccount(ctx context.Context, mail, countryCallingCode, phone string) (*puser.User, error) {
 	var user puser.User
 	var sql string
-	switch validator.PhoneOrMail(account) {
-	case validator.Mail:
+	if mail != "" {
 		sql = "mail = ?"
-	case validator.Phone:
-		sql = "phone = ?"
-	default:
-		sql = "account = ?"
+	}else {
+		sql = "country_calling_code = ? AND phone = ?"
 	}
-	return &user, d.Table(model.TableNameUser).
-		Where(sql+` AND status != ?`+sqli.WithNotDeleted, account, puser.UserStatusDeleted).First(&user).Error
+	sql += ` AND status != ?`+sqlx.WithNotDeleted
+	db := d.Table(model.TableNameUser)
+	if mail != "" {
+		db = db.Where(sql, mail, puser.UserStatusDeleted)
+	} else if countryCallingCode != "" && phone != "" {
+		db = db.Where(sql, countryCallingCode, phone, puser.UserStatusDeleted)
+	}
+	return &user, db.First(&user).Error
 }

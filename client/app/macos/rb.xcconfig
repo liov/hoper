@@ -1,0 +1,7 @@
+// 仅链接当前构建架构对应的一个 .a；不用 force_load（见 RB_LDFLAGS_UNDEF）
+RB_LIB_arm64 = $(SRCROOT)/../staticLibs/macos/arm64/librb.a
+RB_LIB_x86_64 = $(SRCROOT)/../staticLibs/macos/x86_64/librb.a
+RB_LDFLAGS_COMMON = -lc++ -framework Security -framework SystemConfiguration -lresolv
+RB_LDFLAGS_UNDEF = -Wl,-u,_rb_ice_viewer_new -Wl,-u,_rb_ice_viewer_push -Wl,-u,_rb_ice_viewer_poll_out -Wl,-u,_rb_ice_viewer_state -Wl,-u,_rb_ice_viewer_write -Wl,-u,_rb_ice_viewer_read -Wl,-u,_rb_ice_viewer_close -Wl,-u,_rb_ice_grpc_open -Wl,-u,_rb_ice_grpc_close -Wl,-u,_rb_ice_grpc_list_files -Wl,-u,_rb_ice_grpc_thumb_batch -Wl,-u,_rb_ice_grpc_read_file -Wl,-u,_rb_ice_grpc_read_file_range -Wl,-u,_rb_ice_grpc_delete_file
+OTHER_LDFLAGS[arch=arm64] = $(inherited) $(RB_LIB_arm64) $(RB_LDFLAGS_UNDEF) $(RB_LDFLAGS_COMMON)
+OTHER_LDFLAGS[arch=x86_64] = $(inherited) $(RB_LIB_x86_64) $(RB_LDFLAGS_UNDEF) $(RB_LDFLAGS_COMMON)

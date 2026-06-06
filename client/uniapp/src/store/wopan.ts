@@ -15,11 +15,12 @@ export interface WopanState {
 }
 
 export interface FileNode {
-  parent: FileNode
+  parent: FileNode|null
   file: wopan.File
   subFiles: FileNode[]
   pageNo: number
   hasMore: boolean
+  read: boolean
   deleted: boolean
 }
 
@@ -33,10 +34,21 @@ const rootFile: FileNode = {
     id: '0',
     name: 'root',
     type: 1,
+    familyId: 0,
+    fid: '',
+    creator: '',
+    size: 0,
+    createTime: '',
+    shootingTime: '',
+    previewUrl: '',
+    thumbUrl: '',
+    fileType: ''
   },
   subFiles: [],
   pageNo: 0,
   hasMore: true,
+  read: false,
+  deleted: false,
 }
 const state: WopanState = {
   accessToken: uni.getStorageSync(accessTokenKey),
@@ -49,8 +61,8 @@ const state: WopanState = {
   pageSize: 50,
   spaceType: wopan.SpaceType.Private,
 }
-client.setToken(state.accessToken, state.refreshToken)
-client.psToken = state.psToken
+if (state.accessToken) client.setToken(state.accessToken, state.refreshToken)
+if (state.psToken) client.psToken = state.psToken
 const getters = {
 }
 
@@ -110,6 +122,7 @@ const actions = {
           }
         return {
           deleted: false,
+          read: false,
           parent: state.curDir,
           file,
           subFiles: [],

@@ -2,11 +2,9 @@ import 'dart:io';
 
 import 'package:app/components/camrea/camera_view.dart';
 import 'package:app/global/state.dart';
-import 'package:app/rpc/moment.dart';
-import 'package:camera/camera.dart';
+import 'package:app/util/app_permission.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
@@ -26,6 +24,9 @@ mixin class MediaController {
       {BuildContext? context, bool isMultiImage = false,bool isCamera = false}) async {
     if (videoController != null) {
       await videoController!.setVolume(0.0);
+    }
+    if (isCamera || source == ImageSource.camera) {
+      if (!await ensureCameraPermission()) return;
     }
     if (isCamera) {
       final XFile? file = await getPhoto();

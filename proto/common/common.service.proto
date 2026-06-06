@@ -3,12 +3,9 @@ package common;
 
 import "common/common.model.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
-import "hopeio/utils/validator/validator.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "hopeio/request/param.proto";
-import "danielvladco/protobuf/graphql.proto";
-import "hopeio/oauth/oauth.proto";
 import "hopeio/utils/patch/go.proto";
 
 option java_package = "xyz.hoper.protobuf.common";
@@ -23,105 +20,115 @@ service CommonService {
   // 新建
   rpc AddAttr (AddAttrReq) returns (request.Id) {
     option (google.api.http) = {
-      post: "/api/v1/attr"
+      post: "/api/attr"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
 
 
   // 详情
   rpc AttrInfo (request.Id) returns (Attr) {
     option (google.api.http) = {
-      get: "/api/v1/attr/{id}"
+      get: "/api/attr/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
+   
   }
 
   // 修改
   rpc EditAttr (EditAttrReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/attr/{id}"
+      put: "/api/attr/{id}"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
 
   // 列表
-  rpc AttrList (AttrListReq) returns (AttrListRep) {
+  rpc AttrList (AttrListReq) returns (AttrListResp) {
     option (google.api.http) = {
-      get: "/api/v1/attr"
+      get: "/api/attr"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
+
   }
 
   // 新建
   rpc AddTag (AddTagReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/api/v1/tag"
+      post: "/api/tag"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
 
   // 详情
   rpc TagInfo (request.Id) returns (common.Tag) {
     option (google.api.http) = {
-      get: "/api/v1/tag/{id}"
+      get: "/api/tag/{id}"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
+
   }
 
   // 修改
   rpc EditTag (EditTagReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/api/v1/tag/{id}"
+      put: "/api/tag/{id}"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: MUTATION};
+
   }
 
   // 列表
-  rpc TagList (TagListReq) returns (TagListRep) {
+  rpc TagList (TagListReq) returns (TagListResp) {
     option (google.api.http) = {
-      get: "/api/v1/tag"
+      get: "/api/tag"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
+
   }
 
   rpc SendMail (SendMailReq) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/api/v1/sendMail"
+      post: "/api/sendMail"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags:["v1.0.0"]
     };
-    option (danielvladco.protobuf.graphql.rpc) = {type: QUERY};
+
+  }
+
+  rpc Locale (LocaleReq) returns (LocaleResp) {
+    option (google.api.http) = {
+      get: "/api/locale"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags:["v1.0.0"]
+    };
+
   }
 }
 
@@ -146,7 +153,7 @@ message AttrListReq{
   string name = 1[(go.field) = {tags:'comment:"名称"'}];
 }
 
-message AttrListRep{
+message AttrListResp{
   int64 total = 1;
   repeated common.Attr list = 2;
 }
@@ -176,7 +183,7 @@ message TagListReq{
   uint32 pageSize = 4;
 }
 
-message TagListRep{
+message TagListResp{
   uint32 total = 1;
   repeated Tag list = 2;
 }
@@ -201,4 +208,13 @@ message SendSmsReq {
   string sign = 5;
   string content = 6;
   repeated string to = 7;
+}
+
+message LocaleReq {
+  string locale = 1;
+}
+
+message LocaleResp {
+  string locale = 1;
+  map<string, string> messages = 2;
 }

@@ -1,9 +1,12 @@
 package service
 
+import "go.opentelemetry.io/otel"
+
 var (
 	momentSvc  = &MomentService{}
 	actionSvc  = &ActionService{}
 	contentSvc = &ContentService{}
+	Tracer     = otel.Tracer("service")
 )
 
 func GetMomentService() *MomentService {

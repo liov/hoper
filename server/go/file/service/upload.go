@@ -4,19 +4,6 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/hex"
-	"github.com/hopeio/context/httpctx"
-	"github.com/hopeio/scaffold/errcode"
-	gormi "github.com/hopeio/gox/datax/database/gorm"
-	errcode2 "github.com/hopeio/gox/errors/errcode"
-	httpi "github.com/hopeio/gox/net/http"
-	"github.com/hopeio/gox/net/http/fs"
-	timei "github.com/hopeio/gox/time"
-	"github.com/liov/hoper/server/go/file/api/request"
-	"github.com/liov/hoper/server/go/file/api/response"
-	"github.com/liov/hoper/server/go/file/data"
-	"github.com/liov/hoper/server/go/file/model"
-	"github.com/liov/hoper/server/go/global"
-	"github.com/liov/hoper/server/go/protobuf/user"
 	"io"
 	"mime"
 	"mime/multipart"
@@ -24,26 +11,37 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
+
+	errcodex "github.com/hopeio/gox/errors"
+	httpx "github.com/hopeio/gox/net/http"
+	timex "github.com/hopeio/gox/time"
+	"github.com/hopeio/scaffold/errcode"
+	"github.com/liov/hoper/server/go/file/api/response"
+	"github.com/liov/hoper/server/go/file/data"
+	"github.com/liov/hoper/server/go/file/model"
+	"github.com/liov/hoper/server/go/global"
+	"github.com/liov/hoper/server/go/protobuf/user"
 )
 
-const errRep = "上传失败"
+const errResp = "上传失败"
 const sep = "/"
 
 const (
-	ApiExists = "/api/v1/exists"
-	ApiUpload = "/api/v1/upload/"
+	ApiExists = "/api/exists"
+	ApiUpload = "/api/upload/"
 )
 
 // Upload 文件上传
 func Upload(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(global.Conf.Upload.UploadMaxSize)
 	if err != nil {
-		httpi.RespErrRep(w, errcode.InvalidArgument.Msg(errRep))
+		httpx.ServeError(w, r, errcode.InvalidArgument.Msg(errResp))
 		return
 	}
 
 	if r.MultipartForm == nil || (r.MultipartForm.Value == nil && r.MultipartForm.File == nil) {
-		httpi.RespErrRep(w, errcode.InvalidArgument.Msg(errRep))
+		httpx.ServeError(w, r, errcode.InvalidArgument.Msg(errResp))
 		return
 	}
 	md5Str := r.RequestURI[len(ApiUpload):]
@@ -56,55 +54,29 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		info = fhs[0]
 	}
 
-	ctxi, _ := httpctx.FromContext(r.Context())
-	_, err = auth(ctxi, false)
+	_, err = auth(r.Context(), false)
 	if err != nil {
-		(&httpi.RespAnyData{
-			Code: errcode2.ErrCode(user.UserErrLogin),
-			Msg:  errRep,
-		}).Response(w)
+		httpx.ServeError(w, r, user.UserErrLogin.Msg(errResp))
 		return
 	}
-	upload, err := save(ctxi, info, md5Str)
+	upload, err := save(r.Context(), info, md5Str)
 	if err != nil {
-		httpi.RespErrRep(w, errcode.UploadFail.ErrRep())
+		httpx.ServeError(w, r, errcode.UploadFail.ErrResp())
 		return
 	}
-	(&httpi.RespAnyData{Data: response.File{Id: upload.File.Id, URL: upload.File.Path}}).Response(w)
+	(&httpx.CommonAnyResp{Data: response.File{Id: upload.File.Id, URL: upload.File.Path}}).ServeHTTP(w, r)
 
 }
 
-func (*FileService) Exists(ctx context.Context, req *request.Exists) (*response.File, error) {
 
-	ctxi, _ := httpctx.FromContext(ctx)
-	auth, err := auth(ctxi, false)
-	uploadDao := data.GetDao(ctxi)
-	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
-	file, err := uploadDao.FileInfo(db, req.Md5, req.Size)
-	if err != nil {
-		return nil, errcode.DBError
-	}
-	if file != nil {
-		upload := model.UploadInfo{
-			UserId:    auth.Id,
-			CreatedAt: ctxi.RequestAt.Time,
-			FileId:    file.Id,
-		}
-		if err := db.Table(model.TableNameUploadInfo).Create(&upload).Error; err != nil {
-			ctxi.RespErrorLog(errcode.DBError, err, "Create")
-		}
-		return &response.File{Id: file.Id, URL: file.Path}, nil
-	}
-	return nil, errcode.NotFound
-}
+func save(ctx context.Context, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	uploadDao := data.GetDao(db)
 
-func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (upload *model.UploadInfo, err error) {
-	uploadDao := data.GetDao(ctx)
-	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx.Base(), ctx.TraceID())
-	auth := ctx.AuthInfo.(*user.AuthBase)
+	auth, _ := auth(ctx, false)
 	var file *model.FileInfo
 	if md5Str != "" {
-		file, err = uploadDao.FileInfo(db, md5Str, strconv.FormatInt(info.Size, 10))
+		file, err = uploadDao.FileInfo(ctx, md5Str, strconv.FormatInt(info.Size, 10))
 		if err != nil {
 			return nil, err
 		}
@@ -117,16 +89,16 @@ func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (uplo
 		}
 		multipartFile, err = info.Open()
 		if err != nil {
-			return nil, ctx.RespErrorLog(errcode.IOError, err, "Open")
+			return nil, errcode.IOError.Wrap(err)
 		}
 		defer multipartFile.Close()
 		hash := md5.New()
 		_, err = io.Copy(hash, multipartFile)
 		if err != nil {
-			return nil, ctx.RespErrorLog(errcode.IOError, err, "Create")
+			return nil, errcode.IOError.Wrap(err)
 		}
 		md5Str = hex.EncodeToString(hash.Sum(nil))
-		file, err = uploadDao.FileInfo(db, md5Str, strconv.FormatInt(info.Size, 10))
+		file, err = uploadDao.FileInfo(ctx, md5Str, strconv.FormatInt(info.Size, 10))
 		if err != nil {
 			return nil, err
 		}
@@ -134,18 +106,18 @@ func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (uplo
 	if file != nil {
 		upload = &model.UploadInfo{
 			UserId:    auth.Id,
-			CreatedAt: ctx.RequestAt.Time,
+			CreatedAt: time.Now(),
 			FileId:    file.Id,
 		}
-		if err = db.Table(model.TableNameUploadInfo).Create(upload).Error; err != nil {
-			return nil, ctx.RespErrorLog(errcode.DBError, err, "Create")
+		if err = uploadDao.Table(model.TableNameUploadInfo).Create(upload).Error; err != nil {
+			return nil, errcode.DBError.Wrap(err)
 		}
 		return
 	}
 
-	ymdStr := timei.GetYMD(ctx.RequestAt.Time, sep)
+	ymdStr := timex.GetYMD(time.Now(), sep)
 
-	ext, err := fs.GetExt(info)
+	ext, err := httpx.GetFileExt(info)
 	if err != nil {
 		return nil, err
 	}
@@ -179,19 +151,19 @@ func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (uplo
 		Size: info.Size,
 		Path: uploadDir + fileName,
 	}
-	err = db.Table(model.TableNameFileInfo).Create(file).Error
+	err = uploadDao.Table(model.TableNameFileInfo).Create(file).Error
 	if err != nil {
-		return nil, ctx.RespErrorLog(errcode.DBError, err, "Create")
+		return nil, errcode.DBError.Wrap(err)
 	}
 	upload = &model.UploadInfo{
 		FileId:    file.Id,
 		UserId:    auth.Id,
-		CreatedAt: ctx.RequestAt.Time,
+		CreatedAt: time.Now(),
 	}
 
-	err = db.Table(model.TableNameUploadInfo).Create(upload).Error
+	err = uploadDao.Table(model.TableNameUploadInfo).Create(upload).Error
 	if err != nil {
-		return nil, ctx.RespErrorLog(errcode.DBError, err, "Create")
+		return nil, errcode.DBError.Wrap(err)
 	}
 	return upload, nil
 }
@@ -199,43 +171,44 @@ func save(ctx *httpctx.Context, info *multipart.FileHeader, md5Str string) (uplo
 func MultiUpload(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(global.Conf.Upload.UploadMaxSize)
 	if err != nil {
-		httpi.RespErrRep(w, errcode.InvalidArgument.Msg(errRep))
+		httpx.ServeError(w, r, errcode.InvalidArgument.Msg(errResp))
 		return
 	}
-	ctxi, _ := httpctx.FromContext(r.Context())
-	_, err = auth(ctxi, false)
+	ctx, span := Tracer.Start(r.Context(), "MultiUpload")
+	defer span.End()
+	_, err = auth(ctx, false)
 	if err != nil {
-		(&httpi.RespAnyData{
-			Code: errcode2.ErrCode(user.UserErrLogin),
-			Msg:  errRep,
-		}).Response(w)
+		(&httpx.CommonAnyResp{
+			Code: errcodex.ErrCode(user.UserErrLogin),
+			Msg:  errResp,
+		}).ServeHTTP(w, r)
 		return
 	}
 	if r.MultipartForm == nil || (r.MultipartForm.Value == nil && r.MultipartForm.File == nil) {
-		httpi.RespErrRep(w, errcode.InvalidArgument.Msg(errRep))
+		httpx.ServeError(w, r, errcode.InvalidArgument.Msg(errResp))
 		return
 	}
 	md5s := r.MultipartForm.Value["md5[]"]
 	multipartFiles := r.MultipartForm.File["file[]"]
 	// 如果有md5
 	if len(md5s) != 0 && len(md5s) != len(multipartFiles) {
-		httpi.RespErrRep(w, errcode.InvalidArgument.Msg(errRep))
+		httpx.ServeError(w, r, errcode.InvalidArgument.Msg(errResp))
 		return
 	}
-	var urls = make([]model.MultiRep, len(multipartFiles))
+	var urls = make([]response.UploadRes, len(multipartFiles))
 	var failures = make([]string, 0)
 	for i, multipartFile := range multipartFiles {
-		upload, err := save(ctxi, multipartFile, md5s[i])
+		upload, err := save(ctx, multipartFile, md5s[i])
 		if err != nil {
 			failures = append(failures, multipartFile.Filename)
-			httpi.RespErrRep(w, errcode.UploadFail.ErrRep())
+			httpx.ServeError(w, r, errcode.UploadFail.ErrResp())
 			return
 		}
-		urls[i].URL = upload.File.Path
-		urls[i].Success = true
+		urls[i].Name = multipartFile.Filename
+		urls[i].Path = upload.File.Path
 	}
-	(&httpi.RespAnyData{
-		Msg:  strings.Join(failures, ",") + errRep,
+	(&httpx.CommonAnyResp{
+		Msg:  strings.Join(failures, ",") + errResp,
 		Data: urls,
-	}).Response(w)
+	}).ServeHTTP(w, r)
 }

@@ -1,97 +1,69 @@
-import 'package:app/generated/protobuf/content/action.model.pb.dart';
-import 'package:app/global/state.dart';
+import 'package:app/components/feed/feed_images.dart';
+import 'package:app/gen/pb/content/action.model.pb.dart';
 import 'package:app/global/const.dart';
-import 'package:app/pages/action_bar/action_bar.dart';
+import 'package:app/global/state.dart';
 import 'package:app/pages/image/slide_image.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 
 class CommentItem extends StatelessWidget {
-  CommentItem({Key? key, required this.comment}) : super(key: key) {
-    if (this.comment.image != "")
-      this.images = this
-          .comment
-          .image
-          .split(",")
-          .map((url) => BASE_STATIC_URL + url)
-          .toList();
-    else
-      this.images = null;
-  }
+  const CommentItem({super.key, required this.comment});
 
   final Comment comment;
 
-  late final List<String>? images;
+  List<String> get _images {
+    if (comment.image.isEmpty) return const [];
+    return comment.image.split(',').map((url) => BASE_STATIC_URL + url).toList(growable: false);
+  }
 
   @override
   Widget build(BuildContext context) {
-    print("${this.toStringShort()}");
     final user = globalState.userState.getUser(comment.userId);
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(children: [
-        Expanded(
-            flex: 1,
-            child: Row(children: [
+    if (user == null) {
+      return const SizedBox.shrink();
+    }
+    return RepaintBoundary(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
               Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: GestureDetector(
-                    child: CircleAvatar(
-                      child: ExtendedImage.network(
-                        BASE_STATIC_URL + user!.avatar,
-                        alignment: Alignment.centerLeft,
-                        fit: BoxFit.fill,
-                        shape: BoxShape.circle,
-                        cache: true,
-                      ),
-                      /* backgroundImage: ExtendedNetworkImageProvider(
-                BASE_STATIC_URL+user!.avatarUrl,
-                cache: true,
-              ),*/
-                    ),
-                    onTap: () =>
-                        slideImageRoute(BASE_STATIC_URL + user.avatar),
-                  )),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [Text('${user.name}'), Text('${comment.createdAt}')],
-              ),
-            ])),
-        Expanded(
-            flex: 1,
-            child: Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: IconButton(icon: Icon(Icons.favorite), onPressed: () {  },
-
-                    )))),
-      ]),
-      Padding(
-          padding: const EdgeInsets.symmetric(vertical:5.0,horizontal:10),
-          child: MarkdownBody(data: comment.content)),
-      if (images != null)
-        GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3, //横轴三个子widget
-              childAspectRatio: 1.0, //宽高比为1时，子widget
-            ),
-            shrinkWrap: true,
-            itemCount: images!.length,
-            itemBuilder: (BuildContext context, int index) {
-              return Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: GestureDetector(
+                padding: const EdgeInsets.all(10),
+                child: CircleAvatar(
+                  radius: 20,
+                  child: ClipOval(
                     child: ExtendedImage.network(
-                      images![index],
-                      alignment: Alignment.centerLeft,
-                      fit: BoxFit.fill,
+                      BASE_STATIC_URL + user.avatar,
+                      width: 40,
+                      height: 40,
+                      fit: BoxFit.cover,
                       cache: true,
-                      //cancelToken: cancellationToken,
+                      enableLoadState: false,
                     ),
-                    onTap: () => slideImageRoute(images![index]),
-                  ));
-            }),
-    ]);
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(user.name),
+                    Text('${comment.modelTime.createdAt}', style: Theme.of(context).textTheme.bodySmall),
+                  ],
+                ),
+              ),
+              IconButton(icon: const Icon(Icons.favorite), onPressed: () {}),
+            ],
+          ),
+          if (comment.content.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              child: Text(comment.content, maxLines: 8, overflow: TextOverflow.ellipsis),
+            ),
+          if (_images.isNotEmpty) FeedImageGrid(urls: _images, onTap: slideImageRoute),
+        ],
+      ),
+    );
   }
 }

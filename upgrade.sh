@@ -8,49 +8,42 @@ function upgrade(){
   echo $new_version
   git add .
   git commit -m "chore: upgrade dependency"
-  git commit --amend --date="$(date -d '-10 hours' '+%Y-%m-%d %H:%M:%S')" --no-edit
+  #git commit --amend --date="$(date -d '-10 hours' '+%Y-%m-%d %H:%M:%S')" --no-edit
   git tag "$new_version"
+  git push origin main --tags
 }
 
 # 获取参数值
 param=$1
+version=$2
+if [ -z "$version" ]; then
+  version="main"
+fi
 
 # 根据参数执行不同的逻辑
 case $param in
     "")
         echo "Parameter is empty."
         # 在这里执行空参数的逻辑
-        cd $dir/thirdparty/context
-        go get github.com/hopeio/gox@main
-        upgrade
         cd $dir/thirdparty/initialize
-        go get github.com/hopeio/gox@main
+        go get github.com/hopeio/gox@$version
         upgrade
         cd $dir/thirdparty/protobuf
-        go get github.com/hopeio/gox@main
-        upgrade
-        cd $dir/thirdparty/deploy/plugin
-        go get github.com/hopeio/gox@main
-        cd $dir/thirdparty/deploy
+        go get github.com/hopeio/gox@$version
         upgrade
         ;;
-    pc)
+    ch)
         echo "Parameter is pc."
         # 在这里执行pc参数的逻辑
-        cd $dir/thirdparty/pick
-        go get github.com/hopeio/context@main
-        upgrade
         cd $dir/thirdparty/cherry
         go get github.com/hopeio/protobuf@main
-        go get github.com/hopeio/context@main
         upgrade
         ;;
-    ex)
+    sc)
         echo "Parameter is ex."
-        # 在这里执行co参数的逻辑
-        cd $dir/thirdparty/example
+        cd $dir/thirdparty/scaffold
         go get github.com/hopeio/cherry@main
-        go get github.com/hopeio/pick@main
+        upgrade
         ;;
     *)
         echo "Invalid parameter: $param"

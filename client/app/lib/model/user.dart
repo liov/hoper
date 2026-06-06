@@ -1,4 +1,4 @@
-import 'package:app/generated/protobuf/user/user.model.pb.dart' as $pb;
+import 'package:app/gen/pb/user/user.model.pb.dart' as $pb;
 import 'package:json_annotation/json_annotation.dart';
 
 part 'user.g.dart';

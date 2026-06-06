@@ -5,3 +5,4 @@ const (
 	TableNameTagGroup = "tag_group"
 	TableNameTagAttr  = "attr"
 )
+

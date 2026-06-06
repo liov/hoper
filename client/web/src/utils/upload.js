@@ -2,7 +2,7 @@ import axios from "axios";
 import SparkMD5 from "spark-md5";
 
 const exist = async function (md5, size) {
-  const res = await axios.get(`/api/v1/exists/${md5}/${size}`);
+  const res = await axios.get(`/api/exists/${md5}/${size}`);
   if (res.data.code === 0) {
     return res.data.data;
   } else {
@@ -67,7 +67,7 @@ const upload = async function ($file) {
   const formdata = new FormData();
   formdata.append("file", $file);
   const res = await axios({
-    url: `/api/v1/upload/${md5}`,
+    url: `/api/upload/${md5}`,
     method: "post",
     data: formdata,
     headers: { "Content-Type": "multipart/form-data" },

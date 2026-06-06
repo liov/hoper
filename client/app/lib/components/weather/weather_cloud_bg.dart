@@ -10,14 +10,14 @@ import 'package:app/components/weather/weather_type.dart';
 class WeatherCloudBg extends StatefulWidget {
   final WeatherType weatherType;
 
-  const WeatherCloudBg({Key? key, required this.weatherType}) : super(key: key);
+  const WeatherCloudBg({super.key, required this.weatherType});
 
   @override
   _WeatherCloudBgState createState() => _WeatherCloudBgState();
 }
 
 class _WeatherCloudBgState extends State<WeatherCloudBg> {
-  List<ui.Image> _images = [];
+  final List<ui.Image> _images = [];
 
   Future<void> fetchImages() async {
     weatherPrint("开始获取云层图片");
@@ -66,7 +66,7 @@ class BgPainter extends CustomPainter {
   final width;
 
   BgPainter(this.images, this.weatherType, this.widthRatio, this.width) {
-    weatherPrint("获取云层图片成功paintpaint： ${widthRatio}===width==${width}");
+    weatherPrint("获取云层图片成功paintpaint： $widthRatio===width==$width");
   }
 
   @override

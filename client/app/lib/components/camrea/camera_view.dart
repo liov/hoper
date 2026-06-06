@@ -1,12 +1,11 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:applib/util/async.dart';
-import 'camera_controller.dart';
+import 'package:app/util/nav.dart';
+import 'package:app/util/async.dart';
 import 'camera_example.dart';
 
 class CameraView extends StatefulWidget {
-  CameraView(this.cameras);
+  const CameraView(this.cameras, {super.key});
 
   final List<CameraDescription> cameras;
 
@@ -18,10 +17,11 @@ class CameraViewState extends State<CameraView> with WidgetsBindingObserver {
   CameraController? controller;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final _aspectRatio = Get.width / Get.height;
+  double? _aspectRatio;
   final _scale = 1.0;
   @override
   Widget build(BuildContext context) {
+    _aspectRatio ??= MediaQuery.sizeOf(context).width / MediaQuery.sizeOf(context).height;
     return Scaffold(
       key: _scaffoldKey,
       body: Container(
@@ -34,7 +34,7 @@ class CameraViewState extends State<CameraView> with WidgetsBindingObserver {
               builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
                 return snapshot.handle() ??
                     AspectRatio(
-                      aspectRatio: _aspectRatio ,
+                      aspectRatio: _aspectRatio!,
                       child: CameraPreview(controller!,
                           child: Align(
                               alignment: Alignment.bottomCenter,
@@ -43,18 +43,18 @@ class CameraViewState extends State<CameraView> with WidgetsBindingObserver {
                                 child:ElevatedButton(
                                     style: ButtonStyle(
                                         backgroundColor:
-                                        MaterialStateProperty.resolveWith(
+                                        WidgetStateProperty.resolveWith(
                                                 (states) => (Colors.red)),
-                                        shape: MaterialStateProperty.resolveWith(
+                                        shape: WidgetStateProperty.resolveWith(
                                                 (states) => CircleBorder()),
                                         minimumSize:
-                                        MaterialStateProperty.resolveWith(
+                                        WidgetStateProperty.resolveWith(
                                                 (states) => Size(100, 100))),
                                     child: Text('按'),
                                     onPressed: () {
                                       controller!
                                           .takePicture()
-                                          .then((value) => navigator!.pop(value));
+                                          .then((value) => Navigator.of(context).pop(value));
                                     })
                               ))),
                   );
@@ -67,7 +67,7 @@ class CameraViewState extends State<CameraView> with WidgetsBindingObserver {
 
   double _getImageZoom(MediaQueryData data) {
     final double logicalWidth = data.size.width;
-    final double logicalHeight = _aspectRatio * logicalWidth;
+    final double logicalHeight = _aspectRatio! * logicalWidth;
 
     final EdgeInsets padding = data.padding;
     final double maxLogicalHeight =
@@ -75,7 +75,7 @@ class CameraViewState extends State<CameraView> with WidgetsBindingObserver {
     return maxLogicalHeight / logicalHeight;
   }
 
-  onNewCameraSelected(CameraDescription cameraDescription) async {
+  Future<void> onNewCameraSelected(CameraDescription cameraDescription) async {
     if (controller != null) {
       await controller!.dispose();
     }
@@ -122,7 +122,7 @@ class CameraViewState extends State<CameraView> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    print("--" + state.toString());
+    print("--$state");
     // App state changed before we got the chance to initialize.
     if (controller == null || !controller!.value.isInitialized) {
       return;
@@ -140,21 +140,21 @@ class CameraViewState extends State<CameraView> with WidgetsBindingObserver {
 
 void _showCameraException(CameraException e) {
   logError(e.code, e.description);
-  Get.rawSnackbar(message: 'Error: ${e.code}\n${e.description}');
+  AppNavigator.rawSnackbar('Error: ${e.code}\n${e.description}');
 }
 
 Future<XFile?> getPhoto() async {
   final cameras = await availableCameras();
   print(cameras);
-  if (cameras.length == 0) return null;
-  XFile? file = await Get.to(() => CameraView(cameras));
+  if (cameras.isEmpty) return null;
+  XFile? file = await AppNavigator.push(CameraView(cameras));
   return file;
 }
 
 Future<XFile?> getPhoto2() async {
   final cameras = await availableCameras();
   print(cameras);
-  if (cameras.length == 0) return null;
-  XFile? file = await Get.to(() => CameraExample(cameras));
+  if (cameras.isEmpty) return null;
+  XFile? file = await AppNavigator.push(CameraExample(cameras));
   return file;
 }

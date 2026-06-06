@@ -1,9 +1,10 @@
 # hoper3.0
 cd server/go
-go run $(go list -m -f {{.Dir}}  github.com/hopeio/cherry)/tools/protoc/install_tools.go
-protogen.exe go -e -w -v -p ../../proto 
+go run $(go list -m -f {{.Dir}}  github.com/hopeio/protobuf)/tools/install_tools.go
+windows:`protogen.exe go -d -e -w -v -i ../../proto`
+unix:`protogen go -d -e -w -v -i ../../proto`
 
-protogen.exe go -e -w -v -q -p ../../proto  (graphql)
-
+windows:`protogen.exe go -d -e -w -v -i ../../proto  (graphql)`
+unix:`protogen go -d -e -w -v -i ../../proto  (graphql)`
 # docker
 GOOS=linux go build -tags go-json -o ../../build/hoper

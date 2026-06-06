@@ -25,4 +25,5 @@ type Config struct {
 	UploadDir      fs.Dir
 	UploadMaxSize  int64
 	UploadAllowExt []string
+	Bucket         string
 }

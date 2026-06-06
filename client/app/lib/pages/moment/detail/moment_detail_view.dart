@@ -1,87 +1,55 @@
-import 'package:applib/util/async.dart';
-import 'package:app/generated/protobuf/content/content.model.pbenum.dart';
+import 'package:app/util/async.dart';
 
 import 'package:app/pages/comment/comment_add_view.dart';
-import 'package:app/pages/comment/comment_controller.dart';
 import 'package:app/pages/comment/comment_list_view_v2.dart';
 import 'package:app/pages/moment/item/moment_item_view.dart';
-import 'package:app/pages/route.dart';
-import 'package:app/rpc/moment.dart';
+import 'package:app/global/service.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:app/generated/protobuf/content/moment.model.pb.dart' as $pb;
+import 'package:app/gen/pb/content/moment.model.pb.dart' as $pb;
 import 'package:fixnum/fixnum.dart';
-import 'package:app/generated/protobuf/hopeio/request/param.pb.dart' as
-$1;
+import 'package:app/gen/pb/hopeio/request/param.pb.dart' as $1;
 
 class MomentDetailView extends StatelessWidget {
-  final CommentController commentController = Get.find();
+  MomentDetailView.detail($pb.Moment moment, {super.key})
+      : id = moment.id,
+        future = Future.value(moment);
 
-  MomentDetailView({super.key}){
-    if (Get.arguments != null) {
-      moment = Get.arguments;
-      commentController.refId = moment.id;
-      commentController.recvId = moment.userId;
-      commentController.type = ContentType.ContentMoment;
-      future = Future.value(moment);
-      return;
-    }
+  MomentDetailView.byId(this.id, {super.key}) : future = _loadMoment(id);
 
-    final idStr = Get.parameters['id'];
-    if (idStr != null) {
-      id = Int64.parseInt(idStr);
-      future = getMoment();
-      return;
-    }
-    Get.toNamed(Routes.NOTFOUND);
-  }
+  final Int64 id;
+  final Future<$pb.Moment> future;
 
-  MomentDetailView.detail(this.moment) : super() {
-    id = moment.id;
-    future = Future.value(moment);
-  }
-
-  MomentDetailView.byId(this.id) : super() {
-    future = getMoment();
-  }
-
-  final MomentClient momentClient = Get.find();
-  late final $pb.Moment moment;
-  late final Int64 id;
-  late final Future<$pb.Moment> future;
-
-  Future<$pb.Moment> getMoment() async {
-    final rpcMoment = await momentClient.stub.info($1.Id(id: id));
-    moment = rpcMoment;
-    return rpcMoment;
+  static Future<$pb.Moment> _loadMoment(Int64 id) async {
+    return globalService.momentClient.stub.info($1.Id(id: id));
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<$pb.Moment>(
-        future: future,
-        builder: (BuildContext context, AsyncSnapshot<$pb.Moment> snapshot) {
-          final noReady = snapshot.handle();
-          if (noReady != null) return Scaffold(body: noReady);
-          final moment = snapshot.data!;
-          return SafeArea(
-            child: Scaffold(
-              appBar: AppBar(
-                centerTitle: true,
-                title: const Text('瞬间'),
+      future: future,
+      builder: (BuildContext context, AsyncSnapshot<$pb.Moment> snapshot) {
+        final noReady = snapshot.handle();
+        if (noReady != null) return Scaffold(body: noReady);
+        final moment = snapshot.data!;
+        return SafeArea(
+          child: Scaffold(
+            appBar: AppBar(centerTitle: true, title: const Text('瞬间')),
+            body: Center(
+              child: Column(
+                children: [
+                  MomentItem(moment: moment),
+                  Expanded(
+                    flex: 10,
+                    child: CommentListViewV2(moment.statistics),
+                  ),
+                  const Expanded(flex: 1, child: Text('')),
+                ],
               ),
-              body: Center(
-                child: Column(
-                  children: [
-                    MomentItem(moment: moment),
-                    Expanded(flex: 10, child: CommentListViewV2(moment.statistics)),
-                    const Expanded(flex: 1, child: Text('')),
-                  ],
-                ),
-              ),
-              bottomSheet: CommentAdd(),
             ),
-          );
-        });
+            bottomSheet: const CommentAdd(),
+          ),
+        );
+      },
+    );
   }
 }

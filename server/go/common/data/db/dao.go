@@ -1,18 +1,15 @@
 package db
 
 import (
-	"github.com/hopeio/context/httpctx"
 	"gorm.io/gorm"
 )
 
 type CommonDao struct {
-	*httpctx.Context
-	db *gorm.DB
+	*gorm.DB
 }
 
-func GetDao(ctx *httpctx.Context, d *gorm.DB) *CommonDao {
+func GetDao(db *gorm.DB) *CommonDao {
 	return &CommonDao{
-		Context: ctx,
-		db:      d,
+		db,
 	}
 }

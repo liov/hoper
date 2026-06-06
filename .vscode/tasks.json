@@ -1,0 +1,242 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "install protobuf tools",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/thirdparty/protobuf/tools"
+			},
+			"windows": {
+				"options": {
+					"shell": {
+						"executable": "cmd.exe",
+						"args": [
+							"/d",
+							"/c"
+						]
+					}
+				},
+				"env": {
+					"GOCACHE": "${env:USERPROFILE}\\.cache\\go-build",
+					"GOTMPDIR": "${env:USERPROFILE}\\.cache\\go-tmp"
+				},
+				"command": "go build -o install_tools.exe install_tools.go && install_tools.exe && del install_tools.exe",
+			},
+			"command": "go run install_tools.go"
+		},
+		{
+			"label": "app release",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/client/app"
+			},
+			"windows": {
+				"options": {
+					"shell": {
+						"executable": "cmd.exe",
+						"args": [
+							"/d",
+							"/c"
+						]
+					}
+				},
+				"env": {
+					"PUB_HOSTED_URL": "https://pub.flutter-io.cn",
+					"FLUTTER_STORAGE_BASE_URL": "https://storage.flutter-io.cn"
+				}
+			},
+			"command": "flutter",
+			"args": [
+				"build",
+				"apk",
+				"--release"
+			],
+		},
+		{
+			"label": "pub get",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/client/app"
+			},
+			"windows": {
+				"options": {
+					"shell": {
+						"executable": "cmd.exe",
+						"args": [
+							"/d",
+							"/c"
+						]
+					}
+				},
+				"env": {
+					"PUB_HOSTED_URL": "https://pub.flutter-io.cn",
+					"FLUTTER_STORAGE_BASE_URL": "https://storage.flutter-io.cn"
+				}
+			},
+			"command": "flutter",
+			"args": [
+				"pub",
+				"get"
+			],
+		},
+		{
+			"label": "diamond build",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/thirdparty/diamond"
+			},
+			"windows": {
+				"options": {
+					"shell": {
+						"executable": "cmd.exe",
+						"args": [
+							"/d",
+							"/c"
+						]
+					}
+				}
+			},
+			"command": "pnpm",
+			"args": [
+				"build"
+			],
+			"runOptions": {
+				"runOn": "folderOpen",
+			}
+		},
+		{
+			"label": "uniapp:dev",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/client/uniapp"
+			},
+			"windows": {
+				"options": {
+					"shell": {
+						"executable": "cmd.exe",
+						"args": [
+							"/d",
+							"/c"
+						]
+					}
+				}
+			},
+			"isBackground": true, // 必须为 true，因为 dev 服务是常驻的
+			"problemMatcher": {
+				"owner": "typescript",
+				"fileLocation": "relative",
+				"pattern": {
+					"regexp": ".*"
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": ".*",
+					"endsPattern": "ready in.*" // 当终端出现 ready in 时，认为启动成功
+				}
+			},
+			"presentation": {
+				"close": true, // 当任务终止时关闭面板
+				"panel": "new" // 每次创建新面板
+			},
+			"command": "pnpm",
+			"args": [
+				"run",
+				"dev"
+			],
+		},
+		{
+			"label": "ts:pb",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/client/uniapp"
+			},
+			"windows": {
+				"options": {
+					"shell": {
+						"executable": "cmd.exe",
+						"args": [
+							"/d",
+							"/c"
+						]
+					}
+				}
+			},
+			"command": "protogen",
+			"args": [
+				"ts",
+				"-p",
+				"../../thirdparty/protobuf/_proto",
+				"-i",
+				"../../proto",
+				"-o",
+				"gen/pb"
+			],
+		},
+		{
+			"label": "go:pb",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/server/go"
+			},
+			"windows": {
+				"options": {
+					"shell": {
+						"executable": "cmd.exe",
+						"args": [
+							"/d",
+							"/c"
+						]
+					}
+				}
+			},
+			"command": "protogen",
+			"args": [
+				"go",
+				"-d",
+				"-e",
+				"-w",
+				"-v",
+				"-i",
+				"../../proto"
+			],
+			"runOptions": {
+				"runOn": "folderOpen",
+			}
+		},
+		{
+			"label": "dart:pb",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/client/app"
+			},
+			"windows": {
+				"options": {
+					"shell": {
+						"executable": "cmd.exe",
+						"args": [
+							"/d",
+							"/c"
+						]
+					}
+				},
+				"env": {
+					"PATH": "${env:LOCALAPPDATA}\\Pub\\Cache\\bin;D:\\sdk\\flutter\\bin;${env:PATH}"
+				}
+			},
+			"command": "protogen",
+			"args": [
+				"dart",
+				"-p",
+				"../../thirdparty/protobuf/_proto",
+				"-i",
+				"../../proto",
+				"-o",
+				"lib/gen/pb"
+			],
+			"runOptions": {
+				"runOn": "folderOpen",
+			}
+		}
+	]
+}

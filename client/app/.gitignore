@@ -37,7 +37,6 @@ lib/generated/*
 /build/
 
 # Web related
-lib/generated_plugin_registrant.dart
 
 # Symbolication related
 app.*.symbols
@@ -50,12 +49,21 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-dynLibs
-!dynLibs/android/armeabi-v7a/up
-!dynLibs/android/arm64-v8a/up
-!dynLibs/android/x86_64/up
+libraries/
+
+# 静态库 .a / .lib（build_flutter_lib.sh）
+staticLibs/**
+!staticLibs/**/
+!staticLibs/**/up
+# 动态库 .so / .dylib / .dll（findDynamicLibrary）
+dynLibs/**
+!dynLibs/**/
+!dynLibs/**/up
 
 *.g.dart
 /android/app/src/main/res/**/*.png
 /ios/**/*.png
 /web/**/*.png
+**/generated_*
+**/Generated*
+gen

@@ -1,11 +1,3 @@
-<route lang="json">
-{
-  "style": {
-    "navigationBarTitleText": "%app.name%"
-  }
-}
-</route>
-
 <template>
   <view class="center flex-col mt-6">
     <view class="text-red-500 p-4 leading-6">
@@ -22,9 +14,8 @@
     <view class="text-green-500">多语言测试</view>
     <view class="m-4">{{ $t('app.name') }}</view>
     <view class="m-4">{{ $t('weight', { heavy: 100 }) }}</view>
-    <view class="m-4">{{ formatString(translate('weight2'), 100) }}</view>
     <view class="m-4">
-      {{ formatI18n(translate('introduction'), user) }}
+      {{ $t('introduction', user) }}
     </view>
 
     <view class="text-green-500 mt-12">切换语言</view>
@@ -45,11 +36,19 @@
 </template>
 
 <script lang="ts" setup>
-import i18n, { formatI18n, formatString, translate } from '@/locale/index'
+import i18n, { setLocaleAndSync } from '@/locale/index'
 import { testI18n } from '@/utils/i18n'
+import { useI18n } from 'vue-i18n'
+
+definePage({
+  style: {
+    navigationBarTitleText: i18n.global.t('app.name'),
+  }
+})
 
 const current = ref(uni.getLocale())
-const user = { name: '张三', detail: { height: 178, weight: '75kg' } }
+const user = { name: '张三',  height: 178, weight: '75kg' }
+const { t } = useI18n()
 const languages = [
   {
     value: 'zh-Hans',
@@ -62,12 +61,10 @@ const languages = [
   },
 ]
 
-const radioChange = (evt) => {
+const radioChange = async (evt: { detail: { value: string } }) => {
   // console.log(evt)
   current.value = evt.detail.value
-  // 下面2句缺一不可！！！
-  uni.setLocale(evt.detail.value)
-  i18n.global.locale = evt.detail.value
+  await setLocaleAndSync(evt.detail.value)
 }
 </script>
 

@@ -1,33 +1,50 @@
-import java.util.Properties
 import java.io.FileInputStream
+import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.application")
-    id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    // Built-in Kotlin（Flutter 3.44+）；勿再 apply kotlin-android
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-// 读取key.properties
+// 读取 key.properties（release）
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
+// 团队共用 debug 签名（可选）：存在 debug-key.properties 时覆盖默认 ~/.android/debug.keystore，
+// 避免 Mac/Windows 各自 debug 证书不同导致 Flutter 覆盖安装前 Uninstalling old version...
+// 模板见 debug-key.properties.example；生成 keystore 后可将 android/team-debug.keystore 提交仓库。
+val debugKeystoreProperties = Properties()
+val debugKeystorePropertiesFile = rootProject.file("debug-key.properties")
+if (debugKeystorePropertiesFile.exists()) {
+    debugKeystoreProperties.load(FileInputStream(debugKeystorePropertiesFile))
+}
+
 android {
     namespace = "xyz.hoper.app"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973"
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+    // Rust cdylib → dynLibs/android/<abi>/librb.so（build_flutter_lib.sh --android）
+    sourceSets {
+        getByName("main") {
+            jniLibs.srcDirs("../../dynLibs/android")
+        }
+    }
+    packaging {
+        jniLibs {
+            pickFirsts += listOf("lib/**/librb.so")
+        }
     }
 
     defaultConfig {
@@ -42,33 +59,52 @@ android {
         versionName = flutter.versionName
 
         ndk {
-            // Filter for architectures supported by Flutter.
-            abiFilters += setOf("armeabi-v7a", "arm64-v8a", "x86_64")
+            // 仅 arm64；勿用 +=，且需配合 gradle.properties 的 disable-abi-filtering
+            abiFilters.clear()
+            abiFilters.add("arm64-v8a")
         }
     }
 
     signingConfigs {
-        create("release") {  // 创建正式签名配置
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
-            storeFile = keystoreProperties["storeFile"]?.let { file(it) }
-            storePassword = keystoreProperties["storePassword"] as String
-            enableV2Signing = true                       // 启用v2签名[2](@ref)
+        if (debugKeystorePropertiesFile.exists()) {
+            getByName("debug") {
+                keyAlias = debugKeystoreProperties["keyAlias"] as String
+                keyPassword = debugKeystoreProperties["keyPassword"] as String
+                storeFile = debugKeystoreProperties["storeFile"]?.let { rootProject.file(it) }
+                storePassword = debugKeystoreProperties["storePassword"] as String
+            }
+        }
+        if (keystorePropertiesFile.exists()) {
+            create("release") {
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+                storeFile = keystoreProperties["storeFile"]?.let { file(it) }
+                storePassword = keystoreProperties["storePassword"] as String
+                enableV2Signing = true
+            }
         }
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = if (keystorePropertiesFile.exists()) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
     }
 
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
+}
+
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 }
 
 flutter {

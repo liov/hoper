@@ -1,16 +1,13 @@
+import 'package:app/providers/providers.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'follow_controller.dart';
-
-class FollowWidget extends StatelessWidget {
-  const FollowWidget({Key? key}) : super(key: key);
+class FollowWidget extends ConsumerWidget {
+  const FollowWidget({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final controller = Get.put(FollowController());
-
-
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(followProvider);
     return Container();
   }
 }

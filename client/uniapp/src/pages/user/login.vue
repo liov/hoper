@@ -1,0 +1,349 @@
+<template>
+  <view class="min-h-screen flex flex-col bg-gradient-to-br from-[#018d71] via-[#01b892] to-[#e8f8f4]">
+    <view :style="{ height: safeAreaInsets?.top + 'px' }" />
+
+    <!-- Logo 区域 -->
+    <view class="flex flex-col items-center pt-10 pb-5 flex-shrink-0">
+      <image class="w-15 h-15 rounded-[14px] bg-white/20 p-2" src="/static/logo.svg" mode="aspectFit" />
+      <text class="text-4xl font-bold text-white mt-5 tracking-widest">Hoper</text>
+      <text class="text-sm text-white/80 mt-3">{{ $t('auth.slogan') }}</text>
+    </view>
+
+    <!-- #ifdef H5 -->
+    <div id="cf-turnstile" class="flex justify-center mt-4" />
+    <!-- #endif -->
+
+    <!-- 表单卡片 -->
+    <view class="flex-1 bg-white rounded-t-3xl px-6 pb-15 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+      <!-- Tab 切换 -->
+      <view class="relative flex mx-auto w-45 bg-gray-100 rounded-full p-1.5 mt-6 mb-6 overflow-hidden">
+        <view class="flex-1 text-center py-2 text-sm relative z-1 transition-colors duration-200"
+          :class="mode === 'login' ? 'text-[#018d71] font-semibold' : 'text-gray-400'" @click="mode = 'login'">{{
+            $t('auth.login') }}</view>
+        <view class="flex-1 text-center py-2 text-sm relative z-1 transition-colors duration-200"
+          :class="mode === 'register' ? 'text-[#018d71] font-semibold' : 'text-gray-400'" @click="mode = 'register'">{{
+            $t('auth.register') }}</view>
+        <view
+          class="absolute top-1.5 left-1.5 bottom-1.5 bg-white rounded-full shadow transition-transform duration-300"
+          :style="{ width: 'calc(50% - 6px)', transform: `translateX(${mode === 'login' ? '0%' : '100%'})` }" />
+      </view>
+
+      <!-- 登录表单 -->
+      <view v-if="mode === 'login'" class="flex flex-col gap-3.5">
+        <view class="flex items-center bg-gray-50 rounded-2xl px-3.5 h-13 border-2 border-transparent transition-all"
+          :class="focused === 'account' ? 'border-[#018d71] bg-[#f0fdf8]' : ''">
+          <text class="text-xl mr-2.5 flex-shrink-0">📱</text>
+          <input v-model="account" class="flex-1 text-sm text-gray-800 bg-transparent h-full" type="text"
+            :placeholder="$t('auth.account')" placeholder-class="text-gray-300 text-sm" @focus="focused = 'account'"
+            @blur="focused = ''" />
+        </view>
+        <view class="flex items-center bg-gray-50 rounded-2xl px-3.5 h-13 border-2 border-transparent transition-all"
+          :class="focused === 'loginPwd' ? 'border-[#018d71] bg-[#f0fdf8]' : ''">
+          <text class="text-xl mr-2.5 flex-shrink-0">🔒</text>
+          <input v-model="loginForm.password" class="flex-1 text-sm text-gray-800 bg-transparent h-full"
+            :class="{ 'pwd-masked': !showLoginPwd && loginForm.password.length > 0 }" type="text"
+            :placeholder="$t('auth.password')" placeholder-class="text-gray-300 text-sm" @focus="focused = 'loginPwd'"
+            @blur="focused = ''" />
+          <text class="ml-2 flex-shrink-0 text-gray-400 text-base select-none"
+            @click.stop="showLoginPwd = !showLoginPwd">{{ showLoginPwd ? '🙈' : '👁' }}</text>
+        </view>
+
+        <view class="flex justify-end -mt-2">
+          <text class="text-xs text-[#018d71]" @click="onForgotPwd">{{ $t('auth.forgotPwd') }}</text>
+        </view>
+
+        <button
+          class="w-full h-12 bg-gradient-to-r from-[#018d71] to-[#01b892] text-white text-base font-semibold rounded-full border-none tracking-widest mt-2 shadow-[0_4px_12px_rgba(1,141,113,0.35)] center"
+          :disabled="submitting" @click="onLogin">
+          <text v-if="!submitting">{{ $t('auth.loginBtn') }}</text>
+          <view v-else class="flex gap-1.5 items-center">
+            <view class="dot" />
+            <view class="dot" />
+            <view class="dot" />
+          </view>
+        </button>
+
+        <view class="flex items-center gap-2.5 my-1">
+          <view class="flex-1 h-px bg-gray-100" />
+          <text class="text-xs text-gray-300 whitespace-nowrap">{{ $t('auth.otherLogin') }}</text>
+          <view class="flex-1 h-px bg-gray-100" />
+        </view>
+        <view class="flex justify-center gap-15">
+          <view class="flex flex-col items-center gap-1.5" @click="onThirdLogin('wechat')">
+            <view class="w-12 h-12 rounded-full bg-gray-50 center border border-gray-100 text-xl">💬</view>
+            <text class="text-xs text-gray-400">{{ $t('auth.wechat') }}</text>
+          </view>
+          <view class="flex flex-col items-center gap-1.5" @click="onThirdLogin('apple')">
+            <view class="w-12 h-12 rounded-full bg-gray-50 center border border-gray-100 text-xl">🍎</view>
+            <text class="text-xs text-gray-400">{{ $t('auth.apple') }}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 注册：邮箱或手机号 + 验证码（下发方式由服务端区分） -->
+      <view v-else class="flex flex-col gap-3.5">
+        <view class="flex items-center bg-gray-50 rounded-2xl px-3.5 h-13 border-2 border-transparent transition-all"
+          :class="focused === 'regAccount' ? 'border-[#018d71] bg-[#f0fdf8]' : ''">
+          <text class="text-xl mr-2.5 flex-shrink-0">📧</text>
+          <input v-model="account" class="flex-1 text-sm text-gray-800 bg-transparent h-full" type="text"
+            :placeholder="$t('auth.registerAccount')" placeholder-class="text-gray-300 text-sm"
+            @focus="focused = 'regAccount'" @blur="focused = ''" />
+        </view>
+        <view class="flex items-center bg-gray-50 rounded-2xl px-3.5 h-13 border-2 border-transparent transition-all"
+          :class="focused === 'sms' ? 'border-[#018d71] bg-[#f0fdf8]' : ''">
+          <text class="text-xl mr-2.5 flex-shrink-0">🔢</text>
+          <input v-model="registerForm.vCode" class="flex-1 text-sm text-gray-800 bg-transparent h-full" type="text"
+            maxlength="12" :placeholder="$t('auth.verifyCode')" placeholder-class="text-gray-300 text-sm"
+            @focus="focused = 'sms'" @blur="focused = ''" />
+          <button class="text-xs border-none rounded-lg px-2.5 py-1.5 ml-2 flex-shrink-0"
+            :class="smsCountdown > 0 ? 'text-gray-400 bg-gray-100' : 'text-[#018d71] bg-[#e6f7f3]'"
+            :disabled="smsCountdown > 0" @click="onSendVerifyCode">{{ smsCountdown > 0 ? `${smsCountdown}s` :
+              $t('auth.getVerifyCode')
+            }}</button>
+        </view>
+        <view class="flex items-center bg-gray-50 rounded-2xl px-3.5 h-13 border-2 border-transparent transition-all"
+          :class="focused === 'regPwd' ? 'border-[#018d71] bg-[#f0fdf8]' : ''">
+          <text class="text-xl mr-2.5 flex-shrink-0">🔒</text>
+          <input v-model="registerForm.password" class="flex-1 text-sm text-gray-800 bg-transparent h-full"
+            :class="{ 'pwd-masked': !showRegPwd && registerForm.password.length > 0 }" type="text"
+            :placeholder="$t('auth.setPwd')" placeholder-class="text-gray-300 text-sm" @focus="focused = 'regPwd'"
+            @blur="focused = ''" />
+          <text class="ml-2 flex-shrink-0 text-gray-400 text-base select-none" @click.stop="showRegPwd = !showRegPwd">{{
+            showRegPwd ? '🙈' : '👁' }}</text>
+        </view>
+        <view class="flex items-center bg-gray-50 rounded-2xl px-3.5 h-13 border-2 border-transparent transition-all"
+          :class="focused === 'confirm' ? 'border-[#018d71] bg-[#f0fdf8]' : ''">
+          <text class="text-xl mr-2.5 flex-shrink-0">🔒</text>
+          <input v-model="registerForm.confirmPassword" class="flex-1 text-sm text-gray-800 bg-transparent h-full"
+            :class="{ 'pwd-masked': !showRegPwd && registerForm.confirmPassword.length > 0 }" type="text"
+            :placeholder="$t('auth.confirmPwd')" placeholder-class="text-gray-300 text-sm" @focus="focused = 'confirm'"
+            @blur="focused = ''" />
+        </view>
+
+        <view class="flex items-center flex-wrap gap-1 -mt-1">
+          <view class="w-4.5 h-4.5 rounded flex-shrink-0 border-2 center transition-all mr-1"
+            :class="agreed ? 'bg-[#018d71] border-[#018d71]' : 'border-gray-300'" @click="agreed = !agreed"><text
+              v-if="agreed" class="text-xs text-white font-bold">✓</text></view>
+          <text class="text-xs text-gray-400">{{ $t('auth.agreePrefix') }}</text>
+          <text class="text-xs text-[#018d71]" @click="onViewAgreement('user')">{{ $t('auth.userAgreement') }}</text>
+          <text class="text-xs text-gray-400">{{ $t('auth.and') }}</text>
+          <text class="text-xs text-[#018d71]" @click="onViewAgreement('privacy')">{{ $t('auth.privacyPolicy') }}</text>
+        </view>
+
+        <button
+          class="w-full h-12 bg-gradient-to-r from-[#018d71] to-[#01b892] text-white text-base font-semibold rounded-full border-none tracking-widest mt-2 shadow-[0_4px_12px_rgba(1,141,113,0.35)] center"
+          :disabled="submitting" @click="onRegister">
+          <text v-if="!submitting">{{ $t('auth.registerBtn') }}</text>
+          <view v-else class="flex gap-1.5 items-center">
+            <view class="dot" />
+            <view class="dot" />
+            <view class="dot" />
+          </view>
+        </button>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script lang="ts" setup>
+import { useUserStore } from '@/store/user'
+import UserService from '@/api/user'
+import { useI18n } from 'vue-i18n'
+import i18n from '@/locale'
+// #ifdef H5
+// #endif
+
+definePage({
+  type: 'page',
+  style: { navigationStyle: 'custom', navigationBarTitleText: i18n.global.t('page.login') },
+})
+
+const userStore = useUserStore()
+const { t } = useI18n()
+const { safeAreaInsets } = uni.getSystemInfoSync()
+
+const mode = ref<'login' | 'register'>('login')
+const focused = ref('')
+const submitting = ref(false)
+const showLoginPwd = ref(false)
+const showRegPwd = ref(false)
+const agreed = ref(false)
+const smsCountdown = ref(0)
+/** H5 Turnstile 回调写入，作为发送验证码接口的 vCode */
+const turnstileToken = ref('')
+
+const account = ref('')
+const loginForm = reactive({ password: '' })
+/** 注册：account 为邮箱或手机号；昵称由服务端默认规则生成（邮箱前缀 / 手机号） */
+const registerForm = reactive({
+  vCode: '',
+  password: '',
+  confirmPassword: '',
+})
+
+let smsTimer: ReturnType<typeof setInterval> | null = null
+
+function startSmsCountdown() {
+  if (smsTimer) {
+    clearInterval(smsTimer)
+    smsTimer = null
+  }
+  smsCountdown.value = 60
+  smsTimer = setInterval(() => {
+    if (--smsCountdown.value <= 0 && smsTimer) { clearInterval(smsTimer); smsTimer = null }
+  }, 1000)
+}
+
+function isValidEmail(s: string) {
+  const t = s.trim()
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t)
+}
+
+function isValidPhoneCN(s: string) {
+  const t = s.trim()
+  return /^1\d{10}$/.test(t)
+}
+
+/** 拆成 SignupVerify / sendVerifyCode / Signup 用的 mail 或 phone（互斥） */
+function splitRegisterAccount(account: string): { mail?: string; phone?: string; countryCallingCode?: string } {
+  const t = account.trim()
+  if (isValidEmail(t)) return { mail: t }
+  else return { phone: t, countryCallingCode: '86' }
+}
+
+function defaultRegisterName(account: string): string {
+  const t = account.trim()
+  if (isValidEmail(t)) {
+    const local = (t.split('@')[0] || 'user').trim()
+    return (local.length > 10 ? local.slice(0, 10) : local) || 'user'
+  }
+  if (isValidPhoneCN(t)) return t.length > 10 ? t.slice(-10) : t
+  return 'user'
+}
+
+/** 发送验证码：Web 用 Turnstile token；其它端可用环境变量 VITE_SIGNUP_VERIFY_CODE（如人机或测试码） */
+function getSendVerifyVCode(): string {
+  try {
+    const uniPlatform = uni.getSystemInfoSync().uniPlatform
+    if (uniPlatform === 'web') return turnstileToken.value || 'dev'
+  } catch {
+    /* empty */
+  }
+  return String(import.meta.env.VITE_SIGNUP_VERIFY_CODE || '')
+}
+
+async function onSendVerifyCode() {
+  const req = splitRegisterAccount(account.value)
+  if (!req.mail && !req.phone) return uni.showToast({ title: t('auth.err.accountOrPhone'), icon: 'none' })
+  const vCode = getSendVerifyVCode()
+  if (!vCode) return uni.showToast({ title: t('auth.err.turnstile'), icon: 'none' })
+  try {
+    await UserService.signupVerify(req)
+    req.vCode = vCode
+    req.action = 1
+    await UserService.sendVerifyCode(req)
+    startSmsCountdown()
+    uni.showToast({ title: t('auth.codeSent'), icon: 'success' })
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+async function onLogin() {
+  if (!account.value.trim()) return uni.showToast({ title: t('auth.err.account'), icon: 'none' })
+  if (!loginForm.password) return uni.showToast({ title: t('auth.err.password'), icon: 'none' })
+  submitting.value = true
+
+  const req = { ...splitRegisterAccount(account.value), password: loginForm.password }
+  try { await userStore.login(req) }
+  catch (e) {
+    console.log(e)
+  } finally {
+    submitting.value = false
+  }
+}
+
+async function onRegister() {
+  const req = splitRegisterAccount(account.value)
+  if (!req.mail && !req.phone) return uni.showToast({ title: t('auth.err.accountOrPhone'), icon: 'none' })
+  if (!registerForm.vCode.trim()) return uni.showToast({ title: t('auth.err.smsCode'), icon: 'none' })
+  if (registerForm.password.length < 6) return uni.showToast({ title: t('auth.err.pwdLength'), icon: 'none' })
+  if (registerForm.password !== registerForm.confirmPassword) return uni.showToast({ title: t('auth.err.pwdNotMatch'), icon: 'none' })
+  if (!agreed.value) return uni.showToast({ title: t('auth.err.agreement'), icon: 'none' })
+  submitting.value = true
+  try {
+    await userStore.signup({
+      password: registerForm.password,
+      vCode: registerForm.vCode.trim(),
+      ...req,
+    })
+      mode.value = 'login'
+      account.value = ''
+      registerForm.vCode = ''
+      registerForm.password = ''
+      registerForm.confirmPassword = ''
+
+  } finally {
+    submitting.value = false
+  }
+}
+
+function onForgotPwd() { uni.showToast({ title: t('auth.err.forgotPwd'), icon: 'none' }) }
+function onThirdLogin(type: string) { uni.showToast({ title: t('auth.err.thirdLogin', { type }), icon: 'none' }) }
+function onViewAgreement(type: string) { uni.showToast({ title: t(type === 'user' ? 'auth.userAgreement' : 'auth.privacyPolicy'), icon: 'none' }) }
+
+onUnmounted(() => { if (smsTimer) clearInterval(smsTimer) })
+
+// #ifdef H5
+onMounted(() => {
+  const render = () => {
+    (window as any).turnstile.render('#cf-turnstile', {
+      sitekey: '0x4AAAAAAAgC9s4WZMlljGRg',
+      callback: (token: string) => {
+        turnstileToken.value = token
+      },
+    })
+  };
+    if ((window as any).turnstile) render()
+    else {(window as any).onloadTurnstileCallback = render}
+})
+// #endif
+</script>
+
+<style scoped>
+/* loading 动画无法用 utility 表达 */
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+  animation: pulse 1.2s infinite ease-in-out;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.pwd-masked {
+  -webkit-text-security: disc;
+}
+
+@keyframes pulse {
+
+  0%,
+  80%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.5;
+  }
+
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+</style>

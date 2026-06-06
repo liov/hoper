@@ -2,10 +2,11 @@ package service
 
 import (
 	"context"
-	"github.com/hopeio/context/httpctx"
-	"github.com/hopeio/scaffold/errcode"
+	"time"
 
-	gormi "github.com/hopeio/gox/datax/database/gorm"
+	"github.com/hopeio/scaffold/errcode"
+	global2 "github.com/liov/hoper/server/go/global"
+
 	"github.com/liov/hoper/server/go/content/data"
 	dbdao "github.com/liov/hoper/server/go/content/data/db"
 	"github.com/liov/hoper/server/go/content/model"
@@ -14,10 +15,10 @@ import (
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/hopeio/protobuf/request"
-	"github.com/hopeio/gox/datastructure/set"
+	"github.com/hopeio/gox/container/set"
 	"github.com/hopeio/gox/log"
 	"github.com/hopeio/gox/slices"
+	"github.com/hopeio/protobuf/request"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -30,16 +31,13 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 	if req.Action != content.ActionLike && req.Action != content.ActionUnlike && req.Action != content.ActionBrowse {
 		return nil, nil
 	}
-	ctxi, _ := httpctx.FromContext(ctx)
-	span := ctxi.StartSpan("Like")
-	defer span.End()
-	auth, err := auth(ctxi, true)
+
+	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
-
-	contentDBDao := dbdao.GetDao(ctxi, db)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	contentDBDao := dbdao.GetDao(db)
 
 	req.UserId = auth.Id
 
@@ -51,11 +49,12 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 		return &request.Id{Id: id}, nil
 	}
 
-	err = contentDBDao.Transaction(func(tx *gorm.DB) error {
-		contenttxDBDao := dbdao.GetDao(ctxi, tx)
+	err = db.Transaction(func(tx *gorm.DB) error {
+		contenttxDBDao := dbdao.GetDao(tx)
 		err = tx.Table(model.TableNameLike).Create(req).Error
 		if err != nil {
-			return ctxi.RespErrorLog(errcode.DBError, err, "Create")
+			log.Errorw("Create", zap.Error(err))
+			return errcode.DBError.Wrap(err)
 		}
 
 		err = contenttxDBDao.ActionCount(req.Type, req.Action, req.RefId, 1)
@@ -67,25 +66,23 @@ func (*ActionService) Like(ctx context.Context, req *content.LikeReq) (*request.
 	if err != nil {
 		return nil, err
 	}
-	contentRedisDao := data.GetRedisDao(ctxi, global.Dao.Redis)
-	err = contentRedisDao.HotCount(req.Type, req.RefId, 1)
+	contentRedisDao := data.GetRedisDao(global.Dao.Redis.Client)
+	err = contentRedisDao.HotCount(ctx, req.Type, req.RefId, 1)
 
 	if err != nil {
-		return nil, ctxi.RespErrorLog(errcode.RedisErr, err, "HotCountRedis")
+		log.Errorw("HotCountRedis", zap.Error(err))
+		return nil, errcode.RedisErr.Wrap(err)
 	}
 	return &request.Id{Id: req.Id}, nil
 }
 
 func (*ActionService) DelLike(ctx context.Context, req *request.Id) (*emptypb.Empty, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	span := ctxi.StartSpan("")
-	defer span.End()
-	auth, err := auth(ctxi, true)
+	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
-	contentDBDao := data.GetDBDao(ctxi, db)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	contentDBDao := data.GetDBDao(db)
 
 	like, err := contentDBDao.GetLike(req.Id, auth.Id)
 	if err != nil {
@@ -102,8 +99,8 @@ func (*ActionService) DelLike(ctx context.Context, req *request.Id) (*emptypb.Em
 	if err != nil {
 		return nil, err
 	}
-	contentRedisDao := data.GetRedisDao(ctxi, global.Dao.Redis)
-	err = contentRedisDao.HotCount(like.Type, like.RefId, -1)
+	contentRedisDao := data.GetRedisDao(global.Dao.Redis.Client)
+	err = contentRedisDao.HotCount(ctx, like.Type, like.RefId, -1)
 	if err != nil {
 		return nil, err
 	}
@@ -111,22 +108,20 @@ func (*ActionService) DelLike(ctx context.Context, req *request.Id) (*emptypb.Em
 }
 
 func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*request.Id, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
-	auth, err := auth(ctxi, true)
+	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
-
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	req.UserId = auth.Id
 	err = db.Transaction(func(tx *gorm.DB) error {
-		contenttxDBDao := dbdao.GetDao(ctxi, tx)
+		contenttxDBDao := dbdao.GetDao(tx)
 		err = tx.Table(model.TableNameComment).Create(req).Error
 		if err != nil {
-			return ctxi.RespErrorLog(errcode.DBError, err, "Create")
+			log.Errorw("Create", zap.Error(err))
+			return errcode.DBError.Wrap(err)
 		}
-		err = contenttxDBDao.CreateContextExt(content.ContentComment, req.Id)
+		err = contenttxDBDao.CreateContextExt(ctx, content.ContentComment, req.Id)
 		if err != nil {
 			return err
 		}
@@ -138,12 +133,12 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*re
 	})
 	if err != nil {
 		if err != errcode.DBError {
-			ctxi.ErrorLog(err, zap.String(log.FieldPosition, "Transaction"))
+			log.Errorw("Transaction", zap.Error(err))
 		}
 		return nil, err
 	}
-	contentRedisDao := data.GetRedisDao(ctxi, global.Dao.Redis)
-	err = contentRedisDao.HotCount(req.Type, req.RefId, 1)
+	contentRedisDao := data.GetRedisDao(global.Dao.Redis.Client)
+	err = contentRedisDao.HotCount(ctx, req.Type, req.RefId, 1)
 	if err != nil {
 		return nil, err
 	}
@@ -151,26 +146,27 @@ func (*ActionService) Comment(ctx context.Context, req *content.CommentReq) (*re
 }
 
 func (*ActionService) DelComment(ctx context.Context, req *request.Id) (*emptypb.Empty, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
-	auth, err := auth(ctxi, true)
+
+	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
-	contentDBDao := data.GetDBDao(ctxi, db)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	contentDBDao := data.GetDBDao(db)
 
 	var comment content.Comment
 	err = db.Table(model.TableNameComment).First(&comment, "id = ?", req.Id).Error
 	if err != nil {
-		return nil, ctxi.RespErrorLog(errcode.DBError, err, "Find")
+		log.Errorw("Find", zap.Error(err))
+		return nil, errcode.DBError.Wrap(err)
 	}
 	if comment.UserId != auth.Id {
 		var userId uint64
 		err = db.Table(model.ContentTableName(comment.Type)).Select("user_id").
 			Where(`id = ?`, comment.RefId).Scan(&userId).Error
 		if err != nil {
-			return nil, ctxi.RespErrorLog(errcode.DBError, err, "SelectUserId")
+			log.Errorw("Find", zap.Error(err))
+			return nil, errcode.DBError.Wrap(err)
 		}
 		if userId != auth.Id {
 			return nil, errcode.PermissionDenied
@@ -185,8 +181,8 @@ func (*ActionService) DelComment(ctx context.Context, req *request.Id) (*emptypb
 	if err != nil {
 		return nil, err
 	}
-	contentRedisDao := data.GetRedisDao(ctxi, global.Dao.Redis)
-	err = contentRedisDao.HotCount(comment.Type, comment.RefId, -1)
+	contentRedisDao := data.GetRedisDao(global.Dao.Redis.Client)
+	err = contentRedisDao.HotCount(ctx, comment.Type, comment.RefId, -1)
 	if err != nil {
 		return nil, err
 	}
@@ -194,14 +190,13 @@ func (*ActionService) DelComment(ctx context.Context, req *request.Id) (*emptypb
 }
 
 func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*emptypb.Empty, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
-	auth, err := auth(ctxi, true)
+	//metadata := context2.GetMetadata[*user.AuthInfo](ctx)
+	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
-	contentDBDao := data.GetDBDao(ctxi, db)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	contentDBDao := data.GetDBDao(db)
 
 	req.UserId = auth.Id
 	collects, err := contentDBDao.GetCollects(req.Type, []uint64{req.RefId}, auth.Id)
@@ -221,21 +216,23 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*em
 	}
 	for _, id := range diff {
 		collect.FavId = id
-		err = db.Table(model.TableNameCollect).Create(&collect).Error
+		err = contentDBDao.Table(model.TableNameCollect).Create(&collect).Error
 		if err != nil {
-			return nil, ctxi.RespErrorLog(errcode.DBError, err, "Create")
+			log.Errorw("Create", zap.Error(err))
+			return nil, errcode.DBError.Wrap(err)
 		}
 	}
 	if len(origin) == 0 && len(req.FavIds) > 0 {
 		err = contentDBDao.ActionCount(req.Type, content.ActionCollect, req.RefId, 1)
 		if err != nil {
-			return nil, ctxi.RespErrorLog(errcode.DBError, err, "ActionCount")
+			log.Errorw("ActionCount", zap.Error(err))
+			return nil, errcode.DBError.Wrap(err)
 		}
 	}
-	err = db.Table(model.TableNameCollect).Where(`type = ? AND ref_id = ? AND fav_id NOT IN (?)`, req.Type, req.RefId, req.FavIds).
-		Update(`deleted_at`, ctxi.RequestAt.String()).Error
+	err = contentDBDao.Table(model.TableNameCollect).Where(`type = ? AND ref_id = ? AND fav_id NOT IN (?)`, req.Type, req.RefId, req.FavIds).
+		Update(`deleted_at`, time.Now()).Error
 	if err != nil {
-		return nil, ctxi.RespErrorLog(errcode.DBError, err, "DELETE")
+		return nil, errcode.DBError.Wrap(err)
 	}
 	var hotCount float64
 	if len(origin) == 0 && len(req.FavIds) > 0 {
@@ -245,10 +242,11 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*em
 		hotCount = -1
 	}
 	if hotCount != 0 {
-		contentRedisDao := data.GetRedisDao(ctxi, global.Dao.Redis)
-		err = contentRedisDao.HotCount(req.Type, req.RefId, hotCount)
+		contentRedisDao := data.GetRedisDao(global.Dao.Redis.Client)
+		err = contentRedisDao.HotCount(ctx, req.Type, req.RefId, hotCount)
 		if err != nil {
-			return nil, err
+			log.Errorw("HotCountRedis", zap.Error(err))
+			return nil, errcode.RedisErr.Wrap(err)
 		}
 	}
 
@@ -256,51 +254,51 @@ func (*ActionService) Collect(ctx context.Context, req *content.CollectReq) (*em
 }
 
 func (*ActionService) Report(ctx context.Context, req *content.ReportReq) (*emptypb.Empty, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
-	auth, err := auth(ctxi, true)
+
+	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
-	contentRedisDao := data.GetRedisDao(ctxi, global.Dao.Redis)
-	err = contentRedisDao.Limit(&global.Conf.Moment.Limit)
+	contentRedisDao := data.GetRedisDao(global.Dao.Redis.Client)
+	err = contentRedisDao.Limit(ctx, &global.Conf.Moment.Limit, auth.Id)
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
 	req.UserId = auth.Id
 	err = db.Transaction(func(tx *gorm.DB) error {
-		contenttxDBDao := data.GetDBDao(ctxi, tx)
+		contenttxDBDao := data.GetDBDao(tx)
 		err = tx.Table(model.TableNameReport).Create(req).Error
 		if err != nil {
-			return ctxi.RespErrorLog(errcode.DBError, err, "Create")
+			log.Errorw("Create", zap.String(log.FieldPosition, "Create"), zap.Error(err))
+			return errcode.DBError.Wrap(err)
 		}
 		err = contenttxDBDao.ActionCount(req.Type, content.ActionReport, req.RefId, 1)
 		if err != nil {
-			return err
+			log.Errorw("ActionCount", zap.Error(err))
+			return errcode.DBError.Wrap(err)
 		}
 		return nil
 	})
 	if err != nil {
 		if err != errcode.DBError {
-			ctxi.ErrorLog(err, zap.String(log.FieldPosition, "Transaction"))
+			log.Errorw("Transaction", zap.String(log.FieldPosition, "Transaction"), zap.Error(err))
 		}
 		return nil, errcode.DBError
 	}
 	return new(emptypb.Empty), nil
 }
 
-func (*ActionService) CommentList(ctx context.Context, req *content.CommentListReq) (*content.CommentListRep, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
-	auth, err := auth(ctxi, true)
+func (*ActionService) CommentList(ctx context.Context, req *content.CommentListReq) (*content.CommentListResp, error) {
+
+	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
-	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
-	contentDBDao := data.GetDBDao(ctxi, db)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	contentDBDao := data.GetDBDao(db)
 
-	total, comments, err := contentDBDao.GetComments(content.ContentMoment, req.RefId, req.RootId, int(req.PageNo), int(req.PageSize))
+	total, comments, err := contentDBDao.GetComments(content.ContentMoment, req.RefId, req.RootId, req.PageNo, req.PageSize)
 	if err != nil {
 		return nil, err
 	}
@@ -316,7 +314,7 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 		commentMaskField(comments[i])
 	}
 	// ext
-	statistics, err := contentDBDao.GetStatistics(content.ContentComment, ids)
+	statistics, err := contentDBDao.GetStatistics(ctx, content.ContentComment, ids)
 	if err != nil {
 		return nil, err
 	}
@@ -360,13 +358,13 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 	}
 	var users []*user.UserBase
 	if len(userIds) > 0 {
-		userList, err := data.UserClient().BaseList(ctxi.Base(), &user.BaseListReq{Ids: userIds.ToSlice()})
+		userList, err := global2.UserClient().BaseList(ctx, &user.BaseListReq{Ids: userIds.ToSlice()})
 		if err != nil {
 			return nil, err
 		}
 		users = userList.List
 	}
-	return &content.CommentListRep{
+	return &content.CommentListResp{
 		Total: total,
 		List:  comments,
 		Users: users,
@@ -375,19 +373,17 @@ func (*ActionService) CommentList(ctx context.Context, req *content.CommentListR
 
 // 屏蔽字段
 func commentMaskField(comment *content.Comment) {
-	comment.DeletedAt = nil
+	comment.ModelTime.DeletedAt = nil
 }
 
 func (*ActionService) GetUserAction(ctx context.Context, req *content.ContentReq) (*content.UserAction, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
-	auth, err := auth(ctxi, true)
+
+	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
-
-	db := gormi.NewTraceDB(global.Dao.GORMDB.DB, ctx, ctxi.TraceID())
-	contentDBDao := dbdao.GetDao(ctxi, db)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	contentDBDao := dbdao.GetDao(db)
 
 	action := &content.UserAction{}
 	likes, err := contentDBDao.GetContentActions(content.ActionLike, content.ContentMoment, []uint64{req.RefId}, auth.Id)

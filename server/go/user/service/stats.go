@@ -2,9 +2,10 @@ package service
 
 import (
 	"context"
-	"github.com/hopeio/context/httpctx"
+	"time"
+
+	sqlx "github.com/hopeio/gox/database/sql"
 	"github.com/hopeio/scaffold/errcode"
-	dbi "github.com/hopeio/gox/datax/database/sql"
 	"github.com/liov/hoper/server/go/global"
 	"github.com/liov/hoper/server/go/protobuf/user"
 	"github.com/liov/hoper/server/go/user/data"
@@ -14,16 +15,14 @@ import (
 
 // 关注
 func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*emptypb.Empty, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
 
-	auth, err := auth(ctxi, true)
+	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
-
-	userDao := data.GetDBDao(ctxi, global.Dao.GORMDB.DB)
-	exists, err := userDao.FollowExistsDB(req.Id, auth.Id)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	userDao := data.GetDBDao(db)
+	exists, err := userDao.FollowExistsDB(ctx, req.Id, auth.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -35,33 +34,31 @@ func (u *UserService) Follow(ctx context.Context, req *user.FollowReq) (*emptypb
 		FollowId: auth.Id,
 	}).Error
 	if err != nil {
-		return nil, ctxi.RespErrorLog(errcode.DBError, err, "Create")
+		return nil, errcode.DBError.Wrap(err)
 	}
 	return new(emptypb.Empty), nil
 }
 
 // 取消关注
-func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user.BaseListRep, error) {
-	ctxi, _ := httpctx.FromContext(ctx)
-	defer ctxi.StartSpanEnd("")()
+func (u *UserService) DelFollow(ctx context.Context, req *user.FollowReq) (*user.BaseListResp, error) {
 
-	auth, err := auth(ctxi, true)
+	auth, err := auth(ctx, true)
 	if err != nil {
 		return nil, err
 	}
-
-	userDao := data.GetDBDao(ctxi, global.Dao.GORMDB.DB)
-	exists, err := userDao.FollowExistsDB(req.Id, auth.Id)
+	db := global.Dao.GORMDB.DB.WithContext(ctx)
+	userDao := data.GetDBDao(db)
+	exists, err := userDao.FollowExistsDB(ctx, req.Id, auth.Id)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
 		return nil, nil
 	}
-	err = userDao.Table(model.TableNameFollow).Where("user_id = ? AND follow_id = ?"+dbi.WithNotDeleted, req.Id, auth.Id).
-		UpdateColumn("deleted_at", ctxi.RequestAt.String()).Error
+	err = userDao.Table(model.TableNameFollow).Where("user_id = ? AND follow_id = ?"+sqlx.WithNotDeleted, req.Id, auth.Id).
+		UpdateColumn("deleted_at", time.Now()).Error
 	if err != nil {
-		return nil, ctxi.RespErrorLog(errcode.DBError, err, "Create")
+		return nil, errcode.DBError.Wrap(err)
 	}
 	return nil, nil
 }

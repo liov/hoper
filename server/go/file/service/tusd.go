@@ -2,12 +2,13 @@ package service
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/hopeio/gox/log"
 	tusd "github.com/tus/tusd/v2/pkg/handler"
-	"net/http"
 )
 
-func init() {
+func InitTusd() {
 	// Create a new FileStore instance which is responsible for
 	// storing the uploaded file on disk in the specified directory.
 	// This path _must_ exist before tusd will store uploads in it.
@@ -15,7 +16,7 @@ func init() {
 	// a remote FTP server, you can implement your own storage backend
 	// by implementing the tusd.DataStore interface.
 
-	store := NewFileStore("./data/uploads")
+	store := NewFileStore("./.data/uploads")
 
 	// A storage backend for tusd may consist of multiple different parts which
 	// handle upload creation, locking, termination and so on. The composer is a

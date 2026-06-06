@@ -1,16 +1,12 @@
-import 'package:applib/util/async.dart';
-import 'package:app/generated/protobuf/content/content.model.pb.dart' as $moment;
+import 'package:app/util/async.dart';
 
-import 'package:app/global/state.dart';
 
-import 'package:app/pages/moment/item/moment_item_view.dart';
-import 'package:app/pages/moment/detail/moment_detail_view.dart';
 
 import 'package:flutter/material.dart';
 
 
 class SampleView extends StatefulWidget {
-  SampleView({this.tag = "default"}) : super();
+  const SampleView({super.key, this.tag = "default"});
 
   final String tag;
 
@@ -46,9 +42,9 @@ class _SampleState extends State<SampleView> with AutomaticKeepAliveClientMixin,
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final _future = addTimes();
+    final future = addTimes();
     return FutureBuilder<void>(
-        future: _future,
+        future: future,
         builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
           return snapshot.handle() ??  Center(child: Text('$times'),);
   });
@@ -69,10 +65,6 @@ class _SampleState extends State<SampleView> with AutomaticKeepAliveClientMixin,
   }
 
   // 当State对象从树中被移除时，会调用此回调。在一些场景下，Flutter framework会将State对象重新插到树中，如包含此State对象的子树在树的一个位置移动到另一个位置时（可以通过GlobalKey来实现）。如果移除后没有重新插入到树中则紧接着会调用dispose()方法。
-  @override
-  void deactivate() {
-    super.deactivate();
-  }
 
   @override
   void activate() {

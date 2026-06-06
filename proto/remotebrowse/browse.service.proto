@@ -1,0 +1,164 @@
+syntax = "proto3";
+package remotebrowse;
+
+import "remotebrowse/browse.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "hopeio/utils/patch/go.proto";
+
+option java_package = "xyz.hoper.protobuf.remotebrowse";
+option java_multiple_files = true;
+option go_package = "github.com/liov/hoper/server/go/protobuf/remotebrowse";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    version: "1.0"
+  }
+};
+
+message ThumbnailRequest {
+  string path = 1 [(go.field) = {tags:'form:"path" comment:"源文件绝对路径"'}];
+  string hash = 2 [(go.field) = {tags:'form:"hash" comment:"缩略图内容哈希，命中则优先读 Go 本地缓存"'}];
+  uint32 max_edge = 3 [(go.field) = {tags:'form:"max_edge" comment:"最长边像素"'}];
+}
+
+message ThumbnailResponse {
+  bytes data = 1;
+  string mime = 2;
+  string thumb_hash = 3;
+  string cache_path = 4;
+}
+
+message ThumbnailBatchRequest {
+  repeated string paths = 1;
+  uint32 max_edge = 2;
+}
+
+message ThumbnailBatchItem {
+  string path = 1;
+  bytes data = 2;
+  string thumb_hash = 3;
+  /// 非空表示该 path 无缩略图（非图片等）
+  string error = 4;
+}
+
+message ThumbnailBatchResponse {
+  repeated ThumbnailBatchItem items = 1;
+}
+
+message ReadFileRequest {
+  string path = 1;
+  int64 offset = 2;
+  uint32 length = 3;
+}
+
+message ReadFileResponse {
+  string path = 1;
+  int64 total_size = 2;
+  string mime = 3;
+  bytes data = 4;
+  bool eof = 5;
+  string error = 6;
+}
+
+message DeleteFileRequest {
+  string path = 1;
+}
+
+message DeleteFileResponse {
+  string path = 1;
+  string error = 2;
+}
+
+message HealthResponse {
+  string signal_ws = 1;
+  string relay_tcp = 2;
+  string rb_grpc = 3;
+  string thumb_cache = 4;
+}
+
+message ThumbnailChunk {
+  bytes data = 1;
+  string thumb_hash = 2;
+  string mime = 3;
+  bool done = 4;
+  string error = 5;
+}
+
+service RemoteBrowseService {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {
+    description: "远程浏览 HTTP/gRPC"
+  };
+
+  rpc GetHealth (google.protobuf.Empty) returns (HealthResponse) {
+    option (google.api.http) = {
+      get: "/rb/health"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: ["远程浏览", "v1.0.0"]
+      summary: "健康与依赖地址"
+    };
+  }
+
+  rpc ListFiles (ListFilesRequest) returns (ListFilesResponse) {
+    option (google.api.http) = {
+      get: "/rb/v1/list"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: ["远程浏览", "v1.0.0"]
+      summary: "列举目录文件"
+    };
+  }
+
+  rpc GetThumbnail (ThumbnailRequest) returns (ThumbnailResponse) {
+    option (google.api.http) = {
+      post: "/rb/v1/thumb"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: ["远程浏览", "v1.0.0"]
+      summary: "获取缩略图"
+    };
+  }
+
+  rpc ThumbnailPipe (stream ThumbnailRequest) returns (stream ThumbnailChunk) {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: ["远程浏览", "v1.0.0"]
+      summary: "缩略图双向流"
+    };
+  }
+
+  rpc GetThumbnailBatch (ThumbnailBatchRequest) returns (ThumbnailBatchResponse) {
+    option (google.api.http) = {
+      post: "/rb/v1/thumb/batch"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: ["远程浏览", "v1.0.0"]
+      summary: "批量缩略图"
+    };
+  }
+
+  rpc ReadFile (ReadFileRequest) returns (stream ReadFileResponse) {
+    option (google.api.http) = {
+      post: "/rb/v1/read"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: ["远程浏览", "v1.0.0"]
+      summary: "分片读取文件（HTTP 为单次 ReadFileResponse）"
+    };
+  }
+
+  rpc DeleteFile (DeleteFileRequest) returns (DeleteFileResponse) {
+    option (google.api.http) = {
+      post: "/rb/v1/delete"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: ["远程浏览", "v1.0.0"]
+      summary: "删除文件"
+    };
+  }
+}

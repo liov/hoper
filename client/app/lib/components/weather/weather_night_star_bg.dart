@@ -10,7 +10,7 @@ import 'package:app/components/weather/weather_type.dart';
 class WeatherNightStarBg extends StatefulWidget {
   final WeatherType weatherType;
 
-  WeatherNightStarBg({Key? key, required this.weatherType}) : super(key: key);
+  const WeatherNightStarBg({super.key, required this.weatherType});
 
   @override
   _WeatherNightStarBgState createState() => _WeatherNightStarBgState();
@@ -19,8 +19,8 @@ class WeatherNightStarBg extends StatefulWidget {
 class _WeatherNightStarBgState extends State<WeatherNightStarBg>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  List<_StarParam> _starParams = [];
-  List<_MeteorParam> _meteorParams = [];
+  final List<_StarParam> _starParams = [];
+  final List<_MeteorParam> _meteorParams = [];
   WeatherDataState _state = WeatherDataState.init;
   late double width;
   late double height;
@@ -45,9 +45,9 @@ class _WeatherNightStarBgState extends State<WeatherNightStarBg>
   void initStarParams() {
     for (int i = 0; i < 100; i++) {
       var index = Random().nextInt(2);
-      _StarParam _starParam = _StarParam(index);
-      _starParam.init(width, height, widthRatio);
-      _starParams.add(_starParam);
+      _StarParam starParam = _StarParam(index);
+      starParam.init(width, height, widthRatio);
+      _starParams.add(starParam);
     }
     for (int i = 0; i < 4; i++) {
       _MeteorParam param = _MeteorParam();

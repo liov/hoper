@@ -1,4 +1,3 @@
-import 'dart:async';
 
 
 import 'package:app/components/weather/weather_bg.dart';
@@ -6,10 +5,10 @@ import 'package:app/components/weather/weather_rain_snow_bg.dart';
 
 import 'package:app/components/weather/weather_type.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:app/util/nav.dart';
 
 class ChristmasTree extends StatefulWidget {
-  ChristmasTree({Key? key}) : super(key: key);
+  const ChristmasTree({super.key});
 
   @override
   _ChristmasTreeState createState() => _ChristmasTreeState();
@@ -44,7 +43,7 @@ class _ChristmasTreeState extends State<ChristmasTree> with TickerProviderStateM
         child: buildTree(),
     );
   }
-  buildTree() {
+  Column buildTree() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -57,7 +56,7 @@ class _ChristmasTreeState extends State<ChristmasTree> with TickerProviderStateM
     );
   }
 
-  buildRow(int i) {
+  Wrap buildRow(int i) {
     return Wrap(
       children: [
         for (var j = 0; j <= i; j++)
@@ -95,22 +94,24 @@ class _ChristmasTreeState extends State<ChristmasTree> with TickerProviderStateM
 }
 
 class SnowChristmasTree extends StatelessWidget{
+  const SnowChristmasTree({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.black,
         body: SizeInherited(
-            size: Size(Get.width, Get.height),
+            size: Size(AppNavigator.width, AppNavigator.height),
             child: Stack(
               children: [
                 SizedBox(
-                    width: Get.width,
-                    height: Get.height,
+                    width: AppNavigator.width,
+                    height: AppNavigator.height,
                     child: ChristmasTree()),
                 WeatherRainSnowBg(
                     weatherType: WeatherType.heavySnow,
-                    viewWidth: Get.width,
-                    viewHeight: Get.height),
+                    viewWidth: AppNavigator.width,
+                    viewHeight: AppNavigator.height),
               ],
             )));
   }

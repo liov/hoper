@@ -1,0 +1,27 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../toolbox"
+		},
+		{
+			"path": "../vscode-idea-git"
+		},
+		{
+			"path": "../vscode-database"
+		}
+	],
+	"settings": {
+		"typescript.tsdk": "/Users/jyb/Library/pnpm/global/5/node_modules/typescript/lib",
+		"i18n-ally.localesPaths": [
+			"../hoper/locale"
+		],
+		"rust-analyzer.linkedProjects": [
+			"../hoper/server/rust/rb/Cargo.toml"
+		],
+		"ideaGit.excludeRepos": [],
+		"i18n-ally.sourceLanguage": "zh-Hans",
+	}
+}

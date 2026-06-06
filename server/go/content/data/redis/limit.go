@@ -1,56 +1,59 @@
 package redis
 
 import (
-	"github.com/go-redis/redis/v8"
-	"github.com/hopeio/scaffold/errcode"
+	"context"
+	"strconv"
 	"time"
 
-	timei "github.com/hopeio/gox/time"
+	"github.com/hopeio/scaffold/errcode"
+	"github.com/redis/go-redis/v9"
+
+	timex "github.com/hopeio/gox/time"
 	"github.com/liov/hoper/server/go/global"
 )
 
 var limitErr = errcode.TimesTooMuch.Msg("您的操作过于频繁，请先休息一会儿。")
 
-func (d *ContentDao) Limit(l *global.ContentLimit) error {
-	ctxi := d
-	ctx := ctxi.Base()
-	minuteKey := l.MinuteLimitKey + ctxi.AuthID
-	dayKey := l.DayLimitKey + ctxi.AuthID
+func (d *ContentDao) Limit(ctx context.Context, l *global.ContentLimit, userId uint64) error {
+
+	userIdStr := strconv.FormatUint(userId, 10)
+	minuteKey := l.MinuteLimitKey + userIdStr
+	dayKey := l.DayLimitKey + userIdStr
 
 	var minuteIntCmd, dayIntCmd *redis.IntCmd
-	_, err := d.conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+	_, err := d.Pipelined(ctx, func(pipe redis.Pipeliner) error {
 		minuteIntCmd = pipe.Incr(ctx, minuteKey)
 		dayIntCmd = pipe.Incr(ctx, dayKey)
 		return nil
 	})
 	if err != nil {
-		return ctxi.RespErrorLog(errcode.RedisErr, err, "Incr")
+		return errcode.RedisErr.Wrap(err)
 	}
 
 	if minuteIntCmd.Val() > l.MinuteLimitCount || dayIntCmd.Val() > l.DayLimitCount {
 		return limitErr
 	}
 	var minuteDurationCmd, dayDurationCmd *redis.DurationCmd
-	_, err = d.conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+	_, err = d.Pipelined(ctx, func(pipe redis.Pipeliner) error {
 		minuteDurationCmd = pipe.PTTL(ctx, minuteKey)
 		dayDurationCmd = pipe.PTTL(ctx, dayKey)
 		return nil
 	})
 	if err != nil {
-		return ctxi.RespErrorLog(errcode.RedisErr, err, "PTTL")
+		return errcode.RedisErr.Wrap(err)
 	}
 
-	_, err = d.conn.Pipelined(ctx, func(pipe redis.Pipeliner) error {
+	_, err = d.Pipelined(ctx, func(pipe redis.Pipeliner) error {
 		if minuteDurationCmd.Val() < 0 {
 			pipe.Expire(ctx, minuteKey, time.Minute)
 		}
 		if dayDurationCmd.Val() < 0 {
-			pipe.Expire(ctx, dayKey, timei.Day)
+			pipe.Expire(ctx, dayKey, timex.Day)
 		}
 		return nil
 	})
 	if err != nil {
-		return ctxi.RespErrorLog(errcode.RedisErr, err, "Expire")
+		return errcode.RedisErr.Wrap(err)
 	}
 	return nil
 }

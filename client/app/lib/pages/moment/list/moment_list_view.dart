@@ -1,50 +1,133 @@
+import 'package:app/util/async.dart';
+import 'package:app/gen/pb/content/moment.service.pb.dart';
+import 'package:app/global/state.dart';
 
-import 'package:applib/util/async.dart';
+import 'package:app/pages/moment/item/moment_item_view.dart';
+import 'package:app/pages/route.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:app/util/nav.dart';
 
-import '../../../global/service.dart';
-import '../item/moment_item_view.dart';
-import 'moment_list_controller.dart';
-// TabBarView StatelessWidget无法保持状态
-class MomentListView extends StatelessWidget  {
-  MomentListView({super.key, this.tag = "moment"}):super();
-  late final Future<void> future = controller.newList(tag);
-  final MomentListController controller = Get.find();
+import 'package:app/gen/pb/content/moment.model.pb.dart' as $moment;
+
+class MomentListView extends StatefulWidget {
+  const MomentListView({super.key, this.tag = "moment"});
 
   final String tag;
+  @override
+  _MomentListViewState createState() => _MomentListViewState();
+}
 
+class _MomentListViewState extends State<MomentListView>
+    with AutomaticKeepAliveClientMixin {
+  late final req = MomentListReq(pageNo: 1, pageSize: 10);
+  var times = 0;
+  var list = List<$moment.Moment>.empty(growable: true);
+
+  late Future<void> _future;
   late final ScrollController _controller = ScrollController()
     ..addListener(() {
       if (_controller.position.atEdge) {
-        controller.pullList(tag);
+        grpcGetList();
       }
-    }
-    );
+    });
+
+  Future<void> resetList() {
+    times = 0;
+    req.pageNo = 1;
+    list.clear();
+    _future = grpcGetList();
+    return _future;
+  }
+
+  Future<void> grpcGetList() async {
+    globalService.logger.fine(req.toString());
+    var response = await globalService.momentClient.stub.list(req);
+    if (response.list.isEmpty) return;
+    // If the widget was removed from the tree while the message was in flight,
+    // we want to discard the reply rather than calling setState to update our
+    // non-existent appearance.
+    globalState.userState.appendUsers(response.users);
+    list.addAll(response.list);
+    times++;
+    req.pageNo++;
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _future = grpcGetList();
+  }
+
   @override
   Widget build(BuildContext context) {
-    globalService.logger.d('MomentListView重绘');
-    print(_controller);
+    super.build(context);
+    globalService.logger.fine("${toStringShort()}重绘");
     return FutureBuilder<void>(
-        future: future,
-        builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-    return snapshot.handle() ?? GetBuilder<MomentListController>(
-                  id: tag,
-                  builder: (_) => RefreshIndicator(
-                      onRefresh: () {
-                        return controller.resetList(tag);
+      future: _future,
+      builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+        return snapshot.handle() ??
+            RefreshIndicator(
+              onRefresh: () {
+                return resetList();
+              },
+              child: list.isEmpty
+                  ? Center(
+                      child: IconButton(
+                        icon: Icon(Icons.refresh),
+                        onPressed: () {
+                          setState(() {
+                            _future = grpcGetList();
+                          });
+                        },
+                      ),
+                    )
+                  : ListView.separated(
+                      physics: BouncingScrollPhysics(),
+                      controller: _controller,
+                      itemCount: list.length,
+                      separatorBuilder: (BuildContext context, int index) {
+                        return Divider();
                       },
-                      child: ListView.separated(
-                          physics: BouncingScrollPhysics(),
-                          controller: _controller,
-                          itemCount: controller.entityMap[tag]!.list.length,
-                          separatorBuilder: (BuildContext context, int index) {
-                            return Divider();
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                          onTap: () {
+                            AppNavigator.pushNamed(
+                              Routes.contentDetails(
+                                list[index].statistics.type,
+                                list[index].statistics.refId,
+                              ),
+                              arguments: list[index],
+                            );
                           },
-                          itemBuilder: (context, index) {
-                            return MomentItem(
-                                moment: controller.entityMap[tag]!.list[index]);
-                          })));
-          });
+                          child: MomentItem(moment: list[index]),
+                        );
+                      },
+                    ),
+            );
+      },
+    );
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant MomentListView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    print('${toStringShort()}didUpdateWidget');
+    resetList();
+  }
+
+  @override
+  void reassemble() {
+    print('${toStringShort()}reassemble');
+    super.reassemble();
+  }
+
+  @override
+  bool get wantKeepAlive => true;
 }

@@ -52,5 +52,11 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>NSCameraUsageDescription</key>
+		<string>用于拍摄照片和视频并发布动态</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>用于录制视频时采集声音</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>用于从相册选择照片和视频</string>
 	</dict>
 </plist>
