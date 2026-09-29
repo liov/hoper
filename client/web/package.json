@@ -35,7 +35,7 @@
     "element-plus": "^2.13.6",
     "grpc-web": "^2.0.2",
     "js-cookie": "^3.0.5",
-    "markdown-it": "^14.1.1",
+    "markdown-it": "^14.3.1",
     "mitt": "^3.0.1",
     "nprogress": "^0.2.0",
     "pinia": "^3.0.4",
