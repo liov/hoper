@@ -44,7 +44,7 @@
     "spark-md5": "^3.0.2",
     "vant": "^4.9.24",
     "vue": "^3.5.32",
-    "vue-i18n": "^11.3.2",
+    "vue-i18n": "^11.4.14",
     "vue-router": "^5.0.4"
   },
   "devDependencies": {
